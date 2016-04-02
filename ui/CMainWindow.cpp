@@ -48,7 +48,7 @@ CMainWindow::CMainWindow()
 	SetMenuBar( menuBar );
 
 	CreateStatusBar();
-	SetStatusText( "Welcome to wxWidgets!" );
+	SetStatusText( "" );
 
 	m_pMainPanel = new CMainPanel( this );
 
@@ -101,6 +101,6 @@ void CMainWindow::OnExit( wxCommandEvent& event )
 
 void CMainWindow::OnAbout( wxCommandEvent& event )
 {
-	wxMessageBox( "This is a wxWidgets' Hello world sample",
-				  "About Hello World", wxOK | wxICON_INFORMATION );
+	wxMessageBox( "Half-Life Model Viewer 1.40 By Sam \"Solokiller\" Vanheer",
+				  "About Half-Life Model Viewer", wxOK | wxICON_INFORMATION );
 }

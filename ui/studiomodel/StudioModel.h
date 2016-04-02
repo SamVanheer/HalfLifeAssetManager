@@ -11,7 +11,7 @@
 #ifndef INCLUDED_STUDIOMODEL
 #define INCLUDED_STUDIOMODEL
 
-
+#include <vector>
 
 #ifndef byte
 typedef unsigned char byte;
@@ -22,8 +22,19 @@ typedef unsigned char byte;
 
 #include "model/utility/OpenGL.h"
 
+enum TextureFlag
+{
+	STUDIO_NF_RENDER_FLAGS = STUDIO_NF_CHROME | STUDIO_NF_ADDITIVE | STUDIO_NF_MASKED
+};
+
+const size_t PALETTE_ALPHA_INDEX = 255 * 3;
+
 class StudioModel
 {
+public:
+	typedef std::vector<const mstudiomesh_t*> MeshList_t;
+	typedef std::vector<MeshList_t> TextureMeshMap_t;
+
 public:
 	studiohdr_t				*getStudioHeader () const { return m_pstudiohdr; }
 	studiohdr_t				*getTextureHeader () const { return m_ptexturehdr; }
@@ -32,6 +43,12 @@ public:
 	float GetFrame() const { return m_frame; }
 
 	int GetNumFrames() const;
+
+	GLuint GetTextureId( const int iIndex ) const;
+
+	mstudiomodel_t* GetModelByBodyPart( const int iBodyPart ) const;
+
+	const MeshList_t* GetMeshListByTexture( const int iIndex ) const;
 
 	StudioModel();
 
@@ -84,6 +101,8 @@ private:
 	vec4_t					m_adj;				// FIX: non persistant, make static
 
 	GLuint					m_Textures[ MAXSTUDIOSKINS ];
+
+	TextureMeshMap_t		m_TextureMeshMap;
 
 	void					CalcBoneAdj( void );
 	void					CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, float *q );

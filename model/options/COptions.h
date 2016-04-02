@@ -6,6 +6,8 @@
 
 #include "mathlib.h"
 
+#include "ui/studiomodel/StudioModel.h"
+
 //TODO: move
 enum class RenderMode
 {
@@ -61,7 +63,7 @@ public:
 	bool showTexture;
 
 	//Index of the texture to draw onscreen in Texture mode.
-	GLuint texture;
+	int texture;
 
 	float textureScale;
 
@@ -95,6 +97,14 @@ public:
 	vec3_t weaponOrigin;
 
 	bool useWeaponOrigin;
+
+	bool showUVMap;
+
+	bool overlayUVMap;
+
+	const mstudiomesh_t* pUVMesh;	//Null if all should be drawn.
+
+	bool antiAliasUVLines;
 
 private:
 	COptions( const COptions& ) = delete;

@@ -99,6 +99,8 @@ void StudioModel::UploadTexture(mstudiotexture_t *ptexture, byte *data, byte *pa
 		row2[i] = (int) ((i + 0.75) * (ptexture->height / (float)outheight)) * ptexture->width;
 	}
 
+	const byte* const pAlpha = &pal[ PALETTE_ALPHA_INDEX ];
+
 	// scale down and convert to 32bit RGB
 	for (i=0 ; i<outheight ; i++)
 	{
@@ -112,12 +114,20 @@ void StudioModel::UploadTexture(mstudiotexture_t *ptexture, byte *data, byte *pa
 			out[0] = (pix1[0] + pix2[0] + pix3[0] + pix4[0])>>2;
 			out[1] = (pix1[1] + pix2[1] + pix3[1] + pix4[1])>>2;
 			out[2] = (pix1[2] + pix2[2] + pix3[2] + pix4[2])>>2;
-			out[3] = 0xFF;
+
+			if( ptexture->flags & STUDIO_NF_MASKED && pix1 == pAlpha && pix2 == pAlpha && pix3 == pAlpha && pix4 == pAlpha )
+			{
+				out[ 3 ] = 0x00;
+			}
+			else
+			{
+				out[3] = 0xFF;
+			}
 		}
 	}
 
-	glBindTexture( GL_TEXTURE_2D, name );	
-	glTexImage2D( GL_TEXTURE_2D, 0, 3/*??*/, outwidth, outheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex );
+	glBindTexture( GL_TEXTURE_2D, name );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, outwidth, outheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex );
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bFilterTextures ? GL_LINEAR:GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, bFilterTextures ? GL_LINEAR:GL_NEAREST);
@@ -132,6 +142,8 @@ StudioModel::FreeModel ()
 {
 	if( !m_pstudiohdr )
 		return;
+
+	m_TextureMeshMap.clear();
 
 	// deleting textures
 	glDeleteTextures( m_ptexturehdr->numtextures, m_Textures );
@@ -288,6 +300,24 @@ bool StudioModel::PostLoadModel( char *modelname )
 		SetBodygroup (n, 0);
 
 	SetSkin (0);
+
+	//Build texture->meshes map.
+	m_TextureMeshMap.resize( m_ptexturehdr->numtextures );
+
+	const short* const pskinref = ( const short* ) ( ( const byte* ) m_ptexturehdr + m_ptexturehdr->skinindex );
+
+	for( int iBodyPart = 0; iBodyPart < m_pstudiohdr->numbodyparts; ++iBodyPart )
+	{
+		const mstudiomodel_t* const pModel = GetModelByBodyPart( iBodyPart );
+
+		for( int iMesh = 0; iMesh < pModel->nummesh; ++iMesh )
+		{
+			const mstudiomesh_t* pMesh = ( ( const mstudiomesh_t* ) ( ( const byte* ) m_pstudiohdr + pModel->meshindex ) ) + iMesh;
+
+			m_TextureMeshMap[ pskinref[ pMesh->skinref ] ].push_back( pMesh );
+		}
+	}
+
 /*
 	vec3_t mins, maxs;
 	ExtractBbox (mins, maxs);

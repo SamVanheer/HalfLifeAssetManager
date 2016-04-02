@@ -21,6 +21,10 @@ void COptions::ResetModelData()
 	rot[ 0 ] = -90.0f;
 
 	weaponOrigin[ 0 ] = weaponOrigin[ 1 ] = weaponOrigin[ 2 ] = 0;
+
+	texture = 0;
+
+	pUVMesh = nullptr;
 }
 
 void COptions::ResetToDefaults()
@@ -38,7 +42,6 @@ void COptions::ResetToDefaults()
 	useStencil = false;
 	showTexture = false;
 
-	texture = GL_INVALID_TEXTURE_ID;
 	textureScale = 1.0f;
 
 	memset( backgroundTextureFile, 0, sizeof( backgroundTextureFile ) );
@@ -72,6 +75,12 @@ void COptions::ResetToDefaults()
 	wireframeColor[ 1 ] = wireframeColor[ 2 ] = 0;
 
 	useWeaponOrigin = false;
+
+	showUVMap = false;
+
+	overlayUVMap = false;
+
+	antiAliasUVLines = false;
 }
 
 void COptions::CenterView( const StudioModel& model )

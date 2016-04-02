@@ -51,6 +51,10 @@ private:
 	void DrawFloor();
 	void SetupRenderMode( RenderMode renderMode = RenderMode::INVALID );
 
+	void DrawTexture();
+
+	void DrawModel();
+
 private:
 	I3DViewListener* m_pListener;
 

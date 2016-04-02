@@ -23,6 +23,7 @@ enum wxIdentifiers
 	//Model Display panel
 	wxID_MDLDISP_RENDERMODE,
 	wxID_MDLDISP_OPACITY,
+	wxID_MDLDISP_CHECKBOX,
 	wxID_MDLDISP_SCALEMESH,
 	wxID_MDLDISP_SCALEBONES,
 
@@ -46,6 +47,12 @@ enum wxIdentifiers
 
 	//Weapon Origin panel
 	wxID_WPN_TESTORIGINS,
+
+	//Textures panel
+	wxID_TEX_CHANGED,
+	wxID_TEX_SCALE,
+	wxID_TEX_CHECKBOX,
+	wxID_TEX_MESH,
 
 	wxID_CUSTOM_HIGHEST
 };

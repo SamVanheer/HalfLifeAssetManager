@@ -1,12 +1,29 @@
 #ifndef CONTROLPANELS_CTEXTURESPANEL_H
 #define CONTROLPANELS_CTEXTURESPANEL_H
 
+#include "studio.h"
+
 #include "CBaseControlPanel.h"
 
 //Defined in a Windows header
 #ifdef TRANSPARENT
 #undef TRANSPARENT
 #endif
+
+class CMeshClientData final : public wxClientData
+{
+public:
+	CMeshClientData( const mstudiomesh_t* const pMesh )
+		: m_pMesh( pMesh )
+	{
+	}
+
+	const mstudiomesh_t* const m_pMesh;
+
+private:
+	CMeshClientData( const CMeshClientData& ) = delete;
+	CMeshClientData& operator=( const CMeshClientData& ) = delete;
+};
 
 class CTexturesPanel final : public CBaseControlPanel
 {
@@ -50,10 +67,26 @@ public:
 
 	void ModelChanged( const StudioModel& model ) override;
 
+	void TextureChanged( wxCommandEvent& event );
+
+	void ScaleChanged( wxCommandEvent& event );
+
+	void CheckBoxChanged( wxCommandEvent& event );
+
+	void MeshChanged( wxCommandEvent& event );
+
+	void SetTexture( int iIndex );
+
+	void SetScale( int iScale, const bool bSetSlider = true );
+
+protected:
+	wxDECLARE_EVENT_TABLE();
+
 private:
 	wxStaticText* m_pTextureSize;
 	wxComboBox* m_pTexture;
 
+	wxStaticText* m_pScaleTextureViewSize;
 	wxSlider* m_pScaleTextureView;
 
 	wxCheckBox* m_pCheckBoxes[ CheckBox::COUNT ];

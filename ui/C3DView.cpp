@@ -46,41 +46,192 @@ void C3DView::Paint( wxPaintEvent& event )
 
 	glViewport( 0, 0, size.GetX(), size.GetY() );
 
-	//
-	// show textures
-	//
-
 	if( Options.showTexture )
+		DrawTexture();
+	else
+		DrawModel();
+
+	if( m_pListener )
+		m_pListener->Draw3D( size );
+
+	glFlush();
+	SwapBuffers();
+}
+
+void C3DView::MouseEvents( wxMouseEvent& event )
+{
+	//Ignore input in weapon origin mode.
+	//TODO: refactor
+	if( Options.useWeaponOrigin || Options.showTexture )
 	{
-		glMatrixMode( GL_PROJECTION );
+		event.Skip();
+		return;
+	}
+
+	if( event.ButtonDown() )
+	{
+		m_flOldRotX = Options.rot[ 0 ];
+		m_flOldRotY = Options.rot[ 1 ];
+		VectorCopy( Options.trans, m_vecOldTrans );
+		m_flOldX = event.GetX();
+		m_flOldY = event.GetY();
+		Options.pause = false;
+
+		m_iButtonsDown |= event.GetButton();
+	}
+	else if( event.ButtonUp() )
+	{
+		m_iButtonsDown &= ~event.GetButton();
+	}
+	else if( event.Dragging() )
+	{
+		if( event.LeftIsDown() && m_iButtonsDown & wxMOUSE_BTN_LEFT )
+		{
+			if( event.GetModifiers() & wxMOD_SHIFT )
+			{
+				Options.trans[ 0 ] = m_vecOldTrans[ 0 ] - ( float ) ( event.GetX() - m_flOldX );
+				Options.trans[ 1 ] = m_vecOldTrans[ 1 ] + ( float ) ( event.GetY() - m_flOldY );
+			}
+			else
+			{
+				Options.rot[ 0 ] = m_flOldRotX + ( float ) ( event.GetY() - m_flOldY );
+				Options.rot[ 1 ] = m_flOldRotY + ( float ) ( event.GetX() - m_flOldX );
+			}
+		}
+		else if( event.RightIsDown() && m_iButtonsDown & wxMOUSE_BTN_RIGHT )
+		{
+			Options.trans[ 2 ] = m_vecOldTrans[ 2 ] + ( float ) ( event.GetY() - m_flOldY );
+		}
+
+		Refresh();
+	}
+	else
+	{
+		event.Skip();
+	}
+}
+
+void C3DView::PrepareForLoad()
+{
+	SetCurrent( *m_pContext );
+}
+
+void C3DView::UpdateView()
+{
+	const wxLongLong curr = wxGetUTCTimeMillis();
+
+	if( Options.playSequence )
+		g_studioModel.AdvanceFrame( ( ( curr - m_iPrevTime ).GetValue() / 1000.0 ) * Options.speedScale );
+
+	m_iPrevTime = curr;
+
+	if( !Options.pause )
+		Refresh();
+}
+
+void C3DView::DrawFloor()
+{
+	glBegin( GL_TRIANGLE_STRIP );
+	glTexCoord2f( 0.0f, 0.0f );
+	glVertex3f( -100.0f, 100.0f, 0.0f );
+
+	glTexCoord2f( 0.0f, 1.0f );
+	glVertex3f( -100.0f, -100.0f, 0.0f );
+
+	glTexCoord2f( 1.0f, 0.0f );
+	glVertex3f( 100.0f, 100.0f, 0.0f );
+
+	glTexCoord2f( 1.0f, 1.0f );
+	glVertex3f( 100.0f, -100.0f, 0.0f );
+
+	glEnd();
+}
+
+void C3DView::SetupRenderMode( RenderMode renderMode )
+{
+	if( renderMode == RenderMode::INVALID )
+		renderMode = Options.renderMode;
+
+	if( renderMode == RenderMode::WIREFRAME )
+	{
+		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		glDisable( GL_TEXTURE_2D );
+		glDisable( GL_CULL_FACE );
+		glEnable( GL_DEPTH_TEST );
+	}
+	else if( renderMode == RenderMode::FLAT_SHADED ||
+			 renderMode == RenderMode::SMOOTH_SHADED )
+	{
+		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		glDisable( GL_TEXTURE_2D );
+		glEnable( GL_CULL_FACE );
+		glEnable( GL_DEPTH_TEST );
+
+		if( renderMode == RenderMode::FLAT_SHADED )
+			glShadeModel( GL_FLAT );
+		else
+			glShadeModel( GL_SMOOTH );
+	}
+	else if( renderMode == RenderMode::TEXTURE_SHADED )
+	{
+		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		glEnable( GL_TEXTURE_2D );
+		glEnable( GL_CULL_FACE );
+		glEnable( GL_DEPTH_TEST );
+		glShadeModel( GL_SMOOTH );
+	}
+}
+
+void C3DView::DrawTexture()
+{
+	const wxSize size = GetClientSize();
+
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+
+	glOrtho( 0.0f, ( float ) size.GetX(), ( float ) size.GetY(), 0.0f, 1.0f, -1.0f );
+
+	studiohdr_t *hdr = g_studioModel.getTextureHeader();
+	if( hdr )
+	{
+		mstudiotexture_t *ptextures = ( mstudiotexture_t * ) ( ( byte * ) hdr + hdr->textureindex );
+
+		const mstudiotexture_t& texture = ptextures[ Options.texture ];
+
+		float w = ( float ) texture.width * Options.textureScale;
+		float h = ( float ) texture.height * Options.textureScale;
+
+		glMatrixMode( GL_MODELVIEW );
+		glPushMatrix();
 		glLoadIdentity();
 
-		glOrtho( 0.0f, ( float ) size.GetX(), ( float ) size.GetY(), 0.0f, 1.0f, -1.0f );
+		glDisable( GL_CULL_FACE );
+		glDisable( GL_BLEND );
 
-		studiohdr_t *hdr = g_studioModel.getTextureHeader();
-		if( hdr )
+		if( texture.flags & STUDIO_NF_MASKED )
 		{
-			mstudiotexture_t *ptextures = ( mstudiotexture_t * ) ( ( byte * ) hdr + hdr->textureindex );
-			float w = ( float ) ptextures[ Options.texture ].width * Options.textureScale;
-			float h = ( float ) ptextures[ Options.texture ].height * Options.textureScale;
+			glEnable( GL_ALPHA_TEST );
+			glAlphaFunc( GL_GREATER, 0.0f );
+		}
 
-			glMatrixMode( GL_MODELVIEW );
-			glPushMatrix();
-			glLoadIdentity();
+		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		float x = ( ( float ) size.GetX() - w ) / 2;
+		float y = ( ( float ) size.GetY() - h ) / 2;
 
-			glDisable( GL_CULL_FACE );
+		glDisable( GL_DEPTH_TEST );
 
-			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-			float x = ( ( float ) size.GetX() - w ) / 2;
-			float y = ( ( float ) size.GetY() - h ) / 2;
-
+		if( Options.showUVMap && !Options.overlayUVMap )
+		{
+			glColor4f( 0.0f, 0.0f, 0.0f, 1.0f );
 			glDisable( GL_TEXTURE_2D );
-			glColor4f( 1.0f, 0.0f, 0.0f, 1.0f );
-			glRectf( x - 2, y - 2, x + w + 2, y + h + 2 );
+			glRectf( x, y, x + w, y + h );
+		}
 
+		if( !Options.showUVMap || Options.overlayUVMap )
+		{
 			glEnable( GL_TEXTURE_2D );
 			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-			glBindTexture( GL_TEXTURE_2D, Options.texture ); //d_textureNames[0]);	//TODO: fix this ugly crap
+			glBindTexture( GL_TEXTURE_2D, g_studioModel.GetTextureId( Options.texture ) );
 
 			glBegin( GL_TRIANGLE_STRIP );
 
@@ -98,13 +249,84 @@ void C3DView::Paint( wxPaintEvent& event )
 
 			glEnd();
 
-			glPopMatrix();
-
-			glClear( GL_DEPTH_BUFFER_BIT );
 			glBindTexture( GL_TEXTURE_2D, 0 );
 		}
-		return;
+
+		if( Options.showUVMap )
+		{
+			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+
+			size_t uiCount;
+
+			const mstudiomesh_t* const* ppMeshes;
+			
+			if( Options.pUVMesh )
+			{
+				uiCount = 1;
+				ppMeshes = &Options.pUVMesh;
+			}
+			else
+			{
+				const StudioModel::MeshList_t* pList = g_studioModel.GetMeshListByTexture( Options.texture );
+
+				uiCount = pList->size();
+				ppMeshes = pList->data();
+			}
+
+			SetupRenderMode( RenderMode::WIREFRAME );
+
+			if( Options.antiAliasUVLines )
+			{
+				glEnable( GL_BLEND );
+				glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+				glEnable( GL_LINE_SMOOTH );
+			}
+
+			int i;
+
+			for( size_t uiIndex = 0; uiIndex < uiCount; ++uiIndex, ++ppMeshes )
+			{
+				const short* ptricmds = ( short* ) ( ( byte* ) g_studioModel.getStudioHeader() + ( *ppMeshes )->triindex );
+
+				while( i = *( ptricmds++ ) )
+				{
+					if( i < 0 )
+					{
+						glBegin( GL_TRIANGLE_FAN );
+						i = -i;
+					}
+					else
+					{
+						glBegin( GL_TRIANGLE_STRIP );
+					}
+
+					for( ; i > 0; i--, ptricmds += 4 )
+					{
+						// FIX: put these in as integer coords, not floats
+						glVertex2f( x + ptricmds[ 2 ] * Options.textureScale, y + ptricmds[ 3 ] * Options.textureScale );
+					}
+					glEnd();
+				}
+			}
+
+			if( Options.antiAliasUVLines )
+			{
+				glDisable( GL_LINE_SMOOTH );
+			}
+		}
+
+		glPopMatrix();
+
+		glClear( GL_DEPTH_BUFFER_BIT );
+
+		if( texture.flags & STUDIO_NF_MASKED )
+			glDisable( GL_ALPHA_TEST );
 	}
+}
+
+void C3DView::DrawModel()
+{
+	const wxSize size = GetClientSize();
 
 	//
 	// draw background
@@ -287,136 +509,6 @@ void C3DView::Paint( wxPaintEvent& event )
 	}
 
 	glPopMatrix();
-
-	if( m_pListener )
-		m_pListener->Draw3D( size );
-
-	glFlush();
-	SwapBuffers();
-}
-
-void C3DView::MouseEvents( wxMouseEvent& event )
-{
-	//Ignore input in weapon origin mode.
-	//TODO: refactor
-	if( Options.useWeaponOrigin || Options.showTexture )
-	{
-		event.Skip();
-		return;
-	}
-
-	if( event.ButtonDown() )
-	{
-		m_flOldRotX = Options.rot[ 0 ];
-		m_flOldRotY = Options.rot[ 1 ];
-		VectorCopy( Options.trans, m_vecOldTrans );
-		m_flOldX = event.GetX();
-		m_flOldY = event.GetY();
-		Options.pause = false;
-
-		m_iButtonsDown |= event.GetButton();
-	}
-	else if( event.ButtonUp() )
-	{
-		m_iButtonsDown &= ~event.GetButton();
-	}
-	else if( event.Dragging() )
-	{
-		if( event.LeftIsDown() && m_iButtonsDown & wxMOUSE_BTN_LEFT )
-		{
-			if( event.GetModifiers() & wxMOD_SHIFT )
-			{
-				Options.trans[ 0 ] = m_vecOldTrans[ 0 ] - ( float ) ( event.GetX() - m_flOldX );
-				Options.trans[ 1 ] = m_vecOldTrans[ 1 ] + ( float ) ( event.GetY() - m_flOldY );
-			}
-			else
-			{
-				Options.rot[ 0 ] = m_flOldRotX + ( float ) ( event.GetY() - m_flOldY );
-				Options.rot[ 1 ] = m_flOldRotY + ( float ) ( event.GetX() - m_flOldX );
-			}
-		}
-		else if( event.RightIsDown() && m_iButtonsDown & wxMOUSE_BTN_RIGHT )
-		{
-			Options.trans[ 2 ] = m_vecOldTrans[ 2 ] + ( float ) ( event.GetY() - m_flOldY );
-		}
-
-		Refresh();
-	}
-	else
-	{
-		event.Skip();
-	}
-}
-
-void C3DView::PrepareForLoad()
-{
-	SetCurrent( *m_pContext );
-}
-
-void C3DView::UpdateView()
-{
-	const wxLongLong curr = wxGetUTCTimeMillis();
-
-	if( Options.playSequence )
-		g_studioModel.AdvanceFrame( ( ( curr - m_iPrevTime ).GetValue() / 1000.0 ) * Options.speedScale );
-
-	m_iPrevTime = curr;
-
-	if( !Options.pause )
-		Refresh();
-}
-
-void C3DView::DrawFloor()
-{
-	glBegin( GL_TRIANGLE_STRIP );
-	glTexCoord2f( 0.0f, 0.0f );
-	glVertex3f( -100.0f, 100.0f, 0.0f );
-
-	glTexCoord2f( 0.0f, 1.0f );
-	glVertex3f( -100.0f, -100.0f, 0.0f );
-
-	glTexCoord2f( 1.0f, 0.0f );
-	glVertex3f( 100.0f, 100.0f, 0.0f );
-
-	glTexCoord2f( 1.0f, 1.0f );
-	glVertex3f( 100.0f, -100.0f, 0.0f );
-
-	glEnd();
-}
-
-void C3DView::SetupRenderMode( RenderMode renderMode )
-{
-	if( renderMode == RenderMode::INVALID )
-		renderMode = Options.renderMode;
-
-	if( renderMode == RenderMode::WIREFRAME )
-	{
-		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-		glDisable( GL_TEXTURE_2D );
-		glDisable( GL_CULL_FACE );
-		glEnable( GL_DEPTH_TEST );
-	}
-	else if( renderMode == RenderMode::FLAT_SHADED ||
-			 renderMode == RenderMode::SMOOTH_SHADED )
-	{
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-		glDisable( GL_TEXTURE_2D );
-		glEnable( GL_CULL_FACE );
-		glEnable( GL_DEPTH_TEST );
-
-		if( renderMode == RenderMode::FLAT_SHADED )
-			glShadeModel( GL_FLAT );
-		else
-			glShadeModel( GL_SMOOTH );
-	}
-	else if( renderMode == RenderMode::TEXTURE_SHADED )
-	{
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-		glEnable( GL_TEXTURE_2D );
-		glEnable( GL_CULL_FACE );
-		glEnable( GL_DEPTH_TEST );
-		glShadeModel( GL_SMOOTH );
-	}
 }
 
 void C3DView::LoadBackgroundTexture( const wxString& szFilename )
@@ -425,6 +517,7 @@ void C3DView::LoadBackgroundTexture( const wxString& szFilename )
 
 	m_BackgroundTexture = glLoadImage( szFilename.c_str() );
 
+	//TODO: notify UI
 	Options.showBackground = m_BackgroundTexture != GL_INVALID_TEXTURE_ID;
 }
 

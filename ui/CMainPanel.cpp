@@ -69,7 +69,7 @@ CMainPanel::CMainPanel( wxWindow* pParent )
 
 	this->SetSizer( pSizer );
 
-	LoadModel( "v_9mmar.mdl" );
+	LoadModel( "barney.mdl" );
 }
 
 CMainPanel::~CMainPanel()

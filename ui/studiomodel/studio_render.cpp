@@ -262,7 +262,7 @@ mstudioanim_t * StudioModel::GetAnim( mstudioseqdesc_t *pseqdesc )
 
 	if (pseqdesc->seqgroup == 0)
 	{
-		return (mstudioanim_t *)((byte *)m_pstudiohdr + pseqgroup->data + pseqdesc->animindex);
+		return (mstudioanim_t *)((byte *)m_pstudiohdr + pseqgroup->unused2 + pseqdesc->animindex);
 	}
 
 	return (mstudioanim_t *)((byte *)m_panimhdr[pseqdesc->seqgroup] + pseqdesc->animindex);
@@ -322,6 +322,19 @@ int StudioModel::GetNumFrames() const
 	const mstudioseqdesc_t* const pseqdesc = ( mstudioseqdesc_t* ) ( ( byte* ) m_pstudiohdr + m_pstudiohdr->seqindex ) + m_sequence;
 
 	return pseqdesc->numframes;
+}
+
+GLuint StudioModel::GetTextureId( const int iIndex ) const
+{
+	const studiohdr_t* const pHdr = getStudioHeader();
+
+	if( !pHdr )
+		return GL_INVALID_TEXTURE_ID;
+
+	if( iIndex < 0 || iIndex >= pHdr->numtextures )
+		return GL_INVALID_TEXTURE_ID;
+
+	return m_Textures[ iIndex ];
 }
 
 int StudioModel::SetFrame( int nFrame )
@@ -537,6 +550,26 @@ void StudioModel::SetupLighting ( )
 	}
 }
 
+mstudiomodel_t* StudioModel::GetModelByBodyPart( const int iBodyPart ) const
+{
+	mstudiobodyparts_t* pbodypart = ( mstudiobodyparts_t* ) ( ( byte* ) m_pstudiohdr + m_pstudiohdr->bodypartindex ) + iBodyPart;
+
+	int index = m_bodynum / pbodypart->base;
+	index = index % pbodypart->nummodels;
+
+	return ( mstudiomodel_t * ) ( ( byte * ) m_pstudiohdr + pbodypart->modelindex ) + index;
+}
+
+const StudioModel::MeshList_t* StudioModel::GetMeshListByTexture( const int iIndex ) const
+{
+	if( !m_ptexturehdr )
+		return nullptr;
+
+	if( iIndex < 0 || iIndex >= m_ptexturehdr->numtextures )
+		return nullptr;
+
+	return &m_TextureMeshMap[ iIndex ];
+}
 
 /*
 =================
@@ -552,20 +585,13 @@ outputs:
 
 void StudioModel::SetupModel ( int bodypart )
 {
-	int index;
-
 	if (bodypart > m_pstudiohdr->numbodyparts)
 	{
 		// Con_DPrintf ("StudioModel::SetupModel: no such bodypart %d\n", bodypart);
 		bodypart = 0;
 	}
 
-	mstudiobodyparts_t   *pbodypart = (mstudiobodyparts_t *)((byte *)m_pstudiohdr + m_pstudiohdr->bodypartindex) + bodypart;
-
-	index = m_bodynum / pbodypart->base;
-	index = index % pbodypart->nummodels;
-
-	m_pmodel = (mstudiomodel_t *)((byte *)m_pstudiohdr + pbodypart->modelindex) + index;
+	m_pmodel = GetModelByBodyPart( bodypart );
 }
 
 
@@ -846,12 +872,6 @@ unsigned int StudioModel::DrawPoints( const bool bWireframeOnly )
 		VectorTransform (pstudioverts[i], g_bonetransform[pvertbone[i]], g_pxformverts[i]);
 	}
 
-	if (Options.transparency < 1.0f)
-	{
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
 //
 // clip and draw all triangles
 //
@@ -889,14 +909,40 @@ unsigned int StudioModel::DrawPoints( const bool bWireframeOnly )
 		pmesh = (mstudiomesh_t *)((byte *)m_pstudiohdr + m_pmodel->meshindex) + j;
 		ptricmds = (short *)((byte *)m_pstudiohdr + pmesh->triindex);
 
-		s = 1.0/(float)ptexture[pskinref[pmesh->skinref]].width;
-		t = 1.0/(float)ptexture[pskinref[pmesh->skinref]].height;
+		const mstudiotexture_t& texture = ptexture[ pskinref[ pmesh->skinref ] ];
+
+		s = 1.0/(float)texture.width;
+		t = 1.0/(float)texture.height;
+
+		if( texture.flags & STUDIO_NF_ADDITIVE )
+			glDepthMask( GL_FALSE );
+		else
+			glDepthMask( GL_TRUE );
+
+		if( texture.flags & STUDIO_NF_ADDITIVE )
+		{
+			glEnable( GL_BLEND );
+			glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+		}
+		else if( Options.transparency < 1.0f )
+		{
+			glEnable( GL_BLEND );
+			glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+		}
+		else
+			glDisable( GL_BLEND );
+
+		if( texture.flags & STUDIO_NF_MASKED )
+		{
+			glEnable( GL_ALPHA_TEST );
+			glAlphaFunc( GL_GREATER, 0.0f );
+		}
 
 		if( !bWireframeOnly )
 		{
 			glBindTexture( GL_TEXTURE_2D, m_Textures[pskinref[pmesh->skinref]]);
 
-			if (ptexture[pskinref[pmesh->skinref]].flags & STUDIO_NF_CHROME)
+			if ( texture.flags & STUDIO_NF_CHROME)
 			{
 				while (i = *(ptricmds++))
 				{
@@ -981,7 +1027,12 @@ unsigned int StudioModel::DrawPoints( const bool bWireframeOnly )
 				glEnd();
 			}
 		}
+
+		if( texture.flags & STUDIO_NF_MASKED )
+			glDisable( GL_ALPHA_TEST );
 	}
+
+	glDepthMask( GL_TRUE );
 
 	return uiDrawnPolys;
 }
