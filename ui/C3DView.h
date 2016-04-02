@@ -38,6 +38,11 @@ public:
 
 	void UpdateView();
 
+	void LoadBackgroundTexture( const wxString& szFilename );
+	void LoadGroundTexture( const wxString& szFilename );
+
+	void UnloadGroundTexture();
+
 protected:
 	wxDECLARE_EVENT_TABLE();
 

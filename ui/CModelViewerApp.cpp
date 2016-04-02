@@ -1,6 +1,7 @@
 #include "CMainWindow.h"
 
 #include <wx/display.h>
+#include <wx/image.h>
 
 #include <algorithm>
 #include <vector>
@@ -14,6 +15,8 @@ CModelViewerApp* CModelViewerApp::m_pInstance = nullptr;
 bool CModelViewerApp::OnInit()
 {
 	m_pInstance = this;
+
+	wxInitAllImageHandlers();
 
 	m_pPrimaryDisplay = new wxDisplay( 0 );
 

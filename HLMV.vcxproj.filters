@@ -111,6 +111,9 @@
     <ClCompile Include="ui\controlpanels\CBaseControlPanel.cpp">
       <Filter>Source Files\ui\controlpanels</Filter>
     </ClCompile>
+    <ClCompile Include="model\utility\OpenGL.cpp">
+      <Filter>Source Files\model\utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui\wxInclude.h">

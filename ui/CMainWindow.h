@@ -13,8 +13,10 @@ public:
 
 private:
 	void LoadModel( wxCommandEvent& event );
+	void LoadBackgroundTexture( wxCommandEvent& event );
+	void LoadGroundTexture( wxCommandEvent& event );
+	void UnloadGroundTexture( wxCommandEvent& event );
 
-	void OnHello( wxCommandEvent& event );
 	void OnExit( wxCommandEvent& event );
 	void OnAbout( wxCommandEvent& event );
 

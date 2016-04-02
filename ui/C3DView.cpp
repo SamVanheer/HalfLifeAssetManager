@@ -1,3 +1,7 @@
+#include <memory>
+
+#include <wx/image.h>
+
 #include "studiomodel/StudioModel.h"
 
 #include "C3DView.h"
@@ -17,6 +21,10 @@ C3DView::C3DView( wxWindow* pParent, I3DViewListener* pListener )
 C3DView::~C3DView()
 {
 	g_studioModel.FreeModel();
+
+	glDeleteTexture( m_GroundTexture );
+	glDeleteTexture( m_BackgroundTexture );
+
 	delete m_pContext;
 }
 
@@ -409,4 +417,25 @@ void C3DView::SetupRenderMode( RenderMode renderMode )
 		glEnable( GL_DEPTH_TEST );
 		glShadeModel( GL_SMOOTH );
 	}
+}
+
+void C3DView::LoadBackgroundTexture( const wxString& szFilename )
+{
+	glDeleteTexture( m_BackgroundTexture );
+
+	m_BackgroundTexture = glLoadImage( szFilename.c_str() );
+
+	Options.showBackground = m_BackgroundTexture != GL_INVALID_TEXTURE_ID;
+}
+
+void C3DView::LoadGroundTexture( const wxString& szFilename )
+{
+	glDeleteTexture( m_GroundTexture );
+
+	m_GroundTexture = glLoadImage( szFilename.c_str() );
+}
+
+void C3DView::UnloadGroundTexture()
+{
+	glDeleteTexture( m_GroundTexture );
 }

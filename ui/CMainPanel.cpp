@@ -155,3 +155,18 @@ void CMainPanel::PageChanged( wxBookCtrlEvent& event )
 		pPage->PanelActivated();
 	}
 }
+
+void CMainPanel::LoadBackgroundTexture( const wxString& szFilename )
+{
+	m_p3DView->LoadBackgroundTexture( szFilename );
+}
+
+void CMainPanel::LoadGroundTexture( const wxString& szFilename )
+{
+	m_p3DView->LoadGroundTexture( szFilename );
+}
+
+void CMainPanel::UnloadGroundTexture()
+{
+	m_p3DView->UnloadGroundTexture();
+}

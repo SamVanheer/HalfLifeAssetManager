@@ -11,4 +11,8 @@
 */
 const GLuint GL_INVALID_TEXTURE_ID = 0;
 
+GLuint glLoadImage( const char* const pszFilename );
+
+void glDeleteTexture( GLuint& textureId );
+
 #endif //OPENGL_H

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="model\options\COptions.cpp" />
     <ClCompile Include="model\utility\mathlib.c" />
+    <ClCompile Include="model\utility\OpenGL.cpp" />
     <ClCompile Include="ui\C3DView.cpp" />
     <ClCompile Include="ui\CMainPanel.cpp" />
     <ClCompile Include="ui\CModelViewerApp.cpp" />
