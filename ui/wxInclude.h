@@ -1,0 +1,47 @@
+#ifndef WXINCLUDE_H
+#define WXINCLUDE_H
+
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+enum wxIdentifiers
+{
+	wxID_CUSTOM_LOWEST			= wxID_HIGHEST,
+
+	//Main panel
+	wxID_MAIN_PAGECHANGED,
+
+	//Model Display panel
+	wxID_MDLDISP_RENDERMODE,
+	wxID_MDLDISP_OPACITY,
+	wxID_MDLDISP_SCALEMESH,
+	wxID_MDLDISP_SCALEBONES,
+
+	//Body Parts panel
+	wxID_BODY_BODYPARTS,
+	wxID_BODY_SUBMODELS,
+	wxID_BODY_SKIN,
+	wxID_BODY_CONTROLLER,
+	wxID_BODY_CONTROLLER_SLIDER,
+
+	//Base sequences panel
+	wxID_BASESEQUENCE_SEQCHANGED,
+	wxID_BASESEQUENCE_TOGGLEPLAY,
+	wxID_BASESEQUENCE_PREVFRAME,
+	wxID_BASESEQUENCE_NEXTFRAME,
+	wxID_BASESEQUENCE_FRAME,
+	WXID_BASESEQUENCE_ANIMSPEED,
+
+	//Sequences panel
+	wxID_SEQUENCE_EVENT,
+
+	//Weapon Origin panel
+	wxID_WPN_TESTORIGINS,
+
+	wxID_CUSTOM_HIGHEST
+};
+
+#endif //WXINCLUDE_H
