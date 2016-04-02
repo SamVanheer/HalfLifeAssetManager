@@ -107,13 +107,12 @@ void CModelDisplayPanel::ModelChanged( const StudioModel& model )
 
 void CModelDisplayPanel::ViewUpdated()
 {
-	unsigned long uiOld = 0;
-
-	m_pDrawnPolys->GetLabelText().ToULong( &uiOld );
-
 	//Don't update if it's identical. Prevents flickering.
-	if( uiOld != Options.drawnPolys )
+	if( m_uiDrawnPolysLast != Options.drawnPolys )
+	{
+		m_uiDrawnPolysLast = Options.drawnPolys;
 		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", Options.drawnPolys ) );
+	}
 }
 
 void CModelDisplayPanel::RenderModeChanged( wxCommandEvent& event )
@@ -220,6 +219,8 @@ void CModelDisplayPanel::SetRenderMode( RenderMode renderMode )
 		renderMode = RenderMode::FIRST;
 	else if( renderMode > RenderMode::LAST )
 		renderMode = RenderMode::LAST;
+
+	m_pRenderMode->Select( static_cast<int>( renderMode ) );
 
 	Options.renderMode = renderMode;
 }

@@ -11,6 +11,9 @@ enum wxIdentifiers
 {
 	wxID_CUSTOM_LOWEST			= wxID_HIGHEST,
 
+	//Main window
+	wxID_MAINWND_LOADMODEL,
+
 	//Main panel
 	wxID_MAIN_PAGECHANGED,
 

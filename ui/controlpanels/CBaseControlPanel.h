@@ -16,6 +16,9 @@ public:
 
 	virtual void ModelChanged( const StudioModel& model ) = 0;
 
+	//Called right before the 3D view is updated.
+	virtual void ViewPreUpdate() {}
+
 	//Called when the 3D view is drawing.
 	virtual void Draw3D( const wxSize& size ) {}
 

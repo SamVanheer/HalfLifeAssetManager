@@ -305,10 +305,16 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 		m_flOldX = event.GetX();
 		m_flOldY = event.GetY();
 		Options.pause = false;
+
+		m_iButtonsDown |= event.GetButton();
+	}
+	else if( event.ButtonUp() )
+	{
+		m_iButtonsDown &= ~event.GetButton();
 	}
 	else if( event.Dragging() )
 	{
-		if( event.LeftIsDown() )
+		if( event.LeftIsDown() && m_iButtonsDown & wxMOUSE_BTN_LEFT )
 		{
 			if( event.GetModifiers() & wxMOD_SHIFT )
 			{
@@ -321,7 +327,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 				Options.rot[ 1 ] = m_flOldRotY + ( float ) ( event.GetX() - m_flOldX );
 			}
 		}
-		else if( event.RightIsDown() )
+		else if( event.RightIsDown() && m_iButtonsDown & wxMOUSE_BTN_RIGHT )
 		{
 			Options.trans[ 2 ] = m_vecOldTrans[ 2 ] + ( float ) ( event.GetY() - m_flOldY );
 		}

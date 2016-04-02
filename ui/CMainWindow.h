@@ -12,6 +12,8 @@ public:
 	~CMainWindow();
 
 private:
+	void LoadModel( wxCommandEvent& event );
+
 	void OnHello( wxCommandEvent& event );
 	void OnExit( wxCommandEvent& event );
 	void OnAbout( wxCommandEvent& event );
@@ -24,11 +26,6 @@ private:
 private:
 	CMainWindow( const CMainWindow& ) = delete;
 	CMainWindow& operator=( const CMainWindow& ) = delete;
-};
-
-enum
-{
-	ID_Hello = 1
 };
 
 #endif //CMAINWINDOW_H

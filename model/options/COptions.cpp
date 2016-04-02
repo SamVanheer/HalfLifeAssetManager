@@ -13,16 +13,23 @@ COptions::~COptions()
 {
 }
 
-void COptions::ResetToDefaults()
+void COptions::ResetModelData()
 {
-	showBones = false;
-
-	lightColor[ 0 ] = lightColor[ 1 ] = lightColor[ 2 ] = 1.0;
-
 	trans[ 0 ] = trans[ 1 ] = trans[ 2 ] = 0;
 	rot[ 1 ] = rot[ 2 ] = 0;
 
 	rot[ 0 ] = -90.0f;
+
+	weaponOrigin[ 0 ] = weaponOrigin[ 1 ] = weaponOrigin[ 2 ] = 0;
+}
+
+void COptions::ResetToDefaults()
+{
+	ResetModelData();
+
+	showBones = false;
+
+	lightColor[ 0 ] = lightColor[ 1 ] = lightColor[ 2 ] = 1.0;
 
 	transparency = 1.0f;
 
@@ -63,8 +70,6 @@ void COptions::ResetToDefaults()
 
 	wireframeColor[ 0 ] = 1.0f;
 	wireframeColor[ 1 ] = wireframeColor[ 2 ] = 0;
-
-	weaponOrigin[ 0 ] = weaponOrigin[ 1 ] = weaponOrigin[ 2 ] = 0;
 
 	useWeaponOrigin = false;
 }

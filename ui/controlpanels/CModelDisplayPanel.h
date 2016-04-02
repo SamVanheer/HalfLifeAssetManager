@@ -88,6 +88,8 @@ private:
 
 	wxStaticText* m_pDrawnPolys;
 
+	unsigned int m_uiDrawnPolysLast = 0;
+
 private:
 	CModelDisplayPanel( const CModelDisplayPanel& ) = delete;
 	CModelDisplayPanel& operator=( const CModelDisplayPanel& ) = delete;

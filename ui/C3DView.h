@@ -64,6 +64,9 @@ private:
 
 	wxLongLong m_iPrevTime = 0;
 
+	//Tracks mouse button state. Used to prevent input from being mistakingly applied (e.g. double click from dialog spilling over as drag).
+	int m_iButtonsDown = wxMOUSE_BTN_NONE;
+
 private:
 	C3DView( const C3DView& ) = delete;
 	C3DView& operator=( const C3DView& ) = delete;

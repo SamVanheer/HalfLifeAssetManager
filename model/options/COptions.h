@@ -32,6 +32,8 @@ public:
 	COptions();
 	~COptions();
 
+	void ResetModelData();
+
 	void ResetToDefaults();
 
 	void CenterView( const StudioModel& model );

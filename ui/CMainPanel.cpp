@@ -79,6 +79,8 @@ CMainPanel::~CMainPanel()
 
 void CMainPanel::OnTimer( CTimer& timer )
 {
+	ForEachPanel( &CBaseControlPanel::ViewPreUpdate );
+
 	m_p3DView->UpdateView();
 
 	ForEachPanel( &CBaseControlPanel::ViewUpdated );
@@ -102,7 +104,7 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 
 	g_studioModel.FreeModel();
 
-	Options.ResetToDefaults();
+	Options.ResetModelData();
 
 	auto szCFilename = szFilename.char_str( wxMBConvUTF8() );
 
