@@ -27,7 +27,23 @@ enum TextureFlag
 	STUDIO_NF_RENDER_FLAGS = STUDIO_NF_CHROME | STUDIO_NF_ADDITIVE | STUDIO_NF_MASKED
 };
 
-const size_t PALETTE_ALPHA_INDEX = 255 * 3;
+const size_t PALETTE_ENTRIES		= 256;
+const size_t PALETTE_CHANNELS		= 3;
+const size_t PALETTE_SIZE			= PALETTE_ENTRIES * PALETTE_CHANNELS;
+
+const size_t PALETTE_ALPHA_INDEX	= 255 * PALETTE_CHANNELS;
+
+//Mugsy - upped the maximum texture size to 512. All changes are the replacement of '256'
+//with this define, MAX_TEXTURE_DIMS
+#define MAX_TEXTURE_DIMS 512
+
+/*
+*	Converts image dimensions to power of 2.
+*	Returns true if either width or height changed.
+*/
+bool CalculateImageDimensions( const int iWidth, const int iHeight, int& iOutWidth, int& iOutHeight );
+
+void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData );
 
 class StudioModel
 {
@@ -53,6 +69,8 @@ public:
 	StudioModel();
 
 	void					UploadTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, int name );
+	void					UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId );
+	void					ReplaceTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, GLuint textureId );
 	void					FreeModel ();
 	studiohdr_t				*LoadModel( char *modelname );
 	bool					PostLoadModel ( char *modelname );

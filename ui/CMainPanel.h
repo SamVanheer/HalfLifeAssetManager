@@ -79,6 +79,8 @@ public:
 
 	void UnloadGroundTexture();
 
+	void SaveUVMap( const wxString& szFilename, const int iTexture );
+
 protected:
 	wxDECLARE_EVENT_TABLE();
 

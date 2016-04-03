@@ -32,13 +32,45 @@ bool bFilterTextures = true;
 
 ////////////////////////////////////////////////////////////////////////
 
-//Mugsy - upped the maximum texture size to 512. All changes are the replacement of '256'
-//with this define, MAX_TEXTURE_DIMS
-#define MAX_TEXTURE_DIMS 512	
-
 StudioModel::StudioModel()
 {
 	memset( m_Textures, 0, sizeof( m_Textures ) );
+}
+
+//TODO: add error handling
+bool CalculateImageDimensions( const int iWidth, const int iHeight, int& iOutWidth, int& iOutHeight )
+{
+	for( iOutWidth = 1; iOutWidth < iWidth; iOutWidth <<= 1 )
+	{
+	}
+
+	if( iOutWidth > MAX_TEXTURE_DIMS )
+		iOutWidth = MAX_TEXTURE_DIMS;
+
+	for( iOutHeight = 1; iOutHeight < iHeight; iOutHeight <<= 1 )
+	{
+	}
+
+	if( iOutHeight > MAX_TEXTURE_DIMS )
+		iOutHeight = MAX_TEXTURE_DIMS;
+
+	return iWidth != iOutWidth || iHeight != iOutHeight;
+}
+
+//TODO: move
+void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData )
+{
+	byte* pOut = pOutData;
+
+	for( int y = 0; y < iHeight; ++y )
+	{
+		for( int x = 0; x < iWidth; ++x, pOut += 3 )
+		{
+			pOut[ 0 ] = pPalette[ pData[ x + y * iWidth ] * 3 ];
+			pOut[ 1 ] = pPalette[ pData[ x + y * iWidth ] * 3 + 1 ];
+			pOut[ 2 ] = pPalette[ pData[ x + y * iWidth ] * 3 + 2 ];
+		}
+	}
 }
 
 void StudioModel::UploadTexture(mstudiotexture_t *ptexture, byte *data, byte *pal, int name)
@@ -51,18 +83,9 @@ void StudioModel::UploadTexture(mstudiotexture_t *ptexture, byte *data, byte *pa
 
 	// convert texture to power of 2
 	int outwidth;
-	for (outwidth = 1; outwidth < ptexture->width; outwidth <<= 1)
-		;
-
-	if (outwidth > MAX_TEXTURE_DIMS)
-		outwidth = MAX_TEXTURE_DIMS;
-
 	int outheight;
-	for (outheight = 1; outheight < ptexture->height; outheight <<= 1)
-		;
 
-	if (outheight > MAX_TEXTURE_DIMS)
-		outheight = MAX_TEXTURE_DIMS;
+	CalculateImageDimensions( ptexture->width, ptexture->height, outwidth, outheight );
 
 	tex = out = (byte *)malloc( outwidth * outheight * 4);
 	if (!out)
@@ -126,16 +149,26 @@ void StudioModel::UploadTexture(mstudiotexture_t *ptexture, byte *data, byte *pa
 		}
 	}
 
-	glBindTexture( GL_TEXTURE_2D, name );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, outwidth, outheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex );
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bFilterTextures ? GL_LINEAR:GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, bFilterTextures ? GL_LINEAR:GL_NEAREST);
+	UploadRGBATexture( outwidth, outheight, tex, name );
 
 	free( tex );
 }
 
+void StudioModel::UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId )
+{
+	glBindTexture( GL_TEXTURE_2D, textureId );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, iWidth, iHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData );
+	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST );
+}
 
+void StudioModel::ReplaceTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, GLuint textureId )
+{
+	glDeleteTextures( 1, &textureId );
+
+	UploadTexture( ptexture, data, pal, textureId );
+}
 
 void
 StudioModel::FreeModel ()

@@ -75,6 +75,12 @@ public:
 
 	void MeshChanged( wxCommandEvent& event );
 
+	void ImportTexture( wxCommandEvent& event );
+
+	void ExportTexture( wxCommandEvent& event );
+
+	void ExportUVMap( wxCommandEvent& event );
+
 	void SetTexture( int iIndex );
 
 	void SetScale( int iScale, const bool bSetSlider = true );

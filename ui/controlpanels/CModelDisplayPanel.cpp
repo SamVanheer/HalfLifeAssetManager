@@ -157,6 +157,14 @@ void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
 	case CheckBox::MIRROR_ON_GROUND:
 		{
 			Options.mirror = pCheckBox->GetValue();
+
+			//TODO: handle checkbox setting somewhere else
+			if( Options.mirror && !Options.showGround )
+			{
+				m_pCheckBoxes[ CheckBox::SHOW_GROUND ]->SetValue( true );
+				Options.showGround = true;
+			}
+
 			break;
 		}
 

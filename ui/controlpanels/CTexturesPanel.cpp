@@ -1,8 +1,14 @@
+#include <new>
+#include <memory>
+
 #include <wx/gbsizer.h>
+#include <wx/image.h>
 
 #include "ui/studiomodel/StudioModel.h"
 
 #include "model/options/COptions.h"
+
+#include "ui/CMainPanel.h"
 
 #include "CTexturesPanel.h"
 
@@ -11,6 +17,9 @@ wxBEGIN_EVENT_TABLE( CTexturesPanel, CBaseControlPanel )
 	EVT_SLIDER( wxID_TEX_SCALE, CTexturesPanel::ScaleChanged )
 	EVT_CHECKBOX( wxID_TEX_CHECKBOX, CTexturesPanel::CheckBoxChanged )
 	EVT_COMBOBOX( wxID_TEX_MESH, CTexturesPanel::MeshChanged )
+	EVT_BUTTON( wxID_TEX_IMPORTTEXTURE, CTexturesPanel::ImportTexture )
+	EVT_BUTTON( wxID_TEX_EXPORTTEXTURE, CTexturesPanel::ExportTexture )
+	EVT_BUTTON( wxID_TEX_EXPORTUVMAP, CTexturesPanel::ExportUVMap )
 wxEND_EVENT_TABLE()
 
 CTexturesPanel::CTexturesPanel( wxWindow* pParent )
@@ -40,9 +49,9 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent )
 	m_pMesh = new wxComboBox( pElemParent, wxID_TEX_MESH, "" );
 	m_pMesh->SetEditable( false );
 
-	m_pImportTexButton = new wxButton( pElemParent, wxID_ANY, "Import Texture" );
-	m_pExportTexButton = new wxButton( pElemParent, wxID_ANY, "Export Texture" );
-	m_pExportUVButton = new wxButton( pElemParent, wxID_ANY, "Export UV Map" );
+	m_pImportTexButton = new wxButton( pElemParent, wxID_TEX_IMPORTTEXTURE, "Import Texture" );
+	m_pExportTexButton = new wxButton( pElemParent, wxID_TEX_EXPORTTEXTURE, "Export Texture" );
+	m_pExportUVButton = new wxButton( pElemParent, wxID_TEX_EXPORTUVMAP, "Export UV Map" );
 
 	//Layout
 	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );
@@ -217,6 +226,167 @@ void CTexturesPanel::MeshChanged( wxCommandEvent& event )
 
 	//Null client data means it's "All"
 	Options.pUVMesh = pMesh ? pMesh->m_pMesh : nullptr;
+}
+
+void CTexturesPanel::ImportTexture( wxCommandEvent& event )
+{
+	studiohdr_t* const pHdr = g_studioModel.getTextureHeader();
+
+	if( !pHdr )
+	{
+		wxMessageBox( "No model loaded!" );
+		return;
+	}
+
+	const int iTextureIndex = m_pTexture->GetSelection();
+
+	if( iTextureIndex == wxNOT_FOUND )
+	{
+		wxMessageBox( "No texture selected" );
+		return;
+	}
+
+	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "Windows Bitmap (*.bmp)|*.bmp" );
+
+	if( dlg.ShowModal() == wxID_CANCEL )
+		return;
+
+	const wxString szFilename = dlg.GetPath();
+
+	//Must be BMP
+	wxImage image( szFilename, wxBITMAP_TYPE_BMP );
+
+	if( !image.IsOk() )
+	{
+		wxMessageBox( wxString::Format( "Failed to load image \"%s\"!", szFilename.c_str() ) );
+		return;
+	}
+
+	const wxPalette& palette = image.GetPalette();
+
+	if( !palette.IsOk() )
+	{
+		wxMessageBox( wxString::Format( "Palette for image \"%s\" does not exist!", szFilename.c_str() ) );
+		return;
+	}
+
+	mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTextureIndex ];
+
+	if( texture.width != image.GetWidth() || texture.height != image.GetHeight() )
+	{
+		wxMessageBox( wxString::Format( "Image \"%s\" does not have matching dimensions to the current texture (src: %d x %d, dest: %d x %d)", 
+										szFilename.c_str(), 
+										image.GetWidth(), image.GetHeight(), 
+										texture.width, texture.height ) );
+		return;
+	}
+
+	//Convert to 8 bit palette based image.
+	std::unique_ptr<byte[]> texData( new byte[ image.GetWidth() * image.GetHeight() ] );
+
+	byte* pDest = texData.get();
+
+	const unsigned char* pSourceData = image.GetData();
+
+	for( int i = 0; i < image.GetWidth() * image.GetHeight(); ++i, ++pDest, pSourceData += 3 )
+	{
+		*pDest = palette.GetPixel( pSourceData[ 0 ], pSourceData[ 1 ], pSourceData[ 2 ] );
+	}
+
+	byte convPal[ PALETTE_SIZE ];
+
+	memset( convPal, 0, sizeof( convPal ) );
+
+	unsigned char r, g, b;
+
+	for( size_t uiIndex = 0; uiIndex < PALETTE_ENTRIES; ++uiIndex )
+	{
+		if( palette.GetRGB( uiIndex, &r, &g, &b ) )
+		{
+			convPal[ uiIndex * PALETTE_CHANNELS ]		= r;
+			convPal[ uiIndex * PALETTE_CHANNELS + 1 ]	= g;
+			convPal[ uiIndex * PALETTE_CHANNELS + 2 ]	= b;
+		}
+	}
+
+	//Copy over the new image data to the texture.
+	memcpy( ( byte* ) pHdr + texture.index, texData.get(), image.GetWidth() * image.GetHeight() );
+	memcpy( ( byte* ) pHdr + texture.index + image.GetWidth() * image.GetHeight(), convPal, PALETTE_SIZE );
+
+	g_studioModel.ReplaceTexture( &texture, texData.get(), convPal, g_studioModel.GetTextureId( iTextureIndex ) );
+}
+
+void CTexturesPanel::ExportTexture( wxCommandEvent& event )
+{
+	studiohdr_t* const pHdr = g_studioModel.getTextureHeader();
+
+	if( !pHdr )
+	{
+		wxMessageBox( "No model loaded!" );
+		return;
+	}
+
+	const int iTextureIndex = m_pTexture->GetSelection();
+
+	if( iTextureIndex == wxNOT_FOUND )
+	{
+		wxMessageBox( "No texture selected" );
+		return;
+	}
+
+	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "Windows Bitmap (*.bmp)|*.bmp", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+
+	if( dlg.ShowModal() == wxID_CANCEL )
+		return;
+
+	const wxString szFilename = dlg.GetPath();
+
+	mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTextureIndex ];
+
+	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( texture.width * texture.height * 3 );
+
+	Convert8to24Bit( texture.width, texture.height, ( byte* ) pHdr + texture.index, ( byte* ) pHdr + texture.width * texture.height + texture.index, rgbData.get() );
+
+	wxImage image( texture.width, texture.height, rgbData.get(), true );
+
+	if( !image.SaveFile( szFilename, wxBITMAP_TYPE_BMP ) )
+	{
+		wxMessageBox( wxString::Format( "Failed to save image \"%s\"!", szFilename.c_str() ) );
+	}
+}
+
+void CTexturesPanel::ExportUVMap( wxCommandEvent& event )
+{
+	studiohdr_t* const pHdr = g_studioModel.getTextureHeader();
+
+	if( !pHdr )
+	{
+		wxMessageBox( "No model loaded!" );
+		return;
+	}
+
+	const int iTextureIndex = m_pTexture->GetSelection();
+
+	if( iTextureIndex == wxNOT_FOUND )
+	{
+		wxMessageBox( "No texture selected" );
+		return;
+	}
+
+	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "Windows Bitmap (*.bmp)|*.bmp", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+
+	if( dlg.ShowModal() == wxID_CANCEL )
+		return;
+
+	const wxString szFilename = dlg.GetPath();
+
+	//TODO: use a better way to get to the main panel so we can request a uv map save properly
+	CMainPanel* const pParent = static_cast<CMainPanel*>( GetParent()->GetParent() );
+
+	if( !pParent )
+		return;
+
+	pParent->SaveUVMap( szFilename, iTextureIndex );
 }
 
 void CTexturesPanel::SetTexture( int iIndex )

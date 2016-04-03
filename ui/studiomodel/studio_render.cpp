@@ -743,19 +743,16 @@ unsigned int StudioModel::DrawModel( const bool bWireframeOnly )
 
 	if( Options.showEyePosition )
 	{
-		if( !VectorCompare( m_pstudiohdr->eyeposition, vec3_origin ) )
-		{
-			glDisable( GL_TEXTURE_2D );
-			glDisable( GL_CULL_FACE );
-			glDisable( GL_DEPTH_TEST );
+		glDisable( GL_TEXTURE_2D );
+		glDisable( GL_CULL_FACE );
+		glDisable( GL_DEPTH_TEST );
 
-			glPointSize( 7 );
-			glColor3f( 1, 0, 1 );
-			glBegin( GL_POINTS );
-			glVertex3fv( m_pstudiohdr->eyeposition );
-			glEnd();
-			glPointSize( 1 );
-		}
+		glPointSize( 7 );
+		glColor3f( 1, 0, 1 );
+		glBegin( GL_POINTS );
+		glVertex3fv( m_pstudiohdr->eyeposition );
+		glEnd();
+		glPointSize( 1 );
 	}
 
 	if (Options.showHitBoxes)

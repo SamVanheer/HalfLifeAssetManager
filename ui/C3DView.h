@@ -43,6 +43,8 @@ public:
 
 	void UnloadGroundTexture();
 
+	void SaveUVMap( const wxString& szFilename, const int iTexture );
+
 protected:
 	wxDECLARE_EVENT_TABLE();
 
@@ -51,7 +53,7 @@ private:
 	void DrawFloor();
 	void SetupRenderMode( RenderMode renderMode = RenderMode::INVALID );
 
-	void DrawTexture();
+	void DrawTexture( const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines, const mstudiomesh_t* const pUVMesh );
 
 	void DrawModel();
 

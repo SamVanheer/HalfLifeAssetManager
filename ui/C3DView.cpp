@@ -47,7 +47,7 @@ void C3DView::Paint( wxPaintEvent& event )
 	glViewport( 0, 0, size.GetX(), size.GetY() );
 
 	if( Options.showTexture )
-		DrawTexture();
+		DrawTexture( Options.texture, Options.textureScale, Options.showUVMap, Options.overlayUVMap, Options.antiAliasUVLines, Options.pUVMesh );
 	else
 		DrawModel();
 
@@ -182,7 +182,7 @@ void C3DView::SetupRenderMode( RenderMode renderMode )
 	}
 }
 
-void C3DView::DrawTexture()
+void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines, const mstudiomesh_t* const pUVMesh )
 {
 	const wxSize size = GetClientSize();
 
@@ -196,10 +196,10 @@ void C3DView::DrawTexture()
 	{
 		mstudiotexture_t *ptextures = ( mstudiotexture_t * ) ( ( byte * ) hdr + hdr->textureindex );
 
-		const mstudiotexture_t& texture = ptextures[ Options.texture ];
+		const mstudiotexture_t& texture = ptextures[ iTexture ];
 
-		float w = ( float ) texture.width * Options.textureScale;
-		float h = ( float ) texture.height * Options.textureScale;
+		float w = ( float ) texture.width * flTextureScale;
+		float h = ( float ) texture.height * flTextureScale;
 
 		glMatrixMode( GL_MODELVIEW );
 		glPushMatrix();
@@ -220,18 +220,18 @@ void C3DView::DrawTexture()
 
 		glDisable( GL_DEPTH_TEST );
 
-		if( Options.showUVMap && !Options.overlayUVMap )
+		if( bShowUVMap && !bOverlayUVMap )
 		{
 			glColor4f( 0.0f, 0.0f, 0.0f, 1.0f );
 			glDisable( GL_TEXTURE_2D );
 			glRectf( x, y, x + w, y + h );
 		}
 
-		if( !Options.showUVMap || Options.overlayUVMap )
+		if( !bShowUVMap || bOverlayUVMap )
 		{
 			glEnable( GL_TEXTURE_2D );
 			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-			glBindTexture( GL_TEXTURE_2D, g_studioModel.GetTextureId( Options.texture ) );
+			glBindTexture( GL_TEXTURE_2D, g_studioModel.GetTextureId( iTexture ) );
 
 			glBegin( GL_TRIANGLE_STRIP );
 
@@ -252,7 +252,7 @@ void C3DView::DrawTexture()
 			glBindTexture( GL_TEXTURE_2D, 0 );
 		}
 
-		if( Options.showUVMap )
+		if( bShowUVMap )
 		{
 			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
@@ -260,14 +260,14 @@ void C3DView::DrawTexture()
 
 			const mstudiomesh_t* const* ppMeshes;
 			
-			if( Options.pUVMesh )
+			if( pUVMesh )
 			{
 				uiCount = 1;
-				ppMeshes = &Options.pUVMesh;
+				ppMeshes = &pUVMesh;
 			}
 			else
 			{
-				const StudioModel::MeshList_t* pList = g_studioModel.GetMeshListByTexture( Options.texture );
+				const StudioModel::MeshList_t* pList = g_studioModel.GetMeshListByTexture( iTexture );
 
 				uiCount = pList->size();
 				ppMeshes = pList->data();
@@ -275,7 +275,7 @@ void C3DView::DrawTexture()
 
 			SetupRenderMode( RenderMode::WIREFRAME );
 
-			if( Options.antiAliasUVLines )
+			if( bAntiAliasLines )
 			{
 				glEnable( GL_BLEND );
 				glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -303,13 +303,13 @@ void C3DView::DrawTexture()
 					for( ; i > 0; i--, ptricmds += 4 )
 					{
 						// FIX: put these in as integer coords, not floats
-						glVertex2f( x + ptricmds[ 2 ] * Options.textureScale, y + ptricmds[ 3 ] * Options.textureScale );
+						glVertex2f( x + ptricmds[ 2 ] * flTextureScale, y + ptricmds[ 3 ] * flTextureScale );
 					}
 					glEnd();
 				}
 			}
 
-			if( Options.antiAliasUVLines )
+			if( bAntiAliasLines )
 			{
 				glDisable( GL_LINE_SMOOTH );
 			}
@@ -531,4 +531,48 @@ void C3DView::LoadGroundTexture( const wxString& szFilename )
 void C3DView::UnloadGroundTexture()
 {
 	glDeleteTexture( m_GroundTexture );
+}
+
+void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
+{
+	studiohdr_t *hdr = g_studioModel.getTextureHeader();
+
+	if( !hdr )
+		return;
+
+	mstudiotexture_t *ptextures = ( mstudiotexture_t * ) ( ( byte * ) hdr + hdr->textureindex );
+
+	const mstudiotexture_t& texture = ptextures[ iTexture ];
+
+	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( texture.width * texture.height * 3 );
+
+	const wxSize size = GetClientSize();
+
+	float x = ( ( float ) size.GetX() - texture.width ) / 2;
+	float y = ( ( float ) size.GetY() - texture.height ) / 2;
+
+	DrawTexture( iTexture, 1.0f, true, false, false, Options.pUVMesh );
+
+	glReadPixels( x, y, texture.width, texture.height, GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
+
+	//We have to flip the image vertically, since OpenGL reads it upside down.
+	std::unique_ptr<byte[]> correctedData = std::make_unique<byte[]>( texture.width * texture.height * 3 );
+
+	for( int y = 0; y < texture.height; ++y )
+	{
+		for( int x = 0; x < texture.width; ++x )
+		{
+			for( int i = 0; i < 3; ++i )
+			{
+				correctedData[ ( x + y * texture.width ) * 3 + i ] = rgbData[ ( x + ( texture.height - y - 1 ) * texture.width ) * 3 + i ];
+			}
+		}
+	}
+
+	wxImage image( texture.width, texture.height, correctedData.get(), true );
+
+	if( !image.SaveFile( szFilename, wxBITMAP_TYPE_BMP ) )
+	{
+		wxMessageBox( wxString::Format( "Failed to save image \"%s\"!", szFilename.c_str() ) );
+	}
 }

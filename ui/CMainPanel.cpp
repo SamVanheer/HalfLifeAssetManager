@@ -170,3 +170,8 @@ void CMainPanel::UnloadGroundTexture()
 {
 	m_p3DView->UnloadGroundTexture();
 }
+
+void CMainPanel::SaveUVMap( const wxString& szFilename, const int iTexture )
+{
+	m_p3DView->SaveUVMap( szFilename, iTexture );
+}
