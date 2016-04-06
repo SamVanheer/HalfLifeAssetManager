@@ -113,28 +113,35 @@ void CBodyPartsPanel::ModelChanged( const StudioModel& model )
 
 		m_pBodypart->Clear();
 
+		wxArrayString names;
+
 		if( pHdr->numbodyparts > 0 )
 		{
-			for( int i = 0; i < pHdr->numbodyparts; i++ )
-				m_pBodypart->Append( pbodyparts[ i ].name );
+			for( int i = 0; i < pHdr->numbodyparts; ++i )
+				names.Add( pbodyparts[ i ].name );
+
+			m_pBodypart->Append( names );
 
 			m_pBodypart->Select( 0 );
 
 			SetBodypart( 0 );
+
+			names.Clear();
 		}
 
 		m_pSkin->Enable( pHdr->numskinfamilies > 0 );
 		m_pSkin->Clear();
 
-		char szBuffer[ 64 ];
-
-		for( int i = 0; i < pHdr->numskinfamilies; i++ )
+		for( int i = 0; i < pHdr->numskinfamilies; ++i )
 		{
-			snprintf( szBuffer, sizeof( szBuffer ), "Skin %d", i + 1 );
-			m_pSkin->Append( szBuffer );
+			names.Add( wxString::Format( "Skin %d", i + 1 ) );
 		}
 
+		m_pSkin->Append( names );
+
 		SetSkin( 0 );
+
+		names.Clear();
 
 		m_pController->Enable( pHdr->numbonecontrollers > 0 );
 		m_pControllerSlider->Enable( pHdr->numbonecontrollers > 0 );
@@ -144,13 +151,17 @@ void CBodyPartsPanel::ModelChanged( const StudioModel& model )
 
 		for( int i = 0; i < pHdr->numbonecontrollers; i++ )
 		{
-			if( pbonecontrollers[ i ].index == 4 )
-				snprintf( szBuffer, sizeof( szBuffer ), "Mouth" );
+			if( pbonecontrollers[ i ].index == CONTROLLER_MOUTH_INDEX )
+			{
+				names.Add( "Mouth" );
+			}
 			else
-				snprintf( szBuffer, sizeof( szBuffer ), "Controller %d", pbonecontrollers[ i ].index );
-
-			m_pController->Append( szBuffer );
+			{
+				names.Add( wxString::Format( "Controller %d", pbonecontrollers[ i ].index ) );
+			}
 		}
+
+		m_pController->Append( names );
 
 		SetController( 0 );
 
@@ -294,7 +305,7 @@ void CBodyPartsPanel::SetControllerValue( int iIndex, int iValue )
 
 		const mstudiobonecontroller_t* const pbonecontrollers = ( mstudiobonecontroller_t* ) ( ( byte* ) pHdr + pHdr->bonecontrollerindex );
 
-		if( pbonecontrollers[ iIndex ].index == 4 )
+		if( pbonecontrollers[ iIndex ].index == CONTROLLER_MOUTH_INDEX )
 			g_studioModel.SetMouth( iValue );
 		else
 			g_studioModel.SetController( pbonecontrollers[ iIndex ].index, iValue );

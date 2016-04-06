@@ -48,10 +48,15 @@ void CBaseSequencesPanel::ModelChanged( const StudioModel& model )
 	{
 		const mstudioseqdesc_t* const pseqdescs = ( mstudioseqdesc_t* ) ( ( byte* ) pHdr + pHdr->seqindex );
 
+		//Insert all labels into the array, then append the array to the combo box. This is much faster than appending each label to the combo box directly.
+		wxArrayString labels;
+
 		for( int iIndex = 0; iIndex < pHdr->numseq; ++iIndex )
 		{
-			m_pSequence->Append( pseqdescs[ iIndex ].label );
+			labels.Add( pseqdescs[ iIndex ].label );
 		}
+
+		m_pSequence->Append( labels );
 	}
 
 	SetSequence( 0 );

@@ -109,12 +109,17 @@ void CTexturesPanel::ModelChanged( const StudioModel& model )
 
 	const mstudiotexture_t* const pTextures = ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex );
 
+	//Insert all names into the array, then append the array to the combo box. This is much faster than appending each name to the combo box directly.
+	wxArrayString names;
+
 	for( int i = 0; i < pHdr->numtextures; ++i )
 	{
 		const mstudiotexture_t& texture = pTextures[ i ];
 
-		m_pTexture->Append( texture.name );
+		names.Add( texture.name );
 	}
+
+	m_pTexture->Append( names );
 
 	SetTexture( 0 );
 
@@ -282,7 +287,7 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 	}
 
 	//Convert to 8 bit palette based image.
-	std::unique_ptr<byte[]> texData( new byte[ image.GetWidth() * image.GetHeight() ] );
+	std::unique_ptr<byte[]> texData = std::make_unique<byte[]>( image.GetWidth() * image.GetHeight() );
 
 	byte* pDest = texData.get();
 

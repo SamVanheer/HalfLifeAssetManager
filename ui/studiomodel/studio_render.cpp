@@ -12,6 +12,7 @@
 // 1-4-99	fixed AdvanceFrame wraping bug
 
 #include <memory>
+#include <algorithm>
 
 #include "model/utility/OpenGL.h"
 
@@ -828,6 +829,23 @@ unsigned int StudioModel::DrawModel( const bool bWireframeOnly )
 	return uiDrawnPolys;
 }
 
+struct SortedMesh_t
+{
+	mstudiomesh_t* pMesh;
+	int flags;
+};
+
+bool CompareSortedMeshes( const SortedMesh_t& lhs, const SortedMesh_t& rhs )
+{
+	if( ( lhs.flags & ( STUDIO_NF_ADDITIVE ) ) == 0 && rhs.flags & ( STUDIO_NF_ADDITIVE ) )
+		return true;
+
+	if( lhs.flags & ( STUDIO_NF_MASKED ) && ( rhs.flags & ( STUDIO_NF_MASKED ) ) == 0 )
+		return true;
+
+	return false;
+}
+
 /*
 ================
 
@@ -869,6 +887,8 @@ unsigned int StudioModel::DrawPoints( const bool bWireframeOnly )
 		VectorTransform (pstudioverts[i], g_bonetransform[pvertbone[i]], g_pxformverts[i]);
 	}
 
+	SortedMesh_t meshes[ MAXSTUDIOMESHES ];
+
 //
 // clip and draw all triangles
 //
@@ -876,8 +896,11 @@ unsigned int StudioModel::DrawPoints( const bool bWireframeOnly )
 	lv = (float *)g_pvlightvalues;
 	for (j = 0; j < m_pmodel->nummesh; j++) 
 	{
-		int flags;
-		flags = ptexture[pskinref[pmesh[j].skinref]].flags;
+		int flags = ptexture[pskinref[pmesh[j].skinref]].flags;
+
+		meshes[ j ].pMesh = &pmesh[ j ];
+		meshes[ j ].flags = flags;
+
 		for (i = 0; i < pmesh[j].numnorms; i++, lv += 3, pstudionorms++, pnormbone++)
 		{
 			Lighting (&lv_tmp, *pnormbone, flags, (float *)pstudionorms);
@@ -892,6 +915,10 @@ unsigned int StudioModel::DrawPoints( const bool bWireframeOnly )
 		}
 	}
 
+	//Sort meshes by render modes so additive meshes are drawn after solid meshes.
+	//Masked meshes are drawn before solid meshes.
+	std::stable_sort( meshes, meshes + m_pmodel->nummesh, CompareSortedMeshes );
+
 	// glCullFace(GL_FRONT);
 
 	//Set here since it never changes. Much more efficient.
@@ -903,7 +930,7 @@ unsigned int StudioModel::DrawPoints( const bool bWireframeOnly )
 		float s, t;
 		short		*ptricmds;
 
-		pmesh = (mstudiomesh_t *)((byte *)m_pstudiohdr + m_pmodel->meshindex) + j;
+		pmesh = meshes[ j ].pMesh;
 		ptricmds = (short *)((byte *)m_pstudiohdr + pmesh->triindex);
 
 		const mstudiotexture_t& texture = ptexture[ pskinref[ pmesh->skinref ] ];
@@ -916,6 +943,7 @@ unsigned int StudioModel::DrawPoints( const bool bWireframeOnly )
 		else
 			glDepthMask( GL_TRUE );
 
+		//TODO: additive textures should be drawn last, using the painter's algorithm.
 		if( texture.flags & STUDIO_NF_ADDITIVE )
 		{
 			glEnable( GL_BLEND );

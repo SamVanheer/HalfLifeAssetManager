@@ -497,7 +497,7 @@ float StudioModel::GetController( int iController ) const
 
 	byte uiValue;
 
-	if( iController == 4 )
+	if( iController == CONTROLLER_MOUTH_INDEX )
 		uiValue = m_mouth;
 	else
 		uiValue = m_controller[ iController ];
@@ -567,7 +567,7 @@ float StudioModel::SetMouth( float flValue )
 	// find first controller that matches the mouth
 	for (int i = 0; i < m_pstudiohdr->numbonecontrollers; i++, pbonecontroller++)
 	{
-		if (pbonecontroller->index == 4)
+		if (pbonecontroller->index == CONTROLLER_MOUTH_INDEX )
 			break;
 	}
 

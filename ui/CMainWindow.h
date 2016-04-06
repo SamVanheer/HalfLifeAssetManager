@@ -11,11 +11,14 @@ public:
 	CMainWindow();
 	~CMainWindow();
 
+	bool LoadModel( const wxString& szFilename );
+
 private:
 	void LoadModel( wxCommandEvent& event );
 	void LoadBackgroundTexture( wxCommandEvent& event );
 	void LoadGroundTexture( wxCommandEvent& event );
 	void UnloadGroundTexture( wxCommandEvent& event );
+	void SaveModel( wxCommandEvent& event );
 
 	void OnExit( wxCommandEvent& event );
 	void OnAbout( wxCommandEvent& event );
