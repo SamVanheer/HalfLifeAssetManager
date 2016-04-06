@@ -2,8 +2,8 @@
 #include <wx/gbsizer.h>
 #include <wx/tglbtn.h>
 
-#include "model/options/COptions.h"
-#include "ui/studiomodel/StudioModel.h"
+#include "hlmv/CHLMVOptions.h"
+#include "model/studiomodel/StudioModel.h"
 
 #include "CBaseSequencesPanel.h"
 

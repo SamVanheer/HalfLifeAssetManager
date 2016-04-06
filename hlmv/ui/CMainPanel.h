@@ -1,9 +1,9 @@
 #ifndef CMAINPANEL_H
 #define CMAINPANEL_H
 
-#include "wxInclude.h"
+#include "wxHLMV.h"
 
-#include "utility/CTimer.h"
+#include "ui/utility/CTimer.h"
 
 #include "controlpanels/CBaseControlPanel.h"
 

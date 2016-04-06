@@ -60,3 +60,5 @@ Debug/HLMV.log
 *.suo
 *.dll
 changes.txt
+*.log
+*.idb

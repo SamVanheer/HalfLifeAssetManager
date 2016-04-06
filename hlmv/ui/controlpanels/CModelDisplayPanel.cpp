@@ -1,6 +1,6 @@
 #include <wx/gbsizer.h>
 
-#include "ui/studiomodel/StudioModel.h"
+#include "model/studiomodel/StudioModel.h"
 
 #include "CModelDisplayPanel.h"
 

@@ -9,9 +9,9 @@
 #include "controlpanels/CWeaponOriginPanel.h"
 #include "controlpanels/CFullscreenPanel.h"
 
-#include "ui/studiomodel/StudioModel.h"
+#include "model/studiomodel/StudioModel.h"
 
-#include "model/options/COptions.h"
+#include "hlmv/CHLMVOptions.h"
 
 #include "CMainPanel.h"
 
@@ -68,8 +68,6 @@ CMainPanel::CMainPanel( wxWindow* pParent )
 	pSizer->Add( m_pControlPanels, wxSizerFlags().Expand().Proportion( 1 ) );
 
 	this->SetSizer( pSizer );
-
-	LoadModel( "barney.mdl" );
 }
 
 CMainPanel::~CMainPanel()

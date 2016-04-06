@@ -1,19 +1,19 @@
-#include "ui/studiomodel/StudioModel.h"
+#include "model/studiomodel/StudioModel.h"
 
-#include "COptions.h"
+#include "CHLMVOptions.h"
 
-COptions Options;
+CHLMVOptions Options;
 
-COptions::COptions()
+CHLMVOptions::CHLMVOptions()
 {
 	ResetToDefaults();
 }
 
-COptions::~COptions()
+CHLMVOptions::~CHLMVOptions()
 {
 }
 
-void COptions::ResetModelData()
+void CHLMVOptions::ResetModelData()
 {
 	trans[ 0 ] = trans[ 1 ] = trans[ 2 ] = 0;
 	rot[ 1 ] = rot[ 2 ] = 0;
@@ -27,7 +27,7 @@ void COptions::ResetModelData()
 	pUVMesh = nullptr;
 }
 
-void COptions::ResetToDefaults()
+void CHLMVOptions::ResetToDefaults()
 {
 	ResetModelData();
 
@@ -83,7 +83,7 @@ void COptions::ResetToDefaults()
 	antiAliasUVLines = false;
 }
 
-void COptions::CenterView( const StudioModel& model )
+void CHLMVOptions::CenterView( const StudioModel& model )
 {
 	float min[ 3 ], max[ 3 ];
 	model.ExtractBbox( min, max );
@@ -107,7 +107,7 @@ void COptions::CenterView( const StudioModel& model )
 	rot[ 2 ] = 0.0f;
 }
 
-void COptions::SetOrigin( const vec3_t vecOrigin )
+void CHLMVOptions::SetOrigin( const vec3_t vecOrigin )
 {
 	VectorCopy( vecOrigin, trans );
 }

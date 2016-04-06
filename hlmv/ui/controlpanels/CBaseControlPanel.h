@@ -1,7 +1,7 @@
 #ifndef CONTROLPANELS_CBASECONTROLPANEL_H
 #define CONTROLPANELS_CBASECONTROLPANEL_H
 
-#include "ui/wxInclude.h"
+#include "hlmv/ui/wxHLMV.h"
 
 #include <wx/sizer.h>
 

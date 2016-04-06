@@ -4,11 +4,11 @@
 #include <wx/gbsizer.h>
 #include <wx/image.h>
 
-#include "ui/studiomodel/StudioModel.h"
+#include "model/studiomodel/StudioModel.h"
 
-#include "model/options/COptions.h"
+#include "hlmv/CHLMVOptions.h"
 
-#include "ui/CMainPanel.h"
+#include "hlmv/ui/CMainPanel.h"
 
 #include "CTexturesPanel.h"
 

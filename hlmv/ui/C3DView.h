@@ -1,7 +1,7 @@
 #ifndef C3DVIEW_H
 #define C3DVIEW_H
 
-#include "wxInclude.h"
+#include "wxHLMV.h"
 
 #include <wx/glcanvas.h>
 
@@ -9,7 +9,7 @@
 
 #include "mathlib.h"
 
-#include "model/options/COptions.h"
+#include "hlmv/CHLMVOptions.h"
 
 class I3DViewListener
 {

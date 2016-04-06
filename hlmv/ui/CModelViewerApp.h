@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "wxInclude.h"
+#include "wxHLMV.h"
 
 #include <wx/vidmode.h>
 

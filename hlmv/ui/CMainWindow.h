@@ -1,7 +1,7 @@
 #ifndef CMAINWINDOW_H
 #define CMAINWINDOW_H
 
-#include "wxInclude.h"
+#include "wxHLMV.h"
 
 class CMainPanel;
 

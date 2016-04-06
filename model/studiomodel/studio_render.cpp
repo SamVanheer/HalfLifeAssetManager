@@ -17,7 +17,7 @@
 #include "model/utility/OpenGL.h"
 
 #include "StudioModel.h"
-#include "model/options/COptions.h"
+#include "hlmv/CHLMVOptions.h"
 
 #pragma warning( disable : 4244 ) // double to float
 

@@ -1,6 +1,6 @@
 #include <wx/gbsizer.h>
 
-#include "ui/CModelViewerApp.h"
+#include "hlmv/ui/CModelViewerApp.h"
 
 #include "CFullscreenPanel.h"
 

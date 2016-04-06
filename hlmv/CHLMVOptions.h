@@ -6,7 +6,7 @@
 
 #include "mathlib.h"
 
-#include "ui/studiomodel/StudioModel.h"
+#include "model/studiomodel/StudioModel.h"
 
 //TODO: move
 enum class RenderMode
@@ -28,11 +28,11 @@ class StudioModel;
 /*
 *	Contains all options used by the application.
 */
-class COptions final
+class CHLMVOptions final
 {
 public:
-	COptions();
-	~COptions();
+	CHLMVOptions();
+	~CHLMVOptions();
 
 	void ResetModelData();
 
@@ -107,13 +107,13 @@ public:
 	bool antiAliasUVLines;
 
 private:
-	COptions( const COptions& ) = delete;
-	COptions& operator=( const COptions& ) = delete;
+	CHLMVOptions( const CHLMVOptions& ) = delete;
+	CHLMVOptions& operator=( const CHLMVOptions& ) = delete;
 };
 
 /*
 *	Global instance.
 */
-extern COptions Options;
+extern CHLMVOptions Options;
 
 #endif //OPTIONS_COPTIONS_H

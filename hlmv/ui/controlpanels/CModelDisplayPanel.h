@@ -3,7 +3,7 @@
 
 #include "CBaseControlPanel.h"
 
-#include "model/options/COptions.h"
+#include "hlmv/CHLMVOptions.h"
 
 class CModelDisplayPanel final : public CBaseControlPanel
 {

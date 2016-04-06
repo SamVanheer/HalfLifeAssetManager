@@ -22,35 +22,11 @@
     <Filter Include="Header Files\model">
       <UniqueIdentifier>{4f1a7040-6f06-4af2-8e46-716e7df59c19}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\model\options">
-      <UniqueIdentifier>{2031f947-1957-4f6f-b6f3-b3345f21998c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\model">
       <UniqueIdentifier>{fd02c424-5bee-4f16-bb0b-17f44f3c6ba8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\model\options">
-      <UniqueIdentifier>{499c2dc2-34f7-4691-9a4f-baabe850de42}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ui\options">
-      <UniqueIdentifier>{2fc796fb-a4ce-4d8a-aa18-7ed1f6583d8e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ui\options">
-      <UniqueIdentifier>{1cc0297b-a121-4f61-913d-4717c7b0ad0c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\ui\utility">
       <UniqueIdentifier>{7c966415-3377-4c88-97a0-621cdeb0339c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ui\controlpanels">
-      <UniqueIdentifier>{bcf367e4-4f6f-4a64-8b55-abaa14440a96}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ui\controlpanels">
-      <UniqueIdentifier>{b5f65590-77dc-4083-a516-4743495d9f2b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ui\studiomodel">
-      <UniqueIdentifier>{c5e4acf8-60e2-4b0d-9212-7034c2bc4d82}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ui\studiomodel">
-      <UniqueIdentifier>{7218f455-a922-4577-87c3-a0c48e72d77a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\model\utility">
       <UniqueIdentifier>{3f10729f-2e0e-4778-bbef-7673612b278a}</UniqueIdentifier>
@@ -58,111 +34,99 @@
     <Filter Include="Source Files\model\utility">
       <UniqueIdentifier>{619d642f-8b83-4887-aabf-58c51e0af0cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\hlmv">
+      <UniqueIdentifier>{abf7989e-6eed-41ea-81e2-bf2578f44436}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hlmv">
+      <UniqueIdentifier>{f977fe15-e419-4d69-9053-85814bfe32ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hlmv\ui">
+      <UniqueIdentifier>{82364461-4c06-43a7-a77b-9c160046f030}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\hlmv\ui">
+      <UniqueIdentifier>{10a8db50-ff7d-43cf-af81-afdd8753b4c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\hlmv\ui\controlpanels">
+      <UniqueIdentifier>{2b0e164b-36d1-4501-8d08-fdb59a1521c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hlmv\ui\controlpanels">
+      <UniqueIdentifier>{116ffbde-9c49-432a-98c6-e87efd509ef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\hlmv\ui\options">
+      <UniqueIdentifier>{ba7a16e6-3382-4d0c-ae4e-99937507fbde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hlmv\ui\options">
+      <UniqueIdentifier>{ad10a503-75de-44c2-b5da-92b6760b81af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\model\studiomodel">
+      <UniqueIdentifier>{5d1b17aa-86c8-4640-bd9f-d619bb3f2641}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\studiomodel">
+      <UniqueIdentifier>{12e74f2a-b196-4ff2-b54e-e9a4cca99d85}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ui\CMainWindow.cpp">
-      <Filter>Source Files\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\CModelViewerApp.cpp">
-      <Filter>Source Files\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="model\options\COptions.cpp">
-      <Filter>Source Files\model\options</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\options\COptionsDialog.cpp">
-      <Filter>Source Files\ui\options</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\C3DView.cpp">
-      <Filter>Source Files\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\CMainPanel.cpp">
-      <Filter>Source Files\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\controlpanels\CModelDisplayPanel.cpp">
-      <Filter>Source Files\ui\controlpanels</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\controlpanels\CBodyPartsPanel.cpp">
-      <Filter>Source Files\ui\controlpanels</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\controlpanels\CTexturesPanel.cpp">
-      <Filter>Source Files\ui\controlpanels</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\controlpanels\CBaseSequencesPanel.cpp">
-      <Filter>Source Files\ui\controlpanels</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\controlpanels\CSequencesPanel.cpp">
-      <Filter>Source Files\ui\controlpanels</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\controlpanels\CWeaponOriginPanel.cpp">
-      <Filter>Source Files\ui\controlpanels</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\controlpanels\CFullscreenPanel.cpp">
-      <Filter>Source Files\ui\controlpanels</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\studiomodel\studio_render.cpp">
-      <Filter>Source Files\ui\studiomodel</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\studiomodel\studio_utils.cpp">
-      <Filter>Source Files\ui\studiomodel</Filter>
-    </ClCompile>
     <ClCompile Include="model\utility\mathlib.c">
       <Filter>Source Files\model\utility</Filter>
     </ClCompile>
-    <ClCompile Include="ui\controlpanels\CBaseControlPanel.cpp">
-      <Filter>Source Files\ui\controlpanels</Filter>
-    </ClCompile>
     <ClCompile Include="model\utility\OpenGL.cpp">
       <Filter>Source Files\model\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\CHLMVOptions.cpp">
+      <Filter>Source Files\hlmv</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\C3DView.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\CMainPanel.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\CMainWindow.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\CModelViewerApp.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\controlpanels\CBaseControlPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\controlpanels\CBaseSequencesPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\controlpanels\CBodyPartsPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\controlpanels\CFullscreenPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\controlpanels\CModelDisplayPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\controlpanels\CSequencesPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\controlpanels\CTexturesPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\controlpanels\CWeaponOriginPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\options\COptionsDialog.cpp">
+      <Filter>Source Files\hlmv\ui\options</Filter>
+    </ClCompile>
+    <ClCompile Include="model\studiomodel\studio_render.cpp">
+      <Filter>Source Files\model\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="model\studiomodel\studio_utils.cpp">
+      <Filter>Source Files\model\studiomodel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui\wxInclude.h">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="ui\CMainWindow.h">
-      <Filter>Header Files\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\CModelViewerApp.h">
-      <Filter>Header Files\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="model\options\COptions.h">
-      <Filter>Header Files\model\options</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\options\COptionsDialog.h">
-      <Filter>Header Files\ui\options</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\C3DView.h">
-      <Filter>Header Files\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\CMainPanel.h">
-      <Filter>Header Files\ui</Filter>
-    </ClInclude>
     <ClInclude Include="ui\utility\CGridSizerBuilder.h">
       <Filter>Header Files\ui\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\controlpanels\CModelDisplayPanel.h">
-      <Filter>Header Files\ui\controlpanels</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\controlpanels\CBodyPartsPanel.h">
-      <Filter>Header Files\ui\controlpanels</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\controlpanels\CTexturesPanel.h">
-      <Filter>Header Files\ui\controlpanels</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\controlpanels\CBaseSequencesPanel.h">
-      <Filter>Header Files\ui\controlpanels</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\controlpanels\CSequencesPanel.h">
-      <Filter>Header Files\ui\controlpanels</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\controlpanels\CWeaponOriginPanel.h">
-      <Filter>Header Files\ui\controlpanels</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\controlpanels\CFullscreenPanel.h">
-      <Filter>Header Files\ui\controlpanels</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\studiomodel\StudioModel.h">
-      <Filter>Header Files\ui\studiomodel</Filter>
     </ClInclude>
     <ClInclude Include="model\utility\mathlib.h">
       <Filter>Header Files\model\utility</Filter>
@@ -179,8 +143,53 @@
     <ClInclude Include="ui\utility\CTimer.h">
       <Filter>Header Files\ui\utility</Filter>
     </ClInclude>
-    <ClInclude Include="ui\controlpanels\CBaseControlPanel.h">
-      <Filter>Header Files\ui\controlpanels</Filter>
+    <ClInclude Include="hlmv\CHLMVOptions.h">
+      <Filter>Header Files\hlmv</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\C3DView.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\CMainPanel.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\CMainWindow.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\CModelViewerApp.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\controlpanels\CBaseControlPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\controlpanels\CBaseSequencesPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\controlpanels\CBodyPartsPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\controlpanels\CFullscreenPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\controlpanels\CModelDisplayPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\controlpanels\CSequencesPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\controlpanels\CTexturesPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\controlpanels\CWeaponOriginPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\wxHLMV.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\options\COptionsDialog.h">
+      <Filter>Header Files\hlmv\ui\options</Filter>
+    </ClInclude>
+    <ClInclude Include="model\studiomodel\StudioModel.h">
+      <Filter>Header Files\model\studiomodel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

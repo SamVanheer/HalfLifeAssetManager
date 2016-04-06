@@ -1,8 +1,8 @@
 #include <wx/gbsizer.h>
 
-#include "model/options/COptions.h"
+#include "hlmv/CHLMVOptions.h"
 
-#include "ui/studiomodel/StudioModel.h"
+#include "model/studiomodel/StudioModel.h"
 
 #include "CBodyPartsPanel.h"
 

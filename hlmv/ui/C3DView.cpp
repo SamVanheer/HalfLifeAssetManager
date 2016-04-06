@@ -2,7 +2,7 @@
 
 #include <wx/image.h>
 
-#include "studiomodel/StudioModel.h"
+#include "model/studiomodel/StudioModel.h"
 
 #include "C3DView.h"
 
