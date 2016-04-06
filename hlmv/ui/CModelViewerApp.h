@@ -21,6 +21,10 @@ public:
 
 	virtual int OnExit() override;
 
+	virtual bool OnCmdLineParsed( wxCmdLineParser& parser ) override;
+
+	virtual void OnInitCmdLine( wxCmdLineParser& parser ) override;
+
 	const VideoModes_t& GetVideoModes() const { return m_VideoModes; }
 
 private:
@@ -29,6 +33,8 @@ private:
 	wxDisplay* m_pPrimaryDisplay;
 
 	VideoModes_t m_VideoModes;
+
+	wxString m_szModel;						//Model to load on startup, if any.
 };
 
 #endif //CMODELVIEWERAPP_H

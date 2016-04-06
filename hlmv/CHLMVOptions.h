@@ -8,7 +8,9 @@
 
 #include "model/studiomodel/StudioModel.h"
 
-//TODO: move
+/*
+*	Available render modes
+*/
 enum class RenderMode
 {
 	INVALID				= -1,
@@ -26,7 +28,7 @@ enum class RenderMode
 class StudioModel;
 
 /*
-*	Contains all options used by the application.
+*	Contains all options used by the HLMV application.
 */
 class CHLMVOptions final
 {
@@ -41,6 +43,13 @@ public:
 	void CenterView( const StudioModel& model );
 
 	void SetOrigin( const vec3_t vecOrigin );
+
+	StudioModel* GetStudioModel() { return m_pStudioModel; }
+	const StudioModel* GetStudioModel() const { return m_pStudioModel; }
+
+	void ClearStudioModel();
+
+	void SetStudioModel( StudioModel* pStudioModel );
 
 public:
 	bool showBones;
@@ -105,6 +114,9 @@ public:
 	const mstudiomesh_t* pUVMesh;	//Null if all should be drawn.
 
 	bool antiAliasUVLines;
+
+private:
+	StudioModel* m_pStudioModel;
 
 private:
 	CHLMVOptions( const CHLMVOptions& ) = delete;

@@ -1,3 +1,5 @@
+#include <memory>
+
 #include <wx/notebook.h>
 
 #include "C3DView.h"
@@ -100,31 +102,59 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 {
 	m_p3DView->PrepareForLoad();
 
-	g_studioModel.FreeModel();
-
 	Options.ResetModelData();
+
+	Options.ClearStudioModel();
 
 	auto szCFilename = szFilename.char_str( wxMBConvUTF8() );
 
-	if( !g_studioModel.LoadModel( szCFilename ) )
-	{
-		g_studioModel.FreeModel();
+	std::unique_ptr<StudioModel> pStudioModel = std::make_unique<StudioModel>();
 
+	const StudioModel::LoadResult result = pStudioModel->Load( szFilename.c_str() );
+
+	switch( result )
+	{
+	case StudioModel::LoadResult::FAILURE:
+		{
+			wxMessageBox( wxString::Format( "Error loading model \"%s\"\n", szCFilename.data() ), "Error" );
+			return false;
+		}
+
+	case StudioModel::LoadResult::POSTLOADFAILURE:
+		{
+			wxMessageBox( wxString::Format( "Error post-loading model \"%s\"\n", szCFilename.data() ), "Error" );
+			return false;
+		}
+
+	case StudioModel::LoadResult::VERSIONDIFFERS:
+		{
+			wxMessageBox( wxString::Format( "Error loading model \"%s\": version differs\n", szCFilename.data() ), "Error" );
+			return false;
+		}
+
+	default: break;
+	}
+
+	/*
+	//TODO: use a single method to load the model
+	if( !pStudioModel->LoadModel( szCFilename ) )
+	{
 		wxMessageBox( wxString::Format( "Error loading model \"%s\"\n", szCFilename.data() ), "Error" );
 		return false;
 	}
 
-	if( !g_studioModel.PostLoadModel( szCFilename ) )
+	if( !pStudioModel->PostLoadModel( szCFilename ) )
 	{
-		g_studioModel.FreeModel();
-
 		wxMessageBox( wxString::Format( "Error post-loading model \"%s\"\n", szCFilename.data() ), "Error" );
 		return false;
 	}
+	*/
 
-	ModelChanged( g_studioModel );
+	Options.SetStudioModel( pStudioModel.release() );
 
-	Options.CenterView( g_studioModel );
+	ModelChanged( *Options.GetStudioModel() );
+
+	Options.CenterView( *Options.GetStudioModel() );
 
 	return true;
 }

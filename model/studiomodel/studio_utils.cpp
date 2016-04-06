@@ -26,7 +26,6 @@
 //extern float			g_bonetransform[MAXSTUDIOBONES][3][4];
 
 
-StudioModel g_studioModel;
 bool bFilterTextures = true;
 
 
@@ -35,6 +34,11 @@ bool bFilterTextures = true;
 StudioModel::StudioModel()
 {
 	memset( m_Textures, 0, sizeof( m_Textures ) );
+}
+
+StudioModel::~StudioModel()
+{
+	FreeModel();
 }
 
 //TODO: add error handling
@@ -204,18 +208,21 @@ StudioModel::FreeModel ()
 
 
 
-studiohdr_t *StudioModel::LoadModel( char *modelname )
+studiohdr_t *StudioModel::LoadModel( const char* pszModelName, LoadResult* pResult )
 {
+	if( pResult )
+		*pResult = LoadResult::FAILURE;
+
 	FILE *fp;
 	long size;
 	void *buffer;
 
-	if (!modelname)
-		return 0;
+	if( !pszModelName )
+		return nullptr;
 
 	// load the model
-	if( (fp = fopen( modelname, "rb" )) == NULL)
-		return 0;
+	if( (fp = fopen( pszModelName, "rb" )) == nullptr)
+		return nullptr;
 
 	fseek( fp, 0, SEEK_END );
 	size = ftell( fp );
@@ -225,7 +232,7 @@ studiohdr_t *StudioModel::LoadModel( char *modelname )
 	if (!buffer)
 	{
 		fclose (fp);
-		return 0;
+		return nullptr;
 	}
 
 	fread( buffer, size, 1, fp );
@@ -243,13 +250,22 @@ studiohdr_t *StudioModel::LoadModel( char *modelname )
 		strncmp ((const char *) buffer, "IDSQ", 4))
 	{
 		free (buffer);
-		return 0;
+		return nullptr;
 	}
 
 	if (!strncmp ((const char *) buffer, "IDSQ", 4) && !m_pstudiohdr)
 	{
 		free (buffer);
-		return 0;
+		return nullptr;
+	}
+
+	if( phdr->version != STUDIO_VERSION )
+	{
+		if( pResult )
+			*pResult = LoadResult::VERSIONDIFFERS;
+
+		free( buffer );
+		return nullptr;
 	}
 
 	if (phdr->textureindex > 0 && phdr->numtextures <= MAXSTUDIOSKINS)
@@ -273,19 +289,22 @@ studiohdr_t *StudioModel::LoadModel( char *modelname )
 	if (!m_pstudiohdr)
 		m_pstudiohdr = (studiohdr_t *)buffer;
 
+	if( pResult )
+		*pResult = LoadResult::SUCCESS;
+
 	return (studiohdr_t *)buffer;
 }
 
 
 
-bool StudioModel::PostLoadModel( char *modelname )
+bool StudioModel::PostLoadModel( const char* const pszModelName )
 {
 	// preload textures
 	if (m_pstudiohdr->numtextures == 0)
 	{
 		char texturename[256];
 
-		strcpy( texturename, modelname );
+		strcpy( texturename, pszModelName );
 		strcpy( &texturename[strlen(texturename) - 4], "T.mdl" );
 
 		m_ptexturehdr = LoadModel( texturename );
@@ -309,7 +328,7 @@ bool StudioModel::PostLoadModel( char *modelname )
 		{
 			char seqgroupname[256];
 
-			strcpy( seqgroupname, modelname );
+			strcpy( seqgroupname, pszModelName );
 			sprintf( &seqgroupname[strlen(seqgroupname) - 4], "%02d.mdl", i );
 
 			m_panimhdr[i] = LoadModel( seqgroupname );
@@ -360,7 +379,27 @@ bool StudioModel::PostLoadModel( char *modelname )
 	return true;
 }
 
+StudioModel::LoadResult StudioModel::Load( const char* const pszModelName )
+{
+	if( !pszModelName || !( *pszModelName ) )
+		return LoadResult::FAILURE;
 
+	LoadResult result = LoadResult::FAILURE;
+
+	LoadModel( pszModelName, &result );
+
+	if( result != LoadResult::SUCCESS )
+	{
+		return result;
+	}
+
+	if( !PostLoadModel( pszModelName ) )
+	{
+		return LoadResult::POSTLOADFAILURE;
+	}
+
+	return LoadResult::SUCCESS;
+}
 
 bool StudioModel::SaveModel ( char *modelname )
 {

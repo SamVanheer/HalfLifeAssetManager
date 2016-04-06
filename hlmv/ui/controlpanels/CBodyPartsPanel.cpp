@@ -105,7 +105,7 @@ void CBodyPartsPanel::ModelChanged( const StudioModel& model )
 {
 	//TODO: fill info
 
-	const studiohdr_t* const pHdr = g_studioModel.getStudioHeader();
+	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
 
 	if( pHdr )
 	{
@@ -219,7 +219,7 @@ void CBodyPartsPanel::ControllerSliderChanged( wxCommandEvent& event )
 
 void CBodyPartsPanel::SetBodypart( int iIndex )
 {
-	const studiohdr_t* const pHdr = g_studioModel.getStudioHeader();
+	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 	{
@@ -243,20 +243,20 @@ void CBodyPartsPanel::SetBodypart( int iIndex )
 void CBodyPartsPanel::SetSubmodel( int iIndex )
 {
 	m_pSubmodel->Select( iIndex );
-	g_studioModel.SetBodygroup( m_pBodypart->GetSelection(), iIndex );
+	Options.GetStudioModel()->SetBodygroup( m_pBodypart->GetSelection(), iIndex );
 }
 
 void CBodyPartsPanel::SetSkin( int iIndex )
 {
 	m_pSkin->Select( iIndex );
-	g_studioModel.SetSkin( iIndex );
+	Options.GetStudioModel()->SetSkin( iIndex );
 }
 
 void CBodyPartsPanel::UpdateSubmodels( const int iIndex )
 {
 	m_pSubmodel->Clear();
 
-	const studiohdr_t* const pHdr = g_studioModel.getStudioHeader();
+	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 		return;
@@ -279,7 +279,7 @@ void CBodyPartsPanel::UpdateSubmodels( const int iIndex )
 
 void CBodyPartsPanel::SetController( int iIndex )
 {
-	const studiohdr_t* const pHdr = g_studioModel.getStudioHeader();
+	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 		return;
@@ -291,12 +291,12 @@ void CBodyPartsPanel::SetController( int iIndex )
 
 	m_pController->Select( iIndex );
 	m_pControllerSlider->SetRange( ( int ) pbonecontrollers[ iIndex ].start, ( int ) pbonecontrollers[ iIndex ].end );
-	m_pControllerSlider->SetValue( g_studioModel.GetController( iIndex ) );
+	m_pControllerSlider->SetValue( Options.GetStudioModel()->GetController( iIndex ) );
 }
 
 void CBodyPartsPanel::SetControllerValue( int iIndex, int iValue )
 {
-	const studiohdr_t* const pHdr = g_studioModel.getStudioHeader();
+	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
 
 	if( pHdr )
 	{
@@ -306,8 +306,8 @@ void CBodyPartsPanel::SetControllerValue( int iIndex, int iValue )
 		const mstudiobonecontroller_t* const pbonecontrollers = ( mstudiobonecontroller_t* ) ( ( byte* ) pHdr + pHdr->bonecontrollerindex );
 
 		if( pbonecontrollers[ iIndex ].index == CONTROLLER_MOUTH_INDEX )
-			g_studioModel.SetMouth( iValue );
+			Options.GetStudioModel()->SetMouth( iValue );
 		else
-			g_studioModel.SetController( pbonecontrollers[ iIndex ].index, iValue );
+			Options.GetStudioModel()->SetController( pbonecontrollers[ iIndex ].index, iValue );
 	}
 }

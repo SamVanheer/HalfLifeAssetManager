@@ -125,9 +125,6 @@
     <ClInclude Include="ui\wxInclude.h">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="ui\utility\CGridSizerBuilder.h">
-      <Filter>Header Files\ui\utility</Filter>
-    </ClInclude>
     <ClInclude Include="model\utility\mathlib.h">
       <Filter>Header Files\model\utility</Filter>
     </ClInclude>

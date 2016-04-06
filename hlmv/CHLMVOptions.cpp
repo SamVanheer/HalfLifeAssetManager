@@ -5,12 +5,14 @@
 CHLMVOptions Options;
 
 CHLMVOptions::CHLMVOptions()
+	: m_pStudioModel( nullptr )
 {
 	ResetToDefaults();
 }
 
 CHLMVOptions::~CHLMVOptions()
 {
+	ClearStudioModel();
 }
 
 void CHLMVOptions::ResetModelData()
@@ -110,4 +112,21 @@ void CHLMVOptions::CenterView( const StudioModel& model )
 void CHLMVOptions::SetOrigin( const vec3_t vecOrigin )
 {
 	VectorCopy( vecOrigin, trans );
+}
+
+void CHLMVOptions::ClearStudioModel()
+{
+	SetStudioModel( nullptr );
+}
+
+void CHLMVOptions::SetStudioModel( StudioModel* pStudioModel )
+{
+	if( m_pStudioModel )
+	{
+		delete m_pStudioModel;
+		m_pStudioModel = nullptr;
+	}
+
+	if( pStudioModel )
+		m_pStudioModel = pStudioModel;
 }

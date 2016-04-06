@@ -53,6 +53,14 @@ public:
 	typedef std::vector<const mstudiomesh_t*> MeshList_t;
 	typedef std::vector<MeshList_t> TextureMeshMap_t;
 
+	enum class LoadResult
+	{
+		SUCCESS = 0,
+		FAILURE,			//Generic error on load.
+		POSTLOADFAILURE,	//Generic error on post load.
+		VERSIONDIFFERS		//Header version differs from current.
+	};
+
 public:
 	studiohdr_t				*getStudioHeader () const { return m_pstudiohdr; }
 	studiohdr_t				*getTextureHeader () const { return m_ptexturehdr; }
@@ -69,13 +77,15 @@ public:
 	const MeshList_t* GetMeshListByTexture( const int iIndex ) const;
 
 	StudioModel();
+	~StudioModel();
 
 	void					UploadTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, int name );
 	void					UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId );
 	void					ReplaceTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, GLuint textureId );
 	void					FreeModel ();
-	studiohdr_t				*LoadModel( char *modelname );
-	bool					PostLoadModel ( char *modelname );
+	studiohdr_t				*LoadModel( const char* pszModelName, LoadResult* pResult = nullptr );
+	bool					PostLoadModel ( const char* const pszModelName );
+	LoadResult				Load( const char* const pszModelName );
 	bool					SaveModel ( char *modelname );
 	unsigned int			DrawModel( const bool bWireframeOnly = false );
 	void					AdvanceFrame( float dt );
@@ -146,6 +156,5 @@ private:
 
 extern vec3_t g_vright;		// needs to be set to viewer's right in order for chrome to work
 extern float g_lambert;		// modifier for pseudo-hemispherical lighting
-extern StudioModel g_studioModel;
 
 #endif // INCLUDED_STUDIOMODEL

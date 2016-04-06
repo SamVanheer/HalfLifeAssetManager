@@ -63,7 +63,7 @@ CMainWindow::CMainWindow()
 
 	Maximize( true );
 
-	LoadModel( "barney.mdl" );
+	//LoadModel( "barney.mdl" );
 }
 
 CMainWindow::~CMainWindow()
@@ -132,7 +132,7 @@ void CMainWindow::UnloadGroundTexture( wxCommandEvent& event )
 
 void CMainWindow::SaveModel( wxCommandEvent& event )
 {
-	if( g_studioModel.getStudioHeader() == nullptr )
+	if( Options.GetStudioModel() == nullptr )
 	{
 		wxMessageBox( "No model to save!" );
 		return;
@@ -145,7 +145,7 @@ void CMainWindow::SaveModel( wxCommandEvent& event )
 
 	const wxString szFilename = dlg.GetPath();
 
-	if( !g_studioModel.SaveModel( szFilename.char_str( wxMBConvUTF8() ) ) )
+	if( !Options.GetStudioModel()->SaveModel( szFilename.char_str( wxMBConvUTF8() ) ) )
 	{
 		wxMessageBox( wxString::Format( "An error occurred while saving the model \"%s\"", szFilename.c_str() ) );
 	}

@@ -43,6 +43,7 @@ Studio models are position independent, so the cache manager can move them.
 #define MAXSTUDIOEVENTS		1024
 #define MAXSTUDIOPIVOTS		256
 #define MAXSTUDIOCONTROLLERS 8
+#define STUDIO_VERSION 10
 
 typedef struct
 {

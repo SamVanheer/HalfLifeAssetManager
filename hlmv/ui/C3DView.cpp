@@ -20,7 +20,7 @@ C3DView::C3DView( wxWindow* pParent, I3DViewListener* pListener )
 
 C3DView::~C3DView()
 {
-	g_studioModel.FreeModel();
+	Options.ClearStudioModel();
 
 	glDeleteTexture( m_GroundTexture );
 	glDeleteTexture( m_BackgroundTexture );
@@ -120,8 +120,8 @@ void C3DView::UpdateView()
 {
 	const wxLongLong curr = wxGetUTCTimeMillis();
 
-	if( Options.playSequence )
-		g_studioModel.AdvanceFrame( ( ( curr - m_iPrevTime ).GetValue() / 1000.0 ) * Options.speedScale );
+	if( Options.playSequence && Options.GetStudioModel() )
+		Options.GetStudioModel()->AdvanceFrame( ( ( curr - m_iPrevTime ).GetValue() / 1000.0 ) * Options.speedScale );
 
 	m_iPrevTime = curr;
 
@@ -191,7 +191,7 @@ void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const
 
 	glOrtho( 0.0f, ( float ) size.GetX(), ( float ) size.GetY(), 0.0f, 1.0f, -1.0f );
 
-	studiohdr_t *hdr = g_studioModel.getTextureHeader();
+	studiohdr_t *hdr = Options.GetStudioModel()->getTextureHeader();
 	if( hdr )
 	{
 		mstudiotexture_t *ptextures = ( mstudiotexture_t * ) ( ( byte * ) hdr + hdr->textureindex );
@@ -231,7 +231,7 @@ void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const
 		{
 			glEnable( GL_TEXTURE_2D );
 			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-			glBindTexture( GL_TEXTURE_2D, g_studioModel.GetTextureId( iTexture ) );
+			glBindTexture( GL_TEXTURE_2D, Options.GetStudioModel()->GetTextureId( iTexture ) );
 
 			glBegin( GL_TRIANGLE_STRIP );
 
@@ -267,7 +267,7 @@ void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const
 			}
 			else
 			{
-				const StudioModel::MeshList_t* pList = g_studioModel.GetMeshListByTexture( iTexture );
+				const StudioModel::MeshList_t* pList = Options.GetStudioModel()->GetMeshListByTexture( iTexture );
 
 				uiCount = pList->size();
 				ppMeshes = pList->data();
@@ -286,7 +286,7 @@ void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const
 
 			for( size_t uiIndex = 0; uiIndex < uiCount; ++uiIndex, ++ppMeshes )
 			{
-				const short* ptricmds = ( short* ) ( ( byte* ) g_studioModel.getStudioHeader() + ( *ppMeshes )->triindex );
+				const short* ptricmds = ( short* ) ( ( byte* ) Options.GetStudioModel()->getStudioHeader() + ( *ppMeshes )->triindex );
 
 				while( i = *( ptricmds++ ) )
 				{
@@ -373,6 +373,9 @@ void C3DView::DrawModel()
 		glBindTexture( GL_TEXTURE_2D, 0 );
 	}
 
+	if( !Options.GetStudioModel() )
+		return;
+
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 	gluPerspective( 65.0f, ( GLfloat ) size.GetX() / ( GLfloat ) size.GetY(), 1.0f, 4096.0f );
@@ -430,7 +433,7 @@ void C3DView::DrawModel()
 		glScalef( 1, 1, -1 );
 		glCullFace( GL_BACK );
 		SetupRenderMode();
-		Options.drawnPolys += g_studioModel.DrawModel();
+		Options.drawnPolys += Options.GetStudioModel()->DrawModel();
 
 		//Draw wireframe overlay
 		//TODO: integrate this into DrawModel somehow.
@@ -438,7 +441,7 @@ void C3DView::DrawModel()
 		{
 			SetupRenderMode( RenderMode::WIREFRAME );
 
-			Options.drawnPolys += g_studioModel.DrawModel( true );
+			Options.drawnPolys += Options.GetStudioModel()->DrawModel( true );
 		}
 
 		glPopMatrix();
@@ -450,14 +453,14 @@ void C3DView::DrawModel()
 	SetupRenderMode();
 
 	glCullFace( GL_FRONT );
-	Options.drawnPolys += g_studioModel.DrawModel();
+	Options.drawnPolys += Options.GetStudioModel()->DrawModel();
 
 	//Draw wireframe overlay
 	if( Options.wireframeOverlay )
 	{
 		SetupRenderMode( RenderMode::WIREFRAME );
 
-		Options.drawnPolys += g_studioModel.DrawModel( true );
+		Options.drawnPolys += Options.GetStudioModel()->DrawModel( true );
 	}
 
 	//
@@ -535,7 +538,7 @@ void C3DView::UnloadGroundTexture()
 
 void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 {
-	studiohdr_t *hdr = g_studioModel.getTextureHeader();
+	studiohdr_t *hdr = Options.GetStudioModel()->getTextureHeader();
 
 	if( !hdr )
 		return;

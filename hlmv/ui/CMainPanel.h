@@ -87,9 +87,10 @@ protected:
 private:
 	/*
 	*	Helper function to inform all control panels.
+	*	Important: pass by reference.
 	*/
 	template<typename FUNC, typename... ARGS>
-	void ForEachPanel( FUNC func, ARGS... args )
+	void ForEachPanel( FUNC func, ARGS&... args )
 	{
 		const size_t uiPageCount = m_pControlPanels->GetPageCount();
 

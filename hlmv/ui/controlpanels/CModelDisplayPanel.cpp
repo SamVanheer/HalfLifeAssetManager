@@ -209,7 +209,7 @@ void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
 	double flScale = 1.0;
 
 	if( m_pMeshScale->GetValue().ToDouble( &flScale ) )
-		g_studioModel.scaleMeshes( flScale );
+		Options.GetStudioModel()->scaleMeshes( flScale );
 	else
 		m_pMeshScale->SetValue( "1.0" );
 }
@@ -219,7 +219,7 @@ void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
 	double flScale = 1.0;
 
 	if( m_pBonesScale->GetValue().ToDouble( &flScale ) )
-		g_studioModel.scaleBones( flScale );
+		Options.GetStudioModel()->scaleBones( flScale );
 	else
 		m_pBonesScale->SetValue( "1.0" );
 }

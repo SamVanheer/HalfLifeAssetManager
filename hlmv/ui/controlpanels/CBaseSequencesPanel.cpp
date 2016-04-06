@@ -42,7 +42,7 @@ void CBaseSequencesPanel::ModelChanged( const StudioModel& model )
 
 	m_pSequence->Clear();
 
-	const studiohdr_t* const pHdr = g_studioModel.getStudioHeader();
+	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
 
 	if( pHdr )
 	{
@@ -78,12 +78,12 @@ void CBaseSequencesPanel::TogglePlay( wxCommandEvent& event )
 
 void CBaseSequencesPanel::PrevFrame( wxCommandEvent& event )
 {
-	SetFrame( g_studioModel.GetFrame() - 1 );
+	SetFrame( Options.GetStudioModel()->GetFrame() - 1 );
 }
 
 void CBaseSequencesPanel::NextFrame( wxCommandEvent& event )
 {
-	SetFrame( g_studioModel.GetFrame() + 1 );
+	SetFrame( Options.GetStudioModel()->GetFrame() + 1 );
 }
 
 void CBaseSequencesPanel::FrameChanged( wxCommandEvent& event )
@@ -103,7 +103,7 @@ void CBaseSequencesPanel::AnimSpeedChanged( wxCommandEvent& event )
 
 void CBaseSequencesPanel::SetSequence( int iIndex )
 {
-	const studiohdr_t* const pHdr = g_studioModel.getStudioHeader();
+	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 	{
@@ -119,7 +119,7 @@ void CBaseSequencesPanel::SetSequence( int iIndex )
 
 	Options.sequence = iIndex;
 
-	g_studioModel.SetSequence( Options.sequence );
+	Options.GetStudioModel()->SetSequence( Options.sequence );
 
 	mstudioseqdesc_t nullSeq;
 
@@ -136,12 +136,14 @@ void CBaseSequencesPanel::SetSequence( int iIndex )
 
 void CBaseSequencesPanel::SetFrame( int iFrame )
 {
+	StudioModel* const pStudioModel = Options.GetStudioModel();
+
 	if( iFrame < 0 )
-		iFrame = g_studioModel.GetNumFrames();
-	else if( iFrame >= g_studioModel.GetNumFrames() )
+		iFrame = pStudioModel->GetNumFrames();
+	else if( iFrame >= pStudioModel->GetNumFrames() )
 		iFrame = 0;
 
-	g_studioModel.SetFrame( iFrame );
+	pStudioModel->SetFrame( iFrame );
 
 	long iPos = m_pFrame->GetInsertionPoint();
 
@@ -235,7 +237,7 @@ void CBaseSequencesPanel::SetFrameControlsEnabled( const bool bState )
 
 	if( bState )
 	{
-		SetFrame( static_cast<int>( g_studioModel.GetFrame() ) );
+		SetFrame( static_cast<int>( Options.GetStudioModel()->GetFrame() ) );
 	}
 	else
 	{

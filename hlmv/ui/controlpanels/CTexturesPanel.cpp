@@ -102,7 +102,7 @@ void CTexturesPanel::ModelChanged( const StudioModel& model )
 
 	m_pMesh->Clear();
 
-	const studiohdr_t* const pHdr = g_studioModel.getTextureHeader();
+	const studiohdr_t* const pHdr = model.getTextureHeader();
 
 	if( !pHdr )
 		return;
@@ -138,7 +138,7 @@ void CTexturesPanel::ScaleChanged( wxCommandEvent& event )
 
 void CTexturesPanel::CheckBoxChanged( wxCommandEvent& event )
 {
-	const studiohdr_t* const pHdr = g_studioModel.getTextureHeader();
+	const studiohdr_t* const pHdr = Options.GetStudioModel()->getTextureHeader();
 
 	if( !pHdr )
 		return;
@@ -235,7 +235,9 @@ void CTexturesPanel::MeshChanged( wxCommandEvent& event )
 
 void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 {
-	studiohdr_t* const pHdr = g_studioModel.getTextureHeader();
+	StudioModel* const pStudioModel = Options.GetStudioModel();
+
+	studiohdr_t* const pHdr = pStudioModel->getTextureHeader();
 
 	if( !pHdr )
 	{
@@ -318,12 +320,12 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 	memcpy( ( byte* ) pHdr + texture.index, texData.get(), image.GetWidth() * image.GetHeight() );
 	memcpy( ( byte* ) pHdr + texture.index + image.GetWidth() * image.GetHeight(), convPal, PALETTE_SIZE );
 
-	g_studioModel.ReplaceTexture( &texture, texData.get(), convPal, g_studioModel.GetTextureId( iTextureIndex ) );
+	pStudioModel->ReplaceTexture( &texture, texData.get(), convPal, pStudioModel->GetTextureId( iTextureIndex ) );
 }
 
 void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 {
-	studiohdr_t* const pHdr = g_studioModel.getTextureHeader();
+	studiohdr_t* const pHdr = Options.GetStudioModel()->getTextureHeader();
 
 	if( !pHdr )
 	{
@@ -362,7 +364,7 @@ void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 
 void CTexturesPanel::ExportUVMap( wxCommandEvent& event )
 {
-	studiohdr_t* const pHdr = g_studioModel.getTextureHeader();
+	studiohdr_t* const pHdr = Options.GetStudioModel()->getTextureHeader();
 
 	if( !pHdr )
 	{
@@ -396,8 +398,10 @@ void CTexturesPanel::ExportUVMap( wxCommandEvent& event )
 
 void CTexturesPanel::SetTexture( int iIndex )
 {
-	const studiohdr_t* const pHdr = g_studioModel.getStudioHeader();
-	const studiohdr_t* const pTexHdr = g_studioModel.getTextureHeader();
+	StudioModel* const pStudioModel = Options.GetStudioModel();
+
+	const studiohdr_t* const pHdr = pStudioModel->getStudioHeader();
+	const studiohdr_t* const pTexHdr = pStudioModel->getTextureHeader();
 
 	m_pMesh->Clear();
 
@@ -417,7 +421,7 @@ void CTexturesPanel::SetTexture( int iIndex )
 	m_pCheckBoxes[ CheckBox::ADDITIVE ]->SetValue( ( texture.flags & STUDIO_NF_ADDITIVE ) != 0 );
 	m_pCheckBoxes[ CheckBox::TRANSPARENT ]->SetValue( ( texture.flags & STUDIO_NF_MASKED ) != 0 );
 
-	const StudioModel::MeshList_t* pMeshList = g_studioModel.GetMeshListByTexture( iIndex );
+	const StudioModel::MeshList_t* pMeshList = pStudioModel->GetMeshListByTexture( iIndex );
 
 	if( pMeshList )
 	{

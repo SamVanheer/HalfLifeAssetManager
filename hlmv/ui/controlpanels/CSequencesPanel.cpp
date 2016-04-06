@@ -3,6 +3,8 @@
 
 #include "model/studiomodel/StudioModel.h"
 
+#include "hlmv/CHLMVOptions.h"
+
 #include "CSequencesPanel.h"
 
 wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseSequencesPanel )
@@ -79,7 +81,7 @@ void CSequencesPanel::EventChanged( wxCommandEvent& event )
 
 void CSequencesPanel::UpdateEvents()
 {
-	const studiohdr_t* const pHdr = g_studioModel.getStudioHeader();
+	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 		return;
@@ -116,7 +118,7 @@ void CSequencesPanel::UpdateEventInfo( int iIndex )
 		return;
 	}
 
-	const studiohdr_t* const pHdr = g_studioModel.getStudioHeader();
+	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 		return;

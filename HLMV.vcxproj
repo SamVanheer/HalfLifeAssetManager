@@ -59,7 +59,6 @@
     <ClInclude Include="model\utility\OpenGL.h" />
     <ClInclude Include="model\utility\Platform.h" />
     <ClInclude Include="model\utility\studio.h" />
-    <ClInclude Include="ui\utility\CGridSizerBuilder.h" />
     <ClInclude Include="ui\utility\CTimer.h" />
     <ClInclude Include="ui\wxInclude.h" />
   </ItemGroup>
