@@ -376,6 +376,7 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 	glViewport( 0, 0, texture.width, texture.height );
 
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
