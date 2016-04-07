@@ -64,6 +64,12 @@
     <Filter Include="Source Files\model\studiomodel">
       <UniqueIdentifier>{12e74f2a-b196-4ff2-b54e-e9a4cca99d85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\model\graphics">
+      <UniqueIdentifier>{b6af4a93-606a-43f2-a030-8d9accd6675b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\graphics">
+      <UniqueIdentifier>{c34c9514-8e8b-4368-aa97-6247580a4a27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="model\utility\mathlib.c">
@@ -71,9 +77,6 @@
     </ClCompile>
     <ClCompile Include="model\utility\OpenGL.cpp">
       <Filter>Source Files\model\utility</Filter>
-    </ClCompile>
-    <ClCompile Include="hlmv\CHLMVOptions.cpp">
-      <Filter>Source Files\hlmv</Filter>
     </ClCompile>
     <ClCompile Include="hlmv\ui\C3DView.cpp">
       <Filter>Source Files\hlmv\ui</Filter>
@@ -120,6 +123,15 @@
     <ClCompile Include="model\studiomodel\studio_utils.cpp">
       <Filter>Source Files\model\studiomodel</Filter>
     </ClCompile>
+    <ClCompile Include="hlmv\CHLMVSettings.cpp">
+      <Filter>Source Files\hlmv</Filter>
+    </ClCompile>
+    <ClCompile Include="hlmv\ui\CHLMV.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="model\graphics\GraphicsHelpers.cpp">
+      <Filter>Source Files\model\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui\wxInclude.h">
@@ -139,9 +151,6 @@
     </ClInclude>
     <ClInclude Include="ui\utility\CTimer.h">
       <Filter>Header Files\ui\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="hlmv\CHLMVOptions.h">
-      <Filter>Header Files\hlmv</Filter>
     </ClInclude>
     <ClInclude Include="hlmv\ui\C3DView.h">
       <Filter>Header Files\hlmv\ui</Filter>
@@ -187,6 +196,18 @@
     </ClInclude>
     <ClInclude Include="model\studiomodel\StudioModel.h">
       <Filter>Header Files\model\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\CHLMVSettings.h">
+      <Filter>Header Files\hlmv</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\CHLMV.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="model\graphics\GraphicsHelpers.h">
+      <Filter>Header Files\model\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="model\graphics\Constants.h">
+      <Filter>Header Files\model\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

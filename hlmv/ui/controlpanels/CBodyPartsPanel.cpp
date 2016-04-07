@@ -1,6 +1,6 @@
 #include <wx/gbsizer.h>
 
-#include "hlmv/CHLMVOptions.h"
+#include "hlmv/CHLMVSettings.h"
 
 #include "model/studiomodel/StudioModel.h"
 

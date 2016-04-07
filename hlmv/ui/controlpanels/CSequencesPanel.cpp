@@ -3,7 +3,7 @@
 
 #include "model/studiomodel/StudioModel.h"
 
-#include "hlmv/CHLMVOptions.h"
+#include "hlmv/CHLMVSettings.h"
 
 #include "CSequencesPanel.h"
 

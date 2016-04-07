@@ -17,7 +17,8 @@
 #include "model/utility/OpenGL.h"
 
 #include "StudioModel.h"
-#include "hlmv/CHLMVOptions.h"
+//TODO: decouple hlmv from renderer
+#include "hlmv/CHLMVSettings.h"
 
 #pragma warning( disable : 4244 ) // double to float
 

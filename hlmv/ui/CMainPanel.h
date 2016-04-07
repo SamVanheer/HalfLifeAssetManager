@@ -74,9 +74,10 @@ public:
 
 	void PageChanged( wxBookCtrlEvent& event );
 
-	void LoadBackgroundTexture( const wxString& szFilename );
-	void LoadGroundTexture( const wxString& szFilename );
+	bool LoadBackgroundTexture( const wxString& szFilename );
+	void UnloadBackgroundTexture();
 
+	bool LoadGroundTexture( const wxString& szFilename );
 	void UnloadGroundTexture();
 
 	void SaveUVMap( const wxString& szFilename, const int iTexture );

@@ -3,8 +3,13 @@
 
 #include "Platform.h"
 
-#include <gl/GL.h>
-#include <gl/GLU.h>
+//#include <gl/GL.h>
+//#include <gl/GLU.h>
+
+#include <GL/glew.h>
+
+//Should be called after a context is created. If false, exit the program.
+bool PostInitializeOpenGL();
 
 /*
 *	As specified by the OpenGL standard, 0 is not a valid texture id.

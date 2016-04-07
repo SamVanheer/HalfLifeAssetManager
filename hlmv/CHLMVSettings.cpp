@@ -1,21 +1,21 @@
 #include "model/studiomodel/StudioModel.h"
 
-#include "CHLMVOptions.h"
+#include "CHLMVSettings.h"
 
-CHLMVOptions Options;
+CHLMVSettings Options;
 
-CHLMVOptions::CHLMVOptions()
+CHLMVSettings::CHLMVSettings()
 	: m_pStudioModel( nullptr )
 {
 	ResetToDefaults();
 }
 
-CHLMVOptions::~CHLMVOptions()
+CHLMVSettings::~CHLMVSettings()
 {
 	ClearStudioModel();
 }
 
-void CHLMVOptions::ResetModelData()
+void CHLMVSettings::ResetModelData()
 {
 	trans[ 0 ] = trans[ 1 ] = trans[ 2 ] = 0;
 	rot[ 1 ] = rot[ 2 ] = 0;
@@ -29,7 +29,7 @@ void CHLMVOptions::ResetModelData()
 	pUVMesh = nullptr;
 }
 
-void CHLMVOptions::ResetToDefaults()
+void CHLMVSettings::ResetToDefaults()
 {
 	ResetModelData();
 
@@ -41,7 +41,6 @@ void CHLMVOptions::ResetToDefaults()
 
 	showAttachments = false;
 	showHitBoxes = false;
-	useStencil = false;
 	showTexture = false;
 
 	textureScale = 1.0f;
@@ -49,6 +48,9 @@ void CHLMVOptions::ResetToDefaults()
 	memset( backgroundTextureFile, 0, sizeof( backgroundTextureFile ) );
 	memset( groundTextureFile, 0, sizeof( groundTextureFile ) );
 
+	//There used to be an option called "useStencil" that was enabled along with mirror if the OpenGL driver was not 3DFX.
+	//Considering how old that driver (and the hardware that used it) is, the code for it was removed.
+	//The stencil buffer is now always used by mirror (it limits the mirroring effect to the floor quad).
 	mirror = false;
 
 	renderMode = RenderMode::TEXTURE_SHADED;
@@ -85,7 +87,7 @@ void CHLMVOptions::ResetToDefaults()
 	antiAliasUVLines = false;
 }
 
-void CHLMVOptions::CenterView( const StudioModel& model )
+void CHLMVSettings::CenterView( const StudioModel& model )
 {
 	float min[ 3 ], max[ 3 ];
 	model.ExtractBbox( min, max );
@@ -109,17 +111,17 @@ void CHLMVOptions::CenterView( const StudioModel& model )
 	rot[ 2 ] = 0.0f;
 }
 
-void CHLMVOptions::SetOrigin( const vec3_t vecOrigin )
+void CHLMVSettings::SetOrigin( const vec3_t vecOrigin )
 {
 	VectorCopy( vecOrigin, trans );
 }
 
-void CHLMVOptions::ClearStudioModel()
+void CHLMVSettings::ClearStudioModel()
 {
 	SetStudioModel( nullptr );
 }
 
-void CHLMVOptions::SetStudioModel( StudioModel* pStudioModel )
+void CHLMVSettings::SetStudioModel( StudioModel* pStudioModel )
 {
 	if( m_pStudioModel )
 	{

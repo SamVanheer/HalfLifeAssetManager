@@ -2,7 +2,7 @@
 
 #include <wx/gbsizer.h>
 
-#include "hlmv/CHLMVOptions.h"
+#include "hlmv/CHLMVSettings.h"
 
 #include "CWeaponOriginPanel.h"
 

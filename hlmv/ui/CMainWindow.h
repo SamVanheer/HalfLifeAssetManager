@@ -12,6 +12,20 @@ public:
 	~CMainWindow();
 
 	bool LoadModel( const wxString& szFilename );
+	bool PromptLoadModel();
+
+	bool SaveModel( const wxString& szFilename );
+	bool PromptSaveModel();
+
+	bool LoadBackgroundTexture( const wxString& szFilename );
+	bool PromptLoadBackgroundTexture();
+
+	void UnloadBackgroundTexture();
+
+	bool LoadGroundTexture( const wxString& szFilename );
+	bool PromptLoadGroundTexture();
+
+	void UnloadGroundTexture();
 
 private:
 	void LoadModel( wxCommandEvent& event );

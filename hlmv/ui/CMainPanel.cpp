@@ -13,7 +13,7 @@
 
 #include "model/studiomodel/StudioModel.h"
 
-#include "hlmv/CHLMVOptions.h"
+#include "hlmv/CHLMVSettings.h"
 
 #include "CMainPanel.h"
 
@@ -25,9 +25,6 @@ CMainPanel::CMainPanel( wxWindow* pParent )
 	: wxPanel( pParent )
 {
 	m_pTimer = new CTimer( this );
-
-	//60 FPS
-	m_pTimer->Start( ( 1 / 60.0 ) * 1000 );
 
 	m_p3DView = new C3DView( this, this );
 
@@ -70,6 +67,9 @@ CMainPanel::CMainPanel( wxWindow* pParent )
 	pSizer->Add( m_pControlPanels, wxSizerFlags().Expand().Proportion( 1 ) );
 
 	this->SetSizer( pSizer );
+
+	//60 FPS
+	m_pTimer->Start( ( 1 / 60.0 ) * 1000 );
 }
 
 CMainPanel::~CMainPanel()
@@ -184,14 +184,19 @@ void CMainPanel::PageChanged( wxBookCtrlEvent& event )
 	}
 }
 
-void CMainPanel::LoadBackgroundTexture( const wxString& szFilename )
+bool CMainPanel::LoadBackgroundTexture( const wxString& szFilename )
 {
-	m_p3DView->LoadBackgroundTexture( szFilename );
+	return m_p3DView->LoadBackgroundTexture( szFilename );
 }
 
-void CMainPanel::LoadGroundTexture( const wxString& szFilename )
+void CMainPanel::UnloadBackgroundTexture()
 {
-	m_p3DView->LoadGroundTexture( szFilename );
+	return m_p3DView->UnloadBackgroundTexture();
+}
+
+bool CMainPanel::LoadGroundTexture( const wxString& szFilename )
+{
+	return m_p3DView->LoadGroundTexture( szFilename );
 }
 
 void CMainPanel::UnloadGroundTexture()

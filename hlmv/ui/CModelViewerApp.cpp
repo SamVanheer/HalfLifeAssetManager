@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "model/utility/OpenGL.h"
+
 #include "CModelViewerApp.h"
 
 wxIMPLEMENT_APP( CModelViewerApp );

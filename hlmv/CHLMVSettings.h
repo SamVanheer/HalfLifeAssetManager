@@ -1,40 +1,24 @@
-#ifndef OPTIONS_COPTIONS_H
-#define OPTIONS_COPTIONS_H
+#ifndef HLMV_CHLMVSETTINGS_H
+#define HLMV_CHLMVSETTINGS_H
 
 #include "model/utility/Platform.h"
 #include "model/utility/OpenGL.h"
+#include "model/graphics/Constants.h"
 
 #include "mathlib.h"
 
 #include "model/studiomodel/StudioModel.h"
 
-/*
-*	Available render modes
-*/
-enum class RenderMode
-{
-	INVALID				= -1,
-	FIRST				= 0,
-
-	WIREFRAME			= FIRST,
-	FLAT_SHADED,
-	SMOOTH_SHADED,
-	TEXTURE_SHADED,
-
-	COUNT,
-	LAST				= COUNT - 1 //Must be last
-};
-
 class StudioModel;
 
 /*
-*	Contains all options used by the HLMV application.
+*	Contains all settings used by the HLMV application.
 */
-class CHLMVOptions final
+class CHLMVSettings final
 {
 public:
-	CHLMVOptions();
-	~CHLMVOptions();
+	CHLMVSettings();
+	~CHLMVSettings();
 
 	void ResetModelData();
 
@@ -64,8 +48,6 @@ public:
 	bool showAttachments;
 
 	bool showHitBoxes;
-
-	bool useStencil;
 
 	bool showBackground;
 
@@ -119,13 +101,13 @@ private:
 	StudioModel* m_pStudioModel;
 
 private:
-	CHLMVOptions( const CHLMVOptions& ) = delete;
-	CHLMVOptions& operator=( const CHLMVOptions& ) = delete;
+	CHLMVSettings( const CHLMVSettings& ) = delete;
+	CHLMVSettings& operator=( const CHLMVSettings& ) = delete;
 };
 
 /*
 *	Global instance.
 */
-extern CHLMVOptions Options;
+extern CHLMVSettings Options;
 
-#endif //OPTIONS_COPTIONS_H
+#endif //HLMV_CHLMVSETTINGS_H

@@ -19,8 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="hlmv\CHLMVOptions.cpp" />
+    <ClCompile Include="hlmv\CHLMVSettings.cpp" />
     <ClCompile Include="hlmv\ui\C3DView.cpp" />
+    <ClCompile Include="hlmv\ui\CHLMV.cpp" />
     <ClCompile Include="hlmv\ui\CMainPanel.cpp" />
     <ClCompile Include="hlmv\ui\CMainWindow.cpp" />
     <ClCompile Include="hlmv\ui\CModelViewerApp.cpp" />
@@ -33,14 +34,16 @@
     <ClCompile Include="hlmv\ui\controlpanels\CTexturesPanel.cpp" />
     <ClCompile Include="hlmv\ui\controlpanels\CWeaponOriginPanel.cpp" />
     <ClCompile Include="hlmv\ui\options\COptionsDialog.cpp" />
+    <ClCompile Include="model\graphics\GraphicsHelpers.cpp" />
     <ClCompile Include="model\studiomodel\studio_render.cpp" />
     <ClCompile Include="model\studiomodel\studio_utils.cpp" />
     <ClCompile Include="model\utility\mathlib.c" />
     <ClCompile Include="model\utility\OpenGL.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="hlmv\CHLMVOptions.h" />
+    <ClInclude Include="hlmv\CHLMVSettings.h" />
     <ClInclude Include="hlmv\ui\C3DView.h" />
+    <ClInclude Include="hlmv\ui\CHLMV.h" />
     <ClInclude Include="hlmv\ui\CMainPanel.h" />
     <ClInclude Include="hlmv\ui\CMainWindow.h" />
     <ClInclude Include="hlmv\ui\CModelViewerApp.h" />
@@ -54,6 +57,8 @@
     <ClInclude Include="hlmv\ui\controlpanels\CWeaponOriginPanel.h" />
     <ClInclude Include="hlmv\ui\options\COptionsDialog.h" />
     <ClInclude Include="hlmv\ui\wxHLMV.h" />
+    <ClInclude Include="model\graphics\Constants.h" />
+    <ClInclude Include="model\graphics\GraphicsHelpers.h" />
     <ClInclude Include="model\studiomodel\StudioModel.h" />
     <ClInclude Include="model\utility\mathlib.h" />
     <ClInclude Include="model\utility\OpenGL.h" />
@@ -133,13 +138,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\model\utility;.;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\external\GLEW\include;.\model\utility;.;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;wxbase31ud.lib;wxmsw31ud_core.lib;wxmsw31ud_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;wxbase31ud.lib;wxmsw31ud_core.lib;wxmsw31ud_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -166,15 +171,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\model\utility;.;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\external\GLEW\include;.\model\utility;.;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -19,7 +19,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 wxEND_EVENT_TABLE()
 
 CMainWindow::CMainWindow()
-	: wxFrame( nullptr, wxID_ANY, "Half-Life Model Viewer", wxDefaultPosition, wxSize( 600, 400 ) )
+	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
 {
 	wxMenu* menuFile = new wxMenu;
 	menuFile->Append( wxID_MAINWND_LOADMODEL, "&Load Model...",
@@ -90,65 +90,107 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 	return bSuccess;
 }
 
-void CMainWindow::LoadModel( wxCommandEvent& event )
+bool CMainWindow::PromptLoadModel()
 {
 	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "Half-Life Models (*.mdl)|*.mdl" );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
-		return;
+		return false;
 
-	if( m_pMainPanel->LoadModel( dlg.GetPath() ) )
+	return LoadModel( dlg.GetPath() );
+}
+
+bool CMainWindow::SaveModel( const wxString& szFilename )
+{
+	const bool bSuccess = Options.GetStudioModel()->SaveModel( szFilename.char_str( wxMBConvUTF8() ) );
+
+	if( !bSuccess )
 	{
-		this->SetTitle( wxString::Format( "%s - %s", HLMV_TITLE, dlg.GetPath().c_str() ) );
+		wxMessageBox( wxString::Format( "An error occurred while saving the model \"%s\"", szFilename.c_str() ) );
 	}
-	else
-		this->SetTitle( HLMV_TITLE );
+
+	return bSuccess;
 }
 
-void CMainWindow::LoadBackgroundTexture( wxCommandEvent& event )
-{
-	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "*.*" );
-
-	if( dlg.ShowModal() == wxID_CANCEL )
-		return;
-
-	m_pMainPanel->LoadBackgroundTexture( dlg.GetPath() );
-}
-
-void CMainWindow::LoadGroundTexture( wxCommandEvent& event )
-{
-	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "*.*" );
-
-	if( dlg.ShowModal() == wxID_CANCEL )
-		return;
-
-	m_pMainPanel->LoadGroundTexture( dlg.GetPath() );
-}
-
-void CMainWindow::UnloadGroundTexture( wxCommandEvent& event )
-{
-	m_pMainPanel->UnloadGroundTexture();
-}
-
-void CMainWindow::SaveModel( wxCommandEvent& event )
+bool CMainWindow::PromptSaveModel()
 {
 	if( Options.GetStudioModel() == nullptr )
 	{
 		wxMessageBox( "No model to save!" );
-		return;
+		return false;
 	}
 
 	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "Half-Life Models (*.mdl)|*.mdl", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
-		return;
+		return false;
 
-	const wxString szFilename = dlg.GetPath();
+	return SaveModel( dlg.GetPath() );
+}
 
-	if( !Options.GetStudioModel()->SaveModel( szFilename.char_str( wxMBConvUTF8() ) ) )
-	{
-		wxMessageBox( wxString::Format( "An error occurred while saving the model \"%s\"", szFilename.c_str() ) );
-	}
+bool CMainWindow::LoadBackgroundTexture( const wxString& szFilename )
+{
+	return m_pMainPanel->LoadBackgroundTexture( szFilename );
+}
+
+bool CMainWindow::PromptLoadBackgroundTexture()
+{
+	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "*.*" );
+
+	if( dlg.ShowModal() == wxID_CANCEL )
+		return false;
+
+	return LoadBackgroundTexture( dlg.GetPath() );
+}
+
+void CMainWindow::UnloadBackgroundTexture()
+{
+	m_pMainPanel->UnloadBackgroundTexture();
+}
+
+bool CMainWindow::LoadGroundTexture( const wxString& szFilename )
+{
+	return m_pMainPanel->LoadGroundTexture( szFilename );
+}
+
+bool CMainWindow::PromptLoadGroundTexture()
+{
+	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "*.*" );
+
+	if( dlg.ShowModal() == wxID_CANCEL )
+		return false;
+
+	return LoadGroundTexture( dlg.GetPath() );
+}
+
+void CMainWindow::UnloadGroundTexture()
+{
+	m_pMainPanel->UnloadGroundTexture();
+}
+
+void CMainWindow::LoadModel( wxCommandEvent& event )
+{
+	PromptLoadModel();
+}
+
+void CMainWindow::LoadBackgroundTexture( wxCommandEvent& event )
+{
+	PromptLoadBackgroundTexture();
+}
+
+void CMainWindow::LoadGroundTexture( wxCommandEvent& event )
+{
+	PromptLoadGroundTexture();
+}
+
+void CMainWindow::UnloadGroundTexture( wxCommandEvent& event )
+{
+	UnloadGroundTexture();
+}
+
+void CMainWindow::SaveModel( wxCommandEvent& event )
+{
+	PromptSaveModel();
 }
 
 void CMainWindow::OnExit( wxCommandEvent& event )

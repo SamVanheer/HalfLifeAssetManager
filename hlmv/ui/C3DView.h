@@ -3,13 +3,14 @@
 
 #include "wxHLMV.h"
 
-#include <wx/glcanvas.h>
-
 #include "model/utility/OpenGL.h"
+
+//Must be included after OpenGL.h because GLEW replaces gl.h
+#include <wx/glcanvas.h>
 
 #include "mathlib.h"
 
-#include "hlmv/CHLMVOptions.h"
+#include "hlmv/CHLMVSettings.h"
 
 class I3DViewListener
 {
@@ -26,6 +27,9 @@ inline I3DViewListener::~I3DViewListener()
 class C3DView final : public wxGLCanvas
 {
 public:
+	static const float FLOOR_SIDE_LENGTH;
+
+public:
 	C3DView( wxWindow* pParent, I3DViewListener* pListener = nullptr );
 	~C3DView();
 
@@ -38,9 +42,10 @@ public:
 
 	void UpdateView();
 
-	void LoadBackgroundTexture( const wxString& szFilename );
-	void LoadGroundTexture( const wxString& szFilename );
+	bool LoadBackgroundTexture( const wxString& szFilename );
+	void UnloadBackgroundTexture();
 
+	bool LoadGroundTexture( const wxString& szFilename );
 	void UnloadGroundTexture();
 
 	void SaveUVMap( const wxString& szFilename, const int iTexture );
@@ -50,7 +55,6 @@ protected:
 
 private:
 
-	void DrawFloor();
 	void SetupRenderMode( RenderMode renderMode = RenderMode::INVALID );
 
 	void DrawTexture( const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines, const mstudiomesh_t* const pUVMesh );
@@ -77,6 +81,10 @@ private:
 
 	//Tracks mouse button state. Used to prevent input from being mistakingly applied (e.g. double click from dialog spilling over as drag).
 	int m_iButtonsDown = wxMOUSE_BTN_NONE;
+
+	//UV map framebuffer and render target.
+	GLuint m_UVFrameBuffer = 0;
+	GLuint m_UVRenderTarget = GL_INVALID_TEXTURE_ID;
 
 private:
 	C3DView( const C3DView& ) = delete;

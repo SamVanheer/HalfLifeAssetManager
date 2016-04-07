@@ -4,6 +4,8 @@
 
 #include "model/studiomodel/StudioModel.h"
 
+#include "model/graphics/GraphicsHelpers.h"
+
 #include "C3DView.h"
 
 wxBEGIN_EVENT_TABLE( C3DView, wxGLCanvas )
@@ -11,15 +13,70 @@ wxBEGIN_EVENT_TABLE( C3DView, wxGLCanvas )
 	EVT_MOUSE_EVENTS( C3DView::MouseEvents )
 wxEND_EVENT_TABLE()
 
+const float C3DView::FLOOR_SIDE_LENGTH = 200;
+
+class CGLAttributes final
+{
+public:
+	CGLAttributes()
+	{
+		m_Attributes
+			.PlatformDefaults()
+			.Stencil( 8 )
+			.EndList();
+	}
+
+	const wxGLAttributes& GetAttributes() const { return m_Attributes; }
+
+private:
+	wxGLAttributes m_Attributes;
+
+private:
+	CGLAttributes( const CGLAttributes& ) = delete;
+	CGLAttributes& operator=( const CGLAttributes& ) = delete;
+};
+
+static const CGLAttributes g_GLAttributes;
+
 C3DView::C3DView( wxWindow* pParent, I3DViewListener* pListener )
-	: wxGLCanvas( pParent, wxID_ANY, nullptr, wxDefaultPosition, wxSize( 600, 400 ) )
+	: wxGLCanvas( pParent, g_GLAttributes.GetAttributes(), wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pListener( pListener )
 {
-	m_pContext = new wxGLContext( this );
+	wxGLContextAttrs attrs;
+
+	attrs.PlatformDefaults()
+		.MajorVersion( 3 )
+		.MinorVersion( 0 )
+		.EndList();
+
+	m_pContext = new wxGLContext( this, nullptr, &attrs );
+
+	//Initalize GLEW if needed.
+	SetCurrent( *m_pContext );
+
+	if( !PostInitializeOpenGL() )
+	{
+		//TODO: exit more gracefully.
+		wxExit();
+	}
 }
 
 C3DView::~C3DView()
 {
+	SetCurrent( *m_pContext );
+
+	if( m_UVFrameBuffer != 0 )
+	{
+		glDeleteFramebuffers( 1, &m_UVFrameBuffer );
+		m_UVFrameBuffer = 0;
+	}
+
+	if( m_UVRenderTarget )
+	{
+		glDeleteTextures( 1, &m_UVRenderTarget );
+		m_UVRenderTarget = 0;
+	}
+
 	Options.ClearStudioModel();
 
 	glDeleteTexture( m_GroundTexture );
@@ -39,8 +96,12 @@ void C3DView::Paint( wxPaintEvent& event )
 
 	const wxSize size = GetClientSize();
 	
-	if( Options.useStencil )
+	if( Options.mirror )
+	{
+		glClearStencil( 0 );
+
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+	}
 	else
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
@@ -129,199 +190,19 @@ void C3DView::UpdateView()
 		Refresh();
 }
 
-void C3DView::DrawFloor()
-{
-	glBegin( GL_TRIANGLE_STRIP );
-	glTexCoord2f( 0.0f, 0.0f );
-	glVertex3f( -100.0f, 100.0f, 0.0f );
-
-	glTexCoord2f( 0.0f, 1.0f );
-	glVertex3f( -100.0f, -100.0f, 0.0f );
-
-	glTexCoord2f( 1.0f, 0.0f );
-	glVertex3f( 100.0f, 100.0f, 0.0f );
-
-	glTexCoord2f( 1.0f, 1.0f );
-	glVertex3f( 100.0f, -100.0f, 0.0f );
-
-	glEnd();
-}
-
 void C3DView::SetupRenderMode( RenderMode renderMode )
 {
 	if( renderMode == RenderMode::INVALID )
 		renderMode = Options.renderMode;
 
-	if( renderMode == RenderMode::WIREFRAME )
-	{
-		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-		glDisable( GL_TEXTURE_2D );
-		glDisable( GL_CULL_FACE );
-		glEnable( GL_DEPTH_TEST );
-	}
-	else if( renderMode == RenderMode::FLAT_SHADED ||
-			 renderMode == RenderMode::SMOOTH_SHADED )
-	{
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-		glDisable( GL_TEXTURE_2D );
-		glEnable( GL_CULL_FACE );
-		glEnable( GL_DEPTH_TEST );
-
-		if( renderMode == RenderMode::FLAT_SHADED )
-			glShadeModel( GL_FLAT );
-		else
-			glShadeModel( GL_SMOOTH );
-	}
-	else if( renderMode == RenderMode::TEXTURE_SHADED )
-	{
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-		glEnable( GL_TEXTURE_2D );
-		glEnable( GL_CULL_FACE );
-		glEnable( GL_DEPTH_TEST );
-		glShadeModel( GL_SMOOTH );
-	}
+	graphics::helpers::SetupRenderMode( renderMode );
 }
 
 void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines, const mstudiomesh_t* const pUVMesh )
 {
 	const wxSize size = GetClientSize();
 
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-
-	glOrtho( 0.0f, ( float ) size.GetX(), ( float ) size.GetY(), 0.0f, 1.0f, -1.0f );
-
-	studiohdr_t *hdr = Options.GetStudioModel()->getTextureHeader();
-	if( hdr )
-	{
-		mstudiotexture_t *ptextures = ( mstudiotexture_t * ) ( ( byte * ) hdr + hdr->textureindex );
-
-		const mstudiotexture_t& texture = ptextures[ iTexture ];
-
-		float w = ( float ) texture.width * flTextureScale;
-		float h = ( float ) texture.height * flTextureScale;
-
-		glMatrixMode( GL_MODELVIEW );
-		glPushMatrix();
-		glLoadIdentity();
-
-		glDisable( GL_CULL_FACE );
-		glDisable( GL_BLEND );
-
-		if( texture.flags & STUDIO_NF_MASKED )
-		{
-			glEnable( GL_ALPHA_TEST );
-			glAlphaFunc( GL_GREATER, 0.0f );
-		}
-
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-		float x = ( ( float ) size.GetX() - w ) / 2;
-		float y = ( ( float ) size.GetY() - h ) / 2;
-
-		glDisable( GL_DEPTH_TEST );
-
-		if( bShowUVMap && !bOverlayUVMap )
-		{
-			glColor4f( 0.0f, 0.0f, 0.0f, 1.0f );
-			glDisable( GL_TEXTURE_2D );
-			glRectf( x, y, x + w, y + h );
-		}
-
-		if( !bShowUVMap || bOverlayUVMap )
-		{
-			glEnable( GL_TEXTURE_2D );
-			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-			glBindTexture( GL_TEXTURE_2D, Options.GetStudioModel()->GetTextureId( iTexture ) );
-
-			glBegin( GL_TRIANGLE_STRIP );
-
-			glTexCoord2f( 0, 0 );
-			glVertex2f( x, y );
-
-			glTexCoord2f( 1, 0 );
-			glVertex2f( x + w, y );
-
-			glTexCoord2f( 0, 1 );
-			glVertex2f( x, y + h );
-
-			glTexCoord2f( 1, 1 );
-			glVertex2f( x + w, y + h );
-
-			glEnd();
-
-			glBindTexture( GL_TEXTURE_2D, 0 );
-		}
-
-		if( bShowUVMap )
-		{
-			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-
-			size_t uiCount;
-
-			const mstudiomesh_t* const* ppMeshes;
-			
-			if( pUVMesh )
-			{
-				uiCount = 1;
-				ppMeshes = &pUVMesh;
-			}
-			else
-			{
-				const StudioModel::MeshList_t* pList = Options.GetStudioModel()->GetMeshListByTexture( iTexture );
-
-				uiCount = pList->size();
-				ppMeshes = pList->data();
-			}
-
-			SetupRenderMode( RenderMode::WIREFRAME );
-
-			if( bAntiAliasLines )
-			{
-				glEnable( GL_BLEND );
-				glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-				glEnable( GL_LINE_SMOOTH );
-			}
-
-			int i;
-
-			for( size_t uiIndex = 0; uiIndex < uiCount; ++uiIndex, ++ppMeshes )
-			{
-				const short* ptricmds = ( short* ) ( ( byte* ) Options.GetStudioModel()->getStudioHeader() + ( *ppMeshes )->triindex );
-
-				while( i = *( ptricmds++ ) )
-				{
-					if( i < 0 )
-					{
-						glBegin( GL_TRIANGLE_FAN );
-						i = -i;
-					}
-					else
-					{
-						glBegin( GL_TRIANGLE_STRIP );
-					}
-
-					for( ; i > 0; i--, ptricmds += 4 )
-					{
-						// FIX: put these in as integer coords, not floats
-						glVertex2f( x + ptricmds[ 2 ] * flTextureScale, y + ptricmds[ 3 ] * flTextureScale );
-					}
-					glEnd();
-				}
-			}
-
-			if( bAntiAliasLines )
-			{
-				glDisable( GL_LINE_SMOOTH );
-			}
-		}
-
-		glPopMatrix();
-
-		glClear( GL_DEPTH_BUFFER_BIT );
-
-		if( texture.flags & STUDIO_NF_MASKED )
-			glDisable( GL_ALPHA_TEST );
-	}
+	graphics::helpers::DrawTexture( size.GetX(), size.GetY(), *Options.GetStudioModel(), iTexture, flTextureScale, bShowUVMap, bOverlayUVMap, bAntiAliasLines, pUVMesh );
 }
 
 void C3DView::DrawModel()
@@ -334,51 +215,13 @@ void C3DView::DrawModel()
 
 	if( Options.showBackground && m_BackgroundTexture != GL_INVALID_TEXTURE_ID && !Options.showTexture )
 	{
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity();
-
-		glOrtho( 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, -1.0f );
-
-		glMatrixMode( GL_MODELVIEW );
-		glPushMatrix();
-		glLoadIdentity();
-
-		glDisable( GL_CULL_FACE );
-		glEnable( GL_TEXTURE_2D );
-
-		glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
-		glBindTexture( GL_TEXTURE_2D, m_BackgroundTexture );
-
-		glBegin( GL_TRIANGLE_STRIP );
-
-		glTexCoord2f( 0, 0 );
-		glVertex2f( 0, 0 );
-
-		glTexCoord2f( 1, 0 );
-		glVertex2f( 1, 0 );
-
-		glTexCoord2f( 0, 1 );
-		glVertex2f( 0, 1 );
-
-		glTexCoord2f( 1, 1 );
-		glVertex2f( 1, 1 );
-
-		glEnd();
-
-		glPopMatrix();
-
-		glClear( GL_DEPTH_BUFFER_BIT );
-		glBindTexture( GL_TEXTURE_2D, 0 );
+		graphics::helpers::DrawBackground( m_BackgroundTexture );
 	}
 
 	if( !Options.GetStudioModel() )
 		return;
 
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-	gluPerspective( 65.0f, ( GLfloat ) size.GetX() / ( GLfloat ) size.GetY(), 1.0f, 4096.0f );
+	graphics::helpers::SetProjection( size.GetX(), size.GetY() );
 
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
@@ -399,56 +242,15 @@ void C3DView::DrawModel()
 		glRotatef( Options.rot[ 1 ], 0.0f, 0.0f, 1.0f );
 	}
 
-	// setup stencil buffer
-	if( Options.useStencil )
-	{
-		/* Don't update color or depth. */
-		glDisable( GL_DEPTH_TEST );
-		glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
-
-		/* Draw 1 into the stencil buffer. */
-		glEnable( GL_STENCIL_TEST );
-		glStencilOp( GL_REPLACE, GL_REPLACE, GL_REPLACE );
-		glStencilFunc( GL_ALWAYS, 1, 0xffffffff );
-
-		/* Now render floor; floor pixels just get their stencil set to 1. */
-		DrawFloor();
-
-		/* Re-enable update of color and depth. */
-		glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-		glEnable( GL_DEPTH_TEST );
-
-		/* Now, only render where stencil is set to 1. */
-		glStencilFunc( GL_EQUAL, 1, 0xffffffff );  /* draw if ==1 */
-		glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-	}
-
 	g_vright[ 0 ] = g_vright[ 1 ] = Options.trans[ 2 ];
 
 	Options.drawnPolys = 0;
 
+	// setup stencil buffer and draw mirror
 	if( Options.mirror )
 	{
-		glPushMatrix();
-		glScalef( 1, 1, -1 );
-		glCullFace( GL_BACK );
-		SetupRenderMode();
-		Options.drawnPolys += Options.GetStudioModel()->DrawModel();
-
-		//Draw wireframe overlay
-		//TODO: integrate this into DrawModel somehow.
-		if( Options.wireframeOverlay )
-		{
-			SetupRenderMode( RenderMode::WIREFRAME );
-
-			Options.drawnPolys += Options.GetStudioModel()->DrawModel( true );
-		}
-
-		glPopMatrix();
+		Options.drawnPolys += graphics::helpers::DrawMirroredModel( *Options.GetStudioModel(), Options.renderMode, Options.wireframeOverlay, FLOOR_SIDE_LENGTH );
 	}
-
-	if( Options.useStencil )
-		glDisable( GL_STENCIL_TEST );
 
 	SetupRenderMode();
 
@@ -458,9 +260,7 @@ void C3DView::DrawModel()
 	//Draw wireframe overlay
 	if( Options.wireframeOverlay )
 	{
-		SetupRenderMode( RenderMode::WIREFRAME );
-
-		Options.drawnPolys += Options.GetStudioModel()->DrawModel( true );
+		Options.drawnPolys += graphics::helpers::DrawWireframeOverlay( *Options.GetStudioModel() );
 	}
 
 	//
@@ -469,66 +269,36 @@ void C3DView::DrawModel()
 
 	if( Options.showGround )
 	{
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-		glEnable( GL_DEPTH_TEST );
-		glEnable( GL_CULL_FACE );
-
-		if( Options.useStencil )
-			glFrontFace( GL_CW );
-		else
-			glDisable( GL_CULL_FACE );
-
-		glEnable( GL_BLEND );
-		if( m_GroundTexture == GL_INVALID_TEXTURE_ID )
-		{
-			glDisable( GL_TEXTURE_2D );
-			glColor4f( Options.groundColor[ 0 ], Options.groundColor[ 1 ], Options.groundColor[ 2 ], 0.7f );
-			glBindTexture( GL_TEXTURE_2D, 0 );
-		}
-		else
-		{
-			glEnable( GL_TEXTURE_2D );
-			glColor4f( 1.0f, 1.0f, 1.0f, 0.6f );
-			glBindTexture( GL_TEXTURE_2D, m_GroundTexture );
-		}
-
-		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-		DrawFloor();
-
-		glDisable( GL_BLEND );
-
-		if( Options.useStencil )
-		{
-			glCullFace( GL_BACK );
-			glColor4f( 0.1f, 0.1f, 0.1f, 1.0f );
-			glBindTexture( GL_TEXTURE_2D, 0 );
-			DrawFloor();
-
-			glFrontFace( GL_CCW );
-		}
-		else
-			glEnable( GL_CULL_FACE );
+		graphics::helpers::DrawFloor( FLOOR_SIDE_LENGTH, m_GroundTexture, Options.groundColor, Options.mirror );
 	}
 
 	glPopMatrix();
 }
 
-void C3DView::LoadBackgroundTexture( const wxString& szFilename )
+bool C3DView::LoadBackgroundTexture( const wxString& szFilename )
 {
-	glDeleteTexture( m_BackgroundTexture );
+	UnloadBackgroundTexture();
 
 	m_BackgroundTexture = glLoadImage( szFilename.c_str() );
 
 	//TODO: notify UI
 	Options.showBackground = m_BackgroundTexture != GL_INVALID_TEXTURE_ID;
+
+	return m_BackgroundTexture != GL_INVALID_TEXTURE_ID;
 }
 
-void C3DView::LoadGroundTexture( const wxString& szFilename )
+void C3DView::UnloadBackgroundTexture()
+{
+	glDeleteTexture( m_BackgroundTexture );
+}
+
+bool C3DView::LoadGroundTexture( const wxString& szFilename )
 {
 	glDeleteTexture( m_GroundTexture );
 
 	m_GroundTexture = glLoadImage( szFilename.c_str() );
+
+	return m_GroundTexture != GL_INVALID_TEXTURE_ID;
 }
 
 void C3DView::UnloadGroundTexture()
@@ -536,27 +306,74 @@ void C3DView::UnloadGroundTexture()
 	glDeleteTexture( m_GroundTexture );
 }
 
+/*
+*	Saves the given texture's UV map.
+*/
 void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 {
-	studiohdr_t *hdr = Options.GetStudioModel()->getTextureHeader();
+	const studiohdr_t* const pHdr = Options.GetStudioModel()->getTextureHeader();
 
-	if( !hdr )
+	if( !pHdr )
 		return;
 
-	mstudiotexture_t *ptextures = ( mstudiotexture_t * ) ( ( byte * ) hdr + hdr->textureindex );
+	const mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTexture ];
 
-	const mstudiotexture_t& texture = ptextures[ iTexture ];
+	SetCurrent( *m_pContext );
+
+	//Create the framebuffer if it doesn't exist yet.
+	if( m_UVFrameBuffer == 0 )
+	{
+		glGenFramebuffers( 1, &m_UVFrameBuffer );
+
+		glBindFramebuffer( GL_FRAMEBUFFER, m_UVFrameBuffer );
+
+		glGenTextures( 1, &m_UVRenderTarget );
+
+		glBindTexture( GL_TEXTURE_2D, m_UVRenderTarget );
+
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr );
+
+		//Poor filtering, so it doesn't mess with the results.
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+		//Unbind it so there can be no conflicts.
+		glBindTexture( GL_TEXTURE_2D, GL_INVALID_TEXTURE_ID );
+
+		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_UVRenderTarget, 0 );
+
+		const GLenum drawBuffer = GL_COLOR_ATTACHMENT0;
+
+		glDrawBuffers( 1, &drawBuffer );
+	}
+
+	glBindFramebuffer( GL_FRAMEBUFFER, m_UVFrameBuffer );
+
+	const GLenum completeness = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+
+	if( completeness != GL_FRAMEBUFFER_COMPLETE )
+	{
+		//TODO: show error code as string
+		wxMessageBox( "UV map framebuffer is incomplete!" );
+		return;
+	}
 
 	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( texture.width * texture.height * 3 );
 
-	const wxSize size = GetClientSize();
+	glViewport( 0, 0, texture.width, texture.height );
 
-	float x = ( ( float ) size.GetX() - texture.width ) / 2;
-	float y = ( ( float ) size.GetY() - texture.height ) / 2;
+	glClearColor( 1.0, 1.0, 1.0, 1.0 );
 
-	DrawTexture( iTexture, 1.0f, true, false, false, Options.pUVMesh );
+	glClear( GL_COLOR_BUFFER_BIT );
 
-	glReadPixels( x, y, texture.width, texture.height, GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
+	graphics::helpers::DrawTexture( texture.width, texture.height, *Options.GetStudioModel(), iTexture, 1.0f, true, false, false, Options.pUVMesh );
+
+	glFlush();
+	glFinish();
+
+	glReadPixels( 0, 0, texture.width, texture.height, GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
+
+	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 	//We have to flip the image vertically, since OpenGL reads it upside down.
 	std::unique_ptr<byte[]> correctedData = std::make_unique<byte[]>( texture.width * texture.height * 3 );

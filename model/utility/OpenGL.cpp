@@ -6,6 +6,30 @@
 
 #include "OpenGL.h"
 
+static bool g_GLEWInitialized = false;
+
+static GLenum g_GLEWResult = GLEW_OK;
+
+bool PostInitializeOpenGL()
+{
+	//Should only get here if it was already initalized.
+	if( g_GLEWInitialized )
+	{
+		return GLEW_OK == g_GLEWResult;
+	}
+
+	g_GLEWInitialized = true;
+
+	const GLenum glewResult = g_GLEWResult = glewInit();
+
+	if( glewResult != GLEW_OK )
+	{
+		wxMessageBox( wxString::Format( "Error initializing GLEW:\n%s", reinterpret_cast<const char*>( glewGetErrorString( glewResult ) ) ) );
+	}
+
+	return GLEW_OK == glewResult;
+}
+
 GLuint glLoadImage( const char* const pszFilename )
 {
 	if( !pszFilename || !( *pszFilename ) )

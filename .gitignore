@@ -62,3 +62,8 @@ Debug/HLMV.log
 changes.txt
 *.log
 *.idb
+uvmap.bmp
+external/GLEW/include/GL/glew.h
+external/GLEW/include/GL/glxew.h
+external/GLEW/lib/glew32.lib
+external/GLEW/include/GL/wglew.h
