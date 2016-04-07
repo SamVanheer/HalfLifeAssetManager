@@ -65,17 +65,7 @@ C3DView::~C3DView()
 {
 	SetCurrent( *m_pContext );
 
-	if( m_UVFrameBuffer != 0 )
-	{
-		glDeleteFramebuffers( 1, &m_UVFrameBuffer );
-		m_UVFrameBuffer = 0;
-	}
-
-	if( m_UVRenderTarget )
-	{
-		glDeleteTextures( 1, &m_UVRenderTarget );
-		m_UVRenderTarget = 0;
-	}
+	DestroyUVFrameBuffer();
 
 	Options.ClearStudioModel();
 
@@ -275,6 +265,52 @@ void C3DView::DrawModel()
 	glPopMatrix();
 }
 
+void C3DView::CreateUVFrameBuffer()
+{
+	if( m_UVFrameBuffer == 0 )
+	{
+		glGenFramebuffers( 1, &m_UVFrameBuffer );
+
+		glBindFramebuffer( GL_FRAMEBUFFER, m_UVFrameBuffer );
+
+		glGenTextures( 1, &m_UVRenderTarget );
+	}
+}
+
+void C3DView::DestroyUVFrameBuffer()
+{
+	SetCurrent( *m_pContext );
+
+	if( m_UVFrameBuffer != 0 )
+	{
+		glDeleteFramebuffers( 1, &m_UVFrameBuffer );
+		m_UVFrameBuffer = 0;
+	}
+}
+
+void C3DView::SetUVRenderTargetDimensions( const int iWidth, const int iHeight )
+{
+	if( m_UVRenderTarget == GL_INVALID_TEXTURE_ID )
+		return;
+
+	glBindTexture( GL_TEXTURE_2D, m_UVRenderTarget );
+
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, iWidth, iHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr );
+
+	//Poor filtering, so it doesn't mess with the results.
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+	//Unbind it so there can be no conflicts.
+	glBindTexture( GL_TEXTURE_2D, GL_INVALID_TEXTURE_ID );
+
+	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_UVRenderTarget, 0 );
+
+	const GLenum drawBuffer = GL_COLOR_ATTACHMENT0;
+
+	glDrawBuffers( 1, &drawBuffer );
+}
+
 bool C3DView::LoadBackgroundTexture( const wxString& szFilename )
 {
 	UnloadBackgroundTexture();
@@ -321,31 +357,9 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 	SetCurrent( *m_pContext );
 
 	//Create the framebuffer if it doesn't exist yet.
-	if( m_UVFrameBuffer == 0 )
-	{
-		glGenFramebuffers( 1, &m_UVFrameBuffer );
+	CreateUVFrameBuffer();
 
-		glBindFramebuffer( GL_FRAMEBUFFER, m_UVFrameBuffer );
-
-		glGenTextures( 1, &m_UVRenderTarget );
-
-		glBindTexture( GL_TEXTURE_2D, m_UVRenderTarget );
-
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr );
-
-		//Poor filtering, so it doesn't mess with the results.
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-		//Unbind it so there can be no conflicts.
-		glBindTexture( GL_TEXTURE_2D, GL_INVALID_TEXTURE_ID );
-
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_UVRenderTarget, 0 );
-
-		const GLenum drawBuffer = GL_COLOR_ATTACHMENT0;
-
-		glDrawBuffers( 1, &drawBuffer );
-	}
+	SetUVRenderTargetDimensions( texture.width, texture.height );
 
 	glBindFramebuffer( GL_FRAMEBUFFER, m_UVFrameBuffer );
 
@@ -362,7 +376,6 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 	glViewport( 0, 0, texture.width, texture.height );
 
-	glClearColor( 1.0, 1.0, 1.0, 1.0 );
 
 	glClear( GL_COLOR_BUFFER_BIT );
 

@@ -61,6 +61,12 @@ private:
 
 	void DrawModel();
 
+	void CreateUVFrameBuffer();
+
+	void DestroyUVFrameBuffer();
+
+	void SetUVRenderTargetDimensions( const int iWidth, const int iHeight );
+
 private:
 	I3DViewListener* m_pListener;
 
