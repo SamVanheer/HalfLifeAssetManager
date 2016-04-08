@@ -10,6 +10,11 @@ static bool g_GLEWInitialized = false;
 
 static GLenum g_GLEWResult = GLEW_OK;
 
+bool IsOpenGLInitialized()
+{
+	return g_GLEWInitialized;
+}
+
 bool PostInitializeOpenGL()
 {
 	//Should only get here if it was already initalized.

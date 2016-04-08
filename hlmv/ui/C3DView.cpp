@@ -6,6 +6,8 @@
 
 #include "model/graphics/GraphicsHelpers.h"
 
+#include "ui/CwxOpenGL.h"
+
 #include "C3DView.h"
 
 wxBEGIN_EVENT_TABLE( C3DView, wxGLCanvas )
@@ -15,50 +17,11 @@ wxEND_EVENT_TABLE()
 
 const float C3DView::FLOOR_SIDE_LENGTH = 200;
 
-class CGLAttributes final
-{
-public:
-	CGLAttributes()
-	{
-		m_Attributes
-			.PlatformDefaults()
-			.Stencil( 8 )
-			.EndList();
-	}
-
-	const wxGLAttributes& GetAttributes() const { return m_Attributes; }
-
-private:
-	wxGLAttributes m_Attributes;
-
-private:
-	CGLAttributes( const CGLAttributes& ) = delete;
-	CGLAttributes& operator=( const CGLAttributes& ) = delete;
-};
-
-static const CGLAttributes g_GLAttributes;
-
 C3DView::C3DView( wxWindow* pParent, I3DViewListener* pListener )
-	: wxGLCanvas( pParent, g_GLAttributes.GetAttributes(), wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
+	: wxGLCanvas( pParent, wxOpenGL().GetCanvasAttributes(), wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pListener( pListener )
 {
-	wxGLContextAttrs attrs;
-
-	attrs.PlatformDefaults()
-		.MajorVersion( 3 )
-		.MinorVersion( 0 )
-		.EndList();
-
-	m_pContext = new wxGLContext( this, nullptr, &attrs );
-
-	//Initalize GLEW if needed.
-	SetCurrent( *m_pContext );
-
-	if( !PostInitializeOpenGL() )
-	{
-		//TODO: exit more gracefully.
-		wxExit();
-	}
+	m_pContext = wxOpenGL().GetContext( this );
 }
 
 C3DView::~C3DView()
@@ -72,7 +35,7 @@ C3DView::~C3DView()
 	glDeleteTexture( m_GroundTexture );
 	glDeleteTexture( m_BackgroundTexture );
 
-	delete m_pContext;
+	m_pContext = nullptr;
 }
 
 void C3DView::Paint( wxPaintEvent& event )

@@ -1,0 +1,56 @@
+#ifndef UI_CWXOPENGL_H
+#define UI_CWXOPENGL_H
+
+#include "wxInclude.h"
+
+#include <wx/glcanvas.h>
+
+/*
+*	Singleton class that stores all OpenGL data used by any program.
+*/
+class CwxOpenGL final
+{
+public:
+	static CwxOpenGL& GetInstance()
+	{
+		static CwxOpenGL* pInstance = nullptr;
+
+		if( !pInstance )
+		{
+			pInstance = new CwxOpenGL();
+		}
+
+		return *pInstance;
+	}
+
+	bool Initialize( const wxGLAttributes& canvasAttributes, const wxGLContextAttrs* const pContextAttrs = nullptr );
+	void Shutdown();
+
+	const wxGLAttributes& GetCanvasAttributes() const { return m_CanvasAttributes; }
+
+	const wxGLContextAttrs* GetContextAttributes() const { return m_bContextAttributesSet ? &m_ContextAttributes : nullptr; }
+
+	wxGLContext* GetContext( wxGLCanvas* pCanvas );
+
+private:
+	CwxOpenGL();
+	~CwxOpenGL();
+
+private:
+	wxGLAttributes		m_CanvasAttributes;
+	wxGLContextAttrs	m_ContextAttributes;
+	bool				m_bContextAttributesSet = false;	//Whether any context attributes have been set.
+
+	wxGLContext*		m_pContext = nullptr;				//The context used by all windows.
+
+private:
+	CwxOpenGL( const CwxOpenGL& ) = delete;
+	CwxOpenGL& operator=( const CwxOpenGL& ) = delete;
+};
+
+inline CwxOpenGL& wxOpenGL()
+{
+	return CwxOpenGL::GetInstance();
+}
+
+#endif //UI_CWXOPENGL_H

@@ -132,6 +132,9 @@
     <ClCompile Include="model\graphics\GraphicsHelpers.cpp">
       <Filter>Source Files\model\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="ui\CwxOpenGL.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui\wxInclude.h">
@@ -208,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="model\graphics\Constants.h">
       <Filter>Header Files\model\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\CwxOpenGL.h">
+      <Filter>Header Files\ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

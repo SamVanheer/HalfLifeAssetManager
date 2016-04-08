@@ -1,6 +1,8 @@
 #ifndef OPENGL_H
 #define OPENGL_H
 
+//TODO: move to graphics
+
 #include "Platform.h"
 
 //#include <gl/GL.h>
@@ -9,6 +11,8 @@
 #include <GL/glew.h>
 
 //Should be called after a context is created. If false, exit the program.
+//TODO: move to class
+bool IsOpenGLInitialized();
 bool PostInitializeOpenGL();
 
 /*

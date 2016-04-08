@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "model/utility/OpenGL.h"
+#include "ui/CwxOpenGL.h"
 
 #include "CModelViewerApp.h"
 
@@ -21,6 +22,27 @@ bool CModelViewerApp::OnInit()
 		return false;
 
 	m_pInstance = this;
+
+	//Set up OpenGL parameters.
+	//TODO: move to common base class
+	{
+		wxGLAttributes canvasAttributes;
+
+		canvasAttributes
+			.PlatformDefaults()
+			.Stencil( 8 )
+			.EndList();
+
+		wxGLContextAttrs contextAttributes;
+
+		contextAttributes.PlatformDefaults()
+			.MajorVersion( 3 )
+			.MinorVersion( 0 )
+			.EndList();
+
+		if( !wxOpenGL().Initialize( canvasAttributes, &contextAttributes ) )
+			return false;
+	}
 
 	wxInitAllImageHandlers();
 
@@ -50,6 +72,8 @@ bool CModelViewerApp::OnInit()
 
 int CModelViewerApp::OnExit()
 {
+	wxOpenGL().Shutdown();
+
 	delete m_pPrimaryDisplay;
 
 	m_pInstance = nullptr;
