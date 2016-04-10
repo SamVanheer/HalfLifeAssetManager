@@ -1,5 +1,7 @@
 #include <wx/filename.h>
 
+#include "hlmv/ui/CModelViewerApp.h"
+
 #include "model/utility/OpenGL.h"
 
 #include "hlmv/CHLMVSettings.h"
@@ -75,6 +77,13 @@ CMainWindow::~CMainWindow()
 	m_pSettings->ClearStudioModel();
 
 	delete m_pSettings;
+
+	wxGetApp().ExitApp( true );
+}
+
+void CMainWindow::OnTimer( CTimer& timer )
+{
+	m_pMainPanel->OnTimer( timer );
 }
 
 bool CMainWindow::LoadModel( const wxString& szFilename )

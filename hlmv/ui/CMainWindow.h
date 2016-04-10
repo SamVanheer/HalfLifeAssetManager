@@ -3,14 +3,19 @@
 
 #include "wxHLMV.h"
 
+#include "ui/utility/CTimer.h"
+
+class CTimer;
 class CMainPanel;
 class CHLMVSettings;
 
-class CMainWindow final : public wxFrame
+class CMainWindow final : public wxFrame, public ITimerListener
 {
 public:
 	CMainWindow();
 	~CMainWindow();
+
+	void OnTimer( CTimer& timer ) override final;
 
 	bool LoadModel( const wxString& szFilename );
 	bool PromptLoadModel();

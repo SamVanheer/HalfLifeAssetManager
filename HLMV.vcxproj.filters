@@ -141,6 +141,9 @@
     <ClCompile Include="ui\utility\wxUtil.cpp">
       <Filter>Source Files\ui\utility</Filter>
     </ClCompile>
+    <ClCompile Include="hlmv\ui\CFullscreenWindow.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui\wxInclude.h">
@@ -223,6 +226,9 @@
     </ClInclude>
     <ClInclude Include="ui\utility\wxUtil.h">
       <Filter>Header Files\ui\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="hlmv\ui\CFullscreenWindow.h">
+      <Filter>Header Files\hlmv\ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

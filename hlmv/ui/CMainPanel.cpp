@@ -27,8 +27,6 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
 {
 	wxASSERT( pSettings != nullptr );
 
-	m_pTimer = new CTimer( this );
-
 	m_p3DView = new C3DView( this, pSettings, this );
 
 	m_pControlPanels = new wxNotebook( this, wxID_MAIN_PAGECHANGED );
@@ -70,14 +68,10 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
 	pSizer->Add( m_pControlPanels, wxSizerFlags().Expand().Proportion( 1 ) );
 
 	this->SetSizer( pSizer );
-
-	//60 FPS
-	m_pTimer->Start( ( 1 / 60.0 ) * 1000 );
 }
 
 CMainPanel::~CMainPanel()
 {
-	delete m_pTimer;
 }
 
 void CMainPanel::OnTimer( CTimer& timer )

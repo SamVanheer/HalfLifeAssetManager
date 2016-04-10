@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="hlmv\CHLMVSettings.cpp" />
     <ClCompile Include="hlmv\ui\C3DView.cpp" />
+    <ClCompile Include="hlmv\ui\CFullscreenWindow.cpp" />
     <ClCompile Include="hlmv\ui\CHLMV.cpp" />
     <ClCompile Include="hlmv\ui\CMainPanel.cpp" />
     <ClCompile Include="hlmv\ui\CMainWindow.cpp" />
@@ -45,6 +46,7 @@
   <ItemGroup>
     <ClInclude Include="hlmv\CHLMVSettings.h" />
     <ClInclude Include="hlmv\ui\C3DView.h" />
+    <ClInclude Include="hlmv\ui\CFullscreenWindow.h" />
     <ClInclude Include="hlmv\ui\CHLMV.h" />
     <ClInclude Include="hlmv\ui\CMainPanel.h" />
     <ClInclude Include="hlmv\ui\CMainWindow.h" />

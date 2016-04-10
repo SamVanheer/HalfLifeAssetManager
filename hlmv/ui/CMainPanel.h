@@ -3,14 +3,14 @@
 
 #include "wxHLMV.h"
 
-#include "ui/utility/CTimer.h"
-
 #include "controlpanels/CBaseControlPanel.h"
 
 #include "C3DView.h"
 
 class wxNotebook;
 class wxBookCtrlEvent;
+
+class CTimer;
 
 class CModelDisplayPanel;
 class CBodyPartsPanel;
@@ -22,7 +22,7 @@ class CFullscreenPanel;
 class StudioModel;
 class CHLMVSettings;
 
-class CMainPanel final : public wxPanel, public ITimerListener, public I3DViewListener
+class CMainPanel final : public wxPanel, public I3DViewListener
 {
 public:
 
@@ -68,7 +68,7 @@ public:
 	CHLMVSettings* GetSettings() { return m_pSettings; }
 	const CHLMVSettings* GetSettings() const { return m_pSettings; }
 
-	void OnTimer( CTimer& timer ) override final;
+	void OnTimer( CTimer& timer );
 
 	void Draw3D( const wxSize& size ) override final;
 
@@ -109,8 +109,6 @@ private:
 
 private:
 	CHLMVSettings* const m_pSettings;
-
-	CTimer* m_pTimer;
 
 	C3DView* m_p3DView;
 

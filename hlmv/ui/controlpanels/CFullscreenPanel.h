@@ -9,11 +9,13 @@ public:
 	CFullscreenPanel( wxWindow* pParent, CHLMVSettings* const pSettings );
 	~CFullscreenPanel();
 
-	void ModelChanged( const StudioModel& model ) override;
+protected:
+	wxDECLARE_EVENT_TABLE();
 
 private:
-	wxComboBox* m_pResolution;
+	void GoFullscreen( wxCommandEvent& event );
 
+private:
 	wxButton* m_pGoFullscreen;
 
 private:

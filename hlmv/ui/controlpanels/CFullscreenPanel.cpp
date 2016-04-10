@@ -1,54 +1,25 @@
 #include <wx/gbsizer.h>
 
-#include "ui/utility/wxUtil.h"
+#include "hlmv/ui/CModelViewerApp.h"
+
+#include "hlmv/ui/CFullscreenWindow.h"
 
 #include "CFullscreenPanel.h"
+
+wxBEGIN_EVENT_TABLE( CFullscreenPanel, CBaseControlPanel )
+	EVT_BUTTON( wxID_FULLSCREEN_GO, CFullscreenPanel::GoFullscreen )
+wxEND_EVENT_TABLE()
 
 CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
 	: CBaseControlPanel( pParent, "Fullscreen", pSettings )
 {
 	wxWindow* const pElemParent = GetBox();
 
-	wxStaticText* pResolution = new wxStaticText( pElemParent, wxID_ANY, "Resolution" );
-
-	m_pResolution = new wxComboBox( pElemParent, wxID_ANY, "" );
-	m_pResolution->SetEditable( false );
-
-	//Try to get the display we're currently on.
-	int iDisplay = wxDisplay::GetFromWindow( this );
-
-	//Assume primary
-	if( iDisplay == wxNOT_FOUND )
-		iDisplay = 0;
-
-	wxDisplay display( iDisplay );
-
-	if( display.IsOk() )
-	{
-		std::vector<wxVideoMode> modes;
-
-		wx::GetUniqueVideoModes( display, modes );
-
-		for( const auto& mode : modes )
-		{
-			m_pResolution->Append( wxString::Format( "%d x %d", mode.GetWidth(), mode.GetHeight() ) );
-		}
-	}
-	else
-	{
-		wxMessageBox( "Fullscreen support: Unable to get display for video modes query" );
-	}
-
-	m_pResolution->Select( 0 );
-
-	m_pGoFullscreen = new wxButton( pElemParent, wxID_ANY, "Fullscreen!" );
+	m_pGoFullscreen = new wxButton( pElemParent, wxID_FULLSCREEN_GO, "Fullscreen!" );
 
 	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );
 
-	pSizer->Add( pResolution, wxGBPosition( 0, 0 ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pResolution, wxGBPosition( 1, 0 ), wxDefaultSpan, wxEXPAND );
-
-	pSizer->Add( m_pGoFullscreen, wxGBPosition( 1, 1 ), wxDefaultSpan, wxEXPAND );
+	pSizer->Add( m_pGoFullscreen, wxGBPosition( 0, 0 ), wxDefaultSpan, wxEXPAND );
 
 	GetBoxSizer()->Add( pSizer );
 }
@@ -57,9 +28,13 @@ CFullscreenPanel::~CFullscreenPanel()
 {
 }
 
-void CFullscreenPanel::ModelChanged( const StudioModel& model )
+void CFullscreenPanel::GoFullscreen( wxCommandEvent& event )
 {
-	//TODO: fill info
-}
+	if( wxGetApp().GetFullscreenWindow() )
+	{
+		wxMessageBox( "A fullscreen window is already open!" );
+		return;
+	}
 
-//TODO: implement fullscreen mode
+	hlmv::CFullscreenWindow* pWindow = new hlmv::CFullscreenWindow( *m_pSettings );
+}

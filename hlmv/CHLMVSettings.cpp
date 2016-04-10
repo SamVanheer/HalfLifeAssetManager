@@ -10,7 +10,8 @@ CHLMVSettings::CHLMVSettings()
 
 CHLMVSettings::~CHLMVSettings()
 {
-	ClearStudioModel();
+	//Note: don't clear the studio model here; since the same instance is shared.
+	//TODO: use reference counted/shared ptr to avoid this problem
 }
 
 void CHLMVSettings::ResetModelData()

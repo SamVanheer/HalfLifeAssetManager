@@ -54,6 +54,9 @@ enum wxIdentifiers
 	wxID_TEX_EXPORTTEXTURE,
 	wxID_TEX_EXPORTUVMAP,
 
+	//Fullscreen panel
+	wxID_FULLSCREEN_GO,
+
 	wxID_CUSTOM_HIGHEST
 };
 
