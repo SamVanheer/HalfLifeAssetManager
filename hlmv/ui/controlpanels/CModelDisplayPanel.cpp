@@ -22,8 +22,8 @@ wxBEGIN_EVENT_TABLE( CModelDisplayPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_MDLDISP_SCALEBONES, CModelDisplayPanel::ScaleBones )
 wxEND_EVENT_TABLE()
 
-CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent )
-	: CBaseControlPanel( pParent, "Model Display" )
+CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+	: CBaseControlPanel( pParent, "Model Display", pSettings )
 {
 	//Helps catch errors if we miss one.
 	memset( m_pCheckBoxes, 0, sizeof( m_pCheckBoxes ) );
@@ -103,10 +103,10 @@ void CModelDisplayPanel::ModelChanged( const StudioModel& model )
 void CModelDisplayPanel::ViewUpdated()
 {
 	//Don't update if it's identical. Prevents flickering.
-	if( m_uiDrawnPolysLast != Options.drawnPolys )
+	if( m_uiDrawnPolysLast != m_pSettings->drawnPolys )
 	{
-		m_uiDrawnPolysLast = Options.drawnPolys;
-		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", Options.drawnPolys ) );
+		m_uiDrawnPolysLast = m_pSettings->drawnPolys;
+		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", m_pSettings->drawnPolys ) );
 	}
 }
 
@@ -138,19 +138,19 @@ void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
 	{
 	case CheckBox::SHOW_HITBOXES:
 		{
-			Options.showHitBoxes = pCheckBox->GetValue();
+			m_pSettings->renderSettings.showHitBoxes = pCheckBox->GetValue();
 			break;
 		}
 
 	case CheckBox::SHOW_GROUND:
 		{
-			Options.showGround = pCheckBox->GetValue();
+			m_pSettings->showGround = pCheckBox->GetValue();
 
 			//TODO: handle checkbox setting somewhere else
-			if( !Options.showGround && Options.mirror )
+			if( !m_pSettings->showGround && m_pSettings->mirror )
 			{
 				m_pCheckBoxes[ CheckBox::MIRROR_ON_GROUND ]->SetValue( false );
-				Options.mirror = false;
+				m_pSettings->mirror = false;
 			}
 
 			break;
@@ -158,19 +158,19 @@ void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
 
 	case CheckBox::SHOW_BONES:
 		{
-			Options.showBones = pCheckBox->GetValue();
+			m_pSettings->renderSettings.showBones = pCheckBox->GetValue();
 			break;
 		}
 
 	case CheckBox::MIRROR_ON_GROUND:
 		{
-			Options.mirror = pCheckBox->GetValue();
+			m_pSettings->mirror = pCheckBox->GetValue();
 
 			//TODO: handle checkbox setting somewhere else
-			if( Options.mirror && !Options.showGround )
+			if( m_pSettings->mirror && !m_pSettings->showGround )
 			{
 				m_pCheckBoxes[ CheckBox::SHOW_GROUND ]->SetValue( true );
-				Options.showGround = true;
+				m_pSettings->showGround = true;
 			}
 
 			break;
@@ -178,25 +178,25 @@ void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
 
 	case CheckBox::SHOW_ATTACHMENTS:
 		{
-			Options.showAttachments = pCheckBox->GetValue();
+			m_pSettings->renderSettings.showAttachments = pCheckBox->GetValue();
 			break;
 		}
 
 	case CheckBox::SHOW_BACKGROUND:
 		{
-			Options.showBackground = pCheckBox->GetValue();
+			m_pSettings->showBackground = pCheckBox->GetValue();
 			break;
 		}
 
 	case CheckBox::SHOW_EYE_POSITION:
 		{
-			Options.showEyePosition = pCheckBox->GetValue();
+			m_pSettings->renderSettings.showEyePosition = pCheckBox->GetValue();
 			break;
 		}
 
 	case CheckBox::WIREFRAME_OVERLAY:
 		{
-			Options.wireframeOverlay = pCheckBox->GetValue();
+			m_pSettings->wireframeOverlay = pCheckBox->GetValue();
 			break;
 		}
 
@@ -209,7 +209,7 @@ void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
 	double flScale = 1.0;
 
 	if( m_pMeshScale->GetValue().ToDouble( &flScale ) )
-		Options.GetStudioModel()->scaleMeshes( flScale );
+		m_pSettings->GetStudioModel()->scaleMeshes( flScale );
 	else
 		m_pMeshScale->SetValue( "1.0" );
 }
@@ -219,7 +219,7 @@ void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
 	double flScale = 1.0;
 
 	if( m_pBonesScale->GetValue().ToDouble( &flScale ) )
-		Options.GetStudioModel()->scaleBones( flScale );
+		m_pSettings->GetStudioModel()->scaleBones( flScale );
 	else
 		m_pBonesScale->SetValue( "1.0" );
 }
@@ -233,7 +233,7 @@ void CModelDisplayPanel::SetRenderMode( RenderMode renderMode )
 
 	m_pRenderMode->Select( static_cast<int>( renderMode ) );
 
-	Options.renderMode = renderMode;
+	m_pSettings->renderMode = renderMode;
 }
 
 void CModelDisplayPanel::SetOpacity( int iValue, const bool bUpdateSlider )
@@ -248,5 +248,5 @@ void CModelDisplayPanel::SetOpacity( int iValue, const bool bUpdateSlider )
 	if( bUpdateSlider )
 		m_pOpacitySlider->SetValue( iValue );
 
-	Options.transparency = iValue / static_cast<float>( OPACITY_MAX );
+	m_pSettings->renderSettings.transparency = iValue / static_cast<float>( OPACITY_MAX );
 }

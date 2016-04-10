@@ -4,8 +4,8 @@
 
 #include "CFullscreenPanel.h"
 
-CFullscreenPanel::CFullscreenPanel( wxWindow* pParent )
-	: CBaseControlPanel( pParent, "Fullscreen" )
+CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+	: CBaseControlPanel( pParent, "Fullscreen", pSettings )
 {
 	wxWindow* const pElemParent = GetBox();
 
@@ -61,3 +61,5 @@ void CFullscreenPanel::ModelChanged( const StudioModel& model )
 {
 	//TODO: fill info
 }
+
+//TODO: implement fullscreen mode

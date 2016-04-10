@@ -21,26 +21,29 @@ wxBEGIN_EVENT_TABLE( CMainPanel, wxPanel )
 	EVT_NOTEBOOK_PAGE_CHANGED( wxID_MAIN_PAGECHANGED, CMainPanel::PageChanged )
 wxEND_EVENT_TABLE()
 
-CMainPanel::CMainPanel( wxWindow* pParent )
+CMainPanel::CMainPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
 	: wxPanel( pParent )
+	, m_pSettings( pSettings )
 {
+	wxASSERT( pSettings != nullptr );
+
 	m_pTimer = new CTimer( this );
 
-	m_p3DView = new C3DView( this, this );
+	m_p3DView = new C3DView( this, pSettings, this );
 
 	m_pControlPanels = new wxNotebook( this, wxID_MAIN_PAGECHANGED );
 
-	m_pModelDisplay = new CModelDisplayPanel( m_pControlPanels );
+	m_pModelDisplay = new CModelDisplayPanel( m_pControlPanels, pSettings );
 
-	m_pBodyParts = new CBodyPartsPanel( m_pControlPanels );
+	m_pBodyParts = new CBodyPartsPanel( m_pControlPanels, pSettings );
 
-	m_pTextures = new CTexturesPanel( m_pControlPanels );
+	m_pTextures = new CTexturesPanel( m_pControlPanels, pSettings );
 
-	m_pSequencesPanel = new CSequencesPanel( m_pControlPanels );
+	m_pSequencesPanel = new CSequencesPanel( m_pControlPanels, pSettings );
 
-	m_pWeaponOriginPanel = new CWeaponOriginPanel( m_pControlPanels );
+	m_pWeaponOriginPanel = new CWeaponOriginPanel( m_pControlPanels, pSettings );
 
-	m_pFullscreen = new CFullscreenPanel( m_pControlPanels );
+	m_pFullscreen = new CFullscreenPanel( m_pControlPanels, pSettings );
 
 	CBaseControlPanel* const panels[] = 
 	{
@@ -102,9 +105,9 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 {
 	m_p3DView->PrepareForLoad();
 
-	Options.ResetModelData();
+	m_pSettings->ResetModelData();
 
-	Options.ClearStudioModel();
+	m_pSettings->ClearStudioModel();
 
 	auto szCFilename = szFilename.char_str( wxMBConvUTF8() );
 
@@ -150,11 +153,11 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 	}
 	*/
 
-	Options.SetStudioModel( pStudioModel.release() );
+	m_pSettings->SetStudioModel( pStudioModel.release() );
 
-	ModelChanged( *Options.GetStudioModel() );
+	ModelChanged( *m_pSettings->GetStudioModel() );
 
-	Options.CenterView( *Options.GetStudioModel() );
+	m_pSettings->CenterView( *m_pSettings->GetStudioModel() );
 
 	return true;
 }

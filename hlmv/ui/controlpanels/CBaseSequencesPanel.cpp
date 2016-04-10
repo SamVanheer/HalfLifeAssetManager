@@ -16,8 +16,8 @@ wxBEGIN_EVENT_TABLE( CBaseSequencesPanel, wxPanel )
 	EVT_SLIDER( WXID_BASESEQUENCE_ANIMSPEED, CBaseSequencesPanel::AnimSpeedChanged )
 wxEND_EVENT_TABLE()
 
-CBaseSequencesPanel::CBaseSequencesPanel( wxWindow* pParent, const wxString& szName )
-	: CBaseControlPanel( pParent, szName )
+CBaseSequencesPanel::CBaseSequencesPanel( wxWindow* pParent, const wxString& szName, CHLMVSettings* const pSettings )
+	: CBaseControlPanel( pParent, szName, pSettings )
 	, m_pSequence( nullptr )
 	, m_pTogglePlayButton( nullptr )
 	, m_pPrevFrameButton( nullptr )
@@ -42,7 +42,7 @@ void CBaseSequencesPanel::ModelChanged( const StudioModel& model )
 
 	m_pSequence->Clear();
 
-	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
 
 	if( pHdr )
 	{
@@ -71,19 +71,19 @@ void CBaseSequencesPanel::SequenceChanged( wxCommandEvent& event )
 
 void CBaseSequencesPanel::TogglePlay( wxCommandEvent& event )
 {
-	Options.playSequence = !m_pTogglePlayButton->GetValue();
+	m_pSettings->playSequence = !m_pTogglePlayButton->GetValue();
 
-	SetFrameControlsEnabled( !Options.playSequence );
+	SetFrameControlsEnabled( !m_pSettings->playSequence );
 }
 
 void CBaseSequencesPanel::PrevFrame( wxCommandEvent& event )
 {
-	SetFrame( Options.GetStudioModel()->GetFrame() - 1 );
+	SetFrame( m_pSettings->GetStudioModel()->GetFrame() - 1 );
 }
 
 void CBaseSequencesPanel::NextFrame( wxCommandEvent& event )
 {
-	SetFrame( Options.GetStudioModel()->GetFrame() + 1 );
+	SetFrame( m_pSettings->GetStudioModel()->GetFrame() + 1 );
 }
 
 void CBaseSequencesPanel::FrameChanged( wxCommandEvent& event )
@@ -98,12 +98,12 @@ void CBaseSequencesPanel::FrameChanged( wxCommandEvent& event )
 
 void CBaseSequencesPanel::AnimSpeedChanged( wxCommandEvent& event )
 {
-	Options.speedScale = m_pAnimSpeed->GetValue() / static_cast<float>( ANIMSPEED_SLIDER_DEFAULT );
+	m_pSettings->speedScale = m_pAnimSpeed->GetValue() / static_cast<float>( ANIMSPEED_SLIDER_DEFAULT );
 }
 
 void CBaseSequencesPanel::SetSequence( int iIndex )
 {
-	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 	{
@@ -117,9 +117,9 @@ void CBaseSequencesPanel::SetSequence( int iIndex )
 
 	m_pSequence->Select( iIndex );
 
-	Options.sequence = iIndex;
+	m_pSettings->sequence = iIndex;
 
-	Options.GetStudioModel()->SetSequence( Options.sequence );
+	m_pSettings->GetStudioModel()->SetSequence( m_pSettings->sequence );
 
 	mstudioseqdesc_t nullSeq;
 
@@ -136,7 +136,7 @@ void CBaseSequencesPanel::SetSequence( int iIndex )
 
 void CBaseSequencesPanel::SetFrame( int iFrame )
 {
-	StudioModel* const pStudioModel = Options.GetStudioModel();
+	StudioModel* const pStudioModel = m_pSettings->GetStudioModel();
 
 	if( iFrame < 0 )
 		iFrame = pStudioModel->GetNumFrames();
@@ -237,7 +237,7 @@ void CBaseSequencesPanel::SetFrameControlsEnabled( const bool bState )
 
 	if( bState )
 	{
-		SetFrame( static_cast<int>( Options.GetStudioModel()->GetFrame() ) );
+		SetFrame( static_cast<int>( m_pSettings->GetStudioModel()->GetFrame() ) );
 	}
 	else
 	{

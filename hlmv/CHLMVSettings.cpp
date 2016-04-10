@@ -2,8 +2,6 @@
 
 #include "CHLMVSettings.h"
 
-CHLMVSettings Options;
-
 CHLMVSettings::CHLMVSettings()
 	: m_pStudioModel( nullptr )
 {
@@ -33,14 +31,6 @@ void CHLMVSettings::ResetToDefaults()
 {
 	ResetModelData();
 
-	showBones = false;
-
-	lightColor[ 0 ] = lightColor[ 1 ] = lightColor[ 2 ] = 1.0;
-
-	transparency = 1.0f;
-
-	showAttachments = false;
-	showHitBoxes = false;
 	showTexture = false;
 
 	textureScale = 1.0f;
@@ -71,12 +61,7 @@ void CHLMVSettings::ResetToDefaults()
 
 	drawnPolys = 0;
 
-	showEyePosition = false;
-
 	wireframeOverlay = false;
-
-	wireframeColor[ 0 ] = 1.0f;
-	wireframeColor[ 1 ] = wireframeColor[ 2 ] = 0;
 
 	useWeaponOrigin = false;
 
@@ -85,6 +70,8 @@ void CHLMVSettings::ResetToDefaults()
 	overlayUVMap = false;
 
 	antiAliasUVLines = false;
+
+	renderSettings.ResetToDefaults();
 }
 
 void CHLMVSettings::CenterView( const StudioModel& model )

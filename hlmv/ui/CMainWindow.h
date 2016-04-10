@@ -4,6 +4,7 @@
 #include "wxHLMV.h"
 
 class CMainPanel;
+class CHLMVSettings;
 
 class CMainWindow final : public wxFrame
 {
@@ -41,6 +42,7 @@ private:
 
 private:
 	CMainPanel* m_pMainPanel;
+	CHLMVSettings* m_pSettings;
 
 private:
 	CMainWindow( const CMainWindow& ) = delete;

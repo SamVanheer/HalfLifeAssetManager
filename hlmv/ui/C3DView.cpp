@@ -2,7 +2,7 @@
 
 #include <wx/image.h>
 
-#include "model/studiomodel/StudioModel.h"
+#include "hlmv/CHLMVSettings.h"
 
 #include "model/graphics/GraphicsHelpers.h"
 
@@ -17,8 +17,9 @@ wxEND_EVENT_TABLE()
 
 const float C3DView::FLOOR_SIDE_LENGTH = 200;
 
-C3DView::C3DView( wxWindow* pParent, I3DViewListener* pListener )
+C3DView::C3DView( wxWindow* pParent, CHLMVSettings* const pSettings, I3DViewListener* pListener )
 	: wxGLCanvas( pParent, wxOpenGL().GetCanvasAttributes(), wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
+	, m_pSettings( pSettings )
 	, m_pListener( pListener )
 {
 	m_pContext = wxOpenGL().GetContext( this );
@@ -29,8 +30,6 @@ C3DView::~C3DView()
 	SetCurrent( *m_pContext );
 
 	DestroyUVFrameBuffer();
-
-	Options.ClearStudioModel();
 
 	glDeleteTexture( m_GroundTexture );
 	glDeleteTexture( m_BackgroundTexture );
@@ -49,7 +48,7 @@ void C3DView::Paint( wxPaintEvent& event )
 
 	const wxSize size = GetClientSize();
 	
-	if( Options.mirror )
+	if( m_pSettings->mirror )
 	{
 		glClearStencil( 0 );
 
@@ -60,8 +59,8 @@ void C3DView::Paint( wxPaintEvent& event )
 
 	glViewport( 0, 0, size.GetX(), size.GetY() );
 
-	if( Options.showTexture )
-		DrawTexture( Options.texture, Options.textureScale, Options.showUVMap, Options.overlayUVMap, Options.antiAliasUVLines, Options.pUVMesh );
+	if( m_pSettings->showTexture )
+		DrawTexture( m_pSettings->texture, m_pSettings->textureScale, m_pSettings->showUVMap, m_pSettings->overlayUVMap, m_pSettings->antiAliasUVLines, m_pSettings->pUVMesh );
 	else
 		DrawModel();
 
@@ -76,7 +75,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 {
 	//Ignore input in weapon origin mode.
 	//TODO: refactor
-	if( Options.useWeaponOrigin || Options.showTexture )
+	if( m_pSettings->useWeaponOrigin || m_pSettings->showTexture )
 	{
 		event.Skip();
 		return;
@@ -84,12 +83,12 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 
 	if( event.ButtonDown() )
 	{
-		m_flOldRotX = Options.rot[ 0 ];
-		m_flOldRotY = Options.rot[ 1 ];
-		VectorCopy( Options.trans, m_vecOldTrans );
+		m_flOldRotX = m_pSettings->rot[ 0 ];
+		m_flOldRotY = m_pSettings->rot[ 1 ];
+		VectorCopy( m_pSettings->trans, m_vecOldTrans );
 		m_flOldX = event.GetX();
 		m_flOldY = event.GetY();
-		Options.pause = false;
+		m_pSettings->pause = false;
 
 		m_iButtonsDown |= event.GetButton();
 	}
@@ -103,18 +102,18 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 		{
 			if( event.GetModifiers() & wxMOD_SHIFT )
 			{
-				Options.trans[ 0 ] = m_vecOldTrans[ 0 ] - ( float ) ( event.GetX() - m_flOldX );
-				Options.trans[ 1 ] = m_vecOldTrans[ 1 ] + ( float ) ( event.GetY() - m_flOldY );
+				m_pSettings->trans[ 0 ] = m_vecOldTrans[ 0 ] - ( float ) ( event.GetX() - m_flOldX );
+				m_pSettings->trans[ 1 ] = m_vecOldTrans[ 1 ] + ( float ) ( event.GetY() - m_flOldY );
 			}
 			else
 			{
-				Options.rot[ 0 ] = m_flOldRotX + ( float ) ( event.GetY() - m_flOldY );
-				Options.rot[ 1 ] = m_flOldRotY + ( float ) ( event.GetX() - m_flOldX );
+				m_pSettings->rot[ 0 ] = m_flOldRotX + ( float ) ( event.GetY() - m_flOldY );
+				m_pSettings->rot[ 1 ] = m_flOldRotY + ( float ) ( event.GetX() - m_flOldX );
 			}
 		}
 		else if( event.RightIsDown() && m_iButtonsDown & wxMOUSE_BTN_RIGHT )
 		{
-			Options.trans[ 2 ] = m_vecOldTrans[ 2 ] + ( float ) ( event.GetY() - m_flOldY );
+			m_pSettings->trans[ 2 ] = m_vecOldTrans[ 2 ] + ( float ) ( event.GetY() - m_flOldY );
 		}
 
 		Refresh();
@@ -134,19 +133,19 @@ void C3DView::UpdateView()
 {
 	const wxLongLong curr = wxGetUTCTimeMillis();
 
-	if( Options.playSequence && Options.GetStudioModel() )
-		Options.GetStudioModel()->AdvanceFrame( ( ( curr - m_iPrevTime ).GetValue() / 1000.0 ) * Options.speedScale );
+	if( m_pSettings->playSequence && m_pSettings->GetStudioModel() )
+		m_pSettings->GetStudioModel()->AdvanceFrame( ( ( curr - m_iPrevTime ).GetValue() / 1000.0 ) * m_pSettings->speedScale );
 
 	m_iPrevTime = curr;
 
-	if( !Options.pause )
+	if( !m_pSettings->pause )
 		Refresh();
 }
 
 void C3DView::SetupRenderMode( RenderMode renderMode )
 {
 	if( renderMode == RenderMode::INVALID )
-		renderMode = Options.renderMode;
+		renderMode = m_pSettings->renderMode;
 
 	graphics::helpers::SetupRenderMode( renderMode );
 }
@@ -155,7 +154,7 @@ void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const
 {
 	const wxSize size = GetClientSize();
 
-	graphics::helpers::DrawTexture( size.GetX(), size.GetY(), *Options.GetStudioModel(), iTexture, flTextureScale, bShowUVMap, bOverlayUVMap, bAntiAliasLines, pUVMesh );
+	graphics::helpers::DrawTexture( size.GetX(), size.GetY(), *m_pSettings->GetStudioModel(), iTexture, flTextureScale, bShowUVMap, bOverlayUVMap, bAntiAliasLines, pUVMesh );
 }
 
 void C3DView::DrawModel()
@@ -166,12 +165,12 @@ void C3DView::DrawModel()
 	// draw background
 	//
 
-	if( Options.showBackground && m_BackgroundTexture != GL_INVALID_TEXTURE_ID && !Options.showTexture )
+	if( m_pSettings->showBackground && m_BackgroundTexture != GL_INVALID_TEXTURE_ID && !m_pSettings->showTexture )
 	{
 		graphics::helpers::DrawBackground( m_BackgroundTexture );
 	}
 
-	if( !Options.GetStudioModel() )
+	if( !m_pSettings->GetStudioModel() )
 		return;
 
 	graphics::helpers::SetProjection( size.GetX(), size.GetY() );
@@ -180,49 +179,50 @@ void C3DView::DrawModel()
 	glPushMatrix();
 	glLoadIdentity();
 
-	if( Options.useWeaponOrigin )
+	if( m_pSettings->useWeaponOrigin )
 	{
-		glTranslatef( -Options.weaponOrigin[ 0 ], -Options.weaponOrigin[ 1 ], -Options.weaponOrigin[ 2 ] );
+		glTranslatef( -m_pSettings->weaponOrigin[ 0 ], -m_pSettings->weaponOrigin[ 1 ], -m_pSettings->weaponOrigin[ 2 ] );
 
 		glRotatef( -90, 1.0f, 0.0f, 0.0f );
 		glRotatef( 90, 0.0f, 0.0f, 1.0f );
 	}
 	else
 	{
-		glTranslatef( -Options.trans[ 0 ], -Options.trans[ 1 ], -Options.trans[ 2 ] );
+		glTranslatef( -m_pSettings->trans[ 0 ], -m_pSettings->trans[ 1 ], -m_pSettings->trans[ 2 ] );
 
-		glRotatef( Options.rot[ 0 ], 1.0f, 0.0f, 0.0f );
-		glRotatef( Options.rot[ 1 ], 0.0f, 0.0f, 1.0f );
+		glRotatef( m_pSettings->rot[ 0 ], 1.0f, 0.0f, 0.0f );
+		glRotatef( m_pSettings->rot[ 1 ], 0.0f, 0.0f, 1.0f );
 	}
 
-	g_vright[ 0 ] = g_vright[ 1 ] = Options.trans[ 2 ];
+	g_vright[ 0 ] = g_vright[ 1 ] = m_pSettings->trans[ 2 ];
 
-	Options.drawnPolys = 0;
+	m_pSettings->drawnPolys = 0;
 
 	// setup stencil buffer and draw mirror
-	if( Options.mirror )
+	if( m_pSettings->mirror )
 	{
-		Options.drawnPolys += graphics::helpers::DrawMirroredModel( *Options.GetStudioModel(), Options.renderMode, Options.wireframeOverlay, FLOOR_SIDE_LENGTH );
+		m_pSettings->drawnPolys += graphics::helpers::DrawMirroredModel( *m_pSettings->GetStudioModel(), m_pSettings->renderMode, 
+																		 m_pSettings->renderSettings, m_pSettings->wireframeOverlay, FLOOR_SIDE_LENGTH );
 	}
 
 	SetupRenderMode();
 
 	glCullFace( GL_FRONT );
-	Options.drawnPolys += Options.GetStudioModel()->DrawModel();
+	m_pSettings->drawnPolys += m_pSettings->GetStudioModel()->DrawModel( m_pSettings->renderSettings );
 
 	//Draw wireframe overlay
-	if( Options.wireframeOverlay )
+	if( m_pSettings->wireframeOverlay )
 	{
-		Options.drawnPolys += graphics::helpers::DrawWireframeOverlay( *Options.GetStudioModel() );
+		m_pSettings->drawnPolys += graphics::helpers::DrawWireframeOverlay( *m_pSettings->GetStudioModel(), m_pSettings->renderSettings );
 	}
 
 	//
 	// draw ground
 	//
 
-	if( Options.showGround )
+	if( m_pSettings->showGround )
 	{
-		graphics::helpers::DrawFloor( FLOOR_SIDE_LENGTH, m_GroundTexture, Options.groundColor, Options.mirror );
+		graphics::helpers::DrawFloor( FLOOR_SIDE_LENGTH, m_GroundTexture, m_pSettings->groundColor, m_pSettings->mirror );
 	}
 
 	glPopMatrix();
@@ -281,7 +281,7 @@ bool C3DView::LoadBackgroundTexture( const wxString& szFilename )
 	m_BackgroundTexture = glLoadImage( szFilename.c_str() );
 
 	//TODO: notify UI
-	Options.showBackground = m_BackgroundTexture != GL_INVALID_TEXTURE_ID;
+	m_pSettings->showBackground = m_BackgroundTexture != GL_INVALID_TEXTURE_ID;
 
 	return m_BackgroundTexture != GL_INVALID_TEXTURE_ID;
 }
@@ -310,7 +310,7 @@ void C3DView::UnloadGroundTexture()
 */
 void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 {
-	const studiohdr_t* const pHdr = Options.GetStudioModel()->getTextureHeader();
+	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getTextureHeader();
 
 	if( !pHdr )
 		return;
@@ -343,7 +343,7 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
-	graphics::helpers::DrawTexture( texture.width, texture.height, *Options.GetStudioModel(), iTexture, 1.0f, true, false, false, Options.pUVMesh );
+	graphics::helpers::DrawTexture( texture.width, texture.height, *m_pSettings->GetStudioModel(), iTexture, 1.0f, true, false, false, m_pSettings->pUVMesh );
 
 	glFlush();
 	glFinish();

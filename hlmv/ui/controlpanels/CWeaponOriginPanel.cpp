@@ -10,8 +10,8 @@ wxBEGIN_EVENT_TABLE( CWeaponOriginPanel, CBaseSequencesPanel )
 	EVT_BUTTON( wxID_WPN_TESTORIGINS, CWeaponOriginPanel::TestOrigins )
 wxEND_EVENT_TABLE()
 
-CWeaponOriginPanel::CWeaponOriginPanel( wxWindow* pParent )
-	: CBaseSequencesPanel( pParent, "Weapon Origin" )
+CWeaponOriginPanel::CWeaponOriginPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+	: CBaseSequencesPanel( pParent, "Weapon Origin", pSettings )
 {
 	wxWindow* const pElemParent = GetBox();
 
@@ -182,19 +182,19 @@ void CWeaponOriginPanel::ModelChanged( const StudioModel& model )
 	CBaseSequencesPanel::ModelChanged( model );
 
 	//TODO: fill info
-	m_pXOrigin->SetLabelText( wxString::Format( "%.6f", Options.weaponOrigin[ 0 ] ) );
-	m_pYOrigin->SetLabelText( wxString::Format( "%.6f", Options.weaponOrigin[ 1 ] ) );
-	m_pZOrigin->SetLabelText( wxString::Format( "%.6f", Options.weaponOrigin[ 2 ] ) );
+	m_pXOrigin->SetLabelText( wxString::Format( "%.6f", m_pSettings->weaponOrigin[ 0 ] ) );
+	m_pYOrigin->SetLabelText( wxString::Format( "%.6f", m_pSettings->weaponOrigin[ 1 ] ) );
+	m_pZOrigin->SetLabelText( wxString::Format( "%.6f", m_pSettings->weaponOrigin[ 2 ] ) );
 }
 
 void CWeaponOriginPanel::PanelActivated()
 {
-	Options.useWeaponOrigin = true;
+	m_pSettings->useWeaponOrigin = true;
 }
 
 void CWeaponOriginPanel::PanelDeactivated()
 {
-	Options.useWeaponOrigin = false;
+	m_pSettings->useWeaponOrigin = false;
 }
 
 static void GetDoubleFromTextCtrl( wxTextCtrl* const pCtrl, vec_t& flInOutValue )
@@ -214,7 +214,7 @@ void CWeaponOriginPanel::TestOrigins( wxCommandEvent& event )
 {
 	double flValue = 0;
 
-	GetDoubleFromTextCtrl( m_pXOrigin, Options.weaponOrigin[ 0 ] );
-	GetDoubleFromTextCtrl( m_pYOrigin, Options.weaponOrigin[ 1 ] );
-	GetDoubleFromTextCtrl( m_pZOrigin, Options.weaponOrigin[ 2 ] );
+	GetDoubleFromTextCtrl( m_pXOrigin, m_pSettings->weaponOrigin[ 0 ] );
+	GetDoubleFromTextCtrl( m_pYOrigin, m_pSettings->weaponOrigin[ 1 ] );
+	GetDoubleFromTextCtrl( m_pZOrigin, m_pSettings->weaponOrigin[ 2 ] );
 }

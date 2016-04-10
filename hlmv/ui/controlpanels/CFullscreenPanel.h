@@ -6,7 +6,7 @@
 class CFullscreenPanel final : public CBaseControlPanel
 {
 public:
-	CFullscreenPanel( wxWindow* pParent );
+	CFullscreenPanel( wxWindow* pParent, CHLMVSettings* const pSettings );
 	~CFullscreenPanel();
 
 	void ModelChanged( const StudioModel& model ) override;

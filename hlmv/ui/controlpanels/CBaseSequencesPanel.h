@@ -41,7 +41,7 @@ public:
 protected:
 	wxDECLARE_EVENT_TABLE();
 
-	CBaseSequencesPanel( wxWindow* pParent, const wxString& szName );
+	CBaseSequencesPanel( wxWindow* pParent, const wxString& szName, CHLMVSettings* const pSettings );
 
 	void CreateUI( wxGridBagSizer* pSizer );
 

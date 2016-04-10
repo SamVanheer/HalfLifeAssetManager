@@ -19,7 +19,7 @@ public:
 	static const int GUIDELINES_EDGE_WIDTH			= 4;
 
 public:
-	CWeaponOriginPanel( wxWindow* pParent );
+	CWeaponOriginPanel( wxWindow* pParent, CHLMVSettings* const pSettings );
 	~CWeaponOriginPanel();
 
 	void Draw3D( const wxSize& size ) override;

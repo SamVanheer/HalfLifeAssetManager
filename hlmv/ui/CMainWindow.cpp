@@ -2,6 +2,8 @@
 
 #include "model/utility/OpenGL.h"
 
+#include "hlmv/CHLMVSettings.h"
+
 #include "CMainPanel.h"
 
 #include "CMainWindow.h"
@@ -18,6 +20,7 @@ wxEND_EVENT_TABLE()
 
 CMainWindow::CMainWindow()
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
+	, m_pSettings( new CHLMVSettings() )
 {
 	wxMenu* menuFile = new wxMenu;
 	menuFile->Append( wxID_MAINWND_LOADMODEL, "&Load Model...",
@@ -57,7 +60,7 @@ CMainWindow::CMainWindow()
 	CreateStatusBar();
 	SetStatusText( "" );
 
-	m_pMainPanel = new CMainPanel( this );
+	m_pMainPanel = new CMainPanel( this, m_pSettings );
 
 	Maximize( true );
 
@@ -66,6 +69,12 @@ CMainWindow::CMainWindow()
 
 CMainWindow::~CMainWindow()
 {
+	//Call this first so nothing tries to access the settings object.
+	DestroyChildren();
+
+	m_pSettings->ClearStudioModel();
+
+	delete m_pSettings;
 }
 
 bool CMainWindow::LoadModel( const wxString& szFilename )
@@ -100,7 +109,7 @@ bool CMainWindow::PromptLoadModel()
 
 bool CMainWindow::SaveModel( const wxString& szFilename )
 {
-	const bool bSuccess = Options.GetStudioModel()->SaveModel( szFilename.char_str( wxMBConvUTF8() ) );
+	const bool bSuccess = m_pSettings->GetStudioModel()->SaveModel( szFilename.char_str( wxMBConvUTF8() ) );
 
 	if( !bSuccess )
 	{
@@ -112,7 +121,7 @@ bool CMainWindow::SaveModel( const wxString& szFilename )
 
 bool CMainWindow::PromptSaveModel()
 {
-	if( Options.GetStudioModel() == nullptr )
+	if( m_pSettings->GetStudioModel() == nullptr )
 	{
 		wxMessageBox( "No model to save!" );
 		return false;

@@ -7,6 +7,8 @@
 
 class StudioModel;
 
+class CHLMVSettings;
+
 class CBaseControlPanel : public wxPanel
 {
 public:
@@ -31,12 +33,18 @@ public:
 	//Called when the panel is no longer the active panel.
 	virtual void PanelDeactivated() {}
 
+	CHLMVSettings* GetSettings() { return m_pSettings; }
+	const CHLMVSettings* GetSettings() const { return m_pSettings; }
+
 protected:
-	CBaseControlPanel( wxWindow* pParent, const wxString& szName );
+	CBaseControlPanel( wxWindow* pParent, const wxString& szName, CHLMVSettings* const pSettings );
 
 	wxStaticBox* GetBox() { return m_pBox; }
 
 	wxStaticBoxSizer* GetBoxSizer() { return m_pBoxSizer; }
+
+protected:
+	CHLMVSettings* const m_pSettings;
 
 private:
 	const wxString m_szName;

@@ -26,9 +26,9 @@ void DrawFloorQuad( float flSideLength );
 
 void DrawFloor( float flSideLength, GLuint groundTexture, const vec3_t groundColor, const bool bMirror );
 
-unsigned int DrawWireframeOverlay( StudioModel& model );
+unsigned int DrawWireframeOverlay( StudioModel& model, const StudioModel::CRenderSettings& settings );
 
-unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength );
+unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const StudioModel::CRenderSettings& settings, const bool bWireframeOverlay, const float flSideLength );
 }
 }
 

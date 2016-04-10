@@ -14,8 +14,8 @@ wxBEGIN_EVENT_TABLE( CBodyPartsPanel, CBaseControlPanel )
 	EVT_SLIDER( wxID_BODY_CONTROLLER_SLIDER, CBodyPartsPanel::ControllerSliderChanged )
 wxEND_EVENT_TABLE()
 
-CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent )
-	: CBaseControlPanel( pParent, "Body Parts" )
+CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+	: CBaseControlPanel( pParent, "Body Parts", pSettings )
 {
 	wxWindow* const pElemParent = GetBox();
 
@@ -105,7 +105,7 @@ void CBodyPartsPanel::ModelChanged( const StudioModel& model )
 {
 	//TODO: fill info
 
-	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
 
 	if( pHdr )
 	{
@@ -188,8 +188,8 @@ void CBodyPartsPanel::ViewUpdated()
 	m_pDrawnPolys->GetLabelText().ToULong( &uiOld );
 
 	//Don't update if it's identical. Prevents flickering.
-	if( uiOld != Options.drawnPolys )
-		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", Options.drawnPolys ) );
+	if( uiOld != m_pSettings->drawnPolys )
+		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", m_pSettings->drawnPolys ) );
 }
 
 void CBodyPartsPanel::BodypartChanged( wxCommandEvent& event )
@@ -219,7 +219,7 @@ void CBodyPartsPanel::ControllerSliderChanged( wxCommandEvent& event )
 
 void CBodyPartsPanel::SetBodypart( int iIndex )
 {
-	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 	{
@@ -243,20 +243,20 @@ void CBodyPartsPanel::SetBodypart( int iIndex )
 void CBodyPartsPanel::SetSubmodel( int iIndex )
 {
 	m_pSubmodel->Select( iIndex );
-	Options.GetStudioModel()->SetBodygroup( m_pBodypart->GetSelection(), iIndex );
+	m_pSettings->GetStudioModel()->SetBodygroup( m_pBodypart->GetSelection(), iIndex );
 }
 
 void CBodyPartsPanel::SetSkin( int iIndex )
 {
 	m_pSkin->Select( iIndex );
-	Options.GetStudioModel()->SetSkin( iIndex );
+	m_pSettings->GetStudioModel()->SetSkin( iIndex );
 }
 
 void CBodyPartsPanel::UpdateSubmodels( const int iIndex )
 {
 	m_pSubmodel->Clear();
 
-	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 		return;
@@ -279,7 +279,7 @@ void CBodyPartsPanel::UpdateSubmodels( const int iIndex )
 
 void CBodyPartsPanel::SetController( int iIndex )
 {
-	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 		return;
@@ -291,12 +291,12 @@ void CBodyPartsPanel::SetController( int iIndex )
 
 	m_pController->Select( iIndex );
 	m_pControllerSlider->SetRange( ( int ) pbonecontrollers[ iIndex ].start, ( int ) pbonecontrollers[ iIndex ].end );
-	m_pControllerSlider->SetValue( Options.GetStudioModel()->GetController( iIndex ) );
+	m_pControllerSlider->SetValue( m_pSettings->GetStudioModel()->GetController( iIndex ) );
 }
 
 void CBodyPartsPanel::SetControllerValue( int iIndex, int iValue )
 {
-	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
 
 	if( pHdr )
 	{
@@ -306,8 +306,8 @@ void CBodyPartsPanel::SetControllerValue( int iIndex, int iValue )
 		const mstudiobonecontroller_t* const pbonecontrollers = ( mstudiobonecontroller_t* ) ( ( byte* ) pHdr + pHdr->bonecontrollerindex );
 
 		if( pbonecontrollers[ iIndex ].index == CONTROLLER_MOUTH_INDEX )
-			Options.GetStudioModel()->SetMouth( iValue );
+			m_pSettings->GetStudioModel()->SetMouth( iValue );
 		else
-			Options.GetStudioModel()->SetController( pbonecontrollers[ iIndex ].index, iValue );
+			m_pSettings->GetStudioModel()->SetController( pbonecontrollers[ iIndex ].index, iValue );
 	}
 }

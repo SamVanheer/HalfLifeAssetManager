@@ -20,6 +20,7 @@ class CWeaponOriginPanel;
 class CFullscreenPanel;
 
 class StudioModel;
+class CHLMVSettings;
 
 class CMainPanel final : public wxPanel, public ITimerListener, public I3DViewListener
 {
@@ -61,8 +62,11 @@ public:
 	static const size_t OPACITY_DEFAULT = OPACITY_MAX;
 
 public:
-	CMainPanel( wxWindow* pParent );
+	CMainPanel( wxWindow* pParent, CHLMVSettings* const pSettings );
 	~CMainPanel();
+
+	CHLMVSettings* GetSettings() { return m_pSettings; }
+	const CHLMVSettings* GetSettings() const { return m_pSettings; }
 
 	void OnTimer( CTimer& timer ) override final;
 
@@ -104,6 +108,8 @@ private:
 	}
 
 private:
+	CHLMVSettings* const m_pSettings;
+
 	CTimer* m_pTimer;
 
 	C3DView* m_p3DView;

@@ -58,7 +58,7 @@ public:
 	};
 
 public:
-	CTexturesPanel( wxWindow* pParent );
+	CTexturesPanel( wxWindow* pParent, CHLMVSettings* const pSettings );
 	~CTexturesPanel();
 
 	void PanelActivated() override;

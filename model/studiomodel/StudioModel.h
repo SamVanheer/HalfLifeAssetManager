@@ -61,6 +61,30 @@ public:
 		VERSIONDIFFERS		//Header version differs from current.
 	};
 
+	class CRenderSettings final
+	{
+	public:
+		CRenderSettings() = default;
+		CRenderSettings( const CRenderSettings& other ) = default;
+		CRenderSettings& operator=( const CRenderSettings& other ) = default;
+
+		void ResetToDefaults()
+		{
+			*this = CRenderSettings();
+		}
+
+	public:
+		vec3_t lightColor		= { 1.0f, 1.0f, 1.0f };
+
+		float transparency		= 1.0f;
+		bool showBones			= false;
+		bool showAttachments	= false;
+		bool showEyePosition	= false;
+		bool showHitBoxes		= false;
+
+		vec3_t wireframeColor	= { 1.0f, 0.0f, 0.0f };
+	};
+
 public:
 	studiohdr_t				*getStudioHeader () const { return m_pstudiohdr; }
 	studiohdr_t				*getTextureHeader () const { return m_ptexturehdr; }
@@ -87,7 +111,7 @@ public:
 	bool					PostLoadModel ( const char* const pszModelName );
 	LoadResult				Load( const char* const pszModelName );
 	bool					SaveModel ( char *modelname );
-	unsigned int			DrawModel( const bool bWireframeOnly = false );
+	unsigned int			DrawModel( const CRenderSettings& settings, const bool wireframeOnly = false );
 	void					AdvanceFrame( float dt );
 	int						SetFrame (int nFrame);
 
@@ -142,12 +166,12 @@ private:
 	void					SlerpBones( vec4_t q1[], vec3_t pos1[], vec4_t q2[], vec3_t pos2[], float s );
 	void					SetUpBones ( void );
 
-	unsigned int			DrawPoints( const bool bWireframeOnly = false );
+	unsigned int			DrawPoints( const CRenderSettings& settings, const bool wireframeOnly = false );
 
 	void					Lighting (float *lv, int bone, int flags, vec3_t normal);
 	void					Chrome (int *chrome, int bone, vec3_t normal);
 
-	void					SetupLighting( void );
+	void					SetupLighting( const CRenderSettings& settings );
 
 	void					SetupModel ( int bodypart );
 };

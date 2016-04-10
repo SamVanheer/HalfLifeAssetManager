@@ -353,11 +353,11 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const vec3_t groundCol
 *	Draws a wireframe overlay over a model
 *	model:	Model to draw
 */
-unsigned int DrawWireframeOverlay( StudioModel& model )
+unsigned int DrawWireframeOverlay( StudioModel& model, const StudioModel::CRenderSettings& settings )
 {
 	SetupRenderMode( RenderMode::WIREFRAME );
 
-	return model.DrawModel( true );
+	return model.DrawModel( settings, true );
 }
 
 /*
@@ -367,7 +367,7 @@ unsigned int DrawWireframeOverlay( StudioModel& model )
 *	bWireframeOverlay:	Whether to render a wireframe overlay on top of the model
 *	flSideLength:		Length of one side of the floor
 */
-unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength )
+unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const StudioModel::CRenderSettings& settings, const bool bWireframeOverlay, const float flSideLength )
 {
 	/* Don't update color or depth. */
 	glDisable( GL_DEPTH_TEST );
@@ -395,13 +395,13 @@ unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode,
 	glScalef( 1, 1, -1 );
 	glCullFace( GL_BACK );
 	SetupRenderMode( renderMode );
-	unsigned int uiDrawnPolys = model.DrawModel();
+	unsigned int uiDrawnPolys = model.DrawModel( settings );
 
 	//Draw wireframe overlay
 	//TODO: integrate this into DrawModel somehow.
 	if( bWireframeOverlay )
 	{
-		uiDrawnPolys += DrawWireframeOverlay( model );
+		uiDrawnPolys += DrawWireframeOverlay( model, settings );
 	}
 
 	glPopMatrix();

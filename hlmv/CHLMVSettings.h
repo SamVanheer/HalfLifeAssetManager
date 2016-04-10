@@ -9,8 +9,6 @@
 
 #include "model/studiomodel/StudioModel.h"
 
-class StudioModel;
-
 /*
 *	Contains all settings used by the HLMV application.
 */
@@ -19,6 +17,9 @@ class CHLMVSettings final
 public:
 	CHLMVSettings();
 	~CHLMVSettings();
+
+	CHLMVSettings( const CHLMVSettings& other ) = default;
+	CHLMVSettings& operator=( const CHLMVSettings& other ) = default;
 
 	void ResetModelData();
 
@@ -36,18 +37,9 @@ public:
 	void SetStudioModel( StudioModel* pStudioModel );
 
 public:
-	bool showBones;
-
 	//TODO: replace with Vector
-	vec3_t lightColor;
 	vec3_t trans;
 	vec3_t rot;
-
-	float transparency;
-
-	bool showAttachments;
-
-	bool showHitBoxes;
 
 	bool showBackground;
 
@@ -79,11 +71,7 @@ public:
 
 	unsigned int drawnPolys; //TODO: move
 
-	bool showEyePosition;
-
 	bool wireframeOverlay;
-
-	vec3_t wireframeColor;
 
 	vec3_t weaponOrigin;
 
@@ -97,17 +85,10 @@ public:
 
 	bool antiAliasUVLines;
 
+	StudioModel::CRenderSettings renderSettings;
+
 private:
 	StudioModel* m_pStudioModel;
-
-private:
-	CHLMVSettings( const CHLMVSettings& ) = delete;
-	CHLMVSettings& operator=( const CHLMVSettings& ) = delete;
 };
-
-/*
-*	Global instance.
-*/
-extern CHLMVSettings Options;
 
 #endif //HLMV_CHLMVSETTINGS_H

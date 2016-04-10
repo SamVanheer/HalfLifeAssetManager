@@ -11,8 +11,8 @@ wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseSequencesPanel )
 	EVT_COMBOBOX( wxID_SEQUENCE_EVENT, CSequencesPanel::EventChanged )
 wxEND_EVENT_TABLE()
 
-CSequencesPanel::CSequencesPanel( wxWindow* pParent )
-	: CBaseSequencesPanel( pParent, "Sequences" )
+CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+	: CBaseSequencesPanel( pParent, "Sequences", pSettings )
 {
 	wxWindow* const pElemParent = GetBox();
 
@@ -81,7 +81,7 @@ void CSequencesPanel::EventChanged( wxCommandEvent& event )
 
 void CSequencesPanel::UpdateEvents()
 {
-	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 		return;
@@ -118,7 +118,7 @@ void CSequencesPanel::UpdateEventInfo( int iIndex )
 		return;
 	}
 
-	const studiohdr_t* const pHdr = Options.GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 		return;

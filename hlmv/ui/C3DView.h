@@ -10,7 +10,11 @@
 
 #include "mathlib.h"
 
-#include "hlmv/CHLMVSettings.h"
+#include "model/studiomodel/StudioModel.h"
+
+#include "model/graphics/Constants.h"
+
+class CHLMVSettings;
 
 class I3DViewListener
 {
@@ -30,7 +34,7 @@ public:
 	static const float FLOOR_SIDE_LENGTH;
 
 public:
-	C3DView( wxWindow* pParent, I3DViewListener* pListener = nullptr );
+	C3DView( wxWindow* pParent, CHLMVSettings* const pSettings, I3DViewListener* pListener = nullptr );
 	~C3DView();
 
 	void Paint( wxPaintEvent& event );
@@ -68,6 +72,8 @@ private:
 	void SetUVRenderTargetDimensions( const int iWidth, const int iHeight );
 
 private:
+	CHLMVSettings* const m_pSettings;
+
 	I3DViewListener* m_pListener;
 
 	wxGLContext* m_pContext;
