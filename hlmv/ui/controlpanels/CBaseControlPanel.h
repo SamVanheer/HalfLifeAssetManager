@@ -16,7 +16,7 @@ public:
 
 	const wxString& GetPanelName() const { return m_szName; }
 
-	virtual void ModelChanged( const StudioModel& model ) = 0;
+	virtual void ModelChanged( const StudioModel& model ) {}
 
 	//Called right before the 3D view is updated.
 	virtual void ViewPreUpdate() {}
