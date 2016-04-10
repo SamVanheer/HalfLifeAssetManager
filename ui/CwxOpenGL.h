@@ -11,17 +11,9 @@
 class CwxOpenGL final
 {
 public:
-	static CwxOpenGL& GetInstance()
-	{
-		static CwxOpenGL* pInstance = nullptr;
+	static CwxOpenGL& GetInstance();
 
-		if( !pInstance )
-		{
-			pInstance = new CwxOpenGL();
-		}
-
-		return *pInstance;
-	}
+	static void DestroyInstance();
 
 	bool Initialize( const wxGLAttributes& canvasAttributes, const wxGLContextAttrs* const pContextAttrs = nullptr );
 	void Shutdown();
@@ -37,6 +29,8 @@ private:
 	~CwxOpenGL();
 
 private:
+	static CwxOpenGL* m_pInstance;
+
 	wxGLAttributes		m_CanvasAttributes;
 	wxGLContextAttrs	m_ContextAttributes;
 	bool				m_bContextAttributesSet = false;	//Whether any context attributes have been set.

@@ -6,8 +6,6 @@
 
 #include "CMainWindow.h"
 
-#define HLMV_TITLE "Half-Life Model Viewer"
-
 wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_MAINWND_LOADMODEL, CMainWindow::LoadModel )
 	EVT_MENU( wxID_MAINWND_LOADBACKGROUND, CMainWindow::LoadBackgroundTexture )

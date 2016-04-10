@@ -40,6 +40,7 @@
     <ClCompile Include="model\utility\mathlib.c" />
     <ClCompile Include="model\utility\OpenGL.cpp" />
     <ClCompile Include="ui\CwxOpenGL.cpp" />
+    <ClCompile Include="ui\utility\wxUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hlmv\CHLMVSettings.h" />
@@ -67,6 +68,7 @@
     <ClInclude Include="model\utility\studio.h" />
     <ClInclude Include="ui\CwxOpenGL.h" />
     <ClInclude Include="ui\utility\CTimer.h" />
+    <ClInclude Include="ui\utility\wxUtil.h" />
     <ClInclude Include="ui\wxInclude.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

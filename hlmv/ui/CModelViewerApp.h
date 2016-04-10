@@ -5,36 +5,29 @@
 
 #include "wxHLMV.h"
 
-#include <wx/vidmode.h>
-
-class wxDisplay;
-
 class CModelViewerApp final : public wxApp
 {
 public:
 	typedef std::vector<wxVideoMode> VideoModes_t;
 
 public:
-	static CModelViewerApp& GetApp() { return *m_pInstance; }
-
 	virtual bool OnInit() override;
 
 	virtual int OnExit() override;
 
-	virtual bool OnCmdLineParsed( wxCmdLineParser& parser ) override;
-
 	virtual void OnInitCmdLine( wxCmdLineParser& parser ) override;
 
-	const VideoModes_t& GetVideoModes() const { return m_VideoModes; }
+	virtual bool OnCmdLineParsed( wxCmdLineParser& parser ) override;
 
 private:
-	static CModelViewerApp* m_pInstance;
+	bool Initialize();
 
-	wxDisplay* m_pPrimaryDisplay;
+	void Shutdown();
 
-	VideoModes_t m_VideoModes;
-
+private:
 	wxString m_szModel;						//Model to load on startup, if any.
 };
+
+wxDECLARE_APP( CModelViewerApp );
 
 #endif //CMODELVIEWERAPP_H

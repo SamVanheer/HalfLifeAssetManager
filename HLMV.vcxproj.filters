@@ -70,6 +70,9 @@
     <Filter Include="Source Files\model\graphics">
       <UniqueIdentifier>{c34c9514-8e8b-4368-aa97-6247580a4a27}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ui\utility">
+      <UniqueIdentifier>{a590454e-4163-4290-a956-e5ad60d25ee1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="model\utility\mathlib.c">
@@ -134,6 +137,9 @@
     </ClCompile>
     <ClCompile Include="ui\CwxOpenGL.cpp">
       <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\utility\wxUtil.cpp">
+      <Filter>Source Files\ui\utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +220,9 @@
     </ClInclude>
     <ClInclude Include="ui\CwxOpenGL.h">
       <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\utility\wxUtil.h">
+      <Filter>Header Files\ui\utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

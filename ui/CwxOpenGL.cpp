@@ -2,6 +2,27 @@
 
 #include "CwxOpenGL.h"
 
+CwxOpenGL* CwxOpenGL::m_pInstance = nullptr;
+
+CwxOpenGL& CwxOpenGL::GetInstance()
+{
+	if( !m_pInstance )
+	{
+		m_pInstance = new CwxOpenGL();
+	}
+
+	return *m_pInstance;
+}
+
+void CwxOpenGL::DestroyInstance()
+{
+	if( m_pInstance )
+	{
+		delete m_pInstance;
+		m_pInstance = nullptr;
+	}
+}
+
 CwxOpenGL::CwxOpenGL()
 {
 }
@@ -39,6 +60,14 @@ void CwxOpenGL::Shutdown()
 		delete m_pContext;
 		m_pContext = nullptr;
 	}
+
+	if( m_bContextAttributesSet )
+	{
+		m_bContextAttributesSet = false;
+		m_ContextAttributes.Reset();
+	}
+
+	m_CanvasAttributes.Reset();
 }
 
 /*

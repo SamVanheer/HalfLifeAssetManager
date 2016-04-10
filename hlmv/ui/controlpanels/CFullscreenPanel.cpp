@@ -1,6 +1,6 @@
 #include <wx/gbsizer.h>
 
-#include "hlmv/ui/CModelViewerApp.h"
+#include "ui/utility/wxUtil.h"
 
 #include "CFullscreenPanel.h"
 
@@ -14,11 +14,29 @@ CFullscreenPanel::CFullscreenPanel( wxWindow* pParent )
 	m_pResolution = new wxComboBox( pElemParent, wxID_ANY, "" );
 	m_pResolution->SetEditable( false );
 
-	const auto& modes = CModelViewerApp::GetApp().GetVideoModes();
+	//Try to get the display we're currently on.
+	int iDisplay = wxDisplay::GetFromWindow( this );
 
-	for( const auto& mode : modes )
+	//Assume primary
+	if( iDisplay == wxNOT_FOUND )
+		iDisplay = 0;
+
+	wxDisplay display( iDisplay );
+
+	if( display.IsOk() )
 	{
-		m_pResolution->Append( wxString::Format( "%d x %d", mode.GetWidth(), mode.GetHeight() ) );
+		std::vector<wxVideoMode> modes;
+
+		wx::GetUniqueVideoModes( display, modes );
+
+		for( const auto& mode : modes )
+		{
+			m_pResolution->Append( wxString::Format( "%d x %d", mode.GetWidth(), mode.GetHeight() ) );
+		}
+	}
+	else
+	{
+		wxMessageBox( "Fullscreen support: Unable to get display for video modes query" );
 	}
 
 	m_pResolution->Select( 0 );

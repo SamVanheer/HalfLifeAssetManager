@@ -57,4 +57,6 @@ enum wxIdentifiers
 	wxID_CUSTOM_HIGHEST
 };
 
+#define HLMV_TITLE "Half-Life Model Viewer"
+
 #endif //HLMV_UI_WXHLMV_H
