@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\ui">
+      <UniqueIdentifier>{de259b0e-0f7c-4d3a-9f0c-b59ae4b58061}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui">
+      <UniqueIdentifier>{138420c3-8f56-4beb-9c94-57e9616e3163}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui\utility">
+      <UniqueIdentifier>{7c966415-3377-4c88-97a0-621cdeb0339c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\hlmv">
+      <UniqueIdentifier>{abf7989e-6eed-41ea-81e2-bf2578f44436}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hlmv">
+      <UniqueIdentifier>{f977fe15-e419-4d69-9053-85814bfe32ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hlmv\ui">
+      <UniqueIdentifier>{82364461-4c06-43a7-a77b-9c160046f030}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\hlmv\ui">
+      <UniqueIdentifier>{10a8db50-ff7d-43cf-af81-afdd8753b4c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\hlmv\ui\controlpanels">
+      <UniqueIdentifier>{2b0e164b-36d1-4501-8d08-fdb59a1521c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hlmv\ui\controlpanels">
+      <UniqueIdentifier>{116ffbde-9c49-432a-98c6-e87efd509ef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\hlmv\ui\options">
+      <UniqueIdentifier>{ba7a16e6-3382-4d0c-ae4e-99937507fbde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hlmv\ui\options">
+      <UniqueIdentifier>{ad10a503-75de-44c2-b5da-92b6760b81af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui\utility">
+      <UniqueIdentifier>{a590454e-4163-4290-a956-e5ad60d25ee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\common">
+      <UniqueIdentifier>{c003bdf0-454e-4475-a918-228b9342fadb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common">
+      <UniqueIdentifier>{b2ffd917-b04d-437c-8e2e-6171185835db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics">
+      <UniqueIdentifier>{a8cc43f3-adc8-40e6-83bf-e50ef343feec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics">
+      <UniqueIdentifier>{6c61afb5-133b-41bf-bdbd-f19d1b0f536d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\studiomodel">
+      <UniqueIdentifier>{e7f0c473-f1e0-4100-8834-18b23a16e3a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\studiomodel">
+      <UniqueIdentifier>{3352beac-ccdf-447e-9945-3606c3006ba3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utility">
+      <UniqueIdentifier>{ed25d055-24a0-4488-916b-44d217c824cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utility">
+      <UniqueIdentifier>{eebee85d-37b6-4c0a-88a0-77fa3f71577f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\filesystem">
+      <UniqueIdentifier>{b76ba503-1cfc-4446-a38f-c9218f31e25c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\filesystem">
+      <UniqueIdentifier>{a1cd882c-24ad-4c8d-a9b1-69047d4b5df0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\soundsystem">
+      <UniqueIdentifier>{aaeed290-72e3-4960-96fc-84da1b96b58e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\soundsystem">
+      <UniqueIdentifier>{e5b1181c-a0f8-4bbf-a905-4b473449de74}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\common\CGlobals.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\studiomodel\studio_render.cpp">
+      <Filter>Source Files\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\studiomodel\studio_utils.cpp">
+      <Filter>Source Files\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\common\Platform.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utility\mathlib.c">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\filesystem\CFileSystem.cpp">
+      <Filter>Source Files\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\soundsystem\CSoundSystem.cpp">
+      <Filter>Source Files\soundsystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\graphics\OpenGL.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\utility\wxUtil.cpp">
+      <Filter>Source Files\ui\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\CwxOpenGL.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\Logging.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\CHLMVSettings.cpp">
+      <Filter>Source Files\hlmv</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\C3DView.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\CFullscreenWindow.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\CHLMV.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\CMainPanel.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\CMainWindow.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\CModelViewerApp.cpp">
+      <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\options\COptionsDialog.cpp">
+      <Filter>Source Files\hlmv\ui\options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\controlpanels\CBaseControlPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\controlpanels\CBaseSequencesPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\controlpanels\CBodyPartsPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\controlpanels\CFullscreenPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\controlpanels\CModelDisplayPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\controlpanels\CSequencesPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\controlpanels\CTexturesPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\controlpanels\CWeaponOriginPanel.cpp">
+      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\graphics\OpenGL.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\Constants.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\GraphicsHelpers.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\common\Utility.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\common\CGlobals.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\common\Logging.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\studiomodel\StudioModel.h">
+      <Filter>Header Files\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\common\Platform.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utility\mathlib.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utility\studio.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\filesystem\CFileSystem.h">
+      <Filter>Header Files\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\soundsystem\CSoundSystem.h">
+      <Filter>Header Files\soundsystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\CwxOpenGL.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wxInclude.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\utility\CTimer.h">
+      <Filter>Header Files\ui\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\utility\wxUtil.h">
+      <Filter>Header Files\ui\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\CHLMVSettings.h">
+      <Filter>Header Files\hlmv</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\C3DView.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\CFullscreenWindow.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\CHLMV.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\CMainPanel.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\CMainWindow.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\CModelViewerApp.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\wxHLMV.h">
+      <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\options\COptionsDialog.h">
+      <Filter>Header Files\hlmv\ui\options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\controlpanels\CBaseControlPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\controlpanels\CBaseSequencesPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\controlpanels\CBodyPartsPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\controlpanels\CFullscreenPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\controlpanels\CModelDisplayPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\controlpanels\CSequencesPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\controlpanels\CTexturesPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\controlpanels\CWeaponOriginPanel.h">
+      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
