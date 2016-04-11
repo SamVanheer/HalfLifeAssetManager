@@ -472,6 +472,18 @@ int StudioModel::SetSequence( int iSequence )
 
 	m_sequence = iSequence;
 	m_frame = 0;
+	m_flFrameRate = 1.0f;
+
+	const mstudioseqdesc_t* pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex ) + iSequence;
+
+	if( pseqdesc->numframes > 1 )
+	{
+		m_flComputedFrameRate = 256 * pseqdesc->fps / ( pseqdesc->numframes - 1 );
+	}
+	else
+	{
+		m_flComputedFrameRate = 256.0;
+	}
 
 	return m_sequence;
 }
@@ -785,3 +797,40 @@ void StudioModel::scaleBones (float scale)
 	}	
 }
 
+#include "common/Logging.h"
+
+int StudioModel::GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index )
+{
+	if( !m_pstudiohdr || m_sequence >= m_pstudiohdr->numseq )
+		return 0;
+
+	int events = 0;
+
+	const mstudioseqdesc_t* pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex ) + m_sequence;
+	const mstudioevent_t* pevent = ( mstudioevent_t * ) ( ( byte * ) m_pstudiohdr + pseqdesc->eventindex );
+
+	if( pseqdesc->numevents == 0 || index > pseqdesc->numevents )
+		return 0;
+
+	if( pseqdesc->numframes <= 1 )
+	{
+		flStart = 0;
+		flEnd = 1.0;
+	}
+
+	for( ; index < pseqdesc->numevents; index++ )
+	{
+		// Don't send client-side events to the server AI
+		if( pevent[ index ].event >= EVENT_CLIENT )
+			continue;
+
+		if( ( pevent[ index ].frame >= flStart && pevent[ index ].frame < flEnd ) ||
+			( ( pseqdesc->flags & STUDIO_LOOPING ) && flEnd >= pseqdesc->numframes - 1 && pevent[ index ].frame < flEnd - pseqdesc->numframes + 1 ) )
+		{
+			event.iEvent = pevent[ index ].event;
+			event.pszOptions = pevent[ index ].options;
+			return index + 1;
+		}
+	}
+	return 0;
+}

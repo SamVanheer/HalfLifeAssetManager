@@ -88,6 +88,9 @@
     <Filter Include="Header Files\common">
       <UniqueIdentifier>{c003bdf0-454e-4475-a918-228b9342fadb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\common">
+      <UniqueIdentifier>{b2ffd917-b04d-437c-8e2e-6171185835db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="model\utility\mathlib.c">
@@ -167,6 +170,12 @@
     </ClCompile>
     <ClCompile Include="ui\Logging.cpp">
       <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="model\utility\Platform.cpp">
+      <Filter>Source Files\model\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="common\CGlobals.cpp">
+      <Filter>Source Files\common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -261,6 +270,9 @@
       <Filter>Header Files\filesystem</Filter>
     </ClInclude>
     <ClInclude Include="common\Logging.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\CGlobals.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
   </ItemGroup>

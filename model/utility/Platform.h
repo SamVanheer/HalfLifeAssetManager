@@ -8,6 +8,8 @@
 
 #define MAX_PATH_LENGTH MAX_PATH
 
+#undef GetCurrentTime
+
 #else
 
 #error "Not implemented"
@@ -15,5 +17,9 @@
 #define MAX_PATH_LENGTH PATH_MAX
 
 #endif
+
+long long GetCurrentTick();
+
+double GetCurrentTime();
 
 #endif //PLATFORM_H

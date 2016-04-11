@@ -41,6 +41,7 @@ enum wxIdentifiers
 
 	//Sequences panel
 	wxID_SEQUENCE_EVENT,
+	wxID_SEQUENCE_PLAYSOUND,
 
 	//Weapon Origin panel
 	wxID_WPN_TESTORIGINS,

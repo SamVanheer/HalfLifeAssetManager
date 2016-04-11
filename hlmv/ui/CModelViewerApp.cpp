@@ -55,6 +55,7 @@ bool CModelViewerApp::OnCmdLineParsed( wxCmdLineParser& parser )
 
 void CModelViewerApp::OnTimer( CTimer& timer )
 {
+	//TODO: move this
 	soundSystem().RunFrame();
 
 	if( m_pListener )
@@ -141,7 +142,6 @@ bool CModelViewerApp::Initialize()
 		return false;
 	}
 
-	/*
 	//TODO: remove this.
 	fileSystem().SetBasePath( "../../../../../../Program Files (x86)/Steam/steamapps/common/Sven Co-op/" );
 
@@ -150,8 +150,7 @@ bool CModelViewerApp::Initialize()
 	fileSystem().AddSearchPath( "svencoop_downloads" );
 	fileSystem().AddSearchPath( "svencoop_hd" );
 
-	soundSystem().PlaySound( "sound/tur/letgo.wav" );
-	*/
+	//soundSystem().PlaySound( "sound/tur/letgo.wav" );
 
 	m_pMainWindow = new CMainWindow();
 

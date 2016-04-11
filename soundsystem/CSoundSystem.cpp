@@ -237,7 +237,7 @@ void CSoundSystem::RunFrame()
 	}
 }
 
-void CSoundSystem::PlaySound( const char* const pszFilename )
+void CSoundSystem::PlaySound( const char* pszFilename, const float flVolume, const int iPitch )
 {
 	if( !pszFilename || !( *pszFilename ) )
 		return;
@@ -245,9 +245,19 @@ void CSoundSystem::PlaySound( const char* const pszFilename )
 	if( !m_pSystem )
 		return;
 
+	char szActualFilename[ MAX_PATH_LENGTH ];
+
+	if( pszFilename[ 0 ] == '*' )
+		++pszFilename;
+
+	const int iRet = snprintf( szActualFilename, sizeof( szActualFilename ), "sound/%s", pszFilename );
+
+	if( iRet < 0 || static_cast<size_t>( iRet ) >= sizeof( szActualFilename ) )
+		return;
+
 	char szFullFilename[ MAX_PATH_LENGTH ];
 
-	if( !fileSystem().GetRelativePath( pszFilename, szFullFilename, sizeof( szFullFilename ) ) )
+	if( !fileSystem().GetRelativePath( szActualFilename, szFullFilename, sizeof( szFullFilename ) ) )
 	{
 		Warning( "CSoundSystem::PlaySound: Unable to find sound file\n" );
 		return;
@@ -268,6 +278,26 @@ void CSoundSystem::PlaySound( const char* const pszFilename )
 		return;
 
 	if( CheckFMODResult( m_pSystem->playSound( FMOD_CHANNEL_FREE, sound.pSound, false, &sound.pChannel ) ) )
+	{
+		CheckFMODResult( sound.pSound->release() );
+		return;
+	}
+
+	if( CheckFMODResult( sound.pChannel->setVolume( flVolume ) ) )
+	{
+		CheckFMODResult( sound.pSound->release() );
+		return;
+	}
+
+	float flFrequency;
+
+	if( CheckFMODResult( sound.pChannel->getFrequency( &flFrequency ) ) )
+	{
+		CheckFMODResult( sound.pSound->release() );
+		return;
+	}
+
+	if( CheckFMODResult( sound.pChannel->setFrequency( flFrequency * ( iPitch * 0.01f ) ) ) )
 	{
 		CheckFMODResult( sound.pSound->release() );
 		return;

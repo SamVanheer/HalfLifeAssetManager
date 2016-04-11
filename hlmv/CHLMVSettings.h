@@ -69,6 +69,8 @@ public:
 
 	int sequence;
 
+	bool playSound;
+
 	unsigned int drawnPolys; //TODO: move
 
 	bool wireframeOverlay;

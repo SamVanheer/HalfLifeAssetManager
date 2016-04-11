@@ -16,6 +16,9 @@
 
 #include "model/utility/OpenGL.h"
 
+#include "common/Logging.h"
+#include "common/CGlobals.h"
+
 #include "StudioModel.h"
 
 #pragma warning( disable : 4244 ) // double to float
@@ -294,17 +297,32 @@ void StudioModel::SlerpBones( vec4_t q1[], vec3_t pos1[], vec4_t q2[], vec3_t po
 }
 
 
-void StudioModel::AdvanceFrame( float dt )
+float StudioModel::AdvanceFrame( float dt )
 {
 	if (!m_pstudiohdr)
-		return;
+		return 0.0;
 
-	mstudioseqdesc_t	*pseqdesc;
-	pseqdesc = (mstudioseqdesc_t *)((byte *)m_pstudiohdr + m_pstudiohdr->seqindex) + m_sequence;
+	mstudioseqdesc_t	*pseqdesc = (mstudioseqdesc_t *)((byte *)m_pstudiohdr + m_pstudiohdr->seqindex) + m_sequence;
 
-	if (dt > 0.1)
+	if( dt == 0.0 )
+	{
+		dt = ( Globals.GetCurrentTime() - m_flAnimTime );
+		if( dt <= 0.001 )
+		{
+			m_flAnimTime = Globals.GetCurrentTime();
+			return 0.0;
+		}
+	}
+
+	if( !m_flAnimTime )
+		dt = 0.0;
+
+	/*
+	if( dt > 0.1f )
 		dt = 0.1f;
-	m_frame += dt * pseqdesc->fps;
+		*/
+
+	m_frame += dt * pseqdesc->fps * m_flFrameRate;
 
 	if (pseqdesc->numframes <= 1)
 	{
@@ -315,6 +333,10 @@ void StudioModel::AdvanceFrame( float dt )
 		// wrap
 		m_frame -= (int)(m_frame / (pseqdesc->numframes - 1)) * (pseqdesc->numframes - 1);
 	}
+
+	m_flAnimTime = Globals.GetCurrentTime();
+
+	return dt;
 }
 
 int StudioModel::GetNumFrames() const
@@ -360,9 +382,38 @@ int StudioModel::SetFrame( int nFrame )
 		m_frame -= (int)(m_frame / (pseqdesc->numframes - 1)) * (pseqdesc->numframes - 1);
 	}
 
+	m_flAnimTime = Globals.GetCurrentTime();
+
 	return m_frame;
 }
 
+void StudioModel::DispatchAnimEvents( IAnimEventHandler& handler, float flInterval )
+{
+	if( !m_pstudiohdr )
+	{
+		Message( "Gibbed monster is thinking!\n" );
+		return;
+	}
+
+	// FIXME: I have to do this or some events get missed, and this is probably causing the problem below
+	flInterval = 0.1f;
+
+	const mstudioseqdesc_t* pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex ) + m_sequence;
+
+	// FIX: this still sometimes hits events twice
+	float flStart = m_frame + ( m_flLastEventCheck - m_flAnimTime ) * pseqdesc->fps * m_flFrameRate;
+	float flEnd = m_frame + flInterval * pseqdesc->fps * m_flFrameRate;
+	m_flLastEventCheck = m_flAnimTime + flInterval;
+
+	CAnimEvent event;
+
+	int index = 0;
+
+	while( ( index = GetAnimationEvent( event, flStart, flEnd, index ) ) != 0 )
+	{
+		handler.HandleAnimEvent( event );
+	}
+}
 
 void StudioModel::SetUpBones ( void )
 {

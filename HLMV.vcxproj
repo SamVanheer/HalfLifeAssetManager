@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="common\CGlobals.cpp" />
     <ClCompile Include="filesystem\CFileSystem.cpp" />
     <ClCompile Include="hlmv\CHLMVSettings.cpp" />
     <ClCompile Include="hlmv\ui\C3DView.cpp" />
@@ -41,12 +42,14 @@
     <ClCompile Include="model\studiomodel\studio_utils.cpp" />
     <ClCompile Include="model\utility\mathlib.c" />
     <ClCompile Include="model\utility\OpenGL.cpp" />
+    <ClCompile Include="model\utility\Platform.cpp" />
     <ClCompile Include="soundsystem\CSoundSystem.cpp" />
     <ClCompile Include="ui\CwxOpenGL.cpp" />
     <ClCompile Include="ui\Logging.cpp" />
     <ClCompile Include="ui\utility\wxUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\CGlobals.h" />
     <ClInclude Include="common\Logging.h" />
     <ClInclude Include="filesystem\CFileSystem.h" />
     <ClInclude Include="hlmv\CHLMVSettings.h" />

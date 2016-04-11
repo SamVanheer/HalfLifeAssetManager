@@ -4,7 +4,11 @@
 
 #include "hlmv/CHLMVSettings.h"
 
+#include "common/CGlobals.h"
+
 #include "model/graphics/GraphicsHelpers.h"
+
+#include "soundsystem/CSoundSystem.h"
 
 #include "ui/CwxOpenGL.h"
 
@@ -131,12 +135,66 @@ void C3DView::PrepareForLoad()
 
 void C3DView::UpdateView()
 {
-	const wxLongLong curr = wxGetUTCTimeMillis();
+	//TODO: move logic out of this class and into another
+	const double flCurTime = GetCurrentTime();
+
+	float flFrameTime = flCurTime - Globals.GetPreviousRealTime();
+
+	Globals.SetRealTime( flCurTime );
+
+	if( flFrameTime > 1.0f )
+		flFrameTime = 0.1f;
+
+	if( flFrameTime < 1.0 / Globals.GetFPS() )
+		return;
+
+	Globals.SetPreviousTime( Globals.GetCurrentTime() );
+	Globals.SetCurrentTime( Globals.GetCurrentTime() + flFrameTime );
+	Globals.SetFrameTime( flFrameTime );
+	Globals.SetPreviousRealTime( Globals.GetRealTime() );
 
 	if( m_pSettings->playSequence && m_pSettings->GetStudioModel() )
-		m_pSettings->GetStudioModel()->AdvanceFrame( ( ( curr - m_iPrevTime ).GetValue() / 1000.0 ) * m_pSettings->speedScale );
+	{
+		//TODO: set directly
+		m_pSettings->GetStudioModel()->SetFrameRate( m_pSettings->speedScale );
+		const float flDeltaTime = m_pSettings->GetStudioModel()->AdvanceFrame( /*flFrameTime * m_pSettings->speedScale*/ );
 
-	m_iPrevTime = curr;
+		//TODO: put this listener elsewhere
+		class CStudioModelListener final : public IAnimEventHandler
+		{
+		public:
+			CStudioModelListener( CHLMVSettings* const pSettings )
+				: m_pSettings( pSettings )
+			{
+			}
+
+			void HandleAnimEvent( const CAnimEvent& event ) override final
+			{
+				switch( event.iEvent )
+				{
+				case SCRIPT_EVENT_SOUND:			// Play a named wave file
+				case SCRIPT_EVENT_SOUND_VOICE:
+					{
+						//TODO: define PITCH_NORM
+						if( m_pSettings->playSound )
+						{
+							soundSystem().PlaySound( event.pszOptions, 1.0f, 100 );
+						}
+
+						break;
+					}
+
+				default: break;
+				}
+			}
+
+			CHLMVSettings* const m_pSettings;
+		};
+
+		CStudioModelListener listener( m_pSettings );
+
+		m_pSettings->GetStudioModel()->DispatchAnimEvents( listener, flDeltaTime );
+	}
 
 	if( !m_pSettings->pause )
 		Refresh();

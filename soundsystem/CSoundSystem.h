@@ -43,7 +43,7 @@ public:
 public:
 
 	//Sound playback API
-	void PlaySound( const char* const pszFilename );
+	void PlaySound( const char* pszFilename, const float flVolume, const int iPitch );
 
 	void StopAllSounds();
 

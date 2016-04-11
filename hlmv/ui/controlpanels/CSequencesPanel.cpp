@@ -9,6 +9,7 @@
 
 wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseSequencesPanel )
 	EVT_COMBOBOX( wxID_SEQUENCE_EVENT, CSequencesPanel::EventChanged )
+	EVT_CHECKBOX( wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged )
 wxEND_EVENT_TABLE()
 
 CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
@@ -21,9 +22,10 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMVSettings* const pSetti
 	m_pEvent = new wxComboBox( pElemParent, wxID_SEQUENCE_EVENT, "" );
 	m_pEvent->SetEditable( false );
 
-	m_pPlaySound = new wxCheckBox( pElemParent, wxID_ANY, "Play Sound" );
+	m_pPlaySound = new wxCheckBox( pElemParent, wxID_SEQUENCE_PLAYSOUND, "Play Sound" );
 
 	m_pEventInfo = new wxPanel( pElemParent );
+	m_pEventInfo->SetSize( wxSize( 200, wxDefaultSize.GetY() ) );
 
 	m_pFrame	= new wxStaticText( m_pEventInfo, wxID_ANY, "Frame: Undefined" );
 	m_pEventId	= new wxStaticText( m_pEventInfo, wxID_ANY, "Event: Undefined" );
@@ -41,10 +43,10 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMVSettings* const pSetti
 
 	wxBoxSizer* pEventSizer = new wxBoxSizer( wxVERTICAL );
 
-	pEventSizer->Add( m_pFrame );
-	pEventSizer->Add( m_pEventId );
-	pEventSizer->Add( m_pOptions );
-	pEventSizer->Add( m_pType );
+	pEventSizer->Add( m_pFrame, wxSizerFlags().Expand() );
+	pEventSizer->Add( m_pEventId, wxSizerFlags().Expand() );
+	pEventSizer->Add( m_pOptions, wxSizerFlags().Expand() );
+	pEventSizer->Add( m_pType, wxSizerFlags().Expand() );
 
 	pSizer->Add( m_pEventInfo, wxGBPosition( 0, BASESEQUENCES_FIRST_FREE_COL + 1 ), wxDefaultSpan, wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
@@ -77,6 +79,11 @@ void CSequencesPanel::SequenceChanged( wxCommandEvent& event )
 void CSequencesPanel::EventChanged( wxCommandEvent& event )
 {
 	UpdateEventInfo( m_pEvent->GetSelection() );
+}
+
+void CSequencesPanel::PlaySoundChanged( wxCommandEvent& event )
+{
+	m_pSettings->playSound = m_pPlaySound->GetValue();
 }
 
 void CSequencesPanel::UpdateEvents()
@@ -134,6 +141,9 @@ void CSequencesPanel::UpdateEventInfo( int iIndex )
 	m_pEventId->SetLabelText( wxString::Format( "Event: %d", event.event ) );
 	m_pOptions->SetLabelText( wxString::Format( "Options: %s", static_cast<const char*>( event.options ) ) );
 	m_pType->SetLabelText( wxString::Format( "Type: %d", event.type ) );
+
+	//Resize it so it doesn't cut off the options text
+	m_pEventInfo->Fit();
 
 	m_pEventInfo->Show( true );
 }

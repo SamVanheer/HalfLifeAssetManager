@@ -89,8 +89,6 @@ private:
 	float m_flOldX = 0;
 	float m_flOldY = 0;
 
-	wxLongLong m_iPrevTime = 0;
-
 	//Tracks mouse button state. Used to prevent input from being mistakingly applied (e.g. double click from dialog spilling over as drag).
 	int m_iButtonsDown = wxMOUSE_BTN_NONE;
 

@@ -47,6 +47,32 @@ bool CalculateImageDimensions( const int iWidth, const int iHeight, int& iOutWid
 
 void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData );
 
+struct CAnimEvent final
+{
+	int			iEvent;
+	const char* pszOptions;
+};
+
+#define EVENT_SPECIFIC			0
+#define EVENT_SCRIPTED			1000
+#define EVENT_SHARED			2000
+#define EVENT_CLIENT			5000
+
+#define SCRIPT_EVENT_SOUND			1004		// Play named wave file (on CHAN_BODY)
+#define SCRIPT_EVENT_SOUND_VOICE	1008		// Play named wave file (on CHAN_VOICE)
+
+class IAnimEventHandler
+{
+public:
+	virtual ~IAnimEventHandler() = 0;
+
+	virtual void HandleAnimEvent( const CAnimEvent& event ) = 0;
+};
+
+inline IAnimEventHandler::~IAnimEventHandler()
+{
+}
+
 class StudioModel
 {
 public:
@@ -112,8 +138,10 @@ public:
 	LoadResult				Load( const char* const pszModelName );
 	bool					SaveModel ( char *modelname );
 	unsigned int			DrawModel( const CRenderSettings& settings, const bool wireframeOnly = false );
-	void					AdvanceFrame( float dt );
+	float					AdvanceFrame( float dt = 0.0f );
 	int						SetFrame (int nFrame);
+
+	void					DispatchAnimEvents( IAnimEventHandler& handler, float flInterval = 0.1f );
 
 	void					ExtractBbox( float *mins, float *maxs ) const;
 
@@ -129,21 +157,31 @@ public:
 	int						SetBodygroup( int iGroup, int iValue );
 	int						SetSkin( int iValue );
 
+	float					GetFrameRate() const { return m_flFrameRate; }
+	void					SetFrameRate( const float flFrameRate ) { m_flFrameRate = flFrameRate; }
+
 	void					scaleMeshes (float scale);
 	void					scaleBones (float scale);
+
+	int						GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index );
 
 private:
 	// entity settings
 	vec3_t					m_origin;
 	vec3_t					m_angles;	
-	int						m_sequence;			// sequence index
-	float					m_frame;			// frame
-	int						m_bodynum;			// bodypart selection	
-	int						m_skinnum;			// skin group selection
-	byte					m_controller[4];	// bone controllers
-	byte					m_blending[2];		// animation blending
-	byte					m_mouth;			// mouth position
-	bool					m_owntexmodel;		// do we have a modelT.mdl ?
+	int						m_sequence;				// sequence index
+	float					m_frame;				// frame
+	int						m_bodynum;				// bodypart selection	
+	int						m_skinnum;				// skin group selection
+	byte					m_controller[4];		// bone controllers
+	byte					m_blending[2];			// animation blending
+	byte					m_mouth;				// mouth position
+	bool					m_owntexmodel;			// do we have a modelT.mdl ?
+
+	float					m_flLastEventCheck;		//Last time we checked for animation events.
+	float					m_flAnimTime;			//Time when the frame was set.
+	float					m_flFrameRate;			//Framerate.
+	float					m_flComputedFrameRate;	//Framerate computed for the current sequence.
 
 	// internal data
 	studiohdr_t				*m_pstudiohdr;

@@ -19,6 +19,8 @@ protected:
 	wxDECLARE_EVENT_TABLE();
 
 private:
+	void PlaySoundChanged( wxCommandEvent& event );
+
 	void UpdateEvents();
 
 	void UpdateEventInfo( int iIndex );
