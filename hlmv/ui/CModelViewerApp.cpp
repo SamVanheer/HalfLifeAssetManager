@@ -10,6 +10,9 @@
 #include "model/utility/OpenGL.h"
 #include "ui/CwxOpenGL.h"
 
+#include "filesystem/CFileSystem.h"
+#include "soundsystem/CSoundSystem.h"
+
 #include "CModelViewerApp.h"
 
 wxIMPLEMENT_APP( CModelViewerApp );
@@ -32,17 +35,43 @@ int CModelViewerApp::OnExit()
 	return wxApp::OnExit();
 }
 
+void CModelViewerApp::OnInitCmdLine( wxCmdLineParser& parser )
+{
+	wxApp::OnInitCmdLine( parser );
+
+	//Note: this works by setting all available parameters in the order that they appear on the command line.
+	//The model filename must be last for this to work with drag&drop.
+	parser.AddParam( "Filename of the model to load on startup", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL );
+}
+
+bool CModelViewerApp::OnCmdLineParsed( wxCmdLineParser& parser )
+{
+	//Last parameter is the model to load.
+	if( parser.GetParamCount() > 0 )
+		m_szModel = parser.GetParam( parser.GetParamCount() - 1 );
+
+	return wxApp::OnCmdLineParsed( parser );
+}
+
+void CModelViewerApp::OnTimer( CTimer& timer )
+{
+	soundSystem().RunFrame();
+
+	if( m_pListener )
+		m_pListener->OnTimer( timer );
+}
+
 void CModelViewerApp::SetFullscreenWindow( hlmv::CFullscreenWindow* pWindow )
 {
 	m_pFullscreenWindow = pWindow;
 
 	if( m_pFullscreenWindow )
 	{
-		m_pTimer->SetListener( m_pFullscreenWindow );
+		m_pListener = m_pFullscreenWindow;
 	}
 	else
 	{
-		m_pTimer->SetListener( m_pMainWindow );
+		m_pListener = m_pMainWindow;
 	}
 }
 
@@ -71,6 +100,14 @@ bool CModelViewerApp::Initialize()
 	if( !wxApp::OnInit() )
 		return false;
 
+	filesystem::CFileSystem::CreateInstance();
+
+	if( !fileSystem().Initialize() )
+	{
+		wxMessageBox( "Failed to initialize file system" );
+		return false;
+	}
+
 	SetAppDisplayName( HLMV_TITLE );
 
 	//Set up OpenGL parameters.
@@ -96,11 +133,34 @@ bool CModelViewerApp::Initialize()
 
 	wxInitAllImageHandlers();
 
+	soundsystem::CSoundSystem::CreateInstance();
+
+	if( !soundSystem().Initialize() )
+	{
+		wxMessageBox( "Failed to initialize sound system" );
+		return false;
+	}
+
+	/*
+	//TODO: remove this.
+	fileSystem().SetBasePath( "../../../../../../Program Files (x86)/Steam/steamapps/common/Sven Co-op/" );
+
+	fileSystem().AddSearchPath( "svencoop" );
+	fileSystem().AddSearchPath( "svencoop_addon" );
+	fileSystem().AddSearchPath( "svencoop_downloads" );
+	fileSystem().AddSearchPath( "svencoop_hd" );
+
+	soundSystem().PlaySound( "sound/tur/letgo.wav" );
+	*/
+
 	m_pMainWindow = new CMainWindow();
 
 	m_pMainWindow->Show( true );
 
-	m_pTimer = new CTimer( m_pMainWindow );
+	m_pTimer = new CTimer( this );
+
+	//TODO: tidy
+	m_pListener = m_pMainWindow;
 
 	//60 FPS
 	m_pTimer->Start( ( 1 / 60.0 ) * 1000 );
@@ -129,25 +189,19 @@ void CModelViewerApp::Shutdown()
 		m_pTimer = nullptr;
 	}
 
+	if( soundsystem::CSoundSystem::InstanceExists() )
+	{
+		soundSystem().Shutdown();
+		soundsystem::CSoundSystem::DestroyInstance();
+	}
+
+	if( filesystem::CFileSystem::InstanceExists() )
+	{
+		fileSystem().Shutdown();
+		filesystem::CFileSystem::DestroyInstance();
+	}
+
 	wxOpenGL().Shutdown();
 
 	CwxOpenGL::DestroyInstance();
-}
-
-void CModelViewerApp::OnInitCmdLine( wxCmdLineParser& parser )
-{
-	wxApp::OnInitCmdLine( parser );
-
-	//Note: this works by setting all available parameters in the order that they appear on the command line.
-	//The model filename must be last for this to work with drag&drop.
-	parser.AddParam( "Filename of the model to load on startup", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL );
-}
-
-bool CModelViewerApp::OnCmdLineParsed( wxCmdLineParser& parser )
-{
-	//Last parameter is the model to load.
-	if( parser.GetParamCount() > 0 )
-		m_szModel = parser.GetParam( parser.GetParamCount() - 1 );
-
-	return wxApp::OnCmdLineParsed( parser );
 }

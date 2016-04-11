@@ -67,3 +67,11 @@ external/GLEW/include/GL/glew.h
 external/GLEW/include/GL/glxew.h
 external/GLEW/lib/glew32.lib
 external/GLEW/include/GL/wglew.h
+external/FMOD/include/fmod.h
+external/FMOD/include/fmod.hpp
+external/FMOD/include/fmod_codec.h
+external/FMOD/lib/fmodex_vc.lib
+external/FMOD/include/fmod_dsp.h
+external/FMOD/include/fmod_errors.h
+external/FMOD/include/fmod_memoryinfo.h
+external/FMOD/include/fmod_output.h

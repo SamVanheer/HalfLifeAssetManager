@@ -73,6 +73,21 @@
     <Filter Include="Source Files\ui\utility">
       <UniqueIdentifier>{a590454e-4163-4290-a956-e5ad60d25ee1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\soundsystem">
+      <UniqueIdentifier>{39e52d9e-2bce-490c-8856-007b74fa97ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\soundsystem">
+      <UniqueIdentifier>{29ebaf56-9d86-4c6b-9dd5-d8f7fa0d9e91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\filesystem">
+      <UniqueIdentifier>{df2d5853-8b89-4d12-9e56-745db48e51cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\filesystem">
+      <UniqueIdentifier>{22b44ba6-4833-4d8d-88bd-fa124c5b46c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\common">
+      <UniqueIdentifier>{c003bdf0-454e-4475-a918-228b9342fadb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="model\utility\mathlib.c">
@@ -143,6 +158,15 @@
     </ClCompile>
     <ClCompile Include="hlmv\ui\CFullscreenWindow.cpp">
       <Filter>Source Files\hlmv\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="soundsystem\CSoundSystem.cpp">
+      <Filter>Source Files\soundsystem</Filter>
+    </ClCompile>
+    <ClCompile Include="filesystem\CFileSystem.cpp">
+      <Filter>Source Files\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\Logging.cpp">
+      <Filter>Source Files\ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +253,15 @@
     </ClInclude>
     <ClInclude Include="hlmv\ui\CFullscreenWindow.h">
       <Filter>Header Files\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="soundsystem\CSoundSystem.h">
+      <Filter>Header Files\soundsystem</Filter>
+    </ClInclude>
+    <ClInclude Include="filesystem\CFileSystem.h">
+      <Filter>Header Files\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Logging.h">
+      <Filter>Header Files\common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

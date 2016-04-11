@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="filesystem\CFileSystem.cpp" />
     <ClCompile Include="hlmv\CHLMVSettings.cpp" />
     <ClCompile Include="hlmv\ui\C3DView.cpp" />
     <ClCompile Include="hlmv\ui\CFullscreenWindow.cpp" />
@@ -40,10 +41,14 @@
     <ClCompile Include="model\studiomodel\studio_utils.cpp" />
     <ClCompile Include="model\utility\mathlib.c" />
     <ClCompile Include="model\utility\OpenGL.cpp" />
+    <ClCompile Include="soundsystem\CSoundSystem.cpp" />
     <ClCompile Include="ui\CwxOpenGL.cpp" />
+    <ClCompile Include="ui\Logging.cpp" />
     <ClCompile Include="ui\utility\wxUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\Logging.h" />
+    <ClInclude Include="filesystem\CFileSystem.h" />
     <ClInclude Include="hlmv\CHLMVSettings.h" />
     <ClInclude Include="hlmv\ui\C3DView.h" />
     <ClInclude Include="hlmv\ui\CFullscreenWindow.h" />
@@ -68,6 +73,7 @@
     <ClInclude Include="model\utility\OpenGL.h" />
     <ClInclude Include="model\utility\Platform.h" />
     <ClInclude Include="model\utility\studio.h" />
+    <ClInclude Include="soundsystem\CSoundSystem.h" />
     <ClInclude Include="ui\CwxOpenGL.h" />
     <ClInclude Include="ui\utility\CTimer.h" />
     <ClInclude Include="ui\utility\wxUtil.h" />
@@ -144,13 +150,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\external\GLEW\include;.\model\utility;.;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\external\FMOD\include;.\external\GLEW\include;.\model\utility;.;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;wxbase31ud.lib;wxmsw31ud_core.lib;wxmsw31ud_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\external\FMOD\lib;.\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;fmodex_vc.lib;wxbase31ud.lib;wxmsw31ud_core.lib;wxmsw31ud_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -177,15 +183,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\external\GLEW\include;.\model\utility;.;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\external\FMOD\include;.\external\GLEW\include;.\model\utility;.;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\external\FMOD\lib;.\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;fmodex_vc.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
