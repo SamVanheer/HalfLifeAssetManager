@@ -142,17 +142,11 @@ bool CModelViewerApp::Initialize()
 		return false;
 	}
 
-	//TODO: remove this.
-	/*
-	fileSystem().SetBasePath( "../../../../../../../Program Files (x86)/Steam/steamapps/common/Sven Co-op/" );
-
-	fileSystem().AddSearchPath( "svencoop" );
-	fileSystem().AddSearchPath( "svencoop_addon" );
-	fileSystem().AddSearchPath( "svencoop_downloads" );
-	fileSystem().AddSearchPath( "svencoop_hd" );
-	*/
-
-	//soundSystem().PlaySound( "sound/tur/letgo.wav" );
+	if( !m_Settings.Initialize() )
+	{
+		wxMessageBox( "Failed to initialize settings", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
 
 	m_pMainWindow = new CMainWindow( &m_Settings );
 
@@ -189,6 +183,8 @@ void CModelViewerApp::Shutdown()
 		delete m_pTimer;
 		m_pTimer = nullptr;
 	}
+
+	m_Settings.Shutdown();
 
 	if( soundsystem::CSoundSystem::InstanceExists() )
 	{

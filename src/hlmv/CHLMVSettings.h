@@ -32,6 +32,11 @@ public:
 	bool LoadFromFile( const char* const pszFilename );
 	bool SaveToFile( const char* const pszFilename );
 
+	bool Initialize();
+	void Shutdown();
+
+	bool InitializeFileSystem();
+
 	void CenterView( const StudioModel& model );
 
 	void SetOrigin( const vec3_t vecOrigin );
@@ -100,6 +105,8 @@ public:
 
 private:
 	StudioModel* m_pStudioModel;
+
+	bool m_bInitialized = false;
 
 private:
 	CHLMVSettings( const CHLMVSettings& other ) = default;

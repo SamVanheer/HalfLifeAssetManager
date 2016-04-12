@@ -7,9 +7,13 @@
 #include "keyvalues/CKeyvalue.h"
 #include "keyvalues/CKvBlockNode.h"
 
+#include "filesystem/CFileSystem.h"
+
 #include "settings/GameConfigIO.h"
 
 #include "CHLMVSettings.h"
+
+#define HLMV_SETTINGS_FILE "HLMVSettings.txt"
 
 CHLMVSettings::CHLMVSettings()
 	: m_pStudioModel( nullptr )
@@ -164,6 +168,82 @@ bool CHLMVSettings::SaveToFile( const char* const pszFilename )
 	}
 
 	return false;
+}
+
+bool CHLMVSettings::Initialize()
+{
+	if( m_bInitialized )
+		return false;
+
+	m_bInitialized = true;
+
+	bool bResult = LoadFromFile( HLMV_SETTINGS_FILE );
+
+	//Load the settings, or if the file didn't exist, save settings.
+	if( !bResult )
+	{
+		bResult = SaveToFile( HLMV_SETTINGS_FILE );
+	}
+
+	if( bResult )
+	{
+		bResult = InitializeFileSystem();
+	}
+
+	return bResult;
+}
+
+void CHLMVSettings::Shutdown()
+{
+	if( !m_bInitialized )
+		return;
+
+	m_bInitialized = false;
+
+	if( !SaveToFile( HLMV_SETTINGS_FILE ) )
+		Error( "Failed to save settings!\n" );
+}
+
+bool CHLMVSettings::InitializeFileSystem()
+{
+	if( auto activeConfig = configManager->GetActiveConfig() )
+	{
+		fileSystem().SetBasePath( activeConfig->GetBasePath() );
+
+		fileSystem().RemoveAllSearchPaths();
+
+		CString szPath;
+
+		const char* pszDirs[] =
+		{
+			"",
+			"_downloads",
+			"_addon",
+			"_hd"
+		};
+
+		//Note: do not use a reference here. Varargs doesn't convert it, so it'll end up being const char**.
+
+		//Add mod dirs first, since they override game dirs.
+		if( strcmp( activeConfig->GetGameDir(), activeConfig->GetModDir() ) )
+		{
+			for( const auto pszDir : pszDirs )
+			{
+				szPath.Format( "%s%s", activeConfig->GetModDir(), pszDir );
+
+				fileSystem().AddSearchPath( szPath.CStr() );
+			}
+		}
+
+		for( const auto pszDir : pszDirs )
+		{
+			szPath.Format( "%s%s", activeConfig->GetGameDir(), pszDir );
+
+			fileSystem().AddSearchPath( szPath.CStr() );
+		}
+	}
+
+	return true;
 }
 
 void CHLMVSettings::CenterView( const StudioModel& model )
