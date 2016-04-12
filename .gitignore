@@ -77,3 +77,4 @@ external/FMOD/include/fmod_memoryinfo.h
 external/FMOD/include/fmod_output.h
 *.ilk
 *.user
+msw_14/settings.txt

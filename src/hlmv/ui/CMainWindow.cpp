@@ -6,6 +6,10 @@
 
 #include "hlmv/CHLMVSettings.h"
 
+#include "filesystem/CFileSystem.h"
+
+#include "utility/CString.h"
+
 #include "CMainPanel.h"
 
 #include "CMainWindow.h"
@@ -24,7 +28,51 @@ CMainWindow::CMainWindow()
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pSettings( new CHLMVSettings() )
 {
+	//TODO: move this
+	if( !m_pSettings->LoadFromFile( "settings.txt" ) )
+		m_pSettings->SaveToFile( "settings.txt" );
+	else
+	{
+		if( auto activeConfig = m_pSettings->configManager->GetActiveConfig() )
+		{
+			fileSystem().SetBasePath( activeConfig->GetBasePath() );
+
+			fileSystem().RemoveAllSearchPaths();
+
+			CString szPath;
+
+			const char* pszDirs[] = 
+			{
+				"",
+				"_downloads",
+				"_addon",
+				"_hd"
+			};
+
+			//Note: do not use a reference here. Varargs doesn't convert it, so it'll end up being const char**.
+
+			//Add mod dirs first, since they override game dirs.
+			if( strcmp( activeConfig->GetGameDir(), activeConfig->GetModDir() ) )
+			{
+				for( const auto pszDir : pszDirs )
+				{
+					szPath.Format( "%s%s", activeConfig->GetModDir(), pszDir );
+
+					fileSystem().AddSearchPath( szPath.CStr() );
+				}
+			}
+
+			for( const auto pszDir : pszDirs )
+			{
+				szPath.Format( "%s%s", activeConfig->GetGameDir(), pszDir );
+
+				fileSystem().AddSearchPath( szPath.CStr() );
+			}
+		}
+	}
+
 	wxMenu* menuFile = new wxMenu;
+
 	menuFile->Append( wxID_MAINWND_LOADMODEL, "&Load Model...",
 					  "Load a model" );
 

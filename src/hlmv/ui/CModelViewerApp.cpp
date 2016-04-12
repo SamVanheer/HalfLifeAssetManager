@@ -143,12 +143,14 @@ bool CModelViewerApp::Initialize()
 	}
 
 	//TODO: remove this.
-	fileSystem().SetBasePath( "../../../../../../Program Files (x86)/Steam/steamapps/common/Sven Co-op/" );
+	/*
+	fileSystem().SetBasePath( "../../../../../../../Program Files (x86)/Steam/steamapps/common/Sven Co-op/" );
 
 	fileSystem().AddSearchPath( "svencoop" );
 	fileSystem().AddSearchPath( "svencoop_addon" );
 	fileSystem().AddSearchPath( "svencoop_downloads" );
 	fileSystem().AddSearchPath( "svencoop_hd" );
+	*/
 
 	//soundSystem().PlaySound( "sound/tur/letgo.wav" );
 

@@ -1,0 +1,288 @@
+#include "common/Logging.h"
+
+#include "utility/CEscapeSequences.h"
+
+#include "CKvBlockNode.h"
+#include "CKeyvalue.h"
+
+#include "CKeyvaluesWriter.h"
+
+CKeyvaluesWriter::CKeyvaluesWriter( const char* pszFilename, const CKeyvaluesLexerSettings& settings )
+	: CKeyvaluesWriter( pszFilename, GetNoEscapeSeqConversion(), settings )
+{
+}
+
+CKeyvaluesWriter::CKeyvaluesWriter( const char* pszFilename, CEscapeSequences& escapeSeqConversion, const CKeyvaluesLexerSettings& settings )
+	: m_Settings( settings )
+	, m_pEscapeSeqConversion( &escapeSeqConversion )
+{
+	m_szFilename[ 0 ] = '\0';
+
+	Open( pszFilename );
+}
+
+CKeyvaluesWriter::~CKeyvaluesWriter()
+{
+	Close();
+}
+
+bool CKeyvaluesWriter::Open( const char* pszFilename )
+{
+	Close();
+
+	if( !pszFilename )
+		return false;
+
+	m_pFile = fopen( pszFilename, "w" );
+
+	strncpy( m_szFilename, pszFilename, sizeof( m_szFilename ) );
+	m_szFilename[ sizeof( m_szFilename ) - 1 ] = '\0';
+
+	return IsOpen();
+}
+
+void CKeyvaluesWriter::Close()
+{
+	if( IsOpen() )
+	{
+		fclose( m_pFile );
+		m_pFile = nullptr;
+
+		m_szFilename[ 0 ] = '\0';
+	}
+
+	m_bErrorOccurred = false;
+}
+
+bool CKeyvaluesWriter::BeginBlock( const char* pszName )
+{
+	if( ErrorOccurred() )
+		return false;
+
+	if( !IsOpen() )
+	{
+		Error( "CKeyvaluesWriter::BeginBlock: No file open!\n" );
+
+		return false;
+	}
+
+	if( !pszName )
+		pszName = "";
+
+	if( !( *pszName ) && !m_Settings.fAllowUnnamedBlocks )
+	{
+		Error( "CKeyvaluesWriter::BeginBlock: No unnamed blocks allowed!\n" );
+
+		return false;
+	}
+
+	if( !WriteTabs() )
+		return false;
+
+	if( !WriteToken( pszName ) )
+		return false;
+
+	fprintf( m_pFile, "\n" );
+
+	if( !WriteTabs() )
+		return false;
+
+	fprintf( m_pFile, "{\n" );
+
+	++m_uiTabDepth;
+
+	return true;
+}
+
+bool CKeyvaluesWriter::EndBlock()
+{
+	if( ErrorOccurred() )
+		return false;
+
+	if( !IsOpen() )
+	{
+		Error( "CKeyvaluesWriter::EndBlock: No file open!\n" );
+
+		return false;
+	}
+
+	if( !m_uiTabDepth )
+	{
+		Error( "CKeyvaluesWriter::EndBlock: No block open!\n" );
+
+		return false;
+	}
+
+	--m_uiTabDepth;
+
+	if( !WriteTabs() )
+		return false;
+
+	fprintf( m_pFile, "}\n" );
+
+	return true;
+}
+
+bool CKeyvaluesWriter::WriteKeyvalue( const char* pszKey, const char* pszValue )
+{
+	if( ErrorOccurred() )
+		return false;
+
+	if( !IsOpen() )
+	{
+		Error( "CKeyvaluesWriter::WriteKeyValue: No file open!\n" );
+
+		return false;
+	}
+
+	if( !pszKey || !( *pszKey ) )
+	{
+		Error( "CKeyvaluesWriter::WriteKeyValue: Null or empty key!\n" );
+
+		return false;
+	}
+
+	if( !pszValue )
+		pszValue = "";
+
+	if( !WriteTabs() )
+		return false;
+
+	if( !WriteToken( pszKey ) )
+		return false;
+
+	fprintf( m_pFile, " " );
+
+	if( !WriteToken( pszValue ) )
+		return false;
+
+	fprintf( m_pFile, "\n" );
+
+	return true;
+}
+
+bool CKeyvaluesWriter::WriteBlock( const CKvBlockNode& block )
+{
+	if( !BeginBlock( block.GetKey().CStr() ) )
+		return false;
+
+	const CKvBlockNode::Children_t& children = block.GetChildren();
+
+	for( CKvBlockNode::Children_t::const_iterator it = children.begin(); it != children.end(); ++it )
+	{
+		Write( *( *it ) );
+	}
+
+	return EndBlock();
+}
+
+bool CKeyvaluesWriter::WriteKeyvalue( const CKeyvalue& keyvalue )
+{
+	return WriteKeyvalue( keyvalue.GetKey().CStr(), keyvalue.GetValue().CStr() );
+}
+
+bool CKeyvaluesWriter::Write( const CKeyvalueNode& node )
+{
+	switch( node.GetType() )
+	{
+	case KVNode_Block: return WriteBlock( static_cast<const CKvBlockNode&>( node ) );
+	case KVNode_Keyvalue: return WriteKeyvalue( static_cast<const CKeyvalue&>( node ) );
+	default:
+		{
+			Error( "CKeyvaluesWriter::Write: Unknown node type!\n" );
+
+			return false;
+		}
+	}
+}
+
+bool CKeyvaluesWriter::WriteTabs()
+{
+	if( m_uiTabDepth >= MAX_BUFFER_LENGTH )
+	{
+		Error( "CKeyvaluesWriter::PrintTabs: Tabs too large to output!\n" );
+
+		return false;
+	}
+
+	char szBuffer[ MAX_BUFFER_LENGTH ];
+
+	for( size_t uiTab = 0; uiTab < m_uiTabDepth; ++uiTab )
+	{
+		szBuffer[ uiTab ] = '\t';
+	}
+
+	szBuffer[ m_uiTabDepth ] = '\0';
+
+	fprintf( m_pFile, "%s", szBuffer );
+
+	return true;
+}
+
+bool CKeyvaluesWriter::WriteToken( const char* const pszToken )
+{
+	char szBuffer[ MAX_BUFFER_LENGTH ];
+
+	const bool busesQuotes = !( *pszToken ) || strchr( pszToken, ' ' );
+
+	size_t uiBufIndex = 0;
+
+	if( busesQuotes )
+		szBuffer[ uiBufIndex++ ] = '\"';
+
+	const size_t uiLength = strlen( pszToken );
+
+	for( size_t uiIndex = 0; uiIndex < uiLength; ++uiIndex )
+	{
+		const char* pszConv = m_pEscapeSeqConversion->GetString( pszToken[ uiIndex ] );
+
+		if( pszConv )
+		{
+			const size_t uiConvLength = m_pEscapeSeqConversion->GetStringLength( pszToken[ uiIndex ] );
+
+			if( ( uiBufIndex + uiConvLength ) >= sizeof( szBuffer ) )
+			{
+				Error( "CKeyvaluesWriter::WriteToken: Token too large!\n" );
+
+				return false;
+			}
+
+			strncpy( szBuffer + uiBufIndex, pszConv, uiConvLength );
+
+			uiBufIndex += uiConvLength;
+		}
+		else
+			szBuffer[ uiBufIndex++ ] = pszToken[ uiIndex ];
+
+		if( uiBufIndex >= sizeof( szBuffer ) )
+		{
+			Error( "CKeyvaluesWriter::WriteToken: Token too large!\n" );
+
+			return false;
+		}
+	}
+
+	if( busesQuotes )
+		szBuffer[ uiBufIndex++ ] = '\"';
+
+	if( uiBufIndex >= sizeof( szBuffer ) )
+	{
+		Error( "CKeyvaluesWriter::WriteToken: Token too large!\n" );
+
+		return false;
+	}
+
+	szBuffer[ uiBufIndex ] = '\0';
+
+	fprintf( m_pFile, "%s", szBuffer );
+
+	return true;
+}
+
+void CKeyvaluesWriter::Error( const char* pszError )
+{
+	if( m_Settings.fLogErrors )
+		::Error( "%s", pszError );
+
+	m_bErrorOccurred = true;
+}

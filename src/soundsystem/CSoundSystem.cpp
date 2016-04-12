@@ -259,7 +259,7 @@ void CSoundSystem::PlaySound( const char* pszFilename, const float flVolume, con
 
 	if( !fileSystem().GetRelativePath( szActualFilename, szFullFilename, sizeof( szFullFilename ) ) )
 	{
-		Warning( "CSoundSystem::PlaySound: Unable to find sound file\n" );
+		Warning( "CSoundSystem::PlaySound: Unable to find sound file '%s'\n", pszFilename );
 		return;
 	}
 

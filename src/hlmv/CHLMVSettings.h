@@ -1,6 +1,9 @@
 #ifndef HLMV_CHLMVSETTINGS_H
 #define HLMV_CHLMVSETTINGS_H
 
+#include <vector>
+#include <memory>
+
 #include "common/Platform.h"
 #include "graphics/OpenGL.h"
 #include "graphics/Constants.h"
@@ -9,12 +12,16 @@
 
 #include "studiomodel/StudioModel.h"
 
+#include "settings/CGameConfig.h"
+#include "settings/CGameConfigManager.h"
+
 /*
 *	Contains all settings used by the HLMV application.
 */
 class CHLMVSettings final
 {
 public:
+	//TODO: split into viewer specific and general purpose
 	CHLMVSettings();
 	~CHLMVSettings();
 
@@ -24,6 +31,9 @@ public:
 	void ResetModelData();
 
 	void ResetToDefaults();
+
+	bool LoadFromFile( const char* const pszFilename );
+	bool SaveToFile( const char* const pszFilename );
 
 	void CenterView( const StudioModel& model );
 
@@ -88,6 +98,8 @@ public:
 	bool antiAliasUVLines;
 
 	StudioModel::CRenderSettings renderSettings;
+
+	std::shared_ptr<settings::CGameConfigManager> configManager = std::make_shared<settings::CGameConfigManager>();
 
 private:
 	StudioModel* m_pStudioModel;

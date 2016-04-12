@@ -85,6 +85,18 @@
     <Filter Include="Source Files\soundsystem">
       <UniqueIdentifier>{e5b1181c-a0f8-4bbf-a905-4b473449de74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\keyvalues">
+      <UniqueIdentifier>{482a5840-429c-4347-8e26-31b1891bdda0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\keyvalues">
+      <UniqueIdentifier>{6a4464d3-8a3d-4713-980c-906d6f034605}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\settings">
+      <UniqueIdentifier>{20100ceb-5293-4062-a9bf-e7beb98776da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\settings">
+      <UniqueIdentifier>{c30758a5-e4f4-4b44-aa4a-8754b23722cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
@@ -170,6 +182,45 @@
     </ClCompile>
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CWeaponOriginPanel.cpp">
       <Filter>Source Files\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvalue.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvalueNode.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvalues.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvaluesLexer.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvaluesParser.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvaluesWriter.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKvBlockNode.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utility\CString.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utility\CEscapeSequences.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\settings\CGameConfig.cpp">
+      <Filter>Source Files\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\common\Utility.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\settings\GameConfigIO.cpp">
+      <Filter>Source Files\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\settings\CGameConfigManager.cpp">
+      <Filter>Source Files\settings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -271,6 +322,48 @@
     </ClInclude>
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CWeaponOriginPanel.h">
       <Filter>Header Files\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvalue.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvalueNode.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvalues.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvaluesLexer.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvaluesParser.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvaluesWriter.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKvBlockNode.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\KeyvaluesConstants.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utility\CString.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utility\CMemory.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utility\CEscapeSequences.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\settings\CGameConfig.h">
+      <Filter>Header Files\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\settings\CGameConfigManager.h">
+      <Filter>Header Files\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\settings\GameConfigIO.h">
+      <Filter>Header Files\settings</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

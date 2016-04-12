@@ -1,3 +1,14 @@
+#include "common/Logging.h"
+
+#include "keyvalues/CKeyvaluesParser.h"
+#include "keyvalues/CKeyvaluesWriter.h"
+#include "keyvalues/CKeyvalues.h"
+#include "keyvalues/CKeyvalueNode.h"
+#include "keyvalues/CKeyvalue.h"
+#include "keyvalues/CKvBlockNode.h"
+
+#include "settings/GameConfigIO.h"
+
 #include "CHLMVSettings.h"
 
 CHLMVSettings::CHLMVSettings()
@@ -73,6 +84,86 @@ void CHLMVSettings::ResetToDefaults()
 	antiAliasUVLines = false;
 
 	renderSettings.ResetToDefaults();
+
+	configManager->RemoveAllConfigs();
+}
+
+bool CHLMVSettings::LoadFromFile( const char* const pszFilename )
+{
+	if( !pszFilename || !( *pszFilename ) )
+		return false;
+
+	CKeyvaluesParser parser( pszFilename );
+
+	if( !parser.HasInputData() )
+		return false;
+
+	const CKeyvaluesParser::ParseResult result = parser.Parse();
+
+	if( result == CKeyvaluesParser::Success )
+	{
+		auto keyvalues = parser.GetKeyvalues();
+
+		auto root = keyvalues->GetRoot();
+
+		auto configs = root->FindFirstChild<CKvBlockNode>( "gameConfigs" );
+
+		if( configs )
+		{
+			const auto result = settings::LoadGameConfigs( *configs, configManager );
+
+			if( result.first < result.second )
+				Warning( "%u game configurations failed to load\n", result.second - result.first );
+
+			auto settings = root->FindFirstChild<CKvBlockNode>( "hlmvSettings" );
+
+			if( settings )
+			{
+				auto active = settings->FindFirstChild<CKeyvalue>( "activeConfig" );
+
+				if( active )
+				{
+					configManager->SetActiveConfig( active->GetValue().CStr() );
+				}
+			}
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool CHLMVSettings::SaveToFile( const char* const pszFilename )
+{
+	if( !pszFilename || !( *pszFilename ) )
+		return false;
+
+	CKeyvaluesWriter writer( pszFilename );
+
+	if( writer.IsOpen() )
+	{
+		writer.BeginBlock( "hlmvSettings" );
+
+		if( auto activeConfig = configManager->GetActiveConfig() )
+		{
+			writer.WriteKeyvalue( "activeConfig", activeConfig->GetName() );
+		}
+
+		writer.EndBlock();
+
+		std::shared_ptr<CKvBlockNode> gameConfigs = std::make_shared<CKvBlockNode>( "gameConfigs" );
+
+		settings::SaveGameConfigs( configManager, *gameConfigs );
+
+		writer.WriteBlock( *gameConfigs );
+
+		writer.Close();
+
+		return true;
+	}
+
+	return false;
 }
 
 void CHLMVSettings::CenterView( const StudioModel& model )
