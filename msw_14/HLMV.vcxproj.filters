@@ -222,6 +222,9 @@
     <ClCompile Include="..\src\settings\CGameConfigManager.cpp">
       <Filter>Source Files\settings</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\ui\CwxBaseApp.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -364,6 +367,9 @@
     </ClInclude>
     <ClInclude Include="..\src\settings\GameConfigIO.h">
       <Filter>Header Files\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\CwxBaseApp.h">
+      <Filter>Header Files\ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

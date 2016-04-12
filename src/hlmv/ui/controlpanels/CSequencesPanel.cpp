@@ -48,7 +48,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMVSettings* const pSetti
 	pEventSizer->Add( m_pOptions, wxSizerFlags().Expand() );
 	pEventSizer->Add( m_pType, wxSizerFlags().Expand() );
 
-	pSizer->Add( m_pEventInfo, wxGBPosition( 0, BASESEQUENCES_FIRST_FREE_COL + 1 ), wxDefaultSpan, wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
+	pSizer->Add( m_pEventInfo, wxGBPosition( 1, BASESEQUENCES_FIRST_FREE_COL + 1 ), wxGBSpan( 3, 1 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
 	m_pEventInfo->SetSizer( pEventSizer );
 

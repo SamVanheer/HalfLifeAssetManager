@@ -1,15 +1,20 @@
 #include <memory>
 
+#include "common/Logging.h"
+
 #include "CwxOpenGL.h"
 
 CwxOpenGL* CwxOpenGL::m_pInstance = nullptr;
 
-CwxOpenGL& CwxOpenGL::GetInstance()
+CwxOpenGL& CwxOpenGL::CreateInstance()
 {
-	if( !m_pInstance )
+	if( m_pInstance )
 	{
-		m_pInstance = new CwxOpenGL();
+		Warning( "CwxOpenGL::CreateInstance called multiple times!\n" );
+		return *m_pInstance;
 	}
+
+	m_pInstance = new CwxOpenGL();
 
 	return *m_pInstance;
 }
@@ -21,6 +26,16 @@ void CwxOpenGL::DestroyInstance()
 		delete m_pInstance;
 		m_pInstance = nullptr;
 	}
+}
+
+CwxOpenGL& CwxOpenGL::GetInstance()
+{
+	return *m_pInstance;
+}
+
+bool CwxOpenGL::InstanceExists()
+{
+	return m_pInstance != nullptr;
 }
 
 CwxOpenGL::CwxOpenGL()

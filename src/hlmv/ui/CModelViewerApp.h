@@ -5,7 +5,7 @@
 
 #include "wxHLMV.h"
 
-#include "ui/utility/CTimer.h"
+#include "ui/CwxBaseApp.h"
 
 #include "hlmv/CHLMVSettings.h"
 
@@ -16,7 +16,7 @@ namespace hlmv
 class CFullscreenWindow;
 }
 
-class CModelViewerApp final : public wxApp, public ITimerListener
+class CModelViewerApp final : public CwxBaseApp
 {
 public:
 	typedef std::vector<wxVideoMode> VideoModes_t;
@@ -31,8 +31,6 @@ public:
 	virtual bool OnCmdLineParsed( wxCmdLineParser& parser ) override;
 
 	void OnTimer( CTimer& timer ) override final;
-
-	CTimer* GetTimer() { return m_pTimer; }
 
 	hlmv::CFullscreenWindow* GetFullscreenWindow() { return m_pFullscreenWindow; }
 
@@ -49,8 +47,6 @@ private:
 	wxString m_szModel;						//Model to load on startup, if any.
 
 	CHLMVSettings m_Settings;
-
-	CTimer* m_pTimer = nullptr;
 
 	ITimerListener* m_pListener = nullptr;
 

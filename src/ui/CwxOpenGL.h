@@ -13,9 +13,10 @@
 class CwxOpenGL final : protected CBaseOpenGL
 {
 public:
-	static CwxOpenGL& GetInstance();
-
+	static CwxOpenGL& CreateInstance();
 	static void DestroyInstance();
+	static bool InstanceExists();
+	static CwxOpenGL& GetInstance();
 
 	bool Initialize( const wxGLAttributes& canvasAttributes, const wxGLContextAttrs* const pContextAttrs = nullptr );
 	void Shutdown();

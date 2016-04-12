@@ -1,16 +1,8 @@
 #include "CMainWindow.h"
 #include "CFullscreenWindow.h"
 
-#include <wx/image.h>
 #include <wx/cmdline.h>
 
-#include <algorithm>
-#include <vector>
-
-#include "graphics/OpenGL.h"
-#include "ui/CwxOpenGL.h"
-
-#include "filesystem/CFileSystem.h"
 #include "soundsystem/CSoundSystem.h"
 
 #include "CModelViewerApp.h"
@@ -55,8 +47,7 @@ bool CModelViewerApp::OnCmdLineParsed( wxCmdLineParser& parser )
 
 void CModelViewerApp::OnTimer( CTimer& timer )
 {
-	//TODO: move this
-	soundSystem().RunFrame();
+	CwxBaseApp::OnTimer( timer );
 
 	if( m_pListener )
 		m_pListener->OnTimer( timer );
@@ -78,6 +69,8 @@ void CModelViewerApp::SetFullscreenWindow( hlmv::CFullscreenWindow* pWindow )
 
 void CModelViewerApp::ExitApp( const bool bMainWndClosed )
 {
+	CwxBaseApp::ExitApp( bMainWndClosed );
+
 	if( bMainWndClosed )
 		m_pMainWindow = nullptr;
 
@@ -92,8 +85,6 @@ void CModelViewerApp::ExitApp( const bool bMainWndClosed )
 		m_pMainWindow->Close( true );
 		m_pMainWindow = nullptr;
 	}
-
-	m_pTimer->SetListener( nullptr );
 }
 
 bool CModelViewerApp::Initialize()
@@ -101,46 +92,8 @@ bool CModelViewerApp::Initialize()
 	if( !wxApp::OnInit() )
 		return false;
 
-	filesystem::CFileSystem::CreateInstance();
-
-	if( !fileSystem().Initialize() )
-	{
-		wxMessageBox( "Failed to initialize file system" );
+	if( !InitApp( INIT_ALL, HLMV_TITLE ) )
 		return false;
-	}
-
-	SetAppDisplayName( HLMV_TITLE );
-
-	//Set up OpenGL parameters.
-	//TODO: move to common base class
-	{
-		wxGLAttributes canvasAttributes;
-
-		canvasAttributes
-			.PlatformDefaults()
-			.Stencil( 8 )
-			.EndList();
-
-		wxGLContextAttrs contextAttributes;
-
-		contextAttributes.PlatformDefaults()
-			.MajorVersion( 3 )
-			.MinorVersion( 0 )
-			.EndList();
-
-		if( !wxOpenGL().Initialize( canvasAttributes, &contextAttributes ) )
-			return false;
-	}
-
-	wxInitAllImageHandlers();
-
-	soundsystem::CSoundSystem::CreateInstance();
-
-	if( !soundSystem().Initialize() )
-	{
-		wxMessageBox( "Failed to initialize sound system" );
-		return false;
-	}
 
 	if( !m_Settings.Initialize() )
 	{
@@ -152,13 +105,10 @@ bool CModelViewerApp::Initialize()
 
 	m_pMainWindow->Show( true );
 
-	m_pTimer = new CTimer( this );
-
 	//TODO: tidy
 	m_pListener = m_pMainWindow;
 
-	//60 FPS
-	m_pTimer->Start( ( 1 / 60.0 ) * 1000 );
+	StartTimer();
 
 	if( !m_szModel.IsEmpty() )
 		m_pMainWindow->LoadModel( m_szModel );
@@ -178,27 +128,7 @@ void CModelViewerApp::Shutdown()
 		m_pMainWindow = nullptr;
 	}
 
-	if( m_pTimer )
-	{
-		delete m_pTimer;
-		m_pTimer = nullptr;
-	}
-
 	m_Settings.Shutdown();
 
-	if( soundsystem::CSoundSystem::InstanceExists() )
-	{
-		soundSystem().Shutdown();
-		soundsystem::CSoundSystem::DestroyInstance();
-	}
-
-	if( filesystem::CFileSystem::InstanceExists() )
-	{
-		fileSystem().Shutdown();
-		filesystem::CFileSystem::DestroyInstance();
-	}
-
-	wxOpenGL().Shutdown();
-
-	CwxOpenGL::DestroyInstance();
+	ShutdownApp();
 }

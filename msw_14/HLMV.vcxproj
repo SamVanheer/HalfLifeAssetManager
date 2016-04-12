@@ -54,6 +54,7 @@
     <ClCompile Include="..\src\soundsystem\CSoundSystem.cpp" />
     <ClCompile Include="..\src\studiomodel\studio_render.cpp" />
     <ClCompile Include="..\src\studiomodel\studio_utils.cpp" />
+    <ClCompile Include="..\src\ui\CwxBaseApp.cpp" />
     <ClCompile Include="..\src\ui\CwxOpenGL.cpp" />
     <ClCompile Include="..\src\ui\Logging.cpp" />
     <ClCompile Include="..\src\ui\utility\wxUtil.cpp" />
@@ -103,6 +104,7 @@
     <ClInclude Include="..\src\settings\GameConfigIO.h" />
     <ClInclude Include="..\src\soundsystem\CSoundSystem.h" />
     <ClInclude Include="..\src\studiomodel\StudioModel.h" />
+    <ClInclude Include="..\src\ui\CwxBaseApp.h" />
     <ClInclude Include="..\src\ui\CwxOpenGL.h" />
     <ClInclude Include="..\src\ui\utility\CTimer.h" />
     <ClInclude Include="..\src\ui\utility\wxUtil.h" />
