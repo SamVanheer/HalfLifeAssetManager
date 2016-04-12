@@ -7,6 +7,8 @@
 
 #include "ui/utility/CTimer.h"
 
+#include "hlmv/CHLMVSettings.h"
+
 class CMainWindow;
 
 namespace hlmv
@@ -45,6 +47,8 @@ private:
 
 private:
 	wxString m_szModel;						//Model to load on startup, if any.
+
+	CHLMVSettings m_Settings;
 
 	CTimer* m_pTimer = nullptr;
 

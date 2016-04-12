@@ -154,7 +154,7 @@ bool CModelViewerApp::Initialize()
 
 	//soundSystem().PlaySound( "sound/tur/letgo.wav" );
 
-	m_pMainWindow = new CMainWindow();
+	m_pMainWindow = new CMainWindow( &m_Settings );
 
 	m_pMainWindow->Show( true );
 

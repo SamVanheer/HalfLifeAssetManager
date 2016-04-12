@@ -13,7 +13,7 @@ namespace hlmv
 class CFullscreenWindow final : public wxFrame, public ITimerListener
 {
 public:
-	CFullscreenWindow( const CHLMVSettings& settings );
+	CFullscreenWindow( CHLMVSettings* const pSettings );
 	~CFullscreenWindow();
 
 	void OnTimer( CTimer& timer ) override final;

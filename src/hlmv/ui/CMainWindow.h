@@ -12,7 +12,7 @@ class CHLMVSettings;
 class CMainWindow final : public wxFrame, public ITimerListener
 {
 public:
-	CMainWindow();
+	CMainWindow( CHLMVSettings* const pSettings );
 	~CMainWindow();
 
 	void OnTimer( CTimer& timer ) override final;

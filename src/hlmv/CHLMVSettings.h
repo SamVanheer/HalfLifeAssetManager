@@ -25,9 +25,6 @@ public:
 	CHLMVSettings();
 	~CHLMVSettings();
 
-	CHLMVSettings( const CHLMVSettings& other ) = default;
-	CHLMVSettings& operator=( const CHLMVSettings& other ) = default;
-
 	void ResetModelData();
 
 	void ResetToDefaults();
@@ -103,6 +100,10 @@ public:
 
 private:
 	StudioModel* m_pStudioModel;
+
+private:
+	CHLMVSettings( const CHLMVSettings& other ) = default;
+	CHLMVSettings& operator=( const CHLMVSettings& other ) = delete;
 };
 
 #endif //HLMV_CHLMVSETTINGS_H

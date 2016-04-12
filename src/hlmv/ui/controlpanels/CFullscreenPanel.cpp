@@ -36,5 +36,5 @@ void CFullscreenPanel::GoFullscreen( wxCommandEvent& event )
 		return;
 	}
 
-	hlmv::CFullscreenWindow* pWindow = new hlmv::CFullscreenWindow( *m_pSettings );
+	hlmv::CFullscreenWindow* pWindow = new hlmv::CFullscreenWindow( m_pSettings );
 }

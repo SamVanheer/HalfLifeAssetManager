@@ -24,9 +24,9 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
 wxEND_EVENT_TABLE()
 
-CMainWindow::CMainWindow()
+CMainWindow::CMainWindow( CHLMVSettings* const pSettings )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
-	, m_pSettings( new CHLMVSettings() )
+	, m_pSettings( pSettings )
 {
 	//TODO: move this
 	if( !m_pSettings->LoadFromFile( "settings.txt" ) )
@@ -123,8 +123,6 @@ CMainWindow::~CMainWindow()
 	DestroyChildren();
 
 	m_pSettings->ClearStudioModel();
-
-	delete m_pSettings;
 
 	wxGetApp().ExitApp( true );
 }

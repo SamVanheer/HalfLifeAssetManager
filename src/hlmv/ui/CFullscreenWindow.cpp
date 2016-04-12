@@ -14,9 +14,9 @@ wxBEGIN_EVENT_TABLE( CFullscreenWindow, wxFrame )
 	EVT_KEY_DOWN( CFullscreenWindow::KeyDown )
 wxEND_EVENT_TABLE()
 
-CFullscreenWindow::CFullscreenWindow( const CHLMVSettings& settings )
+CFullscreenWindow::CFullscreenWindow( CHLMVSettings* const pSettings )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE )
-	, m_pSettings( new CHLMVSettings( settings ) )
+	, m_pSettings( pSettings )
 {
 	wxGetApp().SetFullscreenWindow( this );
 
@@ -36,8 +36,6 @@ CFullscreenWindow::CFullscreenWindow( const CHLMVSettings& settings )
 
 CFullscreenWindow::~CFullscreenWindow()
 {
-	delete m_pSettings;
-
 	wxGetApp().SetFullscreenWindow( nullptr );
 }
 
