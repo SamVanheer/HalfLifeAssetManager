@@ -3,16 +3,20 @@
 
 #include "ui/wxInclude.h"
 
-enum wxIdentifiers
+enum wxIdentifier
 {
-	wxID_CUSTOM_LOWEST = wxID_HIGHEST + 1,
+	wxID_CUSTOM_LOWEST = wxID_COMMON_HIGHEST + 1,
 
 	//Main window
+	//File menu
 	wxID_MAINWND_LOADMODEL,
 	wxID_MAINWND_LOADBACKGROUND,
 	wxID_MAINWND_LOADGROUND,
 	wxID_MAINWND_UNLOADGROUND,
 	wxID_MAINWND_SAVEMODEL,
+
+	//Tools menu
+	wxID_MAINWND_TOGGLEMESSAGES,
 
 	//Main panel
 	wxID_MAIN_PAGECHANGED,

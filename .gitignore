@@ -59,7 +59,6 @@ Debug/HLMV.log
 *.db
 *.suo
 *.dll
-changes.txt
 *.log
 *.idb
 uvmap.bmp
@@ -77,5 +76,4 @@ external/FMOD/include/fmod_memoryinfo.h
 external/FMOD/include/fmod_output.h
 *.ilk
 *.user
-msw_14/settings.txt
-msw_14/HLMVSettings.txt
+*.txt

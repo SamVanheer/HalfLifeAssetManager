@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\common\CGlobals.cpp" />
+    <ClCompile Include="..\src\common\Logging.cpp" />
     <ClCompile Include="..\src\common\Platform.cpp" />
     <ClCompile Include="..\src\common\Utility.cpp" />
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
@@ -54,9 +55,10 @@
     <ClCompile Include="..\src\soundsystem\CSoundSystem.cpp" />
     <ClCompile Include="..\src\studiomodel\studio_render.cpp" />
     <ClCompile Include="..\src\studiomodel\studio_utils.cpp" />
+    <ClCompile Include="..\src\ui\CMessagesWindow.cpp" />
     <ClCompile Include="..\src\ui\CwxBaseApp.cpp" />
     <ClCompile Include="..\src\ui\CwxOpenGL.cpp" />
-    <ClCompile Include="..\src\ui\Logging.cpp" />
+    <ClCompile Include="..\src\ui\wxLogging.cpp" />
     <ClCompile Include="..\src\ui\utility\wxUtil.cpp" />
     <ClCompile Include="..\src\utility\CEscapeSequences.cpp" />
     <ClCompile Include="..\src\utility\CString.cpp">
@@ -104,8 +106,11 @@
     <ClInclude Include="..\src\settings\GameConfigIO.h" />
     <ClInclude Include="..\src\soundsystem\CSoundSystem.h" />
     <ClInclude Include="..\src\studiomodel\StudioModel.h" />
+    <ClInclude Include="..\src\ui\CMessagesWindow.h" />
     <ClInclude Include="..\src\ui\CwxBaseApp.h" />
     <ClInclude Include="..\src\ui\CwxOpenGL.h" />
+    <ClInclude Include="..\src\ui\utility\IWindowCloseListener.h" />
+    <ClInclude Include="..\src\ui\wxLogging.h" />
     <ClInclude Include="..\src\ui\utility\CTimer.h" />
     <ClInclude Include="..\src\ui\utility\wxUtil.h" />
     <ClInclude Include="..\src\ui\wxInclude.h" />

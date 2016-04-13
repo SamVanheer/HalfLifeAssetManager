@@ -3,6 +3,8 @@
 
 #include "CwxOpenGL.h"
 
+#include "CMessagesWindow.h"
+
 #include "CwxBaseApp.h"
 
 CwxBaseApp::CwxBaseApp()
@@ -18,6 +20,76 @@ void CwxBaseApp::OnTimer( CTimer& timer )
 	//TODO: move this
 	if( soundsystem::CSoundSystem::InstanceExists() )
 		soundSystem().RunFrame();
+}
+
+void CwxBaseApp::OnWindowClose( wxFrame* pWindow, wxCloseEvent& event )
+{
+	if( pWindow == m_pMessagesWindow )
+	{
+		if( !event.CanVeto() )
+		{
+			MessagesWindowClosed();
+		}
+	}
+}
+
+void CwxBaseApp::ExitApp( const bool bMainWndClosed )
+{
+	//Don't call multiple times.
+	if( m_bExiting )
+		return;
+
+	m_bExiting = true;
+
+	m_pTimer->SetListener( nullptr );
+	
+	//Close messages window if needed.
+	UseMessagesWindow( false );
+}
+
+void CwxBaseApp::UseMessagesWindow( const bool bUse )
+{
+	//Don't allow creation during exit.
+	if( bUse && m_bExiting )
+		return;
+
+	//No change
+	if( bUse == ( m_pMessagesWindow != nullptr ) )
+		return;
+
+	if( bUse )
+	{
+		m_pMessagesWindow = new CMessagesWindow( m_uiMaxMessagesCount, this );
+
+		logging().SetLogListener( m_pMessagesWindow );
+	}
+	else
+	{
+		m_pMessagesWindow->Close( true );
+
+		//Don't call MessagesWindowClosed; Close calls this.
+	}
+}
+
+void CwxBaseApp::ShowMessagesWindow( const bool bShow )
+{
+	if( !m_pMessagesWindow )
+		return;
+
+	m_pMessagesWindow->Show( bShow );
+}
+
+void CwxBaseApp::MessagesWindowClosed()
+{
+	m_pMessagesWindow = nullptr;
+
+	//TODO: track and reset listener so it restores the previous one
+	logging().SetLogListener( nullptr );
+}
+
+void CwxBaseApp::SetMaxMessagesCount( const size_t uiMaxMessagesCount )
+{
+	m_uiMaxMessagesCount = uiMaxMessagesCount;
 }
 
 bool CwxBaseApp::InitApp( InitFlags_t initFlags, const wxString& szDisplayName )
@@ -117,9 +189,4 @@ void CwxBaseApp::StartTimer()
 {
 	//60 FPS
 	m_pTimer->Start( ( 1 / 60.0 ) * 1000 );
-}
-
-void CwxBaseApp::ExitApp( const bool bMainWndClosed )
-{
-	m_pTimer->SetListener( nullptr );
 }

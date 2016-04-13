@@ -1,3 +1,5 @@
+#include "common/Logging.h"
+
 #include "CMainWindow.h"
 #include "CFullscreenWindow.h"
 
@@ -85,6 +87,9 @@ void CModelViewerApp::ExitApp( const bool bMainWndClosed )
 		m_pMainWindow->Close( true );
 		m_pMainWindow = nullptr;
 	}
+
+	//TODO: use log to file listener instead (prevents message boxes from popping up during shutdown)
+	logging().SetLogListener( GetNullLogListener() );
 }
 
 bool CModelViewerApp::Initialize()
@@ -100,6 +105,9 @@ bool CModelViewerApp::Initialize()
 		wxMessageBox( "Failed to initialize settings", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
 	}
+
+	//Must be called before we create the main window, since it accesses the window.
+	UseMessagesWindow( true );
 
 	m_pMainWindow = new CMainWindow( &m_Settings );
 

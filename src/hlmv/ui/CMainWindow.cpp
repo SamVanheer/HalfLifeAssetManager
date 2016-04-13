@@ -10,6 +10,8 @@
 
 #include "utility/CString.h"
 
+#include "ui/CMessagesWindow.h"
+
 #include "CMainPanel.h"
 
 #include "CMainWindow.h"
@@ -21,6 +23,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_MAINWND_UNLOADGROUND, CMainWindow::UnloadGroundTexture )
 	EVT_MENU( wxID_MAINWND_SAVEMODEL, CMainWindow::SaveModel )
 	EVT_MENU( wxID_EXIT, CMainWindow::OnExit )
+	EVT_MENU( wxID_MAINWND_TOGGLEMESSAGES, CMainWindow::ShowMessagesWindow )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
 wxEND_EVENT_TABLE()
 
@@ -56,12 +59,20 @@ CMainWindow::CMainWindow( CHLMVSettings* const pSettings )
 
 	menuFile->Append( wxID_EXIT );
 
+	wxMenu* pMenuTools = new wxMenu;
+
+	pMenuTools->Append( wxID_MAINWND_TOGGLEMESSAGES, "Show Messages Window", "Shows or hides the messages window", true );
+
 	wxMenu* menuHelp = new wxMenu;
+
 	menuHelp->Append( wxID_ABOUT );
 
 	wxMenuBar* menuBar = new wxMenuBar;
+
 	menuBar->Append( menuFile, "&File" );
+	menuBar->Append( pMenuTools, "&Tools" );
 	menuBar->Append( menuHelp, "&Help" );
+
 	SetMenuBar( menuBar );
 
 	CreateStatusBar();
@@ -70,6 +81,11 @@ CMainWindow::CMainWindow( CHLMVSettings* const pSettings )
 	m_pMainPanel = new CMainPanel( this, m_pSettings );
 
 	Maximize( true );
+
+	if( CMessagesWindow* pWindow = wxGetApp().GetMessagesWindow() )
+	{
+		pWindow->Bind( wxEVT_CLOSE_WINDOW, &CMainWindow::OnMessagesWindowClosed, this );
+	}
 
 	//LoadModel( "barney.mdl" );
 }
@@ -212,6 +228,11 @@ void CMainWindow::SaveModel( wxCommandEvent& event )
 	PromptSaveModel();
 }
 
+void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )
+{
+	wxGetApp().ShowMessagesWindow( event.IsChecked() );
+}
+
 void CMainWindow::OnExit( wxCommandEvent& event )
 {
 	Close( true );
@@ -221,4 +242,17 @@ void CMainWindow::OnAbout( wxCommandEvent& event )
 {
 	wxMessageBox( "Half-Life Model Viewer 1.40 By Sam \"Solokiller\" Vanheer",
 				  "About Half-Life Model Viewer", wxOK | wxICON_INFORMATION );
+}
+
+void CMainWindow::OnMessagesWindowClosed( wxCloseEvent& event )
+{
+	//Whenever the messages window is closed by clicking the close button, uncheck this.
+	wxMenuItem* pItem = GetMenuBar()->FindItem( wxID_MAINWND_TOGGLEMESSAGES );
+
+	if( pItem )
+	{
+		pItem->Check( false );
+	}
+
+	event.Skip();
 }

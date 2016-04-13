@@ -34,16 +34,20 @@ public:
 	void UnloadGroundTexture();
 
 private:
+	wxDECLARE_EVENT_TABLE();
+
 	void LoadModel( wxCommandEvent& event );
 	void LoadBackgroundTexture( wxCommandEvent& event );
 	void LoadGroundTexture( wxCommandEvent& event );
 	void UnloadGroundTexture( wxCommandEvent& event );
 	void SaveModel( wxCommandEvent& event );
 
+	void ShowMessagesWindow( wxCommandEvent& event );
+
 	void OnExit( wxCommandEvent& event );
 	void OnAbout( wxCommandEvent& event );
 
-	wxDECLARE_EVENT_TABLE();
+	void OnMessagesWindowClosed( wxCloseEvent& event );
 
 private:
 	CMainPanel* m_pMainPanel;

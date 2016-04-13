@@ -132,9 +132,6 @@
     <ClCompile Include="..\src\ui\CwxOpenGL.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ui\Logging.cpp">
-      <Filter>Source Files\ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\hlmv\CHLMVSettings.cpp">
       <Filter>Source Files\hlmv</Filter>
     </ClCompile>
@@ -224,6 +221,15 @@
     </ClCompile>
     <ClCompile Include="..\src\ui\CwxBaseApp.cpp">
       <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\CMessagesWindow.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wxLogging.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\common\Logging.cpp">
+      <Filter>Source Files\common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -370,6 +376,15 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\CwxBaseApp.h">
       <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\CMessagesWindow.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wxLogging.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\utility\IWindowCloseListener.h">
+      <Filter>Header Files\ui\utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
