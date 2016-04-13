@@ -5,6 +5,8 @@
 
 #include "ui/utility/CTimer.h"
 
+#include "hlmv/CHLMVSettings.h"
+
 class CTimer;
 class CMainPanel;
 class CHLMVSettings;
@@ -36,15 +38,18 @@ public:
 private:
 	wxDECLARE_EVENT_TABLE();
 
+	void RefreshRecentFiles();
+
 	void LoadModel( wxCommandEvent& event );
 	void LoadBackgroundTexture( wxCommandEvent& event );
 	void LoadGroundTexture( wxCommandEvent& event );
 	void UnloadGroundTexture( wxCommandEvent& event );
 	void SaveModel( wxCommandEvent& event );
+	void OpenRecentFile( wxCommandEvent& event );
+	void OnExit( wxCommandEvent& event );
 
 	void ShowMessagesWindow( wxCommandEvent& event );
 
-	void OnExit( wxCommandEvent& event );
 	void OnAbout( wxCommandEvent& event );
 
 	void OnMessagesWindowClosed( wxCloseEvent& event );
@@ -52,6 +57,8 @@ private:
 private:
 	CMainPanel* m_pMainPanel;
 	CHLMVSettings* m_pSettings;
+
+	wxMenuItem* m_RecentFiles[ CHLMVSettings::MAX_RECENT_FILES ];
 
 private:
 	CMainWindow( const CMainWindow& ) = delete;

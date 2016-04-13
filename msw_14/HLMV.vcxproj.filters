@@ -231,6 +231,9 @@
     <ClCompile Include="..\src\common\Logging.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\settings\CRecentFiles.cpp">
+      <Filter>Source Files\settings</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -385,6 +388,9 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\utility\IWindowCloseListener.h">
       <Filter>Header Files\ui\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\settings\CRecentFiles.h">
+      <Filter>Header Files\settings</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

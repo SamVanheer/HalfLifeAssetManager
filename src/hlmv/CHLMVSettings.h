@@ -14,12 +14,16 @@
 
 #include "settings/CGameConfig.h"
 #include "settings/CGameConfigManager.h"
+#include "settings/CRecentFiles.h"
 
 /*
 *	Contains all settings used by the HLMV application.
 */
 class CHLMVSettings final
 {
+public:
+	static const size_t MAX_RECENT_FILES = 4;
+
 public:
 	//TODO: split into viewer specific and general purpose
 	CHLMVSettings();
@@ -102,6 +106,8 @@ public:
 	StudioModel::CRenderSettings renderSettings;
 
 	std::shared_ptr<settings::CGameConfigManager> configManager = std::make_shared<settings::CGameConfigManager>();
+
+	std::shared_ptr<settings::CRecentFiles> recentFiles = std::make_shared<settings::CRecentFiles>( MAX_RECENT_FILES );
 
 private:
 	StudioModel* m_pStudioModel;

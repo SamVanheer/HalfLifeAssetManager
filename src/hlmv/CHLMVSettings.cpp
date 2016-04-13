@@ -129,6 +129,24 @@ bool CHLMVSettings::LoadFromFile( const char* const pszFilename )
 				{
 					configManager->SetActiveConfig( active->GetValue().CStr() );
 				}
+
+				if( auto block = settings->FindFirstChild<CKvBlockNode>( "recentFiles" ) )
+				{
+					const auto& children = block->GetChildren();
+
+					for( const auto& child : children )
+					{
+						if( child->GetType() != KVNode_Keyvalue )
+							continue;
+
+						if( child->GetKey() != "recentFile" )
+							continue;
+
+						auto file = std::static_pointer_cast<CKeyvalue>( child );
+
+						recentFiles->Add( file->GetValue().CStr() );
+					}
+				}
 			}
 		}
 
@@ -153,6 +171,15 @@ bool CHLMVSettings::SaveToFile( const char* const pszFilename )
 		{
 			writer.WriteKeyvalue( "activeConfig", activeConfig->GetName() );
 		}
+
+		writer.BeginBlock( "recentFiles" );
+
+		for( const auto& file : recentFiles->GetFiles() )
+		{
+			writer.WriteKeyvalue( "recentFile", file.c_str() );
+		}
+
+		writer.EndBlock();
 
 		writer.EndBlock();
 

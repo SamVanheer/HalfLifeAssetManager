@@ -22,6 +22,10 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_MAINWND_LOADGROUND, CMainWindow::LoadGroundTexture )
 	EVT_MENU( wxID_MAINWND_UNLOADGROUND, CMainWindow::UnloadGroundTexture )
 	EVT_MENU( wxID_MAINWND_SAVEMODEL, CMainWindow::SaveModel )
+	EVT_MENU( wxID_MAINWND_RECENTFILE1, CMainWindow::OpenRecentFile )
+	EVT_MENU( wxID_MAINWND_RECENTFILE2, CMainWindow::OpenRecentFile )
+	EVT_MENU( wxID_MAINWND_RECENTFILE3, CMainWindow::OpenRecentFile )
+	EVT_MENU( wxID_MAINWND_RECENTFILE4, CMainWindow::OpenRecentFile )
 	EVT_MENU( wxID_EXIT, CMainWindow::OnExit )
 	EVT_MENU( wxID_MAINWND_TOGGLEMESSAGES, CMainWindow::ShowMessagesWindow )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
@@ -52,8 +56,16 @@ CMainWindow::CMainWindow( CHLMVSettings* const pSettings )
 
 	menuFile->AppendSeparator();
 
-	//TODO: add recent files list
-	//menuFile->AppendSubMenu( ... );
+	wxMenu* pRecentFiles = new wxMenu;
+
+	for( size_t uiIndex = 0; uiIndex < CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
+	{
+		wxMenuItem* pItem = m_RecentFiles[ uiIndex ] = pRecentFiles->Append( wxID_MAINWND_RECENTFILE1 + static_cast<int>( uiIndex ), "(empty)" );
+	}
+
+	RefreshRecentFiles();
+
+	menuFile->AppendSubMenu( pRecentFiles, "Recent Files" );
 
 	menuFile->AppendSeparator();
 
@@ -118,6 +130,11 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 	if( bSuccess )
 	{
 		this->SetTitle( wxString::Format( "%s - %s", HLMV_TITLE, szAbsFilename.c_str() ) );
+
+		m_pSettings->recentFiles->Add( std::string( szAbsFilename.c_str() ) );
+
+		//TODO: if the file doesn't exist, remove the entry.
+		RefreshRecentFiles();
 	}
 	else
 		this->SetTitle( HLMV_TITLE );
@@ -203,6 +220,32 @@ void CMainWindow::UnloadGroundTexture()
 	m_pMainPanel->UnloadGroundTexture();
 }
 
+void CMainWindow::RefreshRecentFiles()
+{
+	const auto& recentFiles = m_pSettings->recentFiles->GetFiles();
+
+	auto it = recentFiles.begin();
+	auto end = recentFiles.end();
+
+	for( size_t uiIndex = 0; uiIndex < CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
+	{
+		wxMenuItem* const pItem = m_RecentFiles[ uiIndex ];
+
+		if( it != end )
+		{
+			pItem->Enable( true );
+			pItem->SetItemLabel( it->c_str() );
+
+			++it;
+		}
+		else
+		{
+			pItem->Enable( false );
+			pItem->SetItemLabel( "(empty)" );
+		}
+	}
+}
+
 void CMainWindow::LoadModel( wxCommandEvent& event )
 {
 	PromptLoadModel();
@@ -228,9 +271,19 @@ void CMainWindow::SaveModel( wxCommandEvent& event )
 	PromptSaveModel();
 }
 
-void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )
+void CMainWindow::OpenRecentFile( wxCommandEvent& event )
 {
-	wxGetApp().ShowMessagesWindow( event.IsChecked() );
+	if( event.GetId() < wxID_MAINWND_RECENTFILE1 || event.GetId() > wxID_MAINWND_RECENTFILE4 )
+	{
+		wxMessageBox( wxString::Format( "Invalid ID specified for recent files list (%d)", event.GetId() ) );
+		return;
+	}
+
+	const size_t fileId = static_cast<size_t>( event.GetId() - wxID_MAINWND_RECENTFILE1 );
+
+	const wxString szFilename = m_pSettings->recentFiles->Get( fileId );
+
+	LoadModel( szFilename );
 }
 
 void CMainWindow::OnExit( wxCommandEvent& event )
@@ -238,8 +291,14 @@ void CMainWindow::OnExit( wxCommandEvent& event )
 	Close( true );
 }
 
+void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )
+{
+	wxGetApp().ShowMessagesWindow( event.IsChecked() );
+}
+
 void CMainWindow::OnAbout( wxCommandEvent& event )
 {
+	//TODO: add info about 1.25, Jed's
 	wxMessageBox( "Half-Life Model Viewer 1.40 By Sam \"Solokiller\" Vanheer",
 				  "About Half-Life Model Viewer", wxOK | wxICON_INFORMATION );
 }

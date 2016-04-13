@@ -51,6 +51,7 @@
     <ClCompile Include="..\src\keyvalues\CKvBlockNode.cpp" />
     <ClCompile Include="..\src\settings\CGameConfig.cpp" />
     <ClCompile Include="..\src\settings\CGameConfigManager.cpp" />
+    <ClCompile Include="..\src\settings\CRecentFiles.cpp" />
     <ClCompile Include="..\src\settings\GameConfigIO.cpp" />
     <ClCompile Include="..\src\soundsystem\CSoundSystem.cpp" />
     <ClCompile Include="..\src\studiomodel\studio_render.cpp" />
@@ -103,6 +104,7 @@
     <ClInclude Include="..\src\keyvalues\KeyvaluesConstants.h" />
     <ClInclude Include="..\src\settings\CGameConfig.h" />
     <ClInclude Include="..\src\settings\CGameConfigManager.h" />
+    <ClInclude Include="..\src\settings\CRecentFiles.h" />
     <ClInclude Include="..\src\settings\GameConfigIO.h" />
     <ClInclude Include="..\src\soundsystem\CSoundSystem.h" />
     <ClInclude Include="..\src\studiomodel\StudioModel.h" />
