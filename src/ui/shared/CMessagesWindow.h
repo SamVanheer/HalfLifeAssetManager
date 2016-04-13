@@ -1,7 +1,7 @@
 #ifndef UI_CMESSAGESWINDOW_H
 #define UI_CMESSAGESWINDOW_H
 
-#include "wxInclude.h"
+#include "ui/wxInclude.h"
 
 #include <wx/listctrl.h>
 

@@ -1,6 +1,6 @@
 #include <wx/sizer.h>
 
-#include "utility/IWindowCloseListener.h"
+#include "ui/utility/IWindowCloseListener.h"
 
 #include "CMessagesWindow.h"
 

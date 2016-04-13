@@ -97,6 +97,12 @@
     <Filter Include="Source Files\settings">
       <UniqueIdentifier>{c30758a5-e4f4-4b44-aa4a-8754b23722cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ui\shared">
+      <UniqueIdentifier>{2cc43b55-cfc7-43ef-b8a4-92bd70a0564d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui\shared">
+      <UniqueIdentifier>{1c22d988-ba22-410a-b36f-801ff85e37d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
@@ -222,9 +228,6 @@
     <ClCompile Include="..\src\ui\CwxBaseApp.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ui\CMessagesWindow.cpp">
-      <Filter>Source Files\ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ui\wxLogging.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
@@ -233,6 +236,9 @@
     </ClCompile>
     <ClCompile Include="..\src\settings\CRecentFiles.cpp">
       <Filter>Source Files\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\shared\CMessagesWindow.cpp">
+      <Filter>Source Files\ui\shared</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -380,9 +386,6 @@
     <ClInclude Include="..\src\ui\CwxBaseApp.h">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ui\CMessagesWindow.h">
-      <Filter>Header Files\ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ui\wxLogging.h">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
@@ -391,6 +394,9 @@
     </ClInclude>
     <ClInclude Include="..\src\settings\CRecentFiles.h">
       <Filter>Header Files\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\shared\CMessagesWindow.h">
+      <Filter>Header Files\ui\shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

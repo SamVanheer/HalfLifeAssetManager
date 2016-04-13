@@ -56,9 +56,9 @@
     <ClCompile Include="..\src\soundsystem\CSoundSystem.cpp" />
     <ClCompile Include="..\src\studiomodel\studio_render.cpp" />
     <ClCompile Include="..\src\studiomodel\studio_utils.cpp" />
-    <ClCompile Include="..\src\ui\CMessagesWindow.cpp" />
     <ClCompile Include="..\src\ui\CwxBaseApp.cpp" />
     <ClCompile Include="..\src\ui\CwxOpenGL.cpp" />
+    <ClCompile Include="..\src\ui\shared\CMessagesWindow.cpp" />
     <ClCompile Include="..\src\ui\wxLogging.cpp" />
     <ClCompile Include="..\src\ui\utility\wxUtil.cpp" />
     <ClCompile Include="..\src\utility\CEscapeSequences.cpp" />
@@ -108,9 +108,9 @@
     <ClInclude Include="..\src\settings\GameConfigIO.h" />
     <ClInclude Include="..\src\soundsystem\CSoundSystem.h" />
     <ClInclude Include="..\src\studiomodel\StudioModel.h" />
-    <ClInclude Include="..\src\ui\CMessagesWindow.h" />
     <ClInclude Include="..\src\ui\CwxBaseApp.h" />
     <ClInclude Include="..\src\ui\CwxOpenGL.h" />
+    <ClInclude Include="..\src\ui\shared\CMessagesWindow.h" />
     <ClInclude Include="..\src\ui\utility\IWindowCloseListener.h" />
     <ClInclude Include="..\src\ui\wxLogging.h" />
     <ClInclude Include="..\src\ui\utility\CTimer.h" />

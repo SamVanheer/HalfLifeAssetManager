@@ -10,7 +10,7 @@
 
 #include "utility/CString.h"
 
-#include "ui/CMessagesWindow.h"
+#include "ui/shared/CMessagesWindow.h"
 
 #include "CMainPanel.h"
 
@@ -129,12 +129,17 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 
 	if( bSuccess )
 	{
-		this->SetTitle( wxString::Format( "%s - %s", HLMV_TITLE, szAbsFilename.c_str() ) );
+		const wxCStrData data = szAbsFilename.c_str();
+		const char* const pszAbsFilename = data.AsChar();
 
-		m_pSettings->recentFiles->Add( std::string( szAbsFilename.c_str() ) );
+		this->SetTitle( wxString::Format( "%s - %s", HLMV_TITLE, pszAbsFilename ) );
+
+		m_pSettings->recentFiles->Add( pszAbsFilename );
 
 		//TODO: if the file doesn't exist, remove the entry.
 		RefreshRecentFiles();
+
+		Message( "Loaded model \"%s\"\n", pszAbsFilename );
 	}
 	else
 		this->SetTitle( HLMV_TITLE );

@@ -3,7 +3,7 @@
 
 #include "CwxOpenGL.h"
 
-#include "CMessagesWindow.h"
+#include "ui/shared/CMessagesWindow.h"
 
 #include "CwxBaseApp.h"
 
