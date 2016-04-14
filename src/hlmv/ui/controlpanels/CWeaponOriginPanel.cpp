@@ -10,7 +10,7 @@ wxBEGIN_EVENT_TABLE( CWeaponOriginPanel, CBaseSequencesPanel )
 	EVT_BUTTON( wxID_WPN_TESTORIGINS, CWeaponOriginPanel::TestOrigins )
 wxEND_EVENT_TABLE()
 
-CWeaponOriginPanel::CWeaponOriginPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+CWeaponOriginPanel::CWeaponOriginPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
 	: CBaseSequencesPanel( pParent, "Weapon Origin", pSettings )
 {
 	wxWindow* const pElemParent = GetBox();

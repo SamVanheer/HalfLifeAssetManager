@@ -21,7 +21,7 @@ wxBEGIN_EVENT_TABLE( CMainPanel, wxPanel )
 	EVT_NOTEBOOK_PAGE_CHANGED( wxID_MAIN_PAGECHANGED, CMainPanel::PageChanged )
 wxEND_EVENT_TABLE()
 
-CMainPanel::CMainPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+CMainPanel::CMainPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
 	: wxPanel( pParent )
 	, m_pSettings( pSettings )
 {

@@ -16,7 +16,7 @@ wxBEGIN_EVENT_TABLE( CBaseSequencesPanel, wxPanel )
 	EVT_SLIDER( WXID_BASESEQUENCE_ANIMSPEED, CBaseSequencesPanel::AnimSpeedChanged )
 wxEND_EVENT_TABLE()
 
-CBaseSequencesPanel::CBaseSequencesPanel( wxWindow* pParent, const wxString& szName, CHLMVSettings* const pSettings )
+CBaseSequencesPanel::CBaseSequencesPanel( wxWindow* pParent, const wxString& szName, hlmv::CHLMVState* const pSettings )
 	: CBaseControlPanel( pParent, szName, pSettings )
 	, m_pSequence( nullptr )
 	, m_pTogglePlayButton( nullptr )

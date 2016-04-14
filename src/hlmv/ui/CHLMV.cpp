@@ -4,14 +4,18 @@
 
 namespace hlmv
 {
-CHLMV::CHLMV( CHLMVSettings* pSettings, CMainWindow* pMainWindow )
+CHLMV::CHLMV( CHLMVSettings* const pSettings )
 	: m_pSettings( pSettings )
-	, m_pMainWindow( pMainWindow )
 {
 }
 
 CHLMV::~CHLMV()
 {
+}
+
+void CHLMV::SetMainWindow( CMainWindow* const pMainWindow )
+{
+	m_pMainWindow = pMainWindow;
 }
 
 bool CHLMV::LoadModel( const char* const pszFilename )

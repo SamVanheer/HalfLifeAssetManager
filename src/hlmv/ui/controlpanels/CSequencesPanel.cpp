@@ -12,7 +12,7 @@ wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseSequencesPanel )
 	EVT_CHECKBOX( wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged )
 wxEND_EVENT_TABLE()
 
-CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+CSequencesPanel::CSequencesPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
 	: CBaseSequencesPanel( pParent, "Sequences", pSettings )
 {
 	wxWindow* const pElemParent = GetBox();

@@ -9,12 +9,16 @@
 
 class CTimer;
 class CMainPanel;
-class CHLMVSettings;
+
+namespace hlmv
+{
+class CHLMVState;
+}
 
 class CMainWindow final : public wxFrame, public ITimerListener
 {
 public:
-	CMainWindow( CHLMVSettings* const pSettings );
+	CMainWindow( hlmv::CHLMVState* const pSettings );
 	~CMainWindow();
 
 	void OnTimer( CTimer& timer ) override final;
@@ -49,6 +53,7 @@ private:
 	void OnExit( wxCommandEvent& event );
 
 	void ShowMessagesWindow( wxCommandEvent& event );
+	void OpenOptionsDialog( wxCommandEvent& event );
 
 	void OnAbout( wxCommandEvent& event );
 
@@ -56,9 +61,10 @@ private:
 
 private:
 	CMainPanel* m_pMainPanel;
-	CHLMVSettings* m_pSettings;
+	hlmv::CHLMVState* m_pSettings;
 
-	wxMenuItem* m_RecentFiles[ CHLMVSettings::MAX_RECENT_FILES ];
+	//TODO: replace with CHLMVSettings::MAX_RECENT_FILES
+	wxMenuItem* m_RecentFiles[ hlmv::CHLMVState::MAX_RECENT_FILES ];
 
 private:
 	CMainWindow( const CMainWindow& ) = delete;

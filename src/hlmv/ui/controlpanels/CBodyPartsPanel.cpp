@@ -14,7 +14,7 @@ wxBEGIN_EVENT_TABLE( CBodyPartsPanel, CBaseControlPanel )
 	EVT_SLIDER( wxID_BODY_CONTROLLER_SLIDER, CBodyPartsPanel::ControllerSliderChanged )
 wxEND_EVENT_TABLE()
 
-CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
 	: CBaseControlPanel( pParent, "Body Parts", pSettings )
 {
 	wxWindow* const pElemParent = GetBox();

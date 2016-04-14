@@ -27,6 +27,30 @@ CGameConfig::CGameConfig( const char* const pszName, const CGameConfig& other )
 	strcpy( m_szModDir, other.m_szModDir );
 }
 
+CGameConfig::CGameConfig( const CGameConfig& other )
+{
+	Copy( other );
+}
+
+CGameConfig& CGameConfig::operator=( const CGameConfig& other )
+{
+	if( this != &other )
+	{
+		Copy( other );
+	}
+
+	return *this;
+}
+
+void CGameConfig::Copy( const CGameConfig& other )
+{
+	//The name is already valid since the other instance validated it.
+	strcpy( m_szName, other.m_szName );
+	strcpy( m_szBasePath, other.m_szBasePath );
+	strcpy( m_szGameDir, other.m_szGameDir );
+	strcpy( m_szModDir, other.m_szModDir );
+}
+
 bool CGameConfig::SetName( const char* const pszName )
 {
 	if( !pszName || !( *pszName ) )

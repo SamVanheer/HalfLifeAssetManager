@@ -15,19 +15,21 @@
 
 #define HLMV_SETTINGS_FILE "HLMVSettings.txt"
 
-CHLMVSettings::CHLMVSettings()
+namespace hlmv
+{
+CHLMVState::CHLMVState()
 	: m_pStudioModel( nullptr )
 {
 	ResetToDefaults();
 }
 
-CHLMVSettings::~CHLMVSettings()
+CHLMVState::~CHLMVState()
 {
 	//Note: don't clear the studio model here; since the same instance is shared.
 	//TODO: use reference counted/shared ptr to avoid this problem
 }
 
-void CHLMVSettings::ResetModelData()
+void CHLMVState::ResetModelData()
 {
 	trans[ 0 ] = trans[ 1 ] = trans[ 2 ] = 0;
 	rot[ 1 ] = rot[ 2 ] = 0;
@@ -41,7 +43,7 @@ void CHLMVSettings::ResetModelData()
 	pUVMesh = nullptr;
 }
 
-void CHLMVSettings::ResetToDefaults()
+void CHLMVState::ResetToDefaults()
 {
 	ResetModelData();
 
@@ -92,7 +94,7 @@ void CHLMVSettings::ResetToDefaults()
 	configManager->RemoveAllConfigs();
 }
 
-bool CHLMVSettings::LoadFromFile( const char* const pszFilename )
+bool CHLMVState::LoadFromFile( const char* const pszFilename )
 {
 	if( !pszFilename || !( *pszFilename ) )
 		return false;
@@ -118,34 +120,34 @@ bool CHLMVSettings::LoadFromFile( const char* const pszFilename )
 
 			if( result.first < result.second )
 				Warning( "%u game configurations failed to load\n", result.second - result.first );
+		}
 
-			auto settings = root->FindFirstChild<CKvBlockNode>( "hlmvSettings" );
+		auto settings = root->FindFirstChild<CKvBlockNode>( "hlmvSettings" );
 
-			if( settings )
+		if( settings )
+		{
+			auto active = settings->FindFirstChild<CKeyvalue>( "activeConfig" );
+
+			if( active )
 			{
-				auto active = settings->FindFirstChild<CKeyvalue>( "activeConfig" );
+				configManager->SetActiveConfig( active->GetValue().CStr() );
+			}
 
-				if( active )
+			if( auto block = settings->FindFirstChild<CKvBlockNode>( "recentFiles" ) )
+			{
+				const auto& children = block->GetChildren();
+
+				for( const auto& child : children )
 				{
-					configManager->SetActiveConfig( active->GetValue().CStr() );
-				}
+					if( child->GetType() != KVNode_Keyvalue )
+						continue;
 
-				if( auto block = settings->FindFirstChild<CKvBlockNode>( "recentFiles" ) )
-				{
-					const auto& children = block->GetChildren();
+					if( child->GetKey() != "recentFile" )
+						continue;
 
-					for( const auto& child : children )
-					{
-						if( child->GetType() != KVNode_Keyvalue )
-							continue;
+					auto file = std::static_pointer_cast<CKeyvalue>( child );
 
-						if( child->GetKey() != "recentFile" )
-							continue;
-
-						auto file = std::static_pointer_cast<CKeyvalue>( child );
-
-						recentFiles->Add( file->GetValue().CStr() );
-					}
+					recentFiles->Add( file->GetValue().CStr() );
 				}
 			}
 		}
@@ -156,7 +158,7 @@ bool CHLMVSettings::LoadFromFile( const char* const pszFilename )
 	return false;
 }
 
-bool CHLMVSettings::SaveToFile( const char* const pszFilename )
+bool CHLMVState::SaveToFile( const char* const pszFilename )
 {
 	if( !pszFilename || !( *pszFilename ) )
 		return false;
@@ -197,7 +199,7 @@ bool CHLMVSettings::SaveToFile( const char* const pszFilename )
 	return false;
 }
 
-bool CHLMVSettings::Initialize()
+bool CHLMVState::Initialize()
 {
 	if( m_bInitialized )
 		return false;
@@ -220,7 +222,7 @@ bool CHLMVSettings::Initialize()
 	return bResult;
 }
 
-void CHLMVSettings::Shutdown()
+void CHLMVState::Shutdown()
 {
 	if( !m_bInitialized )
 		return;
@@ -231,7 +233,7 @@ void CHLMVSettings::Shutdown()
 		Error( "Failed to save settings!\n" );
 }
 
-bool CHLMVSettings::InitializeFileSystem()
+bool CHLMVState::InitializeFileSystem()
 {
 	if( auto activeConfig = configManager->GetActiveConfig() )
 	{
@@ -273,7 +275,7 @@ bool CHLMVSettings::InitializeFileSystem()
 	return true;
 }
 
-void CHLMVSettings::CenterView( const StudioModel& model )
+void CHLMVState::CenterView( const StudioModel& model )
 {
 	float min[ 3 ], max[ 3 ];
 	model.ExtractBbox( min, max );
@@ -297,17 +299,17 @@ void CHLMVSettings::CenterView( const StudioModel& model )
 	rot[ 2 ] = 0.0f;
 }
 
-void CHLMVSettings::SetOrigin( const vec3_t vecOrigin )
+void CHLMVState::SetOrigin( const vec3_t vecOrigin )
 {
 	VectorCopy( vecOrigin, trans );
 }
 
-void CHLMVSettings::ClearStudioModel()
+void CHLMVState::ClearStudioModel()
 {
 	SetStudioModel( nullptr );
 }
 
-void CHLMVSettings::SetStudioModel( StudioModel* pStudioModel )
+void CHLMVState::SetStudioModel( StudioModel* pStudioModel )
 {
 	if( m_pStudioModel )
 	{
@@ -317,4 +319,5 @@ void CHLMVSettings::SetStudioModel( StudioModel* pStudioModel )
 
 	if( pStudioModel )
 		m_pStudioModel = pStudioModel;
+}
 }

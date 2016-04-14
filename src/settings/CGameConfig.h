@@ -30,6 +30,19 @@ public:
 	*/
 	CGameConfig( const char* const pszName, const CGameConfig& other );
 
+	/**
+	*	Constructs a config from another.
+	*	@param other Config to copy from.
+	*/
+	CGameConfig( const CGameConfig& other );
+
+	/**
+	*	Sets the contents of this config to the given config.
+	*	@param other Config to copy from.
+	*	@return *this
+	*/
+	CGameConfig& operator=( const CGameConfig& other );
+
 	const char* GetName() const { return m_szName; }
 
 	const char* GetBasePath() const { return m_szBasePath; }
@@ -54,6 +67,8 @@ private:
 	*/
 	bool SetName( const char* const pszName );
 
+	void Copy( const CGameConfig& other );
+
 private:
 	/**
 	*	Name of this config. Must be unique.
@@ -74,10 +89,6 @@ private:
 	*	Name of the mod directory, e.g. "gearbox"
 	*/
 	char m_szModDir[ MAX_PATH_LENGTH ];
-
-private:
-	CGameConfig( const CGameConfig& other ) = delete;
-	CGameConfig& operator=( const CGameConfig& ) = delete;
 };
 }
 

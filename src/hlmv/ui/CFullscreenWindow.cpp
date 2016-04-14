@@ -14,7 +14,7 @@ wxBEGIN_EVENT_TABLE( CFullscreenWindow, wxFrame )
 	EVT_KEY_DOWN( CFullscreenWindow::KeyDown )
 wxEND_EVENT_TABLE()
 
-CFullscreenWindow::CFullscreenWindow( CHLMVSettings* const pSettings )
+CFullscreenWindow::CFullscreenWindow( hlmv::CHLMVState* const pSettings )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE )
 	, m_pSettings( pSettings )
 {

@@ -103,6 +103,12 @@
     <Filter Include="Source Files\ui\shared">
       <UniqueIdentifier>{1c22d988-ba22-410a-b36f-801ff85e37d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\hlmv\settings">
+      <UniqueIdentifier>{19269e5f-6c13-42c6-9d68-6372735a0260}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hlmv\settings">
+      <UniqueIdentifier>{c4102ae9-88e9-43fa-bacf-a05b2df26e5f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
@@ -239,6 +245,18 @@
     </ClCompile>
     <ClCompile Include="..\src\ui\shared\CMessagesWindow.cpp">
       <Filter>Source Files\ui\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\shared\CGameConfigurations.cpp">
+      <Filter>Source Files\ui\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\shared\CEditGameConfigsDialog.cpp">
+      <Filter>Source Files\ui\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\settings\CBaseSettings.cpp">
+      <Filter>Source Files\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hlmv\settings\CHLMVSettings.cpp">
+      <Filter>Source Files\hlmv\settings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -397,6 +415,18 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\shared\CMessagesWindow.h">
       <Filter>Header Files\ui\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\shared\CGameConfigurations.h">
+      <Filter>Header Files\ui\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\shared\CEditGameConfigsDialog.h">
+      <Filter>Header Files\ui\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\settings\CBaseSettings.h">
+      <Filter>Header Files\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\settings\CHLMVSettings.h">
+      <Filter>Header Files\hlmv\settings</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

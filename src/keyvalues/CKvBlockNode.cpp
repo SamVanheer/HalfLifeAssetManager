@@ -107,7 +107,7 @@ void CKvBlockNode::AddKeyvalue( const char* const pszKey, const char* const pszV
 	if( !pszKey || !( *pszKey ) )
 		return;
 
-	if( !pszValue|| !( *pszValue ) ) 
+	if( !pszValue ) 
 		return;
 
 	m_Children.emplace_back( std::make_shared<CKeyvalue>( pszKey, pszValue ) );

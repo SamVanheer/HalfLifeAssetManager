@@ -1,6 +1,6 @@
 #include "CBaseControlPanel.h"
 
-CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName, CHLMVSettings* const pSettings )
+CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName, hlmv::CHLMVState* const pSettings )
 	: wxPanel( pParent )
 	, m_szName( szName )
 	, m_pSettings( pSettings )

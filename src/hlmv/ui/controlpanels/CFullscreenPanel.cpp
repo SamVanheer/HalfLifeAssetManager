@@ -10,7 +10,7 @@ wxBEGIN_EVENT_TABLE( CFullscreenPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_FULLSCREEN_GO, CFullscreenPanel::GoFullscreen )
 wxEND_EVENT_TABLE()
 
-CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
 	: CBaseControlPanel( pParent, "Fullscreen", pSettings )
 {
 	wxWindow* const pElemParent = GetBox();

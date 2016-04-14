@@ -5,7 +5,7 @@
 
 enum wxIdentifier
 {
-	wxID_CUSTOM_LOWEST = wxID_COMMON_HIGHEST + 1,
+	wxID_CUSTOM_LOWEST = wxID_SHARED_HIGHEST + 1,
 
 	//Main window
 	//File menu
@@ -21,6 +21,7 @@ enum wxIdentifier
 
 	//Tools menu
 	wxID_MAINWND_TOGGLEMESSAGES,
+	wxID_MAINWND_OPTIONS,
 
 	//Main panel
 	wxID_MAIN_PAGECHANGED,

@@ -11,6 +11,7 @@
 #include "utility/CString.h"
 
 #include "ui/shared/CMessagesWindow.h"
+#include "options/COptionsDialog.h"
 
 #include "CMainPanel.h"
 
@@ -28,10 +29,11 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_MAINWND_RECENTFILE4, CMainWindow::OpenRecentFile )
 	EVT_MENU( wxID_EXIT, CMainWindow::OnExit )
 	EVT_MENU( wxID_MAINWND_TOGGLEMESSAGES, CMainWindow::ShowMessagesWindow )
+	EVT_MENU( wxID_MAINWND_OPTIONS, CMainWindow::OpenOptionsDialog )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
 wxEND_EVENT_TABLE()
 
-CMainWindow::CMainWindow( CHLMVSettings* const pSettings )
+CMainWindow::CMainWindow( hlmv::CHLMVState* const pSettings )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pSettings( pSettings )
 {
@@ -58,7 +60,7 @@ CMainWindow::CMainWindow( CHLMVSettings* const pSettings )
 
 	wxMenu* pRecentFiles = new wxMenu;
 
-	for( size_t uiIndex = 0; uiIndex < CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
+	for( size_t uiIndex = 0; uiIndex < hlmv::CHLMVState::MAX_RECENT_FILES; ++uiIndex )
 	{
 		wxMenuItem* pItem = m_RecentFiles[ uiIndex ] = pRecentFiles->Append( wxID_MAINWND_RECENTFILE1 + static_cast<int>( uiIndex ), "(empty)" );
 	}
@@ -74,6 +76,10 @@ CMainWindow::CMainWindow( CHLMVSettings* const pSettings )
 	wxMenu* pMenuTools = new wxMenu;
 
 	pMenuTools->Append( wxID_MAINWND_TOGGLEMESSAGES, "Show Messages Window", "Shows or hides the messages window", true );
+
+	pMenuTools->AppendSeparator();
+
+	pMenuTools->Append( wxID_MAINWND_OPTIONS, "Options" );
 
 	wxMenu* menuHelp = new wxMenu;
 
@@ -159,6 +165,9 @@ bool CMainWindow::PromptLoadModel()
 
 bool CMainWindow::SaveModel( const wxString& szFilename )
 {
+	if( !m_pSettings->GetStudioModel() )
+		return false;
+
 	const bool bSuccess = m_pSettings->GetStudioModel()->SaveModel( szFilename.char_str( wxMBConvUTF8() ) );
 
 	if( !bSuccess )
@@ -232,7 +241,7 @@ void CMainWindow::RefreshRecentFiles()
 	auto it = recentFiles.begin();
 	auto end = recentFiles.end();
 
-	for( size_t uiIndex = 0; uiIndex < CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
+	for( size_t uiIndex = 0; uiIndex < hlmv::CHLMVState::MAX_RECENT_FILES; ++uiIndex )
 	{
 		wxMenuItem* const pItem = m_RecentFiles[ uiIndex ];
 
@@ -299,6 +308,14 @@ void CMainWindow::OnExit( wxCommandEvent& event )
 void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )
 {
 	wxGetApp().ShowMessagesWindow( event.IsChecked() );
+}
+
+void CMainWindow::OpenOptionsDialog( wxCommandEvent& event )
+{
+	COptionsDialog dlg( this, m_pSettings );
+
+	if( dlg.ShowModal() == wxID_CANCEL )
+		return;
 }
 
 void CMainWindow::OnAbout( wxCommandEvent& event )

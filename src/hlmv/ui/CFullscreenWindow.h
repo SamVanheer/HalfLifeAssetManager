@@ -5,15 +5,16 @@
 
 #include "ui/utility/CTimer.h"
 
-class CHLMVSettings;
 class C3DView;
 
 namespace hlmv
 {
+class CHLMVState;
+
 class CFullscreenWindow final : public wxFrame, public ITimerListener
 {
 public:
-	CFullscreenWindow( CHLMVSettings* const pSettings );
+	CFullscreenWindow( CHLMVState* const pSettings );
 	~CFullscreenWindow();
 
 	void OnTimer( CTimer& timer ) override final;
@@ -25,7 +26,7 @@ private:
 	void KeyDown( wxKeyEvent& event );
 
 private:
-	CHLMVSettings* m_pSettings;
+	CHLMVState* m_pSettings;
 
 	C3DView* m_p3DView;
 

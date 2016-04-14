@@ -22,7 +22,7 @@ wxBEGIN_EVENT_TABLE( CTexturesPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_TEX_EXPORTUVMAP, CTexturesPanel::ExportUVMap )
 wxEND_EVENT_TABLE()
 
-CTexturesPanel::CTexturesPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+CTexturesPanel::CTexturesPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
 	: CBaseControlPanel( pParent, "Textures", pSettings )
 {
 	//Helps catch errors if we miss one.

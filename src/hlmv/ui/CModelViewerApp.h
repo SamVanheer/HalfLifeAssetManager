@@ -46,7 +46,7 @@ private:
 private:
 	wxString m_szModel;						//Model to load on startup, if any.
 
-	CHLMVSettings m_Settings;
+	hlmv::CHLMVState m_Settings;
 
 	ITimerListener* m_pListener = nullptr;
 

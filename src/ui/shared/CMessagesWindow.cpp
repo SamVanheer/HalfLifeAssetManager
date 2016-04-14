@@ -6,7 +6,7 @@
 
 wxBEGIN_EVENT_TABLE( CMessagesWindow, wxFrame )
 	EVT_SIZE( CMessagesWindow::OnSize )
-	EVT_BUTTON( wxID_COMMON_MESSAGES_CLEAR, CMessagesWindow::OnClear )
+	EVT_BUTTON( wxID_SHARED_MESSAGES_CLEAR, CMessagesWindow::OnClear )
 	EVT_LIST_COL_BEGIN_DRAG( wxID_ANY, CMessagesWindow::OnListColumnBeginDrag )
 	EVT_CLOSE( CMessagesWindow::OnClose )
 wxEND_EVENT_TABLE()
@@ -17,7 +17,7 @@ CMessagesWindow::CMessagesWindow( const size_t uiMaxMessagesCount, IWindowCloseL
 	, m_pWindowCloseListener( pWindowCloseListener )
 {
 
-	wxButton* pClear = new wxButton( this, wxID_COMMON_MESSAGES_CLEAR, "Clear" );
+	wxButton* pClear = new wxButton( this, wxID_SHARED_MESSAGES_CLEAR, "Clear" );
 
 	m_pList = new wxListView( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxLC_HRULES );
 

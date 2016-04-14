@@ -27,6 +27,7 @@
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
     <ClCompile Include="..\src\graphics\OpenGL.cpp" />
     <ClCompile Include="..\src\hlmv\CHLMVSettings.cpp" />
+    <ClCompile Include="..\src\hlmv\settings\CHLMVSettings.cpp" />
     <ClCompile Include="..\src\hlmv\ui\C3DView.cpp" />
     <ClCompile Include="..\src\hlmv\ui\CFullscreenWindow.cpp" />
     <ClCompile Include="..\src\hlmv\ui\CHLMV.cpp" />
@@ -49,6 +50,7 @@
     <ClCompile Include="..\src\keyvalues\CKeyvaluesParser.cpp" />
     <ClCompile Include="..\src\keyvalues\CKeyvaluesWriter.cpp" />
     <ClCompile Include="..\src\keyvalues\CKvBlockNode.cpp" />
+    <ClCompile Include="..\src\settings\CBaseSettings.cpp" />
     <ClCompile Include="..\src\settings\CGameConfig.cpp" />
     <ClCompile Include="..\src\settings\CGameConfigManager.cpp" />
     <ClCompile Include="..\src\settings\CRecentFiles.cpp" />
@@ -58,6 +60,8 @@
     <ClCompile Include="..\src\studiomodel\studio_utils.cpp" />
     <ClCompile Include="..\src\ui\CwxBaseApp.cpp" />
     <ClCompile Include="..\src\ui\CwxOpenGL.cpp" />
+    <ClCompile Include="..\src\ui\shared\CEditGameConfigsDialog.cpp" />
+    <ClCompile Include="..\src\ui\shared\CGameConfigurations.cpp" />
     <ClCompile Include="..\src\ui\shared\CMessagesWindow.cpp" />
     <ClCompile Include="..\src\ui\wxLogging.cpp" />
     <ClCompile Include="..\src\ui\utility\wxUtil.cpp" />
@@ -78,6 +82,7 @@
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
     <ClInclude Include="..\src\graphics\OpenGL.h" />
     <ClInclude Include="..\src\hlmv\CHLMVSettings.h" />
+    <ClInclude Include="..\src\hlmv\settings\CHLMVSettings.h" />
     <ClInclude Include="..\src\hlmv\ui\C3DView.h" />
     <ClInclude Include="..\src\hlmv\ui\CFullscreenWindow.h" />
     <ClInclude Include="..\src\hlmv\ui\CHLMV.h" />
@@ -102,6 +107,7 @@
     <ClInclude Include="..\src\keyvalues\CKeyvaluesWriter.h" />
     <ClInclude Include="..\src\keyvalues\CKvBlockNode.h" />
     <ClInclude Include="..\src\keyvalues\KeyvaluesConstants.h" />
+    <ClInclude Include="..\src\settings\CBaseSettings.h" />
     <ClInclude Include="..\src\settings\CGameConfig.h" />
     <ClInclude Include="..\src\settings\CGameConfigManager.h" />
     <ClInclude Include="..\src\settings\CRecentFiles.h" />
@@ -110,6 +116,8 @@
     <ClInclude Include="..\src\studiomodel\StudioModel.h" />
     <ClInclude Include="..\src\ui\CwxBaseApp.h" />
     <ClInclude Include="..\src\ui\CwxOpenGL.h" />
+    <ClInclude Include="..\src\ui\shared\CEditGameConfigsDialog.h" />
+    <ClInclude Include="..\src\ui\shared\CGameConfigurations.h" />
     <ClInclude Include="..\src\ui\shared\CMessagesWindow.h" />
     <ClInclude Include="..\src\ui\utility\IWindowCloseListener.h" />
     <ClInclude Include="..\src\ui\wxLogging.h" />
@@ -194,6 +202,7 @@
       <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\src;$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)/$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -227,6 +236,7 @@
       <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\src;$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)/$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

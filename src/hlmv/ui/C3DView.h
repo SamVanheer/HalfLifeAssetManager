@@ -14,7 +14,10 @@
 
 #include "graphics/Constants.h"
 
-class CHLMVSettings;
+namespace hlmv
+{
+class CHLMVState;
+}
 
 class I3DViewListener
 {
@@ -34,7 +37,7 @@ public:
 	static const float FLOOR_SIDE_LENGTH;
 
 public:
-	C3DView( wxWindow* pParent, CHLMVSettings* const pSettings, I3DViewListener* pListener = nullptr );
+	C3DView( wxWindow* pParent, hlmv::CHLMVState* const pSettings, I3DViewListener* pListener = nullptr );
 	~C3DView();
 
 	void Paint( wxPaintEvent& event );
@@ -72,7 +75,7 @@ private:
 	void SetUVRenderTargetDimensions( const int iWidth, const int iHeight );
 
 private:
-	CHLMVSettings* const m_pSettings;
+	hlmv::CHLMVState* const m_pSettings;
 
 	I3DViewListener* m_pListener;
 

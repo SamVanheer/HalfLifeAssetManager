@@ -19,15 +19,18 @@
 /*
 *	Contains all settings used by the HLMV application.
 */
-class CHLMVSettings final
+namespace hlmv
+{
+class CHLMVState final
 {
 public:
+	//TODO: remove
 	static const size_t MAX_RECENT_FILES = 4;
 
 public:
 	//TODO: split into viewer specific and general purpose
-	CHLMVSettings();
-	~CHLMVSettings();
+	CHLMVState();
+	~CHLMVState();
 
 	void ResetModelData();
 
@@ -115,8 +118,9 @@ private:
 	bool m_bInitialized = false;
 
 private:
-	CHLMVSettings( const CHLMVSettings& other ) = default;
-	CHLMVSettings& operator=( const CHLMVSettings& other ) = delete;
+	CHLMVState( const CHLMVState& other ) = default;
+	CHLMVState& operator=( const CHLMVState& other ) = delete;
 };
+}
 
 #endif //HLMV_CHLMVSETTINGS_H

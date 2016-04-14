@@ -20,7 +20,11 @@ class CWeaponOriginPanel;
 class CFullscreenPanel;
 
 class StudioModel;
-class CHLMVSettings;
+
+namespace hlmv
+{
+class CHLMVState;
+}
 
 class CMainPanel final : public wxPanel, public I3DViewListener
 {
@@ -62,11 +66,11 @@ public:
 	static const size_t OPACITY_DEFAULT = OPACITY_MAX;
 
 public:
-	CMainPanel( wxWindow* pParent, CHLMVSettings* const pSettings );
+	CMainPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings );
 	~CMainPanel();
 
-	CHLMVSettings* GetSettings() { return m_pSettings; }
-	const CHLMVSettings* GetSettings() const { return m_pSettings; }
+	const hlmv::CHLMVState* GetSettings() const { return m_pSettings; }
+	hlmv::CHLMVState* GetSettings() { return m_pSettings; }
 
 	void OnTimer( CTimer& timer );
 
@@ -108,7 +112,7 @@ private:
 	}
 
 private:
-	CHLMVSettings* const m_pSettings;
+	hlmv::CHLMVState* const m_pSettings;
 
 	C3DView* m_p3DView;
 

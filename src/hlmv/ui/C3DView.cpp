@@ -21,7 +21,7 @@ wxEND_EVENT_TABLE()
 
 const float C3DView::FLOOR_SIDE_LENGTH = 200;
 
-C3DView::C3DView( wxWindow* pParent, CHLMVSettings* const pSettings, I3DViewListener* pListener )
+C3DView::C3DView( wxWindow* pParent, hlmv::CHLMVState* const pSettings, I3DViewListener* pListener )
 	: wxGLCanvas( pParent, wxOpenGL().GetCanvasAttributes(), wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pSettings( pSettings )
 	, m_pListener( pListener )
@@ -163,7 +163,7 @@ void C3DView::UpdateView()
 		class CStudioModelListener final : public IAnimEventHandler
 		{
 		public:
-			CStudioModelListener( CHLMVSettings* const pSettings )
+			CStudioModelListener( hlmv::CHLMVState* const pSettings )
 				: m_pSettings( pSettings )
 			{
 			}
@@ -188,7 +188,7 @@ void C3DView::UpdateView()
 				}
 			}
 
-			CHLMVSettings* const m_pSettings;
+			hlmv::CHLMVState* const m_pSettings;
 		};
 
 		CStudioModelListener listener( m_pSettings );

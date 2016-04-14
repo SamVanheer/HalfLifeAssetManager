@@ -6,7 +6,7 @@
 class CSequencesPanel final : public CBaseSequencesPanel
 {
 public:
-	CSequencesPanel( wxWindow* pParent, CHLMVSettings* const pSettings );
+	CSequencesPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings );
 	~CSequencesPanel();
 
 	void ModelChanged( const StudioModel& model ) override;

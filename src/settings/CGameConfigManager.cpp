@@ -15,6 +15,34 @@ CGameConfigManager::~CGameConfigManager()
 	RemoveAllConfigs();
 }
 
+CGameConfigManager::CGameConfigManager( const CGameConfigManager& other )
+{
+	Copy( other );
+}
+
+CGameConfigManager& CGameConfigManager::operator=( const CGameConfigManager& other )
+{
+	if( this != &other )
+	{
+		Copy( other );
+	}
+
+	return *this;
+}
+
+void CGameConfigManager::Copy( const CGameConfigManager& other )
+{
+	RemoveAllConfigs();
+
+	for( const auto& config : other.m_Configs )
+	{
+		m_Configs.push_back( std::make_shared<CGameConfig>( *config ) );
+	}
+
+	if( other.m_ActiveConfig )
+		SetActiveConfig( other.m_ActiveConfig->GetName() );
+}
+
 bool CGameConfigManager::HasConfig( const std::shared_ptr<const CGameConfig>& config ) const
 {
 	if( !config )
@@ -50,7 +78,7 @@ std::shared_ptr<CGameConfig> CGameConfigManager::GetConfig( const char* const ps
 	return it != m_Configs.end() ? *it : nullptr;
 }
 
-bool CGameConfigManager::AddConfig( std::shared_ptr<CGameConfig> config )
+bool CGameConfigManager::AddConfig( const std::shared_ptr<CGameConfig>& config )
 {
 	if( !config )
 		return false;
@@ -69,7 +97,7 @@ bool CGameConfigManager::AddConfig( std::shared_ptr<CGameConfig> config )
 	return true;
 }
 
-bool CGameConfigManager::RemoveConfig( std::shared_ptr<CGameConfig> config )
+bool CGameConfigManager::RemoveConfig( const std::shared_ptr<CGameConfig>& config )
 {
 	if( !config )
 		return false;
@@ -97,7 +125,7 @@ void CGameConfigManager::RemoveAllConfigs()
 		m_ActiveConfig.reset();
 }
 
-bool CGameConfigManager::RenameConfig( std::shared_ptr<CGameConfig> config, const char* const pszNewName )
+bool CGameConfigManager::RenameConfig( const std::shared_ptr<CGameConfig>& config, const char* const pszNewName )
 {
 	if( !config )
 		return false;

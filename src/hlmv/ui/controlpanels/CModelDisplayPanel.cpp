@@ -22,7 +22,7 @@ wxBEGIN_EVENT_TABLE( CModelDisplayPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_MDLDISP_SCALEBONES, CModelDisplayPanel::ScaleBones )
 wxEND_EVENT_TABLE()
 
-CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMVSettings* const pSettings )
+CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
 	: CBaseControlPanel( pParent, "Model Display", pSettings )
 {
 	//Helps catch errors if we miss one.
