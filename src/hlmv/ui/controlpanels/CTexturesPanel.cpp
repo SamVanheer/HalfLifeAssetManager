@@ -97,8 +97,6 @@ void CTexturesPanel::PanelDeactivated()
 
 void CTexturesPanel::ModelChanged( const StudioModel& model )
 {
-	//TODO: fill info
-
 	m_pTexture->Clear();
 
 	m_pMesh->Clear();

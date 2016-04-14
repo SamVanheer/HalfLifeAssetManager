@@ -104,8 +104,6 @@ CBodyPartsPanel::~CBodyPartsPanel()
 
 void CBodyPartsPanel::ModelChanged( const StudioModel& model )
 {
-	//TODO: fill info
-
 	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
 
 	if( pHdr )

@@ -182,7 +182,6 @@ void CWeaponOriginPanel::ModelChanged( const StudioModel& model )
 {
 	CBaseSequencesPanel::ModelChanged( model );
 
-	//TODO: fill info
 	m_pXOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 0 ] ) );
 	m_pYOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 1 ] ) );
 	m_pZOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 2 ] ) );

@@ -297,7 +297,7 @@ void CSoundSystem::PlaySound( const char* pszFilename, const float flVolume, con
 		return;
 	}
 
-	if( CheckFMODResult( sound.pChannel->setFrequency( flFrequency * ( iPitch * 0.01f ) ) ) )
+	if( CheckFMODResult( sound.pChannel->setFrequency( flFrequency * ( iPitch / ( static_cast<float>( PITCH_NORM ) ) ) ) ) )
 	{
 		CheckFMODResult( sound.pSound->release() );
 		return;

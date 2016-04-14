@@ -3,6 +3,8 @@
 
 #include <list>
 
+#include "SoundConstants.h"
+
 namespace FMOD
 {
 class System;

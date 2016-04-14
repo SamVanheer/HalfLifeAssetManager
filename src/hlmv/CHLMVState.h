@@ -24,7 +24,6 @@ namespace hlmv
 class CHLMVState final
 {
 public:
-	//TODO: split into viewer specific and general purpose
 	CHLMVState();
 	~CHLMVState();
 
@@ -78,7 +77,10 @@ public:
 
 	bool playSound;
 
-	unsigned int drawnPolys; //TODO: move
+	/**
+	*	How many polygons were drawn in the last frame. Does not include things like hitboxes or attachments, only the actual model.
+	*/
+	unsigned int drawnPolys;
 
 	bool wireframeOverlay;
 
@@ -98,8 +100,6 @@ public:
 
 private:
 	StudioModel* m_pStudioModel;
-
-	bool m_bInitialized = false;
 
 private:
 	CHLMVState( const CHLMVState& ) = delete;

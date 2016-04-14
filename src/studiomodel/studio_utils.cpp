@@ -530,8 +530,7 @@ float StudioModel::GetController( int iController ) const
 	if( !m_pstudiohdr )
 		return 0.0f;
 
-	//TODO: fix magic number
-	if( iController < 0 || iController > 4 )
+	if( iController < 0 || iController > CONTROLLER_MOUTH_INDEX )
 		return 0;
 
 	const mstudiobonecontroller_t* pbonecontroller = ( mstudiobonecontroller_t* ) ( ( byte* ) m_pstudiohdr + m_pstudiohdr->bonecontrollerindex );

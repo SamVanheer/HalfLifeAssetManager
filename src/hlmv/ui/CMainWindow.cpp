@@ -1,17 +1,12 @@
 #include <wx/filename.h>
 
-//TODO: tidy includes
-#include "hlmv/ui/CModelViewerApp.h"
-
-#include "graphics/OpenGL.h"
-
-#include "hlmv/ui/CHLMV.h"
-
-#include "filesystem/CFileSystem.h"
-
-#include "utility/CString.h"
+#include "ui/CwxOpenGL.h"
 
 #include "ui/shared/CMessagesWindow.h"
+
+#include "hlmv/ui/CModelViewerApp.h"
+#include "hlmv/ui/CHLMV.h"
+
 #include "options/COptionsDialog.h"
 
 #include "CMainPanel.h"
@@ -105,16 +100,12 @@ CMainWindow::CMainWindow( hlmv::CHLMV* const pHLMV )
 	{
 		pWindow->Bind( wxEVT_CLOSE_WINDOW, &CMainWindow::OnMessagesWindowClosed, this );
 	}
-
-	//LoadModel( "barney.mdl" );
 }
 
 CMainWindow::~CMainWindow()
 {
-	//Call this first so nothing tries to access the settings object.
-	DestroyChildren();
-
-	m_pHLMV->GetState()->ClearStudioModel();
+	//Clear the studio model here, while the context is still valid.
+	m_pMainPanel->FreeModel();
 
 	wxGetApp().ExitApp( true );
 }

@@ -431,5 +431,8 @@
     <ClInclude Include="..\src\keyvalues\Keyvalues.h">
       <Filter>Header Files\keyvalues</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\soundsystem\SoundConstants.h">
+      <Filter>Header Files\soundsystem</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

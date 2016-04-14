@@ -25,6 +25,15 @@ public:
 
 	const wxGLContextAttrs* GetContextAttributes() const { return m_bContextAttributesSet ? &m_ContextAttributes : nullptr; }
 
+	/**
+	*	Gets the context, if it exists.
+	*/
+	wxGLContext* GetContext() { return m_pContext; }
+
+	/**
+	*	Gets a context for use by a canvas. The context is created if it doesn't exist yet.
+	*	@param pCanvas Canvas used to create the context.
+	*/
 	wxGLContext* GetContext( wxGLCanvas* pCanvas );
 
 	GLuint glLoadImage( const char* const pszFilename ) override final;

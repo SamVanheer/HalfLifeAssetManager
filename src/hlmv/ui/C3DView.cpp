@@ -178,10 +178,9 @@ void C3DView::UpdateView()
 				case SCRIPT_EVENT_SOUND:			// Play a named wave file
 				case SCRIPT_EVENT_SOUND_VOICE:
 					{
-						//TODO: define PITCH_NORM
 						if( m_pSettings->playSound )
 						{
-							soundSystem().PlaySound( event.pszOptions, 1.0f, 100 );
+							soundSystem().PlaySound( event.pszOptions, 1.0f, soundsystem::PITCH_NORM );
 						}
 
 						break;

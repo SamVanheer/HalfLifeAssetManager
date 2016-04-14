@@ -111,7 +111,6 @@ bool CModelViewerApp::Initialize()
 		return false;
 	}
 
-	//TODO: add settings
 	//TODO: move both to CHLMV
 	m_pHLMV = new hlmv::CHLMV( &m_Settings, &m_State );
 

@@ -10,8 +10,7 @@ CHLMVState::CHLMVState()
 
 CHLMVState::~CHLMVState()
 {
-	//Note: don't clear the studio model here; since the same instance is shared.
-	//TODO: use reference counted/shared ptr to avoid this problem
+	ClearStudioModel();
 }
 
 void CHLMVState::ResetModelData()

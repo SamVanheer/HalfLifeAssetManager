@@ -133,21 +133,6 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 	default: break;
 	}
 
-	/*
-	//TODO: use a single method to load the model
-	if( !pStudioModel->LoadModel( szCFilename ) )
-	{
-		wxMessageBox( wxString::Format( "Error loading model \"%s\"\n", szCFilename.data() ), "Error" );
-		return false;
-	}
-
-	if( !pStudioModel->PostLoadModel( szCFilename ) )
-	{
-		wxMessageBox( wxString::Format( "Error post-loading model \"%s\"\n", szCFilename.data() ), "Error" );
-		return false;
-	}
-	*/
-
 	m_pHLMV->GetState()->SetStudioModel( pStudioModel.release() );
 
 	ModelChanged( *m_pHLMV->GetState()->GetStudioModel() );
@@ -155,6 +140,16 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 	m_pHLMV->GetState()->CenterView( *m_pHLMV->GetState()->GetStudioModel() );
 
 	return true;
+}
+
+void CMainPanel::FreeModel()
+{
+	m_p3DView->PrepareForLoad();
+
+	if( m_pHLMV->GetState()->GetStudioModel() )
+	{
+		m_pHLMV->GetState()->ClearStudioModel();
+	}
 }
 
 void CMainPanel::ModelChanged( const StudioModel& model )

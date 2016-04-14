@@ -78,6 +78,8 @@ public:
 
 	bool LoadModel( const wxString& szFilename );
 
+	void FreeModel();
+
 	void ModelChanged( const StudioModel& model );
 
 	void PageChanged( wxBookCtrlEvent& event );

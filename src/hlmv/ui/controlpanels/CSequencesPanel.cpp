@@ -65,7 +65,6 @@ CSequencesPanel::~CSequencesPanel()
 void CSequencesPanel::ModelChanged( const StudioModel& model )
 {
 	CBaseSequencesPanel::ModelChanged( model );
-	//TODO: fill info
 
 	UpdateEvents();
 }

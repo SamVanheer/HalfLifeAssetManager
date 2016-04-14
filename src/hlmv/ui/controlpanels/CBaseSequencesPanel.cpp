@@ -39,8 +39,6 @@ CBaseSequencesPanel::~CBaseSequencesPanel()
 
 void CBaseSequencesPanel::ModelChanged( const StudioModel& model )
 {
-	//TODO: fill info
-
 	m_pSequence->Clear();
 
 	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();

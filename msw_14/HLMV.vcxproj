@@ -114,6 +114,7 @@
     <ClInclude Include="..\src\settings\CRecentFiles.h" />
     <ClInclude Include="..\src\settings\GameConfigIO.h" />
     <ClInclude Include="..\src\soundsystem\CSoundSystem.h" />
+    <ClInclude Include="..\src\soundsystem\SoundConstants.h" />
     <ClInclude Include="..\src\studiomodel\StudioModel.h" />
     <ClInclude Include="..\src\ui\CwxBaseApp.h" />
     <ClInclude Include="..\src\ui\CwxOpenGL.h" />
