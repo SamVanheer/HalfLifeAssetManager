@@ -4,7 +4,7 @@
 #include "ui/shared/CGameConfigurations.h"
 
 #include "hlmv/ui/CHLMV.h"
-#include "hlmv/CHLMVState.h"
+#include "hlmv/settings/CHLMVSettings.h"
 
 #include "COptionsDialog.h"
 
@@ -19,7 +19,7 @@ COptionsDialog::COptionsDialog( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
 	m_pPages = new wxNotebook( this, wxID_ANY );
 
 	//TODO: use a copy of the manager
-	m_pGameConfigs = new CGameConfigurations( m_pPages, m_pHLMV->GetState()->configManager );
+	m_pGameConfigs = new CGameConfigurations( m_pPages, m_pHLMV->GetSettings()->GetConfigManager() );
 
 	m_pPages->AddPage( m_pGameConfigs, "Game Configurations", true );
 

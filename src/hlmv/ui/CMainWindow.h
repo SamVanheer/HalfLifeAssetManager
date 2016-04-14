@@ -5,6 +5,7 @@
 
 #include "ui/utility/CTimer.h"
 
+#include "hlmv/settings/CHLMVSettings.h"
 #include "hlmv/CHLMVState.h"
 
 class CTimer;
@@ -63,8 +64,7 @@ private:
 	hlmv::CHLMV* m_pHLMV;
 	CMainPanel* m_pMainPanel;
 
-	//TODO: replace with CHLMVSettings::MAX_RECENT_FILES
-	wxMenuItem* m_RecentFiles[ hlmv::CHLMVState::MAX_RECENT_FILES ];
+	wxMenuItem* m_RecentFiles[ hlmv::CHLMVSettings::MAX_RECENT_FILES ];
 
 private:
 	CMainWindow( const CMainWindow& ) = delete;

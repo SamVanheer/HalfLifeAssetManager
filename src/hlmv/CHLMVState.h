@@ -24,10 +24,6 @@ namespace hlmv
 class CHLMVState final
 {
 public:
-	//TODO: remove
-	static const size_t MAX_RECENT_FILES = 4;
-
-public:
 	//TODO: split into viewer specific and general purpose
 	CHLMVState();
 	~CHLMVState();
@@ -35,14 +31,6 @@ public:
 	void ResetModelData();
 
 	void ResetToDefaults();
-
-	bool LoadFromFile( const char* const pszFilename );
-	bool SaveToFile( const char* const pszFilename );
-
-	bool Initialize();
-	void Shutdown();
-
-	bool InitializeFileSystem();
 
 	void CenterView( const StudioModel& model );
 
@@ -108,17 +96,13 @@ public:
 
 	StudioModel::CRenderSettings renderSettings;
 
-	std::shared_ptr<settings::CGameConfigManager> configManager = std::make_shared<settings::CGameConfigManager>();
-
-	std::shared_ptr<settings::CRecentFiles> recentFiles = std::make_shared<settings::CRecentFiles>( MAX_RECENT_FILES );
-
 private:
 	StudioModel* m_pStudioModel;
 
 	bool m_bInitialized = false;
 
 private:
-	CHLMVState( const CHLMVState& other ) = default;
+	CHLMVState( const CHLMVState& ) = delete;
 	CHLMVState& operator=( const CHLMVState& other ) = delete;
 };
 }

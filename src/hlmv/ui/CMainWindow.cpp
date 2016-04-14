@@ -61,7 +61,7 @@ CMainWindow::CMainWindow( hlmv::CHLMV* const pHLMV )
 
 	wxMenu* pRecentFiles = new wxMenu;
 
-	for( size_t uiIndex = 0; uiIndex < hlmv::CHLMVState::MAX_RECENT_FILES; ++uiIndex )
+	for( size_t uiIndex = 0; uiIndex < hlmv::CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
 	{
 		wxMenuItem* pItem = m_RecentFiles[ uiIndex ] = pRecentFiles->Append( wxID_MAINWND_RECENTFILE1 + static_cast<int>( uiIndex ), "(empty)" );
 	}
@@ -141,7 +141,7 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 
 		this->SetTitle( wxString::Format( "%s - %s", HLMV_TITLE, pszAbsFilename ) );
 
-		m_pHLMV->GetState()->recentFiles->Add( pszAbsFilename );
+		m_pHLMV->GetSettings()->GetRecentFiles()->Add( pszAbsFilename );
 
 		//TODO: if the file doesn't exist, remove the entry.
 		RefreshRecentFiles();
@@ -237,12 +237,12 @@ void CMainWindow::UnloadGroundTexture()
 
 void CMainWindow::RefreshRecentFiles()
 {
-	const auto& recentFiles = m_pHLMV->GetState()->recentFiles->GetFiles();
+	const auto& recentFiles = m_pHLMV->GetSettings()->GetRecentFiles()->GetFiles();
 
 	auto it = recentFiles.begin();
 	auto end = recentFiles.end();
 
-	for( size_t uiIndex = 0; uiIndex < hlmv::CHLMVState::MAX_RECENT_FILES; ++uiIndex )
+	for( size_t uiIndex = 0; uiIndex < hlmv::CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
 	{
 		wxMenuItem* const pItem = m_RecentFiles[ uiIndex ];
 
@@ -296,7 +296,7 @@ void CMainWindow::OpenRecentFile( wxCommandEvent& event )
 
 	const size_t fileId = static_cast<size_t>( event.GetId() - wxID_MAINWND_RECENTFILE1 );
 
-	const wxString szFilename = m_pHLMV->GetState()->recentFiles->Get( fileId );
+	const wxString szFilename = m_pHLMV->GetSettings()->GetRecentFiles()->Get( fileId );
 
 	LoadModel( szFilename );
 }

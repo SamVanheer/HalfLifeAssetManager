@@ -71,5 +71,6 @@ enum wxIdentifier
 };
 
 #define HLMV_TITLE "Half-Life Model Viewer"
+#define HLMV_SETTINGS_FILE "HLMVSettings.txt"
 
 #endif //HLMV_UI_WXHLMV_H

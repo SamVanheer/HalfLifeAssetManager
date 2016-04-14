@@ -106,6 +106,7 @@
     <ClInclude Include="..\src\keyvalues\CKeyvaluesParser.h" />
     <ClInclude Include="..\src\keyvalues\CKeyvaluesWriter.h" />
     <ClInclude Include="..\src\keyvalues\CKvBlockNode.h" />
+    <ClInclude Include="..\src\keyvalues\Keyvalues.h" />
     <ClInclude Include="..\src\keyvalues\KeyvaluesConstants.h" />
     <ClInclude Include="..\src\settings\CBaseSettings.h" />
     <ClInclude Include="..\src\settings\CGameConfig.h" />

@@ -102,17 +102,18 @@ bool CModelViewerApp::Initialize()
 	if( !InitApp( INIT_ALL, HLMV_TITLE ) )
 		return false;
 
-	if( !m_State.Initialize() )
+	//Must be called before we create the main window, since it accesses the window.
+	UseMessagesWindow( true );
+
+	if( !m_Settings.Initialize( HLMV_SETTINGS_FILE ) )
 	{
 		wxMessageBox( "Failed to initialize settings", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
 	}
 
-	//Must be called before we create the main window, since it accesses the window.
-	UseMessagesWindow( true );
-
 	//TODO: add settings
-	m_pHLMV = new hlmv::CHLMV( nullptr, &m_State );
+	//TODO: move both to CHLMV
+	m_pHLMV = new hlmv::CHLMV( &m_Settings, &m_State );
 
 	//TODO: use 2 step init to avoid a situation where the main window constructor tries to access the CHLMV instance.
 	m_pMainWindow = new CMainWindow( m_pHLMV );
@@ -150,7 +151,7 @@ void CModelViewerApp::Shutdown()
 		m_pHLMV = nullptr;
 	}
 
-	m_State.Shutdown();
+	m_Settings.Shutdown( HLMV_SETTINGS_FILE );
 
 	ShutdownApp();
 }
