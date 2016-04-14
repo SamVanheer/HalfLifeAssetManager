@@ -26,7 +26,7 @@
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
     <ClCompile Include="..\src\graphics\OpenGL.cpp" />
-    <ClCompile Include="..\src\hlmv\CHLMVSettings.cpp" />
+    <ClCompile Include="..\src\hlmv\CHLMVState.cpp" />
     <ClCompile Include="..\src\hlmv\settings\CHLMVSettings.cpp" />
     <ClCompile Include="..\src\hlmv\ui\C3DView.cpp" />
     <ClCompile Include="..\src\hlmv\ui\CFullscreenWindow.cpp" />
@@ -81,7 +81,7 @@
     <ClInclude Include="..\src\graphics\Constants.h" />
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
     <ClInclude Include="..\src\graphics\OpenGL.h" />
-    <ClInclude Include="..\src\hlmv\CHLMVSettings.h" />
+    <ClInclude Include="..\src\hlmv\CHLMVState.h" />
     <ClInclude Include="..\src\hlmv\settings\CHLMVSettings.h" />
     <ClInclude Include="..\src\hlmv\ui\C3DView.h" />
     <ClInclude Include="..\src\hlmv\ui\CFullscreenWindow.h" />

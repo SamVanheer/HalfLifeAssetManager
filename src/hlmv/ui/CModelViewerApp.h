@@ -7,7 +7,7 @@
 
 #include "ui/CwxBaseApp.h"
 
-#include "hlmv/CHLMVSettings.h"
+#include "hlmv/CHLMVState.h"
 
 class CMainWindow;
 

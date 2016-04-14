@@ -4,7 +4,7 @@
 
 #include "graphics/OpenGL.h"
 
-#include "hlmv/CHLMVSettings.h"
+#include "hlmv/CHLMVState.h"
 
 #include "filesystem/CFileSystem.h"
 

@@ -3,7 +3,7 @@
 
 #include "CBaseControlPanel.h"
 
-#include "hlmv/CHLMVSettings.h"
+#include "hlmv/CHLMVState.h"
 
 class CModelDisplayPanel final : public CBaseControlPanel
 {

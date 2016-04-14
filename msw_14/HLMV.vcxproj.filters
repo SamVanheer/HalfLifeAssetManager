@@ -144,9 +144,6 @@
     <ClCompile Include="..\src\ui\CwxOpenGL.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\hlmv\CHLMVSettings.cpp">
-      <Filter>Source Files\hlmv</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\hlmv\ui\C3DView.cpp">
       <Filter>Source Files\hlmv\ui</Filter>
     </ClCompile>
@@ -258,6 +255,9 @@
     <ClCompile Include="..\src\hlmv\settings\CHLMVSettings.cpp">
       <Filter>Source Files\hlmv\settings</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\hlmv\CHLMVState.cpp">
+      <Filter>Source Files\hlmv</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -307,9 +307,6 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\utility\wxUtil.h">
       <Filter>Header Files\ui\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\hlmv\CHLMVSettings.h">
-      <Filter>Header Files\hlmv</Filter>
     </ClInclude>
     <ClInclude Include="..\src\hlmv\ui\C3DView.h">
       <Filter>Header Files\hlmv\ui</Filter>
@@ -427,6 +424,9 @@
     </ClInclude>
     <ClInclude Include="..\src\hlmv\settings\CHLMVSettings.h">
       <Filter>Header Files\hlmv\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\CHLMVState.h">
+      <Filter>Header Files\hlmv</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

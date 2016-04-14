@@ -2,7 +2,7 @@
 #include <wx/gbsizer.h>
 #include <wx/tglbtn.h>
 
-#include "hlmv/CHLMVSettings.h"
+#include "hlmv/CHLMVState.h"
 #include "studiomodel/StudioModel.h"
 
 #include "CBaseSequencesPanel.h"

@@ -11,7 +11,7 @@
 
 #include "settings/GameConfigIO.h"
 
-#include "CHLMVSettings.h"
+#include "CHLMVState.h"
 
 #define HLMV_SETTINGS_FILE "HLMVSettings.txt"
 

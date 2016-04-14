@@ -13,7 +13,7 @@
 
 #include "studiomodel/StudioModel.h"
 
-#include "hlmv/CHLMVSettings.h"
+#include "hlmv/CHLMVState.h"
 
 #include "CMainPanel.h"
 

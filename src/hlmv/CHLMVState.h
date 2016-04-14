@@ -1,5 +1,5 @@
-#ifndef HLMV_CHLMVSETTINGS_H
-#define HLMV_CHLMVSETTINGS_H
+#ifndef HLMV_CHLMVSTATE_H
+#define HLMV_CHLMVSTATE_H
 
 #include <vector>
 #include <memory>
@@ -123,4 +123,4 @@ private:
 };
 }
 
-#endif //HLMV_CHLMVSETTINGS_H
+#endif //HLMV_CHLMVSTATE_H

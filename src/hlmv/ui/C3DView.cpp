@@ -2,7 +2,7 @@
 
 #include <wx/image.h>
 
-#include "hlmv/CHLMVSettings.h"
+#include "hlmv/CHLMVState.h"
 
 #include "common/CGlobals.h"
 

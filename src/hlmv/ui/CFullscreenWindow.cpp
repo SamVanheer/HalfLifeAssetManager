@@ -2,7 +2,7 @@
 
 #include "hlmv/ui/CModelViewerApp.h"
 
-#include "hlmv/CHLMVSettings.h"
+#include "hlmv/CHLMVState.h"
 
 #include "C3DView.h"
 

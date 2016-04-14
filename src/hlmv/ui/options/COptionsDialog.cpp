@@ -3,7 +3,7 @@
 
 #include "ui/shared/CGameConfigurations.h"
 
-#include "hlmv/CHLMVSettings.h"
+#include "hlmv/CHLMVState.h"
 
 #include "COptionsDialog.h"
 

@@ -6,7 +6,7 @@
 
 #include "studiomodel/StudioModel.h"
 
-#include "hlmv/CHLMVSettings.h"
+#include "hlmv/CHLMVState.h"
 
 #include "hlmv/ui/CMainPanel.h"
 
