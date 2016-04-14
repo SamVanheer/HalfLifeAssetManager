@@ -304,10 +304,13 @@ void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )
 
 void CMainWindow::OpenOptionsDialog( wxCommandEvent& event )
 {
-	COptionsDialog dlg( this, m_pHLMV );
+	COptionsDialog dlg( this, m_pHLMV->GetSettings() );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
 		return;
+
+	//TODO: this should be using listeners
+	m_pHLMV->GetSettings()->InitializeFileSystem();
 }
 
 void CMainWindow::OnAbout( wxCommandEvent& event )

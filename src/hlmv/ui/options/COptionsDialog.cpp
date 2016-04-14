@@ -1,9 +1,9 @@
 #include <wx/sizer.h>
 #include <wx/notebook.h>
 
+#include "CGeneralOptions.h"
 #include "ui/shared/CGameConfigurations.h"
 
-#include "hlmv/ui/CHLMV.h"
 #include "hlmv/settings/CHLMVSettings.h"
 
 #include "COptionsDialog.h"
@@ -12,16 +12,20 @@ wxBEGIN_EVENT_TABLE( COptionsDialog, wxDialog )
 	EVT_BUTTON( wxID_ANY, COptionsDialog::OnButton )
 wxEND_EVENT_TABLE()
 
-COptionsDialog::COptionsDialog( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+COptionsDialog::COptionsDialog( wxWindow* pParent, hlmv::CHLMVSettings* const pSettings )
 	: wxDialog( pParent, wxID_ANY, "Options", wxDefaultPosition, wxSize( 500, 700 ) )
-	, m_pHLMV( pHLMV )
+	, m_pSettings( pSettings )
+	, m_EditableSettings( std::make_unique<hlmv::CHLMVSettings>( *pSettings ) )
 {
 	m_pPages = new wxNotebook( this, wxID_ANY );
 
-	//TODO: use a copy of the manager
-	m_pGameConfigs = new CGameConfigurations( m_pPages, m_pHLMV->GetSettings()->GetConfigManager() );
+	m_pGeneral = new hlmv::CGeneralOptions( m_pPages, m_EditableSettings.get() );
+	m_pGameConfigs = new CGameConfigurations( m_pPages, m_EditableSettings->GetConfigManager() );
 
-	m_pPages->AddPage( m_pGameConfigs, "Game Configurations", true );
+	m_pPages->AddPage( m_pGeneral, "General" );
+	m_pPages->AddPage( m_pGameConfigs, "Game Configurations" );
+
+	m_pPages->ChangeSelection( 0 );
 
 	//Layout
 	wxBoxSizer* pSizer = new wxBoxSizer( wxVERTICAL );
@@ -47,10 +51,10 @@ void COptionsDialog::OnButton( wxCommandEvent& event )
 	case wxID_OK:
 	case wxID_APPLY:
 		{
-			//Copy over the settings to the actual settings object.
-			//*m_pSettings = *m_pConfSettings;
-
 			m_pGameConfigs->Save();
+
+			//Copy over the settings to the actual settings object.
+			*m_pSettings = *m_EditableSettings;
 			break;
 		}
 

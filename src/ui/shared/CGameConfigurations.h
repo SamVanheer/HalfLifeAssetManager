@@ -37,6 +37,8 @@ private:
 private:
 	std::shared_ptr<settings::CGameConfigManager> m_Manager;
 
+	wxComboBox* m_pActiveConfig;
+
 	wxComboBox* m_pConfigs;
 
 	//wxComboBox does not track the previous selection.

@@ -19,6 +19,9 @@ CGameConfigurations::CGameConfigurations( wxWindow* pParent, std::shared_ptr<set
 {
 	wxASSERT( manager != nullptr );
 
+	m_pActiveConfig = new wxComboBox( this, wxID_ANY );
+	m_pActiveConfig->SetEditable( false );
+
 	m_pConfigs = new wxComboBox( this, wxID_SHARED_GAMECONFIGS_CONFIG_CHANGED );
 	m_pConfigs->SetEditable( false );
 
@@ -34,19 +37,24 @@ CGameConfigurations::CGameConfigurations( wxWindow* pParent, std::shared_ptr<set
 	//Layout
 	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );
 
-	pSizer->Add( new wxStaticText( this, wxID_ANY, "Game Configurations:" ), wxGBPosition( 0, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
-	pSizer->Add( m_pConfigs, wxGBPosition( 1, 0 ), wxGBSpan( 1, 4 ), wxEXPAND );
-	pSizer->Add( pEditConfigs, wxGBPosition( 1, 4 ), wxGBSpan( 1, 1 ), wxEXPAND );
+	int iRow = 0;
 
-	pSizer->Add( new wxStaticText( this, wxID_ANY, "Base path:" ), wxGBPosition( 2, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
-	pSizer->Add( m_pBasePath, wxGBPosition( 3, 0 ), wxGBSpan( 1, 4 ), wxEXPAND );
-	pSizer->Add( m_pFindBasePath, wxGBPosition( 3, 4 ), wxGBSpan( 1, 1 ), wxEXPAND );
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "Active Configuration:" ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
+	pSizer->Add( m_pActiveConfig, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
 
-	pSizer->Add( new wxStaticText( this, wxID_ANY, "Game directory:" ), wxGBPosition( 4, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
-	pSizer->Add( m_pGameDir, wxGBPosition( 5, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "Game Configurations:" ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
+	pSizer->Add( m_pConfigs, wxGBPosition( iRow, 0 ), wxGBSpan( 1, 4 ), wxEXPAND );
+	pSizer->Add( pEditConfigs, wxGBPosition( iRow++, 4 ), wxGBSpan( 1, 1 ), wxEXPAND );
 
-	pSizer->Add( new wxStaticText( this, wxID_ANY, "Mod directory:" ), wxGBPosition( 6, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
-	pSizer->Add( m_pModDir, wxGBPosition( 7, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "Base path:" ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
+	pSizer->Add( m_pBasePath, wxGBPosition( iRow, 0 ), wxGBSpan( 1, 4 ), wxEXPAND );
+	pSizer->Add( m_pFindBasePath, wxGBPosition( iRow++, 4 ), wxGBSpan( 1, 1 ), wxEXPAND );
+
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "Game directory:" ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
+	pSizer->Add( m_pGameDir, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
+
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "Mod directory:" ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
+	pSizer->Add( m_pModDir, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
 
 	for( size_t uiCol = 0; uiCol < 5; ++uiCol )
 		pSizer->AddGrowableCol( uiCol );
@@ -63,11 +71,22 @@ CGameConfigurations::~CGameConfigurations()
 void CGameConfigurations::Save()
 {
 	StoreConfig( m_pConfigs->GetSelection() );
+
+	const int iIndex = m_pActiveConfig->GetSelection();
+
+	if( iIndex != wxNOT_FOUND )
+	{
+		m_Manager->SetActiveConfig( m_Manager->GetConfig( m_pActiveConfig->GetStringSelection().c_str() ) );
+	}
+	else
+	{
+		m_Manager->ClearActiveConfig();
+	}
 }
 
 void CGameConfigurations::Initialize( unsigned int uiIndex )
 {
-	m_pConfigs->Clear();
+	m_pActiveConfig->Clear();
 
 	wxArrayString configs;
 
@@ -75,6 +94,20 @@ void CGameConfigurations::Initialize( unsigned int uiIndex )
 	{
 		configs.Add( config->GetName() );
 	}
+
+	m_pActiveConfig->Append( configs );
+
+	if( auto config = m_Manager->GetActiveConfig() )
+	{
+		m_pActiveConfig->SetSelection( m_Manager->IndexOf( config ) );
+	}
+	else
+	{
+		//No active config
+		m_pActiveConfig->SetSelection( wxNOT_FOUND );
+	}
+
+	m_pConfigs->Clear();
 
 	m_pConfigs->Append( configs );
 

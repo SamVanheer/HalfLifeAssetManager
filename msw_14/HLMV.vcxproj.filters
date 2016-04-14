@@ -258,6 +258,9 @@
     <ClCompile Include="..\src\hlmv\CHLMVState.cpp">
       <Filter>Source Files\hlmv</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\hlmv\ui\options\CGeneralOptions.cpp">
+      <Filter>Source Files\hlmv\ui\options</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -433,6 +436,9 @@
     </ClInclude>
     <ClInclude Include="..\src\soundsystem\SoundConstants.h">
       <Filter>Header Files\soundsystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hlmv\ui\options\CGeneralOptions.h">
+      <Filter>Header Files\hlmv\ui\options</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

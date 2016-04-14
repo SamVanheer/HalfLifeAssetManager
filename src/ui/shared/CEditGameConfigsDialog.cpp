@@ -51,6 +51,8 @@ CEditGameConfigsDialog::CEditGameConfigsDialog( wxWindow* pParent, std::shared_p
 	m_pConfigs->SetColumnWidth( 0, m_pConfigs->GetClientSize().GetWidth() );
 
 	Initialize();
+
+	//TODO: this class should communicate back to CGameConfigurations directly to avoid expensive reinit.
 }
 
 CEditGameConfigsDialog::~CEditGameConfigsDialog()

@@ -13,6 +13,8 @@ class CGameConfigManager final : public std::enable_shared_from_this<CGameConfig
 private:
 	typedef std::vector<std::shared_ptr<CGameConfig>> Configs_t;
 
+	static const size_t INVALID_INDEX = static_cast<size_t>( -1 );
+
 public:
 	/**
 	*	Constructs an empty manager.
@@ -60,6 +62,13 @@ public:
 	*	@return true if this manager has the given config, false otherwise.
 	*/
 	bool HasConfig( const char* const pszName ) const;
+
+	/**
+	*	Gets the index of the given config, or INVALID_INDEX if the config is not in the list.
+	*	@param config Configuration to search for.
+	*	@return Index of the config, or INVALID_INDEX if the config isn't in the list.
+	*/
+	size_t IndexOf( const std::shared_ptr<const CGameConfig>& config ) const;
 
 	/**
 	*	Gets a config by name.
@@ -127,6 +136,11 @@ public:
 	*	@see SetActiveConfig( const std::shared_ptr<CGameConfig>& config )
 	*/
 	bool SetActiveConfig( const char* const pszName );
+
+	/**
+	*	Clears the active config.
+	*/
+	void ClearActiveConfig();
 
 private:
 	void Copy( const CGameConfigManager& other );

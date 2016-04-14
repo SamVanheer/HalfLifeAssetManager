@@ -10,13 +10,15 @@ class CGameConfigurations;
 
 namespace hlmv
 {
-class CHLMV;
+class CHLMVSettings;
+
+class CGeneralOptions;
 }
 
 class COptionsDialog final : public wxDialog
 {
 public:
-	COptionsDialog( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
+	COptionsDialog( wxWindow* pParent, hlmv::CHLMVSettings* const pSettings );
 	~COptionsDialog();
 
 protected:
@@ -26,10 +28,12 @@ private:
 	void OnButton( wxCommandEvent& event );
 
 private:
-	hlmv::CHLMV* const m_pHLMV;
+	hlmv::CHLMVSettings* const m_pSettings;
+	std::unique_ptr<hlmv::CHLMVSettings> m_EditableSettings;
 
 	wxNotebook* m_pPages;
 
+	hlmv::CGeneralOptions* m_pGeneral;
 	CGameConfigurations* m_pGameConfigs;
 
 private:

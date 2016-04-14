@@ -42,6 +42,7 @@
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CSequencesPanel.cpp" />
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CTexturesPanel.cpp" />
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CWeaponOriginPanel.cpp" />
+    <ClCompile Include="..\src\hlmv\ui\options\CGeneralOptions.cpp" />
     <ClCompile Include="..\src\hlmv\ui\options\COptionsDialog.cpp" />
     <ClCompile Include="..\src\keyvalues\CKeyvalue.cpp" />
     <ClCompile Include="..\src\keyvalues\CKeyvalueNode.cpp" />
@@ -97,6 +98,7 @@
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CSequencesPanel.h" />
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CTexturesPanel.h" />
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CWeaponOriginPanel.h" />
+    <ClInclude Include="..\src\hlmv\ui\options\CGeneralOptions.h" />
     <ClInclude Include="..\src\hlmv\ui\options\COptionsDialog.h" />
     <ClInclude Include="..\src\hlmv\ui\wxHLMV.h" />
     <ClInclude Include="..\src\keyvalues\CKeyvalue.h" />

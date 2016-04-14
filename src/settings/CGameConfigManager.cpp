@@ -39,6 +39,7 @@ void CGameConfigManager::Copy( const CGameConfigManager& other )
 		m_Configs.push_back( std::make_shared<CGameConfig>( *config ) );
 	}
 
+	//TODO: add listener
 	if( other.m_ActiveConfig )
 		SetActiveConfig( other.m_ActiveConfig->GetName() );
 }
@@ -56,6 +57,21 @@ bool CGameConfigManager::HasConfig( const std::shared_ptr<const CGameConfig>& co
 bool CGameConfigManager::HasConfig( const char* const pszName ) const
 {
 	return GetConfig( pszName ) != nullptr;
+}
+
+size_t CGameConfigManager::IndexOf( const std::shared_ptr<const CGameConfig>& config ) const
+{
+	if( !config )
+		return INVALID_INDEX;
+
+	auto it = std::find( m_Configs.begin(), m_Configs.end(), config );
+
+	if( it != m_Configs.end() )
+	{
+		return it - m_Configs.begin();
+	}
+
+	return INVALID_INDEX;
 }
 
 std::shared_ptr<const CGameConfig> CGameConfigManager::GetConfig( const char* const pszName ) const
@@ -184,5 +200,10 @@ bool CGameConfigManager::SetActiveConfig( const char* const pszName )
 	m_ActiveConfig = config;
 
 	return true;
+}
+
+void CGameConfigManager::ClearActiveConfig()
+{
+	m_ActiveConfig.reset();
 }
 }
