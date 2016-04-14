@@ -1,9 +1,12 @@
 #include <wx/gbsizer.h>
 
+#include "hlmv/ui/CHLMV.h"
+
 #include "studiomodel/StudioModel.h"
 
 #include "CModelDisplayPanel.h"
 
+//TODO: move
 static const wxString RENDERMODES[] =
 {
 	"Wireframe",
@@ -22,8 +25,8 @@ wxBEGIN_EVENT_TABLE( CModelDisplayPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_MDLDISP_SCALEBONES, CModelDisplayPanel::ScaleBones )
 wxEND_EVENT_TABLE()
 
-CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
-	: CBaseControlPanel( pParent, "Model Display", pSettings )
+CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+	: CBaseControlPanel( pParent, "Model Display", pHLMV )
 {
 	//Helps catch errors if we miss one.
 	memset( m_pCheckBoxes, 0, sizeof( m_pCheckBoxes ) );
@@ -103,10 +106,10 @@ void CModelDisplayPanel::ModelChanged( const StudioModel& model )
 void CModelDisplayPanel::ViewUpdated()
 {
 	//Don't update if it's identical. Prevents flickering.
-	if( m_uiDrawnPolysLast != m_pSettings->drawnPolys )
+	if( m_uiDrawnPolysLast != m_pHLMV->GetState()->drawnPolys )
 	{
-		m_uiDrawnPolysLast = m_pSettings->drawnPolys;
-		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", m_pSettings->drawnPolys ) );
+		m_uiDrawnPolysLast = m_pHLMV->GetState()->drawnPolys;
+		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", m_pHLMV->GetState()->drawnPolys ) );
 	}
 }
 
@@ -138,19 +141,19 @@ void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
 	{
 	case CheckBox::SHOW_HITBOXES:
 		{
-			m_pSettings->renderSettings.showHitBoxes = pCheckBox->GetValue();
+			m_pHLMV->GetState()->renderSettings.showHitBoxes = pCheckBox->GetValue();
 			break;
 		}
 
 	case CheckBox::SHOW_GROUND:
 		{
-			m_pSettings->showGround = pCheckBox->GetValue();
+			m_pHLMV->GetState()->showGround = pCheckBox->GetValue();
 
 			//TODO: handle checkbox setting somewhere else
-			if( !m_pSettings->showGround && m_pSettings->mirror )
+			if( !m_pHLMV->GetState()->showGround && m_pHLMV->GetState()->mirror )
 			{
 				m_pCheckBoxes[ CheckBox::MIRROR_ON_GROUND ]->SetValue( false );
-				m_pSettings->mirror = false;
+				m_pHLMV->GetState()->mirror = false;
 			}
 
 			break;
@@ -158,19 +161,19 @@ void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
 
 	case CheckBox::SHOW_BONES:
 		{
-			m_pSettings->renderSettings.showBones = pCheckBox->GetValue();
+			m_pHLMV->GetState()->renderSettings.showBones = pCheckBox->GetValue();
 			break;
 		}
 
 	case CheckBox::MIRROR_ON_GROUND:
 		{
-			m_pSettings->mirror = pCheckBox->GetValue();
+			m_pHLMV->GetState()->mirror = pCheckBox->GetValue();
 
 			//TODO: handle checkbox setting somewhere else
-			if( m_pSettings->mirror && !m_pSettings->showGround )
+			if( m_pHLMV->GetState()->mirror && !m_pHLMV->GetState()->showGround )
 			{
 				m_pCheckBoxes[ CheckBox::SHOW_GROUND ]->SetValue( true );
-				m_pSettings->showGround = true;
+				m_pHLMV->GetState()->showGround = true;
 			}
 
 			break;
@@ -178,25 +181,25 @@ void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
 
 	case CheckBox::SHOW_ATTACHMENTS:
 		{
-			m_pSettings->renderSettings.showAttachments = pCheckBox->GetValue();
+			m_pHLMV->GetState()->renderSettings.showAttachments = pCheckBox->GetValue();
 			break;
 		}
 
 	case CheckBox::SHOW_BACKGROUND:
 		{
-			m_pSettings->showBackground = pCheckBox->GetValue();
+			m_pHLMV->GetState()->showBackground = pCheckBox->GetValue();
 			break;
 		}
 
 	case CheckBox::SHOW_EYE_POSITION:
 		{
-			m_pSettings->renderSettings.showEyePosition = pCheckBox->GetValue();
+			m_pHLMV->GetState()->renderSettings.showEyePosition = pCheckBox->GetValue();
 			break;
 		}
 
 	case CheckBox::WIREFRAME_OVERLAY:
 		{
-			m_pSettings->wireframeOverlay = pCheckBox->GetValue();
+			m_pHLMV->GetState()->wireframeOverlay = pCheckBox->GetValue();
 			break;
 		}
 
@@ -209,7 +212,7 @@ void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
 	double flScale = 1.0;
 
 	if( m_pMeshScale->GetValue().ToDouble( &flScale ) )
-		m_pSettings->GetStudioModel()->scaleMeshes( flScale );
+		m_pHLMV->GetState()->GetStudioModel()->scaleMeshes( flScale );
 	else
 		m_pMeshScale->SetValue( "1.0" );
 }
@@ -219,7 +222,7 @@ void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
 	double flScale = 1.0;
 
 	if( m_pBonesScale->GetValue().ToDouble( &flScale ) )
-		m_pSettings->GetStudioModel()->scaleBones( flScale );
+		m_pHLMV->GetState()->GetStudioModel()->scaleBones( flScale );
 	else
 		m_pBonesScale->SetValue( "1.0" );
 }
@@ -233,7 +236,7 @@ void CModelDisplayPanel::SetRenderMode( RenderMode renderMode )
 
 	m_pRenderMode->Select( static_cast<int>( renderMode ) );
 
-	m_pSettings->renderMode = renderMode;
+	m_pHLMV->GetState()->renderMode = renderMode;
 }
 
 void CModelDisplayPanel::SetOpacity( int iValue, const bool bUpdateSlider )
@@ -248,5 +251,5 @@ void CModelDisplayPanel::SetOpacity( int iValue, const bool bUpdateSlider )
 	if( bUpdateSlider )
 		m_pOpacitySlider->SetValue( iValue );
 
-	m_pSettings->renderSettings.transparency = iValue / static_cast<float>( OPACITY_MAX );
+	m_pHLMV->GetState()->renderSettings.transparency = iValue / static_cast<float>( OPACITY_MAX );
 }

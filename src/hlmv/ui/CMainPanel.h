@@ -23,7 +23,7 @@ class StudioModel;
 
 namespace hlmv
 {
-class CHLMVState;
+class CHLMV;
 }
 
 class CMainPanel final : public wxPanel, public I3DViewListener
@@ -66,11 +66,11 @@ public:
 	static const size_t OPACITY_DEFAULT = OPACITY_MAX;
 
 public:
-	CMainPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings );
+	CMainPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
 	~CMainPanel();
 
-	const hlmv::CHLMVState* GetSettings() const { return m_pSettings; }
-	hlmv::CHLMVState* GetSettings() { return m_pSettings; }
+	const hlmv::CHLMV* GetHLMV() const { return m_pHLMV; }
+	hlmv::CHLMV* GetHLMV() { return m_pHLMV; }
 
 	void OnTimer( CTimer& timer );
 
@@ -112,7 +112,7 @@ private:
 	}
 
 private:
-	hlmv::CHLMVState* const m_pSettings;
+	hlmv::CHLMV* const m_pHLMV;
 
 	C3DView* m_p3DView;
 

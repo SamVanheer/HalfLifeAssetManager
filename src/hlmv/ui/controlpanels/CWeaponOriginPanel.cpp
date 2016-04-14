@@ -2,6 +2,7 @@
 
 #include <wx/gbsizer.h>
 
+#include "hlmv/ui/CHLMV.h"
 #include "hlmv/CHLMVState.h"
 
 #include "CWeaponOriginPanel.h"
@@ -10,8 +11,8 @@ wxBEGIN_EVENT_TABLE( CWeaponOriginPanel, CBaseSequencesPanel )
 	EVT_BUTTON( wxID_WPN_TESTORIGINS, CWeaponOriginPanel::TestOrigins )
 wxEND_EVENT_TABLE()
 
-CWeaponOriginPanel::CWeaponOriginPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
-	: CBaseSequencesPanel( pParent, "Weapon Origin", pSettings )
+CWeaponOriginPanel::CWeaponOriginPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+	: CBaseSequencesPanel( pParent, "Weapon Origin", pHLMV )
 {
 	wxWindow* const pElemParent = GetBox();
 
@@ -182,19 +183,19 @@ void CWeaponOriginPanel::ModelChanged( const StudioModel& model )
 	CBaseSequencesPanel::ModelChanged( model );
 
 	//TODO: fill info
-	m_pXOrigin->SetLabelText( wxString::Format( "%.6f", m_pSettings->weaponOrigin[ 0 ] ) );
-	m_pYOrigin->SetLabelText( wxString::Format( "%.6f", m_pSettings->weaponOrigin[ 1 ] ) );
-	m_pZOrigin->SetLabelText( wxString::Format( "%.6f", m_pSettings->weaponOrigin[ 2 ] ) );
+	m_pXOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 0 ] ) );
+	m_pYOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 1 ] ) );
+	m_pZOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 2 ] ) );
 }
 
 void CWeaponOriginPanel::PanelActivated()
 {
-	m_pSettings->useWeaponOrigin = true;
+	m_pHLMV->GetState()->useWeaponOrigin = true;
 }
 
 void CWeaponOriginPanel::PanelDeactivated()
 {
-	m_pSettings->useWeaponOrigin = false;
+	m_pHLMV->GetState()->useWeaponOrigin = false;
 }
 
 static void GetDoubleFromTextCtrl( wxTextCtrl* const pCtrl, vec_t& flInOutValue )
@@ -214,7 +215,7 @@ void CWeaponOriginPanel::TestOrigins( wxCommandEvent& event )
 {
 	double flValue = 0;
 
-	GetDoubleFromTextCtrl( m_pXOrigin, m_pSettings->weaponOrigin[ 0 ] );
-	GetDoubleFromTextCtrl( m_pYOrigin, m_pSettings->weaponOrigin[ 1 ] );
-	GetDoubleFromTextCtrl( m_pZOrigin, m_pSettings->weaponOrigin[ 2 ] );
+	GetDoubleFromTextCtrl( m_pXOrigin, m_pHLMV->GetState()->weaponOrigin[ 0 ] );
+	GetDoubleFromTextCtrl( m_pYOrigin, m_pHLMV->GetState()->weaponOrigin[ 1 ] );
+	GetDoubleFromTextCtrl( m_pZOrigin, m_pHLMV->GetState()->weaponOrigin[ 2 ] );
 }

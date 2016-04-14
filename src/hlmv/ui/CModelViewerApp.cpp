@@ -7,6 +7,8 @@
 
 #include "soundsystem/CSoundSystem.h"
 
+#include "CHLMV.h"
+
 #include "CModelViewerApp.h"
 
 wxIMPLEMENT_APP( CModelViewerApp );
@@ -100,7 +102,7 @@ bool CModelViewerApp::Initialize()
 	if( !InitApp( INIT_ALL, HLMV_TITLE ) )
 		return false;
 
-	if( !m_Settings.Initialize() )
+	if( !m_State.Initialize() )
 	{
 		wxMessageBox( "Failed to initialize settings", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
@@ -109,7 +111,13 @@ bool CModelViewerApp::Initialize()
 	//Must be called before we create the main window, since it accesses the window.
 	UseMessagesWindow( true );
 
-	m_pMainWindow = new CMainWindow( &m_Settings );
+	//TODO: add settings
+	m_pHLMV = new hlmv::CHLMV( nullptr, &m_State );
+
+	//TODO: use 2 step init to avoid a situation where the main window constructor tries to access the CHLMV instance.
+	m_pMainWindow = new CMainWindow( m_pHLMV );
+
+	m_pHLMV->SetMainWindow( m_pMainWindow );
 
 	m_pMainWindow->Show( true );
 
@@ -136,7 +144,13 @@ void CModelViewerApp::Shutdown()
 		m_pMainWindow = nullptr;
 	}
 
-	m_Settings.Shutdown();
+	if( m_pHLMV )
+	{
+		delete m_pHLMV;
+		m_pHLMV = nullptr;
+	}
+
+	m_State.Shutdown();
 
 	ShutdownApp();
 }

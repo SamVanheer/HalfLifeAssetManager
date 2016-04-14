@@ -1,10 +1,11 @@
 #include <wx/filename.h>
 
+//TODO: tidy includes
 #include "hlmv/ui/CModelViewerApp.h"
 
 #include "graphics/OpenGL.h"
 
-#include "hlmv/CHLMVState.h"
+#include "hlmv/ui/CHLMV.h"
 
 #include "filesystem/CFileSystem.h"
 
@@ -33,9 +34,9 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
 wxEND_EVENT_TABLE()
 
-CMainWindow::CMainWindow( hlmv::CHLMVState* const pSettings )
+CMainWindow::CMainWindow( hlmv::CHLMV* const pHLMV )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
-	, m_pSettings( pSettings )
+	, m_pHLMV( pHLMV )
 {
 	wxMenu* menuFile = new wxMenu;
 
@@ -96,7 +97,7 @@ CMainWindow::CMainWindow( hlmv::CHLMVState* const pSettings )
 	CreateStatusBar();
 	SetStatusText( "" );
 
-	m_pMainPanel = new CMainPanel( this, m_pSettings );
+	m_pMainPanel = new CMainPanel( this, m_pHLMV );
 
 	Maximize( true );
 
@@ -113,7 +114,7 @@ CMainWindow::~CMainWindow()
 	//Call this first so nothing tries to access the settings object.
 	DestroyChildren();
 
-	m_pSettings->ClearStudioModel();
+	m_pHLMV->GetState()->ClearStudioModel();
 
 	wxGetApp().ExitApp( true );
 }
@@ -140,7 +141,7 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 
 		this->SetTitle( wxString::Format( "%s - %s", HLMV_TITLE, pszAbsFilename ) );
 
-		m_pSettings->recentFiles->Add( pszAbsFilename );
+		m_pHLMV->GetState()->recentFiles->Add( pszAbsFilename );
 
 		//TODO: if the file doesn't exist, remove the entry.
 		RefreshRecentFiles();
@@ -165,10 +166,10 @@ bool CMainWindow::PromptLoadModel()
 
 bool CMainWindow::SaveModel( const wxString& szFilename )
 {
-	if( !m_pSettings->GetStudioModel() )
+	if( !m_pHLMV->GetState()->GetStudioModel() )
 		return false;
 
-	const bool bSuccess = m_pSettings->GetStudioModel()->SaveModel( szFilename.char_str( wxMBConvUTF8() ) );
+	const bool bSuccess = m_pHLMV->GetState()->GetStudioModel()->SaveModel( szFilename.char_str( wxMBConvUTF8() ) );
 
 	if( !bSuccess )
 	{
@@ -180,7 +181,7 @@ bool CMainWindow::SaveModel( const wxString& szFilename )
 
 bool CMainWindow::PromptSaveModel()
 {
-	if( m_pSettings->GetStudioModel() == nullptr )
+	if( m_pHLMV->GetState()->GetStudioModel() == nullptr )
 	{
 		wxMessageBox( "No model to save!" );
 		return false;
@@ -236,7 +237,7 @@ void CMainWindow::UnloadGroundTexture()
 
 void CMainWindow::RefreshRecentFiles()
 {
-	const auto& recentFiles = m_pSettings->recentFiles->GetFiles();
+	const auto& recentFiles = m_pHLMV->GetState()->recentFiles->GetFiles();
 
 	auto it = recentFiles.begin();
 	auto end = recentFiles.end();
@@ -295,7 +296,7 @@ void CMainWindow::OpenRecentFile( wxCommandEvent& event )
 
 	const size_t fileId = static_cast<size_t>( event.GetId() - wxID_MAINWND_RECENTFILE1 );
 
-	const wxString szFilename = m_pSettings->recentFiles->Get( fileId );
+	const wxString szFilename = m_pHLMV->GetState()->recentFiles->Get( fileId );
 
 	LoadModel( szFilename );
 }
@@ -312,7 +313,7 @@ void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )
 
 void CMainWindow::OpenOptionsDialog( wxCommandEvent& event )
 {
-	COptionsDialog dlg( this, m_pSettings );
+	COptionsDialog dlg( this, m_pHLMV );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
 		return;

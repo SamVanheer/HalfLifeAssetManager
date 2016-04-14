@@ -9,7 +9,7 @@ class StudioModel;
 
 namespace hlmv
 {
-class CHLMVState;
+class CHLMV;
 }
 
 class CBaseControlPanel : public wxPanel
@@ -18,6 +18,9 @@ public:
 	virtual ~CBaseControlPanel();
 
 	const wxString& GetPanelName() const { return m_szName; }
+
+	const hlmv::CHLMV* GetHLMV() const { return m_pHLMV; }
+	hlmv::CHLMV* GetHLMV() { return m_pHLMV; }
 
 	//TODO: remove parameter, rename to InitializeUI
 	virtual void ModelChanged( const StudioModel& model ) {}
@@ -37,18 +40,15 @@ public:
 	//Called when the panel is no longer the active panel.
 	virtual void PanelDeactivated() {}
 
-	const hlmv::CHLMVState* GetSettings() const { return m_pSettings; }
-	hlmv::CHLMVState* GetSettings() { return m_pSettings; }
-
 protected:
-	CBaseControlPanel( wxWindow* pParent, const wxString& szName, hlmv::CHLMVState* const pSettings );
+	CBaseControlPanel( wxWindow* pParent, const wxString& szName, hlmv::CHLMV* const pHLMV );
 
 	wxStaticBox* GetBox() { return m_pBox; }
 
 	wxStaticBoxSizer* GetBoxSizer() { return m_pBoxSizer; }
 
 protected:
-	hlmv::CHLMVState* const m_pSettings;
+	hlmv::CHLMV* const m_pHLMV;
 
 private:
 	const wxString m_szName;

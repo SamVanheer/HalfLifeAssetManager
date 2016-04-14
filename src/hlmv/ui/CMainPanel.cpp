@@ -13,6 +13,7 @@
 
 #include "studiomodel/StudioModel.h"
 
+#include "CHLMV.h"
 #include "hlmv/CHLMVState.h"
 
 #include "CMainPanel.h"
@@ -21,27 +22,27 @@ wxBEGIN_EVENT_TABLE( CMainPanel, wxPanel )
 	EVT_NOTEBOOK_PAGE_CHANGED( wxID_MAIN_PAGECHANGED, CMainPanel::PageChanged )
 wxEND_EVENT_TABLE()
 
-CMainPanel::CMainPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
+CMainPanel::CMainPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
 	: wxPanel( pParent )
-	, m_pSettings( pSettings )
+	, m_pHLMV( pHLMV )
 {
-	wxASSERT( pSettings != nullptr );
+	wxASSERT( pHLMV != nullptr );
 
-	m_p3DView = new C3DView( this, pSettings, this );
+	m_p3DView = new C3DView( this, m_pHLMV, this );
 
 	m_pControlPanels = new wxNotebook( this, wxID_MAIN_PAGECHANGED );
 
-	m_pModelDisplay = new CModelDisplayPanel( m_pControlPanels, pSettings );
+	m_pModelDisplay = new CModelDisplayPanel( m_pControlPanels, m_pHLMV );
 
-	m_pBodyParts = new CBodyPartsPanel( m_pControlPanels, pSettings );
+	m_pBodyParts = new CBodyPartsPanel( m_pControlPanels, m_pHLMV );
 
-	m_pTextures = new CTexturesPanel( m_pControlPanels, pSettings );
+	m_pTextures = new CTexturesPanel( m_pControlPanels, m_pHLMV );
 
-	m_pSequencesPanel = new CSequencesPanel( m_pControlPanels, pSettings );
+	m_pSequencesPanel = new CSequencesPanel( m_pControlPanels, m_pHLMV );
 
-	m_pWeaponOriginPanel = new CWeaponOriginPanel( m_pControlPanels, pSettings );
+	m_pWeaponOriginPanel = new CWeaponOriginPanel( m_pControlPanels, m_pHLMV );
 
-	m_pFullscreen = new CFullscreenPanel( m_pControlPanels, pSettings );
+	m_pFullscreen = new CFullscreenPanel( m_pControlPanels, m_pHLMV );
 
 	CBaseControlPanel* const panels[] = 
 	{
@@ -99,9 +100,9 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 {
 	m_p3DView->PrepareForLoad();
 
-	m_pSettings->ResetModelData();
+	m_pHLMV->GetState()->ResetModelData();
 
-	m_pSettings->ClearStudioModel();
+	m_pHLMV->GetState()->ClearStudioModel();
 
 	auto szCFilename = szFilename.char_str( wxMBConvUTF8() );
 
@@ -147,11 +148,11 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 	}
 	*/
 
-	m_pSettings->SetStudioModel( pStudioModel.release() );
+	m_pHLMV->GetState()->SetStudioModel( pStudioModel.release() );
 
-	ModelChanged( *m_pSettings->GetStudioModel() );
+	ModelChanged( *m_pHLMV->GetState()->GetStudioModel() );
 
-	m_pSettings->CenterView( *m_pSettings->GetStudioModel() );
+	m_pHLMV->GetState()->CenterView( *m_pHLMV->GetState()->GetStudioModel() );
 
 	return true;
 }

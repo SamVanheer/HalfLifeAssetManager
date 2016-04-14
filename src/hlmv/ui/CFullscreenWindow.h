@@ -9,12 +9,12 @@ class C3DView;
 
 namespace hlmv
 {
-class CHLMVState;
+class CHLMV;
 
 class CFullscreenWindow final : public wxFrame, public ITimerListener
 {
 public:
-	CFullscreenWindow( CHLMVState* const pSettings );
+	CFullscreenWindow( CHLMV* const pHLMV );
 	~CFullscreenWindow();
 
 	void OnTimer( CTimer& timer ) override final;
@@ -26,7 +26,7 @@ private:
 	void KeyDown( wxKeyEvent& event );
 
 private:
-	CHLMVState* m_pSettings;
+	CHLMV* m_pHLMV;
 
 	C3DView* m_p3DView;
 

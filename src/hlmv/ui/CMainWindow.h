@@ -12,13 +12,13 @@ class CMainPanel;
 
 namespace hlmv
 {
-class CHLMVState;
+class CHLMV;
 }
 
 class CMainWindow final : public wxFrame, public ITimerListener
 {
 public:
-	CMainWindow( hlmv::CHLMVState* const pSettings );
+	CMainWindow( hlmv::CHLMV* const pHLMV );
 	~CMainWindow();
 
 	void OnTimer( CTimer& timer ) override final;
@@ -60,8 +60,8 @@ private:
 	void OnMessagesWindowClosed( wxCloseEvent& event );
 
 private:
+	hlmv::CHLMV* m_pHLMV;
 	CMainPanel* m_pMainPanel;
-	hlmv::CHLMVState* m_pSettings;
 
 	//TODO: replace with CHLMVSettings::MAX_RECENT_FILES
 	wxMenuItem* m_RecentFiles[ hlmv::CHLMVState::MAX_RECENT_FILES ];

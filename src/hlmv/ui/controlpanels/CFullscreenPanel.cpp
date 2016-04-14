@@ -4,14 +4,16 @@
 
 #include "hlmv/ui/CFullscreenWindow.h"
 
+#include "hlmv/ui/CHLMV.h"
+
 #include "CFullscreenPanel.h"
 
 wxBEGIN_EVENT_TABLE( CFullscreenPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_FULLSCREEN_GO, CFullscreenPanel::GoFullscreen )
 wxEND_EVENT_TABLE()
 
-CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
-	: CBaseControlPanel( pParent, "Fullscreen", pSettings )
+CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+	: CBaseControlPanel( pParent, "Fullscreen", pHLMV )
 {
 	wxWindow* const pElemParent = GetBox();
 
@@ -30,11 +32,12 @@ CFullscreenPanel::~CFullscreenPanel()
 
 void CFullscreenPanel::GoFullscreen( wxCommandEvent& event )
 {
+	//TODO: move fullscreen window to CHLMV
 	if( wxGetApp().GetFullscreenWindow() )
 	{
 		wxMessageBox( "A fullscreen window is already open!" );
 		return;
 	}
 
-	hlmv::CFullscreenWindow* pWindow = new hlmv::CFullscreenWindow( m_pSettings );
+	hlmv::CFullscreenWindow* pWindow = new hlmv::CFullscreenWindow( m_pHLMV );
 }

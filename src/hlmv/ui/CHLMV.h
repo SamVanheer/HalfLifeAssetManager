@@ -6,6 +6,7 @@ class CMainWindow;
 namespace hlmv
 {
 class CHLMVSettings;
+class CHLMVState;
 
 /**
 *	Facade class to access the entire HLMV program.
@@ -17,7 +18,7 @@ public:
 	*	Constructs this class with the given settings.
 	*	@param pSettings Settings to use.
 	*/
-	CHLMV( CHLMVSettings* const pSettings );
+	CHLMV( CHLMVSettings* const pSettings, CHLMVState* const pState );
 
 	/**
 	*	Destructor.
@@ -33,6 +34,16 @@ public:
 	*	@copydoc GetSettings() const
 	*/
 	CHLMVSettings* GetSettings() { return m_pSettings; }
+
+	/**
+	*	Gets the state object.
+	*/
+	const CHLMVState* GetState() const { return m_pState; }
+
+	/**
+	*	@copydoc GetState() const
+	*/
+	CHLMVState* GetState() { return m_pState; }
 
 	/**
 	*	Gets the main window.
@@ -110,6 +121,7 @@ public:
 
 private:
 	CHLMVSettings* m_pSettings;
+	CHLMVState* m_pState;
 	CMainWindow* m_pMainWindow = nullptr;
 
 private:

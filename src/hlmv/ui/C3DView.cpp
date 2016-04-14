@@ -2,6 +2,7 @@
 
 #include <wx/image.h>
 
+#include "hlmv/ui/CHLMV.h"
 #include "hlmv/CHLMVState.h"
 
 #include "common/CGlobals.h"
@@ -21,9 +22,9 @@ wxEND_EVENT_TABLE()
 
 const float C3DView::FLOOR_SIDE_LENGTH = 200;
 
-C3DView::C3DView( wxWindow* pParent, hlmv::CHLMVState* const pSettings, I3DViewListener* pListener )
+C3DView::C3DView( wxWindow* pParent, hlmv::CHLMV* const pHLMV, I3DViewListener* pListener )
 	: wxGLCanvas( pParent, wxOpenGL().GetCanvasAttributes(), wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
-	, m_pSettings( pSettings )
+	, m_pHLMV( pHLMV )
 	, m_pListener( pListener )
 {
 	m_pContext = wxOpenGL().GetContext( this );
@@ -52,7 +53,7 @@ void C3DView::Paint( wxPaintEvent& event )
 
 	const wxSize size = GetClientSize();
 	
-	if( m_pSettings->mirror )
+	if( m_pHLMV->GetState()->mirror )
 	{
 		glClearStencil( 0 );
 
@@ -63,8 +64,10 @@ void C3DView::Paint( wxPaintEvent& event )
 
 	glViewport( 0, 0, size.GetX(), size.GetY() );
 
-	if( m_pSettings->showTexture )
-		DrawTexture( m_pSettings->texture, m_pSettings->textureScale, m_pSettings->showUVMap, m_pSettings->overlayUVMap, m_pSettings->antiAliasUVLines, m_pSettings->pUVMesh );
+	if( m_pHLMV->GetState()->showTexture )
+		DrawTexture( m_pHLMV->GetState()->texture, m_pHLMV->GetState()->textureScale, 
+					 m_pHLMV->GetState()->showUVMap, m_pHLMV->GetState()->overlayUVMap, 
+					 m_pHLMV->GetState()->antiAliasUVLines, m_pHLMV->GetState()->pUVMesh );
 	else
 		DrawModel();
 
@@ -79,7 +82,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 {
 	//Ignore input in weapon origin mode.
 	//TODO: refactor
-	if( m_pSettings->useWeaponOrigin || m_pSettings->showTexture )
+	if( m_pHLMV->GetState()->useWeaponOrigin || m_pHLMV->GetState()->showTexture )
 	{
 		event.Skip();
 		return;
@@ -87,12 +90,12 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 
 	if( event.ButtonDown() )
 	{
-		m_flOldRotX = m_pSettings->rot[ 0 ];
-		m_flOldRotY = m_pSettings->rot[ 1 ];
-		VectorCopy( m_pSettings->trans, m_vecOldTrans );
+		m_flOldRotX = m_pHLMV->GetState()->rot[ 0 ];
+		m_flOldRotY = m_pHLMV->GetState()->rot[ 1 ];
+		VectorCopy( m_pHLMV->GetState()->trans, m_vecOldTrans );
 		m_flOldX = event.GetX();
 		m_flOldY = event.GetY();
-		m_pSettings->pause = false;
+		m_pHLMV->GetState()->pause = false;
 
 		m_iButtonsDown |= event.GetButton();
 	}
@@ -106,18 +109,18 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 		{
 			if( event.GetModifiers() & wxMOD_SHIFT )
 			{
-				m_pSettings->trans[ 0 ] = m_vecOldTrans[ 0 ] - ( float ) ( event.GetX() - m_flOldX );
-				m_pSettings->trans[ 1 ] = m_vecOldTrans[ 1 ] + ( float ) ( event.GetY() - m_flOldY );
+				m_pHLMV->GetState()->trans[ 0 ] = m_vecOldTrans[ 0 ] - ( float ) ( event.GetX() - m_flOldX );
+				m_pHLMV->GetState()->trans[ 1 ] = m_vecOldTrans[ 1 ] + ( float ) ( event.GetY() - m_flOldY );
 			}
 			else
 			{
-				m_pSettings->rot[ 0 ] = m_flOldRotX + ( float ) ( event.GetY() - m_flOldY );
-				m_pSettings->rot[ 1 ] = m_flOldRotY + ( float ) ( event.GetX() - m_flOldX );
+				m_pHLMV->GetState()->rot[ 0 ] = m_flOldRotX + ( float ) ( event.GetY() - m_flOldY );
+				m_pHLMV->GetState()->rot[ 1 ] = m_flOldRotY + ( float ) ( event.GetX() - m_flOldX );
 			}
 		}
 		else if( event.RightIsDown() && m_iButtonsDown & wxMOUSE_BTN_RIGHT )
 		{
-			m_pSettings->trans[ 2 ] = m_vecOldTrans[ 2 ] + ( float ) ( event.GetY() - m_flOldY );
+			m_pHLMV->GetState()->trans[ 2 ] = m_vecOldTrans[ 2 ] + ( float ) ( event.GetY() - m_flOldY );
 		}
 
 		Refresh();
@@ -153,11 +156,11 @@ void C3DView::UpdateView()
 	Globals.SetFrameTime( flFrameTime );
 	Globals.SetPreviousRealTime( Globals.GetRealTime() );
 
-	if( m_pSettings->playSequence && m_pSettings->GetStudioModel() )
+	if( m_pHLMV->GetState()->playSequence && m_pHLMV->GetState()->GetStudioModel() )
 	{
 		//TODO: set directly
-		m_pSettings->GetStudioModel()->SetFrameRate( m_pSettings->speedScale );
-		const float flDeltaTime = m_pSettings->GetStudioModel()->AdvanceFrame( /*flFrameTime * m_pSettings->speedScale*/ );
+		m_pHLMV->GetState()->GetStudioModel()->SetFrameRate( m_pHLMV->GetState()->speedScale );
+		const float flDeltaTime = m_pHLMV->GetState()->GetStudioModel()->AdvanceFrame( /*flFrameTime * m_pSettings->speedScale*/ );
 
 		//TODO: put this listener elsewhere
 		class CStudioModelListener final : public IAnimEventHandler
@@ -191,19 +194,19 @@ void C3DView::UpdateView()
 			hlmv::CHLMVState* const m_pSettings;
 		};
 
-		CStudioModelListener listener( m_pSettings );
+		CStudioModelListener listener( m_pHLMV->GetState() );
 
-		m_pSettings->GetStudioModel()->DispatchAnimEvents( listener, flDeltaTime );
+		m_pHLMV->GetState()->GetStudioModel()->DispatchAnimEvents( listener, flDeltaTime );
 	}
 
-	if( !m_pSettings->pause )
+	if( !m_pHLMV->GetState()->pause )
 		Refresh();
 }
 
 void C3DView::SetupRenderMode( RenderMode renderMode )
 {
 	if( renderMode == RenderMode::INVALID )
-		renderMode = m_pSettings->renderMode;
+		renderMode = m_pHLMV->GetState()->renderMode;
 
 	graphics::helpers::SetupRenderMode( renderMode );
 }
@@ -212,7 +215,7 @@ void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const
 {
 	const wxSize size = GetClientSize();
 
-	graphics::helpers::DrawTexture( size.GetX(), size.GetY(), *m_pSettings->GetStudioModel(), iTexture, flTextureScale, bShowUVMap, bOverlayUVMap, bAntiAliasLines, pUVMesh );
+	graphics::helpers::DrawTexture( size.GetX(), size.GetY(), *m_pHLMV->GetState()->GetStudioModel(), iTexture, flTextureScale, bShowUVMap, bOverlayUVMap, bAntiAliasLines, pUVMesh );
 }
 
 void C3DView::DrawModel()
@@ -223,12 +226,12 @@ void C3DView::DrawModel()
 	// draw background
 	//
 
-	if( m_pSettings->showBackground && m_BackgroundTexture != GL_INVALID_TEXTURE_ID && !m_pSettings->showTexture )
+	if( m_pHLMV->GetState()->showBackground && m_BackgroundTexture != GL_INVALID_TEXTURE_ID && !m_pHLMV->GetState()->showTexture )
 	{
 		graphics::helpers::DrawBackground( m_BackgroundTexture );
 	}
 
-	if( !m_pSettings->GetStudioModel() )
+	if( !m_pHLMV->GetState()->GetStudioModel() )
 		return;
 
 	graphics::helpers::SetProjection( size.GetX(), size.GetY() );
@@ -237,50 +240,50 @@ void C3DView::DrawModel()
 	glPushMatrix();
 	glLoadIdentity();
 
-	if( m_pSettings->useWeaponOrigin )
+	if( m_pHLMV->GetState()->useWeaponOrigin )
 	{
-		glTranslatef( -m_pSettings->weaponOrigin[ 0 ], -m_pSettings->weaponOrigin[ 1 ], -m_pSettings->weaponOrigin[ 2 ] );
+		glTranslatef( -m_pHLMV->GetState()->weaponOrigin[ 0 ], -m_pHLMV->GetState()->weaponOrigin[ 1 ], -m_pHLMV->GetState()->weaponOrigin[ 2 ] );
 
 		glRotatef( -90, 1.0f, 0.0f, 0.0f );
 		glRotatef( 90, 0.0f, 0.0f, 1.0f );
 	}
 	else
 	{
-		glTranslatef( -m_pSettings->trans[ 0 ], -m_pSettings->trans[ 1 ], -m_pSettings->trans[ 2 ] );
+		glTranslatef( -m_pHLMV->GetState()->trans[ 0 ], -m_pHLMV->GetState()->trans[ 1 ], -m_pHLMV->GetState()->trans[ 2 ] );
 
-		glRotatef( m_pSettings->rot[ 0 ], 1.0f, 0.0f, 0.0f );
-		glRotatef( m_pSettings->rot[ 1 ], 0.0f, 0.0f, 1.0f );
+		glRotatef( m_pHLMV->GetState()->rot[ 0 ], 1.0f, 0.0f, 0.0f );
+		glRotatef( m_pHLMV->GetState()->rot[ 1 ], 0.0f, 0.0f, 1.0f );
 	}
 
-	g_vright[ 0 ] = g_vright[ 1 ] = m_pSettings->trans[ 2 ];
+	g_vright[ 0 ] = g_vright[ 1 ] = m_pHLMV->GetState()->trans[ 2 ];
 
-	m_pSettings->drawnPolys = 0;
+	m_pHLMV->GetState()->drawnPolys = 0;
 
 	// setup stencil buffer and draw mirror
-	if( m_pSettings->mirror )
+	if( m_pHLMV->GetState()->mirror )
 	{
-		m_pSettings->drawnPolys += graphics::helpers::DrawMirroredModel( *m_pSettings->GetStudioModel(), m_pSettings->renderMode, 
-																		 m_pSettings->renderSettings, m_pSettings->wireframeOverlay, FLOOR_SIDE_LENGTH );
+		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawMirroredModel( *m_pHLMV->GetState()->GetStudioModel(), m_pHLMV->GetState()->renderMode,
+																				 m_pHLMV->GetState()->renderSettings, m_pHLMV->GetState()->wireframeOverlay, FLOOR_SIDE_LENGTH );
 	}
 
 	SetupRenderMode();
 
 	glCullFace( GL_FRONT );
-	m_pSettings->drawnPolys += m_pSettings->GetStudioModel()->DrawModel( m_pSettings->renderSettings );
+	m_pHLMV->GetState()->drawnPolys += m_pHLMV->GetState()->GetStudioModel()->DrawModel( m_pHLMV->GetState()->renderSettings );
 
 	//Draw wireframe overlay
-	if( m_pSettings->wireframeOverlay )
+	if( m_pHLMV->GetState()->wireframeOverlay )
 	{
-		m_pSettings->drawnPolys += graphics::helpers::DrawWireframeOverlay( *m_pSettings->GetStudioModel(), m_pSettings->renderSettings );
+		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawWireframeOverlay( *m_pHLMV->GetState()->GetStudioModel(), m_pHLMV->GetState()->renderSettings );
 	}
 
 	//
 	// draw ground
 	//
 
-	if( m_pSettings->showGround )
+	if( m_pHLMV->GetState()->showGround )
 	{
-		graphics::helpers::DrawFloor( FLOOR_SIDE_LENGTH, m_GroundTexture, m_pSettings->groundColor, m_pSettings->mirror );
+		graphics::helpers::DrawFloor( FLOOR_SIDE_LENGTH, m_GroundTexture, m_pHLMV->GetState()->groundColor, m_pHLMV->GetState()->mirror );
 	}
 
 	glPopMatrix();
@@ -339,7 +342,7 @@ bool C3DView::LoadBackgroundTexture( const wxString& szFilename )
 	m_BackgroundTexture = wxOpenGL().glLoadImage( szFilename.c_str() );
 
 	//TODO: notify UI
-	m_pSettings->showBackground = m_BackgroundTexture != GL_INVALID_TEXTURE_ID;
+	m_pHLMV->GetState()->showBackground = m_BackgroundTexture != GL_INVALID_TEXTURE_ID;
 
 	return m_BackgroundTexture != GL_INVALID_TEXTURE_ID;
 }
@@ -368,7 +371,7 @@ void C3DView::UnloadGroundTexture()
 */
 void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 {
-	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getTextureHeader();
+	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getTextureHeader();
 
 	if( !pHdr )
 		return;
@@ -401,7 +404,7 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
-	graphics::helpers::DrawTexture( texture.width, texture.height, *m_pSettings->GetStudioModel(), iTexture, 1.0f, true, false, false, m_pSettings->pUVMesh );
+	graphics::helpers::DrawTexture( texture.width, texture.height, *m_pHLMV->GetState()->GetStudioModel(), iTexture, 1.0f, true, false, false, m_pHLMV->GetState()->pUVMesh );
 
 	glFlush();
 	glFinish();

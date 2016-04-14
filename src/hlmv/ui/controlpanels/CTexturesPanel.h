@@ -10,6 +10,7 @@
 #undef TRANSPARENT
 #endif
 
+//TODO: move to separate file
 class CMeshClientData final : public wxClientData
 {
 public:
@@ -58,7 +59,7 @@ public:
 	};
 
 public:
-	CTexturesPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings );
+	CTexturesPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
 	~CTexturesPanel();
 
 	void PanelActivated() override;

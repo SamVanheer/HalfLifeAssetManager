@@ -2,6 +2,7 @@
 #include <wx/gbsizer.h>
 #include <wx/tglbtn.h>
 
+#include "hlmv/ui/CHLMV.h"
 #include "hlmv/CHLMVState.h"
 #include "studiomodel/StudioModel.h"
 
@@ -16,8 +17,8 @@ wxBEGIN_EVENT_TABLE( CBaseSequencesPanel, wxPanel )
 	EVT_SLIDER( WXID_BASESEQUENCE_ANIMSPEED, CBaseSequencesPanel::AnimSpeedChanged )
 wxEND_EVENT_TABLE()
 
-CBaseSequencesPanel::CBaseSequencesPanel( wxWindow* pParent, const wxString& szName, hlmv::CHLMVState* const pSettings )
-	: CBaseControlPanel( pParent, szName, pSettings )
+CBaseSequencesPanel::CBaseSequencesPanel( wxWindow* pParent, const wxString& szName, hlmv::CHLMV* const pHLMV )
+	: CBaseControlPanel( pParent, szName, pHLMV )
 	, m_pSequence( nullptr )
 	, m_pTogglePlayButton( nullptr )
 	, m_pPrevFrameButton( nullptr )
@@ -42,7 +43,7 @@ void CBaseSequencesPanel::ModelChanged( const StudioModel& model )
 
 	m_pSequence->Clear();
 
-	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
 
 	if( pHdr )
 	{
@@ -71,19 +72,19 @@ void CBaseSequencesPanel::SequenceChanged( wxCommandEvent& event )
 
 void CBaseSequencesPanel::TogglePlay( wxCommandEvent& event )
 {
-	m_pSettings->playSequence = !m_pTogglePlayButton->GetValue();
+	m_pHLMV->GetState()->playSequence = !m_pTogglePlayButton->GetValue();
 
-	SetFrameControlsEnabled( !m_pSettings->playSequence );
+	SetFrameControlsEnabled( !m_pHLMV->GetState()->playSequence );
 }
 
 void CBaseSequencesPanel::PrevFrame( wxCommandEvent& event )
 {
-	SetFrame( m_pSettings->GetStudioModel()->GetFrame() - 1 );
+	SetFrame( m_pHLMV->GetState()->GetStudioModel()->GetFrame() - 1 );
 }
 
 void CBaseSequencesPanel::NextFrame( wxCommandEvent& event )
 {
-	SetFrame( m_pSettings->GetStudioModel()->GetFrame() + 1 );
+	SetFrame( m_pHLMV->GetState()->GetStudioModel()->GetFrame() + 1 );
 }
 
 void CBaseSequencesPanel::FrameChanged( wxCommandEvent& event )
@@ -98,12 +99,12 @@ void CBaseSequencesPanel::FrameChanged( wxCommandEvent& event )
 
 void CBaseSequencesPanel::AnimSpeedChanged( wxCommandEvent& event )
 {
-	m_pSettings->speedScale = m_pAnimSpeed->GetValue() / static_cast<float>( ANIMSPEED_SLIDER_DEFAULT );
+	m_pHLMV->GetState()->speedScale = m_pAnimSpeed->GetValue() / static_cast<float>( ANIMSPEED_SLIDER_DEFAULT );
 }
 
 void CBaseSequencesPanel::SetSequence( int iIndex )
 {
-	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 	{
@@ -117,9 +118,9 @@ void CBaseSequencesPanel::SetSequence( int iIndex )
 
 	m_pSequence->Select( iIndex );
 
-	m_pSettings->sequence = iIndex;
+	m_pHLMV->GetState()->sequence = iIndex;
 
-	m_pSettings->GetStudioModel()->SetSequence( m_pSettings->sequence );
+	m_pHLMV->GetState()->GetStudioModel()->SetSequence( m_pHLMV->GetState()->sequence );
 
 	mstudioseqdesc_t nullSeq;
 
@@ -136,7 +137,7 @@ void CBaseSequencesPanel::SetSequence( int iIndex )
 
 void CBaseSequencesPanel::SetFrame( int iFrame )
 {
-	StudioModel* const pStudioModel = m_pSettings->GetStudioModel();
+	StudioModel* const pStudioModel = m_pHLMV->GetState()->GetStudioModel();
 
 	if( iFrame < 0 )
 		iFrame = pStudioModel->GetNumFrames();
@@ -237,7 +238,7 @@ void CBaseSequencesPanel::SetFrameControlsEnabled( const bool bState )
 
 	if( bState )
 	{
-		SetFrame( static_cast<int>( m_pSettings->GetStudioModel()->GetFrame() ) );
+		SetFrame( static_cast<int>( m_pHLMV->GetState()->GetStudioModel()->GetFrame() ) );
 	}
 	else
 	{

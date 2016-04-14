@@ -16,7 +16,7 @@
 
 namespace hlmv
 {
-class CHLMVState;
+class CHLMV;
 }
 
 class I3DViewListener
@@ -37,7 +37,7 @@ public:
 	static const float FLOOR_SIDE_LENGTH;
 
 public:
-	C3DView( wxWindow* pParent, hlmv::CHLMVState* const pSettings, I3DViewListener* pListener = nullptr );
+	C3DView( wxWindow* pParent, hlmv::CHLMV* const pHLMV, I3DViewListener* pListener = nullptr );
 	~C3DView();
 
 	void Paint( wxPaintEvent& event );
@@ -75,7 +75,7 @@ private:
 	void SetUVRenderTargetDimensions( const int iWidth, const int iHeight );
 
 private:
-	hlmv::CHLMVState* const m_pSettings;
+	hlmv::CHLMV* const m_pHLMV;
 
 	I3DViewListener* m_pListener;
 

@@ -1,12 +1,12 @@
 #include "CBaseControlPanel.h"
 
-CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName, hlmv::CHLMVState* const pSettings )
+CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName, hlmv::CHLMV* const pHLMV )
 	: wxPanel( pParent )
 	, m_szName( szName )
-	, m_pSettings( pSettings )
+	, m_pHLMV( pHLMV )
 {
 	wxASSERT( !szName.IsEmpty() );
-	wxASSERT( pSettings != nullptr );
+	wxASSERT( pHLMV != nullptr );
 
 	m_pName = new wxStaticText( this, wxID_ANY, szName );
 

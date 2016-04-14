@@ -4,8 +4,9 @@
 
 namespace hlmv
 {
-CHLMV::CHLMV( CHLMVSettings* const pSettings )
+CHLMV::CHLMV( CHLMVSettings* const pSettings, CHLMVState* const pState )
 	: m_pSettings( pSettings )
+	, m_pState( pState )
 {
 }
 

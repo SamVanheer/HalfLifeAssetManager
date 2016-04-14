@@ -6,7 +6,7 @@
 class CFullscreenPanel final : public CBaseControlPanel
 {
 public:
-	CFullscreenPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings );
+	CFullscreenPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
 	~CFullscreenPanel();
 
 protected:

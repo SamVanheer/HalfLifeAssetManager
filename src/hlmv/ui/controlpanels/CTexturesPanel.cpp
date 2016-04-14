@@ -6,6 +6,7 @@
 
 #include "studiomodel/StudioModel.h"
 
+#include "hlmv/ui/CHLMV.h"
 #include "hlmv/CHLMVState.h"
 
 #include "hlmv/ui/CMainPanel.h"
@@ -22,8 +23,8 @@ wxBEGIN_EVENT_TABLE( CTexturesPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_TEX_EXPORTUVMAP, CTexturesPanel::ExportUVMap )
 wxEND_EVENT_TABLE()
 
-CTexturesPanel::CTexturesPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
-	: CBaseControlPanel( pParent, "Textures", pSettings )
+CTexturesPanel::CTexturesPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+	: CBaseControlPanel( pParent, "Textures", pHLMV )
 {
 	//Helps catch errors if we miss one.
 	memset( m_pCheckBoxes, 0, sizeof( m_pCheckBoxes ) );
@@ -86,12 +87,12 @@ CTexturesPanel::~CTexturesPanel()
 
 void CTexturesPanel::PanelActivated()
 {
-	m_pSettings->showTexture = true;
+	m_pHLMV->GetState()->showTexture = true;
 }
 
 void CTexturesPanel::PanelDeactivated()
 {
-	m_pSettings->showTexture = false;
+	m_pHLMV->GetState()->showTexture = false;
 }
 
 void CTexturesPanel::ModelChanged( const StudioModel& model )
@@ -138,7 +139,7 @@ void CTexturesPanel::ScaleChanged( wxCommandEvent& event )
 
 void CTexturesPanel::CheckBoxChanged( wxCommandEvent& event )
 {
-	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getTextureHeader();
+	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getTextureHeader();
 
 	if( !pHdr )
 		return;
@@ -197,21 +198,21 @@ void CTexturesPanel::CheckBoxChanged( wxCommandEvent& event )
 
 	case CheckBox::SHOW_UV_MAP:
 		{
-			m_pSettings->showUVMap = pCheckBox->GetValue();
+			m_pHLMV->GetState()->showUVMap = pCheckBox->GetValue();
 
 			break;
 		}
 
 	case CheckBox::OVERLAY_UV_MAP:
 		{
-			m_pSettings->overlayUVMap = pCheckBox->GetValue();
+			m_pHLMV->GetState()->overlayUVMap = pCheckBox->GetValue();
 
 			break;
 		}
 
 	case CheckBox::ANTI_ALIAS_LINES:
 		{
-			m_pSettings->antiAliasUVLines = pCheckBox->GetValue();
+			m_pHLMV->GetState()->antiAliasUVLines = pCheckBox->GetValue();
 
 			break;
 		}
@@ -230,12 +231,12 @@ void CTexturesPanel::MeshChanged( wxCommandEvent& event )
 	const CMeshClientData* pMesh = static_cast<const CMeshClientData*>( m_pMesh->GetClientObject( iIndex ) );
 
 	//Null client data means it's "All"
-	m_pSettings->pUVMesh = pMesh ? pMesh->m_pMesh : nullptr;
+	m_pHLMV->GetState()->pUVMesh = pMesh ? pMesh->m_pMesh : nullptr;
 }
 
 void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 {
-	StudioModel* const pStudioModel = m_pSettings->GetStudioModel();
+	StudioModel* const pStudioModel = m_pHLMV->GetState()->GetStudioModel();
 
 	studiohdr_t* const pHdr = pStudioModel->getTextureHeader();
 
@@ -325,13 +326,13 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 
 void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 {
-	studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getTextureHeader();
-
-	if( !pHdr )
+	if( !m_pHLMV->GetState()->GetStudioModel() )
 	{
 		wxMessageBox( "No model loaded!" );
 		return;
 	}
+
+	studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getTextureHeader();
 
 	const int iTextureIndex = m_pTexture->GetSelection();
 
@@ -364,7 +365,7 @@ void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 
 void CTexturesPanel::ExportUVMap( wxCommandEvent& event )
 {
-	studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getTextureHeader();
+	studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getTextureHeader();
 
 	if( !pHdr )
 	{
@@ -398,7 +399,7 @@ void CTexturesPanel::ExportUVMap( wxCommandEvent& event )
 
 void CTexturesPanel::SetTexture( int iIndex )
 {
-	StudioModel* const pStudioModel = m_pSettings->GetStudioModel();
+	StudioModel* const pStudioModel = m_pHLMV->GetState()->GetStudioModel();
 
 	const studiohdr_t* const pHdr = pStudioModel->getStudioHeader();
 	const studiohdr_t* const pTexHdr = pStudioModel->getTextureHeader();
@@ -434,7 +435,7 @@ void CTexturesPanel::SetTexture( int iIndex )
 
 		if( uiIndex > 0 )
 		{
-			m_pSettings->pUVMesh = ( *pMeshList )[ 0 ];
+			m_pHLMV->GetState()->pUVMesh = ( *pMeshList )[ 0 ];
 
 			if( uiIndex > 1 )
 			{
@@ -445,7 +446,7 @@ void CTexturesPanel::SetTexture( int iIndex )
 		m_pMesh->Select( 0 );
 	}
 
-	m_pSettings->texture = iIndex;
+	m_pHLMV->GetState()->texture = iIndex;
 }
 
 void CTexturesPanel::SetScale( int iScale, const bool bSetSlider )
@@ -453,7 +454,7 @@ void CTexturesPanel::SetScale( int iScale, const bool bSetSlider )
 	if( iScale < TEXTUREVIEW_SLIDER_MIN || iScale > TEXTUREVIEW_SLIDER_MAX )
 		iScale = TEXTUREVIEW_SLIDER_DEFAULT;
 
-	m_pSettings->textureScale = iScale;
+	m_pHLMV->GetState()->textureScale = iScale;
 
 	if( bSetSlider )
 		m_pScaleTextureView->SetValue( iScale );

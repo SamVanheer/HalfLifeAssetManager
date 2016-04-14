@@ -3,6 +3,7 @@
 
 #include "studiomodel/StudioModel.h"
 
+#include "hlmv/ui/CHLMV.h"
 #include "hlmv/CHLMVState.h"
 
 #include "CSequencesPanel.h"
@@ -12,8 +13,8 @@ wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseSequencesPanel )
 	EVT_CHECKBOX( wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged )
 wxEND_EVENT_TABLE()
 
-CSequencesPanel::CSequencesPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings )
-	: CBaseSequencesPanel( pParent, "Sequences", pSettings )
+CSequencesPanel::CSequencesPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+	: CBaseSequencesPanel( pParent, "Sequences", pHLMV )
 {
 	wxWindow* const pElemParent = GetBox();
 
@@ -83,12 +84,12 @@ void CSequencesPanel::EventChanged( wxCommandEvent& event )
 
 void CSequencesPanel::PlaySoundChanged( wxCommandEvent& event )
 {
-	m_pSettings->playSound = m_pPlaySound->GetValue();
+	m_pHLMV->GetState()->playSound = m_pPlaySound->GetValue();
 }
 
 void CSequencesPanel::UpdateEvents()
 {
-	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 		return;
@@ -125,7 +126,7 @@ void CSequencesPanel::UpdateEventInfo( int iIndex )
 		return;
 	}
 
-	const studiohdr_t* const pHdr = m_pSettings->GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
 		return;

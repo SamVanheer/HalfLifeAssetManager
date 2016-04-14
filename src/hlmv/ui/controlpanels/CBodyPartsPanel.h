@@ -16,7 +16,7 @@ public:
 	static const size_t COMBOBOX_WIDTH = 200;
 
 public:
-	CBodyPartsPanel( wxWindow* pParent, hlmv::CHLMVState* const pSettings );
+	CBodyPartsPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
 	~CBodyPartsPanel();
 
 	void ModelChanged( const StudioModel& model ) override;

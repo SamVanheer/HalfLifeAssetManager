@@ -14,6 +14,7 @@ class CMainWindow;
 namespace hlmv
 {
 class CFullscreenWindow;
+class CHLMV;
 }
 
 class CModelViewerApp final : public CwxBaseApp
@@ -46,7 +47,9 @@ private:
 private:
 	wxString m_szModel;						//Model to load on startup, if any.
 
-	hlmv::CHLMVState m_Settings;
+	hlmv::CHLMVState m_State;
+
+	hlmv::CHLMV* m_pHLMV = nullptr;
 
 	ITimerListener* m_pListener = nullptr;
 

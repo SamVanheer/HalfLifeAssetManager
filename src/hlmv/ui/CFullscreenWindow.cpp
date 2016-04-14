@@ -2,6 +2,7 @@
 
 #include "hlmv/ui/CModelViewerApp.h"
 
+#include "hlmv/ui/CHLMV.h"
 #include "hlmv/CHLMVState.h"
 
 #include "C3DView.h"
@@ -14,13 +15,13 @@ wxBEGIN_EVENT_TABLE( CFullscreenWindow, wxFrame )
 	EVT_KEY_DOWN( CFullscreenWindow::KeyDown )
 wxEND_EVENT_TABLE()
 
-CFullscreenWindow::CFullscreenWindow( hlmv::CHLMVState* const pSettings )
+CFullscreenWindow::CFullscreenWindow( hlmv::CHLMV* const pHLMV )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE )
-	, m_pSettings( pSettings )
+	, m_pHLMV( pHLMV )
 {
 	wxGetApp().SetFullscreenWindow( this );
 
-	m_p3DView = new C3DView( this, m_pSettings );
+	m_p3DView = new C3DView( this, m_pHLMV );
 
 	wxBoxSizer* pSizer = new wxBoxSizer( wxVERTICAL );
 
