@@ -99,7 +99,7 @@ CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pModelInfo->SetSizer( pInfoSizer );
 
-	pSizer->Add( m_pModelInfo, wxGBPosition( 0, 4 ), wxGBSpan( 2, 2 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
+	pSizer->Add( m_pModelInfo, wxGBPosition( 0, 4 ), wxGBSpan( 3, 2 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
 	GetBoxSizer()->Add( pSizer );
 }
