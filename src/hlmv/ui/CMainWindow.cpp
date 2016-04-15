@@ -317,9 +317,28 @@ void CMainWindow::OpenOptionsDialog( wxCommandEvent& event )
 
 void CMainWindow::OnAbout( wxCommandEvent& event )
 {
-	//TODO: add info about 1.25, Jed's
-	wxMessageBox( "Half-Life Model Viewer 1.40 By Sam \"Solokiller\" Vanheer",
-				  "About Half-Life Model Viewer", wxOK | wxICON_INFORMATION );
+	//This should not be modified unless necessary (e.g. to change a date, or to correct information).
+
+	//No tab support in message boxes, so manually align it
+	wxMessageBox( wxString::Format( "Half-Life Model Viewer 2.0\n"
+					"2016 Sam \"Solokiller\" Vanheer\n\n"
+					"Email:    sam.vanheer@outlook.com\n\n"
+					"Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil \'Jed\' Jedrzejewski\n"
+					"Email:    jed@wunderboy.org\n"
+					"Web:      http://www.wunderboy.org/\n\n"
+					"Also based on Half-Life Model Viewer v1.25 © 2002 Mete Ciragan\n"
+					"Email:    mete@swissquake.ch\n"
+					"Web:      http://www.milkshape3d.com/\n\n"
+					"Contains FMOD, Copyright © Firelight Technologies Pty, Ltd., 2012-2016.\n\n"
+					"Contains The OpenGL Extension Wrangler Library\n"
+					"Copyright( C ) 2008 - 2016, Nigel Stewart <nigels[]users sourceforge net>\n"
+					"Copyright( C ) 2002 - 2008, Milan Ikits <milan ikits[]ieee org>\n"
+					"Copyright( C ) 2002 - 2008, Marcelo E.Magallon <mmagallo[]debian org>\n"
+					"Copyright( C ) 2002, Lev Povalahev\n"
+					"All rights reserved.\n\n"
+					"Uses wxWidgets 3.10\n\n"
+					"Build Date: %s\n", __DATE__ ),
+					"About Half-Life Model Viewer", wxOK | wxICON_INFORMATION );
 }
 
 void CMainWindow::OnMessagesWindowClosed( wxCloseEvent& event )

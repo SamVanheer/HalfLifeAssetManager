@@ -4,7 +4,7 @@
 #include "settings/CGameConfigManager.h"
 #include "settings/CGameConfig.h"
 
-#include "CGameConfigurations.h"
+#include "CGameConfigurationsPanel.h"
 
 #include "CEditGameConfigsDialog.h"
 
@@ -17,7 +17,7 @@ wxBEGIN_EVENT_TABLE( CEditGameConfigsDialog, wxDialog )
 	EVT_BUTTON( wxID_SHARED_EDITGAMECONFIGS_REMOVE, CEditGameConfigsDialog::RemoveConfig )
 wxEND_EVENT_TABLE()
 
-CEditGameConfigsDialog::CEditGameConfigsDialog( wxWindow* pParent, std::shared_ptr<settings::CGameConfigManager> manager, CGameConfigurations* const pGameConfigsPanel )
+CEditGameConfigsDialog::CEditGameConfigsDialog( wxWindow* pParent, std::shared_ptr<settings::CGameConfigManager> manager, CGameConfigurationsPanel* const pGameConfigsPanel )
 	: wxDialog( pParent, wxID_ANY, "Edit Game Configurations", wxDefaultPosition, wxSize( 400, 250 ) )
 	, m_Manager( manager )
 	, m_pGameConfigsPanel( pGameConfigsPanel )
@@ -56,8 +56,6 @@ CEditGameConfigsDialog::CEditGameConfigsDialog( wxWindow* pParent, std::shared_p
 	m_pConfigs->SetColumnWidth( 0, m_pConfigs->GetClientSize().GetWidth() );
 
 	Initialize();
-
-	//TODO: this class should communicate back to CGameConfigurations directly to avoid expensive reinit.
 }
 
 CEditGameConfigsDialog::~CEditGameConfigsDialog()

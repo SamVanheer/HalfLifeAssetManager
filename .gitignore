@@ -76,4 +76,5 @@ external/FMOD/include/fmod_memoryinfo.h
 external/FMOD/include/fmod_output.h
 *.ilk
 *.user
-*.txt
+*.bmp
+changes.txt

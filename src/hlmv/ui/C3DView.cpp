@@ -163,9 +163,7 @@ void C3DView::UpdateView()
 
 	if( m_pHLMV->GetState()->playSequence && m_pHLMV->GetState()->GetStudioModel() )
 	{
-		//TODO: set directly
-		m_pHLMV->GetState()->GetStudioModel()->SetFrameRate( m_pHLMV->GetState()->speedScale );
-		const float flDeltaTime = m_pHLMV->GetState()->GetStudioModel()->AdvanceFrame( /*flFrameTime * m_pSettings->speedScale*/ );
+		const float flDeltaTime = m_pHLMV->GetState()->GetStudioModel()->AdvanceFrame( /*flFrameTime*/ );
 
 		//TODO: put this listener elsewhere
 		class CStudioModelListener final : public IAnimEventHandler
@@ -389,6 +387,7 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 	SetCurrent( *m_pContext );
 
 	//Create the framebuffer if it doesn't exist yet.
+	//TODO: move the frame buffer into its own class, managed by CwxOpenGL
 	CreateUVFrameBuffer();
 
 	SetUVRenderTargetDimensions( texture.width, texture.height );
@@ -399,8 +398,10 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 	if( completeness != GL_FRAMEBUFFER_COMPLETE )
 	{
-		//TODO: show error code as string
-		wxMessageBox( "UV map framebuffer is incomplete!" );
+		wxMessageBox( wxString::Format( "UV map framebuffer is incomplete!\n%s (status code %d)", glFrameBufferStatusToString( completeness ), completeness ) );
+
+		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
 		return;
 	}
 

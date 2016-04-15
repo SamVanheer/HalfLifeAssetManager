@@ -66,8 +66,6 @@ public:
 
 	bool pause;
 
-	float speedScale;
-
 	bool playSequence;
 
 	int sequence;

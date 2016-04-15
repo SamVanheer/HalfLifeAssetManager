@@ -15,12 +15,12 @@ class wxListEvent;
 
 namespace ui
 {
-class CGameConfigurations;
+class CGameConfigurationsPanel;
 
 class CEditGameConfigsDialog final : public wxDialog
 {
 public:
-	CEditGameConfigsDialog( wxWindow* pParent, std::shared_ptr<settings::CGameConfigManager> manager, CGameConfigurations* const pGameConfigsPanel );
+	CEditGameConfigsDialog( wxWindow* pParent, std::shared_ptr<settings::CGameConfigManager> manager, CGameConfigurationsPanel* const pGameConfigsPanel );
 	~CEditGameConfigsDialog();
 
 	bool AddConfig( const wxString& szName );
@@ -39,7 +39,7 @@ private:
 private:
 	std::shared_ptr<settings::CGameConfigManager> m_Manager;
 
-	CGameConfigurations* const m_pGameConfigsPanel;
+	CGameConfigurationsPanel* const m_pGameConfigsPanel;
 
 	wxListView* m_pConfigs;
 

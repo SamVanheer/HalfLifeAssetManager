@@ -49,8 +49,6 @@ void CHLMVState::ResetToDefaults()
 
 	pause = false;
 
-	speedScale = 1.0f;
-
 	playSequence = true;
 
 	sequence = 0;

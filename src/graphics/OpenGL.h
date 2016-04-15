@@ -51,4 +51,6 @@ const GLuint GL_INVALID_TEXTURE_ID = 0;
 
 void glDeleteTexture( GLuint& textureId );
 
+const char* glFrameBufferStatusToString( const GLenum status );
+
 #endif //GRAPHICS_OPENGL_H

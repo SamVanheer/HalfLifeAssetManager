@@ -24,6 +24,7 @@
     <ClCompile Include="..\src\common\Platform.cpp" />
     <ClCompile Include="..\src\common\Utility.cpp" />
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
+    <ClCompile Include="..\src\graphics\Constants.cpp" />
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
     <ClCompile Include="..\src\graphics\OpenGL.cpp" />
     <ClCompile Include="..\src\hlmv\CHLMVState.cpp" />
@@ -62,7 +63,7 @@
     <ClCompile Include="..\src\ui\CwxBaseApp.cpp" />
     <ClCompile Include="..\src\ui\CwxOpenGL.cpp" />
     <ClCompile Include="..\src\ui\shared\CEditGameConfigsDialog.cpp" />
-    <ClCompile Include="..\src\ui\shared\CGameConfigurations.cpp" />
+    <ClCompile Include="..\src\ui\shared\CGameConfigurationsPanel.cpp" />
     <ClCompile Include="..\src\ui\shared\CMessagesWindow.cpp" />
     <ClCompile Include="..\src\ui\wxLogging.cpp" />
     <ClCompile Include="..\src\ui\utility\wxUtil.cpp" />
@@ -125,8 +126,9 @@
     <ClInclude Include="..\src\ui\CwxBaseApp.h" />
     <ClInclude Include="..\src\ui\CwxOpenGL.h" />
     <ClInclude Include="..\src\ui\shared\CEditGameConfigsDialog.h" />
-    <ClInclude Include="..\src\ui\shared\CGameConfigurations.h" />
+    <ClInclude Include="..\src\ui\shared\CGameConfigurationsPanel.h" />
     <ClInclude Include="..\src\ui\shared\CMessagesWindow.h" />
+    <ClInclude Include="..\src\ui\utility\CMeshClientData.h" />
     <ClInclude Include="..\src\ui\utility\IWindowCloseListener.h" />
     <ClInclude Include="..\src\ui\wxLogging.h" />
     <ClInclude Include="..\src\ui\utility\CTimer.h" />

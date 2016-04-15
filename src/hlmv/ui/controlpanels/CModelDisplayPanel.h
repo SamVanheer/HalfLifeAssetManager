@@ -56,6 +56,17 @@ public:
 
 	void ViewUpdated() override;
 
+	void SetRenderMode( RenderMode renderMode );
+
+	//0..100
+	void SetOpacity( int iValue, const bool bUpdateSlider = true );
+
+	void SetCheckBox( const CheckBox::Type checkBox, const bool bValue );
+
+protected:
+	wxDECLARE_EVENT_TABLE();
+
+private:
 	void RenderModeChanged( wxCommandEvent& event );
 
 	void OpacityChanged( wxCommandEvent& event );
@@ -65,14 +76,6 @@ public:
 	void ScaleMesh( wxCommandEvent& event );
 
 	void ScaleBones( wxCommandEvent& event );
-
-	void SetRenderMode( RenderMode renderMode );
-
-	//0..100
-	void SetOpacity( int iValue, const bool bUpdateSlider = true );
-
-protected:
-	wxDECLARE_EVENT_TABLE();
 
 private:
 	wxComboBox* m_pRenderMode;

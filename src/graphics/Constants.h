@@ -18,4 +18,8 @@ enum class RenderMode
 	LAST = COUNT - 1 //Must be last
 };
 
+const char* RenderModeToString( const RenderMode renderMode );
+
+RenderMode RenderModeFromString( const char* const pszString );
+
 #endif //GRAPHICS_CONSTANTS_H

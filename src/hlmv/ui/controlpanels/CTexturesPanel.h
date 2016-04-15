@@ -3,28 +3,14 @@
 
 #include "utility/studio.h"
 
+#include "ui/utility/CMeshClientData.h"
+
 #include "CBaseControlPanel.h"
 
 //Defined in a Windows header
 #ifdef TRANSPARENT
 #undef TRANSPARENT
 #endif
-
-//TODO: move to separate file
-class CMeshClientData final : public wxClientData
-{
-public:
-	CMeshClientData( const mstudiomesh_t* const pMesh )
-		: m_pMesh( pMesh )
-	{
-	}
-
-	const mstudiomesh_t* const m_pMesh;
-
-private:
-	CMeshClientData( const CMeshClientData& ) = delete;
-	CMeshClientData& operator=( const CMeshClientData& ) = delete;
-};
 
 namespace hlmv
 {

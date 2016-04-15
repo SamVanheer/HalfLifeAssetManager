@@ -6,17 +6,6 @@
 
 #include "CModelDisplayPanel.h"
 
-//TODO: move
-static const wxString RENDERMODES[] =
-{
-	"Wireframe",
-	"Flat Shaded",
-	"Smooth Shaded",
-	"Texture Shaded"
-};
-
-static const size_t DEFAULT_RENDERMODE = ARRAYSIZE( RENDERMODES ) - 1;
-
 namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( CModelDisplayPanel, CBaseControlPanel )
@@ -41,7 +30,14 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pOpacitySlider = new wxSlider( pElemParent, wxID_MDLDISP_OPACITY, OPACITY_DEFAULT, OPACITY_MIN, OPACITY_MAX );
 
-	m_pRenderMode = new wxComboBox( pElemParent, wxID_MDLDISP_RENDERMODE, RENDERMODES[ DEFAULT_RENDERMODE ], wxDefaultPosition, wxDefaultSize, ARRAYSIZE( RENDERMODES ), RENDERMODES );
+	m_pRenderMode = new wxComboBox( pElemParent, wxID_MDLDISP_RENDERMODE );
+
+	for( int iRenderMode = static_cast<int>( RenderMode::FIRST ); iRenderMode < static_cast<int>( RenderMode::COUNT ); ++iRenderMode )
+	{
+		m_pRenderMode->Append( RenderModeToString( static_cast<RenderMode>( iRenderMode ) ) );
+	}
+
+	m_pRenderMode->SetSelection( static_cast<int>( RenderMode::TEXTURE_SHADED ) );
 
 	m_pRenderMode->SetEditable( false );
 
@@ -115,120 +111,6 @@ void CModelDisplayPanel::ViewUpdated()
 	}
 }
 
-void CModelDisplayPanel::RenderModeChanged( wxCommandEvent& event )
-{
-	const int iValue = m_pRenderMode->GetSelection();
-
-	if( iValue == wxNOT_FOUND )
-		return;
-
-	SetRenderMode( static_cast<RenderMode>( iValue ) );
-}
-
-void CModelDisplayPanel::OpacityChanged( wxCommandEvent& event )
-{
-	SetOpacity( m_pOpacitySlider->GetValue(), false );
-}
-
-void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
-{
-	wxCheckBox* const pCheckBox = static_cast<wxCheckBox*>( event.GetEventObject() );
-
-	const CheckBox::Type checkbox = static_cast<CheckBox::Type>( reinterpret_cast<int>( pCheckBox->GetClientData() ) );
-
-	if( checkbox < CheckBox::FIRST || checkbox > CheckBox::LAST )
-		return;
-
-	switch( checkbox )
-	{
-	case CheckBox::SHOW_HITBOXES:
-		{
-			m_pHLMV->GetState()->renderSettings.showHitBoxes = pCheckBox->GetValue();
-			break;
-		}
-
-	case CheckBox::SHOW_GROUND:
-		{
-			m_pHLMV->GetState()->showGround = pCheckBox->GetValue();
-
-			//TODO: handle checkbox setting somewhere else
-			if( !m_pHLMV->GetState()->showGround && m_pHLMV->GetState()->mirror )
-			{
-				m_pCheckBoxes[ CheckBox::MIRROR_ON_GROUND ]->SetValue( false );
-				m_pHLMV->GetState()->mirror = false;
-			}
-
-			break;
-		}
-
-	case CheckBox::SHOW_BONES:
-		{
-			m_pHLMV->GetState()->renderSettings.showBones = pCheckBox->GetValue();
-			break;
-		}
-
-	case CheckBox::MIRROR_ON_GROUND:
-		{
-			m_pHLMV->GetState()->mirror = pCheckBox->GetValue();
-
-			//TODO: handle checkbox setting somewhere else
-			if( m_pHLMV->GetState()->mirror && !m_pHLMV->GetState()->showGround )
-			{
-				m_pCheckBoxes[ CheckBox::SHOW_GROUND ]->SetValue( true );
-				m_pHLMV->GetState()->showGround = true;
-			}
-
-			break;
-		}
-
-	case CheckBox::SHOW_ATTACHMENTS:
-		{
-			m_pHLMV->GetState()->renderSettings.showAttachments = pCheckBox->GetValue();
-			break;
-		}
-
-	case CheckBox::SHOW_BACKGROUND:
-		{
-			m_pHLMV->GetState()->showBackground = pCheckBox->GetValue();
-			break;
-		}
-
-	case CheckBox::SHOW_EYE_POSITION:
-		{
-			m_pHLMV->GetState()->renderSettings.showEyePosition = pCheckBox->GetValue();
-			break;
-		}
-
-	case CheckBox::WIREFRAME_OVERLAY:
-		{
-			m_pHLMV->GetState()->wireframeOverlay = pCheckBox->GetValue();
-			break;
-		}
-
-	default: break;
-	}
-}
-
-void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
-{
-	double flScale = 1.0;
-
-	if( m_pMeshScale->GetValue().ToDouble( &flScale ) )
-		m_pHLMV->GetState()->GetStudioModel()->scaleMeshes( flScale );
-	else
-		m_pMeshScale->SetValue( "1.0" );
-}
-
-void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
-{
-	double flScale = 1.0;
-
-	if( m_pBonesScale->GetValue().ToDouble( &flScale ) )
-		m_pHLMV->GetState()->GetStudioModel()->scaleBones( flScale );
-	else
-		m_pBonesScale->SetValue( "1.0" );
-}
-
 void CModelDisplayPanel::SetRenderMode( RenderMode renderMode )
 {
 	if( renderMode < RenderMode::FIRST )
@@ -254,5 +136,127 @@ void CModelDisplayPanel::SetOpacity( int iValue, const bool bUpdateSlider )
 		m_pOpacitySlider->SetValue( iValue );
 
 	m_pHLMV->GetState()->renderSettings.transparency = iValue / static_cast<float>( OPACITY_MAX );
+}
+
+void CModelDisplayPanel::SetCheckBox( const CheckBox::Type checkBox, const bool bValue )
+{
+	if( checkBox < CheckBox::FIRST || checkBox > CheckBox::LAST )
+		return;
+
+	wxCheckBox* pCheckBox = m_pCheckBoxes[ checkBox ];
+
+	pCheckBox->SetValue( bValue );
+
+	switch( checkBox )
+	{
+	case CheckBox::SHOW_HITBOXES:
+		{
+			m_pHLMV->GetState()->renderSettings.showHitBoxes = bValue;
+			break;
+		}
+
+	case CheckBox::SHOW_GROUND:
+		{
+			m_pHLMV->GetState()->showGround = bValue;
+
+			if( !m_pHLMV->GetState()->showGround && m_pHLMV->GetState()->mirror )
+			{
+				SetCheckBox( CheckBox::MIRROR_ON_GROUND, false );
+			}
+
+			break;
+		}
+
+	case CheckBox::SHOW_BONES:
+		{
+			m_pHLMV->GetState()->renderSettings.showBones = bValue;
+			break;
+		}
+
+	case CheckBox::MIRROR_ON_GROUND:
+		{
+			m_pHLMV->GetState()->mirror = bValue;
+
+			if( m_pHLMV->GetState()->mirror && !m_pHLMV->GetState()->showGround )
+			{
+				SetCheckBox( CheckBox::SHOW_GROUND, true );
+			}
+
+			break;
+		}
+
+	case CheckBox::SHOW_ATTACHMENTS:
+		{
+			m_pHLMV->GetState()->renderSettings.showAttachments = bValue;
+			break;
+		}
+
+	case CheckBox::SHOW_BACKGROUND:
+		{
+			m_pHLMV->GetState()->showBackground = bValue;
+			break;
+		}
+
+	case CheckBox::SHOW_EYE_POSITION:
+		{
+			m_pHLMV->GetState()->renderSettings.showEyePosition = bValue;
+			break;
+		}
+
+	case CheckBox::WIREFRAME_OVERLAY:
+		{
+			m_pHLMV->GetState()->wireframeOverlay = bValue;
+			break;
+		}
+
+	default: break;
+	}
+}
+
+void CModelDisplayPanel::RenderModeChanged( wxCommandEvent& event )
+{
+	const int iValue = m_pRenderMode->GetSelection();
+
+	if( iValue == wxNOT_FOUND )
+		return;
+
+	SetRenderMode( static_cast<RenderMode>( iValue ) );
+}
+
+void CModelDisplayPanel::OpacityChanged( wxCommandEvent& event )
+{
+	SetOpacity( m_pOpacitySlider->GetValue(), false );
+}
+
+void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
+{
+	wxCheckBox* const pCheckBox = static_cast<wxCheckBox*>( event.GetEventObject() );
+
+	const CheckBox::Type checkbox = static_cast<CheckBox::Type>( reinterpret_cast<int>( pCheckBox->GetClientData() ) );
+
+	if( checkbox < CheckBox::FIRST || checkbox > CheckBox::LAST )
+		return;
+
+	SetCheckBox( checkbox, pCheckBox->GetValue() );
+}
+
+void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
+{
+	double flScale = 1.0;
+
+	if( m_pMeshScale->GetValue().ToDouble( &flScale ) )
+		m_pHLMV->GetState()->GetStudioModel()->scaleMeshes( flScale );
+	else
+		m_pMeshScale->SetValue( "1.0" );
+}
+
+void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
+{
+	double flScale = 1.0;
+
+	if( m_pBonesScale->GetValue().ToDouble( &flScale ) )
+		m_pHLMV->GetState()->GetStudioModel()->scaleBones( flScale );
+	else
+		m_pBonesScale->SetValue( "1.0" );
 }
 }

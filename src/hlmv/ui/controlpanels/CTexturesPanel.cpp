@@ -4,6 +4,8 @@
 #include <wx/gbsizer.h>
 #include <wx/image.h>
 
+#include "graphics/GraphicsHelpers.h"
+
 #include "studiomodel/StudioModel.h"
 
 #include "hlmv/ui/CHLMV.h"
@@ -228,7 +230,7 @@ void CTexturesPanel::MeshChanged( wxCommandEvent& event )
 	if( iIndex == wxNOT_FOUND )
 		return;
 
-	const CMeshClientData* pMesh = static_cast<const CMeshClientData*>( m_pMesh->GetClientObject( iIndex ) );
+	const ui::CMeshClientData* pMesh = static_cast<const ui::CMeshClientData*>( m_pMesh->GetClientObject( iIndex ) );
 
 	//Null client data means it's "All"
 	m_pHLMV->GetState()->pUVMesh = pMesh ? pMesh->m_pMesh : nullptr;
@@ -353,7 +355,7 @@ void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 
 	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( texture.width * texture.height * 3 );
 
-	Convert8to24Bit( texture.width, texture.height, ( byte* ) pHdr + texture.index, ( byte* ) pHdr + texture.width * texture.height + texture.index, rgbData.get() );
+	graphics::helpers::Convert8to24Bit( texture.width, texture.height, ( byte* ) pHdr + texture.index, ( byte* ) pHdr + texture.width * texture.height + texture.index, rgbData.get() );
 
 	wxImage image( texture.width, texture.height, rgbData.get(), true );
 
@@ -430,7 +432,7 @@ void CTexturesPanel::SetTexture( int iIndex )
 
 		for( uiIndex = 0; uiIndex < pMeshList->size(); ++uiIndex )
 		{
-			m_pMesh->Append( wxString::Format( "Mesh %u", uiIndex + 1 ), new CMeshClientData( ( *pMeshList )[ uiIndex ] ) );
+			m_pMesh->Append( wxString::Format( "Mesh %u", uiIndex + 1 ), new ui::CMeshClientData( ( *pMeshList )[ uiIndex ] ) );
 		}
 
 		if( uiIndex > 0 )

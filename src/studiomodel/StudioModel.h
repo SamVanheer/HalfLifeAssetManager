@@ -38,14 +38,6 @@ const size_t PALETTE_ALPHA_INDEX	= 255 * PALETTE_CHANNELS;
 //with this define, MAX_TEXTURE_DIMS
 #define MAX_TEXTURE_DIMS 512
 
-/*
-*	Converts image dimensions to power of 2.
-*	Returns true if either width or height changed.
-*/
-bool CalculateImageDimensions( const int iWidth, const int iHeight, int& iOutWidth, int& iOutHeight );
-
-void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData );
-
 struct CAnimEvent final
 {
 	int			iEvent;

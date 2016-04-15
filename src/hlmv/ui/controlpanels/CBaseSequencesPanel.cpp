@@ -43,63 +43,29 @@ void CBaseSequencesPanel::ModelChanged( const StudioModel& model )
 {
 	m_pSequence->Clear();
 
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
-
-	if( pHdr )
+	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
 	{
-		const mstudioseqdesc_t* const pseqdescs = ( mstudioseqdesc_t* ) ( ( byte* ) pHdr + pHdr->seqindex );
+		const studiohdr_t* const pHdr = pModel->getStudioHeader();
 
-		//Insert all labels into the array, then append the array to the combo box. This is much faster than appending each label to the combo box directly.
-		wxArrayString labels;
-
-		for( int iIndex = 0; iIndex < pHdr->numseq; ++iIndex )
+		if( pHdr )
 		{
-			labels.Add( pseqdescs[ iIndex ].label );
-		}
+			const mstudioseqdesc_t* const pseqdescs = ( mstudioseqdesc_t* ) ( ( byte* ) pHdr + pHdr->seqindex );
 
-		m_pSequence->Append( labels );
+			//Insert all labels into the array, then append the array to the combo box. This is much faster than appending each label to the combo box directly.
+			wxArrayString labels;
+
+			for( int iIndex = 0; iIndex < pHdr->numseq; ++iIndex )
+			{
+				labels.Add( pseqdescs[ iIndex ].label );
+			}
+
+			m_pSequence->Append( labels );
+		}
 	}
 
 	SetSequence( 0 );
 
 	m_pAnimSpeed->SetValue( ANIMSPEED_SLIDER_DEFAULT );
-}
-
-void CBaseSequencesPanel::SequenceChanged( wxCommandEvent& event )
-{
-	SetSequence( m_pSequence->GetSelection() );
-}
-
-void CBaseSequencesPanel::TogglePlay( wxCommandEvent& event )
-{
-	m_pHLMV->GetState()->playSequence = !m_pTogglePlayButton->GetValue();
-
-	SetFrameControlsEnabled( !m_pHLMV->GetState()->playSequence );
-}
-
-void CBaseSequencesPanel::PrevFrame( wxCommandEvent& event )
-{
-	SetFrame( m_pHLMV->GetState()->GetStudioModel()->GetFrame() - 1 );
-}
-
-void CBaseSequencesPanel::NextFrame( wxCommandEvent& event )
-{
-	SetFrame( m_pHLMV->GetState()->GetStudioModel()->GetFrame() + 1 );
-}
-
-void CBaseSequencesPanel::FrameChanged( wxCommandEvent& event )
-{
-	const wxString szValue = m_pFrame->GetValue();
-
-	long iValue;
-
-	if( szValue.ToLong( &iValue ) )
-		SetFrame( iValue );
-}
-
-void CBaseSequencesPanel::AnimSpeedChanged( wxCommandEvent& event )
-{
-	m_pHLMV->GetState()->speedScale = m_pAnimSpeed->GetValue() / static_cast<float>( ANIMSPEED_SLIDER_DEFAULT );
 }
 
 void CBaseSequencesPanel::SetSequence( int iIndex )
@@ -230,6 +196,11 @@ void CBaseSequencesPanel::CreateUI( wxGridBagSizer* pSizer )
 	SetFrameControlsEnabled( false );
 }
 
+void CBaseSequencesPanel::SequenceChanged( wxCommandEvent& event )
+{
+	SetSequence( m_pSequence->GetSelection() );
+}
+
 void CBaseSequencesPanel::SetFrameControlsEnabled( const bool bState )
 {
 	m_pPrevFrameButton->Enable( bState );
@@ -246,5 +217,40 @@ void CBaseSequencesPanel::SetFrameControlsEnabled( const bool bState )
 	}
 
 	m_pTogglePlayButton->SetLabelText( bState ? "Play" : "Stop" );
+}
+
+void CBaseSequencesPanel::TogglePlay( wxCommandEvent& event )
+{
+	m_pHLMV->GetState()->playSequence = !m_pTogglePlayButton->GetValue();
+
+	SetFrameControlsEnabled( !m_pHLMV->GetState()->playSequence );
+}
+
+void CBaseSequencesPanel::PrevFrame( wxCommandEvent& event )
+{
+	SetFrame( m_pHLMV->GetState()->GetStudioModel()->GetFrame() - 1 );
+}
+
+void CBaseSequencesPanel::NextFrame( wxCommandEvent& event )
+{
+	SetFrame( m_pHLMV->GetState()->GetStudioModel()->GetFrame() + 1 );
+}
+
+void CBaseSequencesPanel::FrameChanged( wxCommandEvent& event )
+{
+	const wxString szValue = m_pFrame->GetValue();
+
+	long iValue;
+
+	if( szValue.ToLong( &iValue ) )
+		SetFrame( iValue );
+}
+
+void CBaseSequencesPanel::AnimSpeedChanged( wxCommandEvent& event )
+{
+	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
+	{
+		pModel->SetFrameRate( m_pAnimSpeed->GetValue() / static_cast<float>( ANIMSPEED_SLIDER_DEFAULT ) );
+	}
 }
 }

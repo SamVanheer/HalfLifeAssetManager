@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include "graphics/OpenGL.h"
+#include "graphics/GraphicsHelpers.h"
 
 #include "StudioModel.h"
 
@@ -41,42 +42,6 @@ StudioModel::~StudioModel()
 	FreeModel();
 }
 
-//TODO: add error handling
-bool CalculateImageDimensions( const int iWidth, const int iHeight, int& iOutWidth, int& iOutHeight )
-{
-	for( iOutWidth = 1; iOutWidth < iWidth; iOutWidth <<= 1 )
-	{
-	}
-
-	if( iOutWidth > MAX_TEXTURE_DIMS )
-		iOutWidth = MAX_TEXTURE_DIMS;
-
-	for( iOutHeight = 1; iOutHeight < iHeight; iOutHeight <<= 1 )
-	{
-	}
-
-	if( iOutHeight > MAX_TEXTURE_DIMS )
-		iOutHeight = MAX_TEXTURE_DIMS;
-
-	return iWidth != iOutWidth || iHeight != iOutHeight;
-}
-
-//TODO: move
-void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData )
-{
-	byte* pOut = pOutData;
-
-	for( int y = 0; y < iHeight; ++y )
-	{
-		for( int x = 0; x < iWidth; ++x, pOut += 3 )
-		{
-			pOut[ 0 ] = pPalette[ pData[ x + y * iWidth ] * 3 ];
-			pOut[ 1 ] = pPalette[ pData[ x + y * iWidth ] * 3 + 1 ];
-			pOut[ 2 ] = pPalette[ pData[ x + y * iWidth ] * 3 + 2 ];
-		}
-	}
-}
-
 void StudioModel::UploadTexture(mstudiotexture_t *ptexture, byte *data, byte *pal, int name)
 {
 	// unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight;
@@ -89,7 +54,8 @@ void StudioModel::UploadTexture(mstudiotexture_t *ptexture, byte *data, byte *pa
 	int outwidth;
 	int outheight;
 
-	CalculateImageDimensions( ptexture->width, ptexture->height, outwidth, outheight );
+	if( !graphics::helpers::CalculateImageDimensions( ptexture->width, ptexture->height, outwidth, outheight ) )
+		return;
 
 	tex = out = (byte *)malloc( outwidth * outheight * 4);
 	if (!out)
@@ -398,6 +364,8 @@ StudioModel::LoadResult StudioModel::Load( const char* const pszModelName )
 		return LoadResult::POSTLOADFAILURE;
 	}
 
+	m_flFrameRate = 1.0f;
+
 	return LoadResult::SUCCESS;
 }
 
@@ -472,7 +440,6 @@ int StudioModel::SetSequence( int iSequence )
 
 	m_sequence = iSequence;
 	m_frame = 0;
-	m_flFrameRate = 1.0f;
 
 	const mstudioseqdesc_t* pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex ) + iSequence;
 

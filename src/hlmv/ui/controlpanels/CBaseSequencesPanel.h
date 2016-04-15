@@ -24,18 +24,6 @@ public:
 
 	virtual void ModelChanged( const StudioModel& model ) override;
 
-	virtual void SequenceChanged( wxCommandEvent& event );
-
-	void TogglePlay( wxCommandEvent& event );
-
-	void PrevFrame( wxCommandEvent& event );
-
-	void NextFrame( wxCommandEvent& event );
-
-	void FrameChanged( wxCommandEvent& event );
-
-	void AnimSpeedChanged( wxCommandEvent& event );
-
 	void SetSequence( int iIndex );
 
 	void SetFrame( int iFrame );
@@ -47,9 +35,20 @@ protected:
 
 	void CreateUI( wxGridBagSizer* pSizer );
 
-private:
+	virtual void SequenceChanged( wxCommandEvent& event );
 
+private:
 	void SetFrameControlsEnabled( const bool bState );
+
+	void TogglePlay( wxCommandEvent& event );
+
+	void PrevFrame( wxCommandEvent& event );
+
+	void NextFrame( wxCommandEvent& event );
+
+	void FrameChanged( wxCommandEvent& event );
+
+	void AnimSpeedChanged( wxCommandEvent& event );
 
 protected:
 	wxComboBox* m_pSequence;

@@ -9,7 +9,7 @@ class wxNotebook;
 
 namespace ui
 {
-class CGameConfigurations;
+class CGameConfigurationsPanel;
 }
 
 namespace hlmv
@@ -37,7 +37,7 @@ private:
 	wxNotebook* m_pPages;
 
 	CGeneralOptions* m_pGeneral;
-	ui::CGameConfigurations* m_pGameConfigs;
+	ui::CGameConfigurationsPanel* m_pGameConfigs;
 
 private:
 	COptionsDialog( const COptionsDialog& ) = delete;

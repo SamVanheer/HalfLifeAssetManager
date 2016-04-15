@@ -1,5 +1,5 @@
-#ifndef UI_SHARED_CGAMECONFIGURATIONS_H
-#define UI_SHARED_CGAMECONFIGURATIONS_H
+#ifndef UI_SHARED_CGAMECONFIGURATIONSPANEL_H
+#define UI_SHARED_CGAMECONFIGURATIONSPANEL_H
 
 #include <memory>
 
@@ -12,12 +12,11 @@ class CGameConfigManager;
 
 namespace ui
 {
-//TODO: rename to CGameConfigurationsPanel
-class CGameConfigurations final : public wxPanel
+class CGameConfigurationsPanel final : public wxPanel
 {
 public:
-	CGameConfigurations( wxWindow* pParent, std::shared_ptr<settings::CGameConfigManager> manager );
-	~CGameConfigurations();
+	CGameConfigurationsPanel( wxWindow* pParent, std::shared_ptr<settings::CGameConfigManager> manager );
+	~CGameConfigurationsPanel();
 
 	void Save();
 
@@ -60,9 +59,9 @@ private:
 	wxTextCtrl* m_pModDir;
 
 private:
-	CGameConfigurations( const CGameConfigurations& ) = delete;
-	CGameConfigurations& operator=( const CGameConfigurations& ) = delete;
+	CGameConfigurationsPanel( const CGameConfigurationsPanel& ) = delete;
+	CGameConfigurationsPanel& operator=( const CGameConfigurationsPanel& ) = delete;
 };
 }
 
-#endif //UI_SHARED_CGAMECONFIGURATIONS_H
+#endif //UI_SHARED_CGAMECONFIGURATIONSPANEL_H

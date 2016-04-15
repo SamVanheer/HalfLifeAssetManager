@@ -243,9 +243,6 @@
     <ClCompile Include="..\src\ui\shared\CMessagesWindow.cpp">
       <Filter>Source Files\ui\shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ui\shared\CGameConfigurations.cpp">
-      <Filter>Source Files\ui\shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ui\shared\CEditGameConfigsDialog.cpp">
       <Filter>Source Files\ui\shared</Filter>
     </ClCompile>
@@ -269,6 +266,12 @@
     </ClCompile>
     <ClCompile Include="..\src\utility\Vector.cpp">
       <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\shared\CGameConfigurationsPanel.cpp">
+      <Filter>Source Files\ui\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\graphics\Constants.cpp">
+      <Filter>Source Files\graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -425,9 +428,6 @@
     <ClInclude Include="..\src\ui\shared\CMessagesWindow.h">
       <Filter>Header Files\ui\shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ui\shared\CGameConfigurations.h">
-      <Filter>Header Files\ui\shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ui\shared\CEditGameConfigsDialog.h">
       <Filter>Header Files\ui\shared</Filter>
     </ClInclude>
@@ -466,6 +466,12 @@
     </ClInclude>
     <ClInclude Include="..\src\utility\BoundingBox.h">
       <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\utility\CMeshClientData.h">
+      <Filter>Header Files\ui\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\shared\CGameConfigurationsPanel.h">
+      <Filter>Header Files\ui\shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -30,3 +30,21 @@ void glDeleteTexture( GLuint& textureId )
 		textureId = GL_INVALID_TEXTURE_ID;
 	}
 }
+
+const char* glFrameBufferStatusToString( const GLenum status )
+{
+	switch( status )
+	{
+	case GL_FRAMEBUFFER_COMPLETE:						return "Framebuffer complete";
+	case GL_FRAMEBUFFER_UNDEFINED:						return "Framebuffer Undefined";
+	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:			return "Framebuffer attachment incomplete";
+	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:	return "Framebuffer missing attachment";
+	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:			return "Framebuffer draw color attachment points undefined";
+	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:			return "Framebuffer read color attachment points undefined";
+	case GL_FRAMEBUFFER_UNSUPPORTED:					return "Framebuffer configuration unsupported";
+	case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:			return "Framebuffer multisample configuration invalid";
+	case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:		return "Framebuffer layers not populated, or color attachments have incorrect textures";
+
+	default:											return "Unknown error";
+	}
+}

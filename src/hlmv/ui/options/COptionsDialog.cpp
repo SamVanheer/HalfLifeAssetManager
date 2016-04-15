@@ -2,7 +2,7 @@
 #include <wx/notebook.h>
 
 #include "CGeneralOptions.h"
-#include "ui/shared/CGameConfigurations.h"
+#include "ui/shared/CGameConfigurationsPanel.h"
 
 #include "hlmv/settings/CHLMVSettings.h"
 
@@ -22,7 +22,7 @@ COptionsDialog::COptionsDialog( wxWindow* pParent, CHLMVSettings* const pSetting
 	m_pPages = new wxNotebook( this, wxID_ANY );
 
 	m_pGeneral = new CGeneralOptions( m_pPages, m_EditableSettings.get() );
-	m_pGameConfigs = new ui::CGameConfigurations( m_pPages, m_EditableSettings->GetConfigManager() );
+	m_pGameConfigs = new ui::CGameConfigurationsPanel( m_pPages, m_EditableSettings->GetConfigManager() );
 
 	m_pPages->AddPage( m_pGeneral, "General" );
 	m_pPages->AddPage( m_pGameConfigs, "Game Configurations" );

@@ -5,17 +5,17 @@
 
 #include "CEditGameConfigsDialog.h"
 
-#include "CGameConfigurations.h"
+#include "CGameConfigurationsPanel.h"
 
 namespace ui
 {
-wxBEGIN_EVENT_TABLE( CGameConfigurations, wxPanel )
-	EVT_COMBOBOX( wxID_SHARED_GAMECONFIGS_CONFIG_CHANGED, CGameConfigurations::ConfigChanged )
-	EVT_BUTTON( wxID_SHARED_GAMECONFIGS_EDIT, CGameConfigurations::EditConfigs )
-	EVT_BUTTON( wxID_SHARED_GAMECONFIGS_FINDBASEPATH, CGameConfigurations::FindBasePath )
+wxBEGIN_EVENT_TABLE( CGameConfigurationsPanel, wxPanel )
+	EVT_COMBOBOX( wxID_SHARED_GAMECONFIGS_CONFIG_CHANGED, CGameConfigurationsPanel::ConfigChanged )
+	EVT_BUTTON( wxID_SHARED_GAMECONFIGS_EDIT, CGameConfigurationsPanel::EditConfigs )
+	EVT_BUTTON( wxID_SHARED_GAMECONFIGS_FINDBASEPATH, CGameConfigurationsPanel::FindBasePath )
 wxEND_EVENT_TABLE()
 
-CGameConfigurations::CGameConfigurations( wxWindow* pParent, std::shared_ptr<settings::CGameConfigManager> manager )
+CGameConfigurationsPanel::CGameConfigurationsPanel( wxWindow* pParent, std::shared_ptr<settings::CGameConfigManager> manager )
 	: wxPanel( pParent, wxID_ANY, wxDefaultPosition, wxSize( 600, 600 ) )
 	, m_Manager( manager )
 {
@@ -68,11 +68,11 @@ CGameConfigurations::CGameConfigurations( wxWindow* pParent, std::shared_ptr<set
 	SetCurrentConfig( m_pActiveConfig->GetSelection() );
 }
 
-CGameConfigurations::~CGameConfigurations()
+CGameConfigurationsPanel::~CGameConfigurationsPanel()
 {
 }
 
-void CGameConfigurations::Save()
+void CGameConfigurationsPanel::Save()
 {
 	StoreConfig( m_pConfigs->GetSelection() );
 
@@ -88,7 +88,7 @@ void CGameConfigurations::Save()
 	}
 }
 
-void CGameConfigurations::ConfigAdded( const wxString& szConfigName )
+void CGameConfigurationsPanel::ConfigAdded( const wxString& szConfigName )
 {
 	wxASSERT( !szConfigName.IsEmpty() );
 
@@ -106,7 +106,7 @@ void CGameConfigurations::ConfigAdded( const wxString& szConfigName )
 	}
 }
 
-void CGameConfigurations::ConfigRenamed( const wxString& szOldName, const wxString& szNewName )
+void CGameConfigurationsPanel::ConfigRenamed( const wxString& szOldName, const wxString& szNewName )
 {
 	wxASSERT( !szOldName.IsEmpty() );
 	wxASSERT( !szNewName.IsEmpty() );
@@ -136,7 +136,7 @@ void CGameConfigurations::ConfigRenamed( const wxString& szOldName, const wxStri
 	}
 }
 
-void CGameConfigurations::ConfigRemoved( const wxString& szConfigName )
+void CGameConfigurationsPanel::ConfigRemoved( const wxString& szConfigName )
 {
 	wxASSERT( !szConfigName.IsEmpty() );
 
@@ -152,7 +152,7 @@ void CGameConfigurations::ConfigRemoved( const wxString& szConfigName )
 		m_pActiveConfig->Delete( iIndex );
 }
 
-void CGameConfigurations::Initialize()
+void CGameConfigurationsPanel::Initialize()
 {
 	m_pActiveConfig->Clear();
 
@@ -180,7 +180,7 @@ void CGameConfigurations::Initialize()
 	m_pConfigs->Append( configs );
 }
 
-void CGameConfigurations::SetCurrentConfig( int iIndex )
+void CGameConfigurationsPanel::SetCurrentConfig( int iIndex )
 {
 	if( m_pConfigs->IsListEmpty() )
 	{
@@ -219,7 +219,7 @@ void CGameConfigurations::SetCurrentConfig( int iIndex )
 	m_pFindBasePath->Enable( true );
 }
 
-void CGameConfigurations::StoreConfig( const unsigned int uiIndex )
+void CGameConfigurationsPanel::StoreConfig( const unsigned int uiIndex )
 {
 	if( uiIndex >= m_pConfigs->GetCount() )
 		return;
@@ -245,7 +245,7 @@ void CGameConfigurations::StoreConfig( const unsigned int uiIndex )
 	config->SetModDir( m_pModDir->GetValue().c_str() );
 }
 
-void CGameConfigurations::ConfigChanged( wxCommandEvent& event )
+void CGameConfigurationsPanel::ConfigChanged( wxCommandEvent& event )
 {
 	int iIndex = m_pConfigs->GetSelection();
 
@@ -255,7 +255,7 @@ void CGameConfigurations::ConfigChanged( wxCommandEvent& event )
 	SetCurrentConfig( iIndex );
 }
 
-void CGameConfigurations::EditConfigs( wxCommandEvent& event )
+void CGameConfigurationsPanel::EditConfigs( wxCommandEvent& event )
 {
 	CEditGameConfigsDialog dlg( this, m_Manager, this );
 
@@ -271,7 +271,7 @@ void CGameConfigurations::EditConfigs( wxCommandEvent& event )
 	*/
 }
 
-void CGameConfigurations::FindBasePath( wxCommandEvent& event )
+void CGameConfigurationsPanel::FindBasePath( wxCommandEvent& event )
 {
 	wxDirDialog dlg( this, "Select base path" );
 

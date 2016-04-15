@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "common/Logging.h"
 
 #include "utility/Color.h"
@@ -8,10 +10,47 @@ namespace graphics
 {
 namespace helpers
 {
-/*
-*	Sets up OpenGL for the specified render mode.
-*	renderMode:		Render mode to set up. Must be valid.
-*/
+bool CalculateImageDimensions( const int iWidth, const int iHeight, int& iOutWidth, int& iOutHeight )
+{
+	if( iWidth <= 0 || iHeight <= 0 )
+		return false;
+
+	for( iOutWidth = 1; iOutWidth < iWidth; iOutWidth <<= 1 )
+	{
+	}
+
+	if( iOutWidth > MAX_TEXTURE_DIMS )
+		iOutWidth = MAX_TEXTURE_DIMS;
+
+	for( iOutHeight = 1; iOutHeight < iHeight; iOutHeight <<= 1 )
+	{
+	}
+
+	if( iOutHeight > MAX_TEXTURE_DIMS )
+		iOutHeight = MAX_TEXTURE_DIMS;
+
+	return true;
+}
+
+void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData )
+{
+	assert( pData );
+	assert( pPalette );
+	assert( pOutData );
+
+	byte* pOut = pOutData;
+
+	for( int y = 0; y < iHeight; ++y )
+	{
+		for( int x = 0; x < iWidth; ++x, pOut += 3 )
+		{
+			pOut[ 0 ] = pPalette[ pData[ x + y * iWidth ] * 3 ];
+			pOut[ 1 ] = pPalette[ pData[ x + y * iWidth ] * 3 + 1 ];
+			pOut[ 2 ] = pPalette[ pData[ x + y * iWidth ] * 3 + 2 ];
+		}
+	}
+}
+
 void SetupRenderMode( RenderMode renderMode )
 {
 	if( renderMode == RenderMode::INVALID )
@@ -64,18 +103,6 @@ void SetupRenderMode( RenderMode renderMode )
 	}
 }
 
-/*
-*	Draws a texture onto the screen. Optionally draws a UV map, either on a black background, or on top of the texture.
-*	iWidth:				Width of the viewport
-*	iHeight:			Height of the viewport
-*	pStudioModel:		Model whose texture is being drawn
-*	iTexture:			Index of the texture to draw
-*	flTextureScale:		Zoom level
-*	bShowUVMap:			If true, draws the UV map
-*	bOverlayUVMap:		If true, and bShowUVMap is true, overlays the UV map on top of the texture
-*	bAntiAliasLines:	If true, anti aliases UV map lines
-*	pUVMesh:			If specified, is the mesh to use to draw the UV map. If null, all meshes that use the texture are drawn.
-*/
 void DrawTexture( const int iWidth, const int iHeight,
 				  const StudioModel& studioModel,
 				  const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines, 
@@ -219,10 +246,6 @@ void DrawTexture( const int iWidth, const int iHeight,
 	}
 }
 
-/*
-*	Draws a background texture, fitted to the viewport.
-*	backgroundTexture:	OpenGL texture id that represents the background texture
-*/
 void DrawBackground( GLuint backgroundTexture )
 {
 	if( backgroundTexture == GL_INVALID_TEXTURE_ID )
@@ -267,11 +290,6 @@ void DrawBackground( GLuint backgroundTexture )
 	glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
-/*
-*	Sets the projection matrix to the default perspective settings.
-*	iWidth:		Width of the viewport
-*	iHeight:	Height of the viewport
-*/
 void SetProjection( const int iWidth, const int iHeight )
 {
 	glMatrixMode( GL_PROJECTION );
@@ -279,10 +297,6 @@ void SetProjection( const int iWidth, const int iHeight )
 	gluPerspective( 65.0f, ( GLfloat ) iWidth / ( GLfloat ) iHeight, 1.0f, 4096.0f );
 }
 
-/*
-*	Draws a floor quad.
-*	flSideLength:	Length of one side of the floor
-*/
 void DrawFloorQuad( float flSideLength )
 {
 	flSideLength = abs( flSideLength );
@@ -305,13 +319,6 @@ void DrawFloorQuad( float flSideLength )
 	glEnd();
 }
 
-/*
-*	Draws a floor, optionally with a texture.
-*	flSideLength:	Length of one side of the floor
-*	groundTexture:	OpenGL texture id of the texture to draw as the floor, or GL_INVALID_TEXTURE_ID to draw a solid color instead
-*	groundColor:	Color of the ground if no texture is specified
-*	bMirror:		If true, draws a solid underside
-*/
 void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundColor, const bool bMirror )
 {
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
@@ -356,10 +363,6 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 		glEnable( GL_CULL_FACE );
 }
 
-/*
-*	Draws a wireframe overlay over a model
-*	model:	Model to draw
-*/
 unsigned int DrawWireframeOverlay( StudioModel& model, const StudioModel::CRenderSettings& settings )
 {
 	SetupRenderMode( RenderMode::WIREFRAME );
@@ -367,13 +370,6 @@ unsigned int DrawWireframeOverlay( StudioModel& model, const StudioModel::CRende
 	return model.DrawModel( settings, true );
 }
 
-/*
-*	Draws a mirrored model.
-*	model:				Model to draw
-*	renderMode:			Render mode to use
-*	bWireframeOverlay:	Whether to render a wireframe overlay on top of the model
-*	flSideLength:		Length of one side of the floor
-*/
 unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const StudioModel::CRenderSettings& settings, const bool bWireframeOverlay, const float flSideLength )
 {
 	/* Don't update color or depth. */
