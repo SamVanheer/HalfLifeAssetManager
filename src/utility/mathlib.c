@@ -25,9 +25,6 @@
 
 #include "mathlib.h"
 
-vec3_t vec3_origin = {0,0,0};
-
-
 double VectorLength(vec3_t v)
 {
 	int		i;

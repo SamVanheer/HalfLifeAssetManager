@@ -34,8 +34,6 @@ typedef vec_t vec4_t[4];	// x,y,z,w
 
 #define	Q_PI	3.14159265358979323846
 
-extern vec3_t vec3_origin;
-
 // Use this definition globally
 #define	ON_EPSILON		0.01
 #define	EQUAL_EPSILON	0.001

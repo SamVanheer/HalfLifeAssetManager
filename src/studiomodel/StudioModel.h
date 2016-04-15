@@ -13,7 +13,7 @@
 
 #include <vector>
 
-#include "common/Types.h"
+#include "common/Const.h"
 
 #include "utility/mathlib.h"
 #include "utility/studio.h"

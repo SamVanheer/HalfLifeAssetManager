@@ -3,7 +3,7 @@
 
 #include <cassert>
 
-#include "common/Types.h"
+#include "common/Const.h"
 
 /**
 *	Lightweight Color class.
@@ -25,7 +25,7 @@ public:
 
 public:
 
-	Color( const byte rgb = 0, const byte alpha = ALPHA_OPAQUE )
+	explicit Color( const byte rgb = 0, const byte alpha = ALPHA_OPAQUE )
 	{
 		Set( rgb, alpha );
 	}

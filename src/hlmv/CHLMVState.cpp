@@ -96,9 +96,9 @@ void CHLMVState::CenterView( const StudioModel& model )
 	rot[ 2 ] = 0.0f;
 }
 
-void CHLMVState::SetOrigin( const vec3_t vecOrigin )
+void CHLMVState::SetOrigin( const Vector& vecOrigin )
 {
-	VectorCopy( vecOrigin, trans );
+	trans = vecOrigin;
 }
 
 void CHLMVState::ClearStudioModel()

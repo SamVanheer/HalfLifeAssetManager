@@ -74,12 +74,13 @@
     </ClCompile>
     <ClCompile Include="..\src\utility\IOUtils.cpp" />
     <ClCompile Include="..\src\utility\mathlib.c" />
+    <ClCompile Include="..\src\utility\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\common\CGlobals.h" />
     <ClInclude Include="..\src\common\Logging.h" />
     <ClInclude Include="..\src\common\Platform.h" />
-    <ClInclude Include="..\src\common\Types.h" />
+    <ClInclude Include="..\src\common\Const.h" />
     <ClInclude Include="..\src\common\Utility.h" />
     <ClInclude Include="..\src\filesystem\CFileSystem.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />
@@ -138,6 +139,7 @@
     <ClInclude Include="..\src\utility\IOUtils.h" />
     <ClInclude Include="..\src\utility\mathlib.h" />
     <ClInclude Include="..\src\utility\studio.h" />
+    <ClInclude Include="..\src\utility\Vector.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B478CBB5-EEF9-4E7F-9749-E90ACE12E016}</ProjectGuid>

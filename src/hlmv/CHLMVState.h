@@ -8,7 +8,7 @@
 #include "graphics/OpenGL.h"
 #include "graphics/Constants.h"
 
-#include "utility/mathlib.h"
+#include "utility/Vector.h"
 
 #include "studiomodel/StudioModel.h"
 
@@ -33,7 +33,7 @@ public:
 
 	void CenterView( const StudioModel& model );
 
-	void SetOrigin( const vec3_t vecOrigin );
+	void SetOrigin( const Vector& vecOrigin );
 
 	StudioModel* GetStudioModel() { return m_pStudioModel; }
 	const StudioModel* GetStudioModel() const { return m_pStudioModel; }
@@ -43,9 +43,8 @@ public:
 	void SetStudioModel( StudioModel* pStudioModel );
 
 public:
-	//TODO: replace with Vector
-	vec3_t trans;
-	vec3_t rot;
+	Vector trans;
+	Vector rot;
 
 	bool showBackground;
 
@@ -82,7 +81,7 @@ public:
 
 	bool wireframeOverlay;
 
-	vec3_t weaponOrigin;
+	Vector weaponOrigin;
 
 	bool useWeaponOrigin;
 
