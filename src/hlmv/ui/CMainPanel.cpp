@@ -18,11 +18,13 @@
 
 #include "CMainPanel.h"
 
+namespace hlmv
+{
 wxBEGIN_EVENT_TABLE( CMainPanel, wxPanel )
 	EVT_NOTEBOOK_PAGE_CHANGED( wxID_MAIN_PAGECHANGED, CMainPanel::PageChanged )
 wxEND_EVENT_TABLE()
 
-CMainPanel::CMainPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: wxPanel( pParent )
 	, m_pHLMV( pHLMV )
 {
@@ -200,4 +202,5 @@ void CMainPanel::UnloadGroundTexture()
 void CMainPanel::SaveUVMap( const wxString& szFilename, const int iTexture )
 {
 	m_p3DView->SaveUVMap( szFilename, iTexture );
+}
 }

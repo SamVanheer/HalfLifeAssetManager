@@ -5,6 +5,8 @@
 
 #include "hlmv/CHLMVState.h"
 
+namespace hlmv
+{
 class CModelDisplayPanel final : public CBaseControlPanel
 {
 public:
@@ -47,7 +49,7 @@ public:
 	static const size_t OPACITY_DEFAULT = OPACITY_MAX;
 
 public:
-	CModelDisplayPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
+	CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CModelDisplayPanel();
 
 	void ModelChanged( const StudioModel& model ) override;
@@ -94,5 +96,6 @@ private:
 	CModelDisplayPanel( const CModelDisplayPanel& ) = delete;
 	CModelDisplayPanel& operator=( const CModelDisplayPanel& ) = delete;
 };
+}
 
 #endif //CONTROLPANELS_CMODELDISPLAYPANEL_H

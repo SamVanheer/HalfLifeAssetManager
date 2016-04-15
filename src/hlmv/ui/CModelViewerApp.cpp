@@ -115,7 +115,7 @@ bool CModelViewerApp::Initialize()
 	m_pHLMV = new hlmv::CHLMV( &m_Settings, &m_State );
 
 	//TODO: use 2 step init to avoid a situation where the main window constructor tries to access the CHLMV instance.
-	m_pMainWindow = new CMainWindow( m_pHLMV );
+	m_pMainWindow = new hlmv::CMainWindow( m_pHLMV );
 
 	m_pHLMV->SetMainWindow( m_pMainWindow );
 

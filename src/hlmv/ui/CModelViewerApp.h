@@ -10,10 +10,10 @@
 #include "hlmv/settings/CHLMVSettings.h"
 #include "hlmv/CHLMVState.h"
 
-class CMainWindow;
 
 namespace hlmv
 {
+class CMainWindow;
 class CFullscreenWindow;
 class CHLMV;
 }
@@ -55,7 +55,7 @@ private:
 
 	ITimerListener* m_pListener = nullptr;
 
-	CMainWindow* m_pMainWindow = nullptr;
+	hlmv::CMainWindow* m_pMainWindow = nullptr;
 	hlmv::CFullscreenWindow* m_pFullscreenWindow = nullptr;
 };
 

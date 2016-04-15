@@ -3,6 +3,8 @@
 
 #include "CBaseControlPanel.h"
 
+namespace hlmv
+{
 class CBodyPartsPanel final : public CBaseControlPanel
 {
 public:
@@ -16,7 +18,7 @@ public:
 	static const size_t COMBOBOX_WIDTH = 200;
 
 public:
-	CBodyPartsPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
+	CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CBodyPartsPanel();
 
 	void ModelChanged( const StudioModel& model ) override;
@@ -77,5 +79,6 @@ private:
 	CBodyPartsPanel( const CBodyPartsPanel& ) = delete;
 	CBodyPartsPanel& operator=( const CBodyPartsPanel& ) = delete;
 };
+}
 
 #endif //CONTROLPANELS_CBODYPARTSPANEL_H

@@ -16,6 +16,8 @@
 
 #include "C3DView.h"
 
+namespace hlmv
+{
 wxBEGIN_EVENT_TABLE( C3DView, wxGLCanvas )
 	EVT_PAINT( C3DView::Paint )
 	EVT_MOUSE_EVENTS( C3DView::MouseEvents )
@@ -23,7 +25,7 @@ wxEND_EVENT_TABLE()
 
 const float C3DView::FLOOR_SIDE_LENGTH = 200;
 
-C3DView::C3DView( wxWindow* pParent, hlmv::CHLMV* const pHLMV, I3DViewListener* pListener )
+C3DView::C3DView( wxWindow* pParent, CHLMV* const pHLMV, I3DViewListener* pListener )
 	: wxGLCanvas( pParent, wxOpenGL().GetCanvasAttributes(), wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
 	, m_pListener( pListener )
@@ -169,7 +171,7 @@ void C3DView::UpdateView()
 		class CStudioModelListener final : public IAnimEventHandler
 		{
 		public:
-			CStudioModelListener( hlmv::CHLMVState* const pSettings )
+			CStudioModelListener( CHLMVState* const pSettings )
 				: m_pSettings( pSettings )
 			{
 			}
@@ -193,7 +195,7 @@ void C3DView::UpdateView()
 				}
 			}
 
-			hlmv::CHLMVState* const m_pSettings;
+			CHLMVState* const m_pSettings;
 		};
 
 		CStudioModelListener listener( m_pHLMV->GetState() );
@@ -439,4 +441,5 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 	{
 		wxMessageBox( wxString::Format( "Failed to save image \"%s\"!", szFilename.c_str() ) );
 	}
+}
 }

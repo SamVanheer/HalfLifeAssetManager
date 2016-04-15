@@ -24,7 +24,6 @@ class StudioModel;
 namespace hlmv
 {
 class CHLMV;
-}
 
 class CMainPanel final : public wxPanel, public I3DViewListener
 {
@@ -66,11 +65,11 @@ public:
 	static const size_t OPACITY_DEFAULT = OPACITY_MAX;
 
 public:
-	CMainPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
+	CMainPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CMainPanel();
 
-	const hlmv::CHLMV* GetHLMV() const { return m_pHLMV; }
-	hlmv::CHLMV* GetHLMV() { return m_pHLMV; }
+	const CHLMV* GetHLMV() const { return m_pHLMV; }
+	CHLMV* GetHLMV() { return m_pHLMV; }
 
 	void OnTimer( CTimer& timer );
 
@@ -114,7 +113,7 @@ private:
 	}
 
 private:
-	hlmv::CHLMV* const m_pHLMV;
+	CHLMV* const m_pHLMV;
 
 	C3DView* m_p3DView;
 
@@ -131,5 +130,6 @@ private:
 	CMainPanel( const CMainPanel& ) = delete;
 	CMainPanel& operator=( const CMainPanel& ) = delete;
 };
+}
 
 #endif //CMAINPANEL_H

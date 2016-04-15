@@ -13,6 +13,8 @@
 
 #include "CMainWindow.h"
 
+namespace hlmv
+{
 wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_MAINWND_LOADMODEL, CMainWindow::LoadModel )
 	EVT_MENU( wxID_MAINWND_LOADBACKGROUND, CMainWindow::LoadBackgroundTexture )
@@ -29,7 +31,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
 wxEND_EVENT_TABLE()
 
-CMainWindow::CMainWindow( hlmv::CHLMV* const pHLMV )
+CMainWindow::CMainWindow( CHLMV* const pHLMV )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
 {
@@ -56,7 +58,7 @@ CMainWindow::CMainWindow( hlmv::CHLMV* const pHLMV )
 
 	wxMenu* pRecentFiles = new wxMenu;
 
-	for( size_t uiIndex = 0; uiIndex < hlmv::CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
+	for( size_t uiIndex = 0; uiIndex < CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
 	{
 		wxMenuItem* pItem = m_RecentFiles[ uiIndex ] = pRecentFiles->Append( wxID_MAINWND_RECENTFILE1 + static_cast<int>( uiIndex ), "(empty)" );
 	}
@@ -233,7 +235,7 @@ void CMainWindow::RefreshRecentFiles()
 	auto it = recentFiles.begin();
 	auto end = recentFiles.end();
 
-	for( size_t uiIndex = 0; uiIndex < hlmv::CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
+	for( size_t uiIndex = 0; uiIndex < CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
 	{
 		wxMenuItem* const pItem = m_RecentFiles[ uiIndex ];
 
@@ -331,4 +333,5 @@ void CMainWindow::OnMessagesWindowClosed( wxCloseEvent& event )
 	}
 
 	event.Skip();
+}
 }

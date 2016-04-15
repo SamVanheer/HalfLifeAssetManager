@@ -7,6 +7,8 @@
 
 #include "CBodyPartsPanel.h"
 
+namespace hlmv
+{
 wxBEGIN_EVENT_TABLE( CBodyPartsPanel, CBaseControlPanel )
 	EVT_COMBOBOX( wxID_BODY_BODYPARTS, CBodyPartsPanel::BodypartChanged )
 	EVT_COMBOBOX( wxID_BODY_SUBMODELS, CBodyPartsPanel::SubmodelChanged )
@@ -15,7 +17,7 @@ wxBEGIN_EVENT_TABLE( CBodyPartsPanel, CBaseControlPanel )
 	EVT_SLIDER( wxID_BODY_CONTROLLER_SLIDER, CBodyPartsPanel::ControllerSliderChanged )
 wxEND_EVENT_TABLE()
 
-CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: CBaseControlPanel( pParent, "Body Parts", pHLMV )
 {
 	wxWindow* const pElemParent = GetBox();
@@ -309,4 +311,5 @@ void CBodyPartsPanel::SetControllerValue( int iIndex, int iValue )
 		else
 			m_pHLMV->GetState()->GetStudioModel()->SetController( pbonecontrollers[ iIndex ].index, iValue );
 	}
+}
 }

@@ -8,12 +8,14 @@
 
 #include "CSequencesPanel.h"
 
+namespace hlmv
+{
 wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseSequencesPanel )
 	EVT_COMBOBOX( wxID_SEQUENCE_EVENT, CSequencesPanel::EventChanged )
 	EVT_CHECKBOX( wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged )
 wxEND_EVENT_TABLE()
 
-CSequencesPanel::CSequencesPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: CBaseSequencesPanel( pParent, "Sequences", pHLMV )
 {
 	wxWindow* const pElemParent = GetBox();
@@ -146,4 +148,5 @@ void CSequencesPanel::UpdateEventInfo( int iIndex )
 	m_pEventInfo->Fit();
 
 	m_pEventInfo->Show( true );
+}
 }

@@ -3,10 +3,12 @@
 
 #include "CBaseControlPanel.h"
 
+namespace hlmv
+{
 class CFullscreenPanel final : public CBaseControlPanel
 {
 public:
-	CFullscreenPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
+	CFullscreenPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CFullscreenPanel();
 
 protected:
@@ -22,5 +24,6 @@ private:
 	CFullscreenPanel( const CFullscreenPanel& ) = delete;
 	CFullscreenPanel& operator=( const CFullscreenPanel& ) = delete;
 };
+}
 
 #endif //CONTROLPANELS_CFULLSCREENPANEL_H

@@ -6,6 +6,8 @@
 class wxGridBagSizer;
 class wxToggleButton;
 
+namespace hlmv
+{
 class CBaseSequencesPanel : public CBaseControlPanel
 {
 public:
@@ -41,7 +43,7 @@ public:
 protected:
 	wxDECLARE_EVENT_TABLE();
 
-	CBaseSequencesPanel( wxWindow* pParent, const wxString& szName, hlmv::CHLMV* const pHLMV );
+	CBaseSequencesPanel( wxWindow* pParent, const wxString& szName, CHLMV* const pHLMV );
 
 	void CreateUI( wxGridBagSizer* pSizer );
 
@@ -69,5 +71,6 @@ private:
 	CBaseSequencesPanel( const CBaseSequencesPanel& ) = delete;
 	CBaseSequencesPanel& operator=( const CBaseSequencesPanel& ) = delete;
 };
+}
 
 #endif //CONTROLPANELS_CBASESEQUENCESPANEL_H

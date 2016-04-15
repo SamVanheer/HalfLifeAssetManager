@@ -8,11 +8,13 @@
 
 #include "CFullscreenPanel.h"
 
+namespace hlmv
+{
 wxBEGIN_EVENT_TABLE( CFullscreenPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_FULLSCREEN_GO, CFullscreenPanel::GoFullscreen )
 wxEND_EVENT_TABLE()
 
-CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: CBaseControlPanel( pParent, "Fullscreen", pHLMV )
 {
 	wxWindow* const pElemParent = GetBox();
@@ -39,5 +41,6 @@ void CFullscreenPanel::GoFullscreen( wxCommandEvent& event )
 		return;
 	}
 
-	hlmv::CFullscreenWindow* pWindow = new hlmv::CFullscreenWindow( m_pHLMV );
+	CFullscreenWindow* pWindow = new CFullscreenWindow( m_pHLMV );
+}
 }

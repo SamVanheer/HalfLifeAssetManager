@@ -9,18 +9,20 @@
 #include "hlmv/CHLMVState.h"
 
 class CTimer;
-class CMainPanel;
 
 namespace hlmv
 {
 class CHLMV;
-}
+class CMainPanel;
 
 class CMainWindow final : public wxFrame, public ITimerListener
 {
 public:
-	CMainWindow( hlmv::CHLMV* const pHLMV );
+	CMainWindow( CHLMV* const pHLMV );
 	~CMainWindow();
+
+	const CHLMV* GetHLMV() const { return m_pHLMV; }
+	CHLMV* GetHLMV() { return m_pHLMV; }
 
 	void OnTimer( CTimer& timer ) override final;
 
@@ -61,14 +63,15 @@ private:
 	void OnMessagesWindowClosed( wxCloseEvent& event );
 
 private:
-	hlmv::CHLMV* m_pHLMV;
+	CHLMV* m_pHLMV;
 	CMainPanel* m_pMainPanel;
 
-	wxMenuItem* m_RecentFiles[ hlmv::CHLMVSettings::MAX_RECENT_FILES ];
+	wxMenuItem* m_RecentFiles[ CHLMVSettings::MAX_RECENT_FILES ];
 
 private:
 	CMainWindow( const CMainWindow& ) = delete;
 	CMainWindow& operator=( const CMainWindow& ) = delete;
 };
+}
 
 #endif //CMAINWINDOW_H

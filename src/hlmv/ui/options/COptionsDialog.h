@@ -17,12 +17,11 @@ namespace hlmv
 class CHLMVSettings;
 
 class CGeneralOptions;
-}
 
 class COptionsDialog final : public wxDialog
 {
 public:
-	COptionsDialog( wxWindow* pParent, hlmv::CHLMVSettings* const pSettings );
+	COptionsDialog( wxWindow* pParent, CHLMVSettings* const pSettings );
 	~COptionsDialog();
 
 protected:
@@ -32,17 +31,18 @@ private:
 	void OnButton( wxCommandEvent& event );
 
 private:
-	hlmv::CHLMVSettings* const m_pSettings;
-	std::unique_ptr<hlmv::CHLMVSettings> m_EditableSettings;
+	CHLMVSettings* const m_pSettings;
+	std::unique_ptr<CHLMVSettings> m_EditableSettings;
 
 	wxNotebook* m_pPages;
 
-	hlmv::CGeneralOptions* m_pGeneral;
+	CGeneralOptions* m_pGeneral;
 	ui::CGameConfigurations* m_pGameConfigs;
 
 private:
 	COptionsDialog( const COptionsDialog& ) = delete;
 	COptionsDialog& operator=( const COptionsDialog& ) = delete;
 };
+}
 
 #endif //COPTIONSDIALOG_H

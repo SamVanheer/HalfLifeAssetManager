@@ -3,6 +3,8 @@
 
 #include "CBaseSequencesPanel.h"
 
+namespace hlmv
+{
 class CWeaponOriginPanel final : public CBaseSequencesPanel
 {
 public:
@@ -19,7 +21,7 @@ public:
 	static const int GUIDELINES_EDGE_WIDTH			= 4;
 
 public:
-	CWeaponOriginPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
+	CWeaponOriginPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CWeaponOriginPanel();
 
 	void Draw3D( const wxSize& size ) override;
@@ -49,5 +51,6 @@ private:
 	CWeaponOriginPanel( const CWeaponOriginPanel& ) = delete;
 	CWeaponOriginPanel& operator=( const CWeaponOriginPanel& ) = delete;
 };
+}
 
 #endif //CONTROLPANELS_CWEAPONORIGINPANEL_H

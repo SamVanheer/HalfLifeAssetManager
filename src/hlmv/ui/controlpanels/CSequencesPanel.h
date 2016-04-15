@@ -3,10 +3,12 @@
 
 #include "CBaseSequencesPanel.h"
 
+namespace hlmv
+{
 class CSequencesPanel final : public CBaseSequencesPanel
 {
 public:
-	CSequencesPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
+	CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CSequencesPanel();
 
 	void ModelChanged( const StudioModel& model ) override;
@@ -41,5 +43,6 @@ private:
 	CSequencesPanel( const CSequencesPanel& ) = delete;
 	CSequencesPanel& operator=( const CSequencesPanel& ) = delete;
 };
+}
 
 #endif //CONTROLPANELS_CSEQUENCESPANEL_H

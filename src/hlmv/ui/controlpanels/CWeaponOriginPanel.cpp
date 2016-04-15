@@ -10,11 +10,13 @@
 
 #include "CWeaponOriginPanel.h"
 
+namespace hlmv
+{
 wxBEGIN_EVENT_TABLE( CWeaponOriginPanel, CBaseSequencesPanel )
 	EVT_BUTTON( wxID_WPN_TESTORIGINS, CWeaponOriginPanel::TestOrigins )
 wxEND_EVENT_TABLE()
 
-CWeaponOriginPanel::CWeaponOriginPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+CWeaponOriginPanel::CWeaponOriginPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: CBaseSequencesPanel( pParent, "Weapon Origin", pHLMV )
 {
 	wxWindow* const pElemParent = GetBox();
@@ -219,9 +221,8 @@ static void GetDoubleFromTextCtrl( wxTextCtrl* const pCtrl, vec_t& flInOutValue 
 
 void CWeaponOriginPanel::TestOrigins( wxCommandEvent& event )
 {
-	double flValue = 0;
-
 	GetDoubleFromTextCtrl( m_pXOrigin, m_pHLMV->GetState()->weaponOrigin[ 0 ] );
 	GetDoubleFromTextCtrl( m_pYOrigin, m_pHLMV->GetState()->weaponOrigin[ 1 ] );
 	GetDoubleFromTextCtrl( m_pZOrigin, m_pHLMV->GetState()->weaponOrigin[ 2 ] );
+}
 }

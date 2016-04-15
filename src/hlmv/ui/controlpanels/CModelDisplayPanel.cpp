@@ -17,6 +17,8 @@ static const wxString RENDERMODES[] =
 
 static const size_t DEFAULT_RENDERMODE = ARRAYSIZE( RENDERMODES ) - 1;
 
+namespace hlmv
+{
 wxBEGIN_EVENT_TABLE( CModelDisplayPanel, CBaseControlPanel )
 	EVT_COMBOBOX( wxID_MDLDISP_RENDERMODE, CModelDisplayPanel::RenderModeChanged )
 	EVT_SLIDER( wxID_MDLDISP_OPACITY, CModelDisplayPanel::OpacityChanged )
@@ -25,7 +27,7 @@ wxBEGIN_EVENT_TABLE( CModelDisplayPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_MDLDISP_SCALEBONES, CModelDisplayPanel::ScaleBones )
 wxEND_EVENT_TABLE()
 
-CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: CBaseControlPanel( pParent, "Model Display", pHLMV )
 {
 	//Helps catch errors if we miss one.
@@ -252,4 +254,5 @@ void CModelDisplayPanel::SetOpacity( int iValue, const bool bUpdateSlider )
 		m_pOpacitySlider->SetValue( iValue );
 
 	m_pHLMV->GetState()->renderSettings.transparency = iValue / static_cast<float>( OPACITY_MAX );
+}
 }

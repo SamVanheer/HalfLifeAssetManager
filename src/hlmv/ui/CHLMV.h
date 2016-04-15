@@ -1,12 +1,12 @@
 #ifndef HLMV_CHLMV_H
 #define HLMV_CHLMV_H
 
-class CMainWindow;
-
 namespace hlmv
 {
 class CHLMVSettings;
 class CHLMVState;
+
+class CMainWindow;
 
 /**
 *	Facade class to access the entire HLMV program.

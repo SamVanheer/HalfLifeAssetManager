@@ -8,6 +8,8 @@
 
 #include "CBaseSequencesPanel.h"
 
+namespace hlmv
+{
 wxBEGIN_EVENT_TABLE( CBaseSequencesPanel, wxPanel )
 	EVT_COMBOBOX( wxID_BASESEQUENCE_SEQCHANGED, CBaseSequencesPanel::SequenceChanged )
 	EVT_TOGGLEBUTTON( wxID_BASESEQUENCE_TOGGLEPLAY, CBaseSequencesPanel::TogglePlay )
@@ -17,7 +19,7 @@ wxBEGIN_EVENT_TABLE( CBaseSequencesPanel, wxPanel )
 	EVT_SLIDER( WXID_BASESEQUENCE_ANIMSPEED, CBaseSequencesPanel::AnimSpeedChanged )
 wxEND_EVENT_TABLE()
 
-CBaseSequencesPanel::CBaseSequencesPanel( wxWindow* pParent, const wxString& szName, hlmv::CHLMV* const pHLMV )
+CBaseSequencesPanel::CBaseSequencesPanel( wxWindow* pParent, const wxString& szName, CHLMV* const pHLMV )
 	: CBaseControlPanel( pParent, szName, pHLMV )
 	, m_pSequence( nullptr )
 	, m_pTogglePlayButton( nullptr )
@@ -244,4 +246,5 @@ void CBaseSequencesPanel::SetFrameControlsEnabled( const bool bState )
 	}
 
 	m_pTogglePlayButton->SetLabelText( bState ? "Play" : "Stop" );
+}
 }

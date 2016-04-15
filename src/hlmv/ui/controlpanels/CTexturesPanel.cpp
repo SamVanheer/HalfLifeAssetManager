@@ -13,6 +13,8 @@
 
 #include "CTexturesPanel.h"
 
+namespace hlmv
+{
 wxBEGIN_EVENT_TABLE( CTexturesPanel, CBaseControlPanel )
 	EVT_COMBOBOX( wxID_TEX_CHANGED, CTexturesPanel::TextureChanged )
 	EVT_SLIDER( wxID_TEX_SCALE, CTexturesPanel::ScaleChanged )
@@ -23,7 +25,7 @@ wxBEGIN_EVENT_TABLE( CTexturesPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_TEX_EXPORTUVMAP, CTexturesPanel::ExportUVMap )
 wxEND_EVENT_TABLE()
 
-CTexturesPanel::CTexturesPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV )
+CTexturesPanel::CTexturesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: CBaseControlPanel( pParent, "Textures", pHLMV )
 {
 	//Helps catch errors if we miss one.
@@ -458,4 +460,5 @@ void CTexturesPanel::SetScale( int iScale, const bool bSetSlider )
 		m_pScaleTextureView->SetValue( iScale );
 
 	m_pScaleTextureViewSize->SetLabelText( wxString::Format( "Scale Texture View (%dx)", iScale ) );
+}
 }

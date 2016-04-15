@@ -5,11 +5,10 @@
 
 #include "ui/utility/CTimer.h"
 
-class C3DView;
-
 namespace hlmv
 {
 class CHLMV;
+class C3DView;
 
 class CFullscreenWindow final : public wxFrame, public ITimerListener
 {

@@ -1,6 +1,8 @@
 #include "CBaseControlPanel.h"
 
-CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName, hlmv::CHLMV* const pHLMV )
+namespace hlmv
+{
+CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName, CHLMV* const pHLMV )
 	: wxPanel( pParent )
 	, m_szName( szName )
 	, m_pHLMV( pHLMV )
@@ -22,4 +24,5 @@ CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName,
 
 CBaseControlPanel::~CBaseControlPanel()
 {
+}
 }

@@ -8,18 +8,20 @@
 
 #include "COptionsDialog.h"
 
+namespace hlmv
+{
 wxBEGIN_EVENT_TABLE( COptionsDialog, wxDialog )
 	EVT_BUTTON( wxID_ANY, COptionsDialog::OnButton )
 wxEND_EVENT_TABLE()
 
-COptionsDialog::COptionsDialog( wxWindow* pParent, hlmv::CHLMVSettings* const pSettings )
+COptionsDialog::COptionsDialog( wxWindow* pParent, CHLMVSettings* const pSettings )
 	: wxDialog( pParent, wxID_ANY, "Options", wxDefaultPosition, wxSize( 500, 700 ) )
 	, m_pSettings( pSettings )
-	, m_EditableSettings( std::make_unique<hlmv::CHLMVSettings>( *pSettings ) )
+	, m_EditableSettings( std::make_unique<CHLMVSettings>( *pSettings ) )
 {
 	m_pPages = new wxNotebook( this, wxID_ANY );
 
-	m_pGeneral = new hlmv::CGeneralOptions( m_pPages, m_EditableSettings.get() );
+	m_pGeneral = new CGeneralOptions( m_pPages, m_EditableSettings.get() );
 	m_pGameConfigs = new ui::CGameConfigurations( m_pPages, m_EditableSettings->GetConfigManager() );
 
 	m_pPages->AddPage( m_pGeneral, "General" );
@@ -69,4 +71,5 @@ void COptionsDialog::OnButton( wxCommandEvent& event )
 	}
 
 	event.Skip();
+}
 }

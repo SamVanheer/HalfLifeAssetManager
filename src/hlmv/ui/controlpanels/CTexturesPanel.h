@@ -26,6 +26,8 @@ private:
 	CMeshClientData& operator=( const CMeshClientData& ) = delete;
 };
 
+namespace hlmv
+{
 class CTexturesPanel final : public CBaseControlPanel
 {
 public:
@@ -59,7 +61,7 @@ public:
 	};
 
 public:
-	CTexturesPanel( wxWindow* pParent, hlmv::CHLMV* const pHLMV );
+	CTexturesPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CTexturesPanel();
 
 	void PanelActivated() override;
@@ -108,5 +110,6 @@ private:
 	CTexturesPanel( const CTexturesPanel& ) = delete;
 	CTexturesPanel& operator=( const CTexturesPanel& ) = delete;
 };
+}
 
 #endif //CONTROLPANELS_CTEXTURESPANEL_H
