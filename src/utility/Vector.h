@@ -308,6 +308,24 @@ public:
 		return Vector( *this ) -= other;
 	}
 
+	/**
+	*	Equality operator.
+	*	@see Equals
+	*/
+	bool operator==( const Vector& other ) const
+	{
+		return Equals( other );
+	}
+
+	/**
+	*	Inequality operator.
+	*	@see Equals
+	*/
+	bool operator!=( const Vector& other ) const
+	{
+		return !Equals( other );
+	}
+
 	explicit operator const vec_t*() const { return data; }
 	explicit operator vec_t*() { return data; }
 
@@ -351,7 +369,7 @@ inline Vector operator/( const vec_t flValue, const Vector& vec )
 inline Vector Vector::MA( const vec_t flValue, const Vector& vec ) const
 {
 	return ( *this + ( flValue * vec ) );
-};
+}
 
 /**
 *	2D vector.
@@ -638,6 +656,24 @@ public:
 		return Vector2D( *this ) -= other;
 	}
 
+	/**
+	*	Equality operator.
+	*	@see Equals
+	*/
+	bool operator==( const Vector& other ) const
+	{
+		return Equals( other );
+	}
+
+	/**
+	*	Inequality operator.
+	*	@see Equals
+	*/
+	bool operator!=( const Vector& other ) const
+	{
+		return !Equals( other );
+	}
+
 	explicit operator const vec_t*() const { return data; }
 	explicit operator vec_t*() { return data; }
 
@@ -673,6 +709,11 @@ inline Vector2D operator/( const vec_t flValue, const Vector2D& vec )
 	return vec / flValue;
 }
 
+inline Vector2D Vector2D::MA( const vec_t flValue, const Vector2D& vec ) const
+{
+	return ( *this + ( flValue * vec ) );
+}
+
 inline Vector::Vector( const Vector2D& other )
 {
 	Set( other.x, other.y, 0 );
@@ -685,11 +726,19 @@ inline Vector& Vector::operator=( const Vector2D& other )
 	return *this;
 }
 
-inline Vector2D Vector2D::MA( const vec_t flValue, const Vector2D& vec ) const
-{
-	return ( *this + ( flValue * vec ) );
-}
-
+/**
+*	World origin.
+*/
 extern const Vector vec3_origin;
+
+/**
+*	Vector that represents an invalid min boundary.
+*/
+extern const Vector WORLD_INVALID_MIN;
+
+/**
+*	Vector that represents an invalid max boundary.
+*/
+extern const Vector WORLD_INVALID_MAX;
 
 #endif //UTILITY_VECTOR_H

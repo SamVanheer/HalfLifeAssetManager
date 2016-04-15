@@ -132,12 +132,14 @@
     <ClInclude Include="..\src\ui\utility\CTimer.h" />
     <ClInclude Include="..\src\ui\utility\wxUtil.h" />
     <ClInclude Include="..\src\ui\wxInclude.h" />
+    <ClInclude Include="..\src\utility\BoundingBox.h" />
     <ClInclude Include="..\src\utility\CEscapeSequences.h" />
     <ClInclude Include="..\src\utility\CMemory.h" />
     <ClInclude Include="..\src\utility\Color.h" />
     <ClInclude Include="..\src\utility\CString.h" />
     <ClInclude Include="..\src\utility\IOUtils.h" />
     <ClInclude Include="..\src\utility\mathlib.h" />
+    <ClInclude Include="..\src\utility\Matrix.h" />
     <ClInclude Include="..\src\utility\studio.h" />
     <ClInclude Include="..\src\utility\Vector.h" />
   </ItemGroup>

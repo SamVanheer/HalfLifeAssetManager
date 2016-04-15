@@ -461,5 +461,11 @@
     <ClInclude Include="..\src\common\Const.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\utility\Matrix.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utility\BoundingBox.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
