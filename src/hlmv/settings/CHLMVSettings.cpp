@@ -78,8 +78,10 @@ bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 		{
 			const auto& children = block->GetChildren();
 
-			for( const auto& child : children )
+			for( auto it = children.rbegin(), end = children.rend(); it != end; ++it )
 			{
+				const auto& child = *it;
+
 				if( child->GetType() != KVNode_Keyvalue )
 					continue;
 

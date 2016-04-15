@@ -42,6 +42,12 @@ public:
 
 	void UnloadGroundTexture();
 
+	void CenterView();
+
+	void SaveView();
+
+	void RestoreView();
+
 private:
 	wxDECLARE_EVENT_TABLE();
 
@@ -54,6 +60,10 @@ private:
 	void SaveModel( wxCommandEvent& event );
 	void OpenRecentFile( wxCommandEvent& event );
 	void OnExit( wxCommandEvent& event );
+
+	void CenterView( wxCommandEvent& event );
+	void SaveView( wxCommandEvent& event );
+	void RestoreView( wxCommandEvent& event );
 
 	void ShowMessagesWindow( wxCommandEvent& event );
 	void OpenOptionsDialog( wxCommandEvent& event );

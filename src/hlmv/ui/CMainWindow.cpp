@@ -26,6 +26,9 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_MAINWND_RECENTFILE3, CMainWindow::OpenRecentFile )
 	EVT_MENU( wxID_MAINWND_RECENTFILE4, CMainWindow::OpenRecentFile )
 	EVT_MENU( wxID_EXIT, CMainWindow::OnExit )
+	EVT_MENU( wxID_MAINWND_CENTERVIEW, CMainWindow::CenterView )
+	EVT_MENU( wxID_MAINWND_SAVEVIEW, CMainWindow::SaveView )
+	EVT_MENU( wxID_MAINWND_RESTOREVIEW, CMainWindow::RestoreView )
 	EVT_MENU( wxID_MAINWND_TOGGLEMESSAGES, CMainWindow::ShowMessagesWindow )
 	EVT_MENU( wxID_MAINWND_OPTIONS, CMainWindow::OpenOptionsDialog )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
@@ -71,6 +74,12 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 
 	menuFile->Append( wxID_EXIT );
 
+	wxMenu* pMenuView = new wxMenu;
+
+	pMenuView->Append( wxID_MAINWND_CENTERVIEW, "Center View" );
+	pMenuView->Append( wxID_MAINWND_SAVEVIEW, "Save View" );
+	pMenuView->Append( wxID_MAINWND_RESTOREVIEW, "Restore View" );
+
 	wxMenu* pMenuTools = new wxMenu;
 
 	pMenuTools->Append( wxID_MAINWND_TOGGLEMESSAGES, "Show Messages Window", "Shows or hides the messages window", true );
@@ -86,6 +95,7 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 	wxMenuBar* menuBar = new wxMenuBar;
 
 	menuBar->Append( menuFile, "&File" );
+	menuBar->Append( pMenuView, "&View" );
 	menuBar->Append( pMenuTools, "&Tools" );
 	menuBar->Append( menuHelp, "&Help" );
 
@@ -228,6 +238,21 @@ void CMainWindow::UnloadGroundTexture()
 	m_pMainPanel->UnloadGroundTexture();
 }
 
+void CMainWindow::CenterView()
+{
+	m_pHLMV->GetState()->CenterView();
+}
+
+void CMainWindow::SaveView()
+{
+	m_pHLMV->GetState()->SaveView();
+}
+
+void CMainWindow::RestoreView()
+{
+	m_pHLMV->GetState()->RestoreView();
+}
+
 void CMainWindow::RefreshRecentFiles()
 {
 	const auto& recentFiles = m_pHLMV->GetSettings()->GetRecentFiles()->GetFiles();
@@ -297,6 +322,21 @@ void CMainWindow::OpenRecentFile( wxCommandEvent& event )
 void CMainWindow::OnExit( wxCommandEvent& event )
 {
 	Close( true );
+}
+
+void CMainWindow::CenterView( wxCommandEvent& event )
+{
+	CenterView();
+}
+
+void CMainWindow::SaveView( wxCommandEvent& event )
+{
+	SaveView();
+}
+
+void CMainWindow::RestoreView( wxCommandEvent& event )
+{
+	RestoreView();
 }
 
 void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )

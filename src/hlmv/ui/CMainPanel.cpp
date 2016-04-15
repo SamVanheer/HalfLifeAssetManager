@@ -141,7 +141,7 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 
 	InitializeUI();
 
-	m_pHLMV->GetState()->CenterView( *m_pHLMV->GetState()->GetStudioModel() );
+	m_pHLMV->GetState()->CenterView();
 
 	return true;
 }

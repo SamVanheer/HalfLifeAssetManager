@@ -2,6 +2,8 @@
 
 namespace hlmv
 {
+const Vector CHLMVState::DEFAULT_ROTATION = Vector( -90.0f, 0, 0 );
+
 CHLMVState::CHLMVState()
 	: m_pStudioModel( nullptr )
 {
@@ -16,9 +18,8 @@ CHLMVState::~CHLMVState()
 void CHLMVState::ResetModelData()
 {
 	trans[ 0 ] = trans[ 1 ] = trans[ 2 ] = 0;
-	rot[ 1 ] = rot[ 2 ] = 0;
 
-	rot[ 0 ] = -90.0f;
+	rot = DEFAULT_ROTATION;
 
 	weaponOrigin[ 0 ] = weaponOrigin[ 1 ] = weaponOrigin[ 2 ] = 0;
 
@@ -70,10 +71,13 @@ void CHLMVState::ResetToDefaults()
 	renderSettings.ResetToDefaults();
 }
 
-void CHLMVState::CenterView( const StudioModel& model )
+void CHLMVState::CenterView()
 {
+	if( !m_pStudioModel )
+		return;
+
 	float min[ 3 ], max[ 3 ];
-	model.ExtractBbox( min, max );
+	m_pStudioModel->ExtractBbox( min, max );
 
 	float dx = max[ 0 ] - min[ 0 ];
 	float dy = max[ 1 ] - min[ 1 ];
@@ -92,6 +96,18 @@ void CHLMVState::CenterView( const StudioModel& model )
 	rot[ 0 ] = -90.0f;
 	rot[ 1 ] = -90.0f;
 	rot[ 2 ] = 0.0f;
+}
+
+void CHLMVState::SaveView()
+{
+	savedTrans	= trans;
+	savedRot	= rot;
+}
+
+void CHLMVState::RestoreView()
+{
+	trans	= savedTrans;
+	rot		= savedRot;
 }
 
 void CHLMVState::SetOrigin( const Vector& vecOrigin )

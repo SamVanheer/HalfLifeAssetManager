@@ -24,6 +24,9 @@ namespace hlmv
 class CHLMVState final
 {
 public:
+	static const Vector DEFAULT_ROTATION;
+
+public:
 	CHLMVState();
 	~CHLMVState();
 
@@ -31,7 +34,11 @@ public:
 
 	void ResetToDefaults();
 
-	void CenterView( const StudioModel& model );
+	void CenterView();
+
+	void SaveView();
+
+	void RestoreView();
 
 	void SetOrigin( const Vector& vecOrigin );
 
@@ -45,6 +52,10 @@ public:
 public:
 	Vector trans;
 	Vector rot;
+
+	//Do not reset these; the user inits these!
+	Vector savedTrans;
+	Vector savedRot = DEFAULT_ROTATION;
 
 	bool showBackground;
 
