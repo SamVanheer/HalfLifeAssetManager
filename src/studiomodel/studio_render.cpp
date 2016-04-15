@@ -973,7 +973,7 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 
 	//Set here since it never changes. Much more efficient.
 	if( wireframeOnly )
-		glColor4f( settings.wireframeColor[ 0 ], settings.wireframeColor[ 1 ], settings.wireframeColor[ 2 ], settings.transparency );
+		glColor4f( settings.wireframeColor[ 0 ] / 255.0f, settings.wireframeColor[ 1 ] / 255.0f, settings.wireframeColor[ 2 ] / 255.0f, settings.transparency );
 
 	for (j = 0; j < m_pmodel->nummesh; j++) 
 	{

@@ -24,6 +24,8 @@ public:
 
 	static const Color DEFAULT_LIGHT_COLOR;
 
+	static const Color DEFAULT_WIREFRAME_COLOR;
+
 public:
 	CHLMVSettings();
 	~CHLMVSettings();
@@ -85,6 +87,17 @@ public:
 	*/
 	void SetLightColor( const Color& color ) { m_LightColor = color; }
 
+	/**
+	*	Gets the user defined wireframe color.
+	*/
+	const Color& GetWireframeColor() const { return m_WireframeColor; }
+
+	/**
+	*	Sets the user defined wireframe color.
+	*	@param color Color to set.
+	*/
+	void SetWireframeColor( const Color& color ) { m_WireframeColor = color; }
+
 protected:
 	bool LoadFromFile( const std::shared_ptr<CKvBlockNode>& root ) override final;
 
@@ -103,6 +116,8 @@ private:
 	Color m_CrosshairColor = DEFAULT_CROSSHAIR_COLOR;
 
 	Color m_LightColor = DEFAULT_LIGHT_COLOR;
+
+	Color m_WireframeColor = DEFAULT_WIREFRAME_COLOR;
 };
 }
 

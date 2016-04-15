@@ -100,14 +100,13 @@ public:
 
 	public:
 		Color lightColor		= Color( 255, 255, 255 );
+		Color wireframeColor	= Color( 255, 0, 0 );
 
 		float transparency		= 1.0f;
 		bool showBones			= false;
 		bool showAttachments	= false;
 		bool showEyePosition	= false;
 		bool showHitBoxes		= false;
-
-		vec3_t wireframeColor	= { 1.0f, 0.0f, 0.0f };
 	};
 
 public:

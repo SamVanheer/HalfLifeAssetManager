@@ -18,6 +18,7 @@ wxBEGIN_EVENT_TABLE( CGeneralOptions, wxPanel )
 	EVT_BUTTON( wxID_OPTIONS_GENERAL_DEFAULT_BACKGROUND_COLOR, CGeneralOptions::SetDefaultColor )
 	EVT_BUTTON( wxID_OPTIONS_GENERAL_DEFAULT_CROSSHAIR_COLOR, CGeneralOptions::SetDefaultColor )
 	EVT_BUTTON( wxID_OPTIONS_GENERAL_DEFAULT_LIGHT_COLOR, CGeneralOptions::SetDefaultColor )
+	EVT_BUTTON( wxID_OPTIONS_GENERAL_DEFAULT_WIREFRAME_COLOR, CGeneralOptions::SetDefaultColor )
 wxEND_EVENT_TABLE()
 
 CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSettings )
@@ -33,6 +34,8 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 	m_pCrosshairColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( m_pSettings->GetCrosshairColor() ), wxDefaultPosition, wxDefaultSize );
 
 	m_pLightColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( m_pSettings->GetLightColor() ), wxDefaultPosition, wxDefaultSize );
+
+	m_pWireframeColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( m_pSettings->GetWireframeColor() ), wxDefaultPosition, wxDefaultSize );
 
 	//Layout
 	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );
@@ -61,6 +64,10 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 	pSizer->Add( m_pLightColor, wxGBPosition( iRow, 1 ), wxGBSpan( 1, 1 ) );
 	pSizer->Add( new wxButton( this, wxID_OPTIONS_GENERAL_DEFAULT_LIGHT_COLOR, "Default" ), wxGBPosition( iRow++, 2 ), wxGBSpan( 1, 1 ) );
 
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "Wireframe Color:" ), wxGBPosition( iRow, 0 ), wxGBSpan( 1, 1 ) );
+	pSizer->Add( m_pWireframeColor, wxGBPosition( iRow, 1 ), wxGBSpan( 1, 1 ) );
+	pSizer->Add( new wxButton( this, wxID_OPTIONS_GENERAL_DEFAULT_WIREFRAME_COLOR, "Default" ), wxGBPosition( iRow++, 2 ), wxGBSpan( 1, 1 ) );
+
 	for( size_t uiIndex = 0; uiIndex < static_cast<size_t>( iNumCols ); ++uiIndex )
 	{
 		pSizer->AddGrowableCol( uiIndex );
@@ -81,6 +88,7 @@ void CGeneralOptions::Save()
 	m_pSettings->SetBackgroundColor( wx::wxToColor( m_pBackgroundColor->GetColour() ) );
 	m_pSettings->SetCrosshairColor( wx::wxToColor( m_pCrosshairColor->GetColour() ) );
 	m_pSettings->SetLightColor( wx::wxToColor( m_pLightColor->GetColour() ) );
+	m_pSettings->SetWireframeColor( wx::wxToColor( m_pWireframeColor->GetColour() ) );
 }
 
 void CGeneralOptions::Initialize()
@@ -89,6 +97,7 @@ void CGeneralOptions::Initialize()
 	m_pBackgroundColor->SetColour( wx::ColorTowx( m_pSettings->GetBackgroundColor() ) );
 	m_pCrosshairColor->SetColour( wx::ColorTowx( m_pSettings->GetCrosshairColor() ) );
 	m_pLightColor->SetColour( wx::ColorTowx( m_pSettings->GetLightColor() ) );
+	m_pWireframeColor->SetColour( wx::ColorTowx( m_pSettings->GetWireframeColor() ) );
 }
 
 void CGeneralOptions::SetDefaultColor( wxCommandEvent& event )
@@ -123,6 +132,13 @@ void CGeneralOptions::SetDefaultColor( wxCommandEvent& event )
 		{
 			color = CHLMVSettings::DEFAULT_LIGHT_COLOR;
 			pCtrl = m_pLightColor;
+			break;
+		}
+
+	case wxID_OPTIONS_GENERAL_DEFAULT_WIREFRAME_COLOR:
+		{
+			color = CHLMVSettings::DEFAULT_WIREFRAME_COLOR;
+			pCtrl = m_pWireframeColor;
 			break;
 		}
 

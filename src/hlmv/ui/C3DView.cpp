@@ -95,7 +95,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 	{
 		m_flOldRotX = m_pHLMV->GetState()->rot[ 0 ];
 		m_flOldRotY = m_pHLMV->GetState()->rot[ 1 ];
-		VectorCopy( m_pHLMV->GetState()->trans, m_vecOldTrans );
+		m_vecOldTrans = m_pHLMV->GetState()->trans;
 		m_flOldX = event.GetX();
 		m_flOldY = event.GetY();
 		m_pHLMV->GetState()->pause = false;
@@ -236,8 +236,9 @@ void C3DView::DrawModel()
 	if( !m_pHLMV->GetState()->GetStudioModel() )
 		return;
 
-	//Update lighting color.
+	//Update colors.
 	m_pHLMV->GetState()->renderSettings.lightColor = m_pHLMV->GetSettings()->GetLightColor();
+	m_pHLMV->GetState()->renderSettings.wireframeColor = m_pHLMV->GetSettings()->GetWireframeColor();
 
 	graphics::helpers::SetProjection( size.GetX(), size.GetY() );
 

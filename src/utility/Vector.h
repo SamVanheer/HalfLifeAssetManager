@@ -145,6 +145,9 @@ public:
 	{
 		const vec_t flLength = Length();
 
+		if( flLength == 0 )
+			return 0;
+
 		*this /= flLength;
 
 		return flLength;
@@ -499,6 +502,9 @@ public:
 	vec_t Normalize()
 	{
 		const vec_t flLength = Length();
+
+		if( flLength == 0 )
+			return 0;
 
 		*this /= flLength;
 

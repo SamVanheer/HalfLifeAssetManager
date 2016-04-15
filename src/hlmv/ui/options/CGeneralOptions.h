@@ -32,6 +32,7 @@ private:
 	wxColourPickerCtrl* m_pBackgroundColor;
 	wxColourPickerCtrl* m_pCrosshairColor;
 	wxColourPickerCtrl* m_pLightColor;
+	wxColourPickerCtrl* m_pWireframeColor;
 
 private:
 	CGeneralOptions( const CGeneralOptions& ) = delete;

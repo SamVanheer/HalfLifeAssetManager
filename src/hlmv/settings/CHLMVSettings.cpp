@@ -19,6 +19,8 @@ const Color CHLMVSettings::DEFAULT_CROSSHAIR_COLOR = Color( 255, 0, 0 );
 
 const Color CHLMVSettings::DEFAULT_LIGHT_COLOR = Color( 255, 255, 255 );
 
+const Color CHLMVSettings::DEFAULT_WIREFRAME_COLOR = Color( 255, 0, 0 );
+
 CHLMVSettings::CHLMVSettings()
 {
 }
@@ -53,6 +55,7 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 	m_BackgroundColor	= other.m_BackgroundColor;
 	m_CrosshairColor	= other.m_CrosshairColor;
 	m_LightColor		= other.m_LightColor;
+	m_WireframeColor	= other.m_WireframeColor;
 }
 
 bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
@@ -93,6 +96,7 @@ bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 		LoadColorSetting( settings, "backgroundColor", m_BackgroundColor );
 		LoadColorSetting( settings, "crosshairColor", m_CrosshairColor );
 		LoadColorSetting( settings, "lightColor", m_LightColor );
+		LoadColorSetting( settings, "wireframeColor", m_WireframeColor );
 	}
 
 	return true;
@@ -123,6 +127,7 @@ bool CHLMVSettings::SaveToFile( CKeyvaluesWriter& writer )
 	SaveColorSetting( writer, "backgroundColor", m_BackgroundColor );
 	SaveColorSetting( writer, "crosshairColor", m_CrosshairColor );
 	SaveColorSetting( writer, "lightColor", m_LightColor );
+	SaveColorSetting( writer, "wireframeColor", m_WireframeColor );
 
 	writer.EndBlock();
 
