@@ -7,6 +7,8 @@
 
 #include "CGameConfigurations.h"
 
+namespace ui
+{
 wxBEGIN_EVENT_TABLE( CGameConfigurations, wxPanel )
 	EVT_COMBOBOX( wxID_SHARED_GAMECONFIGS_CONFIG_CHANGED, CGameConfigurations::ConfigChanged )
 	EVT_BUTTON( wxID_SHARED_GAMECONFIGS_EDIT, CGameConfigurations::EditConfigs )
@@ -62,6 +64,8 @@ CGameConfigurations::CGameConfigurations( wxWindow* pParent, std::shared_ptr<set
 	this->SetSizer( pSizer );
 
 	Initialize();
+
+	SetCurrentConfig( m_pActiveConfig->GetSelection() );
 }
 
 CGameConfigurations::~CGameConfigurations()
@@ -84,7 +88,71 @@ void CGameConfigurations::Save()
 	}
 }
 
-void CGameConfigurations::Initialize( unsigned int uiIndex )
+void CGameConfigurations::ConfigAdded( const wxString& szConfigName )
+{
+	wxASSERT( !szConfigName.IsEmpty() );
+
+	m_pActiveConfig->Append( szConfigName );
+	m_pConfigs->Append( szConfigName );
+
+	if( m_pConfigs->GetSelection() == wxNOT_FOUND )
+	{
+		SetCurrentConfig( 0 );
+	}
+
+	if( m_pActiveConfig->GetSelection() == wxNOT_FOUND )
+	{
+		m_pActiveConfig->SetSelection( 0 );
+	}
+}
+
+void CGameConfigurations::ConfigRenamed( const wxString& szOldName, const wxString& szNewName )
+{
+	wxASSERT( !szOldName.IsEmpty() );
+	wxASSERT( !szNewName.IsEmpty() );
+
+	int iIndex = m_pConfigs->FindString( szOldName );
+
+	if( iIndex != wxNOT_FOUND )
+	{
+		m_pConfigs->SetString( iIndex, szNewName );
+	}
+	else
+	{
+		wxMessageBox( wxString::Format( "CGameConfigurations::ConfigRenamed: Attempted to rename a config \"%s\" that doesn't exist!", szOldName ) );
+		return;
+	}
+
+	iIndex = m_pActiveConfig->FindString( szOldName );
+
+	if( iIndex != wxNOT_FOUND )
+	{
+		m_pActiveConfig->SetString( iIndex, szNewName );
+	}
+	else
+	{
+		wxMessageBox( wxString::Format( "CGameConfigurations::ConfigRenamed: Attempted to rename a config \"%s\" that doesn't exist!", szOldName ) );
+		return;
+	}
+}
+
+void CGameConfigurations::ConfigRemoved( const wxString& szConfigName )
+{
+	wxASSERT( !szConfigName.IsEmpty() );
+
+	int iIndex = m_pConfigs->FindString( szConfigName );
+
+	if( iIndex != wxNOT_FOUND )
+		m_pConfigs->Delete( iIndex );
+
+	//This should be the same index as the one returned above. Still, can't hurt to be certain.
+	iIndex = m_pActiveConfig->FindString( szConfigName );
+
+	if( iIndex != wxNOT_FOUND )
+		m_pActiveConfig->Delete( iIndex );
+}
+
+void CGameConfigurations::Initialize()
 {
 	m_pActiveConfig->Clear();
 
@@ -110,14 +178,9 @@ void CGameConfigurations::Initialize( unsigned int uiIndex )
 	m_pConfigs->Clear();
 
 	m_pConfigs->Append( configs );
-
-	if( uiIndex >= m_pConfigs->GetCount() )
-		uiIndex = 0;
-
-	SetCurrentConfig( uiIndex );
 }
 
-void CGameConfigurations::SetCurrentConfig( unsigned int uiIndex )
+void CGameConfigurations::SetCurrentConfig( int iIndex )
 {
 	if( m_pConfigs->IsListEmpty() )
 	{
@@ -129,15 +192,15 @@ void CGameConfigurations::SetCurrentConfig( unsigned int uiIndex )
 		return;
 	}
 
-	if( uiIndex >= m_pConfigs->GetCount() )
-		uiIndex = 0;
+	if( iIndex < 0 || static_cast<size_t>( iIndex ) >= m_pConfigs->GetCount() )
+		iIndex = 0;
 
 	if( m_iCurrentConfig != wxNOT_FOUND )
 	{
 		StoreConfig( m_iCurrentConfig );
 	}
 
-	auto config = m_Manager->GetConfig( m_pConfigs->GetString( uiIndex ).c_str() );
+	auto config = m_Manager->GetConfig( m_pConfigs->GetString( iIndex ).c_str() );
 
 	if( !config )
 	{
@@ -145,9 +208,9 @@ void CGameConfigurations::SetCurrentConfig( unsigned int uiIndex )
 		return;
 	}
 
-	m_pConfigs->Select( uiIndex );
+	m_pConfigs->Select( iIndex );
 
-	m_iCurrentConfig = uiIndex;
+	m_iCurrentConfig = iIndex;
 
 	m_pBasePath->SetValue( config->GetBasePath() );
 	m_pGameDir->SetValue( config->GetGameDir() );
@@ -194,16 +257,18 @@ void CGameConfigurations::ConfigChanged( wxCommandEvent& event )
 
 void CGameConfigurations::EditConfigs( wxCommandEvent& event )
 {
-	CEditGameConfigsDialog dlg( this, m_Manager );
+	CEditGameConfigsDialog dlg( this, m_Manager, this );
 
 	dlg.ShowModal();
 
+	/*
 	int iIndex = m_pConfigs->GetSelection();
 
 	if( iIndex == wxNOT_FOUND )
 		iIndex = 0;
 
 	Initialize( iIndex );
+	*/
 }
 
 void CGameConfigurations::FindBasePath( wxCommandEvent& event )
@@ -214,4 +279,5 @@ void CGameConfigurations::FindBasePath( wxCommandEvent& event )
 		return;
 
 	m_pBasePath->SetValue( dlg.GetPath() );
+}
 }

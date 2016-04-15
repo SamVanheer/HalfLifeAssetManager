@@ -4,8 +4,12 @@
 #include "settings/CGameConfigManager.h"
 #include "settings/CGameConfig.h"
 
+#include "CGameConfigurations.h"
+
 #include "CEditGameConfigsDialog.h"
 
+namespace ui
+{
 wxBEGIN_EVENT_TABLE( CEditGameConfigsDialog, wxDialog )
 	EVT_LIST_COL_BEGIN_DRAG( wxID_SHARED_EDITGAMECONFIGS_CONFIGS, CEditGameConfigsDialog::OnListColumnBeginDrag )
 	EVT_BUTTON( wxID_SHARED_EDITGAMECONFIGS_ADD, CEditGameConfigsDialog::AddConfig )
@@ -13,9 +17,10 @@ wxBEGIN_EVENT_TABLE( CEditGameConfigsDialog, wxDialog )
 	EVT_BUTTON( wxID_SHARED_EDITGAMECONFIGS_REMOVE, CEditGameConfigsDialog::RemoveConfig )
 wxEND_EVENT_TABLE()
 
-CEditGameConfigsDialog::CEditGameConfigsDialog( wxWindow* pParent, std::shared_ptr<settings::CGameConfigManager> manager )
+CEditGameConfigsDialog::CEditGameConfigsDialog( wxWindow* pParent, std::shared_ptr<settings::CGameConfigManager> manager, CGameConfigurations* const pGameConfigsPanel )
 	: wxDialog( pParent, wxID_ANY, "Edit Game Configurations", wxDefaultPosition, wxSize( 400, 250 ) )
 	, m_Manager( manager )
+	, m_pGameConfigsPanel( pGameConfigsPanel )
 {
 	wxASSERT( manager != nullptr );
 
@@ -81,6 +86,8 @@ bool CEditGameConfigsDialog::AddConfig( const wxString& szName )
 
 	m_pConfigs->InsertItem( m_pConfigs->GetItemCount(), szName );
 
+	m_pGameConfigsPanel->ConfigAdded( szName );
+
 	return true;
 }
 
@@ -145,6 +152,7 @@ void CEditGameConfigsDialog::EditConfig( wxCommandEvent& event )
 			if( m_Manager->RenameConfig( szName.c_str(), szValue.c_str() ) )
 			{
 				m_pConfigs->SetItemText( iIndex, szValue );
+				m_pGameConfigsPanel->ConfigRenamed( szName, szValue );
 				return;
 			}
 		}
@@ -170,4 +178,7 @@ void CEditGameConfigsDialog::RemoveConfig( wxCommandEvent& event )
 		return;
 
 	m_pConfigs->DeleteItem( iIndex );
+
+	m_pGameConfigsPanel->ConfigRemoved( szName );
+}
 }

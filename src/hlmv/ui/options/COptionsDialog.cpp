@@ -20,7 +20,7 @@ COptionsDialog::COptionsDialog( wxWindow* pParent, hlmv::CHLMVSettings* const pS
 	m_pPages = new wxNotebook( this, wxID_ANY );
 
 	m_pGeneral = new hlmv::CGeneralOptions( m_pPages, m_EditableSettings.get() );
-	m_pGameConfigs = new CGameConfigurations( m_pPages, m_EditableSettings->GetConfigManager() );
+	m_pGameConfigs = new ui::CGameConfigurations( m_pPages, m_EditableSettings->GetConfigManager() );
 
 	m_pPages->AddPage( m_pGeneral, "General" );
 	m_pPages->AddPage( m_pGameConfigs, "Game Configurations" );

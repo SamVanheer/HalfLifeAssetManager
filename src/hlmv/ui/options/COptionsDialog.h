@@ -6,7 +6,11 @@
 #include "ui/wxInclude.h"
 
 class wxNotebook;
+
+namespace ui
+{
 class CGameConfigurations;
+}
 
 namespace hlmv
 {
@@ -34,7 +38,7 @@ private:
 	wxNotebook* m_pPages;
 
 	hlmv::CGeneralOptions* m_pGeneral;
-	CGameConfigurations* m_pGameConfigs;
+	ui::CGameConfigurations* m_pGameConfigs;
 
 private:
 	COptionsDialog( const COptionsDialog& ) = delete;

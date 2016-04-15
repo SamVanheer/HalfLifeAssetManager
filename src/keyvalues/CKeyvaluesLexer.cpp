@@ -243,7 +243,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 
 	if( result == ReadToken )
 	{
-		if( strncmp( pszBegin, "{", pszEnd - pszBegin ) == 0 )
+		if( strncmp( pszBegin, "{", 1 ) == 0 )
 		{
 			//Can only open a block after a key
 			if( m_TokenType != KVToken_Key && !m_Settings.fAllowUnnamedBlocks )
@@ -261,7 +261,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 				m_TokenType = KVToken_BlockOpen;
 			}
 		}
-		else if( strncmp( pszBegin, "}", pszEnd - pszBegin ) == 0 )
+		else if( strncmp( pszBegin, "}", 1 ) == 0 )
 		{
 			//Can only close a block after a block open, close or value
 			if( m_TokenType != KVToken_Value && m_TokenType != KVToken_BlockOpen && m_TokenType != KVToken_BlockClose )

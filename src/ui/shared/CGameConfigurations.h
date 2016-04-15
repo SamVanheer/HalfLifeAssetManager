@@ -10,6 +10,9 @@ namespace settings
 class CGameConfigManager;
 }
 
+namespace ui
+{
+//TODO: rename to CGameConfigurationsPanel
 class CGameConfigurations final : public wxPanel
 {
 public:
@@ -18,13 +21,20 @@ public:
 
 	void Save();
 
+	//Used by CEditGameConfigsDialog to inform us of changes.
+	void ConfigAdded( const wxString& szConfigName );
+
+	void ConfigRenamed( const wxString& szOldName, const wxString& szNewName );
+
+	void ConfigRemoved( const wxString& szConfigName );
+
 protected:
 	wxDECLARE_EVENT_TABLE();
 
 private:
-	void Initialize( unsigned int uiIndex = 0 );
+	void Initialize();
 
-	void SetCurrentConfig( unsigned int uiIndex );
+	void SetCurrentConfig( int iIndex );
 
 	void StoreConfig( const unsigned int uiIndex );
 
@@ -44,8 +54,6 @@ private:
 	//wxComboBox does not track the previous selection.
 	int m_iCurrentConfig = wxNOT_FOUND;
 
-	wxStaticText* m_pCurrentConfig;
-
 	wxTextCtrl* m_pBasePath;
 	wxButton* m_pFindBasePath;
 	wxTextCtrl* m_pGameDir;
@@ -55,5 +63,6 @@ private:
 	CGameConfigurations( const CGameConfigurations& ) = delete;
 	CGameConfigurations& operator=( const CGameConfigurations& ) = delete;
 };
+}
 
 #endif //UI_SHARED_CGAMECONFIGURATIONS_H
