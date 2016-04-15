@@ -26,7 +26,7 @@ public:
 
 	void Draw3D( const wxSize& size ) override;
 
-	void ModelChanged( const StudioModel& model ) override;
+	void InitializeUI() override;
 
 	void PanelActivated() override;
 

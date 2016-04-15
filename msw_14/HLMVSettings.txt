@@ -20,6 +20,7 @@ hlmvSettings
 	activeConfig svencoop
 	recentFiles
 	{
+		recentFile "C:\Users\Sam\Documents\Programs\C++ Programs\HL_Tools\resources\barney.mdl"
 		recentFile "C:\Program Files (x86)\Steam\steamapps\common\Sven Co-op\svencoop\models\loader.mdl"
 	}
 	groundColor "216 216 175"

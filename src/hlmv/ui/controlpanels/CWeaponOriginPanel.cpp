@@ -187,9 +187,9 @@ void CWeaponOriginPanel::Draw3D( const wxSize& size )
 	}
 }
 
-void CWeaponOriginPanel::ModelChanged( const StudioModel& model )
+void CWeaponOriginPanel::InitializeUI()
 {
-	CBaseSequencesPanel::ModelChanged( model );
+	CBaseSequencesPanel::InitializeUI();
 
 	m_pXOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 0 ] ) );
 	m_pYOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 1 ] ) );

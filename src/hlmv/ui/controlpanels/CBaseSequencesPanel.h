@@ -22,7 +22,7 @@ public:
 public:
 	virtual ~CBaseSequencesPanel();
 
-	virtual void ModelChanged( const StudioModel& model ) override;
+	virtual void InitializeUI() override;
 
 	void SetSequence( int iIndex );
 

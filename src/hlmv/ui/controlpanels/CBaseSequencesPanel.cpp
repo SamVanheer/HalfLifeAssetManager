@@ -39,9 +39,11 @@ CBaseSequencesPanel::~CBaseSequencesPanel()
 {
 }
 
-void CBaseSequencesPanel::ModelChanged( const StudioModel& model )
+void CBaseSequencesPanel::InitializeUI()
 {
 	m_pSequence->Clear();
+
+	bool bSuccess = false;
 
 	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
 	{
@@ -49,6 +51,8 @@ void CBaseSequencesPanel::ModelChanged( const StudioModel& model )
 
 		if( pHdr )
 		{
+			m_pSequence->Enable( true );
+
 			const mstudioseqdesc_t* const pseqdescs = ( mstudioseqdesc_t* ) ( ( byte* ) pHdr + pHdr->seqindex );
 
 			//Insert all labels into the array, then append the array to the combo box. This is much faster than appending each label to the combo box directly.
@@ -60,57 +64,70 @@ void CBaseSequencesPanel::ModelChanged( const StudioModel& model )
 			}
 
 			m_pSequence->Append( labels );
+
+			SetSequence( 0 );
+
+			bSuccess = true;
 		}
 	}
 
-	SetSequence( 0 );
-
 	m_pAnimSpeed->SetValue( ANIMSPEED_SLIDER_DEFAULT );
+
+	if( !bSuccess )
+	{
+		m_pSequence->Enable( false );
+	}
 }
 
 void CBaseSequencesPanel::SetSequence( int iIndex )
 {
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
-
-	if( !pHdr )
+	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
 	{
-		return;
+		const studiohdr_t* const pHdr = pModel->getStudioHeader();
+
+		if( !pHdr )
+		{
+			return;
+		}
+
+		const mstudioseqdesc_t* const pseqdescs = ( mstudioseqdesc_t* ) ( ( byte* ) pHdr + pHdr->seqindex );
+
+		if( iIndex < 0 || iIndex >= pHdr->numseq )
+			iIndex = 0;
+
+		m_pSequence->Select( iIndex );
+
+		m_pHLMV->GetState()->sequence = iIndex;
+
+		pModel->SetSequence( m_pHLMV->GetState()->sequence );
+
+		mstudioseqdesc_t nullSeq;
+
+		memset( &nullSeq, 0, sizeof( nullSeq ) );
+
+		const mstudioseqdesc_t& sequence = pHdr->numseq > 0 ? pseqdescs[ iIndex ] : nullSeq;
+
+		m_pSequenceIndex->SetLabelText( wxString::Format( "Sequence #: %d", iIndex ) );
+		m_pFrameCount->SetLabelText( wxString::Format( "Frames: %d", sequence.numframes ) );
+		m_pFrameRate->SetLabelText( wxString::Format( "FPS: %.2f", sequence.fps ) );
+		m_pBlends->SetLabelText( wxString::Format( "Blends: %d", sequence.numblends ) );
+		m_pEventCount->SetLabelText( wxString::Format( "# of Events: %d", sequence.numevents ) );
 	}
-
-	const mstudioseqdesc_t* const pseqdescs = ( mstudioseqdesc_t* ) ( ( byte* ) pHdr + pHdr->seqindex );
-
-	if( iIndex < 0 || iIndex >= pHdr->numseq )
-		iIndex = 0;
-
-	m_pSequence->Select( iIndex );
-
-	m_pHLMV->GetState()->sequence = iIndex;
-
-	m_pHLMV->GetState()->GetStudioModel()->SetSequence( m_pHLMV->GetState()->sequence );
-
-	mstudioseqdesc_t nullSeq;
-
-	memset( &nullSeq, 0, sizeof( nullSeq ) );
-
-	const mstudioseqdesc_t& sequence = pHdr->numseq > 0 ? pseqdescs[ iIndex ] : nullSeq;
-
-	m_pSequenceIndex->SetLabelText( wxString::Format( "Sequence #: %d", iIndex ) );
-	m_pFrameCount->SetLabelText( wxString::Format( "Frames: %d", sequence.numframes ) );
-	m_pFrameRate->SetLabelText( wxString::Format( "FPS: %.2f", sequence.fps ) );
-	m_pBlends->SetLabelText( wxString::Format( "Blends: %d", sequence.numblends ) );
-	m_pEventCount->SetLabelText( wxString::Format( "# of Events: %d", sequence.numevents ) );
 }
 
 void CBaseSequencesPanel::SetFrame( int iFrame )
 {
 	StudioModel* const pStudioModel = m_pHLMV->GetState()->GetStudioModel();
 
-	if( iFrame < 0 )
-		iFrame = pStudioModel->GetNumFrames();
-	else if( iFrame >= pStudioModel->GetNumFrames() )
-		iFrame = 0;
+	if( pStudioModel )
+	{
+		if( iFrame < 0 )
+			iFrame = pStudioModel->GetNumFrames();
+		else if( iFrame >= pStudioModel->GetNumFrames() )
+			iFrame = 0;
 
-	pStudioModel->SetFrame( iFrame );
+		pStudioModel->SetFrame( iFrame );
+	}
 
 	long iPos = m_pFrame->GetInsertionPoint();
 
@@ -209,7 +226,9 @@ void CBaseSequencesPanel::SetFrameControlsEnabled( const bool bState )
 
 	if( bState )
 	{
-		SetFrame( static_cast<int>( m_pHLMV->GetState()->GetStudioModel()->GetFrame() ) );
+		auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
+		SetFrame( static_cast<int>( pModel ? pModel->GetFrame() : 0 ) );
 	}
 	else
 	{
@@ -228,12 +247,22 @@ void CBaseSequencesPanel::TogglePlay( wxCommandEvent& event )
 
 void CBaseSequencesPanel::PrevFrame( wxCommandEvent& event )
 {
-	SetFrame( m_pHLMV->GetState()->GetStudioModel()->GetFrame() - 1 );
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
+	if( !pModel )
+		return;
+
+	SetFrame( pModel->GetFrame() - 1 );
 }
 
 void CBaseSequencesPanel::NextFrame( wxCommandEvent& event )
 {
-	SetFrame( m_pHLMV->GetState()->GetStudioModel()->GetFrame() + 1 );
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
+	if( !pModel )
+		return;
+
+	SetFrame( pModel->GetFrame() + 1 );
 }
 
 void CBaseSequencesPanel::FrameChanged( wxCommandEvent& event )

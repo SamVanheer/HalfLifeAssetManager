@@ -64,9 +64,9 @@ CSequencesPanel::~CSequencesPanel()
 {
 }
 
-void CSequencesPanel::ModelChanged( const StudioModel& model )
+void CSequencesPanel::InitializeUI()
 {
-	CBaseSequencesPanel::ModelChanged( model );
+	CBaseSequencesPanel::InitializeUI();
 
 	UpdateEvents();
 }
@@ -90,12 +90,17 @@ void CSequencesPanel::PlaySoundChanged( wxCommandEvent& event )
 
 void CSequencesPanel::UpdateEvents()
 {
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
-
-	if( !pHdr )
-		return;
-
 	m_pEvent->Clear();
+
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
+	if( !pModel || !pModel->getStudioHeader() )
+	{
+		UpdateEventInfo( -1 );
+		return;
+	}
+
+	const studiohdr_t* const pHdr = pModel->getStudioHeader();
 
 	const mstudioseqdesc_t& sequence = ( ( mstudioseqdesc_t* ) ( ( byte* ) pHdr + pHdr->seqindex ) )[ m_pSequence->GetSelection() ];
 
@@ -123,6 +128,7 @@ void CSequencesPanel::UpdateEventInfo( int iIndex )
 {
 	if( iIndex == -1 )
 	{
+		m_pEvent->Enable( false );
 		m_pEventInfo->Show( false );
 		return;
 	}
@@ -136,6 +142,8 @@ void CSequencesPanel::UpdateEventInfo( int iIndex )
 
 	if( iIndex < 0 || iIndex >= sequence.numevents )
 		return;
+
+	m_pEvent->Enable( true );
 
 	const mstudioevent_t& event = ( ( mstudioevent_t* ) ( ( byte* ) pHdr + sequence.eventindex ) )[ iIndex ];
 

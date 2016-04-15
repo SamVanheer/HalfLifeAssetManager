@@ -71,6 +71,8 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	pSizer->Add( m_pControlPanels, wxSizerFlags().Expand().Proportion( 1 ) );
 
 	this->SetSizer( pSizer );
+
+	InitializeUI();
 }
 
 CMainPanel::~CMainPanel()
@@ -137,7 +139,7 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 
 	m_pHLMV->GetState()->SetStudioModel( pStudioModel.release() );
 
-	ModelChanged( *m_pHLMV->GetState()->GetStudioModel() );
+	InitializeUI();
 
 	m_pHLMV->GetState()->CenterView( *m_pHLMV->GetState()->GetStudioModel() );
 
@@ -154,9 +156,9 @@ void CMainPanel::FreeModel()
 	}
 }
 
-void CMainPanel::ModelChanged( const StudioModel& model )
+void CMainPanel::InitializeUI()
 {
-	ForEachPanel( &CBaseControlPanel::ModelChanged, model );
+	ForEachPanel( &CBaseControlPanel::InitializeUI );
 }
 
 void CMainPanel::PageChanged( wxBookCtrlEvent& event )

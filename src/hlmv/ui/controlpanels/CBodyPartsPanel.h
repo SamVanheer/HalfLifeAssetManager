@@ -21,7 +21,7 @@ public:
 	CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CBodyPartsPanel();
 
-	void ModelChanged( const StudioModel& model ) override;
+	void InitializeUI() override;
 
 	void ViewUpdated() override;
 
@@ -51,6 +51,8 @@ protected:
 private:
 	void UpdateSubmodels( const int iIndex );
 
+	void SetModelInfo( const studiohdr_t& hdr, const studiohdr_t& texHdr );
+
 private:
 	wxComboBox* m_pBodypart;
 	wxComboBox* m_pSubmodel;
@@ -62,7 +64,11 @@ private:
 
 	wxStaticText* m_pDrawnPolys;
 
+	unsigned int m_uiOldDrawnPolys = -1;
+
 	//Info text
+	wxPanel* m_pModelInfo;
+
 	wxStaticText* m_pBones;
 	wxStaticText* m_pBoneControllers;
 	wxStaticText* m_pHitBoxes;

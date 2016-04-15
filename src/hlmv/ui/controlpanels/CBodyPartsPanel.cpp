@@ -48,17 +48,19 @@ CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pDrawnPolys = new wxStaticText( pElemParent, wxID_ANY, "Drawn Polys: Undefined" );
 
-	m_pBones = new wxStaticText( pElemParent, wxID_ANY, "Bones: Undefined" );
-	m_pBoneControllers = new wxStaticText( pElemParent, wxID_ANY, "Bone Controllers: Undefined" );
-	m_pHitBoxes = new wxStaticText( pElemParent, wxID_ANY, "Hit Boxes: Undefined" );
-	m_pSequences = new wxStaticText( pElemParent, wxID_ANY, "Sequences: Undefined" );
-	m_pSequenceGroups = new wxStaticText( pElemParent, wxID_ANY, "Sequence Groups: Undefined" );
+	m_pModelInfo = new wxPanel( pElemParent );
 
-	m_pTextures = new wxStaticText( pElemParent, wxID_ANY, "Textures: Undefined" );
-	m_pSkinFamilies = new wxStaticText( pElemParent, wxID_ANY, "Skin Families: Undefined" );
-	m_pBodyparts = new wxStaticText( pElemParent, wxID_ANY, "Bodyparts: Undefined" );
-	m_pAttachments = new wxStaticText( pElemParent, wxID_ANY, "Attachments: Undefined" );
-	m_pTransitions = new wxStaticText( pElemParent, wxID_ANY, "Transitions: Undefined" );
+	m_pBones = new wxStaticText( m_pModelInfo, wxID_ANY, "Bones: Undefined" );
+	m_pBoneControllers = new wxStaticText( m_pModelInfo, wxID_ANY, "Bone Controllers: Undefined" );
+	m_pHitBoxes = new wxStaticText( m_pModelInfo, wxID_ANY, "Hit Boxes: Undefined" );
+	m_pSequences = new wxStaticText( m_pModelInfo, wxID_ANY, "Sequences: Undefined" );
+	m_pSequenceGroups = new wxStaticText( m_pModelInfo, wxID_ANY, "Sequence Groups: Undefined" );
+
+	m_pTextures = new wxStaticText( m_pModelInfo, wxID_ANY, "Textures: Undefined" );
+	m_pSkinFamilies = new wxStaticText( m_pModelInfo, wxID_ANY, "Skin Families: Undefined" );
+	m_pBodyparts = new wxStaticText( m_pModelInfo, wxID_ANY, "Bodyparts: Undefined" );
+	m_pAttachments = new wxStaticText( m_pModelInfo, wxID_ANY, "Attachments: Undefined" );
+	m_pTransitions = new wxStaticText( m_pModelInfo, wxID_ANY, "Transitions: Undefined" );
 
 	//Layout
 	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );
@@ -95,7 +97,9 @@ CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	pInfoSizer->Add( m_pAttachments, wxGBPosition( 3, 1 ), wxDefaultSpan, wxEXPAND );
 	pInfoSizer->Add( m_pTransitions, wxGBPosition( 4, 1 ), wxDefaultSpan, wxEXPAND );
 
-	pSizer->Add( pInfoSizer, wxGBPosition( 0, 4 ), wxGBSpan( 2, 2 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
+	m_pModelInfo->SetSizer( pInfoSizer );
+
+	pSizer->Add( m_pModelInfo, wxGBPosition( 0, 4 ), wxGBSpan( 2, 2 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
 	GetBoxSizer()->Add( pSizer );
 }
@@ -104,93 +108,114 @@ CBodyPartsPanel::~CBodyPartsPanel()
 {
 }
 
-void CBodyPartsPanel::ModelChanged( const StudioModel& model )
+void CBodyPartsPanel::InitializeUI()
 {
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
+	m_pBodypart->Clear();
+	m_pSubmodel->Clear();
+	m_pSkin->Clear();
+	m_pController->Clear();
 
-	if( pHdr )
+	bool bSuccess = false;
+
+	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
 	{
-		const mstudiobodyparts_t* const pbodyparts = ( mstudiobodyparts_t* ) ( ( byte* ) pHdr + pHdr->bodypartindex );
+		const studiohdr_t* const pHdr = pModel->getStudioHeader();
 
-		m_pBodypart->Clear();
-
-		wxArrayString names;
-
-		if( pHdr->numbodyparts > 0 )
+		if( pHdr )
 		{
-			for( int i = 0; i < pHdr->numbodyparts; ++i )
-				names.Add( pbodyparts[ i ].name );
+			const mstudiobodyparts_t* const pbodyparts = ( mstudiobodyparts_t* ) ( ( byte* ) pHdr + pHdr->bodypartindex );
 
-			m_pBodypart->Append( names );
+			wxArrayString names;
 
-			m_pBodypart->Select( 0 );
-
-			SetBodypart( 0 );
-
-			names.Clear();
-		}
-
-		m_pSkin->Enable( pHdr->numskinfamilies > 0 );
-		m_pSkin->Clear();
-
-		for( int i = 0; i < pHdr->numskinfamilies; ++i )
-		{
-			names.Add( wxString::Format( "Skin %d", i + 1 ) );
-		}
-
-		m_pSkin->Append( names );
-
-		SetSkin( 0 );
-
-		names.Clear();
-
-		m_pController->Enable( pHdr->numbonecontrollers > 0 );
-		m_pControllerSlider->Enable( pHdr->numbonecontrollers > 0 );
-		m_pController->Clear();
-
-		const mstudiobonecontroller_t* const pbonecontrollers = ( mstudiobonecontroller_t* ) ( ( byte* ) pHdr + pHdr->bonecontrollerindex );
-
-		for( int i = 0; i < pHdr->numbonecontrollers; i++ )
-		{
-			if( pbonecontrollers[ i ].index == CONTROLLER_MOUTH_INDEX )
+			if( pHdr->numbodyparts > 0 )
 			{
-				names.Add( "Mouth" );
+				m_pBodypart->Enable( true );
+
+				for( int i = 0; i < pHdr->numbodyparts; ++i )
+					names.Add( pbodyparts[ i ].name );
+
+				m_pBodypart->Append( names );
+
+				m_pBodypart->Select( 0 );
+
+				SetBodypart( 0 );
+
+				names.Clear();
 			}
 			else
 			{
-				names.Add( wxString::Format( "Controller %d", pbonecontrollers[ i ].index ) );
+				m_pBodypart->Enable( false );
+				m_pSubmodel->Enable( false );
 			}
+
+			m_pSkin->Enable( pHdr->numskinfamilies > 0 );
+
+			for( int i = 0; i < pHdr->numskinfamilies; ++i )
+			{
+				names.Add( wxString::Format( "Skin %d", i + 1 ) );
+			}
+
+			m_pSkin->Append( names );
+
+			SetSkin( 0 );
+
+			names.Clear();
+
+			m_pController->Enable( pHdr->numbonecontrollers > 0 );
+			m_pControllerSlider->Enable( pHdr->numbonecontrollers > 0 );
+
+			const mstudiobonecontroller_t* const pbonecontrollers = ( mstudiobonecontroller_t* ) ( ( byte* ) pHdr + pHdr->bonecontrollerindex );
+
+			for( int i = 0; i < pHdr->numbonecontrollers; i++ )
+			{
+				if( pbonecontrollers[ i ].index == CONTROLLER_MOUTH_INDEX )
+				{
+					names.Add( "Mouth" );
+				}
+				else
+				{
+					names.Add( wxString::Format( "Controller %d", pbonecontrollers[ i ].index ) );
+				}
+			}
+
+			m_pController->Append( names );
+
+			const studiohdr_t* const pTexHdr = pModel->getTextureHeader();
+
+			SetModelInfo( *pHdr, *pTexHdr );
+
+			m_pModelInfo->Show( true );
+
+			bSuccess = true;
 		}
-
-		m_pController->Append( names );
-
-		SetController( 0 );
-
-		const studiohdr_t* const pTexHdr = model.getTextureHeader();
-
-		m_pBones			->SetLabelText( wxString::Format( "Bones: %d", pHdr->numbones ) );
-		m_pBoneControllers	->SetLabelText( wxString::Format( "Bone Controllers: %d", pHdr->numbonecontrollers ) );
-		m_pHitBoxes			->SetLabelText( wxString::Format( "Hit Boxes: %d", pHdr->numhitboxes ) );
-		m_pSequences		->SetLabelText( wxString::Format( "Sequences: %d", pHdr->numseq ) );
-		m_pSequenceGroups	->SetLabelText( wxString::Format( "Sequence Groups: %d", pHdr->numseqgroups ) );
-
-		m_pTextures			->SetLabelText( wxString::Format( "Textures: %d", pTexHdr->numtextures ) );
-		m_pSkinFamilies		->SetLabelText( wxString::Format( "Skin Families: %d", pHdr->numskinfamilies ) );
-		m_pBodyparts		->SetLabelText( wxString::Format( "Bodyparts: %d", pHdr->numbodyparts ) );
-		m_pAttachments		->SetLabelText( wxString::Format( "Attachments: %d", pHdr->numattachments ) );
-		m_pTransitions		->SetLabelText( wxString::Format( "Transitions: %d", pHdr->numtransitions ) );
 	}
+
+	if( !bSuccess )
+	{
+		m_pBodypart->Enable( false );
+		m_pSubmodel->Enable( false );
+		m_pSkin->Enable( false );
+		m_pController->Enable( false );
+
+		studiohdr_t dummyHdr;
+
+		memset( &dummyHdr, 0, sizeof( dummyHdr ) );
+
+		SetModelInfo( dummyHdr, dummyHdr );
+		m_pModelInfo->Show( false );
+	}
+
+	SetController( 0 );
 }
 
 void CBodyPartsPanel::ViewUpdated()
 {
-	unsigned long uiOld = 0;
-
-	m_pDrawnPolys->GetLabelText().ToULong( &uiOld );
-
 	//Don't update if it's identical. Prevents flickering.
-	if( uiOld != m_pHLMV->GetState()->drawnPolys )
+	if( m_uiOldDrawnPolys != m_pHLMV->GetState()->drawnPolys )
+	{
+		m_uiOldDrawnPolys = m_pHLMV->GetState()->drawnPolys;
 		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", m_pHLMV->GetState()->drawnPolys ) );
+	}
 }
 
 void CBodyPartsPanel::BodypartChanged( wxCommandEvent& event )
@@ -260,7 +285,12 @@ void CBodyPartsPanel::UpdateSubmodels( const int iIndex )
 	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
 
 	if( !pHdr )
+	{
+		m_pSubmodel->Enable( false );
 		return;
+	}
+
+	m_pSubmodel->Enable( true );
 
 	if( iIndex < pHdr->numbodyparts )
 	{
@@ -278,12 +308,35 @@ void CBodyPartsPanel::UpdateSubmodels( const int iIndex )
 	}
 }
 
+void CBodyPartsPanel::SetModelInfo( const studiohdr_t& hdr, const studiohdr_t& texHdr )
+{
+	m_pBones			->SetLabelText( wxString::Format( "Bones: %d", hdr.numbones ) );
+	m_pBoneControllers	->SetLabelText( wxString::Format( "Bone Controllers: %d", hdr.numbonecontrollers ) );
+	m_pHitBoxes			->SetLabelText( wxString::Format( "Hit Boxes: %d", hdr.numhitboxes ) );
+	m_pSequences		->SetLabelText( wxString::Format( "Sequences: %d", hdr.numseq ) );
+	m_pSequenceGroups	->SetLabelText( wxString::Format( "Sequence Groups: %d", hdr.numseqgroups ) );
+
+	m_pTextures			->SetLabelText( wxString::Format( "Textures: %d", texHdr.numtextures ) );
+	m_pSkinFamilies		->SetLabelText( wxString::Format( "Skin Families: %d", hdr.numskinfamilies ) );
+	m_pBodyparts		->SetLabelText( wxString::Format( "Bodyparts: %d", hdr.numbodyparts ) );
+	m_pAttachments		->SetLabelText( wxString::Format( "Attachments: %d", hdr.numattachments ) );
+	m_pTransitions		->SetLabelText( wxString::Format( "Transitions: %d", hdr.numtransitions ) );
+}
+
 void CBodyPartsPanel::SetController( int iIndex )
 {
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
 
-	if( !pHdr )
+	if( !pModel || !pModel->getStudioHeader() || pModel->getStudioHeader()->numbonecontrollers == 0 )
+	{
+		//Disable and center it.
+		m_pControllerSlider->Enable( false );
+		m_pControllerSlider->SetRange( 0, 2 );
+		m_pControllerSlider->SetValue( 1 );
 		return;
+	}
+
+	const studiohdr_t* const pHdr = pModel->getStudioHeader();
 
 	if( iIndex < 0 || iIndex >= pHdr->numbonecontrollers )
 		iIndex = 0;
@@ -293,11 +346,17 @@ void CBodyPartsPanel::SetController( int iIndex )
 	m_pController->Select( iIndex );
 	m_pControllerSlider->SetRange( ( int ) pbonecontrollers[ iIndex ].start, ( int ) pbonecontrollers[ iIndex ].end );
 	m_pControllerSlider->SetValue( m_pHLMV->GetState()->GetStudioModel()->GetController( iIndex ) );
+	m_pControllerSlider->Enable( true );
 }
 
 void CBodyPartsPanel::SetControllerValue( int iIndex, int iValue )
 {
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
+	if( !pModel )
+		return;
+
+	const studiohdr_t* const pHdr = pModel->getStudioHeader();
 
 	if( pHdr )
 	{

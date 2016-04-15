@@ -11,7 +11,7 @@ public:
 	CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CSequencesPanel();
 
-	void ModelChanged( const StudioModel& model ) override;
+	void InitializeUI() override;
 
 	void SequenceChanged( wxCommandEvent& event ) override;
 

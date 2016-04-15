@@ -79,7 +79,7 @@ public:
 
 	void FreeModel();
 
-	void ModelChanged( const StudioModel& model );
+	void InitializeUI();
 
 	void PageChanged( wxBookCtrlEvent& event );
 

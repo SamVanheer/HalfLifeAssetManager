@@ -54,7 +54,7 @@ public:
 
 	void PanelDeactivated() override;
 
-	void ModelChanged( const StudioModel& model ) override;
+	void InitializeUI() override;
 
 	void TextureChanged( wxCommandEvent& event );
 

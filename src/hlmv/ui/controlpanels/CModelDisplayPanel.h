@@ -52,7 +52,7 @@ public:
 	CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CModelDisplayPanel();
 
-	void ModelChanged( const StudioModel& model ) override;
+	void InitializeUI() override;
 
 	void ViewUpdated() override;
 
@@ -93,7 +93,7 @@ private:
 
 	wxStaticText* m_pDrawnPolys;
 
-	unsigned int m_uiDrawnPolysLast = 0;
+	unsigned int m_uiDrawnPolysLast = -1;
 
 private:
 	CModelDisplayPanel( const CModelDisplayPanel& ) = delete;

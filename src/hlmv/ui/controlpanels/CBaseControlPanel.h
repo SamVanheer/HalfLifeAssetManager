@@ -21,8 +21,7 @@ public:
 	const CHLMV* GetHLMV() const { return m_pHLMV; }
 	CHLMV* GetHLMV() { return m_pHLMV; }
 
-	//TODO: remove parameter, rename to InitializeUI
-	virtual void ModelChanged( const StudioModel& model ) {}
+	virtual void InitializeUI() {}
 
 	//Called right before the 3D view is updated.
 	virtual void ViewPreUpdate() {}

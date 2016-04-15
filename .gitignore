@@ -78,3 +78,4 @@ external/FMOD/include/fmod_output.h
 *.user
 *.bmp
 changes.txt
+msw_14/HLMVSettings.txt

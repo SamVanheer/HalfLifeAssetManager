@@ -99,34 +99,49 @@ void CTexturesPanel::PanelDeactivated()
 	m_pHLMV->GetState()->showTexture = false;
 }
 
-void CTexturesPanel::ModelChanged( const StudioModel& model )
+void CTexturesPanel::InitializeUI()
 {
 	m_pTexture->Clear();
 
 	m_pMesh->Clear();
 
-	const studiohdr_t* const pHdr = model.getTextureHeader();
+	bool bSuccess = false;
 
-	if( !pHdr )
-		return;
-
-	const mstudiotexture_t* const pTextures = ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex );
-
-	//Insert all names into the array, then append the array to the combo box. This is much faster than appending each name to the combo box directly.
-	wxArrayString names;
-
-	for( int i = 0; i < pHdr->numtextures; ++i )
+	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
 	{
-		const mstudiotexture_t& texture = pTextures[ i ];
+		const studiohdr_t* const pHdr = pModel->getTextureHeader();
 
-		names.Add( texture.name );
+		if( pHdr )
+		{
+			m_pTexture->Enable( true );
+
+			const mstudiotexture_t* const pTextures = ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex );
+
+			//Insert all names into the array, then append the array to the combo box. This is much faster than appending each name to the combo box directly.
+			wxArrayString names;
+
+			for( int i = 0; i < pHdr->numtextures; ++i )
+			{
+				const mstudiotexture_t& texture = pTextures[ i ];
+
+				names.Add( texture.name );
+			}
+
+			m_pTexture->Append( names );
+
+			SetTexture( 0 );
+
+			bSuccess = true;
+		}
 	}
 
-	m_pTexture->Append( names );
-
-	SetTexture( 0 );
-
 	SetScale( TEXTUREVIEW_SLIDER_DEFAULT );
+
+	if( !bSuccess )
+	{
+		m_pTexture->Enable( false );
+		m_pMesh->Enable( false );
+	}
 }
 
 void CTexturesPanel::TextureChanged( wxCommandEvent& event )
@@ -141,7 +156,12 @@ void CTexturesPanel::ScaleChanged( wxCommandEvent& event )
 
 void CTexturesPanel::CheckBoxChanged( wxCommandEvent& event )
 {
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getTextureHeader();
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
+	if( !pModel )
+		return;
+
+	const studiohdr_t* const pHdr = pModel->getTextureHeader();
 
 	if( !pHdr )
 		return;
@@ -238,11 +258,9 @@ void CTexturesPanel::MeshChanged( wxCommandEvent& event )
 
 void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 {
-	StudioModel* const pStudioModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
 
-	studiohdr_t* const pHdr = pStudioModel->getTextureHeader();
-
-	if( !pHdr )
+	if( !pModel || !pModel->getTextureHeader() )
 	{
 		wxMessageBox( "No model loaded!" );
 		return;
@@ -279,6 +297,8 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 		wxMessageBox( wxString::Format( "Palette for image \"%s\" does not exist!", szFilename.c_str() ) );
 		return;
 	}
+
+	studiohdr_t* const pHdr = pModel->getTextureHeader();
 
 	mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTextureIndex ];
 
@@ -323,18 +343,18 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 	memcpy( ( byte* ) pHdr + texture.index, texData.get(), image.GetWidth() * image.GetHeight() );
 	memcpy( ( byte* ) pHdr + texture.index + image.GetWidth() * image.GetHeight(), convPal, PALETTE_SIZE );
 
-	pStudioModel->ReplaceTexture( &texture, texData.get(), convPal, pStudioModel->GetTextureId( iTextureIndex ) );
+	pModel->ReplaceTexture( &texture, texData.get(), convPal, pModel->GetTextureId( iTextureIndex ) );
 }
 
 void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 {
-	if( !m_pHLMV->GetState()->GetStudioModel() )
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
+	if( !pModel )
 	{
 		wxMessageBox( "No model loaded!" );
 		return;
 	}
-
-	studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getTextureHeader();
 
 	const int iTextureIndex = m_pTexture->GetSelection();
 
@@ -350,6 +370,8 @@ void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 		return;
 
 	const wxString szFilename = dlg.GetPath();
+
+	studiohdr_t* const pHdr = pModel->getTextureHeader();
 
 	mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTextureIndex ];
 
@@ -367,9 +389,9 @@ void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 
 void CTexturesPanel::ExportUVMap( wxCommandEvent& event )
 {
-	studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getTextureHeader();
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
 
-	if( !pHdr )
+	if( !pModel )
 	{
 		wxMessageBox( "No model loaded!" );
 		return;
@@ -409,7 +431,10 @@ void CTexturesPanel::SetTexture( int iIndex )
 	m_pMesh->Clear();
 
 	if( !pHdr || !pTexHdr )
+	{
+		m_pMesh->Enable( false );
 		return;
+	}
 
 	if( iIndex < 0 || iIndex >= pTexHdr->numtextures )
 		iIndex = 0;
@@ -428,6 +453,8 @@ void CTexturesPanel::SetTexture( int iIndex )
 
 	if( pMeshList )
 	{
+		m_pMesh->Enable( true );
+
 		size_t uiIndex;
 
 		for( uiIndex = 0; uiIndex < pMeshList->size(); ++uiIndex )

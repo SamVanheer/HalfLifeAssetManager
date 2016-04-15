@@ -70,11 +70,15 @@ void C3DView::Paint( wxPaintEvent& event )
 	glViewport( 0, 0, size.GetX(), size.GetY() );
 
 	if( m_pHLMV->GetState()->showTexture )
+	{
 		DrawTexture( m_pHLMV->GetState()->texture, m_pHLMV->GetState()->textureScale, 
 					 m_pHLMV->GetState()->showUVMap, m_pHLMV->GetState()->overlayUVMap, 
 					 m_pHLMV->GetState()->antiAliasUVLines, m_pHLMV->GetState()->pUVMesh );
+	}
 	else
+	{
 		DrawModel();
+	}
 
 	if( m_pListener )
 		m_pListener->Draw3D( size );
@@ -215,9 +219,14 @@ void C3DView::SetupRenderMode( RenderMode renderMode )
 
 void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines, const mstudiomesh_t* const pUVMesh )
 {
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
+	if( !pModel )
+		return;
+
 	const wxSize size = GetClientSize();
 
-	graphics::helpers::DrawTexture( size.GetX(), size.GetY(), *m_pHLMV->GetState()->GetStudioModel(), iTexture, flTextureScale, bShowUVMap, bOverlayUVMap, bAntiAliasLines, pUVMesh );
+	graphics::helpers::DrawTexture( size.GetX(), size.GetY(), *pModel, iTexture, flTextureScale, bShowUVMap, bOverlayUVMap, bAntiAliasLines, pUVMesh );
 }
 
 void C3DView::DrawModel()

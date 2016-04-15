@@ -92,7 +92,7 @@ CModelDisplayPanel::~CModelDisplayPanel()
 {
 }
 
-void CModelDisplayPanel::ModelChanged( const StudioModel& model )
+void CModelDisplayPanel::InitializeUI()
 {
 	SetRenderMode( RenderMode::TEXTURE_SHADED );
 	SetOpacity( 100 );
@@ -242,20 +242,30 @@ void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
 
 void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
 {
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
 	double flScale = 1.0;
 
 	if( m_pMeshScale->GetValue().ToDouble( &flScale ) )
-		m_pHLMV->GetState()->GetStudioModel()->scaleMeshes( flScale );
+	{
+		if( pModel )
+			pModel->scaleMeshes( flScale );
+	}
 	else
 		m_pMeshScale->SetValue( "1.0" );
 }
 
 void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
 {
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
 	double flScale = 1.0;
 
 	if( m_pBonesScale->GetValue().ToDouble( &flScale ) )
-		m_pHLMV->GetState()->GetStudioModel()->scaleBones( flScale );
+	{
+		if( pModel )
+			m_pHLMV->GetState()->GetStudioModel()->scaleBones( flScale );
+	}
 	else
 		m_pBonesScale->SetValue( "1.0" );
 }
