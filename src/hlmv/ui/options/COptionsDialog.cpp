@@ -51,6 +51,7 @@ void COptionsDialog::OnButton( wxCommandEvent& event )
 	case wxID_OK:
 	case wxID_APPLY:
 		{
+			m_pGeneral->Save();
 			m_pGameConfigs->Save();
 
 			//Copy over the settings to the actual settings object.

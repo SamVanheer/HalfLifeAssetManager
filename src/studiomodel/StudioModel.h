@@ -13,13 +13,11 @@
 
 #include <vector>
 
-//TODO: move
-#ifndef byte
-typedef unsigned char byte;
-#endif // byte
+#include "common/Types.h"
 
 #include "utility/mathlib.h"
 #include "utility/studio.h"
+#include "utility/Color.h"
 
 #include "graphics/OpenGL.h"
 
@@ -101,7 +99,7 @@ public:
 		}
 
 	public:
-		vec3_t lightColor		= { 1.0f, 1.0f, 1.0f };
+		Color lightColor		= Color( 255, 255, 255 );
 
 		float transparency		= 1.0f;
 		bool showBones			= false;

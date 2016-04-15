@@ -4,22 +4,11 @@
 
 namespace wx
 {
-/**
-*	Compares video modes using the resolutions only.
-*	@return true if the modes are identical, false otherwise.
-*/
 bool CompareVideoModeResolutions( const wxVideoMode& lhs, const wxVideoMode& rhs )
 {
 	return lhs.GetWidth() == rhs.GetWidth() && lhs.GetHeight() == lhs.GetHeight();
 }
 
-/**
-*	Given a display, fills the vector videoModes with all supported video modes, using comparator to compare video modes.
-*	@param display Display whose supported video modes will be queried.
-*	@param videoModes Destination vector that will contain all video modes.
-*	@param comparator Comparator to use when filtering the list.
-*	@return true on success, false otherwise.
-*/
 bool GetUniqueVideoModes( const wxDisplay& display, std::vector<wxVideoMode>& videoModes, const VideoModeComparator comparator )
 {
 	videoModes.clear();
@@ -36,14 +25,18 @@ bool GetUniqueVideoModes( const wxDisplay& display, std::vector<wxVideoMode>& vi
 	return true;
 }
 
-/**
-*	Given a display, fills the vector videoModes with all supported video modes, comparing video modes using the resolution only.
-*	@param display: Display whose supported video modes will be queried.
-*	@param videoModes: Destination vector that will contain all video modes.
-*	@return true on success, false otherwise.
-*/
 bool GetUniqueVideoModes( const wxDisplay& display, std::vector<wxVideoMode>& videoModes )
 {
 	return GetUniqueVideoModes( display, videoModes, &CompareVideoModeResolutions );
+}
+
+wxColor ColorTowx( const Color& color )
+{
+	return wxColor( color.GetRed(), color.GetGreen(), color.GetBlue(), color.GetAlpha() );
+}
+
+Color wxToColor( const wxColor& color )
+{
+	return Color( color.Red(), color.Green(), color.Blue(), color.Alpha() );
 }
 }

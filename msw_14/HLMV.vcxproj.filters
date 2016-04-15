@@ -261,6 +261,12 @@
     <ClCompile Include="..\src\hlmv\ui\options\CGeneralOptions.cpp">
       <Filter>Source Files\hlmv\ui\options</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\utility\Color.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utility\IOUtils.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -439,6 +445,15 @@
     </ClInclude>
     <ClInclude Include="..\src\hlmv\ui\options\CGeneralOptions.h">
       <Filter>Header Files\hlmv\ui\options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utility\Color.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\common\Types.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utility\IOUtils.h">
+      <Filter>Header Files\utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

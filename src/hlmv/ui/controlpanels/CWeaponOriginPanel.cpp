@@ -2,7 +2,10 @@
 
 #include <wx/gbsizer.h>
 
+#include "utility/Color.h"
+
 #include "hlmv/ui/CHLMV.h"
+#include "hlmv/settings/CHLMVSettings.h"
 #include "hlmv/CHLMVState.h"
 
 #include "CWeaponOriginPanel.h"
@@ -81,7 +84,9 @@ void CWeaponOriginPanel::Draw3D( const wxSize& size )
 
 		glDisable( GL_TEXTURE_2D );
 
-		glColor4f( 1.0, 0.0, 0.0, 1.0 );
+		const Color& crosshairColor = m_pHLMV->GetSettings()->GetCrosshairColor();
+
+		glColor4f( crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0 );
 
 		glPointSize( CROSSHAIR_LINE_WIDTH );
 		glLineWidth( CROSSHAIR_LINE_WIDTH );
@@ -131,7 +136,9 @@ void CWeaponOriginPanel::Draw3D( const wxSize& size )
 
 		glDisable( GL_TEXTURE_2D );
 
-		glColor4f( 1.0, 0.0, 0.0, 1.0 );
+		const Color& crosshairColor = m_pHLMV->GetSettings()->GetCrosshairColor();
+
+		glColor4f( crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0 );
 
 		glPointSize( GUIDELINES_LINE_WIDTH );
 		glLineWidth( GUIDELINES_LINE_WIDTH );

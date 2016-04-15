@@ -1,5 +1,7 @@
 #include "common/Logging.h"
 
+#include "utility/Color.h"
+
 #include "GraphicsHelpers.h"
 
 namespace graphics
@@ -310,7 +312,7 @@ void DrawFloorQuad( float flSideLength )
 *	groundColor:	Color of the ground if no texture is specified
 *	bMirror:		If true, draws a solid underside
 */
-void DrawFloor( float flSideLength, GLuint groundTexture, const vec3_t groundColor, const bool bMirror )
+void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundColor, const bool bMirror )
 {
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	glEnable( GL_DEPTH_TEST );
@@ -325,7 +327,7 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const vec3_t groundCol
 	if( groundTexture == GL_INVALID_TEXTURE_ID )
 	{
 		glDisable( GL_TEXTURE_2D );
-		glColor4f( groundColor[ 0 ], groundColor[ 1 ], groundColor[ 2 ], 0.7f );
+		glColor4f( groundColor[ 0 ] / 255.0f, groundColor[ 1 ] / 255.0f, groundColor[ 2 ] / 255.0f, 0.7f );
 		glBindTexture( GL_TEXTURE_2D, 0 );
 	}
 	else

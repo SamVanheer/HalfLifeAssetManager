@@ -3,6 +3,7 @@
 #include <wx/image.h>
 
 #include "hlmv/ui/CHLMV.h"
+#include "hlmv/settings/CHLMVSettings.h"
 #include "hlmv/CHLMVState.h"
 
 #include "common/CGlobals.h"
@@ -49,7 +50,9 @@ void C3DView::Paint( wxPaintEvent& event )
 	//Can't use the DC to draw anything since OpenGL draws over it.
 	wxPaintDC( this );
 
-	glClearColor( 0.5, 0.5, 0.5, 1.0 );
+	const Color& backgroundColor = m_pHLMV->GetSettings()->GetBackgroundColor();
+
+	glClearColor( backgroundColor.GetRed() / 255.0f, backgroundColor.GetGreen() / 255.0f, backgroundColor.GetBlue() / 255.0f, 1.0 );
 
 	const wxSize size = GetClientSize();
 	
@@ -233,6 +236,9 @@ void C3DView::DrawModel()
 	if( !m_pHLMV->GetState()->GetStudioModel() )
 		return;
 
+	//Update lighting color.
+	m_pHLMV->GetState()->renderSettings.lightColor = m_pHLMV->GetSettings()->GetLightColor();
+
 	graphics::helpers::SetProjection( size.GetX(), size.GetY() );
 
 	glMatrixMode( GL_MODELVIEW );
@@ -282,7 +288,7 @@ void C3DView::DrawModel()
 
 	if( m_pHLMV->GetState()->showGround )
 	{
-		graphics::helpers::DrawFloor( FLOOR_SIDE_LENGTH, m_GroundTexture, m_pHLMV->GetState()->groundColor, m_pHLMV->GetState()->mirror );
+		graphics::helpers::DrawFloor( FLOOR_SIDE_LENGTH, m_GroundTexture, m_pHLMV->GetSettings()->GetGroundColor(), m_pHLMV->GetState()->mirror );
 	}
 
 	glPopMatrix();

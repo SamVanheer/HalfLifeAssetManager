@@ -65,8 +65,6 @@ public:
 
 	bool showGround;
 
-	vec3_t groundColor;
-
 	bool pause;
 
 	float speedScale;

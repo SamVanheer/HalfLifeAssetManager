@@ -7,6 +7,8 @@
 
 #include "graphics/OpenGL.h"
 
+class Color;
+
 namespace graphics
 {
 namespace helpers
@@ -24,7 +26,7 @@ void SetProjection( const int iWidth, const int iHeight );
 
 void DrawFloorQuad( float flSideLength );
 
-void DrawFloor( float flSideLength, GLuint groundTexture, const vec3_t groundColor, const bool bMirror );
+void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundColor, const bool bMirror );
 
 unsigned int DrawWireframeOverlay( StudioModel& model, const StudioModel::CRenderSettings& settings );
 

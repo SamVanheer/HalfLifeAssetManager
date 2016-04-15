@@ -1,4 +1,8 @@
+#include "common/Logging.h"
+
 #include "keyvalues/Keyvalues.h"
+
+#include "utility/IOUtils.h"
 
 #include "settings/CGameConfig.h"
 #include "settings/CGameConfigManager.h"
@@ -7,6 +11,14 @@
 
 namespace hlmv
 {
+const Color CHLMVSettings::DEFAULT_GROUND_COLOR = Color( 216, 216, 175 );
+
+const Color CHLMVSettings::DEFAULT_BACKGROUND_COLOR = Color( 63, 127, 127 );
+
+const Color CHLMVSettings::DEFAULT_CROSSHAIR_COLOR = Color( 255, 0, 0 );
+
+const Color CHLMVSettings::DEFAULT_LIGHT_COLOR = Color( 255, 255, 255 );
+
 CHLMVSettings::CHLMVSettings()
 {
 }
@@ -35,7 +47,12 @@ CHLMVSettings& CHLMVSettings::operator=( const CHLMVSettings& other )
 
 void CHLMVSettings::Copy( const CHLMVSettings& other )
 {
-	*m_RecentFiles = *other.m_RecentFiles;
+	*m_RecentFiles		= *other.m_RecentFiles;
+
+	m_GroundColor		= other.m_GroundColor;
+	m_BackgroundColor	= other.m_BackgroundColor;
+	m_CrosshairColor	= other.m_CrosshairColor;
+	m_LightColor		= other.m_LightColor;
 }
 
 bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
@@ -71,6 +88,11 @@ bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 				m_RecentFiles->Add( file->GetValue().CStr() );
 			}
 		}
+
+		LoadColorSetting( settings, "groundColor", m_GroundColor );
+		LoadColorSetting( settings, "backgroundColor", m_BackgroundColor );
+		LoadColorSetting( settings, "crosshairColor", m_CrosshairColor );
+		LoadColorSetting( settings, "lightColor", m_LightColor );
 	}
 
 	return true;
@@ -96,6 +118,11 @@ bool CHLMVSettings::SaveToFile( CKeyvaluesWriter& writer )
 	}
 
 	writer.EndBlock();
+
+	SaveColorSetting( writer, "groundColor", m_GroundColor );
+	SaveColorSetting( writer, "backgroundColor", m_BackgroundColor );
+	SaveColorSetting( writer, "crosshairColor", m_CrosshairColor );
+	SaveColorSetting( writer, "lightColor", m_LightColor );
 
 	writer.EndBlock();
 

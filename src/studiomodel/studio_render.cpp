@@ -590,9 +590,9 @@ void StudioModel::SetupLighting( const CRenderSettings& settings )
 	g_lightvec[1] = 0;
 	g_lightvec[2] = -1.0;
 
-	g_lightcolor[0] = settings.lightColor[0];
-	g_lightcolor[1] = settings.lightColor[1];
-	g_lightcolor[2] = settings.lightColor[2];
+	g_lightcolor[0] = settings.lightColor[0] / 255.0f;
+	g_lightcolor[1] = settings.lightColor[1] / 255.0f;
+	g_lightcolor[2] = settings.lightColor[2] / 255.0f;
 
 	// TODO: only do it for bones that actually have textures
 	for (i = 0; i < m_pstudiohdr->numbones; i++)

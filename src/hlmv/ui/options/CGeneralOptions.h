@@ -3,6 +3,8 @@
 
 #include "hlmv/ui/wxHLMV.h"
 
+class wxColourPickerCtrl;
+
 namespace hlmv
 {
 class CHLMVSettings;
@@ -15,8 +17,21 @@ public:
 
 	void Save();
 
+protected:
+	wxDECLARE_EVENT_TABLE();
+
+private:
+	void Initialize();
+
+	void SetDefaultColor( wxCommandEvent& event );
+
 private:
 	CHLMVSettings* const m_pSettings;
+
+	wxColourPickerCtrl* m_pGroundColor;
+	wxColourPickerCtrl* m_pBackgroundColor;
+	wxColourPickerCtrl* m_pCrosshairColor;
+	wxColourPickerCtrl* m_pLightColor;
 
 private:
 	CGeneralOptions( const CGeneralOptions& ) = delete;

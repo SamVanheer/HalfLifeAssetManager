@@ -47,10 +47,6 @@ void CHLMVState::ResetToDefaults()
 
 	showGround = false;
 
-	groundColor[ 0 ] = 0.85f;
-	groundColor[ 1 ] = 0.85f;
-	groundColor[ 2 ] = 0.69f;
-
 	pause = false;
 
 	speedScale = 1.0f;
