@@ -320,7 +320,8 @@ void CMainWindow::OnAbout( wxCommandEvent& event )
 	//This should not be modified unless necessary (e.g. to change a date, or to correct information).
 
 	//No tab support in message boxes, so manually align it
-	wxMessageBox( wxString::Format( "Half-Life Model Viewer 2.0\n"
+	wxMessageBox( wxString::Format( 
+					"Half-Life Model Viewer 2.0\n"
 					"2016 Sam \"Solokiller\" Vanheer\n\n"
 					"Email:    sam.vanheer@outlook.com\n\n"
 					"Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil \'Jed\' Jedrzejewski\n"
@@ -336,8 +337,11 @@ void CMainWindow::OnAbout( wxCommandEvent& event )
 					"Copyright( C ) 2002 - 2008, Marcelo E.Magallon <mmagallo[]debian org>\n"
 					"Copyright( C ) 2002, Lev Povalahev\n"
 					"All rights reserved.\n\n"
-					"Uses wxWidgets 3.10\n\n"
-					"Build Date: %s\n", __DATE__ ),
+					"Uses wxWidgets %d.%d.%d\n\n"
+					"Build Date: %s\n", 
+					wxMAJOR_VERSION, wxMINOR_VERSION, wxRELEASE_NUMBER, 
+					__DATE__ 
+					),
 					"About Half-Life Model Viewer", wxOK | wxICON_INFORMATION );
 }
 
