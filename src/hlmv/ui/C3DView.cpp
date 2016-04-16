@@ -184,6 +184,7 @@ void C3DView::UpdateView()
 				{
 				case SCRIPT_EVENT_SOUND:			// Play a named wave file
 				case SCRIPT_EVENT_SOUND_VOICE:
+				case SCRIPT_CLIENT_EVENT_SOUND:
 					{
 						if( m_pSettings->playSound )
 						{

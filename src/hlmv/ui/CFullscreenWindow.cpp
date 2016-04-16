@@ -12,7 +12,7 @@
 namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( CFullscreenWindow, wxFrame )
-	EVT_KEY_DOWN( CFullscreenWindow::KeyDown )
+	EVT_CHAR_HOOK( CFullscreenWindow::KeyDown )
 wxEND_EVENT_TABLE()
 
 CFullscreenWindow::CFullscreenWindow( CHLMV* const pHLMV )

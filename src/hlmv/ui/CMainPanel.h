@@ -12,18 +12,17 @@ class wxBookCtrlEvent;
 
 class CTimer;
 
-class CModelDisplayPanel;
-class CBodyPartsPanel;
-class CTexturesPanel;
-class CSequencesPanel;
-class CWeaponOriginPanel;
-class CFullscreenPanel;
-
 class StudioModel;
 
 namespace hlmv
 {
 class CHLMV;
+
+class CModelDisplayPanel;
+class CBodyPartsPanel;
+class CTexturesPanel;
+class CSequencesPanel;
+class CFullscreenPanel;
 
 class CMainPanel final : public wxPanel, public I3DViewListener
 {
@@ -131,7 +130,6 @@ private:
 	CBodyPartsPanel*		m_pBodyParts;
 	CTexturesPanel*			m_pTextures;
 	CSequencesPanel*		m_pSequencesPanel;
-	CWeaponOriginPanel*		m_pWeaponOriginPanel;
 	CFullscreenPanel*		m_pFullscreen;
 
 private:

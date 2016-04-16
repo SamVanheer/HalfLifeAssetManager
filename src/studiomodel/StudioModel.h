@@ -51,6 +51,7 @@ struct CAnimEvent final
 
 #define SCRIPT_EVENT_SOUND			1004		// Play named wave file (on CHAN_BODY)
 #define SCRIPT_EVENT_SOUND_VOICE	1008		// Play named wave file (on CHAN_VOICE)
+#define SCRIPT_CLIENT_EVENT_SOUND	5004		// Play named wave file (at a given location)
 
 class IAnimEventHandler
 {

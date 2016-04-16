@@ -36,13 +36,11 @@
     <ClCompile Include="..\src\hlmv\ui\CMainWindow.cpp" />
     <ClCompile Include="..\src\hlmv\ui\CModelViewerApp.cpp" />
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CBaseControlPanel.cpp" />
-    <ClCompile Include="..\src\hlmv\ui\controlpanels\CBaseSequencesPanel.cpp" />
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CBodyPartsPanel.cpp" />
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CFullscreenPanel.cpp" />
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CModelDisplayPanel.cpp" />
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CSequencesPanel.cpp" />
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CTexturesPanel.cpp" />
-    <ClCompile Include="..\src\hlmv\ui\controlpanels\CWeaponOriginPanel.cpp" />
     <ClCompile Include="..\src\hlmv\ui\options\CGeneralOptions.cpp" />
     <ClCompile Include="..\src\hlmv\ui\options\COptionsDialog.cpp" />
     <ClCompile Include="..\src\keyvalues\CKeyvalue.cpp" />
@@ -96,13 +94,11 @@
     <ClInclude Include="..\src\hlmv\ui\CMainWindow.h" />
     <ClInclude Include="..\src\hlmv\ui\CModelViewerApp.h" />
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CBaseControlPanel.h" />
-    <ClInclude Include="..\src\hlmv\ui\controlpanels\CBaseSequencesPanel.h" />
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CBodyPartsPanel.h" />
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CFullscreenPanel.h" />
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CModelDisplayPanel.h" />
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CSequencesPanel.h" />
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CTexturesPanel.h" />
-    <ClInclude Include="..\src\hlmv\ui\controlpanels\CWeaponOriginPanel.h" />
     <ClInclude Include="..\src\hlmv\ui\options\CGeneralOptions.h" />
     <ClInclude Include="..\src\hlmv\ui\options\COptionsDialog.h" />
     <ClInclude Include="..\src\hlmv\ui\wxHLMV.h" />
@@ -214,7 +210,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;STUDIOMODEL_HANDLE_CLIENT_EVENTS;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\src;$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)/$(IntDir)/%(RelativeDir)/</ObjectFileName>
@@ -248,7 +244,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;STUDIOMODEL_HANDLE_CLIENT_EVENTS;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\src;$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)/$(IntDir)/%(RelativeDir)/</ObjectFileName>

@@ -786,9 +786,11 @@ int StudioModel::GetAnimationEvent( CAnimEvent& event, float flStart, float flEn
 
 	for( ; index < pseqdesc->numevents; index++ )
 	{
+#ifndef STUDIOMODEL_HANDLE_CLIENT_EVENTS
 		// Don't send client-side events to the server AI
 		if( pevent[ index ].event >= EVENT_CLIENT )
 			continue;
+#endif
 
 		if( ( pevent[ index ].frame >= flStart && pevent[ index ].frame < flEnd ) ||
 			( ( pseqdesc->flags & STUDIO_LOOPING ) && flEnd >= pseqdesc->numframes - 1 && pevent[ index ].frame < flEnd - pseqdesc->numframes + 1 ) )

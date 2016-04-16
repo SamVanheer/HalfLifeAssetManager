@@ -9,7 +9,6 @@
 #include "controlpanels/CBodyPartsPanel.h"
 #include "controlpanels/CTexturesPanel.h"
 #include "controlpanels/CSequencesPanel.h"
-#include "controlpanels/CWeaponOriginPanel.h"
 #include "controlpanels/CFullscreenPanel.h"
 
 #include "studiomodel/StudioModel.h"
@@ -59,8 +58,6 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pSequencesPanel = new CSequencesPanel( m_pControlPanels, m_pHLMV );
 
-	m_pWeaponOriginPanel = new CWeaponOriginPanel( m_pControlPanels, m_pHLMV );
-
 	m_pFullscreen = new CFullscreenPanel( m_pControlPanels, m_pHLMV );
 
 	CBaseControlPanel* const panels[] = 
@@ -69,7 +66,6 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 		m_pBodyParts,
 		m_pTextures,
 		m_pSequencesPanel,
-		m_pWeaponOriginPanel,
 		m_pFullscreen
 	};
 

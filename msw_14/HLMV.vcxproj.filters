@@ -168,9 +168,6 @@
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CBaseControlPanel.cpp">
       <Filter>Source Files\hlmv\ui\controlpanels</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\hlmv\ui\controlpanels\CBaseSequencesPanel.cpp">
-      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CBodyPartsPanel.cpp">
       <Filter>Source Files\hlmv\ui\controlpanels</Filter>
     </ClCompile>
@@ -184,9 +181,6 @@
       <Filter>Source Files\hlmv\ui\controlpanels</Filter>
     </ClCompile>
     <ClCompile Include="..\src\hlmv\ui\controlpanels\CTexturesPanel.cpp">
-      <Filter>Source Files\hlmv\ui\controlpanels</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\hlmv\ui\controlpanels\CWeaponOriginPanel.cpp">
       <Filter>Source Files\hlmv\ui\controlpanels</Filter>
     </ClCompile>
     <ClCompile Include="..\src\keyvalues\CKeyvalue.cpp">
@@ -350,9 +344,6 @@
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CBaseControlPanel.h">
       <Filter>Header Files\hlmv\ui\controlpanels</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\hlmv\ui\controlpanels\CBaseSequencesPanel.h">
-      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CBodyPartsPanel.h">
       <Filter>Header Files\hlmv\ui\controlpanels</Filter>
     </ClInclude>
@@ -366,9 +357,6 @@
       <Filter>Header Files\hlmv\ui\controlpanels</Filter>
     </ClInclude>
     <ClInclude Include="..\src\hlmv\ui\controlpanels\CTexturesPanel.h">
-      <Filter>Header Files\hlmv\ui\controlpanels</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\hlmv\ui\controlpanels\CWeaponOriginPanel.h">
       <Filter>Header Files\hlmv\ui\controlpanels</Filter>
     </ClInclude>
     <ClInclude Include="..\src\keyvalues\CKeyvalue.h">
