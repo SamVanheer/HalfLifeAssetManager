@@ -112,10 +112,18 @@ private:
 		}
 	}
 
+	void ViewOriginChanged( wxCommandEvent& event );
+
 private:
 	CHLMV* const m_pHLMV;
 
 	C3DView* m_p3DView;
+
+	wxPanel* m_pControlPanel;
+
+	wxPanel* m_pMainControlBar;
+
+	wxRadioBox* m_pViewOrigin;
 
 	wxNotebook* m_pControlPanels;
 

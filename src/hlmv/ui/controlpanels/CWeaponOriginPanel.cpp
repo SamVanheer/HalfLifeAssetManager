@@ -196,16 +196,6 @@ void CWeaponOriginPanel::InitializeUI()
 	m_pZOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 2 ] ) );
 }
 
-void CWeaponOriginPanel::PanelActivated()
-{
-	m_pHLMV->GetState()->useWeaponOrigin = true;
-}
-
-void CWeaponOriginPanel::PanelDeactivated()
-{
-	m_pHLMV->GetState()->useWeaponOrigin = false;
-}
-
 static void GetDoubleFromTextCtrl( wxTextCtrl* const pCtrl, vec_t& flInOutValue )
 {
 	double flValue = 0;

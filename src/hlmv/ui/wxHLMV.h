@@ -30,6 +30,7 @@ enum wxIdentifier
 
 	//Main panel
 	wxID_MAIN_PAGECHANGED,
+	wxID_MAIN_VIEWORIGINCHANGED,
 
 	//Model Display panel
 	wxID_MDLDISP_RENDERMODE,

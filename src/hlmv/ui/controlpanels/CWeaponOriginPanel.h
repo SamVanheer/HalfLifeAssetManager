@@ -28,10 +28,6 @@ public:
 
 	void InitializeUI() override;
 
-	void PanelActivated() override;
-
-	void PanelDeactivated() override;
-
 	void TestOrigins( wxCommandEvent& event );
 
 protected:

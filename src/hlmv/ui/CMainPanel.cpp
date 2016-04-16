@@ -1,6 +1,7 @@
 #include <memory>
 
 #include <wx/notebook.h>
+#include <wx/gbsizer.h>
 
 #include "C3DView.h"
 
@@ -20,8 +21,17 @@
 
 namespace hlmv
 {
+static const wxString VIEWORIGINS[] = 
+{
+	"Free View",
+	"Weapon Origin"
+};
+
+static const int VIEWORIGIN_WEAPON = 1;
+
 wxBEGIN_EVENT_TABLE( CMainPanel, wxPanel )
 	EVT_NOTEBOOK_PAGE_CHANGED( wxID_MAIN_PAGECHANGED, CMainPanel::PageChanged )
+	EVT_RADIOBOX( wxID_MAIN_VIEWORIGINCHANGED, CMainPanel::ViewOriginChanged )
 wxEND_EVENT_TABLE()
 
 CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
@@ -32,7 +42,14 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_p3DView = new C3DView( this, m_pHLMV, this );
 
-	m_pControlPanels = new wxNotebook( this, wxID_MAIN_PAGECHANGED );
+	m_pControlPanel = new wxPanel( this );
+
+	m_pMainControlBar = new wxPanel( m_pControlPanel );
+
+	m_pViewOrigin = new wxRadioBox( m_pMainControlBar, wxID_MAIN_VIEWORIGINCHANGED, "View Origin", wxDefaultPosition, wxDefaultSize, 
+									wxArrayString( ARRAYSIZE( VIEWORIGINS ), VIEWORIGINS ), 2, wxRA_SPECIFY_COLS );
+
+	m_pControlPanels = new wxNotebook( m_pControlPanel, wxID_MAIN_PAGECHANGED );
 
 	m_pModelDisplay = new CModelDisplayPanel( m_pControlPanels, m_pHLMV );
 
@@ -64,11 +81,25 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pControlPanels->SetSelection( 0 );
 
 	//Layout
+	wxGridBagSizer* pBarSizer = new wxGridBagSizer( 5, 5 );
+
+	pBarSizer->Add( m_pViewOrigin, wxGBPosition( 0, 0 ), wxGBSpan( 1, 2 ) );
+
+	m_pMainControlBar->SetSizer( pBarSizer );
+
+	wxBoxSizer* pPanelSizer = new wxBoxSizer( wxVERTICAL );
+
+	pPanelSizer->Add( m_pMainControlBar, wxSizerFlags().Expand() );
+
+	pPanelSizer->Add( m_pControlPanels, wxSizerFlags().Expand() );
+
+	m_pControlPanel->SetSizer( pPanelSizer );
+
 	wxBoxSizer* pSizer = new wxBoxSizer( wxVERTICAL );
 
 	//3D view takes up 3/4th of the main area
 	pSizer->Add( m_p3DView, wxSizerFlags().Expand().Proportion( 3 ) );
-	pSizer->Add( m_pControlPanels, wxSizerFlags().Expand().Proportion( 1 ) );
+	pSizer->Add( m_pControlPanel, wxSizerFlags().Expand().Proportion( 1 ) );
 
 	this->SetSizer( pSizer );
 
@@ -204,5 +235,10 @@ void CMainPanel::UnloadGroundTexture()
 void CMainPanel::SaveUVMap( const wxString& szFilename, const int iTexture )
 {
 	m_p3DView->SaveUVMap( szFilename, iTexture );
+}
+
+void CMainPanel::ViewOriginChanged( wxCommandEvent& event )
+{
+	m_pHLMV->GetState()->useWeaponOrigin = m_pViewOrigin->GetSelection() == VIEWORIGIN_WEAPON;
 }
 }
