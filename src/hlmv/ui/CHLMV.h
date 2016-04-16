@@ -18,7 +18,7 @@ public:
 	*	Constructs this class with the given settings.
 	*	@param pSettings Settings to use.
 	*/
-	CHLMV( CHLMVSettings* const pSettings, CHLMVState* const pState );
+	CHLMV();
 
 	/**
 	*	Destructor.
@@ -54,6 +54,17 @@ public:
 	*	Sets the main window.
 	*/
 	void SetMainWindow( CMainWindow* const pMainWindow );
+
+	/**
+	*	Initializes HLMV.
+	*	@return true on success, false otherwise.
+	*/
+	bool Initialize();
+
+	/**
+	*	Shuts down HLMV. This must be called even if Initialize returned false.
+	*/
+	void Shutdown();
 
 	//Load/Save model
 	/**

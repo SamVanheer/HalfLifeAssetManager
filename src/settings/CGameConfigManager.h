@@ -8,6 +8,27 @@ namespace settings
 {
 class CGameConfig;
 
+/**
+*	Listener for catching game config events.
+*/
+class IGameConfigListener
+{
+public:
+	virtual ~IGameConfigListener() = 0;
+
+	/**
+	*	Called when the active config changes.
+	*/
+	virtual void ActiveConfigChanged( const std::shared_ptr<CGameConfig>& oldConfig, const std::shared_ptr<CGameConfig>& newConfig ) = 0;
+};
+
+inline IGameConfigListener::~IGameConfigListener()
+{
+}
+
+/**
+*	This class manages game configurations, as well as the active configuration.
+*/
 class CGameConfigManager final : public std::enable_shared_from_this<CGameConfigManager>
 {
 private:
@@ -142,13 +163,24 @@ public:
 	*/
 	void ClearActiveConfig();
 
+	IGameConfigListener* GetListener() { return m_pListener; }
+
+	void SetListener( IGameConfigListener* pListener )
+	{
+		m_pListener = pListener;
+	}
+
 private:
 	void Copy( const CGameConfigManager& other );
+
+	bool DoSetActiveConfig( const std::shared_ptr<CGameConfig>& config );
 
 private:
 	Configs_t m_Configs;
 
 	std::shared_ptr<CGameConfig> m_ActiveConfig;
+
+	IGameConfigListener* m_pListener = nullptr;
 };
 }
 

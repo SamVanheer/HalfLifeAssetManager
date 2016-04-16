@@ -4,19 +4,36 @@
 
 namespace hlmv
 {
-CHLMV::CHLMV( CHLMVSettings* const pSettings, CHLMVState* const pState )
-	: m_pSettings( pSettings )
-	, m_pState( pState )
+CHLMV::CHLMV()
+	: m_pSettings( new CHLMVSettings() )
+	, m_pState( new CHLMVState() )
 {
 }
 
 CHLMV::~CHLMV()
 {
+	delete m_pState;
+	delete m_pSettings;
 }
 
 void CHLMV::SetMainWindow( CMainWindow* const pMainWindow )
 {
 	m_pMainWindow = pMainWindow;
+}
+
+bool CHLMV::Initialize()
+{
+	if( !m_pSettings->Initialize( HLMV_SETTINGS_FILE ) )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void CHLMV::Shutdown()
+{
+	m_pSettings->Shutdown( HLMV_SETTINGS_FILE );
 }
 
 bool CHLMV::LoadModel( const char* const pszFilename )

@@ -41,6 +41,8 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
 {
+	pHLMV->SetMainWindow( this );
+
 	wxMenu* menuFile = new wxMenu;
 
 	menuFile->Append( wxID_MAINWND_LOADMODEL, "&Load Model...",
@@ -144,6 +146,17 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 
 	const wxString szAbsFilename = file.GetFullPath();
 
+	if( !file.Exists() )
+	{
+		wxMessageBox( wxString::Format( "The file \"%s\" does not exist.", szAbsFilename ) );
+
+		m_pHLMV->GetSettings()->GetRecentFiles()->Remove( std::string( szFilename.c_str() ) );
+
+		RefreshRecentFiles();
+
+		return false;
+	}
+
 	const bool bSuccess = m_pMainPanel->LoadModel( szAbsFilename );
 
 	if( bSuccess )
@@ -155,7 +168,6 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 
 		m_pHLMV->GetSettings()->GetRecentFiles()->Add( pszAbsFilename );
 
-		//TODO: if the file doesn't exist, remove the entry.
 		RefreshRecentFiles();
 
 		Message( "Loaded model \"%s\"\n", pszAbsFilename );
@@ -417,9 +429,6 @@ void CMainWindow::OpenOptionsDialog( wxCommandEvent& event )
 
 	if( dlg.ShowModal() == wxID_CANCEL )
 		return;
-
-	//TODO: this should be using listeners
-	m_pHLMV->GetSettings()->InitializeFileSystem();
 }
 
 void CMainWindow::OnAbout( wxCommandEvent& event )

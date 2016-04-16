@@ -7,10 +7,6 @@
 
 #include "ui/CwxBaseApp.h"
 
-#include "hlmv/settings/CHLMVSettings.h"
-#include "hlmv/CHLMVState.h"
-
-
 namespace hlmv
 {
 class CMainWindow;
@@ -47,9 +43,6 @@ private:
 
 private:
 	wxString m_szModel;						//Model to load on startup, if any.
-
-	hlmv::CHLMVSettings m_Settings;
-	hlmv::CHLMVState m_State;
 
 	hlmv::CHLMV* m_pHLMV = nullptr;
 

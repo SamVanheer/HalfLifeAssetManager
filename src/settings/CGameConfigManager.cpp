@@ -12,6 +12,8 @@ CGameConfigManager::CGameConfigManager()
 
 CGameConfigManager::~CGameConfigManager()
 {
+	m_pListener = nullptr;
+
 	RemoveAllConfigs();
 }
 
@@ -39,9 +41,13 @@ void CGameConfigManager::Copy( const CGameConfigManager& other )
 		m_Configs.push_back( std::make_shared<CGameConfig>( *config ) );
 	}
 
-	//TODO: add listener
+	//Don't pass the actual config object, since it differs from our copy.
 	if( other.m_ActiveConfig )
 		SetActiveConfig( other.m_ActiveConfig->GetName() );
+	else
+		ClearActiveConfig();
+
+	//Don't copy the listener.
 }
 
 bool CGameConfigManager::HasConfig( const std::shared_ptr<const CGameConfig>& config ) const
@@ -185,9 +191,7 @@ bool CGameConfigManager::SetActiveConfig( const std::shared_ptr<CGameConfig>& co
 	if( !HasConfig( config ) )
 		return false;
 
-	m_ActiveConfig = config;
-
-	return true;
+	return DoSetActiveConfig( config );
 }
 
 bool CGameConfigManager::SetActiveConfig( const char* const pszName )
@@ -197,13 +201,30 @@ bool CGameConfigManager::SetActiveConfig( const char* const pszName )
 	if( !config )
 		return false;
 
-	m_ActiveConfig = config;
-
-	return true;
+	return DoSetActiveConfig( config );
 }
 
 void CGameConfigManager::ClearActiveConfig()
 {
-	m_ActiveConfig.reset();
+	if( !m_ActiveConfig )
+		return;
+
+	DoSetActiveConfig( nullptr );
+}
+
+bool CGameConfigManager::DoSetActiveConfig( const std::shared_ptr<CGameConfig>& config )
+{
+	//Nothing to do.
+	if( m_ActiveConfig == config )
+		return true;
+
+	auto oldConfig = m_ActiveConfig;
+
+	m_ActiveConfig = config;
+
+	if( m_pListener )
+		m_pListener->ActiveConfigChanged( oldConfig, m_ActiveConfig );
+
+	return true;
 }
 }

@@ -5,13 +5,14 @@
 
 #include "settings/CBaseSettings.h"
 #include "settings/CRecentFiles.h"
+#include "settings/CGameConfigManager.h"
 
 namespace hlmv
 {
 /**
 *	Settings for HLMV.
 */
-class CHLMVSettings final : public settings::CBaseSettings
+class CHLMVSettings final : public settings::CBaseSettings, public settings::IGameConfigListener
 {
 public:
 	static const size_t MAX_RECENT_FILES = 4;
@@ -32,6 +33,8 @@ public:
 
 	CHLMVSettings( const CHLMVSettings& other );
 	CHLMVSettings& operator=( const CHLMVSettings& other );
+
+	void ActiveConfigChanged( const std::shared_ptr<settings::CGameConfig>& oldConfig, const std::shared_ptr<settings::CGameConfig>& newConfig ) override final;
 
 	/**
 	*	Gets the recent files list.
@@ -99,6 +102,10 @@ public:
 	void SetWireframeColor( const Color& color ) { m_WireframeColor = color; }
 
 protected:
+	bool PostInitialize( const char* const pszFilename ) override final;
+
+	void PreShutdown( const char* const pszFilename ) override final;
+
 	bool LoadFromFile( const std::shared_ptr<CKvBlockNode>& root ) override final;
 
 	bool SaveToFile( CKeyvaluesWriter& writer ) override final;

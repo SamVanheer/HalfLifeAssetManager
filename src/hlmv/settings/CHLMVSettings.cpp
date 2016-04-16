@@ -58,6 +58,27 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 	m_WireframeColor	= other.m_WireframeColor;
 }
 
+void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameConfig>& oldConfig, const std::shared_ptr<settings::CGameConfig>& newConfig )
+{
+	//Active config changed, reinit the filesystem
+	if( !InitializeFileSystem() )
+	{
+		Error( "Error reinitializing the filesystem after configuration change from \"%s\" to \"%s\"\n", oldConfig ? oldConfig->GetName() : "None", newConfig ? newConfig->GetName() : "None" );
+	}
+}
+
+bool CHLMVSettings::PostInitialize( const char* const pszFilename )
+{
+	GetConfigManager()->SetListener( this );
+
+	return true;
+}
+
+void CHLMVSettings::PreShutdown( const char* const pszFilename )
+{
+	GetConfigManager()->SetListener( nullptr );
+}
+
 bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 {
 	if( !CBaseSettings::LoadFromFile( root ) )
