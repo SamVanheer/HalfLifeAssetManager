@@ -14,6 +14,7 @@
 #include "keyvalues/CKeyvaluesParser.h"
 #include "keyvalues/CKeyvaluesWriter.h"
 
+#include "filesystem/FileSystemConstants.h"
 #include "filesystem/CFileSystem.h"
 
 #include "utility/CString.h"
@@ -124,31 +125,20 @@ bool CBaseSettings::InitializeFileSystem( const std::shared_ptr<const CGameConfi
 
 	CString szPath;
 
-	//TODO: put this somewhere else
-	const char* pszDirs[] =
-	{
-		"",
-		"_downloads",
-		"_addon",
-		"_hd"
-	};
-
-	//Note: do not use a reference here. Varargs doesn't convert it, so it'll end up being const char**.
-
 	//Add mod dirs first, since they override game dirs.
 	if( strcmp( config->GetGameDir(), config->GetModDir() ) )
 	{
-		for( const auto pszDir : pszDirs )
+		for( size_t uiIndex = 0; uiIndex < filesystem::NUM_STEAMPIPE_DIRECTORY_EXTS; ++uiIndex )
 		{
-			szPath.Format( "%s%s", config->GetModDir(), pszDir );
+			szPath.Format( "%s%s", config->GetModDir(), filesystem::STEAMPIPE_DIRECTORY_EXTS[ uiIndex ] );
 
 			fileSystem().AddSearchPath( szPath.CStr() );
 		}
 	}
 
-	for( const auto pszDir : pszDirs )
+	for( size_t uiIndex = 0; uiIndex < filesystem::NUM_STEAMPIPE_DIRECTORY_EXTS; ++uiIndex )
 	{
-		szPath.Format( "%s%s", config->GetGameDir(), pszDir );
+		szPath.Format( "%s%s", config->GetGameDir(), filesystem::STEAMPIPE_DIRECTORY_EXTS[ uiIndex ] );
 
 		fileSystem().AddSearchPath( szPath.CStr() );
 	}

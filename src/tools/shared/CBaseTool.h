@@ -9,7 +9,13 @@
 
 #include "ui/utility/IWindowCloseListener.h"
 
+class wxGLAttributes;
+class wxGLContextAttrs;
+
+namespace ui
+{
 class CMessagesWindow;
+}
 
 namespace tools
 {
@@ -75,7 +81,7 @@ public:
 
 	const wxString& GetDisplayName() const { return m_szDisplayName; }
 
-	CMessagesWindow* GetMessagesWindow() { return m_pMessagesWindow; }
+	ui::CMessagesWindow* GetMessagesWindow() { return m_pMessagesWindow; }
 
 	bool IsUsingMessagesWindow() const { return m_pMessagesWindow != nullptr; }
 
@@ -96,6 +102,16 @@ protected:
 	*	bUse Whether to use the messages window or not.
 	*/
 	void UseMessagesWindow( const bool bUse );
+
+	/**
+	*	Allows the tool to configure custom canvas attributes.
+	*/
+	virtual void GetGLCanvasAttributes( wxGLAttributes& attrs );
+
+	/**
+	*	Allow the tool to configure custom context attributes.
+	*/
+	virtual void GetGLContextAttributes( wxGLContextAttrs& attrs );
 
 	/**
 	*	Called after the tool has been initialized.
@@ -127,7 +143,7 @@ private:
 
 	CTimer* m_pTimer = nullptr;
 
-	CMessagesWindow* m_pMessagesWindow = nullptr;
+	ui::CMessagesWindow* m_pMessagesWindow = nullptr;
 
 	size_t m_uiMaxMessagesCount = DEFAULT_MAX_MESSAGES_COUNT;
 

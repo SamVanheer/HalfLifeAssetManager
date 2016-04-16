@@ -114,8 +114,8 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pShowCrosshair = new wxCheckBox( pElemParent, wxID_ANY, "Show Crosshair" );
 	m_pShowGuidelines = new wxCheckBox( pElemParent, wxID_ANY, "Show Guidelines" );
 
-	//TODO: avoid using newlines and fit the text automatically instead
-	wxStaticText* pOriginInfo = new wxStaticText( pElemParent, wxID_ANY, "Changes to the origin must be\nmade by altering the $origin line\nin your model's QC file." );
+	wxStaticText* pOriginInfo = new wxStaticText( pElemParent, wxID_ANY, "Changes to the origin must be made by altering the $origin line in your model's QC file.",
+												  wxDefaultPosition, wxSize( 180, 40 ) );
 
 	//Layout
 	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );

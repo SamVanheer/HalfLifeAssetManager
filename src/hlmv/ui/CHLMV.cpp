@@ -34,9 +34,6 @@ bool CHLMV::PostInitialize()
 
 	m_pMainWindow->Show( true );
 
-	//TODO: tidy
-	m_pListener = m_pMainWindow;
-
 	StartTimer();
 
 	return true;
@@ -59,8 +56,11 @@ void CHLMV::PreShutdown()
 
 void CHLMV::RunFrame( CTimer& timer )
 {
-	if( m_pListener )
-		m_pListener->OnTimer( timer );
+	//TODO: remove the dependency on CTimer
+	if( m_pFullscreenWindow )
+		m_pFullscreenWindow->OnTimer( timer );
+	else if( m_pMainWindow )
+		m_pMainWindow->OnTimer( timer );
 }
 
 void CHLMV::OnExit( const bool bMainWndClosed )
@@ -89,18 +89,9 @@ void CHLMV::SetMainWindow( CMainWindow* const pMainWindow )
 	m_pMainWindow = pMainWindow;
 }
 
-void CHLMV::SetFullscreenWindow( CFullscreenWindow* pWindow )
+void CHLMV::SetFullscreenWindow( CFullscreenWindow* const pWindow )
 {
 	m_pFullscreenWindow = pWindow;
-
-	if( m_pFullscreenWindow )
-	{
-		m_pListener = m_pFullscreenWindow;
-	}
-	else
-	{
-		m_pListener = m_pMainWindow;
-	}
 }
 
 bool CHLMV::LoadModel( const char* const pszFilename )

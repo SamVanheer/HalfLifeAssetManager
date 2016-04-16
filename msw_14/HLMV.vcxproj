@@ -24,6 +24,7 @@
     <ClCompile Include="..\src\common\Platform.cpp" />
     <ClCompile Include="..\src\common\Utility.cpp" />
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
+    <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp" />
     <ClCompile Include="..\src\graphics\Constants.cpp" />
     <ClCompile Include="..\src\graphics\GLRenderTarget.cpp" />
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
@@ -84,6 +85,7 @@
     <ClInclude Include="..\src\common\Const.h" />
     <ClInclude Include="..\src\common\Utility.h" />
     <ClInclude Include="..\src\filesystem\CFileSystem.h" />
+    <ClInclude Include="..\src\filesystem\FileSystemConstants.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />
     <ClInclude Include="..\src\graphics\GLRenderTarget.h" />
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />

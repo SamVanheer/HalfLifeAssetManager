@@ -26,7 +26,6 @@ CBaseTool::~CBaseTool()
 
 void CBaseTool::OnTimer( CTimer& timer )
 {
-	//TODO: move this
 	if( soundsystem::CSoundSystem::InstanceExists() )
 		soundSystem().RunFrame();
 
@@ -59,7 +58,6 @@ bool CBaseTool::Initialize()
 		}
 	}
 
-	//TODO: make customizable based on tool
 	if( m_InitFlags & INIT_OPENGL )
 	{
 		//Set up OpenGL parameters.
@@ -67,17 +65,11 @@ bool CBaseTool::Initialize()
 
 		wxGLAttributes canvasAttributes;
 
-		canvasAttributes
-			.PlatformDefaults()
-			.Stencil( 8 )
-			.EndList();
+		GetGLCanvasAttributes( canvasAttributes );
 
 		wxGLContextAttrs contextAttributes;
 
-		contextAttributes.PlatformDefaults()
-			.MajorVersion( 3 )
-			.MinorVersion( 0 )
-			.EndList();
+		GetGLContextAttributes( contextAttributes );
 
 		if( !wxOpenGL().Initialize( canvasAttributes, &contextAttributes ) )
 			return false;
@@ -105,6 +97,23 @@ bool CBaseTool::Initialize()
 		return false;
 
 	return true;
+}
+
+void CBaseTool::GetGLCanvasAttributes( wxGLAttributes& attrs )
+{
+	attrs
+		.PlatformDefaults()
+		.Stencil( 8 )
+		.EndList();
+}
+
+void CBaseTool::GetGLContextAttributes( wxGLContextAttrs& attrs )
+{
+	attrs
+		.PlatformDefaults()
+		.MajorVersion( 3 )
+		.MinorVersion( 0 )
+		.EndList();
 }
 
 void CBaseTool::Shutdown()
@@ -165,7 +174,7 @@ void CBaseTool::UseMessagesWindow( const bool bUse )
 
 	if( bUse )
 	{
-		m_pMessagesWindow = new CMessagesWindow( m_uiMaxMessagesCount, this );
+		m_pMessagesWindow = new ui::CMessagesWindow( m_uiMaxMessagesCount, this );
 
 		logging().SetLogListener( m_pMessagesWindow );
 	}

@@ -285,6 +285,9 @@
     <ClCompile Include="..\src\ui\CwxBaseApp.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp">
+      <Filter>Source Files\filesystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -484,6 +487,9 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\CwxBaseApp.h">
       <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\filesystem\FileSystemConstants.h">
+      <Filter>Header Files\filesystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

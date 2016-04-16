@@ -7,13 +7,13 @@
 
 #include "common/Logging.h"
 
-class CMessagesWindow;
 class wxListView;
 class IWindowCloseListener;
 
+namespace ui
+{
 /**
 *	A window that lists a number of log messages.
-*	TODO move to ui namespace
 */
 class CMessagesWindow final : public wxFrame, public ILogListener
 {
@@ -70,5 +70,6 @@ private:
 	CMessagesWindow( const CMessagesWindow& ) = delete;
 	CMessagesWindow& operator=( const CMessagesWindow& ) = delete;
 };
+}
 
 #endif //UI_CMESSAGESWINDOW_H

@@ -4,6 +4,8 @@
 
 #include "CMessagesWindow.h"
 
+namespace ui
+{
 wxBEGIN_EVENT_TABLE( CMessagesWindow, wxFrame )
 	EVT_SIZE( CMessagesWindow::OnSize )
 	EVT_BUTTON( wxID_SHARED_MESSAGES_CLEAR, CMessagesWindow::OnClear )
@@ -170,4 +172,5 @@ void CMessagesWindow::UpdateHeader()
 	column.SetText( wxString::Format( "Messages (%d)", m_pList->GetItemCount() ) );
 
 	m_pList->SetColumn( 0, column );
+}
 }

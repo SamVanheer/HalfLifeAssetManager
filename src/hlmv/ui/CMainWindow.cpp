@@ -118,7 +118,7 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 
 	Maximize( true );
 
-	if( CMessagesWindow* pWindow = m_pHLMV->GetMessagesWindow() )
+	if( ui::CMessagesWindow* pWindow = m_pHLMV->GetMessagesWindow() )
 	{
 		pWindow->Bind( wxEVT_CLOSE_WINDOW, &CMainWindow::OnMessagesWindowClosed, this );
 	}

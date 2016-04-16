@@ -76,7 +76,7 @@ public:
 	/**
 	*	Sets the fullscreen window.
 	*/
-	void SetFullscreenWindow( CFullscreenWindow* pWindow );
+	void SetFullscreenWindow( CFullscreenWindow* const pWindow );
 
 	//Load/Save model
 	/**
@@ -150,8 +150,6 @@ public:
 private:
 	CHLMVSettings* m_pSettings;
 	CHLMVState* m_pState;
-
-	ITimerListener* m_pListener = nullptr;
 
 	CMainWindow* m_pMainWindow = nullptr;
 	CFullscreenWindow* m_pFullscreenWindow = nullptr;
