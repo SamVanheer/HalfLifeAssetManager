@@ -1,95 +1,52 @@
 #ifndef UI_CWXBASEAPP_H
 #define UI_CWXBASEAPP_H
 
-#include <cstdint>
-
 #include "wxInclude.h"
 
-#include "ui/utility/CTimer.h"
-
-#include "ui/utility/IWindowCloseListener.h"
-
-class CMessagesWindow;
+namespace tools
+{
+class CBaseTool;
+}
 
 /**
 *	Base class for wxWidgets apps using the tools codebase.
 */
-class CwxBaseApp : public wxApp, public ITimerListener, public IWindowCloseListener
+class CwxBaseApp : public wxApp
 {
-public:
-	static const size_t DEFAULT_MAX_MESSAGES_COUNT = 100;
-
 protected:
-	enum InitFlag
-	{
-		INIT_FILESYSTEM		= 1 << 0,
-		INIT_SOUNDSYSTEM	= 1 << 1,
-		INIT_OPENGL			= 1 << 2,
-		INIT_IMAGEHANDLERS	= 1 << 3,
-
-		INIT_ALL = INIT_FILESYSTEM | INIT_SOUNDSYSTEM | INIT_OPENGL | INIT_IMAGEHANDLERS
-	};
-
-	typedef uint8_t InitFlags_t;
-
-public:
 	CwxBaseApp();
 	virtual ~CwxBaseApp() = 0;
 
-	virtual void OnTimer( CTimer& timer ) override;
+public:
+	virtual bool OnInit() override;
 
-	virtual void OnWindowClose( wxFrame* pWindow, wxCloseEvent& event ) override;
+	virtual int OnExit() override;
 
-	bool IsExiting() const { return m_bExiting; }
+	tools::CBaseTool* GetTool() { return m_pTool; }
 
-	virtual void ExitApp( const bool bMainWndClosed = false );
+private:
+	bool Initialize();
 
-	CMessagesWindow* GetMessagesWindow() { return m_pMessagesWindow; }
-
-	bool IsUsingMessagesWindow() const { return m_pMessagesWindow != nullptr; }
-
-	void ShowMessagesWindow( const bool bShow );
-
-	size_t GetMaxMessagesCount() const { return m_uiMaxMessagesCount; }
-
-	void SetMaxMessagesCount( const size_t uiMaxMessagesCount );
+	void Shutdown();
 
 protected:
 	/**
-	*	Initializes the app.
-	*	@param initFlags Bit vector containing which systems to initialize, or INIT_ALL.
-	*	@param szDisplayName The display name to set.
-	*	@return true on success, false otherwise.
+	*	Creates the tool. Must return a new instance every time it's called.
 	*/
-	bool InitApp( InitFlags_t initFlags, const wxString& szDisplayName = "" );
+	virtual tools::CBaseTool* CreateTool() = 0;
 
 	/**
-	*	Shuts down the app. Destroys systems that were created in InitApp.
+	*	Called after OnInit finishes.
 	*/
-	void ShutdownApp();
+	virtual bool PostInitialize() { return true; }
 
 	/**
-	*	Starts the render loop timer.
+	*	Called before OnExit runs shutdown code.
 	*/
-	void StartTimer();
-
-	/**
-	*	Allows an app to enable the messages window. This is a separate window containing log messages.
-	*	bUse Whether to use the messages window or not.
-	*/
-	void UseMessagesWindow( const bool bUse );
+	virtual void PreShutdown() {}
 
 private:
-	void MessagesWindowClosed();
-
-private:
-	CTimer* m_pTimer = nullptr;
-
-	CMessagesWindow* m_pMessagesWindow = nullptr;
-
-	size_t m_uiMaxMessagesCount = DEFAULT_MAX_MESSAGES_COUNT;
-
-	bool m_bExiting = false;
+	tools::CBaseTool* m_pTool = nullptr;
 
 private:
 	CwxBaseApp( const CwxBaseApp& ) = delete;

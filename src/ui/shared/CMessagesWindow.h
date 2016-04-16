@@ -13,6 +13,7 @@ class IWindowCloseListener;
 
 /**
 *	A window that lists a number of log messages.
+*	TODO move to ui namespace
 */
 class CMessagesWindow final : public wxFrame, public ILogListener
 {

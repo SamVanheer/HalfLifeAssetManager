@@ -5,7 +5,6 @@
 
 #include "ui/shared/CMessagesWindow.h"
 
-#include "hlmv/ui/CModelViewerApp.h"
 #include "hlmv/ui/CHLMV.h"
 
 #include "options/COptionsDialog.h"
@@ -119,7 +118,7 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 
 	Maximize( true );
 
-	if( CMessagesWindow* pWindow = wxGetApp().GetMessagesWindow() )
+	if( CMessagesWindow* pWindow = m_pHLMV->GetMessagesWindow() )
 	{
 		pWindow->Bind( wxEVT_CLOSE_WINDOW, &CMainWindow::OnMessagesWindowClosed, this );
 	}
@@ -130,7 +129,7 @@ CMainWindow::~CMainWindow()
 	//Clear the studio model here, while the context is still valid.
 	m_pMainPanel->FreeModel();
 
-	wxGetApp().ExitApp( true );
+	m_pHLMV->Exit( true );
 }
 
 void CMainWindow::OnTimer( CTimer& timer )
@@ -420,7 +419,7 @@ void CMainWindow::DumpModelInfo( wxCommandEvent& event )
 
 void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )
 {
-	wxGetApp().ShowMessagesWindow( event.IsChecked() );
+	m_pHLMV->ShowMessagesWindow( event.IsChecked() );
 }
 
 void CMainWindow::OpenOptionsDialog( wxCommandEvent& event )

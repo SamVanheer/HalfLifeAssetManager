@@ -1,35 +1,12 @@
 #include "common/Logging.h"
 
-#include "CMainWindow.h"
-#include "CFullscreenWindow.h"
-
 #include <wx/cmdline.h>
-
-#include "soundsystem/CSoundSystem.h"
 
 #include "CHLMV.h"
 
 #include "CModelViewerApp.h"
 
 wxIMPLEMENT_APP( CModelViewerApp );
-
-bool CModelViewerApp::OnInit()
-{
-	if( !Initialize() )
-	{
-		Shutdown();
-		return false;
-	}
-
-	return true;
-}
-
-int CModelViewerApp::OnExit()
-{
-	Shutdown();
-
-	return wxApp::OnExit();
-}
 
 void CModelViewerApp::OnInitCmdLine( wxCmdLineParser& parser )
 {
@@ -49,103 +26,10 @@ bool CModelViewerApp::OnCmdLineParsed( wxCmdLineParser& parser )
 	return wxApp::OnCmdLineParsed( parser );
 }
 
-void CModelViewerApp::OnTimer( CTimer& timer )
+bool CModelViewerApp::PostInitialize()
 {
-	CwxBaseApp::OnTimer( timer );
-
-	if( m_pListener )
-		m_pListener->OnTimer( timer );
-}
-
-void CModelViewerApp::SetFullscreenWindow( hlmv::CFullscreenWindow* pWindow )
-{
-	m_pFullscreenWindow = pWindow;
-
-	if( m_pFullscreenWindow )
-	{
-		m_pListener = m_pFullscreenWindow;
-	}
-	else
-	{
-		m_pListener = m_pMainWindow;
-	}
-}
-
-void CModelViewerApp::ExitApp( const bool bMainWndClosed )
-{
-	CwxBaseApp::ExitApp( bMainWndClosed );
-
-	if( bMainWndClosed )
-		m_pMainWindow = nullptr;
-
-	if( m_pFullscreenWindow )
-	{
-		m_pFullscreenWindow->Close( true );
-		m_pFullscreenWindow = nullptr;
-	}
-
-	if( m_pMainWindow )
-	{
-		m_pMainWindow->Close( true );
-		m_pMainWindow = nullptr;
-	}
-
-	//TODO: use log to file listener instead (prevents message boxes from popping up during shutdown)
-	logging().SetLogListener( GetNullLogListener() );
-}
-
-bool CModelViewerApp::Initialize()
-{
-	if( !wxApp::OnInit() )
-		return false;
-
-	if( !InitApp( INIT_ALL, HLMV_TITLE ) )
-		return false;
-
-	//Must be called before we create the main window, since it accesses the window.
-	UseMessagesWindow( true );
-
-	m_pHLMV = new hlmv::CHLMV();
-
-	if( !m_pHLMV->Initialize() )
-	{
-		wxMessageBox( "Failed to initialize HLMV", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
-		return false;
-	}
-
-	m_pMainWindow = new hlmv::CMainWindow( m_pHLMV );
-
-	m_pMainWindow->Show( true );
-
-	//TODO: tidy
-	m_pListener = m_pMainWindow;
-
-	StartTimer();
-
 	if( !m_szModel.IsEmpty() )
-		m_pMainWindow->LoadModel( m_szModel );
+		GetTool()->LoadModel( m_szModel );
 
 	return true;
-}
-
-void CModelViewerApp::Shutdown()
-{
-	if( m_pFullscreenWindow )
-	{
-		m_pFullscreenWindow = nullptr;
-	}
-
-	if( m_pMainWindow )
-	{
-		m_pMainWindow = nullptr;
-	}
-
-	if( m_pHLMV )
-	{
-		m_pHLMV->Shutdown();
-		delete m_pHLMV;
-		m_pHLMV = nullptr;
-	}
-
-	ShutdownApp();
 }

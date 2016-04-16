@@ -1,17 +1,20 @@
 #ifndef HLMV_CHLMV_H
 #define HLMV_CHLMV_H
 
+#include "tools/shared/CBaseTool.h"
+
 namespace hlmv
 {
 class CHLMVSettings;
 class CHLMVState;
 
 class CMainWindow;
+class CFullscreenWindow;
 
 /**
 *	Facade class to access the entire HLMV program.
 */
-class CHLMV final
+class CHLMV final : public tools::CBaseTool
 {
 public:
 	/**
@@ -25,6 +28,16 @@ public:
 	*/
 	~CHLMV();
 
+protected:
+	bool PostInitialize() override final;
+
+	void PreShutdown() override final;
+
+	void RunFrame( CTimer& timer ) override final;
+
+	void OnExit( const bool bMainWndClosed ) override final;
+
+public:
 	/**
 	*	Gets the settings object.
 	*/
@@ -56,15 +69,14 @@ public:
 	void SetMainWindow( CMainWindow* const pMainWindow );
 
 	/**
-	*	Initializes HLMV.
-	*	@return true on success, false otherwise.
+	*	Gets the fullscreen window.
 	*/
-	bool Initialize();
+	CFullscreenWindow* GetFullscreenWindow() { return m_pFullscreenWindow; }
 
 	/**
-	*	Shuts down HLMV. This must be called even if Initialize returned false.
+	*	Sets the fullscreen window.
 	*/
-	void Shutdown();
+	void SetFullscreenWindow( CFullscreenWindow* pWindow );
 
 	//Load/Save model
 	/**
@@ -138,7 +150,11 @@ public:
 private:
 	CHLMVSettings* m_pSettings;
 	CHLMVState* m_pState;
+
+	ITimerListener* m_pListener = nullptr;
+
 	CMainWindow* m_pMainWindow = nullptr;
+	CFullscreenWindow* m_pFullscreenWindow = nullptr;
 
 private:
 	CHLMV( const CHLMV& ) = delete;

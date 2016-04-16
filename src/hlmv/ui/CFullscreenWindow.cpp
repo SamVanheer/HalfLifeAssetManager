@@ -1,7 +1,5 @@
 #include <wx/sizer.h>
 
-#include "hlmv/ui/CModelViewerApp.h"
-
 #include "hlmv/ui/CHLMV.h"
 #include "hlmv/CHLMVState.h"
 
@@ -19,7 +17,7 @@ CFullscreenWindow::CFullscreenWindow( CHLMV* const pHLMV )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE )
 	, m_pHLMV( pHLMV )
 {
-	wxGetApp().SetFullscreenWindow( this );
+	m_pHLMV->SetFullscreenWindow( this );
 
 	m_p3DView = new C3DView( this, m_pHLMV );
 
@@ -37,7 +35,7 @@ CFullscreenWindow::CFullscreenWindow( CHLMV* const pHLMV )
 
 CFullscreenWindow::~CFullscreenWindow()
 {
-	wxGetApp().SetFullscreenWindow( nullptr );
+	m_pHLMV->SetFullscreenWindow( nullptr );
 }
 
 void CFullscreenWindow::OnTimer( CTimer& timer )

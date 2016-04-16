@@ -1,7 +1,5 @@
 #include <wx/gbsizer.h>
 
-#include "hlmv/ui/CModelViewerApp.h"
-
 #include "hlmv/ui/CFullscreenWindow.h"
 
 #include "hlmv/ui/CHLMV.h"
@@ -34,8 +32,7 @@ CFullscreenPanel::~CFullscreenPanel()
 
 void CFullscreenPanel::GoFullscreen( wxCommandEvent& event )
 {
-	//TODO: move fullscreen window to CHLMV
-	if( wxGetApp().GetFullscreenWindow() )
+	if( m_pHLMV->GetFullscreenWindow() )
 	{
 		wxMessageBox( "A fullscreen window is already open!" );
 		return;

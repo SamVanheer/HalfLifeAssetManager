@@ -1,55 +1,28 @@
 #ifndef CMODELVIEWERAPP_H
 #define CMODELVIEWERAPP_H
 
-#include <vector>
-
 #include "wxHLMV.h"
 
 #include "ui/CwxBaseApp.h"
 
-namespace hlmv
-{
-class CMainWindow;
-class CFullscreenWindow;
-class CHLMV;
-}
+#include "hlmv/ui/CHLMV.h"
 
-class CModelViewerApp final : public CwxBaseApp
+class CModelViewerApp : public CwxBaseApp
 {
 public:
-	typedef std::vector<wxVideoMode> VideoModes_t;
-
-public:
-	virtual bool OnInit() override;
-
-	virtual int OnExit() override;
-
 	virtual void OnInitCmdLine( wxCmdLineParser& parser ) override;
 
 	virtual bool OnCmdLineParsed( wxCmdLineParser& parser ) override;
 
-	void OnTimer( CTimer& timer ) override final;
-
-	hlmv::CFullscreenWindow* GetFullscreenWindow() { return m_pFullscreenWindow; }
-
-	void SetFullscreenWindow( hlmv::CFullscreenWindow* pWindow );
-
-	void ExitApp( const bool bMainWndClosed = false );
+	hlmv::CHLMV* GetTool() { return static_cast<hlmv::CHLMV*>( CwxBaseApp::GetTool() ); }
 
 private:
-	bool Initialize();
+	virtual hlmv::CHLMV* CreateTool() override { return new hlmv::CHLMV(); }
 
-	void Shutdown();
+	virtual bool PostInitialize() override;
 
 private:
-	wxString m_szModel;						//Model to load on startup, if any.
-
-	hlmv::CHLMV* m_pHLMV = nullptr;
-
-	ITimerListener* m_pListener = nullptr;
-
-	hlmv::CMainWindow* m_pMainWindow = nullptr;
-	hlmv::CFullscreenWindow* m_pFullscreenWindow = nullptr;
+	wxString m_szModel;		//Model to load on startup, if any.
 };
 
 wxDECLARE_APP( CModelViewerApp );

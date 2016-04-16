@@ -109,6 +109,18 @@
     <Filter Include="Source Files\hlmv\settings">
       <UniqueIdentifier>{c4102ae9-88e9-43fa-bacf-a05b2df26e5f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\tools">
+      <UniqueIdentifier>{430dbb2b-f132-4e72-9fa0-ba50777487fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tools\shared">
+      <UniqueIdentifier>{4846e60a-91ab-4fdf-bd67-01ee912246c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tools">
+      <UniqueIdentifier>{c42c5e25-9a0d-4a6c-bf11-999d3ed80267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tools\shared">
+      <UniqueIdentifier>{1bfc15c9-36cc-411f-a732-4b1119e81a93}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
@@ -222,9 +234,6 @@
     <ClCompile Include="..\src\settings\CGameConfigManager.cpp">
       <Filter>Source Files\settings</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ui\CwxBaseApp.cpp">
-      <Filter>Source Files\ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ui\wxLogging.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
@@ -269,6 +278,12 @@
     </ClCompile>
     <ClCompile Include="..\src\graphics\GLRenderTarget.cpp">
       <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
+      <Filter>Source Files\tools\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\CwxBaseApp.cpp">
+      <Filter>Source Files\ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -404,9 +419,6 @@
     <ClInclude Include="..\src\settings\GameConfigIO.h">
       <Filter>Header Files\settings</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ui\CwxBaseApp.h">
-      <Filter>Header Files\ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ui\wxLogging.h">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
@@ -466,6 +478,12 @@
     </ClInclude>
     <ClInclude Include="..\src\graphics\GLRenderTarget.h">
       <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\shared\CBaseTool.h">
+      <Filter>Header Files\tools\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\CwxBaseApp.h">
+      <Filter>Header Files\ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
