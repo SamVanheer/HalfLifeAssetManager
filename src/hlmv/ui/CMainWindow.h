@@ -52,6 +52,8 @@ public:
 
 	void TakeScreenshot();
 
+	void DumpModelInfo();
+
 private:
 	wxDECLARE_EVENT_TABLE();
 
@@ -69,6 +71,7 @@ private:
 	void SaveView( wxCommandEvent& event );
 	void RestoreView( wxCommandEvent& event );
 	void TakeScreenshot( wxCommandEvent& event );
+	void DumpModelInfo( wxCommandEvent& event );
 
 	void ShowMessagesWindow( wxCommandEvent& event );
 	void OpenOptionsDialog( wxCommandEvent& event );

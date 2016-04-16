@@ -1,4 +1,5 @@
 #include <wx/filename.h>
+#include <wx/mimetype.h>
 
 #include "ui/CwxOpenGL.h"
 
@@ -30,6 +31,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_MAINWND_SAVEVIEW, CMainWindow::SaveView )
 	EVT_MENU( wxID_MAINWND_RESTOREVIEW, CMainWindow::RestoreView )
 	EVT_MENU( wxID_MAINWND_TAKESCREENSHOT, CMainWindow::TakeScreenshot )
+	EVT_MENU( wxID_MAINWND_DUMPMODELINFO, CMainWindow::DumpModelInfo )
 	EVT_MENU( wxID_MAINWND_TOGGLEMESSAGES, CMainWindow::ShowMessagesWindow )
 	EVT_MENU( wxID_MAINWND_OPTIONS, CMainWindow::OpenOptionsDialog )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
@@ -84,6 +86,8 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 	pMenuView->AppendSeparator();
 
 	pMenuView->Append( wxID_MAINWND_TAKESCREENSHOT, "Take Screenshot" );
+
+	pMenuView->Append( wxID_MAINWND_DUMPMODELINFO, "Dump Model Info" );
 
 	wxMenu* pMenuTools = new wxMenu;
 
@@ -268,6 +272,44 @@ void CMainWindow::TakeScreenshot()
 	m_pMainPanel->TakeScreenshot();
 }
 
+void CMainWindow::DumpModelInfo()
+{
+	if( !m_pHLMV->GetState()->GetStudioModel() )
+	{
+		wxMessageBox( "No model loaded!" );
+		return;
+	}
+
+	if( m_pHLMV->GetState()->DumpModelInfo( HLMV_DUMP_MODEL_INFO_FILE ) )
+	{
+		//Launch the default text editor.
+		wxFileType* pFileType = wxTheMimeTypesManager->GetFileTypeFromExtension( "txt" );
+
+		bool bSuccess = false;
+
+		if( pFileType )
+		{
+			wxString szOpenCommand;
+
+			if( pFileType->GetOpenCommand( &szOpenCommand, wxFileType::MessageParameters( HLMV_DUMP_MODEL_INFO_FILE ) ) )
+			{
+				bSuccess = wxExecute( szOpenCommand, wxEXEC_ASYNC ) != 0;
+			}
+
+			delete pFileType;
+		}
+
+		if( !bSuccess )
+		{
+			wxMessageBox( "Unable to open default text editor" );
+		}
+	}
+	else
+	{
+		wxMessageBox( "An error occurred while dumping model info" );
+	}
+}
+
 void CMainWindow::RefreshRecentFiles()
 {
 	const auto& recentFiles = m_pHLMV->GetSettings()->GetRecentFiles()->GetFiles();
@@ -357,6 +399,11 @@ void CMainWindow::RestoreView( wxCommandEvent& event )
 void CMainWindow::TakeScreenshot( wxCommandEvent& event )
 {
 	TakeScreenshot();
+}
+
+void CMainWindow::DumpModelInfo( wxCommandEvent& event )
+{
+	DumpModelInfo();
 }
 
 void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )

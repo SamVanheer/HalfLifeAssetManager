@@ -49,6 +49,8 @@ public:
 
 	void SetStudioModel( StudioModel* pStudioModel );
 
+	bool DumpModelInfo( const char* const pszFilename );
+
 public:
 	Vector trans;
 	Vector rot;

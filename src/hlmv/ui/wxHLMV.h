@@ -24,6 +24,7 @@ enum wxIdentifier
 	wxID_MAINWND_SAVEVIEW,
 	wxID_MAINWND_RESTOREVIEW,
 	wxID_MAINWND_TAKESCREENSHOT,
+	wxID_MAINWND_DUMPMODELINFO,
 
 	//Tools menu
 	wxID_MAINWND_TOGGLEMESSAGES,
@@ -87,5 +88,6 @@ enum wxIdentifier
 
 #define HLMV_TITLE "Half-Life Model Viewer"
 #define HLMV_SETTINGS_FILE "HLMVSettings.txt"
+#define HLMV_DUMP_MODEL_INFO_FILE "midump.txt"
 
 #endif //HLMV_UI_WXHLMV_H
