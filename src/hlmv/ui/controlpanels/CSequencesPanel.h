@@ -77,6 +77,8 @@ private:
 
 	wxSlider* m_pAnimSpeed;
 
+	wxPanel* m_pSequenceInfo;
+
 	wxStaticText* m_pSequenceIndex;
 	wxStaticText* m_pFrameCount;
 	wxStaticText* m_pFrameRate;

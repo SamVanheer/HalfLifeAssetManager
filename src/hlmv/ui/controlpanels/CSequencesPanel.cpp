@@ -64,13 +64,13 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	wxStaticText* pSpeed = new wxStaticText( pElemParent, wxID_ANY, "Speed" );
 
-	wxPanel* pInfoPanel = new wxPanel( pElemParent );
+	m_pSequenceInfo = new wxPanel( pElemParent );
 
-	m_pSequenceIndex = new wxStaticText( pInfoPanel, wxID_ANY, "Sequence #: Undefined" );
-	m_pFrameCount = new wxStaticText( pInfoPanel, wxID_ANY, "Frames: Undefined" );
-	m_pFrameRate = new wxStaticText( pInfoPanel, wxID_ANY, "FPS: Undefined" );
-	m_pBlends = new wxStaticText( pInfoPanel, wxID_ANY, "Blends: Undefined" );
-	m_pEventCount = new wxStaticText( pInfoPanel, wxID_ANY, "# of Events: Undefined" );
+	m_pSequenceIndex = new wxStaticText( m_pSequenceInfo, wxID_ANY, "Sequence #: Undefined" );
+	m_pFrameCount = new wxStaticText( m_pSequenceInfo, wxID_ANY, "Frames: Undefined" );
+	m_pFrameRate = new wxStaticText( m_pSequenceInfo, wxID_ANY, "FPS: Undefined" );
+	m_pBlends = new wxStaticText( m_pSequenceInfo, wxID_ANY, "Blends: Undefined" );
+	m_pEventCount = new wxStaticText( m_pSequenceInfo, wxID_ANY, "# of Events: Undefined" );
 
 	//Info
 	wxBoxSizer* pInfoSizer = new wxBoxSizer( wxVERTICAL );
@@ -81,7 +81,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	pInfoSizer->Add( m_pBlends, 0, wxEXPAND );
 	pInfoSizer->Add( m_pEventCount, 0, wxEXPAND );
 
-	pInfoPanel->SetSizer( pInfoSizer );
+	m_pSequenceInfo->SetSizer( pInfoSizer );
 
 	SetFrameControlsEnabled( false );
 
@@ -135,7 +135,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	iCol += 4;
 
-	pSizer->Add( pInfoPanel, wxGBPosition( 1, iCol++ ), wxGBSpan( 3, 1 ), wxEXPAND );
+	pSizer->Add( m_pSequenceInfo, wxGBPosition( 1, iCol++ ), wxGBSpan( 3, 1 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
 	pSizer->Add( pEvents, wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
 	pSizer->Add( m_pEvent, wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
@@ -329,6 +329,8 @@ void CSequencesPanel::InitializeUI()
 
 			SetSequence( 0 );
 
+			m_pSequenceInfo->Show( true );
+
 			bSuccess = true;
 		}
 	}
@@ -338,6 +340,7 @@ void CSequencesPanel::InitializeUI()
 	if( !bSuccess )
 	{
 		m_pSequence->Enable( false );
+		m_pSequenceInfo->Show( false );
 	}
 
 	UpdateEvents();
