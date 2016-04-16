@@ -46,7 +46,10 @@ public:
 
 	bool Write( const CKeyvalueNode& node );
 
+	bool WriteComment( const char* const pszComment, const size_t uiTabs = 0 );
+
 private:
+	bool WriteTabs( const size_t uiTabs );
 	bool WriteTabs();
 
 	bool WriteToken( const char* const pszToken );

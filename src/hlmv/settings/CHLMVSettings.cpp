@@ -115,6 +115,10 @@ bool CHLMVSettings::SaveToFile( CKeyvaluesWriter& writer )
 	{
 		writer.WriteKeyvalue( "activeConfig", activeConfig->GetName() );
 	}
+	else
+	{
+		writer.WriteComment( "No active config" );
+	}
 
 	writer.BeginBlock( "recentFiles" );
 

@@ -196,9 +196,29 @@ bool CKeyvaluesWriter::Write( const CKeyvalueNode& node )
 	}
 }
 
-bool CKeyvaluesWriter::WriteTabs()
+bool CKeyvaluesWriter::WriteComment( const char* const pszComment, const size_t uiTabs )
 {
-	if( m_uiTabDepth >= MAX_BUFFER_LENGTH )
+	//Allow empty comment blocks
+	if( !pszComment )
+		return false;
+
+	//Indent to current tab in all cases.
+	WriteTabs();
+
+	WriteTabs( uiTabs );
+
+	fprintf( m_pFile, "//%s\n", pszComment );
+
+	return true;
+}
+
+bool CKeyvaluesWriter::WriteTabs( const size_t uiTabs )
+{
+	//Don't bother.
+	if( uiTabs == 0 )
+		return true;
+
+	if( uiTabs >= MAX_BUFFER_LENGTH )
 	{
 		Error( "CKeyvaluesWriter::PrintTabs: Tabs too large to output!\n" );
 
@@ -207,16 +227,21 @@ bool CKeyvaluesWriter::WriteTabs()
 
 	char szBuffer[ MAX_BUFFER_LENGTH ];
 
-	for( size_t uiTab = 0; uiTab < m_uiTabDepth; ++uiTab )
+	for( size_t uiTab = 0; uiTab < uiTabs; ++uiTab )
 	{
 		szBuffer[ uiTab ] = '\t';
 	}
 
-	szBuffer[ m_uiTabDepth ] = '\0';
+	szBuffer[ uiTabs ] = '\0';
 
 	fprintf( m_pFile, "%s", szBuffer );
 
 	return true;
+}
+
+bool CKeyvaluesWriter::WriteTabs()
+{
+	return WriteTabs( m_uiTabDepth );
 }
 
 bool CKeyvaluesWriter::WriteToken( const char* const pszToken )
