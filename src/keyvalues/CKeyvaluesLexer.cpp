@@ -148,6 +148,9 @@ bool CKeyvaluesLexer::SkipCommentLine()
 
 CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, const char*& pszEnd, bool& fWasQuoted )
 {
+	//Only true if we encountered a quote.
+	fWasQuoted = false;
+
 	ReadResult result = EndOfBuffer;
 
 	//Found a quoted string, parse in until we find the next quote or newline
@@ -197,8 +200,6 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, co
 
 	default:
 		{
-			fWasQuoted = false;
-
 			//Found an unquoted value; read until first whitespace
 
 			pszBegin = m_pszCurrentPosition;
@@ -243,42 +244,53 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 
 	if( result == ReadToken )
 	{
-		if( strncmp( pszBegin, "{", 1 ) == 0 )
-		{
-			//Can only open a block after a key
-			if( m_TokenType != KVToken_Key && !m_Settings.fAllowUnnamedBlocks )
-			{
-				if( m_Settings.fLogErrors )
-					Error( "CKeyvaluesLexer::ReadNextToken: illegal block open '%c'!\n", KeyvalueControl_BlockOpen );
+		bool bHandled = false;
 
-				result = FormatError;
-				m_szToken = "";
-				m_TokenType = KVToken_None;
-			}
-			else
-			{
-				m_szToken = KeyvalueControl_BlockOpen;
-				m_TokenType = KVToken_BlockOpen;
-			}
-		}
-		else if( strncmp( pszBegin, "}", 1 ) == 0 )
+		//Don't handle "{" as { (same for }).
+		if( !fWasQuoted )
 		{
-			//Can only close a block after a block open, close or value
-			if( m_TokenType != KVToken_Value && m_TokenType != KVToken_BlockOpen && m_TokenType != KVToken_BlockClose )
+			if( strncmp( pszBegin, "{", 1 ) == 0 )
 			{
-				if( m_Settings.fLogErrors )
-					Error( "CKeyvaluesLexer::ReadNextToken: illegal block close '%c'!\n", KeyvalueControl_BlockClose );
-				result = FormatError;
-				m_szToken = "";
-				m_TokenType = KVToken_None;
+				//Can only open a block after a key
+				if( m_TokenType != KVToken_Key && !m_Settings.fAllowUnnamedBlocks )
+				{
+					if( m_Settings.fLogErrors )
+						Error( "CKeyvaluesLexer::ReadNextToken: illegal block open '%c'!\n", KeyvalueControl_BlockOpen );
+
+					result = FormatError;
+					m_szToken = "";
+					m_TokenType = KVToken_None;
+				}
+				else
+				{
+					m_szToken = KeyvalueControl_BlockOpen;
+					m_TokenType = KVToken_BlockOpen;
+				}
+
+				bHandled = true;
 			}
-			else
+			else if( strncmp( pszBegin, "}", 1 ) == 0 )
 			{
-				m_szToken = KeyvalueControl_BlockClose;
-				m_TokenType = KVToken_BlockClose;
+				//Can only close a block after a block open, close or value
+				if( m_TokenType != KVToken_Value && m_TokenType != KVToken_BlockOpen && m_TokenType != KVToken_BlockClose )
+				{
+					if( m_Settings.fLogErrors )
+						Error( "CKeyvaluesLexer::ReadNextToken: illegal block close '%c'!\n", KeyvalueControl_BlockClose );
+					result = FormatError;
+					m_szToken = "";
+					m_TokenType = KVToken_None;
+				}
+				else
+				{
+					m_szToken = KeyvalueControl_BlockClose;
+					m_TokenType = KVToken_BlockClose;
+				}
+
+				bHandled = true;
 			}
 		}
-		else
+		
+		if( !bHandled )
 		{
 			m_szToken.Assign( pszBegin, 0, pszEnd - pszBegin );
 

@@ -193,6 +193,16 @@ bool CBaseSettings::SaveToFile( const char* const pszFilename )
 
 bool CBaseSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 {
+	return LoadGameConfigs( root );
+}
+
+bool CBaseSettings::SaveToFile( CKeyvaluesWriter& writer )
+{
+	return SaveGameConfigs( writer );
+}
+
+bool CBaseSettings::LoadGameConfigs( const std::shared_ptr<CKvBlockNode>& root )
+{
 	auto configs = root->FindFirstChild<CKvBlockNode>( "gameConfigs" );
 
 	if( configs )
@@ -206,14 +216,12 @@ bool CBaseSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 	return true;
 }
 
-bool CBaseSettings::SaveToFile( CKeyvaluesWriter& writer )
+bool CBaseSettings::SaveGameConfigs( CKeyvaluesWriter& writer )
 {
 	std::shared_ptr<CKvBlockNode> gameConfigs = std::make_shared<CKvBlockNode>( "gameConfigs" );
 
 	settings::SaveGameConfigs( m_ConfigManager, *gameConfigs );
 
-	writer.WriteBlock( *gameConfigs );
-
-	return true;
+	return writer.WriteBlock( *gameConfigs );
 }
 }

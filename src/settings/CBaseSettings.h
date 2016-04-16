@@ -124,6 +124,10 @@ protected:
 	*/
 	virtual bool SaveToFile( CKeyvaluesWriter& writer );
 
+	bool LoadGameConfigs( const std::shared_ptr<CKvBlockNode>& root );
+
+	bool SaveGameConfigs( CKeyvaluesWriter& writer );
+
 private:
 	//Note: must be non-virtual.
 	void Copy( const CBaseSettings& other );
