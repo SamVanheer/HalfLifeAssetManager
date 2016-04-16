@@ -3,20 +3,18 @@
 
 #include "wxHLMV.h"
 
-#include "ui/utility/CTimer.h"
-
 namespace hlmv
 {
 class CHLMV;
 class C3DView;
 
-class CFullscreenWindow final : public wxFrame, public ITimerListener
+class CFullscreenWindow final : public wxFrame
 {
 public:
 	CFullscreenWindow( CHLMV* const pHLMV );
 	~CFullscreenWindow();
 
-	void OnTimer( CTimer& timer ) override final;
+	void RunFrame();
 
 protected:
 	wxDECLARE_EVENT_TABLE();

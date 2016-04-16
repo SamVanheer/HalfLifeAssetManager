@@ -33,7 +33,7 @@ protected:
 
 	void PreShutdown() override final;
 
-	void RunFrame( CTimer& timer ) override final;
+	void RunFrame() override final;
 
 	void OnExit( const bool bMainWndClosed ) override final;
 

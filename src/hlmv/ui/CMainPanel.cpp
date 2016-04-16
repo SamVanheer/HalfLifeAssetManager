@@ -109,7 +109,7 @@ CMainPanel::~CMainPanel()
 {
 }
 
-void CMainPanel::OnTimer( CTimer& timer )
+void CMainPanel::RunFrame()
 {
 	ForEachPanel( &CBaseControlPanel::ViewPreUpdate );
 

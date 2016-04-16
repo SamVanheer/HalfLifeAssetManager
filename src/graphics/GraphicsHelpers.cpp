@@ -421,7 +421,6 @@ unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode,
 	unsigned int uiDrawnPolys = model.DrawModel( settings );
 
 	//Draw wireframe overlay
-	//TODO: integrate this into DrawModel somehow.
 	if( bWireframeOverlay )
 	{
 		uiDrawnPolys += DrawWireframeOverlay( model, settings );

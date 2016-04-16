@@ -3,19 +3,15 @@
 
 #include "wxHLMV.h"
 
-#include "ui/utility/CTimer.h"
-
 #include "hlmv/settings/CHLMVSettings.h"
 #include "hlmv/CHLMVState.h"
-
-class CTimer;
 
 namespace hlmv
 {
 class CHLMV;
 class CMainPanel;
 
-class CMainWindow final : public wxFrame, public ITimerListener
+class CMainWindow final : public wxFrame
 {
 public:
 	CMainWindow( CHLMV* const pHLMV );
@@ -24,7 +20,7 @@ public:
 	const CHLMV* GetHLMV() const { return m_pHLMV; }
 	CHLMV* GetHLMV() { return m_pHLMV; }
 
-	void OnTimer( CTimer& timer ) override final;
+	void RunFrame();
 
 	bool LoadModel( const wxString& szFilename );
 	bool PromptLoadModel();

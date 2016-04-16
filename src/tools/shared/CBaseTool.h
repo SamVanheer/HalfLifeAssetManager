@@ -127,7 +127,7 @@ protected:
 	/**
 	*	Called every frame.
 	*/
-	virtual void RunFrame( CTimer& timer ) = 0;
+	virtual void RunFrame() = 0;
 
 	/**
 	*	Called when the tool wants to exit.

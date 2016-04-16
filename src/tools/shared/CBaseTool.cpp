@@ -29,7 +29,7 @@ void CBaseTool::OnTimer( CTimer& timer )
 	if( soundsystem::CSoundSystem::InstanceExists() )
 		soundSystem().RunFrame();
 
-	RunFrame( timer );
+	RunFrame();
 }
 
 void CBaseTool::OnWindowClose( wxFrame* pWindow, wxCloseEvent& event )

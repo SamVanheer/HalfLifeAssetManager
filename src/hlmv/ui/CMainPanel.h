@@ -10,8 +10,6 @@
 class wxNotebook;
 class wxBookCtrlEvent;
 
-class CTimer;
-
 class StudioModel;
 
 namespace hlmv
@@ -70,7 +68,7 @@ public:
 	const CHLMV* GetHLMV() const { return m_pHLMV; }
 	CHLMV* GetHLMV() { return m_pHLMV; }
 
-	void OnTimer( CTimer& timer );
+	void RunFrame();
 
 	void Draw3D( const wxSize& size ) override final;
 

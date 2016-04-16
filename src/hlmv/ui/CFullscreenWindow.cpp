@@ -38,7 +38,7 @@ CFullscreenWindow::~CFullscreenWindow()
 	m_pHLMV->SetFullscreenWindow( nullptr );
 }
 
-void CFullscreenWindow::OnTimer( CTimer& timer )
+void CFullscreenWindow::RunFrame()
 {
 	m_p3DView->UpdateView();
 }

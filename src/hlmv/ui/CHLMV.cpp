@@ -54,13 +54,12 @@ void CHLMV::PreShutdown()
 	}
 }
 
-void CHLMV::RunFrame( CTimer& timer )
+void CHLMV::RunFrame()
 {
-	//TODO: remove the dependency on CTimer
 	if( m_pFullscreenWindow )
-		m_pFullscreenWindow->OnTimer( timer );
+		m_pFullscreenWindow->RunFrame();
 	else if( m_pMainWindow )
-		m_pMainWindow->OnTimer( timer );
+		m_pMainWindow->RunFrame();
 }
 
 void CHLMV::OnExit( const bool bMainWndClosed )

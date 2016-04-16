@@ -132,9 +132,9 @@ CMainWindow::~CMainWindow()
 	m_pHLMV->Exit( true );
 }
 
-void CMainWindow::OnTimer( CTimer& timer )
+void CMainWindow::RunFrame()
 {
-	m_pMainPanel->OnTimer( timer );
+	m_pMainPanel->RunFrame();
 }
 
 bool CMainWindow::LoadModel( const wxString& szFilename )
