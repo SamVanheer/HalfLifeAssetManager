@@ -12,6 +12,9 @@ class CGameConfigManager;
 
 namespace ui
 {
+/**
+*	This panel contains the game configurations and active configuration settings.
+*/
 class CGameConfigurationsPanel final : public wxPanel
 {
 public:

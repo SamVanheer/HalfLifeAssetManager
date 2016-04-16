@@ -6,7 +6,7 @@
 #include <cstdio>
 #include <type_traits>
 
-/*
+/**
 * Lightweight memory management class
 * Can store owned or non-owned memory
 * If this owns the given memory, it assumes the memory was allocated as an array

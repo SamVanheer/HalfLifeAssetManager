@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_CONSTANTS_H
 #define GRAPHICS_CONSTANTS_H
 
-/*
+/**
 *	Available render modes
 */
 enum class RenderMode

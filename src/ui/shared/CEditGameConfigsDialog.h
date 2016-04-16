@@ -17,6 +17,10 @@ namespace ui
 {
 class CGameConfigurationsPanel;
 
+/**
+*	Dialog that allows game configurations to be added, renamed, and removed.
+*	Notifies its parent CGameConfigurationsPanel of changes.
+*/
 class CEditGameConfigsDialog final : public wxDialog
 {
 public:

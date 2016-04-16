@@ -237,7 +237,7 @@ void CSoundSystem::RunFrame()
 	}
 }
 
-void CSoundSystem::PlaySound( const char* pszFilename, const float flVolume, const int iPitch )
+void CSoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitch )
 {
 	if( !pszFilename || !( *pszFilename ) )
 		return;
@@ -262,6 +262,12 @@ void CSoundSystem::PlaySound( const char* pszFilename, const float flVolume, con
 		Warning( "CSoundSystem::PlaySound: Unable to find sound file '%s'\n", pszFilename );
 		return;
 	}
+
+	if( flVolume > 1 || flVolume < 0 )
+		flVolume = VOLUME_NORM;
+
+	if( iPitch > 255 || iPitch < 0 )
+		iPitch = PITCH_NORM;
 
 	const size_t uiIndex = GetSoundForPlayback();
 

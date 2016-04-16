@@ -11,6 +11,9 @@
 
 class CMessagesWindow;
 
+/**
+*	Base class for wxWidgets apps using the tools codebase.
+*/
 class CwxBaseApp : public wxApp, public ITimerListener, public IWindowCloseListener
 {
 public:
@@ -52,9 +55,22 @@ public:
 	void SetMaxMessagesCount( const size_t uiMaxMessagesCount );
 
 protected:
+	/**
+	*	Initializes the app.
+	*	@param initFlags Bit vector containing which systems to initialize, or INIT_ALL.
+	*	@param szDisplayName The display name to set.
+	*	@return true on success, false otherwise.
+	*/
 	bool InitApp( InitFlags_t initFlags, const wxString& szDisplayName = "" );
+
+	/**
+	*	Shuts down the app. Destroys systems that were created in InitApp.
+	*/
 	void ShutdownApp();
 
+	/**
+	*	Starts the render loop timer.
+	*/
 	void StartTimer();
 
 	/**

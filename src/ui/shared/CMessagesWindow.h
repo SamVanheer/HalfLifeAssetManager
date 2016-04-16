@@ -11,6 +11,9 @@ class CMessagesWindow;
 class wxListView;
 class IWindowCloseListener;
 
+/**
+*	A window that lists a number of log messages.
+*/
 class CMessagesWindow final : public wxFrame, public ILogListener
 {
 public:

@@ -14,6 +14,9 @@ class Channel;
 
 namespace soundsystem
 {
+/**
+*	A sound system that can be used to play back sounds. Sounds are non-looping.
+*/
 class CSoundSystem final
 {
 public:
@@ -40,13 +43,26 @@ public:
 	bool Initialize();
 	void Shutdown();
 
+	/**
+	*	Must be called every frame.
+	*/
 	void RunFrame();
 
 public:
 
 	//Sound playback API
-	void PlaySound( const char* pszFilename, const float flVolume, const int iPitch );
 
+	/**
+	*	Plays a sound by name. The filename is relative to the game's sound directory, and is looked up using the filesystem.
+	*	@param pszFilename Sound filename.
+	*	@param flVolume Volume. Expressed as a range between [0, 1].
+	*	@param iPitch Pitch amount. Expressed as a range between [0, 255].
+	*/
+	void PlaySound( const char* pszFilename, float flVolume, int iPitch );
+
+	/**
+	*	Stops all sounds that are currently playing.
+	*/
 	void StopAllSounds();
 
 private:

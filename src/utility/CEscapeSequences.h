@@ -1,7 +1,7 @@
 #ifndef CESCAPESEQUENCES_H
 #define CESCAPESEQUENCES_H
 
-/*
+/**
 * This class represents a mapping of escape sequences to their string versions
 * E.g. \n becomes \\n
 */
@@ -38,8 +38,8 @@ private:
 	char m_IndexToSeq[ 256 ];			//Maps an index to an escape sequence
 
 private:
-	CEscapeSequences( const CEscapeSequences& );
-	CEscapeSequences& operator=( const CEscapeSequences& );
+	CEscapeSequences( const CEscapeSequences& ) = delete;
+	CEscapeSequences& operator=( const CEscapeSequences& ) = delete;
 };
 
 #define BEGIN_ESCAPE_SEQ_LIST( listName )							\

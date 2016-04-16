@@ -6,28 +6,19 @@
 namespace
 {
 static std::mt19937 g_Random;
+}
 
-static const
-class CInitRandom final
+void UTIL_InitRandom()
 {
-public:
-	CInitRandom()
-	{
-		std::random_device rd;
+	std::random_device rd;
 
-		std::array<int, 624> seed_data;
+	std::array<int, 624> seed_data;
 
-		std::generate( seed_data.begin(), seed_data.end(), std::ref( rd ) );
+	std::generate( seed_data.begin(), seed_data.end(), std::ref( rd ) );
 
-		std::seed_seq seq( seed_data.begin(), seed_data.end() );
+	std::seed_seq seq( seed_data.begin(), seed_data.end() );
 
-		g_Random.seed( seq );
-	}
-
-private:
-	CInitRandom( const CInitRandom& ) = delete;
-	CInitRandom& operator=( const CInitRandom& ) = delete;
-} g_Init;
+	g_Random.seed( seq );
 }
 
 int UTIL_RandomLong( int iLow, int iHigh )

@@ -43,6 +43,11 @@ inline size_t StringHash( const char* const pszString )
 }
 
 /**
+*	Initializes the random number generator.
+*/
+void UTIL_InitRandom();
+
+/**
 *	Gets a random 32 bit integer number in the range [iLow, iHigh]
 */
 int UTIL_RandomLong( int iLow, int iHigh );

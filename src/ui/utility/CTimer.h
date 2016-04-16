@@ -5,12 +5,17 @@
 
 class CTimer;
 
+/**
+*	Listener interface for timer events.
+*/
 class ITimerListener
 {
 public:
 	virtual ~ITimerListener() = 0;
 
-	//Override this to be notified when released.
+	/**
+	*	Override this to be notified when released.
+	*/
 	virtual void ReleaseTimerListener() {}
 
 	virtual void OnTimer( CTimer& timer ) = 0;
@@ -20,6 +25,9 @@ inline ITimerListener::~ITimerListener()
 {
 }
 
+/**
+*	Timer that calls a listener when an event occurs.
+*/
 class CTimer : public wxTimer
 {
 public:

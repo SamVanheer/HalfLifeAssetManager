@@ -35,8 +35,16 @@ constexpr inline size_t _ArraySizeof( T ( & )[ SIZE ] )
 
 #define MAX_BUFFER_LENGTH 512
 
+/**
+*	Returns the current tick time, in milliseconds.
+*	@return Tick time, in milliseconds.
+*/
 long long GetCurrentTick();
 
+/**
+*	Gets the current time, in seconds.
+*	@return Current time, in seconds.
+*/
 double GetCurrentTime();
 
 #endif //PLATFORM_H

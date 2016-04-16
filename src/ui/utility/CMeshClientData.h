@@ -7,6 +7,9 @@
 
 namespace ui
 {
+/**
+*	Client data class for StudioModel mesh data.
+*/
 class CMeshClientData final : public wxClientData
 {
 public:

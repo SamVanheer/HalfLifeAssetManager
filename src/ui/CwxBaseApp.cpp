@@ -5,6 +5,8 @@
 
 #include "ui/shared/CMessagesWindow.h"
 
+#include "common/Utility.h"
+
 #include "CwxBaseApp.h"
 
 CwxBaseApp::CwxBaseApp()
@@ -94,6 +96,8 @@ void CwxBaseApp::SetMaxMessagesCount( const size_t uiMaxMessagesCount )
 
 bool CwxBaseApp::InitApp( InitFlags_t initFlags, const wxString& szDisplayName )
 {
+	UTIL_InitRandom();
+
 	//The sound system requires the use of the file system.
 	if( initFlags & INIT_SOUNDSYSTEM )
 		initFlags |= INIT_FILESYSTEM;
