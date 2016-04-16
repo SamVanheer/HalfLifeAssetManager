@@ -56,8 +56,6 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pBonesScale = new wxTextCtrl( pElemParent, wxID_ANY, "1.0" );
 	m_pBonesScaleButton = new wxButton( pElemParent, wxID_MDLDISP_SCALEBONES, "Scale Bones" );
 
-	m_pDrawnPolys = new wxStaticText( pElemParent, wxID_ANY, "Drawn Polys: Undefined" );
-
 	//Layout
 	wxGridBagSizer* pControlsSizer = new wxGridBagSizer( CONTROLS_ROW_GAP, CONTROLS_COL_GAP );
 
@@ -83,8 +81,6 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	pControlsSizer->Add( m_pBonesScale, wxGBPosition( 1, 3 ), wxDefaultSpan, wxEXPAND );
 	pControlsSizer->Add( m_pBonesScaleButton, wxGBPosition( 1, 4 ), wxDefaultSpan, wxEXPAND );
 
-	pControlsSizer->Add( m_pDrawnPolys, wxGBPosition( 3, 3 ), wxGBSpan( 1, 2 ), wxEXPAND );
-
 	GetBoxSizer()->Add( pControlsSizer );
 }
 
@@ -99,16 +95,6 @@ void CModelDisplayPanel::InitializeUI()
 
 	m_pMeshScale->SetValue( "1.0" );
 	m_pBonesScale->SetValue( "1.0" );
-}
-
-void CModelDisplayPanel::ViewUpdated()
-{
-	//Don't update if it's identical. Prevents flickering.
-	if( m_uiDrawnPolysLast != m_pHLMV->GetState()->drawnPolys )
-	{
-		m_uiDrawnPolysLast = m_pHLMV->GetState()->drawnPolys;
-		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", m_pHLMV->GetState()->drawnPolys ) );
-	}
 }
 
 void CModelDisplayPanel::SetRenderMode( RenderMode renderMode )

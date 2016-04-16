@@ -54,8 +54,6 @@ public:
 
 	void InitializeUI() override;
 
-	void ViewUpdated() override;
-
 	void SetRenderMode( RenderMode renderMode );
 
 	//0..100
@@ -90,10 +88,6 @@ private:
 
 	wxTextCtrl* m_pBonesScale;
 	wxButton* m_pBonesScaleButton;
-
-	wxStaticText* m_pDrawnPolys;
-
-	unsigned int m_uiDrawnPolysLast = -1;
 
 private:
 	CModelDisplayPanel( const CModelDisplayPanel& ) = delete;

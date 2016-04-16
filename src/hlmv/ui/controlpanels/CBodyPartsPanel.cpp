@@ -46,8 +46,6 @@ CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	wxStaticText* pControllerSlider = new wxStaticText( pElemParent, wxID_ANY, "Value" );
 
-	m_pDrawnPolys = new wxStaticText( pElemParent, wxID_ANY, "Drawn Polys: Undefined" );
-
 	m_pModelInfo = new wxPanel( pElemParent );
 
 	m_pBones = new wxStaticText( m_pModelInfo, wxID_ANY, "Bones: Undefined" );
@@ -79,8 +77,6 @@ CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	pSizer->Add( m_pControllerSlider, wxGBPosition( 1, 2 ), wxDefaultSpan, wxCENTER );
 	pSizer->Add( pControllerSlider, wxGBPosition( 1, 3 ), wxDefaultSpan, wxCENTER | wxALIGN_LEFT );
-
-	pSizer->Add( m_pDrawnPolys, wxGBPosition( 2, 2 ), wxDefaultSpan, wxCENTER );
 
 	//Info text
 	wxGridBagSizer* pInfoSizer = new wxGridBagSizer( 5, 5 );
@@ -206,16 +202,6 @@ void CBodyPartsPanel::InitializeUI()
 	}
 
 	SetController( 0 );
-}
-
-void CBodyPartsPanel::ViewUpdated()
-{
-	//Don't update if it's identical. Prevents flickering.
-	if( m_uiOldDrawnPolys != m_pHLMV->GetState()->drawnPolys )
-	{
-		m_uiOldDrawnPolys = m_pHLMV->GetState()->drawnPolys;
-		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", m_pHLMV->GetState()->drawnPolys ) );
-	}
 }
 
 void CBodyPartsPanel::BodypartChanged( wxCommandEvent& event )

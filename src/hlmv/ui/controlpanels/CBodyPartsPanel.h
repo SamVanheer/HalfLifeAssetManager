@@ -23,8 +23,6 @@ public:
 
 	void InitializeUI() override;
 
-	void ViewUpdated() override;
-
 	void BodypartChanged( wxCommandEvent& event );
 
 	void SubmodelChanged( wxCommandEvent& event );
@@ -61,10 +59,6 @@ private:
 	wxComboBox* m_pController;
 
 	wxSlider* m_pControllerSlider;
-
-	wxStaticText* m_pDrawnPolys;
-
-	unsigned int m_uiOldDrawnPolys = -1;
 
 	//Info text
 	wxPanel* m_pModelInfo;

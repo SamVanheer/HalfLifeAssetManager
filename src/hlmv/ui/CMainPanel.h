@@ -124,6 +124,10 @@ private:
 
 	wxPanel* m_pMainControlBar;
 
+	unsigned int m_uiOldDrawnPolys = -1;
+
+	wxStaticText* m_pDrawnPolys;
+
 	wxRadioBox* m_pViewOrigin;
 
 	wxNotebook* m_pControlPanels;

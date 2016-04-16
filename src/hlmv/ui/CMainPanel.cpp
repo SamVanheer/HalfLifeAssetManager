@@ -48,6 +48,8 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pViewOrigin = new wxRadioBox( m_pMainControlBar, wxID_MAIN_VIEWORIGINCHANGED, "View Origin", wxDefaultPosition, wxDefaultSize, 
 									wxArrayString( ARRAYSIZE( VIEWORIGINS ), VIEWORIGINS ), 2, wxRA_SPECIFY_COLS );
 
+	m_pDrawnPolys = new wxStaticText( m_pMainControlBar, wxID_ANY, "Drawn Polys: Undefined" );
+
 	m_pControlPanels = new wxNotebook( m_pControlPanel, wxID_MAIN_PAGECHANGED );
 
 	m_pModelDisplay = new CModelDisplayPanel( m_pControlPanels, m_pHLMV );
@@ -80,6 +82,7 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	wxGridBagSizer* pBarSizer = new wxGridBagSizer( 5, 5 );
 
 	pBarSizer->Add( m_pViewOrigin, wxGBPosition( 0, 0 ), wxGBSpan( 1, 2 ) );
+	pBarSizer->Add( m_pDrawnPolys, wxGBPosition( 0, 2 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER );
 
 	m_pMainControlBar->SetSizer( pBarSizer );
 
@@ -111,6 +114,13 @@ void CMainPanel::OnTimer( CTimer& timer )
 	ForEachPanel( &CBaseControlPanel::ViewPreUpdate );
 
 	m_p3DView->UpdateView();
+
+	//Don't update if it's identical. Prevents flickering.
+	if( m_uiOldDrawnPolys != m_pHLMV->GetState()->drawnPolys )
+	{
+		m_uiOldDrawnPolys = m_pHLMV->GetState()->drawnPolys;
+		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", m_pHLMV->GetState()->drawnPolys ) );
+	}
 
 	ForEachPanel( &CBaseControlPanel::ViewUpdated );
 }
