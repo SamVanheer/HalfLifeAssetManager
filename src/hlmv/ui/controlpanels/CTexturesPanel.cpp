@@ -412,13 +412,7 @@ void CTexturesPanel::ExportUVMap( wxCommandEvent& event )
 
 	const wxString szFilename = dlg.GetPath();
 
-	//TODO: use a better way to get to the main panel so we can request a uv map save properly
-	CMainPanel* const pParent = static_cast<CMainPanel*>( GetParent()->GetParent() );
-
-	if( !pParent )
-		return;
-
-	pParent->SaveUVMap( szFilename, iTextureIndex );
+	m_pHLMV->SaveUVMap( szFilename, iTextureIndex );
 }
 
 void CTexturesPanel::SetTexture( int iIndex )

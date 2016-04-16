@@ -59,10 +59,13 @@ public:
 
 	void SaveUVMap( const wxString& szFilename, const int iTexture );
 
+	void TakeScreenshot();
+
 protected:
 	wxDECLARE_EVENT_TABLE();
 
 private:
+	void DrawScene();
 
 	void SetupRenderMode( RenderMode renderMode = RenderMode::INVALID );
 

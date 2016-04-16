@@ -68,4 +68,9 @@ void CHLMV::UnloadGroundTexture()
 {
 	m_pMainWindow->UnloadGroundTexture();
 }
+
+void CHLMV::SaveUVMap( const wxString& szFilename, const int iTexture )
+{
+	m_pMainWindow->SaveUVMap( szFilename, iTexture );
+}
 }

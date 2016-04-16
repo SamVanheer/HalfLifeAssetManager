@@ -233,6 +233,11 @@ void CMainPanel::SaveUVMap( const wxString& szFilename, const int iTexture )
 	m_p3DView->SaveUVMap( szFilename, iTexture );
 }
 
+void CMainPanel::TakeScreenshot()
+{
+	m_p3DView->TakeScreenshot();
+}
+
 void CMainPanel::ViewOriginChanged( wxCommandEvent& event )
 {
 	m_pHLMV->GetState()->useWeaponOrigin = m_pViewOrigin->GetSelection() == VIEWORIGIN_WEAPON;

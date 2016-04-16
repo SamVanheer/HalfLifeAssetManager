@@ -9,6 +9,7 @@
 #include "common/CGlobals.h"
 
 #include "graphics/GraphicsHelpers.h"
+#include "graphics/GLRenderTarget.h"
 
 #include "soundsystem/CSoundSystem.h"
 
@@ -52,36 +53,7 @@ void C3DView::Paint( wxPaintEvent& event )
 	//Can't use the DC to draw anything since OpenGL draws over it.
 	wxPaintDC( this );
 
-	const Color& backgroundColor = m_pHLMV->GetSettings()->GetBackgroundColor();
-
-	glClearColor( backgroundColor.GetRed() / 255.0f, backgroundColor.GetGreen() / 255.0f, backgroundColor.GetBlue() / 255.0f, 1.0 );
-
-	const wxSize size = GetClientSize();
-	
-	if( m_pHLMV->GetState()->mirror )
-	{
-		glClearStencil( 0 );
-
-		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-	}
-	else
-		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-	glViewport( 0, 0, size.GetX(), size.GetY() );
-
-	if( m_pHLMV->GetState()->showTexture )
-	{
-		DrawTexture( m_pHLMV->GetState()->texture, m_pHLMV->GetState()->textureScale, 
-					 m_pHLMV->GetState()->showUVMap, m_pHLMV->GetState()->overlayUVMap, 
-					 m_pHLMV->GetState()->antiAliasUVLines, m_pHLMV->GetState()->pUVMesh );
-	}
-	else
-	{
-		DrawModel();
-	}
-
-	if( m_pListener )
-		m_pListener->Draw3D( size );
+	DrawScene();
 
 	glFlush();
 	SwapBuffers();
@@ -208,6 +180,40 @@ void C3DView::UpdateView()
 
 	if( !m_pHLMV->GetState()->pause )
 		Refresh();
+}
+
+void C3DView::DrawScene()
+{
+	const Color& backgroundColor = m_pHLMV->GetSettings()->GetBackgroundColor();
+
+	glClearColor( backgroundColor.GetRed() / 255.0f, backgroundColor.GetGreen() / 255.0f, backgroundColor.GetBlue() / 255.0f, 1.0 );
+
+	const wxSize size = GetClientSize();
+
+	if( m_pHLMV->GetState()->mirror )
+	{
+		glClearStencil( 0 );
+
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+	}
+	else
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+	glViewport( 0, 0, size.GetX(), size.GetY() );
+
+	if( m_pHLMV->GetState()->showTexture )
+	{
+		DrawTexture( m_pHLMV->GetState()->texture, m_pHLMV->GetState()->textureScale,
+					 m_pHLMV->GetState()->showUVMap, m_pHLMV->GetState()->overlayUVMap,
+					 m_pHLMV->GetState()->antiAliasUVLines, m_pHLMV->GetState()->pUVMesh );
+	}
+	else
+	{
+		DrawModel();
+	}
+
+	if( m_pListener )
+		m_pListener->Draw3D( size );
 }
 
 void C3DView::SetupRenderMode( RenderMode renderMode )
@@ -387,7 +393,12 @@ void C3DView::UnloadGroundTexture()
 */
 void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 {
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getTextureHeader();
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
+	if( !pModel )
+		return;
+
+	const studiohdr_t* const pHdr = pModel->getTextureHeader();
 
 	if( !pHdr )
 		return;
@@ -396,26 +407,28 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 	SetCurrent( *m_pContext );
 
-	//Create the framebuffer if it doesn't exist yet.
-	//TODO: move the frame buffer into its own class, managed by CwxOpenGL
-	CreateUVFrameBuffer();
+	GLRenderTarget* const pScratchTarget = wxOpenGL().GetScratchTarget();
 
-	SetUVRenderTargetDimensions( texture.width, texture.height );
+	if( !pScratchTarget )
+	{
+		wxMessageBox( "Unable to create target to draw UV map to!" );
+		return;
+	}
 
-	glBindFramebuffer( GL_FRAMEBUFFER, m_UVFrameBuffer );
+	pScratchTarget->Bind();
 
-	const GLenum completeness = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+	pScratchTarget->Setup( texture.width, texture.height, false );
+
+	const GLenum completeness = pScratchTarget->GetStatus();
 
 	if( completeness != GL_FRAMEBUFFER_COMPLETE )
 	{
 		wxMessageBox( wxString::Format( "UV map framebuffer is incomplete!\n%s (status code %d)", glFrameBufferStatusToString( completeness ), completeness ) );
 
-		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+		pScratchTarget->Unbind();
 
 		return;
 	}
-
-	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( texture.width * texture.height * 3 );
 
 	glViewport( 0, 0, texture.width, texture.height );
 
@@ -425,28 +438,57 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 	graphics::helpers::DrawTexture( texture.width, texture.height, *m_pHLMV->GetState()->GetStudioModel(), iTexture, 1.0f, true, false, false, m_pHLMV->GetState()->pUVMesh );
 
-	glFlush();
-	glFinish();
+	pScratchTarget->FinishDraw();
 
-	glReadPixels( 0, 0, texture.width, texture.height, GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
+	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( texture.width * texture.height * 3 );
 
-	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+	pScratchTarget->GetPixels( texture.width, texture.height, GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
+
+	pScratchTarget->Unbind();
 
 	//We have to flip the image vertically, since OpenGL reads it upside down.
-	std::unique_ptr<byte[]> correctedData = std::make_unique<byte[]>( texture.width * texture.height * 3 );
+	graphics::helpers::FlipImageVertically( texture.width, texture.height, rgbData.get() );
 
-	for( int y = 0; y < texture.height; ++y )
+	wxImage image( texture.width, texture.height, rgbData.get(), true );
+
+	if( !image.SaveFile( szFilename, wxBITMAP_TYPE_BMP ) )
 	{
-		for( int x = 0; x < texture.width; ++x )
-		{
-			for( int i = 0; i < 3; ++i )
-			{
-				correctedData[ ( x + y * texture.width ) * 3 + i ] = rgbData[ ( x + ( texture.height - y - 1 ) * texture.width ) * 3 + i ];
-			}
-		}
+		wxMessageBox( wxString::Format( "Failed to save image \"%s\"!", szFilename.c_str() ) );
 	}
+}
 
-	wxImage image( texture.width, texture.height, correctedData.get(), true );
+void C3DView::TakeScreenshot()
+{
+	SetCurrent( *m_pContext );
+
+	const wxSize size = GetClientSize();
+
+	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( size.GetWidth() * size.GetHeight() * 3 );
+
+	GLint oldReadBuffer;
+
+	glGetIntegerv( GL_READ_BUFFER, &oldReadBuffer );
+
+	//Read currently displayed buffer.
+	glReadBuffer( GL_FRONT );
+
+	//Grab the image from the 3D view itself.
+	glReadPixels( 0, 0, size.GetWidth(), size.GetHeight(), GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
+
+	glReadBuffer( oldReadBuffer );
+
+	//Now ask for a filename.
+	wxFileDialog dlg( this );
+
+	if( dlg.ShowModal() == wxID_CANCEL )
+		return;
+
+	const wxString szFilename = dlg.GetPath();
+
+	//We have to flip the image vertically, since OpenGL reads it upside down.
+	graphics::helpers::FlipImageVertically( size.GetWidth(), size.GetHeight(), rgbData.get() );
+
+	wxImage image( size.GetWidth(), size.GetHeight(), rgbData.get(), true );
 
 	if( !image.SaveFile( szFilename, wxBITMAP_TYPE_BMP ) )
 	{

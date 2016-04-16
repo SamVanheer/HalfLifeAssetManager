@@ -24,6 +24,14 @@ bool CalculateImageDimensions( const int iWidth, const int iHeight, int& iOutWid
 */
 void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData );
 
+/**
+*	Flips an image vertically. This allows conversion between OpenGL and image formats. The image is flipped in place.
+*	@param iWidth Image width, in pixels.
+*	@param iHeight Image height, in pixels.
+*	@param pData Pixel data, in RGB 24 bit.
+*/
+void FlipImageVertically( const int iWidth, const int iHeight, byte* const pData );
+
 /*
 *	Sets up OpenGL for the specified render mode.
 *	@param renderMode Render mode to set up. Must be valid.

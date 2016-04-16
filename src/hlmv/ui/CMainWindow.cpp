@@ -29,6 +29,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_MAINWND_CENTERVIEW, CMainWindow::CenterView )
 	EVT_MENU( wxID_MAINWND_SAVEVIEW, CMainWindow::SaveView )
 	EVT_MENU( wxID_MAINWND_RESTOREVIEW, CMainWindow::RestoreView )
+	EVT_MENU( wxID_MAINWND_TAKESCREENSHOT, CMainWindow::TakeScreenshot )
 	EVT_MENU( wxID_MAINWND_TOGGLEMESSAGES, CMainWindow::ShowMessagesWindow )
 	EVT_MENU( wxID_MAINWND_OPTIONS, CMainWindow::OpenOptionsDialog )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
@@ -79,6 +80,10 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 	pMenuView->Append( wxID_MAINWND_CENTERVIEW, "Center View" );
 	pMenuView->Append( wxID_MAINWND_SAVEVIEW, "Save View" );
 	pMenuView->Append( wxID_MAINWND_RESTOREVIEW, "Restore View" );
+
+	pMenuView->AppendSeparator();
+
+	pMenuView->Append( wxID_MAINWND_TAKESCREENSHOT, "Take Screenshot" );
 
 	wxMenu* pMenuTools = new wxMenu;
 
@@ -238,6 +243,11 @@ void CMainWindow::UnloadGroundTexture()
 	m_pMainPanel->UnloadGroundTexture();
 }
 
+void CMainWindow::SaveUVMap( const wxString& szFilename, const int iTexture )
+{
+	m_pMainPanel->SaveUVMap( szFilename, iTexture );
+}
+
 void CMainWindow::CenterView()
 {
 	m_pHLMV->GetState()->CenterView();
@@ -251,6 +261,11 @@ void CMainWindow::SaveView()
 void CMainWindow::RestoreView()
 {
 	m_pHLMV->GetState()->RestoreView();
+}
+
+void CMainWindow::TakeScreenshot()
+{
+	m_pMainPanel->TakeScreenshot();
 }
 
 void CMainWindow::RefreshRecentFiles()
@@ -337,6 +352,11 @@ void CMainWindow::SaveView( wxCommandEvent& event )
 void CMainWindow::RestoreView( wxCommandEvent& event )
 {
 	RestoreView();
+}
+
+void CMainWindow::TakeScreenshot( wxCommandEvent& event )
+{
+	TakeScreenshot();
 }
 
 void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )

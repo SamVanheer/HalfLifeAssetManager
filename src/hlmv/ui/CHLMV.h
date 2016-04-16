@@ -119,6 +119,11 @@ public:
 	*/
 	void UnloadGroundTexture();
 
+	/**
+	*	Saves the given texture's UV map to the given file.
+	*/
+	void SaveUVMap( const wxString& szFilename, const int iTexture );
+
 private:
 	CHLMVSettings* m_pSettings;
 	CHLMVState* m_pState;

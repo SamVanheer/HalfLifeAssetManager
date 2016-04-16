@@ -25,6 +25,7 @@
     <ClCompile Include="..\src\common\Utility.cpp" />
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
     <ClCompile Include="..\src\graphics\Constants.cpp" />
+    <ClCompile Include="..\src\graphics\GLRenderTarget.cpp" />
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
     <ClCompile Include="..\src\graphics\OpenGL.cpp" />
     <ClCompile Include="..\src\hlmv\CHLMVState.cpp" />
@@ -83,6 +84,7 @@
     <ClInclude Include="..\src\common\Utility.h" />
     <ClInclude Include="..\src\filesystem\CFileSystem.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />
+    <ClInclude Include="..\src\graphics\GLRenderTarget.h" />
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
     <ClInclude Include="..\src\graphics\OpenGL.h" />
     <ClInclude Include="..\src\hlmv\CHLMVState.h" />

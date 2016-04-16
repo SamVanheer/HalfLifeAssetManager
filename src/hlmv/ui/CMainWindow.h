@@ -42,11 +42,15 @@ public:
 
 	void UnloadGroundTexture();
 
+	void SaveUVMap( const wxString& szFilename, const int iTexture );
+
 	void CenterView();
 
 	void SaveView();
 
 	void RestoreView();
+
+	void TakeScreenshot();
 
 private:
 	wxDECLARE_EVENT_TABLE();
@@ -64,6 +68,7 @@ private:
 	void CenterView( wxCommandEvent& event );
 	void SaveView( wxCommandEvent& event );
 	void RestoreView( wxCommandEvent& event );
+	void TakeScreenshot( wxCommandEvent& event );
 
 	void ShowMessagesWindow( wxCommandEvent& event );
 	void OpenOptionsDialog( wxCommandEvent& event );

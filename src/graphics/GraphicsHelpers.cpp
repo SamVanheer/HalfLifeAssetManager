@@ -51,6 +51,26 @@ void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pDa
 	}
 }
 
+void FlipImageVertically( const int iWidth, const int iHeight, byte* const pData )
+{
+	assert( iWidth > 0 );
+	assert( iHeight > 0 );
+	assert( pData );
+
+	const int iHalfHeight = iHeight / 2;
+
+	for( int y = iHalfHeight; y < iHeight; ++y )
+	{
+		for( int x = 0; x < iWidth; ++x )
+		{
+			for( int i = 0; i < 3; ++i )
+			{
+				std::swap( pData[ ( x + y * iWidth ) * 3 + i ], pData[ ( x + ( iHeight - y - 1 ) * iWidth ) * 3 + i ] );
+			}
+		}
+	}
+}
+
 void SetupRenderMode( RenderMode renderMode )
 {
 	if( renderMode == RenderMode::INVALID )

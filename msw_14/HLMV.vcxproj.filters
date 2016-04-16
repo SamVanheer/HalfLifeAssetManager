@@ -267,6 +267,9 @@
     <ClCompile Include="..\src\graphics\Constants.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\graphics\GLRenderTarget.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -460,6 +463,9 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\shared\CGameConfigurationsPanel.h">
       <Filter>Header Files\ui\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\GLRenderTarget.h">
+      <Filter>Header Files\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

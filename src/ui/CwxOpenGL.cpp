@@ -2,6 +2,8 @@
 
 #include "common/Logging.h"
 
+#include "graphics/GLRenderTarget.h"
+
 #include "CwxOpenGL.h"
 
 CwxOpenGL* CwxOpenGL::m_pInstance = nullptr;
@@ -70,6 +72,13 @@ bool CwxOpenGL::Initialize( const wxGLAttributes& canvasAttributes, const wxGLCo
 */
 void CwxOpenGL::Shutdown()
 {
+	//TODO: this requires the gl context to be current. It requires a canvas to do so, meaning this has to happen before the last canvas is destroyed.
+	if( m_pScratchTarget )
+	{
+		delete m_pScratchTarget;
+		m_pScratchTarget = nullptr;
+	}
+
 	if( m_pContext )
 	{
 		delete m_pContext;
@@ -113,6 +122,23 @@ wxGLContext* CwxOpenGL::GetContext( wxGLCanvas* pCanvas )
 	}
 
 	return m_pContext;
+}
+
+GLRenderTarget* CwxOpenGL::GetScratchTarget()
+{
+	if( m_pScratchTarget )
+		return m_pScratchTarget;
+
+	//Need a context before we can create this.
+	if( !m_pContext )
+	{
+		wxASSERT_MSG( m_pContext, "The scratch target requires a context to be created!" );
+		return nullptr;
+	}
+
+	m_pScratchTarget = new GLRenderTarget( true );
+
+	return m_pScratchTarget;
 }
 
 GLuint CwxOpenGL::glLoadImage( const char* const pszFilename )

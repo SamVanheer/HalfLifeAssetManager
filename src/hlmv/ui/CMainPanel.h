@@ -90,6 +90,8 @@ public:
 
 	void SaveUVMap( const wxString& szFilename, const int iTexture );
 
+	void TakeScreenshot();
+
 protected:
 	wxDECLARE_EVENT_TABLE();
 
