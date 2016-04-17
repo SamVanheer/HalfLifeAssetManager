@@ -6,9 +6,9 @@
 
 #include "studiomodel/StudioModel.h"
 
-#include "hlmv/ui/CHLMV.h"
-#include "hlmv/settings/CHLMVSettings.h"
-#include "hlmv/CHLMVState.h"
+#include "../CHLMV.h"
+#include "../../settings/CHLMVSettings.h"
+#include "../../CHLMVState.h"
 
 #include "CSequencesPanel.h"
 

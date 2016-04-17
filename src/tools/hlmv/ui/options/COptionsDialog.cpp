@@ -4,7 +4,7 @@
 #include "CGeneralOptions.h"
 #include "ui/shared/CGameConfigurationsPanel.h"
 
-#include "hlmv/settings/CHLMVSettings.h"
+#include "../../settings/CHLMVSettings.h"
 
 #include "COptionsDialog.h"
 

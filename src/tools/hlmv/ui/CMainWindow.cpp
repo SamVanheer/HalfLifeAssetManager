@@ -5,7 +5,7 @@
 
 #include "ui/shared/CMessagesWindow.h"
 
-#include "hlmv/ui/CHLMV.h"
+#include "CHLMV.h"
 
 #include "options/COptionsDialog.h"
 

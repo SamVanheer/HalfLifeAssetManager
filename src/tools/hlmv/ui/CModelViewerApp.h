@@ -5,7 +5,7 @@
 
 #include "ui/CwxBaseApp.h"
 
-#include "hlmv/ui/CHLMV.h"
+#include "CHLMV.h"
 
 class CModelViewerApp : public CwxBaseApp
 {

@@ -3,7 +3,7 @@
 
 #include "CBaseControlPanel.h"
 
-#include "hlmv/CHLMVState.h"
+#include "../../CHLMVState.h"
 
 namespace hlmv
 {

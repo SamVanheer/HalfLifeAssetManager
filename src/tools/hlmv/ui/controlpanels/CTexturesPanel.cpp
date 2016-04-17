@@ -8,10 +8,8 @@
 
 #include "studiomodel/StudioModel.h"
 
-#include "hlmv/ui/CHLMV.h"
-#include "hlmv/CHLMVState.h"
-
-#include "hlmv/ui/CMainPanel.h"
+#include "../CHLMV.h"
+#include "../../CHLMVState.h"
 
 #include "CTexturesPanel.h"
 

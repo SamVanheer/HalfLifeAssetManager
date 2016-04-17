@@ -3,7 +3,7 @@
 
 #include "tools/shared/CBaseTool.h"
 
-#include "hlmv/settings/CHLMVSettings.h"
+#include "../settings/CHLMVSettings.h"
 
 namespace hlmv
 {

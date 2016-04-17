@@ -7,7 +7,7 @@
 
 #include "ui/utility/wxUtil.h"
 
-#include "hlmv/settings/CHLMVSettings.h"
+#include "../../settings/CHLMVSettings.h"
 
 #include "CGeneralOptions.h"
 

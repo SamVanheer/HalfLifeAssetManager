@@ -1,7 +1,7 @@
 #ifndef HLMV_UI_OPTIONS_CGENERALOPTIONS_H
 #define HLMV_UI_OPTIONS_CGENERALOPTIONS_H
 
-#include "hlmv/ui/wxHLMV.h"
+#include "../wxHLMV.h"
 
 class wxColourPickerCtrl;
 

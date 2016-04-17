@@ -1,8 +1,8 @@
 #include <wx/gbsizer.h>
 
-#include "hlmv/ui/CFullscreenWindow.h"
+#include "../CFullscreenWindow.h"
 
-#include "hlmv/ui/CHLMV.h"
+#include "../CHLMV.h"
 
 #include "CFullscreenPanel.h"
 

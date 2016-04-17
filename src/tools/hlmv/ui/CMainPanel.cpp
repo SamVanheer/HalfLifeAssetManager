@@ -14,7 +14,7 @@
 #include "studiomodel/StudioModel.h"
 
 #include "CHLMV.h"
-#include "hlmv/CHLMVState.h"
+#include "../CHLMVState.h"
 
 #include "CMainPanel.h"
 

@@ -1,7 +1,7 @@
 #include <wx/sizer.h>
 
-#include "hlmv/ui/CHLMV.h"
-#include "hlmv/CHLMVState.h"
+#include "CHLMV.h"
+#include "../CHLMVState.h"
 
 #include "C3DView.h"
 

@@ -3,8 +3,8 @@
 
 #include "wxHLMV.h"
 
-#include "hlmv/settings/CHLMVSettings.h"
-#include "hlmv/CHLMVState.h"
+#include "../settings/CHLMVSettings.h"
+#include "../CHLMVState.h"
 
 namespace hlmv
 {
