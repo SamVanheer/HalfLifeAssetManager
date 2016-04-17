@@ -39,7 +39,7 @@ protected:
 
 	void OnExit( const bool bMainWndClosed ) override final;
 
-	void FPSChanged( const float flOldFPS, const float flNewFPS ) override final;
+	void FPSChanged( const double flOldFPS, const double flNewFPS ) override final;
 
 public:
 	/**

@@ -69,12 +69,12 @@ void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameCo
 	}
 }
 
-void CHLMVSettings::SetFPS( const float flFPS )
+void CHLMVSettings::SetFPS( const double flFPS )
 {
 	if( flFPS == m_flFPS )
 		return;
 
-	const float flOldFPS = m_flFPS;
+	const double flOldFPS = m_flFPS;
 
 	m_flFPS = clamp( flFPS, MIN_FPS, MAX_FPS );
 
@@ -138,7 +138,7 @@ bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 
 		if( auto fps = settings->FindFirstChild<CKeyvalue>( "fps" ) )
 		{
-			SetFPS( static_cast<float>( strtod( fps->GetValue().CStr(), nullptr ) ) );
+			SetFPS( strtod( fps->GetValue().CStr(), nullptr ) );
 		}
 	}
 

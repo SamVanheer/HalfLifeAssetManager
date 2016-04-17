@@ -17,7 +17,7 @@ class IHLMVSettingsListener
 public:
 	virtual ~IHLMVSettingsListener() = 0;
 
-	virtual void FPSChanged( const float flOldFPS, const float flNewFPS ) = 0;
+	virtual void FPSChanged( const double flOldFPS, const double flNewFPS ) = 0;
 };
 
 inline IHLMVSettingsListener::~IHLMVSettingsListener()
@@ -132,12 +132,12 @@ public:
 	/**
 	*	Gets the FPS.
 	*/
-	float GetFPS() const { return m_flFPS; }
+	double GetFPS() const { return m_flFPS; }
 
 	/**
 	*	Sets the FPS.
 	*/
-	void SetFPS( const float flFPS );
+	void SetFPS( const double flFPS );
 
 protected:
 	bool PostInitialize( const char* const pszFilename ) override final;
@@ -166,7 +166,7 @@ private:
 
 	Color m_WireframeColor = DEFAULT_WIREFRAME_COLOR;
 
-	float m_flFPS = DEFAULT_FPS;
+	double m_flFPS = DEFAULT_FPS;
 };
 }
 

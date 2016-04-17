@@ -12,6 +12,7 @@ CHLMV::CHLMV()
 	, m_pSettings( new CHLMVSettings() )
 	, m_pState( new CHLMVState() )
 {
+	m_pSettings->SetHLMVListener( this );
 }
 
 CHLMV::~CHLMV()
@@ -83,7 +84,7 @@ void CHLMV::OnExit( const bool bMainWndClosed )
 	logging().SetLogListener( GetNullLogListener() );
 }
 
-void CHLMV::FPSChanged( const float flOldFPS, const float flNewFPS )
+void CHLMV::FPSChanged( const double flOldFPS, const double flNewFPS )
 {
 	StartTimer( flNewFPS );
 }

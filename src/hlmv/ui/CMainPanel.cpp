@@ -50,6 +50,8 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pDrawnPolys = new wxStaticText( m_pMainControlBar, wxID_ANY, "Drawn Polys: Undefined" );
 
+	m_pFPS = new wxStaticText( m_pMainControlBar, wxID_ANY, "FPS: 0" );
+
 	m_pControlPanels = new wxNotebook( m_pControlPanel, wxID_MAIN_PAGECHANGED );
 
 	m_pModelDisplay = new CModelDisplayPanel( m_pControlPanels, m_pHLMV );
@@ -83,6 +85,7 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	pBarSizer->Add( m_pViewOrigin, wxGBPosition( 0, 0 ), wxGBSpan( 1, 2 ) );
 	pBarSizer->Add( m_pDrawnPolys, wxGBPosition( 0, 2 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER );
+	pBarSizer->Add( m_pFPS, wxGBPosition( 0, 3 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER );
 
 	m_pMainControlBar->SetSizer( pBarSizer );
 
@@ -111,6 +114,10 @@ CMainPanel::~CMainPanel()
 
 void CMainPanel::RunFrame()
 {
+	++m_uiCurrentFPS;
+
+	const long long iCurrentTick = GetCurrentTick();
+
 	ForEachPanel( &CBaseControlPanel::ViewPreUpdate );
 
 	m_p3DView->UpdateView();
@@ -120,6 +127,16 @@ void CMainPanel::RunFrame()
 	{
 		m_uiOldDrawnPolys = m_pHLMV->GetState()->drawnPolys;
 		m_pDrawnPolys->SetLabelText( wxString::Format( "Drawn Polys: %u", m_pHLMV->GetState()->drawnPolys ) );
+	}
+
+	//Update FPS.
+	if( iCurrentTick - m_iLastFPSUpdate >= 1000 )
+	{
+		m_iLastFPSUpdate = iCurrentTick;
+
+		m_pFPS->SetLabelText( wxString::Format( "FPS: %u", m_uiCurrentFPS ) );
+
+		m_uiCurrentFPS = 0;
 	}
 
 	ForEachPanel( &CBaseControlPanel::ViewUpdated );

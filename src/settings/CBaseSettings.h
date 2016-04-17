@@ -18,11 +18,11 @@ class CGameConfigManager;
 class CBaseSettings
 {
 public:
-	static const float DEFAULT_FPS;
+	static const double DEFAULT_FPS;
 
-	static const float MIN_FPS;
+	static const double MIN_FPS;
 
-	static const float MAX_FPS;
+	static const double MAX_FPS;
 
 protected:
 	/**

@@ -126,6 +126,11 @@ private:
 
 	wxStaticText* m_pDrawnPolys;
 
+	long long m_iLastFPSUpdate = GetCurrentTick();
+	unsigned int m_uiCurrentFPS = 0;
+
+	wxStaticText* m_pFPS;
+
 	wxRadioBox* m_pViewOrigin;
 
 	wxNotebook* m_pControlPanels;

@@ -23,11 +23,12 @@
 
 namespace settings
 {
-const float CBaseSettings::DEFAULT_FPS = 30.0f;
+const double CBaseSettings::DEFAULT_FPS = 30.0f;
 
-const float CBaseSettings::MIN_FPS = 15.0f;
+const double CBaseSettings::MIN_FPS = 15.0f;
 
-const float CBaseSettings::MAX_FPS = 500.0f;
+//wxTimer seems to have issues going higher than ~64 FPS. Might be good to use a more game engine like main loop instead of a timer.
+const double CBaseSettings::MAX_FPS = 60.0f;
 
 CBaseSettings::CBaseSettings()
 	: m_ConfigManager( std::make_shared<CGameConfigManager>() )

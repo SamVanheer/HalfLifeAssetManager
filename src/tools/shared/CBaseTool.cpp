@@ -209,10 +209,12 @@ void CBaseTool::SetMaxMessagesCount( const size_t uiMaxMessagesCount )
 	m_uiMaxMessagesCount = uiMaxMessagesCount;
 }
 
-void CBaseTool::StartTimer( float flFPS )
+void CBaseTool::StartTimer( double flFPS )
 {
-	flFPS = clamp( flFPS, settings::CBaseSettings::MIN_FPS, settings::CBaseSettings::MAX_FPS );
+	//The + 3 here is necessary so the FPS isn't clamped at odd values. 60 FPS is actually 40 FPS without this.
+	//TODO: figure out how to handle the main event loop ourselves, then run frame updates while idle. Idle events look promising, but don't run when a menu is open.
+	flFPS = clamp( flFPS, settings::CBaseSettings::MIN_FPS, settings::CBaseSettings::MAX_FPS ) + 3;
 
-	m_pTimer->Start( ( 1 / flFPS ) * 1000 );
+	m_pTimer->Start( 1000 / flFPS );
 }
 }
