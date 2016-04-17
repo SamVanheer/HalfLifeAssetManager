@@ -77,9 +77,6 @@ void CHLMV::OnExit( const bool bMainWndClosed )
 		m_pMainWindow->Close( true );
 		m_pMainWindow = nullptr;
 	}
-
-	//TODO: use log to file listener instead (prevents message boxes from popping up during shutdown)
-	logging().SetLogListener( GetNullLogListener() );
 }
 
 void CHLMV::SetMainWindow( CMainWindow* const pMainWindow )

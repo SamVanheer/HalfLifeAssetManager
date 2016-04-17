@@ -228,6 +228,9 @@ void CBaseTool::Exit( const bool bMainWndClosed )
 	//Close messages window if needed.
 	UseMessagesWindow( false );
 
+	//Don't let any log message boxes pop up during shutdown.
+	logging().SetLogListener( GetNullLogListener() );
+
 	OnExit( bMainWndClosed );
 }
 
@@ -280,7 +283,6 @@ void CBaseTool::MessagesWindowClosed()
 {
 	m_pMessagesWindow = nullptr;
 
-	//TODO: track and reset listener so it restores the previous one
 	logging().SetLogListener( nullptr );
 }
 
