@@ -33,9 +33,6 @@ inline I3DViewListener::~I3DViewListener()
 class C3DView final : public wxGLCanvas
 {
 public:
-	static const float FLOOR_SIDE_LENGTH;
-
-public:
 	C3DView( wxWindow* pParent, CHLMV* const pHLMV, I3DViewListener* pListener = nullptr );
 	~C3DView();
 

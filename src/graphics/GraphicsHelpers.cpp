@@ -321,8 +321,6 @@ void DrawFloorQuad( float flSideLength )
 {
 	flSideLength = abs( flSideLength );
 
-	flSideLength /= 2;
-
 	glBegin( GL_TRIANGLE_STRIP );
 	glTexCoord2f( 0.0f, 0.0f );
 	glVertex3f( -flSideLength, flSideLength, 0.0f );

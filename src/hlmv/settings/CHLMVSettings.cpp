@@ -21,6 +21,12 @@ const Color CHLMVSettings::DEFAULT_LIGHT_COLOR = Color( 255, 255, 255 );
 
 const Color CHLMVSettings::DEFAULT_WIREFRAME_COLOR = Color( 255, 0, 0 );
 
+const float CHLMVSettings::MIN_FLOOR_LENGTH = 0;
+
+const float CHLMVSettings::MAX_FLOOR_LENGTH = 2048;
+
+const float CHLMVSettings::DEFAULT_FLOOR_LENGTH = 100;
+
 CHLMVSettings::CHLMVSettings()
 {
 }
@@ -56,6 +62,8 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 	m_CrosshairColor	= other.m_CrosshairColor;
 	m_LightColor		= other.m_LightColor;
 	m_WireframeColor	= other.m_WireframeColor;
+
+	m_flFloorLength		= other.m_flFloorLength;
 }
 
 void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameConfig>& oldConfig, const std::shared_ptr<settings::CGameConfig>& newConfig )
@@ -65,6 +73,11 @@ void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameCo
 	{
 		Error( "Error reinitializing the filesystem after configuration change from \"%s\" to \"%s\"\n", oldConfig ? oldConfig->GetName() : "None", newConfig ? newConfig->GetName() : "None" );
 	}
+}
+
+void CHLMVSettings::SetFloorLength( float flLength )
+{
+	m_flFloorLength = clamp( abs( flLength ), MIN_FLOOR_LENGTH, MAX_FLOOR_LENGTH );
 }
 
 bool CHLMVSettings::PostInitialize( const char* const pszFilename )
@@ -120,6 +133,11 @@ bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 		LoadColorSetting( settings, "crosshairColor", m_CrosshairColor );
 		LoadColorSetting( settings, "lightColor", m_LightColor );
 		LoadColorSetting( settings, "wireframeColor", m_WireframeColor );
+
+		if( auto floor = settings->FindFirstChild<CKeyvalue>( "floorLength" ) )
+		{
+			SetFloorLength( static_cast<float>( strtod( floor->GetValue().CStr(), nullptr ) ) );
+		}
 	}
 
 	return true;
@@ -129,6 +147,8 @@ bool CHLMVSettings::SaveToFile( CKeyvaluesWriter& writer )
 {
 	if( !CBaseSettings::SaveToFile( writer ) )
 		return false;
+
+	char szBuffer[ MAX_BUFFER_LENGTH ];
 
 	writer.BeginBlock( "hlmvSettings" );
 
@@ -156,8 +176,13 @@ bool CHLMVSettings::SaveToFile( CKeyvaluesWriter& writer )
 	SaveColorSetting( writer, "lightColor", m_LightColor );
 	SaveColorSetting( writer, "wireframeColor", m_WireframeColor );
 
+	if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%f", GetFloorLength() ), sizeof( szBuffer ) ) )
+		return false;
+
+	writer.WriteKeyvalue( "floorLength", szBuffer );
+
 	writer.EndBlock();
 
-	return true;
+	return !writer.ErrorOccurred();
 }
 }

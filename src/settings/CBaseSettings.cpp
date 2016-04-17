@@ -215,9 +215,12 @@ bool CBaseSettings::SaveToFile( CKeyvaluesWriter& writer )
 
 bool CBaseSettings::LoadCommonSettings( const std::shared_ptr<CKvBlockNode>& root )
 {
-	if( auto fps = root->FindFirstChild<CKeyvalue>( "fps" ) )
+	if( auto common = root->FindFirstChild<CKvBlockNode>( "commonSettings" ) )
 	{
-		SetFPS( strtod( fps->GetValue().CStr(), nullptr ) );
+		if( auto fps = common->FindFirstChild<CKeyvalue>( "fps" ) )
+		{
+			SetFPS( strtod( fps->GetValue().CStr(), nullptr ) );
+		}
 	}
 
 	return true;
@@ -225,6 +228,8 @@ bool CBaseSettings::LoadCommonSettings( const std::shared_ptr<CKvBlockNode>& roo
 
 bool CBaseSettings::SaveCommonSettings( CKeyvaluesWriter& writer )
 {
+	writer.BeginBlock( "commonSettings" );
+
 	char szBuffer[ MAX_BUFFER_LENGTH ];
 
 	if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%f", GetFPS() ), sizeof( szBuffer ) ) )
@@ -232,7 +237,9 @@ bool CBaseSettings::SaveCommonSettings( CKeyvaluesWriter& writer )
 
 	writer.WriteKeyvalue( "fps", szBuffer );
 
-	return true;
+	writer.EndBlock();
+
+	return !writer.ErrorOccurred();
 }
 
 bool CBaseSettings::LoadGameConfigs( const std::shared_ptr<CKvBlockNode>& root )

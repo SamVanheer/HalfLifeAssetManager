@@ -27,6 +27,12 @@ public:
 
 	static const Color DEFAULT_WIREFRAME_COLOR;
 
+	static const float MIN_FLOOR_LENGTH;
+
+	static const float MAX_FLOOR_LENGTH;
+
+	static const float DEFAULT_FLOOR_LENGTH;
+
 public:
 	CHLMVSettings();
 	~CHLMVSettings();
@@ -101,6 +107,16 @@ public:
 	*/
 	void SetWireframeColor( const Color& color ) { m_WireframeColor = color; }
 
+	/**
+	*	Gets the floor length.
+	*/
+	float GetFloorLength() const { return m_flFloorLength; }
+
+	/**
+	*	Sets the floor length.
+	*/
+	void SetFloorLength( float flLength );
+
 protected:
 	bool PostInitialize( const char* const pszFilename ) override final;
 
@@ -125,6 +141,8 @@ private:
 	Color m_LightColor = DEFAULT_LIGHT_COLOR;
 
 	Color m_WireframeColor = DEFAULT_WIREFRAME_COLOR;
+
+	float m_flFloorLength = DEFAULT_FLOOR_LENGTH;
 };
 }
 

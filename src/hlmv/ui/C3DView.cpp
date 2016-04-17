@@ -24,8 +24,6 @@ wxBEGIN_EVENT_TABLE( C3DView, wxGLCanvas )
 	EVT_MOUSE_EVENTS( C3DView::MouseEvents )
 wxEND_EVENT_TABLE()
 
-const float C3DView::FLOOR_SIDE_LENGTH = 200;
-
 C3DView::C3DView( wxWindow* pParent, CHLMV* const pHLMV, I3DViewListener* pListener )
 	: wxGLCanvas( pParent, wxOpenGL().GetCanvasAttributes(), wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
@@ -270,7 +268,8 @@ void C3DView::DrawModel()
 	if( m_pHLMV->GetState()->mirror )
 	{
 		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawMirroredModel( *m_pHLMV->GetState()->GetStudioModel(), m_pHLMV->GetState()->renderMode,
-																				 m_pHLMV->GetState()->renderSettings, m_pHLMV->GetState()->wireframeOverlay, FLOOR_SIDE_LENGTH );
+																				 m_pHLMV->GetState()->renderSettings, m_pHLMV->GetState()->wireframeOverlay, 
+																				 m_pHLMV->GetSettings()->GetFloorLength() );
 	}
 
 	SetupRenderMode();
@@ -290,7 +289,7 @@ void C3DView::DrawModel()
 
 	if( m_pHLMV->GetState()->showGround )
 	{
-		graphics::helpers::DrawFloor( FLOOR_SIDE_LENGTH, m_GroundTexture, m_pHLMV->GetSettings()->GetGroundColor(), m_pHLMV->GetState()->mirror );
+		graphics::helpers::DrawFloor( m_pHLMV->GetSettings()->GetFloorLength(), m_GroundTexture, m_pHLMV->GetSettings()->GetGroundColor(), m_pHLMV->GetState()->mirror );
 	}
 
 	glPopMatrix();

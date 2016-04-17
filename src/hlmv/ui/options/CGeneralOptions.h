@@ -27,6 +27,8 @@ private:
 
 	void SetDefaultFPS( wxCommandEvent& event );
 
+	void SetDefaultFloorLength( wxCommandEvent& event );
+
 private:
 	CHLMVSettings* const m_pSettings;
 
@@ -37,6 +39,7 @@ private:
 	wxColourPickerCtrl* m_pWireframeColor;
 
 	wxSlider* m_pFPS;
+	wxSlider* m_pFloorLength;
 
 private:
 	CGeneralOptions( const CGeneralOptions& ) = delete;
