@@ -416,7 +416,25 @@ unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode,
 	glScalef( 1, 1, -1 );
 	glCullFace( GL_BACK );
 	SetupRenderMode( renderMode );
+
+	glEnable( GL_CLIP_PLANE0 );
+
+	/*
+	*	This defines a clipping plane that covers the ground. Any mirrored polygons will not be drawn above the ground.
+	*/
+	const GLdouble flClipPlane[] = 
+	{
+		0.0,	//X
+		0.0,	//Y
+		1.0,	//Z
+		0.0		//Offset in direction. In our case, this would move the plane up or down.
+	};
+
+	glClipPlane( GL_CLIP_PLANE0, flClipPlane );
+
 	unsigned int uiDrawnPolys = model.DrawModel( settings );
+
+	glDisable( GL_CLIP_PLANE0 );
 
 	//Draw wireframe overlay
 	if( bWireframeOverlay )
