@@ -84,3 +84,6 @@ msw_14/HLMVSettings - kopie.txt
 bin/HLMVSettings.txt
 *.iobj
 *.ipdb
+*.res
+msw_14/Release/RCa37524
+msw_14/Release/RCa37624

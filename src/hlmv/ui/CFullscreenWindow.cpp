@@ -19,6 +19,8 @@ CFullscreenWindow::CFullscreenWindow( CHLMV* const pHLMV )
 {
 	m_pHLMV->SetFullscreenWindow( this );
 
+	SetIcon( m_pHLMV->GetToolIcon() );
+
 	m_p3DView = new C3DView( this, m_pHLMV );
 
 	wxBoxSizer* pSizer = new wxBoxSizer( wxVERTICAL );

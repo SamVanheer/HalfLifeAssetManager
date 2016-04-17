@@ -149,6 +149,9 @@
     <ClInclude Include="..\src\utility\studio.h" />
     <ClInclude Include="..\src\utility\Vector.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\src\msw\tools\hlmv.rc" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B478CBB5-EEF9-4E7F-9749-E90ACE12E016}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

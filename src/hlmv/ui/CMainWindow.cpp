@@ -44,6 +44,8 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 {
 	pHLMV->SetMainWindow( this );
 
+	SetIcon( m_pHLMV->GetToolIcon() );
+
 	wxMenu* menuFile = new wxMenu;
 
 	menuFile->Append( wxID_MAINWND_LOADMODEL, "&Load Model...",

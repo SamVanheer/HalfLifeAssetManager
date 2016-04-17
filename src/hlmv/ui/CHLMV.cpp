@@ -8,7 +8,7 @@
 namespace hlmv
 {
 CHLMV::CHLMV()
-	: CBaseTool( INIT_ALL, "Half-Life Model Viewer", new CHLMVSettings() )
+	: CBaseTool( INIT_ALL, "Half-Life Model Viewer", wxICON( HLMV_ICON ), new CHLMVSettings() )
 	, m_pState( new CHLMVState() )
 {
 	GetSettings()->SetSettingsListener( this );

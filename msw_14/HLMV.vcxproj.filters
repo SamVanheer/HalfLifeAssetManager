@@ -498,4 +498,9 @@
       <Filter>Header Files\tools\shared</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\src\msw\tools\hlmv.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
 </Project>

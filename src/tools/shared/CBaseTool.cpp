@@ -17,9 +17,10 @@
 
 namespace tools
 {
-CBaseTool::CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName, settings::CBaseSettings* const pSettings )
+CBaseTool::CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName, const wxIcon& toolIcon, settings::CBaseSettings* const pSettings )
 	: m_InitFlags( initFlags )
 	, m_szDisplayName( szDisplayName )
+	, m_ToolIcon( toolIcon )
 	, m_pSettings( pSettings )
 {
 	wxASSERT_MSG( !szDisplayName.IsEmpty(), "Tool Display Name may not be empty!" );
@@ -260,6 +261,8 @@ void CBaseTool::UseMessagesWindow( const bool bUse )
 	if( bUse )
 	{
 		m_pMessagesWindow = new ui::CMessagesWindow( m_uiMaxMessagesCount, this );
+
+		m_pMessagesWindow->SetIcon( GetToolIcon() );
 
 		logging().SetLogListener( m_pMessagesWindow );
 	}

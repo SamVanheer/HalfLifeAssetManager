@@ -49,7 +49,7 @@ protected:
 	*	@param initFlags Bit vector containing which systems to initialize, or INIT_ALL.
 	*	@param szDisplayName Display name.
 	*/
-	CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName, settings::CBaseSettings* const pSettings );
+	CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName, const wxIcon& toolIcon, settings::CBaseSettings* const pSettings );
 
 public:
 	virtual ~CBaseTool() = 0;
@@ -102,6 +102,11 @@ public:
 	*	Gets the tool display name, if any.
 	*/
 	const wxString& GetDisplayName() const { return m_szDisplayName; }
+
+	/**
+	*	Gets the tool icon, used for window icons.
+	*/
+	const wxIcon& GetToolIcon() const { return m_ToolIcon; }
 
 	/**
 	*	Gets the log filename.
@@ -187,6 +192,7 @@ private:
 private:
 	InitFlags_t m_InitFlags;
 	const wxString m_szDisplayName;
+	const wxIcon m_ToolIcon;
 
 	wxString m_szLogFileName;
 
