@@ -23,12 +23,12 @@
 
 namespace settings
 {
-const double CBaseSettings::DEFAULT_FPS = 30.0f;
+const double CBaseSettings::DEFAULT_FPS = 30.0;
 
-const double CBaseSettings::MIN_FPS = 15.0f;
+const double CBaseSettings::MIN_FPS = 15.0;
 
 //wxTimer seems to have issues going higher than ~64 FPS. Might be good to use a more game engine like main loop instead of a timer.
-const double CBaseSettings::MAX_FPS = 60.0f;
+const double CBaseSettings::MAX_FPS = 60.0; //500.0;
 
 CBaseSettings::CBaseSettings()
 	: m_ConfigManager( std::make_shared<CGameConfigManager>() )
@@ -58,6 +58,21 @@ CBaseSettings& CBaseSettings::operator=( const CBaseSettings& other )
 void CBaseSettings::Copy( const CBaseSettings& other )
 {
 	*m_ConfigManager = *other.m_ConfigManager;
+
+	SetFPS( other.GetFPS() );
+}
+
+void CBaseSettings::SetFPS( const double flFPS )
+{
+	if( flFPS == m_flFPS )
+		return;
+
+	const double flOldFPS = m_flFPS;
+
+	m_flFPS = clamp( flFPS, MIN_FPS, MAX_FPS );
+
+	if( m_pListener )
+		m_pListener->FPSChanged( flOldFPS, m_flFPS );
 }
 
 bool CBaseSettings::Initialize( const char* const pszFilename )
@@ -190,12 +205,34 @@ bool CBaseSettings::SaveToFile( const char* const pszFilename )
 
 bool CBaseSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 {
-	return LoadGameConfigs( root );
+	return LoadCommonSettings( root ) && LoadGameConfigs( root );
 }
 
 bool CBaseSettings::SaveToFile( CKeyvaluesWriter& writer )
 {
-	return SaveGameConfigs( writer );
+	return SaveCommonSettings( writer ) && SaveGameConfigs( writer );
+}
+
+bool CBaseSettings::LoadCommonSettings( const std::shared_ptr<CKvBlockNode>& root )
+{
+	if( auto fps = root->FindFirstChild<CKeyvalue>( "fps" ) )
+	{
+		SetFPS( strtod( fps->GetValue().CStr(), nullptr ) );
+	}
+
+	return true;
+}
+
+bool CBaseSettings::SaveCommonSettings( CKeyvaluesWriter& writer )
+{
+	char szBuffer[ MAX_BUFFER_LENGTH ];
+
+	if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%f", GetFPS() ), sizeof( szBuffer ) ) )
+		return false;
+
+	writer.WriteKeyvalue( "fps", szBuffer );
+
+	return true;
 }
 
 bool CBaseSettings::LoadGameConfigs( const std::shared_ptr<CKvBlockNode>& root )

@@ -7,7 +7,6 @@
 
 namespace hlmv
 {
-class CHLMVSettings;
 class CHLMVState;
 
 class CMainWindow;
@@ -16,7 +15,7 @@ class CFullscreenWindow;
 /**
 *	Facade class to access the entire HLMV program.
 */
-class CHLMV final : public tools::CBaseTool, public IHLMVSettingsListener
+class CHLMV final : public tools::CBaseTool
 {
 public:
 	/**
@@ -39,18 +38,16 @@ protected:
 
 	void OnExit( const bool bMainWndClosed ) override final;
 
-	void FPSChanged( const double flOldFPS, const double flNewFPS ) override final;
-
 public:
 	/**
 	*	Gets the settings object.
 	*/
-	const CHLMVSettings* GetSettings() const { return m_pSettings; }
+	const CHLMVSettings* GetSettings() const { return static_cast<const CHLMVSettings*>( CBaseTool::GetSettings() ); }
 
 	/**
 	*	@copydoc GetSettings() const
 	*/
-	CHLMVSettings* GetSettings() { return m_pSettings; }
+	CHLMVSettings* GetSettings() { return static_cast<CHLMVSettings*>( CBaseTool::GetSettings() ); }
 
 	/**
 	*	Gets the state object.
@@ -152,7 +149,6 @@ public:
 	void SaveUVMap( const wxString& szFilename, const int iTexture );
 
 private:
-	CHLMVSettings* m_pSettings;
 	CHLMVState* m_pState;
 
 	CMainWindow* m_pMainWindow = nullptr;

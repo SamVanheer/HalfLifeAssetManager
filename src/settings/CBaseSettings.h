@@ -12,6 +12,21 @@ class CGameConfig;
 class CGameConfigManager;
 
 /**
+*	Listener for settings.
+*/
+class ISettingsListener
+{
+public:
+	virtual ~ISettingsListener() = 0;
+
+	virtual void FPSChanged( const double flOldFPS, const double flNewFPS ) = 0;
+};
+
+inline ISettingsListener::~ISettingsListener()
+{
+}
+
+/**
 *	This class manages settings that are shared between all tools.
 *	This class is abstract.
 */
@@ -31,11 +46,6 @@ protected:
 	CBaseSettings();
 
 	/**
-	*	Destructor.
-	*/
-	virtual ~CBaseSettings();
-
-	/**
 	*	Constructs settings using another settings object. This is a deep copy.
 	*	@param other Settings to copy.
 	*/
@@ -50,6 +60,24 @@ protected:
 
 public:
 	/**
+	*	Destructor.
+	*/
+	virtual ~CBaseSettings();
+
+	/**
+	*	Gets the settings listener.
+	*/
+	ISettingsListener* GetSettingsListener() { return m_pListener; }
+
+	/**
+	*	Sets the settings listener.
+	*/
+	void SetSettingsListener( ISettingsListener* const pListener )
+	{
+		m_pListener = pListener;
+	}
+
+	/**
 	*	Gets the config manager.
 	*/
 	std::shared_ptr<const CGameConfigManager> GetConfigManager() const { return m_ConfigManager; }
@@ -58,6 +86,16 @@ public:
 	*	@see GetConfigManager() const
 	*/
 	std::shared_ptr<CGameConfigManager> GetConfigManager() { return m_ConfigManager; }
+
+	/**
+	*	Gets the FPS.
+	*/
+	double GetFPS() const { return m_flFPS; }
+
+	/**
+	*	Sets the FPS.
+	*/
+	void SetFPS( const double flFPS );
 
 	/**
 	*	Returns whether the settings object is initialized or not.
@@ -131,6 +169,10 @@ protected:
 	*/
 	virtual bool SaveToFile( CKeyvaluesWriter& writer );
 
+	bool LoadCommonSettings( const std::shared_ptr<CKvBlockNode>& root );
+
+	bool SaveCommonSettings( CKeyvaluesWriter& writer );
+
 	bool LoadGameConfigs( const std::shared_ptr<CKvBlockNode>& root );
 
 	bool SaveGameConfigs( CKeyvaluesWriter& writer );
@@ -140,10 +182,14 @@ private:
 	void Copy( const CBaseSettings& other );
 
 private:
+	ISettingsListener* m_pListener = nullptr;
+
 	/**
 	*	The config manager. This keeps track of all game configurations, as well as the active configuration.
 	*/
 	std::shared_ptr<CGameConfigManager> m_ConfigManager = std::make_shared<CGameConfigManager>();
+
+	double m_flFPS = DEFAULT_FPS;
 
 	bool m_bInitialized = false;
 };

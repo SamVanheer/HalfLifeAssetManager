@@ -8,17 +8,15 @@
 namespace hlmv
 {
 CHLMV::CHLMV()
-	: CBaseTool( INIT_ALL, "Half-Life Model Viewer" )
-	, m_pSettings( new CHLMVSettings() )
+	: CBaseTool( INIT_ALL, "Half-Life Model Viewer", new CHLMVSettings() )
 	, m_pState( new CHLMVState() )
 {
-	m_pSettings->SetHLMVListener( this );
+	GetSettings()->SetSettingsListener( this );
 }
 
 CHLMV::~CHLMV()
 {
 	delete m_pState;
-	delete m_pSettings;
 }
 
 bool CHLMV::PostInitialize()
@@ -26,7 +24,7 @@ bool CHLMV::PostInitialize()
 	//Must be called before we create the main window, since it accesses the window.
 	UseMessagesWindow( true );
 
-	if( !m_pSettings->Initialize( HLMV_SETTINGS_FILE ) )
+	if( !GetSettings()->Initialize( HLMV_SETTINGS_FILE ) )
 	{
 		return false;
 	}
@@ -35,14 +33,14 @@ bool CHLMV::PostInitialize()
 
 	m_pMainWindow->Show( true );
 
-	StartTimer( m_pSettings->GetFPS() );
+	StartTimer( GetSettings()->GetFPS() );
 
 	return true;
 }
 
 void CHLMV::PreShutdown()
 {
-	m_pSettings->Shutdown( HLMV_SETTINGS_FILE );
+	GetSettings()->Shutdown( HLMV_SETTINGS_FILE );
 
 	if( m_pFullscreenWindow )
 	{
@@ -82,11 +80,6 @@ void CHLMV::OnExit( const bool bMainWndClosed )
 
 	//TODO: use log to file listener instead (prevents message boxes from popping up during shutdown)
 	logging().SetLogListener( GetNullLogListener() );
-}
-
-void CHLMV::FPSChanged( const double flOldFPS, const double flNewFPS )
-{
-	StartTimer( flNewFPS );
 }
 
 void CHLMV::SetMainWindow( CMainWindow* const pMainWindow )

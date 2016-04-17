@@ -9,6 +9,8 @@
 
 #include "ui/utility/IWindowCloseListener.h"
 
+#include "settings/CBaseSettings.h"
+
 class wxGLAttributes;
 class wxGLContextAttrs;
 
@@ -23,7 +25,7 @@ namespace tools
 *	Base class for tools. Defines common initialization and shutdown operations, and manages shared behavior.
 *	Abstract.
 */
-class CBaseTool : public ITimerListener, public IWindowCloseListener
+class CBaseTool : public ITimerListener, public IWindowCloseListener, public settings::ISettingsListener
 {
 public:
 	static const size_t DEFAULT_MAX_MESSAGES_COUNT = 100;
@@ -47,7 +49,7 @@ protected:
 	*	@param initFlags Bit vector containing which systems to initialize, or INIT_ALL.
 	*	@param szDisplayName Display name.
 	*/
-	CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName = "" );
+	CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName, settings::CBaseSettings* const pSettings );
 
 public:
 	virtual ~CBaseTool() = 0;
@@ -57,7 +59,19 @@ private:
 
 	virtual void OnWindowClose( wxFrame* pWindow, wxCloseEvent& event ) override;
 
+	virtual void FPSChanged( const double flOldFPS, const double flNewFPS ) override;
+
 public:
+	/**
+	*	Gets the settings object.
+	*/
+	const settings::CBaseSettings* GetSettings() const { return m_pSettings; }
+
+	/**
+	*	@copydoc GetSettings() const
+	*/
+	settings::CBaseSettings* GetSettings() { return m_pSettings; }
+
 	/**
 	*	Initializes the tool.
 	*	@return true on success, false otherwise.
@@ -68,6 +82,11 @@ public:
 	*	Shuts down the tool. This must be called even if Initialize returned false.
 	*/
 	void Shutdown();
+
+	/**
+	*	Runs a single frame for this tool.
+	*/
+	void ToolRunFrame();
 
 	/**
 	*	Returns whether the tool is exiting.
@@ -140,6 +159,8 @@ private:
 private:
 	InitFlags_t m_InitFlags;
 	const wxString m_szDisplayName;
+
+	settings::CBaseSettings* m_pSettings;
 
 	CTimer* m_pTimer = nullptr;
 

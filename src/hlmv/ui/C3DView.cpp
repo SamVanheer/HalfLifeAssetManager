@@ -119,24 +119,6 @@ void C3DView::PrepareForLoad()
 
 void C3DView::UpdateView()
 {
-	//TODO: move logic out of this class and into another
-	const double flCurTime = GetCurrentTime();
-
-	float flFrameTime = flCurTime - Globals.GetPreviousRealTime();
-
-	Globals.SetRealTime( flCurTime );
-
-	if( flFrameTime > 1.0f )
-		flFrameTime = 0.1f;
-
-	if( flFrameTime < 1.0 / m_pHLMV->GetSettings()->GetFPS() )
-		return;
-
-	Globals.SetPreviousTime( Globals.GetCurrentTime() );
-	Globals.SetCurrentTime( Globals.GetCurrentTime() + flFrameTime );
-	Globals.SetFrameTime( flFrameTime );
-	Globals.SetPreviousRealTime( Globals.GetRealTime() );
-
 	if( m_pHLMV->GetState()->playSequence && m_pHLMV->GetState()->GetStudioModel() )
 	{
 		const float flDeltaTime = m_pHLMV->GetState()->GetStudioModel()->AdvanceFrame( /*flFrameTime*/ );
@@ -179,7 +161,10 @@ void C3DView::UpdateView()
 	}
 
 	if( !m_pHLMV->GetState()->pause )
+	{
 		Refresh();
+		Update();
+	}
 }
 
 void C3DView::DrawScene()

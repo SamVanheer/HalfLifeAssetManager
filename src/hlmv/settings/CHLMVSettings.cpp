@@ -56,8 +56,6 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 	m_CrosshairColor	= other.m_CrosshairColor;
 	m_LightColor		= other.m_LightColor;
 	m_WireframeColor	= other.m_WireframeColor;
-
-	SetFPS( other.GetFPS() );
 }
 
 void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameConfig>& oldConfig, const std::shared_ptr<settings::CGameConfig>& newConfig )
@@ -67,19 +65,6 @@ void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameCo
 	{
 		Error( "Error reinitializing the filesystem after configuration change from \"%s\" to \"%s\"\n", oldConfig ? oldConfig->GetName() : "None", newConfig ? newConfig->GetName() : "None" );
 	}
-}
-
-void CHLMVSettings::SetFPS( const double flFPS )
-{
-	if( flFPS == m_flFPS )
-		return;
-
-	const double flOldFPS = m_flFPS;
-
-	m_flFPS = clamp( flFPS, MIN_FPS, MAX_FPS );
-
-	if( m_pListener )
-		m_pListener->FPSChanged( flOldFPS, m_flFPS );
 }
 
 bool CHLMVSettings::PostInitialize( const char* const pszFilename )
@@ -135,11 +120,6 @@ bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 		LoadColorSetting( settings, "crosshairColor", m_CrosshairColor );
 		LoadColorSetting( settings, "lightColor", m_LightColor );
 		LoadColorSetting( settings, "wireframeColor", m_WireframeColor );
-
-		if( auto fps = settings->FindFirstChild<CKeyvalue>( "fps" ) )
-		{
-			SetFPS( strtod( fps->GetValue().CStr(), nullptr ) );
-		}
 	}
 
 	return true;
@@ -149,8 +129,6 @@ bool CHLMVSettings::SaveToFile( CKeyvaluesWriter& writer )
 {
 	if( !CBaseSettings::SaveToFile( writer ) )
 		return false;
-
-	char szBuffer[ MAX_BUFFER_LENGTH ];
 
 	writer.BeginBlock( "hlmvSettings" );
 
@@ -177,9 +155,6 @@ bool CHLMVSettings::SaveToFile( CKeyvaluesWriter& writer )
 	SaveColorSetting( writer, "crosshairColor", m_CrosshairColor );
 	SaveColorSetting( writer, "lightColor", m_LightColor );
 	SaveColorSetting( writer, "wireframeColor", m_WireframeColor );
-
-	if( PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%f", GetFPS() ), sizeof( szBuffer ) ) )
-		writer.WriteKeyvalue( "fps", szBuffer );
 
 	writer.EndBlock();
 

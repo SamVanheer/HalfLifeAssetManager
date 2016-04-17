@@ -5,6 +5,7 @@
 
 #include "ui/shared/CMessagesWindow.h"
 
+#include "common/CGlobals.h"
 #include "common/Utility.h"
 
 #include "settings/CBaseSettings.h"
@@ -13,10 +14,13 @@
 
 namespace tools
 {
-CBaseTool::CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName )
+CBaseTool::CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName, settings::CBaseSettings* const pSettings )
 	: m_InitFlags( initFlags )
 	, m_szDisplayName( szDisplayName )
+	, m_pSettings( pSettings )
 {
+	assert( pSettings );
+
 	//The sound system requires the use of the file system.
 	if( m_InitFlags & INIT_SOUNDSYSTEM )
 		m_InitFlags |= INIT_FILESYSTEM;
@@ -24,14 +28,12 @@ CBaseTool::CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName 
 
 CBaseTool::~CBaseTool()
 {
+	delete m_pSettings;
 }
 
 void CBaseTool::OnTimer( CTimer& timer )
 {
-	if( soundsystem::CSoundSystem::InstanceExists() )
-		soundSystem().RunFrame();
-
-	RunFrame();
+	ToolRunFrame();
 }
 
 void CBaseTool::OnWindowClose( wxFrame* pWindow, wxCloseEvent& event )
@@ -43,6 +45,11 @@ void CBaseTool::OnWindowClose( wxFrame* pWindow, wxCloseEvent& event )
 			MessagesWindowClosed();
 		}
 	}
+}
+
+void CBaseTool::FPSChanged( const double flOldFPS, const double flNewFPS )
+{
+	StartTimer( flNewFPS );
 }
 
 bool CBaseTool::Initialize()
@@ -146,6 +153,34 @@ void CBaseTool::Shutdown()
 
 		CwxOpenGL::DestroyInstance();
 	}
+}
+
+void CBaseTool::ToolRunFrame()
+{
+	const double flCurTime = GetCurrentTime();
+
+	double flFrameTime = flCurTime - Globals.GetPreviousRealTime();
+
+	Globals.SetRealTime( flCurTime );
+
+	if( flFrameTime > 1.0 )
+		flFrameTime = 0.1;
+
+	//Don't use this when using wxTimer, since it lowers the FPS by a fair amount.
+	/*
+	if( flFrameTime < ( 1.0 / GetSettings()->GetFPS() ) )
+		return;
+		*/
+
+	Globals.SetPreviousTime( Globals.GetCurrentTime() );
+	Globals.SetCurrentTime( Globals.GetCurrentTime() + flFrameTime );
+	Globals.SetFrameTime( flFrameTime );
+	Globals.SetPreviousRealTime( Globals.GetRealTime() );
+
+	if( soundsystem::CSoundSystem::InstanceExists() )
+		soundSystem().RunFrame();
+
+	RunFrame();
 }
 
 void CBaseTool::Exit( const bool bMainWndClosed )

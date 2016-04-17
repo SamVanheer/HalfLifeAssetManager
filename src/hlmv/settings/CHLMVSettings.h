@@ -10,21 +10,6 @@
 namespace hlmv
 {
 /**
-*	Listener for HLMV settings.
-*/
-class IHLMVSettingsListener
-{
-public:
-	virtual ~IHLMVSettingsListener() = 0;
-
-	virtual void FPSChanged( const double flOldFPS, const double flNewFPS ) = 0;
-};
-
-inline IHLMVSettingsListener::~IHLMVSettingsListener()
-{
-}
-
-/**
 *	Settings for HLMV.
 */
 class CHLMVSettings final : public settings::CBaseSettings, public settings::IGameConfigListener
@@ -50,19 +35,6 @@ public:
 	CHLMVSettings& operator=( const CHLMVSettings& other );
 
 	void ActiveConfigChanged( const std::shared_ptr<settings::CGameConfig>& oldConfig, const std::shared_ptr<settings::CGameConfig>& newConfig ) override final;
-
-	/**
-	*	Gets the HLMV listener.
-	*/
-	IHLMVSettingsListener* GetHLMVListener() { return m_pListener; }
-
-	/**
-	*	Sets the HLMV listener.
-	*/
-	void SetHLMVListener( IHLMVSettingsListener* const pListener )
-	{
-		m_pListener = pListener;
-	}
 
 	/**
 	*	Gets the recent files list.
@@ -129,16 +101,6 @@ public:
 	*/
 	void SetWireframeColor( const Color& color ) { m_WireframeColor = color; }
 
-	/**
-	*	Gets the FPS.
-	*/
-	double GetFPS() const { return m_flFPS; }
-
-	/**
-	*	Sets the FPS.
-	*/
-	void SetFPS( const double flFPS );
-
 protected:
 	bool PostInitialize( const char* const pszFilename ) override final;
 
@@ -152,8 +114,6 @@ private:
 	void Copy( const CHLMVSettings& other );
 
 private:
-	IHLMVSettingsListener* m_pListener = nullptr;
-
 	std::shared_ptr<settings::CRecentFiles> m_RecentFiles = std::make_shared<settings::CRecentFiles>( MAX_RECENT_FILES );
 
 	Color m_GroundColor = DEFAULT_GROUND_COLOR;
@@ -165,8 +125,6 @@ private:
 	Color m_LightColor = DEFAULT_LIGHT_COLOR;
 
 	Color m_WireframeColor = DEFAULT_WIREFRAME_COLOR;
-
-	double m_flFPS = DEFAULT_FPS;
 };
 }
 

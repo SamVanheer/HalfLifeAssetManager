@@ -396,7 +396,8 @@ void StudioModel::DispatchAnimEvents( IAnimEventHandler& handler, float flInterv
 	}
 
 	// FIXME: I have to do this or some events get missed, and this is probably causing the problem below
-	flInterval = 0.1f;
+	//This isn't really necessary, at least not in a tool.
+	//flInterval = 0.1f;
 
 	const mstudioseqdesc_t* pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex ) + m_sequence;
 
