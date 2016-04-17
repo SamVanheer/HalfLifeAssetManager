@@ -9,6 +9,8 @@
 
 #include "options/COptionsDialog.h"
 
+#include "tools/shared/Credits.h"
+
 #include "CMainPanel.h"
 
 #include "CMainWindow.h"
@@ -445,17 +447,8 @@ void CMainWindow::OnAbout( wxCommandEvent& event )
 					"Also based on Half-Life Model Viewer v1.25 © 2002 Mete Ciragan\n"
 					"Email:    mete@swissquake.ch\n"
 					"Web:      http://www.milkshape3d.com/\n\n"
-					"Contains FMOD, Copyright © Firelight Technologies Pty, Ltd., 2012-2016.\n\n"
-					"Contains The OpenGL Extension Wrangler Library\n"
-					"Copyright( C ) 2008 - 2016, Nigel Stewart <nigels[]users sourceforge net>\n"
-					"Copyright( C ) 2002 - 2008, Milan Ikits <milan ikits[]ieee org>\n"
-					"Copyright( C ) 2002 - 2008, Marcelo E.Magallon <mmagallo[]debian org>\n"
-					"Copyright( C ) 2002, Lev Povalahev\n"
-					"All rights reserved.\n\n"
-					"Uses wxWidgets %d.%d.%d\n\n"
-					"Build Date: %s\n", 
-					wxMAJOR_VERSION, wxMINOR_VERSION, wxRELEASE_NUMBER, 
-					__DATE__ 
+					"%s", 
+					tools::GetSharedCredits()
 					),
 					"About Half-Life Model Viewer", wxOK | wxICON_INFORMATION );
 }

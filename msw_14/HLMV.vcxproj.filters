@@ -288,6 +288,9 @@
     <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp">
       <Filter>Source Files\filesystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\tools\shared\Credits.cpp">
+      <Filter>Source Files\tools\shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -490,6 +493,9 @@
     </ClInclude>
     <ClInclude Include="..\src\filesystem\FileSystemConstants.h">
       <Filter>Header Files\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\shared\Credits.h">
+      <Filter>Header Files\tools\shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
