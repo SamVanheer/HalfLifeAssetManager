@@ -34,7 +34,7 @@ bool CHLMV::PostInitialize()
 
 	m_pMainWindow->Show( true );
 
-	StartTimer();
+	StartTimer( m_pSettings->GetFPS() );
 
 	return true;
 }
@@ -81,6 +81,11 @@ void CHLMV::OnExit( const bool bMainWndClosed )
 
 	//TODO: use log to file listener instead (prevents message boxes from popping up during shutdown)
 	logging().SetLogListener( GetNullLogListener() );
+}
+
+void CHLMV::FPSChanged( const float flOldFPS, const float flNewFPS )
+{
+	StartTimer( flNewFPS );
 }
 
 void CHLMV::SetMainWindow( CMainWindow* const pMainWindow )

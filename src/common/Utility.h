@@ -1,6 +1,7 @@
 #ifndef COMMON_UTILITY_H
 #define COMMON_UTILITY_H
 
+#include <algorithm>
 #include <cstring>
 
 /**
@@ -56,5 +57,14 @@ int UTIL_RandomLong( int iLow, int iHigh );
 *	Gets a random 32 bit floating point number in the range [flLow, flHigh]
 */
 float UTIL_RandomFloat( float flLow, float flHigh );
+
+/**
+*	Clamps a given value to a given range.
+*/
+template<typename T>
+T clamp( const T& value, const T& min, const T& max )
+{
+	return std::max( min, std::min( max, value ) );
+}
 
 #endif //COMMON_UTILITY_H

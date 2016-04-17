@@ -19,6 +19,7 @@ wxBEGIN_EVENT_TABLE( CGeneralOptions, wxPanel )
 	EVT_BUTTON( wxID_OPTIONS_GENERAL_DEFAULT_CROSSHAIR_COLOR, CGeneralOptions::SetDefaultColor )
 	EVT_BUTTON( wxID_OPTIONS_GENERAL_DEFAULT_LIGHT_COLOR, CGeneralOptions::SetDefaultColor )
 	EVT_BUTTON( wxID_OPTIONS_GENERAL_DEFAULT_WIREFRAME_COLOR, CGeneralOptions::SetDefaultColor )
+	EVT_BUTTON( wxID_OPTIONS_GENERAL_DEFAULT_FPS, CGeneralOptions::SetDefaultFPS )
 wxEND_EVENT_TABLE()
 
 CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSettings )
@@ -36,6 +37,9 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 	m_pLightColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( m_pSettings->GetLightColor() ), wxDefaultPosition, wxDefaultSize );
 
 	m_pWireframeColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( m_pSettings->GetWireframeColor() ), wxDefaultPosition, wxDefaultSize );
+
+	m_pFPS = new wxSlider( this, wxID_ANY, m_pSettings->GetFPS(), hlmv::CHLMVSettings::MIN_FPS, hlmv::CHLMVSettings::MAX_FPS, 
+						   wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ), wxSL_HORIZONTAL | wxSL_TOP | wxSL_LABELS );
 
 	//Layout
 	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );
@@ -68,6 +72,12 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 	pSizer->Add( m_pWireframeColor, wxGBPosition( iRow, 1 ), wxGBSpan( 1, 1 ) );
 	pSizer->Add( new wxButton( this, wxID_OPTIONS_GENERAL_DEFAULT_WIREFRAME_COLOR, "Default" ), wxGBPosition( iRow++, 2 ), wxGBSpan( 1, 1 ) );
 
+	pSizer->Add( new wxStaticLine( this ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, iNumCols ), wxEXPAND );
+
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "FPS:" ), wxGBPosition( iRow, 0 ), wxGBSpan( 1, 1 ) );
+	pSizer->Add( m_pFPS, wxGBPosition( iRow, 1 ), wxGBSpan( 1, 2 ) );
+	pSizer->Add( new wxButton( this, wxID_OPTIONS_GENERAL_DEFAULT_FPS, "Default" ), wxGBPosition( iRow++, 3 ), wxGBSpan( 1, 1 ) );
+
 	for( size_t uiIndex = 0; uiIndex < static_cast<size_t>( iNumCols ); ++uiIndex )
 	{
 		pSizer->AddGrowableCol( uiIndex );
@@ -89,6 +99,7 @@ void CGeneralOptions::Save()
 	m_pSettings->SetCrosshairColor( wx::wxToColor( m_pCrosshairColor->GetColour() ) );
 	m_pSettings->SetLightColor( wx::wxToColor( m_pLightColor->GetColour() ) );
 	m_pSettings->SetWireframeColor( wx::wxToColor( m_pWireframeColor->GetColour() ) );
+	m_pSettings->SetFPS( m_pFPS->GetValue() );
 }
 
 void CGeneralOptions::Initialize()
@@ -98,6 +109,7 @@ void CGeneralOptions::Initialize()
 	m_pCrosshairColor->SetColour( wx::ColorTowx( m_pSettings->GetCrosshairColor() ) );
 	m_pLightColor->SetColour( wx::ColorTowx( m_pSettings->GetLightColor() ) );
 	m_pWireframeColor->SetColour( wx::ColorTowx( m_pSettings->GetWireframeColor() ) );
+	m_pFPS->SetValue( m_pSettings->GetFPS() );
 }
 
 void CGeneralOptions::SetDefaultColor( wxCommandEvent& event )
@@ -150,5 +162,10 @@ void CGeneralOptions::SetDefaultColor( wxCommandEvent& event )
 	}
 
 	pCtrl->SetColour( wx::ColorTowx( color ) );
+}
+
+void CGeneralOptions::SetDefaultFPS( wxCommandEvent& event )
+{
+	m_pFPS->SetValue( CHLMVSettings::DEFAULT_FPS );
 }
 }

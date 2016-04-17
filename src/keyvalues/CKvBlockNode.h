@@ -79,7 +79,7 @@ std::shared_ptr<T> CKvBlockNode::FindFirstChild( const char* const pszKey ) cons
 	if( !node )
 		return nullptr;
 
-	return std::static_pointer_cast<T>( node );
+	return std::dynamic_pointer_cast<T>( node );
 }
 
 #endif //CKVBLOCKNODE_H

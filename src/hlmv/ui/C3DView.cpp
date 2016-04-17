@@ -129,7 +129,7 @@ void C3DView::UpdateView()
 	if( flFrameTime > 1.0f )
 		flFrameTime = 0.1f;
 
-	if( flFrameTime < 1.0 / Globals.GetFPS() )
+	if( flFrameTime < 1.0 / m_pHLMV->GetSettings()->GetFPS() )
 		return;
 
 	Globals.SetPreviousTime( Globals.GetCurrentTime() );

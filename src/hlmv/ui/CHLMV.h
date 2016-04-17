@@ -3,6 +3,8 @@
 
 #include "tools/shared/CBaseTool.h"
 
+#include "hlmv/settings/CHLMVSettings.h"
+
 namespace hlmv
 {
 class CHLMVSettings;
@@ -14,7 +16,7 @@ class CFullscreenWindow;
 /**
 *	Facade class to access the entire HLMV program.
 */
-class CHLMV final : public tools::CBaseTool
+class CHLMV final : public tools::CBaseTool, public IHLMVSettingsListener
 {
 public:
 	/**
@@ -36,6 +38,8 @@ protected:
 	void RunFrame() override final;
 
 	void OnExit( const bool bMainWndClosed ) override final;
+
+	void FPSChanged( const float flOldFPS, const float flNewFPS ) override final;
 
 public:
 	/**

@@ -7,6 +7,8 @@
 
 #include "common/Utility.h"
 
+#include "settings/CBaseSettings.h"
+
 #include "CBaseTool.h"
 
 namespace tools
@@ -207,9 +209,10 @@ void CBaseTool::SetMaxMessagesCount( const size_t uiMaxMessagesCount )
 	m_uiMaxMessagesCount = uiMaxMessagesCount;
 }
 
-void CBaseTool::StartTimer()
+void CBaseTool::StartTimer( float flFPS )
 {
-	//60 FPS
-	m_pTimer->Start( ( 1 / 60.0 ) * 1000 );
+	flFPS = clamp( flFPS, settings::CBaseSettings::MIN_FPS, settings::CBaseSettings::MAX_FPS );
+
+	m_pTimer->Start( ( 1 / flFPS ) * 1000 );
 }
 }

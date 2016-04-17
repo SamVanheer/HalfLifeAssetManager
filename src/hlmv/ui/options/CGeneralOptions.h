@@ -25,6 +25,8 @@ private:
 
 	void SetDefaultColor( wxCommandEvent& event );
 
+	void SetDefaultFPS( wxCommandEvent& event );
+
 private:
 	CHLMVSettings* const m_pSettings;
 
@@ -33,6 +35,8 @@ private:
 	wxColourPickerCtrl* m_pCrosshairColor;
 	wxColourPickerCtrl* m_pLightColor;
 	wxColourPickerCtrl* m_pWireframeColor;
+
+	wxSlider* m_pFPS;
 
 private:
 	CGeneralOptions( const CGeneralOptions& ) = delete;

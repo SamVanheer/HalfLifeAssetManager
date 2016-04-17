@@ -23,6 +23,12 @@
 
 namespace settings
 {
+const float CBaseSettings::DEFAULT_FPS = 30.0f;
+
+const float CBaseSettings::MIN_FPS = 15.0f;
+
+const float CBaseSettings::MAX_FPS = 500.0f;
+
 CBaseSettings::CBaseSettings()
 	: m_ConfigManager( std::make_shared<CGameConfigManager>() )
 {

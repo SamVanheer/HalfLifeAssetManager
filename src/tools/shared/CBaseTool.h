@@ -95,7 +95,7 @@ protected:
 	/**
 	*	Starts the render loop timer.
 	*/
-	void StartTimer();
+	void StartTimer( float flFPS );
 
 	/**
 	*	Allows an app to enable the messages window. This is a separate window containing log messages.
