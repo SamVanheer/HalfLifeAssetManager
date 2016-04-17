@@ -32,7 +32,10 @@ int CwxBaseApp::OnExit()
 bool CwxBaseApp::Initialize()
 {
 	if( !wxApp::OnInit() )
+	{
+		wxMessageBox( "Failed to initialize app", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
+	}
 
 	m_pTool = CreateTool();
 
@@ -48,7 +51,10 @@ bool CwxBaseApp::Initialize()
 	}
 
 	if( !PostInitialize() )
+	{
+		wxMessageBox( "Failed to post initialize app", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
+	}
 
 	return true;
 }

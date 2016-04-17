@@ -1,3 +1,6 @@
+#include <wx/stdpaths.h>
+#include <wx/filename.h>
+
 #include "filesystem/CFileSystem.h"
 #include "soundsystem/CSoundSystem.h"
 
@@ -19,7 +22,10 @@ CBaseTool::CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName,
 	, m_szDisplayName( szDisplayName )
 	, m_pSettings( pSettings )
 {
-	assert( pSettings );
+	wxASSERT_MSG( !szDisplayName.IsEmpty(), "Tool Display Name may not be empty!" );
+	wxASSERT( pSettings );
+
+	SetLogFileName( szDisplayName );
 
 	//The sound system requires the use of the file system.
 	if( m_InitFlags & INIT_SOUNDSYSTEM )
@@ -54,6 +60,24 @@ void CBaseTool::FPSChanged( const double flOldFPS, const double flNewFPS )
 
 bool CBaseTool::Initialize()
 {
+	//Configure the working directory to be the exe directory.
+	{
+		wxStandardPaths& paths = wxStandardPaths::Get();
+
+		const wxString szGetExePath = paths.GetExecutablePath();
+
+		wxFileName szFile( szGetExePath );
+
+		const wxString szWorkingDir = szFile.GetPath();
+
+		wxSetWorkingDirectory( szWorkingDir );
+	}
+
+	const wxString szLogFileName = GetLogFileName() + ".log";
+
+	//Overwrite previous session log.
+	logging().OpenLogFile( szLogFileName.c_str(), false );
+
 	UTIL_InitRandom();
 
 	if( m_InitFlags & INIT_FILESYSTEM )
@@ -81,7 +105,10 @@ bool CBaseTool::Initialize()
 		GetGLContextAttributes( contextAttributes );
 
 		if( !wxOpenGL().Initialize( canvasAttributes, &contextAttributes ) )
+		{
+			wxMessageBox( "Failed to initialize file system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 			return false;
+		}
 	}
 
 	if( m_InitFlags & INIT_IMAGEHANDLERS )
@@ -103,7 +130,10 @@ bool CBaseTool::Initialize()
 	m_pTimer = new CTimer( this );
 
 	if( !PostInitialize() )
+	{
+		wxMessageBox( "Failed to post initialize tool", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
+	}
 
 	return true;
 }
@@ -153,6 +183,8 @@ void CBaseTool::Shutdown()
 
 		CwxOpenGL::DestroyInstance();
 	}
+
+	//Don't close the log file just yet. It'll be closed when the program is unloaded, so anything that happens between now and then should be logged.
 }
 
 void CBaseTool::ToolRunFrame()
@@ -199,6 +231,19 @@ void CBaseTool::Exit( const bool bMainWndClosed )
 	OnExit( bMainWndClosed );
 }
 
+const wxString& CBaseTool::GetLogFileName() const
+{
+	return !m_szLogFileName.IsEmpty() ? m_szLogFileName : m_szDisplayName;
+}
+
+void CBaseTool::SetLogFileName( const wxString& szFileName )
+{
+	if( szFileName.IsEmpty() )
+		m_szLogFileName = m_szDisplayName;
+	else
+		m_szLogFileName = szFileName;
+}
+
 void CBaseTool::UseMessagesWindow( const bool bUse )
 {
 	//Don't allow creation during exit.
@@ -239,9 +284,22 @@ void CBaseTool::MessagesWindowClosed()
 	logging().SetLogListener( nullptr );
 }
 
+size_t CBaseTool::GetMaxMessagesCount() const
+{
+	if( !m_pMessagesWindow )
+		return m_uiMaxMessagesCount;
+
+	return m_pMessagesWindow->GetMaxMessagesCount();
+}
+
 void CBaseTool::SetMaxMessagesCount( const size_t uiMaxMessagesCount )
 {
 	m_uiMaxMessagesCount = uiMaxMessagesCount;
+
+	if( m_pMessagesWindow )
+	{
+		m_pMessagesWindow->SetMaxMessagesCount( uiMaxMessagesCount );
+	}
 }
 
 void CBaseTool::StartTimer( double flFPS )

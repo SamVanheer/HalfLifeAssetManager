@@ -1,6 +1,9 @@
 #ifndef COMMON_LOGGING_H
 #define COMMON_LOGGING_H
 
+#include <cstdarg>
+#include <cstdio>
+
 #ifdef ERROR
 #undef ERROR
 #endif
@@ -64,8 +67,35 @@ public:
 	*/
 	void SetLogListener( ILogListener* pListener );
 
+	/**
+	*	Logs a message.
+	*	@param type Message type.
+	*	@param pszFormat Format string.
+	*	@param ... Varargs parameters.
+	*/
+	void Log( const LogType type, const char* const pszFormat, ... );
+
+	/**
+	*	Logs a message.
+	*	@param type Message type.
+	*	@param pszFormat Format string.
+	*	@param list Varargs list.
+	*/
+	void VLog( const LogType type, const char* const pszFormat, va_list list );
+
+	bool IsLogFileOpen() const { return m_pLogFile != nullptr; }
+
+	bool OpenLogFile( const char* const pszFilename, const bool bAppend = true );
+
+	void CloseLogFile();
+
 private:
 	ILogListener* m_pListener = nullptr;
+
+	//Don't trigger recursive logging.
+	bool m_bInLog = false;
+
+	FILE* m_pLogFile = nullptr;
 
 private:
 	CLogging( const CLogging& ) = delete;

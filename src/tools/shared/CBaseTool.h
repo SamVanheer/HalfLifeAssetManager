@@ -98,16 +98,44 @@ public:
 	*/
 	void Exit( const bool bMainWndClosed = false );
 
+	/**
+	*	Gets the tool display name, if any.
+	*/
 	const wxString& GetDisplayName() const { return m_szDisplayName; }
 
+	/**
+	*	Gets the log filename.
+	*/
+	const wxString& GetLogFileName() const;
+
+	/**
+	*	Sets the log filename. If empty, uses the display name.
+	*/
+	void SetLogFileName( const wxString& szFileName );
+
+	/**
+	*	Returns the messages window, if it exists.
+	*/
 	ui::CMessagesWindow* GetMessagesWindow() { return m_pMessagesWindow; }
 
+	/**
+	*	Returns whether the messages window is visible.
+	*/
 	bool IsUsingMessagesWindow() const { return m_pMessagesWindow != nullptr; }
 
+	/**
+	*	Shows or hides the messages window.
+	*/
 	void ShowMessagesWindow( const bool bShow );
 
-	size_t GetMaxMessagesCount() const { return m_uiMaxMessagesCount; }
+	/**
+	*	Gets the maximum messages count.
+	*/
+	size_t GetMaxMessagesCount() const;
 
+	/**
+	*	Sets the maximum messages count.
+	*/
 	void SetMaxMessagesCount( const size_t uiMaxMessagesCount );
 
 protected:
@@ -159,6 +187,8 @@ private:
 private:
 	InitFlags_t m_InitFlags;
 	const wxString m_szDisplayName;
+
+	wxString m_szLogFileName;
 
 	settings::CBaseSettings* m_pSettings;
 

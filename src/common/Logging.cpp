@@ -1,6 +1,5 @@
 #include <cassert>
-#include <cstdarg>
-#include <cstdio>
+#include <chrono>
 
 #include "Logging.h"
 
@@ -36,6 +35,7 @@ CLogging::CLogging()
 
 CLogging::~CLogging()
 {
+	CloseLogFile();
 }
 
 void CLogging::SetLogListener( ILogListener* pListener )
@@ -50,19 +50,30 @@ void CLogging::SetLogListener( ILogListener* pListener )
 	}
 }
 
-/*
-*	Common logging interface implementation.
-*/
-namespace
+void CLogging::Log( const LogType type, const char* const pszFormat, ... )
 {
-//Don't trigger recursive logging.
-static bool g_bInLog = false;
+	assert( pszFormat != nullptr && *pszFormat );
 
-static void Log( const char* const pszFormat, va_list list, const LogType type )
+	va_list list;
+
+	va_start( list, pszFormat );
+
+	VLog( type, pszFormat, list );
+
+	va_end( list );
+}
+
+void CLogging::VLog( const LogType type, const char* const pszFormat, va_list list )
 {
+	assert( pszFormat != nullptr && *pszFormat );
+
+	if( m_bInLog )
+		return;
+
+	m_bInLog = true;
+
 	char szBuffer[ 8192 ];
 
-	//Don't rely on wxString's formatting here, it breaks for some reason.
 	const int iRet = vsnprintf( szBuffer, sizeof( szBuffer ), pszFormat, list );
 
 	if( iRet < 0 || static_cast<size_t>( iRet ) >= sizeof( szBuffer ) )
@@ -70,66 +81,82 @@ static void Log( const char* const pszFormat, va_list list, const LogType type )
 		snprintf( szBuffer, sizeof( szBuffer ), "Log buffer too small for '%s'\n", pszFormat );
 	}
 
-	logging().GetLogListener()->LogMessage( type, szBuffer );
+	if( IsLogFileOpen() )
+	{
+		fprintf( m_pLogFile, "%s", szBuffer );
+	}
+
+	GetLogListener()->LogMessage( type, szBuffer );
+
+	m_bInLog = false;
 }
+
+bool CLogging::OpenLogFile( const char* const pszFilename, const bool bAppend )
+{
+	assert( pszFilename && *pszFilename );
+
+	CloseLogFile();
+
+	m_pLogFile = fopen( pszFilename, bAppend ? "wa" : "w" );
+
+	if( m_pLogFile )
+	{
+		auto now = std::chrono::system_clock::now();
+
+		const time_t time = std::chrono::system_clock::to_time_t( now );
+
+		//No newline because ctime's return value contains one.
+		fprintf( m_pLogFile, "Log opened on %s", ctime( &time ) );
+	}
+
+	return IsLogFileOpen();
+}
+
+void CLogging::CloseLogFile()
+{
+	if( IsLogFileOpen() )
+	{
+		auto now = std::chrono::system_clock::now();
+
+		const time_t time = std::chrono::system_clock::to_time_t( now );
+
+		//No newline because ctime's return value contains one.
+		fprintf( m_pLogFile, "Log closed on %s", ctime( &time ) );
+
+		fclose( m_pLogFile );
+		m_pLogFile = nullptr;
+	}
 }
 
 void Message( const char* const pszFormat, ... )
 {
-	if( g_bInLog )
-		return;
-
-	g_bInLog = true;
-
-	assert( pszFormat != nullptr && *pszFormat );
-
 	va_list list;
 
 	va_start( list, pszFormat );
 
-	Log( pszFormat, list, LogType::MESSAGE );
+	logging().VLog( LogType::MESSAGE, pszFormat, list );
 
 	va_end( list );
-
-	g_bInLog = false;
 }
 
 void Warning( const char* const pszFormat, ... )
 {
-	if( g_bInLog )
-		return;
-
-	g_bInLog = true;
-
-	assert( pszFormat != nullptr && *pszFormat );
-
 	va_list list;
 
 	va_start( list, pszFormat );
 
-	Log( pszFormat, list, LogType::WARNING );
+	logging().VLog( LogType::WARNING, pszFormat, list );
 
 	va_end( list );
-
-	g_bInLog = false;
 }
 
 void Error( const char* const pszFormat, ... )
 {
-	if( g_bInLog )
-		return;
-
-	g_bInLog = true;
-
-	assert( pszFormat != nullptr && *pszFormat );
-
 	va_list list;
 
 	va_start( list, pszFormat );
 
-	Log( pszFormat, list, LogType::ERROR );
+	logging().VLog( LogType::ERROR, pszFormat, list );
 
 	va_end( list );
-
-	g_bInLog = false;
 }

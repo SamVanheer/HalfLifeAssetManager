@@ -10,7 +10,6 @@ namespace settings
 class CGameConfigManager;
 }
 
-class wxListView;
 class wxListEvent;
 
 namespace ui
@@ -35,7 +34,6 @@ protected:
 private:
 	void Initialize();
 
-	void OnListColumnBeginDrag( wxListEvent& event );
 	void AddConfig( wxCommandEvent& event );
 	void EditConfig( wxCommandEvent& event );
 	void RemoveConfig( wxCommandEvent& event );
@@ -45,7 +43,7 @@ private:
 
 	CGameConfigurationsPanel* const m_pGameConfigsPanel;
 
-	wxListView* m_pConfigs;
+	wxListBox* m_pConfigs;
 
 private:
 	CEditGameConfigsDialog( const CEditGameConfigsDialog& ) = delete;

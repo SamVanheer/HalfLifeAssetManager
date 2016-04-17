@@ -15,6 +15,9 @@
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
 
+#define getcwd _getcwd
+#define setcwd _setcwd
+
 #else
 
 #error "Not implemented"

@@ -93,17 +93,32 @@ bool CBaseSettings::Initialize( const char* const pszFilename )
 	if( !bResult )
 	{
 		bResult = SaveToFile( pszFilename );
+
+		if( !bResult )
+		{
+			Error( "Failed to save settings\n" );
+		}
 	}
 
 	//Initialize file system based on settings.
 	if( bResult )
 	{
 		bResult = InitializeFileSystem();
+
+		if( !bResult )
+		{
+			Error( "Failed to initialize file system\n" );
+		}
 	}
 
 	if( bResult )
 	{
 		bResult = PostInitialize( pszFilename );
+
+		if( !bResult )
+		{
+			Error( "Failed to post initialize settings\n" );
+		}
 	}
 
 	return bResult;

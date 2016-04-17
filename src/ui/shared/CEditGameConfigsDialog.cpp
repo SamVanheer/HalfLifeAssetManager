@@ -1,5 +1,4 @@
 #include <wx/gbsizer.h>
-#include <wx/listctrl.h>
 
 #include "settings/CGameConfigManager.h"
 #include "settings/CGameConfig.h"
@@ -11,7 +10,6 @@
 namespace ui
 {
 wxBEGIN_EVENT_TABLE( CEditGameConfigsDialog, wxDialog )
-	EVT_LIST_COL_BEGIN_DRAG( wxID_SHARED_EDITGAMECONFIGS_CONFIGS, CEditGameConfigsDialog::OnListColumnBeginDrag )
 	EVT_BUTTON( wxID_SHARED_EDITGAMECONFIGS_ADD, CEditGameConfigsDialog::AddConfig )
 	EVT_BUTTON( wxID_SHARED_EDITGAMECONFIGS_EDIT, CEditGameConfigsDialog::EditConfig )
 	EVT_BUTTON( wxID_SHARED_EDITGAMECONFIGS_REMOVE, CEditGameConfigsDialog::RemoveConfig )
@@ -24,9 +22,7 @@ CEditGameConfigsDialog::CEditGameConfigsDialog( wxWindow* pParent, std::shared_p
 {
 	wxASSERT( manager != nullptr );
 
-	m_pConfigs = new wxListView( this, wxID_SHARED_EDITGAMECONFIGS_CONFIGS, wxDefaultPosition, wxSize( 200, 200 ), wxLC_REPORT | wxLC_SINGLE_SEL );
-
-	m_pConfigs->AppendColumn( "Configurations" );
+	m_pConfigs = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxSize( 200, 200 ) );
 
 	wxButton* pAdd = new wxButton( this, wxID_SHARED_EDITGAMECONFIGS_ADD, "Add" );
 	wxButton* pEdit = new wxButton( this, wxID_SHARED_EDITGAMECONFIGS_EDIT, "Edit" );
@@ -53,8 +49,6 @@ CEditGameConfigsDialog::CEditGameConfigsDialog( wxWindow* pParent, std::shared_p
 
 	this->Fit();
 
-	m_pConfigs->SetColumnWidth( 0, m_pConfigs->GetClientSize().GetWidth() );
-
 	Initialize();
 }
 
@@ -64,12 +58,16 @@ CEditGameConfigsDialog::~CEditGameConfigsDialog()
 
 void CEditGameConfigsDialog::Initialize()
 {
-	m_pConfigs->DeleteAllItems();
+	m_pConfigs->Clear();
+
+	wxArrayString configs;
 
 	for( const auto& config : m_Manager->GetConfigs() )
 	{
-		m_pConfigs->InsertItem( m_pConfigs->GetItemCount(), config->GetName() );
+		configs.push_back( config->GetName() );
 	}
+
+	m_pConfigs->Append( configs );
 }
 
 bool CEditGameConfigsDialog::AddConfig( const wxString& szName )
@@ -82,16 +80,11 @@ bool CEditGameConfigsDialog::AddConfig( const wxString& szName )
 	if( !m_Manager->AddConfig( config ) )
 		return false;
 
-	m_pConfigs->InsertItem( m_pConfigs->GetItemCount(), szName );
+	m_pConfigs->Append( szName );
 
 	m_pGameConfigsPanel->ConfigAdded( szName );
 
 	return true;
-}
-
-void CEditGameConfigsDialog::OnListColumnBeginDrag( wxListEvent& event )
-{
-	event.Veto();
 }
 
 void CEditGameConfigsDialog::AddConfig( wxCommandEvent& event )
@@ -122,12 +115,12 @@ void CEditGameConfigsDialog::AddConfig( wxCommandEvent& event )
 
 void CEditGameConfigsDialog::EditConfig( wxCommandEvent& event )
 {
-	const long iIndex = m_pConfigs->GetFirstSelected();
+	const int iIndex = m_pConfigs->GetSelection();
 
 	if( iIndex == wxNOT_FOUND )
 		return;
 
-	const wxString szName = m_pConfigs->GetItemText( iIndex );
+	const wxString szName = m_pConfigs->GetString( iIndex );
 
 	auto config = m_Manager->GetConfig( szName.c_str() );
 
@@ -149,7 +142,7 @@ void CEditGameConfigsDialog::EditConfig( wxCommandEvent& event )
 		{
 			if( m_Manager->RenameConfig( szName.c_str(), szValue.c_str() ) )
 			{
-				m_pConfigs->SetItemText( iIndex, szValue );
+				m_pConfigs->SetString( iIndex, szValue );
 				m_pGameConfigsPanel->ConfigRenamed( szName, szValue );
 				return;
 			}
@@ -160,12 +153,12 @@ void CEditGameConfigsDialog::EditConfig( wxCommandEvent& event )
 
 void CEditGameConfigsDialog::RemoveConfig( wxCommandEvent& event )
 {
-	const long iIndex = m_pConfigs->GetFirstSelected();
+	const int iIndex = m_pConfigs->GetSelection();
 
 	if( iIndex == wxNOT_FOUND )
 		return;
 
-	const wxString szName = m_pConfigs->GetItemText( iIndex );
+	const wxString szName = m_pConfigs->GetString( iIndex );
 
 	auto config = m_Manager->GetConfig( szName.c_str() );
 
@@ -175,7 +168,7 @@ void CEditGameConfigsDialog::RemoveConfig( wxCommandEvent& event )
 	if( !m_Manager->RemoveConfig( config ) )
 		return;
 
-	m_pConfigs->DeleteItem( iIndex );
+	m_pConfigs->Delete( iIndex );
 
 	m_pGameConfigsPanel->ConfigRemoved( szName );
 }

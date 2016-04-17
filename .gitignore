@@ -81,3 +81,6 @@ changes.txt
 msw_14/HLMVSettings.txt
 msw_14/midump.txt
 msw_14/HLMVSettings - kopie.txt
+bin/HLMVSettings.txt
+*.iobj
+*.ipdb
