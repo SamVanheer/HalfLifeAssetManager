@@ -232,14 +232,11 @@ void C3DView::DrawModel()
 		graphics::helpers::DrawBackground( m_BackgroundTexture );
 	}
 
-	if( !m_pHLMV->GetState()->GetStudioModel() )
-		return;
-
 	//Update colors.
 	m_pHLMV->GetState()->renderSettings.lightColor = m_pHLMV->GetSettings()->GetLightColor();
 	m_pHLMV->GetState()->renderSettings.wireframeColor = m_pHLMV->GetSettings()->GetWireframeColor();
 
-	graphics::helpers::SetProjection( size.GetX(), size.GetY() );
+	graphics::helpers::SetProjection( size.GetWidth(), size.GetHeight() );
 
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
@@ -264,10 +261,12 @@ void C3DView::DrawModel()
 
 	m_pHLMV->GetState()->drawnPolys = 0;
 
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
 	// setup stencil buffer and draw mirror
-	if( m_pHLMV->GetState()->mirror )
+	if( m_pHLMV->GetState()->mirror && pModel )
 	{
-		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawMirroredModel( *m_pHLMV->GetState()->GetStudioModel(), m_pHLMV->GetState()->renderMode,
+		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawMirroredModel( *pModel, m_pHLMV->GetState()->renderMode,
 																				 m_pHLMV->GetState()->renderSettings, m_pHLMV->GetState()->wireframeOverlay, 
 																				 m_pHLMV->GetSettings()->GetFloorLength() );
 	}
@@ -275,12 +274,16 @@ void C3DView::DrawModel()
 	SetupRenderMode();
 
 	glCullFace( GL_FRONT );
-	m_pHLMV->GetState()->drawnPolys += m_pHLMV->GetState()->GetStudioModel()->DrawModel( m_pHLMV->GetState()->renderSettings );
+
+	if( pModel )
+	{
+		m_pHLMV->GetState()->drawnPolys += pModel->DrawModel( m_pHLMV->GetState()->renderSettings );
+	}
 
 	//Draw wireframe overlay
-	if( m_pHLMV->GetState()->wireframeOverlay )
+	if( m_pHLMV->GetState()->wireframeOverlay && pModel )
 	{
-		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawWireframeOverlay( *m_pHLMV->GetState()->GetStudioModel(), m_pHLMV->GetState()->renderSettings );
+		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawWireframeOverlay( *pModel, m_pHLMV->GetState()->renderSettings );
 	}
 
 	//
