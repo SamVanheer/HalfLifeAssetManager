@@ -19,6 +19,8 @@
 #include "common/Logging.h"
 #include "common/CGlobals.h"
 
+#include "game/CAnimEvent.h"
+
 #include "StudioModel.h"
 
 #pragma warning( disable : 4244 ) // double to float

@@ -503,6 +503,15 @@
     <ClInclude Include="..\src\game\studiomodel\studio.h">
       <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\game\Events.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\CAnimEvent.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\Palette.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\msw\tools\hlmv.rc">

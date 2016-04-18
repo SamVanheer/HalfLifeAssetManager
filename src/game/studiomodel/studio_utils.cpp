@@ -17,7 +17,10 @@
 
 #include "graphics/OpenGL.h"
 #include "graphics/GraphicsHelpers.h"
+#include "graphics/Palette.h"
 
+#include "game/CAnimEvent.h"
+#include "game/Events.h"
 #include "StudioModel.h"
 
 

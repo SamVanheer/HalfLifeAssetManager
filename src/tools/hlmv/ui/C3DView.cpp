@@ -13,6 +13,9 @@
 
 #include "soundsystem/CSoundSystem.h"
 
+#include "game/CAnimEvent.h"
+#include "game/Events.h"
+
 #include "ui/CwxOpenGL.h"
 
 #include "C3DView.h"

@@ -29,30 +29,11 @@ enum TextureFlag
 
 const int CONTROLLER_MOUTH_INDEX	= 4;
 
-const size_t PALETTE_ENTRIES		= 256;
-const size_t PALETTE_CHANNELS		= 3;
-const size_t PALETTE_SIZE			= PALETTE_ENTRIES * PALETTE_CHANNELS;
-
-const size_t PALETTE_ALPHA_INDEX	= 255 * PALETTE_CHANNELS;
-
 //Mugsy - upped the maximum texture size to 512. All changes are the replacement of '256'
 //with this define, MAX_TEXTURE_DIMS
 #define MAX_TEXTURE_DIMS 512
 
-struct CAnimEvent final
-{
-	int			iEvent;
-	const char* pszOptions;
-};
-
-#define EVENT_SPECIFIC			0
-#define EVENT_SCRIPTED			1000
-#define EVENT_SHARED			2000
-#define EVENT_CLIENT			5000
-
-#define SCRIPT_EVENT_SOUND			1004		// Play named wave file (on CHAN_BODY)
-#define SCRIPT_EVENT_SOUND_VOICE	1008		// Play named wave file (on CHAN_VOICE)
-#define SCRIPT_CLIENT_EVENT_SOUND	5004		// Play named wave file (at a given location)
+struct CAnimEvent;
 
 class IAnimEventHandler
 {

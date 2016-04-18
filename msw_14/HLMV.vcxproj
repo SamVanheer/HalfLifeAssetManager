@@ -87,12 +87,15 @@
     <ClInclude Include="..\src\common\Utility.h" />
     <ClInclude Include="..\src\filesystem\CFileSystem.h" />
     <ClInclude Include="..\src\filesystem\FileSystemConstants.h" />
+    <ClInclude Include="..\src\game\CAnimEvent.h" />
+    <ClInclude Include="..\src\game\Events.h" />
     <ClInclude Include="..\src\game\studiomodel\studio.h" />
     <ClInclude Include="..\src\game\studiomodel\StudioModel.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />
     <ClInclude Include="..\src\graphics\GLRenderTarget.h" />
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
     <ClInclude Include="..\src\graphics\OpenGL.h" />
+    <ClInclude Include="..\src\graphics\Palette.h" />
     <ClInclude Include="..\src\keyvalues\CKeyvalue.h" />
     <ClInclude Include="..\src\keyvalues\CKeyvalueNode.h" />
     <ClInclude Include="..\src\keyvalues\CKeyvalues.h" />

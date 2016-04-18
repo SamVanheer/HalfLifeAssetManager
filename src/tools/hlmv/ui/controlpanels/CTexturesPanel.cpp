@@ -5,6 +5,7 @@
 #include <wx/image.h>
 
 #include "graphics/GraphicsHelpers.h"
+#include "graphics/Palette.h"
 
 #include "game/studiomodel/StudioModel.h"
 
