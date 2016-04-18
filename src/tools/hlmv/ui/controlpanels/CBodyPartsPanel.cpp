@@ -3,7 +3,7 @@
 #include "../CHLMV.h"
 #include "../../CHLMVState.h"
 
-#include "studiomodel/StudioModel.h"
+#include "game/studiomodel/StudioModel.h"
 
 #include "CBodyPartsPanel.h"
 

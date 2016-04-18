@@ -25,6 +25,8 @@
     <ClCompile Include="..\src\common\Utility.cpp" />
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
     <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp" />
+    <ClCompile Include="..\src\game\studiomodel\studio_render.cpp" />
+    <ClCompile Include="..\src\game\studiomodel\studio_utils.cpp" />
     <ClCompile Include="..\src\graphics\Constants.cpp" />
     <ClCompile Include="..\src\graphics\GLRenderTarget.cpp" />
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
@@ -42,8 +44,6 @@
     <ClCompile Include="..\src\settings\CRecentFiles.cpp" />
     <ClCompile Include="..\src\settings\GameConfigIO.cpp" />
     <ClCompile Include="..\src\soundsystem\CSoundSystem.cpp" />
-    <ClCompile Include="..\src\studiomodel\studio_render.cpp" />
-    <ClCompile Include="..\src\studiomodel\studio_utils.cpp" />
     <ClCompile Include="..\src\tools\hlmv\CHLMVState.cpp" />
     <ClCompile Include="..\src\tools\hlmv\settings\CHLMVSettings.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\C3DView.cpp" />
@@ -87,6 +87,8 @@
     <ClInclude Include="..\src\common\Utility.h" />
     <ClInclude Include="..\src\filesystem\CFileSystem.h" />
     <ClInclude Include="..\src\filesystem\FileSystemConstants.h" />
+    <ClInclude Include="..\src\game\studiomodel\studio.h" />
+    <ClInclude Include="..\src\game\studiomodel\StudioModel.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />
     <ClInclude Include="..\src\graphics\GLRenderTarget.h" />
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
@@ -107,7 +109,6 @@
     <ClInclude Include="..\src\settings\GameConfigIO.h" />
     <ClInclude Include="..\src\soundsystem\CSoundSystem.h" />
     <ClInclude Include="..\src\soundsystem\SoundConstants.h" />
-    <ClInclude Include="..\src\studiomodel\StudioModel.h" />
     <ClInclude Include="..\src\tools\hlmv\CHLMVState.h" />
     <ClInclude Include="..\src\tools\hlmv\settings\CHLMVSettings.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\C3DView.h" />
@@ -146,7 +147,6 @@
     <ClInclude Include="..\src\utility\IOUtils.h" />
     <ClInclude Include="..\src\utility\mathlib.h" />
     <ClInclude Include="..\src\utility\Matrix.h" />
-    <ClInclude Include="..\src\utility\studio.h" />
     <ClInclude Include="..\src\utility\Vector.h" />
   </ItemGroup>
   <ItemGroup>

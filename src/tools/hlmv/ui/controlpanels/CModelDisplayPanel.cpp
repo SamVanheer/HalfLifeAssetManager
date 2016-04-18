@@ -2,7 +2,7 @@
 
 #include "../CHLMV.h"
 
-#include "studiomodel/StudioModel.h"
+#include "game/studiomodel/StudioModel.h"
 
 #include "CModelDisplayPanel.h"
 

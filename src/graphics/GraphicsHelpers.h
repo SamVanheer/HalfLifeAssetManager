@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_GRAPHICSHELPERS_H
 #define GRAPHICS_GRAPHICSHELPERS_H
 
-#include "studiomodel/StudioModel.h"
+#include "game/studiomodel/StudioModel.h"
 
 #include "graphics/Constants.h"
 

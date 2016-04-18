@@ -37,12 +37,6 @@
     <Filter Include="Source Files\graphics">
       <UniqueIdentifier>{6c61afb5-133b-41bf-bdbd-f19d1b0f536d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\studiomodel">
-      <UniqueIdentifier>{e7f0c473-f1e0-4100-8834-18b23a16e3a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\studiomodel">
-      <UniqueIdentifier>{3352beac-ccdf-447e-9945-3606c3006ba3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\utility">
       <UniqueIdentifier>{ed25d055-24a0-4488-916b-44d217c824cc}</UniqueIdentifier>
     </Filter>
@@ -121,6 +115,18 @@
     <Filter Include="Source Files\tools\hlmv\ui\controlpanels">
       <UniqueIdentifier>{2818c960-9b05-403d-802b-feeee28fa899}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\game">
+      <UniqueIdentifier>{58f6fb94-cca1-46c3-834b-6e074558f469}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game">
+      <UniqueIdentifier>{faeb3001-0b1a-4461-8a6b-3b783a3f02f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\game\studiomodel">
+      <UniqueIdentifier>{342283d2-5ba0-41b9-9d47-c6093a12e674}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game\studiomodel">
+      <UniqueIdentifier>{487ead65-14f4-486c-bf37-b4f77271c9ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
@@ -128,12 +134,6 @@
     </ClCompile>
     <ClCompile Include="..\src\common\CGlobals.cpp">
       <Filter>Source Files\common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\studiomodel\studio_render.cpp">
-      <Filter>Source Files\studiomodel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\studiomodel\studio_utils.cpp">
-      <Filter>Source Files\studiomodel</Filter>
     </ClCompile>
     <ClCompile Include="..\src\common\Platform.cpp">
       <Filter>Source Files\common</Filter>
@@ -291,6 +291,12 @@
     <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CTexturesPanel.cpp">
       <Filter>Source Files\tools\hlmv\ui\controlpanels</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\game\studiomodel\studio_render.cpp">
+      <Filter>Source Files\game\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\studiomodel\studio_utils.cpp">
+      <Filter>Source Files\game\studiomodel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -311,16 +317,10 @@
     <ClInclude Include="..\src\common\Logging.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\studiomodel\StudioModel.h">
-      <Filter>Header Files\studiomodel</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\common\Platform.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\src\utility\mathlib.h">
-      <Filter>Header Files\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\utility\studio.h">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
     <ClInclude Include="..\src\filesystem\CFileSystem.h">
@@ -496,6 +496,12 @@
     </ClInclude>
     <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CTexturesPanel.h">
       <Filter>Header Files\tools\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\studiomodel\StudioModel.h">
+      <Filter>Header Files\game\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\studiomodel\studio.h">
+      <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

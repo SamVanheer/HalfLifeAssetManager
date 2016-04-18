@@ -4,7 +4,7 @@
 
 #include "utility/Color.h"
 
-#include "studiomodel/StudioModel.h"
+#include "game/studiomodel/StudioModel.h"
 
 #include "../CHLMV.h"
 #include "../../settings/CHLMVSettings.h"

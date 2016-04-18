@@ -10,7 +10,7 @@
 
 #include "utility/Vector.h"
 
-#include "studiomodel/StudioModel.h"
+#include "game/studiomodel/StudioModel.h"
 
 #include "graphics/Constants.h"
 

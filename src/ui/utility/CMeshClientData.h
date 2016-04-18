@@ -3,7 +3,7 @@
 
 #include "ui/wxInclude.h"
 
-#include "utility/studio.h"
+#include "game/studiomodel/studio.h"
 
 namespace ui
 {

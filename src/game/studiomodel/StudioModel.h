@@ -16,10 +16,11 @@
 #include "common/Const.h"
 
 #include "utility/mathlib.h"
-#include "utility/studio.h"
 #include "utility/Color.h"
 
 #include "graphics/OpenGL.h"
+
+#include "studio.h"
 
 enum TextureFlag
 {

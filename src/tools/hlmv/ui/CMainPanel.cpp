@@ -11,7 +11,7 @@
 #include "controlpanels/CSequencesPanel.h"
 #include "controlpanels/CFullscreenPanel.h"
 
-#include "studiomodel/StudioModel.h"
+#include "game/studiomodel/StudioModel.h"
 
 #include "CHLMV.h"
 #include "../CHLMVState.h"

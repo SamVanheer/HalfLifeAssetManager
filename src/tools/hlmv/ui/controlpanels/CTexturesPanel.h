@@ -1,8 +1,6 @@
 #ifndef CONTROLPANELS_CTEXTURESPANEL_H
 #define CONTROLPANELS_CTEXTURESPANEL_H
 
-#include "utility/studio.h"
-
 #include "ui/utility/CMeshClientData.h"
 
 #include "CBaseControlPanel.h"
