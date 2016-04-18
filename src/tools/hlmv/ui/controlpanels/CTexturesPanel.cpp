@@ -6,6 +6,7 @@
 
 #include "graphics/GraphicsHelpers.h"
 #include "graphics/Palette.h"
+#include "graphics/BMPFile.h"
 
 #include "game/studiomodel/StudioModel.h"
 
@@ -374,13 +375,7 @@ void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 
 	mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTextureIndex ];
 
-	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( texture.width * texture.height * 3 );
-
-	graphics::helpers::Convert8to24Bit( texture.width, texture.height, ( byte* ) pHdr + texture.index, ( byte* ) pHdr + texture.width * texture.height + texture.index, rgbData.get() );
-
-	wxImage image( texture.width, texture.height, rgbData.get(), true );
-
-	if( !image.SaveFile( szFilename, wxBITMAP_TYPE_BMP ) )
+	if( !graphics::bmpfile::SaveBMPFile( szFilename.c_str(), texture.width, texture.height, ( uint8_t* ) pHdr + texture.index, ( uint8_t* ) pHdr + texture.index + texture.width * texture.height ) )
 	{
 		wxMessageBox( wxString::Format( "Failed to save image \"%s\"!", szFilename.c_str() ) );
 	}

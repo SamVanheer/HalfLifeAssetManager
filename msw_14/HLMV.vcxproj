@@ -27,6 +27,7 @@
     <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp" />
     <ClCompile Include="..\src\game\studiomodel\studio_render.cpp" />
     <ClCompile Include="..\src\game\studiomodel\studio_utils.cpp" />
+    <ClCompile Include="..\src\graphics\BMPFile.cpp" />
     <ClCompile Include="..\src\graphics\Constants.cpp" />
     <ClCompile Include="..\src\graphics\GLRenderTarget.cpp" />
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
@@ -91,6 +92,7 @@
     <ClInclude Include="..\src\game\Events.h" />
     <ClInclude Include="..\src\game\studiomodel\studio.h" />
     <ClInclude Include="..\src\game\studiomodel\StudioModel.h" />
+    <ClInclude Include="..\src\graphics\BMPFile.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />
     <ClInclude Include="..\src\graphics\GLRenderTarget.h" />
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
