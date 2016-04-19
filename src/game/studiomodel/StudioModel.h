@@ -22,11 +22,6 @@
 
 #include "studio.h"
 
-enum TextureFlag
-{
-	STUDIO_NF_RENDER_FLAGS = STUDIO_NF_CHROME | STUDIO_NF_ADDITIVE | STUDIO_NF_MASKED
-};
-
 const int CONTROLLER_MOUTH_INDEX	= 4;
 
 //Mugsy - upped the maximum texture size to 512. All changes are the replacement of '256'
