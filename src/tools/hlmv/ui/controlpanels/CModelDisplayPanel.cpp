@@ -235,7 +235,7 @@ void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
 	if( m_pMeshScale->GetValue().ToDouble( &flScale ) )
 	{
 		if( pModel )
-			pModel->scaleMeshes( flScale );
+			pModel->ScaleMeshes( flScale );
 	}
 	else
 		m_pMeshScale->SetValue( "1.0" );
@@ -250,7 +250,7 @@ void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
 	if( m_pBonesScale->GetValue().ToDouble( &flScale ) )
 	{
 		if( pModel )
-			m_pHLMV->GetState()->GetStudioModel()->scaleBones( flScale );
+			m_pHLMV->GetState()->GetStudioModel()->ScaleBones( flScale );
 	}
 	else
 		m_pBonesScale->SetValue( "1.0" );

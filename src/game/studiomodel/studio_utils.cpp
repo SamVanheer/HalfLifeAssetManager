@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/Logging.h"
+
 #include "graphics/OpenGL.h"
 #include "graphics/GraphicsHelpers.h"
 #include "graphics/Palette.h"
@@ -703,7 +705,7 @@ int StudioModel::SetSkin( int iValue )
 
 
 
-void StudioModel::scaleMeshes (float scale)
+void StudioModel::ScaleMeshes( float scale )
 {
 	if (!m_pstudiohdr)
 		return;
@@ -750,7 +752,7 @@ void StudioModel::scaleMeshes (float scale)
 
 
 
-void StudioModel::scaleBones (float scale)
+void StudioModel::ScaleBones( float scale )
 {
 	if (!m_pstudiohdr)
 		return;
@@ -766,9 +768,7 @@ void StudioModel::scaleBones (float scale)
 	}	
 }
 
-#include "common/Logging.h"
-
-int StudioModel::GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index )
+int StudioModel::GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents )
 {
 	if( !m_pstudiohdr || m_sequence >= m_pstudiohdr->numseq )
 		return 0;
@@ -789,11 +789,13 @@ int StudioModel::GetAnimationEvent( CAnimEvent& event, float flStart, float flEn
 
 	for( ; index < pseqdesc->numevents; index++ )
 	{
-#ifndef STUDIOMODEL_HANDLE_CLIENT_EVENTS
-		// Don't send client-side events to the server AI
-		if( pevent[ index ].event >= EVENT_CLIENT )
-			continue;
-#endif
+		//TODO: maybe leave it up to the listener to filter these out?
+		if( !bAllowClientEvents )
+		{
+			// Don't send client-side events to the server AI
+			if( pevent[ index ].event >= EVENT_CLIENT )
+				continue;
+		}
 
 		if( ( pevent[ index ].frame >= flStart && pevent[ index ].frame < flEnd ) ||
 			( ( pseqdesc->flags & STUDIO_LOOPING ) && flEnd >= pseqdesc->numframes - 1 && pevent[ index ].frame < flEnd - pseqdesc->numframes + 1 ) )
@@ -804,4 +806,33 @@ int StudioModel::GetAnimationEvent( CAnimEvent& event, float flStart, float flEn
 		}
 	}
 	return 0;
+}
+
+void StudioModel::DispatchAnimEvents( IAnimEventHandler& handler, const bool bAllowClientEvents, float flInterval )
+{
+	if( !m_pstudiohdr )
+	{
+		Message( "Gibbed monster is thinking!\n" );
+		return;
+	}
+
+	// FIXME: I have to do this or some events get missed, and this is probably causing the problem below
+	//This isn't really necessary, at least not in a tool.
+	//flInterval = 0.1f;
+
+	const mstudioseqdesc_t* pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex ) + m_sequence;
+
+	// FIX: this still sometimes hits events twice
+	float flStart = m_frame + ( m_flLastEventCheck - m_flAnimTime ) * pseqdesc->fps * m_flFrameRate;
+	float flEnd = m_frame + flInterval * pseqdesc->fps * m_flFrameRate;
+	m_flLastEventCheck = m_flAnimTime + flInterval;
+
+	CAnimEvent event;
+
+	int index = 0;
+
+	while( ( index = GetAnimationEvent( event, flStart, flEnd, index, bAllowClientEvents ) ) != 0 )
+	{
+		handler.HandleAnimEvent( event );
+	}
 }

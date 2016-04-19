@@ -35,6 +35,10 @@ const int CONTROLLER_MOUTH_INDEX	= 4;
 
 struct CAnimEvent;
 
+/**
+*	Interface for handling animation events.
+*	TODO: this should be merged into a class/interface that handles all operations for a model, like the game does.
+*/
 class IAnimEventHandler
 {
 public:
@@ -47,6 +51,11 @@ inline IAnimEventHandler::~IAnimEventHandler()
 {
 }
 
+/**
+*	Stores a single model's data and state.
+*	TODO: decompose into a data and state class.
+*	TODO: this class should always contain a valid model.
+*/
 class StudioModel
 {
 public:
@@ -61,6 +70,9 @@ public:
 		VERSIONDIFFERS		//Header version differs from current.
 	};
 
+	/**
+	*	Stores settings used to render the model.
+	*/
 	class CRenderSettings final
 	{
 	public:
@@ -105,7 +117,7 @@ public:
 	void					UploadTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, int name );
 	void					UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId );
 	void					ReplaceTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, GLuint textureId );
-	void					FreeModel ();
+	void					FreeModel();
 	studiohdr_t				*LoadModel( const char* pszModelName, LoadResult* pResult = nullptr );
 	bool					PostLoadModel ( const char* const pszModelName );
 	LoadResult				Load( const char* const pszModelName );
@@ -113,8 +125,6 @@ public:
 	unsigned int			DrawModel( const CRenderSettings& settings, const bool wireframeOnly = false );
 	float					AdvanceFrame( float dt = 0.0f );
 	int						SetFrame (int nFrame);
-
-	void					DispatchAnimEvents( IAnimEventHandler& handler, float flInterval = 0.1f );
 
 	void					ExtractBbox( float *mins, float *maxs ) const;
 
@@ -133,10 +143,12 @@ public:
 	float					GetFrameRate() const { return m_flFrameRate; }
 	void					SetFrameRate( const float flFrameRate ) { m_flFrameRate = flFrameRate; }
 
-	void					scaleMeshes (float scale);
-	void					scaleBones (float scale);
+	void					ScaleMeshes( float scale );
+	void					ScaleBones( float scale );
 
-	int						GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index );
+	int						GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents );
+
+	void					DispatchAnimEvents( IAnimEventHandler& handler, const bool bAllowClientEvents, float flInterval = 0.1f );
 
 private:
 	// entity settings

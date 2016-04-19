@@ -158,7 +158,8 @@ void C3DView::UpdateView()
 
 		CStudioModelListener listener( m_pHLMV->GetState() );
 
-		m_pHLMV->GetState()->GetStudioModel()->DispatchAnimEvents( listener, flDeltaTime );
+		//Allow client events.
+		m_pHLMV->GetState()->GetStudioModel()->DispatchAnimEvents( listener, true, flDeltaTime );
 	}
 
 	if( !m_pHLMV->GetState()->pause )

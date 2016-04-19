@@ -389,35 +389,6 @@ int StudioModel::SetFrame( int nFrame )
 	return m_frame;
 }
 
-void StudioModel::DispatchAnimEvents( IAnimEventHandler& handler, float flInterval )
-{
-	if( !m_pstudiohdr )
-	{
-		Message( "Gibbed monster is thinking!\n" );
-		return;
-	}
-
-	// FIXME: I have to do this or some events get missed, and this is probably causing the problem below
-	//This isn't really necessary, at least not in a tool.
-	//flInterval = 0.1f;
-
-	const mstudioseqdesc_t* pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex ) + m_sequence;
-
-	// FIX: this still sometimes hits events twice
-	float flStart = m_frame + ( m_flLastEventCheck - m_flAnimTime ) * pseqdesc->fps * m_flFrameRate;
-	float flEnd = m_frame + flInterval * pseqdesc->fps * m_flFrameRate;
-	m_flLastEventCheck = m_flAnimTime + flInterval;
-
-	CAnimEvent event;
-
-	int index = 0;
-
-	while( ( index = GetAnimationEvent( event, flStart, flEnd, index ) ) != 0 )
-	{
-		handler.HandleAnimEvent( event );
-	}
-}
-
 void StudioModel::SetUpBones ( void )
 {
 	int					i;
