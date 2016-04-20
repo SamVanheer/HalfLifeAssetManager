@@ -62,25 +62,11 @@ Debug/HLMV.log
 *.log
 *.idb
 uvmap.bmp
-external/GLEW/include/GL/glew.h
-external/GLEW/include/GL/glxew.h
-external/GLEW/lib/glew32.lib
-external/GLEW/include/GL/wglew.h
-external/FMOD/include/fmod.h
-external/FMOD/include/fmod.hpp
-external/FMOD/include/fmod_codec.h
-external/FMOD/lib/fmodex_vc.lib
-external/FMOD/include/fmod_dsp.h
-external/FMOD/include/fmod_errors.h
-external/FMOD/include/fmod_memoryinfo.h
-external/FMOD/include/fmod_output.h
+external/*
 *.ilk
 *.user
 *.bmp
 changes.txt
-msw_14/HLMVSettings.txt
-msw_14/midump.txt
-msw_14/HLMVSettings - kopie.txt
 bin/HLMVSettings.txt
 *.iobj
 *.ipdb

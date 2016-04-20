@@ -67,6 +67,7 @@ public:
 
 	/**
 	*	Stores settings used to render the model.
+	*	TODO: move rendering out of this class.
 	*/
 	class CRenderSettings final
 	{
