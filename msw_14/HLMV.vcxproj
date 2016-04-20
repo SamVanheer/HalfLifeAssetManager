@@ -151,7 +151,6 @@
     <ClInclude Include="..\src\utility\CString.h" />
     <ClInclude Include="..\src\utility\IOUtils.h" />
     <ClInclude Include="..\src\utility\mathlib.h" />
-    <ClInclude Include="..\src\utility\Matrix.h" />
     <ClInclude Include="..\src\utility\Vector.h" />
   </ItemGroup>
   <ItemGroup>

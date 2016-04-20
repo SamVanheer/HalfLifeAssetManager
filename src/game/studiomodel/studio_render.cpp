@@ -14,6 +14,10 @@
 #include <memory>
 #include <algorithm>
 
+#include <glm/gtc/matrix_transform.hpp>
+//TODO: avoid using value_ptr unless it's absolutely necessary
+#include <glm/gtc/type_ptr.hpp>
+
 #include "graphics/OpenGL.h"
 
 #include "common/Logging.h"
@@ -25,7 +29,7 @@
 
 #pragma warning( disable : 4244 ) // double to float
 
-vec3_t g_vright = { 50, 50, 0 };		// needs to be set to viewer's right in order for chrome to work
+glm::vec3 g_vright = { 50, 50, 0 };		// needs to be set to viewer's right in order for chrome to work
 float g_lambert = 1.5;
 
 ////////////////////////////////////////////////////////////////////////
@@ -45,10 +49,10 @@ int				g_smodels_total;				// cookie
 
 float			g_bonetransform[MAXSTUDIOBONES][3][4];	// bone transformation matrix
 
-int				g_chrome[MAXSTUDIOVERTS][2];	// texture coords for surface normals
+glm::ivec2		g_chrome[MAXSTUDIOVERTS];		// texture coords for surface normals
 int				g_chromeage[MAXSTUDIOBONES];	// last time chrome vectors were updated
-vec3_t			g_chromeup[MAXSTUDIOBONES];		// chrome vector "up" in bone reference frames
-vec3_t			g_chromeright[MAXSTUDIOBONES];	// chrome vector "right" in bone reference frames
+glm::vec3		g_chromeup[MAXSTUDIOBONES];		// chrome vector "up" in bone reference frames
+glm::vec3		g_chromeright[MAXSTUDIOBONES];	// chrome vector "right" in bone reference frames
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -103,7 +107,7 @@ void StudioModel::CalcBoneAdj( )
 }
 
 
-void StudioModel::CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, float *q )
+void StudioModel::CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, vec4_t q )
 {
 	int					j, k;
 	vec4_t				q1, q2;
@@ -178,7 +182,7 @@ void StudioModel::CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, 
 }
 
 
-void StudioModel::CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, float *pos )
+void StudioModel::CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, vec3_t pos )
 {
 	int					j, k;
 	mstudioanimvalue_t	*panimvalue;
@@ -247,7 +251,7 @@ void StudioModel::CalcRotations ( vec3_t *pos, vec4_t *q, mstudioseqdesc_t *pseq
 	pbone		= (mstudiobone_t *)((byte *)m_pstudiohdr + m_pstudiohdr->boneindex);
 	for (i = 0; i < m_pstudiohdr->numbones; i++, pbone++, panim++) 
 	{
-		CalcBoneQuaternion( frame, s, pbone, panim, q[i] );
+		CalcBoneQuaternion( frame, s, pbone, panim, q[ i ] );
 		CalcBonePosition( frame, s, pbone, panim, pos[i] );
 	}
 
@@ -469,7 +473,7 @@ void StudioModel::SetUpBones ( void )
 StudioModel::TransformFinalVert
 ================
 */
-void StudioModel::Lighting (float *lv, int bone, int flags, vec3_t normal)
+void StudioModel::Lighting( float *lv, int bone, int flags, const glm::vec3& normal )
 {
 	float 	illum;
 	float	lightcos;
@@ -508,39 +512,42 @@ void StudioModel::Lighting (float *lv, int bone, int flags, vec3_t normal)
 }
 
 
-void StudioModel::Chrome (int *pchrome, int bone, vec3_t normal)
+void StudioModel::Chrome( glm::ivec2& chrome, int bone, const glm::vec3& normal)
 {
 	float n;
 
 	if (g_chromeage[bone] != g_smodels_total)
 	{
 		// calculate vectors from the viewer to the bone. This roughly adjusts for position
-		vec3_t chromeupvec;		// g_chrome t vector in world reference frame
-		vec3_t chromerightvec;	// g_chrome s vector in world reference frame
-		vec3_t tmp;				// vector pointing at bone in world reference frame
-		VectorScale( m_origin, -1, tmp );
+		glm::vec3 chromeupvec;		// g_chrome t vector in world reference frame
+		glm::vec3 chromerightvec;	// g_chrome s vector in world reference frame
+		glm::vec3 tmp;				// vector pointing at bone in world reference frame
+
+		tmp = m_origin * -1.0f;
+
 		tmp[0] += g_bonetransform[bone][0][3];
 		tmp[1] += g_bonetransform[bone][1][3];
 		tmp[2] += g_bonetransform[bone][2][3];
-		VectorNormalize( tmp );
-		CrossProduct( tmp, g_vright, chromeupvec );
-		VectorNormalize( chromeupvec );
-		CrossProduct( tmp, chromeupvec, chromerightvec );
-		VectorNormalize( chromerightvec );
 
-		VectorIRotate( chromeupvec, g_bonetransform[bone], g_chromeup[bone] );
-		VectorIRotate( chromerightvec, g_bonetransform[bone], g_chromeright[bone] );
+		tmp = glm::normalize( tmp );
+		chromeupvec = glm::cross( tmp, g_vright );
+		chromeupvec = glm::normalize( chromeupvec );
+		chromerightvec = glm::cross( tmp, chromeupvec );
+		chromerightvec = glm::normalize( chromerightvec );
+
+		VectorIRotate( glm::value_ptr( chromeupvec ), g_bonetransform[bone], glm::value_ptr( g_chromeup[bone] ) );
+		VectorIRotate( glm::value_ptr( chromerightvec), g_bonetransform[bone], glm::value_ptr( g_chromeright[bone] ) );
 
 		g_chromeage[bone] = g_smodels_total;
 	}
 
 	// calc s coord
-	n = DotProduct( normal, g_chromeright[bone] );
-	pchrome[0] = (n + 1.0) * 32; // FIX: make this a float
+	n = glm::dot( normal, g_chromeright[bone] );
+	chrome[0] = (n + 1.0) * 32; // FIX: make this a float
 
 	// calc t coord
-	n = DotProduct( normal, g_chromeup[bone] );
-	pchrome[1] = (n + 1.0) * 32; // FIX: make this a float
+	n = glm::dot( normal, g_chromeup[bone] );
+	chrome[1] = (n + 1.0) * 32; // FIX: make this a float
 }
 
 
@@ -882,7 +889,7 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 	byte				*pvertbone;
 	byte				*pnormbone;
 	vec3_t				*pstudioverts;
-	vec3_t				*pstudionorms;
+	const glm::vec3*	pstudionorms;
 	mstudiotexture_t	*ptexture;
 	float 				*av;
 	float				*lv;
@@ -898,7 +905,7 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 	pmesh = (mstudiomesh_t *)((byte *)m_pstudiohdr + m_pmodel->meshindex);
 
 	pstudioverts = (vec3_t *)((byte *)m_pstudiohdr + m_pmodel->vertindex);
-	pstudionorms = (vec3_t *)((byte *)m_pstudiohdr + m_pmodel->normindex);
+	pstudionorms = ( const glm::vec3* ) ( ( const byte* ) m_pstudiohdr + m_pmodel->normindex );
 
 	pskinref = (short *)((byte *)m_ptexturehdr + m_ptexturehdr->skinindex);
 	if (m_skinnum != 0 && m_skinnum < m_ptexturehdr->numskinfamilies)
@@ -906,7 +913,7 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 
 	for (i = 0; i < m_pmodel->numverts; i++)
 	{
-		//vec3_t tmp;
+		//glm::vec3 tmp;
 		//VectorScale (pstudioverts[i], 12, tmp);
 		VectorTransform (pstudioverts[i], g_bonetransform[pvertbone[i]], g_pxformverts[i]);
 	}
@@ -925,13 +932,13 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 		meshes[ j ].pMesh = &pmesh[ j ];
 		meshes[ j ].flags = flags;
 
-		for (i = 0; i < pmesh[j].numnorms; i++, lv += 3, pstudionorms++, pnormbone++)
+		for (i = 0; i < pmesh[j].numnorms; i++, lv += 3, ++pstudionorms, pnormbone++)
 		{
-			Lighting (&lv_tmp, *pnormbone, flags, (float *)pstudionorms);
+			Lighting( &lv_tmp, *pnormbone, flags, *pstudionorms );
 
 			// FIX: move this check out of the inner loop
 			if (flags & STUDIO_NF_CHROME)
-				Chrome( g_chrome[(float (*)[3])lv - g_pvlightvalues], *pnormbone, (float *)pstudionorms );
+				Chrome( g_chrome[(float (*)[3])lv - g_pvlightvalues], *pnormbone, *pstudionorms );
 
 			lv[0] = lv_tmp * g_lightcolor[0];
 			lv[1] = lv_tmp * g_lightcolor[1];

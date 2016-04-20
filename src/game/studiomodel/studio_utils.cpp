@@ -342,7 +342,7 @@ bool StudioModel::PostLoadModel( const char* const pszModelName )
 	}
 
 /*
-	vec3_t mins, maxs;
+	glm::vec3 mins, maxs;
 	ExtractBbox (mins, maxs);
 	if (mins[2] < 5.0f)
 		m_origin[2] = -mins[2];
@@ -448,46 +448,35 @@ int StudioModel::SetSequence( int iSequence )
 
 	const mstudioseqdesc_t* pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex ) + iSequence;
 
-	if( pseqdesc->numframes > 1 )
-	{
-		m_flComputedFrameRate = 256 * pseqdesc->fps / ( pseqdesc->numframes - 1 );
-	}
-	else
-	{
-		m_flComputedFrameRate = 256.0;
-	}
-
 	return m_sequence;
 }
 
 
-void StudioModel::ExtractBbox( float *mins, float *maxs ) const
+void StudioModel::ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const
 {
-	mstudioseqdesc_t	*pseqdesc;
-
-	pseqdesc = (mstudioseqdesc_t *)((byte *)m_pstudiohdr + m_pstudiohdr->seqindex);
+	const mstudioseqdesc_t* pseqdesc = m_pstudiohdr->GetSequence( m_sequence );
 	
-	mins[0] = pseqdesc[ m_sequence ].bbmin[0];
-	mins[1] = pseqdesc[ m_sequence ].bbmin[1];
-	mins[2] = pseqdesc[ m_sequence ].bbmin[2];
+	vecMins[0] = pseqdesc->bbmin[0];
+	vecMins[1] = pseqdesc->bbmin[1];
+	vecMins[2] = pseqdesc->bbmin[2];
 
-	maxs[0] = pseqdesc[ m_sequence ].bbmax[0];
-	maxs[1] = pseqdesc[ m_sequence ].bbmax[1];
-	maxs[2] = pseqdesc[ m_sequence ].bbmax[2];
+	vecMaxs[0] = pseqdesc->bbmax[0];
+	vecMaxs[1] = pseqdesc->bbmax[1];
+	vecMaxs[2] = pseqdesc->bbmax[2];
 }
 
 
 
-void StudioModel::GetSequenceInfo( float *pflFrameRate, float *pflGroundSpeed )
+void StudioModel::GetSequenceInfo( float *pflFrameRate, float *pflGroundSpeed ) const
 {
-	mstudioseqdesc_t	*pseqdesc;
-
-	pseqdesc = (mstudioseqdesc_t *)((byte *)m_pstudiohdr + m_pstudiohdr->seqindex) + (int)m_sequence;
+	const mstudioseqdesc_t* pseqdesc = m_pstudiohdr->GetSequence( m_sequence );
 
 	if (pseqdesc->numframes > 1)
 	{
 		*pflFrameRate = 256 * pseqdesc->fps / (pseqdesc->numframes - 1);
-		*pflGroundSpeed = sqrt( pseqdesc->linearmovement[0]*pseqdesc->linearmovement[0]+ pseqdesc->linearmovement[1]*pseqdesc->linearmovement[1]+ pseqdesc->linearmovement[2]*pseqdesc->linearmovement[2] );
+		*pflGroundSpeed = sqrt( pseqdesc->linearmovement[0]*pseqdesc->linearmovement[0]+ 
+								pseqdesc->linearmovement[1]*pseqdesc->linearmovement[1]+ 
+								pseqdesc->linearmovement[2]*pseqdesc->linearmovement[2] );
 		*pflGroundSpeed = *pflGroundSpeed * pseqdesc->fps / (pseqdesc->numframes - 1);
 	}
 	else
@@ -722,10 +711,12 @@ void StudioModel::ScaleMeshes( float scale )
 			SetBodygroup (i, j);
 			SetupModel (i);
 
-			vec3_t *pstudioverts = (vec3_t *)((byte *)m_pstudiohdr + m_pmodel->vertindex);
+			glm::vec3 *pstudioverts = ( glm::vec3 *)((byte *)m_pstudiohdr + m_pmodel->vertindex);
 
 			for (k = 0; k < m_pmodel->numverts; k++)
-				VectorScale (pstudioverts[k], scale, pstudioverts[k]);
+			{
+				pstudioverts[ k ] *= scale;
+			}
 		}
 	}
 

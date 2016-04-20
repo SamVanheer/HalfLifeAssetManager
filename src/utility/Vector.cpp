@@ -1,7 +1,9 @@
+#include "common/Const.h"
+
 #include "Vector.h"
 
-const Vector vec3_origin = Vector( 0 );
+const glm::vec3 vec3_origin = glm::vec3( 0 );
 
-const Vector WORLD_INVALID_MIN = Vector( static_cast<vec_t>( WORLD_INVALID_MIN_COORD ) );
+const glm::vec3 WORLD_INVALID_MIN = glm::vec3( static_cast<vec_t>( WORLD_INVALID_MIN_COORD ) );
 
-const Vector WORLD_INVALID_MAX = Vector( static_cast<vec_t>( WORLD_INVALID_MAX_COORD ) );
+const glm::vec3 WORLD_INVALID_MAX = glm::vec3( static_cast<vec_t>( WORLD_INVALID_MAX_COORD ) );

@@ -13,6 +13,10 @@
 
 #include <vector>
 
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+
 #include "common/Const.h"
 
 #include "utility/mathlib.h"
@@ -115,18 +119,18 @@ public:
 	void					ReplaceTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, GLuint textureId );
 	void					FreeModel();
 	studiohdr_t				*LoadModel( const char* pszModelName, LoadResult* pResult = nullptr );
-	bool					PostLoadModel ( const char* const pszModelName );
+	bool					PostLoadModel( const char* const pszModelName );
 	LoadResult				Load( const char* const pszModelName );
-	bool					SaveModel ( char *modelname );
+	bool					SaveModel( char *modelname );
 	unsigned int			DrawModel( const CRenderSettings& settings, const bool wireframeOnly = false );
 	float					AdvanceFrame( float dt = 0.0f );
-	int						SetFrame (int nFrame);
+	int						SetFrame( int nFrame );
 
-	void					ExtractBbox( float *mins, float *maxs ) const;
+	void					ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const;
 
 	int						SetSequence( int iSequence );
-	int						GetSequence( void );
-	void					GetSequenceInfo( float *pflFrameRate, float *pflGroundSpeed );
+	int						GetSequence();
+	void					GetSequenceInfo( float *pflFrameRate, float *pflGroundSpeed ) const;
 
 	float					GetController( int iController ) const;
 
@@ -148,8 +152,8 @@ public:
 
 private:
 	// entity settings
-	vec3_t					m_origin;
-	vec3_t					m_angles;	
+	glm::vec3				m_origin;
+	glm::vec3				m_angles;
 	int						m_sequence;				// sequence index
 	float					m_frame;				// frame
 	int						m_bodynum;				// bodypart selection	
@@ -162,7 +166,6 @@ private:
 	float					m_flLastEventCheck;		//Last time we checked for animation events.
 	float					m_flAnimTime;			//Time when the frame was set.
 	float					m_flFrameRate;			//Framerate.
-	float					m_flComputedFrameRate;	//Framerate computed for the current sequence.
 
 	// internal data
 	studiohdr_t				*m_pstudiohdr;
@@ -171,33 +174,33 @@ private:
 	studiohdr_t				*m_ptexturehdr;
 	studiohdr_t				*m_panimhdr[32];
 
-	vec4_t					m_adj;				// FIX: non persistant, make static
+	glm::vec4				m_adj;				// FIX: non persistant, make static
 
 	GLuint					m_Textures[ MAXSTUDIOSKINS ];
 
 	TextureMeshMap_t		m_TextureMeshMap;
 
-	void					CalcBoneAdj( void );
-	void					CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, float *q );
-	void					CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, float *pos );
-	void					CalcRotations ( vec3_t *pos, vec4_t *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f );
+	void					CalcBoneAdj();
+	void					CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, vec4_t q );
+	void					CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, vec3_t pos );
+	void					CalcRotations( vec3_t *pos, vec4_t *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f );
 	mstudioanim_t			*GetAnim( mstudioseqdesc_t *pseqdesc );
 	void					SlerpBones( vec4_t q1[], vec3_t pos1[], vec4_t q2[], vec3_t pos2[], float s );
-	void					SetUpBones ( void );
+	void					SetUpBones();
 
 	unsigned int			DrawPoints( const CRenderSettings& settings, const bool wireframeOnly = false );
 
-	void					Lighting (float *lv, int bone, int flags, vec3_t normal);
-	void					Chrome (int *chrome, int bone, vec3_t normal);
+	void					Lighting( float *lv, int bone, int flags, const glm::vec3& normal );
+	void					Chrome( glm::ivec2& chrome, int bone, const glm::vec3& normal );
 
 	void					SetupLighting( const CRenderSettings& settings );
 
-	void					SetupModel ( int bodypart );
+	void					SetupModel( int bodypart );
 };
 
 
 
-extern vec3_t g_vright;		// needs to be set to viewer's right in order for chrome to work
+extern glm::vec3 g_vright;		// needs to be set to viewer's right in order for chrome to work
 extern float g_lambert;		// modifier for pseudo-hemispherical lighting
 
 #endif // INCLUDED_STUDIOMODEL

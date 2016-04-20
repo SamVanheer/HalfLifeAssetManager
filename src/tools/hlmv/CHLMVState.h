@@ -4,11 +4,11 @@
 #include <vector>
 #include <memory>
 
+#include <glm/vec3.hpp>
+
 #include "common/Platform.h"
 #include "graphics/OpenGL.h"
 #include "graphics/Constants.h"
-
-#include "utility/Vector.h"
 
 #include "game/studiomodel/StudioModel.h"
 
@@ -24,7 +24,7 @@ namespace hlmv
 class CHLMVState final
 {
 public:
-	static const Vector DEFAULT_ROTATION;
+	static const glm::vec3 DEFAULT_ROTATION;
 
 public:
 	CHLMVState();
@@ -40,7 +40,7 @@ public:
 
 	void RestoreView();
 
-	void SetOrigin( const Vector& vecOrigin );
+	void SetOrigin( const glm::vec3& vecOrigin );
 
 	StudioModel* GetStudioModel() { return m_pStudioModel; }
 	const StudioModel* GetStudioModel() const { return m_pStudioModel; }
@@ -52,12 +52,12 @@ public:
 	bool DumpModelInfo( const char* const pszFilename );
 
 public:
-	Vector trans;
-	Vector rot;
+	glm::vec3 trans;
+	glm::vec3 rot;
 
 	//Do not reset these; the user inits these!
-	Vector savedTrans;
-	Vector savedRot = DEFAULT_ROTATION;
+	glm::vec3 savedTrans;
+	glm::vec3 savedRot = DEFAULT_ROTATION;
 
 	bool showBackground;
 
@@ -92,7 +92,7 @@ public:
 
 	bool wireframeOverlay;
 
-	Vector weaponOrigin;
+	glm::vec3 weaponOrigin;
 
 	bool useWeaponOrigin;
 

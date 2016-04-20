@@ -2,7 +2,7 @@
 
 namespace hlmv
 {
-const Vector CHLMVState::DEFAULT_ROTATION = Vector( -90.0f, 0, 0 );
+const glm::vec3 CHLMVState::DEFAULT_ROTATION = glm::vec3( -90.0f, 0, 0 );
 
 CHLMVState::CHLMVState()
 	: m_pStudioModel( nullptr )
@@ -76,7 +76,7 @@ void CHLMVState::CenterView()
 	if( !m_pStudioModel )
 		return;
 
-	float min[ 3 ], max[ 3 ];
+	glm::vec3 min, max;
 	m_pStudioModel->ExtractBbox( min, max );
 
 	float dx = max[ 0 ] - min[ 0 ];
@@ -110,7 +110,7 @@ void CHLMVState::RestoreView()
 	rot		= savedRot;
 }
 
-void CHLMVState::SetOrigin( const Vector& vecOrigin )
+void CHLMVState::SetOrigin( const glm::vec3& vecOrigin )
 {
 	trans = vecOrigin;
 }

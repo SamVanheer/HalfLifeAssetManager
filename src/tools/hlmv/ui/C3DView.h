@@ -8,7 +8,7 @@
 //Must be included after OpenGL.h because GLEW replaces gl.h
 #include <wx/glcanvas.h>
 
-#include "utility/Vector.h"
+#include <glm/vec3.hpp>
 
 #include "game/studiomodel/StudioModel.h"
 
@@ -89,7 +89,7 @@ private:
 	float m_flOldRotX = 0;
 	float m_flOldRotY = 0;
 
-	Vector m_vecOldTrans = { 0, 0, 0 };
+	glm::vec3 m_vecOldTrans = { 0, 0, 0 };
 
 	float m_flOldX = 0;
 	float m_flOldY = 0;
