@@ -133,7 +133,7 @@ void DrawTexture( const int iWidth, const int iHeight,
 
 	glOrtho( 0.0f, ( float ) iWidth, ( float ) iHeight, 0.0f, 1.0f, -1.0f );
 
-	const studiohdr_t* const hdr = studioModel.getTextureHeader();
+	const studiohdr_t* const hdr = studioModel.GetTextureHeader();
 	if( hdr )
 	{
 		mstudiotexture_t *ptextures = ( mstudiotexture_t * ) ( ( byte * ) hdr + hdr->textureindex );
@@ -228,7 +228,7 @@ void DrawTexture( const int iWidth, const int iHeight,
 
 			for( size_t uiIndex = 0; uiIndex < uiCount; ++uiIndex, ++ppMeshes )
 			{
-				const short* ptricmds = ( short* ) ( ( byte* ) studioModel.getStudioHeader() + ( *ppMeshes )->triindex );
+				const short* ptricmds = ( short* ) ( ( byte* ) studioModel.GetStudioHeader() + ( *ppMeshes )->triindex );
 
 				while( i = *( ptricmds++ ) )
 				{

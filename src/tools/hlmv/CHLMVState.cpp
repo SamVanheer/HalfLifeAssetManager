@@ -137,12 +137,12 @@ bool CHLMVState::DumpModelInfo( const char* const pszFilename )
 	if( !pszFilename || !( *pszFilename ) )
 		return false;
 
-	if( !m_pStudioModel || !m_pStudioModel->getStudioHeader() )
+	if( !m_pStudioModel || !m_pStudioModel->GetStudioHeader() )
 		return false;
 
 	if( FILE* pFile = fopen( pszFilename, "w" ) )
 	{
-		const studiohdr_t* const pHdr = m_pStudioModel->getStudioHeader();
+		const studiohdr_t* const pHdr = m_pStudioModel->GetStudioHeader();
 
 		const byte* const pByte = reinterpret_cast<const byte* const>( pHdr );
 
@@ -312,7 +312,7 @@ bool CHLMVState::DumpModelInfo( const char* const pszFilename )
 			}
 		}
 
-		const studiohdr_t* const pTexHdr = m_pStudioModel->getTextureHeader();
+		const studiohdr_t* const pTexHdr = m_pStudioModel->GetTextureHeader();
 
 		fprintf( pFile,
 				 "Number of Textures: %d\n"

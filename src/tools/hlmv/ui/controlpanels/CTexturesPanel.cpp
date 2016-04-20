@@ -109,7 +109,7 @@ void CTexturesPanel::InitializeUI()
 
 	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
 	{
-		const studiohdr_t* const pHdr = pModel->getTextureHeader();
+		const studiohdr_t* const pHdr = pModel->GetTextureHeader();
 
 		if( pHdr )
 		{
@@ -161,7 +161,7 @@ void CTexturesPanel::CheckBoxChanged( wxCommandEvent& event )
 	if( !pModel )
 		return;
 
-	const studiohdr_t* const pHdr = pModel->getTextureHeader();
+	const studiohdr_t* const pHdr = pModel->GetTextureHeader();
 
 	if( !pHdr )
 		return;
@@ -260,7 +260,7 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 {
 	auto pModel = m_pHLMV->GetState()->GetStudioModel();
 
-	if( !pModel || !pModel->getTextureHeader() )
+	if( !pModel || !pModel->GetTextureHeader() )
 	{
 		wxMessageBox( "No model loaded!" );
 		return;
@@ -298,7 +298,7 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 		return;
 	}
 
-	studiohdr_t* const pHdr = pModel->getTextureHeader();
+	studiohdr_t* const pHdr = pModel->GetTextureHeader();
 
 	mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTextureIndex ];
 
@@ -371,7 +371,7 @@ void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 
 	const wxString szFilename = dlg.GetPath();
 
-	studiohdr_t* const pHdr = pModel->getTextureHeader();
+	studiohdr_t* const pHdr = pModel->GetTextureHeader();
 
 	mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTextureIndex ];
 
@@ -413,8 +413,8 @@ void CTexturesPanel::SetTexture( int iIndex )
 {
 	StudioModel* const pStudioModel = m_pHLMV->GetState()->GetStudioModel();
 
-	const studiohdr_t* const pHdr = pStudioModel->getStudioHeader();
-	const studiohdr_t* const pTexHdr = pStudioModel->getTextureHeader();
+	const studiohdr_t* const pHdr = pStudioModel->GetStudioHeader();
+	const studiohdr_t* const pTexHdr = pStudioModel->GetTextureHeader();
 
 	m_pMesh->Clear();
 

@@ -44,61 +44,6 @@ enum
 	STUDIO_VERSION			 = 10
 };
 
-struct studiohdr_t
-{
-	int		id;
-	int		version;
-
-	char	name[ 64 ];
-	int		length;
-
-	vec3_t	eyeposition;	// ideal eye position
-	vec3_t	min;			// ideal movement hull size
-	vec3_t	max;
-
-	vec3_t	bbmin;			// clipping bounding box
-	vec3_t	bbmax;
-
-	int		flags;
-
-	int		numbones;			// bones
-	int		boneindex;
-
-	int		numbonecontrollers;		// bone controllers
-	int		bonecontrollerindex;
-
-	int		numhitboxes;			// complex bounding boxes
-	int		hitboxindex;
-
-	int		numseq;				// animation sequences
-	int		seqindex;
-
-	int		numseqgroups;		// demand loaded sequences
-	int		seqgroupindex;
-
-	int		numtextures;		// raw textures
-	int		textureindex;
-	int		texturedataindex;
-
-	int		numskinref;			// replaceable textures
-	int		numskinfamilies;
-	int		skinindex;
-
-	int		numbodyparts;
-	int		bodypartindex;
-
-	int		numattachments;		// queryable attachable points
-	int		attachmentindex;
-
-	int		soundtable;
-	int		soundindex;
-	int		soundgroups;
-	int		soundgroupindex;
-
-	int		numtransitions;		// animation node to animation node transition graph
-	int		transitionindex;
-};
-
 // header for demand loaded sequence group data
 struct studioseqhdr_t
 {
@@ -318,6 +263,125 @@ struct mstudiotrivert_t
 	short	s, t;			// s,t position on skin
 };
 #endif
+
+struct studiohdr_t
+{
+	int		id;
+	int		version;
+
+	char	name[ 64 ];
+	int		length;
+
+	vec3_t	eyeposition;	// ideal eye position
+	vec3_t	min;			// ideal movement hull size
+	vec3_t	max;
+
+	vec3_t	bbmin;			// clipping bounding box
+	vec3_t	bbmax;
+
+	int		flags;
+
+	const	byte* GetData() const { return reinterpret_cast<const byte*>( this ); }
+	byte* GetData() { return reinterpret_cast<byte*>( this ); }
+
+	int		numbones;			// bones
+	int		boneindex;
+
+	const	mstudiobone_t* GetBones() const { return reinterpret_cast<const mstudiobone_t*>( GetData() + boneindex ); }
+	mstudiobone_t* GetBones() { return reinterpret_cast<mstudiobone_t*>( GetData() + boneindex ); }
+
+	const	mstudiobone_t* GetBone( const int iIndex ) const { return GetBones() + iIndex; }
+	mstudiobone_t* GetBone( const int iIndex ) { return GetBones() + iIndex; }
+
+	int		numbonecontrollers;		// bone controllers
+	int		bonecontrollerindex;
+
+	const	mstudiobonecontroller_t* GetBoneControllers() const { return reinterpret_cast<const mstudiobonecontroller_t*>( GetData() + bonecontrollerindex ); }
+	mstudiobonecontroller_t* GetBoneControllers() { return reinterpret_cast<mstudiobonecontroller_t*>( GetData() + bonecontrollerindex ); }
+
+	const	mstudiobonecontroller_t* GetBoneController( const int iIndex ) const { return GetBoneControllers() + iIndex; }
+	mstudiobonecontroller_t* GetBoneController( const int iIndex ) { return GetBoneControllers() + iIndex; }
+
+	int		numhitboxes;			// complex bounding boxes
+	int		hitboxindex;
+
+	const	mstudiobbox_t* GetHitBoxes() const { return reinterpret_cast<const mstudiobbox_t*>( GetData() + hitboxindex ); }
+	mstudiobbox_t* GetHitBoxes() { return reinterpret_cast<mstudiobbox_t*>( GetData() + hitboxindex ); }
+
+	const	mstudiobbox_t* GetHitBox( const int iIndex ) const { return GetHitBoxes() + iIndex; }
+	mstudiobbox_t* GetHitBox( const int iIndex ) { return GetHitBoxes() + iIndex; }
+
+	int		numseq;				// animation sequences
+	int		seqindex;
+
+	const	mstudioseqdesc_t* GetSequences() const { return reinterpret_cast<const mstudioseqdesc_t*>( GetData() + seqindex ); }
+	mstudioseqdesc_t* GetSequences() { return reinterpret_cast<mstudioseqdesc_t*>( GetData() + seqindex ); }
+
+	const	mstudioseqdesc_t* GetSequence( const int iIndex ) const { return GetSequences() + iIndex; }
+	mstudioseqdesc_t* GetSequence( const int iIndex ) { return GetSequences() + iIndex; }
+
+	int		numseqgroups;		// demand loaded sequences
+	int		seqgroupindex;
+
+	const	mstudioseqgroup_t* GetSequenceGroups() const { return reinterpret_cast<const mstudioseqgroup_t*>( GetData() + seqgroupindex ); }
+	mstudioseqgroup_t* GetSequenceGroups() { return reinterpret_cast<mstudioseqgroup_t*>( GetData() + seqgroupindex ); }
+
+	const	mstudioseqgroup_t* GetSequenceGroup( const int iIndex ) const { return GetSequenceGroups() + iIndex; }
+	mstudioseqgroup_t* GetSequenceGroup( const int iIndex ) { return GetSequenceGroups() + iIndex; }
+
+	int		numtextures;		// raw textures
+	int		textureindex;
+	int		texturedataindex;
+
+	const	mstudiotexture_t* GetTextures() const { return reinterpret_cast<const mstudiotexture_t*>( GetData() + textureindex ); }
+	mstudiotexture_t* GetTextures() { return reinterpret_cast<mstudiotexture_t*>( GetData() + textureindex ); }
+
+	const	mstudiotexture_t* GetTexture( const int iIndex ) const { return GetTextures() + iIndex; }
+	mstudiotexture_t* GetTexture( const int iIndex ) { return GetTextures() + iIndex; }
+
+	int		numskinref;			// replaceable textures
+	int		numskinfamilies;
+	int		skinindex;
+
+	const	short* GetSkins() const { return reinterpret_cast<const short*>( GetData() + skinindex ); }
+	short* GetSkins() { return reinterpret_cast<short*>( GetData() + skinindex ); }
+
+	const	short* GetSkin( const int iIndex ) const { return GetSkins() + iIndex; }
+	short* GetSkin( const int iIndex ) { return GetSkins() + iIndex; }
+
+	int		numbodyparts;
+	int		bodypartindex;
+
+	const	mstudiobodyparts_t* GetBodyparts() const { return reinterpret_cast<const mstudiobodyparts_t*>( GetData() + bodypartindex ); }
+	mstudiobodyparts_t* GetBodyparts() { return reinterpret_cast<mstudiobodyparts_t*>( GetData() + bodypartindex ); }
+
+	const	mstudiobodyparts_t* GetBodypart( const int iIndex ) const { return GetBodyparts() + iIndex; }
+	mstudiobodyparts_t* GetBodypart( const int iIndex ) { return GetBodyparts() + iIndex; }
+
+	int		numattachments;		// queryable attachable points
+	int		attachmentindex;
+
+	const	mstudioattachment_t* GetAttachments() const { return reinterpret_cast<const mstudioattachment_t*>( GetData() + attachmentindex ); }
+	mstudioattachment_t* GetAttachments() { return reinterpret_cast<mstudioattachment_t*>( GetData() + attachmentindex ); }
+
+	const	mstudioattachment_t* GetAttachment( const int iIndex ) const { return GetAttachments() + iIndex; }
+	mstudioattachment_t* GetAttachment( const int iIndex ) { return GetAttachments() + iIndex; }
+
+	//This seems to be obsolete. Probably replaced by events that reference external sounds?
+	int		soundtable;
+	int		soundindex;
+	int		soundgroups;
+	int		soundgroupindex;
+
+	int		numtransitions;		// animation node to animation node transition graph
+	int		transitionindex;
+
+	const	byte* GetTransitions() const { return reinterpret_cast<const byte*>( GetData() + attachmentindex ); }
+	byte* GetTransitions() { return reinterpret_cast<byte*>( GetData() + attachmentindex ); }
+
+	const	byte* GetTransition( const int iIndex ) const { return GetTransitions() + iIndex; }
+	byte* GetTransition( const int iIndex ) { return GetTransitions() + iIndex; }
+};
 
 // lighting options
 enum

@@ -389,7 +389,7 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 	if( !pModel )
 		return;
 
-	const studiohdr_t* const pHdr = pModel->getTextureHeader();
+	const studiohdr_t* const pHdr = pModel->GetTextureHeader();
 
 	if( !pHdr )
 		return;

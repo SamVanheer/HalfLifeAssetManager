@@ -92,9 +92,9 @@ public:
 	};
 
 public:
-	studiohdr_t				*getStudioHeader () const { return m_pstudiohdr; }
-	studiohdr_t				*getTextureHeader () const { return m_ptexturehdr; }
-	studiohdr_t				*getAnimHeader (int i) const { return m_panimhdr[i]; }
+	studiohdr_t				*GetStudioHeader() const { return m_pstudiohdr; }
+	studiohdr_t				*GetTextureHeader() const { return m_ptexturehdr; }
+	studiohdr_t				*GetAnimHeader( const int i ) const { return m_panimhdr[i]; }
 
 	float GetFrame() const { return m_frame; }
 

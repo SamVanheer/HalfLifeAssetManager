@@ -115,7 +115,7 @@ void CBodyPartsPanel::InitializeUI()
 
 	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
 	{
-		const studiohdr_t* const pHdr = pModel->getStudioHeader();
+		const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
 		if( pHdr )
 		{
@@ -176,7 +176,7 @@ void CBodyPartsPanel::InitializeUI()
 
 			m_pController->Append( names );
 
-			const studiohdr_t* const pTexHdr = pModel->getTextureHeader();
+			const studiohdr_t* const pTexHdr = pModel->GetTextureHeader();
 
 			SetModelInfo( *pHdr, *pTexHdr );
 
@@ -231,7 +231,7 @@ void CBodyPartsPanel::ControllerSliderChanged( wxCommandEvent& event )
 
 void CBodyPartsPanel::SetBodypart( int iIndex )
 {
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->GetStudioHeader();
 
 	if( !pHdr )
 	{
@@ -268,7 +268,7 @@ void CBodyPartsPanel::UpdateSubmodels( const int iIndex )
 {
 	m_pSubmodel->Clear();
 
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->GetStudioHeader();
 
 	if( !pHdr )
 	{
@@ -313,7 +313,7 @@ void CBodyPartsPanel::SetController( int iIndex )
 {
 	auto pModel = m_pHLMV->GetState()->GetStudioModel();
 
-	if( !pModel || !pModel->getStudioHeader() || pModel->getStudioHeader()->numbonecontrollers == 0 )
+	if( !pModel || !pModel->GetStudioHeader() || pModel->GetStudioHeader()->numbonecontrollers == 0 )
 	{
 		//Disable and center it.
 		m_pControllerSlider->Enable( false );
@@ -322,7 +322,7 @@ void CBodyPartsPanel::SetController( int iIndex )
 		return;
 	}
 
-	const studiohdr_t* const pHdr = pModel->getStudioHeader();
+	const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
 	if( iIndex < 0 || iIndex >= pHdr->numbonecontrollers )
 		iIndex = 0;
@@ -342,7 +342,7 @@ void CBodyPartsPanel::SetControllerValue( int iIndex, int iValue )
 	if( !pModel )
 		return;
 
-	const studiohdr_t* const pHdr = pModel->getStudioHeader();
+	const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
 	if( pHdr )
 	{

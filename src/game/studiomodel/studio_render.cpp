@@ -350,7 +350,7 @@ int StudioModel::GetNumFrames() const
 
 GLuint StudioModel::GetTextureId( const int iIndex ) const
 {
-	const studiohdr_t* const pHdr = getStudioHeader();
+	const studiohdr_t* const pHdr = GetStudioHeader();
 
 	if( !pHdr )
 		return GL_INVALID_TEXTURE_ID;

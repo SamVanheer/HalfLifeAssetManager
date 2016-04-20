@@ -309,7 +309,7 @@ void CSequencesPanel::InitializeUI()
 
 	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
 	{
-		const studiohdr_t* const pHdr = pModel->getStudioHeader();
+		const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
 		if( pHdr )
 		{
@@ -354,7 +354,7 @@ void CSequencesPanel::SetSequence( int iIndex )
 {
 	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
 	{
-		const studiohdr_t* const pHdr = pModel->getStudioHeader();
+		const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
 		if( !pHdr )
 		{
@@ -438,13 +438,13 @@ void CSequencesPanel::UpdateEvents()
 
 	auto pModel = m_pHLMV->GetState()->GetStudioModel();
 
-	if( !pModel || !pModel->getStudioHeader() )
+	if( !pModel || !pModel->GetStudioHeader() )
 	{
 		UpdateEventInfo( -1 );
 		return;
 	}
 
-	const studiohdr_t* const pHdr = pModel->getStudioHeader();
+	const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
 	const mstudioseqdesc_t& sequence = ( ( mstudioseqdesc_t* ) ( ( byte* ) pHdr + pHdr->seqindex ) )[ m_pSequence->GetSelection() ];
 
@@ -470,14 +470,16 @@ void CSequencesPanel::UpdateEvents()
 
 void CSequencesPanel::UpdateEventInfo( int iIndex )
 {
-	if( iIndex == -1 )
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
+	if( iIndex == -1 || !pModel )
 	{
 		m_pEvent->Enable( false );
 		m_pEventInfo->Show( false );
 		return;
 	}
 
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->getStudioHeader();
+	const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
 	if( !pHdr )
 		return;
