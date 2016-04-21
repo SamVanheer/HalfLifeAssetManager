@@ -181,11 +181,11 @@ private:
 	TextureMeshMap_t		m_TextureMeshMap;
 
 	void					CalcBoneAdj();
-	void					CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, vec4_t q );
-	void					CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, vec3_t pos );
-	void					CalcRotations( vec3_t *pos, vec4_t *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f );
+	void					CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec4& q );
+	void					CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec3& pos );
+	void					CalcRotations( glm::vec3 *pos, glm::vec4 *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f );
 	mstudioanim_t			*GetAnim( mstudioseqdesc_t *pseqdesc );
-	void					SlerpBones( vec4_t q1[], vec3_t pos1[], vec4_t q2[], vec3_t pos2[], float s );
+	void					SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s );
 	void					SetUpBones();
 
 	unsigned int			DrawPoints( const CRenderSettings& settings, const bool wireframeOnly = false );

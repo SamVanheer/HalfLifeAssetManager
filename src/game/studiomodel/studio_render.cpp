@@ -34,20 +34,20 @@ float g_lambert = 1.5;
 
 ////////////////////////////////////////////////////////////////////////
 
-vec3_t			g_xformverts[MAXSTUDIOVERTS];	// transformed vertices
-vec3_t			g_lightvalues[MAXSTUDIOVERTS];	// light surface normals
-vec3_t			*g_pxformverts;
-vec3_t			*g_pvlightvalues;
+glm::vec3		g_xformverts[MAXSTUDIOVERTS];	// transformed vertices
+glm::vec3		g_lightvalues[MAXSTUDIOVERTS];	// light surface normals
+glm::vec3*		g_pxformverts;
+glm::vec3*		g_pvlightvalues;
 
-vec3_t			g_lightvec;						// light vector in model reference frame
-vec3_t			g_blightvec[MAXSTUDIOBONES];	// light vectors in bone reference frames
+glm::vec3		g_lightvec;						// light vector in model reference frame
+glm::vec3		g_blightvec[MAXSTUDIOBONES];	// light vectors in bone reference frames
 int				g_ambientlight;					// ambient world light
 float			g_shadelight;					// direct world light
-vec3_t			g_lightcolor;
+Color			g_lightcolor;
 
 int				g_smodels_total;				// cookie
 
-float			g_bonetransform[MAXSTUDIOBONES][3][4];	// bone transformation matrix
+glm::mat3x4		g_bonetransform[MAXSTUDIOBONES];	// bone transformation matrix
 
 glm::ivec2		g_chrome[MAXSTUDIOVERTS];		// texture coords for surface normals
 int				g_chromeage[MAXSTUDIOBONES];	// last time chrome vectors were updated
@@ -107,11 +107,11 @@ void StudioModel::CalcBoneAdj( )
 }
 
 
-void StudioModel::CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, vec4_t q )
+void StudioModel::CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec4& q )
 {
 	int					j, k;
-	vec4_t				q1, q2;
-	vec3_t				angle1, angle2;
+	glm::vec4			q1, q2;
+	glm::vec3			angle1, angle2;
 	mstudioanimvalue_t	*panimvalue;
 
 	for (j = 0; j < 3; j++)
@@ -182,7 +182,7 @@ void StudioModel::CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, 
 }
 
 
-void StudioModel::CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, vec3_t pos )
+void StudioModel::CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec3& pos )
 {
 	int					j, k;
 	mstudioanimvalue_t	*panimvalue;
@@ -234,8 +234,7 @@ void StudioModel::CalcBonePosition( int frame, float s, mstudiobone_t *pbone, ms
 	}
 }
 
-
-void StudioModel::CalcRotations ( vec3_t *pos, vec4_t *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f )
+void StudioModel::CalcRotations ( glm::vec3 *pos, glm::vec4 *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f )
 {
 	int					i;
 	int					frame;
@@ -252,7 +251,7 @@ void StudioModel::CalcRotations ( vec3_t *pos, vec4_t *q, mstudioseqdesc_t *pseq
 	for (i = 0; i < m_pstudiohdr->numbones; i++, pbone++, panim++) 
 	{
 		CalcBoneQuaternion( frame, s, pbone, panim, q[ i ] );
-		CalcBonePosition( frame, s, pbone, panim, pos[i] );
+		CalcBonePosition( frame, s, pbone, panim, pos[ i ] );
 	}
 
 	if (pseqdesc->motiontype & STUDIO_X)
@@ -278,10 +277,10 @@ mstudioanim_t * StudioModel::GetAnim( mstudioseqdesc_t *pseqdesc )
 }
 
 
-void StudioModel::SlerpBones( vec4_t q1[], vec3_t pos1[], vec4_t q2[], vec3_t pos2[], float s )
+void StudioModel::SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s )
 {
 	int			i;
-	vec4_t		q3;
+	glm::vec4	q3;
 	float		s1;
 
 	if (s < 0) s = 0;
@@ -401,16 +400,15 @@ void StudioModel::SetUpBones ( void )
 	mstudioseqdesc_t	*pseqdesc;
 	mstudioanim_t		*panim;
 
-	static vec3_t		pos[MAXSTUDIOBONES];
-	float				bonematrix[3][4];
-	static vec4_t		q[MAXSTUDIOBONES];
+	static glm::vec3		pos[MAXSTUDIOBONES];
+	static glm::vec4		q[MAXSTUDIOBONES];
 
-	static vec3_t		pos2[MAXSTUDIOBONES];
-	static vec4_t		q2[MAXSTUDIOBONES];
-	static vec3_t		pos3[MAXSTUDIOBONES];
-	static vec4_t		q3[MAXSTUDIOBONES];
-	static vec3_t		pos4[MAXSTUDIOBONES];
-	static vec4_t		q4[MAXSTUDIOBONES];
+	static glm::vec3		pos2[MAXSTUDIOBONES];
+	static glm::vec4		q2[MAXSTUDIOBONES];
+	static glm::vec3		pos3[MAXSTUDIOBONES];
+	static glm::vec4		q3[MAXSTUDIOBONES];
+	static glm::vec3		pos4[MAXSTUDIOBONES];
+	static glm::vec4		q4[MAXSTUDIOBONES];
 
 
 	if (m_sequence >=  m_pstudiohdr->numseq) {
@@ -450,6 +448,8 @@ void StudioModel::SetUpBones ( void )
 
 	pbones = (mstudiobone_t *)((byte *)m_pstudiohdr + m_pstudiohdr->boneindex);
 
+	glm::mat3x4 bonematrix;
+
 	for (i = 0; i < m_pstudiohdr->numbones; i++) {
 		QuaternionMatrix( q[i], bonematrix );
 
@@ -458,7 +458,7 @@ void StudioModel::SetUpBones ( void )
 		bonematrix[2][3] = pos[i][2];
 
 		if (pbones[i].parent == -1) {
-			memcpy(g_bonetransform[i], bonematrix, sizeof(float) * 12);
+			g_bonetransform[ i ] = bonematrix;
 		} 
 		else {
 			R_ConcatTransforms (g_bonetransform[pbones[i].parent], bonematrix, g_bonetransform[i]);
@@ -487,7 +487,7 @@ void StudioModel::Lighting( float *lv, int bone, int flags, const glm::vec3& nor
 	else 
 	{
 		float r;
-		lightcos = DotProduct (normal, g_blightvec[bone]); // -1 colinear, 1 opposite
+		lightcos = glm::dot( normal, g_blightvec[ bone ] ); // -1 colinear, 1 opposite
 
 		if (lightcos > 1.0)
 			lightcos = 1;
@@ -535,8 +535,8 @@ void StudioModel::Chrome( glm::ivec2& chrome, int bone, const glm::vec3& normal)
 		chromerightvec = glm::cross( tmp, chromeupvec );
 		chromerightvec = glm::normalize( chromerightvec );
 
-		VectorIRotate( glm::value_ptr( chromeupvec ), g_bonetransform[bone], glm::value_ptr( g_chromeup[bone] ) );
-		VectorIRotate( glm::value_ptr( chromerightvec), g_bonetransform[bone], glm::value_ptr( g_chromeright[bone] ) );
+		VectorIRotate( chromeupvec, g_bonetransform[bone], g_chromeup[bone] );
+		VectorIRotate( chromerightvec, g_bonetransform[bone], g_chromeright[bone] );
 
 		g_chromeage[bone] = g_smodels_total;
 	}
@@ -571,9 +571,9 @@ void StudioModel::SetupLighting( const CRenderSettings& settings )
 	g_lightvec[1] = 0;
 	g_lightvec[2] = -1.0;
 
-	g_lightcolor[0] = settings.lightColor[0] / 255.0f;
-	g_lightcolor[1] = settings.lightColor[1] / 255.0f;
-	g_lightcolor[2] = settings.lightColor[2] / 255.0f;
+	g_lightcolor[0] = settings.lightColor[0];
+	g_lightcolor[1] = settings.lightColor[1];
+	g_lightcolor[2] = settings.lightColor[2];
 
 	// TODO: only do it for bones that actually have textures
 	for (i = 0; i < m_pstudiohdr->numbones; i++)
@@ -626,28 +626,32 @@ void StudioModel::SetupModel ( int bodypart )
 	m_pmodel = GetModelByBodyPart( bodypart );
 }
 
-
-void
-drawBox (vec3_t *v)
+/**
+*	Draws a box using an array of 8 vectors as corner points.
+*	TODO: move to graphicshelpers
+*/
+void drawBox( const glm::vec3* const v )
 {
-	glBegin (GL_QUAD_STRIP);
-	for (int i = 0; i < 10; i++)
-		glVertex3fv (v[i & 7]);
-	glEnd ();
+	glBegin( GL_QUAD_STRIP );
+	for( int i = 0; i < 10; ++i )
+	{
+		glVertex3fv( glm::value_ptr( v[ i & 7 ] ) );
+	}
+	glEnd();
 	
-	glBegin  (GL_QUAD_STRIP);
-	glVertex3fv (v[6]);
-	glVertex3fv (v[0]);
-	glVertex3fv (v[4]);
-	glVertex3fv (v[2]);
-	glEnd ();
+	glBegin( GL_QUAD_STRIP );
+	glVertex3fv(glm::value_ptr( v[6] ) );
+	glVertex3fv(glm::value_ptr( v[0] ) );
+	glVertex3fv(glm::value_ptr( v[4] ) );
+	glVertex3fv(glm::value_ptr( v[2] ) );
+	glEnd();
 
-	glBegin  (GL_QUAD_STRIP);
-	glVertex3fv (v[1]);
-	glVertex3fv (v[7]);
-	glVertex3fv (v[3]);
-	glVertex3fv (v[5]);
-	glEnd ();
+	glBegin( GL_QUAD_STRIP );
+	glVertex3fv(glm::value_ptr( v[1] ) );
+	glVertex3fv(glm::value_ptr( v[7] ) );
+	glVertex3fv(glm::value_ptr( v[3] ) );
+	glVertex3fv(glm::value_ptr( v[5] ) );
+	glEnd();
 
 }
 
@@ -744,30 +748,30 @@ unsigned int StudioModel::DrawModel( const CRenderSettings& settings, const bool
 		for (i = 0; i < m_pstudiohdr->numattachments; i++)
 		{
 			mstudioattachment_t *pattachments = (mstudioattachment_t *) ((byte *) m_pstudiohdr + m_pstudiohdr->attachmentindex);
-			vec3_t v[4];
-			VectorTransform (pattachments[i].org, g_bonetransform[pattachments[i].bone], v[0]);
-			VectorTransform (pattachments[i].vectors[0], g_bonetransform[pattachments[i].bone], v[1]);
-			VectorTransform (pattachments[i].vectors[1], g_bonetransform[pattachments[i].bone], v[2]);
-			VectorTransform (pattachments[i].vectors[2], g_bonetransform[pattachments[i].bone], v[3]);
+			glm::vec3 v[4];
+			VectorTransform (pattachments[i].org,			g_bonetransform[pattachments[i].bone], v[0] );
+			VectorTransform (pattachments[i].vectors[0],	g_bonetransform[pattachments[i].bone], v[1] );
+			VectorTransform (pattachments[i].vectors[1],	g_bonetransform[pattachments[i].bone], v[2] );
+			VectorTransform (pattachments[i].vectors[2],	g_bonetransform[pattachments[i].bone], v[3] );
 			glBegin (GL_LINES);
 			glColor3f (1, 0, 0);
-			glVertex3fv (v[0]);
+			glVertex3fv (glm::value_ptr( v[0] ) );
 			glColor3f (1, 1, 1);
-			glVertex3fv (v[1]);
+			glVertex3fv ( glm::value_ptr( v[1] ) );
 			glColor3f (1, 0, 0);
-			glVertex3fv (v[0]);
+			glVertex3fv ( glm::value_ptr( v[0] ) );
 			glColor3f (1, 1, 1);
-			glVertex3fv (v[2]);
+			glVertex3fv ( glm::value_ptr( v[2] ) );
 			glColor3f (1, 0, 0);
-			glVertex3fv (v[0]);
+			glVertex3fv ( glm::value_ptr( v[0] ) );
 			glColor3f (1, 1, 1);
-			glVertex3fv (v[3]);
+			glVertex3fv ( glm::value_ptr( v[3] ) );
 			glEnd ();
 
 			glPointSize (5);
 			glColor3f (0, 1, 0);
 			glBegin (GL_POINTS);
-			glVertex3fv (v[0]);
+			glVertex3fv ( glm::value_ptr( v[0] ) );
 			glEnd ();
 			glPointSize (1);
 		}
@@ -782,7 +786,7 @@ unsigned int StudioModel::DrawModel( const CRenderSettings& settings, const bool
 		glPointSize( 7 );
 		glColor3f( 1, 0, 1 );
 		glBegin( GL_POINTS );
-		glVertex3fv( m_pstudiohdr->eyeposition );
+		glVertex3fv( glm::value_ptr( m_pstudiohdr->eyeposition ) );
 		glEnd();
 		glPointSize( 1 );
 	}
@@ -805,10 +809,10 @@ unsigned int StudioModel::DrawModel( const CRenderSettings& settings, const bool
 		for (i = 0; i < m_pstudiohdr->numhitboxes; i++)
 		{
 			mstudiobbox_t *pbboxes = (mstudiobbox_t *) ((byte *) m_pstudiohdr + m_pstudiohdr->hitboxindex);
-			vec3_t v[8], v2[8], bbmin, bbmax;
+			glm::vec3 v[8], v2[8];
 
-			VectorCopy (pbboxes[i].bbmin, bbmin);
-			VectorCopy (pbboxes[i].bbmax, bbmax);
+			glm::vec3 bbmin = pbboxes[ i ].bbmin;
+			glm::vec3 bbmax = pbboxes[ i ].bbmax;
 
 			v[0][0] = bbmin[0];
 			v[0][1] = bbmax[1];
@@ -842,16 +846,16 @@ unsigned int StudioModel::DrawModel( const CRenderSettings& settings, const bool
 			v[7][1] = bbmin[1];
 			v[7][2] = bbmax[2];
 
-			VectorTransform (v[0], g_bonetransform[pbboxes[i].bone], v2[0]);
-			VectorTransform (v[1], g_bonetransform[pbboxes[i].bone], v2[1]);
-			VectorTransform (v[2], g_bonetransform[pbboxes[i].bone], v2[2]);
-			VectorTransform (v[3], g_bonetransform[pbboxes[i].bone], v2[3]);
-			VectorTransform (v[4], g_bonetransform[pbboxes[i].bone], v2[4]);
-			VectorTransform (v[5], g_bonetransform[pbboxes[i].bone], v2[5]);
-			VectorTransform (v[6], g_bonetransform[pbboxes[i].bone], v2[6]);
-			VectorTransform (v[7], g_bonetransform[pbboxes[i].bone], v2[7]);
+			VectorTransform( v[0], g_bonetransform[pbboxes[i].bone], v2[0] );
+			VectorTransform( v[1], g_bonetransform[pbboxes[i].bone], v2[1] );
+			VectorTransform( v[2], g_bonetransform[pbboxes[i].bone], v2[2] );
+			VectorTransform( v[3], g_bonetransform[pbboxes[i].bone], v2[3] );
+			VectorTransform( v[4], g_bonetransform[pbboxes[i].bone], v2[4] );
+			VectorTransform( v[5], g_bonetransform[pbboxes[i].bone], v2[5] );
+			VectorTransform( v[6], g_bonetransform[pbboxes[i].bone], v2[6] );
+			VectorTransform( v[7], g_bonetransform[pbboxes[i].bone], v2[7] );
 			
-			drawBox (v2);
+			drawBox( v2 );
 		}
 	}
 
@@ -888,11 +892,11 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 	mstudiomesh_t		*pmesh;
 	byte				*pvertbone;
 	byte				*pnormbone;
-	vec3_t				*pstudioverts;
+	const glm::vec3*			pstudioverts;
 	const glm::vec3*	pstudionorms;
 	mstudiotexture_t	*ptexture;
-	float 				*av;
-	float				*lv;
+	float* 				av;
+	float*				lv;
 	float				lv_tmp;
 	short				*pskinref;
 
@@ -904,7 +908,7 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 
 	pmesh = (mstudiomesh_t *)((byte *)m_pstudiohdr + m_pmodel->meshindex);
 
-	pstudioverts = (vec3_t *)((byte *)m_pstudiohdr + m_pmodel->vertindex);
+	pstudioverts = ( const glm::vec3* ) ( ( const byte* ) m_pstudiohdr + m_pmodel->vertindex );
 	pstudionorms = ( const glm::vec3* ) ( ( const byte* ) m_pstudiohdr + m_pmodel->normindex );
 
 	pskinref = (short *)((byte *)m_ptexturehdr + m_ptexturehdr->skinindex);
@@ -913,9 +917,8 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 
 	for (i = 0; i < m_pmodel->numverts; i++)
 	{
-		//glm::vec3 tmp;
-		//VectorScale (pstudioverts[i], 12, tmp);
-		VectorTransform (pstudioverts[i], g_bonetransform[pvertbone[i]], g_pxformverts[i]);
+		//glm::vec3 tmp = pstudioverts[ i ] * 12;
+		VectorTransform( pstudioverts[i], g_bonetransform[pvertbone[i]], g_pxformverts[i] );
 	}
 
 	SortedMesh_t meshes[ MAXSTUDIOMESHES ];
@@ -938,11 +941,11 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 
 			// FIX: move this check out of the inner loop
 			if (flags & STUDIO_NF_CHROME)
-				Chrome( g_chrome[(float (*)[3])lv - g_pvlightvalues], *pnormbone, *pstudionorms );
+				Chrome( g_chrome[ reinterpret_cast<glm::vec3*>( lv ) - g_pvlightvalues ], *pnormbone, *pstudionorms );
 
-			lv[0] = lv_tmp * g_lightcolor[0];
-			lv[1] = lv_tmp * g_lightcolor[1];
-			lv[2] = lv_tmp * g_lightcolor[2];
+			lv[0] = lv_tmp * ( g_lightcolor[0] / 255.0f );
+			lv[1] = lv_tmp * ( g_lightcolor[1] / 255.0f );
+			lv[2] = lv_tmp * ( g_lightcolor[2] / 255.0f );
 		}
 	}
 
@@ -1019,11 +1022,11 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 						// FIX: put these in as integer coords, not floats
 						glTexCoord2f(g_chrome[ptricmds[1]][0]*s, g_chrome[ptricmds[1]][1]*t);
 					
-						lv = g_pvlightvalues[ptricmds[1]];
+						lv = glm::value_ptr( g_pvlightvalues[ptricmds[1]] );
 						glColor4f( lv[0], lv[1], lv[2], settings.transparency);
 
-						av = g_pxformverts[ptricmds[0]];
-						glVertex3f(av[0], av[1], av[2]);
+						av = glm::value_ptr( g_pxformverts[ptricmds[0]] );
+						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
 					}
 					glEnd( );
 				}	
@@ -1049,11 +1052,11 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 						// FIX: put these in as integer coords, not floats
 						glTexCoord2f(ptricmds[2]*s, ptricmds[3]*t);
 					
-						lv = g_pvlightvalues[ptricmds[1]];
+						lv = glm::value_ptr( g_pvlightvalues[ptricmds[1]] );
 						glColor4f( lv[0], lv[1], lv[2], settings.transparency);
 
-						av = g_pxformverts[ptricmds[0]];
-						glVertex3f(av[0], av[1], av[2]);
+						av = glm::value_ptr( g_pxformverts[ ptricmds[ 0 ] ] );
+						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
 					}
 					glEnd( );
 				}	
@@ -1077,7 +1080,7 @@ unsigned int StudioModel::DrawPoints( const CRenderSettings& settings, const boo
 
 				for( ; i > 0; i--, ptricmds += 4 )
 				{
-					av = g_pxformverts[ ptricmds[ 0 ] ];
+					av = glm::value_ptr( g_pxformverts[ ptricmds[ 0 ] ] );
 					glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
 				}
 				glEnd();

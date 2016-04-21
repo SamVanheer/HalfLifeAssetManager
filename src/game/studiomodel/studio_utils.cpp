@@ -726,16 +726,16 @@ void StudioModel::ScaleMeshes( float scale )
 	mstudiobbox_t *pbboxes = (mstudiobbox_t *) ((byte *) m_pstudiohdr + m_pstudiohdr->hitboxindex);
 	for (i = 0; i < m_pstudiohdr->numhitboxes; i++)
 	{
-		VectorScale (pbboxes[i].bbmin, scale, pbboxes[i].bbmin);
-		VectorScale (pbboxes[i].bbmax, scale, pbboxes[i].bbmax);
+		pbboxes[ i ].bbmin *= scale;
+		pbboxes[ i ].bbmax *= scale;
 	}
 
 	// scale bounding boxes
 	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)m_pstudiohdr + m_pstudiohdr->seqindex);
 	for (i = 0; i < m_pstudiohdr->numseq; i++)
 	{
-		VectorScale (pseqdesc[i].bbmin, scale, pseqdesc[i].bbmin);
-		VectorScale (pseqdesc[i].bbmax, scale, pseqdesc[i].bbmax);
+		pseqdesc[i].bbmin *= scale;
+		pseqdesc[i].bbmax *= scale;
 	}
 
 	// maybe scale exeposition, pivots, attachments

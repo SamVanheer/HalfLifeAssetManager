@@ -80,10 +80,10 @@ struct mstudiobonecontroller_t
 // intersection boxes
 struct mstudiobbox_t
 {
-	int		bone;
-	int		group;			// intersection group
-	vec3_t	bbmin;		// bounding box
-	vec3_t	bbmax;
+	int			bone;
+	int			group;			// intersection group
+	glm::vec3	bbmin;		// bounding box
+	glm::vec3	bbmax;
 };
 
 #if !defined( CACHE_USER ) && !defined( QUAKEDEF_H )
@@ -108,47 +108,47 @@ struct mstudioseqgroup_t
 // sequence descriptions
 struct mstudioseqdesc_t
 {
-	char	label[ 32 ];	// sequence label
+	char		label[ 32 ];	// sequence label
 
-	float	fps;		// frames per second	
-	int		flags;		// looping/non-looping flags
+	float		fps;		// frames per second	
+	int			flags;		// looping/non-looping flags
 
-	int		activity;
-	int		actweight;
+	int			activity;
+	int			actweight;
 
-	int		numevents;
-	int		eventindex;
+	int			numevents;
+	int			eventindex;
 
-	int		numframes;	// number of frames per sequence
+	int			numframes;	// number of frames per sequence
 
-	int		numpivots;	// number of foot pivots
-	int		pivotindex;
+	int			numpivots;	// number of foot pivots
+	int			pivotindex;
 
-	int		motiontype;
-	int		motionbone;
-	vec3_t	linearmovement;
-	int		automoveposindex;
-	int		automoveangleindex;
+	int			motiontype;
+	int			motionbone;
+	glm::vec3	linearmovement;
+	int			automoveposindex;
+	int			automoveangleindex;
 
-	vec3_t	bbmin;		// per sequence bounding box
-	vec3_t	bbmax;
+	glm::vec3	bbmin;		// per sequence bounding box
+	glm::vec3	bbmax;
 
-	int		numblends;
-	int		animindex;		// mstudioanim_t pointer relative to start of sequence group data
-							// [blend][bone][X, Y, Z, XR, YR, ZR]
+	int			numblends;
+	int			animindex;		// mstudioanim_t pointer relative to start of sequence group data
+								// [blend][bone][X, Y, Z, XR, YR, ZR]
 
-	int		blendtype[ 2 ];	// X, Y, Z, XR, YR, ZR
-	float	blendstart[ 2 ];	// starting value
-	float	blendend[ 2 ];	// ending value
-	int		blendparent;
+	int			blendtype[ 2 ];	// X, Y, Z, XR, YR, ZR
+	float		blendstart[ 2 ];	// starting value
+	float		blendend[ 2 ];	// ending value
+	int			blendparent;
 
-	int		seqgroup;		// sequence group for demand loading
+	int			seqgroup;		// sequence group for demand loading
 
-	int		entrynode;		// transition node at entry
-	int		exitnode;		// transition node at exit
-	int		nodeflags;		// transition rules
+	int			entrynode;		// transition node at entry
+	int			exitnode;		// transition node at exit
+	int			nodeflags;		// transition rules
 
-	int		nextseq;		// auto advancing sequences
+	int			nextseq;		// auto advancing sequences
 };
 
 // events
@@ -163,19 +163,19 @@ struct mstudioevent_t
 // pivots
 struct mstudiopivot_t
 {
-	vec3_t	org;	// pivot point
-	int		start;
-	int		end;
+	glm::vec3		org;	// pivot point
+	int			start;
+	int			end;
 };
 
 // attachment
 struct mstudioattachment_t
 {
-	char	name[ 32 ];
-	int		type;
-	int		bone;
-	vec3_t	org;	// attachment point
-	vec3_t	vectors[ 3 ];
+	char		name[ 32 ];
+	int			type;
+	int			bone;
+	glm::vec3	org;	// attachment point
+	glm::vec3	vectors[ 3 ];
 };
 
 struct mstudioanim_t
@@ -231,17 +231,17 @@ struct mstudiomodel_t
 
 	int		numverts;		// number of unique vertices
 	int		vertinfoindex;	// vertex bone info
-	int		vertindex;		// vertex vec3_t
+	int		vertindex;		// vertex glm::vec3
 	int		numnorms;		// number of unique surface normals
 	int		norminfoindex;	// normal bone info
-	int		normindex;		// normal vec3_t
+	int		normindex;		// normal glm::vec3
 
 	int		numgroups;		// deformation groups
 	int		groupindex;
 };
 
 
-// vec3_t	boundingbox[model][bone][2];	// complex intersection info
+// glm::vec3	boundingbox[model][bone][2];	// complex intersection info
 
 
 // meshes
@@ -251,7 +251,7 @@ struct mstudiomesh_t
 	int		triindex;
 	int		skinref;
 	int		numnorms;		// per mesh normals
-	int		normindex;		// normal vec3_t
+	int		normindex;		// normal glm::vec3
 };
 
 // triangles
@@ -266,26 +266,26 @@ struct mstudiotrivert_t
 
 struct studiohdr_t
 {
-	int		id;
-	int		version;
+	int			id;
+	int			version;
 
-	char	name[ 64 ];
-	int		length;
+	char		name[ 64 ];
+	int			length;
 
-	vec3_t	eyeposition;	// ideal eye position
-	vec3_t	min;			// ideal movement hull size
-	vec3_t	max;
+	glm::vec3	eyeposition;	// ideal eye position
+	glm::vec3	min;			// ideal movement hull size
+	glm::vec3	max;
 
-	vec3_t	bbmin;			// clipping bounding box
-	vec3_t	bbmax;
+	glm::vec3	bbmin;			// clipping bounding box
+	glm::vec3	bbmax;
 
-	int		flags;
+	int			flags;
 
 	const	byte* GetData() const { return reinterpret_cast<const byte*>( this ); }
 	byte* GetData() { return reinterpret_cast<byte*>( this ); }
 
-	int		numbones;			// bones
-	int		boneindex;
+	int			numbones;			// bones
+	int			boneindex;
 
 	const	mstudiobone_t* GetBones() const { return reinterpret_cast<const mstudiobone_t*>( GetData() + boneindex ); }
 	mstudiobone_t* GetBones() { return reinterpret_cast<mstudiobone_t*>( GetData() + boneindex ); }
@@ -293,8 +293,8 @@ struct studiohdr_t
 	const	mstudiobone_t* GetBone( const int iIndex ) const { return GetBones() + iIndex; }
 	mstudiobone_t* GetBone( const int iIndex ) { return GetBones() + iIndex; }
 
-	int		numbonecontrollers;		// bone controllers
-	int		bonecontrollerindex;
+	int			numbonecontrollers;		// bone controllers
+	int			bonecontrollerindex;
 
 	const	mstudiobonecontroller_t* GetBoneControllers() const { return reinterpret_cast<const mstudiobonecontroller_t*>( GetData() + bonecontrollerindex ); }
 	mstudiobonecontroller_t* GetBoneControllers() { return reinterpret_cast<mstudiobonecontroller_t*>( GetData() + bonecontrollerindex ); }
@@ -302,8 +302,8 @@ struct studiohdr_t
 	const	mstudiobonecontroller_t* GetBoneController( const int iIndex ) const { return GetBoneControllers() + iIndex; }
 	mstudiobonecontroller_t* GetBoneController( const int iIndex ) { return GetBoneControllers() + iIndex; }
 
-	int		numhitboxes;			// complex bounding boxes
-	int		hitboxindex;
+	int			numhitboxes;			// complex bounding boxes
+	int			hitboxindex;
 
 	const	mstudiobbox_t* GetHitBoxes() const { return reinterpret_cast<const mstudiobbox_t*>( GetData() + hitboxindex ); }
 	mstudiobbox_t* GetHitBoxes() { return reinterpret_cast<mstudiobbox_t*>( GetData() + hitboxindex ); }
@@ -311,8 +311,8 @@ struct studiohdr_t
 	const	mstudiobbox_t* GetHitBox( const int iIndex ) const { return GetHitBoxes() + iIndex; }
 	mstudiobbox_t* GetHitBox( const int iIndex ) { return GetHitBoxes() + iIndex; }
 
-	int		numseq;				// animation sequences
-	int		seqindex;
+	int			numseq;				// animation sequences
+	int			seqindex;
 
 	const	mstudioseqdesc_t* GetSequences() const { return reinterpret_cast<const mstudioseqdesc_t*>( GetData() + seqindex ); }
 	mstudioseqdesc_t* GetSequences() { return reinterpret_cast<mstudioseqdesc_t*>( GetData() + seqindex ); }
@@ -320,8 +320,8 @@ struct studiohdr_t
 	const	mstudioseqdesc_t* GetSequence( const int iIndex ) const { return GetSequences() + iIndex; }
 	mstudioseqdesc_t* GetSequence( const int iIndex ) { return GetSequences() + iIndex; }
 
-	int		numseqgroups;		// demand loaded sequences
-	int		seqgroupindex;
+	int			numseqgroups;		// demand loaded sequences
+	int			seqgroupindex;
 
 	const	mstudioseqgroup_t* GetSequenceGroups() const { return reinterpret_cast<const mstudioseqgroup_t*>( GetData() + seqgroupindex ); }
 	mstudioseqgroup_t* GetSequenceGroups() { return reinterpret_cast<mstudioseqgroup_t*>( GetData() + seqgroupindex ); }
@@ -329,9 +329,9 @@ struct studiohdr_t
 	const	mstudioseqgroup_t* GetSequenceGroup( const int iIndex ) const { return GetSequenceGroups() + iIndex; }
 	mstudioseqgroup_t* GetSequenceGroup( const int iIndex ) { return GetSequenceGroups() + iIndex; }
 
-	int		numtextures;		// raw textures
-	int		textureindex;
-	int		texturedataindex;
+	int			numtextures;		// raw textures
+	int			textureindex;
+	int			texturedataindex;
 
 	const	mstudiotexture_t* GetTextures() const { return reinterpret_cast<const mstudiotexture_t*>( GetData() + textureindex ); }
 	mstudiotexture_t* GetTextures() { return reinterpret_cast<mstudiotexture_t*>( GetData() + textureindex ); }
@@ -339,9 +339,9 @@ struct studiohdr_t
 	const	mstudiotexture_t* GetTexture( const int iIndex ) const { return GetTextures() + iIndex; }
 	mstudiotexture_t* GetTexture( const int iIndex ) { return GetTextures() + iIndex; }
 
-	int		numskinref;			// replaceable textures
-	int		numskinfamilies;
-	int		skinindex;
+	int			numskinref;			// replaceable textures
+	int			numskinfamilies;
+	int			skinindex;
 
 	const	short* GetSkins() const { return reinterpret_cast<const short*>( GetData() + skinindex ); }
 	short* GetSkins() { return reinterpret_cast<short*>( GetData() + skinindex ); }
@@ -349,8 +349,8 @@ struct studiohdr_t
 	const	short* GetSkin( const int iIndex ) const { return GetSkins() + iIndex; }
 	short* GetSkin( const int iIndex ) { return GetSkins() + iIndex; }
 
-	int		numbodyparts;
-	int		bodypartindex;
+	int			numbodyparts;
+	int			bodypartindex;
 
 	const	mstudiobodyparts_t* GetBodyparts() const { return reinterpret_cast<const mstudiobodyparts_t*>( GetData() + bodypartindex ); }
 	mstudiobodyparts_t* GetBodyparts() { return reinterpret_cast<mstudiobodyparts_t*>( GetData() + bodypartindex ); }
@@ -358,8 +358,8 @@ struct studiohdr_t
 	const	mstudiobodyparts_t* GetBodypart( const int iIndex ) const { return GetBodyparts() + iIndex; }
 	mstudiobodyparts_t* GetBodypart( const int iIndex ) { return GetBodyparts() + iIndex; }
 
-	int		numattachments;		// queryable attachable points
-	int		attachmentindex;
+	int			numattachments;		// queryable attachable points
+	int			attachmentindex;
 
 	const	mstudioattachment_t* GetAttachments() const { return reinterpret_cast<const mstudioattachment_t*>( GetData() + attachmentindex ); }
 	mstudioattachment_t* GetAttachments() { return reinterpret_cast<mstudioattachment_t*>( GetData() + attachmentindex ); }
@@ -368,13 +368,13 @@ struct studiohdr_t
 	mstudioattachment_t* GetAttachment( const int iIndex ) { return GetAttachments() + iIndex; }
 
 	//This seems to be obsolete. Probably replaced by events that reference external sounds?
-	int		soundtable;
-	int		soundindex;
-	int		soundgroups;
-	int		soundgroupindex;
+	int			soundtable;
+	int			soundindex;
+	int			soundgroups;
+	int			soundgroupindex;
 
-	int		numtransitions;		// animation node to animation node transition graph
-	int		transitionindex;
+	int			numtransitions;		// animation node to animation node transition graph
+	int			transitionindex;
 
 	const	byte* GetTransitions() const { return reinterpret_cast<const byte*>( GetData() + attachmentindex ); }
 	byte* GetTransitions() { return reinterpret_cast<byte*>( GetData() + attachmentindex ); }

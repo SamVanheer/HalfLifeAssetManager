@@ -13,19 +13,22 @@
 
 // mathlib.h
 
-#include <math.h>
+/**
+*	This file refers to Spherical Linear Interpolation as slerp.
+*/
+
+#include <cmath>
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat3x4.hpp>
 
+//TODO: typedef glm::* types into the global namespace, using doublevec_t to decide whether to use float or double.
 #ifdef DOUBLEVEC_T
 typedef double vec_t;
 #else
 typedef float vec_t;
 #endif
-typedef vec_t vec3_t[3];	// x,y,z
-typedef vec_t vec4_t[4];	// x,y,z,w
 
 #define	SIDE_FRONT		0
 #define	SIDE_ON			2
@@ -38,8 +41,6 @@ typedef vec_t vec4_t[4];	// x,y,z,w
 #define	ON_EPSILON		0.01
 #define	EQUAL_EPSILON	0.001
 
-int VectorCompare (vec3_t v1, vec3_t v2);
-
 /**
 *	Compares the given vectors.
 *	@param lhs
@@ -47,10 +48,6 @@ int VectorCompare (vec3_t v1, vec3_t v2);
 *	@return true if the vectors are equal, to within EQUAL_EPSILON difference for all components, false otherwise.
 */
 bool VectorCompare( const glm::vec3& lhs, const glm::vec3& rhs );
-
-#define DotProduct(x,y) ((x)[0]*(y)[0]+(x)[1]*(y)[1]+(x)[2]*(y)[2])
-#define VectorCopy(a,b) {(b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2];}
-#define VectorScale(a,b,c) {(c)[0]=(b)*(a)[0];(c)[1]=(b)*(a)[1];(c)[2]=(b)*(a)[2];}
 
 /**
 *	Sets all of the given vector's components to the given value.
@@ -86,11 +83,20 @@ inline constexpr vec_t VectorAvg( const glm::vec3& vec )
 */
 void VectorMA( const glm::vec3& va, double scale, const glm::vec3& vb, glm::vec3& vc );
 
-void AngleMatrix (const vec3_t angles, float matrix[3][4] );
-void AngleIMatrix (const vec3_t angles, float matrix[3][4] );
-void R_ConcatTransforms (const float in1[3][4], const float in2[3][4], float out[3][4]);
+/**
+*	Converts an angle to a matrix representing the operation that rotates a vector by the angle.
+*/
+void AngleMatrix( const glm::vec3& angles, glm::mat3x4& matrix );
 
-void VectorIRotate (const vec3_t in1, const float in2[3][4], vec3_t out);
+/**
+*	Converts an angle to a matrix representing the operation that rotates a vector by the inverse of the angle.
+*/
+void AngleIMatrix( const glm::vec3& angles, glm::mat3x4& matrix );
+
+/**
+*	Concatenates the given matrices and stores the result in out.
+*/
+void R_ConcatTransforms( const glm::mat3x4& in1, const glm::mat3x4& in2, glm::mat3x4& out );
 
 /**
 *	Rotates a vector with the given matrix.
@@ -102,10 +108,24 @@ void VectorRotate( const glm::vec3& vector, const glm::mat3x4& matrix, glm::vec3
 */
 void VectorIRotate( const glm::vec3& vector, const glm::mat3x4& matrix, glm::vec3& outResult );
 
-void VectorTransform (const vec3_t in1, const float in2[3][4], vec3_t out);
+/**
+*	Performs the operation in2 * in1 and stores the result in out.
+*/
+void VectorTransform( const glm::vec3& in1, const glm::mat3x4& in2, glm::vec3& out );
 
-void AngleQuaternion( const vec3_t angles, vec4_t quaternion );
-void QuaternionMatrix( const vec4_t quaternion, float (*matrix)[4] );
-void QuaternionSlerp( const vec4_t p, vec4_t q, float t, vec4_t qt );
+/**
+*	Converts an angle into a quaternion.
+*/
+void AngleQuaternion( const glm::vec3& angles, glm::vec4& quaternion );
+
+/**
+*	Converts a quaternion to a matrix.
+*/
+void QuaternionMatrix( const glm::vec4& quaternion, glm::mat3x4& matrix );
+
+/**
+* performs slerp using the quaternion p.
+*/
+void QuaternionSlerp( const glm::vec4& p, glm::vec4& q, float t, glm::vec4& qt );
 
 #endif

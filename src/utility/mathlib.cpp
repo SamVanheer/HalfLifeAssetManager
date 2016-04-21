@@ -8,30 +8,15 @@
 *
 ****/
 
-// mathlib.c -- math primitives
+// mathlib.cpp -- math primitives
 
 #pragma warning( disable : 4244 )
-#pragma warning( disable : 4237 )
-#pragma warning( disable : 4305 )
-
 
 /* #include "cmdlib.h" */
 
 #include <glm/geometric.hpp>
 
 #include "mathlib.h"
-
-
-int VectorCompare (vec3_t v1, vec3_t v2)
-{
-	int		i;
-	
-	for (i=0 ; i<3 ; i++)
-		if (fabs(v1[i]-v2[i]) > EQUAL_EPSILON)
-			return false;
-			
-	return true;
-}
 
 bool VectorCompare( const glm::vec3& lhs, const glm::vec3& rhs )
 {
@@ -75,28 +60,7 @@ void VectorMA( const glm::vec3& va, double scale, const glm::vec3& vb, glm::vec3
 	vc[ 2 ] = va[ 2 ] + scale * vb[ 2 ];
 }
 
-void ClearBounds (vec3_t mins, vec3_t maxs)
-{
-	mins[0] = mins[1] = mins[2] = 99999;
-	maxs[0] = maxs[1] = maxs[2] = -99999;
-}
-
-void AddPointToBounds (vec3_t v, vec3_t mins, vec3_t maxs)
-{
-	int		i;
-	vec_t	val;
-
-	for (i=0 ; i<3 ; i++)
-	{
-		val = v[i];
-		if (val < mins[i])
-			mins[i] = val;
-		if (val > maxs[i])
-			maxs[i] = val;
-	}
-}
-
-void AngleMatrix (const vec3_t angles, float matrix[ 3 ][ 4 ] )
+void AngleMatrix( const glm::vec3& angles, glm::mat3x4& matrix )
 {
 	float		angle;
 	float		sr, sp, sy, cr, cp, cy;
@@ -126,7 +90,7 @@ void AngleMatrix (const vec3_t angles, float matrix[ 3 ][ 4 ] )
 	matrix[2][3] = 0.0;
 }
 
-void AngleIMatrix (const vec3_t angles, float matrix[3][4] )
+void AngleIMatrix( const glm::vec3& angles, glm::mat3x4& matrix )
 {
 	float		angle;
 	float		sr, sp, sy, cr, cp, cy;
@@ -156,32 +120,32 @@ void AngleIMatrix (const vec3_t angles, float matrix[3][4] )
 	matrix[2][3] = 0.0;
 }
 
-void R_ConcatTransforms (const float in1[3][4], const float in2[3][4], float out[3][4])
+void R_ConcatTransforms( const glm::mat3x4& in1, const glm::mat3x4& in2, glm::mat3x4& out )
 {
-	out[0][0] = in1[0][0] * in2[0][0] + in1[0][1] * in2[1][0] +
-				in1[0][2] * in2[2][0];
-	out[0][1] = in1[0][0] * in2[0][1] + in1[0][1] * in2[1][1] +
-				in1[0][2] * in2[2][1];
-	out[0][2] = in1[0][0] * in2[0][2] + in1[0][1] * in2[1][2] +
-				in1[0][2] * in2[2][2];
-	out[0][3] = in1[0][0] * in2[0][3] + in1[0][1] * in2[1][3] +
-				in1[0][2] * in2[2][3] + in1[0][3];
-	out[1][0] = in1[1][0] * in2[0][0] + in1[1][1] * in2[1][0] +
-				in1[1][2] * in2[2][0];
-	out[1][1] = in1[1][0] * in2[0][1] + in1[1][1] * in2[1][1] +
-				in1[1][2] * in2[2][1];
-	out[1][2] = in1[1][0] * in2[0][2] + in1[1][1] * in2[1][2] +
-				in1[1][2] * in2[2][2];
-	out[1][3] = in1[1][0] * in2[0][3] + in1[1][1] * in2[1][3] +
-				in1[1][2] * in2[2][3] + in1[1][3];
-	out[2][0] = in1[2][0] * in2[0][0] + in1[2][1] * in2[1][0] +
-				in1[2][2] * in2[2][0];
-	out[2][1] = in1[2][0] * in2[0][1] + in1[2][1] * in2[1][1] +
-				in1[2][2] * in2[2][1];
-	out[2][2] = in1[2][0] * in2[0][2] + in1[2][1] * in2[1][2] +
-				in1[2][2] * in2[2][2];
-	out[2][3] = in1[2][0] * in2[0][3] + in1[2][1] * in2[1][3] +
-				in1[2][2] * in2[2][3] + in1[2][3];
+	out[ 0 ][ 0 ] = in1[ 0 ][ 0 ] * in2[ 0 ][ 0 ] + in1[ 0 ][ 1 ] * in2[ 1 ][ 0 ] +
+		in1[ 0 ][ 2 ] * in2[ 2 ][ 0 ];
+	out[ 0 ][ 1 ] = in1[ 0 ][ 0 ] * in2[ 0 ][ 1 ] + in1[ 0 ][ 1 ] * in2[ 1 ][ 1 ] +
+		in1[ 0 ][ 2 ] * in2[ 2 ][ 1 ];
+	out[ 0 ][ 2 ] = in1[ 0 ][ 0 ] * in2[ 0 ][ 2 ] + in1[ 0 ][ 1 ] * in2[ 1 ][ 2 ] +
+		in1[ 0 ][ 2 ] * in2[ 2 ][ 2 ];
+	out[ 0 ][ 3 ] = in1[ 0 ][ 0 ] * in2[ 0 ][ 3 ] + in1[ 0 ][ 1 ] * in2[ 1 ][ 3 ] +
+		in1[ 0 ][ 2 ] * in2[ 2 ][ 3 ] + in1[ 0 ][ 3 ];
+	out[ 1 ][ 0 ] = in1[ 1 ][ 0 ] * in2[ 0 ][ 0 ] + in1[ 1 ][ 1 ] * in2[ 1 ][ 0 ] +
+		in1[ 1 ][ 2 ] * in2[ 2 ][ 0 ];
+	out[ 1 ][ 1 ] = in1[ 1 ][ 0 ] * in2[ 0 ][ 1 ] + in1[ 1 ][ 1 ] * in2[ 1 ][ 1 ] +
+		in1[ 1 ][ 2 ] * in2[ 2 ][ 1 ];
+	out[ 1 ][ 2 ] = in1[ 1 ][ 0 ] * in2[ 0 ][ 2 ] + in1[ 1 ][ 1 ] * in2[ 1 ][ 2 ] +
+		in1[ 1 ][ 2 ] * in2[ 2 ][ 2 ];
+	out[ 1 ][ 3 ] = in1[ 1 ][ 0 ] * in2[ 0 ][ 3 ] + in1[ 1 ][ 1 ] * in2[ 1 ][ 3 ] +
+		in1[ 1 ][ 2 ] * in2[ 2 ][ 3 ] + in1[ 1 ][ 3 ];
+	out[ 2 ][ 0 ] = in1[ 2 ][ 0 ] * in2[ 0 ][ 0 ] + in1[ 2 ][ 1 ] * in2[ 1 ][ 0 ] +
+		in1[ 2 ][ 2 ] * in2[ 2 ][ 0 ];
+	out[ 2 ][ 1 ] = in1[ 2 ][ 0 ] * in2[ 0 ][ 1 ] + in1[ 2 ][ 1 ] * in2[ 1 ][ 1 ] +
+		in1[ 2 ][ 2 ] * in2[ 2 ][ 1 ];
+	out[ 2 ][ 2 ] = in1[ 2 ][ 0 ] * in2[ 0 ][ 2 ] + in1[ 2 ][ 1 ] * in2[ 1 ][ 2 ] +
+		in1[ 2 ][ 2 ] * in2[ 2 ][ 2 ];
+	out[ 2 ][ 3 ] = in1[ 2 ][ 0 ] * in2[ 0 ][ 3 ] + in1[ 2 ][ 1 ] * in2[ 1 ][ 3 ] +
+		in1[ 2 ][ 2 ] * in2[ 2 ][ 3 ] + in1[ 2 ][ 3 ];
 }
 
 void VectorRotate( const glm::vec3& vector, const glm::mat3x4& matrix, glm::vec3& outResult )
@@ -198,25 +162,14 @@ void VectorIRotate( const glm::vec3& vector, const glm::mat3x4& matrix, glm::vec
 	outResult[ 2 ] = vector[ 0 ] * matrix[ 0 ][ 2 ] + vector[ 1 ] * matrix[ 1 ][ 2 ] + vector[ 2 ] * matrix[ 2 ][ 2 ];
 }
 
-// rotate by the inverse of the matrix
-void VectorIRotate (const vec3_t in1, const float in2[3][4], vec3_t out)
+void VectorTransform( const glm::vec3& in1, const glm::mat3x4& in2, glm::vec3& out )
 {
-	out[0] = in1[0]*in2[0][0] + in1[1]*in2[1][0] + in1[2]*in2[2][0];
-	out[1] = in1[0]*in2[0][1] + in1[1]*in2[1][1] + in1[2]*in2[2][1];
-	out[2] = in1[0]*in2[0][2] + in1[1]*in2[1][2] + in1[2]*in2[2][2];
+	out[ 0 ] = glm::dot( in1, *reinterpret_cast<const glm::vec3*>( &in2[ 0 ] ) ) + in2[ 0 ][ 3 ];
+	out[ 1 ] = glm::dot( in1, *reinterpret_cast<const glm::vec3*>( &in2[ 1 ] ) ) + in2[ 1 ][ 3 ];
+	out[ 2 ] = glm::dot( in1, *reinterpret_cast<const glm::vec3*>( &in2[ 2 ] ) ) + in2[ 2 ][ 3 ];
 }
 
-
-void VectorTransform (const vec3_t in1, const float in2[3][4], vec3_t out)
-{
-	out[0] = DotProduct(in1, in2[0]) + in2[0][3];
-	out[1] = DotProduct(in1, in2[1]) +	in2[1][3];
-	out[2] = DotProduct(in1, in2[2]) +	in2[2][3];
-}
-
-
-
-void AngleQuaternion( const vec3_t angles, vec4_t quaternion )
+void AngleQuaternion( const glm::vec3& angles, glm::vec4& quaternion )
 {
 	float		angle;
 	float		sr, sp, sy, cr, cp, cy;
@@ -238,23 +191,22 @@ void AngleQuaternion( const vec3_t angles, vec4_t quaternion )
 	quaternion[3] = cr*cp*cy+sr*sp*sy; // W
 }
 
-void QuaternionMatrix( const vec4_t quaternion, float (*matrix)[4] )
+void QuaternionMatrix( const glm::vec4& quaternion, glm::mat3x4& matrix )
 {
+	matrix[ 0 ][ 0 ] = 1.0 - 2.0 * quaternion[ 1 ] * quaternion[ 1 ] - 2.0 * quaternion[ 2 ] * quaternion[ 2 ];
+	matrix[ 1 ][ 0 ] = 2.0 * quaternion[ 0 ] * quaternion[ 1 ] + 2.0 * quaternion[ 3 ] * quaternion[ 2 ];
+	matrix[ 2 ][ 0 ] = 2.0 * quaternion[ 0 ] * quaternion[ 2 ] - 2.0 * quaternion[ 3 ] * quaternion[ 1 ];
 
-	matrix[0][0] = 1.0 - 2.0 * quaternion[1] * quaternion[1] - 2.0 * quaternion[2] * quaternion[2];
-	matrix[1][0] = 2.0 * quaternion[0] * quaternion[1] + 2.0 * quaternion[3] * quaternion[2];
-	matrix[2][0] = 2.0 * quaternion[0] * quaternion[2] - 2.0 * quaternion[3] * quaternion[1];
+	matrix[ 0 ][ 1 ] = 2.0 * quaternion[ 0 ] * quaternion[ 1 ] - 2.0 * quaternion[ 3 ] * quaternion[ 2 ];
+	matrix[ 1 ][ 1 ] = 1.0 - 2.0 * quaternion[ 0 ] * quaternion[ 0 ] - 2.0 * quaternion[ 2 ] * quaternion[ 2 ];
+	matrix[ 2 ][ 1 ] = 2.0 * quaternion[ 1 ] * quaternion[ 2 ] + 2.0 * quaternion[ 3 ] * quaternion[ 0 ];
 
-	matrix[0][1] = 2.0 * quaternion[0] * quaternion[1] - 2.0 * quaternion[3] * quaternion[2];
-	matrix[1][1] = 1.0 - 2.0 * quaternion[0] * quaternion[0] - 2.0 * quaternion[2] * quaternion[2];
-	matrix[2][1] = 2.0 * quaternion[1] * quaternion[2] + 2.0 * quaternion[3] * quaternion[0];
-
-	matrix[0][2] = 2.0 * quaternion[0] * quaternion[2] + 2.0 * quaternion[3] * quaternion[1];
-	matrix[1][2] = 2.0 * quaternion[1] * quaternion[2] - 2.0 * quaternion[3] * quaternion[0];
-	matrix[2][2] = 1.0 - 2.0 * quaternion[0] * quaternion[0] - 2.0 * quaternion[1] * quaternion[1];
+	matrix[ 0 ][ 2 ] = 2.0 * quaternion[ 0 ] * quaternion[ 2 ] + 2.0 * quaternion[ 3 ] * quaternion[ 1 ];
+	matrix[ 1 ][ 2 ] = 2.0 * quaternion[ 1 ] * quaternion[ 2 ] - 2.0 * quaternion[ 3 ] * quaternion[ 0 ];
+	matrix[ 2 ][ 2 ] = 1.0 - 2.0 * quaternion[ 0 ] * quaternion[ 0 ] - 2.0 * quaternion[ 1 ] * quaternion[ 1 ];
 }
 
-void QuaternionSlerp( const vec4_t p, vec4_t q, float t, vec4_t qt )
+void QuaternionSlerp( const glm::vec4& p, glm::vec4& q, float t, glm::vec4& qt )
 {
 	int i;
 	float omega, cosom, sinom, sclp, sclq;
