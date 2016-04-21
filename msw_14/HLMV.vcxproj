@@ -77,7 +77,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\src\utility\IOUtils.cpp" />
-    <ClCompile Include="..\src\utility\mathlib.c" />
+    <ClCompile Include="..\src\utility\mathlib.cpp" />
     <ClCompile Include="..\src\utility\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
