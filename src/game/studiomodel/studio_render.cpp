@@ -50,7 +50,7 @@ mstudioanim_t * StudioModel::GetAnim( mstudioseqdesc_t *pseqdesc )
 
 GLuint StudioModel::GetTextureId( const int iIndex ) const
 {
-	const studiohdr_t* const pHdr = GetStudioHeader();
+	const studiohdr_t* const pHdr = GetTextureHeader();
 
 	if( !pHdr )
 		return GL_INVALID_TEXTURE_ID;
