@@ -30,7 +30,6 @@ CLogging& logging()
 
 CLogging::CLogging()
 {
-	SetLogListener( GetDefaultLogListener() );
 }
 
 CLogging::~CLogging()

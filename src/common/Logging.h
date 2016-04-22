@@ -90,7 +90,7 @@ public:
 	void CloseLogFile();
 
 private:
-	ILogListener* m_pListener = nullptr;
+	ILogListener* m_pListener = GetDefaultLogListener();
 
 	//Don't trigger recursive logging.
 	bool m_bInLog = false;
