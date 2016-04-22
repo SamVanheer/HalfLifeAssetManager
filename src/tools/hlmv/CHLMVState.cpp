@@ -67,8 +67,6 @@ void CHLMVState::ResetToDefaults()
 	overlayUVMap = false;
 
 	antiAliasUVLines = false;
-
-	renderSettings.ResetToDefaults();
 }
 
 void CHLMVState::CenterView()

@@ -7,6 +7,9 @@
 #include "settings/CGameConfig.h"
 #include "settings/CGameConfigManager.h"
 
+#include "cvar/CVar.h"
+#include "cvar/CCVarSystem.h"
+
 #include "CHLMVSettings.h"
 
 namespace hlmv
@@ -60,8 +63,6 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 	m_GroundColor		= other.m_GroundColor;
 	m_BackgroundColor	= other.m_BackgroundColor;
 	m_CrosshairColor	= other.m_CrosshairColor;
-	m_LightColor		= other.m_LightColor;
-	m_WireframeColor	= other.m_WireframeColor;
 
 	m_flFloorLength		= other.m_flFloorLength;
 }
@@ -131,8 +132,10 @@ bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 		LoadColorSetting( settings, "groundColor", m_GroundColor );
 		LoadColorSetting( settings, "backgroundColor", m_BackgroundColor );
 		LoadColorSetting( settings, "crosshairColor", m_CrosshairColor );
-		LoadColorSetting( settings, "lightColor", m_LightColor );
-		LoadColorSetting( settings, "wireframeColor", m_WireframeColor );
+
+		LoadColorCVarSetting( settings, "lightColor", "r_lighting" );
+
+		LoadColorCVarSetting( settings, "wireframeColor", "r_wireframecolor" );
 
 		if( auto floor = settings->FindFirstChild<CKeyvalue>( "floorLength" ) )
 		{
@@ -173,8 +176,8 @@ bool CHLMVSettings::SaveToFile( CKeyvaluesWriter& writer )
 	SaveColorSetting( writer, "groundColor", m_GroundColor );
 	SaveColorSetting( writer, "backgroundColor", m_BackgroundColor );
 	SaveColorSetting( writer, "crosshairColor", m_CrosshairColor );
-	SaveColorSetting( writer, "lightColor", m_LightColor );
-	SaveColorSetting( writer, "wireframeColor", m_WireframeColor );
+	SaveColorCVarSetting( writer, "lightColor", "r_lighting" );
+	SaveColorCVarSetting( writer, "wireframeColor", "r_wireframecolor" );
 
 	if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%f", GetFloorLength() ), sizeof( szBuffer ) ) )
 		return false;

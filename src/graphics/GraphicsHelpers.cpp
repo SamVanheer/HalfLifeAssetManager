@@ -381,14 +381,14 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 		glEnable( GL_CULL_FACE );
 }
 
-unsigned int DrawWireframeOverlay( StudioModel& model, const StudioModel::CRenderSettings& settings )
+unsigned int DrawWireframeOverlay( StudioModel& model )
 {
 	SetupRenderMode( RenderMode::WIREFRAME );
 
-	return model.DrawModel( settings, true );
+	return model.DrawModel( true );
 }
 
-unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const StudioModel::CRenderSettings& settings, const bool bWireframeOverlay, const float flSideLength )
+unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength )
 {
 	/* Don't update color or depth. */
 	glDisable( GL_DEPTH_TEST );
@@ -432,14 +432,14 @@ unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode,
 
 	glClipPlane( GL_CLIP_PLANE0, flClipPlane );
 
-	unsigned int uiDrawnPolys = model.DrawModel( settings );
+	unsigned int uiDrawnPolys = model.DrawModel();
 
 	glDisable( GL_CLIP_PLANE0 );
 
 	//Draw wireframe overlay
 	if( bWireframeOverlay )
 	{
-		uiDrawnPolys += DrawWireframeOverlay( model, settings );
+		uiDrawnPolys += DrawWireframeOverlay( model );
 	}
 
 	glPopMatrix();

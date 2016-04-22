@@ -27,6 +27,7 @@
     <ClCompile Include="..\src\cvar\CConCommand.cpp" />
     <ClCompile Include="..\src\cvar\CCVar.cpp" />
     <ClCompile Include="..\src\cvar\CCVarSystem.cpp" />
+    <ClCompile Include="..\src\cvar\CVarUtils.cpp" />
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
     <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp" />
     <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp" />
@@ -99,6 +100,7 @@
     <ClInclude Include="..\src\cvar\CCVarSystem.h" />
     <ClInclude Include="..\src\cvar\ConVarConstants.h" />
     <ClInclude Include="..\src\cvar\CVar.h" />
+    <ClInclude Include="..\src\cvar\CVarUtils.h" />
     <ClInclude Include="..\src\filesystem\CFileSystem.h" />
     <ClInclude Include="..\src\filesystem\FileSystemConstants.h" />
     <ClInclude Include="..\src\game\CAnimEvent.h" />

@@ -87,7 +87,7 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 *	Draws a wireframe overlay over a model
 *	@param model Model to draw
 */
-unsigned int DrawWireframeOverlay( StudioModel& model, const StudioModel::CRenderSettings& settings );
+unsigned int DrawWireframeOverlay( StudioModel& model );
 
 /**
 *	Draws a mirrored model.
@@ -96,7 +96,7 @@ unsigned int DrawWireframeOverlay( StudioModel& model, const StudioModel::CRende
 *	@param bWireframeOverlay	Whether to render a wireframe overlay on top of the model
 *	@param flSideLength			Length of one side of the floor
 */
-unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const StudioModel::CRenderSettings& settings, const bool bWireframeOverlay, const float flSideLength );
+unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength );
 }
 }
 

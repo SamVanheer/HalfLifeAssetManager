@@ -327,6 +327,9 @@
     <ClCompile Include="..\src\cvar\CCVarSystem.cpp">
       <Filter>Source Files\cvar</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cvar\CVarUtils.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -567,6 +570,9 @@
       <Filter>Header Files\utility</Filter>
     </ClInclude>
     <ClInclude Include="..\src\cvar\CCVarSystem.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\CVarUtils.h">
       <Filter>Header Files\cvar</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,6 +9,10 @@
 
 #include "../../settings/CHLMVSettings.h"
 
+#include "cvar/CVar.h"
+#include "cvar/CCVarSystem.h"
+#include "cvar/CVarUtils.h"
+
 #include "CGeneralOptions.h"
 
 namespace hlmv
@@ -35,9 +39,9 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 
 	m_pCrosshairColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( m_pSettings->GetCrosshairColor() ), wxDefaultPosition, wxDefaultSize );
 
-	m_pLightColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( m_pSettings->GetLightColor() ), wxDefaultPosition, wxDefaultSize );
+	m_pLightColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( CHLMVSettings::DEFAULT_LIGHT_COLOR ), wxDefaultPosition, wxDefaultSize );
 
-	m_pWireframeColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( m_pSettings->GetWireframeColor() ), wxDefaultPosition, wxDefaultSize );
+	m_pWireframeColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( CHLMVSettings::DEFAULT_WIREFRAME_COLOR ), wxDefaultPosition, wxDefaultSize );
 
 	m_pFPS = new wxSlider( this, wxID_ANY, m_pSettings->GetFPS(), hlmv::CHLMVSettings::MIN_FPS, hlmv::CHLMVSettings::MAX_FPS, 
 						   wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ), wxSL_HORIZONTAL | wxSL_TOP | wxSL_LABELS );
@@ -96,10 +100,13 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 	this->SetSizer( pSizer );
 
 	Initialize();
+
+	cvar::cvars().InstallGlobalCVarHandler( this );
 }
 
 CGeneralOptions::~CGeneralOptions()
 {
+	cvar::cvars().RemoveGlobalCVarHandler( this );
 }
 
 void CGeneralOptions::Save()
@@ -107,8 +114,29 @@ void CGeneralOptions::Save()
 	m_pSettings->SetGroundColor( wx::wxToColor( m_pGroundColor->GetColour() ) );
 	m_pSettings->SetBackgroundColor( wx::wxToColor( m_pBackgroundColor->GetColour() ) );
 	m_pSettings->SetCrosshairColor( wx::wxToColor( m_pCrosshairColor->GetColour() ) );
-	m_pSettings->SetLightColor( wx::wxToColor( m_pLightColor->GetColour() ) );
-	m_pSettings->SetWireframeColor( wx::wxToColor( m_pWireframeColor->GetColour() ) );
+
+	Color color = wx::wxToColor( m_pLightColor->GetColour() );
+
+	cvar::CCVar* pLightingR;
+	cvar::CCVar* pLightingG;
+	cvar::CCVar* pLightingB;
+
+	if( cvar::GetColorCVars( "r_lighting", &pLightingR, &pLightingG, &pLightingB ) )
+	{
+		pLightingR->SetInt( color.GetRed() );
+		pLightingG->SetInt( color.GetGreen() );
+		pLightingB->SetInt( color.GetBlue() );
+	}
+
+	color = wx::wxToColor( m_pWireframeColor->GetColour() );
+
+	if( cvar::GetColorCVars( "r_wireframecolor", &pLightingR, &pLightingG, &pLightingB ) )
+	{
+		pLightingR->SetInt( color.GetRed() );
+		pLightingG->SetInt( color.GetGreen() );
+		pLightingB->SetInt( color.GetBlue() );
+	}
+
 	m_pSettings->SetFPS( m_pFPS->GetValue() );
 	m_pSettings->SetFloorLength( m_pFloorLength->GetValue() );
 }
@@ -118,10 +146,39 @@ void CGeneralOptions::Initialize()
 	m_pGroundColor->SetColour( wx::ColorTowx( m_pSettings->GetGroundColor() ) );
 	m_pBackgroundColor->SetColour( wx::ColorTowx( m_pSettings->GetBackgroundColor() ) );
 	m_pCrosshairColor->SetColour( wx::ColorTowx( m_pSettings->GetCrosshairColor() ) );
-	m_pLightColor->SetColour( wx::ColorTowx( m_pSettings->GetLightColor() ) );
-	m_pWireframeColor->SetColour( wx::ColorTowx( m_pSettings->GetWireframeColor() ) );
+
+	cvar::CCVar* pLightingR;
+	cvar::CCVar* pLightingG;
+	cvar::CCVar* pLightingB;
+
+	if( cvar::GetColorCVars( "r_lighting", &pLightingR, &pLightingG, &pLightingB ) )
+	{
+		m_pLightColor->SetColour( wx::ColorTowx( Color( pLightingR->GetInt(), pLightingG->GetInt(), pLightingB->GetInt() ) ) );
+	}
+
+	if( cvar::GetColorCVars( "r_wireframecolor", &pLightingR, &pLightingG, &pLightingB ) )
+	{
+		m_pWireframeColor->SetColour( wx::ColorTowx( Color( pLightingR->GetInt(), pLightingG->GetInt(), pLightingB->GetInt() ) ) );
+	}
+
 	m_pFPS->SetValue( m_pSettings->GetFPS() );
 	m_pFloorLength->SetValue( m_pSettings->GetFloorLength() );
+}
+
+void CGeneralOptions::HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue )
+{
+	//Update the value in real-time.
+	if( strncmp( "r_lighting_", cvar.GetName(), 11 ) == 0 )
+	{
+		cvar::CCVar* pLightingR;
+		cvar::CCVar* pLightingG;
+		cvar::CCVar* pLightingB;
+
+		if( cvar::GetColorCVars( "r_lighting", &pLightingR, &pLightingG, &pLightingB ) )
+		{
+			m_pLightColor->SetColour( wx::ColorTowx( Color( pLightingR->GetInt(), pLightingG->GetInt(), pLightingB->GetInt() ) ) );
+		}
+	}
 }
 
 void CGeneralOptions::SetDefaultColor( wxCommandEvent& event )

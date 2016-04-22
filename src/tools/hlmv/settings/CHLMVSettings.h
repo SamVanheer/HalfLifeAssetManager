@@ -86,28 +86,6 @@ public:
 	void SetCrosshairColor( const Color& color ) { m_CrosshairColor = color; }
 
 	/**
-	*	Gets the user defined light color.
-	*/
-	const Color& GetLightColor() const { return m_LightColor; }
-
-	/**
-	*	Sets the user defined light color.
-	*	@param color Color to set.
-	*/
-	void SetLightColor( const Color& color ) { m_LightColor = color; }
-
-	/**
-	*	Gets the user defined wireframe color.
-	*/
-	const Color& GetWireframeColor() const { return m_WireframeColor; }
-
-	/**
-	*	Sets the user defined wireframe color.
-	*	@param color Color to set.
-	*/
-	void SetWireframeColor( const Color& color ) { m_WireframeColor = color; }
-
-	/**
 	*	Gets the floor length.
 	*/
 	float GetFloorLength() const { return m_flFloorLength; }
@@ -137,10 +115,6 @@ private:
 	Color m_BackgroundColor = DEFAULT_BACKGROUND_COLOR;
 
 	Color m_CrosshairColor = DEFAULT_CROSSHAIR_COLOR;
-
-	Color m_LightColor = DEFAULT_LIGHT_COLOR;
-
-	Color m_WireframeColor = DEFAULT_WIREFRAME_COLOR;
 
 	float m_flFloorLength = DEFAULT_FLOOR_LENGTH;
 };

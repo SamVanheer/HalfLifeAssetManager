@@ -3,13 +3,15 @@
 
 #include "../wxHLMV.h"
 
+#include "cvar/CCVar.h"
+
 class wxColourPickerCtrl;
 
 namespace hlmv
 {
 class CHLMVSettings;
 
-class CGeneralOptions final : public wxPanel
+class CGeneralOptions final : public wxPanel, public cvar::ICVarHandler
 {
 public:
 	CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSettings );
@@ -22,6 +24,8 @@ protected:
 
 private:
 	void Initialize();
+
+	void HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue ) override final;
 
 	void SetDefaultColor( wxCommandEvent& event );
 

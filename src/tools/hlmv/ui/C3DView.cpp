@@ -236,10 +236,6 @@ void C3DView::DrawModel()
 		graphics::helpers::DrawBackground( m_BackgroundTexture );
 	}
 
-	//Update colors.
-	m_pHLMV->GetState()->renderSettings.lightColor = m_pHLMV->GetSettings()->GetLightColor();
-	m_pHLMV->GetState()->renderSettings.wireframeColor = m_pHLMV->GetSettings()->GetWireframeColor();
-
 	graphics::helpers::SetProjection( size.GetWidth(), size.GetHeight() );
 
 	glMatrixMode( GL_MODELVIEW );
@@ -271,7 +267,7 @@ void C3DView::DrawModel()
 	if( m_pHLMV->GetState()->mirror && pModel )
 	{
 		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawMirroredModel( *pModel, m_pHLMV->GetState()->renderMode,
-																				 m_pHLMV->GetState()->renderSettings, m_pHLMV->GetState()->wireframeOverlay, 
+																				 m_pHLMV->GetState()->wireframeOverlay, 
 																				 m_pHLMV->GetSettings()->GetFloorLength() );
 	}
 
@@ -281,13 +277,13 @@ void C3DView::DrawModel()
 
 	if( pModel )
 	{
-		m_pHLMV->GetState()->drawnPolys += pModel->DrawModel( m_pHLMV->GetState()->renderSettings );
+		m_pHLMV->GetState()->drawnPolys += pModel->DrawModel();
 	}
 
 	//Draw wireframe overlay
 	if( m_pHLMV->GetState()->wireframeOverlay && pModel )
 	{
-		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawWireframeOverlay( *pModel, m_pHLMV->GetState()->renderSettings );
+		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawWireframeOverlay( *pModel );
 	}
 
 	//

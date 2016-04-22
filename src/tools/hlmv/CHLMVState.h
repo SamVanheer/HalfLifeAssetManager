@@ -104,8 +104,6 @@ public:
 
 	bool antiAliasUVLines;
 
-	StudioModel::CRenderSettings renderSettings;
-
 private:
 	StudioModel* m_pStudioModel;
 

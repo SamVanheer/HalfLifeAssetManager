@@ -96,7 +96,7 @@ CModelDisplayPanel::~CModelDisplayPanel()
 void CModelDisplayPanel::InitializeUI()
 {
 	SetRenderMode( RenderMode::TEXTURE_SHADED );
-	SetOpacity( 100 );
+	SetOpacity( OPACITY_DEFAULT );
 
 	m_pMeshScale->SetValue( "1.0" );
 	m_pBonesScale->SetValue( "1.0" );
@@ -126,7 +126,12 @@ void CModelDisplayPanel::SetOpacity( int iValue, const bool bUpdateSlider )
 	if( bUpdateSlider )
 		m_pOpacitySlider->SetValue( iValue );
 
-	m_pHLMV->GetState()->renderSettings.transparency = iValue / static_cast<float>( OPACITY_MAX );
+	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+
+	if( !pModel )
+		return;
+
+	pModel->SetTransparency( iValue / static_cast<float>( OPACITY_MAX ) );
 }
 
 void CModelDisplayPanel::SetCheckBox( const CheckBox::Type checkBox, const bool bValue )

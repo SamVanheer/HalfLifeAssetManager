@@ -69,29 +69,6 @@ public:
 		VERSIONDIFFERS		//Header version differs from current.
 	};
 
-	/**
-	*	Stores settings used to render the model.
-	*	TODO: move rendering out of this class.
-	*/
-	class CRenderSettings final
-	{
-	public:
-		CRenderSettings() = default;
-		CRenderSettings( const CRenderSettings& other ) = default;
-		CRenderSettings& operator=( const CRenderSettings& other ) = default;
-
-		void ResetToDefaults()
-		{
-			*this = CRenderSettings();
-		}
-
-	public:
-		Color lightColor		= Color( 255, 255, 255 );
-		Color wireframeColor	= Color( 255, 0, 0 );
-
-		float transparency		= 1.0f;
-	};
-
 public:
 	StudioModel();
 	~StudioModel();
@@ -150,6 +127,9 @@ public:
 	int						GetSkin() const { return m_skinnum; }
 	int						SetSkin( int iValue );
 
+	float					GetTransparency() const { return m_flTransparency; }
+	void					SetTransparency( const float flTransparency ) { m_flTransparency = flTransparency; }
+
 	int						GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents );
 	void					DispatchAnimEvents( IAnimEventHandler& handler, const bool bAllowClientEvents, float flInterval = 0.1f );
 
@@ -167,24 +147,25 @@ public:
 	bool					SaveModel( char *modelname );
 
 	//CStudioModelRenderer
-	unsigned int			DrawModel( const CRenderSettings& settings, const bool wireframeOnly = false );
+	unsigned int			DrawModel( const bool wireframeOnly = false );
 
 private:
 	// entity settings
 	glm::vec3				m_origin;
 	glm::vec3				m_angles;
-	int						m_sequence;				// sequence index
-	float					m_frame;				// frame
-	int						m_bodynum;				// bodypart selection	
-	int						m_skinnum;				// skin group selection
-	byte					m_controller[4];		// bone controllers
-	byte					m_blending[2];			// animation blending
-	byte					m_mouth;				// mouth position
-	bool					m_owntexmodel;			// do we have a modelT.mdl ?
+	int						m_sequence;					// sequence index
+	float					m_frame;					// frame
+	int						m_bodynum;					// bodypart selection	
+	int						m_skinnum;					// skin group selection
+	byte					m_controller[4];			// bone controllers
+	byte					m_blending[2];				// animation blending
+	byte					m_mouth;					// mouth position
+	bool					m_owntexmodel;				// do we have a modelT.mdl ?
 
-	float					m_flLastEventCheck;		//Last time we checked for animation events.
-	float					m_flAnimTime;			//Time when the frame was set.
-	float					m_flFrameRate;			//Framerate.
+	float					m_flLastEventCheck;			//Last time we checked for animation events.
+	float					m_flAnimTime;				//Time when the frame was set.
+	float					m_flFrameRate;				//Framerate.
+	float					m_flTransparency = 1.0f;	//Transparency.
 
 	// internal data
 	studiohdr_t				*m_pstudiohdr;
@@ -206,12 +187,12 @@ private:
 	void					SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s );
 	void					SetUpBones();
 
-	unsigned int			DrawPoints( const CRenderSettings& settings, const bool wireframeOnly = false );
+	unsigned int			DrawPoints( const bool wireframeOnly = false );
 
 	void					Lighting( float *lv, int bone, int flags, const glm::vec3& normal );
 	void					Chrome( glm::ivec2& chrome, int bone, const glm::vec3& normal );
 
-	void					SetupLighting( const CRenderSettings& settings );
+	void					SetupLighting();
 
 	void					SetupModel( int bodypart );
 };
