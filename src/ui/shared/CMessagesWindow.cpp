@@ -2,6 +2,8 @@
 
 #include "ui/utility/IWindowCloseListener.h"
 
+#include "cvar/CCVarSystem.h"
+
 #include "CMessagesWindow.h"
 
 namespace ui
@@ -10,6 +12,7 @@ wxBEGIN_EVENT_TABLE( CMessagesWindow, wxFrame )
 	EVT_SIZE( CMessagesWindow::OnSize )
 	EVT_BUTTON( wxID_SHARED_MESSAGES_CLEAR, CMessagesWindow::OnClear )
 	EVT_LIST_COL_BEGIN_DRAG( wxID_ANY, CMessagesWindow::OnListColumnBeginDrag )
+	EVT_TEXT_ENTER( wxID_SHARED_MESSAGES_COMMAND, CMessagesWindow::CommandEntered )
 	EVT_CLOSE( CMessagesWindow::OnClose )
 wxEND_EVENT_TABLE()
 
@@ -25,6 +28,8 @@ CMessagesWindow::CMessagesWindow( const size_t uiMaxMessagesCount, IWindowCloseL
 
 	m_pList->InsertColumn( 0, "", wxLIST_FORMAT_LEFT, wxLIST_AUTOSIZE_USEHEADER );
 
+	m_pCommand = new wxTextCtrl( this, wxID_SHARED_MESSAGES_COMMAND );
+
 	UpdateHeader();
 
 	//Layout
@@ -37,6 +42,13 @@ CMessagesWindow::CMessagesWindow( const size_t uiMaxMessagesCount, IWindowCloseL
 	pSizer->Add( pBtnsSizer );
 
 	pSizer->Add( m_pList, wxSizerFlags().Expand().Proportion( 1 ) );
+
+	wxBoxSizer* pCommandSizer = new wxBoxSizer( wxHORIZONTAL );
+
+	pCommandSizer->Add( new wxStaticText( this, wxID_ANY, "Command:" ) );
+	pCommandSizer->Add( m_pCommand, wxSizerFlags().Expand().Proportion( 1 ) );
+
+	pSizer->Add( pCommandSizer, wxSizerFlags().Expand() );
 
 	this->SetSizer( pSizer );
 
@@ -146,6 +158,21 @@ void CMessagesWindow::OnListColumnBeginDrag( wxListEvent& event )
 	event.Veto();
 }
 
+void CMessagesWindow::CommandEntered( wxCommandEvent& event )
+{
+	wxString szCommand = m_pCommand->GetValue();
+
+	m_pCommand->ChangeValue( "" );
+
+	szCommand.Trim( false );
+	szCommand.Trim( true );
+
+	if( !szCommand.IsEmpty() )
+	{
+		cvar::cvars().Command( szCommand.c_str() );
+	}
+}
+
 void CMessagesWindow::OnClose( wxCloseEvent& event )
 {
 	//Veto any non-forced close. This window must stick around until it's closed by force.
@@ -154,6 +181,9 @@ void CMessagesWindow::OnClose( wxCloseEvent& event )
 		event.Veto();
 		//Hide the window.
 		Show( false );
+
+		//Clear command text
+		m_pCommand->ChangeValue( "" );
 	}
 
 	if( m_pWindowCloseListener )

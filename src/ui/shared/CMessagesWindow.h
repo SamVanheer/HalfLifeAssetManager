@@ -55,6 +55,8 @@ private:
 
 	void OnListColumnBeginDrag( wxListEvent& event );
 
+	void CommandEntered( wxCommandEvent& event );
+
 	void OnClose( wxCloseEvent& event );
 
 	void UpdateHeader();
@@ -65,6 +67,8 @@ private:
 	IWindowCloseListener* m_pWindowCloseListener;
 
 	wxListView* m_pList;
+
+	wxTextCtrl* m_pCommand;
 
 private:
 	CMessagesWindow( const CMessagesWindow& ) = delete;

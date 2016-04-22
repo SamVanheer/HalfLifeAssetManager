@@ -1,6 +1,7 @@
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
 
+#include "cvar/CCVarSystem.h"
 #include "filesystem/CFileSystem.h"
 #include "soundsystem/CSoundSystem.h"
 
@@ -83,6 +84,13 @@ bool CBaseTool::Initialize()
 	logging().OpenLogFile( szLogFileName.c_str(), false );
 
 	UTIL_InitRandom();
+
+	//TODO: these message boxes can be put into an UTIL_FatalError function or something
+	if( !cvar::cvars().Initialize() )
+	{
+		wxMessageBox( "Failed to initialize cvar system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
 
 	if( m_InitFlags & INIT_FILESYSTEM )
 	{
@@ -181,12 +189,6 @@ void CBaseTool::Shutdown()
 		soundsystem::CSoundSystem::DestroyInstance();
 	}
 
-	if( filesystem::CFileSystem::InstanceExists() )
-	{
-		fileSystem().Shutdown();
-		filesystem::CFileSystem::DestroyInstance();
-	}
-
 	if( CwxOpenGL::InstanceExists() )
 	{
 		studiomodel::renderer().Shutdown();
@@ -195,6 +197,14 @@ void CBaseTool::Shutdown()
 
 		CwxOpenGL::DestroyInstance();
 	}
+
+	if( filesystem::CFileSystem::InstanceExists() )
+	{
+		fileSystem().Shutdown();
+		filesystem::CFileSystem::DestroyInstance();
+	}
+
+	cvar::cvars().Shutdown();
 
 	//Don't close the log file just yet. It'll be closed when the program is unloaded, so anything that happens between now and then should be logged.
 }
@@ -220,6 +230,8 @@ void CBaseTool::ToolRunFrame()
 	Globals.SetCurrentTime( Globals.GetCurrentTime() + flFrameTime );
 	Globals.SetFrameTime( flFrameTime );
 	Globals.SetPreviousRealTime( Globals.GetRealTime() );
+
+	cvar::cvars().RunFrame();
 
 	studiomodel::renderer().RunFrame();
 

@@ -13,6 +13,7 @@ enum wxSharedIdentifier
 
 	//Messages window
 	wxID_SHARED_MESSAGES_CLEAR,
+	wxID_SHARED_MESSAGES_COMMAND,
 
 	//Game configs panel
 	wxID_SHARED_GAMECONFIGS_CONFIG_CHANGED,

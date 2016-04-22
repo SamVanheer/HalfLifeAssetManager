@@ -127,6 +127,12 @@
     <Filter Include="Source Files\game\studiomodel">
       <UniqueIdentifier>{487ead65-14f4-486c-bf37-b4f77271c9ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\cvar">
+      <UniqueIdentifier>{59e80cce-765a-4a29-9d03-9419afbcd973}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cvar">
+      <UniqueIdentifier>{c8efb600-86ff-49a1-92a8-aa60ef6c6b24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
@@ -302,6 +308,24 @@
     </ClCompile>
     <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp">
       <Filter>Source Files\game\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cvar\CConCommand.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cvar\CCVar.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utility\Tokenization.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utility\CCommand.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cvar\CBaseConCommand.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cvar\CCvarSystem.cpp">
+      <Filter>Source Files\cvar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -520,6 +544,30 @@
     </ClInclude>
     <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h">
       <Filter>Header Files\game\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\CBaseConCommand.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\CConCommand.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\CCVar.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\ConVarConstants.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\CVar.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utility\Tokenization.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utility\CCommand.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\CCVarSystem.h">
+      <Filter>Header Files\cvar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

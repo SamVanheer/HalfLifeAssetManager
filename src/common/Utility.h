@@ -43,6 +43,24 @@ inline size_t StringHash( const char* const pszString )
 	return ( _Val );
 }
 
+template<typename STR>
+struct Hash_C_String final : public std::unary_function<STR*, size_t>
+{
+	std::size_t operator()( STR pszStr ) const
+	{
+		return StringHash( pszStr );
+	}
+};
+
+template<typename STR, int ( *COMPARE )( STR lhs, STR rhs ) = strcmp>
+struct EqualTo_C_String final
+{
+	constexpr bool operator()( STR lhs, STR rhs ) const
+	{
+		return COMPARE( lhs, rhs ) == 0;
+	}
+};
+
 /**
 *	Initializes the random number generator.
 */

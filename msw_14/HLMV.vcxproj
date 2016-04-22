@@ -23,6 +23,10 @@
     <ClCompile Include="..\src\common\Logging.cpp" />
     <ClCompile Include="..\src\common\Platform.cpp" />
     <ClCompile Include="..\src\common\Utility.cpp" />
+    <ClCompile Include="..\src\cvar\CBaseConCommand.cpp" />
+    <ClCompile Include="..\src\cvar\CConCommand.cpp" />
+    <ClCompile Include="..\src\cvar\CCVar.cpp" />
+    <ClCompile Include="..\src\cvar\CCvarSystem.cpp" />
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
     <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp" />
     <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp" />
@@ -71,6 +75,7 @@
     <ClCompile Include="..\src\ui\shared\CMessagesWindow.cpp" />
     <ClCompile Include="..\src\ui\wxLogging.cpp" />
     <ClCompile Include="..\src\ui\utility\wxUtil.cpp" />
+    <ClCompile Include="..\src\utility\CCommand.cpp" />
     <ClCompile Include="..\src\utility\CEscapeSequences.cpp" />
     <ClCompile Include="..\src\utility\Color.cpp" />
     <ClCompile Include="..\src\utility\CString.cpp">
@@ -79,6 +84,7 @@
     </ClCompile>
     <ClCompile Include="..\src\utility\IOUtils.cpp" />
     <ClCompile Include="..\src\utility\mathlib.cpp" />
+    <ClCompile Include="..\src\utility\Tokenization.cpp" />
     <ClCompile Include="..\src\utility\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +93,12 @@
     <ClInclude Include="..\src\common\Platform.h" />
     <ClInclude Include="..\src\common\Const.h" />
     <ClInclude Include="..\src\common\Utility.h" />
+    <ClInclude Include="..\src\cvar\CBaseConCommand.h" />
+    <ClInclude Include="..\src\cvar\CConCommand.h" />
+    <ClInclude Include="..\src\cvar\CCVar.h" />
+    <ClInclude Include="..\src\cvar\CCVarSystem.h" />
+    <ClInclude Include="..\src\cvar\ConVarConstants.h" />
+    <ClInclude Include="..\src\cvar\CVar.h" />
     <ClInclude Include="..\src\filesystem\CFileSystem.h" />
     <ClInclude Include="..\src\filesystem\FileSystemConstants.h" />
     <ClInclude Include="..\src\game\CAnimEvent.h" />
@@ -147,12 +159,14 @@
     <ClInclude Include="..\src\ui\utility\wxUtil.h" />
     <ClInclude Include="..\src\ui\wxInclude.h" />
     <ClInclude Include="..\src\utility\BoundingBox.h" />
+    <ClInclude Include="..\src\utility\CCommand.h" />
     <ClInclude Include="..\src\utility\CEscapeSequences.h" />
     <ClInclude Include="..\src\utility\CMemory.h" />
     <ClInclude Include="..\src\utility\Color.h" />
     <ClInclude Include="..\src\utility\CString.h" />
     <ClInclude Include="..\src\utility\IOUtils.h" />
     <ClInclude Include="..\src\utility\mathlib.h" />
+    <ClInclude Include="..\src\utility\Tokenization.h" />
     <ClInclude Include="..\src\utility\Vector.h" />
   </ItemGroup>
   <ItemGroup>
