@@ -4,6 +4,8 @@
 
 #include "game/studiomodel/StudioModel.h"
 
+#include "cvar/CCVarSystem.h"
+
 #include "CModelDisplayPanel.h"
 
 namespace hlmv
@@ -82,10 +84,13 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	pControlsSizer->Add( m_pBonesScaleButton, wxGBPosition( 1, 4 ), wxDefaultSpan, wxEXPAND );
 
 	GetBoxSizer()->Add( pControlsSizer );
+
+	cvar::cvars().InstallGlobalCVarHandler( this );
 }
 
 CModelDisplayPanel::~CModelDisplayPanel()
 {
+	cvar::cvars().RemoveGlobalCVarHandler( this );
 }
 
 void CModelDisplayPanel::InitializeUI()
@@ -126,10 +131,19 @@ void CModelDisplayPanel::SetOpacity( int iValue, const bool bUpdateSlider )
 
 void CModelDisplayPanel::SetCheckBox( const CheckBox::Type checkBox, const bool bValue )
 {
+	InternalSetCheckBox( checkBox, bValue, false );
+}
+
+void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, const bool bValue, const bool bCameFromChangeEvent )
+{
 	if( checkBox < CheckBox::FIRST || checkBox > CheckBox::LAST )
 		return;
 
 	wxCheckBox* pCheckBox = m_pCheckBoxes[ checkBox ];
+
+	//Don't do anything if it's identical. Helps prevent unnecessary calls.
+	if( !bCameFromChangeEvent && pCheckBox->GetValue() == bValue )
+		return;
 
 	pCheckBox->SetValue( bValue );
 
@@ -137,7 +151,7 @@ void CModelDisplayPanel::SetCheckBox( const CheckBox::Type checkBox, const bool 
 	{
 	case CheckBox::SHOW_HITBOXES:
 		{
-			m_pHLMV->GetState()->renderSettings.showHitBoxes = bValue;
+			cvar::cvars().Command( wxString::Format( "r.showhitboxes %d", bValue ? 1 : 0 ).c_str() );
 			break;
 		}
 
@@ -155,7 +169,8 @@ void CModelDisplayPanel::SetCheckBox( const CheckBox::Type checkBox, const bool 
 
 	case CheckBox::SHOW_BONES:
 		{
-			m_pHLMV->GetState()->renderSettings.showBones = bValue;
+			cvar::cvars().Command( wxString::Format( "r.showbones %d", bValue ? 1 : 0 ).c_str() );
+
 			break;
 		}
 
@@ -173,7 +188,7 @@ void CModelDisplayPanel::SetCheckBox( const CheckBox::Type checkBox, const bool 
 
 	case CheckBox::SHOW_ATTACHMENTS:
 		{
-			m_pHLMV->GetState()->renderSettings.showAttachments = bValue;
+			cvar::cvars().Command( wxString::Format( "r.showattachments %d", bValue ? 1 : 0 ).c_str() );
 			break;
 		}
 
@@ -185,7 +200,7 @@ void CModelDisplayPanel::SetCheckBox( const CheckBox::Type checkBox, const bool 
 
 	case CheckBox::SHOW_EYE_POSITION:
 		{
-			m_pHLMV->GetState()->renderSettings.showEyePosition = bValue;
+			cvar::cvars().Command( wxString::Format( "r.showeyeposition %d", bValue ? 1 : 0 ).c_str() );
 			break;
 		}
 
@@ -223,7 +238,7 @@ void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
 	if( checkbox < CheckBox::FIRST || checkbox > CheckBox::LAST )
 		return;
 
-	SetCheckBox( checkbox, pCheckBox->GetValue() );
+	InternalSetCheckBox( checkbox, pCheckBox->GetValue(), true );
 }
 
 void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
@@ -254,5 +269,25 @@ void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
 	}
 	else
 		m_pBonesScale->SetValue( "1.0" );
+}
+
+void CModelDisplayPanel::HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue )
+{
+	if( strcmp( cvar.GetName(), "r.showbones" ) == 0 )
+	{
+		SetCheckBox( CheckBox::SHOW_BONES, cvar.GetBool() );
+	}
+	else if( strcmp( cvar.GetName(), "r.showattachments" ) == 0 )
+	{
+		SetCheckBox( CheckBox::SHOW_ATTACHMENTS, cvar.GetBool() );
+	}
+	else if( strcmp( cvar.GetName(), "r.showeyeposition" ) == 0 )
+	{
+		SetCheckBox( CheckBox::SHOW_EYE_POSITION, cvar.GetBool() );
+	}
+	else if( strcmp( cvar.GetName(), "r.showhitboxes" ) == 0 )
+	{
+		SetCheckBox( CheckBox::SHOW_HITBOXES, cvar.GetBool() );
+	}
 }
 }

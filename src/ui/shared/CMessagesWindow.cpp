@@ -13,6 +13,7 @@ wxBEGIN_EVENT_TABLE( CMessagesWindow, wxFrame )
 	EVT_BUTTON( wxID_SHARED_MESSAGES_CLEAR, CMessagesWindow::OnClear )
 	EVT_LIST_COL_BEGIN_DRAG( wxID_ANY, CMessagesWindow::OnListColumnBeginDrag )
 	EVT_TEXT_ENTER( wxID_SHARED_MESSAGES_COMMAND, CMessagesWindow::CommandEntered )
+	EVT_SHOW( CMessagesWindow::OnShown )
 	EVT_CLOSE( CMessagesWindow::OnClose )
 wxEND_EVENT_TABLE()
 
@@ -171,6 +172,17 @@ void CMessagesWindow::CommandEntered( wxCommandEvent& event )
 	{
 		cvar::cvars().Command( szCommand.c_str() );
 	}
+}
+
+void CMessagesWindow::OnShown( wxShowEvent& event )
+{
+	if( event.IsShown() )
+	{
+		//The command text ctrl should always have focus when opened.
+		m_pCommand->SetFocus();
+	}
+
+	event.Skip();
 }
 
 void CMessagesWindow::OnClose( wxCloseEvent& event )

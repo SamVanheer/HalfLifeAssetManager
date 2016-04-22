@@ -4,10 +4,13 @@
 
 #include "common/Logging.h"
 
+#include "cvar/CCVar.h"
+
 #include "StudioModel.h"
 
 #include "CStudioModelRenderer.h"
 
+//Double to float conversion
 #pragma warning( disable: 4244 )
 
 namespace studiomodel

@@ -14,7 +14,7 @@ namespace cvar
 {
 namespace
 {
-static CCvarSystem g_CVars;
+static CCVarSystem g_CVars;
 
 static CConCommand g_Wait( "wait", &g_CVars, Flag::NONE, "Suspends command execution for the current frame" );
 
@@ -23,21 +23,21 @@ static CCVar g_ShowWait( "showwait", CCVarArgsBuilder().FloatValue( 0 ).HelpInfo
 static CConCommand g_Find( "find", &g_CVars, Flag::NONE, "Finds commands by searching by name and through help info" );
 }
 
-CCvarSystem& cvars()
+CCVarSystem& cvars()
 {
 	return g_CVars;
 }
 
-CCvarSystem::CCvarSystem()
+CCVarSystem::CCVarSystem()
 {
 	memset( m_szCommandBuffer, 0, sizeof( m_szCommandBuffer ) );
 }
 
-CCvarSystem::~CCvarSystem()
+CCVarSystem::~CCVarSystem()
 {
 }
 
-bool CCvarSystem::Initialize()
+bool CCVarSystem::Initialize()
 {
 	CBaseConCommand* pCommand = CBaseConCommand::GetHead();
 
@@ -53,19 +53,19 @@ bool CCvarSystem::Initialize()
 	return true;
 }
 
-void CCvarSystem::Shutdown()
+void CCVarSystem::Shutdown()
 {
 	m_bInitialized = false;
 
 	m_Commands.clear();
 }
 
-void CCvarSystem::RunFrame()
+void CCVarSystem::RunFrame()
 {
 	Execute();
 }
 
-bool CCvarSystem::AddCommand( CBaseConCommand* const pCommand )
+bool CCVarSystem::AddCommand( CBaseConCommand* const pCommand )
 {
 	assert( pCommand );
 
@@ -86,7 +86,7 @@ bool CCvarSystem::AddCommand( CBaseConCommand* const pCommand )
 	return it.second;
 }
 
-void CCvarSystem::RemoveCommand( CBaseConCommand* const pCommand )
+void CCVarSystem::RemoveCommand( CBaseConCommand* const pCommand )
 {
 	if( !pCommand )
 	{
@@ -109,7 +109,7 @@ void CCvarSystem::RemoveCommand( CBaseConCommand* const pCommand )
 	m_Commands.erase( it );
 }
 
-void CCvarSystem::RemoveCommand( const char* const pszName )
+void CCVarSystem::RemoveCommand( const char* const pszName )
 {
 	assert( pszName );
 
@@ -128,7 +128,7 @@ void CCvarSystem::RemoveCommand( const char* const pszName )
 	m_Commands.erase( pszName );
 }
 
-void CCvarSystem::Command( const char* const pszCommand )
+void CCVarSystem::Command( const char* const pszCommand )
 {
 	assert( pszCommand );
 
@@ -163,7 +163,7 @@ void CCvarSystem::Command( const char* const pszCommand )
 	}
 }
 
-void CCvarSystem::Execute()
+void CCVarSystem::Execute()
 {
 	//The wait is over.
 	m_bWait = false;
@@ -239,16 +239,35 @@ void CCvarSystem::Execute()
 	}
 }
 
-void CCvarSystem::CVarChanged( const CCVar& cvar, const char* pszOldValue, float flOldValue )
+CBaseConCommand* CCVarSystem::FindCommand( const char* const pszName )
+{
+	assert( pszName );
+
+	if( !( *pszName ) )
+		return nullptr;
+
+	auto it = m_Commands.find( pszName );
+
+	if( it == m_Commands.end() )
+	{
+		return nullptr;
+	}
+
+	return it->second;
+}
+
+void CCVarSystem::CVarChanged( CCVar& cvar, const char* pszOldValue, float flOldValue )
 {
 	//Don't print this on init.
 	if( !IsInitialized() )
 		return;
 
 	Message( "\"%s\" changed to \"%s\"\n", cvar.GetName(), cvar.GetString() );
+
+	CallGlobalCVarHandlers( cvar, pszOldValue, flOldValue );
 }
 
-void CCvarSystem::ProcessCommand( const util::CCommand& args )
+void CCVarSystem::ProcessCommand( const util::CCommand& args )
 {
 	assert( args.IsValid() );
 
@@ -335,7 +354,7 @@ void CCvarSystem::ProcessCommand( const util::CCommand& args )
 	}
 }
 
-void CCvarSystem::HandleConCommand( const CConCommand& command, const util::CCommand& args )
+void CCVarSystem::HandleConCommand( const CConCommand& command, const util::CCommand& args )
 {
 	const char* const pszName = args.Arg( 0 );
 
@@ -376,6 +395,49 @@ void CCvarSystem::HandleConCommand( const CConCommand& command, const util::CCom
 				}
 			}
 		}
+	}
+}
+
+bool CCVarSystem::HasGlobalCVarHandler( ICVarHandler* pHandler ) const
+{
+	if( !pHandler )
+		return false;
+
+	return std::find( m_GlobalCVarHandlers.begin(), m_GlobalCVarHandlers.end(), pHandler ) != m_GlobalCVarHandlers.end();
+}
+
+bool CCVarSystem::InstallGlobalCVarHandler( ICVarHandler* pHandler )
+{
+	assert( pHandler );
+
+	if( HasGlobalCVarHandler( pHandler ) )
+		return true;
+
+	m_GlobalCVarHandlers.push_back( pHandler );
+
+	return true;
+}
+
+void CCVarSystem::RemoveGlobalCVarHandler( ICVarHandler* pHandler )
+{
+	if( !pHandler )
+		return;
+
+	auto it = std::find( m_GlobalCVarHandlers.begin(), m_GlobalCVarHandlers.end(), pHandler );
+
+	if( it == m_GlobalCVarHandlers.end() )
+	{
+		return;
+	}
+
+	m_GlobalCVarHandlers.erase( it );
+}
+
+void CCVarSystem::CallGlobalCVarHandlers( CCVar& cvar, const char* pszOldValue, float flOldValue )
+{
+	for( auto handler : m_GlobalCVarHandlers )
+	{
+		handler->HandleCVar( cvar, pszOldValue, flOldValue );
 	}
 }
 }

@@ -26,7 +26,7 @@
     <ClCompile Include="..\src\cvar\CBaseConCommand.cpp" />
     <ClCompile Include="..\src\cvar\CConCommand.cpp" />
     <ClCompile Include="..\src\cvar\CCVar.cpp" />
-    <ClCompile Include="..\src\cvar\CCvarSystem.cpp" />
+    <ClCompile Include="..\src\cvar\CCVarSystem.cpp" />
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
     <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp" />
     <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp" />

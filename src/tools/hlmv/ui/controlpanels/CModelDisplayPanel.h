@@ -5,9 +5,11 @@
 
 #include "../../CHLMVState.h"
 
+#include "cvar/CCVar.h"
+
 namespace hlmv
 {
-class CModelDisplayPanel final : public CBaseControlPanel
+class CModelDisplayPanel final : public CBaseControlPanel, public cvar::ICVarHandler
 {
 public:
 	//Weakly typed, strongly scoped.
@@ -65,6 +67,8 @@ protected:
 	wxDECLARE_EVENT_TABLE();
 
 private:
+	void InternalSetCheckBox( const CheckBox::Type checkBox, const bool bValue, const bool bCameFromChangeEvent );
+
 	void RenderModeChanged( wxCommandEvent& event );
 
 	void OpacityChanged( wxCommandEvent& event );
@@ -74,6 +78,8 @@ private:
 	void ScaleMesh( wxCommandEvent& event );
 
 	void ScaleBones( wxCommandEvent& event );
+
+	void HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue ) override final;
 
 private:
 	wxComboBox* m_pRenderMode;

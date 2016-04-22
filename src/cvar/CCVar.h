@@ -27,9 +27,10 @@ public:
 	virtual ~ICVarHandler() = 0;
 
 	/**
-	*	Called when a command is being executed.
-	*	@param command Command being executed.
-	*	@param args Arguments.
+	*	Called when a cvar has changed.
+	*	@param cvar CVar that was changed.
+	*	@param pszOldValue Old string value.
+	*	@param flOldValue Old float value.
 	*/
 	virtual void HandleCVar( CCVar& cvar, const char* pszOldValue, float flOldValue ) = 0;
 };

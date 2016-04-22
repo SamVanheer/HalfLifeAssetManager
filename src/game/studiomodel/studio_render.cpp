@@ -25,6 +25,8 @@
 
 #include "game/CAnimEvent.h"
 
+#include "cvar/CCVar.h"
+
 #include "StudioModel.h"
 
 #pragma warning( disable : 4244 ) // double to float
@@ -53,6 +55,11 @@ glm::ivec2		g_chrome[MAXSTUDIOVERTS];		// texture coords for surface normals
 int				g_chromeage[MAXSTUDIOBONES];	// last time chrome vectors were updated
 glm::vec3		g_chromeup[MAXSTUDIOBONES];		// chrome vector "up" in bone reference frames
 glm::vec3		g_chromeright[MAXSTUDIOBONES];	// chrome vector "right" in bone reference frames
+
+static cvar::CCVar g_ShowBones( "r.showbones", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model bones" ) );
+static cvar::CCVar g_ShowAttachments( "r.showattachments", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model attachments" ) );
+static cvar::CCVar g_ShowEyePosition( "r.showeyeposition", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model eye position" ) );
+static cvar::CCVar g_ShowHitboxes( "r.showhitboxes", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model hitboxes" ) );
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -701,7 +708,7 @@ unsigned int StudioModel::DrawModel( const CRenderSettings& settings, const bool
 	}
 
 	// draw bones
-	if (settings.showBones)
+	if( g_ShowBones.GetBool() )
 	{
 		mstudiobone_t *pbones = (mstudiobone_t *) ((byte *) m_pstudiohdr + m_pstudiohdr->boneindex);
 		glDisable (GL_TEXTURE_2D);
@@ -739,7 +746,7 @@ unsigned int StudioModel::DrawModel( const CRenderSettings& settings, const bool
 		glPointSize (1.0f);
 	}
 
-	if (settings.showAttachments)
+	if( g_ShowAttachments.GetBool() )
 	{
 		glDisable (GL_TEXTURE_2D);
 		glDisable (GL_CULL_FACE);
@@ -776,7 +783,7 @@ unsigned int StudioModel::DrawModel( const CRenderSettings& settings, const bool
 		}
 	}
 
-	if( settings.showEyePosition )
+	if( g_ShowEyePosition.GetBool() )
 	{
 		glDisable( GL_TEXTURE_2D );
 		glDisable( GL_CULL_FACE );
@@ -790,7 +797,7 @@ unsigned int StudioModel::DrawModel( const CRenderSettings& settings, const bool
 		glPointSize( 1 );
 	}
 
-	if (settings.showHitBoxes)
+	if( g_ShowHitboxes.GetBool() )
 	{
 		glDisable (GL_TEXTURE_2D);
 		glDisable (GL_CULL_FACE);

@@ -324,7 +324,7 @@
     <ClCompile Include="..\src\cvar\CBaseConCommand.cpp">
       <Filter>Source Files\cvar</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cvar\CCvarSystem.cpp">
+    <ClCompile Include="..\src\cvar\CCVarSystem.cpp">
       <Filter>Source Files\cvar</Filter>
     </ClCompile>
   </ItemGroup>

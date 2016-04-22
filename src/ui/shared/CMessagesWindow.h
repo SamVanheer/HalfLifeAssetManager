@@ -57,6 +57,8 @@ private:
 
 	void CommandEntered( wxCommandEvent& event );
 
+	void OnShown( wxShowEvent& event );
+
 	void OnClose( wxCloseEvent& event );
 
 	void UpdateHeader();

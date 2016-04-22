@@ -90,10 +90,6 @@ public:
 		Color wireframeColor	= Color( 255, 0, 0 );
 
 		float transparency		= 1.0f;
-		bool showBones			= false;
-		bool showAttachments	= false;
-		bool showEyePosition	= false;
-		bool showHitBoxes		= false;
 	};
 
 public:

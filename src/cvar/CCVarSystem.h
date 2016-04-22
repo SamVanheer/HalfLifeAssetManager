@@ -2,23 +2,25 @@
 #define CVAR_CCVARSYSTEM_H
 
 #include <unordered_map>
+#include <vector>
 
 #include "common/Utility.h"
 
 #include "utility/CCommand.h"
 
+#include "CBaseConCommand.h"
 #include "CConCommand.h"
+#include "CCVar.h"
 
 namespace cvar
 {
-class CBaseConCommand;
-class CCVar;
-
-class CCvarSystem final : public IConCommandHandler
+class CCVarSystem final : public IConCommandHandler
 {
 private:
 	//The default hasher and equal comparator for const char* operate on the memory address, not the string itself.
 	typedef std::unordered_map<const char*, CBaseConCommand*, Hash_C_String<const char*>, EqualTo_C_String<const char*>> Commands_t;
+
+	typedef std::vector<ICVarHandler*> GlobalCVarHandlers_t;
 
 	/**
 	*	Maximum size of the command buffer. This should be able to store 64 commands that use the maximum space available.
@@ -26,8 +28,8 @@ private:
 	static const size_t MAX_COMMAND_BUFFER = util::CCommand::MAX_LENGTH * 64;
 
 public:
-	CCvarSystem();
-	~CCvarSystem();
+	CCVarSystem();
+	~CCVarSystem();
 
 	/**
 	*	Returns whether the system has been initialized.
@@ -78,17 +80,45 @@ public:
 	*/
 	void Execute();
 
-	void CVarChanged( const CCVar& cvar, const char* pszOldValue, float flOldValue );
+	/**
+	*	Finds a command by name.
+	*/
+	CBaseConCommand* FindCommand( const char* const pszName );
+
+	void CVarChanged( CCVar& cvar, const char* pszOldValue, float flOldValue );
+
+	//TODO: move this to its own class.
+	/**
+	*	Returns whether the given handler is currently installed.
+	*/
+	bool HasGlobalCVarHandler( ICVarHandler* pHandler ) const;
+
+	/**
+	*	Installs a global cvar handler.
+	*	@param pHandler Handler to install.
+	*	@return true on success, false otherwise.
+	*/
+	bool InstallGlobalCVarHandler( ICVarHandler* pHandler );
+
+	/**
+	*	Removes a global cvar handler.
+	*	@param pHandler Handler to remove.
+	*/
+	void RemoveGlobalCVarHandler( ICVarHandler* pHandler );
 
 private:
 	void ProcessCommand( const util::CCommand& args );
 
 	void HandleConCommand( const CConCommand& command, const util::CCommand& args ) override final;
 
+	void CallGlobalCVarHandlers( CCVar& cvar, const char* pszOldValue, float flOldValue );
+
 private:
 	bool m_bInitialized = false;
 
 	Commands_t m_Commands;
+
+	GlobalCVarHandlers_t m_GlobalCVarHandlers;
 
 	char m_szCommandBuffer[ MAX_COMMAND_BUFFER ];
 
@@ -98,11 +128,11 @@ private:
 	bool m_bWait = false;
 
 private:
-	CCvarSystem( const CCvarSystem& ) = delete;
-	CCvarSystem& operator=( const CCvarSystem& ) = delete;
+	CCVarSystem( const CCVarSystem& ) = delete;
+	CCVarSystem& operator=( const CCVarSystem& ) = delete;
 };
 
-CCvarSystem& cvars();
+CCVarSystem& cvars();
 }
 
 #endif //CVAR_CCVARSYSTEM_H
