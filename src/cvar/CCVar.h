@@ -208,6 +208,7 @@ public:
 	*	@see CBaseConCommand::CBaseConCommand( const char* const pszName, const char* const pszHelpInfo )
 	*/
 	CCVar( const char* const pszName, const CCVarArgsBuilder& args = CCVarArgsBuilder() );
+	virtual ~CCVar();
 
 	virtual CommandType GetType() const override { return CommandType::CVAR; }
 

@@ -77,6 +77,11 @@ CCVar::CCVar( const char* const pszName, const CCVarArgsBuilder& args )
 	}
 }
 
+CCVar::~CCVar()
+{
+	delete[] m_pszValue;
+}
+
 void CCVar::SetString( const char* const pszValue )
 {
 	assert( pszValue );
