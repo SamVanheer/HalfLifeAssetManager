@@ -16,6 +16,8 @@
 #include "game/CAnimEvent.h"
 #include "game/Events.h"
 
+#include "game/studiomodel/CStudioModelRenderer.h"
+
 #include "ui/CwxOpenGL.h"
 
 #include "C3DView.h"
@@ -263,12 +265,17 @@ void C3DView::DrawModel()
 
 	auto pModel = m_pHLMV->GetState()->GetStudioModel();
 
-	// setup stencil buffer and draw mirror
-	if( m_pHLMV->GetState()->mirror && pModel )
+	if( pModel )
 	{
-		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawMirroredModel( *pModel, m_pHLMV->GetState()->renderMode,
-																				 m_pHLMV->GetState()->wireframeOverlay, 
-																				 m_pHLMV->GetSettings()->GetFloorLength() );
+		studiomodel::renderer().Prepare( pModel );
+
+		// setup stencil buffer and draw mirror
+		if( m_pHLMV->GetState()->mirror )
+		{
+			m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawMirroredModel( *pModel, m_pHLMV->GetState()->renderMode,
+																					 m_pHLMV->GetState()->wireframeOverlay, 
+																					 m_pHLMV->GetSettings()->GetFloorLength() );
+		}
 	}
 
 	SetupRenderMode();
@@ -277,13 +284,15 @@ void C3DView::DrawModel()
 
 	if( pModel )
 	{
-		m_pHLMV->GetState()->drawnPolys += pModel->DrawModel();
-	}
+		m_pHLMV->GetState()->drawnPolys += studiomodel::renderer().DrawModel();
 
-	//Draw wireframe overlay
-	if( m_pHLMV->GetState()->wireframeOverlay && pModel )
-	{
-		m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawWireframeOverlay( *pModel );
+		//Draw wireframe overlay
+		if( m_pHLMV->GetState()->wireframeOverlay )
+		{
+			m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawWireframeOverlay( *pModel );
+		}
+
+		studiomodel::renderer().Unprepare();
 	}
 
 	//

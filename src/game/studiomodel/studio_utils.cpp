@@ -25,15 +25,9 @@
 #include "game/Events.h"
 #include "StudioModel.h"
 
-
-
 #pragma warning( disable : 4244 ) // double to float
 
-//extern float			g_bonetransform[MAXSTUDIOBONES][3][4];
-
-
 bool bFilterTextures = true;
-
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -145,8 +139,7 @@ void StudioModel::ReplaceTexture( mstudiotexture_t *ptexture, byte *data, byte *
 	UploadTexture( ptexture, data, pal, textureId );
 }
 
-void
-StudioModel::FreeModel ()
+void StudioModel::FreeModel()
 {
 	if( !m_pstudiohdr )
 		return;
@@ -176,8 +169,6 @@ StudioModel::FreeModel ()
 
 	memset( m_Textures, 0, sizeof( m_Textures ) );
 }
-
-
 
 studiohdr_t *StudioModel::LoadModel( const char* pszModelName, LoadResult* pResult )
 {
@@ -429,11 +420,9 @@ bool StudioModel::SaveModel ( char *modelname )
 	return true;
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////
 
-int StudioModel::GetSequence( )
+int StudioModel::GetSequence()
 {
 	return m_sequence;
 }
@@ -455,7 +444,7 @@ void StudioModel::GetSequenceInfo( float *pflFrameRate, float *pflGroundSpeed ) 
 
 	if (pseqdesc->numframes > 1)
 	{
-		*pflFrameRate = 256 * pseqdesc->fps / (pseqdesc->numframes - 1);
+		*pflFrameRate = pseqdesc->fps;
 		*pflGroundSpeed = sqrt( pseqdesc->linearmovement[0]*pseqdesc->linearmovement[0]+ 
 								pseqdesc->linearmovement[1]*pseqdesc->linearmovement[1]+ 
 								pseqdesc->linearmovement[2]*pseqdesc->linearmovement[2] );
@@ -472,13 +461,8 @@ void StudioModel::ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const
 {
 	const mstudioseqdesc_t* pseqdesc = m_pstudiohdr->GetSequence( m_sequence );
 
-	vecMins[ 0 ] = pseqdesc->bbmin[ 0 ];
-	vecMins[ 1 ] = pseqdesc->bbmin[ 1 ];
-	vecMins[ 2 ] = pseqdesc->bbmin[ 2 ];
-
-	vecMaxs[ 0 ] = pseqdesc->bbmax[ 0 ];
-	vecMaxs[ 1 ] = pseqdesc->bbmax[ 1 ];
-	vecMaxs[ 2 ] = pseqdesc->bbmax[ 2 ];
+	vecMins = pseqdesc->bbmin;
+	vecMaxs = pseqdesc->bbmax;
 }
 
 byte StudioModel::GetBoneController( int iController ) const
@@ -567,7 +551,6 @@ float StudioModel::SetController( int iController, float flValue )
 	return setting * (1.0 / 255.0) * (pbonecontroller->end - pbonecontroller->start) + pbonecontroller->start;
 }
 
-
 float StudioModel::SetMouth( float flValue )
 {
 	if (!m_pstudiohdr)
@@ -615,7 +598,6 @@ float StudioModel::SetMouth( float flValue )
 	return setting * (1.0 / 64.0) * (pbonecontroller->end - pbonecontroller->start) + pbonecontroller->start;
 }
 
-
 float StudioModel::SetBlending( int iBlender, float flValue )
 {
 	mstudioseqdesc_t	*pseqdesc;
@@ -653,8 +635,6 @@ float StudioModel::SetBlending( int iBlender, float flValue )
 
 	return setting * (1.0 / 255.0) * (pseqdesc->blendend[iBlender] - pseqdesc->blendstart[iBlender]) + pseqdesc->blendstart[iBlender];
 }
-
-
 
 int StudioModel::SetBodygroup( int iGroup, int iValue )
 {
@@ -776,11 +756,20 @@ void StudioModel::ScaleMeshes( float scale )
 		for( j = 0; j < pbodypart->nummodels; j++ )
 		{
 			SetBodygroup( i, j );
-			SetupModel( i );
 
-			glm::vec3 *pstudioverts = ( glm::vec3 * )( ( byte * ) m_pstudiohdr + m_pmodel->vertindex );
+			int bodypart = i;
 
-			for( k = 0; k < m_pmodel->numverts; k++ )
+			if( bodypart > m_pstudiohdr->numbodyparts )
+			{
+				// Con_DPrintf ("StudioModel::SetupModel: no such bodypart %d\n", bodypart);
+				bodypart = 0;
+			}
+
+			mstudiomodel_t* pModel = GetModelByBodyPart( bodypart );
+
+			glm::vec3 *pstudioverts = ( glm::vec3 * )( ( byte * ) m_pstudiohdr + pModel->vertindex );
+
+			for( k = 0; k < pModel->numverts; k++ )
 			{
 				pstudioverts[ k ] *= scale;
 			}
@@ -807,8 +796,6 @@ void StudioModel::ScaleMeshes( float scale )
 
 	// maybe scale exeposition, pivots, attachments
 }
-
-
 
 void StudioModel::ScaleBones( float scale )
 {

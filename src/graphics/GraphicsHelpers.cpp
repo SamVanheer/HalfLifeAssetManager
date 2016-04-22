@@ -4,6 +4,8 @@
 
 #include "utility/Color.h"
 
+#include "game/studiomodel/CStudioModelRenderer.h"
+
 #include "GraphicsHelpers.h"
 
 namespace graphics
@@ -385,7 +387,7 @@ unsigned int DrawWireframeOverlay( StudioModel& model )
 {
 	SetupRenderMode( RenderMode::WIREFRAME );
 
-	return model.DrawModel( true );
+	return studiomodel::renderer().DrawModel( true );
 }
 
 unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength )
@@ -432,7 +434,7 @@ unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode,
 
 	glClipPlane( GL_CLIP_PLANE0, flClipPlane );
 
-	unsigned int uiDrawnPolys = model.DrawModel();
+	unsigned int uiDrawnPolys = studiomodel::renderer().DrawModel();
 
 	glDisable( GL_CLIP_PLANE0 );
 

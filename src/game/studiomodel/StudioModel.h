@@ -96,9 +96,9 @@ public:
 	void					SetAngles( const glm::vec3& vecAngles ) { m_angles = vecAngles; }
 
 	//CBaseAnimating
-	float					GetFrame() const { return m_frame; }
-
 	int						GetNumFrames() const;
+
+	float					GetFrame() const { return m_frame; }
 
 	float					AdvanceFrame( float dt = 0.0f );
 	int						SetFrame( int nFrame );
@@ -146,9 +146,6 @@ public:
 	LoadResult				Load( const char* const pszModelName );
 	bool					SaveModel( char *modelname );
 
-	//CStudioModelRenderer
-	unsigned int			DrawModel( const bool wireframeOnly = false );
-
 private:
 	// entity settings
 	glm::vec3				m_origin;
@@ -169,37 +166,13 @@ private:
 
 	// internal data
 	studiohdr_t				*m_pstudiohdr;
-	mstudiomodel_t			*m_pmodel;
 
 	studiohdr_t				*m_ptexturehdr;
 	studiohdr_t				*m_panimhdr[32];
 
-	glm::vec4				m_adj;				// FIX: non persistant, make static
-
 	GLuint					m_Textures[ MAXSTUDIOSKINS ];
 
 	TextureMeshMap_t		m_TextureMeshMap;
-
-	void					CalcBoneAdj();
-	void					CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec4& q );
-	void					CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec3& pos );
-	void					CalcRotations( glm::vec3 *pos, glm::vec4 *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f );
-	void					SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s );
-	void					SetUpBones();
-
-	unsigned int			DrawPoints( const bool wireframeOnly = false );
-
-	void					Lighting( float *lv, int bone, int flags, const glm::vec3& normal );
-	void					Chrome( glm::ivec2& chrome, int bone, const glm::vec3& normal );
-
-	void					SetupLighting();
-
-	void					SetupModel( int bodypart );
 };
-
-
-
-extern glm::vec3 g_vright;		// needs to be set to viewer's right in order for chrome to work
-extern float g_lambert;		// modifier for pseudo-hemispherical lighting
 
 #endif // INCLUDED_STUDIOMODEL

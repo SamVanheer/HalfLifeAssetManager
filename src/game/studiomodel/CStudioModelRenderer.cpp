@@ -5,6 +5,7 @@
 #include "common/Logging.h"
 
 #include "cvar/CCVar.h"
+#include "cvar/CVarUtils.h"
 
 #include "StudioModel.h"
 
@@ -12,6 +13,19 @@
 
 //Double to float conversion
 #pragma warning( disable: 4244 )
+
+glm::vec3 g_vright = { 50, 50, 0 };		// needs to be set to viewer's right in order for chrome to work
+float g_lambert = 1.5;
+
+cvar::CCVar g_ShowBones( "r.showbones", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model bones" ) );
+cvar::CCVar g_ShowAttachments( "r.showattachments", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model attachments" ) );
+cvar::CCVar g_ShowEyePosition( "r.showeyeposition", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model eye position" ) );
+cvar::CCVar g_ShowHitboxes( "r.showhitboxes", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model hitboxes" ) );
+
+//TODO: this is temporary until lighting can be moved somewhere else
+
+DEFINE_COLOR_CVAR( , r_lighting, 255, 255, 255, "Lighting", cvar::CCVarArgsBuilder().Callback( cvar::ColorCVarChanged ) );
+DEFINE_COLOR_CVAR( , r_wireframecolor, 255, 0, 0, "Wireframe overlay", cvar::CCVarArgsBuilder().Callback( cvar::ColorCVarChanged ) );
 
 namespace studiomodel
 {
@@ -115,7 +129,7 @@ void drawBox( const glm::vec3* const v )
 
 }
 
-unsigned int CStudioModelRenderer::DrawModel( const CRenderSettings& settings, const bool wireframeOnly )
+unsigned int CStudioModelRenderer::DrawModel( const bool wireframeOnly )
 {
 	int i;
 
@@ -143,19 +157,19 @@ unsigned int CStudioModelRenderer::DrawModel( const CRenderSettings& settings, c
 
 	SetUpBones();
 
-	SetupLighting( settings );
+	SetupLighting();
 
 	unsigned int uiDrawnPolys = 0;
 
 	for( i = 0; i < m_pStudioHdr->numbodyparts; i++ )
 	{
 		SetupModel( i );
-		if( settings.transparency > 0.0f )
-			uiDrawnPolys += DrawPoints( settings, wireframeOnly );
+		if( m_pCurrentModel->GetTransparency() > 0.0f )
+			uiDrawnPolys += DrawPoints( wireframeOnly );
 	}
 
 	// draw bones
-	if( settings.showBones )
+	if( g_ShowBones.GetBool() )
 	{
 		mstudiobone_t *pbones = m_pStudioHdr->GetBones();
 		glDisable( GL_TEXTURE_2D );
@@ -193,7 +207,7 @@ unsigned int CStudioModelRenderer::DrawModel( const CRenderSettings& settings, c
 		glPointSize( 1.0f );
 	}
 
-	if( settings.showAttachments )
+	if( g_ShowAttachments.GetBool() )
 	{
 		glDisable( GL_TEXTURE_2D );
 		glDisable( GL_CULL_FACE );
@@ -230,7 +244,7 @@ unsigned int CStudioModelRenderer::DrawModel( const CRenderSettings& settings, c
 		}
 	}
 
-	if( settings.showEyePosition )
+	if( g_ShowEyePosition.GetBool() )
 	{
 		glDisable( GL_TEXTURE_2D );
 		glDisable( GL_CULL_FACE );
@@ -244,11 +258,11 @@ unsigned int CStudioModelRenderer::DrawModel( const CRenderSettings& settings, c
 		glPointSize( 1 );
 	}
 
-	if( settings.showHitBoxes )
+	if( g_ShowHitboxes.GetBool() )
 	{
 		glDisable( GL_TEXTURE_2D );
 		glDisable( GL_CULL_FACE );
-		if( settings.transparency < 1.0f )
+		if( m_pCurrentModel->GetTransparency() < 1.0f )
 			glDisable( GL_DEPTH_TEST );
 		else
 			glEnable( GL_DEPTH_TEST );
@@ -630,7 +644,7 @@ g_ambientlight
 g_shadelight
 ================
 */
-void CStudioModelRenderer::SetupLighting( const CRenderSettings& settings )
+void CStudioModelRenderer::SetupLighting()
 {
 	int i;
 	g_ambientlight = 32;
@@ -640,9 +654,9 @@ void CStudioModelRenderer::SetupLighting( const CRenderSettings& settings )
 	g_lightvec[ 1 ] = 0;
 	g_lightvec[ 2 ] = -1.0;
 
-	g_lightcolor[ 0 ] = settings.lightColor[ 0 ];
-	g_lightcolor[ 1 ] = settings.lightColor[ 1 ];
-	g_lightcolor[ 2 ] = settings.lightColor[ 2 ];
+	g_lightcolor[ 0 ] = r_lighting_r.GetInt();
+	g_lightcolor[ 1 ] = r_lighting_g.GetInt();
+	g_lightcolor[ 2 ] = r_lighting_b.GetInt();
 
 	// TODO: only do it for bones that actually have textures
 	for( i = 0; i < m_pStudioHdr->numbones; i++ )
@@ -651,6 +665,17 @@ void CStudioModelRenderer::SetupLighting( const CRenderSettings& settings )
 	}
 }
 
+/*
+=================
+StudioModel::SetupModel
+based on the body part, figure out which mesh it should be using.
+inputs:
+currententity
+outputs:
+pstudiomesh
+pmdl
+=================
+*/
 void CStudioModelRenderer::SetupModel( int bodypart )
 {
 	if( bodypart > m_pStudioHdr->numbodyparts )
@@ -679,7 +704,7 @@ bool CompareSortedMeshes( const SortedMesh_t& lhs, const SortedMesh_t& rhs )
 	return false;
 }
 
-unsigned int CStudioModelRenderer::DrawPoints( const CRenderSettings& settings, const bool wireframeOnly )
+unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 {
 	int					i, j;
 	mstudiomesh_t		*pmesh;
@@ -753,7 +778,10 @@ unsigned int CStudioModelRenderer::DrawPoints( const CRenderSettings& settings, 
 
 	//Set here since it never changes. Much more efficient.
 	if( wireframeOnly )
-		glColor4f( settings.wireframeColor[ 0 ] / 255.0f, settings.wireframeColor[ 1 ] / 255.0f, settings.wireframeColor[ 2 ] / 255.0f, settings.transparency );
+		glColor4f( r_wireframecolor_r.GetFloat() / 255.0f, 
+				   r_wireframecolor_g.GetFloat() / 255.0f, 
+				   r_wireframecolor_b.GetFloat() / 255.0f, 
+				   m_pCurrentModel->GetTransparency() );
 
 	for( j = 0; j < m_pModel->nummesh; j++ )
 	{
@@ -779,7 +807,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const CRenderSettings& settings, 
 			glEnable( GL_BLEND );
 			glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 		}
-		else if( settings.transparency < 1.0f )
+		else if( m_pCurrentModel->GetTransparency() < 1.0f )
 		{
 			glEnable( GL_BLEND );
 			glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -819,7 +847,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const CRenderSettings& settings, 
 						glTexCoord2f( g_chrome[ ptricmds[ 1 ] ][ 0 ] * s, g_chrome[ ptricmds[ 1 ] ][ 1 ] * t );
 
 						lv = glm::value_ptr( g_pvlightvalues[ ptricmds[ 1 ] ] );
-						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], settings.transparency );
+						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pCurrentModel->GetTransparency() );
 
 						av = glm::value_ptr( g_pxformverts[ ptricmds[ 0 ] ] );
 						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
@@ -849,7 +877,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const CRenderSettings& settings, 
 						glTexCoord2f( ptricmds[ 2 ] * s, ptricmds[ 3 ] * t );
 
 						lv = glm::value_ptr( g_pvlightvalues[ ptricmds[ 1 ] ] );
-						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], settings.transparency );
+						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pCurrentModel->GetTransparency() );
 
 						av = glm::value_ptr( g_pxformverts[ ptricmds[ 0 ] ] );
 						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );

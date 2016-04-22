@@ -23,34 +23,6 @@ class CStudioModelRenderer final
 {
 public:
 	/**
-	*	Stores settings used to render the model.
-	*	TODO: this should be decomposed into cvars for debug drawing and entity settings for the rest. Lighting should be handled by having a list of lights in the world.
-	*/
-	class CRenderSettings final
-	{
-	public:
-		CRenderSettings() = default;
-		CRenderSettings( const CRenderSettings& other ) = default;
-		CRenderSettings& operator=( const CRenderSettings& other ) = default;
-
-		void ResetToDefaults()
-		{
-			*this = CRenderSettings();
-		}
-
-	public:
-		Color lightColor = Color( 255, 255, 255 );
-		Color wireframeColor = Color( 255, 0, 0 );
-
-		float transparency = 1.0f;
-		bool showBones = false;
-		bool showAttachments = false;
-		bool showEyePosition = false;
-		bool showHitBoxes = false;
-	};
-
-public:
-	/**
 	*	Constructor.
 	*/
 	CStudioModelRenderer();
@@ -96,7 +68,7 @@ public:
 	*/
 	void Unprepare();
 
-	unsigned int DrawModel( const CRenderSettings& settings, const bool wireframeOnly = false );
+	unsigned int DrawModel( const bool wireframeOnly = false );
 
 private:
 	void SetUpBones();
@@ -107,11 +79,11 @@ private:
 	void CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec3& pos );
 	void SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s );
 
-	void SetupLighting( const CRenderSettings& settings );
+	void SetupLighting();
 
 	void SetupModel( int bodypart );
 
-	unsigned int DrawPoints( const CRenderSettings& settings, const bool wireframeOnly = false );
+	unsigned int DrawPoints( const bool wireframeOnly = false );
 
 	void Lighting( float *lv, int bone, int flags, const glm::vec3& normal );
 	void Chrome( glm::ivec2& chrome, int bone, const glm::vec3& normal );
@@ -166,5 +138,9 @@ private:
 //TODO: avoid using a global
 CStudioModelRenderer& renderer();
 }
+
+//TODO: move these into CStudioModelRenderer
+extern glm::vec3 g_vright;		// needs to be set to viewer's right in order for chrome to work
+extern float g_lambert;		// modifier for pseudo-hemispherical lighting
 
 #endif //GAME_STUDIOMODEL_CSTUDIOMODELRENDERER_H
