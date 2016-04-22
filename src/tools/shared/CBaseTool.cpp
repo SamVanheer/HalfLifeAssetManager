@@ -8,10 +8,13 @@
 
 #include "ui/shared/CMessagesWindow.h"
 
+#include "common/Const.h"
 #include "common/CGlobals.h"
 #include "common/Utility.h"
 
 #include "settings/CBaseSettings.h"
+
+#include "game/studiomodel/CStudioModelRenderer.h"
 
 #include "CBaseTool.h"
 
@@ -110,6 +113,12 @@ bool CBaseTool::Initialize()
 			wxMessageBox( "Failed to initialize file system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 			return false;
 		}
+
+		if( !studiomodel::renderer().Initialize() )
+		{
+			wxMessageBox( "Failed to initialize StudioModel renderer", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+			return false;
+		}
 	}
 
 	if( m_InitFlags & INIT_IMAGEHANDLERS )
@@ -180,6 +189,8 @@ void CBaseTool::Shutdown()
 
 	if( CwxOpenGL::InstanceExists() )
 	{
+		studiomodel::renderer().Shutdown();
+
 		wxOpenGL().Shutdown();
 
 		CwxOpenGL::DestroyInstance();
@@ -209,6 +220,8 @@ void CBaseTool::ToolRunFrame()
 	Globals.SetCurrentTime( Globals.GetCurrentTime() + flFrameTime );
 	Globals.SetFrameTime( flFrameTime );
 	Globals.SetPreviousRealTime( Globals.GetRealTime() );
+
+	studiomodel::renderer().RunFrame();
 
 	if( soundsystem::CSoundSystem::InstanceExists() )
 		soundSystem().RunFrame();

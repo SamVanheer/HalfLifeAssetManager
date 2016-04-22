@@ -446,26 +446,8 @@ int StudioModel::SetSequence( int iSequence )
 	m_sequence = iSequence;
 	m_frame = 0;
 
-	const mstudioseqdesc_t* pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex ) + iSequence;
-
 	return m_sequence;
 }
-
-
-void StudioModel::ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const
-{
-	const mstudioseqdesc_t* pseqdesc = m_pstudiohdr->GetSequence( m_sequence );
-	
-	vecMins[0] = pseqdesc->bbmin[0];
-	vecMins[1] = pseqdesc->bbmin[1];
-	vecMins[2] = pseqdesc->bbmin[2];
-
-	vecMaxs[0] = pseqdesc->bbmax[0];
-	vecMaxs[1] = pseqdesc->bbmax[1];
-	vecMaxs[2] = pseqdesc->bbmax[2];
-}
-
-
 
 void StudioModel::GetSequenceInfo( float *pflFrameRate, float *pflGroundSpeed ) const
 {
@@ -484,6 +466,24 @@ void StudioModel::GetSequenceInfo( float *pflFrameRate, float *pflGroundSpeed ) 
 		*pflFrameRate = 256.0;
 		*pflGroundSpeed = 0.0;
 	}
+}
+
+void StudioModel::ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const
+{
+	const mstudioseqdesc_t* pseqdesc = m_pstudiohdr->GetSequence( m_sequence );
+
+	vecMins[ 0 ] = pseqdesc->bbmin[ 0 ];
+	vecMins[ 1 ] = pseqdesc->bbmin[ 1 ];
+	vecMins[ 2 ] = pseqdesc->bbmin[ 2 ];
+
+	vecMaxs[ 0 ] = pseqdesc->bbmax[ 0 ];
+	vecMaxs[ 1 ] = pseqdesc->bbmax[ 1 ];
+	vecMaxs[ 2 ] = pseqdesc->bbmax[ 2 ];
+}
+
+byte StudioModel::GetBoneController( int iController ) const
+{
+	return m_controller[ iController ];
 }
 
 float StudioModel::GetController( int iController ) const
@@ -692,73 +692,6 @@ int StudioModel::SetSkin( int iValue )
 	return iValue;
 }
 
-
-
-void StudioModel::ScaleMeshes( float scale )
-{
-	if (!m_pstudiohdr)
-		return;
-
-	int i, j, k;
-
-	// scale verts
-	int tmp = m_bodynum;
-	for (i = 0; i < m_pstudiohdr->numbodyparts; i++)
-	{
-		mstudiobodyparts_t *pbodypart = (mstudiobodyparts_t *)((byte *)m_pstudiohdr + m_pstudiohdr->bodypartindex) + i;
-		for (j = 0; j < pbodypart->nummodels; j++)
-		{
-			SetBodygroup (i, j);
-			SetupModel (i);
-
-			glm::vec3 *pstudioverts = ( glm::vec3 *)((byte *)m_pstudiohdr + m_pmodel->vertindex);
-
-			for (k = 0; k < m_pmodel->numverts; k++)
-			{
-				pstudioverts[ k ] *= scale;
-			}
-		}
-	}
-
-	m_bodynum = tmp;
-
-	// scale complex hitboxes
-	mstudiobbox_t *pbboxes = (mstudiobbox_t *) ((byte *) m_pstudiohdr + m_pstudiohdr->hitboxindex);
-	for (i = 0; i < m_pstudiohdr->numhitboxes; i++)
-	{
-		pbboxes[ i ].bbmin *= scale;
-		pbboxes[ i ].bbmax *= scale;
-	}
-
-	// scale bounding boxes
-	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)m_pstudiohdr + m_pstudiohdr->seqindex);
-	for (i = 0; i < m_pstudiohdr->numseq; i++)
-	{
-		pseqdesc[i].bbmin *= scale;
-		pseqdesc[i].bbmax *= scale;
-	}
-
-	// maybe scale exeposition, pivots, attachments
-}
-
-
-
-void StudioModel::ScaleBones( float scale )
-{
-	if (!m_pstudiohdr)
-		return;
-
-	mstudiobone_t *pbones = (mstudiobone_t *) ((byte *) m_pstudiohdr + m_pstudiohdr->boneindex);
-	for (int i = 0; i < m_pstudiohdr->numbones; i++)
-	{
-		for (int j = 0; j < 3; j++)
-		{
-			pbones[i].value[j] *= scale;
-			pbones[i].scale[j] *= scale;
-		}
-	}	
-}
-
 int StudioModel::GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents )
 {
 	if( !m_pstudiohdr || m_sequence >= m_pstudiohdr->numseq )
@@ -825,5 +758,70 @@ void StudioModel::DispatchAnimEvents( IAnimEventHandler& handler, const bool bAl
 	while( ( index = GetAnimationEvent( event, flStart, flEnd, index, bAllowClientEvents ) ) != 0 )
 	{
 		handler.HandleAnimEvent( event );
+	}
+}
+
+void StudioModel::ScaleMeshes( float scale )
+{
+	if( !m_pstudiohdr )
+		return;
+
+	int i, j, k;
+
+	// scale verts
+	int tmp = m_bodynum;
+	for( i = 0; i < m_pstudiohdr->numbodyparts; i++ )
+	{
+		mstudiobodyparts_t *pbodypart = ( mstudiobodyparts_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->bodypartindex ) + i;
+		for( j = 0; j < pbodypart->nummodels; j++ )
+		{
+			SetBodygroup( i, j );
+			SetupModel( i );
+
+			glm::vec3 *pstudioverts = ( glm::vec3 * )( ( byte * ) m_pstudiohdr + m_pmodel->vertindex );
+
+			for( k = 0; k < m_pmodel->numverts; k++ )
+			{
+				pstudioverts[ k ] *= scale;
+			}
+		}
+	}
+
+	m_bodynum = tmp;
+
+	// scale complex hitboxes
+	mstudiobbox_t *pbboxes = ( mstudiobbox_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->hitboxindex );
+	for( i = 0; i < m_pstudiohdr->numhitboxes; i++ )
+	{
+		pbboxes[ i ].bbmin *= scale;
+		pbboxes[ i ].bbmax *= scale;
+	}
+
+	// scale bounding boxes
+	mstudioseqdesc_t *pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex );
+	for( i = 0; i < m_pstudiohdr->numseq; i++ )
+	{
+		pseqdesc[ i ].bbmin *= scale;
+		pseqdesc[ i ].bbmax *= scale;
+	}
+
+	// maybe scale exeposition, pivots, attachments
+}
+
+
+
+void StudioModel::ScaleBones( float scale )
+{
+	if( !m_pstudiohdr )
+		return;
+
+	mstudiobone_t *pbones = ( mstudiobone_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->boneindex );
+	for( int i = 0; i < m_pstudiohdr->numbones; i++ )
+	{
+		for( int j = 0; j < 3; j++ )
+		{
+			pbones[ i ].value[ j ] *= scale;
+			pbones[ i ].scale[ j ] *= scale;
+		}
 	}
 }

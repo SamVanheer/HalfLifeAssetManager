@@ -300,6 +300,9 @@
     <ClCompile Include="..\src\utility\mathlib.cpp">
       <Filter>Source Files\utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp">
+      <Filter>Source Files\game\studiomodel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -514,6 +517,9 @@
     </ClInclude>
     <ClInclude Include="..\src\graphics\BMPFile.h">
       <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h">
+      <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -97,58 +97,81 @@ public:
 	};
 
 public:
+	StudioModel();
+	~StudioModel();
+
+	//CStudioModelCache
+	const MeshList_t*		GetMeshListByTexture( const int iIndex ) const;
+
+	//CStudioModel
 	studiohdr_t				*GetStudioHeader() const { return m_pstudiohdr; }
 	studiohdr_t				*GetTextureHeader() const { return m_ptexturehdr; }
 	studiohdr_t				*GetAnimHeader( const int i ) const { return m_panimhdr[i]; }
 
-	float GetFrame() const { return m_frame; }
+	mstudioanim_t			*GetAnim( mstudioseqdesc_t *pseqdesc );
 
-	int GetNumFrames() const;
-
-	GLuint GetTextureId( const int iIndex ) const;
-
-	mstudiomodel_t* GetModelByBodyPart( const int iBodyPart ) const;
-
-	const MeshList_t* GetMeshListByTexture( const int iIndex ) const;
-
-	StudioModel();
-	~StudioModel();
-
-	void					UploadTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, int name );
-	void					UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId );
-	void					ReplaceTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, GLuint textureId );
-	void					FreeModel();
-	studiohdr_t				*LoadModel( const char* pszModelName, LoadResult* pResult = nullptr );
-	bool					PostLoadModel( const char* const pszModelName );
-	LoadResult				Load( const char* const pszModelName );
-	bool					SaveModel( char *modelname );
-	unsigned int			DrawModel( const CRenderSettings& settings, const bool wireframeOnly = false );
-	float					AdvanceFrame( float dt = 0.0f );
-	int						SetFrame( int nFrame );
-
-	void					ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const;
-
-	int						SetSequence( int iSequence );
-	int						GetSequence();
-	void					GetSequenceInfo( float *pflFrameRate, float *pflGroundSpeed ) const;
-
-	float					GetController( int iController ) const;
-
-	float					SetController( int iController, float flValue );
-	float					SetMouth( float flValue );
-	float					SetBlending( int iBlender, float flValue );
-	int						SetBodygroup( int iGroup, int iValue );
-	int						SetSkin( int iValue );
-
-	float					GetFrameRate() const { return m_flFrameRate; }
-	void					SetFrameRate( const float flFrameRate ) { m_flFrameRate = flFrameRate; }
+	GLuint					GetTextureId( const int iIndex ) const;
 
 	void					ScaleMeshes( float scale );
 	void					ScaleBones( float scale );
 
-	int						GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents );
+	//CBaseEntity
+	const glm::vec3&		GetOrigin() const { return m_origin; }
+	void					SetOrigin( const glm::vec3& vecOrigin ) { m_origin = vecOrigin; }
 
+	const glm::vec3&		GetAngles() const { return m_angles; }
+	void					SetAngles( const glm::vec3& vecAngles ) { m_angles = vecAngles; }
+
+	//CBaseAnimating
+	float					GetFrame() const { return m_frame; }
+
+	int						GetNumFrames() const;
+
+	float					AdvanceFrame( float dt = 0.0f );
+	int						SetFrame( int nFrame );
+
+	float					GetFrameRate() const { return m_flFrameRate; }
+	void					SetFrameRate( const float flFrameRate ) { m_flFrameRate = flFrameRate; }
+
+	int						GetSequence();
+	void					GetSequenceInfo( float *pflFrameRate, float *pflGroundSpeed ) const;
+	int						SetSequence( int iSequence );
+
+	void					ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const;
+
+	byte					GetBoneController( int iController ) const;
+	float					GetController( int iController ) const;
+	float					SetController( int iController, float flValue );
+	byte					GetMouth() const { return m_mouth; }
+	float					SetMouth( float flValue );
+
+	byte					GetBlendingValue( int iBlender ) const { return m_blending[ iBlender ]; }
+
+	float					SetBlending( int iBlender, float flValue );
+
+	int						SetBodygroup( int iGroup, int iValue );
+
+	int						GetSkin() const { return m_skinnum; }
+	int						SetSkin( int iValue );
+
+	int						GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents );
 	void					DispatchAnimEvents( IAnimEventHandler& handler, const bool bAllowClientEvents, float flInterval = 0.1f );
+
+	mstudiomodel_t*			GetModelByBodyPart( const int iBodyPart ) const;
+
+	void					UploadTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, int name );
+	void					UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId );
+	void					ReplaceTexture( mstudiotexture_t *ptexture, byte *data, byte *pal, GLuint textureId );
+
+	//CModelCache
+	void					FreeModel();
+	studiohdr_t*			LoadModel( const char* pszModelName, LoadResult* pResult = nullptr );
+	bool					PostLoadModel( const char* const pszModelName );
+	LoadResult				Load( const char* const pszModelName );
+	bool					SaveModel( char *modelname );
+
+	//CStudioModelRenderer
+	unsigned int			DrawModel( const CRenderSettings& settings, const bool wireframeOnly = false );
 
 private:
 	// entity settings
@@ -184,7 +207,6 @@ private:
 	void					CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec4& q );
 	void					CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec3& pos );
 	void					CalcRotations( glm::vec3 *pos, glm::vec4 *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f );
-	mstudioanim_t			*GetAnim( mstudioseqdesc_t *pseqdesc );
 	void					SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s );
 	void					SetUpBones();
 

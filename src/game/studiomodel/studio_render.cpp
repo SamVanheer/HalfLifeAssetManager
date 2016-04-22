@@ -301,13 +301,19 @@ void StudioModel::SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm
 	}
 }
 
+int StudioModel::GetNumFrames() const
+{
+	const mstudioseqdesc_t* const pseqdesc = ( mstudioseqdesc_t* ) ( ( byte* ) m_pstudiohdr + m_pstudiohdr->seqindex ) + m_sequence;
+
+	return pseqdesc->numframes;
+}
 
 float StudioModel::AdvanceFrame( float dt )
 {
-	if (!m_pstudiohdr)
+	if( !m_pstudiohdr )
 		return 0.0;
 
-	mstudioseqdesc_t	*pseqdesc = (mstudioseqdesc_t *)((byte *)m_pstudiohdr + m_pstudiohdr->seqindex) + m_sequence;
+	mstudioseqdesc_t	*pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex ) + m_sequence;
 
 	if( dt == 0.0 )
 	{
@@ -324,19 +330,19 @@ float StudioModel::AdvanceFrame( float dt )
 
 	/*
 	if( dt > 0.1f )
-		dt = 0.1f;
-		*/
+	dt = 0.1f;
+	*/
 
 	m_frame += dt * pseqdesc->fps * m_flFrameRate;
 
-	if (pseqdesc->numframes <= 1)
+	if( pseqdesc->numframes <= 1 )
 	{
 		m_frame = 0;
 	}
 	else
 	{
 		// wrap
-		m_frame -= (int)(m_frame / (pseqdesc->numframes - 1)) * (pseqdesc->numframes - 1);
+		m_frame -= ( int ) ( m_frame / ( pseqdesc->numframes - 1 ) ) * ( pseqdesc->numframes - 1 );
 	}
 
 	m_flAnimTime = Globals.GetCurrentTime();
@@ -344,11 +350,32 @@ float StudioModel::AdvanceFrame( float dt )
 	return dt;
 }
 
-int StudioModel::GetNumFrames() const
+int StudioModel::SetFrame( int nFrame )
 {
-	const mstudioseqdesc_t* const pseqdesc = ( mstudioseqdesc_t* ) ( ( byte* ) m_pstudiohdr + m_pstudiohdr->seqindex ) + m_sequence;
+	if( nFrame == -1 )
+		return m_frame;
 
-	return pseqdesc->numframes;
+	if( !m_pstudiohdr )
+		return 0;
+
+	mstudioseqdesc_t	*pseqdesc;
+	pseqdesc = ( mstudioseqdesc_t * ) ( ( byte * ) m_pstudiohdr + m_pstudiohdr->seqindex ) + m_sequence;
+
+	m_frame = nFrame;
+
+	if( pseqdesc->numframes <= 1 )
+	{
+		m_frame = 0;
+	}
+	else
+	{
+		// wrap
+		m_frame -= ( int ) ( m_frame / ( pseqdesc->numframes - 1 ) ) * ( pseqdesc->numframes - 1 );
+	}
+
+	m_flAnimTime = Globals.GetCurrentTime();
+
+	return m_frame;
 }
 
 GLuint StudioModel::GetTextureId( const int iIndex ) const
@@ -362,34 +389,6 @@ GLuint StudioModel::GetTextureId( const int iIndex ) const
 		return GL_INVALID_TEXTURE_ID;
 
 	return m_Textures[ iIndex ];
-}
-
-int StudioModel::SetFrame( int nFrame )
-{
-	if (nFrame == -1)
-		return m_frame;
-
-	if (!m_pstudiohdr)
-		return 0;
-
-	mstudioseqdesc_t	*pseqdesc;
-	pseqdesc = (mstudioseqdesc_t *)((byte *)m_pstudiohdr + m_pstudiohdr->seqindex) + m_sequence;
-
-	m_frame = nFrame;
-
-	if (pseqdesc->numframes <= 1)
-	{
-		m_frame = 0;
-	}
-	else
-	{
-		// wrap
-		m_frame -= (int)(m_frame / (pseqdesc->numframes - 1)) * (pseqdesc->numframes - 1);
-	}
-
-	m_flAnimTime = Globals.GetCurrentTime();
-
-	return m_frame;
 }
 
 void StudioModel::SetUpBones ( void )

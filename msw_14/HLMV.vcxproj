@@ -25,6 +25,7 @@
     <ClCompile Include="..\src\common\Utility.cpp" />
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
     <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp" />
+    <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp" />
     <ClCompile Include="..\src\game\studiomodel\studio_render.cpp" />
     <ClCompile Include="..\src\game\studiomodel\studio_utils.cpp" />
     <ClCompile Include="..\src\graphics\BMPFile.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="..\src\filesystem\FileSystemConstants.h" />
     <ClInclude Include="..\src\game\CAnimEvent.h" />
     <ClInclude Include="..\src\game\Events.h" />
+    <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h" />
     <ClInclude Include="..\src\game\studiomodel\studio.h" />
     <ClInclude Include="..\src\game\studiomodel\StudioModel.h" />
     <ClInclude Include="..\src\graphics\BMPFile.h" />
