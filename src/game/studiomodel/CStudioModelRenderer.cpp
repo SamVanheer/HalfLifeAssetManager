@@ -917,11 +917,11 @@ void CStudioModelRenderer::Chrome( glm::ivec2& chrome, int bone, const glm::vec3
 		tmp[ 1 ] += m_bonetransform[ bone ][ 1 ][ 3 ];
 		tmp[ 2 ] += m_bonetransform[ bone ][ 2 ][ 3 ];
 
-		tmp = glm::normalize( tmp );
+		VectorNormalize( tmp );
 		chromeupvec = glm::cross( tmp, m_vecViewerRight );
-		chromeupvec = glm::normalize( chromeupvec );
+		VectorNormalize( chromeupvec );
 		chromerightvec = glm::cross( tmp, chromeupvec );
-		chromerightvec = glm::normalize( chromerightvec );
+		VectorNormalize( chromerightvec );
 
 		VectorIRotate( chromeupvec, m_bonetransform[ bone ], m_chromeup[ bone ] );
 		VectorIRotate( chromerightvec, m_bonetransform[ bone ], m_chromeright[ bone ] );
