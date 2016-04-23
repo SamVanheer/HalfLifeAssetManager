@@ -19,9 +19,6 @@
 //Double to float conversion
 #pragma warning( disable: 4244 )
 
-glm::vec3 g_vright = { 50, 50, 0 };		// needs to be set to viewer's right in order for chrome to work
-float g_lambert = 1.5;
-
 cvar::CCVar g_ShowBones( "r_showbones", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model bones" ) );
 cvar::CCVar g_ShowAttachments( "r_showattachments", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model attachments" ) );
 cvar::CCVar g_ShowEyePosition( "r_showeyeposition", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model eye position" ) );
@@ -55,6 +52,8 @@ CStudioModelRenderer::~CStudioModelRenderer()
 bool CStudioModelRenderer::Initialize()
 {
 	m_uiModelsDrawnCount = 0;
+
+	m_uiDrawnPolygonsCount = 0;
 
 	return true;
 }
@@ -92,8 +91,8 @@ unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity,
 
 	++m_uiModelsDrawnCount; // render data cache cookie
 
-	g_pxformverts = &g_xformverts[ 0 ];
-	g_pvlightvalues = &g_lightvalues[ 0 ];
+	m_pxformverts = &m_xformverts[ 0 ];
+	m_pvlightvalues = &m_lightvalues[ 0 ];
 
 	if( m_pStudioHdr->numbodyparts == 0 )
 		return 0;
@@ -138,15 +137,15 @@ unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity,
 				glPointSize( 3.0f );
 				glColor3f( 1, 0.7f, 0 );
 				glBegin( GL_LINES );
-				glVertex3f( g_bonetransform[ pbones[ i ].parent ][ 0 ][ 3 ], g_bonetransform[ pbones[ i ].parent ][ 1 ][ 3 ], g_bonetransform[ pbones[ i ].parent ][ 2 ][ 3 ] );
-				glVertex3f( g_bonetransform[ i ][ 0 ][ 3 ], g_bonetransform[ i ][ 1 ][ 3 ], g_bonetransform[ i ][ 2 ][ 3 ] );
+				glVertex3f( m_bonetransform[ pbones[ i ].parent ][ 0 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 1 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 2 ][ 3 ] );
+				glVertex3f( m_bonetransform[ i ][ 0 ][ 3 ], m_bonetransform[ i ][ 1 ][ 3 ], m_bonetransform[ i ][ 2 ][ 3 ] );
 				glEnd();
 
 				glColor3f( 0, 0, 0.8f );
 				glBegin( GL_POINTS );
 				if( pbones[ pbones[ i ].parent ].parent != -1 )
-					glVertex3f( g_bonetransform[ pbones[ i ].parent ][ 0 ][ 3 ], g_bonetransform[ pbones[ i ].parent ][ 1 ][ 3 ], g_bonetransform[ pbones[ i ].parent ][ 2 ][ 3 ] );
-				glVertex3f( g_bonetransform[ i ][ 0 ][ 3 ], g_bonetransform[ i ][ 1 ][ 3 ], g_bonetransform[ i ][ 2 ][ 3 ] );
+					glVertex3f( m_bonetransform[ pbones[ i ].parent ][ 0 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 1 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 2 ][ 3 ] );
+				glVertex3f( m_bonetransform[ i ][ 0 ][ 3 ], m_bonetransform[ i ][ 1 ][ 3 ], m_bonetransform[ i ][ 2 ][ 3 ] );
 				glEnd();
 			}
 			else
@@ -155,7 +154,7 @@ unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity,
 				glPointSize( 5.0f );
 				glColor3f( 0.8f, 0, 0 );
 				glBegin( GL_POINTS );
-				glVertex3f( g_bonetransform[ i ][ 0 ][ 3 ], g_bonetransform[ i ][ 1 ][ 3 ], g_bonetransform[ i ][ 2 ][ 3 ] );
+				glVertex3f( m_bonetransform[ i ][ 0 ][ 3 ], m_bonetransform[ i ][ 1 ][ 3 ], m_bonetransform[ i ][ 2 ][ 3 ] );
 				glEnd();
 			}
 		}
@@ -173,10 +172,10 @@ unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity,
 		{
 			mstudioattachment_t *pattachments = m_pStudioHdr->GetAttachments();
 			glm::vec3 v[ 4 ];
-			VectorTransform( pattachments[ i ].org, g_bonetransform[ pattachments[ i ].bone ], v[ 0 ] );
-			VectorTransform( pattachments[ i ].vectors[ 0 ], g_bonetransform[ pattachments[ i ].bone ], v[ 1 ] );
-			VectorTransform( pattachments[ i ].vectors[ 1 ], g_bonetransform[ pattachments[ i ].bone ], v[ 2 ] );
-			VectorTransform( pattachments[ i ].vectors[ 2 ], g_bonetransform[ pattachments[ i ].bone ], v[ 3 ] );
+			VectorTransform( pattachments[ i ].org, m_bonetransform[ pattachments[ i ].bone ], v[ 0 ] );
+			VectorTransform( pattachments[ i ].vectors[ 0 ], m_bonetransform[ pattachments[ i ].bone ], v[ 1 ] );
+			VectorTransform( pattachments[ i ].vectors[ 1 ], m_bonetransform[ pattachments[ i ].bone ], v[ 2 ] );
+			VectorTransform( pattachments[ i ].vectors[ 2 ], m_bonetransform[ pattachments[ i ].bone ], v[ 3 ] );
 			glBegin( GL_LINES );
 			glColor3f( 1, 0, 0 );
 			glVertex3fv( glm::value_ptr( v[ 0 ] ) );
@@ -270,14 +269,14 @@ unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity,
 			v[ 7 ][ 1 ] = bbmin[ 1 ];
 			v[ 7 ][ 2 ] = bbmax[ 2 ];
 
-			VectorTransform( v[ 0 ], g_bonetransform[ pbboxes[ i ].bone ], v2[ 0 ] );
-			VectorTransform( v[ 1 ], g_bonetransform[ pbboxes[ i ].bone ], v2[ 1 ] );
-			VectorTransform( v[ 2 ], g_bonetransform[ pbboxes[ i ].bone ], v2[ 2 ] );
-			VectorTransform( v[ 3 ], g_bonetransform[ pbboxes[ i ].bone ], v2[ 3 ] );
-			VectorTransform( v[ 4 ], g_bonetransform[ pbboxes[ i ].bone ], v2[ 4 ] );
-			VectorTransform( v[ 5 ], g_bonetransform[ pbboxes[ i ].bone ], v2[ 5 ] );
-			VectorTransform( v[ 6 ], g_bonetransform[ pbboxes[ i ].bone ], v2[ 6 ] );
-			VectorTransform( v[ 7 ], g_bonetransform[ pbboxes[ i ].bone ], v2[ 7 ] );
+			VectorTransform( v[ 0 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 0 ] );
+			VectorTransform( v[ 1 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 1 ] );
+			VectorTransform( v[ 2 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 2 ] );
+			VectorTransform( v[ 3 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 3 ] );
+			VectorTransform( v[ 4 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 4 ] );
+			VectorTransform( v[ 5 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 5 ] );
+			VectorTransform( v[ 6 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 6 ] );
+			VectorTransform( v[ 7 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 7 ] );
 
 			graphics::helpers::DrawBox( v2 );
 		}
@@ -348,18 +347,20 @@ void CStudioModelRenderer::SetUpBones()
 
 	glm::mat3x4 bonematrix;
 
-	for( i = 0; i < m_pStudioHdr->numbones; i++ ) {
+	for( i = 0; i < m_pStudioHdr->numbones; i++ )
+	{
 		QuaternionMatrix( q[ i ], bonematrix );
 
 		bonematrix[ 0 ][ 3 ] = pos[ i ][ 0 ];
 		bonematrix[ 1 ][ 3 ] = pos[ i ][ 1 ];
 		bonematrix[ 2 ][ 3 ] = pos[ i ][ 2 ];
 
-		if( pbones[ i ].parent == -1 ) {
-			g_bonetransform[ i ] = bonematrix;
+		if( pbones[ i ].parent == -1 )
+		{
+			m_bonetransform[ i ] = bonematrix;
 		}
 		else {
-			R_ConcatTransforms( g_bonetransform[ pbones[ i ].parent ], bonematrix, g_bonetransform[ i ] );
+			R_ConcatTransforms( m_bonetransform[ pbones[ i ].parent ], bonematrix, m_bonetransform[ i ] );
 		}
 	}
 }
@@ -604,22 +605,21 @@ g_shadelight
 */
 void CStudioModelRenderer::SetupLighting()
 {
-	int i;
-	g_ambientlight = 32;
-	g_shadelight = 192;
+	m_ambientlight = 32;
+	m_shadelight = 192;
 
-	g_lightvec[ 0 ] = 0;
-	g_lightvec[ 1 ] = 0;
-	g_lightvec[ 2 ] = -1.0;
+	m_lightvec[ 0 ] = 0;
+	m_lightvec[ 1 ] = 0;
+	m_lightvec[ 2 ] = -1.0;
 
-	g_lightcolor[ 0 ] = r_lighting_r.GetInt();
-	g_lightcolor[ 1 ] = r_lighting_g.GetInt();
-	g_lightcolor[ 2 ] = r_lighting_b.GetInt();
+	m_lightcolor[ 0 ] = r_lighting_r.GetInt();
+	m_lightcolor[ 1 ] = r_lighting_g.GetInt();
+	m_lightcolor[ 2 ] = r_lighting_b.GetInt();
 
 	// TODO: only do it for bones that actually have textures
-	for( i = 0; i < m_pStudioHdr->numbones; i++ )
+	for( int i = 0; i < m_pStudioHdr->numbones; i++ )
 	{
-		VectorIRotate( g_lightvec, g_bonetransform[ i ], g_blightvec[ i ] );
+		VectorIRotate( m_lightvec, m_bonetransform[ i ], m_blightvec[ i ] );
 	}
 }
 
@@ -680,7 +680,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 	for( i = 0; i < m_pModel->numverts; i++ )
 	{
 		//glm::vec3 tmp = pstudioverts[ i ] * 12;
-		VectorTransform( pstudioverts[ i ], g_bonetransform[ pvertbone[ i ] ], g_pxformverts[ i ] );
+		VectorTransform( pstudioverts[ i ], m_bonetransform[ pvertbone[ i ] ], m_pxformverts[ i ] );
 	}
 
 	SortedMesh_t meshes[ MAXSTUDIOMESHES ];
@@ -689,7 +689,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 	// clip and draw all triangles
 	//
 
-	lv = ( float * ) g_pvlightvalues;
+	lv = ( float * ) m_pvlightvalues;
 	for( j = 0; j < m_pModel->nummesh; j++ )
 	{
 		int flags = ptexture[ pskinref[ pmesh[ j ].skinref ] ].flags;
@@ -703,11 +703,11 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 
 			// FIX: move this check out of the inner loop
 			if( flags & STUDIO_NF_CHROME )
-				Chrome( g_chrome[ reinterpret_cast<glm::vec3*>( lv ) - g_pvlightvalues ], *pnormbone, *pstudionorms );
+				Chrome( m_chrome[ reinterpret_cast<glm::vec3*>( lv ) - m_pvlightvalues ], *pnormbone, *pstudionorms );
 
-			lv[ 0 ] = lv_tmp * ( g_lightcolor[ 0 ] / 255.0f );
-			lv[ 1 ] = lv_tmp * ( g_lightcolor[ 1 ] / 255.0f );
-			lv[ 2 ] = lv_tmp * ( g_lightcolor[ 2 ] / 255.0f );
+			lv[ 0 ] = lv_tmp * ( m_lightcolor[ 0 ] / 255.0f );
+			lv[ 1 ] = lv_tmp * ( m_lightcolor[ 1 ] / 255.0f );
+			lv[ 2 ] = lv_tmp * ( m_lightcolor[ 2 ] / 255.0f );
 		}
 	}
 
@@ -785,12 +785,12 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 					for( ; i > 0; i--, ptricmds += 4 )
 					{
 						// FIX: put these in as integer coords, not floats
-						glTexCoord2f( g_chrome[ ptricmds[ 1 ] ][ 0 ] * s, g_chrome[ ptricmds[ 1 ] ][ 1 ] * t );
+						glTexCoord2f( m_chrome[ ptricmds[ 1 ] ][ 0 ] * s, m_chrome[ ptricmds[ 1 ] ][ 1 ] * t );
 
-						lv = glm::value_ptr( g_pvlightvalues[ ptricmds[ 1 ] ] );
+						lv = glm::value_ptr( m_pvlightvalues[ ptricmds[ 1 ] ] );
 						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pEntity->GetTransparency() );
 
-						av = glm::value_ptr( g_pxformverts[ ptricmds[ 0 ] ] );
+						av = glm::value_ptr( m_pxformverts[ ptricmds[ 0 ] ] );
 						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
 					}
 					glEnd();
@@ -817,10 +817,10 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 						// FIX: put these in as integer coords, not floats
 						glTexCoord2f( ptricmds[ 2 ] * s, ptricmds[ 3 ] * t );
 
-						lv = glm::value_ptr( g_pvlightvalues[ ptricmds[ 1 ] ] );
+						lv = glm::value_ptr( m_pvlightvalues[ ptricmds[ 1 ] ] );
 						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pEntity->GetTransparency() );
 
-						av = glm::value_ptr( g_pxformverts[ ptricmds[ 0 ] ] );
+						av = glm::value_ptr( m_pxformverts[ ptricmds[ 0 ] ] );
 						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
 					}
 					glEnd();
@@ -845,7 +845,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 
 				for( ; i > 0; i--, ptricmds += 4 )
 				{
-					av = glm::value_ptr( g_pxformverts[ ptricmds[ 0 ] ] );
+					av = glm::value_ptr( m_pxformverts[ ptricmds[ 0 ] ] );
 					glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
 				}
 				glEnd();
@@ -866,29 +866,29 @@ void CStudioModelRenderer::Lighting( float *lv, int bone, int flags, const glm::
 	float 	illum;
 	float	lightcos;
 
-	illum = g_ambientlight;
+	illum = m_ambientlight;
 
 	if( flags & STUDIO_NF_FLATSHADE )
 	{
-		illum += g_shadelight * 0.8;
+		illum += m_shadelight * 0.8;
 	}
 	else
 	{
 		float r;
-		lightcos = glm::dot( normal, g_blightvec[ bone ] ); // -1 colinear, 1 opposite
+		lightcos = glm::dot( normal, m_blightvec[ bone ] ); // -1 colinear, 1 opposite
 
 		if( lightcos > 1.0 )
 			lightcos = 1;
 
-		illum += g_shadelight;
+		illum += m_shadelight;
 
-		r = g_lambert;
+		r = m_flLambert;
 		if( r <= 1.0 ) r = 1.0;
 
 		lightcos = ( lightcos + ( r - 1.0 ) ) / r; 		// do modified hemispherical lighting
 		if( lightcos > 0.0 )
 		{
-			illum -= g_shadelight * lightcos;
+			illum -= m_shadelight * lightcos;
 		}
 		if( illum <= 0 )
 			illum = 0;
@@ -904,7 +904,7 @@ void CStudioModelRenderer::Chrome( glm::ivec2& chrome, int bone, const glm::vec3
 {
 	float n;
 
-	if( g_chromeage[ bone ] != m_uiModelsDrawnCount )
+	if( m_chromeage[ bone ] != m_uiModelsDrawnCount )
 	{
 		// calculate vectors from the viewer to the bone. This roughly adjusts for position
 		glm::vec3 chromeupvec;		// g_chrome t vector in world reference frame
@@ -913,28 +913,28 @@ void CStudioModelRenderer::Chrome( glm::ivec2& chrome, int bone, const glm::vec3
 
 		tmp = m_pEntity->GetOrigin() * -1.0f;
 
-		tmp[ 0 ] += g_bonetransform[ bone ][ 0 ][ 3 ];
-		tmp[ 1 ] += g_bonetransform[ bone ][ 1 ][ 3 ];
-		tmp[ 2 ] += g_bonetransform[ bone ][ 2 ][ 3 ];
+		tmp[ 0 ] += m_bonetransform[ bone ][ 0 ][ 3 ];
+		tmp[ 1 ] += m_bonetransform[ bone ][ 1 ][ 3 ];
+		tmp[ 2 ] += m_bonetransform[ bone ][ 2 ][ 3 ];
 
 		tmp = glm::normalize( tmp );
-		chromeupvec = glm::cross( tmp, g_vright );
+		chromeupvec = glm::cross( tmp, m_vecViewerRight );
 		chromeupvec = glm::normalize( chromeupvec );
 		chromerightvec = glm::cross( tmp, chromeupvec );
 		chromerightvec = glm::normalize( chromerightvec );
 
-		VectorIRotate( chromeupvec, g_bonetransform[ bone ], g_chromeup[ bone ] );
-		VectorIRotate( chromerightvec, g_bonetransform[ bone ], g_chromeright[ bone ] );
+		VectorIRotate( chromeupvec, m_bonetransform[ bone ], m_chromeup[ bone ] );
+		VectorIRotate( chromerightvec, m_bonetransform[ bone ], m_chromeright[ bone ] );
 
-		g_chromeage[ bone ] = m_uiModelsDrawnCount;
+		m_chromeage[ bone ] = m_uiModelsDrawnCount;
 	}
 
 	// calc s coord
-	n = glm::dot( normal, g_chromeright[ bone ] );
+	n = glm::dot( normal, m_chromeright[ bone ] );
 	chrome[ 0 ] = ( n + 1.0 ) * 32; // FIX: make this a float
 
 									// calc t coord
-	n = glm::dot( normal, g_chromeup[ bone ] );
+	n = glm::dot( normal, m_chromeup[ bone ] );
 	chrome[ 1 ] = ( n + 1.0 ) * 32; // FIX: make this a float
 }
 }

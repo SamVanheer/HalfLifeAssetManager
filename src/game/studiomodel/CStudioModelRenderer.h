@@ -59,6 +59,12 @@ public:
 	*/
 	unsigned int GetDrawnPolygonsCount() const { return m_uiDrawnPolygonsCount; }
 
+	float GetLambert() const { return m_flLambert; }
+
+	const glm::vec3& GetViewerRight() const { return m_vecViewerRight; }
+
+	void SetViewerRight( const glm::vec3& vecViewerRight ) { m_vecViewerRight = vecViewerRight; }
+
 	/**
 	*	Draws the given model.
 	*/
@@ -100,30 +106,33 @@ private:
 	mstudiomodel_t* m_pModel = nullptr;
 
 	/**
-	*	The number of polygons drawn since the last call to Prepare.
+	*	The number of polygons drawn since the last call to Initialize.
 	*/
 	unsigned int m_uiDrawnPolygonsCount = 0;
 
-	glm::vec3		g_xformverts[ MAXSTUDIOVERTS ];		// transformed vertices
-	glm::vec3		g_lightvalues[ MAXSTUDIOVERTS ];	// light surface normals
-	glm::vec3*		g_pxformverts;
-	glm::vec3*		g_pvlightvalues;
+	glm::vec3		m_xformverts[ MAXSTUDIOVERTS ];		// transformed vertices
+	glm::vec3		m_lightvalues[ MAXSTUDIOVERTS ];	// light surface normals
+	glm::vec3*		m_pxformverts;
+	glm::vec3*		m_pvlightvalues;
 
-	glm::mat3x4		g_bonetransform[ MAXSTUDIOBONES ];	// bone transformation matrix
+	glm::mat3x4		m_bonetransform[ MAXSTUDIOBONES ];	// bone transformation matrix
 
 	glm::vec4		m_Adj;
 
-	int				g_ambientlight;						// ambient world light
-	float			g_shadelight;						// direct world light
+	int				m_ambientlight;						// ambient world light
+	float			m_shadelight;						// direct world light
 
-	glm::vec3		g_lightvec;							// light vector in model reference frame
-	Color			g_lightcolor;
-	glm::vec3		g_blightvec[ MAXSTUDIOBONES ];		// light vectors in bone reference frames
+	glm::vec3		m_lightvec;							// light vector in model reference frame
+	Color			m_lightcolor;
+	glm::vec3		m_blightvec[ MAXSTUDIOBONES ];		// light vectors in bone reference frames
 
-	glm::ivec2		g_chrome[ MAXSTUDIOVERTS ];			// texture coords for surface normals
-	unsigned int	g_chromeage[ MAXSTUDIOBONES ];		// last time chrome vectors were updated
-	glm::vec3		g_chromeup[ MAXSTUDIOBONES ];		// chrome vector "up" in bone reference frames
-	glm::vec3		g_chromeright[ MAXSTUDIOBONES ];	// chrome vector "right" in bone reference frames
+	glm::ivec2		m_chrome[ MAXSTUDIOVERTS ];			// texture coords for surface normals
+	unsigned int	m_chromeage[ MAXSTUDIOBONES ];		// last time chrome vectors were updated
+	glm::vec3		m_chromeup[ MAXSTUDIOBONES ];		// chrome vector "up" in bone reference frames
+	glm::vec3		m_chromeright[ MAXSTUDIOBONES ];	// chrome vector "right" in bone reference frames
+
+	glm::vec3		m_vecViewerRight = { 50, 50, 0 };	// needs to be set to viewer's right in order for chrome to work
+	float			m_flLambert = 1.5f;					// modifier for pseudo-hemispherical lighting
 
 private:
 	CStudioModelRenderer( const CStudioModelRenderer& ) = delete;
@@ -133,9 +142,5 @@ private:
 //TODO: avoid using a global
 CStudioModelRenderer& renderer();
 }
-
-//TODO: move these into CStudioModelRenderer
-extern glm::vec3 g_vright;		// needs to be set to viewer's right in order for chrome to work
-extern float g_lambert;		// modifier for pseudo-hemispherical lighting
 
 #endif //GAME_STUDIOMODEL_CSTUDIOMODELRENDERER_H

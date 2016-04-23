@@ -222,7 +222,11 @@ void C3DView::DrawModel()
 		glRotatef( m_pHLMV->GetState()->rot[ 1 ], 0.0f, 0.0f, 1.0f );
 	}
 
-	g_vright[ 0 ] = g_vright[ 1 ] = m_pHLMV->GetState()->trans[ 2 ];
+	glm::vec3 vecViewerRight = studiomodel::renderer().GetViewerRight();
+
+	vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = m_pHLMV->GetState()->trans[ 2 ];
+
+	studiomodel::renderer().SetViewerRight( vecViewerRight );
 
 	m_pHLMV->GetState()->drawnPolys = 0;
 
