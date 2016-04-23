@@ -144,9 +144,6 @@
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\common\CGlobals.cpp">
-      <Filter>Source Files\common</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\common\Platform.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
@@ -351,6 +348,9 @@
     <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp">
       <Filter>Source Files\game\studiomodel</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\common\CWorldTime.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -363,9 +363,6 @@
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\common\Utility.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\common\CGlobals.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\src\common\Logging.h">
@@ -619,6 +616,9 @@
     </ClInclude>
     <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h">
       <Filter>Header Files\game\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\common\CWorldTime.h">
+      <Filter>Header Files\common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

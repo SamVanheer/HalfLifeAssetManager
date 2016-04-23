@@ -10,7 +10,7 @@
 #include "ui/shared/CMessagesWindow.h"
 
 #include "common/Const.h"
-#include "common/CGlobals.h"
+#include "common/CWorldTime.h"
 #include "common/Utility.h"
 
 #include "settings/CBaseSettings.h"
@@ -213,9 +213,9 @@ void CBaseTool::ToolRunFrame()
 {
 	const double flCurTime = GetCurrentTime();
 
-	double flFrameTime = flCurTime - Globals.GetPreviousRealTime();
+	double flFrameTime = flCurTime - WorldTime.GetPreviousRealTime();
 
-	Globals.SetRealTime( flCurTime );
+	WorldTime.SetRealTime( flCurTime );
 
 	if( flFrameTime > 1.0 )
 		flFrameTime = 0.1;
@@ -226,10 +226,10 @@ void CBaseTool::ToolRunFrame()
 		return;
 		*/
 
-	Globals.SetPreviousTime( Globals.GetCurrentTime() );
-	Globals.SetCurrentTime( Globals.GetCurrentTime() + flFrameTime );
-	Globals.SetFrameTime( flFrameTime );
-	Globals.SetPreviousRealTime( Globals.GetRealTime() );
+	WorldTime.SetPreviousTime( WorldTime.GetCurrentTime() );
+	WorldTime.SetCurrentTime( WorldTime.GetCurrentTime() + flFrameTime );
+	WorldTime.SetFrameTime( flFrameTime );
+	WorldTime.SetPreviousRealTime( WorldTime.GetRealTime() );
 
 	cvar::cvars().RunFrame();
 

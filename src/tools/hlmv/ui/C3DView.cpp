@@ -6,8 +6,6 @@
 #include "../settings/CHLMVSettings.h"
 #include "../CHLMVState.h"
 
-#include "common/CGlobals.h"
-
 #include "graphics/GraphicsHelpers.h"
 #include "graphics/GLRenderTarget.h"
 

@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\common\CGlobals.cpp" />
+    <ClCompile Include="..\src\common\CWorldTime.cpp" />
     <ClCompile Include="..\src\common\Logging.cpp" />
     <ClCompile Include="..\src\common\Platform.cpp" />
     <ClCompile Include="..\src\common\Utility.cpp" />
@@ -94,7 +94,7 @@
     <ClCompile Include="..\src\utility\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\common\CGlobals.h" />
+    <ClInclude Include="..\src\common\CWorldTime.h" />
     <ClInclude Include="..\src\common\Class.h" />
     <ClInclude Include="..\src\common\Logging.h" />
     <ClInclude Include="..\src\common\Platform.h" />

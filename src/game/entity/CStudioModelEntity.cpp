@@ -1,5 +1,5 @@
 #include "common/Logging.h"
-#include "common/CGlobals.h"
+#include "common/CWorldTime.h"
 
 #include "soundsystem/CSoundSystem.h"
 
@@ -65,10 +65,10 @@ float CStudioModelEntity::AdvanceFrame( float dt )
 
 	if( dt == 0.0 )
 	{
-		dt = ( Globals.GetCurrentTime() - m_flAnimTime );
+		dt = ( WorldTime.GetCurrentTime() - m_flAnimTime );
 		if( dt <= 0.001 )
 		{
-			m_flAnimTime = Globals.GetCurrentTime();
+			m_flAnimTime = WorldTime.GetCurrentTime();
 			return 0.0;
 		}
 	}
@@ -93,7 +93,7 @@ float CStudioModelEntity::AdvanceFrame( float dt )
 		m_flFrame -= ( int ) ( m_flFrame / ( pseqdesc->numframes - 1 ) ) * ( pseqdesc->numframes - 1 );
 	}
 
-	m_flAnimTime = Globals.GetCurrentTime();
+	m_flAnimTime = WorldTime.GetCurrentTime();
 
 	return dt;
 }
@@ -224,7 +224,7 @@ int CStudioModelEntity::SetFrame( const int iFrame )
 		m_flFrame -= ( int ) ( m_flFrame / ( pseqdesc->numframes - 1 ) ) * ( pseqdesc->numframes - 1 );
 	}
 
-	m_flAnimTime = Globals.GetCurrentTime();
+	m_flAnimTime = WorldTime.GetCurrentTime();
 
 	return static_cast<int>( m_flFrame );
 }

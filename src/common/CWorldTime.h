@@ -1,12 +1,12 @@
-#ifndef COMMON_CGLOBALS_H
-#define COMMON_CGLOBALS_H
+#ifndef COMMON_CWORLDTIME_H
+#define COMMON_CWORLDTIME_H
 
-class CGlobals final
+class CWorldTime final
 {
 public:
-	CGlobals() = default;
-	CGlobals( const CGlobals& ) = default;
-	CGlobals& operator=( const CGlobals& ) = default;
+	CWorldTime() = default;
+	CWorldTime( const CWorldTime& ) = default;
+	CWorldTime& operator=( const CWorldTime& ) = default;
 
 	float GetCurrentTime() const { return m_flCurrentTime; }
 
@@ -36,6 +36,6 @@ private:
 	double m_flPrevRealTime = 0.0f;
 };
 
-extern CGlobals Globals;
+extern CWorldTime WorldTime;
 
-#endif //COMMON_CGLOBALS_H
+#endif //COMMON_CWORLDTIME_H
