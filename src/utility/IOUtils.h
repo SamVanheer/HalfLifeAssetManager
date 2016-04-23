@@ -15,4 +15,8 @@ bool LoadColorCVarSetting( const std::shared_ptr<CKvBlockNode>& settings, const 
 
 bool SaveColorCVarSetting( CKeyvaluesWriter& writer, const char* const pszName, const char* const pszCVar, const bool bHasAlpha = false );
 
+bool LoadArchiveCVars( const std::shared_ptr<CKvBlockNode>& cvars );
+
+bool SaveArchiveCVars( CKeyvaluesWriter& writer, const char* const pszBlockName );
+
 #endif //UTILITY_IOUTILS_H

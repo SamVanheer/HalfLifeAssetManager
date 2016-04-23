@@ -256,6 +256,49 @@ CBaseConCommand* CCVarSystem::FindCommand( const char* const pszName )
 	return it->second;
 }
 
+CCVar* CCVarSystem::GetCVarForSet( const char* const pszCVar )
+{
+	assert( pszCVar );
+
+	auto pCommand = FindCommand( pszCVar );
+
+	if( !pCommand )
+	{
+		Warning( "Unknown CVar \"%s\", ignoring\n", pszCVar );
+		return nullptr;
+	}
+
+	if( pCommand->GetType() != CommandType::CVAR )
+	{
+		Warning( "Command \"%s\" is not a CVar\n", pszCVar );
+		return nullptr;
+	}
+
+	return static_cast<CCVar*>( pCommand );
+}
+
+void CCVarSystem::SetCVarString( const char* const pszCVar, const char* const pszValue )
+{
+	assert( pszValue );
+
+	CCVar* pCVar = GetCVarForSet( pszCVar );
+
+	if( !pCVar )
+		return;
+
+	pCVar->SetString( pszValue );
+}
+
+void CCVarSystem::SetCVarFloat( const char* const pszCVar, const float flValue )
+{
+	CCVar* pCVar = GetCVarForSet( pszCVar );
+
+	if( !pCVar )
+		return;
+
+	pCVar->SetFloat( flValue );
+}
+
 void CCVarSystem::CVarChanged( CCVar& cvar, const char* pszOldValue, float flOldValue )
 {
 	//Don't print this on init.
@@ -265,6 +308,24 @@ void CCVarSystem::CVarChanged( CCVar& cvar, const char* pszOldValue, float flOld
 	Message( "\"%s\" changed to \"%s\"\n", cvar.GetName(), cvar.GetString() );
 
 	CallGlobalCVarHandlers( cvar, pszOldValue, flOldValue );
+}
+
+void CCVarSystem::ArchiveCVars( const CVarArchiveCallback pCallback, void* pObject )
+{
+	assert( pCallback );
+
+	for( const auto command : m_Commands )
+	{
+		if( command.second->GetType() != CommandType::CVAR )
+			continue;
+
+		const CCVar& cvar = static_cast<const CCVar&>( *command.second );
+
+		if( cvar.GetFlags() & Flag::ARCHIVE )
+		{
+			pCallback( pObject, cvar );
+		}
+	}
 }
 
 void CCVarSystem::ProcessCommand( const util::CCommand& args )

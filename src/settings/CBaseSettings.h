@@ -13,6 +13,7 @@ class CGameConfigManager;
 
 /**
 *	Listener for settings.
+*	TODO: replace with cvars
 */
 class ISettingsListener
 {

@@ -93,3 +93,43 @@ bool SaveColorCVarSetting( CKeyvaluesWriter& writer, const char* const pszName, 
 
 	return SaveColorSetting( writer, pszName, color );
 }
+
+bool LoadArchiveCVars( const std::shared_ptr<CKvBlockNode>& cvars )
+{
+	const auto& children = cvars->GetChildren();
+
+	for( const auto& child : children )
+	{
+		if( child->GetType() != KVNode_Keyvalue )
+		{
+			continue;
+		}
+
+		auto kv = std::static_pointer_cast<CKeyvalue>( child );
+
+		cvar::cvars().SetCVarString( kv->GetKey().CStr(), kv->GetValue().CStr() );
+	}
+
+	return true;
+}
+
+namespace
+{
+static void SaveArchiveCVarsCallback( void* pObject, const cvar::CCVar& cvar )
+{
+	CKeyvaluesWriter& writer = *reinterpret_cast<CKeyvaluesWriter*>( pObject );
+
+	writer.WriteKeyvalue( cvar.GetName(), cvar.GetString() );
+}
+}
+
+bool SaveArchiveCVars( CKeyvaluesWriter& writer, const char* const pszBlockName )
+{
+	writer.BeginBlock( pszBlockName );
+
+	cvar::cvars().ArchiveCVars( &SaveArchiveCVarsCallback, &writer );
+
+	writer.EndBlock();
+
+	return true;
+}

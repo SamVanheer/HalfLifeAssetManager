@@ -26,8 +26,8 @@ cvar::CCVar g_ShowHitboxes( "r_showhitboxes", cvar::CCVarArgsBuilder().FloatValu
 
 //TODO: this is temporary until lighting can be moved somewhere else
 
-DEFINE_COLOR_CVAR( , r_lighting, 255, 255, 255, "Lighting", cvar::CCVarArgsBuilder().Callback( cvar::ColorCVarChanged ) );
-DEFINE_COLOR_CVAR( , r_wireframecolor, 255, 0, 0, "Wireframe overlay color", cvar::CCVarArgsBuilder().Callback( cvar::ColorCVarChanged ) );
+DEFINE_COLOR_CVAR( , r_lighting, 255, 255, 255, "Lighting", cvar::CCVarArgsBuilder().Flags( cvar::Flag::ARCHIVE ).Callback( cvar::ColorCVarChanged ) );
+DEFINE_COLOR_CVAR( , r_wireframecolor, 255, 0, 0, "Wireframe overlay color", cvar::CCVarArgsBuilder().Flags( cvar::Flag::ARCHIVE ).Callback( cvar::ColorCVarChanged ) );
 
 namespace studiomodel
 {

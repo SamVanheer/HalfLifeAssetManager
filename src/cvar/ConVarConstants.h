@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#include "common/Utility.h"
+
 /**
 *	@defgroup CVar Command variables that can be used system wide. Includes command execution for function like operations.
 *	@{
@@ -48,9 +50,10 @@ typedef uint32_t Flags_t;
 
 namespace Flag
 {
-enum Flag
+enum Flag : Flags_t
 {
-	NONE = 0,
+	NONE		= 0,
+	ARCHIVE		= Bit<Flags_t>( 0 )
 };
 }
 }

@@ -133,10 +133,6 @@ bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 		LoadColorSetting( settings, "backgroundColor", m_BackgroundColor );
 		LoadColorSetting( settings, "crosshairColor", m_CrosshairColor );
 
-		LoadColorCVarSetting( settings, "lightColor", "r_lighting" );
-
-		LoadColorCVarSetting( settings, "wireframeColor", "r_wireframecolor" );
-
 		if( auto floor = settings->FindFirstChild<CKeyvalue>( "floorLength" ) )
 		{
 			SetFloorLength( static_cast<float>( strtod( floor->GetValue().CStr(), nullptr ) ) );
@@ -176,8 +172,6 @@ bool CHLMVSettings::SaveToFile( CKeyvaluesWriter& writer )
 	SaveColorSetting( writer, "groundColor", m_GroundColor );
 	SaveColorSetting( writer, "backgroundColor", m_BackgroundColor );
 	SaveColorSetting( writer, "crosshairColor", m_CrosshairColor );
-	SaveColorCVarSetting( writer, "lightColor", "r_lighting" );
-	SaveColorCVarSetting( writer, "wireframeColor", "r_wireframecolor" );
 
 	if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%f", GetFloorLength() ), sizeof( szBuffer ) ) )
 		return false;

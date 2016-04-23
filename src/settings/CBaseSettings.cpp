@@ -18,6 +18,7 @@
 #include "filesystem/CFileSystem.h"
 
 #include "utility/CString.h"
+#include "utility/IOUtils.h"
 
 #include "CBaseSettings.h"
 
@@ -236,6 +237,12 @@ bool CBaseSettings::LoadCommonSettings( const std::shared_ptr<CKvBlockNode>& roo
 		{
 			SetFPS( strtod( fps->GetValue().CStr(), nullptr ) );
 		}
+
+		if( auto cvars = common->FindFirstChild<CKvBlockNode>( "cvars" ) )
+		{
+			if( !LoadArchiveCVars( cvars ) )
+				return false;
+		}
 	}
 
 	return true;
@@ -251,6 +258,9 @@ bool CBaseSettings::SaveCommonSettings( CKeyvaluesWriter& writer )
 		return false;
 
 	writer.WriteKeyvalue( "fps", szBuffer );
+
+	if( !SaveArchiveCVars( writer, "cvars" ) )
+		return false;
 
 	writer.EndBlock();
 

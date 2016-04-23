@@ -28,6 +28,9 @@ private:
 	static const size_t MAX_COMMAND_BUFFER = util::CCommand::MAX_LENGTH * 64;
 
 public:
+	using CVarArchiveCallback = void ( * )( void* pObject, const CCVar& cvar );
+
+public:
 	CCVarSystem();
 	~CCVarSystem();
 
@@ -85,7 +88,20 @@ public:
 	*/
 	CBaseConCommand* FindCommand( const char* const pszName );
 
+private:
+	CCVar* GetCVarForSet( const char* const pszCVar );
+
+public:
+	void SetCVarString( const char* const pszCVar, const char* const pszValue );
+
+	void SetCVarFloat( const char* const pszCVar, const float flValue );
+
 	void CVarChanged( CCVar& cvar, const char* pszOldValue, float flOldValue );
+
+	/**
+	*	Enumerates all CVars and calls pCallback for all CVars marked with the ARCHIVE flag.
+	*/
+	void ArchiveCVars( const CVarArchiveCallback pCallback, void* pObject = nullptr );
 
 	//TODO: move this to its own class.
 	/**
