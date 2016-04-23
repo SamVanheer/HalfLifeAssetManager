@@ -36,10 +36,22 @@ class CStudioModel;
 StudioModelLoadResult LoadStudioModel( const char* const pszFilename, const bool bFilterTextures, CStudioModel*& pModel );
 
 /**
+*	Saves a studio model.
+*	@param pszFilename Name of the file to save the model to. This is the entire path, including the extension.
+*	@param pModel Model to save.
+*	@return true on success, false otherwise.
+*/
+bool SaveStudioModel( const char* const pszFilename, const CStudioModel* const pModel );
+
+/**
 *	Container representing a studiomodel and its data.
 */
 class CStudioModel final
 {
+private:
+	typedef std::vector<const mstudiomesh_t*> MeshList_t;
+	typedef std::vector<MeshList_t> TextureMeshMap_t;
+
 protected:
 	friend StudioModelLoadResult LoadStudioModel( const char* const pszFilename, const bool bFilterTextures, CStudioModel*& pModel );
 
@@ -58,7 +70,13 @@ public:
 
 	mstudioanim_t*	GetAnim( mstudioseqdesc_t* pseqdesc ) const;
 
+	mstudiomodel_t* GetModelByBodyPart( const int iBody, const int iBodyPart ) const;
+
+	bool			CalculateBodygroup( const int iGroup, const int iValue, int& iInOutBodygroup ) const;
+
 	GLuint			GetTextureId( const int iIndex ) const;
+
+	void			ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte *pal, GLuint textureId, const bool bFilterTextures );
 
 private:
 	studiohdr_t*	m_pStudioHdr;
@@ -72,6 +90,9 @@ private:
 	CStudioModel( const CStudioModel& ) = delete;
 	CStudioModel& operator=( const CStudioModel& ) = delete;
 };
+
+void ScaleMeshes( CStudioModel* pStudioModel, const float flScale );
+void ScaleBones( CStudioModel* pStudioModel, const float flScale );
 }
 
 #endif //GAME_STUDIOMODEL_CSTUDIOMODEL_H

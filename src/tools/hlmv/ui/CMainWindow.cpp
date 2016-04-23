@@ -193,10 +193,12 @@ bool CMainWindow::PromptLoadModel()
 
 bool CMainWindow::SaveModel( const wxString& szFilename )
 {
-	if( !m_pHLMV->GetState()->GetStudioModel() )
+	if( !m_pHLMV->GetState()->GetEntity() )
 		return false;
 
-	const bool bSuccess = m_pHLMV->GetState()->GetStudioModel()->SaveModel( szFilename.char_str( wxMBConvUTF8() ) );
+	auto pModel = m_pHLMV->GetState()->GetEntity()->GetModel();
+
+	const bool bSuccess = studiomodel::SaveStudioModel( szFilename.c_str(), pModel );
 
 	if( !bSuccess )
 	{
@@ -208,7 +210,7 @@ bool CMainWindow::SaveModel( const wxString& szFilename )
 
 bool CMainWindow::PromptSaveModel()
 {
-	if( m_pHLMV->GetState()->GetStudioModel() == nullptr )
+	if( m_pHLMV->GetState()->GetEntity() == nullptr )
 	{
 		wxMessageBox( "No model to save!" );
 		return false;
@@ -289,7 +291,7 @@ void CMainWindow::TakeScreenshot()
 
 void CMainWindow::DumpModelInfo()
 {
-	if( !m_pHLMV->GetState()->GetStudioModel() )
+	if( !m_pHLMV->GetState()->GetEntity() )
 	{
 		wxMessageBox( "No model loaded!" );
 		return;

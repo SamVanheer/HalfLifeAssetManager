@@ -37,10 +37,7 @@
     <ClCompile Include="..\src\game\entity\CStudioModelEntity.cpp" />
     <ClCompile Include="..\src\game\studiomodel\CStudioModel.cpp" />
     <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp" />
-    <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer2.cpp" />
     <ClCompile Include="..\src\game\studiomodel\StudioSorting.cpp" />
-    <ClCompile Include="..\src\game\studiomodel\studio_render.cpp" />
-    <ClCompile Include="..\src\game\studiomodel\studio_utils.cpp" />
     <ClCompile Include="..\src\graphics\BMPFile.cpp" />
     <ClCompile Include="..\src\graphics\Constants.cpp" />
     <ClCompile Include="..\src\graphics\GLRenderTarget.cpp" />
@@ -122,9 +119,7 @@
     <ClInclude Include="..\src\game\Events.h" />
     <ClInclude Include="..\src\game\studiomodel\CStudioModel.h" />
     <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h" />
-    <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer2.h" />
     <ClInclude Include="..\src\game\studiomodel\studio.h" />
-    <ClInclude Include="..\src\game\studiomodel\StudioModel.h" />
     <ClInclude Include="..\src\game\studiomodel\StudioSorting.h" />
     <ClInclude Include="..\src\graphics\BMPFile.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />

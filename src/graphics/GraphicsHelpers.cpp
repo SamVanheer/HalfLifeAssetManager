@@ -128,16 +128,23 @@ void SetupRenderMode( RenderMode renderMode )
 }
 
 void DrawTexture( const int iWidth, const int iHeight,
-				  const StudioModel& studioModel,
+				  CStudioModelEntity* pEntity,
 				  const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines, 
 				  const mstudiomesh_t* const pUVMesh )
 {
+	assert( pEntity );
+
+	auto pModel = pEntity->GetModel();
+
+	assert( pModel );
+
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 
 	glOrtho( 0.0f, ( float ) iWidth, ( float ) iHeight, 0.0f, 1.0f, -1.0f );
 
-	const studiohdr_t* const hdr = studioModel.GetTextureHeader();
+	const studiohdr_t* const hdr = pModel->GetTextureHeader();
+
 	if( hdr )
 	{
 		mstudiotexture_t *ptextures = ( mstudiotexture_t * ) ( ( byte * ) hdr + hdr->textureindex );
@@ -177,7 +184,7 @@ void DrawTexture( const int iWidth, const int iHeight,
 		{
 			glEnable( GL_TEXTURE_2D );
 			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-			glBindTexture( GL_TEXTURE_2D, studioModel.GetTextureId( iTexture ) );
+			glBindTexture( GL_TEXTURE_2D, pModel->GetTextureId( iTexture ) );
 
 			glBegin( GL_TRIANGLE_STRIP );
 
@@ -202,21 +209,15 @@ void DrawTexture( const int iWidth, const int iHeight,
 		{
 			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
-			size_t uiCount;
-
-			const mstudiomesh_t* const* ppMeshes;
+			CStudioModelEntity::MeshList_t meshes;
 
 			if( pUVMesh )
 			{
-				uiCount = 1;
-				ppMeshes = &pUVMesh;
+				meshes.push_back( pUVMesh );
 			}
 			else
 			{
-				const StudioModel::MeshList_t* pList = studioModel.GetMeshListByTexture( iTexture );
-
-				uiCount = pList->size();
-				ppMeshes = pList->data();
+				meshes = pEntity->ComputeMeshList( iTexture );
 			}
 
 			SetupRenderMode( RenderMode::WIREFRAME );
@@ -230,9 +231,11 @@ void DrawTexture( const int iWidth, const int iHeight,
 
 			int i;
 
-			for( size_t uiIndex = 0; uiIndex < uiCount; ++uiIndex, ++ppMeshes )
+			const mstudiomesh_t* const* ppMeshes = meshes.data();
+
+			for( size_t uiIndex = 0; uiIndex < meshes.size(); ++uiIndex, ++ppMeshes )
 			{
-				const short* ptricmds = ( short* ) ( ( byte* ) studioModel.GetStudioHeader() + ( *ppMeshes )->triindex );
+				const short* ptricmds = ( short* ) ( ( byte* ) pModel->GetStudioHeader() + ( *ppMeshes )->triindex );
 
 				while( i = *( ptricmds++ ) )
 				{
@@ -385,14 +388,18 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 		glEnable( GL_CULL_FACE );
 }
 
-unsigned int DrawWireframeOverlay( StudioModel& model )
+unsigned int DrawWireframeOverlay( CStudioModelEntity* pEntity )
 {
 	SetupRenderMode( RenderMode::WIREFRAME );
 
-	return studiomodel::renderer().DrawModel( &model, true );
+	const unsigned int uiOldPolys = studiomodel::renderer().GetDrawnPolygonsCount();
+
+	pEntity->Draw( entity::DRAWF_WIREFRAME_ONLY );
+
+	return studiomodel::renderer().GetDrawnPolygonsCount() - uiOldPolys;
 }
 
-unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength )
+unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength )
 {
 	/* Don't update color or depth. */
 	glDisable( GL_DEPTH_TEST );
@@ -436,21 +443,23 @@ unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode,
 
 	glClipPlane( GL_CLIP_PLANE0, flClipPlane );
 
-	unsigned int uiDrawnPolys = studiomodel::renderer().DrawModel( &model );
+	const unsigned int uiOldPolys = studiomodel::renderer().GetDrawnPolygonsCount();
+
+	pEntity->Draw( entity::DRAWF_NONE );
 
 	glDisable( GL_CLIP_PLANE0 );
 
 	//Draw wireframe overlay
 	if( bWireframeOverlay )
 	{
-		uiDrawnPolys += DrawWireframeOverlay( model );
+		DrawWireframeOverlay( pEntity );
 	}
 
 	glPopMatrix();
 
 	glDisable( GL_STENCIL_TEST );
 
-	return uiDrawnPolys;
+	return studiomodel::renderer().GetDrawnPolygonsCount() - uiOldPolys;
 }
 
 void DrawBox( const glm::vec3* const v )

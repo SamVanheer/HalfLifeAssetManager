@@ -10,8 +10,6 @@
 #include "graphics/OpenGL.h"
 #include "graphics/Constants.h"
 
-#include "game/studiomodel/StudioModel.h"
-
 #include "game/entity/CStudioModelEntity.h"
 
 #include "settings/CGameConfig.h"
@@ -44,16 +42,11 @@ public:
 
 	void SetOrigin( const glm::vec3& vecOrigin );
 
-	StudioModel* GetStudioModel() { return m_pStudioModel; }
-	const StudioModel* GetStudioModel() const { return m_pStudioModel; }
+	void ClearEntity();
 
-	void ClearStudioModel();
+	CStudioModelEntity* GetEntity() { return m_pEntity; }
 
-	void SetStudioModel( StudioModel* pStudioModel );
-
-	CStudioModelEntity* GetModel() { return m_pEntity; }
-
-	void SetModel( CStudioModelEntity* pEntity );
+	void SetEntity( CStudioModelEntity* pEntity );
 
 	bool DumpModelInfo( const char* const pszFilename );
 
@@ -111,7 +104,6 @@ public:
 	bool antiAliasUVLines;
 
 private:
-	StudioModel* m_pStudioModel;
 	CStudioModelEntity* m_pEntity;
 
 private:

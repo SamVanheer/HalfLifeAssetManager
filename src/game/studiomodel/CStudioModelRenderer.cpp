@@ -9,8 +9,10 @@
 
 #include "graphics/GraphicsHelpers.h"
 
-#include "StudioModel.h"
+#include "CStudioModel.h"
 #include "StudioSorting.h"
+
+#include "game/entity/CStudioModelEntity.h"
 
 #include "CStudioModelRenderer.h"
 
@@ -65,22 +67,28 @@ void CStudioModelRenderer::RunFrame()
 {
 }
 
-unsigned int CStudioModelRenderer::DrawModel( StudioModel* const pModel, const bool wireframeOnly )
+unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity, const bool wireframeOnly )
 {
-	m_pCurrentModel = pModel;
+	m_pEntity = pEntity;
 
-	if( pModel )
+	if( !pEntity )
 	{
-		m_pStudioHdr = pModel->GetStudioHeader();
-		m_pTextureHdr = pModel->GetTextureHeader();
-	}
-	else
-	{
-		Error( "CStudioModelRenderer::DrawModel: Prepare called with null model!\n" );
+		Error( "CStudioModelRenderer::DrawModel: Called with null entity!\n" );
 		return 0;
 	}
 
-	m_uiDrawnPolygonsCount = 0;
+	m_pCurrentModel = pEntity->GetModel();
+
+	if( m_pCurrentModel )
+	{
+		m_pStudioHdr = m_pCurrentModel->GetStudioHeader();
+		m_pTextureHdr = m_pCurrentModel->GetTextureHeader();
+	}
+	else
+	{
+		Error( "CStudioModelRenderer::DrawModel: Called with null model!\n" );
+		return 0;
+	}
 
 	++m_uiModelsDrawnCount; // render data cache cookie
 
@@ -92,8 +100,8 @@ unsigned int CStudioModelRenderer::DrawModel( StudioModel* const pModel, const b
 
 	glPushMatrix();
 
-	const glm::vec3& vecOrigin = m_pCurrentModel->GetOrigin();
-	const glm::vec3& vecAngles = m_pCurrentModel->GetAngles();
+	const glm::vec3& vecOrigin = m_pEntity->GetOrigin();
+	const glm::vec3& vecAngles = m_pEntity->GetAngles();
 
 	glTranslatef( vecOrigin[ 0 ], vecOrigin[ 1 ], vecOrigin[ 2 ] );
 
@@ -110,9 +118,11 @@ unsigned int CStudioModelRenderer::DrawModel( StudioModel* const pModel, const b
 	for( int i = 0; i < m_pStudioHdr->numbodyparts; i++ )
 	{
 		SetupModel( i );
-		if( m_pCurrentModel->GetTransparency() > 0.0f )
+		if( m_pEntity->GetTransparency() > 0.0f )
 			uiDrawnPolys += DrawPoints( wireframeOnly );
 	}
+
+	//TODO: separate out into methods.
 
 	// draw bones
 	if( g_ShowBones.GetBool() )
@@ -209,7 +219,7 @@ unsigned int CStudioModelRenderer::DrawModel( StudioModel* const pModel, const b
 	{
 		glDisable( GL_TEXTURE_2D );
 		glDisable( GL_CULL_FACE );
-		if( m_pCurrentModel->GetTransparency() < 1.0f )
+		if( m_pEntity->GetTransparency() < 1.0f )
 			glDisable( GL_DEPTH_TEST );
 		else
 			glEnable( GL_DEPTH_TEST );
@@ -275,6 +285,8 @@ unsigned int CStudioModelRenderer::DrawModel( StudioModel* const pModel, const b
 
 	glPopMatrix();
 
+	m_uiDrawnPolygonsCount += uiDrawnPolys;
+
 	return uiDrawnPolys;
 }
 
@@ -296,38 +308,38 @@ void CStudioModelRenderer::SetUpBones()
 	static glm::vec3		pos4[ MAXSTUDIOBONES ];
 	static glm::vec4		q4[ MAXSTUDIOBONES ];
 
-	if( m_pCurrentModel->GetSequence() >= m_pStudioHdr->numseq )
+	if( m_pEntity->GetSequence() >= m_pStudioHdr->numseq )
 	{
-		m_pCurrentModel->SetSequence( 0 );
+		m_pEntity->SetSequence( 0 );
 	}
 
-	pseqdesc = m_pStudioHdr->GetSequence( m_pCurrentModel->GetSequence() );
+	pseqdesc = m_pStudioHdr->GetSequence( m_pEntity->GetSequence() );
 
 	panim = m_pCurrentModel->GetAnim( pseqdesc );
-	CalcRotations( pos, q, pseqdesc, panim, m_pCurrentModel->GetFrame() );
+	CalcRotations( pos, q, pseqdesc, panim, m_pEntity->GetFrame() );
 
 	if( pseqdesc->numblends > 1 )
 	{
 		float				s;
 
 		panim += m_pStudioHdr->numbones;
-		CalcRotations( pos2, q2, pseqdesc, panim, m_pCurrentModel->GetFrame() );
-		s = m_pCurrentModel->GetBlendingValue( 0 ) / 255.0;
+		CalcRotations( pos2, q2, pseqdesc, panim, m_pEntity->GetFrame() );
+		s = m_pEntity->GetBlendingByIndex( 0 ) / 255.0;
 
 		SlerpBones( q, pos, q2, pos2, s );
 
 		if( pseqdesc->numblends == 4 )
 		{
 			panim += m_pStudioHdr->numbones;
-			CalcRotations( pos3, q3, pseqdesc, panim, m_pCurrentModel->GetFrame() );
+			CalcRotations( pos3, q3, pseqdesc, panim, m_pEntity->GetFrame() );
 
 			panim += m_pStudioHdr->numbones;
-			CalcRotations( pos4, q4, pseqdesc, panim, m_pCurrentModel->GetFrame() );
+			CalcRotations( pos4, q4, pseqdesc, panim, m_pEntity->GetFrame() );
 
-			s = m_pCurrentModel->GetBlendingValue( 0 ) / 255.0;
+			s = m_pEntity->GetBlendingByIndex( 0 ) / 255.0;
 			SlerpBones( q3, pos3, q4, pos4, s );
 
-			s = m_pCurrentModel->GetBlendingValue( 1 ) / 255.0;
+			s = m_pEntity->GetBlendingByIndex( 1 ) / 255.0;
 			SlerpBones( q, pos, q3, pos3, s );
 		}
 	}
@@ -396,11 +408,11 @@ void CStudioModelRenderer::CalcBoneAdj()
 			// check for 360% wrapping
 			if( pbonecontroller[ j ].type & STUDIO_RLOOP )
 			{
-				value = m_pCurrentModel->GetBoneController( i ) * ( 360.0 / 256.0 ) + pbonecontroller[ j ].start;
+				value = m_pEntity->GetControllerByIndex( i ) * ( 360.0 / 256.0 ) + pbonecontroller[ j ].start;
 			}
 			else
 			{
-				value = m_pCurrentModel->GetBoneController(  i ) / 255.0;
+				value = m_pEntity->GetControllerByIndex(  i ) / 255.0;
 				if( value < 0 ) value = 0;
 				if( value > 1.0 ) value = 1.0;
 				value = ( 1.0 - value ) * pbonecontroller[ j ].start + value * pbonecontroller[ j ].end;
@@ -409,7 +421,7 @@ void CStudioModelRenderer::CalcBoneAdj()
 		}
 		else
 		{
-			value = m_pCurrentModel->GetMouth() / 64.0;
+			value = m_pEntity->GetMouth() / 64.0;
 			if( value > 1.0 ) value = 1.0;
 			value = ( 1.0 - value ) * pbonecontroller[ j ].start + value * pbonecontroller[ j ].end;
 			// Con_DPrintf("%d %f\n", mouthopen, value );
@@ -503,7 +515,6 @@ void CStudioModelRenderer::CalcBoneQuaternion( int frame, float s, mstudiobone_t
 		AngleQuaternion( angle1, q );
 	}
 }
-
 
 void CStudioModelRenderer::CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec3& pos )
 {
@@ -631,7 +642,7 @@ void CStudioModelRenderer::SetupModel( int bodypart )
 		bodypart = 0;
 	}
 
-	m_pModel = m_pCurrentModel->GetModelByBodyPart( bodypart );
+	m_pModel = m_pEntity->GetModelByBodyPart( bodypart );
 }
 
 unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
@@ -661,7 +672,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 
 	pskinref = m_pTextureHdr->GetSkins();
 
-	const int iSkinNum = m_pCurrentModel->GetSkin();
+	const int iSkinNum = m_pEntity->GetSkin();
 
 	if( iSkinNum != 0 && iSkinNum < m_pTextureHdr->numskinfamilies )
 		pskinref += ( iSkinNum * m_pTextureHdr->numskinref );
@@ -711,7 +722,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 		glColor4f( r_wireframecolor_r.GetFloat() / 255.0f, 
 				   r_wireframecolor_g.GetFloat() / 255.0f, 
 				   r_wireframecolor_b.GetFloat() / 255.0f, 
-				   m_pCurrentModel->GetTransparency() );
+				   m_pEntity->GetTransparency() );
 
 	for( j = 0; j < m_pModel->nummesh; j++ )
 	{
@@ -737,7 +748,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 			glEnable( GL_BLEND );
 			glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 		}
-		else if( m_pCurrentModel->GetTransparency() < 1.0f )
+		else if( m_pEntity->GetTransparency() < 1.0f )
 		{
 			glEnable( GL_BLEND );
 			glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -777,7 +788,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 						glTexCoord2f( g_chrome[ ptricmds[ 1 ] ][ 0 ] * s, g_chrome[ ptricmds[ 1 ] ][ 1 ] * t );
 
 						lv = glm::value_ptr( g_pvlightvalues[ ptricmds[ 1 ] ] );
-						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pCurrentModel->GetTransparency() );
+						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pEntity->GetTransparency() );
 
 						av = glm::value_ptr( g_pxformverts[ ptricmds[ 0 ] ] );
 						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
@@ -807,7 +818,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 						glTexCoord2f( ptricmds[ 2 ] * s, ptricmds[ 3 ] * t );
 
 						lv = glm::value_ptr( g_pvlightvalues[ ptricmds[ 1 ] ] );
-						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pCurrentModel->GetTransparency() );
+						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pEntity->GetTransparency() );
 
 						av = glm::value_ptr( g_pxformverts[ ptricmds[ 0 ] ] );
 						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
@@ -900,7 +911,7 @@ void CStudioModelRenderer::Chrome( glm::ivec2& chrome, int bone, const glm::vec3
 		glm::vec3 chromerightvec;	// g_chrome s vector in world reference frame
 		glm::vec3 tmp;				// vector pointing at bone in world reference frame
 
-		tmp = m_pCurrentModel->GetOrigin() * -1.0f;
+		tmp = m_pEntity->GetOrigin() * -1.0f;
 
 		tmp[ 0 ] += g_bonetransform[ bone ][ 0 ][ 3 ];
 		tmp[ 1 ] += g_bonetransform[ bone ][ 1 ][ 3 ];

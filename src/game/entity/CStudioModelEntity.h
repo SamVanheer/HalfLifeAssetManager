@@ -1,20 +1,23 @@
 #ifndef GAME_CSTUDIOMODELENTITY_H
 #define GAME_CSTUDIOMODELENTITY_H
 
+#include <vector>
+
+#include "game/studiomodel/CStudioModel.h"
+
+#include "game/CAnimEvent.h"
+#include "game/Events.h"
+
 #include "CBaseAnimating.h"
-
-namespace studiomodel
-{
-class CStudioModel;
-}
-
-struct CAnimEvent;
 
 /**
 *	Studio model entity.
 */
 class CStudioModelEntity : public CBaseAnimating
 {
+public:
+	typedef std::vector<const mstudiomesh_t*> MeshList_t;
+
 public:
 	DECLARE_CLASS( CStudioModelEntity, CBaseAnimating );
 
@@ -25,7 +28,7 @@ public:
 
 	virtual bool Spawn() override;
 
-	virtual void Draw() override;
+	virtual void Draw( entity::DrawFlags_t flags ) override;
 
 	float	AdvanceFrame( float dt = 0.0f );
 
@@ -63,6 +66,7 @@ public:
 
 	void GetSequenceInfo( float& flFrameRate, float& flGroundSpeed ) const;
 
+	//TODO: lowercase the G
 	int GetBodyGroup() const { return m_iBodyGroup; }
 	int SetBodyGroup( const int iBodyGroup, const int iValue );
 
@@ -87,6 +91,8 @@ public:
 	void ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const;
 
 	mstudiomodel_t* GetModelByBodyPart( const int iBodyPart ) const;
+
+	MeshList_t ComputeMeshList( const int iTexture ) const;
 };
 
 #endif //GAME_CSTUDIOMODELENTITY_H

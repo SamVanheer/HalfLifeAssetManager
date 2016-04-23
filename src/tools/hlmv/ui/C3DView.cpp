@@ -13,9 +13,6 @@
 
 #include "soundsystem/CSoundSystem.h"
 
-#include "game/CAnimEvent.h"
-#include "game/Events.h"
-
 #include "game/studiomodel/CStudioModelRenderer.h"
 
 #include "game/entity/CStudioModelEntity.h"
@@ -124,48 +121,10 @@ void C3DView::PrepareForLoad()
 
 void C3DView::UpdateView()
 {
-	if( m_pHLMV->GetState()->playSequence && m_pHLMV->GetState()->GetStudioModel() )
+	//TODO: the playSequence check should occur in the entity.
+	if( m_pHLMV->GetState()->playSequence && m_pHLMV->GetState()->GetEntity() )
 	{
-		const float flDeltaTime = m_pHLMV->GetState()->GetStudioModel()->AdvanceFrame( /*flFrameTime*/ );
-
-		//TODO: put this listener elsewhere
-		class CStudioModelListener final : public IAnimEventHandler
-		{
-		public:
-			CStudioModelListener( CHLMVState* const pSettings )
-				: m_pSettings( pSettings )
-			{
-			}
-
-			void HandleAnimEvent( const CAnimEvent& event ) override final
-			{
-				switch( event.iEvent )
-				{
-				case SCRIPT_EVENT_SOUND:			// Play a named wave file
-				case SCRIPT_EVENT_SOUND_VOICE:
-				case SCRIPT_CLIENT_EVENT_SOUND:
-					{
-						if( m_pSettings->playSound )
-						{
-							soundSystem().PlaySound( event.pszOptions, 1.0f, soundsystem::PITCH_NORM );
-						}
-
-						break;
-					}
-
-				default: break;
-				}
-			}
-
-			CHLMVState* const m_pSettings;
-		};
-
-		CStudioModelListener listener( m_pHLMV->GetState() );
-
-		//Allow client events.
-		m_pHLMV->GetState()->GetStudioModel()->DispatchAnimEvents( listener, true, flDeltaTime );
-
-		m_pHLMV->GetState()->GetModel()->Think();
+		m_pHLMV->GetState()->GetEntity()->Think();
 	}
 
 	if( !m_pHLMV->GetState()->pause )
@@ -219,14 +178,14 @@ void C3DView::SetupRenderMode( RenderMode renderMode )
 
 void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines, const mstudiomesh_t* const pUVMesh )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pModel )
+	if( !pEntity )
 		return;
 
 	const wxSize size = GetClientSize();
 
-	graphics::helpers::DrawTexture( size.GetX(), size.GetY(), *pModel, iTexture, flTextureScale, bShowUVMap, bOverlayUVMap, bAntiAliasLines, pUVMesh );
+	graphics::helpers::DrawTexture( size.GetX(), size.GetY(), pEntity, iTexture, flTextureScale, bShowUVMap, bOverlayUVMap, bAntiAliasLines, pUVMesh );
 }
 
 void C3DView::DrawModel()
@@ -267,16 +226,18 @@ void C3DView::DrawModel()
 
 	m_pHLMV->GetState()->drawnPolys = 0;
 
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	const unsigned int uiOldPolys = studiomodel::renderer().GetDrawnPolygonsCount();
 
-	if( pModel )
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
+	if( pEntity )
 	{
 		// setup stencil buffer and draw mirror
 		if( m_pHLMV->GetState()->mirror )
 		{
-			m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawMirroredModel( *pModel, m_pHLMV->GetState()->renderMode,
-																					 m_pHLMV->GetState()->wireframeOverlay, 
-																					 m_pHLMV->GetSettings()->GetFloorLength() );
+			graphics::helpers::DrawMirroredModel( pEntity, m_pHLMV->GetState()->renderMode,
+												  m_pHLMV->GetState()->wireframeOverlay, 
+												  m_pHLMV->GetSettings()->GetFloorLength() );
 		}
 	}
 
@@ -284,21 +245,15 @@ void C3DView::DrawModel()
 
 	glCullFace( GL_FRONT );
 
-	if( pModel )
+	if( pEntity )
 	{
-		m_pHLMV->GetState()->drawnPolys += studiomodel::renderer().DrawModel( pModel );
+		pEntity->Draw( entity::DRAWF_NONE );
 
 		//Draw wireframe overlay
 		if( m_pHLMV->GetState()->wireframeOverlay )
 		{
-			m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawWireframeOverlay( *pModel );
+			graphics::helpers::DrawWireframeOverlay( pEntity );
 		}
-	}
-
-	//TODO cleanup
-	if( CBaseEntity* pEntity = m_pHLMV->GetState()->GetModel() )
-	{
-		//pEntity->Draw();
 	}
 
 	//
@@ -309,6 +264,8 @@ void C3DView::DrawModel()
 	{
 		graphics::helpers::DrawFloor( m_pHLMV->GetSettings()->GetFloorLength(), m_GroundTexture, m_pHLMV->GetSettings()->GetGroundColor(), m_pHLMV->GetState()->mirror );
 	}
+
+	m_pHLMV->GetState()->drawnPolys = studiomodel::renderer().GetDrawnPolygonsCount() - uiOldPolys;
 
 	glPopMatrix();
 }
@@ -395,10 +352,12 @@ void C3DView::UnloadGroundTexture()
 */
 void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pModel )
+	if( !pEntity )
 		return;
+
+	auto pModel = pEntity->GetModel();
 
 	const studiohdr_t* const pHdr = pModel->GetTextureHeader();
 
@@ -438,7 +397,7 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
-	graphics::helpers::DrawTexture( texture.width, texture.height, *m_pHLMV->GetState()->GetStudioModel(), iTexture, 1.0f, true, false, false, m_pHLMV->GetState()->pUVMesh );
+	graphics::helpers::DrawTexture( texture.width, texture.height, pEntity, iTexture, 1.0f, true, false, false, m_pHLMV->GetState()->pUVMesh );
 
 	pScratchTarget->FinishDraw();
 

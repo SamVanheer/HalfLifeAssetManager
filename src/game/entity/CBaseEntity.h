@@ -44,7 +44,7 @@ public:
 	/**
 	*	Draws this entity.
 	*/
-	virtual void Draw() {}
+	virtual void Draw( entity::DrawFlags_t flags ) {}
 
 private:
 	const char* m_pszClassName = nullptr;

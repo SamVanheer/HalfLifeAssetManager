@@ -1,7 +1,8 @@
 #ifndef GRAPHICS_GRAPHICSHELPERS_H
 #define GRAPHICS_GRAPHICSHELPERS_H
 
-#include "game/studiomodel/StudioModel.h"
+#include "game/studiomodel/CStudioModel.h"
+#include "game/entity/CStudioModelEntity.h"
 
 #include "graphics/Constants.h"
 
@@ -51,7 +52,7 @@ void SetupRenderMode( RenderMode renderMode );
 *	@param pUVMesh			If specified, is the mesh to use to draw the UV map. If null, all meshes that use the texture are drawn.
 */
 void DrawTexture( const int iWidth, const int iHeight,
-				  const StudioModel& studioModel,
+				  CStudioModelEntity* pEntity,
 				  const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines,
 				  const mstudiomesh_t* const pUVMesh );
 
@@ -87,7 +88,7 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 *	Draws a wireframe overlay over a model
 *	@param model Model to draw
 */
-unsigned int DrawWireframeOverlay( StudioModel& model );
+unsigned int DrawWireframeOverlay( CStudioModelEntity* pEntity );
 
 /**
 *	Draws a mirrored model.
@@ -96,7 +97,7 @@ unsigned int DrawWireframeOverlay( StudioModel& model );
 *	@param bWireframeOverlay	Whether to render a wireframe overlay on top of the model
 *	@param flSideLength			Length of one side of the floor
 */
-unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength );
+unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength );
 
 /**
 *	Draws a box using an array of 8 vectors as corner points.

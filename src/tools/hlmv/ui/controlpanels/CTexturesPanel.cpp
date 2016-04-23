@@ -8,7 +8,7 @@
 #include "graphics/Palette.h"
 #include "graphics/BMPFile.h"
 
-#include "game/studiomodel/StudioModel.h"
+#include "game/studiomodel/CStudioModel.h"
 
 #include "../CHLMV.h"
 #include "../../CHLMVState.h"
@@ -107,31 +107,34 @@ void CTexturesPanel::InitializeUI()
 
 	bool bSuccess = false;
 
-	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
+	if( auto pEntity = m_pHLMV->GetState()->GetEntity() )
 	{
-		const studiohdr_t* const pHdr = pModel->GetTextureHeader();
-
-		if( pHdr )
+		if( auto pModel = pEntity->GetModel() )
 		{
-			m_pTexture->Enable( true );
+			const studiohdr_t* const pHdr = pModel->GetTextureHeader();
 
-			const mstudiotexture_t* const pTextures = ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex );
-
-			//Insert all names into the array, then append the array to the combo box. This is much faster than appending each name to the combo box directly.
-			wxArrayString names;
-
-			for( int i = 0; i < pHdr->numtextures; ++i )
+			if( pHdr )
 			{
-				const mstudiotexture_t& texture = pTextures[ i ];
+				m_pTexture->Enable( true );
 
-				names.Add( texture.name );
+				const mstudiotexture_t* const pTextures = ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex );
+
+				//Insert all names into the array, then append the array to the combo box. This is much faster than appending each name to the combo box directly.
+				wxArrayString names;
+
+				for( int i = 0; i < pHdr->numtextures; ++i )
+				{
+					const mstudiotexture_t& texture = pTextures[ i ];
+
+					names.Add( texture.name );
+				}
+
+				m_pTexture->Append( names );
+
+				SetTexture( 0 );
+
+				bSuccess = true;
 			}
-
-			m_pTexture->Append( names );
-
-			SetTexture( 0 );
-
-			bSuccess = true;
 		}
 	}
 
@@ -156,7 +159,12 @@ void CTexturesPanel::ScaleChanged( wxCommandEvent& event )
 
 void CTexturesPanel::CheckBoxChanged( wxCommandEvent& event )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
+	if( !pEntity )
+		return;
+
+	auto pModel = pEntity->GetModel();
 
 	if( !pModel )
 		return;
@@ -258,13 +266,15 @@ void CTexturesPanel::MeshChanged( wxCommandEvent& event )
 
 void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pModel || !pModel->GetTextureHeader() )
+	if( !pEntity || !pEntity->GetModel() )
 	{
 		wxMessageBox( "No model loaded!" );
 		return;
 	}
+
+	auto pStudioModel = pEntity->GetModel();
 
 	const int iTextureIndex = m_pTexture->GetSelection();
 
@@ -298,7 +308,7 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 		return;
 	}
 
-	studiohdr_t* const pHdr = pModel->GetTextureHeader();
+	studiohdr_t* const pHdr = pStudioModel->GetTextureHeader();
 
 	mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTextureIndex ];
 
@@ -343,18 +353,21 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 	memcpy( ( byte* ) pHdr + texture.index, texData.get(), image.GetWidth() * image.GetHeight() );
 	memcpy( ( byte* ) pHdr + texture.index + image.GetWidth() * image.GetHeight(), convPal, PALETTE_SIZE );
 
-	pModel->ReplaceTexture( &texture, texData.get(), convPal, pModel->GetTextureId( iTextureIndex ) );
+	//TODO get filter textures from somewhere
+	pStudioModel->ReplaceTexture( &texture, texData.get(), convPal, pStudioModel->GetTextureId( iTextureIndex ), true );
 }
 
 void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pModel )
+	if( !pEntity || !pEntity->GetModel() )
 	{
 		wxMessageBox( "No model loaded!" );
 		return;
 	}
+
+	auto pStudioModel = pEntity->GetModel();
 
 	const int iTextureIndex = m_pTexture->GetSelection();
 
@@ -371,7 +384,7 @@ void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 
 	const wxString szFilename = dlg.GetPath();
 
-	studiohdr_t* const pHdr = pModel->GetTextureHeader();
+	studiohdr_t* const pHdr = pStudioModel->GetTextureHeader();
 
 	mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTextureIndex ];
 
@@ -383,13 +396,15 @@ void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 
 void CTexturesPanel::ExportUVMap( wxCommandEvent& event )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pModel )
+	if( !pEntity || !pEntity->GetModel() )
 	{
 		wxMessageBox( "No model loaded!" );
 		return;
 	}
+
+	auto pStudioModel = pEntity->GetModel();
 
 	const int iTextureIndex = m_pTexture->GetSelection();
 
@@ -411,7 +426,14 @@ void CTexturesPanel::ExportUVMap( wxCommandEvent& event )
 
 void CTexturesPanel::SetTexture( int iIndex )
 {
-	StudioModel* const pStudioModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
+	if( !pEntity )
+		return;
+
+	auto pStudioModel = pEntity->GetModel();
+
+	wxASSERT( pStudioModel );
 
 	const studiohdr_t* const pHdr = pStudioModel->GetStudioHeader();
 	const studiohdr_t* const pTexHdr = pStudioModel->GetTextureHeader();
@@ -437,31 +459,32 @@ void CTexturesPanel::SetTexture( int iIndex )
 	m_pCheckBoxes[ CheckBox::ADDITIVE ]->SetValue( ( texture.flags & STUDIO_NF_ADDITIVE ) != 0 );
 	m_pCheckBoxes[ CheckBox::TRANSPARENT ]->SetValue( ( texture.flags & STUDIO_NF_MASKED ) != 0 );
 
-	const StudioModel::MeshList_t* pMeshList = pStudioModel->GetMeshListByTexture( iIndex );
+	const CStudioModelEntity::MeshList_t meshes = pEntity->ComputeMeshList( iIndex );
 
-	if( pMeshList )
+	m_pMesh->Enable( true );
+
+	size_t uiIndex;
+
+	for( uiIndex = 0; uiIndex < meshes.size(); ++uiIndex )
 	{
-		m_pMesh->Enable( true );
-
-		size_t uiIndex;
-
-		for( uiIndex = 0; uiIndex < pMeshList->size(); ++uiIndex )
-		{
-			m_pMesh->Append( wxString::Format( "Mesh %u", uiIndex + 1 ), new ui::CMeshClientData( ( *pMeshList )[ uiIndex ] ) );
-		}
-
-		if( uiIndex > 0 )
-		{
-			m_pHLMV->GetState()->pUVMesh = ( *pMeshList )[ 0 ];
-
-			if( uiIndex > 1 )
-			{
-				m_pMesh->Append( "All" );
-			}
-		}
-
-		m_pMesh->Select( 0 );
+		m_pMesh->Append( wxString::Format( "Mesh %u", uiIndex + 1 ), new ui::CMeshClientData( meshes[ uiIndex ] ) );
 	}
+
+	if( uiIndex > 0 )
+	{
+		m_pHLMV->GetState()->pUVMesh = meshes[ 0 ];
+
+		if( uiIndex > 1 )
+		{
+			m_pMesh->Append( "All" );
+		}
+	}
+	else
+	{
+		m_pHLMV->GetState()->pUVMesh = nullptr;
+	}
+
+	m_pMesh->Select( 0 );
 
 	m_pHLMV->GetState()->texture = iIndex;
 }

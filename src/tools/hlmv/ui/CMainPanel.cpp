@@ -11,8 +11,6 @@
 #include "controlpanels/CSequencesPanel.h"
 #include "controlpanels/CFullscreenPanel.h"
 
-#include "game/studiomodel/StudioModel.h"
-
 #include "game/studiomodel/CStudioModel.h"
 #include "game/entity/CStudioModelEntity.h"
 #include "game/entity/CBaseEntityList.h"
@@ -164,39 +162,9 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 
 	m_pHLMV->GetState()->ResetModelData();
 
-	m_pHLMV->GetState()->ClearStudioModel();
+	m_pHLMV->GetState()->ClearEntity();
 
 	auto szCFilename = szFilename.char_str( wxMBConvUTF8() );
-
-	std::unique_ptr<StudioModel> pStudioModel = std::make_unique<StudioModel>();
-
-	const StudioModel::LoadResult result = pStudioModel->Load( szFilename.c_str() );
-
-	switch( result )
-	{
-	default:
-	case StudioModel::LoadResult::FAILURE:
-		{
-			wxMessageBox( wxString::Format( "Error loading model \"%s\"\n", szCFilename.data() ), "Error" );
-			return false;
-		}
-
-	case StudioModel::LoadResult::POSTLOADFAILURE:
-		{
-			wxMessageBox( wxString::Format( "Error post-loading model \"%s\"\n", szCFilename.data() ), "Error" );
-			return false;
-		}
-
-	case StudioModel::LoadResult::VERSIONDIFFERS:
-		{
-			wxMessageBox( wxString::Format( "Error loading model \"%s\": version differs\n", szCFilename.data() ), "Error" );
-			return false;
-		}
-
-	case StudioModel::LoadResult::SUCCESS: break;
-	}
-
-	m_pHLMV->GetState()->SetStudioModel( pStudioModel.release() );
 
 	studiomodel::CStudioModel* pModel;
 
@@ -226,7 +194,7 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 	case studiomodel::StudioModelLoadResult::SUCCESS: break;
 	}
 
-	CStudioModelEntity* pEntity = static_cast<CStudioModelEntity*>( CBaseEntity::Create( "studiomodel", glm::vec3( 0, 50, 0 ), glm::vec3(), false ) );
+	CStudioModelEntity* pEntity = static_cast<CStudioModelEntity*>( CBaseEntity::Create( "studiomodel", glm::vec3(), glm::vec3(), false ) );
 
 	if( pEntity )
 	{
@@ -234,7 +202,7 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 
 		pEntity->Spawn();
 
-		m_pHLMV->GetState()->SetModel( pEntity );
+		m_pHLMV->GetState()->SetEntity( pEntity );
 	}
 	else
 	{
@@ -252,10 +220,7 @@ void CMainPanel::FreeModel()
 {
 	m_p3DView->PrepareForLoad();
 
-	if( m_pHLMV->GetState()->GetStudioModel() )
-	{
-		m_pHLMV->GetState()->ClearStudioModel();
-	}
+	m_pHLMV->GetState()->ClearEntity();
 }
 
 void CMainPanel::InitializeUI()

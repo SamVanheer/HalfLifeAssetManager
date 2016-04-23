@@ -4,8 +4,6 @@
 
 #include "utility/Color.h"
 
-#include "game/studiomodel/StudioModel.h"
-
 #include "../CHLMV.h"
 #include "../../settings/CHLMVSettings.h"
 #include "../../CHLMVState.h"
@@ -307,8 +305,10 @@ void CSequencesPanel::InitializeUI()
 
 	bool bSuccess = false;
 
-	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
+	if( auto pEntity = m_pHLMV->GetState()->GetEntity() )
 	{
+		auto pModel = pEntity->GetModel();
+
 		const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
 		if( pHdr )
@@ -352,8 +352,10 @@ void CSequencesPanel::InitializeUI()
 
 void CSequencesPanel::SetSequence( int iIndex )
 {
-	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
+	if( auto pEntity = m_pHLMV->GetState()->GetEntity() )
 	{
+		auto pModel = pEntity->GetModel();
+
 		const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
 		if( !pHdr )
@@ -370,7 +372,7 @@ void CSequencesPanel::SetSequence( int iIndex )
 
 		m_pHLMV->GetState()->sequence = iIndex;
 
-		pModel->SetSequence( m_pHLMV->GetState()->sequence );
+		pEntity->SetSequence( m_pHLMV->GetState()->sequence );
 
 		mstudioseqdesc_t nullSeq;
 
@@ -388,16 +390,16 @@ void CSequencesPanel::SetSequence( int iIndex )
 
 void CSequencesPanel::SetFrame( int iFrame )
 {
-	StudioModel* const pStudioModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( pStudioModel )
+	if( pEntity )
 	{
 		if( iFrame < 0 )
-			iFrame = pStudioModel->GetNumFrames();
-		else if( iFrame >= pStudioModel->GetNumFrames() )
+			iFrame = pEntity->GetNumFrames();
+		else if( iFrame >= pEntity->GetNumFrames() )
 			iFrame = 0;
 
-		pStudioModel->SetFrame( iFrame );
+		pEntity->SetFrame( iFrame );
 	}
 
 	long iPos = m_pSequenceFrame->GetInsertionPoint();
@@ -420,9 +422,9 @@ void CSequencesPanel::SetFrameControlsEnabled( const bool bState )
 
 	if( bState )
 	{
-		auto pModel = m_pHLMV->GetState()->GetStudioModel();
+		auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-		SetFrame( static_cast<int>( pModel ? pModel->GetFrame() : 0 ) );
+		SetFrame( static_cast<int>( pEntity ? pEntity->GetFrame() : 0 ) );
 	}
 	else
 	{
@@ -436,13 +438,15 @@ void CSequencesPanel::UpdateEvents()
 {
 	m_pEvent->Clear();
 
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pModel || !pModel->GetStudioHeader() )
+	if( !pEntity )
 	{
 		UpdateEventInfo( -1 );
 		return;
 	}
+
+	auto pModel = pEntity->GetModel();
 
 	const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
@@ -470,14 +474,16 @@ void CSequencesPanel::UpdateEvents()
 
 void CSequencesPanel::UpdateEventInfo( int iIndex )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( iIndex == -1 || !pModel )
+	if( iIndex == -1 || !pEntity )
 	{
 		m_pEvent->Enable( false );
 		m_pEventInfo->Show( false );
 		return;
 	}
+
+	auto pModel = pEntity->GetModel();
 
 	const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
@@ -520,22 +526,22 @@ void CSequencesPanel::TogglePlay( wxCommandEvent& event )
 
 void CSequencesPanel::PrevFrame( wxCommandEvent& event )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pModel )
+	if( !pEntity )
 		return;
 
-	SetFrame( pModel->GetFrame() - 1 );
+	SetFrame( pEntity->GetFrame() - 1 );
 }
 
 void CSequencesPanel::NextFrame( wxCommandEvent& event )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pModel )
+	if( !pEntity )
 		return;
 
-	SetFrame( pModel->GetFrame() + 1 );
+	SetFrame( pEntity->GetFrame() + 1 );
 }
 
 void CSequencesPanel::FrameChanged( wxCommandEvent& event )
@@ -550,9 +556,9 @@ void CSequencesPanel::FrameChanged( wxCommandEvent& event )
 
 void CSequencesPanel::AnimSpeedChanged( wxCommandEvent& event )
 {
-	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
+	if( auto pEntity = m_pHLMV->GetState()->GetEntity() )
 	{
-		pModel->SetFrameRate( m_pAnimSpeed->GetValue() / static_cast<float>( ANIMSPEED_SLIDER_DEFAULT ) );
+		pEntity->SetFrameRate( m_pAnimSpeed->GetValue() / static_cast<float>( ANIMSPEED_SLIDER_DEFAULT ) );
 	}
 }
 

@@ -1,3 +1,5 @@
+#include "game/studiomodel/CStudioModel.h"
+
 #include "game/entity/CBaseEntityList.h"
 
 #include "CHLMVState.h"
@@ -7,15 +9,14 @@ namespace hlmv
 const glm::vec3 CHLMVState::DEFAULT_ROTATION = glm::vec3( -90.0f, 0, 0 );
 
 CHLMVState::CHLMVState()
-	: m_pStudioModel( nullptr )
-	, m_pEntity( nullptr )
+	: m_pEntity( nullptr )
 {
 	ResetToDefaults();
 }
 
 CHLMVState::~CHLMVState()
 {
-	ClearStudioModel();
+	ClearEntity();
 }
 
 void CHLMVState::ResetModelData()
@@ -74,11 +75,11 @@ void CHLMVState::ResetToDefaults()
 
 void CHLMVState::CenterView()
 {
-	if( !m_pStudioModel )
+	if( !m_pEntity )
 		return;
 
 	glm::vec3 min, max;
-	m_pStudioModel->ExtractBbox( min, max );
+	m_pEntity->ExtractBbox( min, max );
 
 	float dx = max[ 0 ] - min[ 0 ];
 	float dy = max[ 1 ] - min[ 1 ];
@@ -116,29 +117,21 @@ void CHLMVState::SetOrigin( const glm::vec3& vecOrigin )
 	trans = vecOrigin;
 }
 
-void CHLMVState::ClearStudioModel()
+void CHLMVState::ClearEntity()
 {
-	SetStudioModel( nullptr );
-
-	GetEntityList().Remove( m_pEntity );
-	m_pEntity = nullptr;
+	SetEntity( nullptr );
 }
 
-void CHLMVState::SetStudioModel( StudioModel* pStudioModel )
+void CHLMVState::SetEntity( CStudioModelEntity* pEntity )
 {
-	if( m_pStudioModel )
+	if( m_pEntity )
 	{
-		delete m_pStudioModel;
-		m_pStudioModel = nullptr;
+		GetEntityList().Remove( m_pEntity );
+		m_pEntity = nullptr;
 	}
 
-	if( pStudioModel )
-		m_pStudioModel = pStudioModel;
-}
-
-void CHLMVState::SetModel( CStudioModelEntity* pEntity )
-{
-	m_pEntity = pEntity;
+	if( pEntity )
+		m_pEntity = pEntity;
 }
 
 bool CHLMVState::DumpModelInfo( const char* const pszFilename )
@@ -146,12 +139,14 @@ bool CHLMVState::DumpModelInfo( const char* const pszFilename )
 	if( !pszFilename || !( *pszFilename ) )
 		return false;
 
-	if( !m_pStudioModel || !m_pStudioModel->GetStudioHeader() )
+	if( !m_pEntity || !m_pEntity->GetModel() )
 		return false;
 
 	if( FILE* pFile = fopen( pszFilename, "w" ) )
 	{
-		const studiohdr_t* const pHdr = m_pStudioModel->GetStudioHeader();
+		const auto pModel = m_pEntity->GetModel();
+
+		const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
 		const byte* const pByte = reinterpret_cast<const byte* const>( pHdr );
 
@@ -321,7 +316,7 @@ bool CHLMVState::DumpModelInfo( const char* const pszFilename )
 			}
 		}
 
-		const studiohdr_t* const pTexHdr = m_pStudioModel->GetTextureHeader();
+		const studiohdr_t* const pTexHdr = pModel->GetTextureHeader();
 
 		fprintf( pFile,
 				 "Number of Textures: %d\n"

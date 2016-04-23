@@ -10,9 +10,9 @@
 
 #include <glm/vec3.hpp>
 
-#include "game/studiomodel/StudioModel.h"
-
 #include "graphics/Constants.h"
+
+#include "game/studiomodel/studio.h"
 
 namespace hlmv
 {

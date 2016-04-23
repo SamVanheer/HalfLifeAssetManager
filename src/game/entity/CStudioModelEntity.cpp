@@ -1,12 +1,11 @@
 #include "common/Logging.h"
 #include "common/CGlobals.h"
 
+#include "soundsystem/CSoundSystem.h"
+
 #include "game/studiomodel/CStudioModel.h"
 
-#include "game/CAnimEvent.h"
-#include "game/Events.h"
-
-#include "game/studiomodel/CStudioModelRenderer2.h"
+#include "game/studiomodel/CStudioModelRenderer.h"
 
 #include "CStudioModelEntity.h"
 
@@ -46,9 +45,9 @@ bool CStudioModelEntity::Spawn()
 	return true;
 }
 
-void CStudioModelEntity::Draw()
+void CStudioModelEntity::Draw( entity::DrawFlags_t flags )
 {
-	studiomodel::renderer2().DrawModel( m_pModel, this, false );
+	studiomodel::renderer().DrawModel( this, ( flags & entity::DRAWF_WIREFRAME_ONLY ) != 0 );
 }
 
 float CStudioModelEntity::AdvanceFrame( float dt )
@@ -97,6 +96,24 @@ float CStudioModelEntity::AdvanceFrame( float dt )
 
 void CStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 {
+	//TODO: move to subclass.
+	switch( event.iEvent )
+	{
+	case SCRIPT_EVENT_SOUND:			// Play a named wave file
+	case SCRIPT_EVENT_SOUND_VOICE:
+	case SCRIPT_CLIENT_EVENT_SOUND:
+		{
+			//TODO: re-add this.
+			//if( m_pSettings->playSound )
+			{
+				soundSystem().PlaySound( event.pszOptions, 1.0f, soundsystem::PITCH_NORM );
+			}
+
+			break;
+		}
+
+	default: break;
+	}
 }
 
 int CStudioModelEntity::GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents )
@@ -258,16 +275,10 @@ int CStudioModelEntity::SetBodyGroup( const int iBodyGroup, const int iValue )
 	if( iBodyGroup > m_pModel->GetStudioHeader()->numbodyparts )
 		return -1;
 
-	const mstudiobodyparts_t* pbodypart = m_pModel->GetStudioHeader()->GetBodypart( iBodyGroup );
+	if( m_pModel->CalculateBodygroup( iBodyGroup, iValue, m_iBodyGroup ) )
+		return iValue;
 
-	int iCurrent = ( m_iBodyGroup / pbodypart->base ) % pbodypart->nummodels;
-
-	if( iValue >= pbodypart->nummodels )
-		return iCurrent;
-
-	m_iBodyGroup = ( m_iBodyGroup - ( iCurrent * pbodypart->base ) + ( iValue * pbodypart->base ) );
-
-	return iValue;
+	return -1;
 }
 
 int CStudioModelEntity::SetSkin( const int iSkin )
@@ -504,9 +515,42 @@ void CStudioModelEntity::ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) c
 
 mstudiomodel_t* CStudioModelEntity::GetModelByBodyPart( const int iBodyPart ) const
 {
-	const mstudiobodyparts_t* const pbodypart = m_pModel->GetStudioHeader()->GetBodypart( iBodyPart );
+	return m_pModel->GetModelByBodyPart( m_iBodyGroup, iBodyPart );
+}
 
-	const int index = ( m_iBodyGroup / pbodypart->base ) % pbodypart->nummodels;
+CStudioModelEntity::MeshList_t CStudioModelEntity::ComputeMeshList( const int iTexture ) const
+{
+	assert( m_pModel );
 
-	return ( mstudiomodel_t * ) ( ( byte * ) m_pModel->GetStudioHeader() + pbodypart->modelindex ) + index;
+	MeshList_t meshes;
+
+	const auto pStudioHdr = m_pModel->GetStudioHeader();
+
+	const short* const pskinref = m_pModel->GetTextureHeader()->GetSkins();
+
+	int iBodygroup = 0;
+
+	for( int iBodyPart = 0; iBodyPart < pStudioHdr->numbodyparts; ++iBodyPart )
+	{
+		mstudiobodyparts_t *pbodypart = pStudioHdr->GetBodypart( iBodyPart );
+
+		for( int iModel = 0; iModel < pbodypart->nummodels; ++iModel )
+		{
+			m_pModel->CalculateBodygroup( iBodyPart, iModel, iBodygroup );
+
+			mstudiomodel_t* pModel = m_pModel->GetModelByBodyPart( iBodygroup, iBodyPart );
+
+			for( int iMesh = 0; iMesh < pModel->nummesh; ++iMesh )
+			{
+				const mstudiomesh_t* pMesh = ( ( const mstudiomesh_t* ) ( ( const byte* ) m_pModel->GetStudioHeader() + pModel->meshindex ) ) + iMesh;
+
+				if( pskinref[ pMesh->skinref ] == iTexture )
+				{
+					meshes.push_back( pMesh );
+				}
+			}
+		}
+	}
+
+	return meshes;
 }

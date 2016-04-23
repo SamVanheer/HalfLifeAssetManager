@@ -11,13 +11,14 @@
 
 #include "utility/Color.h"
 
-class StudioModel;
+class CStudioModelEntity;
 
 namespace studiomodel
 {
+class CStudioModel;
+
 /**
 *	Used to render studio models. Only one instance of this class should be used, and should be kept around, in order to achieve reasonably performant and consistent rendering.
-*	This class is designed to allow you to either render a model once, or to allow multiple passes by reusing setup.
 */
 class CStudioModelRenderer final
 {
@@ -48,10 +49,10 @@ public:
 	*/
 	void RunFrame();
 
+	/**
+	*	Gets the number of models that have been drawn during this map.
+	*/
 	unsigned int GetModelsDrawnCount() const { return m_uiModelsDrawnCount; }
-
-	const	StudioModel* GetCurrentModel() const	{ return m_pCurrentModel; }
-			StudioModel* GetCurrentModel()			{ return m_pCurrentModel; }
 
 	/**
 	*	Gets the number of polygons drawn since the last call to Prepare.
@@ -61,7 +62,7 @@ public:
 	/**
 	*	Draws the given model.
 	*/
-	unsigned int DrawModel( StudioModel* const pModel, const bool wireframeOnly = false );
+	unsigned int DrawModel( CStudioModelEntity* const pEntity, const bool wireframeOnly = false );
 
 private:
 	void SetUpBones();
@@ -90,7 +91,8 @@ private:
 	/**
 	*	The current model being rendered.
 	*/
-	StudioModel* m_pCurrentModel = nullptr;
+	CStudioModel* m_pCurrentModel = nullptr;
+	CStudioModelEntity* m_pEntity = nullptr;
 
 	studiohdr_t* m_pStudioHdr = nullptr;
 	studiohdr_t* m_pTextureHdr = nullptr;
@@ -111,15 +113,15 @@ private:
 
 	glm::vec4		m_Adj;
 
-	int				g_ambientlight;					// ambient world light
-	float			g_shadelight;					// direct world light
+	int				g_ambientlight;						// ambient world light
+	float			g_shadelight;						// direct world light
 
-	glm::vec3		g_lightvec;						// light vector in model reference frame
+	glm::vec3		g_lightvec;							// light vector in model reference frame
 	Color			g_lightcolor;
-	glm::vec3		g_blightvec[ MAXSTUDIOBONES ];	// light vectors in bone reference frames
+	glm::vec3		g_blightvec[ MAXSTUDIOBONES ];		// light vectors in bone reference frames
 
-	glm::ivec2		g_chrome[ MAXSTUDIOVERTS ];		// texture coords for surface normals
-	unsigned int	g_chromeage[ MAXSTUDIOBONES ];	// last time chrome vectors were updated
+	glm::ivec2		g_chrome[ MAXSTUDIOVERTS ];			// texture coords for surface normals
+	unsigned int	g_chromeage[ MAXSTUDIOBONES ];		// last time chrome vectors were updated
 	glm::vec3		g_chromeup[ MAXSTUDIOBONES ];		// chrome vector "up" in bone reference frames
 	glm::vec3		g_chromeright[ MAXSTUDIOBONES ];	// chrome vector "right" in bone reference frames
 

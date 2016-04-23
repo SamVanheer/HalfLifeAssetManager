@@ -3,8 +3,6 @@
 #include "../CHLMV.h"
 #include "../../CHLMVState.h"
 
-#include "game/studiomodel/StudioModel.h"
-
 #include "CBodyPartsPanel.h"
 
 namespace hlmv
@@ -113,8 +111,10 @@ void CBodyPartsPanel::InitializeUI()
 
 	bool bSuccess = false;
 
-	if( auto pModel = m_pHLMV->GetState()->GetStudioModel() )
+	if( auto pEntity = m_pHLMV->GetState()->GetEntity() )
 	{
+		auto pModel = pEntity->GetModel();
+
 		const studiohdr_t* const pHdr = pModel->GetStudioHeader();
 
 		if( pHdr )
@@ -164,7 +164,7 @@ void CBodyPartsPanel::InitializeUI()
 
 			for( int i = 0; i < pHdr->numbonecontrollers; i++ )
 			{
-				if( pbonecontrollers[ i ].index == CONTROLLER_MOUTH_INDEX )
+				if( pbonecontrollers[ i ].index == STUDIO_MOUTH_CONTROLLER )
 				{
 					names.Add( "Mouth" );
 				}
@@ -231,13 +231,17 @@ void CBodyPartsPanel::ControllerSliderChanged( wxCommandEvent& event )
 
 void CBodyPartsPanel::SetBodypart( int iIndex )
 {
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->GetStudioHeader();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pHdr )
+	if( !pEntity )
 	{
 		m_pBodypart->Select( 0 );
 		return;
 	}
+
+	auto pModel = pEntity->GetModel();
+
+	const auto pHdr = pModel->GetStudioHeader();
 
 	if( iIndex < 0 || iIndex >= pHdr->numbodyparts )
 		iIndex = 0;
@@ -254,29 +258,41 @@ void CBodyPartsPanel::SetBodypart( int iIndex )
 
 void CBodyPartsPanel::SetSubmodel( int iIndex )
 {
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
+	if( !pEntity )
+		return;
+
 	m_pSubmodel->Select( iIndex );
-	m_pHLMV->GetState()->GetStudioModel()->SetBodygroup( m_pBodypart->GetSelection(), iIndex );
+	pEntity->SetBodyGroup( m_pBodypart->GetSelection(), iIndex );
 }
 
 void CBodyPartsPanel::SetSkin( int iIndex )
 {
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
+	if( !pEntity )
+		return;
+
 	m_pSkin->Select( iIndex );
-	m_pHLMV->GetState()->GetStudioModel()->SetSkin( iIndex );
+	pEntity->SetSkin( iIndex );
 }
 
 void CBodyPartsPanel::UpdateSubmodels( const int iIndex )
 {
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
 	m_pSubmodel->Clear();
 
-	const studiohdr_t* const pHdr = m_pHLMV->GetState()->GetStudioModel()->GetStudioHeader();
-
-	if( !pHdr )
+	if( !pEntity )
 	{
 		m_pSubmodel->Enable( false );
 		return;
 	}
 
 	m_pSubmodel->Enable( true );
+
+	auto pHdr = pEntity->GetModel()->GetStudioHeader();
 
 	if( iIndex < pHdr->numbodyparts )
 	{
@@ -311,9 +327,9 @@ void CBodyPartsPanel::SetModelInfo( const studiohdr_t& hdr, const studiohdr_t& t
 
 void CBodyPartsPanel::SetController( int iIndex )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pModel || !pModel->GetStudioHeader() || pModel->GetStudioHeader()->numbonecontrollers == 0 )
+	if( !pEntity || !pEntity->GetModel() || !pEntity->GetModel()->GetStudioHeader() || pEntity->GetModel()->GetStudioHeader()->numbonecontrollers == 0 )
 	{
 		//Disable and center it.
 		m_pControllerSlider->Enable( false );
@@ -322,7 +338,7 @@ void CBodyPartsPanel::SetController( int iIndex )
 		return;
 	}
 
-	const studiohdr_t* const pHdr = pModel->GetStudioHeader();
+	const studiohdr_t* const pHdr = pEntity->GetModel()->GetStudioHeader();
 
 	if( iIndex < 0 || iIndex >= pHdr->numbonecontrollers )
 		iIndex = 0;
@@ -331,18 +347,18 @@ void CBodyPartsPanel::SetController( int iIndex )
 
 	m_pController->Select( iIndex );
 	m_pControllerSlider->SetRange( ( int ) pbonecontrollers[ iIndex ].start, ( int ) pbonecontrollers[ iIndex ].end );
-	m_pControllerSlider->SetValue( m_pHLMV->GetState()->GetStudioModel()->GetController( iIndex ) );
+	m_pControllerSlider->SetValue( pEntity->GetControllerValue( iIndex ) );
 	m_pControllerSlider->Enable( true );
 }
 
 void CBodyPartsPanel::SetControllerValue( int iIndex, int iValue )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pModel )
+	if( !pEntity )
 		return;
 
-	const studiohdr_t* const pHdr = pModel->GetStudioHeader();
+	const studiohdr_t* const pHdr = pEntity->GetModel()->GetStudioHeader();
 
 	if( pHdr )
 	{
@@ -351,10 +367,10 @@ void CBodyPartsPanel::SetControllerValue( int iIndex, int iValue )
 
 		const mstudiobonecontroller_t* const pbonecontrollers = ( mstudiobonecontroller_t* ) ( ( byte* ) pHdr + pHdr->bonecontrollerindex );
 
-		if( pbonecontrollers[ iIndex ].index == CONTROLLER_MOUTH_INDEX )
-			m_pHLMV->GetState()->GetStudioModel()->SetMouth( iValue );
+		if( pbonecontrollers[ iIndex ].index == STUDIO_MOUTH_CONTROLLER )
+			pEntity->SetMouth( iValue );
 		else
-			m_pHLMV->GetState()->GetStudioModel()->SetController( pbonecontrollers[ iIndex ].index, iValue );
+			pEntity->SetController( pbonecontrollers[ iIndex ].index, iValue );
 	}
 }
 }

@@ -2,8 +2,6 @@
 
 #include "../CHLMV.h"
 
-#include "game/studiomodel/StudioModel.h"
-
 #include "cvar/CCVarSystem.h"
 
 #include "CModelDisplayPanel.h"
@@ -126,12 +124,12 @@ void CModelDisplayPanel::SetOpacity( int iValue, const bool bUpdateSlider )
 	if( bUpdateSlider )
 		m_pOpacitySlider->SetValue( iValue );
 
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	if( !pModel )
+	if( !pEntity )
 		return;
 
-	pModel->SetTransparency( iValue / static_cast<float>( OPACITY_MAX ) );
+	pEntity->SetTransparency( iValue / static_cast<float>( OPACITY_MAX ) );
 }
 
 void CModelDisplayPanel::SetCheckBox( const CheckBox::Type checkBox, const bool bValue )
@@ -248,14 +246,14 @@ void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
 
 void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
 	double flScale = 1.0;
 
 	if( m_pMeshScale->GetValue().ToDouble( &flScale ) )
 	{
-		if( pModel )
-			pModel->ScaleMeshes( flScale );
+		if( pEntity )
+			studiomodel::ScaleMeshes( pEntity->GetModel(), flScale );
 	}
 	else
 		m_pMeshScale->SetValue( "1.0" );
@@ -263,14 +261,14 @@ void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
 
 void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
 {
-	auto pModel = m_pHLMV->GetState()->GetStudioModel();
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
 	double flScale = 1.0;
 
 	if( m_pBonesScale->GetValue().ToDouble( &flScale ) )
 	{
-		if( pModel )
-			m_pHLMV->GetState()->GetStudioModel()->ScaleBones( flScale );
+		if( pEntity )
+			studiomodel::ScaleBones( pEntity->GetModel(), flScale );
 	}
 	else
 		m_pBonesScale->SetValue( "1.0" );

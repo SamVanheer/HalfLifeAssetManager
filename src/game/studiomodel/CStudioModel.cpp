@@ -8,136 +8,8 @@
 
 namespace studiomodel
 {
-CStudioModel::CStudioModel()
-{
-	memset( this, 0, sizeof( *this ) );
-}
-
-CStudioModel::CStudioModel( studiohdr_t* pStudioHdr, studiohdr_t* pTextureHdr, studiohdr_t** ppSeqHdrs, const size_t uiNumSeqHdrs, GLuint* pTextures, const size_t uiNumTextures )
-	: m_pStudioHdr( pStudioHdr )
-	, m_pTextureHdr( pTextureHdr )
-{
-	assert( pStudioHdr );
-	assert( pTextureHdr );
-	assert( ppSeqHdrs );
-	assert( uiNumSeqHdrs <= MAX_SEQGROUPS );
-	assert( pTextures );
-	assert( uiNumTextures <= MAX_TEXTURES );
-
-	for( size_t uiIndex = 0; uiIndex < uiNumSeqHdrs; ++uiIndex )
-	{
-		m_pSeqHdrs[ uiIndex ] = ppSeqHdrs[ uiIndex ];
-	}
-
-	memset( m_pSeqHdrs + uiNumSeqHdrs, 0, sizeof( studiohdr_t* ) * MAX_SEQGROUPS - uiNumSeqHdrs );
-
-	memcpy( m_Textures, pTextureHdr, uiNumTextures );
-	memset( m_Textures + uiNumTextures, 0, sizeof( GLuint ) * MAX_TEXTURES - uiNumTextures );
-}
-
-CStudioModel::~CStudioModel()
-{
-	if( !m_pStudioHdr )
-		return;
-
-	// deleting textures
-	glDeleteTextures( m_pTextureHdr->numtextures, m_Textures );
-
-	for( auto pSeqHdr : m_pSeqHdrs )
-	{
-		delete[] pSeqHdr;
-	}
-
-	//Textures were in a T.mdl, free separately.
-	if( m_pTextureHdr != m_pStudioHdr )
-	{
-		delete[] m_pTextureHdr;
-	}
-
-	delete[] m_pStudioHdr;
-}
-
-mstudioanim_t* CStudioModel::GetAnim( mstudioseqdesc_t* pseqdesc ) const
-{
-	mstudioseqgroup_t* pseqgroup = m_pStudioHdr->GetSequenceGroup( pseqdesc->seqgroup );
-
-	if( pseqdesc->seqgroup == 0 )
-	{
-		return ( mstudioanim_t * ) ( ( byte * ) m_pStudioHdr + pseqgroup->unused2 + pseqdesc->animindex );
-	}
-
-	return ( mstudioanim_t * ) ( ( byte * ) m_pSeqHdrs[ pseqdesc->seqgroup ] + pseqdesc->animindex );
-}
-
-GLuint CStudioModel::GetTextureId( const int iIndex ) const
-{
-	const studiohdr_t* const pHdr = GetTextureHeader();
-
-	if( !pHdr )
-		return GL_INVALID_TEXTURE_ID;
-
-	if( iIndex < 0 || iIndex >= pHdr->numtextures )
-		return GL_INVALID_TEXTURE_ID;
-
-	return m_Textures[ iIndex ];
-}
-
 namespace
 {
-/**
-*	Loads a single studio header.
-*/
-StudioModelLoadResult LoadStudioHeader( const char* const pszFilename, const bool bAllowSeqGroup, studiohdr_t*& pOutStudioHdr )
-{
-	// load the model
-	FILE* pFile = fopen( pszFilename, "rb" );
-
-	if( !pFile )
-		return StudioModelLoadResult::FAILURE;
-
-	fseek( pFile, 0, SEEK_END );
-	const size_t size = ftell( pFile );
-	fseek( pFile, 0, SEEK_SET );
-
-	std::unique_ptr<byte[]> buffer( new byte[ size ] );
-
-	studiohdr_t* pStudioHdr = reinterpret_cast<studiohdr_t*>( buffer.get() );
-
-	if( !pStudioHdr )
-	{
-		fclose( pFile );
-		return StudioModelLoadResult::FAILURE;
-	}
-
-	const size_t uiRead = fread( pStudioHdr, size, 1, pFile );
-	fclose( pFile );
-
-	if( uiRead != 1 )
-		return StudioModelLoadResult::FAILURE;
-
-	if( strncmp( reinterpret_cast<const char*>( &pStudioHdr->id ), STUDIOMDL_HDR_ID, 4 ) &&
-		strncmp( reinterpret_cast<const char*>( &pStudioHdr->id ), STUDIOMDL_SEQ_ID, 4 ) )
-	{
-		return StudioModelLoadResult::FAILURE;
-	}
-
-	if( !bAllowSeqGroup && !strncmp( reinterpret_cast<const char*>( &pStudioHdr->id ), STUDIOMDL_SEQ_ID, 4 ) )
-	{
-		return StudioModelLoadResult::FAILURE;
-	}
-
-	if( pStudioHdr->version != STUDIO_VERSION )
-	{
-		return StudioModelLoadResult::VERSIONDIFFERS;
-	}
-
-	pOutStudioHdr = pStudioHdr;
-
-	buffer.release();
-
-	return StudioModelLoadResult::SUCCESS;
-}
-
 void UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId, const bool bFilterTextures )
 {
 	glBindTexture( GL_TEXTURE_2D, textureId );
@@ -260,6 +132,171 @@ size_t UploadTextures( const studiohdr_t& textureHdr, GLuint* pTextures, const b
 }
 }
 
+CStudioModel::CStudioModel()
+{
+	memset( this, 0, sizeof( *this ) );
+}
+
+CStudioModel::CStudioModel( studiohdr_t* pStudioHdr, studiohdr_t* pTextureHdr, studiohdr_t** ppSeqHdrs, const size_t uiNumSeqHdrs, GLuint* pTextures, const size_t uiNumTextures )
+	: m_pStudioHdr( pStudioHdr )
+	, m_pTextureHdr( pTextureHdr )
+{
+	assert( pStudioHdr );
+	assert( pTextureHdr );
+	assert( ppSeqHdrs );
+	assert( uiNumSeqHdrs <= MAX_SEQGROUPS );
+	assert( pTextures );
+	assert( uiNumTextures <= MAX_TEXTURES );
+
+	for( size_t uiIndex = 0; uiIndex < uiNumSeqHdrs; ++uiIndex )
+	{
+		m_pSeqHdrs[ uiIndex ] = ppSeqHdrs[ uiIndex ];
+	}
+
+	memset( m_pSeqHdrs + uiNumSeqHdrs, 0, sizeof( studiohdr_t* ) * MAX_SEQGROUPS - uiNumSeqHdrs );
+
+	memcpy( m_Textures, pTextureHdr, uiNumTextures );
+	memset( m_Textures + uiNumTextures, 0, sizeof( GLuint ) * MAX_TEXTURES - uiNumTextures );
+}
+
+CStudioModel::~CStudioModel()
+{
+	if( !m_pStudioHdr )
+		return;
+
+	// deleting textures
+	glDeleteTextures( m_pTextureHdr->numtextures, m_Textures );
+
+	for( auto pSeqHdr : m_pSeqHdrs )
+	{
+		delete[] pSeqHdr;
+	}
+
+	//Textures were in a T.mdl, free separately.
+	if( m_pTextureHdr != m_pStudioHdr )
+	{
+		delete[] m_pTextureHdr;
+	}
+
+	delete[] m_pStudioHdr;
+}
+
+mstudioanim_t* CStudioModel::GetAnim( mstudioseqdesc_t* pseqdesc ) const
+{
+	mstudioseqgroup_t* pseqgroup = m_pStudioHdr->GetSequenceGroup( pseqdesc->seqgroup );
+
+	if( pseqdesc->seqgroup == 0 )
+	{
+		return ( mstudioanim_t * ) ( ( byte * ) m_pStudioHdr + pseqgroup->unused2 + pseqdesc->animindex );
+	}
+
+	return ( mstudioanim_t * ) ( ( byte * ) m_pSeqHdrs[ pseqdesc->seqgroup ] + pseqdesc->animindex );
+}
+
+mstudiomodel_t* CStudioModel::GetModelByBodyPart( const int iBody, const int iBodyPart ) const
+{
+	mstudiobodyparts_t* pbodypart = m_pStudioHdr->GetBodypart( iBodyPart );
+
+	int index = iBody / pbodypart->base;
+	index = index % pbodypart->nummodels;
+
+	return ( mstudiomodel_t * ) ( ( byte * ) m_pStudioHdr + pbodypart->modelindex ) + index;
+}
+
+bool CStudioModel::CalculateBodygroup( const int iGroup, const int iValue, int& iInOutBodygroup ) const
+{
+	if( iGroup > m_pStudioHdr->numbodyparts )
+		return false;
+
+	const mstudiobodyparts_t* const pbodypart = m_pStudioHdr->GetBodypart( iGroup );
+
+	int iCurrent = ( iInOutBodygroup / pbodypart->base ) % pbodypart->nummodels;
+
+	if( iValue >= pbodypart->nummodels )
+		return true;
+
+	iInOutBodygroup = ( iInOutBodygroup - ( iCurrent * pbodypart->base ) + ( iValue * pbodypart->base ) );
+
+	return true;
+}
+
+GLuint CStudioModel::GetTextureId( const int iIndex ) const
+{
+	const studiohdr_t* const pHdr = GetTextureHeader();
+
+	if( !pHdr )
+		return GL_INVALID_TEXTURE_ID;
+
+	if( iIndex < 0 || iIndex >= pHdr->numtextures )
+		return GL_INVALID_TEXTURE_ID;
+
+	return m_Textures[ iIndex ];
+}
+
+void CStudioModel::ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte *pal, GLuint textureId, const bool bFilterTextures )
+{
+	glDeleteTextures( 1, &textureId );
+
+	UploadTexture( ptexture, data, pal, textureId, bFilterTextures );
+}
+
+namespace
+{
+/**
+*	Loads a single studio header.
+*/
+StudioModelLoadResult LoadStudioHeader( const char* const pszFilename, const bool bAllowSeqGroup, studiohdr_t*& pOutStudioHdr )
+{
+	// load the model
+	FILE* pFile = fopen( pszFilename, "rb" );
+
+	if( !pFile )
+		return StudioModelLoadResult::FAILURE;
+
+	fseek( pFile, 0, SEEK_END );
+	const size_t size = ftell( pFile );
+	fseek( pFile, 0, SEEK_SET );
+
+	std::unique_ptr<byte[]> buffer( new byte[ size ] );
+
+	studiohdr_t* pStudioHdr = reinterpret_cast<studiohdr_t*>( buffer.get() );
+
+	if( !pStudioHdr )
+	{
+		fclose( pFile );
+		return StudioModelLoadResult::FAILURE;
+	}
+
+	const size_t uiRead = fread( pStudioHdr, size, 1, pFile );
+	fclose( pFile );
+
+	if( uiRead != 1 )
+		return StudioModelLoadResult::FAILURE;
+
+	if( strncmp( reinterpret_cast<const char*>( &pStudioHdr->id ), STUDIOMDL_HDR_ID, 4 ) &&
+		strncmp( reinterpret_cast<const char*>( &pStudioHdr->id ), STUDIOMDL_SEQ_ID, 4 ) )
+	{
+		return StudioModelLoadResult::FAILURE;
+	}
+
+	if( !bAllowSeqGroup && !strncmp( reinterpret_cast<const char*>( &pStudioHdr->id ), STUDIOMDL_SEQ_ID, 4 ) )
+	{
+		return StudioModelLoadResult::FAILURE;
+	}
+
+	if( pStudioHdr->version != STUDIO_VERSION )
+	{
+		return StudioModelLoadResult::VERSIONDIFFERS;
+	}
+
+	pOutStudioHdr = pStudioHdr;
+
+	buffer.release();
+
+	return StudioModelLoadResult::SUCCESS;
+}
+}
+
 StudioModelLoadResult LoadStudioModel( const char* const pszFilename, const bool bFilterTextures, CStudioModel*& pModel )
 {
 	//Takes care of cleanup on failure.
@@ -317,5 +354,157 @@ StudioModelLoadResult LoadStudioModel( const char* const pszFilename, const bool
 	pModel = studioModel.release();
 
 	return StudioModelLoadResult::SUCCESS;
+}
+
+bool SaveStudioModel( const char* const pszFilename, const CStudioModel* const pModel )
+{
+	if( !pszFilename )
+		return false;
+
+	if( !pModel )
+		return false;
+
+	FILE* pFile = fopen( pszFilename, "wb" );
+
+	if( !pFile )
+		return false;
+
+	const studiohdr_t* const pStudioHdr = pModel->GetStudioHeader();
+
+	bool bSuccess = fwrite( pStudioHdr, sizeof( byte ), pStudioHdr->length, pFile ) == pStudioHdr->length;
+
+	fclose( pFile );
+
+	if( !bSuccess )
+	{
+		return false;
+	}
+
+	const studiohdr_t* const pTextureHdr = pModel->GetTextureHeader();
+
+	// write texture model
+	if( pTextureHdr != pStudioHdr )
+	{
+		char texturename[ MAX_PATH_LENGTH ];
+
+		strcpy( texturename, pszFilename );
+		strcpy( &texturename[ strlen( texturename ) - 4 ], "T.mdl" );
+
+		pFile = fopen( texturename, "wb" );
+
+		if( !pFile )
+			return false;
+
+		bSuccess = fwrite( pTextureHdr, sizeof( byte ), pTextureHdr->length, pFile ) == pTextureHdr->length;
+		fclose( pFile );
+
+		if( !bSuccess )
+		{
+			return false;
+		}
+	}
+
+	// write seq groups
+	if( pStudioHdr->numseqgroups > 1 )
+	{
+		char seqgroupname[ MAX_PATH_LENGTH ];
+
+		for( int i = 1; i < pStudioHdr->numseqgroups; i++ )
+		{
+			strcpy( seqgroupname, pszFilename );
+			sprintf( &seqgroupname[ strlen( seqgroupname ) - 4 ], "%02d.mdl", i );
+
+			pFile = fopen( seqgroupname, "wb" );
+
+			if( !pFile )
+				return false;
+
+			const auto pAnimHdr = pModel->GetSeqGroupHeader( i );
+
+			bSuccess = fwrite( pAnimHdr, sizeof( byte ), pAnimHdr->length, pFile ) == pAnimHdr->length;
+			fclose( pFile );
+
+			if( !bSuccess )
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+void ScaleMeshes( CStudioModel* pStudioModel, const float flScale )
+{
+	assert( pStudioModel );
+
+	auto pStudioHdr = pStudioModel->GetStudioHeader();
+
+	int iBodygroup = 0;
+
+	// scale verts
+	for( int i = 0; i < pStudioHdr->numbodyparts; i++ )
+	{
+		mstudiobodyparts_t *pbodypart = pStudioHdr->GetBodypart( i );
+		for( int j = 0; j < pbodypart->nummodels; j++ )
+		{
+			pStudioModel->CalculateBodygroup( i, j, iBodygroup );
+
+			int bodypart = i;
+
+			if( bodypart > pStudioHdr->numbodyparts )
+			{
+				// Con_DPrintf ("StudioModel::SetupModel: no such bodypart %d\n", bodypart);
+				bodypart = 0;
+			}
+
+			mstudiomodel_t* pModel = pStudioModel->GetModelByBodyPart( iBodygroup, bodypart );
+
+			glm::vec3 *pstudioverts = ( glm::vec3 * )( ( byte * ) pStudioHdr + pModel->vertindex );
+
+			for( int k = 0; k < pModel->numverts; k++ )
+			{
+				pstudioverts[ k ] *= flScale;
+			}
+		}
+	}
+
+	// scale complex hitboxes
+	mstudiobbox_t *pbboxes = pStudioHdr->GetHitBoxes();
+
+	for( int i = 0; i < pStudioHdr->numhitboxes; i++ )
+	{
+		pbboxes[ i ].bbmin *= flScale;
+		pbboxes[ i ].bbmax *= flScale;
+	}
+
+	// scale bounding boxes
+	mstudioseqdesc_t *pseqdesc = pStudioHdr->GetSequences();
+
+	for( int i = 0; i < pStudioHdr->numseq; i++ )
+	{
+		pseqdesc[ i ].bbmin *= flScale;
+		pseqdesc[ i ].bbmax *= flScale;
+	}
+
+	// maybe scale exeposition, pivots, attachments
+}
+
+void ScaleBones( CStudioModel* pStudioModel, const float flScale )
+{
+	assert( pStudioModel );
+
+	const auto pStudioHdr = pStudioModel->GetStudioHeader();
+
+	mstudiobone_t* const pbones = pStudioHdr->GetBones();
+
+	for( int i = 0; i < pStudioHdr->numbones; i++ )
+	{
+		for( int j = 0; j < 3; j++ )
+		{
+			pbones[ i ].value[ j ] *= flScale;
+			pbones[ i ].scale[ j ] *= flScale;
+		}
+	}
 }
 }

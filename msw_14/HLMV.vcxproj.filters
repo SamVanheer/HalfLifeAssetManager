@@ -300,20 +300,11 @@
     <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CTexturesPanel.cpp">
       <Filter>Source Files\tools\hlmv\ui\controlpanels</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\game\studiomodel\studio_render.cpp">
-      <Filter>Source Files\game\studiomodel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\game\studiomodel\studio_utils.cpp">
-      <Filter>Source Files\game\studiomodel</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\graphics\BMPFile.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\utility\mathlib.cpp">
       <Filter>Source Files\utility</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp">
-      <Filter>Source Files\game\studiomodel</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cvar\CConCommand.cpp">
       <Filter>Source Files\cvar</Filter>
@@ -354,10 +345,10 @@
     <ClCompile Include="..\src\game\entity\CBaseEntityList.cpp">
       <Filter>Source Files\game\entity</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer2.cpp">
+    <ClCompile Include="..\src\game\studiomodel\StudioSorting.cpp">
       <Filter>Source Files\game\studiomodel</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\game\studiomodel\StudioSorting.cpp">
+    <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp">
       <Filter>Source Files\game\studiomodel</Filter>
     </ClCompile>
   </ItemGroup>
@@ -557,9 +548,6 @@
     <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CTexturesPanel.h">
       <Filter>Header Files\tools\hlmv\ui\controlpanels</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\game\studiomodel\StudioModel.h">
-      <Filter>Header Files\game\studiomodel</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\game\studiomodel\studio.h">
       <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
@@ -574,9 +562,6 @@
     </ClInclude>
     <ClInclude Include="..\src\graphics\BMPFile.h">
       <Filter>Header Files\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h">
-      <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
     <ClInclude Include="..\src\cvar\CBaseConCommand.h">
       <Filter>Header Files\cvar</Filter>
@@ -629,10 +614,10 @@
     <ClInclude Include="..\src\game\entity\EntityConstants.h">
       <Filter>Header Files\game\entity</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer2.h">
+    <ClInclude Include="..\src\game\studiomodel\StudioSorting.h">
       <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\game\studiomodel\StudioSorting.h">
+    <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h">
       <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
   </ItemGroup>
