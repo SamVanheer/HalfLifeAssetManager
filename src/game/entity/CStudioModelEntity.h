@@ -46,7 +46,7 @@ private:
 	studiomodel::CStudioModel* m_pModel = nullptr;
 
 	int		m_iSequence			= 0;				// sequence index
-	int		m_iBodyGroup		= 0;				// bodypart selection	
+	int		m_iBodygroup		= 0;				// bodypart selection	
 	int		m_iSkin				= 0;				// skin group selection
 	byte	m_uiController[ STUDIO_MAX_CONTROLLERS ] = { 0, 0, 0, 0 };	// bone controllers
 	byte	m_uiMouth			= 0;				// mouth position
@@ -66,9 +66,8 @@ public:
 
 	void GetSequenceInfo( float& flFrameRate, float& flGroundSpeed ) const;
 
-	//TODO: lowercase the G
-	int GetBodyGroup() const { return m_iBodyGroup; }
-	int SetBodyGroup( const int iBodyGroup, const int iValue );
+	int GetBodygroup() const { return m_iBodygroup; }
+	int SetBodygroup( const int iBodygroup, const int iValue );
 
 	int GetSkin() const { return m_iSkin; }
 	int SetSkin( const int iSkin );

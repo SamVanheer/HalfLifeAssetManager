@@ -4,6 +4,8 @@
 
 #include "utility/Color.h"
 
+#include "cvar/CCVarSystem.h"
+
 #include "../CHLMV.h"
 #include "../../settings/CHLMVSettings.h"
 #include "../../CHLMVState.h"
@@ -170,10 +172,13 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	GetBoxSizer()->Add( pSizer );
 
 	m_pEventInfo->Show( false );
+
+	cvar::cvars().InstallGlobalCVarHandler( this );
 }
 
 CSequencesPanel::~CSequencesPanel()
 {
+	cvar::cvars().RemoveGlobalCVarHandler( this );
 }
 
 void CSequencesPanel::Draw3D( const wxSize& size )
@@ -370,9 +375,7 @@ void CSequencesPanel::SetSequence( int iIndex )
 
 		m_pSequence->Select( iIndex );
 
-		m_pHLMV->GetState()->sequence = iIndex;
-
-		pEntity->SetSequence( m_pHLMV->GetState()->sequence );
+		pEntity->SetSequence( iIndex );
 
 		mstudioseqdesc_t nullSeq;
 
@@ -412,6 +415,14 @@ void CSequencesPanel::SetFrame( int iFrame )
 		iPos = iLast > 0 ? iLast - 1 : 0;
 
 	m_pSequenceFrame->SetInsertionPoint( iPos );
+}
+
+void CSequencesPanel::HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue )
+{
+	if( strcmp( cvar.GetName(), "s_ent_playsounds" ) == 0 )
+	{
+		m_pPlaySound->SetValue( cvar.GetBool() );
+	}
 }
 
 void CSequencesPanel::SetFrameControlsEnabled( const bool bState )
@@ -569,7 +580,7 @@ void CSequencesPanel::EventChanged( wxCommandEvent& event )
 
 void CSequencesPanel::PlaySoundChanged( wxCommandEvent& event )
 {
-	m_pHLMV->GetState()->playSound = m_pPlaySound->GetValue();
+	cvar::cvars().Command( wxString::Format( "s_ent_playsounds %d", m_pPlaySound->GetValue() ? 1 : 0 ).c_str() );
 }
 
 static void GetDoubleFromTextCtrl( wxTextCtrl* const pCtrl, vec_t& flInOutValue )

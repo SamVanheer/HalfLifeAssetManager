@@ -3,11 +3,15 @@
 
 #include "soundsystem/CSoundSystem.h"
 
+#include "cvar/CCVar.h"
+
 #include "game/studiomodel/CStudioModel.h"
 
 #include "game/studiomodel/CStudioModelRenderer.h"
 
 #include "CStudioModelEntity.h"
+
+static cvar::CCVar s_ent_playsounds( "s_ent_playsounds", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "Whether or not to play sounds triggered by animation events" ) );
 
 LINK_ENTITY_TO_CLASS( studiomodel, CStudioModelEntity );
 
@@ -38,7 +42,7 @@ bool CStudioModelEntity::Spawn()
 	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
 
 	for( int n = 0; n < pStudioHdr->numbodyparts; ++n )
-		SetBodyGroup( n, 0 );
+		SetBodygroup( n, 0 );
 
 	SetSkin( 0 );
 
@@ -103,8 +107,7 @@ void CStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 	case SCRIPT_EVENT_SOUND_VOICE:
 	case SCRIPT_CLIENT_EVENT_SOUND:
 		{
-			//TODO: re-add this.
-			//if( m_pSettings->playSound )
+			if( s_ent_playsounds.GetBool() )
 			{
 				soundSystem().PlaySound( event.pszOptions, 1.0f, soundsystem::PITCH_NORM );
 			}
@@ -267,15 +270,15 @@ void CStudioModelEntity::GetSequenceInfo( float& flFrameRate, float& flGroundSpe
 	}
 }
 
-int CStudioModelEntity::SetBodyGroup( const int iBodyGroup, const int iValue )
+int CStudioModelEntity::SetBodygroup( const int iBodygroup, const int iValue )
 {
 	if( !m_pModel )
 		return 0;
 
-	if( iBodyGroup > m_pModel->GetStudioHeader()->numbodyparts )
+	if( iBodygroup > m_pModel->GetStudioHeader()->numbodyparts )
 		return -1;
 
-	if( m_pModel->CalculateBodygroup( iBodyGroup, iValue, m_iBodyGroup ) )
+	if( m_pModel->CalculateBodygroup( iBodygroup, iValue, m_iBodygroup ) )
 		return iValue;
 
 	return -1;
@@ -515,7 +518,7 @@ void CStudioModelEntity::ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) c
 
 mstudiomodel_t* CStudioModelEntity::GetModelByBodyPart( const int iBodyPart ) const
 {
-	return m_pModel->GetModelByBodyPart( m_iBodyGroup, iBodyPart );
+	return m_pModel->GetModelByBodyPart( m_iBodygroup, iBodyPart );
 }
 
 CStudioModelEntity::MeshList_t CStudioModelEntity::ComputeMeshList( const int iTexture ) const

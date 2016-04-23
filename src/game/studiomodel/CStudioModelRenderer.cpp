@@ -22,15 +22,15 @@
 glm::vec3 g_vright = { 50, 50, 0 };		// needs to be set to viewer's right in order for chrome to work
 float g_lambert = 1.5;
 
-cvar::CCVar g_ShowBones( "r.showbones", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model bones" ) );
-cvar::CCVar g_ShowAttachments( "r.showattachments", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model attachments" ) );
-cvar::CCVar g_ShowEyePosition( "r.showeyeposition", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model eye position" ) );
-cvar::CCVar g_ShowHitboxes( "r.showhitboxes", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model hitboxes" ) );
+cvar::CCVar g_ShowBones( "r_showbones", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model bones" ) );
+cvar::CCVar g_ShowAttachments( "r_showattachments", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model attachments" ) );
+cvar::CCVar g_ShowEyePosition( "r_showeyeposition", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model eye position" ) );
+cvar::CCVar g_ShowHitboxes( "r_showhitboxes", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model hitboxes" ) );
 
 //TODO: this is temporary until lighting can be moved somewhere else
 
 DEFINE_COLOR_CVAR( , r_lighting, 255, 255, 255, "Lighting", cvar::CCVarArgsBuilder().Callback( cvar::ColorCVarChanged ) );
-DEFINE_COLOR_CVAR( , r_wireframecolor, 255, 0, 0, "Wireframe overlay", cvar::CCVarArgsBuilder().Callback( cvar::ColorCVarChanged ) );
+DEFINE_COLOR_CVAR( , r_wireframecolor, 255, 0, 0, "Wireframe overlay color", cvar::CCVarArgsBuilder().Callback( cvar::ColorCVarChanged ) );
 
 namespace studiomodel
 {

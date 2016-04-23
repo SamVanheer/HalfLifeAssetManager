@@ -85,4 +85,13 @@ T clamp( const T& value, const T& min, const T& max )
 	return std::max( min, std::min( max, value ) );
 }
 
+/**
+*	Returns a 1 bit at the given position.
+*/
+template<typename T>
+inline constexpr T Bit( const size_t shift )
+{
+	return static_cast<T>( 1 << shift );
+}
+
 #endif //COMMON_UTILITY_H

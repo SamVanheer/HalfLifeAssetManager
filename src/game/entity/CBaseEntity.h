@@ -68,12 +68,21 @@ public:
 	static CBaseEntity* Create( const char* const pszClassName, const glm::vec3& vecOrigin, const glm::vec3& vecAngles, const bool bSpawn = true );
 
 private:
+	entity::Flags_t m_Flags = entity::FL_NONE;
 	glm::vec3 m_vecOrigin;
 	glm::vec3 m_vecAngles;
 
 	float m_flTransparency = 1.0f;
 
 public:
+	entity::Flags_t GetFlags() const { return m_Flags; }
+	bool AnyFlagsSet( const entity::Flags_t flags ) const { return ( m_Flags & flags ) != 0; }
+	bool AllFlagsSet( const entity::Flags_t flags ) const { return ( m_Flags & flags ) == flags; }
+
+	void InitFlags( const entity::Flags_t flags ) { m_Flags = flags; }
+	void SetFlags( const entity::Flags_t flags ) { m_Flags |= flags; }
+	void ClearFlags( const entity::Flags_t flags ) { m_Flags &= ~flags; }
+
 	const glm::vec3& GetOrigin() const { return m_vecOrigin; }
 	void SetOrigin( const glm::vec3& vecOrigin ) { m_vecOrigin = vecOrigin; }
 

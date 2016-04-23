@@ -80,10 +80,6 @@ public:
 
 	bool playSequence;
 
-	int sequence;
-
-	bool playSound;
-
 	/**
 	*	How many polygons were drawn in the last frame. Does not include things like hitboxes or attachments, only the actual model.
 	*/

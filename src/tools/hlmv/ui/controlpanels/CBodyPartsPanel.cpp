@@ -264,7 +264,7 @@ void CBodyPartsPanel::SetSubmodel( int iIndex )
 		return;
 
 	m_pSubmodel->Select( iIndex );
-	pEntity->SetBodyGroup( m_pBodypart->GetSelection(), iIndex );
+	pEntity->SetBodygroup( m_pBodypart->GetSelection(), iIndex );
 }
 
 void CBodyPartsPanel::SetSkin( int iIndex )

@@ -1,13 +1,15 @@
 #ifndef CONTROLPANELS_CSEQUENCESPANEL_H
 #define CONTROLPANELS_CSEQUENCESPANEL_H
 
+#include "cvar/CCVar.h"
+
 #include "CBaseControlPanel.h"
 
 class wxToggleButton;
 
 namespace hlmv
 {
-class CSequencesPanel final : public CBaseControlPanel
+class CSequencesPanel final : public CBaseControlPanel, public cvar::ICVarHandler
 {
 private:
 	//Divided by 10 to get a multiplier
@@ -41,6 +43,8 @@ public:
 
 protected:
 	wxDECLARE_EVENT_TABLE();
+
+	virtual void HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue ) override;
 
 private:
 	void SetFrameControlsEnabled( const bool bState );

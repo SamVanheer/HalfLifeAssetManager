@@ -33,7 +33,7 @@ class CStudioModel;
 *	@param pModel The model, if it was successfully loaded in.
 *	@return StudioModelLoadResult::SUCCESS on success, an error code in all other cases.
 */
-StudioModelLoadResult LoadStudioModel( const char* const pszFilename, const bool bFilterTextures, CStudioModel*& pModel );
+StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioModel*& pModel );
 
 /**
 *	Saves a studio model.
@@ -53,7 +53,7 @@ private:
 	typedef std::vector<MeshList_t> TextureMeshMap_t;
 
 protected:
-	friend StudioModelLoadResult LoadStudioModel( const char* const pszFilename, const bool bFilterTextures, CStudioModel*& pModel );
+	friend StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioModel*& pModel );
 
 public:
 	static const size_t MAX_SEQGROUPS = 32;
@@ -76,7 +76,7 @@ public:
 
 	GLuint			GetTextureId( const int iIndex ) const;
 
-	void			ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte *pal, GLuint textureId, const bool bFilterTextures );
+	void			ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte *pal, GLuint textureId );
 
 private:
 	studiohdr_t*	m_pStudioHdr;

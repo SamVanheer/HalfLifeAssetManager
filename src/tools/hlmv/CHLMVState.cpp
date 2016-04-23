@@ -56,10 +56,6 @@ void CHLMVState::ResetToDefaults()
 
 	playSequence = true;
 
-	sequence = 0;
-
-	playSound = false;
-
 	drawnPolys = 0;
 
 	wireframeOverlay = false;

@@ -353,8 +353,7 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 	memcpy( ( byte* ) pHdr + texture.index, texData.get(), image.GetWidth() * image.GetHeight() );
 	memcpy( ( byte* ) pHdr + texture.index + image.GetWidth() * image.GetHeight(), convPal, PALETTE_SIZE );
 
-	//TODO get filter textures from somewhere
-	pStudioModel->ReplaceTexture( &texture, texData.get(), convPal, pStudioModel->GetTextureId( iTextureIndex ), true );
+	pStudioModel->ReplaceTexture( &texture, texData.get(), convPal, pStudioModel->GetTextureId( iTextureIndex ) );
 }
 
 void CTexturesPanel::ExportTexture( wxCommandEvent& event )

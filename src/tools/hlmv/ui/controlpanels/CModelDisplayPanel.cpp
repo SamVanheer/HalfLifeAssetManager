@@ -154,7 +154,7 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 	{
 	case CheckBox::SHOW_HITBOXES:
 		{
-			cvar::cvars().Command( wxString::Format( "r.showhitboxes %d", bValue ? 1 : 0 ).c_str() );
+			cvar::cvars().Command( wxString::Format( "r_showhitboxes %d", bValue ? 1 : 0 ).c_str() );
 			break;
 		}
 
@@ -172,7 +172,7 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 
 	case CheckBox::SHOW_BONES:
 		{
-			cvar::cvars().Command( wxString::Format( "r.showbones %d", bValue ? 1 : 0 ).c_str() );
+			cvar::cvars().Command( wxString::Format( "r_showbones %d", bValue ? 1 : 0 ).c_str() );
 
 			break;
 		}
@@ -191,7 +191,7 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 
 	case CheckBox::SHOW_ATTACHMENTS:
 		{
-			cvar::cvars().Command( wxString::Format( "r.showattachments %d", bValue ? 1 : 0 ).c_str() );
+			cvar::cvars().Command( wxString::Format( "r_showattachments %d", bValue ? 1 : 0 ).c_str() );
 			break;
 		}
 
@@ -203,7 +203,7 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 
 	case CheckBox::SHOW_EYE_POSITION:
 		{
-			cvar::cvars().Command( wxString::Format( "r.showeyeposition %d", bValue ? 1 : 0 ).c_str() );
+			cvar::cvars().Command( wxString::Format( "r_showeyeposition %d", bValue ? 1 : 0 ).c_str() );
 			break;
 		}
 
@@ -276,19 +276,19 @@ void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
 
 void CModelDisplayPanel::HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue )
 {
-	if( strcmp( cvar.GetName(), "r.showbones" ) == 0 )
+	if( strcmp( cvar.GetName(), "r_showbones" ) == 0 )
 	{
 		SetCheckBox( CheckBox::SHOW_BONES, cvar.GetBool() );
 	}
-	else if( strcmp( cvar.GetName(), "r.showattachments" ) == 0 )
+	else if( strcmp( cvar.GetName(), "r_showattachments" ) == 0 )
 	{
 		SetCheckBox( CheckBox::SHOW_ATTACHMENTS, cvar.GetBool() );
 	}
-	else if( strcmp( cvar.GetName(), "r.showeyeposition" ) == 0 )
+	else if( strcmp( cvar.GetName(), "r_showeyeposition" ) == 0 )
 	{
 		SetCheckBox( CheckBox::SHOW_EYE_POSITION, cvar.GetBool() );
 	}
-	else if( strcmp( cvar.GetName(), "r.showhitboxes" ) == 0 )
+	else if( strcmp( cvar.GetName(), "r_showhitboxes" ) == 0 )
 	{
 		SetCheckBox( CheckBox::SHOW_HITBOXES, cvar.GetBool() );
 	}

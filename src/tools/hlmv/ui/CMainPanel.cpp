@@ -168,7 +168,7 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 
 	studiomodel::CStudioModel* pModel;
 
-	const auto res = studiomodel::LoadStudioModel( szFilename.c_str(), true, pModel );
+	const auto res = studiomodel::LoadStudioModel( szFilename.c_str(), pModel );
 
 	switch( res )
 	{

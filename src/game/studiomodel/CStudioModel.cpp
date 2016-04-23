@@ -1,6 +1,8 @@
 #include <cassert>
 #include <memory>
 
+#include "cvar/CCVar.h"
+
 #include "graphics/GraphicsHelpers.h"
 #include "graphics/Palette.h"
 
@@ -10,6 +12,8 @@ namespace studiomodel
 {
 namespace
 {
+static cvar::CCVar r_filtertextures( "r_filtertextures", cvar::CCVarArgsBuilder().FloatValue( 1 ).HelpInfo( "Whether to filter textures or not" ) );
+
 void UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId, const bool bFilterTextures )
 {
 	glBindTexture( GL_TEXTURE_2D, textureId );
@@ -233,11 +237,11 @@ GLuint CStudioModel::GetTextureId( const int iIndex ) const
 	return m_Textures[ iIndex ];
 }
 
-void CStudioModel::ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte *pal, GLuint textureId, const bool bFilterTextures )
+void CStudioModel::ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte *pal, GLuint textureId )
 {
 	glDeleteTextures( 1, &textureId );
 
-	UploadTexture( ptexture, data, pal, textureId, bFilterTextures );
+	UploadTexture( ptexture, data, pal, textureId, r_filtertextures.GetBool() );
 }
 
 namespace
@@ -297,7 +301,7 @@ StudioModelLoadResult LoadStudioHeader( const char* const pszFilename, const boo
 }
 }
 
-StudioModelLoadResult LoadStudioModel( const char* const pszFilename, const bool bFilterTextures, CStudioModel*& pModel )
+StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioModel*& pModel )
 {
 	//Takes care of cleanup on failure.
 	std::unique_ptr<CStudioModel> studioModel( new CStudioModel() );
@@ -349,7 +353,7 @@ StudioModelLoadResult LoadStudioModel( const char* const pszFilename, const bool
 		}
 	}
 
-	UploadTextures( *studioModel->m_pTextureHdr, studioModel->m_Textures, bFilterTextures );
+	UploadTextures( *studioModel->m_pTextureHdr, studioModel->m_Textures, r_filtertextures.GetBool() );
 
 	pModel = studioModel.release();
 
