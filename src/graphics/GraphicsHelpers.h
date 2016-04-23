@@ -97,6 +97,11 @@ unsigned int DrawWireframeOverlay( StudioModel& model );
 *	@param flSideLength			Length of one side of the floor
 */
 unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength );
+
+/**
+*	Draws a box using an array of 8 vectors as corner points.
+*/
+void DrawBox( const glm::vec3* const v );
 }
 }
 

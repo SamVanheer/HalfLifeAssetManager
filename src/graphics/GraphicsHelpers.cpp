@@ -1,5 +1,7 @@
 #include <cassert>
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "common/Logging.h"
 
 #include "utility/Color.h"
@@ -387,7 +389,7 @@ unsigned int DrawWireframeOverlay( StudioModel& model )
 {
 	SetupRenderMode( RenderMode::WIREFRAME );
 
-	return studiomodel::renderer().DrawModel( true );
+	return studiomodel::renderer().DrawModel( &model, true );
 }
 
 unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength )
@@ -434,7 +436,7 @@ unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode,
 
 	glClipPlane( GL_CLIP_PLANE0, flClipPlane );
 
-	unsigned int uiDrawnPolys = studiomodel::renderer().DrawModel();
+	unsigned int uiDrawnPolys = studiomodel::renderer().DrawModel( &model );
 
 	glDisable( GL_CLIP_PLANE0 );
 
@@ -449,6 +451,31 @@ unsigned int DrawMirroredModel( StudioModel& model, const RenderMode renderMode,
 	glDisable( GL_STENCIL_TEST );
 
 	return uiDrawnPolys;
+}
+
+void DrawBox( const glm::vec3* const v )
+{
+	glBegin( GL_QUAD_STRIP );
+	for( int i = 0; i < 10; ++i )
+	{
+		glVertex3fv( glm::value_ptr( v[ i & 7 ] ) );
+	}
+	glEnd();
+
+	glBegin( GL_QUAD_STRIP );
+	glVertex3fv( glm::value_ptr( v[ 6 ] ) );
+	glVertex3fv( glm::value_ptr( v[ 0 ] ) );
+	glVertex3fv( glm::value_ptr( v[ 4 ] ) );
+	glVertex3fv( glm::value_ptr( v[ 2 ] ) );
+	glEnd();
+
+	glBegin( GL_QUAD_STRIP );
+	glVertex3fv( glm::value_ptr( v[ 1 ] ) );
+	glVertex3fv( glm::value_ptr( v[ 7 ] ) );
+	glVertex3fv( glm::value_ptr( v[ 3 ] ) );
+	glVertex3fv( glm::value_ptr( v[ 5 ] ) );
+	glEnd();
+
 }
 }
 }

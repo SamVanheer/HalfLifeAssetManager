@@ -28,10 +28,6 @@
 
 const int CONTROLLER_MOUTH_INDEX	= 4;
 
-//Mugsy - upped the maximum texture size to 512. All changes are the replacement of '256'
-//with this define, MAX_TEXTURE_DIMS
-#define MAX_TEXTURE_DIMS 512
-
 struct CAnimEvent;
 
 /**

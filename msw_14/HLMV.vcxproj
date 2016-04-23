@@ -30,7 +30,15 @@
     <ClCompile Include="..\src\cvar\CVarUtils.cpp" />
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
     <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp" />
+    <ClCompile Include="..\src\game\entity\CBaseAnimating.cpp" />
+    <ClCompile Include="..\src\game\entity\CBaseEntity.cpp" />
+    <ClCompile Include="..\src\game\entity\CBaseEntityList.cpp" />
+    <ClCompile Include="..\src\game\entity\CEntityDict.cpp" />
+    <ClCompile Include="..\src\game\entity\CStudioModelEntity.cpp" />
+    <ClCompile Include="..\src\game\studiomodel\CStudioModel.cpp" />
     <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp" />
+    <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer2.cpp" />
+    <ClCompile Include="..\src\game\studiomodel\StudioSorting.cpp" />
     <ClCompile Include="..\src\game\studiomodel\studio_render.cpp" />
     <ClCompile Include="..\src\game\studiomodel\studio_utils.cpp" />
     <ClCompile Include="..\src\graphics\BMPFile.cpp" />
@@ -90,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\common\CGlobals.h" />
+    <ClInclude Include="..\src\common\Class.h" />
     <ClInclude Include="..\src\common\Logging.h" />
     <ClInclude Include="..\src\common\Platform.h" />
     <ClInclude Include="..\src\common\Const.h" />
@@ -104,10 +113,19 @@
     <ClInclude Include="..\src\filesystem\CFileSystem.h" />
     <ClInclude Include="..\src\filesystem\FileSystemConstants.h" />
     <ClInclude Include="..\src\game\CAnimEvent.h" />
+    <ClInclude Include="..\src\game\entity\CBaseAnimating.h" />
+    <ClInclude Include="..\src\game\entity\CBaseEntity.h" />
+    <ClInclude Include="..\src\game\entity\CBaseEntityList.h" />
+    <ClInclude Include="..\src\game\entity\CEntityDict.h" />
+    <ClInclude Include="..\src\game\entity\CStudioModelEntity.h" />
+    <ClInclude Include="..\src\game\entity\EntityConstants.h" />
     <ClInclude Include="..\src\game\Events.h" />
+    <ClInclude Include="..\src\game\studiomodel\CStudioModel.h" />
     <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h" />
+    <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer2.h" />
     <ClInclude Include="..\src\game\studiomodel\studio.h" />
     <ClInclude Include="..\src\game\studiomodel\StudioModel.h" />
+    <ClInclude Include="..\src\game\studiomodel\StudioSorting.h" />
     <ClInclude Include="..\src\graphics\BMPFile.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />
     <ClInclude Include="..\src\graphics\GLRenderTarget.h" />

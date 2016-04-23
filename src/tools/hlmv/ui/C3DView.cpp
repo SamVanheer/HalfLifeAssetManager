@@ -18,6 +18,8 @@
 
 #include "game/studiomodel/CStudioModelRenderer.h"
 
+#include "game/entity/CStudioModelEntity.h"
+
 #include "ui/CwxOpenGL.h"
 
 #include "C3DView.h"
@@ -162,6 +164,8 @@ void C3DView::UpdateView()
 
 		//Allow client events.
 		m_pHLMV->GetState()->GetStudioModel()->DispatchAnimEvents( listener, true, flDeltaTime );
+
+		m_pHLMV->GetState()->GetModel()->Think();
 	}
 
 	if( !m_pHLMV->GetState()->pause )
@@ -267,8 +271,6 @@ void C3DView::DrawModel()
 
 	if( pModel )
 	{
-		studiomodel::renderer().Prepare( pModel );
-
 		// setup stencil buffer and draw mirror
 		if( m_pHLMV->GetState()->mirror )
 		{
@@ -284,15 +286,19 @@ void C3DView::DrawModel()
 
 	if( pModel )
 	{
-		m_pHLMV->GetState()->drawnPolys += studiomodel::renderer().DrawModel();
+		m_pHLMV->GetState()->drawnPolys += studiomodel::renderer().DrawModel( pModel );
 
 		//Draw wireframe overlay
 		if( m_pHLMV->GetState()->wireframeOverlay )
 		{
 			m_pHLMV->GetState()->drawnPolys += graphics::helpers::DrawWireframeOverlay( *pModel );
 		}
+	}
 
-		studiomodel::renderer().Unprepare();
+	//TODO cleanup
+	if( CBaseEntity* pEntity = m_pHLMV->GetState()->GetModel() )
+	{
+		//pEntity->Draw();
 	}
 
 	//

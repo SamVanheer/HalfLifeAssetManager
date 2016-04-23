@@ -13,6 +13,10 @@
 
 #include "game/studiomodel/StudioModel.h"
 
+#include "game/studiomodel/CStudioModel.h"
+#include "game/entity/CStudioModelEntity.h"
+#include "game/entity/CBaseEntityList.h"
+
 #include "CHLMV.h"
 #include "../CHLMVState.h"
 
@@ -170,6 +174,7 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 
 	switch( result )
 	{
+	default:
 	case StudioModel::LoadResult::FAILURE:
 		{
 			wxMessageBox( wxString::Format( "Error loading model \"%s\"\n", szCFilename.data() ), "Error" );
@@ -188,10 +193,53 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 			return false;
 		}
 
-	default: break;
+	case StudioModel::LoadResult::SUCCESS: break;
 	}
 
 	m_pHLMV->GetState()->SetStudioModel( pStudioModel.release() );
+
+	studiomodel::CStudioModel* pModel;
+
+	const auto res = studiomodel::LoadStudioModel( szFilename.c_str(), true, pModel );
+
+	switch( res )
+	{
+	default:
+	case studiomodel::StudioModelLoadResult::FAILURE:
+		{
+			wxMessageBox( wxString::Format( "Error loading model \"%s\"\n", szCFilename.data() ), "Error" );
+			return false;
+		}
+
+	case studiomodel::StudioModelLoadResult::POSTLOADFAILURE:
+		{
+			wxMessageBox( wxString::Format( "Error post-loading model \"%s\"\n", szCFilename.data() ), "Error" );
+			return false;
+		}
+
+	case studiomodel::StudioModelLoadResult::VERSIONDIFFERS:
+		{
+			wxMessageBox( wxString::Format( "Error loading model \"%s\": version differs\n", szCFilename.data() ), "Error" );
+			return false;
+		}
+
+	case studiomodel::StudioModelLoadResult::SUCCESS: break;
+	}
+
+	CStudioModelEntity* pEntity = static_cast<CStudioModelEntity*>( CBaseEntity::Create( "studiomodel", glm::vec3( 0, 50, 0 ), glm::vec3(), false ) );
+
+	if( pEntity )
+	{
+		pEntity->SetModel( pModel );
+
+		pEntity->Spawn();
+
+		m_pHLMV->GetState()->SetModel( pEntity );
+	}
+	else
+	{
+		delete pModel;
+	}
 
 	InitializeUI();
 

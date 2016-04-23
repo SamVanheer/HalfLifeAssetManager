@@ -133,6 +133,12 @@
     <Filter Include="Source Files\cvar">
       <UniqueIdentifier>{c8efb600-86ff-49a1-92a8-aa60ef6c6b24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\game\entity">
+      <UniqueIdentifier>{5da57973-c54f-43c0-9505-78b2444eb3db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\game\entity">
+      <UniqueIdentifier>{b9f2852e-7db8-41f0-8be0-6e31f1a1a41f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
@@ -329,6 +335,30 @@
     </ClCompile>
     <ClCompile Include="..\src\cvar\CVarUtils.cpp">
       <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\studiomodel\CStudioModel.cpp">
+      <Filter>Source Files\game\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CBaseAnimating.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CBaseEntity.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CStudioModelEntity.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CEntityDict.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CBaseEntityList.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer2.cpp">
+      <Filter>Source Files\game\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\studiomodel\StudioSorting.cpp">
+      <Filter>Source Files\game\studiomodel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -574,6 +604,36 @@
     </ClInclude>
     <ClInclude Include="..\src\cvar\CVarUtils.h">
       <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\studiomodel\CStudioModel.h">
+      <Filter>Header Files\game\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\common\Class.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CBaseEntity.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CStudioModelEntity.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CBaseAnimating.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CEntityDict.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CBaseEntityList.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\EntityConstants.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer2.h">
+      <Filter>Header Files\game\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\studiomodel\StudioSorting.h">
+      <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

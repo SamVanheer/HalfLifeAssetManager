@@ -1,3 +1,5 @@
+#include "game/entity/CBaseEntityList.h"
+
 #include "CHLMVState.h"
 
 namespace hlmv
@@ -6,6 +8,7 @@ const glm::vec3 CHLMVState::DEFAULT_ROTATION = glm::vec3( -90.0f, 0, 0 );
 
 CHLMVState::CHLMVState()
 	: m_pStudioModel( nullptr )
+	, m_pEntity( nullptr )
 {
 	ResetToDefaults();
 }
@@ -116,6 +119,9 @@ void CHLMVState::SetOrigin( const glm::vec3& vecOrigin )
 void CHLMVState::ClearStudioModel()
 {
 	SetStudioModel( nullptr );
+
+	GetEntityList().Remove( m_pEntity );
+	m_pEntity = nullptr;
 }
 
 void CHLMVState::SetStudioModel( StudioModel* pStudioModel )
@@ -128,6 +134,11 @@ void CHLMVState::SetStudioModel( StudioModel* pStudioModel )
 
 	if( pStudioModel )
 		m_pStudioModel = pStudioModel;
+}
+
+void CHLMVState::SetModel( CStudioModelEntity* pEntity )
+{
+	m_pEntity = pEntity;
 }
 
 bool CHLMVState::DumpModelInfo( const char* const pszFilename )

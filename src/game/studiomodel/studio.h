@@ -434,7 +434,30 @@ enum
 	STUDIO_HAS_CHROME	= 0x0008	// if any of the textures have chrome on them
 };
 
+//Constants
+enum
+{
+	STUDIO_MAX_CONTROLLERS		= 4,
+	STUDIO_MOUTH_CONTROLLER		= 4,
+	STUDIO_TOTAL_CONTROLLERS	= 5,
+	STUDIO_MAX_BLENDERS			= 2
+};
+
 #define RAD_TO_STUDIO		(32768.0/M_PI)
 #define STUDIO_TO_RAD		(M_PI/32768.0)
+
+/**
+*	Id for studio headers (main and texture headers)
+*/
+#define STUDIOMDL_HDR_ID "IDST"
+
+/**
+*	Id for studio sequence groups
+*/
+#define STUDIOMDL_SEQ_ID "IDSQ"
+
+//Mugsy - upped the maximum texture size to 512. All changes are the replacement of '256'
+//with this define, MAX_TEXTURE_DIMS
+#define MAX_TEXTURE_DIMS 512
 
 #endif //GAME_STUDIOMODEL_STUDIO_H

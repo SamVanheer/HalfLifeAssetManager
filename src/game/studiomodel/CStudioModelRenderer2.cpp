@@ -9,63 +9,62 @@
 
 #include "graphics/GraphicsHelpers.h"
 
-#include "StudioModel.h"
+#include "CStudioModel.h"
 #include "StudioSorting.h"
 
-#include "CStudioModelRenderer.h"
+#include "game/entity/CStudioModelEntity.h"
+
+#include "CStudioModelRenderer2.h"
 
 //Double to float conversion
 #pragma warning( disable: 4244 )
 
-glm::vec3 g_vright = { 50, 50, 0 };		// needs to be set to viewer's right in order for chrome to work
-float g_lambert = 1.5;
-
-cvar::CCVar g_ShowBones( "r.showbones", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model bones" ) );
-cvar::CCVar g_ShowAttachments( "r.showattachments", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model attachments" ) );
-cvar::CCVar g_ShowEyePosition( "r.showeyeposition", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model eye position" ) );
-cvar::CCVar g_ShowHitboxes( "r.showhitboxes", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model hitboxes" ) );
+extern cvar::CCVar g_ShowBones;
+extern cvar::CCVar g_ShowAttachments;
+extern cvar::CCVar g_ShowEyePosition;
+extern cvar::CCVar g_ShowHitboxes;
 
 //TODO: this is temporary until lighting can be moved somewhere else
 
-DEFINE_COLOR_CVAR( , r_lighting, 255, 255, 255, "Lighting", cvar::CCVarArgsBuilder().Callback( cvar::ColorCVarChanged ) );
-DEFINE_COLOR_CVAR( , r_wireframecolor, 255, 0, 0, "Wireframe overlay", cvar::CCVarArgsBuilder().Callback( cvar::ColorCVarChanged ) );
+EXTERN_COLOR_CVAR( r_lighting );
+EXTERN_COLOR_CVAR( r_wireframecolor );
 
 namespace studiomodel
 {
 namespace
 {
-static CStudioModelRenderer g_Renderer;
+static CStudioModelRenderer2 g_Renderer2;
 }
 
-CStudioModelRenderer& renderer()
+CStudioModelRenderer2& renderer2()
 {
-	return g_Renderer;
+	return g_Renderer2;
 }
 
-CStudioModelRenderer::CStudioModelRenderer()
-{
-}
-
-CStudioModelRenderer::~CStudioModelRenderer()
+CStudioModelRenderer2::CStudioModelRenderer2()
 {
 }
 
-bool CStudioModelRenderer::Initialize()
+CStudioModelRenderer2::~CStudioModelRenderer2()
+{
+}
+
+bool CStudioModelRenderer2::Initialize()
 {
 	m_uiModelsDrawnCount = 0;
 
 	return true;
 }
 
-void CStudioModelRenderer::Shutdown()
+void CStudioModelRenderer2::Shutdown()
 {
 }
 
-void CStudioModelRenderer::RunFrame()
+void CStudioModelRenderer2::RunFrame()
 {
 }
 
-unsigned int CStudioModelRenderer::DrawModel( StudioModel* const pModel, const bool wireframeOnly )
+unsigned int CStudioModelRenderer2::DrawModel( CStudioModel* const pModel, CStudioModelEntity* const pEntity, const bool wireframeOnly )
 {
 	m_pCurrentModel = pModel;
 
@@ -76,7 +75,15 @@ unsigned int CStudioModelRenderer::DrawModel( StudioModel* const pModel, const b
 	}
 	else
 	{
-		Error( "CStudioModelRenderer::DrawModel: Prepare called with null model!\n" );
+		Error( "CStudioModelRenderer::DrawModel: Called with null model!\n" );
+		return 0;
+	}
+
+	m_pEntity = pEntity;
+
+	if( !pEntity )
+	{
+		Error( "CStudioModelRenderer::DrawModel: Called with null entity!\n" );
 		return 0;
 	}
 
@@ -92,8 +99,8 @@ unsigned int CStudioModelRenderer::DrawModel( StudioModel* const pModel, const b
 
 	glPushMatrix();
 
-	const glm::vec3& vecOrigin = m_pCurrentModel->GetOrigin();
-	const glm::vec3& vecAngles = m_pCurrentModel->GetAngles();
+	const glm::vec3& vecOrigin = m_pEntity->GetOrigin();
+	const glm::vec3& vecAngles = m_pEntity->GetAngles();
 
 	glTranslatef( vecOrigin[ 0 ], vecOrigin[ 1 ], vecOrigin[ 2 ] );
 
@@ -110,7 +117,7 @@ unsigned int CStudioModelRenderer::DrawModel( StudioModel* const pModel, const b
 	for( int i = 0; i < m_pStudioHdr->numbodyparts; i++ )
 	{
 		SetupModel( i );
-		if( m_pCurrentModel->GetTransparency() > 0.0f )
+		if( m_pEntity->GetTransparency() > 0.0f )
 			uiDrawnPolys += DrawPoints( wireframeOnly );
 	}
 
@@ -209,7 +216,7 @@ unsigned int CStudioModelRenderer::DrawModel( StudioModel* const pModel, const b
 	{
 		glDisable( GL_TEXTURE_2D );
 		glDisable( GL_CULL_FACE );
-		if( m_pCurrentModel->GetTransparency() < 1.0f )
+		if( m_pEntity->GetTransparency() < 1.0f )
 			glDisable( GL_DEPTH_TEST );
 		else
 			glEnable( GL_DEPTH_TEST );
@@ -278,7 +285,7 @@ unsigned int CStudioModelRenderer::DrawModel( StudioModel* const pModel, const b
 	return uiDrawnPolys;
 }
 
-void CStudioModelRenderer::SetUpBones()
+void CStudioModelRenderer2::SetUpBones()
 {
 	int					i;
 
@@ -296,38 +303,38 @@ void CStudioModelRenderer::SetUpBones()
 	static glm::vec3		pos4[ MAXSTUDIOBONES ];
 	static glm::vec4		q4[ MAXSTUDIOBONES ];
 
-	if( m_pCurrentModel->GetSequence() >= m_pStudioHdr->numseq )
+	if( m_pEntity->GetSequence() >= m_pStudioHdr->numseq )
 	{
-		m_pCurrentModel->SetSequence( 0 );
+		m_pEntity->SetSequence( 0 );
 	}
 
-	pseqdesc = m_pStudioHdr->GetSequence( m_pCurrentModel->GetSequence() );
+	pseqdesc = m_pStudioHdr->GetSequence( m_pEntity->GetSequence() );
 
 	panim = m_pCurrentModel->GetAnim( pseqdesc );
-	CalcRotations( pos, q, pseqdesc, panim, m_pCurrentModel->GetFrame() );
+	CalcRotations( pos, q, pseqdesc, panim, m_pEntity->GetFrame() );
 
 	if( pseqdesc->numblends > 1 )
 	{
 		float				s;
 
 		panim += m_pStudioHdr->numbones;
-		CalcRotations( pos2, q2, pseqdesc, panim, m_pCurrentModel->GetFrame() );
-		s = m_pCurrentModel->GetBlendingValue( 0 ) / 255.0;
+		CalcRotations( pos2, q2, pseqdesc, panim, m_pEntity->GetFrame() );
+		s = m_pEntity->GetBlendingByIndex( 0 ) / 255.0;
 
 		SlerpBones( q, pos, q2, pos2, s );
 
 		if( pseqdesc->numblends == 4 )
 		{
 			panim += m_pStudioHdr->numbones;
-			CalcRotations( pos3, q3, pseqdesc, panim, m_pCurrentModel->GetFrame() );
+			CalcRotations( pos3, q3, pseqdesc, panim, m_pEntity->GetFrame() );
 
 			panim += m_pStudioHdr->numbones;
-			CalcRotations( pos4, q4, pseqdesc, panim, m_pCurrentModel->GetFrame() );
+			CalcRotations( pos4, q4, pseqdesc, panim, m_pEntity->GetFrame() );
 
-			s = m_pCurrentModel->GetBlendingValue( 0 ) / 255.0;
+			s = m_pEntity->GetBlendingByIndex( 0 ) / 255.0;
 			SlerpBones( q3, pos3, q4, pos4, s );
 
-			s = m_pCurrentModel->GetBlendingValue( 1 ) / 255.0;
+			s = m_pEntity->GetBlendingByIndex( 1 ) / 255.0;
 			SlerpBones( q, pos, q3, pos3, s );
 		}
 	}
@@ -352,7 +359,7 @@ void CStudioModelRenderer::SetUpBones()
 	}
 }
 
-void CStudioModelRenderer::CalcRotations( glm::vec3 *pos, glm::vec4 *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f )
+void CStudioModelRenderer2::CalcRotations( glm::vec3 *pos, glm::vec4 *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f )
 {
 	int					i;
 	int					frame;
@@ -380,7 +387,7 @@ void CStudioModelRenderer::CalcRotations( glm::vec3 *pos, glm::vec4 *q, mstudios
 		pos[ pseqdesc->motionbone ][ 2 ] = 0.0;
 }
 
-void CStudioModelRenderer::CalcBoneAdj()
+void CStudioModelRenderer2::CalcBoneAdj()
 {
 	int					i, j;
 	float				value;
@@ -396,11 +403,11 @@ void CStudioModelRenderer::CalcBoneAdj()
 			// check for 360% wrapping
 			if( pbonecontroller[ j ].type & STUDIO_RLOOP )
 			{
-				value = m_pCurrentModel->GetBoneController( i ) * ( 360.0 / 256.0 ) + pbonecontroller[ j ].start;
+				value = m_pEntity->GetControllerByIndex( i ) * ( 360.0 / 256.0 ) + pbonecontroller[ j ].start;
 			}
 			else
 			{
-				value = m_pCurrentModel->GetBoneController(  i ) / 255.0;
+				value = m_pEntity->GetControllerByIndex(  i ) / 255.0;
 				if( value < 0 ) value = 0;
 				if( value > 1.0 ) value = 1.0;
 				value = ( 1.0 - value ) * pbonecontroller[ j ].start + value * pbonecontroller[ j ].end;
@@ -409,7 +416,7 @@ void CStudioModelRenderer::CalcBoneAdj()
 		}
 		else
 		{
-			value = m_pCurrentModel->GetMouth() / 64.0;
+			value = m_pEntity->GetMouth() / 64.0;
 			if( value > 1.0 ) value = 1.0;
 			value = ( 1.0 - value ) * pbonecontroller[ j ].start + value * pbonecontroller[ j ].end;
 			// Con_DPrintf("%d %f\n", mouthopen, value );
@@ -430,7 +437,7 @@ void CStudioModelRenderer::CalcBoneAdj()
 	}
 }
 
-void CStudioModelRenderer::CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec4& q )
+void CStudioModelRenderer2::CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec4& q )
 {
 	int					j, k;
 	glm::vec4			q1, q2;
@@ -504,8 +511,7 @@ void CStudioModelRenderer::CalcBoneQuaternion( int frame, float s, mstudiobone_t
 	}
 }
 
-
-void CStudioModelRenderer::CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec3& pos )
+void CStudioModelRenderer2::CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec3& pos )
 {
 	int					j, k;
 	mstudioanimvalue_t	*panimvalue;
@@ -557,7 +563,7 @@ void CStudioModelRenderer::CalcBonePosition( int frame, float s, mstudiobone_t *
 	}
 }
 
-void CStudioModelRenderer::SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s )
+void CStudioModelRenderer2::SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s )
 {
 	int			i;
 	glm::vec4	q3;
@@ -591,7 +597,7 @@ g_ambientlight
 g_shadelight
 ================
 */
-void CStudioModelRenderer::SetupLighting()
+void CStudioModelRenderer2::SetupLighting()
 {
 	int i;
 	g_ambientlight = 32;
@@ -623,7 +629,7 @@ pstudiomesh
 pmdl
 =================
 */
-void CStudioModelRenderer::SetupModel( int bodypart )
+void CStudioModelRenderer2::SetupModel( int bodypart )
 {
 	if( bodypart > m_pStudioHdr->numbodyparts )
 	{
@@ -631,10 +637,10 @@ void CStudioModelRenderer::SetupModel( int bodypart )
 		bodypart = 0;
 	}
 
-	m_pModel = m_pCurrentModel->GetModelByBodyPart( bodypart );
+	m_pModel = m_pEntity->GetModelByBodyPart( bodypart );
 }
 
-unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
+unsigned int CStudioModelRenderer2::DrawPoints( const bool wireframeOnly )
 {
 	int					i, j;
 	mstudiomesh_t		*pmesh;
@@ -661,7 +667,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 
 	pskinref = m_pTextureHdr->GetSkins();
 
-	const int iSkinNum = m_pCurrentModel->GetSkin();
+	const int iSkinNum = m_pEntity->GetSkin();
 
 	if( iSkinNum != 0 && iSkinNum < m_pTextureHdr->numskinfamilies )
 		pskinref += ( iSkinNum * m_pTextureHdr->numskinref );
@@ -711,7 +717,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 		glColor4f( r_wireframecolor_r.GetFloat() / 255.0f, 
 				   r_wireframecolor_g.GetFloat() / 255.0f, 
 				   r_wireframecolor_b.GetFloat() / 255.0f, 
-				   m_pCurrentModel->GetTransparency() );
+				   m_pEntity->GetTransparency() );
 
 	for( j = 0; j < m_pModel->nummesh; j++ )
 	{
@@ -737,7 +743,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 			glEnable( GL_BLEND );
 			glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 		}
-		else if( m_pCurrentModel->GetTransparency() < 1.0f )
+		else if( m_pEntity->GetTransparency() < 1.0f )
 		{
 			glEnable( GL_BLEND );
 			glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -777,7 +783,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 						glTexCoord2f( g_chrome[ ptricmds[ 1 ] ][ 0 ] * s, g_chrome[ ptricmds[ 1 ] ][ 1 ] * t );
 
 						lv = glm::value_ptr( g_pvlightvalues[ ptricmds[ 1 ] ] );
-						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pCurrentModel->GetTransparency() );
+						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pEntity->GetTransparency() );
 
 						av = glm::value_ptr( g_pxformverts[ ptricmds[ 0 ] ] );
 						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
@@ -807,7 +813,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 						glTexCoord2f( ptricmds[ 2 ] * s, ptricmds[ 3 ] * t );
 
 						lv = glm::value_ptr( g_pvlightvalues[ ptricmds[ 1 ] ] );
-						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pCurrentModel->GetTransparency() );
+						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pEntity->GetTransparency() );
 
 						av = glm::value_ptr( g_pxformverts[ ptricmds[ 0 ] ] );
 						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
@@ -850,7 +856,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 	return uiDrawnPolys;
 }
 
-void CStudioModelRenderer::Lighting( float *lv, int bone, int flags, const glm::vec3& normal )
+void CStudioModelRenderer2::Lighting( float *lv, int bone, int flags, const glm::vec3& normal )
 {
 	float 	illum;
 	float	lightcos;
@@ -889,7 +895,7 @@ void CStudioModelRenderer::Lighting( float *lv, int bone, int flags, const glm::
 }
 
 
-void CStudioModelRenderer::Chrome( glm::ivec2& chrome, int bone, const glm::vec3& normal )
+void CStudioModelRenderer2::Chrome( glm::ivec2& chrome, int bone, const glm::vec3& normal )
 {
 	float n;
 
@@ -900,7 +906,7 @@ void CStudioModelRenderer::Chrome( glm::ivec2& chrome, int bone, const glm::vec3
 		glm::vec3 chromerightvec;	// g_chrome s vector in world reference frame
 		glm::vec3 tmp;				// vector pointing at bone in world reference frame
 
-		tmp = m_pCurrentModel->GetOrigin() * -1.0f;
+		tmp = m_pEntity->GetOrigin() * -1.0f;
 
 		tmp[ 0 ] += g_bonetransform[ bone ][ 0 ][ 3 ];
 		tmp[ 1 ] += g_bonetransform[ bone ][ 1 ][ 3 ];

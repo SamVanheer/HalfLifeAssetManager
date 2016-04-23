@@ -1,5 +1,5 @@
-#ifndef GAME_STUDIOMODEL_CSTUDIOMODELRENDERER_H
-#define GAME_STUDIOMODEL_CSTUDIOMODELRENDERER_H
+#ifndef GAME_STUDIOMODEL_CSTUDIOMODELRENDERER2_H
+#define GAME_STUDIOMODEL_CSTUDIOMODELRENDERER2_H
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -11,26 +11,28 @@
 
 #include "utility/Color.h"
 
-class StudioModel;
+class CStudioModelEntity;
 
 namespace studiomodel
 {
+class CStudioModel;
+
 /**
 *	Used to render studio models. Only one instance of this class should be used, and should be kept around, in order to achieve reasonably performant and consistent rendering.
 *	This class is designed to allow you to either render a model once, or to allow multiple passes by reusing setup.
 */
-class CStudioModelRenderer final
+class CStudioModelRenderer2 final
 {
 public:
 	/**
 	*	Constructor.
 	*/
-	CStudioModelRenderer();
+	CStudioModelRenderer2();
 
 	/**
 	*	Destructor.
 	*/
-	~CStudioModelRenderer();
+	~CStudioModelRenderer2();
 
 	/**
 	*	Initializes the renderer. This sets up the renderer's state for a single "map".
@@ -50,8 +52,8 @@ public:
 
 	unsigned int GetModelsDrawnCount() const { return m_uiModelsDrawnCount; }
 
-	const	StudioModel* GetCurrentModel() const	{ return m_pCurrentModel; }
-			StudioModel* GetCurrentModel()			{ return m_pCurrentModel; }
+	const	CStudioModel* GetCurrentModel() const	{ return m_pCurrentModel; }
+			CStudioModel* GetCurrentModel()			{ return m_pCurrentModel; }
 
 	/**
 	*	Gets the number of polygons drawn since the last call to Prepare.
@@ -61,7 +63,7 @@ public:
 	/**
 	*	Draws the given model.
 	*/
-	unsigned int DrawModel( StudioModel* const pModel, const bool wireframeOnly = false );
+	unsigned int DrawModel( CStudioModel* const pModel, CStudioModelEntity* const pEntity, const bool wireframeOnly = false );
 
 private:
 	void SetUpBones();
@@ -90,7 +92,8 @@ private:
 	/**
 	*	The current model being rendered.
 	*/
-	StudioModel* m_pCurrentModel = nullptr;
+	CStudioModel* m_pCurrentModel = nullptr;
+	CStudioModelEntity* m_pEntity = nullptr;
 
 	studiohdr_t* m_pStudioHdr = nullptr;
 	studiohdr_t* m_pTextureHdr = nullptr;
@@ -124,16 +127,16 @@ private:
 	glm::vec3		g_chromeright[ MAXSTUDIOBONES ];	// chrome vector "right" in bone reference frames
 
 private:
-	CStudioModelRenderer( const CStudioModelRenderer& ) = delete;
-	CStudioModelRenderer& operator=( const CStudioModelRenderer& ) = delete;
+	CStudioModelRenderer2( const CStudioModelRenderer2& ) = delete;
+	CStudioModelRenderer2& operator=( const CStudioModelRenderer2& ) = delete;
 };
 
 //TODO: avoid using a global
-CStudioModelRenderer& renderer();
+CStudioModelRenderer2& renderer2();
 }
 
 //TODO: move these into CStudioModelRenderer
 extern glm::vec3 g_vright;		// needs to be set to viewer's right in order for chrome to work
 extern float g_lambert;		// modifier for pseudo-hemispherical lighting
 
-#endif //GAME_STUDIOMODEL_CSTUDIOMODELRENDERER_H
+#endif //GAME_STUDIOMODEL_CSTUDIOMODELRENDERER2_H

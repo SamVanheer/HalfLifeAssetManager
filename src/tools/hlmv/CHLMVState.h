@@ -12,6 +12,8 @@
 
 #include "game/studiomodel/StudioModel.h"
 
+#include "game/entity/CStudioModelEntity.h"
+
 #include "settings/CGameConfig.h"
 #include "settings/CGameConfigManager.h"
 #include "settings/CRecentFiles.h"
@@ -48,6 +50,10 @@ public:
 	void ClearStudioModel();
 
 	void SetStudioModel( StudioModel* pStudioModel );
+
+	CStudioModelEntity* GetModel() { return m_pEntity; }
+
+	void SetModel( CStudioModelEntity* pEntity );
 
 	bool DumpModelInfo( const char* const pszFilename );
 
@@ -106,6 +112,7 @@ public:
 
 private:
 	StudioModel* m_pStudioModel;
+	CStudioModelEntity* m_pEntity;
 
 private:
 	CHLMVState( const CHLMVState& ) = delete;
