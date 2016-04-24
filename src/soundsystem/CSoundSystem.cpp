@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "common/Logging.h"
+#include "common/Utility.h"
 
 #include "filesystem/CFileSystem.h"
 
@@ -263,11 +264,8 @@ void CSoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitc
 		return;
 	}
 
-	if( flVolume > 1 || flVolume < 0 )
-		flVolume = VOLUME_NORM;
-
-	if( iPitch > 255 || iPitch < 0 )
-		iPitch = PITCH_NORM;
+	flVolume = clamp( flVolume, 0.0f, 1.0f );
+	iPitch = clamp( iPitch, 0, 255 );
 
 	const size_t uiIndex = GetSoundForPlayback();
 

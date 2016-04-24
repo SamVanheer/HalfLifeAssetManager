@@ -50,7 +50,7 @@ void CHLMVStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 		{
 			if( s_ent_playsounds.GetBool() )
 			{
-				soundSystem().PlaySound( event.pszOptions, 1.0f, soundsystem::PITCH_NORM );
+				soundSystem().PlaySound( event.pszOptions, soundsystem::VOLUME_NORM, soundsystem::PITCH_NORM );
 			}
 
 			break;
