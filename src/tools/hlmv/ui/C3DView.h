@@ -3,10 +3,7 @@
 
 #include "wxHLMV.h"
 
-#include "graphics/OpenGL.h"
-
-//Must be included after OpenGL.h because GLEW replaces gl.h
-#include <wx/glcanvas.h>
+#include "ui/shared/CwxBaseGLCanvas.h"
 
 #include <glm/vec3.hpp>
 
@@ -30,7 +27,7 @@ inline I3DViewListener::~I3DViewListener()
 {
 }
 
-class C3DView final : public wxGLCanvas
+class C3DView final : public ui::CwxBaseGLCanvas
 {
 public:
 	C3DView( wxWindow* pParent, CHLMV* const pHLMV, I3DViewListener* pListener = nullptr );
@@ -38,8 +35,6 @@ public:
 
 	const CHLMV* GetHLMV() const { return m_pHLMV; }
 	CHLMV* GetHLMV() { return m_pHLMV; }
-
-	void Paint( wxPaintEvent& event );
 
 	void MouseEvents( wxMouseEvent& event );
 
@@ -62,7 +57,7 @@ protected:
 	wxDECLARE_EVENT_TABLE();
 
 private:
-	void DrawScene();
+	void DrawScene() override final;
 
 	void SetupRenderMode( RenderMode renderMode = RenderMode::INVALID );
 
@@ -70,18 +65,10 @@ private:
 
 	void DrawModel();
 
-	void CreateUVFrameBuffer();
-
-	void DestroyUVFrameBuffer();
-
-	void SetUVRenderTargetDimensions( const int iWidth, const int iHeight );
-
 private:
 	CHLMV* const m_pHLMV;
 
 	I3DViewListener* m_pListener;
-
-	wxGLContext* m_pContext;
 
 	GLuint m_BackgroundTexture	= GL_INVALID_TEXTURE_ID;
 	GLuint m_GroundTexture		= GL_INVALID_TEXTURE_ID;
@@ -94,12 +81,8 @@ private:
 	float m_flOldX = 0;
 	float m_flOldY = 0;
 
-	//Tracks mouse button state. Used to prevent input from being mistakingly applied (e.g. double click from dialog spilling over as drag).
+	//Tracks mouse button state. Used to prevent input from being mistakingly applied (e.g. prevent double click from dialog spilling over as drag).
 	int m_iButtonsDown = wxMOUSE_BTN_NONE;
-
-	//UV map framebuffer and render target.
-	GLuint m_UVFrameBuffer = 0;
-	GLuint m_UVRenderTarget = GL_INVALID_TEXTURE_ID;
 
 private:
 	C3DView( const C3DView& ) = delete;

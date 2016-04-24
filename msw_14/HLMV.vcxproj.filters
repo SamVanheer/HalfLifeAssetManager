@@ -363,6 +363,9 @@
     <ClCompile Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.cpp">
       <Filter>Source Files\tools\hlmv\entity</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\ui\shared\CwxBaseGLCanvas.cpp">
+      <Filter>Source Files\ui\shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -640,6 +643,9 @@
     </ClInclude>
     <ClInclude Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.h">
       <Filter>Header Files\tools\hlmv\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\shared\CwxBaseGLCanvas.h">
+      <Filter>Header Files\ui\shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

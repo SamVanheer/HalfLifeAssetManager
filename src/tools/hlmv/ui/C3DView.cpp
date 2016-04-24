@@ -21,42 +21,23 @@
 
 namespace hlmv
 {
-wxBEGIN_EVENT_TABLE( C3DView, wxGLCanvas )
-	EVT_PAINT( C3DView::Paint )
+wxBEGIN_EVENT_TABLE( C3DView, CwxBaseGLCanvas )
 	EVT_MOUSE_EVENTS( C3DView::MouseEvents )
 wxEND_EVENT_TABLE()
 
 C3DView::C3DView( wxWindow* pParent, CHLMV* const pHLMV, I3DViewListener* pListener )
-	: wxGLCanvas( pParent, wxOpenGL().GetCanvasAttributes(), wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
+	: CwxBaseGLCanvas( pParent, wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
 	, m_pListener( pListener )
 {
-	m_pContext = wxOpenGL().GetContext( this );
 }
 
 C3DView::~C3DView()
 {
-	SetCurrent( *m_pContext );
-
-	DestroyUVFrameBuffer();
+	SetCurrent( *GetContext() );
 
 	glDeleteTexture( m_GroundTexture );
 	glDeleteTexture( m_BackgroundTexture );
-
-	m_pContext = nullptr;
-}
-
-void C3DView::Paint( wxPaintEvent& event )
-{
-	SetCurrent( *m_pContext );
-
-	//Can't use the DC to draw anything since OpenGL draws over it.
-	wxPaintDC( this );
-
-	DrawScene();
-
-	glFlush();
-	SwapBuffers();
 }
 
 void C3DView::MouseEvents( wxMouseEvent& event )
@@ -114,7 +95,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 
 void C3DView::PrepareForLoad()
 {
-	SetCurrent( *m_pContext );
+	SetCurrent( *GetContext() );
 }
 
 void C3DView::UpdateView()
@@ -266,52 +247,6 @@ void C3DView::DrawModel()
 	glPopMatrix();
 }
 
-void C3DView::CreateUVFrameBuffer()
-{
-	if( m_UVFrameBuffer == 0 )
-	{
-		glGenFramebuffers( 1, &m_UVFrameBuffer );
-
-		glBindFramebuffer( GL_FRAMEBUFFER, m_UVFrameBuffer );
-
-		glGenTextures( 1, &m_UVRenderTarget );
-	}
-}
-
-void C3DView::DestroyUVFrameBuffer()
-{
-	SetCurrent( *m_pContext );
-
-	if( m_UVFrameBuffer != 0 )
-	{
-		glDeleteFramebuffers( 1, &m_UVFrameBuffer );
-		m_UVFrameBuffer = 0;
-	}
-}
-
-void C3DView::SetUVRenderTargetDimensions( const int iWidth, const int iHeight )
-{
-	if( m_UVRenderTarget == GL_INVALID_TEXTURE_ID )
-		return;
-
-	glBindTexture( GL_TEXTURE_2D, m_UVRenderTarget );
-
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, iWidth, iHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr );
-
-	//Poor filtering, so it doesn't mess with the results.
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-	//Unbind it so there can be no conflicts.
-	glBindTexture( GL_TEXTURE_2D, GL_INVALID_TEXTURE_ID );
-
-	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_UVRenderTarget, 0 );
-
-	const GLenum drawBuffer = GL_COLOR_ATTACHMENT0;
-
-	glDrawBuffers( 1, &drawBuffer );
-}
-
 bool C3DView::LoadBackgroundTexture( const wxString& szFilename )
 {
 	UnloadBackgroundTexture();
@@ -362,7 +297,7 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 	const mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTexture ];
 
-	SetCurrent( *m_pContext );
+	SetCurrent( *GetContext() );
 
 	GLRenderTarget* const pScratchTarget = wxOpenGL().GetScratchTarget();
 
@@ -416,7 +351,7 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 void C3DView::TakeScreenshot()
 {
-	SetCurrent( *m_pContext );
+	SetCurrent( *GetContext() );
 
 	const wxSize size = GetClientSize();
 
