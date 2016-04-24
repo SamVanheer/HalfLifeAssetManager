@@ -322,7 +322,7 @@ StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioMod
 		strcpy( texturename, pszFilename );
 		strcpy( &texturename[ strlen( texturename ) - 4 ], "T.mdl" );
 
-		result = LoadStudioHeader( pszFilename, true, studioModel->m_pTextureHdr );
+		result = LoadStudioHeader( texturename, true, studioModel->m_pTextureHdr );
 
 		if( result != StudioModelLoadResult::SUCCESS )
 		{

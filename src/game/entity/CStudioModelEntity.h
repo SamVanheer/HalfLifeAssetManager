@@ -35,7 +35,7 @@ public:
 	virtual void HandleAnimEvent( const CAnimEvent& event );
 
 	int		GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents );
-	void	DispatchAnimEvents( const bool bAllowClientEvents, float flInterval = 0.1f );
+	void	DispatchAnimEvents( const bool bAllowClientEvents );
 
 	void AnimThink();
 

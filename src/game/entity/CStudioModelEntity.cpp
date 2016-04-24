@@ -81,7 +81,9 @@ float CStudioModelEntity::AdvanceFrame( float dt )
 	dt = 0.1f;
 	*/
 
-	m_flFrame += dt * pseqdesc->fps * m_flFrameRate;
+	const float flIncrement = dt * pseqdesc->fps * m_flFrameRate;
+
+	m_flFrame += flIncrement;
 
 	if( pseqdesc->numframes <= 1 )
 	{
@@ -89,8 +91,16 @@ float CStudioModelEntity::AdvanceFrame( float dt )
 	}
 	else
 	{
+		const float flOldFrame = m_flFrame;
+
 		// wrap
 		m_flFrame -= ( int ) ( m_flFrame / ( pseqdesc->numframes - 1 ) ) * ( pseqdesc->numframes - 1 );
+
+		//Wrapped
+		if( flOldFrame > m_flFrame )
+		{
+			m_flLastEventCheck = m_flFrame - flIncrement;
+		}
 	}
 
 	m_flAnimTime = WorldTime.GetCurrentTime();
@@ -164,7 +174,7 @@ int CStudioModelEntity::GetAnimationEvent( CAnimEvent& event, float flStart, flo
 	return 0;
 }
 
-void CStudioModelEntity::DispatchAnimEvents( const bool bAllowClientEvents, float flInterval )
+void CStudioModelEntity::DispatchAnimEvents( const bool bAllowClientEvents )
 {
 	if( !m_pModel )
 	{
@@ -174,16 +184,15 @@ void CStudioModelEntity::DispatchAnimEvents( const bool bAllowClientEvents, floa
 
 	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
 
-	// FIXME: I have to do this or some events get missed, and this is probably causing the problem below
-	//This isn't really necessary, at least not in a tool.
-	//flInterval = 0.1f;
-
 	const mstudioseqdesc_t* pseqdesc = pStudioHdr->GetSequence( m_iSequence );
 
-	// FIX: this still sometimes hits events twice
-	float flStart = m_flFrame + ( m_flLastEventCheck - m_flAnimTime ) * pseqdesc->fps * m_flFrameRate;
-	float flEnd = m_flFrame + flInterval * pseqdesc->fps * m_flFrameRate;
-	m_flLastEventCheck = m_flAnimTime + flInterval;
+	//This is based on Source's DispatchAnimEvents. It fixes the bug where events don't get triggered, and get triggered multiple times due to the workaround.
+	//Plays from previous frame to current. This differs from GoldSource in that GoldSource plays from current to predicted future frame.
+	//This is more accurate, since it's based on actual frame data, rather than predicted frames, but results in events firing later than before.
+	//The difference is ~0.1 seconds when running at 60 FPS. On dedicated servers the difference will be smaller if the tick rate is higher.
+	float flStart = m_flLastEventCheck;
+	float flEnd = m_flFrame;
+	m_flLastEventCheck = m_flFrame;
 
 	CAnimEvent event;
 
@@ -199,7 +208,7 @@ void CStudioModelEntity::AnimThink()
 {
 	const float flTime = AdvanceFrame();
 
-	DispatchAnimEvents( true, flTime );
+	DispatchAnimEvents( true );
 }
 
 int CStudioModelEntity::SetFrame( const int iFrame )
@@ -249,6 +258,7 @@ int CStudioModelEntity::SetSequence( const int iSequence )
 
 	m_iSequence = iSequence;
 	m_flFrame = 0;
+	m_flLastEventCheck = 0;
 
 	return m_iSequence;
 }
