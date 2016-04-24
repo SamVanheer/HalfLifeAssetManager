@@ -45,7 +45,6 @@
     <ClCompile Include="..\src\graphics\OpenGL.cpp" />
     <ClCompile Include="..\src\keyvalues\CKeyvalue.cpp" />
     <ClCompile Include="..\src\keyvalues\CKeyvalueNode.cpp" />
-    <ClCompile Include="..\src\keyvalues\CKeyvalues.cpp" />
     <ClCompile Include="..\src\keyvalues\CKeyvaluesLexer.cpp" />
     <ClCompile Include="..\src\keyvalues\CKeyvaluesParser.cpp" />
     <ClCompile Include="..\src\keyvalues\CKeyvaluesWriter.cpp" />
@@ -129,7 +128,6 @@
     <ClInclude Include="..\src\graphics\Palette.h" />
     <ClInclude Include="..\src\keyvalues\CKeyvalue.h" />
     <ClInclude Include="..\src\keyvalues\CKeyvalueNode.h" />
-    <ClInclude Include="..\src\keyvalues\CKeyvalues.h" />
     <ClInclude Include="..\src\keyvalues\CKeyvaluesLexer.h" />
     <ClInclude Include="..\src\keyvalues\CKeyvaluesParser.h" />
     <ClInclude Include="..\src\keyvalues\CKeyvaluesWriter.h" />

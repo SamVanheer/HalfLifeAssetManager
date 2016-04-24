@@ -1,24 +1,20 @@
 #ifndef KEYVALUESCONSTANTS_H
 #define KEYVALUESCONSTANTS_H
 
-/*
-* The default key assigned to a keyvalue node if none has been set, or an invalid key was set
+/**
+*	Node types.
+*	TODO: enum class
 */
-#define KEYVALUE_DEFAULT_KEY "INVALID_KEY"
-
-/*
-* The name that the root node has
-*/
-#define KEYVALUE_ROOT_NODE_NAME "ROOT_NODE"
-
-#define KEYVALUE_UNNAMED_BLOCK "UNNAMED"
-
 enum KeyvalueNodeType
 {
 	KVNode_Keyvalue,
 	KVNode_Block
 };
 
+/**
+*	Token types used by the lexer.
+*	TODO: enum class
+*/
 enum KeyvalueTokenType
 {
 	KVToken_None,
@@ -28,14 +24,30 @@ enum KeyvalueTokenType
 	KVToken_Value
 };
 
+/**
+*	The control character used for quoted strings.
+*/
 const char KeyvalueControl_Quote		= '\"';
+
+/**
+*	The control character used for block open statements.
+*/
 const char KeyvalueControl_BlockOpen	= '{';
+
+/**
+*	The control character used for block close statements.
+*/
 const char KeyvalueControl_BlockClose	= '}';
 
-//For pretty printing
+/**
+*	Tab width for pretty printing.
+*/
 const size_t KEYVALUE_TAB_WIDTH = 4;
 
-struct CKeyvaluesLexerSettings
+/**
+*	Settings for the lexer.
+*/
+struct CKeyvaluesLexerSettings final
 {
 	bool fAllowUnnamedBlocks;
 	bool fLogErrors;

@@ -168,9 +168,6 @@
     <ClCompile Include="..\src\keyvalues\CKeyvalueNode.cpp">
       <Filter>Source Files\keyvalues</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\keyvalues\CKeyvalues.cpp">
-      <Filter>Source Files\keyvalues</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\keyvalues\CKeyvaluesLexer.cpp">
       <Filter>Source Files\keyvalues</Filter>
     </ClCompile>
@@ -396,9 +393,6 @@
       <Filter>Header Files\keyvalues</Filter>
     </ClInclude>
     <ClInclude Include="..\src\keyvalues\CKeyvalueNode.h">
-      <Filter>Header Files\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keyvalues\CKeyvalues.h">
       <Filter>Header Files\keyvalues</Filter>
     </ClInclude>
     <ClInclude Include="..\src\keyvalues\CKeyvaluesLexer.h">

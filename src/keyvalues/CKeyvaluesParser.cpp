@@ -1,7 +1,6 @@
 #include "CKeyvalueNode.h"
 #include "CKeyvalue.h"
 #include "CKvBlockNode.h"
-#include "CKeyvalues.h"
 
 #include "CKeyvaluesParser.h"
 
@@ -38,8 +37,8 @@ CBaseKeyvaluesParser::CBaseKeyvaluesParser( CKeyvaluesLexer::Memory_t& memory, c
 	Construct();
 }
 
-CBaseKeyvaluesParser::CBaseKeyvaluesParser( const char* pszFileName, const CKeyvaluesParserSettings& settings, const bool fIsIterative )
-	: m_Lexer( pszFileName, settings.lexerSettings )
+CBaseKeyvaluesParser::CBaseKeyvaluesParser( const char* const pszFilename, const CKeyvaluesParserSettings& settings, const bool fIsIterative )
+	: m_Lexer( pszFilename, settings.lexerSettings )
 	, m_iCurrentDepth( 0 )
 	, m_Settings( settings )
 	, m_fIsIterative( fIsIterative )
@@ -49,6 +48,7 @@ CBaseKeyvaluesParser::CBaseKeyvaluesParser( const char* pszFileName, const CKeyv
 
 void CBaseKeyvaluesParser::Construct()
 {
+	//TODO: this sucks
 	if( m_fIsIterative )
 		++m_iCurrentDepth;
 }
@@ -97,7 +97,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( CKeyvalueNode
 		}
 	}
 
-	CString szKey = !fIsUnnamed ? m_Lexer.GetToken() : KEYVALUE_UNNAMED_BLOCK;
+	CString szKey = !fIsUnnamed ? m_Lexer.GetToken() : "";
 
 	//Only read again if named
 	if( !fIsUnnamed )
@@ -238,8 +238,8 @@ CKeyvaluesParser::CKeyvaluesParser( CKeyvaluesLexer::Memory_t& memory, const CKe
 {
 }
 
-CKeyvaluesParser::CKeyvaluesParser( const char* pszFileName, const CKeyvaluesParserSettings& settings )
-	: BaseClass( pszFileName, settings, false )
+CKeyvaluesParser::CKeyvaluesParser( const char* const pszFilename, const CKeyvaluesParserSettings& settings )
+	: BaseClass( pszFilename, settings, false )
 {
 }
 
@@ -248,12 +248,12 @@ CKeyvaluesParser::~CKeyvaluesParser()
 	delete m_pKeyvalues;
 }
 
-CKeyvalues* CKeyvaluesParser::ReleaseKeyvalues()
+CKvBlockNode* CKeyvaluesParser::ReleaseKeyvalues()
 {
 	if( !m_pKeyvalues )
 		return nullptr;
 
-	CKeyvalues* pKeyvalues = m_pKeyvalues;
+	auto pKeyvalues = m_pKeyvalues;
 
 	m_pKeyvalues = nullptr;
 
@@ -279,21 +279,26 @@ CKeyvaluesParser::ParseResult CKeyvaluesParser::Parse()
 		m_pKeyvalues = nullptr;
 	}
 
-	CKvBlockNode* pRootNode = new CKvBlockNode( KEYVALUE_ROOT_NODE_NAME );
+	CKvBlockNode* pRootNode = new CKvBlockNode( "" );
 
 	ParseResult result = ParseBlock( pRootNode, true );
 
-	if( result != UnexpectedEOB )
+	//Convert successful parse into Success
+	if( result == EndOfData )
 	{
-		m_pKeyvalues = new CKeyvalues( pRootNode );
+		result = Success;
+	}
+
+	if( result == Success )
+	{
+		m_pKeyvalues = pRootNode;
 	}
 	else
 	{
 		delete pRootNode;
 	}
 
-	//Convert successful parse into Success
-	return result == EndOfData ? Success : result;
+	return result;
 }
 
 CIterativeKeyvaluesParser::CIterativeKeyvaluesParser( const CKeyvaluesParserSettings& settings )
@@ -303,6 +308,11 @@ CIterativeKeyvaluesParser::CIterativeKeyvaluesParser( const CKeyvaluesParserSett
 
 CIterativeKeyvaluesParser::CIterativeKeyvaluesParser( CKeyvaluesLexer::Memory_t& memory, const CKeyvaluesParserSettings& settings )
 	: BaseClass( memory, settings, true )
+{
+}
+
+CIterativeKeyvaluesParser::CIterativeKeyvaluesParser( const char* const pszFilename, const CKeyvaluesParserSettings& settings )
+	: BaseClass( pszFilename, settings, true )
 {
 }
 

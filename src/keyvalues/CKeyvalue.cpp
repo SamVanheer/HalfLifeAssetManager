@@ -1,20 +1,19 @@
+#include <cassert>
+
 #include "common/Logging.h"
 
 #include "CKeyvalue.h"
 
-CKeyvalue::CKeyvalue()
-	: BaseClass( KVNode_Keyvalue )
-{
-}
-
-CKeyvalue::CKeyvalue( const char* pszKey, const char* pszValue )
+CKeyvalue::CKeyvalue( const char* const pszKey, const char* const pszValue )
 	: CKeyvalueNode( pszKey, KVNode_Keyvalue )
 {
 	SetValue( pszValue );
 }
 
-void CKeyvalue::SetValue( const char* pszValue )
+void CKeyvalue::SetValue( const char* const pszValue )
 {
+	assert( pszValue );
+
 	m_szValue = pszValue;
 }
 

@@ -5,18 +5,18 @@
 #include "CKeyvalue.h"
 #include "CKvBlockNode.h"
 
-CKvBlockNode::CKvBlockNode( const char* pszKey )
+CKvBlockNode::CKvBlockNode( const char* const pszKey )
 	: BaseClass( pszKey, KVNode_Block )
 {
 }
 
-CKvBlockNode::CKvBlockNode( const char* pszKey, const Children_t& children )
+CKvBlockNode::CKvBlockNode( const char* const pszKey, const Children_t& children )
 	: BaseClass( pszKey, KVNode_Block )
 {
 	SetChildren( children );
 }
 
-CKvBlockNode::CKvBlockNode( const char* pszKey, CKeyvalueNode* pFirstChild )
+CKvBlockNode::CKvBlockNode( const char* const pszKey, CKeyvalueNode* pFirstChild )
 	: BaseClass( pszKey, KVNode_Block )
 {
 	assert( pFirstChild );
@@ -31,7 +31,16 @@ CKvBlockNode::~CKvBlockNode()
 
 void CKvBlockNode::SetChildren( const Children_t& children )
 {
-	m_Children = children;
+	RemoveAllChildren();
+
+	m_Children.reserve( children.size() );
+
+	for( auto pChild : children )
+	{
+		assert( pChild );
+
+		m_Children.push_back( pChild );
+	}
 }
 
 void CKvBlockNode::RemoveAllChildren()
@@ -44,10 +53,9 @@ void CKvBlockNode::RemoveAllChildren()
 	m_Children.clear();
 }
 
-void CKvBlockNode::RemoveAllNotNamed( const char* pszKey )
+void CKvBlockNode::RemoveAllNotNamed( const char* const pszKey )
 {
-	if( !pszKey || !( *pszKey ) )
-		return;
+	assert( pszKey );
 
 	for( Children_t::iterator it = m_Children.begin(); it != m_Children.end(); )
 	{
@@ -61,42 +69,36 @@ void CKvBlockNode::RemoveAllNotNamed( const char* pszKey )
 	}
 }
 
-CKeyvalueNode* CKvBlockNode::FindFirstChild( const char* pszKey ) const
+CKeyvalueNode* CKvBlockNode::FindFirstChild( const char* const pszKey ) const
 {
-	if( pszKey && *pszKey )
-	{
-		const Children_t& children = GetChildren();
+	assert( pszKey );
 
-		for( Children_t::const_iterator it = children.begin(), end = children.end(); it != end; ++it )
+	for( const auto pChild : m_Children )
+	{
+		if( strcmp( pszKey, pChild->GetKey().CStr() ) == 0 )
+			return pChild;
+	}
+
+	return nullptr;
+}
+
+CKeyvalueNode* CKvBlockNode::FindFirstChild( const char* const pszKey, const KeyvalueNodeType type ) const
+{
+	assert( pszKey );
+
+	for( const auto pChild : m_Children )
+	{
+		if( pChild->GetType() == type )
 		{
-			if( strcmp( pszKey, ( *it )->GetKey().CStr() ) == 0 )
-				return ( *it );
+			if( strcmp( pszKey, pChild->GetKey().CStr() ) == 0 )
+				return pChild;
 		}
 	}
 
 	return nullptr;
 }
 
-CKeyvalueNode* CKvBlockNode::FindFirstChild( const char* pszKey, const KeyvalueNodeType type ) const
-{
-	if( pszKey && *pszKey )
-	{
-		const Children_t& children = GetChildren();
-
-		for( Children_t::const_iterator it = children.begin(), end = children.end(); it != end; ++it )
-		{
-			if( ( *it )->GetType() == type )
-			{
-				if( strcmp( pszKey, ( *it )->GetKey().CStr() ) == 0 )
-					return ( *it );
-			}
-		}
-	}
-
-	return nullptr;
-}
-
-CString CKvBlockNode::FindFirstKeyvalue( const char* pszKey ) const
+CString CKvBlockNode::FindFirstKeyvalue( const char* const pszKey ) const
 {
 	if( pszKey && *pszKey )
 	{
@@ -119,11 +121,8 @@ CString CKvBlockNode::FindFirstKeyvalue( const char* pszKey ) const
 
 void CKvBlockNode::AddKeyvalue( const char* const pszKey, const char* const pszValue )
 {
-	if( !pszKey || !( *pszKey ) )
-		return;
-
-	if( !pszValue ) 
-		return;
+	assert( pszKey );
+	assert( pszValue );
 
 	m_Children.emplace_back( new CKeyvalue( pszKey, pszValue ) );
 }

@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cctype>
 #include <cstring>
 #include <cstdio>
@@ -18,38 +19,40 @@ CKeyvaluesLexer::CKeyvaluesLexer( Memory_t& memory, const CKeyvaluesLexerSetting
 	: m_TokenType( KVToken_None )
 	, m_Settings( settings )
 {
+	assert( memory.HasMemory() );
+
 	m_Memory.Swap( memory );
 
 	m_pszCurrentPosition = reinterpret_cast<const char*>( m_Memory.GetMemory() );
 }
 
-CKeyvaluesLexer::CKeyvaluesLexer( const char* pszFileName, const CKeyvaluesLexerSettings& settings )
+CKeyvaluesLexer::CKeyvaluesLexer( const char* const pszFilename, const CKeyvaluesLexerSettings& settings )
 	: m_TokenType( KVToken_None )
 	, m_pszCurrentPosition( nullptr )
 	, m_Settings( settings )
 {
-	if( pszFileName && *pszFileName )
+	assert( pszFilename );
+
+	FILE* pFile = fopen( pszFilename, "rb" );
+
+	if( pFile )
 	{
-		FILE* pFile = fopen( pszFileName, "rb" );
+		fseek( pFile, 0, SEEK_END );
+		const int iSizeInBytes = ftell( pFile );
+		fseek( pFile, 0, SEEK_SET );
 
-		if( pFile )
+		CKeyvaluesLexer::Memory_t memory( iSizeInBytes );
+
+		const int iRead = fread( memory.GetMemory(), 1, iSizeInBytes, pFile );
+
+		fclose( pFile );
+
+		if( iRead == iSizeInBytes )
 		{
-			fseek( pFile, 0, SEEK_END );
-			const int iSizeInBytes = ftell( pFile );
-			fseek( pFile, 0, SEEK_SET );
+			m_Memory.Swap( memory );
 
-			CKeyvaluesLexer::Memory_t memory( iSizeInBytes );
-
-			const int iRead = fread( memory.GetMemory(), 1, iSizeInBytes, pFile );
-
-			fclose( pFile );
-
-			if( iRead == iSizeInBytes )
-			{
-				m_Memory.Swap( memory );
-
-				m_pszCurrentPosition = reinterpret_cast<const char*>( m_Memory.GetMemory() );
-			}
+			//TODO: preparse file and normalize newlines if needed
+			m_pszCurrentPosition = reinterpret_cast<const char*>( m_Memory.GetMemory() );
 		}
 	}
 }
@@ -73,7 +76,7 @@ void CKeyvaluesLexer::Reset()
 
 void CKeyvaluesLexer::Swap( CKeyvaluesLexer& other )
 {
-	if( this != & other )
+	if( this != &other )
 	{
 		m_Memory.Swap( other.m_Memory );
 		std::swap( m_pszCurrentPosition, other.m_pszCurrentPosition );

@@ -7,29 +7,38 @@
 
 #include "KeyvaluesConstants.h"
 
-/*
-* A single keyvalue node
-* The node type is decided on object construction, and cannot be changed afterwards
+/**
+*	A single keyvalue node
 */
 class CKeyvalueNode
 {
 public:
-	/*
-	* Constructs a keyvalue node with a non-empty key
-	* if pszKey is NULL or empty, the key is set to KEYVALUE_DEFAULT_KEY
+	/**
+	*	Constructs a keyvalue node with a key.
+	*	@
 	*/
-	CKeyvalueNode( const char* pszKey, const KeyvalueNodeType type );
-	CKeyvalueNode( const KeyvalueNodeType type );
+	CKeyvalueNode( const char* const pszKey, const KeyvalueNodeType type );
 
 	virtual ~CKeyvalueNode() {}
 
 	const CString& GetKey() const { return m_szKey; }
 
-	void SetKey( const char* pszKey );
+	/**
+	*	Sets the node key. Must be non-null.
+	*/
+	void SetKey( const char* const pszKey );
+
+	/**
+	*	@see SetKey( const char* const pszKey )
+	*/
 	void SetKey( const CString& szKey );
 
+	/**
+	*	Gets the node type.
+	*/
 	KeyvalueNodeType GetType() const { return m_Type; }
 
+	//TODO: move this out of the class
 	virtual void Print( const size_t uiTabLevel = 0 ) const = 0;
 
 private:

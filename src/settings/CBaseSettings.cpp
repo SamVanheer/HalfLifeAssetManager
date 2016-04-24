@@ -7,12 +7,7 @@
 
 #include "GameConfigIO.h"
 
-#include "keyvalues/CKeyvalueNode.h"
-#include "keyvalues/CKeyvalue.h"
-#include "keyvalues/CKvBlockNode.h"
-#include "keyvalues/CKeyvalues.h"
-#include "keyvalues/CKeyvaluesParser.h"
-#include "keyvalues/CKeyvaluesWriter.h"
+#include "keyvalues/Keyvalues.h"
 
 #include "filesystem/FileSystemConstants.h"
 #include "filesystem/CFileSystem.h"
@@ -201,7 +196,7 @@ bool CBaseSettings::LoadFromFile( const char* const pszFilename )
 		return false;
 	}
 
-	return LoadFromFile( *parser.GetKeyvalues()->GetRoot() );
+	return LoadFromFile( *parser.GetKeyvalues() );
 }
 
 bool CBaseSettings::SaveToFile( const char* const pszFilename )

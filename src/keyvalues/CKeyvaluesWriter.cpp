@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "common/Logging.h"
 
 #include "utility/CEscapeSequences.h"
@@ -12,7 +14,7 @@ CKeyvaluesWriter::CKeyvaluesWriter( const char* pszFilename, const CKeyvaluesLex
 {
 }
 
-CKeyvaluesWriter::CKeyvaluesWriter( const char* pszFilename, CEscapeSequences& escapeSeqConversion, const CKeyvaluesLexerSettings& settings )
+CKeyvaluesWriter::CKeyvaluesWriter( const char* const pszFilename, CEscapeSequences& escapeSeqConversion, const CKeyvaluesLexerSettings& settings )
 	: m_Settings( settings )
 	, m_pEscapeSeqConversion( &escapeSeqConversion )
 {
@@ -26,12 +28,11 @@ CKeyvaluesWriter::~CKeyvaluesWriter()
 	Close();
 }
 
-bool CKeyvaluesWriter::Open( const char* pszFilename )
+bool CKeyvaluesWriter::Open( const char* const pszFilename )
 {
-	Close();
+	assert( pszFilename );
 
-	if( !pszFilename )
-		return false;
+	Close();
 
 	m_pFile = fopen( pszFilename, "w" );
 
@@ -123,8 +124,11 @@ bool CKeyvaluesWriter::EndBlock()
 	return true;
 }
 
-bool CKeyvaluesWriter::WriteKeyvalue( const char* pszKey, const char* pszValue )
+bool CKeyvaluesWriter::WriteKeyvalue( const char* const pszKey, const char* const pszValue )
 {
+	assert( pszKey );
+	assert( pszValue );
+
 	if( ErrorOccurred() )
 		return false;
 
@@ -135,15 +139,12 @@ bool CKeyvaluesWriter::WriteKeyvalue( const char* pszKey, const char* pszValue )
 		return false;
 	}
 
-	if( !pszKey || !( *pszKey ) )
+	if( !( *pszKey ) )
 	{
-		Error( "CKeyvaluesWriter::WriteKeyValue: Null or empty key!\n" );
+		Error( "CKeyvaluesWriter::WriteKeyValue: empty key!\n" );
 
 		return false;
 	}
-
-	if( !pszValue )
-		pszValue = "";
 
 	if( !WriteTabs() )
 		return false;
@@ -185,8 +186,8 @@ bool CKeyvaluesWriter::Write( const CKeyvalueNode& node )
 {
 	switch( node.GetType() )
 	{
-	case KVNode_Block: return WriteBlock( static_cast<const CKvBlockNode&>( node ) );
-	case KVNode_Keyvalue: return WriteKeyvalue( static_cast<const CKeyvalue&>( node ) );
+	case KVNode_Block:		return WriteBlock( static_cast<const CKvBlockNode&>( node ) );
+	case KVNode_Keyvalue:	return WriteKeyvalue( static_cast<const CKeyvalue&>( node ) );
 	default:
 		{
 			Error( "CKeyvaluesWriter::Write: Unknown node type!\n" );
@@ -198,9 +199,9 @@ bool CKeyvaluesWriter::Write( const CKeyvalueNode& node )
 
 bool CKeyvaluesWriter::WriteComment( const char* const pszComment, const size_t uiTabs )
 {
+	assert( pszComment );
+
 	//Allow empty comment blocks
-	if( !pszComment )
-		return false;
 
 	//Indent to current tab in all cases.
 	WriteTabs();
@@ -246,6 +247,8 @@ bool CKeyvaluesWriter::WriteTabs()
 
 bool CKeyvaluesWriter::WriteToken( const char* const pszToken )
 {
+	assert( pszToken );
+
 	char szBuffer[ MAX_BUFFER_LENGTH ];
 
 	const bool busesQuotes = !( *pszToken ) || strchr( pszToken, ' ' );

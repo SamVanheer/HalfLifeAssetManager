@@ -3,33 +3,40 @@
 
 #include "CKeyvalueNode.h"
 
-/*
+/**
 * A single keyvalue
 */
-class CKeyvalue : public CKeyvalueNode
+class CKeyvalue final : public CKeyvalueNode
 {
 public:
 	typedef CKeyvalueNode BaseClass;
 
 public:
-	/*
-	* Constructs an empty keyvalue
-	* the key is set to KEYVALUE_DEFAULT_KEY
+	/**
+	*	Constructs a keyvalue with a key and an optional value.
+	*	@param pszKey Key. Must be non-null.
+	*	@param pszValue Value. Must be non-null.
 	*/
-	CKeyvalue();
+	CKeyvalue( const char* const pszKey, const char* const pszValue = "" );
 
-	/*
-	* Constructs a keyvalue with a non-empty key and an optional value
-	* if pszKey is null or empty, the key is set to KEYVALUE_DEFAULT_KEY
+	/**
+	*	Gets the value.
 	*/
-	CKeyvalue( const char* pszKey, const char* pszValue = nullptr );
-
 	const CString& GetValue() const { return m_szValue; }
 
-	void SetValue( const char* pszValue );
+	/**
+	*	Sets the value.
+	*	@param pszValue Value. Must be non-null.
+	*/
+	void SetValue( const char* const pszValue );
+
+	/**
+	*	@see SetValue( const char* const pszValue )
+	*/
 	void SetValue( const CString& szValue );
 
-	virtual void Print( const size_t uiTabLevel = 0 ) const;
+	//TODO: move
+	virtual void Print( const size_t uiTabLevel = 0 ) const override;
 
 private:
 	CString m_szValue;
