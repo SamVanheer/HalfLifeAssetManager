@@ -4,11 +4,13 @@
 
 #include "utility/CEscapeSequences.h"
 
-#include "CKvBlockNode.h"
 #include "CKeyvalue.h"
+#include "CKeyvalueBlock.h"
 
 #include "CKeyvaluesWriter.h"
 
+namespace keyvalues
+{
 CKeyvaluesWriter::CKeyvaluesWriter( const char* pszFilename, const CKeyvaluesLexerSettings& settings )
 	: CKeyvaluesWriter( pszFilename, GetNoEscapeSeqConversion(), settings )
 {
@@ -162,16 +164,16 @@ bool CKeyvaluesWriter::WriteKeyvalue( const char* const pszKey, const char* cons
 	return true;
 }
 
-bool CKeyvaluesWriter::WriteBlock( const CKvBlockNode& block )
+bool CKeyvaluesWriter::WriteBlock( const CKeyvalueBlock& block )
 {
 	if( !BeginBlock( block.GetKey().CStr() ) )
 		return false;
 
-	const CKvBlockNode::Children_t& children = block.GetChildren();
+	const CKeyvalueBlock::Children_t& children = block.GetChildren();
 
-	for( CKvBlockNode::Children_t::const_iterator it = children.begin(); it != children.end(); ++it )
+	for( const auto pChild : children )
 	{
-		Write( *( *it ) );
+		Write( *pChild );
 	}
 
 	return EndBlock();
@@ -186,8 +188,8 @@ bool CKeyvaluesWriter::Write( const CKeyvalueNode& node )
 {
 	switch( node.GetType() )
 	{
-	case KVNode_Block:		return WriteBlock( static_cast<const CKvBlockNode&>( node ) );
-	case KVNode_Keyvalue:	return WriteKeyvalue( static_cast<const CKeyvalue&>( node ) );
+	case NodeType::BLOCK:		return WriteBlock( static_cast<const CKeyvalueBlock&>( node ) );
+	case NodeType::KEYVALUE:	return WriteKeyvalue( static_cast<const CKeyvalue&>( node ) );
 	default:
 		{
 			Error( "CKeyvaluesWriter::Write: Unknown node type!\n" );
@@ -313,4 +315,5 @@ void CKeyvaluesWriter::Error( const char* pszError )
 		::Error( "%s", pszError );
 
 	m_bErrorOccurred = true;
+}
 }

@@ -5,10 +5,13 @@
 
 #include "KeyvaluesConstants.h"
 
-class CKvBlockNode;
-class CKeyvalue;
-class CKeyvalueNode;
 class CEscapeSequences;
+
+namespace keyvalues
+{
+class CKeyvalueNode;
+class CKeyvalue;
+class CKeyvalueBlock;
 
 /**
 *	Writer that can write keyvalues files.
@@ -84,7 +87,7 @@ public:
 	*	Writes an entire block in the current scope.
 	*	@return true on success, false otherwise.
 	*/
-	bool WriteBlock( const CKvBlockNode& block );
+	bool WriteBlock( const CKeyvalueBlock& block );
 
 	/**
 	*	Writes a keyvalue.
@@ -150,5 +153,6 @@ private:
 	CKeyvaluesWriter( const CKeyvaluesWriter& ) = delete;
 	CKeyvaluesWriter& operator=( const CKeyvaluesWriter& ) = delete;
 };
+}
 
 #endif //CKEYVALUESWRITER_H

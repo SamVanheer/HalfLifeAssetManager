@@ -8,15 +8,17 @@
 
 #include "CKeyvaluesLexer.h"
 
+namespace keyvalues
+{
 CKeyvaluesLexer::CKeyvaluesLexer( const CKeyvaluesLexerSettings& settings )
-	: m_TokenType( KVToken_None )
+	: m_TokenType( TokenType::NONE )
 	, m_pszCurrentPosition( nullptr )
 	, m_Settings( settings )
 {
 }
 
 CKeyvaluesLexer::CKeyvaluesLexer( Memory_t& memory, const CKeyvaluesLexerSettings& settings )
-	: m_TokenType( KVToken_None )
+	: m_TokenType( TokenType::NONE )
 	, m_Settings( settings )
 {
 	assert( memory.HasMemory() );
@@ -27,7 +29,7 @@ CKeyvaluesLexer::CKeyvaluesLexer( Memory_t& memory, const CKeyvaluesLexerSetting
 }
 
 CKeyvaluesLexer::CKeyvaluesLexer( const char* const pszFilename, const CKeyvaluesLexerSettings& settings )
-	: m_TokenType( KVToken_None )
+	: m_TokenType( TokenType::NONE )
 	, m_pszCurrentPosition( nullptr )
 	, m_Settings( settings )
 {
@@ -70,7 +72,7 @@ CKeyvaluesLexer::size_type CKeyvaluesLexer::GetReadOffset() const
 void CKeyvaluesLexer::Reset()
 {
 	m_pszCurrentPosition = reinterpret_cast<const char*>( m_Memory.GetMemory() );
-	m_TokenType = KVToken_None;
+	m_TokenType = TokenType::NONE;
 	m_szToken = "";
 }
 
@@ -91,8 +93,8 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::Read()
 	ReadResult result = ReadNextToken();
 
 	//Reset last token to none to prevent invalid token types
-	if( result == EndOfBuffer )
-		m_TokenType = KVToken_None;
+	if( result == END_OF_BUFFER )
+		m_TokenType = TokenType::NONE;
 
 	return result;
 }
@@ -154,13 +156,13 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, co
 	//Only true if we encountered a quote.
 	fWasQuoted = false;
 
-	ReadResult result = EndOfBuffer;
+	ReadResult result = END_OF_BUFFER;
 
 	//Found a quoted string, parse in until we find the next quote or newline
 	//TODO: parse escape sequences properly
 	switch( *m_pszCurrentPosition )
 	{
-	case KeyvalueControl_Quote:
+	case CONTROL_QUOTE:
 		{
 			fWasQuoted = true;
 
@@ -168,18 +170,18 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, co
 
 			pszBegin = m_pszCurrentPosition;
 
-			while( *m_pszCurrentPosition != KeyvalueControl_Quote && *m_pszCurrentPosition != '\n' && IsValidReadPosition() )
+			while( *m_pszCurrentPosition != CONTROL_QUOTE && *m_pszCurrentPosition != '\n' && IsValidReadPosition() )
 				++m_pszCurrentPosition;
 
 			pszEnd = m_pszCurrentPosition;
 
 			if( IsValidReadPosition() )
 			{
-				result = ReadToken;
+				result = READ_TOKEN;
 
 				//Advance past the closing quote or newline
 				//TODO: track line number
-				if( *m_pszCurrentPosition != KeyvalueControl_Quote && m_Settings.fLogWarnings )
+				if( *m_pszCurrentPosition != CONTROL_QUOTE && m_Settings.fLogWarnings )
 					Error( "CKeyvaluesLexer::ReadNext: unclosed quote!\n" );
 
 				++m_pszCurrentPosition;
@@ -189,14 +191,14 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, co
 		}
 
 		//Read open and close as single characters
-	case KeyvalueControl_BlockOpen:
-	case KeyvalueControl_BlockClose:
+	case CONTROL_BLOCK_OPEN:
+	case CONTROL_BLOCK_CLOSE:
 		{
 			pszBegin = m_pszCurrentPosition;
 			++m_pszCurrentPosition;
 			pszEnd = m_pszCurrentPosition;
 
-			result = ReadToken;
+			result = READ_TOKEN;
 
 			break;
 		}
@@ -213,7 +215,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, co
 			pszEnd = m_pszCurrentPosition;
 
 			//Always consider this a successful read, in case this is the last token with no newline after it
-			result = ReadToken;
+			result = READ_TOKEN;
 
 			break;
 		}
@@ -227,7 +229,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 	//No buffer, or reached end
 	if( !IsValidReadPosition() )
 	{
-		return EndOfBuffer;
+		return END_OF_BUFFER;
 	}
 
 	SkipComments();
@@ -235,7 +237,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 	//Nothing left to read
 	if( !IsValidReadPosition() )
 	{
-		return EndOfBuffer;
+		return END_OF_BUFFER;
 	}
 
 	//SkipComments places us at the first non-whitespace character that isn't a comment
@@ -245,7 +247,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 
 	ReadResult result = ReadNext( pszBegin, pszEnd, fWasQuoted );
 
-	if( result == ReadToken )
+	if( result == READ_TOKEN )
 	{
 		bool bHandled = false;
 
@@ -255,19 +257,19 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 			if( strncmp( pszBegin, "{", 1 ) == 0 )
 			{
 				//Can only open a block after a key
-				if( m_TokenType != KVToken_Key && !m_Settings.fAllowUnnamedBlocks )
+				if( m_TokenType != TokenType::KEY && !m_Settings.fAllowUnnamedBlocks )
 				{
 					if( m_Settings.fLogErrors )
-						Error( "CKeyvaluesLexer::ReadNextToken: illegal block open '%c'!\n", KeyvalueControl_BlockOpen );
+						Error( "CKeyvaluesLexer::ReadNextToken: illegal block open '%c'!\n", CONTROL_BLOCK_OPEN );
 
-					result = FormatError;
+					result = FORMAT_ERROR;
 					m_szToken = "";
-					m_TokenType = KVToken_None;
+					m_TokenType = TokenType::NONE;
 				}
 				else
 				{
-					m_szToken = KeyvalueControl_BlockOpen;
-					m_TokenType = KVToken_BlockOpen;
+					m_szToken = CONTROL_BLOCK_OPEN;
+					m_TokenType = TokenType::BLOCK_OPEN;
 				}
 
 				bHandled = true;
@@ -275,18 +277,19 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 			else if( strncmp( pszBegin, "}", 1 ) == 0 )
 			{
 				//Can only close a block after a block open, close or value
-				if( m_TokenType != KVToken_Value && m_TokenType != KVToken_BlockOpen && m_TokenType != KVToken_BlockClose )
+				if( m_TokenType != TokenType::VALUE && m_TokenType != TokenType::BLOCK_OPEN && m_TokenType != TokenType::BLOCK_CLOSE )
 				{
 					if( m_Settings.fLogErrors )
-						Error( "CKeyvaluesLexer::ReadNextToken: illegal block close '%c'!\n", KeyvalueControl_BlockClose );
-					result = FormatError;
+						Error( "CKeyvaluesLexer::ReadNextToken: illegal block close '%c'!\n", CONTROL_BLOCK_CLOSE );
+
+					result = FORMAT_ERROR;
 					m_szToken = "";
-					m_TokenType = KVToken_None;
+					m_TokenType = TokenType::NONE;
 				}
 				else
 				{
-					m_szToken = KeyvalueControl_BlockClose;
-					m_TokenType = KVToken_BlockClose;
+					m_szToken = CONTROL_BLOCK_CLOSE;
+					m_TokenType = TokenType::BLOCK_CLOSE;
 				}
 
 				bHandled = true;
@@ -298,12 +301,13 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 			m_szToken.Assign( pszBegin, 0, pszEnd - pszBegin );
 
 			//If the previous token was a key, this becomes a value
-			if( m_TokenType == KVToken_Key )
-				m_TokenType = KVToken_Value;
+			if( m_TokenType == TokenType::KEY )
+				m_TokenType = TokenType::VALUE;
 			else
-				m_TokenType = KVToken_Key;
+				m_TokenType = TokenType::KEY;
 		}
 	}
 
 	return result;
+}
 }

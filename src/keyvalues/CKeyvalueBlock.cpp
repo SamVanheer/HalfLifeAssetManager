@@ -3,33 +3,35 @@
 #include "common/Logging.h"
 
 #include "CKeyvalue.h"
-#include "CKvBlockNode.h"
+#include "CKeyvalueBlock.h"
 
-CKvBlockNode::CKvBlockNode( const char* const pszKey )
-	: BaseClass( pszKey, KVNode_Block )
+namespace keyvalues
+{
+CKeyvalueBlock::CKeyvalueBlock( const char* const pszKey )
+	: BaseClass( pszKey, NodeType::BLOCK )
 {
 }
 
-CKvBlockNode::CKvBlockNode( const char* const pszKey, const Children_t& children )
-	: BaseClass( pszKey, KVNode_Block )
+CKeyvalueBlock::CKeyvalueBlock( const char* const pszKey, const Children_t& children )
+	: CKeyvalueBlock( pszKey )
 {
 	SetChildren( children );
 }
 
-CKvBlockNode::CKvBlockNode( const char* const pszKey, CKeyvalueNode* pFirstChild )
-	: BaseClass( pszKey, KVNode_Block )
+CKeyvalueBlock::CKeyvalueBlock( const char* const pszKey, CKeyvalueNode* pFirstChild )
+	: CKeyvalueBlock( pszKey )
 {
 	assert( pFirstChild );
 
 	m_Children.push_back( pFirstChild );
 }
 
-CKvBlockNode::~CKvBlockNode()
+CKeyvalueBlock::~CKeyvalueBlock()
 {
 	RemoveAllChildren();
 }
 
-void CKvBlockNode::SetChildren( const Children_t& children )
+void CKeyvalueBlock::SetChildren( const Children_t& children )
 {
 	RemoveAllChildren();
 
@@ -43,7 +45,7 @@ void CKvBlockNode::SetChildren( const Children_t& children )
 	}
 }
 
-void CKvBlockNode::RemoveAllChildren()
+void CKeyvalueBlock::RemoveAllChildren()
 {
 	for( auto pChild : m_Children )
 	{
@@ -53,7 +55,7 @@ void CKvBlockNode::RemoveAllChildren()
 	m_Children.clear();
 }
 
-void CKvBlockNode::RemoveAllNotNamed( const char* const pszKey )
+void CKeyvalueBlock::RemoveAllNotNamed( const char* const pszKey )
 {
 	assert( pszKey );
 
@@ -69,7 +71,7 @@ void CKvBlockNode::RemoveAllNotNamed( const char* const pszKey )
 	}
 }
 
-CKeyvalueNode* CKvBlockNode::FindFirstChild( const char* const pszKey ) const
+CKeyvalueNode* CKeyvalueBlock::FindFirstChild( const char* const pszKey ) const
 {
 	assert( pszKey );
 
@@ -82,7 +84,7 @@ CKeyvalueNode* CKvBlockNode::FindFirstChild( const char* const pszKey ) const
 	return nullptr;
 }
 
-CKeyvalueNode* CKvBlockNode::FindFirstChild( const char* const pszKey, const KeyvalueNodeType type ) const
+CKeyvalueNode* CKeyvalueBlock::FindFirstChild( const char* const pszKey, const NodeType type ) const
 {
 	assert( pszKey );
 
@@ -98,7 +100,7 @@ CKeyvalueNode* CKvBlockNode::FindFirstChild( const char* const pszKey, const Key
 	return nullptr;
 }
 
-CString CKvBlockNode::FindFirstKeyvalue( const char* const pszKey ) const
+CString CKeyvalueBlock::FindFirstKeyvalue( const char* const pszKey ) const
 {
 	if( pszKey && *pszKey )
 	{
@@ -106,7 +108,7 @@ CString CKvBlockNode::FindFirstKeyvalue( const char* const pszKey ) const
 
 		for( Children_t::const_iterator it = children.begin(), end = children.end(); it != end; ++it )
 		{
-			if( ( *it )->GetType() == KVNode_Keyvalue )
+			if( ( *it )->GetType() == NodeType::KEYVALUE )
 			{
 				CKeyvalue* pKV = static_cast<CKeyvalue*>( *it );
 
@@ -119,7 +121,7 @@ CString CKvBlockNode::FindFirstKeyvalue( const char* const pszKey ) const
 	return "";
 }
 
-void CKvBlockNode::AddKeyvalue( const char* const pszKey, const char* const pszValue )
+void CKeyvalueBlock::AddKeyvalue( const char* const pszKey, const char* const pszValue )
 {
 	assert( pszKey );
 	assert( pszValue );
@@ -127,7 +129,7 @@ void CKvBlockNode::AddKeyvalue( const char* const pszKey, const char* const pszV
 	m_Children.emplace_back( new CKeyvalue( pszKey, pszValue ) );
 }
 
-void CKvBlockNode::Print( const size_t uiTabLevel ) const
+void CKeyvalueBlock::Print( const size_t uiTabLevel ) const
 {
 	Message( "%*s\"%s\"\n%*s{\n", static_cast<int>( uiTabLevel * KEYVALUE_TAB_WIDTH ), "", GetKey().CStr(), static_cast<size_t>( uiTabLevel * KEYVALUE_TAB_WIDTH ), "" );
 
@@ -136,8 +138,9 @@ void CKvBlockNode::Print( const size_t uiTabLevel ) const
 	Message( "%*s}\n", static_cast<int>( uiTabLevel * KEYVALUE_TAB_WIDTH ), "" );
 }
 
-void CKvBlockNode::PrintChildren( const size_t uiTabLevel ) const
+void CKeyvalueBlock::PrintChildren( const size_t uiTabLevel ) const
 {
 	for( Children_t::const_iterator it = m_Children.begin(), end = m_Children.end(); it != end; ++it )
 		( *it )->Print( uiTabLevel );
+}
 }

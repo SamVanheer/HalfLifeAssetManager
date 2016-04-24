@@ -3,6 +3,8 @@
 
 #include "CKeyvalueNode.h"
 
+namespace keyvalues
+{
 /**
 * A single keyvalue
 */
@@ -45,5 +47,6 @@ private:
 	CKeyvalue( const CKeyvalue& ) = delete;
 	CKeyvalue& operator=( const CKeyvalue& ) = delete;
 };
+}
 
 #endif //CKEYVALUE_H

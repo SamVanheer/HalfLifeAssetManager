@@ -1,43 +1,43 @@
-#ifndef KEYVALUESCONSTANTS_H
-#define KEYVALUESCONSTANTS_H
+#ifndef KEYVALUES_KEYVALUESCONSTANTS_H
+#define KEYVALUES_KEYVALUESCONSTANTS_H
 
+namespace keyvalues
+{
 /**
 *	Node types.
-*	TODO: enum class
 */
-enum KeyvalueNodeType
+enum class NodeType
 {
-	KVNode_Keyvalue,
-	KVNode_Block
+	KEYVALUE,
+	BLOCK
 };
 
 /**
 *	Token types used by the lexer.
-*	TODO: enum class
 */
-enum KeyvalueTokenType
+enum class TokenType
 {
-	KVToken_None,
-	KVToken_BlockOpen,
-	KVToken_BlockClose,
-	KVToken_Key,			//Also used for block keys
-	KVToken_Value
+	NONE,
+	BLOCK_OPEN,
+	BLOCK_CLOSE,
+	KEY,			//Also used for block keys
+	VALUE
 };
 
 /**
 *	The control character used for quoted strings.
 */
-const char KeyvalueControl_Quote		= '\"';
+const char CONTROL_QUOTE		= '\"';
 
 /**
 *	The control character used for block open statements.
 */
-const char KeyvalueControl_BlockOpen	= '{';
+const char CONTROL_BLOCK_OPEN	= '{';
 
 /**
 *	The control character used for block close statements.
 */
-const char KeyvalueControl_BlockClose	= '}';
+const char CONTROL_BLOCK_CLOSE	= '}';
 
 /**
 *	Tab width for pretty printing.
@@ -60,5 +60,6 @@ struct CKeyvaluesLexerSettings final
 	{
 	}
 };
+}
 
-#endif //KEYVALUESCONSTANTS_H
+#endif //KEYVALUES_KEYVALUESCONSTANTS_H

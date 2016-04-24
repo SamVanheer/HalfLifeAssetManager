@@ -2,7 +2,9 @@
 
 #include "CKeyvalueNode.h"
 
-CKeyvalueNode::CKeyvalueNode( const char* const pszKey, const KeyvalueNodeType type )
+namespace keyvalues
+{
+CKeyvalueNode::CKeyvalueNode( const char* const pszKey, const NodeType type )
 	: m_Type( type )
 {
 	SetKey( pszKey );
@@ -18,4 +20,5 @@ void CKeyvalueNode::SetKey( const char* const pszKey )
 void CKeyvalueNode::SetKey( const CString& szKey )
 {
 	SetKey( szKey.CStr() );
+}
 }

@@ -6,6 +6,8 @@
 
 #include "KeyvaluesConstants.h"
 
+namespace keyvalues
+{
 /**
 *	A lexer that can read in keyvalues text data and tokenize it
 */
@@ -17,9 +19,9 @@ public:
 	*/
 	enum ReadResult
 	{
-		ReadToken,
-		EndOfBuffer,
-		FormatError
+		READ_TOKEN,
+		END_OF_BUFFER,
+		FORMAT_ERROR
 	};
 
 	typedef size_t size_type;
@@ -67,7 +69,7 @@ public:
 	/**
 	*	Gets the current token type.
 	*/
-	KeyvalueTokenType GetTokenType() const { return m_TokenType; }
+	TokenType GetTokenType() const { return m_TokenType; }
 
 	/**
 	*	Gets the current token.
@@ -118,7 +120,7 @@ private:
 	Memory_t			m_Memory;
 	const char*			m_pszCurrentPosition;
 
-	KeyvalueTokenType	m_TokenType;			//Type of the last token we read
+	TokenType			m_TokenType;			//Type of the last token we read
 	CString				m_szToken;				//The last token we read
 
 	CKeyvaluesLexerSettings m_Settings;
@@ -127,5 +129,6 @@ private:
 	CKeyvaluesLexer( const CKeyvaluesLexer& ) = delete;
 	CKeyvaluesLexer& operator=( const CKeyvaluesLexer& ) = delete;
 };
+}
 
 #endif //CKEYVALUESLEXER_H

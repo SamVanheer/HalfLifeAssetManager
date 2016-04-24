@@ -3,8 +3,10 @@
 
 #include "CKeyvaluesLexer.h"
 
+namespace keyvalues
+{
 class CKeyvalueNode;
-class CKvBlockNode;
+class CKeyvalueBlock;
 
 /**
 *	Parser settings.
@@ -33,12 +35,11 @@ public:
 	*/
 	enum ParseResult
 	{
-		Success,
-		EndOfData,		//All data parsed in
-		UnexpectedEOB,
-		FormatError,
-		UnknownError,
-		WrongNodeType
+		SUCCESS,
+		UNEXPECTED_EOB,
+		FORMAT_ERROR,
+		UNKNOWN_ERROR,
+		WRONG_NODE_TYPE
 	};
 
 	static const char* ParseResultToString( const ParseResult result );
@@ -83,7 +84,7 @@ protected:
 
 	ParseResult ParseNext( CKeyvalueNode*& pNode, bool fParseFirst );
 
-	ParseResult ParseBlock( CKvBlockNode*& pBlock, bool fIsRoot );
+	ParseResult ParseBlock( CKeyvalueBlock*& pBlock, bool fIsRoot );
 
 private:
 	void Construct();
@@ -143,17 +144,17 @@ public:
 	/**
 	*	Gets the root keyvalues block.
 	*/
-	const CKvBlockNode* GetKeyvalues() const { return m_pKeyvalues; }
+	const CKeyvalueBlock* GetKeyvalues() const { return m_pKeyvalues; }
 
 	/**
 	*	@see GetKeyvalues() const
 	*/
-	CKvBlockNode* GetKeyvalues() { return m_pKeyvalues; }
+	CKeyvalueBlock* GetKeyvalues() { return m_pKeyvalues; }
 
 	/**
 	*	Releases ownership of the parser's keyvalues and returns them.
 	*/
-	CKvBlockNode* ReleaseKeyvalues();
+	CKeyvalueBlock* ReleaseKeyvalues();
 
 	/**
 	*	Initializes or reinitializes the parser with the given memory.
@@ -163,7 +164,6 @@ public:
 	/**
 	*	Parses in the entire buffer
 	*	If successful, returns ParseResult::Success
-	*	If the end of the buffer is reached and all data was correctly parsed in, ParseResult::EndOfData is converted into ParseResult::Success
 	*	If the buffer ended before a fully formatted keyvalues format was parsed, returns ParseResult::UnexpectedEOB
 	*	If non-keyvalues data is found, returns ParseResult::FormatError
 	*	If an unknown lexer result occurs, returns ParseResult::UnknownError
@@ -171,7 +171,7 @@ public:
 	ParseResult Parse();
 
 private:
-	CKvBlockNode* m_pKeyvalues = nullptr;
+	CKeyvalueBlock* m_pKeyvalues = nullptr;
 };
 
 /**
@@ -206,7 +206,8 @@ public:
 	/**
 	*	Parses a single block from the file. You will have to free the block yourself when you're done with it.
 	*/
-	ParseResult ParseBlock( CKvBlockNode*& pBlock );
+	ParseResult ParseBlock( CKeyvalueBlock*& pBlock );
 };
+}
 
 #endif //CKEYVALUESPARSER_H

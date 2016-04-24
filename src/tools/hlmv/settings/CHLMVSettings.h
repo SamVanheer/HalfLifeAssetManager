@@ -100,9 +100,9 @@ protected:
 
 	void PreShutdown( const char* const pszFilename ) override final;
 
-	bool LoadFromFile( const CKvBlockNode& root ) override final;
+	bool LoadFromFile( const kv::Block& root ) override final;
 
-	bool SaveToFile( CKeyvaluesWriter& writer ) override final;
+	bool SaveToFile( kv::Writer& writer ) override final;
 
 private:
 	void Copy( const CHLMVSettings& other );

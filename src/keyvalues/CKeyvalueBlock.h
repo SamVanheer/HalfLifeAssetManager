@@ -1,15 +1,17 @@
-#ifndef CKVBLOCKNODE_H
-#define CKVBLOCKNODE_H
+#ifndef KEYVALUES_CKEYVALUEBLOCK_H
+#define KEYVALUES_CKEYVALUEBLOCK_H
 
 #include <vector>
 
 #include "CKeyvalueNode.h"
 
+namespace keyvalues
+{
 /**
 *	A single keyvalue block node
 *	Blocks have 0 or more child keyvalues
 */
-class CKvBlockNode final : public CKeyvalueNode
+class CKeyvalueBlock final : public CKeyvalueNode
 {
 public:
 	typedef CKeyvalueNode BaseClass;
@@ -21,7 +23,7 @@ public:
 	*	Constructs a keyvalue node with a key.
 	*	@param pszKey Key. Must be non-null.
 	*/
-	CKvBlockNode( const char* const pszKey );
+	CKeyvalueBlock( const char* const pszKey );
 
 	/**
 	*	Constructs a keyvalue node with a key.
@@ -29,7 +31,7 @@ public:
 	*	@param pszKey Key. Must be non-null.
 	*	@param children Children to add.
 	*/
-	CKvBlockNode( const char* const pszKey, const Children_t& children );
+	CKeyvalueBlock( const char* const pszKey, const Children_t& children );
 
 	/**
 	*	Constructs a keyvalue node with a key.
@@ -37,11 +39,12 @@ public:
 	*	@param pszKey Key. Must be non-null.
 	*	@param pFirstChild. First child. Must be non-null.
 	*/
-	CKvBlockNode( const char* pszKey, CKeyvalueNode* pFirstChild );
+	CKeyvalueBlock( const char* pszKey, CKeyvalueNode* pFirstChild );
 
-	~CKvBlockNode();
+	~CKeyvalueBlock();
 
 	const Children_t& GetChildren() const { return m_Children; }
+	//TODO: remove this and add ways to add/remove children safely.
 	Children_t& GetChildren() { return m_Children; }
 
 	/**
@@ -74,7 +77,7 @@ public:
 	*	@param type Node type to filter by.
 	*	@return If found, the first child node with the given key and type, null otherwise.
 	*/
-	CKeyvalueNode* FindFirstChild( const char* const pszKey, const KeyvalueNodeType type ) const;
+	CKeyvalueNode* FindFirstChild( const char* const pszKey, const NodeType type ) const;
 
 	/**
 	*	Finds the first child with the given key, and that has the given class type.
@@ -108,12 +111,12 @@ private:
 	Children_t m_Children;
 
 private:
-	CKvBlockNode( const CKvBlockNode& ) = delete;
-	CKvBlockNode& operator=( const CKvBlockNode& ) = delete;
+	CKeyvalueBlock( const CKeyvalueBlock& ) = delete;
+	CKeyvalueBlock& operator=( const CKeyvalueBlock& ) = delete;
 };
 
 template<typename T>
-T* CKvBlockNode::FindFirstChild( const char* const pszKey ) const
+T* CKeyvalueBlock::FindFirstChild( const char* const pszKey ) const
 {
 	auto node = FindFirstChild( pszKey );
 
@@ -124,5 +127,6 @@ T* CKvBlockNode::FindFirstChild( const char* const pszKey ) const
 
 	return dynamic_cast<T*>( node );
 }
+}
 
-#endif //CKVBLOCKNODE_H
+#endif //KEYVALUES_CKEYVALUEBLOCK_H

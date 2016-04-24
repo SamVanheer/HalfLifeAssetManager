@@ -184,15 +184,17 @@ bool CBaseSettings::LoadFromFile( const char* const pszFilename )
 	if( !pszFilename || !( *pszFilename ) )
 		return false;
 
-	CKeyvaluesParser parser( pszFilename );
+	kv::Parser parser( pszFilename );
 
 	if( !parser.HasInputData() )
 		return false;
 
-	const CKeyvaluesParser::ParseResult result = parser.Parse();
+	const kv::Parser::ParseResult result = parser.Parse();
 
-	if( result != CKeyvaluesParser::Success )
+	if( result != kv::Parser::SUCCESS )
 	{
+		Error( "Error parsing settings: The error given was:\n%s\n", kv::Parser::ParseResultToString( result ) );
+
 		return false;
 	}
 
@@ -204,7 +206,7 @@ bool CBaseSettings::SaveToFile( const char* const pszFilename )
 	if( !pszFilename || !( *pszFilename ) )
 		return false;
 
-	CKeyvaluesWriter writer( pszFilename );
+	kv::Writer writer( pszFilename );
 
 	if( !writer.IsOpen() )
 	{
@@ -214,26 +216,26 @@ bool CBaseSettings::SaveToFile( const char* const pszFilename )
 	return SaveToFile( writer );
 }
 
-bool CBaseSettings::LoadFromFile( const CKvBlockNode& root )
+bool CBaseSettings::LoadFromFile( const kv::Block& root )
 {
 	return LoadCommonSettings( root ) && LoadGameConfigs( root );
 }
 
-bool CBaseSettings::SaveToFile( CKeyvaluesWriter& writer )
+bool CBaseSettings::SaveToFile( kv::Writer& writer )
 {
 	return SaveCommonSettings( writer ) && SaveGameConfigs( writer );
 }
 
-bool CBaseSettings::LoadCommonSettings( const CKvBlockNode& root )
+bool CBaseSettings::LoadCommonSettings( const kv::Block& root )
 {
-	if( auto common = root.FindFirstChild<CKvBlockNode>( "commonSettings" ) )
+	if( auto common = root.FindFirstChild<kv::Block>( "commonSettings" ) )
 	{
-		if( auto fps = common->FindFirstChild<CKeyvalue>( "fps" ) )
+		if( auto fps = common->FindFirstChild<kv::KV>( "fps" ) )
 		{
 			SetFPS( strtod( fps->GetValue().CStr(), nullptr ) );
 		}
 
-		if( auto cvars = common->FindFirstChild<CKvBlockNode>( "cvars" ) )
+		if( auto cvars = common->FindFirstChild<kv::Block>( "cvars" ) )
 		{
 			if( !LoadArchiveCVars( *cvars ) )
 				return false;
@@ -243,7 +245,7 @@ bool CBaseSettings::LoadCommonSettings( const CKvBlockNode& root )
 	return true;
 }
 
-bool CBaseSettings::SaveCommonSettings( CKeyvaluesWriter& writer )
+bool CBaseSettings::SaveCommonSettings( kv::Writer& writer )
 {
 	writer.BeginBlock( "commonSettings" );
 
@@ -262,9 +264,9 @@ bool CBaseSettings::SaveCommonSettings( CKeyvaluesWriter& writer )
 	return !writer.ErrorOccurred();
 }
 
-bool CBaseSettings::LoadGameConfigs( const CKvBlockNode& root )
+bool CBaseSettings::LoadGameConfigs( const kv::Block& root )
 {
-	auto configs = root.FindFirstChild<CKvBlockNode>( "gameConfigs" );
+	auto configs = root.FindFirstChild<kv::Block>( "gameConfigs" );
 
 	if( configs )
 	{
@@ -277,9 +279,10 @@ bool CBaseSettings::LoadGameConfigs( const CKvBlockNode& root )
 	return true;
 }
 
-bool CBaseSettings::SaveGameConfigs( CKeyvaluesWriter& writer )
+bool CBaseSettings::SaveGameConfigs( kv::Writer& writer )
 {
-	std::shared_ptr<CKvBlockNode> gameConfigs = std::make_shared<CKvBlockNode>( "gameConfigs" );
+	//TODO: make stack allocated
+	auto gameConfigs = std::make_shared<kv::Block>( "gameConfigs" );
 
 	settings::SaveGameConfigs( m_ConfigManager, *gameConfigs );
 

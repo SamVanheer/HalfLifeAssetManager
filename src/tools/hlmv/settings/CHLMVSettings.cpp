@@ -93,23 +93,23 @@ void CHLMVSettings::PreShutdown( const char* const pszFilename )
 	GetConfigManager()->SetListener( nullptr );
 }
 
-bool CHLMVSettings::LoadFromFile( const CKvBlockNode& root )
+bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 {
 	if( !CBaseSettings::LoadFromFile( root ) )
 		return false;
 
-	auto settings = root.FindFirstChild<CKvBlockNode>( "hlmvSettings" );
+	auto settings = root.FindFirstChild<kv::Block>( "hlmvSettings" );
 
 	if( settings )
 	{
-		auto active = settings->FindFirstChild<CKeyvalue>( "activeConfig" );
+		auto active = settings->FindFirstChild<kv::KV>( "activeConfig" );
 
 		if( active )
 		{
 			GetConfigManager()->SetActiveConfig( active->GetValue().CStr() );
 		}
 
-		if( auto block = settings->FindFirstChild<CKvBlockNode>( "recentFiles" ) )
+		if( auto block = settings->FindFirstChild<kv::Block>( "recentFiles" ) )
 		{
 			const auto& children = block->GetChildren();
 
@@ -117,13 +117,13 @@ bool CHLMVSettings::LoadFromFile( const CKvBlockNode& root )
 			{
 				const auto& child = *it;
 
-				if( child->GetType() != KVNode_Keyvalue )
+				if( child->GetType() != kv::NodeType::KEYVALUE )
 					continue;
 
 				if( child->GetKey() != "recentFile" )
 					continue;
 
-				auto file = static_cast<CKeyvalue*>( child );
+				auto file = static_cast<kv::KV*>( child );
 
 				m_RecentFiles->Add( file->GetValue().CStr() );
 			}
@@ -133,7 +133,7 @@ bool CHLMVSettings::LoadFromFile( const CKvBlockNode& root )
 		LoadColorSetting( *settings, "backgroundColor", m_BackgroundColor );
 		LoadColorSetting( *settings, "crosshairColor", m_CrosshairColor );
 
-		if( auto floor = settings->FindFirstChild<CKeyvalue>( "floorLength" ) )
+		if( auto floor = settings->FindFirstChild<kv::KV>( "floorLength" ) )
 		{
 			SetFloorLength( static_cast<float>( strtod( floor->GetValue().CStr(), nullptr ) ) );
 		}
@@ -142,7 +142,7 @@ bool CHLMVSettings::LoadFromFile( const CKvBlockNode& root )
 	return true;
 }
 
-bool CHLMVSettings::SaveToFile( CKeyvaluesWriter& writer )
+bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 {
 	if( !CBaseSettings::SaveToFile( writer ) )
 		return false;

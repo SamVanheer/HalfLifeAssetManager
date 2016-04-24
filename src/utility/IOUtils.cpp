@@ -12,16 +12,16 @@
 
 #include "IOUtils.h"
 
-bool LoadColorSetting(const CKvBlockNode& settings, const char* const pszName, Color& color, const bool bHasAlpha )
+bool LoadColorSetting( const kv::Block& settings, const char* const pszName, Color& color, const bool bHasAlpha )
 {
 	if( !pszName || !( *pszName ) )
 		return false;
 
 	if( auto groundColor = settings.FindFirstChild( pszName ) )
 	{
-		if( groundColor->GetType() == KVNode_Keyvalue )
+		if( groundColor->GetType() == kv::NodeType::KEYVALUE )
 		{
-			const CString& sValue = static_cast<CKeyvalue*>( groundColor )->GetValue();
+			const CString& sValue = static_cast<kv::KV*>( groundColor )->GetValue();
 
 			if( ParseColor( sValue.CStr(), color, bHasAlpha ) )
 			{
@@ -41,7 +41,7 @@ bool LoadColorSetting(const CKvBlockNode& settings, const char* const pszName, C
 	return false;
 }
 
-bool SaveColorSetting( CKeyvaluesWriter& writer, const char* const pszName, const Color& color, const bool bHasAlpha )
+bool SaveColorSetting( kv::Writer& writer, const char* const pszName, const Color& color, const bool bHasAlpha )
 {
 	char szBuffer[ MAX_BUFFER_LENGTH ];
 
@@ -57,7 +57,7 @@ bool SaveColorSetting( CKeyvaluesWriter& writer, const char* const pszName, cons
 	return false;
 }
 
-bool LoadColorCVarSetting( const CKvBlockNode& settings, const char* const pszName, const char* const pszCVar, const bool bHasAlpha )
+bool LoadColorCVarSetting( const kv::Block& settings, const char* const pszName, const char* const pszCVar, const bool bHasAlpha )
 {
 	assert( pszCVar );
 
@@ -80,7 +80,7 @@ bool LoadColorCVarSetting( const CKvBlockNode& settings, const char* const pszNa
 	return true;
 }
 
-bool SaveColorCVarSetting( CKeyvaluesWriter& writer, const char* const pszName, const char* const pszCVar, const bool bHasAlpha )
+bool SaveColorCVarSetting( kv::Writer& writer, const char* const pszName, const char* const pszCVar, const bool bHasAlpha )
 {
 	assert( pszCVar );
 
@@ -96,18 +96,18 @@ bool SaveColorCVarSetting( CKeyvaluesWriter& writer, const char* const pszName, 
 	return SaveColorSetting( writer, pszName, color );
 }
 
-bool LoadArchiveCVars( const CKvBlockNode& cvars )
+bool LoadArchiveCVars( const kv::Block& cvars )
 {
 	const auto& children = cvars.GetChildren();
 
 	for( const auto& child : children )
 	{
-		if( child->GetType() != KVNode_Keyvalue )
+		if( child->GetType() != kv::NodeType::KEYVALUE )
 		{
 			continue;
 		}
 
-		auto kv = static_cast<CKeyvalue*>( child );
+		auto kv = static_cast<kv::KV*>( child );
 
 		cvar::cvars().SetCVarString( kv->GetKey().CStr(), kv->GetValue().CStr() );
 	}
@@ -119,13 +119,13 @@ namespace
 {
 static void SaveArchiveCVarsCallback( void* pObject, const cvar::CCVar& cvar )
 {
-	CKeyvaluesWriter& writer = *reinterpret_cast<CKeyvaluesWriter*>( pObject );
+	auto& writer = *reinterpret_cast<kv::Writer*>( pObject );
 
 	writer.WriteKeyvalue( cvar.GetName(), cvar.GetString() );
 }
 }
 
-bool SaveArchiveCVars( CKeyvaluesWriter& writer, const char* const pszBlockName )
+bool SaveArchiveCVars( kv::Writer& writer, const char* const pszBlockName )
 {
 	writer.BeginBlock( pszBlockName );
 

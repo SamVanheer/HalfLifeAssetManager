@@ -4,8 +4,10 @@
 
 #include "CKeyvalue.h"
 
+namespace keyvalues
+{
 CKeyvalue::CKeyvalue( const char* const pszKey, const char* const pszValue )
-	: CKeyvalueNode( pszKey, KVNode_Keyvalue )
+	: CKeyvalueNode( pszKey, NodeType::KEYVALUE )
 {
 	SetValue( pszValue );
 }
@@ -25,4 +27,5 @@ void CKeyvalue::SetValue( const CString& szValue )
 void CKeyvalue::Print( const size_t uiTabLevel ) const
 {
 	Message( "%*s\"%s\" \"%s\"\n", static_cast<int>( uiTabLevel * KEYVALUE_TAB_WIDTH ), "", GetKey().CStr(), m_szValue.CStr() );
+}
 }

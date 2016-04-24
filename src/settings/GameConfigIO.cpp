@@ -1,8 +1,6 @@
 #include <stdexcept>
 
-#include "keyvalues/CKeyvalueNode.h"
-#include "keyvalues/CKeyvalue.h"
-#include "keyvalues/CKvBlockNode.h"
+#include "keyvalues/Keyvalues.h"
 
 #include "CGameConfig.h"
 #include "CGameConfigManager.h"
@@ -11,12 +9,12 @@
 
 namespace settings
 {
-std::shared_ptr<CGameConfig> LoadGameConfig( const CKvBlockNode& block )
+std::shared_ptr<CGameConfig> LoadGameConfig( const kv::Block& block )
 {
-	auto name = block.FindFirstChild<CKeyvalue>( "name" );
-	auto basePath = block.FindFirstChild<CKeyvalue>( "basePath" );
-	auto gameDir = block.FindFirstChild<CKeyvalue>( "gameDir" );
-	auto modDir = block.FindFirstChild<CKeyvalue>( "modDir" );
+	auto name = block.FindFirstChild<kv::KV>( "name" );
+	auto basePath = block.FindFirstChild<kv::KV>( "basePath" );
+	auto gameDir = block.FindFirstChild<kv::KV>( "gameDir" );
+	auto modDir = block.FindFirstChild<kv::KV>( "modDir" );
 
 	if( !name || !basePath || !gameDir || !modDir )
 	{
@@ -39,7 +37,7 @@ std::shared_ptr<CGameConfig> LoadGameConfig( const CKvBlockNode& block )
 	}
 }
 
-std::pair<size_t, size_t> LoadGameConfigs( const CKvBlockNode& block, std::shared_ptr<CGameConfigManager> manager )
+std::pair<size_t, size_t> LoadGameConfigs( const kv::Block& block, std::shared_ptr<CGameConfigManager> manager )
 {
 	if( !manager )
 		return { 0, 0 };
@@ -55,12 +53,12 @@ std::pair<size_t, size_t> LoadGameConfigs( const CKvBlockNode& block, std::share
 		if( child->GetKey() != "config" )
 			continue;
 
-		if( child->GetType() != KVNode_Block )
+		if( child->GetType() != kv::NodeType::BLOCK )
 			continue;
 
 		++uiTotal;
 
-		auto block = static_cast<CKvBlockNode*>( child );
+		auto block = static_cast<kv::Block*>( child );
 
 		auto config = LoadGameConfig( *block );
 
@@ -74,7 +72,7 @@ std::pair<size_t, size_t> LoadGameConfigs( const CKvBlockNode& block, std::share
 	return { uiCount, uiTotal };
 }
 
-bool SaveGameConfig( const std::shared_ptr<const CGameConfig>& config, CKvBlockNode& block )
+bool SaveGameConfig( const std::shared_ptr<const CGameConfig>& config, kv::Block& block )
 {
 	if( !config )
 		return false;
@@ -82,7 +80,7 @@ bool SaveGameConfig( const std::shared_ptr<const CGameConfig>& config, CKvBlockN
 	if( !( *config->GetName() ) )
 		return false;
 
-	CKvBlockNode* pConfigBlock = new CKvBlockNode( "config" );
+	auto pConfigBlock = new kv::Block( "config" );
 
 	pConfigBlock->AddKeyvalue( "name", config->GetName() );
 	pConfigBlock->AddKeyvalue( "basePath", config->GetBasePath() );
@@ -94,7 +92,7 @@ bool SaveGameConfig( const std::shared_ptr<const CGameConfig>& config, CKvBlockN
 	return true;
 }
 
-size_t SaveGameConfigs( const std::shared_ptr<const CGameConfigManager>& manager, CKvBlockNode& block )
+size_t SaveGameConfigs( const std::shared_ptr<const CGameConfigManager>& manager, kv::Block& block )
 {
 	if( !manager )
 		return 0;

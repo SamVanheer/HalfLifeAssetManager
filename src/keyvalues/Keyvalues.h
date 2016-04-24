@@ -1,11 +1,13 @@
 #ifndef KEYVALUES_KEYVALUES_H
 #define KEYVALUES_KEYVALUES_H
 
+#include "KVForward.h"
+
 #include "KeyvaluesConstants.h"
 
 #include "CKeyvalueNode.h"
 #include "CKeyvalue.h"
-#include "CKvBlockNode.h"
+#include "CKeyvalueBlock.h"
 
 #include "CKeyvaluesLexer.h"
 #include "CKeyvaluesParser.h"

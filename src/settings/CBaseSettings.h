@@ -3,8 +3,7 @@
 
 #include <memory>
 
-class CKvBlockNode;
-class CKeyvaluesWriter;
+#include "keyvalues/KVForward.h"
 
 namespace settings
 {
@@ -161,22 +160,22 @@ protected:
 	*	@param root Root block.
 	*	@see LoadFromFile( const char* const pszFilename )
 	*/
-	virtual bool LoadFromFile( const CKvBlockNode& root );
+	virtual bool LoadFromFile( const kv::Block& root );
 
 	/**
 	*	Saves settings using the given writer.
 	*	@param writer Writer.
 	*	@see SaveToFile( const char* const pszFilename )
 	*/
-	virtual bool SaveToFile( CKeyvaluesWriter& writer );
+	virtual bool SaveToFile( kv::Writer& writer );
 
-	bool LoadCommonSettings( const CKvBlockNode& root );
+	bool LoadCommonSettings( const kv::Block& root );
 
-	bool SaveCommonSettings( CKeyvaluesWriter& writer );
+	bool SaveCommonSettings( kv::Writer& writer );
 
-	bool LoadGameConfigs( const CKvBlockNode& root );
+	bool LoadGameConfigs( const kv::Block& root );
 
-	bool SaveGameConfigs( CKeyvaluesWriter& writer );
+	bool SaveGameConfigs( kv::Writer& writer );
 
 private:
 	//Note: must be non-virtual.

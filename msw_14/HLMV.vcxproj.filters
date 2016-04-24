@@ -177,9 +177,6 @@
     <ClCompile Include="..\src\keyvalues\CKeyvaluesWriter.cpp">
       <Filter>Source Files\keyvalues</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\keyvalues\CKvBlockNode.cpp">
-      <Filter>Source Files\keyvalues</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\utility\CString.cpp">
       <Filter>Source Files\utility</Filter>
     </ClCompile>
@@ -348,6 +345,9 @@
     <ClCompile Include="..\src\common\CWorldTime.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvalueBlock.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -402,9 +402,6 @@
       <Filter>Header Files\keyvalues</Filter>
     </ClInclude>
     <ClInclude Include="..\src\keyvalues\CKeyvaluesWriter.h">
-      <Filter>Header Files\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keyvalues\CKvBlockNode.h">
       <Filter>Header Files\keyvalues</Filter>
     </ClInclude>
     <ClInclude Include="..\src\keyvalues\KeyvaluesConstants.h">
@@ -613,6 +610,12 @@
     </ClInclude>
     <ClInclude Include="..\src\common\CWorldTime.h">
       <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\KVForward.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvalueBlock.h">
+      <Filter>Header Files\keyvalues</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

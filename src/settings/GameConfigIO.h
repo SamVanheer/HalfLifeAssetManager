@@ -3,7 +3,7 @@
 
 #include <memory>
 
-class CKvBlockNode;
+#include "keyvalues/KVForward.h"
 
 namespace settings
 {
@@ -15,7 +15,7 @@ class CGameConfigManager;
 *	@param block keyvalue block that contains a game configuration.
 *	@return Game configuration, or nullptr if the configuration was ill-formed.
 */
-std::shared_ptr<CGameConfig> LoadGameConfig( const CKvBlockNode& block );
+std::shared_ptr<CGameConfig> LoadGameConfig( const kv::Block& block );
 
 /**
 *	Loads a set of game configurations from a block.
@@ -23,7 +23,7 @@ std::shared_ptr<CGameConfig> LoadGameConfig( const CKvBlockNode& block );
 *	@param manager Manager to add configurations to.
 *	@return pair containing the number of configurations that were loaded in, and the total number of configurations encountered in the block. Ill-formed configurations are ignored.
 */
-std::pair<size_t, size_t> LoadGameConfigs( const CKvBlockNode& block, std::shared_ptr<CGameConfigManager> manager );
+std::pair<size_t, size_t> LoadGameConfigs( const kv::Block& block, std::shared_ptr<CGameConfigManager> manager );
 
 /**
 *	Saves a single game configuration to a block. The configuration is added as a child block.
@@ -31,7 +31,7 @@ std::pair<size_t, size_t> LoadGameConfigs( const CKvBlockNode& block, std::share
 *	@param block Block to add the child block to.
 *	@return true on success, false otherwise.
 */
-bool SaveGameConfig( const std::shared_ptr<const CGameConfig>& config, CKvBlockNode& block );
+bool SaveGameConfig( const std::shared_ptr<const CGameConfig>& config, kv::Block& block );
 
 /**
 *	Saves all of the game configurations that the given manager has.
@@ -40,7 +40,7 @@ bool SaveGameConfig( const std::shared_ptr<const CGameConfig>& config, CKvBlockN
 *	@param block Block to add the child blocks to.
 *	@return Number of configurations that were saved.
 */
-size_t SaveGameConfigs( const std::shared_ptr<const CGameConfigManager>& manager, CKvBlockNode& block );
+size_t SaveGameConfigs( const std::shared_ptr<const CGameConfigManager>& manager, kv::Block& block );
 }
 
 #endif //SETTINGS_GAMECONFIGIO_H
