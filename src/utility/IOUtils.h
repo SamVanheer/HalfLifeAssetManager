@@ -1,21 +1,19 @@
 #ifndef UTILITY_IOUTILS_H
 #define UTILITY_IOUTILS_H
 
-#include <memory>
-
 class CKvBlockNode;
 class CKeyvaluesWriter;
 class Color;
 
-bool LoadColorSetting( const std::shared_ptr<CKvBlockNode>& settings, const char* const pszName, Color& color, const bool bHasAlpha = false );
+bool LoadColorSetting( const CKvBlockNode& settings, const char* const pszName, Color& color, const bool bHasAlpha = false );
 
 bool SaveColorSetting( CKeyvaluesWriter& writer, const char* const pszName, const Color& color, const bool bHasAlpha = false );
 
-bool LoadColorCVarSetting( const std::shared_ptr<CKvBlockNode>& settings, const char* const pszName, const char* const pszCVar, const bool bHasAlpha = false );
+bool LoadColorCVarSetting( const CKvBlockNode& settings, const char* const pszName, const char* const pszCVar, const bool bHasAlpha = false );
 
 bool SaveColorCVarSetting( CKeyvaluesWriter& writer, const char* const pszName, const char* const pszCVar, const bool bHasAlpha = false );
 
-bool LoadArchiveCVars( const std::shared_ptr<CKvBlockNode>& cvars );
+bool LoadArchiveCVars( const CKvBlockNode& cvars );
 
 bool SaveArchiveCVars( CKeyvaluesWriter& writer, const char* const pszBlockName );
 

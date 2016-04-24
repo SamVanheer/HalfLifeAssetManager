@@ -23,17 +23,19 @@ public:
 	/*
 	* Constructs a collection of keyvalues with the given block as its root
 	*/
-	CKeyvalues( std::shared_ptr<CKvBlockNode> rootBlock );
+	CKeyvalues( CKvBlockNode* pRootBlock );
 
-	std::shared_ptr<const CKvBlockNode> GetRoot() const { return m_RootBlock; }
-	std::shared_ptr<CKvBlockNode> GetRoot() { return m_RootBlock; }
+	~CKeyvalues();
 
-	void SetRoot( std::shared_ptr<CKvBlockNode> rootBlock );
+	const CKvBlockNode* GetRoot() const { return m_pRootBlock; }
+	CKvBlockNode* GetRoot() { return m_pRootBlock; }
+
+	void SetRoot( CKvBlockNode* pRootBlock );
 
 	void Reset();
 
 private:
-	std::shared_ptr<CKvBlockNode> m_RootBlock;
+	CKvBlockNode* m_pRootBlock = nullptr;
 
 private:
 	CKeyvalues( const CKeyvalues& );

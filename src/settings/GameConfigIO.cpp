@@ -60,7 +60,7 @@ std::pair<size_t, size_t> LoadGameConfigs( const CKvBlockNode& block, std::share
 
 		++uiTotal;
 
-		auto block = std::static_pointer_cast<CKvBlockNode>( child );
+		auto block = static_cast<CKvBlockNode*>( child );
 
 		auto config = LoadGameConfig( *block );
 
@@ -82,14 +82,14 @@ bool SaveGameConfig( const std::shared_ptr<const CGameConfig>& config, CKvBlockN
 	if( !( *config->GetName() ) )
 		return false;
 
-	std::shared_ptr<CKvBlockNode> configBlock = std::make_shared<CKvBlockNode>( "config" );
+	CKvBlockNode* pConfigBlock = new CKvBlockNode( "config" );
 
-	configBlock->AddKeyvalue( "name", config->GetName() );
-	configBlock->AddKeyvalue( "basePath", config->GetBasePath() );
-	configBlock->AddKeyvalue( "gameDir", config->GetGameDir() );
-	configBlock->AddKeyvalue( "modDir", config->GetModDir() );
+	pConfigBlock->AddKeyvalue( "name", config->GetName() );
+	pConfigBlock->AddKeyvalue( "basePath", config->GetBasePath() );
+	pConfigBlock->AddKeyvalue( "gameDir", config->GetGameDir() );
+	pConfigBlock->AddKeyvalue( "modDir", config->GetModDir() );
 
-	block.GetChildren().push_back( configBlock );
+	block.GetChildren().push_back( pConfigBlock );
 
 	return true;
 }

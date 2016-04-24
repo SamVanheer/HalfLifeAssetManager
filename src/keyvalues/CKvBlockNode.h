@@ -1,9 +1,7 @@
 #ifndef CKVBLOCKNODE_H
 #define CKVBLOCKNODE_H
 
-#include <memory>
 #include <vector>
-#include <string>
 
 #include "CKeyvalueNode.h"
 
@@ -16,7 +14,7 @@ class CKvBlockNode : public CKeyvalueNode
 public:
 	typedef CKeyvalueNode BaseClass;
 
-	typedef std::vector<std::shared_ptr<CKeyvalueNode>> Children_t;
+	typedef std::vector<CKeyvalueNode*> Children_t;
 
 public:
 	/*
@@ -37,7 +35,9 @@ public:
 	* if pszKey is NULL or empty, the key is set to KEYVALUE_DEFAULT_KEY
 	* The given child is made the first child
 	*/
-	CKvBlockNode( const char* pszKey, std::shared_ptr<CKeyvalueNode> firstChild );
+	CKvBlockNode( const char* pszKey, CKeyvalueNode* pFirstChild );
+
+	~CKvBlockNode();
 
 	const Children_t& GetChildren() const { return m_Children; }
 	Children_t& GetChildren() { return m_Children; }
@@ -48,12 +48,12 @@ public:
 
 	void RemoveAllNotNamed( const char* pszKey );
 
-	std::shared_ptr<CKeyvalueNode> FindFirstChild( const char* pszKey ) const;
+	CKeyvalueNode* FindFirstChild( const char* pszKey ) const;
 
-	std::shared_ptr<CKeyvalueNode> FindFirstChild( const char* pszKey, const KeyvalueNodeType type ) const;
+	CKeyvalueNode* FindFirstChild( const char* pszKey, const KeyvalueNodeType type ) const;
 
 	template<typename T>
-	std::shared_ptr<T> FindFirstChild( const char* const pszKey ) const;
+	T* FindFirstChild( const char* const pszKey ) const;
 
 	CString FindFirstKeyvalue( const char* pszKey ) const;
 
@@ -72,14 +72,16 @@ private:
 };
 
 template<typename T>
-std::shared_ptr<T> CKvBlockNode::FindFirstChild( const char* const pszKey ) const
+T* CKvBlockNode::FindFirstChild( const char* const pszKey ) const
 {
 	auto node = FindFirstChild( pszKey );
 
 	if( !node )
 		return nullptr;
 
-	return std::dynamic_pointer_cast<T>( node );
+	//TODO: add static const type to the node subclasses, use that to determine the type.
+
+	return dynamic_cast<T*>( node );
 }
 
 #endif //CKVBLOCKNODE_H

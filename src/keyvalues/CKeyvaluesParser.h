@@ -1,8 +1,6 @@
 #ifndef CKEYVALUESPARSER_H
 #define CKEYVALUESPARSER_H
 
-#include <memory>
-
 #include "CKeyvaluesLexer.h"
 
 class CKeyvalueNode;
@@ -69,9 +67,9 @@ protected:
 	*/
 	CBaseKeyvaluesParser( const char* pszFileName, const CKeyvaluesParserSettings& settings, const bool fIsIterative );
 
-	ParseResult ParseNext( std::shared_ptr<CKeyvalueNode>& node, bool fParseFirst );
+	ParseResult ParseNext( CKeyvalueNode*& pNode, bool fParseFirst );
 
-	ParseResult ParseBlock( std::shared_ptr<CKvBlockNode>& block, bool fIsRoot );
+	ParseResult ParseBlock( CKvBlockNode*& pBlock, bool fIsRoot );
 
 private:
 	void Construct();
@@ -112,8 +110,15 @@ public:
 
 	CKeyvaluesParser( const char* pszFileName, const CKeyvaluesParserSettings& settings = CKeyvaluesParserSettings() );
 
-	std::shared_ptr<const CKeyvalues> GetKeyvalues() const { return m_Keyvalues; }
-	std::shared_ptr<CKeyvalues> GetKeyvalues() { return m_Keyvalues; }
+	~CKeyvaluesParser();
+
+	const CKeyvalues* GetKeyvalues() const { return m_pKeyvalues; }
+	CKeyvalues* GetKeyvalues() { return m_pKeyvalues; }
+
+	/**
+	*	Releases ownership of the parser's keyvalues and returns them.
+	*/
+	CKeyvalues* ReleaseKeyvalues();
 
 	void Initialize( CKeyvaluesLexer::Memory_t& memory );
 
@@ -128,7 +133,7 @@ public:
 	ParseResult Parse();
 
 private:
-	std::shared_ptr<CKeyvalues> m_Keyvalues;
+	CKeyvalues* m_pKeyvalues = nullptr;
 };
 
 /*
@@ -148,7 +153,7 @@ public:
 	* Parses a single block from the file
 	* Use either this or Parse, do not use both at the same time, or you will get inaccurate results
 	*/
-	ParseResult ParseBlock( std::shared_ptr<CKvBlockNode>& block );
+	ParseResult ParseBlock( CKvBlockNode*& pBlock );
 };
 
 #endif //CKEYVALUESPARSER_H

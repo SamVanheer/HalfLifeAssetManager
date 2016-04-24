@@ -33,8 +33,6 @@ public:
 	virtual void Print( const size_t uiTabLevel = 0 ) const = 0;
 
 private:
-
-private:
 	CString m_szKey;
 	const KeyvalueNodeType m_Type;
 

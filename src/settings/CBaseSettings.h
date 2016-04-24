@@ -161,7 +161,7 @@ protected:
 	*	@param root Root block.
 	*	@see LoadFromFile( const char* const pszFilename )
 	*/
-	virtual bool LoadFromFile( const std::shared_ptr<CKvBlockNode>& root );
+	virtual bool LoadFromFile( const CKvBlockNode& root );
 
 	/**
 	*	Saves settings using the given writer.
@@ -170,11 +170,11 @@ protected:
 	*/
 	virtual bool SaveToFile( CKeyvaluesWriter& writer );
 
-	bool LoadCommonSettings( const std::shared_ptr<CKvBlockNode>& root );
+	bool LoadCommonSettings( const CKvBlockNode& root );
 
 	bool SaveCommonSettings( CKeyvaluesWriter& writer );
 
-	bool LoadGameConfigs( const std::shared_ptr<CKvBlockNode>& root );
+	bool LoadGameConfigs( const CKvBlockNode& root );
 
 	bool SaveGameConfigs( CKeyvaluesWriter& writer );
 

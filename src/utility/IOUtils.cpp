@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "keyvalues/Keyvalues.h"
 
 #include "common/Logging.h"
@@ -10,16 +12,16 @@
 
 #include "IOUtils.h"
 
-bool LoadColorSetting(const std::shared_ptr<CKvBlockNode>& settings, const char* const pszName, Color& color, const bool bHasAlpha )
+bool LoadColorSetting(const CKvBlockNode& settings, const char* const pszName, Color& color, const bool bHasAlpha )
 {
 	if( !pszName || !( *pszName ) )
 		return false;
 
-	if( auto groundColor = settings->FindFirstChild( pszName ) )
+	if( auto groundColor = settings.FindFirstChild( pszName ) )
 	{
 		if( groundColor->GetType() == KVNode_Keyvalue )
 		{
-			const CString& sValue = std::static_pointer_cast<CKeyvalue>( groundColor )->GetValue();
+			const CString& sValue = static_cast<CKeyvalue*>( groundColor )->GetValue();
 
 			if( ParseColor( sValue.CStr(), color, bHasAlpha ) )
 			{
@@ -55,7 +57,7 @@ bool SaveColorSetting( CKeyvaluesWriter& writer, const char* const pszName, cons
 	return false;
 }
 
-bool LoadColorCVarSetting( const std::shared_ptr<CKvBlockNode>& settings, const char* const pszName, const char* const pszCVar, const bool bHasAlpha )
+bool LoadColorCVarSetting( const CKvBlockNode& settings, const char* const pszName, const char* const pszCVar, const bool bHasAlpha )
 {
 	assert( pszCVar );
 
@@ -94,9 +96,9 @@ bool SaveColorCVarSetting( CKeyvaluesWriter& writer, const char* const pszName, 
 	return SaveColorSetting( writer, pszName, color );
 }
 
-bool LoadArchiveCVars( const std::shared_ptr<CKvBlockNode>& cvars )
+bool LoadArchiveCVars( const CKvBlockNode& cvars )
 {
-	const auto& children = cvars->GetChildren();
+	const auto& children = cvars.GetChildren();
 
 	for( const auto& child : children )
 	{
@@ -105,7 +107,7 @@ bool LoadArchiveCVars( const std::shared_ptr<CKvBlockNode>& cvars )
 			continue;
 		}
 
-		auto kv = std::static_pointer_cast<CKeyvalue>( child );
+		auto kv = static_cast<CKeyvalue*>( child );
 
 		cvar::cvars().SetCVarString( kv->GetKey().CStr(), kv->GetValue().CStr() );
 	}

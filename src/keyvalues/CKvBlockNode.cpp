@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "common/Logging.h"
 
 #include "CKeyvalue.h"
@@ -14,10 +16,17 @@ CKvBlockNode::CKvBlockNode( const char* pszKey, const Children_t& children )
 	SetChildren( children );
 }
 
-CKvBlockNode::CKvBlockNode( const char* pszKey, std::shared_ptr<CKeyvalueNode> firstChild )
+CKvBlockNode::CKvBlockNode( const char* pszKey, CKeyvalueNode* pFirstChild )
 	: BaseClass( pszKey, KVNode_Block )
 {
-	m_Children.push_back( firstChild );
+	assert( pFirstChild );
+
+	m_Children.push_back( pFirstChild );
+}
+
+CKvBlockNode::~CKvBlockNode()
+{
+	RemoveAllChildren();
 }
 
 void CKvBlockNode::SetChildren( const Children_t& children )
@@ -27,6 +36,11 @@ void CKvBlockNode::SetChildren( const Children_t& children )
 
 void CKvBlockNode::RemoveAllChildren()
 {
+	for( auto pChild : m_Children )
+	{
+		delete pChild;
+	}
+
 	m_Children.clear();
 }
 
@@ -39,6 +53,7 @@ void CKvBlockNode::RemoveAllNotNamed( const char* pszKey )
 	{
 		if( ( *it )->GetKey() != pszKey )
 		{
+			delete *it;
 			it = m_Children.erase( it );
 		}
 		else
@@ -46,7 +61,7 @@ void CKvBlockNode::RemoveAllNotNamed( const char* pszKey )
 	}
 }
 
-std::shared_ptr<CKeyvalueNode> CKvBlockNode::FindFirstChild( const char* pszKey ) const
+CKeyvalueNode* CKvBlockNode::FindFirstChild( const char* pszKey ) const
 {
 	if( pszKey && *pszKey )
 	{
@@ -59,10 +74,10 @@ std::shared_ptr<CKeyvalueNode> CKvBlockNode::FindFirstChild( const char* pszKey 
 		}
 	}
 
-	return std::shared_ptr<CKeyvalueNode>();
+	return nullptr;
 }
 
-std::shared_ptr<CKeyvalueNode> CKvBlockNode::FindFirstChild( const char* pszKey, const KeyvalueNodeType type ) const
+CKeyvalueNode* CKvBlockNode::FindFirstChild( const char* pszKey, const KeyvalueNodeType type ) const
 {
 	if( pszKey && *pszKey )
 	{
@@ -78,7 +93,7 @@ std::shared_ptr<CKeyvalueNode> CKvBlockNode::FindFirstChild( const char* pszKey,
 		}
 	}
 
-	return std::shared_ptr<CKeyvalueNode>();
+	return nullptr;
 }
 
 CString CKvBlockNode::FindFirstKeyvalue( const char* pszKey ) const
@@ -91,7 +106,7 @@ CString CKvBlockNode::FindFirstKeyvalue( const char* pszKey ) const
 		{
 			if( ( *it )->GetType() == KVNode_Keyvalue )
 			{
-				CKeyvalue* pKV = static_cast<CKeyvalue*>( ( *it ).get() );
+				CKeyvalue* pKV = static_cast<CKeyvalue*>( *it );
 
 				if( strcmp( pszKey, pKV->GetKey().CStr() ) == 0 )
 					return pKV->GetValue();
@@ -110,7 +125,7 @@ void CKvBlockNode::AddKeyvalue( const char* const pszKey, const char* const pszV
 	if( !pszValue ) 
 		return;
 
-	m_Children.emplace_back( std::make_shared<CKeyvalue>( pszKey, pszValue ) );
+	m_Children.emplace_back( new CKeyvalue( pszKey, pszValue ) );
 }
 
 void CKvBlockNode::Print( const size_t uiTabLevel ) const

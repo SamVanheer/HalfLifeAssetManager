@@ -1,20 +1,41 @@
+#include <cassert>
+
 #include "CKeyvalues.h"
 
 CKeyvalues::CKeyvalues()
 {
 }
 
-CKeyvalues::CKeyvalues( std::shared_ptr<CKvBlockNode> rootBlock )
+CKeyvalues::CKeyvalues( CKvBlockNode* pRootBlock )
 {
-	SetRoot( rootBlock );
+	assert( pRootBlock );
+
+	SetRoot( pRootBlock );
 }
 
-void CKeyvalues::SetRoot( std::shared_ptr<CKvBlockNode> rootBlock )
+CKeyvalues::~CKeyvalues()
 {
-	m_RootBlock = rootBlock;
+	Reset();
+}
+
+void CKeyvalues::SetRoot( CKvBlockNode* pRootBlock )
+{
+	if( m_pRootBlock )
+	{
+		delete m_pRootBlock;
+	}
+
+	if( pRootBlock )
+	{
+		m_pRootBlock = pRootBlock;
+	}
+	else
+	{
+		m_pRootBlock = nullptr;
+	}
 }
 
 void CKeyvalues::Reset()
 {
-	m_RootBlock.reset();
+	SetRoot( nullptr );
 }

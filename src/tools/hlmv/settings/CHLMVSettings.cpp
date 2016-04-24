@@ -93,12 +93,12 @@ void CHLMVSettings::PreShutdown( const char* const pszFilename )
 	GetConfigManager()->SetListener( nullptr );
 }
 
-bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
+bool CHLMVSettings::LoadFromFile( const CKvBlockNode& root )
 {
 	if( !CBaseSettings::LoadFromFile( root ) )
 		return false;
 
-	auto settings = root->FindFirstChild<CKvBlockNode>( "hlmvSettings" );
+	auto settings = root.FindFirstChild<CKvBlockNode>( "hlmvSettings" );
 
 	if( settings )
 	{
@@ -123,15 +123,15 @@ bool CHLMVSettings::LoadFromFile( const std::shared_ptr<CKvBlockNode>& root )
 				if( child->GetKey() != "recentFile" )
 					continue;
 
-				auto file = std::static_pointer_cast<CKeyvalue>( child );
+				auto file = static_cast<CKeyvalue*>( child );
 
 				m_RecentFiles->Add( file->GetValue().CStr() );
 			}
 		}
 
-		LoadColorSetting( settings, "groundColor", m_GroundColor );
-		LoadColorSetting( settings, "backgroundColor", m_BackgroundColor );
-		LoadColorSetting( settings, "crosshairColor", m_CrosshairColor );
+		LoadColorSetting( *settings, "groundColor", m_GroundColor );
+		LoadColorSetting( *settings, "backgroundColor", m_BackgroundColor );
+		LoadColorSetting( *settings, "crosshairColor", m_CrosshairColor );
 
 		if( auto floor = settings->FindFirstChild<CKeyvalue>( "floorLength" ) )
 		{

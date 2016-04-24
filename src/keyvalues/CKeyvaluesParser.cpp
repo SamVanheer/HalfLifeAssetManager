@@ -68,7 +68,7 @@ void CBaseKeyvaluesParser::Initialize( CKeyvaluesLexer::Memory_t& memory )
 	m_iCurrentDepth = m_fIsIterative ? 1 : 0;
 }
 
-CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( std::shared_ptr<CKeyvalueNode>& node, bool fParseFirst )
+CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( CKeyvalueNode*& pNode, bool fParseFirst )
 {
 	ParseResult parseResult;
 
@@ -117,11 +117,11 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( std::shared_p
 			//If parsing the root, current depth is 1
 			if( m_iCurrentDepth == 1 || m_Settings.fAllowNestedBlocks )
 			{
-				node = std::make_shared<CKvBlockNode>( szKey.CStr() );
+				CKvBlockNode* pBlock = new CKvBlockNode( szKey.CStr() );
 
-				std::shared_ptr<CKvBlockNode> block( std::static_pointer_cast<CKvBlockNode>( node ) );
+				pNode = pBlock;
 
-				parseResult = ParseBlock( block, false );
+				parseResult = ParseBlock( pBlock, false );
 			}
 			else
 			{
@@ -133,7 +133,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( std::shared_p
 
 	case KVToken_Value:
 		{
-			node = std::make_shared<CKeyvalue>( szKey.CStr(), m_Lexer.GetToken().CStr() );
+			pNode = new CKeyvalue( szKey.CStr(), m_Lexer.GetToken().CStr() );
 			parseResult = Success;
 			break;
 		}
@@ -145,13 +145,13 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( std::shared_p
 	return parseResult;
 }
 
-CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseBlock( std::shared_ptr<CKvBlockNode>& block, bool fIsRoot )
+CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseBlock( CKvBlockNode*& pBlock, bool fIsRoot )
 {
 	++m_iCurrentDepth;
 
 	CKvBlockNode::Children_t children;
 
-	std::shared_ptr<CKeyvalueNode> node;
+	CKeyvalueNode* pNode = nullptr;
 
 	ParseResult parseResult;
 
@@ -176,7 +176,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseBlock( std::shared_
 			if( !fIsRoot )
 			{
 				--m_iCurrentDepth;
-				block->SetChildren( children );
+				pBlock->SetChildren( children );
 			}
 			else
 				parseResult = FormatError;
@@ -189,19 +189,26 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseBlock( std::shared_
 			if( !fIsRoot )
 				parseResult = FormatError;
 			else
-				block->SetChildren( children );
+				pBlock->SetChildren( children );
 
 			fContinue = false;
 		}
 		else
 		{
 			//New keyvalue or block
-			parseResult = ParseNext( node, false );
+			parseResult = ParseNext( pNode, false );
 
 			if( parseResult == Success )
-				children.push_back( node );
+			{
+				children.push_back( pNode );
+			}
 			else
+			{
+				delete pNode;
 				fContinue = false;
+			}
+
+			pNode = nullptr;
 		}
 	}
 	while( fContinue );
@@ -236,21 +243,53 @@ CKeyvaluesParser::CKeyvaluesParser( const char* pszFileName, const CKeyvaluesPar
 {
 }
 
+CKeyvaluesParser::~CKeyvaluesParser()
+{
+	delete m_pKeyvalues;
+}
+
+CKeyvalues* CKeyvaluesParser::ReleaseKeyvalues()
+{
+	if( !m_pKeyvalues )
+		return nullptr;
+
+	CKeyvalues* pKeyvalues = m_pKeyvalues;
+
+	m_pKeyvalues = nullptr;
+
+	return pKeyvalues;
+}
+
 void CKeyvaluesParser::Initialize( CKeyvaluesLexer::Memory_t& memory )
 {
 	CBaseKeyvaluesParser::Initialize( memory );
-	m_Keyvalues.reset();
+
+	if( m_pKeyvalues )
+	{
+		delete m_pKeyvalues;
+		m_pKeyvalues = nullptr;
+	}
 }
 
 CKeyvaluesParser::ParseResult CKeyvaluesParser::Parse()
 {
-	std::shared_ptr<CKvBlockNode> rootNode = std::make_shared<CKvBlockNode>( KEYVALUE_ROOT_NODE_NAME );
+	if( m_pKeyvalues )
+	{
+		delete m_pKeyvalues;
+		m_pKeyvalues = nullptr;
+	}
 
-	ParseResult result = ParseBlock( rootNode, true );
+	CKvBlockNode* pRootNode = new CKvBlockNode( KEYVALUE_ROOT_NODE_NAME );
+
+	ParseResult result = ParseBlock( pRootNode, true );
 
 	if( result != UnexpectedEOB )
 	{
-		m_Keyvalues = std::make_shared<CKeyvalues>( rootNode );
+		m_pKeyvalues = new CKeyvalues( pRootNode );
+	}
+	else
+	{
+		delete pRootNode;
 	}
 
 	//Convert successful parse into Success
@@ -267,21 +306,24 @@ CIterativeKeyvaluesParser::CIterativeKeyvaluesParser( CKeyvaluesLexer::Memory_t&
 {
 }
 
-CIterativeKeyvaluesParser::ParseResult CIterativeKeyvaluesParser::ParseBlock( std::shared_ptr<CKvBlockNode>& block )
+CIterativeKeyvaluesParser::ParseResult CIterativeKeyvaluesParser::ParseBlock( CKvBlockNode*& pBblock )
 {
-	block.reset();
+	pBblock = nullptr;
 
-	std::shared_ptr<CKeyvalueNode> node;
+	CKeyvalueNode* pNode;
 
-	ParseResult result = ParseNext( node, true );
+	ParseResult result = ParseNext( pNode, true );
 
 	if( result != Success )
 		return result;
 
-	if( node->GetType() != KVNode_Block )
+	if( pNode->GetType() != KVNode_Block )
+	{
+		delete pNode;
 		return WrongNodeType;
+	}
 
-	block = std::static_pointer_cast<CKvBlockNode>( node );
+	pBblock = static_cast<CKvBlockNode*>( pNode );
 
 	return Success;
 }

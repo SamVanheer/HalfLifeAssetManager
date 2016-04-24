@@ -100,7 +100,7 @@ protected:
 
 	void PreShutdown( const char* const pszFilename ) override final;
 
-	bool LoadFromFile( const std::shared_ptr<CKvBlockNode>& root ) override final;
+	bool LoadFromFile( const CKvBlockNode& root ) override final;
 
 	bool SaveToFile( CKeyvaluesWriter& writer ) override final;
 
