@@ -10,13 +10,13 @@ const char* CBaseKeyvaluesParser::ParseResultToString( const ParseResult result 
 {
 	switch( result )
 	{
-	case SUCCESS:			return "Success";
-	case UNEXPECTED_EOB:	return "Unexpected End Of Buffer";
-	case FORMAT_ERROR:		return "Format Error";
-	case WRONG_NODE_TYPE:	return "Wrong Node Type";
+	case ParseResult::SUCCESS:			return "Success";
+	case ParseResult::UNEXPECTED_EOB:	return "Unexpected End Of Buffer";
+	case ParseResult::FORMAT_ERROR:		return "Format Error";
+	case ParseResult::WRONG_NODE_TYPE:	return "Wrong Node Type";
 
 	default:
-	case UNKNOWN_ERROR:		return "Unknown Error";
+	case ParseResult::UNKNOWN_ERROR:	return "Unknown Error";
 	}
 }
 
@@ -73,14 +73,14 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( CKeyvalueNode
 {
 	ParseResult parseResult;
 
-	CKeyvaluesLexer::ReadResult result = CKeyvaluesLexer::END_OF_BUFFER;
+	CKeyvaluesLexer::ReadResult result = CKeyvaluesLexer::ReadResult::END_OF_BUFFER;
 
 	if( fParseFirst )
 	{
 		result = m_Lexer.Read();
 		parseResult = GetResultFor( result );
 
-		if( parseResult != SUCCESS )
+		if( parseResult != ParseResult::SUCCESS )
 			return parseResult;
 	}
 	//ParseBlock already read the token, just check it
@@ -91,7 +91,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( CKeyvalueNode
 	if( m_Lexer.GetTokenType() != TokenType::KEY )
 	{
 		if( !m_Settings.lexerSettings.fAllowUnnamedBlocks )
-			return FORMAT_ERROR;
+			return ParseResult::FORMAT_ERROR;
 		else
 		{
 			fIsUnnamed = true;
@@ -106,7 +106,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( CKeyvalueNode
 		result = m_Lexer.Read();
 
 		//The lexer will validate the format for us and return FormatError if it failed
-		if( ( parseResult = GetResultFor( result, result == CKeyvaluesLexer::READ_TOKEN ) ) != SUCCESS )
+		if( ( parseResult = GetResultFor( result, result == CKeyvaluesLexer::ReadResult::READ_TOKEN ) ) != ParseResult::SUCCESS )
 			return parseResult;
 	}
 
@@ -127,7 +127,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( CKeyvalueNode
 			else
 			{
 				//No nested blocks allowed; error out
-				parseResult = FORMAT_ERROR;
+				parseResult = ParseResult::FORMAT_ERROR;
 			}
 			break;
 		}
@@ -135,12 +135,12 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( CKeyvalueNode
 	case TokenType::VALUE:
 		{
 			pNode = new CKeyvalue( szKey.CStr(), m_Lexer.GetToken().CStr() );
-			parseResult = SUCCESS;
+			parseResult = ParseResult::SUCCESS;
 			break;
 		}
 
 		//Shouldn't be able to get here since the format is already checked, but just in case
-	default: return FORMAT_ERROR;
+	default: return ParseResult::FORMAT_ERROR;
 	}
 
 	return parseResult;
@@ -162,12 +162,12 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseBlock( CKeyvalueBlo
 	{
 		const CKeyvaluesLexer::ReadResult result = m_Lexer.Read();
 
-		if( result == CKeyvaluesLexer::END_OF_BUFFER && fIsRoot )
+		if( result == CKeyvaluesLexer::ReadResult::END_OF_BUFFER && fIsRoot )
 			--m_iCurrentDepth;
 
 		parseResult = GetResultFor( result );
 
-		if( parseResult != SUCCESS )
+		if( parseResult != ParseResult::SUCCESS )
 			fContinue = false;
 
 		//End of this block
@@ -180,7 +180,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseBlock( CKeyvalueBlo
 				pBlock->SetChildren( children );
 			}
 			else
-				parseResult = FORMAT_ERROR;
+				parseResult = ParseResult::FORMAT_ERROR;
 
 			fContinue = false;
 		}
@@ -188,7 +188,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseBlock( CKeyvalueBlo
 		{
 			//End of the file while in a block
 			if( !fIsRoot )
-				parseResult = FORMAT_ERROR;
+				parseResult = ParseResult::FORMAT_ERROR;
 			else
 				pBlock->SetChildren( children );
 
@@ -199,7 +199,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseBlock( CKeyvalueBlo
 			//New keyvalue or block
 			parseResult = ParseNext( pNode, false );
 
-			if( parseResult == SUCCESS )
+			if( parseResult == ParseResult::SUCCESS )
 			{
 				children.push_back( pNode );
 			}
@@ -214,7 +214,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseBlock( CKeyvalueBlo
 	}
 	while( fContinue );
 
-	if( parseResult != SUCCESS )
+	if( parseResult != ParseResult::SUCCESS )
 	{
 		//Destroy all children to prevent leaks.
 		for( auto pChild : children )
@@ -228,11 +228,11 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::GetResultFor( const CKey
 {
 	switch( result )
 	{
-	case CKeyvaluesLexer::READ_TOKEN:		return SUCCESS;
-	case CKeyvaluesLexer::END_OF_BUFFER:	return m_iCurrentDepth > 1 || fExpectedMore ? UNEXPECTED_EOB : SUCCESS;
-	case CKeyvaluesLexer::FORMAT_ERROR:		return FORMAT_ERROR;
+	case CKeyvaluesLexer::ReadResult::READ_TOKEN:		return ParseResult::SUCCESS;
+	case CKeyvaluesLexer::ReadResult::END_OF_BUFFER:	return m_iCurrentDepth > 1 || fExpectedMore ? ParseResult::UNEXPECTED_EOB : ParseResult::SUCCESS;
+	case CKeyvaluesLexer::ReadResult::FORMAT_ERROR:		return ParseResult::FORMAT_ERROR;
 
-	default: return UNKNOWN_ERROR;
+	default: return ParseResult::UNKNOWN_ERROR;
 	}
 }
 
@@ -291,7 +291,7 @@ CKeyvaluesParser::ParseResult CKeyvaluesParser::Parse()
 
 	ParseResult result = ParseBlock( pRootNode, true );
 
-	if( result == SUCCESS )
+	if( result == ParseResult::SUCCESS )
 	{
 		m_pKeyvalues = pRootNode;
 	}
@@ -326,17 +326,17 @@ CIterativeKeyvaluesParser::ParseResult CIterativeKeyvaluesParser::ParseBlock( CK
 
 	ParseResult result = ParseNext( pNode, true );
 
-	if( result != SUCCESS )
+	if( result != ParseResult::SUCCESS )
 		return result;
 
 	if( pNode->GetType() != NodeType::BLOCK )
 	{
 		delete pNode;
-		return WRONG_NODE_TYPE;
+		return ParseResult::WRONG_NODE_TYPE;
 	}
 
 	pBblock = static_cast<CKeyvalueBlock*>( pNode );
 
-	return SUCCESS;
+	return ParseResult::SUCCESS;
 }
 }

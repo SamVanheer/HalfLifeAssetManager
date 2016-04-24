@@ -191,7 +191,7 @@ bool CBaseSettings::LoadFromFile( const char* const pszFilename )
 
 	const kv::Parser::ParseResult result = parser.Parse();
 
-	if( result != kv::Parser::SUCCESS )
+	if( result != kv::Parser::ParseResult::SUCCESS )
 	{
 		Error( "Error parsing settings: The error given was:\n%s\n", kv::Parser::ParseResultToString( result ) );
 

@@ -33,7 +33,7 @@ public:
 	/**
 	*	Parse result codes.
 	*/
-	enum ParseResult
+	enum class ParseResult
 	{
 		SUCCESS,
 		UNEXPECTED_EOB,

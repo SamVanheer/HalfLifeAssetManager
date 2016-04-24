@@ -17,7 +17,7 @@ public:
 	/**
 	*	The result of a read operation.
 	*/
-	enum ReadResult
+	enum class ReadResult
 	{
 		READ_TOKEN,
 		END_OF_BUFFER,

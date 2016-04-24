@@ -93,7 +93,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::Read()
 	ReadResult result = ReadNextToken();
 
 	//Reset last token to none to prevent invalid token types
-	if( result == END_OF_BUFFER )
+	if( result == ReadResult::END_OF_BUFFER )
 		m_TokenType = TokenType::NONE;
 
 	return result;
@@ -156,7 +156,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, co
 	//Only true if we encountered a quote.
 	fWasQuoted = false;
 
-	ReadResult result = END_OF_BUFFER;
+	ReadResult result = ReadResult::END_OF_BUFFER;
 
 	//Found a quoted string, parse in until we find the next quote or newline
 	//TODO: parse escape sequences properly
@@ -177,7 +177,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, co
 
 			if( IsValidReadPosition() )
 			{
-				result = READ_TOKEN;
+				result = ReadResult::READ_TOKEN;
 
 				//Advance past the closing quote or newline
 				//TODO: track line number
@@ -198,7 +198,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, co
 			++m_pszCurrentPosition;
 			pszEnd = m_pszCurrentPosition;
 
-			result = READ_TOKEN;
+			result = ReadResult::READ_TOKEN;
 
 			break;
 		}
@@ -215,7 +215,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, co
 			pszEnd = m_pszCurrentPosition;
 
 			//Always consider this a successful read, in case this is the last token with no newline after it
-			result = READ_TOKEN;
+			result = ReadResult::READ_TOKEN;
 
 			break;
 		}
@@ -229,7 +229,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 	//No buffer, or reached end
 	if( !IsValidReadPosition() )
 	{
-		return END_OF_BUFFER;
+		return ReadResult::END_OF_BUFFER;
 	}
 
 	SkipComments();
@@ -237,7 +237,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 	//Nothing left to read
 	if( !IsValidReadPosition() )
 	{
-		return END_OF_BUFFER;
+		return ReadResult::END_OF_BUFFER;
 	}
 
 	//SkipComments places us at the first non-whitespace character that isn't a comment
@@ -247,7 +247,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 
 	ReadResult result = ReadNext( pszBegin, pszEnd, fWasQuoted );
 
-	if( result == READ_TOKEN )
+	if( result == ReadResult::READ_TOKEN )
 	{
 		bool bHandled = false;
 
@@ -262,7 +262,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 					if( m_Settings.fLogErrors )
 						Error( "CKeyvaluesLexer::ReadNextToken: illegal block open '%c'!\n", CONTROL_BLOCK_OPEN );
 
-					result = FORMAT_ERROR;
+					result = ReadResult::FORMAT_ERROR;
 					m_szToken = "";
 					m_TokenType = TokenType::NONE;
 				}
@@ -282,7 +282,7 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 					if( m_Settings.fLogErrors )
 						Error( "CKeyvaluesLexer::ReadNextToken: illegal block close '%c'!\n", CONTROL_BLOCK_CLOSE );
 
-					result = FORMAT_ERROR;
+					result = ReadResult::FORMAT_ERROR;
 					m_szToken = "";
 					m_TokenType = TokenType::NONE;
 				}
