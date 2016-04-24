@@ -31,6 +31,7 @@ public:
 	static const size_t DEFAULT_MAX_MESSAGES_COUNT = 100;
 
 protected:
+	//TODO: remove these
 	enum InitFlag
 	{
 		INIT_FILESYSTEM = 1 << 0,

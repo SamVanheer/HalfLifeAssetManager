@@ -118,7 +118,7 @@ void CHLMVState::ClearEntity()
 	SetEntity( nullptr );
 }
 
-void CHLMVState::SetEntity( CStudioModelEntity* pEntity )
+void CHLMVState::SetEntity( CHLMVStudioModelEntity* pEntity )
 {
 	if( m_pEntity )
 	{

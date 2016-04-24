@@ -34,7 +34,9 @@
     <ClCompile Include="..\src\game\entity\CBaseEntity.cpp" />
     <ClCompile Include="..\src\game\entity\CBaseEntityList.cpp" />
     <ClCompile Include="..\src\game\entity\CEntityDict.cpp" />
+    <ClCompile Include="..\src\game\entity\CEntityManager.cpp" />
     <ClCompile Include="..\src\game\entity\CStudioModelEntity.cpp" />
+    <ClCompile Include="..\src\game\entity\EHandle.cpp" />
     <ClCompile Include="..\src\game\studiomodel\CStudioModel.cpp" />
     <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp" />
     <ClCompile Include="..\src\game\studiomodel\StudioSorting.cpp" />
@@ -56,6 +58,7 @@
     <ClCompile Include="..\src\settings\GameConfigIO.cpp" />
     <ClCompile Include="..\src\soundsystem\CSoundSystem.cpp" />
     <ClCompile Include="..\src\tools\hlmv\CHLMVState.cpp" />
+    <ClCompile Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.cpp" />
     <ClCompile Include="..\src\tools\hlmv\settings\CHLMVSettings.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\C3DView.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\CFullscreenWindow.cpp" />
@@ -113,7 +116,9 @@
     <ClInclude Include="..\src\game\entity\CBaseEntity.h" />
     <ClInclude Include="..\src\game\entity\CBaseEntityList.h" />
     <ClInclude Include="..\src\game\entity\CEntityDict.h" />
+    <ClInclude Include="..\src\game\entity\CEntityManager.h" />
     <ClInclude Include="..\src\game\entity\CStudioModelEntity.h" />
+    <ClInclude Include="..\src\game\entity\EHandle.h" />
     <ClInclude Include="..\src\game\entity\EntityConstants.h" />
     <ClInclude Include="..\src\game\Events.h" />
     <ClInclude Include="..\src\game\studiomodel\CStudioModel.h" />
@@ -143,6 +148,7 @@
     <ClInclude Include="..\src\soundsystem\CSoundSystem.h" />
     <ClInclude Include="..\src\soundsystem\SoundConstants.h" />
     <ClInclude Include="..\src\tools\hlmv\CHLMVState.h" />
+    <ClInclude Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.h" />
     <ClInclude Include="..\src\tools\hlmv\settings\CHLMVSettings.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\C3DView.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\CFullscreenWindow.h" />

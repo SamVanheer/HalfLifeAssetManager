@@ -194,10 +194,12 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 	case studiomodel::StudioModelLoadResult::SUCCESS: break;
 	}
 
-	CStudioModelEntity* pEntity = static_cast<CStudioModelEntity*>( CBaseEntity::Create( "studiomodel", glm::vec3(), glm::vec3(), false ) );
+	CHLMVStudioModelEntity* pEntity = static_cast<CHLMVStudioModelEntity*>( CBaseEntity::Create( "studiomodel", glm::vec3(), glm::vec3(), false ) );
 
 	if( pEntity )
 	{
+		pEntity->m_pState = m_pHLMV->GetState();
+
 		pEntity->SetModel( pModel );
 
 		pEntity->Spawn();

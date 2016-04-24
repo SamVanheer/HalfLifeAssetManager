@@ -1,26 +1,11 @@
 #include "common/Logging.h"
 #include "common/CWorldTime.h"
 
-#include "soundsystem/CSoundSystem.h"
-
-#include "cvar/CCVar.h"
-
 #include "game/studiomodel/CStudioModel.h"
 
 #include "game/studiomodel/CStudioModelRenderer.h"
 
 #include "CStudioModelEntity.h"
-
-static cvar::CCVar s_ent_playsounds( "s_ent_playsounds", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "Whether or not to play sounds triggered by animation events" ) );
-
-LINK_ENTITY_TO_CLASS( studiomodel, CStudioModelEntity );
-
-void CStudioModelEntity::OnCreate()
-{
-	BaseClass::OnCreate();
-
-	SetThink( &ThisClass::AnimThink );
-}
 
 void CStudioModelEntity::OnDestroy()
 {
@@ -54,7 +39,7 @@ void CStudioModelEntity::Draw( entity::DrawFlags_t flags )
 	studiomodel::renderer().DrawModel( this, ( flags & entity::DRAWF_WIREFRAME_ONLY ) != 0 );
 }
 
-float CStudioModelEntity::AdvanceFrame( float dt )
+float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )
 {
 	if( !m_pModel )
 		return 0.0;
@@ -76,10 +61,11 @@ float CStudioModelEntity::AdvanceFrame( float dt )
 	if( !m_flAnimTime )
 		dt = 0.0;
 
-	/*
-	if( dt > 0.1f )
-	dt = 0.1f;
-	*/
+	if( flMax != -1.f )
+	{
+		if( dt > flMax )
+			dt = flMax;
+	}
 
 	const float flIncrement = dt * pseqdesc->fps * m_flFrameRate;
 
@@ -106,27 +92,6 @@ float CStudioModelEntity::AdvanceFrame( float dt )
 	m_flAnimTime = WorldTime.GetCurrentTime();
 
 	return dt;
-}
-
-void CStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
-{
-	//TODO: move to subclass.
-	switch( event.iEvent )
-	{
-	case SCRIPT_EVENT_SOUND:			// Play a named wave file
-	case SCRIPT_EVENT_SOUND_VOICE:
-	case SCRIPT_CLIENT_EVENT_SOUND:
-		{
-			if( s_ent_playsounds.GetBool() )
-			{
-				soundSystem().PlaySound( event.pszOptions, 1.0f, soundsystem::PITCH_NORM );
-			}
-
-			break;
-		}
-
-	default: break;
-	}
 }
 
 int CStudioModelEntity::GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents )
@@ -204,11 +169,8 @@ void CStudioModelEntity::DispatchAnimEvents( const bool bAllowClientEvents )
 	}
 }
 
-void CStudioModelEntity::AnimThink()
+void CStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 {
-	const float flTime = AdvanceFrame();
-
-	DispatchAnimEvents( true );
 }
 
 int CStudioModelEntity::SetFrame( const int iFrame )
@@ -533,13 +495,15 @@ mstudiomodel_t* CStudioModelEntity::GetModelByBodyPart( const int iBodyPart ) co
 
 CStudioModelEntity::MeshList_t CStudioModelEntity::ComputeMeshList( const int iTexture ) const
 {
-	assert( m_pModel );
+	const studiomodel::CStudioModel* pStudioModel = GetModel();
+
+	assert( pStudioModel );
 
 	MeshList_t meshes;
 
-	const auto pStudioHdr = m_pModel->GetStudioHeader();
+	const auto pStudioHdr = pStudioModel->GetStudioHeader();
 
-	const short* const pskinref = m_pModel->GetTextureHeader()->GetSkins();
+	const short* const pskinref = pStudioModel->GetTextureHeader()->GetSkins();
 
 	int iBodygroup = 0;
 
@@ -549,13 +513,13 @@ CStudioModelEntity::MeshList_t CStudioModelEntity::ComputeMeshList( const int iT
 
 		for( int iModel = 0; iModel < pbodypart->nummodels; ++iModel )
 		{
-			m_pModel->CalculateBodygroup( iBodyPart, iModel, iBodygroup );
+			pStudioModel->CalculateBodygroup( iBodyPart, iModel, iBodygroup );
 
-			mstudiomodel_t* pModel = m_pModel->GetModelByBodyPart( iBodygroup, iBodyPart );
+			mstudiomodel_t* pModel = pStudioModel->GetModelByBodyPart( iBodygroup, iBodyPart );
 
 			for( int iMesh = 0; iMesh < pModel->nummesh; ++iMesh )
 			{
-				const mstudiomesh_t* pMesh = ( ( const mstudiomesh_t* ) ( ( const byte* ) m_pModel->GetStudioHeader() + pModel->meshindex ) ) + iMesh;
+				const mstudiomesh_t* pMesh = ( ( const mstudiomesh_t* ) ( ( const byte* ) pStudioModel->GetStudioHeader() + pModel->meshindex ) ) + iMesh;
 
 				if( pskinref[ pMesh->skinref ] == iTexture )
 				{

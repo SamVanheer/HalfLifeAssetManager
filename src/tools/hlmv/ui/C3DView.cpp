@@ -119,12 +119,6 @@ void C3DView::PrepareForLoad()
 
 void C3DView::UpdateView()
 {
-	//TODO: the playSequence check should occur in the entity.
-	if( m_pHLMV->GetState()->playSequence && m_pHLMV->GetState()->GetEntity() )
-	{
-		m_pHLMV->GetState()->GetEntity()->Think();
-	}
-
 	if( !m_pHLMV->GetState()->pause )
 	{
 		Refresh();

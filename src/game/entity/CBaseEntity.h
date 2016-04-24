@@ -5,9 +5,14 @@
 
 #include "common/Class.h"
 
+#include "EntityConstants.h"
+#include "EHandle.h"
 #include "CEntityDict.h"
 
-#include "EntityConstants.h"
+//Windows defines this
+#ifdef GetClassName
+#undef GetClassName
+#endif
 
 class CBaseEntity;
 
@@ -48,7 +53,7 @@ public:
 
 private:
 	const char* m_pszClassName = nullptr;
-	size_t m_uiEntIndex = entity::INVALID_ENTITY_INDEX;
+	EHandle m_EntHandle;
 
 public:
 	/**
@@ -62,9 +67,24 @@ public:
 	*/
 	const char* GetClassName() const { return m_pszClassName; }
 
-	size_t GetEntIndex() const { return m_uiEntIndex; }
-	void SetEntIndex( const size_t uiIndex ) { m_uiEntIndex = uiIndex; }
+	/**
+	*	Gets the handle that represents this entity.
+	*/
+	const EHandle& GetEntHandle() const { return m_EntHandle; }
 
+	/**
+	*	Sets the handle that represents this entity. Should only be used by the entity list.
+	*/
+	void SetEntHandle( const EHandle& handle ) { m_EntHandle = handle; }
+
+	/**
+	*	Creates a new entity by classname. This is the one place where entities can be created.
+	*	@param pszClassName The entity's class name.
+	*	@param vecOrigin The entity's origin.
+	*	@param vecAngles The entity's angles.
+	*	@param bSpawn Whether to call spawn or not.
+	*	@return Newly created entity, or null.
+	*/
 	static CBaseEntity* Create( const char* const pszClassName, const glm::vec3& vecOrigin, const glm::vec3& vecAngles, const bool bSpawn = true );
 
 private:
@@ -94,6 +114,8 @@ public:
 
 private:
 	ThinkFunc_t m_ThinkFunc;
+	float m_flLastThinkTime = 0;
+	float m_flNextThinkTime = 0;
 
 public:
 	template<typename T>
@@ -106,6 +128,12 @@ public:
 	{
 		m_ThinkFunc = nullptr;
 	}
+
+	float GetLastThinkTime() const { return m_flLastThinkTime; }
+	void SetLastThinkTime( const float flLastThink ) { m_flLastThinkTime = flLastThink; }
+
+	float GetNextThinkTime() const { return m_flNextThinkTime; }
+	void SetNextThinkTime( const float flNextThink ) { m_flNextThinkTime = flNextThink; }
 
 	void Think()
 	{

@@ -139,6 +139,12 @@
     <Filter Include="Header Files\game\entity">
       <UniqueIdentifier>{b9f2852e-7db8-41f0-8be0-6e31f1a1a41f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\tools\hlmv\entity">
+      <UniqueIdentifier>{66662a63-6b7f-408d-a85b-09c1e7c9a593}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tools\hlmv\entity">
+      <UniqueIdentifier>{97a674fd-7541-4e39-ba73-ebdf0ccad66c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
@@ -347,6 +353,15 @@
     </ClCompile>
     <ClCompile Include="..\src\keyvalues\CKeyvalueBlock.cpp">
       <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CEntityManager.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\EHandle.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.cpp">
+      <Filter>Source Files\tools\hlmv\entity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -616,6 +631,15 @@
     </ClInclude>
     <ClInclude Include="..\src\keyvalues\CKeyvalueBlock.h">
       <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CEntityManager.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\EHandle.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.h">
+      <Filter>Header Files\tools\hlmv\entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

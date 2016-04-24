@@ -15,6 +15,8 @@
 
 #include "settings/CBaseSettings.h"
 
+#include "game/entity/CEntityManager.h"
+
 #include "game/studiomodel/CStudioModelRenderer.h"
 
 #include "CBaseTool.h"
@@ -145,6 +147,19 @@ bool CBaseTool::Initialize()
 		}
 	}
 
+	if( !EntityManager().Initialize() )
+	{
+		wxMessageBox( "Failed to initialize entity manager", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	//TODO: move this
+	if( !EntityManager().OnMapBegin() )
+	{
+		wxMessageBox( "Failed to initialize start map", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
 	m_pTimer = new CTimer( this );
 
 	if( !PostInitialize() )
@@ -182,6 +197,13 @@ void CBaseTool::Shutdown()
 		delete m_pTimer;
 		m_pTimer = nullptr;
 	}
+
+	if( EntityManager().IsMapRunning() )
+	{
+		EntityManager().OnMapEnd();
+	}
+
+	EntityManager().Shutdown();
 
 	if( soundsystem::CSoundSystem::InstanceExists() )
 	{
@@ -230,6 +252,8 @@ void CBaseTool::ToolRunFrame()
 	WorldTime.SetCurrentTime( WorldTime.GetCurrentTime() + flFrameTime );
 	WorldTime.SetFrameTime( flFrameTime );
 	WorldTime.SetPreviousRealTime( WorldTime.GetRealTime() );
+
+	EntityManager().RunFrame();
 
 	cvar::cvars().RunFrame();
 

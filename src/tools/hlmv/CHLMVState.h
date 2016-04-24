@@ -10,7 +10,7 @@
 #include "graphics/OpenGL.h"
 #include "graphics/Constants.h"
 
-#include "game/entity/CStudioModelEntity.h"
+#include "tools/hlmv/entity/CHLMVStudioModelEntity.h"
 
 #include "settings/CGameConfig.h"
 #include "settings/CGameConfigManager.h"
@@ -44,9 +44,9 @@ public:
 
 	void ClearEntity();
 
-	CStudioModelEntity* GetEntity() { return m_pEntity; }
+	CHLMVStudioModelEntity* GetEntity() { return m_pEntity; }
 
-	void SetEntity( CStudioModelEntity* pEntity );
+	void SetEntity( CHLMVStudioModelEntity* pEntity );
 
 	bool DumpModelInfo( const char* const pszFilename );
 
@@ -100,7 +100,7 @@ public:
 	bool antiAliasUVLines;
 
 private:
-	CStudioModelEntity* m_pEntity;
+	CHLMVStudioModelEntity* m_pEntity;
 
 private:
 	CHLMVState( const CHLMVState& ) = delete;

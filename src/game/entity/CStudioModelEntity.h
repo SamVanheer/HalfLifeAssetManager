@@ -16,28 +16,24 @@
 class CStudioModelEntity : public CBaseAnimating
 {
 public:
-	typedef std::vector<const mstudiomesh_t*> MeshList_t;
-
-public:
 	DECLARE_CLASS( CStudioModelEntity, CBaseAnimating );
 
 public:
-	virtual void OnCreate() override;
+	typedef std::vector<const mstudiomesh_t*> MeshList_t;
 
+public:
 	virtual void OnDestroy() override;
 
 	virtual bool Spawn() override;
 
 	virtual void Draw( entity::DrawFlags_t flags ) override;
 
-	float	AdvanceFrame( float dt = 0.0f );
-
-	virtual void HandleAnimEvent( const CAnimEvent& event );
+	float	AdvanceFrame( float dt = 0.0f, const float flMax = -1.f );
 
 	int		GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents );
 	void	DispatchAnimEvents( const bool bAllowClientEvents );
 
-	void AnimThink();
+	virtual void HandleAnimEvent( const CAnimEvent& event );
 
 public:
 	int SetFrame( const int iFrame );

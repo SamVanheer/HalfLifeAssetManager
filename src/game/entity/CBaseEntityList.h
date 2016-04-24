@@ -1,15 +1,26 @@
 #ifndef GAME_ENTITY_CBASEENTITYLIST_H
 #define GAME_ENTITY_CBASEENTITYLIST_H
 
+#include "EntityConstants.h"
+
 class CBaseEntity;
+class EHandle;
 
 /**
 *	Manages a list of entities.
 */
 class CBaseEntityList
 {
-public:
-	static const size_t MAX_ENTITIES = 8192;
+private:
+	/**
+	*	Each slot has a serial number that lets us refer to entities safely.
+	*	If m_Entities[ index ].serial == serial, the entity is still what we previously knew it was.
+	*/
+	struct EntData_t final
+	{
+		CBaseEntity*		pEntity;
+		entity::EntSerial_t serial;
+	};
 
 public:
 	CBaseEntityList();
@@ -25,12 +36,25 @@ public:
 	*/
 	size_t GetHighestEntityIndex() const { return m_uiHighestEntIndex; }
 
-	CBaseEntity* GetEntityByIndex( const size_t uiIndex ) const;
+	/**
+	*	Gets an entity by index.
+	*/
+	CBaseEntity* GetEntityByIndex( const entity::EntIndex_t uiIndex ) const;
 
-	CBaseEntity* GetFirstEntity() const;
-	CBaseEntity* GetNextEntity( CBaseEntity* pStart ) const;
+	/**
+	*	Gets an entity by handle.
+	*/
+	CBaseEntity* GetEntityByHandle( const EHandle& handle ) const;
 
-	CBaseEntity* Create( const char* const pszClassName );
+	/**
+	*	Gets the first entity in the list.
+	*/
+	EHandle GetFirstEntity() const;
+
+	/**
+	*	Gets the next entity in the list after previous.
+	*/
+	EHandle GetNextEntity( const EHandle& previous ) const;
 
 	/**
 	*	Inserts an entity into the list.
@@ -48,19 +72,26 @@ public:
 	void RemoveAll();
 
 protected:
+	/**
+	*	Called when an entity has just been added to the list.
+	*/
 	virtual void OnAdded( CBaseEntity* pEntity ) {}
 
+	/**
+	*	Called right before the entity is removed from the list.
+	*/
 	virtual void OnRemove( CBaseEntity* pEntity ) {}
 
 private:
-	void FinishAddEntity( const size_t uiIndex, CBaseEntity* pEntity );
+	void FinishAddEntity( const entity::EntIndex_t uiIndex, CBaseEntity* pEntity );
 	void FinishRemoveEntity( CBaseEntity* pEntity );
 
 private:
 	/**
 	*	The actual list.
+	*	TODO: consider: allocate dynamically, resize as needed. Allows for a num_edicts like command line parameter.
 	*/
-	CBaseEntity* m_Entities[ MAX_ENTITIES ];
+	EntData_t m_Entities[ entity::MAX_ENTITIES ];
 
 	/**
 	*	The total number of entities.
