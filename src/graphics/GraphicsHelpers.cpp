@@ -447,13 +447,13 @@ unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode re
 
 	pEntity->Draw( entity::DRAWF_NONE );
 
-	glDisable( GL_CLIP_PLANE0 );
-
 	//Draw wireframe overlay
 	if( bWireframeOverlay )
 	{
 		DrawWireframeOverlay( pEntity );
 	}
+
+	glDisable( GL_CLIP_PLANE0 );
 
 	glPopMatrix();
 
