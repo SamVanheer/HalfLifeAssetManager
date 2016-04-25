@@ -2,6 +2,7 @@
 #define COMMON_UTILITY_H
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 
 /**
@@ -88,10 +89,18 @@ T clamp( const T& value, const T& min, const T& max )
 /**
 *	Returns a 1 bit at the given position.
 */
-template<typename T>
-inline constexpr T Bit( const size_t shift )
+inline constexpr int32_t Bit( const size_t shift )
 {
-	return static_cast<T>( 1 << shift );
+	return static_cast<int32_t>( 1 << shift );
+}
+
+/**
+*	Returns a 1 bit at the given position.
+*	64 bit variant.
+*/
+inline constexpr int64_t Bit64( const size_t shift )
+{
+	return static_cast<int64_t>( static_cast<int64_t>( 1 ) << shift );
 }
 
 #endif //COMMON_UTILITY_H

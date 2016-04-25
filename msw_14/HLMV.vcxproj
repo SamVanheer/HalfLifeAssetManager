@@ -125,6 +125,7 @@
     <ClInclude Include="..\src\game\studiomodel\CStudioModel.h" />
     <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h" />
     <ClInclude Include="..\src\game\studiomodel\studio.h" />
+    <ClInclude Include="..\src\game\studiomodel\StudioModelConstants.h" />
     <ClInclude Include="..\src\game\studiomodel\StudioSorting.h" />
     <ClInclude Include="..\src\graphics\BMPFile.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />

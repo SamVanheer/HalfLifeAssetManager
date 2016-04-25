@@ -53,7 +53,7 @@ namespace Flag
 enum Flag : Flags_t
 {
 	NONE		= 0,
-	ARCHIVE		= Bit<Flags_t>( 0 )
+	ARCHIVE		= Bit( 0 )
 };
 }
 }

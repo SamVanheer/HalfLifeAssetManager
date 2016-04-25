@@ -36,7 +36,15 @@ bool CStudioModelEntity::Spawn()
 
 void CStudioModelEntity::Draw( entity::DrawFlags_t flags )
 {
-	studiomodel::renderer().DrawModel( this, ( flags & entity::DRAWF_WIREFRAME_ONLY ) != 0 );
+	studiomodel::DrawFlags_t drawFlags = studiomodel::DRAWF_NONE;
+
+	//The entity and studiomodel flags don't necessarily cover the same things.
+	if( flags & entity::DRAWF_WIREFRAME_ONLY )
+	{
+		drawFlags |= studiomodel::DRAWF_WIREFRAME_ONLY;
+	}
+
+	studiomodel::renderer().DrawModel( this, drawFlags );
 }
 
 float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )

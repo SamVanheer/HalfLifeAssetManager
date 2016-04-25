@@ -91,6 +91,7 @@ private:
 	entity::Flags_t m_Flags = entity::FL_NONE;
 	glm::vec3 m_vecOrigin;
 	glm::vec3 m_vecAngles;
+	glm::vec3 m_vecScale = { 1.0f, 1.0f, 1.0f };
 
 	float m_flTransparency = 1.0f;
 
@@ -108,6 +109,10 @@ public:
 
 	const glm::vec3& GetAngles() const { return m_vecAngles; }
 	void SetAngles( const glm::vec3& vecAngles ) { m_vecAngles = vecAngles; }
+
+	const glm::vec3& GetScale() const { return m_vecScale; }
+	glm::vec3& GetScale() { return m_vecScale; }
+	void SetScale( const glm::vec3& vecScale ) { m_vecScale = vecScale; }
 
 	float GetTransparency() const { return m_flTransparency; }
 	void SetTransparency( const float flTransparency ) { m_flTransparency = flTransparency; }

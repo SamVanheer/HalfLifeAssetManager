@@ -79,6 +79,8 @@ private:
 
 	void ScaleBones( wxCommandEvent& event );
 
+	void OnMirrorAxis( wxCommandEvent& event );
+
 	void HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue ) override final;
 
 private:
@@ -94,6 +96,8 @@ private:
 
 	wxTextCtrl* m_pBonesScale;
 	wxButton* m_pBonesScaleButton;
+
+	wxCheckBox* m_pMirror[ 3 ];
 
 private:
 	CModelDisplayPanel( const CModelDisplayPanel& ) = delete;

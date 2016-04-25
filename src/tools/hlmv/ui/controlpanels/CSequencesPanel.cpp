@@ -15,15 +15,15 @@
 namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseControlPanel )
-	EVT_COMBOBOX( wxID_BASESEQUENCE_SEQCHANGED, CSequencesPanel::SequenceChanged )
-	EVT_TOGGLEBUTTON( wxID_BASESEQUENCE_TOGGLEPLAY, CSequencesPanel::TogglePlay )
-	EVT_BUTTON( wxID_BASESEQUENCE_PREVFRAME, CSequencesPanel::PrevFrame )
-	EVT_BUTTON( wxID_BASESEQUENCE_NEXTFRAME, CSequencesPanel::NextFrame )
-	EVT_TEXT( wxID_BASESEQUENCE_FRAME, CSequencesPanel::FrameChanged )
-	EVT_SLIDER( WXID_BASESEQUENCE_ANIMSPEED, CSequencesPanel::AnimSpeedChanged )
+	EVT_COMBOBOX( wxID_SEQUENCE_SEQCHANGED, CSequencesPanel::SequenceChanged )
+	EVT_TOGGLEBUTTON( wxID_SEQUENCE_TOGGLEPLAY, CSequencesPanel::TogglePlay )
+	EVT_BUTTON( wxID_SEQUENCE_PREVFRAME, CSequencesPanel::PrevFrame )
+	EVT_BUTTON( wxID_SEQUENCE_NEXTFRAME, CSequencesPanel::NextFrame )
+	EVT_TEXT( wxID_SEQUENCE_FRAME, CSequencesPanel::FrameChanged )
+	EVT_SLIDER( WXID_SEQUENCE_ANIMSPEED, CSequencesPanel::AnimSpeedChanged )
 	EVT_COMBOBOX( wxID_SEQUENCE_EVENT, CSequencesPanel::EventChanged )
 	EVT_CHECKBOX( wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged )
-	EVT_BUTTON( wxID_WPN_TESTORIGINS, CSequencesPanel::TestOrigins )
+	EVT_BUTTON( wxID_SEQUENCE_TESTORIGINS, CSequencesPanel::TestOrigins )
 wxEND_EVENT_TABLE()
 
 CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
@@ -33,12 +33,12 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	wxStaticText* pSequence = new wxStaticText( pElemParent, wxID_ANY, "Animation Sequence" );
 
-	m_pSequence = new wxComboBox( pElemParent, wxID_BASESEQUENCE_SEQCHANGED, "", wxDefaultPosition, wxSize( 400, wxDefaultSize.GetY() ) );
+	m_pSequence = new wxComboBox( pElemParent, wxID_SEQUENCE_SEQCHANGED, "", wxDefaultPosition, wxSize( 400, wxDefaultSize.GetY() ) );
 
 	m_pSequence->SetEditable( false );
 
-	m_pTogglePlayButton = new wxToggleButton( pElemParent, wxID_BASESEQUENCE_TOGGLEPLAY, "Stop" );
-	m_pPrevFrameButton = new wxButton( pElemParent, wxID_BASESEQUENCE_PREVFRAME, "<<" );
+	m_pTogglePlayButton = new wxToggleButton( pElemParent, wxID_SEQUENCE_TOGGLEPLAY, "Stop" );
+	m_pPrevFrameButton = new wxButton( pElemParent, wxID_SEQUENCE_PREVFRAME, "<<" );
 
 	//Validator so it only considers numbers
 	wxTextValidator validator( wxFILTER_INCLUDE_CHAR_LIST );
@@ -56,10 +56,10 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	validator.SetIncludes( list );
 
-	m_pSequenceFrame = new wxTextCtrl( pElemParent, wxID_BASESEQUENCE_FRAME, "", wxDefaultPosition, wxDefaultSize, 0, validator );
-	m_pNextFrameButton = new wxButton( pElemParent, wxID_BASESEQUENCE_NEXTFRAME, ">>" );
+	m_pSequenceFrame = new wxTextCtrl( pElemParent, wxID_SEQUENCE_FRAME, "", wxDefaultPosition, wxDefaultSize, 0, validator );
+	m_pNextFrameButton = new wxButton( pElemParent, wxID_SEQUENCE_NEXTFRAME, ">>" );
 
-	m_pAnimSpeed = new wxSlider( pElemParent, WXID_BASESEQUENCE_ANIMSPEED, ANIMSPEED_SLIDER_DEFAULT, ANIMSPEED_SLIDER_MIN, ANIMSPEED_SLIDER_MAX,
+	m_pAnimSpeed = new wxSlider( pElemParent, WXID_SEQUENCE_ANIMSPEED, ANIMSPEED_SLIDER_DEFAULT, ANIMSPEED_SLIDER_MIN, ANIMSPEED_SLIDER_MAX,
 								 wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_MIN_MAX_LABELS );
 
 	wxStaticText* pSpeed = new wxStaticText( pElemParent, wxID_ANY, "Speed" );
@@ -109,7 +109,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	wxStaticText* pYOrigin = new wxStaticText( pElemParent, wxID_ANY, "Origin Y" );
 	wxStaticText* pZOrigin = new wxStaticText( pElemParent, wxID_ANY, "Origin Z" );
 
-	m_pTestOrigins = new wxButton( pElemParent, wxID_WPN_TESTORIGINS, "Test Origins" );
+	m_pTestOrigins = new wxButton( pElemParent, wxID_SEQUENCE_TESTORIGINS, "Test Origins" );
 
 	m_pShowCrosshair = new wxCheckBox( pElemParent, wxID_ANY, "Show Crosshair" );
 	m_pShowGuidelines = new wxCheckBox( pElemParent, wxID_ANY, "Show Guidelines" );
@@ -308,9 +308,11 @@ void CSequencesPanel::InitializeUI()
 {
 	m_pSequence->Clear();
 
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
 	bool bSuccess = false;
 
-	if( auto pEntity = m_pHLMV->GetState()->GetEntity() )
+	if( pEntity )
 	{
 		auto pModel = pEntity->GetModel();
 

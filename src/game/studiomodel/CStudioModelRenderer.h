@@ -7,9 +7,11 @@
 
 #include <glm/mat3x4.hpp>
 
+#include "utility/Color.h"
+
 #include "studio.h"
 
-#include "utility/Color.h"
+#include "StudioModelConstants.h"
 
 class CStudioModelEntity;
 
@@ -68,7 +70,7 @@ public:
 	/**
 	*	Draws the given model.
 	*/
-	unsigned int DrawModel( CStudioModelEntity* const pEntity, const bool wireframeOnly = false );
+	unsigned int DrawModel( CStudioModelEntity* const pEntity, const DrawFlags_t flags = DRAWF_NONE );
 
 private:
 	void SetUpBones();

@@ -80,7 +80,7 @@ enum DrawFlag : DrawFlags_t
 	/**
 	*	Only draw wireframe overlay.
 	*/
-	DRAWF_WIREFRAME_ONLY	= Bit<DrawFlags_t>( 0 ),
+	DRAWF_WIREFRAME_ONLY	= Bit( 0 ),
 };
 
 typedef unsigned int Flags_t;
@@ -92,8 +92,8 @@ enum Flag : Flags_t
 	/**
 	*	Marks an entity as needing to be removed at the end of the frame.
 	*/
-	FL_KILLME		= Bit<Flags_t>( 0 ),
-	FL_ALWAYSTHINK	= Bit<Flags_t>( 1 )
+	FL_KILLME		= Bit( 0 ),
+	FL_ALWAYSTHINK	= Bit( 1 )
 };
 }
 

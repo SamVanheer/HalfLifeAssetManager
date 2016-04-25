@@ -220,10 +220,15 @@ void C3DView::DrawModel()
 
 	SetupRenderMode();
 
-	glCullFace( GL_FRONT );
-
 	if( pEntity )
 	{
+		const glm::vec3& vecScale = pEntity->GetScale();
+
+		//Determine if an odd number of scale values are negative. The cull face has to be changed if so.
+		const float flScale = vecScale.x * vecScale.y * vecScale.z;
+
+		glCullFace( flScale > 0 ? GL_FRONT : GL_BACK );
+
 		pEntity->Draw( entity::DRAWF_NONE );
 
 		//Draw wireframe overlay

@@ -346,6 +346,8 @@ void DrawFloorQuad( float flSideLength )
 
 void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundColor, const bool bMirror )
 {
+	glCullFace( GL_FRONT );
+
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_CULL_FACE );
@@ -442,6 +444,13 @@ unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode re
 	};
 
 	glClipPlane( GL_CLIP_PLANE0, flClipPlane );
+
+	const glm::vec3& vecScale = pEntity->GetScale();
+
+	//Determine if an odd number of scale values are negative. The cull face has to be changed if so.
+	const float flScale = vecScale.x * vecScale.y * vecScale.z;
+
+	glCullFace( flScale > 0 ? GL_BACK : GL_FRONT );
 
 	const unsigned int uiOldPolys = studiomodel::renderer().GetDrawnPolygonsCount();
 

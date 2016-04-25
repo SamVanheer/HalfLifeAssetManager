@@ -14,7 +14,11 @@ wxBEGIN_EVENT_TABLE( CModelDisplayPanel, CBaseControlPanel )
 	EVT_CHECKBOX( wxID_MDLDISP_CHECKBOX, CModelDisplayPanel::CheckBoxChanged )
 	EVT_BUTTON( wxID_MDLDISP_SCALEMESH, CModelDisplayPanel::ScaleMesh )
 	EVT_BUTTON( wxID_MDLDISP_SCALEBONES, CModelDisplayPanel::ScaleBones )
+	EVT_CHECKBOX( wxID_MDLDISP_MIRROR, CModelDisplayPanel::OnMirrorAxis )
 wxEND_EVENT_TABLE()
+
+//Client data for the mirror checkboxes
+static const size_t MIRROR[ 3 ] = { 0, 1, 2 };
 
 CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: CBaseControlPanel( pParent, "Model Display", pHLMV )
@@ -56,6 +60,15 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pBonesScale = new wxTextCtrl( pElemParent, wxID_ANY, "1.0" );
 	m_pBonesScaleButton = new wxButton( pElemParent, wxID_MDLDISP_SCALEBONES, "Scale Bones" );
 
+	m_pMirror[ 0 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on X axis" );
+	m_pMirror[ 1 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on Y axis" );
+	m_pMirror[ 2 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on Z axis" );
+
+	for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
+	{
+		m_pMirror[ uiIndex ]->SetClientData( const_cast<size_t*>( &MIRROR[ uiIndex ] ) );
+	}
+
 	//Layout
 	wxGridBagSizer* pControlsSizer = new wxGridBagSizer( CONTROLS_ROW_GAP, CONTROLS_COL_GAP );
 
@@ -81,6 +94,10 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	pControlsSizer->Add( m_pBonesScale, wxGBPosition( 1, 3 ), wxDefaultSpan, wxEXPAND );
 	pControlsSizer->Add( m_pBonesScaleButton, wxGBPosition( 1, 4 ), wxDefaultSpan, wxEXPAND );
 
+	pControlsSizer->Add( m_pMirror[ 0 ], wxGBPosition( 0, 5 ), wxDefaultSpan, wxEXPAND );
+	pControlsSizer->Add( m_pMirror[ 1 ], wxGBPosition( 1, 5 ), wxDefaultSpan, wxEXPAND );
+	pControlsSizer->Add( m_pMirror[ 2 ], wxGBPosition( 2, 5 ), wxDefaultSpan, wxEXPAND );
+
 	GetBoxSizer()->Add( pControlsSizer );
 
 	cvar::cvars().InstallGlobalCVarHandler( this );
@@ -98,6 +115,15 @@ void CModelDisplayPanel::InitializeUI()
 
 	m_pMeshScale->SetValue( "1.0" );
 	m_pBonesScale->SetValue( "1.0" );
+
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
+	for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
+	{
+		m_pMirror[ uiIndex ]->SetValue( false );
+
+		m_pMirror[ uiIndex ]->Enable( pEntity != nullptr );
+	}
 }
 
 void CModelDisplayPanel::SetRenderMode( RenderMode renderMode )
@@ -272,6 +298,20 @@ void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
 	}
 	else
 		m_pBonesScale->SetValue( "1.0" );
+}
+
+void CModelDisplayPanel::OnMirrorAxis( wxCommandEvent& event )
+{
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
+	if( !pEntity )
+	{
+		return;
+	}
+
+	const size_t uiIndex = *reinterpret_cast<const size_t*>( static_cast<wxCheckBox*>( event.GetEventObject() )->GetClientData() );
+
+	pEntity->GetScale()[ uiIndex ] *= -1;
 }
 
 void CModelDisplayPanel::HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue )

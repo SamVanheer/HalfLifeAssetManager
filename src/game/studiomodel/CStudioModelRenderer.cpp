@@ -66,7 +66,7 @@ void CStudioModelRenderer::RunFrame()
 {
 }
 
-unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity, const bool wireframeOnly )
+unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity, const DrawFlags_t flags )
 {
 	m_pEntity = pEntity;
 
@@ -99,14 +99,17 @@ unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity,
 
 	glPushMatrix();
 
-	const glm::vec3& vecOrigin = m_pEntity->GetOrigin();
-	const glm::vec3& vecAngles = m_pEntity->GetAngles();
+	const glm::vec3& vecOrigin	= m_pEntity->GetOrigin();
+	const glm::vec3& vecAngles	= m_pEntity->GetAngles();
+	const glm::vec3& vecScale	= m_pEntity->GetScale();
 
 	glTranslatef( vecOrigin[ 0 ], vecOrigin[ 1 ], vecOrigin[ 2 ] );
 
 	glRotatef( vecAngles[ 1 ], 0, 0, 1 );
 	glRotatef( vecAngles[ 0 ], 0, 1, 0 );
 	glRotatef( vecAngles[ 2 ], 1, 0, 0 );
+
+	glScalef( vecScale.x, vecScale.y, vecScale.z );
 
 	SetUpBones();
 
@@ -118,7 +121,7 @@ unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity,
 	{
 		SetupModel( i );
 		if( m_pEntity->GetTransparency() > 0.0f )
-			uiDrawnPolys += DrawPoints( wireframeOnly );
+			uiDrawnPolys += DrawPoints( ( flags & DRAWF_WIREFRAME_ONLY ) != 0 );
 	}
 
 	//TODO: separate out into methods.

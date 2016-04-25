@@ -647,6 +647,9 @@
     <ClInclude Include="..\src\ui\shared\CwxBaseGLCanvas.h">
       <Filter>Header Files\ui\shared</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\game\studiomodel\StudioModelConstants.h">
+      <Filter>Header Files\game\studiomodel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\msw\tools\hlmv.rc">
