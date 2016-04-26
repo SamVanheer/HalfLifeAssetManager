@@ -18,9 +18,20 @@ protected:
 	float	m_flFrameRate	= 1;	//Framerate.
 
 public:
+	/**
+	*	Gets the frame number.
+	*/
 	float GetFrame() const { return m_flFrame; }
 
+	/**
+	*	Gets the frame rate.
+	*/
 	float GetFrameRate() const { return m_flFrameRate; }
+
+	/**
+	*	Sets the frame rate.
+	*	TODO: prevent negative?
+	*/
 	void SetFrameRate( const float flFrameRate ) { m_flFrameRate = flFrameRate; }
 };
 

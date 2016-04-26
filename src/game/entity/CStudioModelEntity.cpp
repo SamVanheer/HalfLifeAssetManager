@@ -212,6 +212,8 @@ void CStudioModelEntity::SetModel( studiomodel::CStudioModel* pModel )
 {
 	//TODO: release old model.
 	m_pModel = pModel;
+
+	//TODO: reinit entity settings
 }
 
 int CStudioModelEntity::GetNumFrames() const

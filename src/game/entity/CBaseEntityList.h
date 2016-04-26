@@ -83,7 +83,14 @@ protected:
 	virtual void OnRemove( CBaseEntity* pEntity ) {}
 
 private:
+	/**
+	*	Finishes adding an entity.
+	*/
 	void FinishAddEntity( const entity::EntIndex_t uiIndex, CBaseEntity* pEntity );
+
+	/**
+	*	Finishes removing an entity.
+	*/
 	void FinishRemoveEntity( CBaseEntity* pEntity );
 
 private:

@@ -7,6 +7,7 @@
 #include "CHLMVStudioModelEntity.h"
 
 static cvar::CCVar s_ent_playsounds( "s_ent_playsounds", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "Whether or not to play sounds triggered by animation events" ) );
+static cvar::CCVar s_ent_pitchframerate( "s_ent_pitchframerate", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, event sounds are pitch modulated based on the framerate" ) );
 
 LINK_ENTITY_TO_CLASS( studiomodel, CHLMVStudioModelEntity );
 
@@ -50,7 +51,14 @@ void CHLMVStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 		{
 			if( s_ent_playsounds.GetBool() )
 			{
-				soundSystem().PlaySound( event.pszOptions, soundsystem::VOLUME_NORM, soundsystem::PITCH_NORM );
+				int iPitch = soundsystem::PITCH_NORM;
+				
+				if( s_ent_pitchframerate.GetBool() )
+				{
+					iPitch = static_cast<int>( iPitch * GetFrameRate() );
+				}
+
+				soundSystem().PlaySound( event.pszOptions, soundsystem::VOLUME_NORM, iPitch );
 			}
 
 			break;

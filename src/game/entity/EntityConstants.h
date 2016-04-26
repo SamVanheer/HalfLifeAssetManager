@@ -87,12 +87,16 @@ typedef unsigned int Flags_t;
 
 enum Flag : Flags_t
 {
-	FL_NONE		= 0,
+	FL_NONE			= 0,
 
 	/**
 	*	Marks an entity as needing to be removed at the end of the frame.
 	*/
 	FL_KILLME		= Bit( 0 ),
+
+	/**
+	*	If set, the entity's think method is called every frame.
+	*/
 	FL_ALWAYSTHINK	= Bit( 1 )
 };
 }

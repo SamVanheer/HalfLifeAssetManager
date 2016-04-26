@@ -23,6 +23,7 @@ wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseControlPanel )
 	EVT_SLIDER( WXID_SEQUENCE_ANIMSPEED, CSequencesPanel::AnimSpeedChanged )
 	EVT_COMBOBOX( wxID_SEQUENCE_EVENT, CSequencesPanel::EventChanged )
 	EVT_CHECKBOX( wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged )
+	EVT_CHECKBOX( wxID_SEQUENCE_PITCHFRAMERATE, CSequencesPanel::PitchFramerateChanged )
 	EVT_BUTTON( wxID_SEQUENCE_TESTORIGINS, CSequencesPanel::TestOrigins )
 wxEND_EVENT_TABLE()
 
@@ -91,6 +92,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pEvent->SetEditable( false );
 
 	m_pPlaySound = new wxCheckBox( pElemParent, wxID_SEQUENCE_PLAYSOUND, "Play Sound" );
+	m_pPitchFramerate = new wxCheckBox( pElemParent, wxID_SEQUENCE_PITCHFRAMERATE, "Pitch *= Framerate" );
 
 	m_pEventInfo = new wxPanel( pElemParent );
 	m_pEventInfo->SetSize( wxSize( 200, wxDefaultSize.GetY() ) );
@@ -139,7 +141,8 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	pSizer->Add( pEvents, wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
 	pSizer->Add( m_pEvent, wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pPlaySound, wxGBPosition( 2, iCol++ ), wxDefaultSpan, wxEXPAND );
+	pSizer->Add( m_pPlaySound, wxGBPosition( 2, iCol ), wxDefaultSpan, wxEXPAND );
+	pSizer->Add( m_pPitchFramerate, wxGBPosition( 3, iCol++ ), wxDefaultSpan, wxEXPAND );
 
 	wxBoxSizer* pEventSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -425,6 +428,10 @@ void CSequencesPanel::HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, fl
 	{
 		m_pPlaySound->SetValue( cvar.GetBool() );
 	}
+	else if( strcmp( cvar.GetName(), "s_ent_pitchframerate" ) == 0 )
+	{
+		m_pPitchFramerate->SetValue( cvar.GetBool() );
+	}
 }
 
 void CSequencesPanel::SetFrameControlsEnabled( const bool bState )
@@ -583,6 +590,11 @@ void CSequencesPanel::EventChanged( wxCommandEvent& event )
 void CSequencesPanel::PlaySoundChanged( wxCommandEvent& event )
 {
 	cvar::cvars().Command( wxString::Format( "s_ent_playsounds %d", m_pPlaySound->GetValue() ? 1 : 0 ).c_str() );
+}
+
+void CSequencesPanel::PitchFramerateChanged( wxCommandEvent& event )
+{
+	cvar::cvars().SetCVarFloat( "s_ent_pitchframerate", m_pPitchFramerate->GetValue() ? 1 : 0 );
 }
 
 static void GetDoubleFromTextCtrl( wxTextCtrl* const pCtrl, vec_t& flInOutValue )

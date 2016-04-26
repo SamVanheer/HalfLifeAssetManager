@@ -69,6 +69,8 @@ private:
 
 	void PlaySoundChanged( wxCommandEvent& event );
 
+	void PitchFramerateChanged( wxCommandEvent& event );
+
 	void TestOrigins( wxCommandEvent& event );
 
 private:
@@ -92,6 +94,7 @@ private:
 	wxComboBox* m_pEvent;
 
 	wxCheckBox* m_pPlaySound;
+	wxCheckBox* m_pPitchFramerate;
 
 	wxPanel* m_pEventInfo;
 
