@@ -73,6 +73,12 @@
     <Filter Include="Source Files\engine\shared\studiomodel">
       <UniqueIdentifier>{bb4bc543-a802-4d8c-8a54-58e41b1909b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\stdlib\html">
+      <UniqueIdentifier>{628613ab-3973-46f3-bd2f-1d9eeb56a1f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\stdlib\html">
+      <UniqueIdentifier>{c6f2dc13-6bc9-4990-b663-db527b01a364}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\stdlib\utility\CString.h">
@@ -180,6 +186,24 @@
     <ClInclude Include="..\src\engine\shared\studiomodel\StudioSorting.h">
       <Filter>Header Files\engine\shared\studiomodel</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\html\CHTMLBody.h">
+      <Filter>Header Files\stdlib\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\html\CHTMLComposite.h">
+      <Filter>Header Files\stdlib\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\html\CHTMLElement.h">
+      <Filter>Header Files\stdlib\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\html\CHTMLHeader.h">
+      <Filter>Header Files\stdlib\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\html\CHTMLPage.h">
+      <Filter>Header Files\stdlib\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\html\IHTMLObject.h">
+      <Filter>Header Files\stdlib\html</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\stdlib\utility\CString.cpp">
@@ -259,6 +283,21 @@
     </ClCompile>
     <ClCompile Include="..\src\engine\shared\studiomodel\StudioSorting.cpp">
       <Filter>Source Files\engine\shared\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\html\CHTMLBody.cpp">
+      <Filter>Source Files\stdlib\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\html\CHTMLComposite.cpp">
+      <Filter>Source Files\stdlib\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\html\CHTMLElement.cpp">
+      <Filter>Source Files\stdlib\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\html\CHTMLHeader.cpp">
+      <Filter>Source Files\stdlib\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\html\CHTMLPage.cpp">
+      <Filter>Source Files\stdlib\html</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

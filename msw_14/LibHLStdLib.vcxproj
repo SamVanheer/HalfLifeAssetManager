@@ -24,6 +24,12 @@
     <ClInclude Include="..\src\engine\shared\studiomodel\studio.h" />
     <ClInclude Include="..\src\engine\shared\studiomodel\StudioModelConstants.h" />
     <ClInclude Include="..\src\engine\shared\studiomodel\StudioSorting.h" />
+    <ClInclude Include="..\src\html\CHTMLBody.h" />
+    <ClInclude Include="..\src\html\CHTMLComposite.h" />
+    <ClInclude Include="..\src\html\CHTMLElement.h" />
+    <ClInclude Include="..\src\html\CHTMLHeader.h" />
+    <ClInclude Include="..\src\html\CHTMLPage.h" />
+    <ClInclude Include="..\src\html\IHTMLObject.h" />
     <ClInclude Include="..\src\stdlib\cvar\CBaseConCommand.h" />
     <ClInclude Include="..\src\stdlib\cvar\CConCommand.h" />
     <ClInclude Include="..\src\stdlib\cvar\CCVar.h" />
@@ -59,6 +65,11 @@
     <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModel.cpp" />
     <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModelRenderer.cpp" />
     <ClCompile Include="..\src\engine\shared\studiomodel\StudioSorting.cpp" />
+    <ClCompile Include="..\src\html\CHTMLBody.cpp" />
+    <ClCompile Include="..\src\html\CHTMLComposite.cpp" />
+    <ClCompile Include="..\src\html\CHTMLElement.cpp" />
+    <ClCompile Include="..\src\html\CHTMLHeader.cpp" />
+    <ClCompile Include="..\src\html\CHTMLPage.cpp" />
     <ClCompile Include="..\src\stdlib\cvar\CBaseConCommand.cpp" />
     <ClCompile Include="..\src\stdlib\cvar\CConCommand.cpp" />
     <ClCompile Include="..\src\stdlib\cvar\CCVar.cpp" />

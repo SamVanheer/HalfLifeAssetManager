@@ -31,6 +31,21 @@ CKeyvalueBlock::~CKeyvalueBlock()
 	RemoveAllChildren();
 }
 
+CKeyvalueBlock::Children_t CKeyvalueBlock::GetChildrenByKey( const char* const pszKey ) const
+{
+	assert( pszKey );
+
+	Children_t children;
+
+	for( auto child : m_Children )
+	{
+		if( child->GetKey() == pszKey )
+			children.push_back( child );
+	}
+
+	return children;
+}
+
 void CKeyvalueBlock::SetChildren( const Children_t& children )
 {
 	RemoveAllChildren();

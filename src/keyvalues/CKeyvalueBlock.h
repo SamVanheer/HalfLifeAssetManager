@@ -48,6 +48,13 @@ public:
 	Children_t& GetChildren() { return m_Children; }
 
 	/**
+	*	Gets a list of children that have the given key. The children are still managed by this block.
+	*	@param pszKey Key. Must be non-null.
+	*	@return List of zero or more children matching the given key.
+	*/
+	Children_t GetChildrenByKey( const char* const pszKey ) const;
+
+	/**
 	*	Sets the children to the given list. Any nodes that were previously children of this node are destroyed.
 	*	There may not be any null children in the list.
 	*/
