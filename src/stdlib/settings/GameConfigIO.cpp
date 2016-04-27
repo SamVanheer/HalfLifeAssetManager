@@ -58,9 +58,9 @@ std::pair<size_t, size_t> LoadGameConfigs( const kv::Block& block, std::shared_p
 
 		++uiTotal;
 
-		auto block = static_cast<kv::Block*>( child );
+		auto configBlock = static_cast<kv::Block*>( child );
 
-		auto config = LoadGameConfig( *block );
+		auto config = LoadGameConfig( *configBlock );
 
 		if( config )
 		{

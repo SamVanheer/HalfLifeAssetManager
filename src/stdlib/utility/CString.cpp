@@ -579,36 +579,40 @@ CString& CString::operator+=( const int iValue )
 {
 	char szBuffer[ MINIMUM_PRINTF_BUFFER_SIZE ];
 
-	snprintf( szBuffer, sizeof( szBuffer ), "%i", iValue );
+	if( PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%i", iValue ), sizeof( szBuffer ) ) )
+		*this += szBuffer;
 
-	return ( *this += szBuffer );
+	return *this;
 }
 
 CString& CString::operator+=( const unsigned int uiValue )
 {
 	char szBuffer[ MINIMUM_PRINTF_BUFFER_SIZE ];
 
-	snprintf( szBuffer, sizeof( szBuffer ), "%u", uiValue );
+	if( PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%u", uiValue ), sizeof( szBuffer ) ) )
+		*this += szBuffer;
 
-	return ( *this += szBuffer );
+	return *this;
 }
 
 CString& CString::operator+=( const long long int iValue )
 {
 	char szBuffer[ MINIMUM_PRINTF_BUFFER_SIZE ];
 
-	snprintf( szBuffer, sizeof( szBuffer ), "%lli", iValue );
+	if( PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%lli", iValue ), sizeof( szBuffer ) ) )
+		*this += szBuffer;
 
-	return ( *this += szBuffer );
+	return *this;
 }
 
 CString& CString::operator+=( const unsigned long long int uiValue )
 {
 	char szBuffer[ MINIMUM_PRINTF_BUFFER_SIZE ];
 
-	snprintf( szBuffer, sizeof( szBuffer ), "%llu", uiValue );
+	if( PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%llu", uiValue ), sizeof( szBuffer ) ) )
+		*this += szBuffer;
 
-	return ( *this += szBuffer );
+	return *this;
 }
 
 CString& CString::operator+=( const float flValue )

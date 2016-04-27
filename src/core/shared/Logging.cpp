@@ -1,6 +1,8 @@
 #include <cassert>
 #include <chrono>
 
+#include "utility/StringUtils.h"
+
 #include "Logging.h"
 
 const char* GetLogTypePrefix( const LogType type )
@@ -119,7 +121,10 @@ void CLogging::VLog( const LogType type, const char* const pszFormat, va_list li
 
 	if( iRet < 0 || static_cast<size_t>( iRet ) >= sizeof( szBuffer ) )
 	{
-		snprintf( szBuffer, sizeof( szBuffer ), "Log buffer too small for '%s'\n", pszFormat );
+		if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "Log buffer too small for '%s'\n", pszFormat ), sizeof( szBuffer ) ) )
+		{
+			strcpy( szBuffer, "Log buffer too small\n" );
+		}
 	}
 
 	if( IsLogFileOpen() )

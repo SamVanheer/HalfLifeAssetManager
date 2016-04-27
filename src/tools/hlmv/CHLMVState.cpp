@@ -371,9 +371,9 @@ bool CHLMVState::DumpModelInfo( const char* const pszFilename )
 						 iIndex + 1, pBP->modelindex
 				);
 
-				const mstudiomodel_t* pModel = reinterpret_cast<const mstudiomodel_t*>( pByte + pBP->modelindex );
+				const mstudiomodel_t* pSubModel = reinterpret_cast<const mstudiomodel_t*>( pByte + pBP->modelindex );
 
-				for( int iModel = 0; iModel < pBP->nummodels; ++iModel, ++pModel )
+				for( int iModel = 0; iModel < pBP->nummodels; ++iModel, ++pSubModel )
 				{
 					fprintf( pFile,
 							 "\tSub Model %d Name: \"%s\"\n"
@@ -382,17 +382,17 @@ bool CHLMVState::DumpModelInfo( const char* const pszFilename )
 							 "\tSub Model %d Vertices: %d\n"
 							 "\tSub Model %d Normals: %d\n"
 							 "\tSub Model %d Deformation Groups: %d\n\n",
-							 iModel + 1, pModel->name,
-							 iModel + 1, pModel->type,
-							 iModel + 1, pModel->nummesh,
-							 iModel + 1, pModel->numverts,
-							 iModel + 1, pModel->numnorms,
-							 iModel + 1, pModel->numgroups
+							 iModel + 1, pSubModel->name,
+							 iModel + 1, pSubModel->type,
+							 iModel + 1, pSubModel->nummesh,
+							 iModel + 1, pSubModel->numverts,
+							 iModel + 1, pSubModel->numnorms,
+							 iModel + 1, pSubModel->numgroups
 					);
 
-					const mstudiomesh_t* pMesh = reinterpret_cast<const mstudiomesh_t*>( pByte + pModel->meshindex );
+					const mstudiomesh_t* pMesh = reinterpret_cast<const mstudiomesh_t*>( pByte + pSubModel->meshindex );
 
-					for( int iMesh = 0; iMesh < pModel->nummesh; ++iMesh, ++pMesh )
+					for( int iMesh = 0; iMesh < pSubModel->nummesh; ++iMesh, ++pMesh )
 					{
 						fprintf( pFile,
 								 "\t\tSub Model %d, Mesh %d Total Triangles: %d\n"

@@ -38,7 +38,13 @@ void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, const by
 	if( !graphics::helpers::CalculateImageDimensions( ptexture->width, ptexture->height, outwidth, outheight ) )
 		return;
 
-	tex = out = ( byte * ) malloc( outwidth * outheight * 4 );
+	const size_t uiSize = outwidth * outheight * 4;
+
+	//Needs at least one pixel (satisfies code analysis)
+	if( uiSize < 4 )
+		return;
+
+	tex = out = ( byte * ) malloc( uiSize );
 	if( !out )
 	{
 		return;
@@ -342,7 +348,9 @@ StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioMod
 		for( int i = 1; i < studioModel->m_pStudioHdr->numseqgroups; ++i )
 		{
 			strcpy( seqgroupname, pszFilename );
-			snprintf( &seqgroupname[ strlen( seqgroupname ) - 4 ], sizeof( seqgroupname ), "%02d.mdl", i );
+
+			if( !PrintfSuccess( snprintf( &seqgroupname[ strlen( seqgroupname ) - 4 ], sizeof( seqgroupname ), "%02d.mdl", i ), sizeof( seqgroupname ) ) )
+				return StudioModelLoadResult::FAILURE;
 
 			result = LoadStudioHeader( seqgroupname, true, studioModel->m_pSeqHdrs[ i ] );
 

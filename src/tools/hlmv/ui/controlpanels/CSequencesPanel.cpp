@@ -480,7 +480,8 @@ void CSequencesPanel::UpdateEvents()
 
 		for( int i = 0; i < sequence.numevents; ++i )
 		{
-			snprintf( szBuffer, sizeof( szBuffer ), "Event %d", i + 1 );
+			if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "Event %d", i + 1 ), sizeof( szBuffer ) ) )
+				szBuffer[ 0 ] = '\0';
 
 			m_pEvent->Append( szBuffer );
 		}

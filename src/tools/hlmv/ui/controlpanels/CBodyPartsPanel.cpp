@@ -302,7 +302,9 @@ void CBodyPartsPanel::UpdateSubmodels( const int iIndex )
 
 		for( int i = 0; i < pbodyparts[ iIndex ].nummodels; i++ )
 		{
-			snprintf( szBuffer, sizeof( szBuffer ), "Submodel %d", i + 1 );
+			if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "Submodel %d", i + 1 ), sizeof( szBuffer ) ) )
+				szBuffer[ 0 ] = '\0';
+
 			m_pSubmodel->Append( szBuffer );
 		}
 
