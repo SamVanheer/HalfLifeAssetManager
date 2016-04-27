@@ -1,9 +1,9 @@
 #include "shared/Logging.h"
 #include "shared/CWorldTime.h"
 
-#include "game/studiomodel/CStudioModel.h"
+#include "shared/studiomodel/CStudioModel.h"
 
-#include "game/studiomodel/CStudioModelRenderer.h"
+#include "shared/studiomodel/CStudioModelRenderer.h"
 
 #include "CStudioModelEntity.h"
 

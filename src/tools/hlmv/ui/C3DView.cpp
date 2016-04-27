@@ -11,7 +11,7 @@
 
 #include "soundsystem/CSoundSystem.h"
 
-#include "game/studiomodel/CStudioModelRenderer.h"
+#include "shared/studiomodel/CStudioModelRenderer.h"
 
 #include "game/entity/CStudioModelEntity.h"
 

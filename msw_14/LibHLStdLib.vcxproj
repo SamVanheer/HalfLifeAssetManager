@@ -19,6 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModel.h" />
+    <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModelRenderer.h" />
+    <ClInclude Include="..\src\engine\shared\studiomodel\studio.h" />
+    <ClInclude Include="..\src\engine\shared\studiomodel\StudioModelConstants.h" />
+    <ClInclude Include="..\src\engine\shared\studiomodel\StudioSorting.h" />
     <ClInclude Include="..\src\stdlib\cvar\CBaseConCommand.h" />
     <ClInclude Include="..\src\stdlib\cvar\CConCommand.h" />
     <ClInclude Include="..\src\stdlib\cvar\CCVar.h" />
@@ -29,6 +34,8 @@
     <ClInclude Include="..\src\stdlib\filesystem\CFileSystem.h" />
     <ClInclude Include="..\src\stdlib\filesystem\FileSystemConstants.h" />
     <ClInclude Include="..\src\stdlib\graphics\BMPFile.h" />
+    <ClInclude Include="..\src\stdlib\graphics\GLRenderTarget.h" />
+    <ClInclude Include="..\src\stdlib\graphics\OpenGL.h" />
     <ClInclude Include="..\src\stdlib\graphics\Palette.h" />
     <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalue.h" />
     <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalueBlock.h" />
@@ -58,6 +65,9 @@
     <ClInclude Include="..\src\stdlib\utility\Tokenization.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModel.cpp" />
+    <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModelRenderer.cpp" />
+    <ClCompile Include="..\src\engine\shared\studiomodel\StudioSorting.cpp" />
     <ClCompile Include="..\src\stdlib\cvar\CBaseConCommand.cpp" />
     <ClCompile Include="..\src\stdlib\cvar\CConCommand.cpp" />
     <ClCompile Include="..\src\stdlib\cvar\CCVar.cpp" />
@@ -66,6 +76,8 @@
     <ClCompile Include="..\src\stdlib\filesystem\CFileSystem.cpp" />
     <ClCompile Include="..\src\stdlib\filesystem\FileSystemConstants.cpp" />
     <ClCompile Include="..\src\stdlib\graphics\BMPFile.cpp" />
+    <ClCompile Include="..\src\stdlib\graphics\GLRenderTarget.cpp" />
+    <ClCompile Include="..\src\stdlib\graphics\OpenGL.cpp" />
     <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalue.cpp" />
     <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalueBlock.cpp" />
     <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalueNode.cpp" />

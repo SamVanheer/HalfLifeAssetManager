@@ -1,7 +1,7 @@
 #ifndef GAME_STUDIOMODEL_STUDIOSORTING_H
 #define GAME_STUDIOMODEL_STUDIOSORTING_H
 
-#include "studio.h"
+#include "shared/studiomodel/studio.h"
 
 namespace studiomodel
 {

@@ -61,6 +61,24 @@
     <Filter Include="Source Files\stdlib\graphics">
       <UniqueIdentifier>{74b55c31-61ee-4317-8050-ff1d335ab919}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\engine">
+      <UniqueIdentifier>{0a55166f-1465-4217-959d-8fe48fc3b7f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\shared">
+      <UniqueIdentifier>{647e11d3-be9b-475b-9e2c-b86f965d120c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\shared\studiomodel">
+      <UniqueIdentifier>{239240b5-ecad-4a03-92d6-90415bd6faac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{35ec1354-cc76-4fd6-8fe8-568b6cb780c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\shared">
+      <UniqueIdentifier>{f996440b-4239-45d4-832c-f21dbed66ace}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\shared\studiomodel">
+      <UniqueIdentifier>{bb4bc543-a802-4d8c-8a54-58e41b1909b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\stdlib\utility\CString.h">
@@ -174,6 +192,27 @@
     <ClInclude Include="..\src\stdlib\utility\IOUtils.h">
       <Filter>Header Files\stdlib\utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\stdlib\graphics\GLRenderTarget.h">
+      <Filter>Header Files\stdlib\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\graphics\OpenGL.h">
+      <Filter>Header Files\stdlib\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModel.h">
+      <Filter>Header Files\engine\shared\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\studiomodel\studio.h">
+      <Filter>Header Files\engine\shared\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModelRenderer.h">
+      <Filter>Header Files\engine\shared\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\studiomodel\StudioModelConstants.h">
+      <Filter>Header Files\engine\shared\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\studiomodel\StudioSorting.h">
+      <Filter>Header Files\engine\shared\studiomodel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\stdlib\utility\CString.cpp">
@@ -256,6 +295,21 @@
     </ClCompile>
     <ClCompile Include="..\src\stdlib\utility\IOUtils.cpp">
       <Filter>Source Files\stdlib\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\graphics\GLRenderTarget.cpp">
+      <Filter>Source Files\stdlib\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\graphics\OpenGL.cpp">
+      <Filter>Source Files\stdlib\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModel.cpp">
+      <Filter>Source Files\engine\shared\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModelRenderer.cpp">
+      <Filter>Source Files\engine\shared\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\shared\studiomodel\StudioSorting.cpp">
+      <Filter>Source Files\engine\shared\studiomodel</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

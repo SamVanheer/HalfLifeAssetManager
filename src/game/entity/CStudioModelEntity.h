@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "game/studiomodel/CStudioModel.h"
+#include "shared/studiomodel/CStudioModel.h"
 
 #include "game/CAnimEvent.h"
 #include "game/Events.h"

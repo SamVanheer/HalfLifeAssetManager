@@ -8,7 +8,7 @@
 #include "graphics/Palette.h"
 #include "graphics/BMPFile.h"
 
-#include "game/studiomodel/CStudioModel.h"
+#include "shared/studiomodel/CStudioModel.h"
 
 #include "../CHLMV.h"
 #include "../../CHLMVState.h"

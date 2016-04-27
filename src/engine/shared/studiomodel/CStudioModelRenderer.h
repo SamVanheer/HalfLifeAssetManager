@@ -9,7 +9,7 @@
 
 #include "utility/Color.h"
 
-#include "studio.h"
+#include "shared/studiomodel/studio.h"
 
 #include "StudioModelConstants.h"
 

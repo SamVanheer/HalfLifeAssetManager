@@ -91,12 +91,6 @@
     <Filter Include="Source Files\game">
       <UniqueIdentifier>{faeb3001-0b1a-4461-8a6b-3b783a3f02f5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\game\studiomodel">
-      <UniqueIdentifier>{342283d2-5ba0-41b9-9d47-c6093a12e674}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\game\studiomodel">
-      <UniqueIdentifier>{487ead65-14f4-486c-bf37-b4f77271c9ad}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\game\entity">
       <UniqueIdentifier>{5da57973-c54f-43c0-9505-78b2444eb3db}</UniqueIdentifier>
     </Filter>
@@ -112,9 +106,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
-      <Filter>Source Files\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\graphics\OpenGL.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ui\utility\wxUtil.cpp">
@@ -136,9 +127,6 @@
       <Filter>Source Files\ui\shared</Filter>
     </ClCompile>
     <ClCompile Include="..\src\graphics\Constants.cpp">
-      <Filter>Source Files\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\graphics\GLRenderTarget.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
@@ -198,9 +186,6 @@
     <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CTexturesPanel.cpp">
       <Filter>Source Files\tools\hlmv\ui\controlpanels</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\game\studiomodel\CStudioModel.cpp">
-      <Filter>Source Files\game\studiomodel</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\game\entity\CBaseAnimating.cpp">
       <Filter>Source Files\game\entity</Filter>
     </ClCompile>
@@ -216,12 +201,6 @@
     <ClCompile Include="..\src\game\entity\CBaseEntityList.cpp">
       <Filter>Source Files\game\entity</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\game\studiomodel\StudioSorting.cpp">
-      <Filter>Source Files\game\studiomodel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp">
-      <Filter>Source Files\game\studiomodel</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\game\entity\CEntityManager.cpp">
       <Filter>Source Files\game\entity</Filter>
     </ClCompile>
@@ -236,9 +215,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\graphics\OpenGL.h">
-      <Filter>Header Files\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\graphics\Constants.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
@@ -274,9 +250,6 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\shared\CGameConfigurationsPanel.h">
       <Filter>Header Files\ui\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\graphics\GLRenderTarget.h">
-      <Filter>Header Files\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tools\shared\CBaseTool.h">
       <Filter>Header Files\tools\shared</Filter>
@@ -338,17 +311,11 @@
     <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CTexturesPanel.h">
       <Filter>Header Files\tools\hlmv\ui\controlpanels</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\game\studiomodel\studio.h">
-      <Filter>Header Files\game\studiomodel</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\game\Events.h">
       <Filter>Header Files\game</Filter>
     </ClInclude>
     <ClInclude Include="..\src\game\CAnimEvent.h">
       <Filter>Header Files\game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\game\studiomodel\CStudioModel.h">
-      <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
     <ClInclude Include="..\src\game\entity\CBaseEntity.h">
       <Filter>Header Files\game\entity</Filter>
@@ -368,12 +335,6 @@
     <ClInclude Include="..\src\game\entity\EntityConstants.h">
       <Filter>Header Files\game\entity</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\game\studiomodel\StudioSorting.h">
-      <Filter>Header Files\game\studiomodel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h">
-      <Filter>Header Files\game\studiomodel</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\game\entity\CEntityManager.h">
       <Filter>Header Files\game\entity</Filter>
     </ClInclude>
@@ -385,9 +346,6 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\shared\CwxBaseGLCanvas.h">
       <Filter>Header Files\ui\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\game\studiomodel\StudioModelConstants.h">
-      <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

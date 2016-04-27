@@ -9,7 +9,7 @@
 
 #include "graphics/Constants.h"
 
-#include "game/studiomodel/studio.h"
+#include "shared/studiomodel/studio.h"
 
 namespace hlmv
 {

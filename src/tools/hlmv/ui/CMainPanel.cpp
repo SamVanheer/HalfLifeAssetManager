@@ -11,7 +11,7 @@
 #include "controlpanels/CSequencesPanel.h"
 #include "controlpanels/CFullscreenPanel.h"
 
-#include "game/studiomodel/CStudioModel.h"
+#include "shared/studiomodel/CStudioModel.h"
 #include "game/entity/CStudioModelEntity.h"
 #include "game/entity/CBaseEntityList.h"
 

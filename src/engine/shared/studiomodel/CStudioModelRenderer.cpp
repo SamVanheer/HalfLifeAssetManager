@@ -9,7 +9,7 @@
 
 #include "graphics/GraphicsHelpers.h"
 
-#include "CStudioModel.h"
+#include "shared/studiomodel/CStudioModel.h"
 #include "StudioSorting.h"
 
 #include "game/entity/CStudioModelEntity.h"

@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_GRAPHICSHELPERS_H
 #define GRAPHICS_GRAPHICSHELPERS_H
 
-#include "game/studiomodel/CStudioModel.h"
+#include "shared/studiomodel/CStudioModel.h"
 #include "game/entity/CStudioModelEntity.h"
 
 #include "graphics/Constants.h"

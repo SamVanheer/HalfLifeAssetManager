@@ -6,7 +6,7 @@
 
 #include "utility/Color.h"
 
-#include "game/studiomodel/CStudioModelRenderer.h"
+#include "shared/studiomodel/CStudioModelRenderer.h"
 
 #include "GraphicsHelpers.h"
 

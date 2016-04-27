@@ -17,7 +17,7 @@
 
 #include "game/entity/CEntityManager.h"
 
-#include "game/studiomodel/CStudioModelRenderer.h"
+#include "shared/studiomodel/CStudioModelRenderer.h"
 
 #include "CBaseTool.h"
 
