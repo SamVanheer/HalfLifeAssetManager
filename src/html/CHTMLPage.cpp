@@ -13,10 +13,6 @@ CHTMLPage::CHTMLPage()
 {
 }
 
-CHTMLPage::~CHTMLPage()
-{
-}
-
 std::string CHTMLPage::GenerateHTML()
 {
 	std::stringstream stream;

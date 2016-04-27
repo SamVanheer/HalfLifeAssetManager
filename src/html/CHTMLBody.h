@@ -1,19 +1,22 @@
-#ifndef ANGELSCRIPT_CHTMLBODY_H
-#define ANGELSCRIPT_CHTMLBODY_H
+#ifndef HTML_CHTMLBODY_H
+#define HTML_CHTMLBODY_H
 
 #include "CHTMLComposite.h"
 
+/**
+*	Convenience wrapper for the <body> element.
+*/
 class CHTMLBody : public CHTMLComposite
 {
 public:
-	CHTMLBody();
-	~CHTMLBody();
+	CHTMLBody() = default;
+	~CHTMLBody() = default;
 
-	void GenerateHTML( std::stringstream& stream );
+	void GenerateHTML( std::stringstream& stream ) override;
 
 private:
-	CHTMLBody( const CHTMLBody& );
-	CHTMLBody& operator=( const CHTMLBody& );
+	CHTMLBody( const CHTMLBody& ) = delete;
+	CHTMLBody& operator=( const CHTMLBody& ) = delete;
 };
 
-#endif //ANGELSCRIPT_CHTMLBODY_H
+#endif //HTML_CHTMLBODY_H

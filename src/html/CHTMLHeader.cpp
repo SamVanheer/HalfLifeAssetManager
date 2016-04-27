@@ -1,8 +1,6 @@
-#include "CHTMLHeader.h"
-
-#include <sstream>
-
 #include "CHTMLElement.h"
+
+#include "CHTMLHeader.h"
 
 CHTMLHeader::CHTMLHeader()
 	: m_Title( new CHTMLElement( "title" ) )
@@ -10,10 +8,6 @@ CHTMLHeader::CHTMLHeader()
 {
 	m_StyleSheet->SetAttributeValue( "rel", "stylesheet" );
 	m_StyleSheet->SetAttributeValue( "type", "text/css" );
-}
-
-CHTMLHeader::~CHTMLHeader()
-{
 }
 
 void CHTMLHeader::GenerateHTML( std::stringstream& stream )

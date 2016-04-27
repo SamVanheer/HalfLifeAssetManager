@@ -1,5 +1,5 @@
-#ifndef ANGELSCRIPT_CHTMLPAGE_H
-#define ANGELSCRIPT_CHTMLPAGE_H
+#ifndef HTML_CHTMLPAGE_H
+#define HTML_CHTMLPAGE_H
 
 #include <memory>
 #include <string>
@@ -7,16 +7,29 @@
 class CHTMLHeader;
 class CHTMLBody;
 
-class CHTMLPage
+/**
+*	Represents an HTML page.
+*/
+class CHTMLPage final
 {
 public:
 
 	CHTMLPage();
-	~CHTMLPage();
+	~CHTMLPage() = default;
 
-	virtual std::string GenerateHTML();
+	/**
+	*	Generates this page's HTML, and returns it as a string.
+	*/
+	std::string GenerateHTML();
 
+	/**
+	*	Gets the header.
+	*/
 	std::shared_ptr<CHTMLHeader> GetHeader() const { return m_Header; }
+
+	/**
+	*	Gets the body.
+	*/
 	std::shared_ptr<CHTMLBody> GetBody() const { return m_Body; }
 
 private:
@@ -25,8 +38,8 @@ private:
 	std::shared_ptr<CHTMLBody> m_Body;
 
 private:
-	CHTMLPage( const CHTMLPage& );
-	CHTMLPage& operator=( const CHTMLPage& );
+	CHTMLPage( const CHTMLPage& ) = delete;
+	CHTMLPage& operator=( const CHTMLPage& ) = delete;
 };
 
-#endif //ANGELSCRIPT_CHTMLPAGE_H
+#endif //HTML_CHTMLPAGE_H

@@ -8,10 +8,6 @@ CHTMLElement::CHTMLElement( const std::string& szTagName, const std::string& szT
 	SetTextContents( szTextContents );
 }
 
-CHTMLElement::~CHTMLElement()
-{
-}
-
 void CHTMLElement::GenerateHTML( std::stringstream& stream )
 {
 	stream << '<' << m_szTagName;

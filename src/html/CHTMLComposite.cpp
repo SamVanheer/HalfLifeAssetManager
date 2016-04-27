@@ -1,17 +1,6 @@
-#include "CHTMLComposite.h"
-
 #include <cassert>
-#include <sstream>
 
-#include "IHTMLObject.h"
-
-CHTMLComposite::CHTMLComposite()
-{
-}
-
-CHTMLComposite::~CHTMLComposite()
-{
-}
+#include "CHTMLComposite.h"
 
 void CHTMLComposite::AddObject( std::shared_ptr<IHTMLObject> object )
 {
