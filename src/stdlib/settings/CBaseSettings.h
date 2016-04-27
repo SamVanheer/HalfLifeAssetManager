@@ -29,6 +29,7 @@ inline ISettingsListener::~ISettingsListener()
 /**
 *	This class manages settings that are shared between all tools.
 *	This class is abstract.
+*	TODO: make dependency on filesystem use a member variable instead of a global
 */
 class CBaseSettings
 {

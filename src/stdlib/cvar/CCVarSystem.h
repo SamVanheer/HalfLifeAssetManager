@@ -148,6 +148,7 @@ private:
 	CCVarSystem& operator=( const CCVarSystem& ) = delete;
 };
 
+//TODO move to its own library
 CCVarSystem& cvars();
 }
 

@@ -19,6 +19,31 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\stdlib\cvar\CBaseConCommand.h" />
+    <ClInclude Include="..\src\stdlib\cvar\CConCommand.h" />
+    <ClInclude Include="..\src\stdlib\cvar\CCVar.h" />
+    <ClInclude Include="..\src\stdlib\cvar\CCVarSystem.h" />
+    <ClInclude Include="..\src\stdlib\cvar\ConVarConstants.h" />
+    <ClInclude Include="..\src\stdlib\cvar\CVar.h" />
+    <ClInclude Include="..\src\stdlib\cvar\CVarUtils.h" />
+    <ClInclude Include="..\src\stdlib\filesystem\CFileSystem.h" />
+    <ClInclude Include="..\src\stdlib\filesystem\FileSystemConstants.h" />
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalue.h" />
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalueBlock.h" />
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalueNode.h" />
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvaluesLexer.h" />
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvaluesParser.h" />
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvaluesWriter.h" />
+    <ClInclude Include="..\src\stdlib\keyvalues\Keyvalues.h" />
+    <ClInclude Include="..\src\stdlib\keyvalues\KeyvaluesConstants.h" />
+    <ClInclude Include="..\src\stdlib\keyvalues\KVForward.h" />
+    <ClInclude Include="..\src\stdlib\settings\CBaseSettings.h" />
+    <ClInclude Include="..\src\stdlib\settings\CGameConfig.h" />
+    <ClInclude Include="..\src\stdlib\settings\CGameConfigManager.h" />
+    <ClInclude Include="..\src\stdlib\settings\CRecentFiles.h" />
+    <ClInclude Include="..\src\stdlib\settings\GameConfigIO.h" />
+    <ClInclude Include="..\src\stdlib\soundsystem\CSoundSystem.h" />
+    <ClInclude Include="..\src\stdlib\soundsystem\SoundConstants.h" />
     <ClInclude Include="..\src\stdlib\utility\BoundingBox.h" />
     <ClInclude Include="..\src\stdlib\utility\CCommand.h" />
     <ClInclude Include="..\src\stdlib\utility\CEscapeSequences.h" />
@@ -30,6 +55,25 @@
     <ClInclude Include="..\src\stdlib\utility\Tokenization.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\stdlib\cvar\CBaseConCommand.cpp" />
+    <ClCompile Include="..\src\stdlib\cvar\CConCommand.cpp" />
+    <ClCompile Include="..\src\stdlib\cvar\CCVar.cpp" />
+    <ClCompile Include="..\src\stdlib\cvar\CCVarSystem.cpp" />
+    <ClCompile Include="..\src\stdlib\cvar\CVarUtils.cpp" />
+    <ClCompile Include="..\src\stdlib\filesystem\CFileSystem.cpp" />
+    <ClCompile Include="..\src\stdlib\filesystem\FileSystemConstants.cpp" />
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalue.cpp" />
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalueBlock.cpp" />
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalueNode.cpp" />
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvaluesLexer.cpp" />
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvaluesParser.cpp" />
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvaluesWriter.cpp" />
+    <ClCompile Include="..\src\stdlib\settings\CBaseSettings.cpp" />
+    <ClCompile Include="..\src\stdlib\settings\CGameConfig.cpp" />
+    <ClCompile Include="..\src\stdlib\settings\CGameConfigManager.cpp" />
+    <ClCompile Include="..\src\stdlib\settings\CRecentFiles.cpp" />
+    <ClCompile Include="..\src\stdlib\settings\GameConfigIO.cpp" />
+    <ClCompile Include="..\src\stdlib\soundsystem\CSoundSystem.cpp" />
     <ClCompile Include="..\src\stdlib\utility\CCommand.cpp" />
     <ClCompile Include="..\src\stdlib\utility\CEscapeSequences.cpp" />
     <ClCompile Include="..\src\stdlib\utility\Color.cpp" />

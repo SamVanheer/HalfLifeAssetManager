@@ -25,6 +25,36 @@
     <Filter Include="Source Files\stdlib\utility">
       <UniqueIdentifier>{283be93c-0b33-432e-8c08-f16b412b947d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\stdlib\settings">
+      <UniqueIdentifier>{f20b36ed-865d-41d6-a8dc-225231552e79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\stdlib\settings">
+      <UniqueIdentifier>{292e56c4-0d38-421c-a296-dbef02536158}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\stdlib\cvar">
+      <UniqueIdentifier>{56dbc310-3be8-4350-8649-7ed93ca657cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\stdlib\cvar">
+      <UniqueIdentifier>{ecbb6c2d-4c86-4fb7-aa94-dc54b175b827}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\stdlib\soundsystem">
+      <UniqueIdentifier>{a938121a-f6ce-4c5d-82ff-24a405fb268f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\stdlib\soundsystem">
+      <UniqueIdentifier>{3f963043-6d9b-4144-a70f-aad3b7f75ec1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\stdlib\filesystem">
+      <UniqueIdentifier>{8550de96-7e14-482a-9a75-2eec59705050}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\stdlib\filesystem">
+      <UniqueIdentifier>{0108917e-b3cd-4452-b490-952149a7927e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\stdlib\keyvalues">
+      <UniqueIdentifier>{a630a735-49dc-4fbe-9186-59c7977212de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\stdlib\keyvalues">
+      <UniqueIdentifier>{685cc6fc-721f-4561-ae04-90406ccc660e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\stdlib\utility\CString.h">
@@ -54,6 +84,81 @@
     <ClInclude Include="..\src\stdlib\utility\mathlib.h">
       <Filter>Header Files\stdlib\utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\stdlib\settings\CBaseSettings.h">
+      <Filter>Header Files\stdlib\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\settings\CGameConfig.h">
+      <Filter>Header Files\stdlib\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\settings\CGameConfigManager.h">
+      <Filter>Header Files\stdlib\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\settings\CRecentFiles.h">
+      <Filter>Header Files\stdlib\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\settings\GameConfigIO.h">
+      <Filter>Header Files\stdlib\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\CBaseConCommand.h">
+      <Filter>Header Files\stdlib\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\CConCommand.h">
+      <Filter>Header Files\stdlib\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\CCVar.h">
+      <Filter>Header Files\stdlib\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\CCVarSystem.h">
+      <Filter>Header Files\stdlib\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\ConVarConstants.h">
+      <Filter>Header Files\stdlib\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\CVar.h">
+      <Filter>Header Files\stdlib\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\CVarUtils.h">
+      <Filter>Header Files\stdlib\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\soundsystem\CSoundSystem.h">
+      <Filter>Header Files\stdlib\soundsystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\soundsystem\SoundConstants.h">
+      <Filter>Header Files\stdlib\soundsystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\filesystem\CFileSystem.h">
+      <Filter>Header Files\stdlib\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\filesystem\FileSystemConstants.h">
+      <Filter>Header Files\stdlib\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalue.h">
+      <Filter>Header Files\stdlib\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalueBlock.h">
+      <Filter>Header Files\stdlib\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalueNode.h">
+      <Filter>Header Files\stdlib\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvaluesLexer.h">
+      <Filter>Header Files\stdlib\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvaluesParser.h">
+      <Filter>Header Files\stdlib\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvaluesWriter.h">
+      <Filter>Header Files\stdlib\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\keyvalues\Keyvalues.h">
+      <Filter>Header Files\stdlib\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\keyvalues\KeyvaluesConstants.h">
+      <Filter>Header Files\stdlib\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\keyvalues\KVForward.h">
+      <Filter>Header Files\stdlib\keyvalues</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\stdlib\utility\CString.cpp">
@@ -73,6 +178,63 @@
     </ClCompile>
     <ClCompile Include="..\src\stdlib\utility\Color.cpp">
       <Filter>Source Files\stdlib\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\settings\CBaseSettings.cpp">
+      <Filter>Source Files\stdlib\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\settings\CGameConfig.cpp">
+      <Filter>Source Files\stdlib\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\settings\CGameConfigManager.cpp">
+      <Filter>Source Files\stdlib\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\settings\CRecentFiles.cpp">
+      <Filter>Source Files\stdlib\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\settings\GameConfigIO.cpp">
+      <Filter>Source Files\stdlib\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\cvar\CBaseConCommand.cpp">
+      <Filter>Source Files\stdlib\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\cvar\CConCommand.cpp">
+      <Filter>Source Files\stdlib\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\cvar\CCVar.cpp">
+      <Filter>Source Files\stdlib\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\cvar\CCVarSystem.cpp">
+      <Filter>Source Files\stdlib\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\cvar\CVarUtils.cpp">
+      <Filter>Source Files\stdlib\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\soundsystem\CSoundSystem.cpp">
+      <Filter>Source Files\stdlib\soundsystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\filesystem\CFileSystem.cpp">
+      <Filter>Source Files\stdlib\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\filesystem\FileSystemConstants.cpp">
+      <Filter>Source Files\stdlib\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalue.cpp">
+      <Filter>Source Files\stdlib\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalueBlock.cpp">
+      <Filter>Source Files\stdlib\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalueNode.cpp">
+      <Filter>Source Files\stdlib\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvaluesLexer.cpp">
+      <Filter>Source Files\stdlib\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvaluesParser.cpp">
+      <Filter>Source Files\stdlib\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvaluesWriter.cpp">
+      <Filter>Source Files\stdlib\keyvalues</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

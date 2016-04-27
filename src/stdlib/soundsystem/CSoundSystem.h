@@ -83,6 +83,7 @@ private:
 };
 }
 
+//TODO move to its own library
 inline soundsystem::CSoundSystem& soundSystem()
 {
 	return soundsystem::CSoundSystem::GetInstance();

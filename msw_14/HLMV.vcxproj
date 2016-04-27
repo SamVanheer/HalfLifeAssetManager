@@ -19,13 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\cvar\CBaseConCommand.cpp" />
-    <ClCompile Include="..\src\cvar\CConCommand.cpp" />
-    <ClCompile Include="..\src\cvar\CCVar.cpp" />
-    <ClCompile Include="..\src\cvar\CCVarSystem.cpp" />
-    <ClCompile Include="..\src\cvar\CVarUtils.cpp" />
-    <ClCompile Include="..\src\filesystem\CFileSystem.cpp" />
-    <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp" />
     <ClCompile Include="..\src\game\entity\CBaseAnimating.cpp" />
     <ClCompile Include="..\src\game\entity\CBaseEntity.cpp" />
     <ClCompile Include="..\src\game\entity\CBaseEntityList.cpp" />
@@ -41,18 +34,6 @@
     <ClCompile Include="..\src\graphics\GLRenderTarget.cpp" />
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
     <ClCompile Include="..\src\graphics\OpenGL.cpp" />
-    <ClCompile Include="..\src\keyvalues\CKeyvalue.cpp" />
-    <ClCompile Include="..\src\keyvalues\CKeyvalueBlock.cpp" />
-    <ClCompile Include="..\src\keyvalues\CKeyvalueNode.cpp" />
-    <ClCompile Include="..\src\keyvalues\CKeyvaluesLexer.cpp" />
-    <ClCompile Include="..\src\keyvalues\CKeyvaluesParser.cpp" />
-    <ClCompile Include="..\src\keyvalues\CKeyvaluesWriter.cpp" />
-    <ClCompile Include="..\src\settings\CBaseSettings.cpp" />
-    <ClCompile Include="..\src\settings\CGameConfig.cpp" />
-    <ClCompile Include="..\src\settings\CGameConfigManager.cpp" />
-    <ClCompile Include="..\src\settings\CRecentFiles.cpp" />
-    <ClCompile Include="..\src\settings\GameConfigIO.cpp" />
-    <ClCompile Include="..\src\soundsystem\CSoundSystem.cpp" />
     <ClCompile Include="..\src\tools\hlmv\CHLMVState.cpp" />
     <ClCompile Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.cpp" />
     <ClCompile Include="..\src\tools\hlmv\settings\CHLMVSettings.cpp" />
@@ -83,15 +64,6 @@
     <ClCompile Include="..\src\utility\IOUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\cvar\CBaseConCommand.h" />
-    <ClInclude Include="..\src\cvar\CConCommand.h" />
-    <ClInclude Include="..\src\cvar\CCVar.h" />
-    <ClInclude Include="..\src\cvar\CCVarSystem.h" />
-    <ClInclude Include="..\src\cvar\ConVarConstants.h" />
-    <ClInclude Include="..\src\cvar\CVar.h" />
-    <ClInclude Include="..\src\cvar\CVarUtils.h" />
-    <ClInclude Include="..\src\filesystem\CFileSystem.h" />
-    <ClInclude Include="..\src\filesystem\FileSystemConstants.h" />
     <ClInclude Include="..\src\game\CAnimEvent.h" />
     <ClInclude Include="..\src\game\entity\CBaseAnimating.h" />
     <ClInclude Include="..\src\game\entity\CBaseEntity.h" />
@@ -113,22 +85,6 @@
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
     <ClInclude Include="..\src\graphics\OpenGL.h" />
     <ClInclude Include="..\src\graphics\Palette.h" />
-    <ClInclude Include="..\src\keyvalues\CKeyvalue.h" />
-    <ClInclude Include="..\src\keyvalues\CKeyvalueBlock.h" />
-    <ClInclude Include="..\src\keyvalues\CKeyvalueNode.h" />
-    <ClInclude Include="..\src\keyvalues\CKeyvaluesLexer.h" />
-    <ClInclude Include="..\src\keyvalues\CKeyvaluesParser.h" />
-    <ClInclude Include="..\src\keyvalues\CKeyvaluesWriter.h" />
-    <ClInclude Include="..\src\keyvalues\Keyvalues.h" />
-    <ClInclude Include="..\src\keyvalues\KeyvaluesConstants.h" />
-    <ClInclude Include="..\src\keyvalues\KVForward.h" />
-    <ClInclude Include="..\src\settings\CBaseSettings.h" />
-    <ClInclude Include="..\src\settings\CGameConfig.h" />
-    <ClInclude Include="..\src\settings\CGameConfigManager.h" />
-    <ClInclude Include="..\src\settings\CRecentFiles.h" />
-    <ClInclude Include="..\src\settings\GameConfigIO.h" />
-    <ClInclude Include="..\src\soundsystem\CSoundSystem.h" />
-    <ClInclude Include="..\src\soundsystem\SoundConstants.h" />
     <ClInclude Include="..\src\tools\hlmv\CHLMVState.h" />
     <ClInclude Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.h" />
     <ClInclude Include="..\src\tools\hlmv\settings\CHLMVSettings.h" />
@@ -245,7 +201,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WXUSINGDLL;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\GLEW\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -278,7 +234,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WXUSINGDLL;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\GLEW\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

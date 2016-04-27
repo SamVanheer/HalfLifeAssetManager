@@ -90,6 +90,7 @@ private:
 };
 }
 
+//TODO move to its own library
 inline filesystem::CFileSystem& fileSystem()
 {
 	return filesystem::CFileSystem::GetInstance();

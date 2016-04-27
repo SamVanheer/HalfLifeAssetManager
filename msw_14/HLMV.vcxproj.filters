@@ -37,30 +37,6 @@
     <Filter Include="Source Files\utility">
       <UniqueIdentifier>{eebee85d-37b6-4c0a-88a0-77fa3f71577f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\filesystem">
-      <UniqueIdentifier>{b76ba503-1cfc-4446-a38f-c9218f31e25c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\filesystem">
-      <UniqueIdentifier>{a1cd882c-24ad-4c8d-a9b1-69047d4b5df0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\soundsystem">
-      <UniqueIdentifier>{aaeed290-72e3-4960-96fc-84da1b96b58e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\soundsystem">
-      <UniqueIdentifier>{e5b1181c-a0f8-4bbf-a905-4b473449de74}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\keyvalues">
-      <UniqueIdentifier>{482a5840-429c-4347-8e26-31b1891bdda0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\keyvalues">
-      <UniqueIdentifier>{6a4464d3-8a3d-4713-980c-906d6f034605}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\settings">
-      <UniqueIdentifier>{20100ceb-5293-4062-a9bf-e7beb98776da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\settings">
-      <UniqueIdentifier>{c30758a5-e4f4-4b44-aa4a-8754b23722cc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\ui\shared">
       <UniqueIdentifier>{2cc43b55-cfc7-43ef-b8a4-92bd70a0564d}</UniqueIdentifier>
     </Filter>
@@ -121,12 +97,6 @@
     <Filter Include="Source Files\game\studiomodel">
       <UniqueIdentifier>{487ead65-14f4-486c-bf37-b4f77271c9ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\cvar">
-      <UniqueIdentifier>{59e80cce-765a-4a29-9d03-9419afbcd973}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\cvar">
-      <UniqueIdentifier>{c8efb600-86ff-49a1-92a8-aa60ef6c6b24}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\game\entity">
       <UniqueIdentifier>{5da57973-c54f-43c0-9505-78b2444eb3db}</UniqueIdentifier>
     </Filter>
@@ -144,12 +114,6 @@
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\filesystem\CFileSystem.cpp">
-      <Filter>Source Files\filesystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\soundsystem\CSoundSystem.cpp">
-      <Filter>Source Files\soundsystem</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\graphics\OpenGL.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
@@ -159,44 +123,14 @@
     <ClCompile Include="..\src\ui\CwxOpenGL.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\keyvalues\CKeyvalue.cpp">
-      <Filter>Source Files\keyvalues</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\keyvalues\CKeyvalueNode.cpp">
-      <Filter>Source Files\keyvalues</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\keyvalues\CKeyvaluesLexer.cpp">
-      <Filter>Source Files\keyvalues</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\keyvalues\CKeyvaluesParser.cpp">
-      <Filter>Source Files\keyvalues</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\keyvalues\CKeyvaluesWriter.cpp">
-      <Filter>Source Files\keyvalues</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\settings\CGameConfig.cpp">
-      <Filter>Source Files\settings</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\settings\GameConfigIO.cpp">
-      <Filter>Source Files\settings</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\settings\CGameConfigManager.cpp">
-      <Filter>Source Files\settings</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ui\wxLogging.cpp">
       <Filter>Source Files\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\settings\CRecentFiles.cpp">
-      <Filter>Source Files\settings</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ui\shared\CMessagesWindow.cpp">
       <Filter>Source Files\ui\shared</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ui\shared\CEditGameConfigsDialog.cpp">
       <Filter>Source Files\ui\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\settings\CBaseSettings.cpp">
-      <Filter>Source Files\settings</Filter>
     </ClCompile>
     <ClCompile Include="..\src\utility\IOUtils.cpp">
       <Filter>Source Files\utility</Filter>
@@ -215,9 +149,6 @@
     </ClCompile>
     <ClCompile Include="..\src\ui\CwxBaseApp.cpp">
       <Filter>Source Files\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp">
-      <Filter>Source Files\filesystem</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tools\shared\Credits.cpp">
       <Filter>Source Files\tools\shared</Filter>
@@ -273,21 +204,6 @@
     <ClCompile Include="..\src\graphics\BMPFile.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cvar\CConCommand.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cvar\CCVar.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cvar\CBaseConCommand.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cvar\CCVarSystem.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cvar\CVarUtils.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\game\studiomodel\CStudioModel.cpp">
       <Filter>Source Files\game\studiomodel</Filter>
     </ClCompile>
@@ -312,9 +228,6 @@
     <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp">
       <Filter>Source Files\game\studiomodel</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\keyvalues\CKeyvalueBlock.cpp">
-      <Filter>Source Files\keyvalues</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\game\entity\CEntityManager.cpp">
       <Filter>Source Files\game\entity</Filter>
     </ClCompile>
@@ -338,12 +251,6 @@
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\filesystem\CFileSystem.h">
-      <Filter>Header Files\filesystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\soundsystem\CSoundSystem.h">
-      <Filter>Header Files\soundsystem</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ui\CwxOpenGL.h">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
@@ -356,56 +263,17 @@
     <ClInclude Include="..\src\ui\utility\wxUtil.h">
       <Filter>Header Files\ui\utility</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\keyvalues\CKeyvalue.h">
-      <Filter>Header Files\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keyvalues\CKeyvalueNode.h">
-      <Filter>Header Files\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keyvalues\CKeyvaluesLexer.h">
-      <Filter>Header Files\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keyvalues\CKeyvaluesParser.h">
-      <Filter>Header Files\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keyvalues\CKeyvaluesWriter.h">
-      <Filter>Header Files\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keyvalues\KeyvaluesConstants.h">
-      <Filter>Header Files\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\settings\CGameConfig.h">
-      <Filter>Header Files\settings</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\settings\CGameConfigManager.h">
-      <Filter>Header Files\settings</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\settings\GameConfigIO.h">
-      <Filter>Header Files\settings</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ui\wxLogging.h">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ui\utility\IWindowCloseListener.h">
       <Filter>Header Files\ui\utility</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\settings\CRecentFiles.h">
-      <Filter>Header Files\settings</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ui\shared\CMessagesWindow.h">
       <Filter>Header Files\ui\shared</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ui\shared\CEditGameConfigsDialog.h">
       <Filter>Header Files\ui\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\settings\CBaseSettings.h">
-      <Filter>Header Files\settings</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keyvalues\Keyvalues.h">
-      <Filter>Header Files\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\soundsystem\SoundConstants.h">
-      <Filter>Header Files\soundsystem</Filter>
     </ClInclude>
     <ClInclude Include="..\src\utility\IOUtils.h">
       <Filter>Header Files\utility</Filter>
@@ -424,9 +292,6 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\CwxBaseApp.h">
       <Filter>Header Files\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\filesystem\FileSystemConstants.h">
-      <Filter>Header Files\filesystem</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tools\shared\Credits.h">
       <Filter>Header Files\tools\shared</Filter>
@@ -497,27 +362,6 @@
     <ClInclude Include="..\src\graphics\BMPFile.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\cvar\CBaseConCommand.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CConCommand.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CCVar.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\ConVarConstants.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CVar.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CCVarSystem.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CVarUtils.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\game\studiomodel\CStudioModel.h">
       <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
@@ -544,12 +388,6 @@
     </ClInclude>
     <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h">
       <Filter>Header Files\game\studiomodel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keyvalues\KVForward.h">
-      <Filter>Header Files\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keyvalues\CKeyvalueBlock.h">
-      <Filter>Header Files\keyvalues</Filter>
     </ClInclude>
     <ClInclude Include="..\src\game\entity\CEntityManager.h">
       <Filter>Header Files\game\entity</Filter>
