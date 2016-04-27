@@ -45,11 +45,11 @@ char CEscapeSequences::GetEscapeSequence( const char* const pszString ) const
 	{
 		const ConversionInfo_t& info = m_Infos[ m_IndexToSeq[ uiIndex ] ];
 
-		if( info.pszString && strcmp( info.pszString, pszString ) == 0 )
+		if( info.pszString && strncmp( info.pszString, pszString, info.uiLength ) == 0 )
 			return m_IndexToSeq[ uiIndex ];
 	}
 
-	return '\0';
+	return INVALID_CHAR;
 }
 
 BEGIN_ESCAPE_SEQ_LIST( EscapeSequences )
@@ -72,8 +72,8 @@ CEscapeSequences& GetEscapeSeqConversion()
 
 //0x7F is an unprintable character
 BEGIN_ESCAPE_SEQ_LIST( NoEscapeSequences )
-	{ 0x7F, "" }
-END_ESCAPE_SEQ_LIST( NoEscapeSequences, 0x7F );
+	{ CEscapeSequences::INVALID_CHAR, "" }
+END_ESCAPE_SEQ_LIST( NoEscapeSequences, CEscapeSequences::INVALID_CHAR );
 
 CEscapeSequences& GetNoEscapeSeqConversion()
 {

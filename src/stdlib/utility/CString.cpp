@@ -261,7 +261,7 @@ void CString::Assign( const char* pszString, const size_type iLength )
 	if( pszString == m_pszString )
 		return;
 
-	Reserve( iLength, false );
+	Reserve( iLength );
 
 	strcpy( m_pszString, pszString );
 
@@ -391,7 +391,7 @@ CString::size_type CString::GetDynamicAllocation() const
 	return m_pszString != m_szBuffer && !IsStatic() ? GetCapacity() : 0;
 }
 
-void CString::Resize( size_type iNewSize, bool fKeepData )
+void CString::Resize( size_type iNewSize )
 {
 	assert( !IsStatic() );
 
@@ -404,7 +404,7 @@ void CString::Resize( size_type iNewSize, bool fKeepData )
 	//Always dynamically allocate when resizing
 	char* pszBuffer = new char[ iNewSize ];
 
-	if( fKeepData && m_pszString )
+	if( m_pszString )
 	{
 		//The buffer might not contain a valid string
 		m_pszString[ Length() ] = '\0';
@@ -412,6 +412,10 @@ void CString::Resize( size_type iNewSize, bool fKeepData )
 		//Copy only the required number of characters
 		strncpy( pszBuffer, m_pszString, iNewSize );
 		pszBuffer[ iNewSize - 1 ] = '\0';
+	}
+	else
+	{
+		memset( pszBuffer, 0, sizeof( char ) * iNewSize );
 	}
 
 	if( m_pszString != m_szBuffer )
@@ -422,12 +426,14 @@ void CString::Resize( size_type iNewSize, bool fKeepData )
 	SetCapacity( iNewSize );
 }
 
-void CString::Reserve( size_type iMinimum, bool fKeepData )
+void CString::Reserve( size_type iMinimum )
 {
 	if( GetCapacity() > iMinimum )
+	{
 		return;
+	}
 
-	Resize( iMinimum, fKeepData );
+	Resize( iMinimum );
 }
 
 void CString::Clear()

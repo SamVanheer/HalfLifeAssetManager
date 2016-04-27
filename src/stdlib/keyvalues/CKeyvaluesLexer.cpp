@@ -17,6 +17,12 @@ CKeyvaluesLexer::CKeyvaluesLexer( const CKeyvaluesLexerSettings& settings )
 {
 }
 
+CKeyvaluesLexer::CKeyvaluesLexer( CEscapeSequences& escapeSeqConversion, const CKeyvaluesLexerSettings& settings )
+	: CKeyvaluesLexer( settings )
+{
+	m_pEscapeSeqConversion = &escapeSeqConversion;
+}
+
 CKeyvaluesLexer::CKeyvaluesLexer( Memory_t& memory, const CKeyvaluesLexerSettings& settings )
 	: m_TokenType( TokenType::NONE )
 	, m_Settings( settings )
@@ -26,6 +32,12 @@ CKeyvaluesLexer::CKeyvaluesLexer( Memory_t& memory, const CKeyvaluesLexerSetting
 	m_Memory.Swap( memory );
 
 	m_pszCurrentPosition = reinterpret_cast<const char*>( m_Memory.GetMemory() );
+}
+
+CKeyvaluesLexer::CKeyvaluesLexer( Memory_t& memory, CEscapeSequences& escapeSeqConversion, const CKeyvaluesLexerSettings& settings )
+	: CKeyvaluesLexer( memory, settings )
+{
+	m_pEscapeSeqConversion = &escapeSeqConversion;
 }
 
 CKeyvaluesLexer::CKeyvaluesLexer( const char* const pszFilename, const CKeyvaluesLexerSettings& settings )
@@ -57,6 +69,12 @@ CKeyvaluesLexer::CKeyvaluesLexer( const char* const pszFilename, const CKeyvalue
 			m_pszCurrentPosition = reinterpret_cast<const char*>( m_Memory.GetMemory() );
 		}
 	}
+}
+
+CKeyvaluesLexer::CKeyvaluesLexer( const char* const pszFilename, CEscapeSequences& escapeSeqConversion, const CKeyvaluesLexerSettings& settings )
+	: CKeyvaluesLexer( pszFilename, settings )
+{
+	m_pEscapeSeqConversion = &escapeSeqConversion;
 }
 
 bool CKeyvaluesLexer::HasInputData() const
@@ -171,7 +189,18 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, co
 			pszBegin = m_pszCurrentPosition;
 
 			while( *m_pszCurrentPosition != CONTROL_QUOTE && *m_pszCurrentPosition != '\n' && IsValidReadPosition() )
+			{
+				//This is the start of an escape sequence, so skip it and the sequence itself.
+				if( m_pEscapeSeqConversion->GetDelimiterChar() == *m_pszCurrentPosition )
+				{
+					++m_pszCurrentPosition;
+
+					if( !IsValidReadPosition() )
+						break;
+				}
+
 				++m_pszCurrentPosition;
+			}
 
 			pszEnd = m_pszCurrentPosition;
 
@@ -298,7 +327,59 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 		
 		if( !bHandled )
 		{
-			m_szToken.Assign( pszBegin, 0, pszEnd - pszBegin );
+			//Process and check if there are escape characters.
+
+			const size_t uiMaxSize = pszEnd - pszBegin;
+
+			m_szToken.Reserve( uiMaxSize );
+
+			m_szToken.Clear();
+
+			//TODO: escape characters should be preprocessed so they don't show up during parsing later on.
+			for( size_t uiIndex = 0; uiIndex < uiMaxSize; )
+			{
+				if( m_pEscapeSeqConversion->GetDelimiterChar() == pszBegin[ uiIndex ] )
+				{
+					if( uiIndex + 1 < uiMaxSize )
+					{
+						const char cEscapeSeq = m_pEscapeSeqConversion->GetEscapeSequence( &pszBegin[ uiIndex ] );
+
+						if( cEscapeSeq != CEscapeSequences::INVALID_CHAR )
+						{
+							m_szToken += cEscapeSeq;
+
+							uiIndex += 2;
+						}
+						else
+						{
+							if( m_Settings.fLogErrors )
+								Error( "CKeyvaluesLexer::ReadNextToken: illegal escape sequence '%c%c'!\n", pszBegin[ uiIndex ], pszBegin[ uiIndex + 1 ] );
+
+							result = ReadResult::FORMAT_ERROR;
+							m_szToken = "";
+							m_TokenType = TokenType::NONE;
+
+							break;
+						}
+					}
+					else
+					{
+						if( m_Settings.fLogErrors )
+							Error( "CKeyvaluesLexer::ReadNextToken: escape sequence delimiter '%c' at the end of a token!\n", pszBegin[ uiIndex - 1 ] );
+
+						result = ReadResult::FORMAT_ERROR;
+						m_szToken = "";
+						m_TokenType = TokenType::NONE;
+
+						break;
+					}
+				}
+				else
+				{
+					m_szToken += pszBegin[ uiIndex ];
+					++uiIndex;
+				}
+			}
 
 			//If the previous token was a key, this becomes a value
 			if( m_TokenType == TokenType::KEY )

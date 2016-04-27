@@ -1,6 +1,7 @@
 #ifndef CKEYVALUESLEXER_H
 #define CKEYVALUESLEXER_H
 
+#include "utility/CEscapeSequences.h"
 #include "utility/CMemory.h"
 #include "utility/CString.h"
 
@@ -36,6 +37,13 @@ public:
 	CKeyvaluesLexer( const CKeyvaluesLexerSettings& settings = CKeyvaluesLexerSettings() );
 
 	/**
+	*	Constructs an empty lexer
+	*	@param escapeSeqConversion Escape sequences conversion rules.
+	*	@param settings Lexer settings.
+	*/
+	CKeyvaluesLexer( CEscapeSequences& escapeSeqConversion, const CKeyvaluesLexerSettings& settings = CKeyvaluesLexerSettings() );
+
+	/**
 	*	Constructs a lexer that will read from the given memory
 	*	The given memory will be empty after this constructor returns
 	*	Expects a text buffer with all newlines normalized to \n
@@ -45,11 +53,29 @@ public:
 	CKeyvaluesLexer( Memory_t& memory, const CKeyvaluesLexerSettings& settings = CKeyvaluesLexerSettings() );
 
 	/**
+	*	Constructs a lexer that will read from the given memory
+	*	The given memory will be empty after this constructor returns
+	*	Expects a text buffer with all newlines normalized to \n
+	*	@param memory Memory to use. The original memory buffer is no longer valid after this constructor returns.
+	*	@param escapeSeqConversion Escape sequences conversion rules.
+	*	@param settings Lexer settings.
+	*/
+	CKeyvaluesLexer( Memory_t& memory, CEscapeSequences& escapeSeqConversion, const CKeyvaluesLexerSettings& settings = CKeyvaluesLexerSettings() );
+
+	/**
 	*	Constructs a lexer that will read from the given file
 	*	@param pszFilename Name of the file to read from. Must be non-null.
 	*	@param settings Lexer settings.
 	*/
 	CKeyvaluesLexer( const char* const pszFilename, const CKeyvaluesLexerSettings& settings = CKeyvaluesLexerSettings() );
+
+	/**
+	*	Constructs a lexer that will read from the given file
+	*	@param pszFilename Name of the file to read from. Must be non-null.
+	*	@param escapeSeqConversion Escape sequences conversion rules.
+	*	@param settings Lexer settings.
+	*/
+	CKeyvaluesLexer( const char* const pszFilename, CEscapeSequences& escapeSeqConversion, const CKeyvaluesLexerSettings& settings = CKeyvaluesLexerSettings() );
 
 	/**
 	*	Returns whether the lexer has any input data.
@@ -75,6 +101,16 @@ public:
 	*	Gets the current token.
 	*/
 	const CString& GetToken() const { return m_szToken; }
+
+	/**
+	*	Gets the escape sequences conversion object.
+	*/
+	CEscapeSequences* GetEscapeSeqConversion() const { return m_pEscapeSeqConversion; }
+
+	/**
+	*	Sets the escape sequences conversion object.
+	*/
+	void SetEscapeSeqConversion( CEscapeSequences& escapeSeqConversion ) { m_pEscapeSeqConversion = &escapeSeqConversion; }
 
 	/**
 	*	Gets the lexer's settings.
@@ -122,6 +158,8 @@ private:
 
 	TokenType			m_TokenType;			//Type of the last token we read
 	CString				m_szToken;				//The last token we read
+
+	CEscapeSequences* m_pEscapeSeqConversion = &GetNoEscapeSeqConversion();
 
 	CKeyvaluesLexerSettings m_Settings;
 

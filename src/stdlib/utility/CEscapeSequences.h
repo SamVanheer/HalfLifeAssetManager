@@ -14,6 +14,8 @@ public:
 		const char* pszString;		//String version, e.g. "\n"
 	};
 
+	static const char INVALID_CHAR = 0x7F;
+
 private:
 	struct ConversionInfo_t
 	{

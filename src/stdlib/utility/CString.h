@@ -145,9 +145,9 @@ public:
 
 	inline bool IsEmpty() const { return !m_uiLength; }
 
-	void Resize( size_type iNewSize, bool fKeepData = true );
+	void Resize( size_type iNewSize );
 
-	void Reserve( size_type iMinimum, bool fKeepData = true );
+	void Reserve( size_type iMinimum );
 
 	/*
 	* Clears the string, memory is not freed and available for reuse

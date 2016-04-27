@@ -65,6 +65,16 @@ public:
 	*/
 	void Initialize( CKeyvaluesLexer::Memory_t& memory );
 
+	/**
+	*	Gets the escape sequences conversion object.
+	*/
+	CEscapeSequences* GetEscapeSeqConversion() const { return m_Lexer.GetEscapeSeqConversion(); }
+
+	/**
+	*	Sets the escape sequences conversion object.
+	*/
+	void SetEscapeSeqConversion( CEscapeSequences& escapeSeqConversion ) { m_Lexer.SetEscapeSeqConversion( escapeSeqConversion ); }
+
 protected:
 	/**
 	*	Construct an empty parser
