@@ -3,17 +3,42 @@
 
 #include "Logging.h"
 
+const char* GetLogTypePrefix( const LogType type )
+{
+	switch( type )
+	{
+	default:
+	case LogType::MESSAGE:	return "";
+	case LogType::WARNING:	return "Warning: ";
+	case LogType::ERROR:	return "Error: ";
+	}
+}
+
 namespace
 {
 class CNullLogListener final : public ILogListener
 {
+public:
 	void LogMessage( const LogType type, const char* const pszMessage ) override final
 	{
 		//Nothing.
 	}
 };
 
+class CStdOutLogListener final : public ILogListener
+{
+public:
+	void LogMessage( const LogType type, const char* const pszMessage ) override final
+	{
+		printf( "%s%s", GetLogTypePrefix( type ), pszMessage );
+	}
+};
+
 static CNullLogListener g_NullLogListener;
+
+static CStdOutLogListener g_StdOutListener;
+
+static ILogListener* m_pDefaultLogListener = &g_NullLogListener;
 
 static CLogging g_Logging;
 }
@@ -21,6 +46,23 @@ static CLogging g_Logging;
 ILogListener* GetNullLogListener()
 {
 	return &g_NullLogListener;
+}
+
+ILogListener* GetStdOutLogListener()
+{
+	return &g_StdOutListener;
+}
+
+ILogListener* GetDefaultLogListener()
+{
+	return m_pDefaultLogListener;
+}
+
+void SetDefaultLogListener( ILogListener* pListener )
+{
+	assert( pListener );
+
+	m_pDefaultLogListener = pListener;
 }
 
 CLogging& logging()

@@ -1,8 +1,8 @@
 #include <cstdio>
 #include <limits>
 
-#include "common/Platform.h"
-#include "common/Logging.h"
+#include "shared/Platform.h"
+#include "shared/Logging.h"
 
 #include "CCVarSystem.h"
 

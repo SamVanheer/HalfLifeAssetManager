@@ -1,4 +1,4 @@
-#include "common/Logging.h"
+#include "shared/Logging.h"
 
 #include "CMainWindow.h"
 #include "CFullscreenWindow.h"

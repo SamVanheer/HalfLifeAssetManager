@@ -1,5 +1,5 @@
-#include "common/Logging.h"
-#include "common/CWorldTime.h"
+#include "shared/Logging.h"
+#include "shared/CWorldTime.h"
 
 #include "game/studiomodel/CStudioModel.h"
 

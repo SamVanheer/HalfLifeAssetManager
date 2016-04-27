@@ -1,8 +1,8 @@
 #include <cstring>
 #include <cstdio>
 
-#include "common/Logging.h"
-#include "common/Utility.h"
+#include "shared/Logging.h"
+#include "shared/Utility.h"
 
 #include "CFileSystem.h"
 

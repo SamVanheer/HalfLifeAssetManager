@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_OPENGL_H
 #define GRAPHICS_OPENGL_H
 
-#include "common/Platform.h"
+#include "shared/Platform.h"
 
 //#include <gl/GL.h>
 //#include <gl/GLU.h>

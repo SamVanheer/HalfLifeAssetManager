@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <algorithm>
 
-#include "common/Logging.h"
+#include "shared/Logging.h"
 
 #include "CKeyvaluesLexer.h"
 

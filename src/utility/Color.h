@@ -3,7 +3,7 @@
 
 #include <cassert>
 
-#include "common/Const.h"
+#include "shared/Const.h"
 
 /**
 *	Lightweight Color class.

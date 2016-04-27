@@ -5,7 +5,7 @@
 
 #include <glm/vec3.hpp>
 
-#include "common/Const.h"
+#include "shared/Const.h"
 
 #include "utility/mathlib.h"
 #include "utility/Color.h"

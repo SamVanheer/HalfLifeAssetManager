@@ -4,8 +4,8 @@
 #include <cstring>
 #include <algorithm>
 
-#include "common/Logging.h"
-#include "common/Utility.h"
+#include "shared/Logging.h"
+#include "shared/Utility.h"
 
 #include "filesystem/CFileSystem.h"
 

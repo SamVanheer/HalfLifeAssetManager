@@ -1,7 +1,7 @@
 #ifndef GAME_CBASEANIMATING_H
 #define GAME_CBASEANIMATING_H
 
-#include "common/Const.h"
+#include "shared/Const.h"
 
 #include "CBaseEntity.h"
 

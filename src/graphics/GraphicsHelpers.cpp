@@ -2,7 +2,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "common/Logging.h"
+#include "shared/Logging.h"
 
 #include "utility/Color.h"
 

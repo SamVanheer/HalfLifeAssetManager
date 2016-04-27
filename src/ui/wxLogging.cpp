@@ -5,48 +5,44 @@
 
 #include "wxLogging.h"
 
-namespace
+void CwxDefaultLogListener::LogMessage( const LogType type, const char* const pszMessage )
 {
-class CDefaultLogListener final : public ILogListener
-{
-public:
-	void LogMessage( const LogType type, const char* const pszMessage ) override final
+	wxString szCaption;
+	long iStyle = 0;
+
+	switch( type )
 	{
-		wxString szCaption;
-		long iStyle = 0;
-
-		switch( type )
+	default:
+	case LogType::MESSAGE:
 		{
-		default:
-		case LogType::MESSAGE:
-			{
-				szCaption = "Message";
-				break;
-			}
-
-		case LogType::WARNING:
-			{
-				szCaption = "Warning";
-				iStyle = wxICON_WARNING;
-				break;
-			}
-
-		case LogType::ERROR:
-			{
-				szCaption = "Error";
-				iStyle = wxICON_ERROR;
-				break;
-			}
+			szCaption = "Message";
+			break;
 		}
 
-		wxMessageBox( pszMessage, szCaption, wxOK | wxCENTRE | iStyle );
-	}
-};
+	case LogType::WARNING:
+		{
+			szCaption = "Warning";
+			iStyle = wxICON_WARNING;
+			break;
+		}
 
-static CDefaultLogListener g_DefaultLogListener;
+	case LogType::ERROR:
+		{
+			szCaption = "Error";
+			iStyle = wxICON_ERROR;
+			break;
+		}
+	}
+
+	wxMessageBox( pszMessage, szCaption, wxOK | wxCENTRE | iStyle );
 }
 
-ILogListener* GetDefaultLogListener()
+namespace
+{
+static CwxDefaultLogListener g_DefaultLogListener;
+}
+
+ILogListener* GetwxDefaultLogListener()
 {
 	return &g_DefaultLogListener;
 }

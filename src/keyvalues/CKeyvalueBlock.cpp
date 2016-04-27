@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include "common/Logging.h"
+#include "shared/Logging.h"
 
 #include "CKeyvalue.h"
 #include "CKeyvalueBlock.h"

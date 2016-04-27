@@ -1,5 +1,4 @@
-#include "common/Platform.h"
-#include "common/Utility.h"
+#include "shared/Utility.h"
 
 #include "CCVarSystem.h"
 

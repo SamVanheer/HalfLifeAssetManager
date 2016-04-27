@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <string>
 
-#include "common/Platform.h"
-#include "common/Logging.h"
+#include "shared/Platform.h"
+#include "shared/Logging.h"
 
 #include "CString.h"
 

@@ -25,12 +25,6 @@
     <Filter Include="Source Files\ui\utility">
       <UniqueIdentifier>{a590454e-4163-4290-a956-e5ad60d25ee1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\common">
-      <UniqueIdentifier>{c003bdf0-454e-4475-a918-228b9342fadb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\common">
-      <UniqueIdentifier>{b2ffd917-b04d-437c-8e2e-6171185835db}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\graphics">
       <UniqueIdentifier>{a8cc43f3-adc8-40e6-83bf-e50ef343feec}</UniqueIdentifier>
     </Filter>
@@ -145,13 +139,22 @@
     <Filter Include="Source Files\tools\hlmv\entity">
       <UniqueIdentifier>{97a674fd-7541-4e39-ba73-ebdf0ccad66c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\core">
+      <UniqueIdentifier>{06558bb9-ce43-466e-8208-82362809c965}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\core">
+      <UniqueIdentifier>{22c8519a-321e-4fcc-97fc-ae31f942f982}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\core\shared">
+      <UniqueIdentifier>{227e66ff-c85e-489f-9b0f-7c277b38ab9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\core\shared">
+      <UniqueIdentifier>{a6752b7b-6dab-4e3d-8ecf-8019533d8a69}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
       <Filter>Source Files\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\common\Platform.cpp">
-      <Filter>Source Files\common</Filter>
     </ClCompile>
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp">
       <Filter>Source Files\filesystem</Filter>
@@ -192,9 +195,6 @@
     <ClCompile Include="..\src\settings\CGameConfig.cpp">
       <Filter>Source Files\settings</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\common\Utility.cpp">
-      <Filter>Source Files\common</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\settings\GameConfigIO.cpp">
       <Filter>Source Files\settings</Filter>
     </ClCompile>
@@ -203,9 +203,6 @@
     </ClCompile>
     <ClCompile Include="..\src\ui\wxLogging.cpp">
       <Filter>Source Files\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\common\Logging.cpp">
-      <Filter>Source Files\common</Filter>
     </ClCompile>
     <ClCompile Include="..\src\settings\CRecentFiles.cpp">
       <Filter>Source Files\settings</Filter>
@@ -348,9 +345,6 @@
     <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp">
       <Filter>Source Files\game\studiomodel</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\common\CWorldTime.cpp">
-      <Filter>Source Files\common</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\keyvalues\CKeyvalueBlock.cpp">
       <Filter>Source Files\keyvalues</Filter>
     </ClCompile>
@@ -366,6 +360,18 @@
     <ClCompile Include="..\src\ui\shared\CwxBaseGLCanvas.cpp">
       <Filter>Source Files\ui\shared</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\core\shared\CWorldTime.cpp">
+      <Filter>Source Files\core\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\shared\Logging.cpp">
+      <Filter>Source Files\core\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\shared\Platform.cpp">
+      <Filter>Source Files\core\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\shared\Utility.cpp">
+      <Filter>Source Files\core\shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -376,15 +382,6 @@
     </ClInclude>
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h">
       <Filter>Header Files\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\common\Utility.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\common\Logging.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\common\Platform.h">
-      <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\src\utility\mathlib.h">
       <Filter>Header Files\utility</Filter>
@@ -475,9 +472,6 @@
     </ClInclude>
     <ClInclude Include="..\src\utility\Vector.h">
       <Filter>Header Files\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\common\Const.h">
-      <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\src\utility\BoundingBox.h">
       <Filter>Header Files\utility</Filter>
@@ -599,9 +593,6 @@
     <ClInclude Include="..\src\game\studiomodel\CStudioModel.h">
       <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\common\Class.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\game\entity\CBaseEntity.h">
       <Filter>Header Files\game\entity</Filter>
     </ClInclude>
@@ -626,9 +617,6 @@
     <ClInclude Include="..\src\game\studiomodel\CStudioModelRenderer.h">
       <Filter>Header Files\game\studiomodel</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\common\CWorldTime.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\keyvalues\KVForward.h">
       <Filter>Header Files\keyvalues</Filter>
     </ClInclude>
@@ -649,6 +637,24 @@
     </ClInclude>
     <ClInclude Include="..\src\game\studiomodel\StudioModelConstants.h">
       <Filter>Header Files\game\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\shared\Class.h">
+      <Filter>Header Files\core\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\shared\Const.h">
+      <Filter>Header Files\core\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\shared\CWorldTime.h">
+      <Filter>Header Files\core\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\shared\Logging.h">
+      <Filter>Header Files\core\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\shared\Platform.h">
+      <Filter>Header Files\core\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\shared\Utility.h">
+      <Filter>Header Files\core\shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

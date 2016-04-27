@@ -1,4 +1,4 @@
-#include "common/CWorldTime.h"
+#include "shared/CWorldTime.h"
 
 #include "CBaseEntity.h"
 #include "CBaseEntityList.h"

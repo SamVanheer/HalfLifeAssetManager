@@ -1,3 +1,5 @@
+#include "wxLogging.h"
+
 #include "tools/shared/CBaseTool.h"
 
 #include "CwxBaseApp.h"
@@ -12,6 +14,9 @@ CwxBaseApp::~CwxBaseApp()
 
 bool CwxBaseApp::OnInit()
 {
+	//Install the wxWidgets specific default log listener.
+	SetDefaultLogListener( GetwxDefaultLogListener() );
+
 	if( !Initialize() )
 	{
 		Shutdown();

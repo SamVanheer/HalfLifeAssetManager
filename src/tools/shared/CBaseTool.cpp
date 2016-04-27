@@ -9,9 +9,9 @@
 
 #include "ui/shared/CMessagesWindow.h"
 
-#include "common/Const.h"
-#include "common/CWorldTime.h"
-#include "common/Utility.h"
+#include "shared/Const.h"
+#include "shared/CWorldTime.h"
+#include "shared/Utility.h"
 
 #include "settings/CBaseSettings.h"
 

@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\common\CWorldTime.cpp" />
-    <ClCompile Include="..\src\common\Logging.cpp" />
-    <ClCompile Include="..\src\common\Platform.cpp" />
-    <ClCompile Include="..\src\common\Utility.cpp" />
+    <ClCompile Include="..\src\core\shared\CWorldTime.cpp" />
+    <ClCompile Include="..\src\core\shared\Logging.cpp" />
+    <ClCompile Include="..\src\core\shared\Platform.cpp" />
+    <ClCompile Include="..\src\core\shared\Utility.cpp" />
     <ClCompile Include="..\src\cvar\CBaseConCommand.cpp" />
     <ClCompile Include="..\src\cvar\CConCommand.cpp" />
     <ClCompile Include="..\src\cvar\CCVar.cpp" />
@@ -97,12 +97,12 @@
     <ClCompile Include="..\src\utility\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\common\CWorldTime.h" />
-    <ClInclude Include="..\src\common\Class.h" />
-    <ClInclude Include="..\src\common\Logging.h" />
-    <ClInclude Include="..\src\common\Platform.h" />
-    <ClInclude Include="..\src\common\Const.h" />
-    <ClInclude Include="..\src\common\Utility.h" />
+    <ClInclude Include="..\src\core\shared\Class.h" />
+    <ClInclude Include="..\src\core\shared\Const.h" />
+    <ClInclude Include="..\src\core\shared\CWorldTime.h" />
+    <ClInclude Include="..\src\core\shared\Logging.h" />
+    <ClInclude Include="..\src\core\shared\Platform.h" />
+    <ClInclude Include="..\src\core\shared\Utility.h" />
     <ClInclude Include="..\src\cvar\CBaseConCommand.h" />
     <ClInclude Include="..\src\cvar\CConCommand.h" />
     <ClInclude Include="..\src\cvar\CCVar.h" />
@@ -235,27 +235,33 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Shared.props" />
+    <Import Project="LibHLCore_Shared.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Shared.props" />
+    <Import Project="LibHLCore_Shared.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Shared.props" />
+    <Import Project="LibHLCore_Shared.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Shared.props" />
+    <Import Project="LibHLCore_Shared.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -266,10 +272,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WXUSINGDLL;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\src;$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;$(SolutionDir)\..\external\GLM\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileName>$(IntDir)/$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;$(SolutionDir)\..\external\GLM\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -300,10 +305,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;WXUSINGDLL;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WXUSINGDLL;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\src;$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;$(SolutionDir)\..\external\GLM\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileName>$(IntDir)/$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;$(SolutionDir)\..\external\GLM\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

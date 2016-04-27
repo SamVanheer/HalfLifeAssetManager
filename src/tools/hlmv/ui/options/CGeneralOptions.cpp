@@ -2,7 +2,7 @@
 #include <wx/clrpicker.h>
 #include <wx/statline.h>
 
-#include "common/Platform.h"
+#include "shared/Platform.h"
 #include "utility/Color.h"
 
 #include "ui/utility/wxUtil.h"

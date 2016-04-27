@@ -1,8 +1,7 @@
 #ifndef SETTINGS_CGAMECONFIG_H
 #define SETTINGS_CGAMECONFIG_H
 
-#include "common/Platform.h"
-#include "common/Utility.h"
+#include "shared/Utility.h"
 
 namespace settings
 {

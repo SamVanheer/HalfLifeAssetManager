@@ -1,6 +1,6 @@
 #include <glm/vec3.hpp>
 
-#include "common/Const.h"
+#include "shared/Const.h"
 
 #include "StudioSorting.h"
 

@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "common/Logging.h"
+#include "shared/Logging.h"
 
 #include "cvar/CCVar.h"
 #include "cvar/CVarUtils.h"

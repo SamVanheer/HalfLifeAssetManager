@@ -6,7 +6,7 @@
 
 #include <glm/vec3.hpp>
 
-#include "common/Platform.h"
+#include "shared/Platform.h"
 #include "graphics/OpenGL.h"
 #include "graphics/Constants.h"
 

@@ -2,7 +2,7 @@
 
 #include "keyvalues/Keyvalues.h"
 
-#include "common/Logging.h"
+#include "shared/Logging.h"
 
 #include "cvar/CVar.h"
 #include "cvar/CCVarSystem.h"

@@ -18,11 +18,17 @@
 #define getcwd _getcwd
 #define setcwd _setcwd
 
+#define DLLEXPORT __declspec( dllexport )
+#define DLLIMPORT __declspec( dllimport )
+
 #else
 
 #error "Not implemented"
 
 #define MAX_PATH_LENGTH PATH_MAX
+
+#define DLLEXPORT __attribute__( ( visibility( "default" ) ) )
+#define DLLIMPORT
 
 #endif
 

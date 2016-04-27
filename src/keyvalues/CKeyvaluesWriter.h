@@ -1,7 +1,7 @@
 #ifndef CKEYVALUESWRITER_H
 #define CKEYVALUESWRITER_H
 
-#include "common/Platform.h"
+#include "shared/Platform.h"
 
 #include "KeyvaluesConstants.h"
 

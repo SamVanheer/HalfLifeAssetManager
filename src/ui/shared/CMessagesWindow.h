@@ -5,7 +5,7 @@
 
 #include <wx/listctrl.h>
 
-#include "common/Logging.h"
+#include "shared/Logging.h"
 
 class wxListView;
 class IWindowCloseListener;

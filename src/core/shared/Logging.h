@@ -19,6 +19,11 @@ enum class LogType
 };
 
 /**
+*	Gets a prefix to use for the given log type.
+*/
+const char* GetLogTypePrefix( const LogType type );
+
+/**
 *	This interface defines a log listener. Classes can implement this to receive log messages.
 */
 class ILogListener
@@ -42,10 +47,20 @@ inline ILogListener::~ILogListener()
 ILogListener* GetNullLogListener();
 
 /**
+*	Gets the listener that outputs to stdout.
+*/
+ILogListener* GetStdOutLogListener();
+
+/**
 *	Gets the default log listener. If there is a way to log anything, this will provide a means to do so.
-*	UI dependent.
+*	Must be installed by the application itself.
 */
 ILogListener* GetDefaultLogListener();
+
+/**
+*	Sets the default log listener.
+*/
+void SetDefaultLogListener( ILogListener* pListener );
 
 /**
 *	This class manages logging state.
@@ -59,7 +74,7 @@ public:
 	/**
 	*	Gets the current log listener.
 	*/
-	ILogListener* GetLogListener() { return m_pListener; }
+	ILogListener* GetLogListener() { return m_pListener ? m_pListener : GetDefaultLogListener(); }
 
 	/**
 	*	Sets the current log listener. If pListener is null, the default log listener is used.
@@ -90,7 +105,7 @@ public:
 	void CloseLogFile();
 
 private:
-	ILogListener* m_pListener = GetDefaultLogListener();
+	ILogListener* m_pListener = nullptr;
 
 	//Don't trigger recursive logging.
 	bool m_bInLog = false;

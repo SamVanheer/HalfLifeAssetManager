@@ -1,7 +1,7 @@
 #include <cassert>
 #include <memory>
 
-#include "common/Logging.h"
+#include "shared/Logging.h"
 
 #include "CBaseEntity.h"
 #include "EHandle.h"

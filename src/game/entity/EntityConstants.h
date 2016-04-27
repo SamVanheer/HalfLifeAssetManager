@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "common/Utility.h"
+#include "shared/Utility.h"
 
 namespace entity
 {

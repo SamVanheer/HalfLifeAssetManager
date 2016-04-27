@@ -2,7 +2,7 @@
 #include <cctype>
 #include <cstring>
 
-#include "common/Logging.h"
+#include "shared/Logging.h"
 
 #include "CBaseConCommand.h"
 #include "CConCommand.h"

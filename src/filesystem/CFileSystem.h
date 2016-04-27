@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "common/Platform.h"
+#include "shared/Platform.h"
 
 namespace filesystem
 {

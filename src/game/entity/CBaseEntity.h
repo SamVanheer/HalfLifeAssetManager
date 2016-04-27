@@ -3,7 +3,7 @@
 
 #include <glm/vec3.hpp>
 
-#include "common/Class.h"
+#include "shared/Class.h"
 
 #include "EntityConstants.h"
 #include "EHandle.h"

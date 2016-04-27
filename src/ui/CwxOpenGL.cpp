@@ -1,6 +1,6 @@
 #include <memory>
 
-#include "common/Logging.h"
+#include "shared/Logging.h"
 
 #include "graphics/GLRenderTarget.h"
 
