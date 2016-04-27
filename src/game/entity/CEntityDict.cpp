@@ -32,15 +32,15 @@ bool CEntityDict::AddEntity( const CBaseEntityRegistry* pRegistry )
 {
 	assert( pRegistry );
 
-	if( FindEntity( pRegistry->GetClassName() ) )
+	if( FindEntity( pRegistry->GetClassname() ) )
 	{
 		//This shouldn't happen, since there'd be duplicate symbols in the library.
 		//TODO: replace with FatalError
-		Error( "CEntityDict::AddEntity: Duplicate entity \"%s\" added!\n", pRegistry->GetClassName() );
+		Error( "CEntityDict::AddEntity: Duplicate entity \"%s\" added!\n", pRegistry->GetClassname() );
 		return false;
 	}
 
-	m_Dict.insert( std::make_pair( pRegistry->GetClassName(), pRegistry ) );
+	m_Dict.insert( std::make_pair( pRegistry->GetClassname(), pRegistry ) );
 
 	return true;
 }

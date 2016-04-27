@@ -2,6 +2,7 @@
 #define SETTINGS_CGAMECONFIG_H
 
 #include "common/Platform.h"
+#include "common/Utility.h"
 
 namespace settings
 {

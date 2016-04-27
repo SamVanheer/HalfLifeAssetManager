@@ -66,13 +66,13 @@ CEntityDict& GetEntityDict();
 class CBaseEntityRegistry
 {
 public:
-	CBaseEntityRegistry( const char* const pszClassName, const char* const pszInternalName, const size_t uiSizeInBytes )
-		: m_pszClassName( pszClassName )
-		, m_pszInternalName( pszInternalName )
+	CBaseEntityRegistry( const char* const pszClassname, const char* const pszInternalname, const size_t uiSizeInBytes )
+		: m_pszClassname( pszClassname )
+		, m_pszInternalname( pszInternalname )
 		, m_uiSizeInBytes( uiSizeInBytes )
 	{
-		assert( pszClassName );
-		assert( pszInternalName );
+		assert( pszClassname );
+		assert( pszInternalname );
 		assert( uiSizeInBytes > 0 );
 
 		GetEntityDict().AddEntity( this );
@@ -81,12 +81,12 @@ public:
 	/**
 	*	Returns the entity's class name.
 	*/
-	const char* GetClassName() const { return m_pszClassName; }
+	const char* GetClassname() const { return m_pszClassname; }
 
 	/**
 	*	Returns the C++ class name.
 	*/
-	const char* GetInternalName() const { return m_pszInternalName; }
+	const char* GetInternalname() const { return m_pszInternalname; }
 
 	/**
 	*	Gets the size of the class, in bytes.
@@ -104,8 +104,8 @@ public:
 	virtual void Destroy( CBaseEntity* pEntity ) const = 0;
 
 private:
-	const char* const m_pszClassName;
-	const char* const m_pszInternalName;
+	const char* const m_pszClassname;
+	const char* const m_pszInternalname;
 	const size_t m_uiSizeInBytes;
 
 private:
@@ -120,8 +120,8 @@ template<typename ENTITY>
 class CEntityRegistry final : public CBaseEntityRegistry
 {
 public:
-	CEntityRegistry( const char* const pszClassName, const char* const pszInternalName )
-		: CBaseEntityRegistry( pszClassName, pszInternalName, sizeof( ENTITY ) )
+	CEntityRegistry( const char* const pszClassname, const char* const pszInternalname )
+		: CBaseEntityRegistry( pszClassname, pszInternalname, sizeof( ENTITY ) )
 	{
 	}
 

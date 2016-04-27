@@ -3,6 +3,8 @@
 
 #include "wxHLMV.h"
 
+#include "common/Utility.h"
+
 #include "controlpanels/CBaseControlPanel.h"
 
 #include "C3DView.h"

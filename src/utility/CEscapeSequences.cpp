@@ -1,7 +1,7 @@
 #include <cassert>
 #include <memory>
 
-#include "common/Platform.h"
+#include "common/Utility.h"
 
 #include "CEscapeSequences.h"
 
