@@ -139,18 +139,6 @@
     <Filter Include="Source Files\tools\hlmv\entity">
       <UniqueIdentifier>{97a674fd-7541-4e39-ba73-ebdf0ccad66c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\core">
-      <UniqueIdentifier>{06558bb9-ce43-466e-8208-82362809c965}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\core">
-      <UniqueIdentifier>{22c8519a-321e-4fcc-97fc-ae31f942f982}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\core\shared">
-      <UniqueIdentifier>{227e66ff-c85e-489f-9b0f-7c277b38ab9f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\core\shared">
-      <UniqueIdentifier>{a6752b7b-6dab-4e3d-8ecf-8019533d8a69}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
@@ -185,9 +173,6 @@
     </ClCompile>
     <ClCompile Include="..\src\keyvalues\CKeyvaluesWriter.cpp">
       <Filter>Source Files\keyvalues</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\utility\CString.cpp">
-      <Filter>Source Files\utility</Filter>
     </ClCompile>
     <ClCompile Include="..\src\utility\CEscapeSequences.cpp">
       <Filter>Source Files\utility</Filter>
@@ -360,18 +345,6 @@
     <ClCompile Include="..\src\ui\shared\CwxBaseGLCanvas.cpp">
       <Filter>Source Files\ui\shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\core\shared\CWorldTime.cpp">
-      <Filter>Source Files\core\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\core\shared\Logging.cpp">
-      <Filter>Source Files\core\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\core\shared\Platform.cpp">
-      <Filter>Source Files\core\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\core\shared\Utility.cpp">
-      <Filter>Source Files\core\shared</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\OpenGL.h">
@@ -421,9 +394,6 @@
     </ClInclude>
     <ClInclude Include="..\src\keyvalues\KeyvaluesConstants.h">
       <Filter>Header Files\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\utility\CString.h">
-      <Filter>Header Files\utility</Filter>
     </ClInclude>
     <ClInclude Include="..\src\utility\CMemory.h">
       <Filter>Header Files\utility</Filter>
@@ -637,24 +607,6 @@
     </ClInclude>
     <ClInclude Include="..\src\game\studiomodel\StudioModelConstants.h">
       <Filter>Header Files\game\studiomodel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\core\shared\Class.h">
-      <Filter>Header Files\core\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\core\shared\Const.h">
-      <Filter>Header Files\core\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\core\shared\CWorldTime.h">
-      <Filter>Header Files\core\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\core\shared\Logging.h">
-      <Filter>Header Files\core\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\core\shared\Platform.h">
-      <Filter>Header Files\core\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\core\shared\Utility.h">
-      <Filter>Header Files\core\shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

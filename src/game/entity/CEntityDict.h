@@ -4,7 +4,7 @@
 #include <cassert>
 #include <unordered_map>
 
-#include "shared/Utility.h"
+#include "utility/StringUtils.h"
 
 class CBaseEntity;
 class CBaseEntityRegistry;

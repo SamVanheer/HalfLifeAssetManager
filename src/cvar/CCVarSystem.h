@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "shared/Utility.h"
+#include "utility/StringUtils.h"
 
 #include "utility/CCommand.h"
 

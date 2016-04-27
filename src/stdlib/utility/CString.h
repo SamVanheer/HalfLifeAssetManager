@@ -4,7 +4,7 @@
 #include <cstdarg>
 #include <functional>
 
-#include "shared/Utility.h"
+#include "StringUtils.h"
 
 namespace String
 {

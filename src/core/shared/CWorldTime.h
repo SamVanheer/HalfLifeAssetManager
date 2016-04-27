@@ -1,6 +1,8 @@
 #ifndef COMMON_CWORLDTIME_H
 #define COMMON_CWORLDTIME_H
 
+#include "core/LibHLCore.h"
+
 class CWorldTime final
 {
 public:
@@ -36,6 +38,7 @@ private:
 	double m_flPrevRealTime = 0.0f;
 };
 
-extern CWorldTime WorldTime;
+//TODO: this should be managed by the application, not the core library.
+extern HLCORE_API CWorldTime WorldTime;
 
 #endif //COMMON_CWORLDTIME_H

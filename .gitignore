@@ -73,3 +73,5 @@ bin/HLMVSettings.txt
 *.res
 msw_14/Release/RCa37524
 msw_14/Release/RCa37624
+*.exp
+*.lib

@@ -4,6 +4,8 @@
 #include <cstdarg>
 #include <cstdio>
 
+#include "core/LibHLCore.h"
+
 #ifdef ERROR
 #undef ERROR
 #endif
@@ -21,7 +23,7 @@ enum class LogType
 /**
 *	Gets a prefix to use for the given log type.
 */
-const char* GetLogTypePrefix( const LogType type );
+extern "C" HLCORE_API const char* GetLogTypePrefix( const LogType type );
 
 /**
 *	This interface defines a log listener. Classes can implement this to receive log messages.
@@ -44,28 +46,28 @@ inline ILogListener::~ILogListener()
 /**
 *	Gets the null log listener. This listener does not log anything.
 */
-ILogListener* GetNullLogListener();
+extern "C" HLCORE_API ILogListener* GetNullLogListener();
 
 /**
 *	Gets the listener that outputs to stdout.
 */
-ILogListener* GetStdOutLogListener();
+extern "C" HLCORE_API ILogListener* GetStdOutLogListener();
 
 /**
 *	Gets the default log listener. If there is a way to log anything, this will provide a means to do so.
 *	Must be installed by the application itself.
 */
-ILogListener* GetDefaultLogListener();
+extern "C" HLCORE_API ILogListener* GetDefaultLogListener();
 
 /**
 *	Sets the default log listener.
 */
-void SetDefaultLogListener( ILogListener* pListener );
+extern "C" HLCORE_API void SetDefaultLogListener( ILogListener* pListener );
 
 /**
 *	This class manages logging state.
 */
-class CLogging final
+class HLCORE_API CLogging final
 {
 public:
 	CLogging();
@@ -120,7 +122,7 @@ private:
 /**
 *	Gets the log state manager.
 */
-CLogging& logging();
+extern "C" HLCORE_API CLogging& logging();
 
 /**
 *	The implementations for logging features are UI dependent.
@@ -129,16 +131,16 @@ CLogging& logging();
 /**
 *	Logs a message.
 */
-void Message( const char* const pszFormat, ... );
+extern "C" HLCORE_API void Message( const char* const pszFormat, ... );
 
 /**
 *	Logs a warning.
 */
-void Warning( const char* const pszFormat, ... );
+extern "C" HLCORE_API void Warning( const char* const pszFormat, ... );
 
 /**
 *	Logs an error.
 */
-void Error( const char* const pszFormat, ... );
+extern "C" HLCORE_API void Error( const char* const pszFormat, ... );
 
 #endif //COMMON_LOGGING_H

@@ -4,7 +4,6 @@
 #include <string>
 
 #include "shared/Platform.h"
-#include "shared/Logging.h"
 
 #include "CString.h"
 
@@ -190,7 +189,7 @@ CString& CString::TakeOwnership( char* pszString )
 	}
 	else
 	{
-		Error( "CString::TakeOwnership: null pointer passed; can't take ownership!\n" );
+		assert( !"Null pointer passed; can't take ownership!" );
 		*this = ""; //Make sure the string buffer is valid.
 	}
 
@@ -253,7 +252,7 @@ CString::CString( const double flValue )
 	*this = flValue;
 }
 
-void CString::Assign( const char* pszString, const size_t iLength )
+void CString::Assign( const char* pszString, const size_type iLength )
 {
 	//Always make valid
 	if( !pszString )
@@ -946,7 +945,10 @@ void CString::VFormat( const char* pszFormat, va_list list )
 	if( iLength < 0 || iLength >= sizeof( szBuffer ) )
 	{
 		//Error does not use this method, so there is no risk of recursive calls
-		Error( "Error formatting string: format used: '%s'\n", pszFormat );
+		assert( !"Error formatting string" );
+
+		*this = "";
+
 		return;
 	}
 

@@ -2,7 +2,7 @@
 #include <cstdio>
 
 #include "shared/Logging.h"
-#include "shared/Utility.h"
+#include "utility/StringUtils.h"
 
 #include "CFileSystem.h"
 

@@ -4,8 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HLMV", "HLMV.vcxproj", "{B478CBB5-EEF9-4E7F-9749-E90ACE12E016}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358} = {8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}
+		{5ED051D1-9D62-4566-9142-0BBAED41E3CF} = {5ED051D1-9D62-4566-9142-0BBAED41E3CF}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibHLCore", "LibHLCore.vcxproj", "{5ED051D1-9D62-4566-9142-0BBAED41E3CF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibHLStdLib", "LibHLStdLib.vcxproj", "{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +37,14 @@ Global
 		{5ED051D1-9D62-4566-9142-0BBAED41E3CF}.Release|x64.Build.0 = Release|x64
 		{5ED051D1-9D62-4566-9142-0BBAED41E3CF}.Release|x86.ActiveCfg = Release|Win32
 		{5ED051D1-9D62-4566-9142-0BBAED41E3CF}.Release|x86.Build.0 = Release|Win32
+		{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}.Debug|x64.ActiveCfg = Debug|x64
+		{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}.Debug|x64.Build.0 = Debug|x64
+		{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}.Debug|x86.ActiveCfg = Debug|Win32
+		{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}.Debug|x86.Build.0 = Debug|Win32
+		{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}.Release|x64.ActiveCfg = Release|x64
+		{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}.Release|x64.Build.0 = Release|x64
+		{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}.Release|x86.ActiveCfg = Release|Win32
+		{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

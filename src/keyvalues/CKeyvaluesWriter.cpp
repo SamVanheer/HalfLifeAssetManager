@@ -2,6 +2,8 @@
 
 #include "shared/Logging.h"
 
+#include "shared/Utility.h"
+
 #include "utility/CEscapeSequences.h"
 
 #include "CKeyvalue.h"
