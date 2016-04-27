@@ -28,6 +28,8 @@
     <ClInclude Include="..\src\stdlib\cvar\CVarUtils.h" />
     <ClInclude Include="..\src\stdlib\filesystem\CFileSystem.h" />
     <ClInclude Include="..\src\stdlib\filesystem\FileSystemConstants.h" />
+    <ClInclude Include="..\src\stdlib\graphics\BMPFile.h" />
+    <ClInclude Include="..\src\stdlib\graphics\Palette.h" />
     <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalue.h" />
     <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalueBlock.h" />
     <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalueNode.h" />
@@ -50,6 +52,7 @@
     <ClInclude Include="..\src\stdlib\utility\CMemory.h" />
     <ClInclude Include="..\src\stdlib\utility\Color.h" />
     <ClInclude Include="..\src\stdlib\utility\CString.h" />
+    <ClInclude Include="..\src\stdlib\utility\IOUtils.h" />
     <ClInclude Include="..\src\stdlib\utility\mathlib.h" />
     <ClInclude Include="..\src\stdlib\utility\StringUtils.h" />
     <ClInclude Include="..\src\stdlib\utility\Tokenization.h" />
@@ -62,6 +65,7 @@
     <ClCompile Include="..\src\stdlib\cvar\CVarUtils.cpp" />
     <ClCompile Include="..\src\stdlib\filesystem\CFileSystem.cpp" />
     <ClCompile Include="..\src\stdlib\filesystem\FileSystemConstants.cpp" />
+    <ClCompile Include="..\src\stdlib\graphics\BMPFile.cpp" />
     <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalue.cpp" />
     <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalueBlock.cpp" />
     <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalueNode.cpp" />
@@ -78,6 +82,7 @@
     <ClCompile Include="..\src\stdlib\utility\CEscapeSequences.cpp" />
     <ClCompile Include="..\src\stdlib\utility\Color.cpp" />
     <ClCompile Include="..\src\stdlib\utility\CString.cpp" />
+    <ClCompile Include="..\src\stdlib\utility\IOUtils.cpp" />
     <ClCompile Include="..\src\stdlib\utility\mathlib.cpp" />
     <ClCompile Include="..\src\stdlib\utility\Tokenization.cpp" />
   </ItemGroup>

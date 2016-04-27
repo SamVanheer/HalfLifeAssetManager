@@ -55,6 +55,12 @@
     <Filter Include="Source Files\stdlib\keyvalues">
       <UniqueIdentifier>{685cc6fc-721f-4561-ae04-90406ccc660e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\stdlib\graphics">
+      <UniqueIdentifier>{b7d5025c-3c59-4230-9db2-7116933e10ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\stdlib\graphics">
+      <UniqueIdentifier>{74b55c31-61ee-4317-8050-ff1d335ab919}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\stdlib\utility\CString.h">
@@ -159,6 +165,15 @@
     <ClInclude Include="..\src\stdlib\keyvalues\KVForward.h">
       <Filter>Header Files\stdlib\keyvalues</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\stdlib\graphics\BMPFile.h">
+      <Filter>Header Files\stdlib\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\graphics\Palette.h">
+      <Filter>Header Files\stdlib\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\utility\IOUtils.h">
+      <Filter>Header Files\stdlib\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\stdlib\utility\CString.cpp">
@@ -235,6 +250,12 @@
     </ClCompile>
     <ClCompile Include="..\src\stdlib\keyvalues\CKeyvaluesWriter.cpp">
       <Filter>Source Files\stdlib\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\graphics\BMPFile.cpp">
+      <Filter>Source Files\stdlib\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\utility\IOUtils.cpp">
+      <Filter>Source Files\stdlib\utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

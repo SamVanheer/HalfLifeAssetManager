@@ -132,9 +132,6 @@
     <ClCompile Include="..\src\ui\shared\CEditGameConfigsDialog.cpp">
       <Filter>Source Files\ui\shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\utility\IOUtils.cpp">
-      <Filter>Source Files\utility</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ui\shared\CGameConfigurationsPanel.cpp">
       <Filter>Source Files\ui\shared</Filter>
     </ClCompile>
@@ -200,9 +197,6 @@
     </ClCompile>
     <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CTexturesPanel.cpp">
       <Filter>Source Files\tools\hlmv\ui\controlpanels</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\graphics\BMPFile.cpp">
-      <Filter>Source Files\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\game\studiomodel\CStudioModel.cpp">
       <Filter>Source Files\game\studiomodel</Filter>
@@ -274,9 +268,6 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\shared\CEditGameConfigsDialog.h">
       <Filter>Header Files\ui\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\utility\IOUtils.h">
-      <Filter>Header Files\utility</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ui\utility\CMeshClientData.h">
       <Filter>Header Files\ui\utility</Filter>
@@ -355,12 +346,6 @@
     </ClInclude>
     <ClInclude Include="..\src\game\CAnimEvent.h">
       <Filter>Header Files\game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\graphics\Palette.h">
-      <Filter>Header Files\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\graphics\BMPFile.h">
-      <Filter>Header Files\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\src\game\studiomodel\CStudioModel.h">
       <Filter>Header Files\game\studiomodel</Filter>

@@ -29,7 +29,6 @@
     <ClCompile Include="..\src\game\studiomodel\CStudioModel.cpp" />
     <ClCompile Include="..\src\game\studiomodel\CStudioModelRenderer.cpp" />
     <ClCompile Include="..\src\game\studiomodel\StudioSorting.cpp" />
-    <ClCompile Include="..\src\graphics\BMPFile.cpp" />
     <ClCompile Include="..\src\graphics\Constants.cpp" />
     <ClCompile Include="..\src\graphics\GLRenderTarget.cpp" />
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
@@ -61,7 +60,6 @@
     <ClCompile Include="..\src\ui\shared\CwxBaseGLCanvas.cpp" />
     <ClCompile Include="..\src\ui\wxLogging.cpp" />
     <ClCompile Include="..\src\ui\utility\wxUtil.cpp" />
-    <ClCompile Include="..\src\utility\IOUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\game\CAnimEvent.h" />
@@ -79,12 +77,10 @@
     <ClInclude Include="..\src\game\studiomodel\studio.h" />
     <ClInclude Include="..\src\game\studiomodel\StudioModelConstants.h" />
     <ClInclude Include="..\src\game\studiomodel\StudioSorting.h" />
-    <ClInclude Include="..\src\graphics\BMPFile.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />
     <ClInclude Include="..\src\graphics\GLRenderTarget.h" />
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
     <ClInclude Include="..\src\graphics\OpenGL.h" />
-    <ClInclude Include="..\src\graphics\Palette.h" />
     <ClInclude Include="..\src\tools\hlmv\CHLMVState.h" />
     <ClInclude Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.h" />
     <ClInclude Include="..\src\tools\hlmv\settings\CHLMVSettings.h" />
@@ -117,7 +113,6 @@
     <ClInclude Include="..\src\ui\utility\CTimer.h" />
     <ClInclude Include="..\src\ui\utility\wxUtil.h" />
     <ClInclude Include="..\src\ui\wxInclude.h" />
-    <ClInclude Include="..\src\utility\IOUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\msw\tools\hlmv.rc" />
