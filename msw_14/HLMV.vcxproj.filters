@@ -13,35 +13,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\ui">
-      <UniqueIdentifier>{de259b0e-0f7c-4d3a-9f0c-b59ae4b58061}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ui">
-      <UniqueIdentifier>{138420c3-8f56-4beb-9c94-57e9616e3163}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ui\utility">
-      <UniqueIdentifier>{7c966415-3377-4c88-97a0-621cdeb0339c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ui\utility">
-      <UniqueIdentifier>{a590454e-4163-4290-a956-e5ad60d25ee1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\graphics">
       <UniqueIdentifier>{a8cc43f3-adc8-40e6-83bf-e50ef343feec}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\graphics">
       <UniqueIdentifier>{6c61afb5-133b-41bf-bdbd-f19d1b0f536d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\utility">
-      <UniqueIdentifier>{ed25d055-24a0-4488-916b-44d217c824cc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\utility">
-      <UniqueIdentifier>{eebee85d-37b6-4c0a-88a0-77fa3f71577f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ui\shared">
-      <UniqueIdentifier>{2cc43b55-cfc7-43ef-b8a4-92bd70a0564d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ui\shared">
-      <UniqueIdentifier>{1c22d988-ba22-410a-b36f-801ff85e37d7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\tools">
       <UniqueIdentifier>{430dbb2b-f132-4e72-9fa0-ba50777487fb}</UniqueIdentifier>
@@ -103,37 +79,40 @@
     <Filter Include="Source Files\tools\hlmv\entity">
       <UniqueIdentifier>{97a674fd-7541-4e39-ba73-ebdf0ccad66c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ui">
+      <UniqueIdentifier>{d944b2ec-b139-4d1f-bd20-55c536ca1e1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui\wx">
+      <UniqueIdentifier>{e2d9fa8c-9dd4-47fa-ad23-e92c1888303a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui">
+      <UniqueIdentifier>{0a3db060-dce7-4ec4-abf7-7e833d029d92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui\wx">
+      <UniqueIdentifier>{34cd148f-94b7-45a6-b985-366607350bf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui\wx\shared">
+      <UniqueIdentifier>{96761eec-8d6f-4843-a1ec-79c03e0ae63b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui\wx\shared">
+      <UniqueIdentifier>{c5a8971f-b70c-4793-9dbc-6bf3eb714007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui\wx\utility">
+      <UniqueIdentifier>{5bcf2d1e-5cbc-49aa-a945-5d5e126aa491}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui\wx\utility">
+      <UniqueIdentifier>{5b24a20a-49ba-45aa-8857-fe04a0e559fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
       <Filter>Source Files\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ui\utility\wxUtil.cpp">
-      <Filter>Source Files\ui\utility</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ui\CwxOpenGL.cpp">
-      <Filter>Source Files\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ui\wxLogging.cpp">
-      <Filter>Source Files\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ui\shared\CMessagesWindow.cpp">
-      <Filter>Source Files\ui\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ui\shared\CEditGameConfigsDialog.cpp">
-      <Filter>Source Files\ui\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ui\shared\CGameConfigurationsPanel.cpp">
-      <Filter>Source Files\ui\shared</Filter>
     </ClCompile>
     <ClCompile Include="..\src\graphics\Constants.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
       <Filter>Source Files\tools\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ui\CwxBaseApp.cpp">
-      <Filter>Source Files\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tools\shared\Credits.cpp">
       <Filter>Source Files\tools\shared</Filter>
@@ -210,8 +189,29 @@
     <ClCompile Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.cpp">
       <Filter>Source Files\tools\hlmv\entity</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ui\shared\CwxBaseGLCanvas.cpp">
-      <Filter>Source Files\ui\shared</Filter>
+    <ClCompile Include="..\src\ui\wx\CwxBaseApp.cpp">
+      <Filter>Source Files\ui\wx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\CwxOpenGL.cpp">
+      <Filter>Source Files\ui\wx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\wxLogging.cpp">
+      <Filter>Source Files\ui\wx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\shared\CEditGameConfigsDialog.cpp">
+      <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\shared\CGameConfigurationsPanel.cpp">
+      <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\shared\CMessagesWindow.cpp">
+      <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\shared\CwxBaseGLCanvas.cpp">
+      <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\utility\wxUtil.cpp">
+      <Filter>Source Files\ui\wx\utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,41 +221,8 @@
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ui\CwxOpenGL.h">
-      <Filter>Header Files\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\wxInclude.h">
-      <Filter>Header Files\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\utility\CTimer.h">
-      <Filter>Header Files\ui\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\utility\wxUtil.h">
-      <Filter>Header Files\ui\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\wxLogging.h">
-      <Filter>Header Files\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\utility\IWindowCloseListener.h">
-      <Filter>Header Files\ui\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\shared\CMessagesWindow.h">
-      <Filter>Header Files\ui\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\shared\CEditGameConfigsDialog.h">
-      <Filter>Header Files\ui\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\utility\CMeshClientData.h">
-      <Filter>Header Files\ui\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\shared\CGameConfigurationsPanel.h">
-      <Filter>Header Files\ui\shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\tools\shared\CBaseTool.h">
       <Filter>Header Files\tools\shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\CwxBaseApp.h">
-      <Filter>Header Files\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tools\shared\Credits.h">
       <Filter>Header Files\tools\shared</Filter>
@@ -311,12 +278,6 @@
     <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CTexturesPanel.h">
       <Filter>Header Files\tools\hlmv\ui\controlpanels</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\game\Events.h">
-      <Filter>Header Files\game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\game\CAnimEvent.h">
-      <Filter>Header Files\game</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\game\entity\CBaseEntity.h">
       <Filter>Header Files\game\entity</Filter>
     </ClInclude>
@@ -344,8 +305,41 @@
     <ClInclude Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.h">
       <Filter>Header Files\tools\hlmv\entity</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ui\shared\CwxBaseGLCanvas.h">
-      <Filter>Header Files\ui\shared</Filter>
+    <ClInclude Include="..\src\ui\wx\CwxBaseApp.h">
+      <Filter>Header Files\ui\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\CwxOpenGL.h">
+      <Filter>Header Files\ui\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\wxInclude.h">
+      <Filter>Header Files\ui\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\wxLogging.h">
+      <Filter>Header Files\ui\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\shared\CEditGameConfigsDialog.h">
+      <Filter>Header Files\ui\wx\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\shared\CGameConfigurationsPanel.h">
+      <Filter>Header Files\ui\wx\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\shared\CMessagesWindow.h">
+      <Filter>Header Files\ui\wx\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\shared\CwxBaseGLCanvas.h">
+      <Filter>Header Files\ui\wx\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\utility\CMeshClientData.h">
+      <Filter>Header Files\ui\wx\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\utility\CTimer.h">
+      <Filter>Header Files\ui\wx\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\utility\IWindowCloseListener.h">
+      <Filter>Header Files\ui\wx\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\utility\wxUtil.h">
+      <Filter>Header Files\ui\wx\utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

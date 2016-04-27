@@ -1,4 +1,4 @@
-#include "ui/CwxOpenGL.h"
+#include "ui/wx/CwxOpenGL.h"
 
 #include "CwxBaseGLCanvas.h"
 

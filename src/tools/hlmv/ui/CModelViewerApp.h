@@ -3,7 +3,7 @@
 
 #include "wxHLMV.h"
 
-#include "ui/CwxBaseApp.h"
+#include "ui/wx/CwxBaseApp.h"
 
 #include "CHLMV.h"
 

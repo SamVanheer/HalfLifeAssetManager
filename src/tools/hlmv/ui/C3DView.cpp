@@ -15,7 +15,7 @@
 
 #include "game/entity/CStudioModelEntity.h"
 
-#include "ui/CwxOpenGL.h"
+#include "ui/wx/CwxOpenGL.h"
 
 #include "C3DView.h"
 

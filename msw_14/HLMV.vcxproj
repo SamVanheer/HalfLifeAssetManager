@@ -47,17 +47,16 @@
     <ClCompile Include="..\src\tools\hlmv\ui\options\COptionsDialog.cpp" />
     <ClCompile Include="..\src\tools\shared\CBaseTool.cpp" />
     <ClCompile Include="..\src\tools\shared\Credits.cpp" />
-    <ClCompile Include="..\src\ui\CwxBaseApp.cpp" />
-    <ClCompile Include="..\src\ui\CwxOpenGL.cpp" />
-    <ClCompile Include="..\src\ui\shared\CEditGameConfigsDialog.cpp" />
-    <ClCompile Include="..\src\ui\shared\CGameConfigurationsPanel.cpp" />
-    <ClCompile Include="..\src\ui\shared\CMessagesWindow.cpp" />
-    <ClCompile Include="..\src\ui\shared\CwxBaseGLCanvas.cpp" />
-    <ClCompile Include="..\src\ui\wxLogging.cpp" />
-    <ClCompile Include="..\src\ui\utility\wxUtil.cpp" />
+    <ClCompile Include="..\src\ui\wx\CwxBaseApp.cpp" />
+    <ClCompile Include="..\src\ui\wx\CwxOpenGL.cpp" />
+    <ClCompile Include="..\src\ui\wx\shared\CEditGameConfigsDialog.cpp" />
+    <ClCompile Include="..\src\ui\wx\shared\CGameConfigurationsPanel.cpp" />
+    <ClCompile Include="..\src\ui\wx\shared\CMessagesWindow.cpp" />
+    <ClCompile Include="..\src\ui\wx\shared\CwxBaseGLCanvas.cpp" />
+    <ClCompile Include="..\src\ui\wx\utility\wxUtil.cpp" />
+    <ClCompile Include="..\src\ui\wx\wxLogging.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\game\CAnimEvent.h" />
     <ClInclude Include="..\src\game\entity\CBaseAnimating.h" />
     <ClInclude Include="..\src\game\entity\CBaseEntity.h" />
     <ClInclude Include="..\src\game\entity\CBaseEntityList.h" />
@@ -66,7 +65,6 @@
     <ClInclude Include="..\src\game\entity\CStudioModelEntity.h" />
     <ClInclude Include="..\src\game\entity\EHandle.h" />
     <ClInclude Include="..\src\game\entity\EntityConstants.h" />
-    <ClInclude Include="..\src\game\Events.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
     <ClInclude Include="..\src\tools\hlmv\CHLMVState.h" />
@@ -89,18 +87,18 @@
     <ClInclude Include="..\src\tools\hlmv\ui\wxHLMV.h" />
     <ClInclude Include="..\src\tools\shared\CBaseTool.h" />
     <ClInclude Include="..\src\tools\shared\Credits.h" />
-    <ClInclude Include="..\src\ui\CwxBaseApp.h" />
-    <ClInclude Include="..\src\ui\CwxOpenGL.h" />
-    <ClInclude Include="..\src\ui\shared\CEditGameConfigsDialog.h" />
-    <ClInclude Include="..\src\ui\shared\CGameConfigurationsPanel.h" />
-    <ClInclude Include="..\src\ui\shared\CMessagesWindow.h" />
-    <ClInclude Include="..\src\ui\shared\CwxBaseGLCanvas.h" />
-    <ClInclude Include="..\src\ui\utility\CMeshClientData.h" />
-    <ClInclude Include="..\src\ui\utility\IWindowCloseListener.h" />
-    <ClInclude Include="..\src\ui\wxLogging.h" />
-    <ClInclude Include="..\src\ui\utility\CTimer.h" />
-    <ClInclude Include="..\src\ui\utility\wxUtil.h" />
-    <ClInclude Include="..\src\ui\wxInclude.h" />
+    <ClInclude Include="..\src\ui\wx\CwxBaseApp.h" />
+    <ClInclude Include="..\src\ui\wx\CwxOpenGL.h" />
+    <ClInclude Include="..\src\ui\wx\shared\CEditGameConfigsDialog.h" />
+    <ClInclude Include="..\src\ui\wx\shared\CGameConfigurationsPanel.h" />
+    <ClInclude Include="..\src\ui\wx\shared\CMessagesWindow.h" />
+    <ClInclude Include="..\src\ui\wx\shared\CwxBaseGLCanvas.h" />
+    <ClInclude Include="..\src\ui\wx\utility\CMeshClientData.h" />
+    <ClInclude Include="..\src\ui\wx\utility\CTimer.h" />
+    <ClInclude Include="..\src\ui\wx\utility\IWindowCloseListener.h" />
+    <ClInclude Include="..\src\ui\wx\utility\wxUtil.h" />
+    <ClInclude Include="..\src\ui\wx\wxInclude.h" />
+    <ClInclude Include="..\src\ui\wx\wxLogging.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\msw\tools\hlmv.rc" />
@@ -146,22 +144,18 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="Shared.props" />
-    <Import Project="LibHLCore_Shared.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="Shared.props" />
-    <Import Project="LibHLCore_Shared.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="Shared.props" />
-    <Import Project="LibHLCore_Shared.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="Shared.props" />
-    <Import Project="LibHLCore_Shared.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -225,7 +219,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\bin;$(SolutionDir)..\external\FMOD\lib;$(SolutionDir)..\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LibHLCore.lib;LibHLStdLib.lib;opengl32.lib;glu32.lib;glew32.lib;fmodex_vc.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LibHLwxUI.lib;LibHLCore.lib;LibHLStdLib.lib;opengl32.lib;glu32.lib;glew32.lib;fmodex_vc.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -5,7 +5,7 @@
 #include "shared/Platform.h"
 #include "utility/Color.h"
 
-#include "ui/utility/wxUtil.h"
+#include "ui/wx/utility/wxUtil.h"
 
 #include "../../settings/CHLMVSettings.h"
 

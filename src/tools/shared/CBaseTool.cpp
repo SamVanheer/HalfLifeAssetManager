@@ -5,9 +5,9 @@
 #include "filesystem/CFileSystem.h"
 #include "soundsystem/CSoundSystem.h"
 
-#include "ui/CwxOpenGL.h"
+#include "ui/wx/CwxOpenGL.h"
 
-#include "ui/shared/CMessagesWindow.h"
+#include "ui/wx/shared/CMessagesWindow.h"
 
 #include "shared/Const.h"
 #include "shared/CWorldTime.h"

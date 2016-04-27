@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "ui/wxInclude.h"
+#include "../wxHLMV.h"
 
 class wxNotebook;
 

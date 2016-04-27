@@ -1,7 +1,7 @@
 #ifndef HLMV_UI_WXHLMV_H
 #define HLMV_UI_WXHLMV_H
 
-#include "ui/wxInclude.h"
+#include "ui/wx/wxInclude.h"
 
 enum wxIdentifier
 {

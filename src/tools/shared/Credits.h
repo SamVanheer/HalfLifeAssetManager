@@ -1,7 +1,7 @@
 #ifndef TOOLS_SHARED_CREDITS_H
 #define TOOLS_SHARED_CREDITS_H
 
-#include "ui/wxInclude.h"
+#include "ui/wx/wxInclude.h"
 
 namespace tools
 {

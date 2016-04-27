@@ -1,7 +1,7 @@
 #ifndef CTIMER_H
 #define CTIMER_H
 
-#include "ui/wxInclude.h"
+#include "ui/wx/wxInclude.h"
 
 class CTimer;
 

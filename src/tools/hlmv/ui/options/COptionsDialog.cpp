@@ -2,7 +2,7 @@
 #include <wx/notebook.h>
 
 #include "CGeneralOptions.h"
-#include "ui/shared/CGameConfigurationsPanel.h"
+#include "ui/wx/shared/CGameConfigurationsPanel.h"
 
 #include "../../settings/CHLMVSettings.h"
 

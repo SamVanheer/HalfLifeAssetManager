@@ -1,9 +1,9 @@
 #include <wx/filename.h>
 #include <wx/mimetype.h>
 
-#include "ui/CwxOpenGL.h"
+#include "ui/wx/CwxOpenGL.h"
 
-#include "ui/shared/CMessagesWindow.h"
+#include "ui/wx/shared/CMessagesWindow.h"
 
 #include "CHLMV.h"
 

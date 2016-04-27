@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "ui/wxInclude.h"
+#include "ui/wx/wxInclude.h"
 
 namespace settings
 {

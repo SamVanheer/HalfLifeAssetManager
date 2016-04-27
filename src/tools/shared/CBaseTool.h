@@ -3,11 +3,11 @@
 
 #include <cstdint>
 
-#include "ui/wxInclude.h"
+#include "ui/wx/wxInclude.h"
 
-#include "ui/utility/CTimer.h"
+#include "ui/wx/utility/CTimer.h"
 
-#include "ui/utility/IWindowCloseListener.h"
+#include "ui/wx/utility/IWindowCloseListener.h"
 
 #include "settings/CBaseSettings.h"
 

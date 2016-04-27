@@ -3,7 +3,7 @@
 
 #include "wxHLMV.h"
 
-#include "ui/shared/CwxBaseGLCanvas.h"
+#include "ui/wx/shared/CwxBaseGLCanvas.h"
 
 #include <glm/vec3.hpp>
 
