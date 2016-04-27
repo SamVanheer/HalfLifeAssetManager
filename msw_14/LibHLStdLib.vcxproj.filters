@@ -49,12 +49,6 @@
     <Filter Include="Source Files\stdlib\filesystem">
       <UniqueIdentifier>{0108917e-b3cd-4452-b490-952149a7927e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\stdlib\keyvalues">
-      <UniqueIdentifier>{a630a735-49dc-4fbe-9186-59c7977212de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\stdlib\keyvalues">
-      <UniqueIdentifier>{685cc6fc-721f-4561-ae04-90406ccc660e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\stdlib\graphics">
       <UniqueIdentifier>{b7d5025c-3c59-4230-9db2-7116933e10ea}</UniqueIdentifier>
     </Filter>
@@ -156,33 +150,6 @@
     <ClInclude Include="..\src\stdlib\filesystem\FileSystemConstants.h">
       <Filter>Header Files\stdlib\filesystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalue.h">
-      <Filter>Header Files\stdlib\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalueBlock.h">
-      <Filter>Header Files\stdlib\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvalueNode.h">
-      <Filter>Header Files\stdlib\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvaluesLexer.h">
-      <Filter>Header Files\stdlib\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvaluesParser.h">
-      <Filter>Header Files\stdlib\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\keyvalues\CKeyvaluesWriter.h">
-      <Filter>Header Files\stdlib\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\keyvalues\Keyvalues.h">
-      <Filter>Header Files\stdlib\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\keyvalues\KeyvaluesConstants.h">
-      <Filter>Header Files\stdlib\keyvalues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\keyvalues\KVForward.h">
-      <Filter>Header Files\stdlib\keyvalues</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\stdlib\graphics\BMPFile.h">
       <Filter>Header Files\stdlib\graphics</Filter>
     </ClInclude>
@@ -271,24 +238,6 @@
     </ClCompile>
     <ClCompile Include="..\src\stdlib\filesystem\FileSystemConstants.cpp">
       <Filter>Source Files\stdlib\filesystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalue.cpp">
-      <Filter>Source Files\stdlib\keyvalues</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalueBlock.cpp">
-      <Filter>Source Files\stdlib\keyvalues</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvalueNode.cpp">
-      <Filter>Source Files\stdlib\keyvalues</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvaluesLexer.cpp">
-      <Filter>Source Files\stdlib\keyvalues</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvaluesParser.cpp">
-      <Filter>Source Files\stdlib\keyvalues</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\keyvalues\CKeyvaluesWriter.cpp">
-      <Filter>Source Files\stdlib\keyvalues</Filter>
     </ClCompile>
     <ClCompile Include="..\src\stdlib\graphics\BMPFile.cpp">
       <Filter>Source Files\stdlib\graphics</Filter>

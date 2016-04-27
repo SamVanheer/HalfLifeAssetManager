@@ -19,74 +19,28 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModel.h" />
-    <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModelRenderer.h" />
-    <ClInclude Include="..\src\engine\shared\studiomodel\studio.h" />
-    <ClInclude Include="..\src\engine\shared\studiomodel\StudioModelConstants.h" />
-    <ClInclude Include="..\src\engine\shared\studiomodel\StudioSorting.h" />
-    <ClInclude Include="..\src\stdlib\cvar\CBaseConCommand.h" />
-    <ClInclude Include="..\src\stdlib\cvar\CConCommand.h" />
-    <ClInclude Include="..\src\stdlib\cvar\CCVar.h" />
-    <ClInclude Include="..\src\stdlib\cvar\CCVarSystem.h" />
-    <ClInclude Include="..\src\stdlib\cvar\ConVarConstants.h" />
-    <ClInclude Include="..\src\stdlib\cvar\CVar.h" />
-    <ClInclude Include="..\src\stdlib\cvar\CVarUtils.h" />
-    <ClInclude Include="..\src\stdlib\filesystem\CFileSystem.h" />
-    <ClInclude Include="..\src\stdlib\filesystem\FileSystemConstants.h" />
-    <ClInclude Include="..\src\stdlib\graphics\BMPFile.h" />
-    <ClInclude Include="..\src\stdlib\graphics\GLRenderTarget.h" />
-    <ClInclude Include="..\src\stdlib\graphics\OpenGL.h" />
-    <ClInclude Include="..\src\stdlib\graphics\Palette.h" />
-    <ClInclude Include="..\src\stdlib\settings\CBaseSettings.h" />
-    <ClInclude Include="..\src\stdlib\settings\CGameConfig.h" />
-    <ClInclude Include="..\src\stdlib\settings\CGameConfigManager.h" />
-    <ClInclude Include="..\src\stdlib\settings\CRecentFiles.h" />
-    <ClInclude Include="..\src\stdlib\settings\GameConfigIO.h" />
-    <ClInclude Include="..\src\stdlib\soundsystem\CSoundSystem.h" />
-    <ClInclude Include="..\src\stdlib\soundsystem\SoundConstants.h" />
-    <ClInclude Include="..\src\stdlib\utility\BoundingBox.h" />
-    <ClInclude Include="..\src\stdlib\utility\CCommand.h" />
-    <ClInclude Include="..\src\stdlib\utility\CEscapeSequences.h" />
-    <ClInclude Include="..\src\stdlib\utility\CMemory.h" />
-    <ClInclude Include="..\src\stdlib\utility\Color.h" />
-    <ClInclude Include="..\src\stdlib\utility\CString.h" />
-    <ClInclude Include="..\src\stdlib\utility\IOUtils.h" />
-    <ClInclude Include="..\src\stdlib\utility\mathlib.h" />
-    <ClInclude Include="..\src\stdlib\utility\StringUtils.h" />
-    <ClInclude Include="..\src\stdlib\utility\Tokenization.h" />
+    <ClInclude Include="..\src\keyvalues\CKeyvalue.h" />
+    <ClInclude Include="..\src\keyvalues\CKeyvalueBlock.h" />
+    <ClInclude Include="..\src\keyvalues\CKeyvalueNode.h" />
+    <ClInclude Include="..\src\keyvalues\CKeyvaluesLexer.h" />
+    <ClInclude Include="..\src\keyvalues\CKeyvaluesParser.h" />
+    <ClInclude Include="..\src\keyvalues\CKeyvaluesWriter.h" />
+    <ClInclude Include="..\src\keyvalues\Keyvalues.h" />
+    <ClInclude Include="..\src\keyvalues\KeyvaluesConstants.h" />
+    <ClInclude Include="..\src\keyvalues\KVForward.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModel.cpp" />
-    <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModelRenderer.cpp" />
-    <ClCompile Include="..\src\engine\shared\studiomodel\StudioSorting.cpp" />
-    <ClCompile Include="..\src\stdlib\cvar\CBaseConCommand.cpp" />
-    <ClCompile Include="..\src\stdlib\cvar\CConCommand.cpp" />
-    <ClCompile Include="..\src\stdlib\cvar\CCVar.cpp" />
-    <ClCompile Include="..\src\stdlib\cvar\CCVarSystem.cpp" />
-    <ClCompile Include="..\src\stdlib\cvar\CVarUtils.cpp" />
-    <ClCompile Include="..\src\stdlib\filesystem\CFileSystem.cpp" />
-    <ClCompile Include="..\src\stdlib\filesystem\FileSystemConstants.cpp" />
-    <ClCompile Include="..\src\stdlib\graphics\BMPFile.cpp" />
-    <ClCompile Include="..\src\stdlib\graphics\GLRenderTarget.cpp" />
-    <ClCompile Include="..\src\stdlib\graphics\OpenGL.cpp" />
-    <ClCompile Include="..\src\stdlib\settings\CBaseSettings.cpp" />
-    <ClCompile Include="..\src\stdlib\settings\CGameConfig.cpp" />
-    <ClCompile Include="..\src\stdlib\settings\CGameConfigManager.cpp" />
-    <ClCompile Include="..\src\stdlib\settings\CRecentFiles.cpp" />
-    <ClCompile Include="..\src\stdlib\settings\GameConfigIO.cpp" />
-    <ClCompile Include="..\src\stdlib\soundsystem\CSoundSystem.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\CCommand.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\CEscapeSequences.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\Color.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\CString.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\IOUtils.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\mathlib.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\Tokenization.cpp" />
+    <ClCompile Include="..\src\keyvalues\CKeyvalue.cpp" />
+    <ClCompile Include="..\src\keyvalues\CKeyvalueBlock.cpp" />
+    <ClCompile Include="..\src\keyvalues\CKeyvalueNode.cpp" />
+    <ClCompile Include="..\src\keyvalues\CKeyvaluesLexer.cpp" />
+    <ClCompile Include="..\src\keyvalues\CKeyvaluesParser.cpp" />
+    <ClCompile Include="..\src\keyvalues\CKeyvaluesWriter.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}</ProjectGuid>
+    <ProjectGuid>{5556D8C2-35A8-472D-A5C4-F8E78A0EE17E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>LibHLStdLib</RootNamespace>
+    <RootNamespace>LibKeyvalues</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

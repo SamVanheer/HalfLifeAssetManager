@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\keyvalues">
+      <UniqueIdentifier>{4cfd3303-8ac1-4dc3-9f33-608ee545af0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\keyvalues">
+      <UniqueIdentifier>{5d82dc86-95e2-42a6-9edc-1004b62135e8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\keyvalues\CKeyvalue.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvalueBlock.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvalueNode.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvaluesLexer.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvaluesParser.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\CKeyvaluesWriter.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\Keyvalues.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\KeyvaluesConstants.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keyvalues\KVForward.h">
+      <Filter>Header Files\keyvalues</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\keyvalues\CKeyvalue.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvalueBlock.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvalueNode.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvaluesLexer.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvaluesParser.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\keyvalues\CKeyvaluesWriter.cpp">
+      <Filter>Source Files\keyvalues</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
