@@ -174,9 +174,6 @@
     <ClCompile Include="..\src\keyvalues\CKeyvaluesWriter.cpp">
       <Filter>Source Files\keyvalues</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\utility\CEscapeSequences.cpp">
-      <Filter>Source Files\utility</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\settings\CGameConfig.cpp">
       <Filter>Source Files\settings</Filter>
     </ClCompile>
@@ -201,13 +198,7 @@
     <ClCompile Include="..\src\settings\CBaseSettings.cpp">
       <Filter>Source Files\settings</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\utility\Color.cpp">
-      <Filter>Source Files\utility</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\utility\IOUtils.cpp">
-      <Filter>Source Files\utility</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\utility\Vector.cpp">
       <Filter>Source Files\utility</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ui\shared\CGameConfigurationsPanel.cpp">
@@ -282,20 +273,11 @@
     <ClCompile Include="..\src\graphics\BMPFile.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\utility\mathlib.cpp">
-      <Filter>Source Files\utility</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cvar\CConCommand.cpp">
       <Filter>Source Files\cvar</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cvar\CCVar.cpp">
       <Filter>Source Files\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\utility\Tokenization.cpp">
-      <Filter>Source Files\utility</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\utility\CCommand.cpp">
-      <Filter>Source Files\utility</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cvar\CBaseConCommand.cpp">
       <Filter>Source Files\cvar</Filter>
@@ -356,9 +338,6 @@
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\utility\mathlib.h">
-      <Filter>Header Files\utility</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\filesystem\CFileSystem.h">
       <Filter>Header Files\filesystem</Filter>
     </ClInclude>
@@ -395,12 +374,6 @@
     <ClInclude Include="..\src\keyvalues\KeyvaluesConstants.h">
       <Filter>Header Files\keyvalues</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\utility\CMemory.h">
-      <Filter>Header Files\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\utility\CEscapeSequences.h">
-      <Filter>Header Files\utility</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\settings\CGameConfig.h">
       <Filter>Header Files\settings</Filter>
     </ClInclude>
@@ -434,16 +407,7 @@
     <ClInclude Include="..\src\soundsystem\SoundConstants.h">
       <Filter>Header Files\soundsystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\utility\Color.h">
-      <Filter>Header Files\utility</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\utility\IOUtils.h">
-      <Filter>Header Files\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\utility\Vector.h">
-      <Filter>Header Files\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\utility\BoundingBox.h">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ui\utility\CMeshClientData.h">
@@ -547,12 +511,6 @@
     </ClInclude>
     <ClInclude Include="..\src\cvar\CVar.h">
       <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\utility\Tokenization.h">
-      <Filter>Header Files\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\utility\CCommand.h">
-      <Filter>Header Files\utility</Filter>
     </ClInclude>
     <ClInclude Include="..\src\cvar\CCVarSystem.h">
       <Filter>Header Files\cvar</Filter>

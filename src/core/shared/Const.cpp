@@ -1,6 +1,4 @@
-#include "shared/Const.h"
-
-#include "Vector.h"
+#include "Const.h"
 
 const glm::vec3 vec3_origin = glm::vec3( 0 );
 

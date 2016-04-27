@@ -8,7 +8,7 @@
 #include "cvar/CCVarSystem.h"
 #include "cvar/CVarUtils.h"
 
-#include "Color.h"
+#include "utility/Color.h"
 
 #include "IOUtils.h"
 

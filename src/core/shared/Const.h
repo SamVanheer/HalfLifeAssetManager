@@ -3,6 +3,10 @@
 
 #include <cstdint>
 
+#include <glm/vec3.hpp>
+
+#include "core/LibHLCore.h"
+
 typedef unsigned char byte;
 
 typedef unsigned long color32_t;
@@ -32,5 +36,20 @@ typedef float vec_t;
 *	Invalid value for a world max coordinate.
 */
 #define WORLD_INVALID_MAX_COORD INT_MIN
+
+/**
+*	World origin.
+*/
+extern DLLEXPORT const glm::vec3 vec3_origin;
+
+/**
+*	Vector that represents an invalid min boundary.
+*/
+extern DLLEXPORT const glm::vec3 WORLD_INVALID_MIN;
+
+/**
+*	Vector that represents an invalid max boundary.
+*/
+extern DLLEXPORT const glm::vec3 WORLD_INVALID_MAX;
 
 #endif //COMMON_CONST_H

@@ -19,11 +19,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\stdlib\utility\BoundingBox.h" />
+    <ClInclude Include="..\src\stdlib\utility\CCommand.h" />
+    <ClInclude Include="..\src\stdlib\utility\CEscapeSequences.h" />
+    <ClInclude Include="..\src\stdlib\utility\CMemory.h" />
+    <ClInclude Include="..\src\stdlib\utility\Color.h" />
     <ClInclude Include="..\src\stdlib\utility\CString.h" />
+    <ClInclude Include="..\src\stdlib\utility\mathlib.h" />
     <ClInclude Include="..\src\stdlib\utility\StringUtils.h" />
+    <ClInclude Include="..\src\stdlib\utility\Tokenization.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\stdlib\utility\CCommand.cpp" />
+    <ClCompile Include="..\src\stdlib\utility\CEscapeSequences.cpp" />
+    <ClCompile Include="..\src\stdlib\utility\Color.cpp" />
     <ClCompile Include="..\src\stdlib\utility\CString.cpp" />
+    <ClCompile Include="..\src\stdlib\utility\mathlib.cpp" />
+    <ClCompile Include="..\src\stdlib\utility\Tokenization.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}</ProjectGuid>

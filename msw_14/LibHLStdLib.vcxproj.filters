@@ -33,9 +33,45 @@
     <ClInclude Include="..\src\stdlib\utility\StringUtils.h">
       <Filter>Header Files\stdlib\utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\stdlib\utility\CMemory.h">
+      <Filter>Header Files\stdlib\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\utility\CCommand.h">
+      <Filter>Header Files\stdlib\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\utility\Tokenization.h">
+      <Filter>Header Files\stdlib\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\utility\BoundingBox.h">
+      <Filter>Header Files\stdlib\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\utility\CEscapeSequences.h">
+      <Filter>Header Files\stdlib\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\utility\Color.h">
+      <Filter>Header Files\stdlib\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\utility\mathlib.h">
+      <Filter>Header Files\stdlib\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\stdlib\utility\CString.cpp">
+      <Filter>Source Files\stdlib\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\utility\CCommand.cpp">
+      <Filter>Source Files\stdlib\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\utility\Tokenization.cpp">
+      <Filter>Source Files\stdlib\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\utility\CEscapeSequences.cpp">
+      <Filter>Source Files\stdlib\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\utility\mathlib.cpp">
+      <Filter>Source Files\stdlib\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\utility\Color.cpp">
       <Filter>Source Files\stdlib\utility</Filter>
     </ClCompile>
   </ItemGroup>

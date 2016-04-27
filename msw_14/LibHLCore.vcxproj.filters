@@ -62,5 +62,8 @@
     <ClCompile Include="..\src\core\shared\Utility.cpp">
       <Filter>Source Files\core\shared</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\core\shared\Const.cpp">
+      <Filter>Source Files\core\shared</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

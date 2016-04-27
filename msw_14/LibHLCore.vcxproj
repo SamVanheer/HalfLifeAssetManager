@@ -164,6 +164,7 @@
     <ClInclude Include="..\src\core\shared\Utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\core\shared\Const.cpp" />
     <ClCompile Include="..\src\core\shared\CWorldTime.cpp" />
     <ClCompile Include="..\src\core\shared\Logging.cpp" />
     <ClCompile Include="..\src\core\shared\Platform.cpp" />

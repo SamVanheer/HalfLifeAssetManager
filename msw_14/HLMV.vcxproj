@@ -80,13 +80,7 @@
     <ClCompile Include="..\src\ui\shared\CwxBaseGLCanvas.cpp" />
     <ClCompile Include="..\src\ui\wxLogging.cpp" />
     <ClCompile Include="..\src\ui\utility\wxUtil.cpp" />
-    <ClCompile Include="..\src\utility\CCommand.cpp" />
-    <ClCompile Include="..\src\utility\CEscapeSequences.cpp" />
-    <ClCompile Include="..\src\utility\Color.cpp" />
     <ClCompile Include="..\src\utility\IOUtils.cpp" />
-    <ClCompile Include="..\src\utility\mathlib.cpp" />
-    <ClCompile Include="..\src\utility\Tokenization.cpp" />
-    <ClCompile Include="..\src\utility\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\cvar\CBaseConCommand.h" />
@@ -167,15 +161,7 @@
     <ClInclude Include="..\src\ui\utility\CTimer.h" />
     <ClInclude Include="..\src\ui\utility\wxUtil.h" />
     <ClInclude Include="..\src\ui\wxInclude.h" />
-    <ClInclude Include="..\src\utility\BoundingBox.h" />
-    <ClInclude Include="..\src\utility\CCommand.h" />
-    <ClInclude Include="..\src\utility\CEscapeSequences.h" />
-    <ClInclude Include="..\src\utility\CMemory.h" />
-    <ClInclude Include="..\src\utility\Color.h" />
     <ClInclude Include="..\src\utility\IOUtils.h" />
-    <ClInclude Include="..\src\utility\mathlib.h" />
-    <ClInclude Include="..\src\utility\Tokenization.h" />
-    <ClInclude Include="..\src\utility\Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\msw\tools\hlmv.rc" />
@@ -259,7 +245,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WXUSINGDLL;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;$(SolutionDir)\..\external\GLM\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -292,7 +278,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WXUSINGDLL;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;$(SolutionDir)\..\external\GLM\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\FMOD\include;$(SolutionDir)\..\external\GLEW\include;C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
