@@ -31,18 +31,6 @@
     <Filter Include="Source Files\stdlib\settings">
       <UniqueIdentifier>{292e56c4-0d38-421c-a296-dbef02536158}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\stdlib\cvar">
-      <UniqueIdentifier>{56dbc310-3be8-4350-8649-7ed93ca657cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\stdlib\cvar">
-      <UniqueIdentifier>{ecbb6c2d-4c86-4fb7-aa94-dc54b175b827}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\stdlib\filesystem">
-      <UniqueIdentifier>{8550de96-7e14-482a-9a75-2eec59705050}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\stdlib\filesystem">
-      <UniqueIdentifier>{0108917e-b3cd-4452-b490-952149a7927e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\stdlib\graphics">
       <UniqueIdentifier>{b7d5025c-3c59-4230-9db2-7116933e10ea}</UniqueIdentifier>
     </Filter>
@@ -116,33 +104,6 @@
     </ClInclude>
     <ClInclude Include="..\src\stdlib\settings\GameConfigIO.h">
       <Filter>Header Files\stdlib\settings</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\cvar\CBaseConCommand.h">
-      <Filter>Header Files\stdlib\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\cvar\CConCommand.h">
-      <Filter>Header Files\stdlib\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\cvar\CCVar.h">
-      <Filter>Header Files\stdlib\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\cvar\CCVarSystem.h">
-      <Filter>Header Files\stdlib\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\cvar\ConVarConstants.h">
-      <Filter>Header Files\stdlib\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\cvar\CVar.h">
-      <Filter>Header Files\stdlib\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\cvar\CVarUtils.h">
-      <Filter>Header Files\stdlib\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\filesystem\CFileSystem.h">
-      <Filter>Header Files\stdlib\filesystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\filesystem\FileSystemConstants.h">
-      <Filter>Header Files\stdlib\filesystem</Filter>
     </ClInclude>
     <ClInclude Include="..\src\stdlib\graphics\BMPFile.h">
       <Filter>Header Files\stdlib\graphics</Filter>
@@ -226,27 +187,6 @@
     </ClCompile>
     <ClCompile Include="..\src\stdlib\settings\GameConfigIO.cpp">
       <Filter>Source Files\stdlib\settings</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\cvar\CBaseConCommand.cpp">
-      <Filter>Source Files\stdlib\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\cvar\CConCommand.cpp">
-      <Filter>Source Files\stdlib\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\cvar\CCVar.cpp">
-      <Filter>Source Files\stdlib\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\cvar\CCVarSystem.cpp">
-      <Filter>Source Files\stdlib\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\cvar\CVarUtils.cpp">
-      <Filter>Source Files\stdlib\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\filesystem\CFileSystem.cpp">
-      <Filter>Source Files\stdlib\filesystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\filesystem\FileSystemConstants.cpp">
-      <Filter>Source Files\stdlib\filesystem</Filter>
     </ClCompile>
     <ClCompile Include="..\src\stdlib\graphics\BMPFile.cpp">
       <Filter>Source Files\stdlib\graphics</Filter>
