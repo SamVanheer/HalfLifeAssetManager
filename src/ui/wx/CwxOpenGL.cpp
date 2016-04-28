@@ -106,6 +106,21 @@ wxGLContext* CwxOpenGL::GetContext( wxGLCanvas* pCanvas )
 	{
 		m_pContext = new wxGLContext( pCanvas, nullptr, GetContextAttributes() );
 
+		if( !m_pContext->IsOK() )
+		{
+			delete m_pContext;
+			m_pContext = nullptr;
+
+			Error( "Error creating OpenGL context: attributes unsupported by this hardware and/or operating system\n" );
+
+			wxMessageBox( "Error creating OpenGL context: attributes unsupported by this hardware and/or operating system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+
+			//TODO: exit more gracefully.
+			wxExit();
+
+			return nullptr;
+		}
+
 		//Initalize GLEW if needed.
 		if( !IsPostInitialized() )
 		{

@@ -16,7 +16,7 @@ bool CBaseOpenGL::PostInitialize()
 
 	if( m_GLEWResult != GLEW_OK )
 	{
-		Error( "Error initializing GLEW:\n%s", reinterpret_cast<const char*>( glewGetErrorString( m_GLEWResult ) ) );
+		Error( "Error initializing GLEW:\n%s\n", reinterpret_cast<const char*>( glewGetErrorString( m_GLEWResult ) ) );
 	}
 
 	return GLEW_OK == m_GLEWResult;
