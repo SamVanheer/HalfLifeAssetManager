@@ -274,6 +274,9 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 	const char* pszBegin, * pszEnd;
 	bool fWasQuoted;
 
+	//TODO: all of this needs to be redesigned. Instead of two phase parsing, the token should be extracted one character at a time, parsing in escape sequences as needed.
+	//This eliminates the rather messy code currently used here.
+
 	ReadResult result = ReadNext( pszBegin, pszEnd, fWasQuoted );
 
 	if( result == ReadResult::READ_TOKEN )
@@ -335,7 +338,6 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNextToken()
 
 			m_szToken.Clear();
 
-			//TODO: escape characters should be preprocessed so they don't show up during parsing later on.
 			for( size_t uiIndex = 0; uiIndex < uiMaxSize; )
 			{
 				if( m_pEscapeSeqConversion->GetDelimiterChar() == pszBegin[ uiIndex ] )
