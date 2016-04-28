@@ -9,8 +9,6 @@
 #include "graphics/GraphicsHelpers.h"
 #include "graphics/GLRenderTarget.h"
 
-#include "soundsystem/CSoundSystem.h"
-
 #include "shared/studiomodel/CStudioModelRenderer.h"
 
 #include "game/entity/CStudioModelEntity.h"

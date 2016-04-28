@@ -37,12 +37,6 @@
     <Filter Include="Source Files\stdlib\cvar">
       <UniqueIdentifier>{ecbb6c2d-4c86-4fb7-aa94-dc54b175b827}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\stdlib\soundsystem">
-      <UniqueIdentifier>{a938121a-f6ce-4c5d-82ff-24a405fb268f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\stdlib\soundsystem">
-      <UniqueIdentifier>{3f963043-6d9b-4144-a70f-aad3b7f75ec1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\stdlib\filesystem">
       <UniqueIdentifier>{8550de96-7e14-482a-9a75-2eec59705050}</UniqueIdentifier>
     </Filter>
@@ -143,12 +137,6 @@
     </ClInclude>
     <ClInclude Include="..\src\stdlib\cvar\CVarUtils.h">
       <Filter>Header Files\stdlib\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\soundsystem\CSoundSystem.h">
-      <Filter>Header Files\stdlib\soundsystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\stdlib\soundsystem\SoundConstants.h">
-      <Filter>Header Files\stdlib\soundsystem</Filter>
     </ClInclude>
     <ClInclude Include="..\src\stdlib\filesystem\CFileSystem.h">
       <Filter>Header Files\stdlib\filesystem</Filter>
@@ -253,9 +241,6 @@
     </ClCompile>
     <ClCompile Include="..\src\stdlib\cvar\CVarUtils.cpp">
       <Filter>Source Files\stdlib\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\soundsystem\CSoundSystem.cpp">
-      <Filter>Source Files\stdlib\soundsystem</Filter>
     </ClCompile>
     <ClCompile Include="..\src\stdlib\filesystem\CFileSystem.cpp">
       <Filter>Source Files\stdlib\filesystem</Filter>
