@@ -185,10 +185,12 @@ void CBaseTool::GetGLCanvasAttributes( wxGLAttributes& attrs )
 
 void CBaseTool::GetGLContextAttributes( wxGLContextAttrs& attrs )
 {
+	//The default settings for OpenGL allow for Windows XP support. OpenGL 2.1 is typically supported by XP era hardware, making it the best choice.
+	//2.1 supports GLSL 120, which has some features that are nice to have in shaders.
 	attrs
 		.PlatformDefaults()
-		.MajorVersion( 3 )
-		.MinorVersion( 0 )
+		.MajorVersion( 2 )
+		.MinorVersion( 1 )
 		.EndList();
 }
 
