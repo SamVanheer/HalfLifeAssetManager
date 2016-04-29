@@ -8,3 +8,7 @@ HLMV_ICON ICON "../../resources/hlmv.ico"
 // is needed to enable visual styles on Windows XP - see docs/msw/winxp.txt
 // for more information)
 #define wxUSE_NO_MANIFEST 0
+
+// this is not always needed but doesn't hurt (except making the executable
+// very slightly larger): this file contains the standard icons, cursors, ...
+#include "wx/msw/wx.rc"

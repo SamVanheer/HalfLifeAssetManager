@@ -62,7 +62,11 @@ void CBaseTool::OnWindowClose( wxFrame* pWindow, wxCloseEvent& event )
 
 void CBaseTool::FPSChanged( const double flOldFPS, const double flNewFPS )
 {
-	StartTimer( flNewFPS );
+	//Don't restart the timer unless it's already running (we're changing the FPS, not starting the timer)
+	if( IsTimerRunning() )
+	{
+		StartTimer( flNewFPS );
+	}
 }
 
 bool CBaseTool::Initialize()
@@ -354,6 +358,11 @@ void CBaseTool::SetMaxMessagesCount( const size_t uiMaxMessagesCount )
 	{
 		m_pMessagesWindow->SetMaxMessagesCount( uiMaxMessagesCount );
 	}
+}
+
+bool CBaseTool::IsTimerRunning() const
+{
+	return m_pTimer && m_pTimer->IsRunning();
 }
 
 void CBaseTool::StartTimer( double flFPS )

@@ -146,6 +146,11 @@ public:
 
 protected:
 	/**
+	*	Returns whether the timer is running yet.
+	*/
+	bool IsTimerRunning() const;
+
+	/**
 	*	Starts the render loop timer.
 	*/
 	void StartTimer( double flFPS );

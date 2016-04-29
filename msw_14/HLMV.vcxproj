@@ -113,7 +113,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -186,6 +186,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\bin;$(SolutionDir)..\external\FMOD\lib;$(SolutionDir)..\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;LibFileSystem.lib;LibSoundSystem.lib;opengl32.lib;glu32.lib;glew32.lib;fmodex_vc.lib;wxbase31ud.lib;wxmsw31ud_core.lib;wxmsw31ud_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-3.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -221,6 +224,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\bin;$(SolutionDir)..\external\FMOD\lib;$(SolutionDir)..\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;LibFileSystem.lib;LibSoundSystem.lib;opengl32.lib;glu32.lib;glew32.lib;fmodex_vc.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>C:\wxWidgets-3.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
