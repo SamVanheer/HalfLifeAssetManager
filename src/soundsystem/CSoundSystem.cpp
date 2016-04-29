@@ -7,7 +7,7 @@
 #include "shared/Logging.h"
 #include "shared/Utility.h"
 
-#include "filesystem/CFileSystem.h"
+#include "filesystem/IFileSystem.h"
 
 #include "CSoundSystem.h"
 
@@ -70,6 +70,17 @@ CSoundSystem::CSoundSystem()
 }
 
 CSoundSystem::~CSoundSystem()
+{
+}
+
+bool CSoundSystem::Connect( CreateInterfaceFn appFactory, CreateInterfaceFn fileSystemFactory )
+{
+	m_pFileSystem = static_cast<filesystem::IFileSystem*>(fileSystemFactory( IFILESYSTEM_NAME, nullptr ) );
+
+	return m_pFileSystem != nullptr;
+}
+
+void CSoundSystem::Disconnect()
 {
 }
 
@@ -258,7 +269,7 @@ void CSoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitc
 
 	char szFullFilename[ MAX_PATH_LENGTH ];
 
-	if( !fileSystem().GetRelativePath( szActualFilename, szFullFilename, sizeof( szFullFilename ) ) )
+	if( !m_pFileSystem->GetRelativePath( szActualFilename, szFullFilename, sizeof( szFullFilename ) ) )
 	{
 		Warning( "CSoundSystem::PlaySound: Unable to find sound file '%s'\n", pszFilename );
 		return;

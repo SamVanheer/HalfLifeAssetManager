@@ -30,7 +30,8 @@ const float CHLMVSettings::MAX_FLOOR_LENGTH = 2048;
 
 const float CHLMVSettings::DEFAULT_FLOOR_LENGTH = 100;
 
-CHLMVSettings::CHLMVSettings()
+CHLMVSettings::CHLMVSettings( filesystem::IFileSystem* const pFileSystem )
+	: CBaseSettings( pFileSystem )
 {
 }
 

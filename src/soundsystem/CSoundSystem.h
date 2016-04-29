@@ -3,6 +3,8 @@
 
 #include <list>
 
+#include "lib/ILibSystem.h"
+
 #include "SoundConstants.h"
 
 namespace FMOD
@@ -12,12 +14,17 @@ class Sound;
 class Channel;
 }
 
+namespace filesystem
+{
+class IFileSystem;
+}
+
 namespace soundsystem
 {
 /**
 *	A sound system that can be used to play back sounds. Sounds are non-looping.
 */
-class CSoundSystem final
+class CSoundSystem final : public ILibSystem
 {
 public:
 	//Maximum number of sounds to play simultaneously.
@@ -39,6 +46,10 @@ public:
 
 	CSoundSystem();
 	~CSoundSystem();
+
+	bool Connect( CreateInterfaceFn appFactory, CreateInterfaceFn fileSystemFactory ) override final;
+
+	void Disconnect() override final;
 
 	bool Initialize();
 	void Shutdown();
@@ -70,6 +81,8 @@ private:
 
 private:
 	static CSoundSystem* m_pInstance;
+
+	filesystem::IFileSystem* m_pFileSystem = nullptr;
 
 	FMOD::System* m_pSystem = nullptr;
 

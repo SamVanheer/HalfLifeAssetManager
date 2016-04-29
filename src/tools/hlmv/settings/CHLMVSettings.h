@@ -34,7 +34,7 @@ public:
 	static const float DEFAULT_FLOOR_LENGTH;
 
 public:
-	CHLMVSettings();
+	CHLMVSettings( filesystem::IFileSystem* const pFileSystem );
 	~CHLMVSettings();
 
 	CHLMVSettings( const CHLMVSettings& other );

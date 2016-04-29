@@ -5,6 +5,11 @@
 
 #include "keyvalues/KVForward.h"
 
+namespace filesystem
+{
+class IFileSystem;
+}
+
 namespace settings
 {
 class CGameConfig;
@@ -43,8 +48,9 @@ public:
 protected:
 	/**
 	*	Constructs a default settings instance.
+	*	@param pFileSystem Filesystem to use.
 	*/
-	CBaseSettings();
+	CBaseSettings( filesystem::IFileSystem* const pFileSystem );
 
 	/**
 	*	Constructs settings using another settings object. This is a deep copy.
@@ -183,6 +189,7 @@ private:
 	void Copy( const CBaseSettings& other );
 
 private:
+	filesystem::IFileSystem* const m_pFileSystem;
 	ISettingsListener* m_pListener = nullptr;
 
 	/**

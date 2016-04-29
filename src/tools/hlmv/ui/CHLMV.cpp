@@ -8,10 +8,9 @@
 namespace hlmv
 {
 CHLMV::CHLMV()
-	: CBaseTool( INIT_ALL, "Half-Life Model Viewer", wxICON( HLMV_ICON ), new CHLMVSettings() )
+	: CBaseTool( "Half-Life Model Viewer", wxICON( HLMV_ICON ) )
 	, m_pState( new CHLMVState() )
 {
-	GetSettings()->SetSettingsListener( this );
 }
 
 CHLMV::~CHLMV()
@@ -19,8 +18,15 @@ CHLMV::~CHLMV()
 	delete m_pState;
 }
 
+settings::CBaseSettings* CHLMV::CreateSettings()
+{
+	return new CHLMVSettings( GetFileSystem() );
+}
+
 bool CHLMV::PostInitialize()
 {
+	GetSettings()->SetSettingsListener( this );
+
 	//Must be called before we create the main window, since it accesses the window.
 	UseMessagesWindow( true );
 
@@ -40,7 +46,10 @@ bool CHLMV::PostInitialize()
 
 void CHLMV::PreShutdown()
 {
-	GetSettings()->Shutdown( HLMV_SETTINGS_FILE );
+	if( auto pSettings = GetSettings() )
+	{
+		pSettings->Shutdown( HLMV_SETTINGS_FILE );
+	}
 
 	if( m_pFullscreenWindow )
 	{

@@ -11,8 +11,15 @@
 
 #include "settings/CBaseSettings.h"
 
+#include "lib/CLibrary.h"
+
 class wxGLAttributes;
 class wxGLContextAttrs;
+
+namespace filesystem
+{
+class IFileSystem;
+}
 
 namespace ui
 {
@@ -31,26 +38,11 @@ public:
 	static const size_t DEFAULT_MAX_MESSAGES_COUNT = 100;
 
 protected:
-	//TODO: remove these
-	enum InitFlag
-	{
-		INIT_FILESYSTEM = 1 << 0,
-		INIT_SOUNDSYSTEM = 1 << 1,
-		INIT_OPENGL = 1 << 2,
-		INIT_IMAGEHANDLERS = 1 << 3,
-
-		INIT_ALL = INIT_FILESYSTEM | INIT_SOUNDSYSTEM | INIT_OPENGL | INIT_IMAGEHANDLERS
-	};
-
-	typedef uint8_t InitFlags_t;
-
-protected:
 	/**
 	*	Constructor.
-	*	@param initFlags Bit vector containing which systems to initialize, or INIT_ALL.
 	*	@param szDisplayName Display name.
 	*/
-	CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName, const wxIcon& toolIcon, settings::CBaseSettings* const pSettings );
+	CBaseTool( const wxString szDisplayName, const wxIcon& toolIcon );
 
 public:
 	virtual ~CBaseTool() = 0;
@@ -63,6 +55,11 @@ private:
 	virtual void FPSChanged( const double flOldFPS, const double flNewFPS ) override;
 
 public:
+	/**
+	*	Gets the file system.
+	*/
+	filesystem::IFileSystem* GetFileSystem() const { return m_pFileSystem; }
+
 	/**
 	*	Gets the settings object.
 	*/
@@ -170,6 +167,11 @@ protected:
 	*	Allow the tool to configure custom context attributes.
 	*/
 	virtual void GetGLContextAttributes( wxGLContextAttrs& attrs );
+	
+	/**
+	*	Creates the settings instance. This is called once all tool system initialization has completed, allowing the settings object to use systems.
+	*/
+	virtual settings::CBaseSettings* CreateSettings() = 0;
 
 	/**
 	*	Called after the tool has been initialized.
@@ -196,13 +198,16 @@ private:
 	void MessagesWindowClosed();
 
 private:
-	InitFlags_t m_InitFlags;
 	const wxString m_szDisplayName;
 	const wxIcon m_ToolIcon;
 
 	wxString m_szLogFileName;
 
-	settings::CBaseSettings* m_pSettings;
+	CLibrary m_FileSystemLib;
+
+	filesystem::IFileSystem* m_pFileSystem = nullptr;
+
+	settings::CBaseSettings* m_pSettings = nullptr;
 
 	CTimer* m_pTimer = nullptr;
 

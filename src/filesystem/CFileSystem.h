@@ -5,14 +5,17 @@
 
 #include "shared/Platform.h"
 
+#include "IFileSystem.h"
+
+/**
+*	@ingroup FileSystem
+*
+*	@{
+*/
+
 namespace filesystem
 {
-/**
-*	Represents the SteamPipe filesystem. This can find game resources.
-*	The filesystem has a concept of a base path: this is the path to the game directory, like "common/Half-Life"
-*	All search paths are relative to this base path.
-*/
-class CFileSystem final
+class CFileSystem final : public IFileSystem
 {
 private:
 	struct SearchPath_t
@@ -23,63 +26,34 @@ private:
 	typedef std::vector<SearchPath_t> SearchPaths_t;
 
 public:
-	static CFileSystem& CreateInstance();
-	static void DestroyInstance();
-	static bool InstanceExists();
-	static CFileSystem& GetInstance();
-
 	CFileSystem();
 	~CFileSystem();
 
-	bool Initialize();
-	void Shutdown();
+	bool Initialize() override final;
+	void Shutdown() override final;
 
 public:
 	//Filesystem API
 
-	/**
-	*	Gets the base path.
-	*/
-	const char* GetBasePath() const;
+	size_t GetSteamPipeDirectoryExtensions( const char* const*& ppszDirectoryExts ) override final;
 
-	/**
-	*	Sets the base path.
-	*/
-	void SetBasePath( const char* const pszPath );
+	const char* GetBasePath() const override final;
 
-	/**
-	*	Returns whether the filesystem has the given search path.
-	*/
-	bool HasSearchPath( const char* const pszPath ) const;
+	void SetBasePath( const char* const pszPath ) override final;
 
-	/**
-	*	Adds a search path. No duplicates.
-	*/
-	void AddSearchPath( const char* const pszPath );
+	bool HasSearchPath( const char* const pszPath ) const override final;
 
-	/**
-	*	Removes a search path.
-	*/
-	void RemoveSearchPath( const char* const pszPath );
+	void AddSearchPath( const char* const pszPath ) override final;
 
-	/**
-	*	Removes all search paths.
-	*/
-	void RemoveAllSearchPaths();
+	void RemoveSearchPath( const char* const pszPath ) override final;
 
-	/**
-	*	Gets a relative path to a file. This may actually be an absolute path, depending on the value of the base path.
-	*/
-	bool GetRelativePath( const char* const pszFilename, char* pszOutPath, const size_t uiBufferSize );
+	void RemoveAllSearchPaths() override final;
 
-	/**
-	*	Returns whether the given file exists.
-	*/
-	bool FileExists( const char* const pszFilename ) const;
+	bool GetRelativePath( const char* const pszFilename, char* pszOutPath, const size_t uiBufferSize ) override final;
+
+	bool FileExists( const char* const pszFilename ) const override final;
 
 private:
-	static CFileSystem* m_pInstance;
-
 	char m_szBasePath[ MAX_PATH_LENGTH ];
 
 	SearchPaths_t m_SearchPaths;
@@ -90,10 +64,6 @@ private:
 };
 }
 
-//TODO move to its own library
-inline filesystem::CFileSystem& fileSystem()
-{
-	return filesystem::CFileSystem::GetInstance();
-}
+/** @} */
 
 #endif //FILESYSTEM_CFILESYSTEM_H

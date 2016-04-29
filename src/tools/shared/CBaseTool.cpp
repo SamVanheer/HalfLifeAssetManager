@@ -2,7 +2,7 @@
 #include <wx/filename.h>
 
 #include "cvar/CCVarSystem.h"
-#include "filesystem/CFileSystem.h"
+#include "filesystem/IFileSystem.h"
 #include "soundsystem/CSoundSystem.h"
 
 #include "ui/wx/CwxOpenGL.h"
@@ -23,20 +23,13 @@
 
 namespace tools
 {
-CBaseTool::CBaseTool( const InitFlags_t initFlags, const wxString szDisplayName, const wxIcon& toolIcon, settings::CBaseSettings* const pSettings )
-	: m_InitFlags( initFlags )
-	, m_szDisplayName( szDisplayName )
+CBaseTool::CBaseTool( const wxString szDisplayName, const wxIcon& toolIcon )
+	: m_szDisplayName( szDisplayName )
 	, m_ToolIcon( toolIcon )
-	, m_pSettings( pSettings )
 {
 	wxASSERT_MSG( !szDisplayName.IsEmpty(), "Tool Display Name may not be empty!" );
-	wxASSERT( pSettings );
 
 	SetLogFileName( szDisplayName );
-
-	//The sound system requires the use of the file system.
-	if( m_InitFlags & INIT_SOUNDSYSTEM )
-		m_InitFlags |= INIT_FILESYSTEM;
 }
 
 CBaseTool::~CBaseTool()
@@ -98,62 +91,79 @@ bool CBaseTool::Initialize()
 		return false;
 	}
 
-	if( m_InitFlags & INIT_FILESYSTEM )
+	//This can probably be automated.
+	if( !m_FileSystemLib.Load( "LibFileSystem.dll" ) )
 	{
-		filesystem::CFileSystem::CreateInstance();
-
-		if( !fileSystem().Initialize() )
-		{
-			wxMessageBox( "Failed to initialize file system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
-			return false;
-		}
+		wxMessageBox( "Failed to load file system library", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
 	}
 
-	if( m_InitFlags & INIT_OPENGL )
+	const CreateInterfaceFn fileSystemFactory = static_cast<CreateInterfaceFn>( m_FileSystemLib.GetFunctionAddress( CREATEINTERFACE_NAME ) );
+
+	if( !fileSystemFactory )
 	{
-		//Set up OpenGL parameters.
-		CwxOpenGL::CreateInstance();
-
-		wxGLAttributes canvasAttributes;
-
-		GetGLCanvasAttributes( canvasAttributes );
-
-		wxGLContextAttrs contextAttributes;
-
-		GetGLContextAttributes( contextAttributes );
-
-		if( !wxOpenGL().Initialize( canvasAttributes, &contextAttributes ) )
-		{
-			wxMessageBox( "Failed to initialize file system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
-			return false;
-		}
-
-		if( !studiomodel::renderer().Initialize() )
-		{
-			wxMessageBox( "Failed to initialize StudioModel renderer", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
-			return false;
-		}
+		wxMessageBox( "Failed to get file system factory", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
 	}
 
-	if( m_InitFlags & INIT_IMAGEHANDLERS )
+	m_pFileSystem = static_cast<filesystem::IFileSystem*>( fileSystemFactory( IFILESYSTEM_NAME, nullptr ) );
+
+	if( !m_pFileSystem->Initialize() )
 	{
-		wxInitAllImageHandlers();
+		wxMessageBox( "Failed to initialize file system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
 	}
 
-	if( m_InitFlags & INIT_SOUNDSYSTEM )
-	{
-		soundsystem::CSoundSystem::CreateInstance();
+	//Set up OpenGL parameters.
+	CwxOpenGL::CreateInstance();
 
-		if( !soundSystem().Initialize() )
-		{
-			wxMessageBox( "Failed to initialize sound system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
-			return false;
-		}
+	wxGLAttributes canvasAttributes;
+
+	GetGLCanvasAttributes( canvasAttributes );
+
+	wxGLContextAttrs contextAttributes;
+
+	GetGLContextAttributes( contextAttributes );
+
+	if( !wxOpenGL().Initialize( canvasAttributes, &contextAttributes ) )
+	{
+		wxMessageBox( "Failed to initialize file system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	if( !studiomodel::renderer().Initialize() )
+	{
+		wxMessageBox( "Failed to initialize StudioModel renderer", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	wxInitAllImageHandlers();
+
+	soundsystem::CSoundSystem::CreateInstance();
+
+	if( !soundSystem().Connect( &CreateInterface, fileSystemFactory ) )
+	{
+		wxMessageBox( "Failed to connect sound system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	if( !soundSystem().Initialize() )
+	{
+		wxMessageBox( "Failed to initialize sound system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
 	}
 
 	if( !EntityManager().Initialize() )
 	{
 		wxMessageBox( "Failed to initialize entity manager", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	m_pSettings = CreateSettings();
+
+	if( !m_pSettings )
+	{
+		wxMessageBox( "Failed to create settings", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
 	}
 
@@ -214,6 +224,9 @@ void CBaseTool::Shutdown()
 	if( soundsystem::CSoundSystem::InstanceExists() )
 	{
 		soundSystem().Shutdown();
+
+		soundSystem().Disconnect();
+
 		soundsystem::CSoundSystem::DestroyInstance();
 	}
 
@@ -226,11 +239,12 @@ void CBaseTool::Shutdown()
 		CwxOpenGL::DestroyInstance();
 	}
 
-	if( filesystem::CFileSystem::InstanceExists() )
+	if( m_pFileSystem )
 	{
-		fileSystem().Shutdown();
-		filesystem::CFileSystem::DestroyInstance();
+		m_pFileSystem->Shutdown();
 	}
+
+	m_FileSystemLib.Free();
 
 	cvar::cvars().Shutdown();
 

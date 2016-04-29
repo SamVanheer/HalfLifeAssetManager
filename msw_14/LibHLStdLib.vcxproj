@@ -30,6 +30,7 @@
     <ClInclude Include="..\src\html\CHTMLHeader.h" />
     <ClInclude Include="..\src\html\CHTMLPage.h" />
     <ClInclude Include="..\src\html\IHTMLObject.h" />
+    <ClInclude Include="..\src\lib\ILibSystem.h" />
     <ClInclude Include="..\src\stdlib\graphics\BMPFile.h" />
     <ClInclude Include="..\src\stdlib\graphics\GLRenderTarget.h" />
     <ClInclude Include="..\src\stdlib\graphics\OpenGL.h" />

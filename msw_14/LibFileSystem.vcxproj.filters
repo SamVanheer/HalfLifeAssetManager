@@ -19,6 +19,12 @@
     <Filter Include="Source Files\filesystem">
       <UniqueIdentifier>{9b10e276-4ba1-457f-a60a-e8b9f8c1f716}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\lib">
+      <UniqueIdentifier>{bc670b31-3712-4d5e-bfbe-e4e7583fcac2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\lib">
+      <UniqueIdentifier>{6cd7d635-9c3c-4e0e-be3a-5ba3c9673f28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\filesystem\CFileSystem.cpp">
@@ -27,6 +33,9 @@
     <ClCompile Include="..\src\filesystem\FileSystemConstants.cpp">
       <Filter>Source Files\filesystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\lib\LibInterface.cpp">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\filesystem\CFileSystem.h">
@@ -34,6 +43,12 @@
     </ClInclude>
     <ClInclude Include="..\src\filesystem\FileSystemConstants.h">
       <Filter>Header Files\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\filesystem\IFileSystem.h">
+      <Filter>Header Files\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lib\LibInterface.h">
+      <Filter>Header Files\lib</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

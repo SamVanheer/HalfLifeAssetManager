@@ -2,45 +2,14 @@
 #include <cstdio>
 
 #include "shared/Logging.h"
+#include "shared/Utility.h"
 #include "utility/StringUtils.h"
 
 #include "CFileSystem.h"
 
 namespace filesystem
 {
-CFileSystem* CFileSystem::m_pInstance = nullptr;
-
-CFileSystem& CFileSystem::CreateInstance()
-{
-	if( m_pInstance )
-	{
-		Warning( "CFileSystem::CreateInstance called multiple times!\n" );
-		return *m_pInstance;
-	}
-
-	m_pInstance = new CFileSystem();
-
-	return *m_pInstance;
-}
-
-void CFileSystem::DestroyInstance()
-{
-	if( m_pInstance )
-	{
-		delete m_pInstance;
-		m_pInstance = nullptr;
-	}
-}
-
-bool CFileSystem::InstanceExists()
-{
-	return m_pInstance != nullptr;
-}
-
-CFileSystem& CFileSystem::GetInstance()
-{
-	return *m_pInstance;
-}
+REGISTER_SINGLE_INTERFACE( IFILESYSTEM_NAME, CFileSystem );
 
 CFileSystem::CFileSystem()
 {
@@ -61,6 +30,24 @@ bool CFileSystem::Initialize()
 void CFileSystem::Shutdown()
 {
 	RemoveAllSearchPaths();
+}
+
+/**
+*	List of all directory extensions used by SteamPipe.
+*/
+const char* const STEAMPIPE_DIRECTORY_EXTS[] =
+{
+	"",
+	"_downloads",
+	"_addon",
+	"_hd"
+};
+
+size_t CFileSystem::GetSteamPipeDirectoryExtensions( const char* const*& ppszDirectoryExts )
+{
+	ppszDirectoryExts = STEAMPIPE_DIRECTORY_EXTS;
+
+	return ARRAYSIZE( STEAMPIPE_DIRECTORY_EXTS );
 }
 
 const char* CFileSystem::GetBasePath() const
@@ -128,6 +115,7 @@ void CFileSystem::RemoveAllSearchPaths()
 	m_SearchPaths.clear();
 }
 
+//TODO: move into CFileSystem
 static bool RelativePath_CheckFileExists( CFileSystem& fileSystem, const char* const pszCompletePath, const size_t uiLength, char* pszOutPath, size_t uiBufferSize )
 {
 	if( fileSystem.FileExists( pszCompletePath ) )

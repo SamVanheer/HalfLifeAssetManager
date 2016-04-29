@@ -28,6 +28,8 @@
     <ClCompile Include="..\src\game\entity\EHandle.cpp" />
     <ClCompile Include="..\src\graphics\Constants.cpp" />
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
+    <ClCompile Include="..\src\lib\CLibrary.cpp" />
+    <ClCompile Include="..\src\lib\LibInterface.cpp" />
     <ClCompile Include="..\src\tools\hlmv\CHLMVState.cpp" />
     <ClCompile Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.cpp" />
     <ClCompile Include="..\src\tools\hlmv\settings\CHLMVSettings.cpp" />
@@ -67,6 +69,8 @@
     <ClInclude Include="..\src\game\entity\EntityConstants.h" />
     <ClInclude Include="..\src\graphics\Constants.h" />
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
+    <ClInclude Include="..\src\lib\CLibrary.h" />
+    <ClInclude Include="..\src\lib\LibInterface.h" />
     <ClInclude Include="..\src\tools\hlmv\CHLMVState.h" />
     <ClInclude Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.h" />
     <ClInclude Include="..\src\tools\hlmv\settings\CHLMVSettings.h" />
@@ -184,7 +188,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\bin;$(SolutionDir)..\external\FMOD\lib;$(SolutionDir)..\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;LibFileSystem.lib;LibSoundSystem.lib;opengl32.lib;glu32.lib;glew32.lib;fmodex_vc.lib;wxbase31ud.lib;wxmsw31ud_core.lib;wxmsw31ud_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;LibSoundSystem.lib;opengl32.lib;glu32.lib;glew32.lib;fmodex_vc.lib;wxbase31ud.lib;wxmsw31ud_core.lib;wxmsw31ud_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>C:\wxWidgets-3.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -222,7 +226,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\bin;$(SolutionDir)..\external\FMOD\lib;$(SolutionDir)..\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;LibFileSystem.lib;LibSoundSystem.lib;opengl32.lib;glu32.lib;glew32.lib;fmodex_vc.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;LibSoundSystem.lib;opengl32.lib;glu32.lib;glew32.lib;fmodex_vc.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>C:\wxWidgets-3.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

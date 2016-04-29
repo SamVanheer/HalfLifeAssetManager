@@ -103,6 +103,12 @@
     <Filter Include="Source Files\ui\wx\utility">
       <UniqueIdentifier>{5b24a20a-49ba-45aa-8857-fe04a0e559fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\lib">
+      <UniqueIdentifier>{10ddbcbf-e58d-4f87-93b4-cf993f48e3f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lib">
+      <UniqueIdentifier>{a29b46bb-aa08-44a4-9370-87641fbe5d34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
@@ -212,6 +218,12 @@
     </ClCompile>
     <ClCompile Include="..\src\ui\wx\utility\wxUtil.cpp">
       <Filter>Source Files\ui\wx\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\lib\CLibrary.cpp">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\lib\LibInterface.cpp">
+      <Filter>Source Files\lib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -340,6 +352,12 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\wx\utility\wxUtil.h">
       <Filter>Header Files\ui\wx\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lib\CLibrary.h">
+      <Filter>Header Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lib\LibInterface.h">
+      <Filter>Header Files\lib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -9,8 +9,7 @@
 
 #include "keyvalues/Keyvalues.h"
 
-#include "filesystem/FileSystemConstants.h"
-#include "filesystem/CFileSystem.h"
+#include "filesystem/IFileSystem.h"
 
 #include "utility/CString.h"
 #include "utility/IOUtils.h"
@@ -26,9 +25,11 @@ const double CBaseSettings::MIN_FPS = 15.0;
 //wxTimer seems to have issues going higher than ~64 FPS. Might be good to use a more game engine like main loop instead of a timer.
 const double CBaseSettings::MAX_FPS = 60.0; //500.0;
 
-CBaseSettings::CBaseSettings()
-	: m_ConfigManager( std::make_shared<CGameConfigManager>() )
+CBaseSettings::CBaseSettings( filesystem::IFileSystem* const pFileSystem )
+	: m_pFileSystem( pFileSystem )
+	, m_ConfigManager( std::make_shared<CGameConfigManager>() )
 {
+	assert( pFileSystem );
 }
 
 CBaseSettings::~CBaseSettings()
@@ -36,7 +37,7 @@ CBaseSettings::~CBaseSettings()
 }
 
 CBaseSettings::CBaseSettings( const CBaseSettings& other )
-	: CBaseSettings()
+	: CBaseSettings( other.m_pFileSystem )
 {
 	Copy( other );
 }
@@ -53,6 +54,8 @@ CBaseSettings& CBaseSettings::operator=( const CBaseSettings& other )
 
 void CBaseSettings::Copy( const CBaseSettings& other )
 {
+	//Don't copy the filesystem.
+
 	*m_ConfigManager = *other.m_ConfigManager;
 
 	SetFPS( other.GetFPS() );
@@ -140,7 +143,7 @@ void CBaseSettings::Shutdown( const char* const pszFilename )
 
 bool CBaseSettings::InitializeFileSystem()
 {
-	fileSystem().RemoveAllSearchPaths();
+	m_pFileSystem->RemoveAllSearchPaths();
 
 	bool bResult = true;
 
@@ -154,26 +157,30 @@ bool CBaseSettings::InitializeFileSystem()
 
 bool CBaseSettings::InitializeFileSystem( const std::shared_ptr<const CGameConfig>& config )
 {
-	fileSystem().SetBasePath( config->GetBasePath() );
+	m_pFileSystem->SetBasePath( config->GetBasePath() );
 
 	CString szPath;
+
+	const char* const* ppszDirectoryExts;
+
+	const size_t uiNumExts = m_pFileSystem->GetSteamPipeDirectoryExtensions( ppszDirectoryExts );
 
 	//Add mod dirs first, since they override game dirs.
 	if( strcmp( config->GetGameDir(), config->GetModDir() ) )
 	{
-		for( size_t uiIndex = 0; uiIndex < filesystem::NUM_STEAMPIPE_DIRECTORY_EXTS; ++uiIndex )
+		for( size_t uiIndex = 0; uiIndex < uiNumExts; ++uiIndex )
 		{
-			szPath.Format( "%s%s", config->GetModDir(), filesystem::STEAMPIPE_DIRECTORY_EXTS[ uiIndex ] );
+			szPath.Format( "%s%s", config->GetModDir(), ppszDirectoryExts[ uiIndex ] );
 
-			fileSystem().AddSearchPath( szPath.CStr() );
+			m_pFileSystem->AddSearchPath( szPath.CStr() );
 		}
 	}
 
-	for( size_t uiIndex = 0; uiIndex < filesystem::NUM_STEAMPIPE_DIRECTORY_EXTS; ++uiIndex )
+	for( size_t uiIndex = 0; uiIndex < uiNumExts; ++uiIndex )
 	{
-		szPath.Format( "%s%s", config->GetGameDir(), filesystem::STEAMPIPE_DIRECTORY_EXTS[ uiIndex ] );
+		szPath.Format( "%s%s", config->GetGameDir(), ppszDirectoryExts[ uiIndex ] );
 
-		fileSystem().AddSearchPath( szPath.CStr() );
+		m_pFileSystem->AddSearchPath( szPath.CStr() );
 	}
 
 	return true;
