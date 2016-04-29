@@ -3,7 +3,7 @@
 
 #include "cvar/CCVarSystem.h"
 #include "filesystem/IFileSystem.h"
-#include "soundsystem/CSoundSystem.h"
+#include "soundsystem/ISoundSystem.h"
 
 #include "ui/wx/CwxOpenGL.h"
 
@@ -20,6 +20,8 @@
 #include "shared/studiomodel/CStudioModelRenderer.h"
 
 #include "CBaseTool.h"
+
+soundsystem::ISoundSystem* g_pSoundSystem = nullptr;
 
 namespace tools
 {
@@ -139,15 +141,29 @@ bool CBaseTool::Initialize()
 
 	wxInitAllImageHandlers();
 
-	soundsystem::CSoundSystem::CreateInstance();
+	if( !m_SoundSystemLib.Load( "LibSoundSystem.dll" ) )
+	{
+		wxMessageBox( "Failed to load sound system library", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
 
-	if( !soundSystem().Connect( &CreateInterface, fileSystemFactory ) )
+	const CreateInterfaceFn soundSystemFactory = static_cast<CreateInterfaceFn>( m_SoundSystemLib.GetFunctionAddress( CREATEINTERFACE_NAME ) );
+
+	if( !soundSystemFactory )
+	{
+		wxMessageBox( "Failed to get sound system factory", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	g_pSoundSystem = m_pSoundSystem = static_cast<soundsystem::ISoundSystem*>( soundSystemFactory( ISOUNDSYSTEM_NAME, nullptr ) );
+
+	if( !m_pSoundSystem->Connect( &CreateInterface, fileSystemFactory ) )
 	{
 		wxMessageBox( "Failed to connect sound system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
 	}
 
-	if( !soundSystem().Initialize() )
+	if( !m_pSoundSystem->Initialize() )
 	{
 		wxMessageBox( "Failed to initialize sound system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
@@ -221,14 +237,17 @@ void CBaseTool::Shutdown()
 
 	EntityManager().Shutdown();
 
-	if( soundsystem::CSoundSystem::InstanceExists() )
+	if( m_pSoundSystem )
 	{
-		soundSystem().Shutdown();
+		m_pSoundSystem->Shutdown();
 
-		soundSystem().Disconnect();
+		m_pSoundSystem->Disconnect();
 
-		soundsystem::CSoundSystem::DestroyInstance();
+		m_pSoundSystem = nullptr;
+		g_pSoundSystem = nullptr;
 	}
+
+	m_SoundSystemLib.Free();
 
 	if( CwxOpenGL::InstanceExists() )
 	{
@@ -242,6 +261,7 @@ void CBaseTool::Shutdown()
 	if( m_pFileSystem )
 	{
 		m_pFileSystem->Shutdown();
+		m_pFileSystem = nullptr;
 	}
 
 	m_FileSystemLib.Free();
@@ -279,8 +299,7 @@ void CBaseTool::ToolRunFrame()
 
 	studiomodel::renderer().RunFrame();
 
-	if( soundsystem::CSoundSystem::InstanceExists() )
-		soundSystem().RunFrame();
+	m_pSoundSystem->RunFrame();
 
 	RunFrame();
 }

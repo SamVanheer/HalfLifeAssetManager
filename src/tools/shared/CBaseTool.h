@@ -21,6 +21,11 @@ namespace filesystem
 class IFileSystem;
 }
 
+namespace soundsystem
+{
+class ISoundSystem;
+}
+
 namespace ui
 {
 class CMessagesWindow;
@@ -59,6 +64,11 @@ public:
 	*	Gets the file system.
 	*/
 	filesystem::IFileSystem* GetFileSystem() const { return m_pFileSystem; }
+
+	/**
+	*	Gets the sound system.
+	*/
+	soundsystem::ISoundSystem* GetSoundSystem() const { return m_pSoundSystem; }
 
 	/**
 	*	Gets the settings object.
@@ -204,8 +214,10 @@ private:
 	wxString m_szLogFileName;
 
 	CLibrary m_FileSystemLib;
+	CLibrary m_SoundSystemLib;
 
 	filesystem::IFileSystem* m_pFileSystem = nullptr;
+	soundsystem::ISoundSystem* m_pSoundSystem = nullptr;
 
 	settings::CBaseSettings* m_pSettings = nullptr;
 

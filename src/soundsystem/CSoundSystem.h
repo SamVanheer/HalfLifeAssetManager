@@ -3,9 +3,9 @@
 
 #include <list>
 
-#include "lib/ILibSystem.h"
-
 #include "SoundConstants.h"
+
+#include "ISoundSystem.h"
 
 namespace FMOD
 {
@@ -19,12 +19,15 @@ namespace filesystem
 class IFileSystem;
 }
 
+/**
+*	@ingroup SoundSystem
+*
+*	@{
+*/
+
 namespace soundsystem
 {
-/**
-*	A sound system that can be used to play back sounds. Sounds are non-looping.
-*/
-class CSoundSystem final : public ILibSystem
+class CSoundSystem final : public ISoundSystem
 {
 public:
 	//Maximum number of sounds to play simultaneously.
@@ -39,11 +42,6 @@ private:
 	};
 
 public:
-	static CSoundSystem& CreateInstance();
-	static void DestroyInstance();
-	static bool InstanceExists();
-	static CSoundSystem& GetInstance();
-
 	CSoundSystem();
 	~CSoundSystem();
 
@@ -51,37 +49,23 @@ public:
 
 	void Disconnect() override final;
 
-	bool Initialize();
-	void Shutdown();
+	bool Initialize() override final;
+	void Shutdown() override final;
 
-	/**
-	*	Must be called every frame.
-	*/
-	void RunFrame();
+	void RunFrame() override final;
 
 public:
 
 	//Sound playback API
 
-	/**
-	*	Plays a sound by name. The filename is relative to the game's sound directory, and is looked up using the filesystem.
-	*	@param pszFilename Sound filename.
-	*	@param flVolume Volume. Expressed as a range between [0, 1].
-	*	@param iPitch Pitch amount. Expressed as a range between [0, 255].
-	*/
-	void PlaySound( const char* pszFilename, float flVolume, int iPitch );
+	void PlaySound( const char* pszFilename, float flVolume, int iPitch ) override final;
 
-	/**
-	*	Stops all sounds that are currently playing.
-	*/
-	void StopAllSounds();
+	void StopAllSounds() override final;
 
 private:
 	size_t GetSoundForPlayback();
 
 private:
-	static CSoundSystem* m_pInstance;
-
 	filesystem::IFileSystem* m_pFileSystem = nullptr;
 
 	FMOD::System* m_pSystem = nullptr;
@@ -96,10 +80,6 @@ private:
 };
 }
 
-//TODO move to its own library
-inline soundsystem::CSoundSystem& soundSystem()
-{
-	return soundsystem::CSoundSystem::GetInstance();
-}
+/** @} */
 
 #endif //SOUNDSYSTEM_CSOUNDSYSTEM_H

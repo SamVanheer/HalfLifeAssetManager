@@ -1,10 +1,14 @@
-#include "soundsystem/CSoundSystem.h"
+#include "soundsystem/SoundConstants.h"
+#include "soundsystem/ISoundSystem.h"
 
 #include "cvar/CCVar.h"
 
 #include "../CHLMVState.h"
 
 #include "CHLMVStudioModelEntity.h"
+
+//TODO: remove
+extern soundsystem::ISoundSystem* g_pSoundSystem;
 
 static cvar::CCVar s_ent_playsounds( "s_ent_playsounds", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "Whether or not to play sounds triggered by animation events" ) );
 static cvar::CCVar s_ent_pitchframerate( "s_ent_pitchframerate", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, event sounds are pitch modulated based on the framerate" ) );
@@ -58,7 +62,7 @@ void CHLMVStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 					iPitch = static_cast<int>( iPitch * GetFrameRate() );
 				}
 
-				soundSystem().PlaySound( event.pszOptions, soundsystem::VOLUME_NORM, iPitch );
+				g_pSoundSystem->PlaySound( event.pszOptions, soundsystem::VOLUME_NORM, iPitch );
 			}
 
 			break;

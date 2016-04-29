@@ -7,12 +7,16 @@
 #include "shared/Logging.h"
 #include "shared/Utility.h"
 
+#include "lib/LibInterface.h"
+
 #include "filesystem/IFileSystem.h"
 
 #include "CSoundSystem.h"
 
 namespace soundsystem
 {
+REGISTER_SINGLE_INTERFACE( ISOUNDSYSTEM_NAME, CSoundSystem );
+
 /**
 *	Checks the result of an FMOD operation. If the result is not ok, returns true.
 *	@param result Result to check
@@ -28,40 +32,6 @@ bool CheckFMODResult( const FMOD_RESULT result )
 	Error( "FMOD Error: %s (error code: %d)\n", static_cast<const char*>( pszError ), static_cast<int>( result ) );
 
 	return true;
-}
-
-CSoundSystem* CSoundSystem::m_pInstance = nullptr;
-
-CSoundSystem& CSoundSystem::CreateInstance()
-{
-	if( m_pInstance )
-	{
-		Warning( "CSoundSystem::CreateInstance called multiple times!\n" );
-		return *m_pInstance;
-	}
-
-	m_pInstance = new CSoundSystem();
-
-	return *m_pInstance;
-}
-
-void CSoundSystem::DestroyInstance()
-{
-	if( m_pInstance )
-	{
-		delete m_pInstance;
-		m_pInstance = nullptr;
-	}
-}
-
-bool CSoundSystem::InstanceExists()
-{
-	return m_pInstance != nullptr;
-}
-
-CSoundSystem& CSoundSystem::GetInstance()
-{
-	return *m_pInstance;
 }
 
 CSoundSystem::CSoundSystem()

@@ -19,6 +19,12 @@
     <Filter Include="Source Files\soundsystem">
       <UniqueIdentifier>{5c26f32c-7cb4-4efa-afdf-d2056bdd1225}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\lib">
+      <UniqueIdentifier>{90c3f56b-2724-42b5-8d58-5a6b2a63fce6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lib">
+      <UniqueIdentifier>{970ff582-ec62-4514-8406-2fcd4641e2ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\soundsystem\CSoundSystem.h">
@@ -27,10 +33,19 @@
     <ClInclude Include="..\src\soundsystem\SoundConstants.h">
       <Filter>Header Files\soundsystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\soundsystem\ISoundSystem.h">
+      <Filter>Header Files\soundsystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lib\LibInterface.h">
+      <Filter>Header Files\lib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\soundsystem\CSoundSystem.cpp">
       <Filter>Source Files\soundsystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\lib\LibInterface.cpp">
+      <Filter>Source Files\lib</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
