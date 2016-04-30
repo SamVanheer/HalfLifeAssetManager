@@ -41,6 +41,7 @@
     <ClInclude Include="..\src\stdlib\settings\CRecentFiles.h" />
     <ClInclude Include="..\src\stdlib\settings\GameConfigIO.h" />
     <ClInclude Include="..\src\stdlib\utility\BoundingBox.h" />
+    <ClInclude Include="..\src\stdlib\utility\ByteSwap.h" />
     <ClInclude Include="..\src\stdlib\utility\CCommand.h" />
     <ClInclude Include="..\src\stdlib\utility\CEscapeSequences.h" />
     <ClInclude Include="..\src\stdlib\utility\CMemory.h" />
@@ -68,6 +69,7 @@
     <ClCompile Include="..\src\stdlib\settings\CGameConfigManager.cpp" />
     <ClCompile Include="..\src\stdlib\settings\CRecentFiles.cpp" />
     <ClCompile Include="..\src\stdlib\settings\GameConfigIO.cpp" />
+    <ClCompile Include="..\src\stdlib\utility\ByteSwap.cpp" />
     <ClCompile Include="..\src\stdlib\utility\CCommand.cpp" />
     <ClCompile Include="..\src\stdlib\utility\CEscapeSequences.cpp" />
     <ClCompile Include="..\src\stdlib\utility\Color.cpp" />

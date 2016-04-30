@@ -159,6 +159,9 @@
     <ClInclude Include="..\src\lib\ILibSystem.h">
       <Filter>Header Files\lib</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\stdlib\utility\ByteSwap.h">
+      <Filter>Header Files\stdlib\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\stdlib\utility\CString.cpp">
@@ -229,6 +232,9 @@
     </ClCompile>
     <ClCompile Include="..\src\html\CHTMLPage.cpp">
       <Filter>Source Files\stdlib\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\utility\ByteSwap.cpp">
+      <Filter>Source Files\stdlib\utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

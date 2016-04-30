@@ -78,3 +78,5 @@ msw_14/Release/RCa37624
 *.lastcodeanalysissucceeded
 *.nativecodeanalysis.all.xml
 *.nativecodeanalysis.xml
+*.aps
+bin/SpriteViewerSettings.txt

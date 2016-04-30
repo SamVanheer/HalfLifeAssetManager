@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\tools">
+      <UniqueIdentifier>{44339db8-92b8-474c-8617-ed66de79f51b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tools\shared">
+      <UniqueIdentifier>{86cb0b94-9ae5-48c8-b261-4b792949f511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tools">
+      <UniqueIdentifier>{8ef486d0-8dda-4b2d-87e4-eba3fbb24240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tools\shared">
+      <UniqueIdentifier>{f93b8c42-d8fc-43b5-a773-c2f61091f464}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tools\spriteviewer">
+      <UniqueIdentifier>{3da33f4c-a78f-4a28-92ae-a2c31358c09a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tools\spriteviewer">
+      <UniqueIdentifier>{cbaa5c6b-6e36-471d-8d09-333bb4213bcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tools\spriteviewer\ui">
+      <UniqueIdentifier>{444fe3cd-b80c-4807-93b7-40dddf0ed758}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tools\spriteviewer\ui">
+      <UniqueIdentifier>{1f78e824-78e4-4275-a4a6-7e97eac5ea15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tools\spriteviewer\settings">
+      <UniqueIdentifier>{28a65a05-04e1-47bb-9983-cfd2d779c7a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tools\spriteviewer\settings">
+      <UniqueIdentifier>{92fc3764-3359-45a2-9817-a1ae96f4ae80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\game">
+      <UniqueIdentifier>{5576ccca-cc04-43ce-8625-2fc6d37af744}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\game\entity">
+      <UniqueIdentifier>{56dcc681-d1e5-4de6-80ba-fb71fb3e0fce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game">
+      <UniqueIdentifier>{465f41ca-fa03-44d9-92d2-5becd5e45eaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game\entity">
+      <UniqueIdentifier>{55d8f987-354c-40e7-b713-3c63110b45f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\lib">
+      <UniqueIdentifier>{5bb629b0-adc6-4750-9115-9de9f1fb4e7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lib">
+      <UniqueIdentifier>{e8faa711-89b8-4bab-b5a0-c05d7711295c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui">
+      <UniqueIdentifier>{3ff7ae08-8f5d-4f01-abf3-53604c30c0b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui">
+      <UniqueIdentifier>{0073c968-f45a-45bf-b3d5-04552c7bb968}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui\wx">
+      <UniqueIdentifier>{4c3eee9e-0ae3-4c3f-88a0-4c63fc5a6466}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui\wx\shared">
+      <UniqueIdentifier>{d1fabc7d-283e-40c6-998d-6dee61511529}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ui\wx\utility">
+      <UniqueIdentifier>{2e6fbd63-0c60-4a69-b90a-6c7fe5ea0b01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui\wx">
+      <UniqueIdentifier>{1ef303c2-1dac-419e-8d63-3423c6682cd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui\wx\shared">
+      <UniqueIdentifier>{1980fac9-4939-4719-9130-c6d1eed55199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui\wx\utility">
+      <UniqueIdentifier>{6fcf3c4a-0452-4d2a-adcf-a16f723d41e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics">
+      <UniqueIdentifier>{1a809eea-f96e-431c-9f5d-4477af1a588c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics">
+      <UniqueIdentifier>{bffd1570-bc81-4709-ae21-1bb73fb3aa28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine">
+      <UniqueIdentifier>{8d884a1c-6189-4c50-95c6-546b74b41c34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\shared">
+      <UniqueIdentifier>{82908dd8-bcc9-46bc-bedd-7c5e1322db36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\shared\sprite">
+      <UniqueIdentifier>{781f8138-c18a-43f6-9a43-258dfbbc75c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{3ea5cd0b-1c2a-4a2c-af26-aaa1f75f40b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\shared">
+      <UniqueIdentifier>{8b192e57-74f7-41f6-8e31-bd6ab1a22fc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\shared\sprite">
+      <UniqueIdentifier>{ad30220c-ae50-4d06-ac93-e7bed6f95bad}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\tools\shared\CBaseTool.h">
+      <Filter>Header Files\tools\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\shared\Credits.h">
+      <Filter>Header Files\tools\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteViewer.h">
+      <Filter>Header Files\tools\spriteviewer\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteViewerApp.h">
+      <Filter>Header Files\tools\spriteviewer\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\spriteviewer\settings\CSpriteViewerSettings.h">
+      <Filter>Header Files\tools\spriteviewer\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\spriteviewer\ui\wxSpriteViewer.h">
+      <Filter>Header Files\tools\spriteviewer\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\spriteviewer\ui\C3DView.h">
+      <Filter>Header Files\tools\spriteviewer\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\spriteviewer\ui\CMainWindow.h">
+      <Filter>Header Files\tools\spriteviewer\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\spriteviewer\ui\CMainPanel.h">
+      <Filter>Header Files\tools\spriteviewer\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\spriteviewer\CSpriteViewerState.h">
+      <Filter>Header Files\tools\spriteviewer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CBaseAnimating.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CBaseEntity.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CBaseEntityList.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CEntityDict.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CEntityManager.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CStudioModelEntity.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\EHandle.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\EntityConstants.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\game\entity\CSpriteEntity.h">
+      <Filter>Header Files\game\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lib\LibInterface.h">
+      <Filter>Header Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\CwxBaseApp.h">
+      <Filter>Header Files\ui\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\CwxOpenGL.h">
+      <Filter>Header Files\ui\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\wxInclude.h">
+      <Filter>Header Files\ui\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\wxLogging.h">
+      <Filter>Header Files\ui\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\shared\CMessagesWindow.h">
+      <Filter>Header Files\ui\wx\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\shared\CwxBaseGLCanvas.h">
+      <Filter>Header Files\ui\wx\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\utility\CTimer.h">
+      <Filter>Header Files\ui\wx\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\utility\IWindowCloseListener.h">
+      <Filter>Header Files\ui\wx\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\utility\wxUtil.h">
+      <Filter>Header Files\ui\wx\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lib\CLibrary.h">
+      <Filter>Header Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphics\GraphicsHelpers.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\sprite\CSprite.h">
+      <Filter>Header Files\engine\shared\sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\sprite\sprite.h">
+      <Filter>Header Files\engine\shared\sprite</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
+      <Filter>Source Files\tools\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\shared\Credits.cpp">
+      <Filter>Source Files\tools\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteViewer.cpp">
+      <Filter>Source Files\tools\spriteviewer\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteViewerApp.cpp">
+      <Filter>Source Files\tools\spriteviewer\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\spriteviewer\settings\CSpriteViewerSettings.cpp">
+      <Filter>Source Files\tools\spriteviewer\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\spriteviewer\ui\C3DView.cpp">
+      <Filter>Source Files\tools\spriteviewer\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\spriteviewer\ui\CMainWindow.cpp">
+      <Filter>Source Files\tools\spriteviewer\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\spriteviewer\ui\CMainPanel.cpp">
+      <Filter>Source Files\tools\spriteviewer\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\spriteviewer\CSpriteViewerState.cpp">
+      <Filter>Source Files\tools\spriteviewer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CBaseAnimating.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CBaseEntity.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CBaseEntityList.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CEntityDict.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CEntityManager.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CStudioModelEntity.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\EHandle.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\game\entity\CSpriteEntity.cpp">
+      <Filter>Source Files\game\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\lib\LibInterface.cpp">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\CwxBaseApp.cpp">
+      <Filter>Source Files\ui\wx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\CwxOpenGL.cpp">
+      <Filter>Source Files\ui\wx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\wxLogging.cpp">
+      <Filter>Source Files\ui\wx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\shared\CMessagesWindow.cpp">
+      <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\shared\CwxBaseGLCanvas.cpp">
+      <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\utility\wxUtil.cpp">
+      <Filter>Source Files\ui\wx\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\lib\CLibrary.cpp">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\shared\sprite\CSprite.cpp">
+      <Filter>Source Files\engine\shared\sprite</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -19,8 +19,7 @@ class CHLMV final : public tools::CBaseTool
 {
 public:
 	/**
-	*	Constructs this class with the given settings.
-	*	@param pSettings Settings to use.
+	*	Constructor.
 	*/
 	CHLMV();
 

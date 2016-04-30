@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{28F4FDC3-3FEE-4462-8C4F-032A48797630}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>SpriteViewer</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Shared.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Shared.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Shared.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Shared.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;WXUSINGDLL;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\bin;$(SolutionDir)..\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;opengl32.lib;glu32.lib;glew32.lib;wxbase31ud.lib;wxmsw31ud_core.lib;wxmsw31ud_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;WXUSINGDLL;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\wxWidgets-3.1.0\include;C:\wxWidgets-3.1.0\lib\vc140_dll\mswu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\bin;$(SolutionDir)..\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;opengl32.lib;glu32.lib;glew32.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\engine\shared\sprite\CSprite.h" />
+    <ClInclude Include="..\src\engine\shared\sprite\sprite.h" />
+    <ClInclude Include="..\src\game\entity\CBaseAnimating.h" />
+    <ClInclude Include="..\src\game\entity\CBaseEntity.h" />
+    <ClInclude Include="..\src\game\entity\CBaseEntityList.h" />
+    <ClInclude Include="..\src\game\entity\CEntityDict.h" />
+    <ClInclude Include="..\src\game\entity\CEntityManager.h" />
+    <ClInclude Include="..\src\game\entity\CSpriteEntity.h" />
+    <ClInclude Include="..\src\game\entity\CStudioModelEntity.h" />
+    <ClInclude Include="..\src\game\entity\EHandle.h" />
+    <ClInclude Include="..\src\game\entity\EntityConstants.h" />
+    <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
+    <ClInclude Include="..\src\lib\CLibrary.h" />
+    <ClInclude Include="..\src\lib\LibInterface.h" />
+    <ClInclude Include="..\src\tools\shared\CBaseTool.h" />
+    <ClInclude Include="..\src\tools\shared\Credits.h" />
+    <ClInclude Include="..\src\tools\spriteviewer\CSpriteViewerState.h" />
+    <ClInclude Include="..\src\tools\spriteviewer\settings\CSpriteViewerSettings.h" />
+    <ClInclude Include="..\src\tools\spriteviewer\ui\C3DView.h" />
+    <ClInclude Include="..\src\tools\spriteviewer\ui\CMainPanel.h" />
+    <ClInclude Include="..\src\tools\spriteviewer\ui\CMainWindow.h" />
+    <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteViewer.h" />
+    <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteViewerApp.h" />
+    <ClInclude Include="..\src\tools\spriteviewer\ui\wxSpriteViewer.h" />
+    <ClInclude Include="..\src\ui\wx\CwxBaseApp.h" />
+    <ClInclude Include="..\src\ui\wx\CwxOpenGL.h" />
+    <ClInclude Include="..\src\ui\wx\shared\CMessagesWindow.h" />
+    <ClInclude Include="..\src\ui\wx\shared\CwxBaseGLCanvas.h" />
+    <ClInclude Include="..\src\ui\wx\utility\CTimer.h" />
+    <ClInclude Include="..\src\ui\wx\utility\IWindowCloseListener.h" />
+    <ClInclude Include="..\src\ui\wx\utility\wxUtil.h" />
+    <ClInclude Include="..\src\ui\wx\wxInclude.h" />
+    <ClInclude Include="..\src\ui\wx\wxLogging.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\engine\shared\sprite\CSprite.cpp" />
+    <ClCompile Include="..\src\game\entity\CBaseAnimating.cpp" />
+    <ClCompile Include="..\src\game\entity\CBaseEntity.cpp" />
+    <ClCompile Include="..\src\game\entity\CBaseEntityList.cpp" />
+    <ClCompile Include="..\src\game\entity\CEntityDict.cpp" />
+    <ClCompile Include="..\src\game\entity\CEntityManager.cpp" />
+    <ClCompile Include="..\src\game\entity\CSpriteEntity.cpp" />
+    <ClCompile Include="..\src\game\entity\CStudioModelEntity.cpp" />
+    <ClCompile Include="..\src\game\entity\EHandle.cpp" />
+    <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
+    <ClCompile Include="..\src\lib\CLibrary.cpp" />
+    <ClCompile Include="..\src\lib\LibInterface.cpp" />
+    <ClCompile Include="..\src\tools\shared\CBaseTool.cpp" />
+    <ClCompile Include="..\src\tools\shared\Credits.cpp" />
+    <ClCompile Include="..\src\tools\spriteviewer\CSpriteViewerState.cpp" />
+    <ClCompile Include="..\src\tools\spriteviewer\settings\CSpriteViewerSettings.cpp" />
+    <ClCompile Include="..\src\tools\spriteviewer\ui\C3DView.cpp" />
+    <ClCompile Include="..\src\tools\spriteviewer\ui\CMainPanel.cpp" />
+    <ClCompile Include="..\src\tools\spriteviewer\ui\CMainWindow.cpp" />
+    <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteViewer.cpp" />
+    <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteViewerApp.cpp" />
+    <ClCompile Include="..\src\ui\wx\CwxBaseApp.cpp" />
+    <ClCompile Include="..\src\ui\wx\CwxOpenGL.cpp" />
+    <ClCompile Include="..\src\ui\wx\shared\CMessagesWindow.cpp" />
+    <ClCompile Include="..\src\ui\wx\shared\CwxBaseGLCanvas.cpp" />
+    <ClCompile Include="..\src\ui\wx\utility\wxUtil.cpp" />
+    <ClCompile Include="..\src\ui\wx\wxLogging.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
