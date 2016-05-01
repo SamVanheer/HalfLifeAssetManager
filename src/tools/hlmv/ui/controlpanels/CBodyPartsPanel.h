@@ -59,6 +59,7 @@ private:
 	wxComboBox* m_pController;
 
 	wxSlider* m_pControllerSlider;
+	float m_flControllerSliderScale = 1.0f;	//The controller slider scale is used for ranges too small to work with integers.
 
 	//Info text
 	wxPanel* m_pModelInfo;

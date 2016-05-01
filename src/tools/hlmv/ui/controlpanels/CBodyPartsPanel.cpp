@@ -347,8 +347,37 @@ void CBodyPartsPanel::SetController( int iIndex )
 
 	const mstudiobonecontroller_t* const pbonecontrollers = ( mstudiobonecontroller_t* ) ( ( byte* ) pHdr + pHdr->bonecontrollerindex );
 
+	const mstudiobonecontroller_t& controller = pbonecontrollers[ iIndex ];
+
 	m_pController->Select( iIndex );
-	m_pControllerSlider->SetRange( ( int ) pbonecontrollers[ iIndex ].start, ( int ) pbonecontrollers[ iIndex ].end );
+
+	float flStart, flEnd;
+
+	//Swap values if the range is inverted.
+	if( controller.end < controller.start )
+	{
+		flStart = controller.end;
+		flEnd = controller.start;
+	}
+	else
+	{
+		flStart = controller.start;
+		flEnd = controller.end;
+	}
+
+	//Should probably scale as needed so the range is sufficiently large.
+	//This prevents ranges that cover less than a whole integer from not doing anything.
+	if( ( flEnd - flStart ) < 1.0f )
+	{
+		m_flControllerSliderScale = 100.0f;
+	}
+	else
+	{
+		m_flControllerSliderScale = 1.0f;
+	}
+
+	m_pControllerSlider->SetRange( ( int ) ( flStart * m_flControllerSliderScale ), ( int ) ( flEnd * m_flControllerSliderScale ) );
+
 	m_pControllerSlider->SetValue( pEntity->GetControllerValue( iIndex ) );
 	m_pControllerSlider->Enable( true );
 }
@@ -369,10 +398,13 @@ void CBodyPartsPanel::SetControllerValue( int iIndex, int iValue )
 
 		const mstudiobonecontroller_t* const pbonecontrollers = ( mstudiobonecontroller_t* ) ( ( byte* ) pHdr + pHdr->bonecontrollerindex );
 
+		const float flValue = ( static_cast<float>( iValue ) / m_flControllerSliderScale );
+
+		//TODO: support multiple mouth controllers somehow.
 		if( pbonecontrollers[ iIndex ].index == STUDIO_MOUTH_CONTROLLER )
-			pEntity->SetMouth( iValue );
+			pEntity->SetMouth( flValue );
 		else
-			pEntity->SetController( pbonecontrollers[ iIndex ].index, iValue );
+			pEntity->SetController( pbonecontrollers[ iIndex ].index, flValue );
 	}
 }
 }
