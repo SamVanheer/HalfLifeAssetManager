@@ -228,6 +228,9 @@
     <ClCompile Include="..\src\ui\wx\utility\CwxRecentFiles.cpp">
       <Filter>Source Files\ui\wx\utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\ui\wx\shared\CwxBaseFrame.cpp">
+      <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\Constants.h">
@@ -364,6 +367,9 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\wx\utility\CwxRecentFiles.h">
       <Filter>Header Files\ui\wx\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\shared\CwxBaseFrame.h">
+      <Filter>Header Files\ui\wx\shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

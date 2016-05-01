@@ -6,13 +6,14 @@
 #include "../settings/CSpriteViewerSettings.h"
 
 #include "ui/wx/utility/CwxRecentFiles.h"
+#include "ui/wx/shared/CwxBaseFrame.h"
 
 namespace sprview
 {
 class CSpriteViewer;
 class CMainPanel;
 
-class CMainWindow final : public wxFrame
+class CMainWindow final : public ui::CwxBaseFrame
 {
 public:
 	CMainWindow( CSpriteViewer* const pSpriteViewer );

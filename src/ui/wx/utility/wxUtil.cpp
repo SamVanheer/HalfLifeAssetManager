@@ -1,5 +1,7 @@
 #include <algorithm>
 
+#include <wx/mimetype.h>
+
 #include "wxUtil.h"
 
 namespace wx
@@ -38,5 +40,31 @@ wxColor ColorTowx( const Color& color )
 Color wxToColor( const wxColor& color )
 {
 	return Color( color.Red(), color.Green(), color.Blue(), color.Alpha() );
+}
+
+bool LaunchDefaultProgram( const wxString& szExtension, const wxString& szParameters )
+{
+	wxFileType* pFileType = wxTheMimeTypesManager->GetFileTypeFromExtension( szExtension );
+
+	bool bSuccess = false;
+
+	if( pFileType )
+	{
+		wxString szOpenCommand;
+
+		if( pFileType->GetOpenCommand( &szOpenCommand, wxFileType::MessageParameters( szParameters ) ) )
+		{
+			bSuccess = wxExecute( szOpenCommand, wxEXEC_ASYNC ) != 0;
+		}
+
+		delete pFileType;
+	}
+
+	return bSuccess;
+}
+
+bool LaunchDefaultTextEditor( const wxString& szFilename )
+{
+	return LaunchDefaultProgram( "txt", szFilename );
 }
 }

@@ -1,9 +1,9 @@
 #include <wx/filename.h>
-#include <wx/mimetype.h>
 
 #include "ui/wx/CwxOpenGL.h"
 
 #include "ui/wx/shared/CMessagesWindow.h"
+#include "ui/wx/utility/wxUtil.h"
 
 #include "CSpriteViewer.h"
 
@@ -17,7 +17,7 @@
 
 namespace sprview
 {
-wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
+wxBEGIN_EVENT_TABLE( CMainWindow, ui::CwxBaseFrame )
 	EVT_MENU( wxID_MAINWND_LOADSPRITE, CMainWindow::LoadSprite )
 	EVT_MENU( wxID_MAINWND_LOADBACKGROUND, CMainWindow::LoadBackgroundTexture )
 	EVT_MENU( wxID_MAINWND_SAVESPRITE, CMainWindow::SaveSprite )
@@ -29,7 +29,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 wxEND_EVENT_TABLE()
 
 CMainWindow::CMainWindow( CSpriteViewer* const pSpriteViewer )
-	: wxFrame( nullptr, wxID_ANY, SPRITEVIEWER_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
+	: CwxBaseFrame( nullptr, wxID_ANY, SPRITEVIEWER_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pSpriteViewer( pSpriteViewer )
 	, m_RecentFiles( pSpriteViewer->GetSettings()->GetRecentFiles() )
 {
@@ -140,7 +140,7 @@ bool CMainWindow::LoadSprite( const wxString& szFilename )
 		const wxCStrData data = szAbsFilename.c_str();
 		const char* const pszAbsFilename = data.AsChar();
 
-		this->SetTitle( wxString::Format( "%s - %s", SPRITEVIEWER_TITLE, pszAbsFilename ) );
+		this->SetTitleContent( pszAbsFilename );
 
 		m_pSpriteViewer->GetSettings()->GetRecentFiles()->Add( pszAbsFilename );
 
@@ -149,7 +149,7 @@ bool CMainWindow::LoadSprite( const wxString& szFilename )
 		Message( "Loaded sprite \"%s\"\n", pszAbsFilename );
 	}
 	else
-		this->SetTitle( SPRITEVIEWER_TITLE );
+		this->ClearTitleContent();
 
 	return bSuccess;
 }
@@ -234,23 +234,7 @@ void CMainWindow::DumpSpriteInfo()
 	if( m_pSpriteViewer->GetState()->DumpSpriteInfo( SPRITEVIEWER_DUMP_SPRITE_INFO_FILE ) )
 	{
 		//Launch the default text editor.
-		wxFileType* pFileType = wxTheMimeTypesManager->GetFileTypeFromExtension( "txt" );
-
-		bool bSuccess = false;
-
-		if( pFileType )
-		{
-			wxString szOpenCommand;
-
-			if( pFileType->GetOpenCommand( &szOpenCommand, wxFileType::MessageParameters( SPRITEVIEWER_DUMP_SPRITE_INFO_FILE ) ) )
-			{
-				bSuccess = wxExecute( szOpenCommand, wxEXEC_ASYNC ) != 0;
-			}
-
-			delete pFileType;
-		}
-
-		if( !bSuccess )
+		if( !wx::LaunchDefaultTextEditor( SPRITEVIEWER_DUMP_SPRITE_INFO_FILE ) )
 		{
 			wxMessageBox( "Unable to open default text editor" );
 		}
@@ -321,7 +305,7 @@ void CMainWindow::OnAbout( wxCommandEvent& event )
 					"%s", 
 					tools::GetSharedCredits()
 					),
-					"About Half-Life Model Viewer", wxOK | wxICON_INFORMATION );
+					"About Half-Life Sprite Viewer", wxOK | wxICON_INFORMATION );
 }
 
 void CMainWindow::OnMessagesWindowClosed( wxCloseEvent& event )

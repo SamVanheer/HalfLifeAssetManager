@@ -1,9 +1,9 @@
 #include <wx/filename.h>
-#include <wx/mimetype.h>
 
 #include "ui/wx/CwxOpenGL.h"
 
 #include "ui/wx/shared/CMessagesWindow.h"
+#include "ui/wx/utility/wxUtil.h"
 
 #include "CHLMV.h"
 
@@ -17,7 +17,7 @@
 
 namespace hlmv
 {
-wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
+wxBEGIN_EVENT_TABLE( CMainWindow, ui::CwxBaseFrame )
 	EVT_MENU( wxID_MAINWND_LOADMODEL, CMainWindow::LoadModel )
 	EVT_MENU( wxID_MAINWND_LOADBACKGROUND, CMainWindow::LoadBackgroundTexture )
 	EVT_MENU( wxID_MAINWND_LOADGROUND, CMainWindow::LoadGroundTexture )
@@ -35,7 +35,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 wxEND_EVENT_TABLE()
 
 CMainWindow::CMainWindow( CHLMV* const pHLMV )
-	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
+	: CwxBaseFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
 	, m_RecentFiles( pHLMV->GetSettings()->GetRecentFiles() )
 {
@@ -162,7 +162,7 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 		const wxCStrData data = szAbsFilename.c_str();
 		const char* const pszAbsFilename = data.AsChar();
 
-		this->SetTitle( wxString::Format( "%s - %s", HLMV_TITLE, pszAbsFilename ) );
+		this->SetTitleContent( pszAbsFilename );
 
 		m_pHLMV->GetSettings()->GetRecentFiles()->Add( pszAbsFilename );
 
@@ -171,7 +171,7 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 		Message( "Loaded model \"%s\"\n", pszAbsFilename );
 	}
 	else
-		this->SetTitle( HLMV_TITLE );
+		this->ClearTitleContent();
 
 	return bSuccess;
 }
@@ -295,23 +295,7 @@ void CMainWindow::DumpModelInfo()
 	if( m_pHLMV->GetState()->DumpModelInfo( HLMV_DUMP_MODEL_INFO_FILE ) )
 	{
 		//Launch the default text editor.
-		wxFileType* pFileType = wxTheMimeTypesManager->GetFileTypeFromExtension( "txt" );
-
-		bool bSuccess = false;
-
-		if( pFileType )
-		{
-			wxString szOpenCommand;
-
-			if( pFileType->GetOpenCommand( &szOpenCommand, wxFileType::MessageParameters( HLMV_DUMP_MODEL_INFO_FILE ) ) )
-			{
-				bSuccess = wxExecute( szOpenCommand, wxEXEC_ASYNC ) != 0;
-			}
-
-			delete pFileType;
-		}
-
-		if( !bSuccess )
+		if( !wx::LaunchDefaultTextEditor( HLMV_DUMP_MODEL_INFO_FILE ) )
 		{
 			wxMessageBox( "Unable to open default text editor" );
 		}

@@ -48,6 +48,21 @@ wxColor ColorTowx( const Color& color );
 *	Converts a wxColor instance to Color.
 */
 Color wxToColor( const wxColor& color );
+
+/**
+*	Launches the default program for a given filetype and passes the given parameters.
+*	@param szExtension The extension whose default program will be launched.
+*	@param szParameters Parameters to pass to the program.
+*	@return true on success, false otherwise.
+*/
+bool LaunchDefaultProgram( const wxString& szExtension, const wxString& szParameters );
+
+/**
+*	Launches the default text editor and opens the given file.
+*	@param szFilename File to open.
+*	@return true on success, false otherwise.
+*/
+bool LaunchDefaultTextEditor( const wxString& szFilename );
 }
 
 #endif //UI_UTILITY_WXUTIL_H

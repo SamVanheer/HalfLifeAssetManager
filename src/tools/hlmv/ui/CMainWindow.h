@@ -7,13 +7,14 @@
 #include "../CHLMVState.h"
 
 #include "ui/wx/utility/CwxRecentFiles.h"
+#include "ui/wx/shared/CwxBaseFrame.h"
 
 namespace hlmv
 {
 class CHLMV;
 class CMainPanel;
 
-class CMainWindow final : public wxFrame
+class CMainWindow final : public ui::CwxBaseFrame
 {
 public:
 	CMainWindow( CHLMV* const pHLMV );
