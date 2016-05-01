@@ -24,7 +24,7 @@ enum wxIdentifier
 	wxID_CUSTOM_HIGHEST
 };
 
-#define SPRITEVIEWER_TITLE "Half-Life Model Viewer"
+#define SPRITEVIEWER_TITLE "Half-Life Sprite Viewer"
 #define SPRITEVIEWER_SETTINGS_FILE "SpriteViewerSettings.txt"
 #define SPRITEVIEWER_DUMP_SPRITE_INFO_FILE "sprifile.txt"
 
