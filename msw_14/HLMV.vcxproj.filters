@@ -225,6 +225,9 @@
     <ClCompile Include="..\src\lib\LibInterface.cpp">
       <Filter>Source Files\lib</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\ui\wx\utility\CwxRecentFiles.cpp">
+      <Filter>Source Files\ui\wx\utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\Constants.h">
@@ -358,6 +361,9 @@
     </ClInclude>
     <ClInclude Include="..\src\lib\LibInterface.h">
       <Filter>Header Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\utility\CwxRecentFiles.h">
+      <Filter>Header Files\ui\wx\utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

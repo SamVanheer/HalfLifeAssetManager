@@ -216,6 +216,9 @@
     <ClInclude Include="..\src\engine\shared\sprite\SpriteConstants.h">
       <Filter>Header Files\engine\shared\sprite</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\ui\wx\utility\CwxRecentFiles.h">
+      <Filter>Header Files\ui\wx\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
@@ -301,6 +304,9 @@
     </ClCompile>
     <ClCompile Include="..\src\engine\shared\sprite\CSpriteRenderer.cpp">
       <Filter>Source Files\engine\shared\sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\utility\CwxRecentFiles.cpp">
+      <Filter>Source Files\ui\wx\utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

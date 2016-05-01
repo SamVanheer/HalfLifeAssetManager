@@ -23,10 +23,6 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_MAINWND_LOADGROUND, CMainWindow::LoadGroundTexture )
 	EVT_MENU( wxID_MAINWND_UNLOADGROUND, CMainWindow::UnloadGroundTexture )
 	EVT_MENU( wxID_MAINWND_SAVEMODEL, CMainWindow::SaveModel )
-	EVT_MENU( wxID_MAINWND_RECENTFILE1, CMainWindow::OpenRecentFile )
-	EVT_MENU( wxID_MAINWND_RECENTFILE2, CMainWindow::OpenRecentFile )
-	EVT_MENU( wxID_MAINWND_RECENTFILE3, CMainWindow::OpenRecentFile )
-	EVT_MENU( wxID_MAINWND_RECENTFILE4, CMainWindow::OpenRecentFile )
 	EVT_MENU( wxID_EXIT, CMainWindow::OnExit )
 	EVT_MENU( wxID_MAINWND_CENTERVIEW, CMainWindow::CenterView )
 	EVT_MENU( wxID_MAINWND_SAVEVIEW, CMainWindow::SaveView )
@@ -41,6 +37,7 @@ wxEND_EVENT_TABLE()
 CMainWindow::CMainWindow( CHLMV* const pHLMV )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
+	, m_RecentFiles( pHLMV->GetSettings()->GetRecentFiles() )
 {
 	pHLMV->SetMainWindow( this );
 
@@ -69,12 +66,10 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 
 	wxMenu* pRecentFiles = new wxMenu;
 
-	for( size_t uiIndex = 0; uiIndex < CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
-	{
-		wxMenuItem* pItem = m_RecentFiles[ uiIndex ] = pRecentFiles->Append( wxID_MAINWND_RECENTFILE1 + static_cast<int>( uiIndex ), "(empty)" );
-	}
+	m_RecentFiles.AddMenuItems( pRecentFiles );
 
-	RefreshRecentFiles();
+	//Handle the range of items.
+	this->Bind( wxEVT_MENU, &CMainWindow::OpenRecentFile, this, m_RecentFiles.GetBaseID(), m_RecentFiles.GetLastID() );
 
 	menuFile->AppendSubMenu( pRecentFiles, "Recent Files" );
 
@@ -155,7 +150,7 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 
 		m_pHLMV->GetSettings()->GetRecentFiles()->Remove( std::string( szFilename.c_str() ) );
 
-		RefreshRecentFiles();
+		m_RecentFiles.Refresh();
 
 		return false;
 	}
@@ -171,7 +166,7 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 
 		m_pHLMV->GetSettings()->GetRecentFiles()->Add( pszAbsFilename );
 
-		RefreshRecentFiles();
+		m_RecentFiles.Refresh();
 
 		Message( "Loaded model \"%s\"\n", pszAbsFilename );
 	}
@@ -327,32 +322,6 @@ void CMainWindow::DumpModelInfo()
 	}
 }
 
-void CMainWindow::RefreshRecentFiles()
-{
-	const auto& recentFiles = m_pHLMV->GetSettings()->GetRecentFiles()->GetFiles();
-
-	auto it = recentFiles.begin();
-	auto end = recentFiles.end();
-
-	for( size_t uiIndex = 0; uiIndex < CHLMVSettings::MAX_RECENT_FILES; ++uiIndex )
-	{
-		wxMenuItem* const pItem = m_RecentFiles[ uiIndex ];
-
-		if( it != end )
-		{
-			pItem->Enable( true );
-			pItem->SetItemLabel( it->c_str() );
-
-			++it;
-		}
-		else
-		{
-			pItem->Enable( false );
-			pItem->SetItemLabel( "(empty)" );
-		}
-	}
-}
-
 void CMainWindow::LoadModel( wxCommandEvent& event )
 {
 	PromptLoadModel();
@@ -380,15 +349,13 @@ void CMainWindow::SaveModel( wxCommandEvent& event )
 
 void CMainWindow::OpenRecentFile( wxCommandEvent& event )
 {
-	if( event.GetId() < wxID_MAINWND_RECENTFILE1 || event.GetId() > wxID_MAINWND_RECENTFILE4 )
+	wxString szFilename;
+
+	if( !m_RecentFiles.OnOpenRecentFile( event, szFilename ) )
 	{
-		wxMessageBox( wxString::Format( "Invalid ID specified for recent files list (%d)", event.GetId() ) );
+		wxMessageBox( "An error occurred while trying to open a recent file" );
 		return;
 	}
-
-	const size_t fileId = static_cast<size_t>( event.GetId() - wxID_MAINWND_RECENTFILE1 );
-
-	const wxString szFilename = m_pHLMV->GetSettings()->GetRecentFiles()->Get( fileId );
 
 	LoadModel( szFilename );
 }

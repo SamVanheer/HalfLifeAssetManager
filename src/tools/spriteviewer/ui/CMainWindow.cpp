@@ -21,10 +21,6 @@ wxBEGIN_EVENT_TABLE( CMainWindow, wxFrame )
 	EVT_MENU( wxID_MAINWND_LOADSPRITE, CMainWindow::LoadSprite )
 	EVT_MENU( wxID_MAINWND_LOADBACKGROUND, CMainWindow::LoadBackgroundTexture )
 	EVT_MENU( wxID_MAINWND_SAVESPRITE, CMainWindow::SaveSprite )
-	EVT_MENU( wxID_MAINWND_RECENTFILE1, CMainWindow::OpenRecentFile )
-	EVT_MENU( wxID_MAINWND_RECENTFILE2, CMainWindow::OpenRecentFile )
-	EVT_MENU( wxID_MAINWND_RECENTFILE3, CMainWindow::OpenRecentFile )
-	EVT_MENU( wxID_MAINWND_RECENTFILE4, CMainWindow::OpenRecentFile )
 	EVT_MENU( wxID_EXIT, CMainWindow::OnExit )
 	EVT_MENU( wxID_MAINWND_TAKESCREENSHOT, CMainWindow::TakeScreenshot )
 	EVT_MENU( wxID_MAINWND_DUMPSPRITEINFO, CMainWindow::DumpSpriteInfo )
@@ -35,6 +31,7 @@ wxEND_EVENT_TABLE()
 CMainWindow::CMainWindow( CSpriteViewer* const pSpriteViewer )
 	: wxFrame( nullptr, wxID_ANY, SPRITEVIEWER_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pSpriteViewer( pSpriteViewer )
+	, m_RecentFiles( pSpriteViewer->GetSettings()->GetRecentFiles() )
 {
 	m_pSpriteViewer->SetMainWindow( this );
 
@@ -57,12 +54,10 @@ CMainWindow::CMainWindow( CSpriteViewer* const pSpriteViewer )
 
 	wxMenu* pRecentFiles = new wxMenu;
 
-	for( size_t uiIndex = 0; uiIndex < CSpriteViewerSettings::MAX_RECENT_FILES; ++uiIndex )
-	{
-		wxMenuItem* pItem = m_RecentFiles[ uiIndex ] = pRecentFiles->Append( wxID_MAINWND_RECENTFILE1 + static_cast<int>( uiIndex ), "(empty)" );
-	}
+	m_RecentFiles.AddMenuItems( pRecentFiles );
 
-	RefreshRecentFiles();
+	//Handle the range of items.
+	this->Bind( wxEVT_MENU, &CMainWindow::OpenRecentFile, this, m_RecentFiles.GetBaseID(), m_RecentFiles.GetLastID() );
 
 	menuFile->AppendSubMenu( pRecentFiles, "Recent Files" );
 
@@ -133,7 +128,7 @@ bool CMainWindow::LoadSprite( const wxString& szFilename )
 
 		m_pSpriteViewer->GetSettings()->GetRecentFiles()->Remove( std::string( szFilename.c_str() ) );
 
-		RefreshRecentFiles();
+		m_RecentFiles.Refresh();
 
 		return false;
 	}
@@ -149,7 +144,7 @@ bool CMainWindow::LoadSprite( const wxString& szFilename )
 
 		m_pSpriteViewer->GetSettings()->GetRecentFiles()->Add( pszAbsFilename );
 
-		RefreshRecentFiles();
+		m_RecentFiles.Refresh();
 
 		Message( "Loaded sprite \"%s\"\n", pszAbsFilename );
 	}
@@ -262,33 +257,7 @@ void CMainWindow::DumpSpriteInfo()
 	}
 	else
 	{
-		wxMessageBox( "An error occurred while dumping model info" );
-	}
-}
-
-void CMainWindow::RefreshRecentFiles()
-{
-	const auto& recentFiles = m_pSpriteViewer->GetSettings()->GetRecentFiles()->GetFiles();
-
-	auto it = recentFiles.begin();
-	auto end = recentFiles.end();
-
-	for( size_t uiIndex = 0; uiIndex < CSpriteViewerSettings::MAX_RECENT_FILES; ++uiIndex )
-	{
-		wxMenuItem* const pItem = m_RecentFiles[ uiIndex ];
-
-		if( it != end )
-		{
-			pItem->Enable( true );
-			pItem->SetItemLabel( it->c_str() );
-
-			++it;
-		}
-		else
-		{
-			pItem->Enable( false );
-			pItem->SetItemLabel( "(empty)" );
-		}
+		wxMessageBox( "An error occurred while dumping sprite info" );
 	}
 }
 
@@ -309,15 +278,13 @@ void CMainWindow::SaveSprite( wxCommandEvent& event )
 
 void CMainWindow::OpenRecentFile( wxCommandEvent& event )
 {
-	if( event.GetId() < wxID_MAINWND_RECENTFILE1 || event.GetId() > wxID_MAINWND_RECENTFILE4 )
+	wxString szFilename;
+	
+	if( !m_RecentFiles.OnOpenRecentFile( event, szFilename ) )
 	{
-		wxMessageBox( wxString::Format( "Invalid ID specified for recent files list (%d)", event.GetId() ) );
+		wxMessageBox( "An error occurred while trying to open a recent file" );
 		return;
 	}
-
-	const size_t fileId = static_cast<size_t>( event.GetId() - wxID_MAINWND_RECENTFILE1 );
-
-	const wxString szFilename = m_pSpriteViewer->GetSettings()->GetRecentFiles()->Get( fileId );
 
 	LoadSprite( szFilename );
 }

@@ -5,6 +5,8 @@
 
 #include "../settings/CSpriteViewerSettings.h"
 
+#include "ui/wx/utility/CwxRecentFiles.h"
+
 namespace sprview
 {
 class CSpriteViewer;
@@ -39,8 +41,6 @@ public:
 private:
 	wxDECLARE_EVENT_TABLE();
 
-	void RefreshRecentFiles();
-
 	void LoadSprite( wxCommandEvent& event );
 	void LoadBackgroundTexture( wxCommandEvent& event );
 	void SaveSprite( wxCommandEvent& event );
@@ -60,7 +60,7 @@ private:
 	CSpriteViewer* m_pSpriteViewer;
 	CMainPanel* m_pMainPanel;
 
-	wxMenuItem* m_RecentFiles[ CSpriteViewerSettings::MAX_RECENT_FILES ];
+	ui::CwxRecentFiles m_RecentFiles;
 
 private:
 	CMainWindow( const CMainWindow& ) = delete;

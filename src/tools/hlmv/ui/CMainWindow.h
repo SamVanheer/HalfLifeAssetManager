@@ -6,6 +6,8 @@
 #include "../settings/CHLMVSettings.h"
 #include "../CHLMVState.h"
 
+#include "ui/wx/utility/CwxRecentFiles.h"
+
 namespace hlmv
 {
 class CHLMV;
@@ -53,8 +55,6 @@ public:
 private:
 	wxDECLARE_EVENT_TABLE();
 
-	void RefreshRecentFiles();
-
 	void LoadModel( wxCommandEvent& event );
 	void LoadBackgroundTexture( wxCommandEvent& event );
 	void LoadGroundTexture( wxCommandEvent& event );
@@ -80,7 +80,7 @@ private:
 	CHLMV* m_pHLMV;
 	CMainPanel* m_pMainPanel;
 
-	wxMenuItem* m_RecentFiles[ CHLMVSettings::MAX_RECENT_FILES ];
+	ui::CwxRecentFiles m_RecentFiles;
 
 private:
 	CMainWindow( const CMainWindow& ) = delete;

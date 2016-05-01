@@ -187,6 +187,7 @@
     <ClInclude Include="..\src\ui\wx\shared\CMessagesWindow.h" />
     <ClInclude Include="..\src\ui\wx\shared\CwxBaseGLCanvas.h" />
     <ClInclude Include="..\src\ui\wx\utility\CTimer.h" />
+    <ClInclude Include="..\src\ui\wx\utility\CwxRecentFiles.h" />
     <ClInclude Include="..\src\ui\wx\utility\IWindowCloseListener.h" />
     <ClInclude Include="..\src\ui\wx\utility\wxUtil.h" />
     <ClInclude Include="..\src\ui\wx\wxInclude.h" />
@@ -219,6 +220,7 @@
     <ClCompile Include="..\src\ui\wx\CwxOpenGL.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CMessagesWindow.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CwxBaseGLCanvas.cpp" />
+    <ClCompile Include="..\src\ui\wx\utility\CwxRecentFiles.cpp" />
     <ClCompile Include="..\src\ui\wx\utility\wxUtil.cpp" />
     <ClCompile Include="..\src\ui\wx\wxLogging.cpp" />
   </ItemGroup>
