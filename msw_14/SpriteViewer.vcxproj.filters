@@ -210,6 +210,12 @@
     <ClInclude Include="..\src\engine\shared\sprite\sprite.h">
       <Filter>Header Files\engine\shared\sprite</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\engine\shared\sprite\CSpriteRenderer.h">
+      <Filter>Header Files\engine\shared\sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\sprite\SpriteConstants.h">
+      <Filter>Header Files\engine\shared\sprite</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
@@ -291,6 +297,9 @@
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\src\engine\shared\sprite\CSprite.cpp">
+      <Filter>Source Files\engine\shared\sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\shared\sprite\CSpriteRenderer.cpp">
       <Filter>Source Files\engine\shared\sprite</Filter>
     </ClCompile>
   </ItemGroup>

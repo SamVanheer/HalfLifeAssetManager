@@ -157,7 +157,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\engine\shared\sprite\CSprite.h" />
+    <ClInclude Include="..\src\engine\shared\sprite\CSpriteRenderer.h" />
     <ClInclude Include="..\src\engine\shared\sprite\sprite.h" />
+    <ClInclude Include="..\src\engine\shared\sprite\SpriteConstants.h" />
     <ClInclude Include="..\src\game\entity\CBaseAnimating.h" />
     <ClInclude Include="..\src\game\entity\CBaseEntity.h" />
     <ClInclude Include="..\src\game\entity\CBaseEntityList.h" />
@@ -192,6 +194,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\engine\shared\sprite\CSprite.cpp" />
+    <ClCompile Include="..\src\engine\shared\sprite\CSpriteRenderer.cpp" />
     <ClCompile Include="..\src\game\entity\CBaseAnimating.cpp" />
     <ClCompile Include="..\src\game\entity\CBaseEntity.cpp" />
     <ClCompile Include="..\src\game\entity\CBaseEntityList.cpp" />

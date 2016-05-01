@@ -1,9 +1,8 @@
-#include "graphics/OpenGL.h"
-
 #include "shared/CWorldTime.h"
 
 #include "engine/shared/sprite/sprite.h"
 #include "engine/shared/sprite/CSprite.h"
+#include "engine/shared/sprite/CSpriteRenderer.h"
 
 #include "CSpriteEntity.h"
 
@@ -27,67 +26,13 @@ bool CSpriteEntity::Spawn()
 
 void CSpriteEntity::Draw( entity::DrawFlags_t flags )
 {
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
+	sprite::DrawFlags_t drawFlags = sprite::DRAWF_NONE;
 
-	glOrtho( 0.0f, ( float ) 1920, ( float ) 730, 0.0f, 1.0f, -1.0f );
+	//TODO: this needs to be redesigned
+	if( flags & entity::DRAWF_WIREFRAME_ONLY )
+		drawFlags |= sprite::DRAWF_WIREFRAME_OVERLAY | sprite::DRAWF_NODRAW;
 
-	glMatrixMode( GL_MODELVIEW );
-	glPushMatrix();
-	glLoadIdentity();
-
-	const auto& framedesc = m_pSprite->frames[ static_cast<int>( m_flFrame ) ];
-	const auto& frame = framedesc.frameptr;
-
-	glEnable( GL_TEXTURE_2D );
-	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-	glBindTexture( GL_TEXTURE_2D, frame->gl_texturenum );
-
-	float x = 100;
-	float y = 100;
-	float w = frame->width * 4;
-	float h = frame->height * 4;
-
-	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-	glEnable( GL_TEXTURE_2D );
-	glEnable( GL_CULL_FACE );
-	glEnable( GL_DEPTH_TEST );
-	glShadeModel( GL_SMOOTH );
-
-	glBegin( GL_TRIANGLE_STRIP );
-
-	glTexCoord2f( 0, 0 );
-	glVertex2f( x, y );
-
-	glTexCoord2f( 1, 0 );
-	glVertex2f( x + w, y );
-
-	glTexCoord2f( 0, 1 );
-	glVertex2f( x, y + h );
-
-	glTexCoord2f( 1, 1 );
-	glVertex2f( x + w, y + h );
-
-	glEnd();
-
-	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	glDisable( GL_TEXTURE_2D );
-	glDisable( GL_CULL_FACE );
-	glDisable( GL_DEPTH_TEST );
-
-	glBegin( GL_TRIANGLE_STRIP );
-
-	glVertex2f( x, y );
-
-	glVertex2f( x + w, y );
-
-	glVertex2f( x, y + h );
-
-	glVertex2f( x + w, y + h );
-
-	glEnd();
-
-	glPopMatrix();
+	sprite::Renderer().DrawSprite( this, drawFlags );
 }
 
 void CSpriteEntity::AnimThink()

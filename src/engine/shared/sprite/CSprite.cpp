@@ -67,6 +67,9 @@ void Convert8To32Bit( const byte* pInPalette, byte* pRGBAPalette, const TexForma
 				pRGBA[ 3 ] = pInPalette[ uiIndex ] == 255 ? pInPalette[ uiIndex ] : 0xFF;
 			}
 
+			//Zero out the transparent color.
+			memset( pRGBAPalette + 255 * 4, 0, sizeof( byte ) * 4 );
+
 			break;
 		}
 	}
@@ -194,9 +197,11 @@ bool LoadSpriteInternal( byte* pIn, msprite_t*& pSprite )
 		return false;
 	}
 
+	const TexFormat_t texFormat = LittleEnumValue( pHeader->texFormat );
+
 	byte convertedPalette[ PALETTE_ENTRIES * 4 ];
 
-	Convert8To32Bit( pPalette, convertedPalette, LittleEnumValue( pHeader->texFormat ) );
+	Convert8To32Bit( pPalette, convertedPalette, texFormat );
 
 	const int iNumFrames = LittleValue( pHeader->numframes );
 
@@ -207,6 +212,7 @@ bool LoadSpriteInternal( byte* pIn, msprite_t*& pSprite )
 	memset( pSprite, 0, size );
 
 	pSprite->type		= LittleEnumValue( pHeader->type );
+	pSprite->texFormat	= texFormat;
 	pSprite->maxwidth	= LittleValue( pHeader->width );
 	pSprite->maxheight	= LittleValue( pHeader->height );
 	pSprite->numframes	= iNumFrames;

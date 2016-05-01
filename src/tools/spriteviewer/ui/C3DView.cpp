@@ -9,6 +9,7 @@
 #include "graphics/GraphicsHelpers.h"
 
 #include "game/entity/CSpriteEntity.h"
+#include "engine/shared/sprite/CSpriteRenderer.h"
 
 #include "ui/wx/CwxOpenGL.h"
 
@@ -30,7 +31,6 @@ C3DView::~C3DView()
 {
 	SetCurrent( *GetContext() );
 
-	glDeleteTexture( m_GroundTexture );
 	glDeleteTexture( m_BackgroundTexture );
 }
 
@@ -57,10 +57,35 @@ void C3DView::DrawScene()
 
 	glViewport( 0, 0, size.GetX(), size.GetY() );
 
-	DrawSprite();
+	DrawSpriteInfo();
 
 	if( m_pListener )
 		m_pListener->Draw3D( size );
+}
+
+void C3DView::DrawSpriteInfo()
+{
+	const wxSize size = GetClientSize();
+
+	//TODO: these matrices shouldn't be here.
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+
+	//TODO: get size from window
+	glOrtho( 0.0f, ( float ) size.GetWidth(), ( float ) size.GetHeight(), 0.0f, 1.0f, -1.0f );
+
+	glMatrixMode( GL_MODELVIEW );
+	glPushMatrix();
+	glLoadIdentity();
+
+	glCullFace( GL_FRONT );
+
+	if( auto pEntity = m_pSpriteViewer->GetState()->GetEntity() )
+	{
+		sprite::Renderer().DrawSprite2D( size.GetWidth() / 2, size.GetHeight() / 2, pEntity->GetSprite(), 4 );
+	}
+
+	glPopMatrix();
 }
 
 void C3DView::DrawSprite()

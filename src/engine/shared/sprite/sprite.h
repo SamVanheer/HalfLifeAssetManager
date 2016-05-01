@@ -10,7 +10,7 @@
 */
 
 /**
-*	@defgroup Sprite Sprite definitions
+*	@defgroup Sprite 2D Sprite
 *
 *	<pre>
 *	Sprite file format:
@@ -363,6 +363,11 @@ struct msprite_t final
 	*	The type of the sprite.
 	*/
 	Type_t type;
+
+	/**
+	*	The texture format used by the sprite.
+	*/
+	TexFormat_t texFormat;
 
 	/**
 	*	Largest width that any frame in this sprite has.

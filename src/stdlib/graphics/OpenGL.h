@@ -27,6 +27,11 @@ public:
 
 	virtual GLuint glLoadImage( const char* const pszFilename ) = 0;
 
+	/**
+	*	Gets any GL errors that may have occurred.
+	*/
+	void GetErrors();
+
 protected:
 	CBaseOpenGL()
 	{
@@ -50,6 +55,8 @@ private:
 const GLuint GL_INVALID_TEXTURE_ID = 0;
 
 void glDeleteTexture( GLuint& textureId );
+
+const char* glErrorToString( const GLenum error );
 
 const char* glFrameBufferStatusToString( const GLenum status );
 

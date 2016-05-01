@@ -40,6 +40,8 @@ public:
 
 	GLRenderTarget* GetScratchTarget();
 
+	using CBaseOpenGL::GetErrors;
+
 	GLuint glLoadImage( const char* const pszFilename ) override final;
 
 private:

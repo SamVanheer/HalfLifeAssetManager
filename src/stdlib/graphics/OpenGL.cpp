@@ -22,12 +22,39 @@ bool CBaseOpenGL::PostInitialize()
 	return GLEW_OK == m_GLEWResult;
 }
 
+void CBaseOpenGL::GetErrors()
+{
+	GLenum error;
+
+	while( ( error = glGetError() ) != GL_NO_ERROR )
+	{
+		Warning( "OpenGL Error: %s\n", glErrorToString( error ) );
+	}
+}
+
 void glDeleteTexture( GLuint& textureId )
 {
 	if( textureId != GL_INVALID_TEXTURE_ID )
 	{
 		glDeleteTextures( 1, &textureId );
 		textureId = GL_INVALID_TEXTURE_ID;
+	}
+}
+
+const char* glErrorToString( const GLenum error )
+{
+	switch( error )
+	{
+	case GL_NO_ERROR:						return "GL_NO_ERROR";
+	case GL_INVALID_ENUM:					return "GL_INVALID_ENUM";
+	case GL_INVALID_VALUE:					return "GL_INVALID_VALUE";
+	case GL_INVALID_OPERATION:				return "GL_INVALID_OPERATION";
+	case GL_INVALID_FRAMEBUFFER_OPERATION:	return "GL_INVALID_FRAMEBUFFER_OPERATION";
+	case GL_OUT_OF_MEMORY:					return "GL_OUT_OF_MEMORY";
+	case GL_STACK_UNDERFLOW:				return "GL_STACK_UNDERFLOW";
+	case GL_STACK_OVERFLOW:					return "GL_STACK_OVERFLOW";
+
+	default: return "UNKNOWN_GL_ERROR";
 	}
 }
 

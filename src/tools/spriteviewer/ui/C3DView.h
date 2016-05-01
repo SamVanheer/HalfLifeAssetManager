@@ -50,6 +50,8 @@ protected:
 private:
 	void DrawScene() override final;
 
+	void DrawSpriteInfo();
+
 	void DrawSprite();
 
 private:
@@ -58,7 +60,6 @@ private:
 	I3DViewListener* m_pListener;
 
 	GLuint m_BackgroundTexture	= GL_INVALID_TEXTURE_ID;
-	GLuint m_GroundTexture		= GL_INVALID_TEXTURE_ID;
 
 private:
 	C3DView( const C3DView& ) = delete;

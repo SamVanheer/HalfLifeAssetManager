@@ -27,7 +27,9 @@ void CwxBaseGLCanvas::Paint( wxPaintEvent& event )
 
 	DrawScene();
 
-	glFlush();
 	SwapBuffers();
+
+	//Get any errors that were logged during this frame.
+	wxOpenGL().GetErrors();
 }
 }
