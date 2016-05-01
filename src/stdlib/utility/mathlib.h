@@ -128,4 +128,18 @@ void QuaternionMatrix( const glm::vec4& quaternion, glm::mat3x4& matrix );
 */
 void QuaternionSlerp( const glm::vec4& p, glm::vec4& q, float t, glm::vec4& qt );
 
+/**
+*	Converts a vector to angles.
+*	@param vec Vector.
+*	@return Angles.
+*/
+glm::vec3 VectorToAngles( const glm::vec3& vec );
+
+/**
+*	Converts angles to a vector.
+*	@param angles Angles.
+*	@return Vector.
+*/
+glm::vec3 AnglesToVector( const glm::vec3& angles );
+
 #endif

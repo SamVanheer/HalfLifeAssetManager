@@ -254,4 +254,37 @@ void QuaternionSlerp( const glm::vec4& p, glm::vec4& q, float t, glm::vec4& qt )
 	}
 }
 
+glm::vec3 VectorToAngles( const glm::vec3& vec )
+{
+	//Xash3D implementation
+	float tmp, yaw, pitch;
 
+	if( vec[ 1 ] == 0 && vec[ 0 ] == 0 )
+	{
+		// fast case
+		yaw = 0;
+		if( vec[ 2 ] > 0 )
+			pitch = 90.0f;
+		else pitch = 270.0f;
+	}
+	else
+	{
+		yaw = ( atan2( vec[ 1 ], vec[ 0 ] ) * 180 / Q_PI );
+		if( yaw < 0 ) yaw += 360;
+
+		tmp = sqrt( vec[ 0 ] * vec[ 0 ] + vec[ 1 ] * vec[ 1 ] );
+		pitch = ( atan2( vec[ 2 ], tmp ) * 180 / Q_PI );
+		if( pitch < 0 ) pitch += 360;
+	}
+
+	return glm::vec3( pitch, yaw, 0 );
+}
+
+glm::vec3 AnglesToVector( const glm::vec3& angles )
+{
+	return glm::vec3(
+		cos( angles.y ) * cos( angles.x ),
+		sin( angles.y ) * cos( angles.x ),
+		sin( angles.x )
+	);
+}

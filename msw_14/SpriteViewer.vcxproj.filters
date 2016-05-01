@@ -222,6 +222,9 @@
     <ClInclude Include="..\src\ui\wx\shared\CwxBaseFrame.h">
       <Filter>Header Files\ui\wx\shared</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\ui\wx\shared\CwxBase3DView.h">
+      <Filter>Header Files\ui\wx\shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
@@ -312,6 +315,9 @@
       <Filter>Source Files\ui\wx\utility</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ui\wx\shared\CwxBaseFrame.cpp">
+      <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\shared\CwxBase3DView.cpp">
       <Filter>Source Files\ui\wx\shared</Filter>
     </ClCompile>
   </ItemGroup>

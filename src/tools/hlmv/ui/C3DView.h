@@ -3,7 +3,7 @@
 
 #include "wxHLMV.h"
 
-#include "ui/wx/shared/CwxBaseGLCanvas.h"
+#include "ui/wx/shared/CwxBase3DView.h"
 
 #include <glm/vec3.hpp>
 
@@ -27,7 +27,7 @@ inline I3DViewListener::~I3DViewListener()
 {
 }
 
-class C3DView final : public ui::CwxBaseGLCanvas
+class C3DView final : public ui::CwxBase3DView
 {
 public:
 	C3DView( wxWindow* pParent, CHLMV* const pHLMV, I3DViewListener* pListener = nullptr );
@@ -57,7 +57,7 @@ protected:
 	wxDECLARE_EVENT_TABLE();
 
 private:
-	void DrawScene() override final;
+	void OnDraw() override final;
 
 	void SetupRenderMode( RenderMode renderMode = RenderMode::INVALID );
 
@@ -72,17 +72,6 @@ private:
 
 	GLuint m_BackgroundTexture	= GL_INVALID_TEXTURE_ID;
 	GLuint m_GroundTexture		= GL_INVALID_TEXTURE_ID;
-
-	float m_flOldRotX = 0;
-	float m_flOldRotY = 0;
-
-	glm::vec3 m_vecOldTrans = { 0, 0, 0 };
-
-	float m_flOldX = 0;
-	float m_flOldY = 0;
-
-	//Tracks mouse button state. Used to prevent input from being mistakingly applied (e.g. prevent double click from dialog spilling over as drag).
-	int m_iButtonsDown = wxMOUSE_BTN_NONE;
 
 private:
 	C3DView( const C3DView& ) = delete;

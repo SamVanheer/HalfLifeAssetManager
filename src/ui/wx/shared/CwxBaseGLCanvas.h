@@ -17,9 +17,16 @@ namespace ui
 class CwxBaseGLCanvas : public wxGLCanvas
 {
 protected:
-	CwxBaseGLCanvas( wxWindow* pParent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize );
+	CwxBaseGLCanvas( wxWindow* pParent, wxWindowID id = wxID_ANY, 
+					 const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+					 long style = 0,
+					 const wxString& name = wxGLCanvasName,
+					 const wxPalette& palette = wxNullPalette );
+
+public:
 	virtual ~CwxBaseGLCanvas();
 
+protected:
 	wxGLContext* GetContext() { return m_pContext; }
 
 	/**

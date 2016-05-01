@@ -9,6 +9,7 @@
 #include "shared/Platform.h"
 #include "graphics/OpenGL.h"
 #include "graphics/Constants.h"
+#include "graphics/CCamera.h"
 
 #include "tools/hlmv/entity/CHLMVStudioModelEntity.h"
 
@@ -51,12 +52,10 @@ public:
 	bool DumpModelInfo( const char* const pszFilename );
 
 public:
-	glm::vec3 trans;
-	glm::vec3 rot;
+	graphics::CCamera camera;
 
-	//Do not reset these; the user inits these!
-	glm::vec3 savedTrans;
-	glm::vec3 savedRot = DEFAULT_ROTATION;
+	//Do not reset this; the user inits this!
+	graphics::CCamera savedCamera;
 
 	bool showBackground;
 

@@ -19,15 +19,16 @@
 
 namespace hlmv
 {
-wxBEGIN_EVENT_TABLE( C3DView, CwxBaseGLCanvas )
-	EVT_MOUSE_EVENTS( C3DView::MouseEvents )
+wxBEGIN_EVENT_TABLE( C3DView, CwxBase3DView )
+	//EVT_MOUSE_EVENTS( C3DView::MouseEvents )
 wxEND_EVENT_TABLE()
 
 C3DView::C3DView( wxWindow* pParent, CHLMV* const pHLMV, I3DViewListener* pListener )
-	: CwxBaseGLCanvas( pParent, wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
+	: CwxBase3DView( pParent, nullptr, wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
 	, m_pListener( pListener )
 {
+	SetCamera( &m_pHLMV->GetState()->camera );
 }
 
 C3DView::~C3DView()
@@ -48,47 +49,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 		return;
 	}
 
-	if( event.ButtonDown() )
-	{
-		m_flOldRotX = m_pHLMV->GetState()->rot[ 0 ];
-		m_flOldRotY = m_pHLMV->GetState()->rot[ 1 ];
-		m_vecOldTrans = m_pHLMV->GetState()->trans;
-		m_flOldX = event.GetX();
-		m_flOldY = event.GetY();
-		m_pHLMV->GetState()->pause = false;
-
-		m_iButtonsDown |= event.GetButton();
-	}
-	else if( event.ButtonUp() )
-	{
-		m_iButtonsDown &= ~event.GetButton();
-	}
-	else if( event.Dragging() )
-	{
-		if( event.LeftIsDown() && m_iButtonsDown & wxMOUSE_BTN_LEFT )
-		{
-			if( event.GetModifiers() & wxMOD_SHIFT )
-			{
-				m_pHLMV->GetState()->trans[ 0 ] = m_vecOldTrans[ 0 ] - ( float ) ( event.GetX() - m_flOldX );
-				m_pHLMV->GetState()->trans[ 1 ] = m_vecOldTrans[ 1 ] + ( float ) ( event.GetY() - m_flOldY );
-			}
-			else
-			{
-				m_pHLMV->GetState()->rot[ 0 ] = m_flOldRotX + ( float ) ( event.GetY() - m_flOldY );
-				m_pHLMV->GetState()->rot[ 1 ] = m_flOldRotY + ( float ) ( event.GetX() - m_flOldX );
-			}
-		}
-		else if( event.RightIsDown() && m_iButtonsDown & wxMOUSE_BTN_RIGHT )
-		{
-			m_pHLMV->GetState()->trans[ 2 ] = m_vecOldTrans[ 2 ] + ( float ) ( event.GetY() - m_flOldY );
-		}
-
-		Refresh();
-	}
-	else
-	{
-		event.Skip();
-	}
+	CwxBase3DView::MouseEvents( event );
 }
 
 void C3DView::PrepareForLoad()
@@ -105,7 +66,7 @@ void C3DView::UpdateView()
 	}
 }
 
-void C3DView::DrawScene()
+void C3DView::OnDraw()
 {
 	const Color& backgroundColor = m_pHLMV->GetSettings()->GetBackgroundColor();
 
@@ -187,15 +148,12 @@ void C3DView::DrawModel()
 	}
 	else
 	{
-		glTranslatef( -m_pHLMV->GetState()->trans[ 0 ], -m_pHLMV->GetState()->trans[ 1 ], -m_pHLMV->GetState()->trans[ 2 ] );
-
-		glRotatef( m_pHLMV->GetState()->rot[ 0 ], 1.0f, 0.0f, 0.0f );
-		glRotatef( m_pHLMV->GetState()->rot[ 1 ], 0.0f, 0.0f, 1.0f );
+		ApplyCameraToScene();
 	}
 
 	glm::vec3 vecViewerRight = studiomodel::renderer().GetViewerRight();
 
-	vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = m_pHLMV->GetState()->trans[ 2 ];
+	vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = m_pHLMV->GetState()->camera.GetOrigin()[ 2 ];
 
 	studiomodel::renderer().SetViewerRight( vecViewerRight );
 

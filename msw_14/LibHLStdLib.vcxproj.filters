@@ -162,6 +162,9 @@
     <ClInclude Include="..\src\stdlib\utility\ByteSwap.h">
       <Filter>Header Files\stdlib\utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\stdlib\graphics\CCamera.h">
+      <Filter>Header Files\stdlib\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\stdlib\utility\CString.cpp">
@@ -235,6 +238,9 @@
     </ClCompile>
     <ClCompile Include="..\src\stdlib\utility\ByteSwap.cpp">
       <Filter>Source Files\stdlib\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\graphics\CCamera.cpp">
+      <Filter>Source Files\stdlib\graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -32,6 +32,7 @@
     <ClInclude Include="..\src\html\IHTMLObject.h" />
     <ClInclude Include="..\src\lib\ILibSystem.h" />
     <ClInclude Include="..\src\stdlib\graphics\BMPFile.h" />
+    <ClInclude Include="..\src\stdlib\graphics\CCamera.h" />
     <ClInclude Include="..\src\stdlib\graphics\GLRenderTarget.h" />
     <ClInclude Include="..\src\stdlib\graphics\OpenGL.h" />
     <ClInclude Include="..\src\stdlib\graphics\Palette.h" />
@@ -62,6 +63,7 @@
     <ClCompile Include="..\src\html\CHTMLHeader.cpp" />
     <ClCompile Include="..\src\html\CHTMLPage.cpp" />
     <ClCompile Include="..\src\stdlib\graphics\BMPFile.cpp" />
+    <ClCompile Include="..\src\stdlib\graphics\CCamera.cpp" />
     <ClCompile Include="..\src\stdlib\graphics\GLRenderTarget.cpp" />
     <ClCompile Include="..\src\stdlib\graphics\OpenGL.cpp" />
     <ClCompile Include="..\src\stdlib\settings\CBaseSettings.cpp" />

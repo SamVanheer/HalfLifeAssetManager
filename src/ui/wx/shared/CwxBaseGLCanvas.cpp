@@ -8,8 +8,12 @@ wxBEGIN_EVENT_TABLE( CwxBaseGLCanvas, wxGLCanvas )
 	EVT_PAINT( CwxBaseGLCanvas::Paint )
 wxEND_EVENT_TABLE()
 
-CwxBaseGLCanvas::CwxBaseGLCanvas( wxWindow* pParent, wxWindowID id, const wxPoint& pos, const wxSize& size )
-	: wxGLCanvas( pParent, wxOpenGL().GetCanvasAttributes(), id, pos, size )
+CwxBaseGLCanvas::CwxBaseGLCanvas( wxWindow* pParent, wxWindowID id, 
+								  const wxPoint& pos, const wxSize& size, 
+								  long style,
+								  const wxString& name,
+								  const wxPalette& palette )
+	: wxGLCanvas( pParent, wxOpenGL().GetCanvasAttributes(), id, pos, size, style, name, palette )
 {
 	m_pContext = wxOpenGL().GetContext( this );
 }

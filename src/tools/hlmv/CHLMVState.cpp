@@ -21,9 +21,8 @@ CHLMVState::~CHLMVState()
 
 void CHLMVState::ResetModelData()
 {
-	trans[ 0 ] = trans[ 1 ] = trans[ 2 ] = 0;
-
-	rot = DEFAULT_ROTATION;
+	camera.SetOrigin( {} );
+	camera.SetViewDirection( DEFAULT_ROTATION );
 
 	weaponOrigin[ 0 ] = weaponOrigin[ 1 ] = weaponOrigin[ 2 ] = 0;
 
@@ -88,29 +87,33 @@ void CHLMVState::CenterView()
 	if( dz > d )
 		d = dz;
 
+	glm::vec3 trans;
+	glm::vec3 rot;
+
 	trans[ 0 ] = 0;
 	trans[ 1 ] = min[ 2 ] + dz / 2;
 	trans[ 2 ] = d * 1.0f;
 	rot[ 0 ] = -90.0f;
 	rot[ 1 ] = -90.0f;
 	rot[ 2 ] = 0.0f;
+
+	camera.SetOrigin( trans );
+	camera.SetViewDirection( rot );
 }
 
 void CHLMVState::SaveView()
 {
-	savedTrans	= trans;
-	savedRot	= rot;
+	savedCamera = camera;
 }
 
 void CHLMVState::RestoreView()
 {
-	trans	= savedTrans;
-	rot		= savedRot;
+	camera = savedCamera;
 }
 
 void CHLMVState::SetOrigin( const glm::vec3& vecOrigin )
 {
-	trans = vecOrigin;
+	camera.SetOrigin( vecOrigin );
 }
 
 void CHLMVState::ClearEntity()
