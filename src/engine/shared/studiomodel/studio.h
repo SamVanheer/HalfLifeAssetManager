@@ -168,14 +168,38 @@ struct mstudiopivot_t
 	int			end;
 };
 
+enum
+{
+	STUDIO_ATTACH_NUM_VECTORS = 3
+};
+
 // attachment
 struct mstudioattachment_t
 {
-	char		name[ 32 ];
-	int			type;
-	int			bone;
-	glm::vec3	org;	// attachment point
-	glm::vec3	vectors[ 3 ];
+	/**
+	*	Name of this attachment. Unused in GoldSource.
+	*/
+	char name[ 32 ];
+
+	/**
+	*	Type of this attachment. Unused in GoldSource;
+	*/
+	int type;
+
+	/**
+	*	Index of the bone this is attached to.
+	*/
+	int bone;
+
+	/**
+	*	Offset from bone origin.
+	*/
+	glm::vec3 org;
+
+	/**
+	*	Directional vectors? Unused in GoldSource.
+	*/
+	glm::vec3 vectors[ STUDIO_ATTACH_NUM_VECTORS ];
 };
 
 struct mstudioanim_t

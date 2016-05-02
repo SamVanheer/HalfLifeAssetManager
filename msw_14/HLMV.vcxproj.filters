@@ -234,6 +234,9 @@
     <ClCompile Include="..\src\ui\wx\shared\CwxBase3DView.cpp">
       <Filter>Source Files\ui\wx\shared</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CAttachmentsPanel.cpp">
+      <Filter>Source Files\tools\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\Constants.h">
@@ -376,6 +379,9 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\wx\shared\CwxBase3DView.h">
       <Filter>Header Files\ui\wx\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CAttachmentsPanel.h">
+      <Filter>Header Files\tools\hlmv\ui\controlpanels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

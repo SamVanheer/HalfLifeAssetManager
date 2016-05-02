@@ -45,6 +45,9 @@ enum wxIdentifier
 	wxID_BODY_CONTROLLER,
 	wxID_BODY_CONTROLLER_SLIDER,
 
+	//Attachments panel
+	wxID_ATTACH_ATTACHMENT,
+
 	//Sequences panel
 	wxID_SEQUENCE_SEQCHANGED,
 	wxID_SEQUENCE_TOGGLEPLAY,

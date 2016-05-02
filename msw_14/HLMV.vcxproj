@@ -39,6 +39,7 @@
     <ClCompile Include="..\src\tools\hlmv\ui\CMainPanel.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\CMainWindow.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\CModelViewerApp.cpp" />
+    <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CAttachmentsPanel.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CBaseControlPanel.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CBodyPartsPanel.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CFullscreenPanel.cpp" />
@@ -83,6 +84,7 @@
     <ClInclude Include="..\src\tools\hlmv\ui\CMainPanel.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\CMainWindow.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\CModelViewerApp.h" />
+    <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CAttachmentsPanel.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CBaseControlPanel.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CBodyPartsPanel.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CFullscreenPanel.h" />
