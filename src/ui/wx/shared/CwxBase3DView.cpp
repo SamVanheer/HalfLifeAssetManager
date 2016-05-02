@@ -85,7 +85,7 @@ void CwxBase3DView::MouseEvents( wxMouseEvent& event )
 			if( event.GetModifiers() & wxMOD_SHIFT )
 			{
 				m_pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x - ( float ) ( event.GetX() - m_vecOldCoords.x );
-				m_pCamera->GetOrigin().y = m_OldCamera.GetOrigin().y - ( float ) ( event.GetY() - m_vecOldCoords.y );
+				m_pCamera->GetOrigin().y = m_OldCamera.GetOrigin().y + ( float ) ( event.GetY() - m_vecOldCoords.y );
 			}
 			else
 			{
