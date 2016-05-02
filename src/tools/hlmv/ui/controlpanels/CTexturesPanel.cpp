@@ -205,41 +205,64 @@ void CTexturesPanel::CheckBoxChanged( wxCommandEvent& event )
 	{
 	case CheckBox::CHROME:
 		{
-			texture.flags &= ~STUDIO_NF_RENDER_FLAGS;
+			//Chrome disables alpha testing.
+			if( pCheckBox->GetValue() )
+			{
+				texture.flags &= ~STUDIO_NF_MASKED;
+				m_pCheckBoxes[ CheckBox::TRANSPARENT ]->SetValue( false );
+			}
 
 			if( pCheckBox->GetValue() )
 			{
 				texture.flags |= STUDIO_NF_CHROME;
 			}
-
-			m_pCheckBoxes[ CheckBox::ADDITIVE ]->SetValue( false );
-			m_pCheckBoxes[ CheckBox::TRANSPARENT ]->SetValue( false );
+			else
+			{
+				texture.flags &= ~STUDIO_NF_CHROME;
+			}
 
 			break;
 		}
 
 	case CheckBox::ADDITIVE:
 		{
-			texture.flags &= ~STUDIO_NF_RENDER_FLAGS;
+			//Additive disables alpha testing.
+			if( pCheckBox->GetValue() )
+			{
+				texture.flags &= ~STUDIO_NF_MASKED;
+				m_pCheckBoxes[ CheckBox::TRANSPARENT ]->SetValue( false );
+			}
 
 			if( pCheckBox->GetValue() )
+			{
 				texture.flags |= STUDIO_NF_ADDITIVE;
-
-			m_pCheckBoxes[ CheckBox::CHROME ]->SetValue( false );
-			m_pCheckBoxes[ CheckBox::TRANSPARENT ]->SetValue( false );
+			}
+			else
+			{
+				texture.flags &= ~STUDIO_NF_ADDITIVE;
+			}
 
 			break;
 		}
 
 	case CheckBox::TRANSPARENT:
 		{
-			texture.flags &= ~STUDIO_NF_RENDER_FLAGS;
+			//Alpha testing disables chrome and additive.
+			if( pCheckBox->GetValue() )
+			{
+				texture.flags &= ~( STUDIO_NF_CHROME | STUDIO_NF_ADDITIVE );
+				m_pCheckBoxes[ CheckBox::CHROME ]->SetValue( false );
+				m_pCheckBoxes[ CheckBox::ADDITIVE ]->SetValue( false );
+			}
 
 			if( pCheckBox->GetValue() )
+			{
 				texture.flags |= STUDIO_NF_MASKED;
-
-			m_pCheckBoxes[ CheckBox::CHROME ]->SetValue( false );
-			m_pCheckBoxes[ CheckBox::ADDITIVE ]->SetValue( false );
+			}
+			else
+			{
+				texture.flags &= ~STUDIO_NF_MASKED;
+			}
 
 			break;
 		}

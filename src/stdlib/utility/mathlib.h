@@ -17,6 +17,7 @@
 *	This file refers to Spherical Linear Interpolation as slerp.
 */
 
+#include <algorithm>
 #include <cmath>
 
 #include <glm/vec3.hpp>
@@ -72,6 +73,14 @@ vec_t VectorNormalize( glm::vec3& vector );
 inline constexpr vec_t VectorAvg( const glm::vec3& vec )
 {
 	return ( vec.x + vec.y + vec.z ) / 3;
+}
+
+/**
+*	Returns the largest value out of all 3 vector components.
+*/
+inline vec_t VectorMax( const glm::vec3& vec )
+{
+	return std::max( vec[ 0 ], std::max( vec[ 1 ], vec[ 2 ] ) );
 }
 
 /**

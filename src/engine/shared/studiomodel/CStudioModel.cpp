@@ -23,7 +23,7 @@ void UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST );
 }
 
-void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, const byte* pal, int name, const bool bFilterTextures )
+void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, byte* pal, int name, const bool bFilterTextures )
 {
 	// unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight;
 	int		i, j;
@@ -81,6 +81,12 @@ void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, const by
 
 	const byte* const pAlpha = &pal[ PALETTE_ALPHA_INDEX ];
 
+	//This modifies the model's data. Sets the mask color to black. This is also done by Jed's model viewer. (export texture has black)
+	if( ptexture->flags & STUDIO_NF_MASKED )
+	{
+		pal[ 255 * 3 + 0 ] = pal[ 255 * 3 + 1 ] = pal[ 255 * 3 + 2 ] = 0;
+	}
+
 	// scale down and convert to 32bit RGB
 	for( i = 0; i<outheight; i++ )
 	{
@@ -97,6 +103,7 @@ void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, const by
 
 			if( ptexture->flags & STUDIO_NF_MASKED && pix1 == pAlpha && pix2 == pAlpha && pix3 == pAlpha && pix4 == pAlpha )
 			{
+				//Set alpha to 0 to enable transparent pixel.
 				out[ 3 ] = 0x00;
 			}
 			else
@@ -111,15 +118,15 @@ void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, const by
 	free( tex );
 }
 
-size_t UploadTextures( const studiohdr_t& textureHdr, GLuint* pTextures, const bool bFilterTextures )
+size_t UploadTextures( studiohdr_t& textureHdr, GLuint* pTextures, const bool bFilterTextures )
 {
 	size_t uiNumTextures = 0;
 
 	if( textureHdr.textureindex > 0 && textureHdr.numtextures <= CStudioModel::MAX_TEXTURES )
 	{
-		const mstudiotexture_t* ptexture = textureHdr.GetTextures();
+		mstudiotexture_t* ptexture = textureHdr.GetTextures();
 
-		const byte* pIn = reinterpret_cast<const byte*>( &textureHdr );
+		byte* pIn = reinterpret_cast<byte*>( &textureHdr );
 
 		const int n = textureHdr.numtextures;
 

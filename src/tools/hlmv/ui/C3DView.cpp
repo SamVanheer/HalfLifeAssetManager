@@ -153,9 +153,10 @@ void C3DView::DrawModel()
 		ApplyCameraToScene();
 	}
 
-	glm::vec3 vecViewerRight = studiomodel::renderer().GetViewerRight();
-
-	vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = m_pHLMV->GetState()->camera.GetOrigin()[ 2 ];
+	//Originally this was calculated as:
+	//vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = vecOrigin[ 2 ];
+	//But that vector was incorrect. It mostly affects chrome because of its reflective nature.
+	const glm::vec3 vecViewerRight = AnglesToVector( !m_pHLMV->GetState()->useWeaponOrigin ? m_pHLMV->GetState()->camera.GetViewDirection() : glm::vec3( 90, 0, -90 ) );
 
 	studiomodel::renderer().SetViewerRight( vecViewerRight );
 

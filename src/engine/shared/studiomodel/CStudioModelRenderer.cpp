@@ -657,9 +657,6 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 	const glm::vec3*			pstudioverts;
 	const glm::vec3*	pstudionorms;
 	mstudiotexture_t	*ptexture;
-	float* 				av;
-	float*				lv;
-	float				lv_tmp;
 	short				*pskinref;
 
 	unsigned int uiDrawnPolys = 0;
@@ -692,7 +689,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 	// clip and draw all triangles
 	//
 
-	lv = ( float * ) m_pvlightvalues;
+	glm::vec3* lv = m_pvlightvalues;
 	for( j = 0; j < m_pModel->nummesh; j++ )
 	{
 		int flags = ptexture[ pskinref[ pmesh[ j ].skinref ] ].flags;
@@ -700,17 +697,13 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 		meshes[ j ].pMesh = &pmesh[ j ];
 		meshes[ j ].flags = flags;
 
-		for( i = 0; i < pmesh[ j ].numnorms; i++, lv += 3, ++pstudionorms, pnormbone++ )
+		for( i = 0; i < pmesh[ j ].numnorms; i++, ++lv, ++pstudionorms, pnormbone++ )
 		{
-			Lighting( &lv_tmp, *pnormbone, flags, *pstudionorms );
+			Lighting( *lv, *pnormbone, flags, *pstudionorms );
 
 			// FIX: move this check out of the inner loop
 			if( flags & STUDIO_NF_CHROME )
 				Chrome( m_chrome[ reinterpret_cast<glm::vec3*>( lv ) - m_pvlightvalues ], *pnormbone, *pstudionorms );
-
-			lv[ 0 ] = lv_tmp * ( m_lightcolor[ 0 ] / 255.0f );
-			lv[ 1 ] = lv_tmp * ( m_lightcolor[ 1 ] / 255.0f );
-			lv[ 2 ] = lv_tmp * ( m_lightcolor[ 2 ] / 255.0f );
 		}
 	}
 
@@ -762,97 +755,57 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 		if( texture.flags & STUDIO_NF_MASKED )
 		{
 			glEnable( GL_ALPHA_TEST );
-			glAlphaFunc( GL_GREATER, 0.0f );
+			glAlphaFunc( GL_GREATER, 0.5f );
 		}
 
 		if( !wireframeOnly )
 		{
 			glBindTexture( GL_TEXTURE_2D, m_pCurrentModel->GetTextureId( pskinref[ pmesh->skinref ] ) );
+		}
 
-			if( texture.flags & STUDIO_NF_CHROME )
+		while( i = *( ptricmds++ ) )
+		{
+			if( i < 0 )
 			{
-				while( i = *( ptricmds++ ) )
-				{
-					if( i < 0 )
-					{
-						glBegin( GL_TRIANGLE_FAN );
-						i = -i;
-					}
-					else
-					{
-						glBegin( GL_TRIANGLE_STRIP );
-					}
-
-					uiDrawnPolys += i - 2;
-
-					for( ; i > 0; i--, ptricmds += 4 )
-					{
-						// FIX: put these in as integer coords, not floats
-						glTexCoord2f( m_chrome[ ptricmds[ 1 ] ][ 0 ] * s, m_chrome[ ptricmds[ 1 ] ][ 1 ] * t );
-
-						lv = glm::value_ptr( m_pvlightvalues[ ptricmds[ 1 ] ] );
-						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pEntity->GetTransparency() );
-
-						av = glm::value_ptr( m_pxformverts[ ptricmds[ 0 ] ] );
-						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
-					}
-					glEnd();
-				}
+				glBegin( GL_TRIANGLE_FAN );
+				i = -i;
 			}
 			else
 			{
-				while( i = *( ptricmds++ ) )
+				glBegin( GL_TRIANGLE_STRIP );
+			}
+
+			uiDrawnPolys += i - 2;
+
+			for( ; i > 0; i--, ptricmds += 4 )
+			{
+				if( !wireframeOnly )
 				{
-					if( i < 0 )
+					if( texture.flags & STUDIO_NF_CHROME )
 					{
-						glBegin( GL_TRIANGLE_FAN );
-						i = -i;
+						// FIX: put these in as integer coords, not floats
+						glTexCoord2f( m_chrome[ ptricmds[ 1 ] ][ 0 ] * s, m_chrome[ ptricmds[ 1 ] ][ 1 ] * t );
 					}
 					else
 					{
-						glBegin( GL_TRIANGLE_STRIP );
-					}
-
-					uiDrawnPolys += i - 2;
-
-					for( ; i > 0; i--, ptricmds += 4 )
-					{
 						// FIX: put these in as integer coords, not floats
 						glTexCoord2f( ptricmds[ 2 ] * s, ptricmds[ 3 ] * t );
-
-						lv = glm::value_ptr( m_pvlightvalues[ ptricmds[ 1 ] ] );
-						glColor4f( lv[ 0 ], lv[ 1 ], lv[ 2 ], m_pEntity->GetTransparency() );
-
-						av = glm::value_ptr( m_pxformverts[ ptricmds[ 0 ] ] );
-						glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
 					}
-					glEnd();
-				}
-			}
-		}
-		else
-		{
-			while( i = *( ptricmds++ ) )
-			{
-				if( i < 0 )
-				{
-					glBegin( GL_TRIANGLE_FAN );
-					i = -i;
-				}
-				else
-				{
-					glBegin( GL_TRIANGLE_STRIP );
+
+					if( texture.flags & STUDIO_NF_ADDITIVE )
+					{
+						glColor4f( 1.0f, 1.0f, 1.0f, m_pEntity->GetTransparency() );
+					}
+					else
+					{
+						const glm::vec3& lightVec = m_pvlightvalues[ ptricmds[ 1 ] ];
+						glColor4f( lightVec[ 0 ], lightVec[ 1 ], lightVec[ 2 ], m_pEntity->GetTransparency() );
+					}
 				}
 
-				uiDrawnPolys += i - 2;
-
-				for( ; i > 0; i--, ptricmds += 4 )
-				{
-					av = glm::value_ptr( m_pxformverts[ ptricmds[ 0 ] ] );
-					glVertex3f( av[ 0 ], av[ 1 ], av[ 2 ] );
-				}
-				glEnd();
+				glVertex3fv( glm::value_ptr( m_pxformverts[ ptricmds[ 0 ] ] ) );
 			}
+			glEnd();
 		}
 
 		if( texture.flags & STUDIO_NF_MASKED )
@@ -864,42 +817,43 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 	return uiDrawnPolys;
 }
 
-void CStudioModelRenderer::Lighting( float *lv, int bone, int flags, const glm::vec3& normal )
+void CStudioModelRenderer::Lighting( glm::vec3& lv, int bone, int flags, const glm::vec3& normal )
 {
-	float 	illum;
-	float	lightcos;
+	const glm::vec3 lightcolor{ m_lightcolor.GetRed() / 255.0f, m_lightcolor.GetGreen() / 255.0f, m_lightcolor.GetBlue() / 255.0f };
 
-	illum = m_ambientlight;
+	const float ambient = std::max( 0.1f, ( float ) m_ambientlight / 255.0f ); // to avoid divison by zero
+	glm::vec3 illum{ lightcolor * ambient };
 
 	if( flags & STUDIO_NF_FLATSHADE )
 	{
-		illum += m_shadelight * 0.8;
+		VectorMA( illum, 0.8f, lightcolor, illum );
 	}
 	else
 	{
-		float r;
+		float	r, lightcos;
+
 		lightcos = glm::dot( normal, m_blightvec[ bone ] ); // -1 colinear, 1 opposite
 
-		if( lightcos > 1.0 )
-			lightcos = 1;
+		if( lightcos > 1.0f ) lightcos = 1;
+		illum += lightcolor;
 
-		illum += m_shadelight;
+		illum += m_shadelight / 255.0f;
 
 		r = m_flLambert;
-		if( r <= 1.0 ) r = 1.0;
+		if( r < 1.0f ) r = 1.0f;
+		lightcos = ( lightcos + ( r - 1.0f ) ) / r; // do modified hemispherical lighting
+		if( lightcos > 0.0f ) VectorMA( illum, -lightcos, lightcolor, illum );
 
-		lightcos = ( lightcos + ( r - 1.0 ) ) / r; 		// do modified hemispherical lighting
-		if( lightcos > 0.0 )
-		{
-			illum -= m_shadelight * lightcos;
-		}
-		if( illum <= 0 )
-			illum = 0;
+		if( illum[ 0 ] <= 0 ) illum[ 0 ] = 0;
+		if( illum[ 1 ] <= 0 ) illum[ 1 ] = 0;
+		if( illum[ 2 ] <= 0 ) illum[ 2 ] = 0;
 	}
 
-	if( illum > 255 )
-		illum = 255;
-	*lv = illum / 255.0;	// Light from 0 to 1.0
+	float max = VectorMax( illum );
+
+	if( max > 1.0f )
+		lv = illum * ( 1.0f / max );
+	else lv = illum;
 }
 
 

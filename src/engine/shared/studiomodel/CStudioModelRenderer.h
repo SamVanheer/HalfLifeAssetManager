@@ -87,7 +87,7 @@ private:
 
 	unsigned int DrawPoints( const bool wireframeOnly = false );
 
-	void Lighting( float *lv, int bone, int flags, const glm::vec3& normal );
+	void Lighting( glm::vec3& lv, int bone, int flags, const glm::vec3& normal );
 	void Chrome( glm::ivec2& chrome, int bone, const glm::vec3& normal );
 
 private:

@@ -15,6 +15,7 @@
 /* #include "cmdlib.h" */
 
 #include <glm/geometric.hpp>
+#include <glm/trigonometric.hpp>
 
 #include "mathlib.h"
 
@@ -283,8 +284,8 @@ glm::vec3 VectorToAngles( const glm::vec3& vec )
 glm::vec3 AnglesToVector( const glm::vec3& angles )
 {
 	return glm::vec3(
-		cos( angles.y ) * cos( angles.x ),
-		sin( angles.y ) * cos( angles.x ),
-		sin( angles.x )
+		cos( glm::radians( angles.y ) ) * cos( glm::radians( angles.x ) ),
+		sin( glm::radians( angles.y ) ) * cos( glm::radians( angles.x ) ),
+		sin( glm::radians( angles.x ) )
 	);
 }
