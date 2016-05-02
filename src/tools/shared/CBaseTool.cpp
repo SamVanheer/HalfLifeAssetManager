@@ -205,7 +205,9 @@ void CBaseTool::GetGLCanvasAttributes( wxGLAttributes& attrs )
 {
 	attrs
 		.PlatformDefaults()
+		.Defaults()
 		.Stencil( 8 )
+		.DoubleBuffer()
 		.EndList();
 }
 
