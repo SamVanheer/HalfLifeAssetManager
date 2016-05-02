@@ -85,6 +85,8 @@ void C3DView::OnDraw()
 
 	glViewport( 0, 0, size.GetX(), size.GetY() );
 
+	m_pHLMV->GetState()->drawnPolys = 0;
+
 	if( m_pHLMV->GetState()->showTexture )
 	{
 		DrawTexture( m_pHLMV->GetState()->texture, m_pHLMV->GetState()->textureScale,
@@ -156,8 +158,6 @@ void C3DView::DrawModel()
 	vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = m_pHLMV->GetState()->camera.GetOrigin()[ 2 ];
 
 	studiomodel::renderer().SetViewerRight( vecViewerRight );
-
-	m_pHLMV->GetState()->drawnPolys = 0;
 
 	const unsigned int uiOldPolys = studiomodel::renderer().GetDrawnPolygonsCount();
 

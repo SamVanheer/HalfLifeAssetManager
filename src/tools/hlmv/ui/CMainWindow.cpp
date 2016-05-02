@@ -110,8 +110,11 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 
 	SetMenuBar( menuBar );
 
+	/*
+	//Don't need a status bar right now.
 	CreateStatusBar();
 	SetStatusText( "" );
+	*/
 
 	m_pMainPanel = new CMainPanel( this, m_pHLMV );
 

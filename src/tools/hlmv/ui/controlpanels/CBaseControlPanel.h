@@ -41,9 +41,15 @@ public:
 protected:
 	CBaseControlPanel( wxWindow* pParent, const wxString& szName, CHLMV* const pHLMV );
 
-	wxStaticBox* GetBox() { return m_pBox; }
+	/**
+	*	Gets the window to use as the direct parent for child elements.
+	*/
+	wxWindow* GetElementParent() { return this; }
 
-	wxStaticBoxSizer* GetBoxSizer() { return m_pBoxSizer; }
+	/**
+	*	Gets the main sizer to add elements to.
+	*/
+	wxSizer* GetMainSizer() { return m_pMainSizer; }
 
 protected:
 	CHLMV* const m_pHLMV;
@@ -51,11 +57,7 @@ protected:
 private:
 	const wxString m_szName;
 
-	wxStaticText* m_pName;
-
-	wxStaticBox* m_pBox;
-
-	wxStaticBoxSizer* m_pBoxSizer;
+	wxBoxSizer* m_pMainSizer;
 
 private:
 	CBaseControlPanel( const CBaseControlPanel& ) = delete;

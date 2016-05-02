@@ -85,25 +85,33 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	//Layout
 	wxGridBagSizer* pBarSizer = new wxGridBagSizer( 5, 5 );
 
-	pBarSizer->Add( m_pViewOrigin, wxGBPosition( 0, 0 ), wxGBSpan( 1, 2 ) );
-	pBarSizer->Add( m_pDrawnPolys, wxGBPosition( 0, 2 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER );
-	pBarSizer->Add( m_pFPS, wxGBPosition( 0, 3 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER );
+	int iRow = 0;
+
+	pBarSizer->Add( m_pViewOrigin, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 2 ) );
+	pBarSizer->Add( m_pDrawnPolys, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL );
+	pBarSizer->Add( m_pFPS, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL );
 
 	m_pMainControlBar->SetSizer( pBarSizer );
 
-	wxBoxSizer* pPanelSizer = new wxBoxSizer( wxVERTICAL );
+	wxBoxSizer* pPanelSizer = new wxBoxSizer( wxHORIZONTAL );
+
+	//Add a 10px border on the left so the text isn't pasted against the window border.
+	pPanelSizer->AddSpacer( 10 );
 
 	pPanelSizer->Add( m_pMainControlBar, wxSizerFlags().Expand() );
 
-	pPanelSizer->Add( m_pControlPanels, wxSizerFlags().Expand() );
+	//Padding.
+	pPanelSizer->AddSpacer( 10 );
+
+	pPanelSizer->Add( m_pControlPanels, wxSizerFlags().Expand().Proportion( 1 ) );
 
 	m_pControlPanel->SetSizer( pPanelSizer );
 
 	wxBoxSizer* pSizer = new wxBoxSizer( wxVERTICAL );
 
 	//3D view takes up 3/4th of the main area
-	pSizer->Add( m_p3DView, wxSizerFlags().Expand().Proportion( 3 ) );
-	pSizer->Add( m_pControlPanel, wxSizerFlags().Expand().Proportion( 1 ) );
+	pSizer->Add( m_p3DView, wxSizerFlags().Expand().Proportion( 1 ) );
+	pSizer->Add( m_pControlPanel, wxSizerFlags().Expand().Proportion( 0 ) );
 
 	this->SetSizer( pSizer );
 

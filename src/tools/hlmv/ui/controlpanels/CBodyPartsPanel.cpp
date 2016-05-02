@@ -18,7 +18,7 @@ wxEND_EVENT_TABLE()
 CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: CBaseControlPanel( pParent, "Body Parts", pHLMV )
 {
-	wxWindow* const pElemParent = GetBox();
+	wxWindow* const pElemParent = GetElementParent();
 
 	m_pBodypart = new wxComboBox( pElemParent, wxID_BODY_BODYPARTS, "", wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
 	m_pBodypart->SetEditable( false );
@@ -95,7 +95,7 @@ CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	pSizer->Add( m_pModelInfo, wxGBPosition( 0, 4 ), wxGBSpan( 3, 2 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
-	GetBoxSizer()->Add( pSizer );
+	GetMainSizer()->Add( pSizer );
 }
 
 CBodyPartsPanel::~CBodyPartsPanel()

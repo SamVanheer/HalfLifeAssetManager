@@ -15,7 +15,7 @@ wxEND_EVENT_TABLE()
 CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: CBaseControlPanel( pParent, "Fullscreen", pHLMV )
 {
-	wxWindow* const pElemParent = GetBox();
+	wxWindow* const pElemParent = GetElementParent();
 
 	m_pGoFullscreen = new wxButton( pElemParent, wxID_FULLSCREEN_GO, "Fullscreen!" );
 
@@ -23,7 +23,7 @@ CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	pSizer->Add( m_pGoFullscreen, wxGBPosition( 0, 0 ), wxDefaultSpan, wxEXPAND );
 
-	GetBoxSizer()->Add( pSizer );
+	GetMainSizer()->Add( pSizer );
 }
 
 CFullscreenPanel::~CFullscreenPanel()

@@ -30,7 +30,7 @@ wxEND_EVENT_TABLE()
 CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: CBaseControlPanel( pParent, "Sequences", pHLMV )
 {
-	wxWindow* const pElemParent = GetBox();
+	wxWindow* const pElemParent = GetElementParent();
 
 	wxStaticText* pSequence = new wxStaticText( pElemParent, wxID_ANY, "Animation Sequence" );
 
@@ -172,7 +172,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pEventInfo->SetSizer( pEventSizer );
 
-	GetBoxSizer()->Add( pSizer );
+	GetMainSizer()->Add( pSizer );
 
 	m_pEventInfo->Show( false );
 

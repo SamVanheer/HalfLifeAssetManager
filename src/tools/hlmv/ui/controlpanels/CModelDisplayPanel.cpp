@@ -26,7 +26,7 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	//Helps catch errors if we miss one.
 	memset( m_pCheckBoxes, 0, sizeof( m_pCheckBoxes ) );
 
-	wxWindow* const pElemParent = GetBox();
+	wxWindow* const pElemParent = GetElementParent();
 
 	wxStaticText* pRenderMode = new wxStaticText( pElemParent, wxID_ANY, "Render mode:" );
 
@@ -45,14 +45,16 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pRenderMode->SetEditable( false );
 
-	m_pCheckBoxes[ CheckBox::SHOW_HITBOXES ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Hit Boxes" );
-	m_pCheckBoxes[ CheckBox::SHOW_GROUND ]			= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Ground" );
-	m_pCheckBoxes[ CheckBox::SHOW_BONES ]			= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Bones" );
-	m_pCheckBoxes[ CheckBox::MIRROR_ON_GROUND ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Mirror Model On Ground" );
-	m_pCheckBoxes[ CheckBox::SHOW_ATTACHMENTS ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Attachments" );
-	m_pCheckBoxes[ CheckBox::SHOW_BACKGROUND ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Background" );
-	m_pCheckBoxes[ CheckBox::SHOW_EYE_POSITION ]	= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Eye Position" );
-	m_pCheckBoxes[ CheckBox::WIREFRAME_OVERLAY ]	= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Wireframe Overlay" );
+	wxPanel* pCheckBoxPanel = new wxPanel( pElemParent );
+
+	m_pCheckBoxes[ CheckBox::SHOW_HITBOXES ]		= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Show Hit Boxes" );
+	m_pCheckBoxes[ CheckBox::SHOW_GROUND ]			= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Show Ground" );
+	m_pCheckBoxes[ CheckBox::SHOW_BONES ]			= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Show Bones" );
+	m_pCheckBoxes[ CheckBox::MIRROR_ON_GROUND ]		= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Mirror Model On Ground" );
+	m_pCheckBoxes[ CheckBox::SHOW_ATTACHMENTS ]		= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Show Attachments" );
+	m_pCheckBoxes[ CheckBox::SHOW_BACKGROUND ]		= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Show Background" );
+	m_pCheckBoxes[ CheckBox::SHOW_EYE_POSITION ]	= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Show Eye Position" );
+	m_pCheckBoxes[ CheckBox::WIREFRAME_OVERLAY ]	= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Wireframe Overlay" );
 
 	m_pMeshScale = new wxTextCtrl( pElemParent, wxID_ANY, "1.0" );
 	m_pMeshScaleButton = new wxButton( pElemParent, wxID_MDLDISP_SCALEMESH, "Scale Mesh" );
@@ -78,15 +80,21 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	pControlsSizer->Add( m_pOpacity, wxGBPosition( 2, 0 ), wxDefaultSpan, wxEXPAND );
 	pControlsSizer->Add( m_pOpacitySlider, wxGBPosition( 3, 0 ), wxDefaultSpan, wxEXPAND );
 
+	wxGridBagSizer* pCheckBoxSizer = new wxGridBagSizer( 5, 5 );
+
 	for( size_t uiIndex = CheckBox::FIRST; uiIndex < CheckBox::COUNT; ++uiIndex )
 	{
 		if( !m_pCheckBoxes[ uiIndex ] )
 			wxLogError( "CModelDisplayPanel::CModelDisplayPanel: Null checkbox %u!\n", uiIndex );
 
-		pControlsSizer->Add( m_pCheckBoxes[ uiIndex ], wxGBPosition( uiIndex / NUM_CHECKBOXES_PER_ROW, 1 + ( uiIndex % NUM_CHECKBOXES_PER_ROW ) ), wxDefaultSpan, wxEXPAND );
+		pCheckBoxSizer->Add( m_pCheckBoxes[ uiIndex ], wxGBPosition( uiIndex / NUM_CHECKBOXES_PER_ROW, ( uiIndex % NUM_CHECKBOXES_PER_ROW ) ), wxDefaultSpan, wxEXPAND );
 
 		m_pCheckBoxes[ uiIndex ]->SetClientData( reinterpret_cast<void*>( uiIndex ) );
 	}
+
+	pCheckBoxPanel->SetSizer( pCheckBoxSizer );
+
+	pControlsSizer->Add( pCheckBoxPanel, wxGBPosition( 0, 1 ), wxGBSpan( 4, 1 ), wxEXPAND );
 
 	pControlsSizer->Add( m_pMeshScale, wxGBPosition( 0, 3 ), wxDefaultSpan, wxEXPAND );
 	pControlsSizer->Add( m_pMeshScaleButton, wxGBPosition( 0, 4 ), wxDefaultSpan, wxEXPAND );
@@ -98,7 +106,7 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	pControlsSizer->Add( m_pMirror[ 1 ], wxGBPosition( 1, 5 ), wxDefaultSpan, wxEXPAND );
 	pControlsSizer->Add( m_pMirror[ 2 ], wxGBPosition( 2, 5 ), wxDefaultSpan, wxEXPAND );
 
-	GetBoxSizer()->Add( pControlsSizer );
+	GetMainSizer()->Add( pControlsSizer );
 
 	cvar::cvars().InstallGlobalCVarHandler( this );
 }
