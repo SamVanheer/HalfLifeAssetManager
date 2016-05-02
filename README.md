@@ -7,3 +7,5 @@ This includes code copyrighted by Id Software and Valve Software, included in th
 All code is redistributed freely.
 
 All of the code in this repository may be used in other projects provided that the author(s) is/are credited.
+
+See the wiki for more information about project dependencies, libraries and tools.
