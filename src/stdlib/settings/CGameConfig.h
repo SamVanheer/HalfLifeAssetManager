@@ -3,14 +3,24 @@
 
 #include "shared/Utility.h"
 
+/**
+*	@defgroup GameConfig Game configurations
+*
+*	Game configuration data.
+*
+*	@{
+*/
+
 namespace settings
 {
 class CGameConfigManager;
 
 /**
-*	Defines a single game configuration.
+*	@brief Defines a single game configuration.
+*
 *	Each configuration has a unique name. This name can only be changed through the configuration manager.
 *	Unmanaged configurations cannot have their name changed.
+*	@see filesystem::IFileSystem
 */
 class CGameConfig final
 {
@@ -43,18 +53,48 @@ public:
 	*/
 	CGameConfig& operator=( const CGameConfig& other );
 
+	/**
+	*	Gets the name of this configuration.
+	*	@return Name.
+	*/
 	const char* GetName() const { return m_szName; }
 
+	/**
+	*	Gets the base path for this configuration.
+	*	@return Base path.
+	*	@see filesystem::IFileSystem
+	*/
 	const char* GetBasePath() const { return m_szBasePath; }
 
+	/**
+	*	Sets the base path.
+	*	@param pszPath Base path.
+	*	@see filesystem::IFileSystem
+	*/
 	void SetBasePath( const char* pszPath );
 
+	/**
+	*	Gets the game directory for this configuration.
+	*	@return Game directory.
+	*/
 	const char* GetGameDir() const { return m_szGameDir; }
 
+	/**
+	*	Sets the game directory.
+	*	@param pszDirectory Game directory.
+	*/
 	void SetGameDir( const char* pszDirectory );
 
+	/**
+	*	Gets the mod directory for this configuration.
+	*	@return Mod directory.
+	*/
 	const char* GetModDir() const { return m_szModDir; }
 
+	/**
+	*	Sets the mod directory.
+	*	@param pszDirectory Mod directory.
+	*/
 	void SetModDir( const char* pszDirectory );
 
 private:
@@ -67,6 +107,10 @@ private:
 	*/
 	bool SetName( const char* const pszName );
 
+	/**
+	*	Copies the given configuration's settings into this one.
+	*	@param other Configuration to copy from.
+	*/
 	void Copy( const CGameConfig& other );
 
 private:
@@ -76,7 +120,7 @@ private:
 	char m_szName[ MAX_BUFFER_LENGTH ];
 
 	/**
-	*	Path to the base game directory, e.g. "common/Half-life"
+	*	Path to the base game directory, e.g. "C:\Program Files (x86)\Steam\steamapps\common\Half-life"
 	*/
 	char m_szBasePath[ MAX_PATH_LENGTH ];
 
@@ -91,5 +135,7 @@ private:
 	char m_szModDir[ MAX_PATH_LENGTH ];
 };
 }
+
+/** @} */
 
 #endif //SETTINGS_CGAMECONFIG_H

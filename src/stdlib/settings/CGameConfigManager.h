@@ -4,12 +4,18 @@
 #include <vector>
 #include <memory>
 
+/**
+*	@ingroup GameConfigs
+*
+*	@{
+*/
+
 namespace settings
 {
 class CGameConfig;
 
 /**
-*	Listener for catching game config events.
+*	@brief Listener for catching game config events.
 */
 class IGameConfigListener
 {
@@ -18,6 +24,8 @@ public:
 
 	/**
 	*	Called when the active config changes.
+	*	@param oldConfig The old configuration. May be null.
+	*	@param newConfig. The new configuration. May be null.
 	*/
 	virtual void ActiveConfigChanged( const std::shared_ptr<CGameConfig>& oldConfig, const std::shared_ptr<CGameConfig>& newConfig ) = 0;
 };
@@ -27,13 +35,17 @@ inline IGameConfigListener::~IGameConfigListener()
 }
 
 /**
-*	This class manages game configurations, as well as the active configuration.
+*	@brief Manages a list of game configurations, as well as an active configuration.
+*	@see CGameConfig
 */
-class CGameConfigManager final : public std::enable_shared_from_this<CGameConfigManager>
+class CGameConfigManager final
 {
 private:
 	typedef std::vector<std::shared_ptr<CGameConfig>> Configs_t;
 
+	/**
+	*	Invalid config index.
+	*/
 	static const size_t INVALID_INDEX = static_cast<size_t>( -1 );
 
 public:
@@ -138,6 +150,7 @@ public:
 
 	/**
 	*	Gets the active config.
+	*	@return The active config.
 	*/
 	const std::shared_ptr<const CGameConfig>& GetActiveConfig() const { return m_ActiveConfig; }
 
@@ -154,6 +167,9 @@ public:
 	bool SetActiveConfig( const std::shared_ptr<CGameConfig>& config );
 
 	/**
+	*	Sets the active config to the given config.
+	*	@param pszName Name of the config to set.
+	*	@return true if the config was set as the active config, false otherwise.
 	*	@see SetActiveConfig( const std::shared_ptr<CGameConfig>& config )
 	*/
 	bool SetActiveConfig( const char* const pszName );
@@ -163,8 +179,16 @@ public:
 	*/
 	void ClearActiveConfig();
 
+	/**
+	*	Gets the config listener.
+	*	@return Config listener.
+	*/
 	IGameConfigListener* GetListener() { return m_pListener; }
 
+	/**
+	*	Sets the config listener.
+	*	@param pListener Listener to set. May be null.
+	*/
 	void SetListener( IGameConfigListener* pListener )
 	{
 		m_pListener = pListener;
@@ -183,5 +207,7 @@ private:
 	IGameConfigListener* m_pListener = nullptr;
 };
 }
+
+/** @} */
 
 #endif //SETTINGS_CGAMECONFIGMANAGER_H
