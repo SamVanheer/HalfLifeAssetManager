@@ -108,7 +108,7 @@ bool C3DView::LeftMouseDrag( wxMouseEvent& event )
 	{
 		glm::vec3 vecLightDir = studiomodel::renderer().GetLightVector();
 
-		const float DELTA = 0.05;
+		const float DELTA = 0.05f;
 
 		if( m_vecOldCoords.x <= event.GetX() )
 		{
@@ -196,7 +196,7 @@ void C3DView::DrawModel()
 	//Originally this was calculated as:
 	//vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = vecOrigin[ 2 ];
 	//But that vector was incorrect. It mostly affects chrome because of its reflective nature.
-	const glm::vec3 vecViewerRight = AnglesToVector( !m_pHLMV->GetState()->useWeaponOrigin ? m_pHLMV->GetState()->camera.GetViewDirection() : glm::vec3( 90, 0, -90 ) );
+	const glm::vec3 vecViewerRight = AnglesToVector( !m_pHLMV->GetState()->useWeaponOrigin ? m_pHLMV->GetState()->camera.GetViewDirection() : glm::vec3( -90, 90, 0 ) );
 
 	studiomodel::renderer().SetViewerRight( vecViewerRight );
 
