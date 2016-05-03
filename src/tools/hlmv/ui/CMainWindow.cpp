@@ -43,6 +43,8 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 
 	SetIcon( m_pHLMV->GetToolIcon() );
 
+	this->SetDropTarget( new CModelDropTarget( this ) );
+
 	wxMenu* menuFile = new wxMenu;
 
 	menuFile->Append( wxID_MAINWND_LOADMODEL, "&Load Model...",
@@ -422,5 +424,33 @@ void CMainWindow::OnMessagesWindowClosed( wxCloseEvent& event )
 	}
 
 	event.Skip();
+}
+
+bool CMainWindow::OnDropFiles( wxCoord x, wxCoord y, const wxArrayString& filenames )
+{
+	if( filenames.empty() )
+		return true;
+
+	//Open the first model.
+	for( size_t uiIndex = 0; uiIndex < filenames.size(); ++uiIndex )
+	{
+		if( filenames[ uiIndex ].EndsWith( ".mdl" ) )
+		{
+			LoadModel( filenames[ uiIndex ] );
+
+			return true;
+		}
+	}
+
+	const wxString szMessage = filenames.size() == 1 ? "Dropped file is not a model" : "Dropped files did not contain a model";
+
+	wxMessageBox( szMessage );
+
+	return false;
+}
+
+bool CModelDropTarget::OnDropFiles( wxCoord x, wxCoord y, const wxArrayString& filenames )
+{
+	return m_pMainWindow->OnDropFiles( x, y, filenames );
 }
 }

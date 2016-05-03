@@ -3,6 +3,8 @@
 
 #include "wxHLMV.h"
 
+#include <wx/dnd.h>
+
 #include "../settings/CHLMVSettings.h"
 #include "../CHLMVState.h"
 
@@ -13,6 +15,21 @@ namespace hlmv
 {
 class CHLMV;
 class CMainPanel;
+class CMainWindow;
+
+class CModelDropTarget final : public wxFileDropTarget
+{
+public:
+	CModelDropTarget( CMainWindow* const pMainWindow )
+		: m_pMainWindow( pMainWindow )
+	{
+	}
+
+	bool OnDropFiles( wxCoord x, wxCoord y, const wxArrayString& filenames ) override final;
+
+private:
+	CMainWindow* const m_pMainWindow;
+};
 
 class CMainWindow final : public ui::CwxBaseFrame
 {
@@ -52,6 +69,8 @@ public:
 	void TakeScreenshot();
 
 	void DumpModelInfo();
+
+	bool OnDropFiles( wxCoord x, wxCoord y, const wxArrayString& filenames );
 
 private:
 	wxDECLARE_EVENT_TABLE();
