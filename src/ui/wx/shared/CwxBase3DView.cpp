@@ -82,20 +82,23 @@ void CwxBase3DView::MouseEvents( wxMouseEvent& event )
 	{
 		if( event.LeftIsDown() && m_iButtonsDown & wxMOUSE_BTN_LEFT )
 		{
-			if( event.GetModifiers() & wxMOD_SHIFT )
+			if( !LeftMouseDrag( event ) )
 			{
-				m_pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x - ( float ) ( event.GetX() - m_vecOldCoords.x );
-				m_pCamera->GetOrigin().y = m_OldCamera.GetOrigin().y + ( float ) ( event.GetY() - m_vecOldCoords.y );
-			}
-			else
-			{
-				//TODO: this should be a vector, not an angle
-				glm::vec3 vecViewDir = m_OldCamera.GetViewDirection();
+				if( event.GetModifiers() & wxMOD_SHIFT )
+				{
+					m_pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x - ( float ) ( event.GetX() - m_vecOldCoords.x );
+					m_pCamera->GetOrigin().y = m_OldCamera.GetOrigin().y + ( float ) ( event.GetY() - m_vecOldCoords.y );
+				}
+				else
+				{
+					//TODO: this should be a vector, not an angle
+					glm::vec3 vecViewDir = m_OldCamera.GetViewDirection();
 
-				vecViewDir.x += ( float ) ( event.GetY() - m_vecOldCoords.y );
-				vecViewDir.y += ( float ) ( event.GetX() - m_vecOldCoords.x );
+					vecViewDir.x += ( float ) ( event.GetY() - m_vecOldCoords.y );
+					vecViewDir.y += ( float ) ( event.GetX() - m_vecOldCoords.x );
 
-				m_pCamera->SetViewDirection( vecViewDir );
+					m_pCamera->SetViewDirection( vecViewDir );
+				}
 			}
 		}
 		else if( event.RightIsDown() && m_iButtonsDown & wxMOUSE_BTN_RIGHT )
@@ -109,5 +112,10 @@ void CwxBase3DView::MouseEvents( wxMouseEvent& event )
 	{
 		event.Skip();
 	}
+}
+
+bool CwxBase3DView::LeftMouseDrag( wxMouseEvent& event )
+{
+	return false;
 }
 }

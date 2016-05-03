@@ -13,6 +13,7 @@
 #include "controlpanels/CFullscreenPanel.h"
 
 #include "shared/studiomodel/CStudioModel.h"
+#include "shared/studiomodel/CStudioModelRenderer.h"
 #include "game/entity/CStudioModelEntity.h"
 #include "game/entity/CBaseEntityList.h"
 
@@ -31,9 +32,12 @@ static const wxString VIEWORIGINS[] =
 
 static const int VIEWORIGIN_WEAPON = 1;
 
+const glm::vec3 CMainPanel::DEFAULT_LIGHT_VECTOR{ 0, 0, -1 };
+
 wxBEGIN_EVENT_TABLE( CMainPanel, wxPanel )
 	EVT_NOTEBOOK_PAGE_CHANGED( wxID_MAIN_PAGECHANGED, CMainPanel::PageChanged )
 	EVT_RADIOBOX( wxID_MAIN_VIEWORIGINCHANGED, CMainPanel::ViewOriginChanged )
+	EVT_BUTTON( wxID_MAIN_RESETLIGHTVECTOR, CMainPanel::ResetLightVector )
 wxEND_EVENT_TABLE()
 
 CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
@@ -54,6 +58,10 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pDrawnPolys = new wxStaticText( m_pMainControlBar, wxID_ANY, "Drawn Polys: Undefined" );
 
 	m_pFPS = new wxStaticText( m_pMainControlBar, wxID_ANY, "FPS: 0" );
+
+	m_pLightVector = new wxStaticText( m_pMainControlBar, wxID_ANY, "Light Vector: 0 0 0" );
+
+	m_pResetLightVector = new wxButton( m_pMainControlBar, wxID_MAIN_RESETLIGHTVECTOR, "Reset Light Vector" );
 
 	m_pControlPanels = new wxNotebook( m_pControlPanel, wxID_MAIN_PAGECHANGED );
 
@@ -94,6 +102,8 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	pBarSizer->Add( m_pViewOrigin, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 2 ) );
 	pBarSizer->Add( m_pDrawnPolys, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL );
 	pBarSizer->Add( m_pFPS, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL );
+	pBarSizer->Add( m_pLightVector, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL | wxEXPAND );
+	pBarSizer->Add( m_pResetLightVector, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL );
 
 	m_pMainControlBar->SetSizer( pBarSizer );
 
@@ -151,6 +161,15 @@ void CMainPanel::RunFrame()
 		m_pFPS->SetLabelText( wxString::Format( "FPS: %u", m_uiCurrentFPS ) );
 
 		m_uiCurrentFPS = 0;
+	}
+
+	const glm::vec3 vecLight = studiomodel::renderer().GetLightVector();
+
+	if( m_vecPrevLightVec != studiomodel::renderer().GetLightVector() )
+	{
+		m_vecPrevLightVec = studiomodel::renderer().GetLightVector();
+
+		m_pLightVector->SetLabelText( wxString::Format( "Light Vector: %.2f %.2f %.2f", m_vecPrevLightVec[ 0 ], m_vecPrevLightVec[ 1 ], m_vecPrevLightVec[ 2 ] ) );
 	}
 
 	ForEachPanel( &CBaseControlPanel::ViewUpdated );
@@ -240,6 +259,8 @@ void CMainPanel::FreeModel()
 void CMainPanel::InitializeUI()
 {
 	ForEachPanel( &CBaseControlPanel::InitializeUI );
+
+	studiomodel::renderer().SetLightVector( DEFAULT_LIGHT_VECTOR );
 }
 
 void CMainPanel::PageChanged( wxBookCtrlEvent& event )
@@ -295,5 +316,10 @@ void CMainPanel::TakeScreenshot()
 void CMainPanel::ViewOriginChanged( wxCommandEvent& event )
 {
 	m_pHLMV->GetState()->useWeaponOrigin = m_pViewOrigin->GetSelection() == VIEWORIGIN_WEAPON;
+}
+
+void CMainPanel::ResetLightVector( wxCommandEvent& event )
+{
+	studiomodel::renderer().SetLightVector( DEFAULT_LIGHT_VECTOR );
 }
 }

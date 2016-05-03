@@ -611,10 +611,6 @@ void CStudioModelRenderer::SetupLighting()
 	m_ambientlight = 32;
 	m_shadelight = 192;
 
-	m_lightvec[ 0 ] = 0;
-	m_lightvec[ 1 ] = 0;
-	m_lightvec[ 2 ] = -1.0;
-
 	m_lightcolor[ 0 ] = r_lighting_r.GetInt();
 	m_lightcolor[ 1 ] = r_lighting_g.GetInt();
 	m_lightcolor[ 2 ] = r_lighting_b.GetInt();
@@ -819,14 +815,13 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 
 void CStudioModelRenderer::Lighting( glm::vec3& lv, int bone, int flags, const glm::vec3& normal )
 {
-	const glm::vec3 lightcolor{ m_lightcolor.GetRed() / 255.0f, m_lightcolor.GetGreen() / 255.0f, m_lightcolor.GetBlue() / 255.0f };
-
 	const float ambient = std::max( 0.1f, ( float ) m_ambientlight / 255.0f ); // to avoid divison by zero
-	glm::vec3 illum{ lightcolor * ambient };
+	const float shade = m_shadelight / 255.0f;
+	glm::vec3 illum{ ambient };
 
 	if( flags & STUDIO_NF_FLATSHADE )
 	{
-		VectorMA( illum, 0.8f, lightcolor, illum );
+		VectorMA( illum, 0.8f, glm::vec3{ shade }, illum );
 	}
 	else
 	{
@@ -835,14 +830,13 @@ void CStudioModelRenderer::Lighting( glm::vec3& lv, int bone, int flags, const g
 		lightcos = glm::dot( normal, m_blightvec[ bone ] ); // -1 colinear, 1 opposite
 
 		if( lightcos > 1.0f ) lightcos = 1;
-		illum += lightcolor;
 
 		illum += m_shadelight / 255.0f;
 
 		r = m_flLambert;
 		if( r < 1.0f ) r = 1.0f;
 		lightcos = ( lightcos + ( r - 1.0f ) ) / r; // do modified hemispherical lighting
-		if( lightcos > 0.0f ) VectorMA( illum, -lightcos, lightcolor, illum );
+		if( lightcos > 0.0f ) VectorMA( illum, -lightcos, glm::vec3{ shade }, illum );
 
 		if( illum[ 0 ] <= 0 ) illum[ 0 ] = 0;
 		if( illum[ 1 ] <= 0 ) illum[ 1 ] = 0;
@@ -854,6 +848,11 @@ void CStudioModelRenderer::Lighting( glm::vec3& lv, int bone, int flags, const g
 	if( max > 1.0f )
 		lv = illum * ( 1.0f / max );
 	else lv = illum;
+
+	const glm::vec3 lightcolor{ m_lightcolor.GetRed() / 255.0f, m_lightcolor.GetGreen() / 255.0f, m_lightcolor.GetBlue() / 255.0f };
+
+	lv *= lightcolor;
+
 }
 
 

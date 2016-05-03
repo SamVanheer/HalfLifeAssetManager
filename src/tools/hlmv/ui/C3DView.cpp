@@ -102,6 +102,46 @@ void C3DView::OnDraw()
 		m_pListener->Draw3D( size );
 }
 
+bool C3DView::LeftMouseDrag( wxMouseEvent& event )
+{
+	if( event.GetModifiers() & wxMOD_CONTROL )
+	{
+		glm::vec3 vecLightDir = studiomodel::renderer().GetLightVector();
+
+		const float DELTA = 0.05;
+
+		if( m_vecOldCoords.x <= event.GetX() )
+		{
+			vecLightDir.x += DELTA;
+		}
+		else
+		{
+			vecLightDir.x -= DELTA;
+		}
+
+		if( m_vecOldCoords.y <= event.GetY() )
+		{
+			vecLightDir.y += DELTA;
+		}
+		else
+		{
+			vecLightDir.y -= DELTA;
+		}
+
+		m_vecOldCoords.x = event.GetX();
+		m_vecOldCoords.y = event.GetY();
+
+		vecLightDir.x = clamp( vecLightDir.x, -1.0f, 0.0f );
+		vecLightDir.y = clamp( vecLightDir.y, -1.0f, 1.0f );
+
+		studiomodel::renderer().SetLightVector( vecLightDir );
+
+		return true;
+	}
+
+	return false;
+}
+
 void C3DView::SetupRenderMode( RenderMode renderMode )
 {
 	if( renderMode == RenderMode::INVALID )

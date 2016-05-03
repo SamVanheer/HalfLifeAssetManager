@@ -64,6 +64,8 @@ public:
 	static const size_t OPACITY_MAX = 100;
 	static const size_t OPACITY_DEFAULT = OPACITY_MAX;
 
+	static const glm::vec3 DEFAULT_LIGHT_VECTOR;
+
 public:
 	CMainPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CMainPanel();
@@ -116,6 +118,8 @@ private:
 
 	void ViewOriginChanged( wxCommandEvent& event );
 
+	void ResetLightVector( wxCommandEvent& event );
+
 private:
 	CHLMV* const m_pHLMV;
 
@@ -124,6 +128,8 @@ private:
 	wxPanel* m_pControlPanel;
 
 	wxPanel* m_pMainControlBar;
+
+	wxRadioBox* m_pViewOrigin;
 
 	unsigned int m_uiOldDrawnPolys = -1;
 
@@ -134,7 +140,11 @@ private:
 
 	wxStaticText* m_pFPS;
 
-	wxRadioBox* m_pViewOrigin;
+	wxStaticText* m_pLightVector;
+
+	glm::vec3 m_vecPrevLightVec;
+
+	wxButton* m_pResetLightVector;
 
 	wxNotebook* m_pControlPanels;
 

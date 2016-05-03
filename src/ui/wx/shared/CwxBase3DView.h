@@ -83,16 +83,19 @@ protected:
 
 	virtual void MouseEvents( wxMouseEvent& event );
 
-private:
-	I3DViewListener* m_pDrawListener = nullptr;
+	virtual bool LeftMouseDrag( wxMouseEvent& event );
 
-	graphics::CCamera* m_pCamera = nullptr;
-
+protected:
 	//Used for rotation and translation.
 	graphics::CCamera m_OldCamera;
 
 	//Old mouse coordinates.
 	glm::vec2 m_vecOldCoords;
+
+private:
+	I3DViewListener* m_pDrawListener = nullptr;
+
+	graphics::CCamera* m_pCamera = nullptr;
 
 	//Tracks mouse button state. Used to prevent input from being mistakingly applied (e.g. prevent double click from dialog spilling over as drag).
 	int m_iButtonsDown = wxMOUSE_BTN_NONE;

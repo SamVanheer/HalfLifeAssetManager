@@ -29,6 +29,7 @@ enum wxIdentifier
 	//Main panel
 	wxID_MAIN_PAGECHANGED,
 	wxID_MAIN_VIEWORIGINCHANGED,
+	wxID_MAIN_RESETLIGHTVECTOR,
 
 	//Model Display panel
 	wxID_MDLDISP_RENDERMODE,

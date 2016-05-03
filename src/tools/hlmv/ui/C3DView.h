@@ -59,6 +59,8 @@ protected:
 private:
 	void OnDraw() override final;
 
+	bool LeftMouseDrag( wxMouseEvent& event ) override final;
+
 	void SetupRenderMode( RenderMode renderMode = RenderMode::INVALID );
 
 	void DrawTexture( const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines, const mstudiomesh_t* const pUVMesh );

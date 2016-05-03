@@ -67,6 +67,13 @@ public:
 
 	void SetViewerRight( const glm::vec3& vecViewerRight ) { m_vecViewerRight = vecViewerRight; }
 
+	const glm::vec3& GetLightVector() const { return m_lightvec; }
+
+	void SetLightVector( const glm::vec3& lightvec )
+	{
+		m_lightvec = lightvec;
+	}
+
 	/**
 	*	Draws the given model.
 	*/
@@ -124,7 +131,7 @@ private:
 	int				m_ambientlight;						// ambient world light
 	float			m_shadelight;						// direct world light
 
-	glm::vec3		m_lightvec;							// light vector in model reference frame
+	glm::vec3		m_lightvec = { 0, 0, -1 };			// light vector in model reference frame
 	Color			m_lightcolor;
 	glm::vec3		m_blightvec[ MAXSTUDIOBONES ];		// light vectors in bone reference frames
 
