@@ -109,6 +109,12 @@
     <Filter Include="Source Files\lib">
       <UniqueIdentifier>{a29b46bb-aa08-44a4-9370-87641fbe5d34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\tools\shared\ui">
+      <UniqueIdentifier>{daed5e8c-d780-44fe-9998-a5fa1d62f8c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tools\shared\ui">
+      <UniqueIdentifier>{9a4ec907-a79a-4e39-9875-d9307f86be9a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
@@ -242,6 +248,12 @@
     </ClCompile>
     <ClCompile Include="..\src\ui\wx\shared\CProcessDialog.cpp">
       <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CBonesPanel.cpp">
+      <Filter>Source Files\tools\hlmv\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\shared\ui\CStudioTypesCheatSheet.cpp">
+      <Filter>Source Files\tools\shared\ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -394,6 +406,12 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\wx\shared\CProcessDialog.h">
       <Filter>Header Files\ui\wx\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CBonesPanel.h">
+      <Filter>Header Files\tools\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\shared\ui\CStudioTypesCheatSheet.h">
+      <Filter>Header Files\tools\shared\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

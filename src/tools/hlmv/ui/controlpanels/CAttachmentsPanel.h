@@ -33,6 +33,9 @@ public:
 	*/
 	void SetAttachment( int iIndex );
 
+protected:
+	wxDECLARE_EVENT_TABLE();
+
 private:
 	/**
 	*	Handler for attachment change events.

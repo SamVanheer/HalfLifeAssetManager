@@ -424,23 +424,25 @@ enum
 // motion flags
 enum
 {
-	STUDIO_X		= 0x0001,
-	STUDIO_Y		= 0x0002,	
-	STUDIO_Z		= 0x0004,
-	STUDIO_XR		= 0x0008,
-	STUDIO_YR		= 0x0010,
-	STUDIO_ZR		= 0x0020,
-	STUDIO_LX		= 0x0040,
-	STUDIO_LY		= 0x0080,
-	STUDIO_LZ		= 0x0100,
-	STUDIO_AX		= 0x0200,
-	STUDIO_AY		= 0x0400,
-	STUDIO_AZ		= 0x0800,
-	STUDIO_AXR		= 0x1000,
-	STUDIO_AYR		= 0x2000,
-	STUDIO_AZR		= 0x4000,
-	STUDIO_TYPES	= 0x7FFF,
-	STUDIO_RLOOP	= 0x8000	// controller that wraps shortest distance
+	STUDIO_X				= 0x0001,
+	STUDIO_Y				= 0x0002,	
+	STUDIO_Z				= 0x0004,
+	STUDIO_XR				= 0x0008,
+	STUDIO_YR				= 0x0010,
+	STUDIO_ZR				= 0x0020,
+	STUDIO_LX				= 0x0040,
+	STUDIO_LY				= 0x0080,
+	STUDIO_LZ				= 0x0100,
+	STUDIO_AX				= 0x0200,
+	STUDIO_AY				= 0x0400,
+	STUDIO_AZ				= 0x0800,
+	STUDIO_AXR				= 0x1000,
+	STUDIO_AYR				= 0x2000,
+	STUDIO_AZR				= 0x4000,
+	STUDIO_TYPES			= 0x7FFF,
+	STUDIO_CONTROL_FIRST	= STUDIO_X,
+	STUDIO_CONTROL_LAST		= STUDIO_AZR,
+	STUDIO_RLOOP			= 0x8000	// controller that wraps shortest distance
 };
 
 // sequence flags

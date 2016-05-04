@@ -20,6 +20,7 @@ class CHLMV;
 
 class CModelDisplayPanel;
 class CBodyPartsPanel;
+class CBonesPanel;
 class CAttachmentsPanel;
 class CTexturesPanel;
 class CSequencesPanel;
@@ -150,6 +151,7 @@ private:
 
 	CModelDisplayPanel*		m_pModelDisplay;
 	CBodyPartsPanel*		m_pBodyParts;
+	CBonesPanel*			m_pBones;
 	CAttachmentsPanel*		m_pAttachments;
 	CTexturesPanel*			m_pTextures;
 	CSequencesPanel*		m_pSequencesPanel;

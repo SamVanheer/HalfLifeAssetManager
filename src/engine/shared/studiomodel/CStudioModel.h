@@ -93,6 +93,27 @@ private:
 
 void ScaleMeshes( CStudioModel* pStudioModel, const float flScale );
 void ScaleBones( CStudioModel* pStudioModel, const float flScale );
+
+/**
+*	Returns the string representation for a studio control value.
+*	@param iControl Value containing a STUDIO_* control bit.
+*	@return String representation for the control, or nullptr.
+*/
+const char* ControlToString( const int iControl );
+
+/**
+*	Returns the description for a studio control value.
+*	@param iControl Value containing a STUDIO_* control bit.
+*	@return String description for the control, or nullptr.
+*/
+const char* ControlToStringDescription( const int iControl );
+
+/**
+*	Converts a string to a control value.
+*	@param pszString String representation of a control value.
+*	@return Control value, or -1 if the string does not represent a valid control.
+*/
+int StringToControl( const char* const pszString );
 }
 
 #endif //GAME_STUDIOMODEL_CSTUDIOMODEL_H

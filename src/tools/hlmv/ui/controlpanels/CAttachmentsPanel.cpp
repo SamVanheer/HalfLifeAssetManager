@@ -7,6 +7,10 @@
 
 namespace hlmv
 {
+wxBEGIN_EVENT_TABLE( CAttachmentsPanel, CBaseControlPanel )
+	EVT_COMBOBOX( wxID_ATTACH_ATTACHMENT, CAttachmentsPanel::OnAttachmentChanged )
+wxEND_EVENT_TABLE()
+
 CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	: CBaseControlPanel( pParent, "Attachments", pHLMV )
 {
