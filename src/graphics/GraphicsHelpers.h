@@ -64,10 +64,11 @@ void DrawBackground( GLuint backgroundTexture );
 
 /**
 *	Sets the projection matrix to the default perspective settings.
-*	@param iWidth	Width of the viewport
-*	@param iHeight	Height of the viewport
+*	@param flFOV Field Of View.
+*	@param iWidth Width of the viewport
+*	@param iHeight Height of the viewport
 */
-void SetProjection( const int iWidth, const int iHeight );
+void SetProjection( const float flFOV, const int iWidth, const int iHeight );
 
 /**
 *	Draws a floor quad.

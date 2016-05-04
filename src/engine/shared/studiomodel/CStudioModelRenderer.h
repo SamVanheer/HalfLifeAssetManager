@@ -63,6 +63,13 @@ public:
 
 	float GetLambert() const { return m_flLambert; }
 
+	const glm::vec3& GetViewerOrigin() const { return m_vecViewerOrigin; }
+
+	void SetViewerOrigin( const glm::vec3& vecViewerOrigin )
+	{
+		m_vecViewerOrigin = vecViewerOrigin;
+	}
+
 	const glm::vec3& GetViewerRight() const { return m_vecViewerRight; }
 
 	void SetViewerRight( const glm::vec3& vecViewerRight ) { m_vecViewerRight = vecViewerRight; }
@@ -140,6 +147,7 @@ private:
 	glm::vec3		m_chromeup[ MAXSTUDIOBONES ];		// chrome vector "up" in bone reference frames
 	glm::vec3		m_chromeright[ MAXSTUDIOBONES ];	// chrome vector "right" in bone reference frames
 
+	glm::vec3		m_vecViewerOrigin;
 	glm::vec3		m_vecViewerRight = { 50, 50, 0 };	// needs to be set to viewer's right in order for chrome to work
 	float			m_flLambert = 1.5f;					// modifier for pseudo-hemispherical lighting
 

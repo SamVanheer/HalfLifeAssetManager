@@ -101,7 +101,7 @@ void C3DView::DrawSprite()
 		graphics::helpers::DrawBackground( m_BackgroundTexture );
 	}
 
-	graphics::helpers::SetProjection( size.GetWidth(), size.GetHeight() );
+	graphics::helpers::SetProjection( 65.0f, size.GetWidth(), size.GetHeight() );
 
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();

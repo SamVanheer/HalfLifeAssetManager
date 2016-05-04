@@ -867,7 +867,7 @@ void CStudioModelRenderer::Chrome( glm::ivec2& chrome, int bone, const glm::vec3
 		glm::vec3 chromerightvec;	// g_chrome s vector in world reference frame
 		glm::vec3 tmp;				// vector pointing at bone in world reference frame
 
-		tmp = m_pEntity->GetOrigin() * -1.0f;
+		tmp = m_vecViewerOrigin * -1.0f;
 
 		tmp[ 0 ] += m_bonetransform[ bone ][ 0 ][ 3 ];
 		tmp[ 1 ] += m_bonetransform[ bone ][ 1 ][ 3 ];

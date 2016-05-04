@@ -317,11 +317,11 @@ void DrawBackground( GLuint backgroundTexture )
 	glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
-void SetProjection( const int iWidth, const int iHeight )
+void SetProjection( const float flFOV, const int iWidth, const int iHeight )
 {
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	gluPerspective( 65.0f, ( GLfloat ) iWidth / ( GLfloat ) iHeight, 1.0f, 4096.0f );
+	gluPerspective( flFOV, ( GLfloat ) iWidth / ( GLfloat ) iHeight, 1.0f, 4096.0f );
 }
 
 void DrawFloorQuad( float flSideLength )

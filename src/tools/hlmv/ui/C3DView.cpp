@@ -39,19 +39,6 @@ C3DView::~C3DView()
 	glDeleteTexture( m_BackgroundTexture );
 }
 
-void C3DView::MouseEvents( wxMouseEvent& event )
-{
-	//Ignore input in weapon origin mode.
-	//TODO: refactor
-	if( m_pHLMV->GetState()->useWeaponOrigin || m_pHLMV->GetState()->showTexture )
-	{
-		event.Skip();
-		return;
-	}
-
-	CwxBase3DView::MouseEvents( event );
-}
-
 void C3DView::PrepareForLoad()
 {
 	SetCurrent( *GetContext() );
@@ -100,6 +87,19 @@ void C3DView::OnDraw()
 
 	if( m_pListener )
 		m_pListener->Draw3D( size );
+}
+
+void C3DView::MouseEvents( wxMouseEvent& event )
+{
+	//Ignore input in weapon origin mode.
+	//TODO: refactor
+	if( m_pHLMV->GetState()->useWeaponOrigin || m_pHLMV->GetState()->showTexture )
+	{
+		event.Skip();
+		return;
+	}
+
+	CwxBase3DView::MouseEvents( event );
 }
 
 bool C3DView::LeftMouseDrag( wxMouseEvent& event )
@@ -175,7 +175,7 @@ void C3DView::DrawModel()
 		graphics::helpers::DrawBackground( m_BackgroundTexture );
 	}
 
-	graphics::helpers::SetProjection( size.GetWidth(), size.GetHeight() );
+	graphics::helpers::SetProjection( !m_pHLMV->GetState()->useWeaponOrigin ? 65.0f : 74.0f, size.GetWidth(), size.GetHeight() );
 
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
@@ -192,6 +192,8 @@ void C3DView::DrawModel()
 	{
 		ApplyCameraToScene();
 	}
+
+	studiomodel::renderer().SetViewerOrigin( !m_pHLMV->GetState()->useWeaponOrigin ? m_pHLMV->GetState()->camera.GetOrigin() : m_pHLMV->GetState()->weaponOrigin );
 
 	//Originally this was calculated as:
 	//vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = vecOrigin[ 2 ];

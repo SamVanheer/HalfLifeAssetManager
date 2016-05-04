@@ -36,8 +36,6 @@ public:
 	const CHLMV* GetHLMV() const { return m_pHLMV; }
 	CHLMV* GetHLMV() { return m_pHLMV; }
 
-	void MouseEvents( wxMouseEvent& event );
-
 	//Tells the 3D view to prepare for model loading.
 	void PrepareForLoad();
 
@@ -58,6 +56,8 @@ protected:
 
 private:
 	void OnDraw() override final;
+
+	void MouseEvents( wxMouseEvent& event ) override final;
 
 	bool LeftMouseDrag( wxMouseEvent& event ) override final;
 
