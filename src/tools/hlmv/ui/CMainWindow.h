@@ -90,6 +90,9 @@ private:
 	void DumpModelInfo( wxCommandEvent& event );
 
 	void ShowMessagesWindow( wxCommandEvent& event );
+	void OnCompileModel( wxCommandEvent& event );
+	void OnDecompileModel( wxCommandEvent& event );
+	void OnEditQC( wxCommandEvent& event );
 	void OpenOptionsDialog( wxCommandEvent& event );
 
 	void OnAbout( wxCommandEvent& event );

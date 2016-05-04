@@ -17,6 +17,7 @@ namespace hlmv
 class CHLMVSettings;
 
 class CGeneralOptions;
+class CCompilerOptions;
 
 class COptionsDialog final : public wxDialog
 {
@@ -37,6 +38,7 @@ private:
 	wxNotebook* m_pPages;
 
 	CGeneralOptions* m_pGeneral;
+	CCompilerOptions* m_pCompiler;
 	ui::CGameConfigurationsPanel* m_pGameConfigs;
 
 private:

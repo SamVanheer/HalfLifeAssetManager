@@ -3,6 +3,7 @@
 #include "ui/wx/CwxOpenGL.h"
 
 #include "ui/wx/shared/CMessagesWindow.h"
+#include "ui/wx/shared/CProcessDialog.h"
 #include "ui/wx/utility/wxUtil.h"
 
 #include "CHLMV.h"
@@ -30,6 +31,9 @@ wxBEGIN_EVENT_TABLE( CMainWindow, ui::CwxBaseFrame )
 	EVT_MENU( wxID_MAINWND_TAKESCREENSHOT, CMainWindow::TakeScreenshot )
 	EVT_MENU( wxID_MAINWND_DUMPMODELINFO, CMainWindow::DumpModelInfo )
 	EVT_MENU( wxID_MAINWND_TOGGLEMESSAGES, CMainWindow::ShowMessagesWindow )
+	EVT_MENU( wxID_MAINWND_COMPILEMODEL, CMainWindow::OnCompileModel )
+	EVT_MENU( wxID_MAINWND_DECOMPILEMODEL, CMainWindow::OnDecompileModel )
+	EVT_MENU( wxID_MAINWND_EDITQC, CMainWindow::OnEditQC )
 	EVT_MENU( wxID_MAINWND_OPTIONS, CMainWindow::OpenOptionsDialog )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
 wxEND_EVENT_TABLE()
@@ -94,6 +98,12 @@ CMainWindow::CMainWindow( CHLMV* const pHLMV )
 	wxMenu* pMenuTools = new wxMenu;
 
 	pMenuTools->Append( wxID_MAINWND_TOGGLEMESSAGES, "Show Messages Window", "Shows or hides the messages window", true );
+
+	pMenuTools->AppendSeparator();
+
+	pMenuTools->Append( wxID_MAINWND_COMPILEMODEL, "Compile Model..." );
+	pMenuTools->Append( wxID_MAINWND_DECOMPILEMODEL, "Decompile Model..." );
+	pMenuTools->Append( wxID_MAINWND_EDITQC, "Edit QC File..." );
 
 	pMenuTools->AppendSeparator();
 
@@ -300,10 +310,7 @@ void CMainWindow::DumpModelInfo()
 	if( m_pHLMV->GetState()->DumpModelInfo( HLMV_DUMP_MODEL_INFO_FILE ) )
 	{
 		//Launch the default text editor.
-		if( !wx::LaunchDefaultTextEditor( HLMV_DUMP_MODEL_INFO_FILE ) )
-		{
-			wxMessageBox( "Unable to open default text editor" );
-		}
+		wx::LaunchDefaultTextEditor( HLMV_DUMP_MODEL_INFO_FILE );
 	}
 	else
 	{
@@ -382,6 +389,106 @@ void CMainWindow::DumpModelInfo( wxCommandEvent& event )
 void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )
 {
 	m_pHLMV->ShowMessagesWindow( event.IsChecked() );
+}
+
+void CMainWindow::OnCompileModel( wxCommandEvent& event )
+{
+	const wxString szStudioMdl = m_pHLMV->GetSettings()->GetStudioMdl().CStr();
+
+	wxFileName fileName( szStudioMdl );
+
+	if( !fileName.Exists() )
+	{
+		wxMessageBox( "Couldn't find studiomdl compiler!", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return;
+	}
+
+	wxFileDialog dlg( this, "Select QC file", wxEmptyString, wxEmptyString, "QC files (*.qc)|*.qc" );
+
+	if( dlg.ShowModal() == wxID_CANCEL )
+		return;
+
+	const wxString szPath = dlg.GetPath();
+
+	ui::CProcessDialog processDlg( this, wxID_ANY, "StudioMdl Compiler" );
+
+	processDlg.SetInputEnabled( true );
+
+	processDlg.SetCommand( wxString::Format( "%s \"%s\"", szStudioMdl, szPath ) );
+
+	wxFileName cwd( szPath );
+
+	wxExecuteEnv* pEnv = new wxExecuteEnv;
+
+	pEnv->cwd = cwd.GetPath();
+
+	processDlg.SetExecuteEnv( pEnv );
+
+	const int iResult = processDlg.ShowModal();
+
+	if( iResult != ui::CProcessDialog::SUCCESS )
+	{
+		wxMessageBox( processDlg.GetErrorString( iResult ), wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+	}
+	else
+	{
+		Message( "Compiled QC file \"%s\\n", szPath.c_str().AsChar() );
+	}
+}
+
+void CMainWindow::OnDecompileModel( wxCommandEvent& event )
+{
+	const wxString szMdlDec = m_pHLMV->GetSettings()->GetMdlDec().CStr();
+
+	wxFileName fileName( szMdlDec );
+
+	if( !fileName.Exists() )
+	{
+		wxMessageBox( "Couldn't find mdldec decompiler!", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return;
+	}
+
+	wxFileDialog dlg( this, "Select MDL file", wxEmptyString, wxEmptyString, "Half-Life MDL files (*.mdl)|*.mdl" );
+
+	if( dlg.ShowModal() == wxID_CANCEL )
+		return;
+
+	const wxString szPath = dlg.GetPath();
+
+	ui::CProcessDialog processDlg( this, wxID_ANY, "MdlDec Decompiler" );
+
+	processDlg.SetInputEnabled( true );
+
+	processDlg.SetCommand( wxString::Format( "%s \"%s\"", szMdlDec, szPath ) );
+
+	wxFileName cwd( szPath );
+
+	wxExecuteEnv* pEnv = new wxExecuteEnv;
+
+	pEnv->cwd = cwd.GetPath();
+
+	processDlg.SetExecuteEnv( pEnv );
+
+	const int iResult = processDlg.ShowModal();
+
+	if( iResult != ui::CProcessDialog::SUCCESS )
+	{
+		wxMessageBox( processDlg.GetErrorString( iResult ), wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+	}
+	else
+	{
+		Message( "Decompiled MDL file \"%s\\n", szPath.c_str().AsChar() );
+	}
+}
+
+void CMainWindow::OnEditQC( wxCommandEvent& event )
+{
+	wxFileDialog dlg( this, "Select QC file", wxEmptyString, wxEmptyString, "QC files (*.qc)|*.qc" );
+
+	if( dlg.ShowModal() == wxID_CANCEL )
+		return;
+
+	wx::LaunchDefaultTextEditor( dlg.GetPath() );
 }
 
 void CMainWindow::OpenOptionsDialog( wxCommandEvent& event )

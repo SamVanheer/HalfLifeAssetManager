@@ -46,6 +46,7 @@
     <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CModelDisplayPanel.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CSequencesPanel.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CTexturesPanel.cpp" />
+    <ClCompile Include="..\src\tools\hlmv\ui\options\CCompilerOptions.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\options\CGeneralOptions.cpp" />
     <ClCompile Include="..\src\tools\hlmv\ui\options\COptionsDialog.cpp" />
     <ClCompile Include="..\src\tools\shared\CBaseTool.cpp" />
@@ -55,6 +56,7 @@
     <ClCompile Include="..\src\ui\wx\shared\CEditGameConfigsDialog.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CGameConfigurationsPanel.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CMessagesWindow.cpp" />
+    <ClCompile Include="..\src\ui\wx\shared\CProcessDialog.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CwxBase3DView.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CwxBaseFrame.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CwxBaseGLCanvas.cpp" />
@@ -91,6 +93,7 @@
     <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CModelDisplayPanel.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CSequencesPanel.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CTexturesPanel.h" />
+    <ClInclude Include="..\src\tools\hlmv\ui\options\CCompilerOptions.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\options\CGeneralOptions.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\options\COptionsDialog.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\wxHLMV.h" />
@@ -101,6 +104,7 @@
     <ClInclude Include="..\src\ui\wx\shared\CEditGameConfigsDialog.h" />
     <ClInclude Include="..\src\ui\wx\shared\CGameConfigurationsPanel.h" />
     <ClInclude Include="..\src\ui\wx\shared\CMessagesWindow.h" />
+    <ClInclude Include="..\src\ui\wx\shared\CProcessDialog.h" />
     <ClInclude Include="..\src\ui\wx\shared\CwxBase3DView.h" />
     <ClInclude Include="..\src\ui\wx\shared\CwxBaseFrame.h" />
     <ClInclude Include="..\src\ui\wx\shared\CwxBaseGLCanvas.h" />

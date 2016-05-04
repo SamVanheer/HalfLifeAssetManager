@@ -237,6 +237,12 @@
     <ClCompile Include="..\src\tools\hlmv\ui\controlpanels\CAttachmentsPanel.cpp">
       <Filter>Source Files\tools\hlmv\ui\controlpanels</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\tools\hlmv\ui\options\CCompilerOptions.cpp">
+      <Filter>Source Files\tools\hlmv\ui\options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ui\wx\shared\CProcessDialog.cpp">
+      <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\Constants.h">
@@ -382,6 +388,12 @@
     </ClInclude>
     <ClInclude Include="..\src\tools\hlmv\ui\controlpanels\CAttachmentsPanel.h">
       <Filter>Header Files\tools\hlmv\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\hlmv\ui\options\CCompilerOptions.h">
+      <Filter>Header Files\tools\hlmv\ui\options</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\shared\CProcessDialog.h">
+      <Filter>Header Files\ui\wx\shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

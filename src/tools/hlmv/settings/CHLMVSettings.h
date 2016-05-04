@@ -2,6 +2,7 @@
 #define HLMV_SETTINGS_CHLMVSETTINGS_H
 
 #include "utility/Color.h"
+#include "utility/CString.h"
 
 #include "settings/CBaseSettings.h"
 #include "settings/CRecentFiles.h"
@@ -95,6 +96,32 @@ public:
 	*/
 	void SetFloorLength( float flLength );
 
+	/**
+	*	Gets the path to the studiomdl compiler.
+	*/
+	const CString& GetStudioMdl() const { return m_szStudioMdl; }
+
+	/**
+	*	Sets the path to the studiomdl compiler.
+	*/
+	void SetStudioMdl( const CString& szStudioMdl )
+	{
+		m_szStudioMdl = szStudioMdl;
+	}
+
+	/**
+	*	Gets the path to the mdldec decompiler.
+	*/
+	const CString& GetMdlDec() const { return m_szMdlDec; }
+
+	/**
+	*	Sets the path to the mdldec decompiler.
+	*/
+	void SetMdlDec( const CString& szMdlDec )
+	{
+		m_szMdlDec = szMdlDec;
+	}
+
 protected:
 	bool PostInitialize( const char* const pszFilename ) override final;
 
@@ -117,6 +144,9 @@ private:
 	Color m_CrosshairColor = DEFAULT_CROSSHAIR_COLOR;
 
 	float m_flFloorLength = DEFAULT_FLOOR_LENGTH;
+
+	CString m_szStudioMdl;
+	CString m_szMdlDec;
 };
 }
 

@@ -66,6 +66,9 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 	m_CrosshairColor	= other.m_CrosshairColor;
 
 	m_flFloorLength		= other.m_flFloorLength;
+
+	m_szStudioMdl		= other.m_szStudioMdl;
+	m_szMdlDec			= other.m_szMdlDec;
 }
 
 void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameConfig>& oldConfig, const std::shared_ptr<settings::CGameConfig>& newConfig )
@@ -138,6 +141,16 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 		{
 			SetFloorLength( static_cast<float>( strtod( floor->GetValue().CStr(), nullptr ) ) );
 		}
+
+		if( auto studiomdl = settings->FindFirstChild<kv::KV>( "studiomdl" ) )
+		{
+			m_szStudioMdl = studiomdl->GetValue();
+		}
+
+		if( auto mdldec = settings->FindFirstChild<kv::KV>( "mdldec" ) )
+		{
+			m_szMdlDec = mdldec->GetValue();
+		}
 	}
 
 	return true;
@@ -178,6 +191,9 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 		return false;
 
 	writer.WriteKeyvalue( "floorLength", szBuffer );
+
+	writer.WriteKeyvalue( "studiomdl", m_szStudioMdl.CStr() );
+	writer.WriteKeyvalue( "mdldec", m_szMdlDec.CStr() );
 
 	writer.EndBlock();
 

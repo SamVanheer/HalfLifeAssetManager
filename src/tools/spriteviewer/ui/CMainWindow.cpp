@@ -234,10 +234,7 @@ void CMainWindow::DumpSpriteInfo()
 	if( m_pSpriteViewer->GetState()->DumpSpriteInfo( SPRITEVIEWER_DUMP_SPRITE_INFO_FILE ) )
 	{
 		//Launch the default text editor.
-		if( !wx::LaunchDefaultTextEditor( SPRITEVIEWER_DUMP_SPRITE_INFO_FILE ) )
-		{
-			wxMessageBox( "Unable to open default text editor" );
-		}
+		wx::LaunchDefaultTextEditor( SPRITEVIEWER_DUMP_SPRITE_INFO_FILE );
 	}
 	else
 	{

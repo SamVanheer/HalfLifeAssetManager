@@ -2,6 +2,7 @@
 #include <wx/notebook.h>
 
 #include "CGeneralOptions.h"
+#include "CCompilerOptions.h"
 #include "ui/wx/shared/CGameConfigurationsPanel.h"
 
 #include "../../settings/CHLMVSettings.h"
@@ -21,10 +22,13 @@ COptionsDialog::COptionsDialog( wxWindow* pParent, CHLMVSettings* const pSetting
 {
 	m_pPages = new wxNotebook( this, wxID_ANY );
 
+	//TODO: refactor to use a base class and list
 	m_pGeneral = new CGeneralOptions( m_pPages, m_EditableSettings.get() );
+	m_pCompiler = new CCompilerOptions( m_pPages, m_EditableSettings.get() );
 	m_pGameConfigs = new ui::CGameConfigurationsPanel( m_pPages, m_EditableSettings->GetConfigManager() );
 
 	m_pPages->AddPage( m_pGeneral, "General" );
+	m_pPages->AddPage( m_pCompiler, "Compiler" );
 	m_pPages->AddPage( m_pGameConfigs, "Game Configurations" );
 
 	m_pPages->ChangeSelection( 0 );
@@ -54,6 +58,7 @@ void COptionsDialog::OnButton( wxCommandEvent& event )
 	case wxID_APPLY:
 		{
 			m_pGeneral->Save();
+			m_pCompiler->Save();
 			m_pGameConfigs->Save();
 
 			//Copy over the settings to the actual settings object.

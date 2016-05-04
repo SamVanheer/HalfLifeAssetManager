@@ -50,15 +50,7 @@ wxColor ColorTowx( const Color& color );
 Color wxToColor( const wxColor& color );
 
 /**
-*	Launches the default program for a given filetype and passes the given parameters.
-*	@param szExtension The extension whose default program will be launched.
-*	@param szParameters Parameters to pass to the program.
-*	@return true on success, false otherwise.
-*/
-bool LaunchDefaultProgram( const wxString& szExtension, const wxString& szParameters );
-
-/**
-*	Launches the default text editor and opens the given file.
+*	Launches the default text editor and opens the given file. If it fails to launch, an error is displayed to the user.
 *	@param szFilename File to open.
 *	@return true on success, false otherwise.
 */
