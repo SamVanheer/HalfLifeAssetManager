@@ -91,9 +91,9 @@ inline double SwapValue<double>( double value )
 }
 
 /**
-*	Statically determines whether we're on a little or big endian system.
+*	Calls the correct byte swapping functions for the current platform.
 */
-template<const int LITTLE = 1 << 0>
+template<const bool LITTLE = IS_LITTLE_ENDIAN>
 class ByteSwap final
 {
 public:
@@ -126,7 +126,7 @@ public:
 };
 
 template<>
-class ByteSwap<1> final
+class ByteSwap<true> final
 {
 public:
 
@@ -149,7 +149,7 @@ public:
 };
 
 template<>
-class ByteSwap<0x80000000> final
+class ByteSwap<false> final
 {
 public:
 

@@ -10,7 +10,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\src\stdlib;$(SolutionDir)..\src\engine;$(SolutionDir)..\src\core;$(SolutionDir)..\src;$(SolutionDir)\..\external\GLEW\include;$(SolutionDir)\..\external\GLM\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)/$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IS_LITTLE_ENDIAN=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <ImportLibrary>$(SolutionDir)\..\bin\$(TargetName).lib</ImportLibrary>
