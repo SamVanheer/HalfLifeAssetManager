@@ -36,8 +36,9 @@ void FlipImageVertically( const int iWidth, const int iHeight, byte* const pData
 /*
 *	Sets up OpenGL for the specified render mode.
 *	@param renderMode Render mode to set up. Must be valid.
+*	@param bBackfaceCulling Whether backface culling should be enabled or not.
 */
-void SetupRenderMode( RenderMode renderMode );
+void SetupRenderMode( RenderMode renderMode, const bool bBackfaceCulling );
 
 /**
 *	Draws a texture onto the screen. Optionally draws a UV map, either on a black background, or on top of the texture.
@@ -98,7 +99,7 @@ unsigned int DrawWireframeOverlay( CStudioModelEntity* pEntity );
 *	@param bWireframeOverlay	Whether to render a wireframe overlay on top of the model
 *	@param flSideLength			Length of one side of the floor
 */
-unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength );
+unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength, const bool bBackfaceCulling );
 
 /**
 *	Draws a box using an array of 8 vectors as corner points.

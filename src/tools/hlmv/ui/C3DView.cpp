@@ -147,7 +147,7 @@ void C3DView::SetupRenderMode( RenderMode renderMode )
 	if( renderMode == RenderMode::INVALID )
 		renderMode = m_pHLMV->GetState()->renderMode;
 
-	graphics::helpers::SetupRenderMode( renderMode );
+	graphics::helpers::SetupRenderMode( renderMode, m_pHLMV->GetState()->backfaceCulling );
 }
 
 void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines, const mstudiomesh_t* const pUVMesh )
@@ -213,7 +213,8 @@ void C3DView::DrawModel()
 		{
 			graphics::helpers::DrawMirroredModel( pEntity, m_pHLMV->GetState()->renderMode,
 												  m_pHLMV->GetState()->wireframeOverlay, 
-												  m_pHLMV->GetSettings()->GetFloorLength() );
+												  m_pHLMV->GetSettings()->GetFloorLength(),
+												  m_pHLMV->GetState()->backfaceCulling );
 		}
 	}
 

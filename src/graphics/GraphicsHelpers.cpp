@@ -75,7 +75,7 @@ void FlipImageVertically( const int iWidth, const int iHeight, byte* const pData
 	}
 }
 
-void SetupRenderMode( RenderMode renderMode )
+void SetupRenderMode( RenderMode renderMode, const bool bBackfaceCulling )
 {
 	if( renderMode == RenderMode::INVALID )
 		return;
@@ -97,7 +97,16 @@ void SetupRenderMode( RenderMode renderMode )
 		{
 			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 			glDisable( GL_TEXTURE_2D );
-			glEnable( GL_CULL_FACE );
+
+			if( bBackfaceCulling )
+			{
+				glEnable( GL_CULL_FACE );
+			}
+			else
+			{
+				glDisable( GL_CULL_FACE );
+			}
+
 			glEnable( GL_DEPTH_TEST );
 
 			if( renderMode == RenderMode::FLAT_SHADED )
@@ -112,7 +121,16 @@ void SetupRenderMode( RenderMode renderMode )
 		{
 			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 			glEnable( GL_TEXTURE_2D );
-			glEnable( GL_CULL_FACE );
+
+			if( bBackfaceCulling )
+			{
+				glEnable( GL_CULL_FACE );
+			}
+			else
+			{
+				glDisable( GL_CULL_FACE );
+			}
+
 			glEnable( GL_DEPTH_TEST );
 			glShadeModel( GL_SMOOTH );
 
@@ -220,7 +238,7 @@ void DrawTexture( const int iWidth, const int iHeight,
 				meshes = pEntity->ComputeMeshList( iTexture );
 			}
 
-			SetupRenderMode( RenderMode::WIREFRAME );
+			SetupRenderMode( RenderMode::WIREFRAME, true );
 
 			if( bAntiAliasLines )
 			{
@@ -392,7 +410,7 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 
 unsigned int DrawWireframeOverlay( CStudioModelEntity* pEntity )
 {
-	SetupRenderMode( RenderMode::WIREFRAME );
+	SetupRenderMode( RenderMode::WIREFRAME, true );
 
 	const unsigned int uiOldPolys = studiomodel::renderer().GetDrawnPolygonsCount();
 
@@ -401,7 +419,7 @@ unsigned int DrawWireframeOverlay( CStudioModelEntity* pEntity )
 	return studiomodel::renderer().GetDrawnPolygonsCount() - uiOldPolys;
 }
 
-unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength )
+unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength, const bool bBackfaceCulling )
 {
 	/* Don't update color or depth. */
 	glDisable( GL_DEPTH_TEST );
@@ -428,7 +446,7 @@ unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode re
 	glPushMatrix();
 	glScalef( 1, 1, -1 );
 	glCullFace( GL_BACK );
-	SetupRenderMode( renderMode );
+	SetupRenderMode( renderMode, bBackfaceCulling );
 
 	glEnable( GL_CLIP_PLANE0 );
 

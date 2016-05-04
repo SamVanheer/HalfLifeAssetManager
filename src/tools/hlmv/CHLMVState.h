@@ -86,6 +86,8 @@ public:
 
 	bool wireframeOverlay;
 
+	bool backfaceCulling;
+
 	glm::vec3 weaponOrigin;
 
 	bool useWeaponOrigin;

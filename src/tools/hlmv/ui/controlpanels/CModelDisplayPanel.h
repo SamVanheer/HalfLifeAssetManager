@@ -27,6 +27,7 @@ public:
 			SHOW_BACKGROUND,
 			SHOW_EYE_POSITION,
 			WIREFRAME_OVERLAY,
+			BACKFACE_CULLING,
 
 			COUNT,
 			LAST = COUNT - 1	//Must be last.

@@ -59,6 +59,8 @@ void CHLMVState::ResetToDefaults()
 
 	wireframeOverlay = false;
 
+	backfaceCulling = true;
+
 	useWeaponOrigin = false;
 
 	showUVMap = false;

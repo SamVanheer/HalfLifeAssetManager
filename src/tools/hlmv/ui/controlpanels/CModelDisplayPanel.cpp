@@ -55,6 +55,9 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pCheckBoxes[ CheckBox::SHOW_BACKGROUND ]		= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Show Background" );
 	m_pCheckBoxes[ CheckBox::SHOW_EYE_POSITION ]	= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Show Eye Position" );
 	m_pCheckBoxes[ CheckBox::WIREFRAME_OVERLAY ]	= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Wireframe Overlay" );
+	m_pCheckBoxes[ CheckBox::BACKFACE_CULLING ]		= new wxCheckBox( pCheckBoxPanel, wxID_MDLDISP_CHECKBOX, "Backface Culling" );
+
+	m_pCheckBoxes[ CheckBox::BACKFACE_CULLING ]->SetValue( true );
 
 	m_pMeshScale = new wxTextCtrl( pElemParent, wxID_ANY, "1.0" );
 	m_pMeshScaleButton = new wxButton( pElemParent, wxID_MDLDISP_SCALEMESH, "Scale Mesh" );
@@ -244,6 +247,12 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 	case CheckBox::WIREFRAME_OVERLAY:
 		{
 			m_pHLMV->GetState()->wireframeOverlay = bValue;
+			break;
+		}
+	
+	case CheckBox::BACKFACE_CULLING:
+		{
+			m_pHLMV->GetState()->backfaceCulling = bValue;
 			break;
 		}
 

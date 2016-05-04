@@ -90,9 +90,9 @@ CBonesPanel::CBonesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pBoneInfo->SetSizer( pBoneInfoSizer );
 
-	pSizer->Add( m_pBoneInfo, wxGBPosition( 0, iCol++ ), wxGBSpan( 7, 1 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
+	pSizer->Add( m_pBoneInfo, wxGBPosition( 0, iCol++ ), wxGBSpan( 4, 1 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
-	pSizer->Add( new wxStaticLine( pElemParent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL ), wxGBPosition( 0, iCol++ ), wxGBSpan( 7, 1 ), wxEXPAND );
+	pSizer->Add( new wxStaticLine( pElemParent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL ), wxGBPosition( 0, iCol++ ), wxGBSpan( 4, 1 ), wxEXPAND );
 
 	pSizer->Add( pBoneControllersText, wxGBPosition( 0, iCol ), wxGBSpan( 1, 2 ), wxEXPAND );
 	pSizer->Add( m_pBoneControllers, wxGBPosition( 1, iCol ), wxGBSpan( 1, 2 ), wxEXPAND );
