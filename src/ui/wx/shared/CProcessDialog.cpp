@@ -266,7 +266,7 @@ void CProcessDialog::OnTerminated( wxProcessEvent& event )
 	PullOutput();
 
 	m_pOutput->SetDefaultStyle( wxTextAttr( wxColor( 0, 0, 0 ) ) );
-	m_pOutput->AppendText( wxString::Format( "The program exited with exit code %d\n", event.GetExitCode() ) );
+	m_pOutput->AppendText( wxString::Format( "\nThe program exited with exit code %d\n", event.GetExitCode() ) );
 
 	delete m_pProcess;
 	m_pProcess = nullptr;

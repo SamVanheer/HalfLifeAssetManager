@@ -412,8 +412,6 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 
 	ui::CProcessDialog processDlg( this, wxID_ANY, "StudioMdl Compiler" );
 
-	processDlg.SetInputEnabled( true );
-
 	processDlg.SetCommand( wxString::Format( "%s \"%s\"", szStudioMdl, szPath ) );
 
 	wxFileName cwd( szPath );
@@ -456,8 +454,6 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 	const wxString szPath = dlg.GetPath();
 
 	ui::CProcessDialog processDlg( this, wxID_ANY, "MdlDec Decompiler" );
-
-	processDlg.SetInputEnabled( true );
 
 	processDlg.SetCommand( wxString::Format( "%s \"%s\"", szMdlDec, szPath ) );
 
