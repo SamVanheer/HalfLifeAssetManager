@@ -3,8 +3,6 @@
 
 #include <glm/vec2.hpp>
 
-#include "graphics/CCamera.h"
-
 #include "CwxBaseGLCanvas.h"
 
 namespace ui
@@ -52,21 +50,6 @@ public:
 		m_pDrawListener = pDrawListener;
 	}
 
-	/**
-	*	Gets the current camera.
-	*/
-	const graphics::CCamera* GetCamera() const { return m_pCamera; }
-
-	/**
-	*	@copydoc GetCamera() const
-	*/
-	graphics::CCamera* GetCamera() { return m_pCamera; }
-
-	/**
-	*	Sets the current camera.
-	*/
-	void SetCamera( graphics::CCamera* pCamera );
-
 protected:
 	wxDECLARE_EVENT_TABLE();
 
@@ -76,29 +59,8 @@ protected:
 	virtual void OnDraw() {}
 	virtual void OnPostDraw() {}
 
-	/**
-	*	Applies the current camera settings to the scene.
-	*/
-	void ApplyCameraToScene();
-
-	virtual void MouseEvents( wxMouseEvent& event );
-
-	virtual bool LeftMouseDrag( wxMouseEvent& event );
-
-protected:
-	//Used for rotation and translation.
-	graphics::CCamera m_OldCamera;
-
-	//Old mouse coordinates.
-	glm::vec2 m_vecOldCoords;
-
 private:
 	I3DViewListener* m_pDrawListener = nullptr;
-
-	graphics::CCamera* m_pCamera = nullptr;
-
-	//Tracks mouse button state. Used to prevent input from being mistakingly applied (e.g. prevent double click from dialog spilling over as drag).
-	int m_iButtonsDown = wxMOUSE_BTN_NONE;
 };
 }
 

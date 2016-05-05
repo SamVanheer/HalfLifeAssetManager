@@ -1,10 +1,14 @@
 #include <memory>
 
 #include <wx/image.h>
+#include <wx/notebook.h>
 
 #include "CHLMV.h"
 #include "../settings/CHLMVSettings.h"
 #include "../CHLMVState.h"
+
+#include "MouseOpFlag.h"
+#include "controlpanels/CBaseControlPanel.h"
 
 #include "graphics/GraphicsHelpers.h"
 #include "graphics/GLRenderTarget.h"
@@ -20,14 +24,17 @@
 namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( C3DView, CwxBase3DView )
-	//EVT_MOUSE_EVENTS( C3DView::MouseEvents )
+	EVT_MOUSE_EVENTS( C3DView::MouseEvents )
 wxEND_EVENT_TABLE()
 
-C3DView::C3DView( wxWindow* pParent, CHLMV* const pHLMV, I3DViewListener* pListener )
+C3DView::C3DView( wxWindow* pParent, CHLMV* const pHLMV, wxNotebook* const pControlPanels, I3DViewListener* pListener )
 	: CwxBase3DView( pParent, nullptr, wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
+	, m_pControlPanels( pControlPanels )
 	, m_pListener( pListener )
 {
+	wxASSERT( pControlPanels );
+
 	SetCamera( &m_pHLMV->GetState()->camera );
 }
 
@@ -42,6 +49,15 @@ C3DView::~C3DView()
 void C3DView::PrepareForLoad()
 {
 	SetCurrent( *GetContext() );
+}
+
+void C3DView::SetCamera( graphics::CCamera* pCamera )
+{
+	m_pCamera = pCamera;
+	//Also set the old camera so no leftover data gets used.
+
+	if( pCamera )
+		m_OldCamera = *pCamera;
 }
 
 void C3DView::UpdateView()
@@ -89,57 +105,134 @@ void C3DView::OnDraw()
 		m_pListener->Draw3D( size );
 }
 
+void C3DView::ApplyCameraToScene()
+{
+	if( !m_pCamera )
+		return;
+
+	const auto& vecOrigin = m_pCamera->GetOrigin();
+	const auto vecAngles = m_pCamera->GetViewDirection();
+
+	glTranslatef( -vecOrigin[ 0 ], -vecOrigin[ 1 ], -vecOrigin[ 2 ] );
+
+	glRotatef( vecAngles[ 0 ], 1.0f, 0.0f, 0.0f );
+	glRotatef( vecAngles[ 1 ], 0.0f, 0.0f, 1.0f );
+}
+
 void C3DView::MouseEvents( wxMouseEvent& event )
 {
-	//Ignore input in weapon origin mode.
-	//TODO: refactor
-	if( m_pHLMV->GetState()->useWeaponOrigin || m_pHLMV->GetState()->showTexture )
+	if( !m_pCamera )
 	{
 		event.Skip();
 		return;
 	}
 
-	CwxBase3DView::MouseEvents( event );
-}
+	//Default to no operations if we couldn't find the page.
+	MouseOpFlags_t flags = MOUSEOPF_NONE;
 
-bool C3DView::LeftMouseDrag( wxMouseEvent& event )
-{
-	if( event.GetModifiers() & wxMOD_CONTROL )
+	const int iPage = m_pControlPanels->GetSelection();
+
+	if( iPage != wxNOT_FOUND )
 	{
-		glm::vec3 vecLightDir = studiomodel::renderer().GetLightVector();
+		flags = static_cast<CBaseControlPanel*>( m_pControlPanels->GetPage( iPage ) )->GetAllowedMouseOperations();
+	}
 
-		const float DELTA = 0.05f;
+	//Disable translation and rotation when weapon origin view mode is enabled.
+	if( m_pHLMV->GetState()->useWeaponOrigin )
+	{
+		flags &= ~( MOUSEOPF_TRANSLATE | MOUSEOPF_ROTATE );
+	}
 
-		if( m_vecOldCoords.x <= event.GetX() )
-		{
-			vecLightDir.x += DELTA;
-		}
-		else
-		{
-			vecLightDir.x -= DELTA;
-		}
+	//Always handle button down and up events so state isn't invalid in some edge cases.
 
-		if( m_vecOldCoords.y <= event.GetY() )
-		{
-			vecLightDir.y += DELTA;
-		}
-		else
-		{
-			vecLightDir.y -= DELTA;
-		}
-
+	if( event.ButtonDown() )
+	{
+		m_OldCamera.SetOrigin( m_pCamera->GetOrigin() );
+		m_OldCamera.SetViewDirection( m_pCamera->GetViewDirection() );
 		m_vecOldCoords.x = event.GetX();
 		m_vecOldCoords.y = event.GetY();
 
-		vecLightDir.x = clamp( vecLightDir.x, -1.0f, 0.0f );
-		vecLightDir.y = clamp( vecLightDir.y, -1.0f, 1.0f );
-
-		studiomodel::renderer().SetLightVector( vecLightDir );
-
-		return true;
+		m_iButtonsDown |= event.GetButton();
 	}
+	else if( event.ButtonUp() )
+	{
+		m_iButtonsDown &= ~event.GetButton();
+	}
+	else if( event.Dragging() )
+	{
+		if( event.LeftIsDown() && m_iButtonsDown & wxMOUSE_BTN_LEFT )
+		{
+			if( event.GetModifiers() & wxMOD_SHIFT )
+			{
+				if( flags & MOUSEOPF_TRANSLATE )
+				{
+					m_pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x - ( float ) ( event.GetX() - m_vecOldCoords.x );
+					m_pCamera->GetOrigin().y = m_OldCamera.GetOrigin().y + ( float ) ( event.GetY() - m_vecOldCoords.y );
+				}
+			}
+			else if( event.GetModifiers() & wxMOD_CONTROL )
+			{
+				if( flags & MOUSEOPF_LIGHTVECTOR )
+				{
+					glm::vec3 vecLightDir = studiomodel::renderer().GetLightVector();
 
-	return false;
+					const float DELTA = 0.05f;
+
+					if( m_vecOldCoords.x <= event.GetX() )
+					{
+						vecLightDir.x += DELTA;
+					}
+					else
+					{
+						vecLightDir.x -= DELTA;
+					}
+
+					if( m_vecOldCoords.y <= event.GetY() )
+					{
+						vecLightDir.y += DELTA;
+					}
+					else
+					{
+						vecLightDir.y -= DELTA;
+					}
+
+					m_vecOldCoords.x = event.GetX();
+					m_vecOldCoords.y = event.GetY();
+
+					vecLightDir.x = clamp( vecLightDir.x, -1.0f, 0.0f );
+					vecLightDir.y = clamp( vecLightDir.y, -1.0f, 1.0f );
+
+					studiomodel::renderer().SetLightVector( vecLightDir );
+				}
+			}
+			else
+			{
+				if( flags & MOUSEOPF_ROTATE )
+				{
+					//TODO: this should be a vector, not an angle
+					glm::vec3 vecViewDir = m_OldCamera.GetViewDirection();
+
+					vecViewDir.x += ( float ) ( event.GetY() - m_vecOldCoords.y );
+					vecViewDir.y += ( float ) ( event.GetX() - m_vecOldCoords.x );
+
+					m_pCamera->SetViewDirection( vecViewDir );
+				}
+			}
+		}
+		else if( event.RightIsDown() && m_iButtonsDown & wxMOUSE_BTN_RIGHT )
+		{
+			if( flags & MOUSEOPF_TRANSLATE )
+			{
+				m_pCamera->GetOrigin().z = m_OldCamera.GetOrigin().z + ( float ) ( event.GetY() - m_vecOldCoords.y );
+			}
+		}
+
+		Refresh();
+	}
+	else
+	{
+		event.Skip();
+	}
 }
 
 void C3DView::SetupRenderMode( RenderMode renderMode )

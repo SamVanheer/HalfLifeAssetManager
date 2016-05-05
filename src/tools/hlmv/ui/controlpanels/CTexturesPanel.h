@@ -48,6 +48,8 @@ public:
 	CTexturesPanel( wxWindow* pParent, CHLMV* const pHLMV );
 	~CTexturesPanel();
 
+	MouseOpFlags_t GetAllowedMouseOperations() const override final { return MOUSEOPF_NONE; }
+
 	void PanelActivated() override;
 
 	void PanelDeactivated() override;

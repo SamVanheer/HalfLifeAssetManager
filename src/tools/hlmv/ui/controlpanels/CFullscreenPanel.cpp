@@ -12,8 +12,9 @@ wxBEGIN_EVENT_TABLE( CFullscreenPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_FULLSCREEN_GO, CFullscreenPanel::GoFullscreen )
 wxEND_EVENT_TABLE()
 
-CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, CHLMV* const pHLMV )
+CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, CHLMV* const pHLMV, wxNotebook* const pControlPanels )
 	: CBaseControlPanel( pParent, "Fullscreen", pHLMV )
+	, m_pControlPanels( pControlPanels )
 {
 	wxWindow* const pElemParent = GetElementParent();
 
@@ -38,6 +39,6 @@ void CFullscreenPanel::GoFullscreen( wxCommandEvent& event )
 		return;
 	}
 
-	CFullscreenWindow* pWindow = new CFullscreenWindow( m_pHLMV );
+	CFullscreenWindow* pWindow = new CFullscreenWindow( m_pHLMV, m_pControlPanels );
 }
 }

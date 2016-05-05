@@ -13,7 +13,7 @@ wxBEGIN_EVENT_TABLE( CFullscreenWindow, wxFrame )
 	EVT_CHAR_HOOK( CFullscreenWindow::KeyDown )
 wxEND_EVENT_TABLE()
 
-CFullscreenWindow::CFullscreenWindow( CHLMV* const pHLMV )
+CFullscreenWindow::CFullscreenWindow( CHLMV* const pHLMV, wxNotebook* const pControlPanels )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE )
 	, m_pHLMV( pHLMV )
 {
@@ -21,7 +21,7 @@ CFullscreenWindow::CFullscreenWindow( CHLMV* const pHLMV )
 
 	SetIcon( m_pHLMV->GetToolIcon() );
 
-	m_p3DView = new C3DView( this, m_pHLMV );
+	m_p3DView = new C3DView( this, m_pHLMV, pControlPanels );
 
 	wxBoxSizer* pSizer = new wxBoxSizer( wxVERTICAL );
 

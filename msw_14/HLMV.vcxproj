@@ -83,6 +83,7 @@
     <ClInclude Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.h" />
     <ClInclude Include="..\src\tools\hlmv\settings\CHLMVSettings.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\C3DView.h" />
+    <ClInclude Include="..\src\tools\hlmv\ui\MouseOpFlag.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\CFullscreenWindow.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\CHLMV.h" />
     <ClInclude Include="..\src\tools\hlmv\ui\CMainPanel.h" />

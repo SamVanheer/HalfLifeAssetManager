@@ -5,6 +5,8 @@
 
 #include <wx/sizer.h>
 
+#include "../MouseOpFlag.h"
+
 class StudioModel;
 
 namespace hlmv
@@ -20,6 +22,12 @@ public:
 
 	const CHLMV* GetHLMV() const { return m_pHLMV; }
 	CHLMV* GetHLMV() { return m_pHLMV; }
+
+	/**
+	*	Returns a bit vector containing all of the allowed mouse operations.
+	*	Implemented as a virtual to allow for dynamic changes to the allowed operations.
+	*/
+	virtual MouseOpFlags_t GetAllowedMouseOperations() const { return MOUSEOPF_ALL; }
 
 	virtual void InitializeUI() {}
 

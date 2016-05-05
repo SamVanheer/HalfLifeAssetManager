@@ -3,12 +3,14 @@
 
 #include "CBaseControlPanel.h"
 
+class wxNotebook;
+
 namespace hlmv
 {
 class CFullscreenPanel final : public CBaseControlPanel
 {
 public:
-	CFullscreenPanel( wxWindow* pParent, CHLMV* const pHLMV );
+	CFullscreenPanel( wxWindow* pParent, CHLMV* const pHLMV, wxNotebook* const pControlPanels );
 	~CFullscreenPanel();
 
 protected:
@@ -18,6 +20,8 @@ private:
 	void GoFullscreen( wxCommandEvent& event );
 
 private:
+	wxNotebook* const m_pControlPanels;
+
 	wxButton* m_pGoFullscreen;
 
 private:

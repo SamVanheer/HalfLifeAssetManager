@@ -413,6 +413,9 @@
     <ClInclude Include="..\src\tools\shared\ui\CStudioTypesCheatSheet.h">
       <Filter>Header Files\tools\shared\ui</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tools\hlmv\ui\MouseOpFlag.h">
+      <Filter>Header Files\tools\hlmv\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\msw\tools\hlmv.rc">

@@ -8,8 +8,11 @@
 #include <glm/vec3.hpp>
 
 #include "graphics/Constants.h"
+#include "graphics/CCamera.h"
 
 #include "shared/studiomodel/studio.h"
+
+class wxNotebook;
 
 namespace hlmv
 {
@@ -30,11 +33,26 @@ inline I3DViewListener::~I3DViewListener()
 class C3DView final : public ui::CwxBase3DView
 {
 public:
-	C3DView( wxWindow* pParent, CHLMV* const pHLMV, I3DViewListener* pListener = nullptr );
+	C3DView( wxWindow* pParent, CHLMV* const pHLMV, wxNotebook* const pControlPanels, I3DViewListener* pListener = nullptr );
 	~C3DView();
 
 	const CHLMV* GetHLMV() const { return m_pHLMV; }
 	CHLMV* GetHLMV() { return m_pHLMV; }
+
+	/**
+	*	Gets the current camera.
+	*/
+	const graphics::CCamera* GetCamera() const { return m_pCamera; }
+
+	/**
+	*	@copydoc GetCamera() const
+	*/
+	graphics::CCamera* GetCamera() { return m_pCamera; }
+
+	/**
+	*	Sets the current camera.
+	*/
+	void SetCamera( graphics::CCamera* pCamera );
 
 	//Tells the 3D view to prepare for model loading.
 	void PrepareForLoad();
@@ -57,9 +75,12 @@ protected:
 private:
 	void OnDraw() override final;
 
-	void MouseEvents( wxMouseEvent& event ) override final;
+	/**
+	*	Applies the current camera settings to the scene.
+	*/
+	void ApplyCameraToScene();
 
-	bool LeftMouseDrag( wxMouseEvent& event ) override final;
+	void MouseEvents( wxMouseEvent& event );
 
 	void SetupRenderMode( RenderMode renderMode = RenderMode::INVALID );
 
@@ -70,7 +91,20 @@ private:
 private:
 	CHLMV* const m_pHLMV;
 
+	wxNotebook* const m_pControlPanels;
+
 	I3DViewListener* m_pListener;
+
+	graphics::CCamera* m_pCamera = nullptr;
+
+	//Used for rotation and translation.
+	graphics::CCamera m_OldCamera;
+
+	//Old mouse coordinates.
+	glm::vec2 m_vecOldCoords;
+
+	//Tracks mouse button state. Used to prevent input from being mistakingly applied (e.g. prevent double click from dialog spilling over as drag).
+	int m_iButtonsDown = wxMOUSE_BTN_NONE;
 
 	GLuint m_BackgroundTexture	= GL_INVALID_TEXTURE_ID;
 	GLuint m_GroundTexture		= GL_INVALID_TEXTURE_ID;
