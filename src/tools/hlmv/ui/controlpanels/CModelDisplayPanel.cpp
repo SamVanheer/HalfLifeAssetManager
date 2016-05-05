@@ -1,3 +1,6 @@
+#include <cfloat>
+
+#include <wx/spinctrl.h>
 #include <wx/gbsizer.h>
 
 #include "../CHLMV.h"
@@ -70,11 +73,17 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pCheckBoxes[ CheckBox::BACKFACE_CULLING ]->SetValue( true );
 
-	m_pMeshScale = new wxTextCtrl( pElemParent, wxID_ANY, "1.0" );
+	m_pMeshScale = new wxSpinCtrlDouble( pElemParent, wxID_ANY, "1.0" );
 	m_pMeshScaleButton = new wxButton( pElemParent, wxID_MDLDISP_SCALEMESH, "Scale Mesh" );
 
-	m_pBonesScale = new wxTextCtrl( pElemParent, wxID_ANY, "1.0" );
+	m_pMeshScale->SetRange( DBL_MIN, DBL_MAX );
+	m_pMeshScale->SetDigits( 2 );
+
+	m_pBonesScale = new wxSpinCtrlDouble( pElemParent, wxID_ANY, "1.0" );
 	m_pBonesScaleButton = new wxButton( pElemParent, wxID_MDLDISP_SCALEBONES, "Scale Bones" );
+
+	m_pBonesScale->SetRange( DBL_MIN, DBL_MAX );
+	m_pBonesScale->SetDigits( 2 );
 
 	m_pMirror[ 0 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on X axis" );
 	m_pMirror[ 1 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on Y axis" );
@@ -319,30 +328,16 @@ void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
 {
 	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	double flScale = 1.0;
-
-	if( m_pMeshScale->GetValue().ToDouble( &flScale ) )
-	{
-		if( pEntity )
-			studiomodel::ScaleMeshes( pEntity->GetModel(), flScale );
-	}
-	else
-		m_pMeshScale->SetValue( "1.0" );
+	if( pEntity )
+		studiomodel::ScaleMeshes( pEntity->GetModel(), m_pMeshScale->GetValue() );
 }
 
 void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
 {
 	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
-	double flScale = 1.0;
-
-	if( m_pBonesScale->GetValue().ToDouble( &flScale ) )
-	{
-		if( pEntity )
-			studiomodel::ScaleBones( pEntity->GetModel(), flScale );
-	}
-	else
-		m_pBonesScale->SetValue( "1.0" );
+	if( pEntity )
+		studiomodel::ScaleBones( pEntity->GetModel(), m_pBonesScale->GetValue() );
 }
 
 void CModelDisplayPanel::OnMirrorAxis( wxCommandEvent& event )

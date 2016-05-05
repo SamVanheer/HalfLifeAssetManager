@@ -7,6 +7,8 @@
 
 #include "cvar/CCVar.h"
 
+class wxSpinCtrlDouble;
+
 namespace ui
 {
 class CFOVCtrl;
@@ -99,10 +101,10 @@ private:
 
 	wxCheckBox* m_pCheckBoxes[ CheckBox::COUNT ];
 
-	wxTextCtrl* m_pMeshScale;
+	wxSpinCtrlDouble* m_pMeshScale;
 	wxButton* m_pMeshScaleButton;
 
-	wxTextCtrl* m_pBonesScale;
+	wxSpinCtrlDouble* m_pBonesScale;
 	wxButton* m_pBonesScaleButton;
 
 	wxCheckBox* m_pMirror[ 3 ];
