@@ -1,4 +1,5 @@
 #include <wx/gbsizer.h>
+#include <wx/filepicker.h>
 
 #include "settings/CGameConfig.h"
 #include "settings/CGameConfigManager.h"
@@ -12,11 +13,10 @@ namespace ui
 wxBEGIN_EVENT_TABLE( CGameConfigurationsPanel, wxPanel )
 	EVT_COMBOBOX( wxID_SHARED_GAMECONFIGS_CONFIG_CHANGED, CGameConfigurationsPanel::ConfigChanged )
 	EVT_BUTTON( wxID_SHARED_GAMECONFIGS_EDIT, CGameConfigurationsPanel::EditConfigs )
-	EVT_BUTTON( wxID_SHARED_GAMECONFIGS_FINDBASEPATH, CGameConfigurationsPanel::FindBasePath )
 wxEND_EVENT_TABLE()
 
 CGameConfigurationsPanel::CGameConfigurationsPanel( wxWindow* pParent, std::shared_ptr<settings::CGameConfigManager> manager )
-	: wxPanel( pParent, wxID_ANY, wxDefaultPosition, wxSize( 600, 600 ) )
+	: wxPanel( pParent )
 	, m_Manager( manager )
 {
 	wxASSERT( manager != nullptr );
@@ -29,8 +29,8 @@ CGameConfigurationsPanel::CGameConfigurationsPanel( wxWindow* pParent, std::shar
 
 	wxButton* pEditConfigs = new wxButton( this, wxID_SHARED_GAMECONFIGS_EDIT, "Edit" );
 
-	m_pBasePath = new wxTextCtrl( this, wxID_ANY );
-	m_pFindBasePath = new wxButton( this, wxID_SHARED_GAMECONFIGS_FINDBASEPATH, "..." );
+	m_pBasePath = new wxDirPickerCtrl( this, wxID_ANY, wxEmptyString, wxDirSelectorPromptStr, 
+									   wxDefaultPosition, wxDefaultSize, wxDIRP_DEFAULT_STYLE | wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL );
 
 	m_pGameDir = new wxTextCtrl( this, wxID_ANY );
 
@@ -49,8 +49,7 @@ CGameConfigurationsPanel::CGameConfigurationsPanel( wxWindow* pParent, std::shar
 	pSizer->Add( pEditConfigs, wxGBPosition( iRow++, 4 ), wxGBSpan( 1, 1 ), wxEXPAND );
 
 	pSizer->Add( new wxStaticText( this, wxID_ANY, "Base path:" ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
-	pSizer->Add( m_pBasePath, wxGBPosition( iRow, 0 ), wxGBSpan( 1, 4 ), wxEXPAND );
-	pSizer->Add( m_pFindBasePath, wxGBPosition( iRow++, 4 ), wxGBSpan( 1, 1 ), wxEXPAND );
+	pSizer->Add( m_pBasePath, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
 
 	pSizer->Add( new wxStaticText( this, wxID_ANY, "Game directory:" ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
 	pSizer->Add( m_pGameDir, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 5 ), wxEXPAND );
@@ -184,11 +183,11 @@ void CGameConfigurationsPanel::SetCurrentConfig( int iIndex )
 {
 	if( m_pConfigs->IsListEmpty() )
 	{
-		m_pBasePath->SetValue( "" );
+		m_pBasePath->SetPath( "" );
 		m_pGameDir->SetValue( "" );
 		m_pModDir->SetValue( "" );
 
-		m_pFindBasePath->Enable( false );
+		m_pBasePath->Enable( false );
 		return;
 	}
 
@@ -212,11 +211,11 @@ void CGameConfigurationsPanel::SetCurrentConfig( int iIndex )
 
 	m_iCurrentConfig = iIndex;
 
-	m_pBasePath->SetValue( config->GetBasePath() );
+	m_pBasePath->SetPath( config->GetBasePath() );
 	m_pGameDir->SetValue( config->GetGameDir() );
 	m_pModDir->SetValue( config->GetModDir() );
 
-	m_pFindBasePath->Enable( true );
+	m_pBasePath->Enable( true );
 }
 
 void CGameConfigurationsPanel::StoreConfig( const unsigned int uiIndex )
@@ -240,7 +239,7 @@ void CGameConfigurationsPanel::StoreConfig( const unsigned int uiIndex )
 		}
 	}
 
-	config->SetBasePath( m_pBasePath->GetValue().c_str() );
+	config->SetBasePath( m_pBasePath->GetPath().c_str() );
 	config->SetGameDir( m_pGameDir->GetValue().c_str() );
 	config->SetModDir( m_pModDir->GetValue().c_str() );
 }
@@ -269,15 +268,5 @@ void CGameConfigurationsPanel::EditConfigs( wxCommandEvent& event )
 
 	Initialize( iIndex );
 	*/
-}
-
-void CGameConfigurationsPanel::FindBasePath( wxCommandEvent& event )
-{
-	wxDirDialog dlg( this, "Select base path" );
-
-	if( dlg.ShowModal() == wxID_CANCEL )
-		return;
-
-	m_pBasePath->SetValue( dlg.GetPath() );
 }
 }

@@ -475,7 +475,7 @@ void ScaleMeshes( CStudioModel* pStudioModel, const float flScale )
 
 			if( bodypart > pStudioHdr->numbodyparts )
 			{
-				// Con_DPrintf ("StudioModel::SetupModel: no such bodypart %d\n", bodypart);
+				// Con_DPrintf ("studiomodel::SetupModel: no such bodypart %d\n", bodypart);
 				bodypart = 0;
 			}
 

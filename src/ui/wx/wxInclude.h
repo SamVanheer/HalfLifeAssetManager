@@ -18,7 +18,6 @@ enum wxSharedIdentifier
 	//Game configs panel
 	wxID_SHARED_GAMECONFIGS_CONFIG_CHANGED,
 	wxID_SHARED_GAMECONFIGS_EDIT,
-	wxID_SHARED_GAMECONFIGS_FINDBASEPATH,
 
 	//Edit game configs dialog
 	wxID_SHARED_EDITGAMECONFIGS_ADD,

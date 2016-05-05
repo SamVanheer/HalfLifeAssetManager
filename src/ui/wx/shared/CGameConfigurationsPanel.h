@@ -5,6 +5,8 @@
 
 #include "ui/wx/wxInclude.h"
 
+class wxDirPickerCtrl;
+
 namespace settings
 {
 class CGameConfigManager;
@@ -44,8 +46,6 @@ private:
 
 	void EditConfigs( wxCommandEvent& event );
 
-	void FindBasePath( wxCommandEvent& event );
-
 private:
 	std::shared_ptr<settings::CGameConfigManager> m_Manager;
 
@@ -56,8 +56,7 @@ private:
 	//wxComboBox does not track the previous selection.
 	int m_iCurrentConfig = wxNOT_FOUND;
 
-	wxTextCtrl* m_pBasePath;
-	wxButton* m_pFindBasePath;
+	wxDirPickerCtrl* m_pBasePath;
 	wxTextCtrl* m_pGameDir;
 	wxTextCtrl* m_pModDir;
 

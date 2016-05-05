@@ -12,8 +12,6 @@
 class wxNotebook;
 class wxBookCtrlEvent;
 
-class StudioModel;
-
 namespace hlmv
 {
 class CHLMV;

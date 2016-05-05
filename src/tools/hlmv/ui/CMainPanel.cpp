@@ -2,6 +2,7 @@
 
 #include <wx/notebook.h>
 #include <wx/gbsizer.h>
+#include <wx/collpane.h>
 
 #include "C3DView.h"
 
@@ -127,7 +128,6 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	wxBoxSizer* pSizer = new wxBoxSizer( wxVERTICAL );
 
-	//3D view takes up 3/4th of the main area
 	pSizer->Add( m_p3DView, wxSizerFlags().Expand().Proportion( 1 ) );
 	pSizer->Add( m_pControlPanel, wxSizerFlags().Expand().Proportion( 0 ) );
 

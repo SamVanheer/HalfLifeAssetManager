@@ -16,33 +16,32 @@ wxBEGIN_EVENT_TABLE( COptionsDialog, wxDialog )
 wxEND_EVENT_TABLE()
 
 COptionsDialog::COptionsDialog( wxWindow* pParent, CHLMVSettings* const pSettings )
-	: wxDialog( pParent, wxID_ANY, "Options", wxDefaultPosition, wxSize( 500, 700 ) )
+	: wxPropertySheetDialog()
 	, m_pSettings( pSettings )
 	, m_EditableSettings( std::make_unique<CHLMVSettings>( *pSettings ) )
 {
-	m_pPages = new wxNotebook( this, wxID_ANY );
+	if( !wxPropertySheetDialog::Create( pParent, wxID_ANY, "Options", wxDefaultPosition, wxSize( 500, 700 ) ) )
+		return;
+
+	CreateButtons( wxOK | wxCANCEL | wxAPPLY );
+
+	auto pBook = GetBookCtrl();
 
 	//TODO: refactor to use a base class and list
-	m_pGeneral = new CGeneralOptions( m_pPages, m_EditableSettings.get() );
-	m_pCompiler = new CCompilerOptions( m_pPages, m_EditableSettings.get() );
-	m_pGameConfigs = new ui::CGameConfigurationsPanel( m_pPages, m_EditableSettings->GetConfigManager() );
+	m_pGeneral = new CGeneralOptions( pBook, m_EditableSettings.get() );
+	m_pCompiler = new CCompilerOptions( pBook, m_EditableSettings.get() );
+	m_pGameConfigs = new ui::CGameConfigurationsPanel( pBook, m_EditableSettings->GetConfigManager() );
 
-	m_pPages->AddPage( m_pGeneral, "General" );
-	m_pPages->AddPage( m_pCompiler, "Compiler" );
-	m_pPages->AddPage( m_pGameConfigs, "Game Configurations" );
+	pBook->AddPage( m_pGeneral, "General" );
+	pBook->AddPage( m_pCompiler, "Compiler" );
+	pBook->AddPage( m_pGameConfigs, "Game Configurations" );
 
-	m_pPages->ChangeSelection( 0 );
+	pBook->ChangeSelection( 0 );
+
+	pBook->SetMinSize( wxSize( 600, 400 ) );
 
 	//Layout
-	wxBoxSizer* pSizer = new wxBoxSizer( wxVERTICAL );
-
-	pSizer->Add( m_pPages, wxSizerFlags().Expand().Proportion( 1 ) );
-
-	pSizer->Add( this->CreateStdDialogButtonSizer( wxOK | wxCANCEL | wxAPPLY ) );
-
-	this->SetSizer( pSizer );
-
-	this->CenterOnScreen();
+	LayoutDialog();
 }
 
 COptionsDialog::~COptionsDialog()

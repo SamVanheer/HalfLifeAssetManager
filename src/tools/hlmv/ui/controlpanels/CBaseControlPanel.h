@@ -7,8 +7,6 @@
 
 #include "../MouseOpFlag.h"
 
-class StudioModel;
-
 namespace hlmv
 {
 class CHLMV;

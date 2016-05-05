@@ -3,6 +3,8 @@
 
 #include "../wxHLMV.h"
 
+class wxFilePickerCtrl;
+
 namespace hlmv
 {
 class CCompilerOptions final : public wxPanel
@@ -18,14 +20,11 @@ protected:
 private:
 	void Initialize();
 
-	void SetStudioMdl( wxCommandEvent& event );
-	void SetMdlDec( wxCommandEvent& event );
-
 private:
 	CHLMVSettings* const m_pSettings;
 
-	wxTextCtrl* m_pStudioMdl;
-	wxTextCtrl* m_pMdlDec;
+	wxFilePickerCtrl* m_pStudioMdl;
+	wxFilePickerCtrl* m_pMdlDec;
 
 private:
 	CCompilerOptions( const CCompilerOptions& ) = delete;

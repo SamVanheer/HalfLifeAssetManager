@@ -5,7 +5,7 @@
 
 #include "../wxHLMV.h"
 
-class wxNotebook;
+#include <wx/propdlg.h>
 
 namespace ui
 {
@@ -19,7 +19,7 @@ class CHLMVSettings;
 class CGeneralOptions;
 class CCompilerOptions;
 
-class COptionsDialog final : public wxDialog
+class COptionsDialog final : public wxPropertySheetDialog
 {
 public:
 	COptionsDialog( wxWindow* pParent, CHLMVSettings* const pSettings );
@@ -34,8 +34,6 @@ private:
 private:
 	CHLMVSettings* const m_pSettings;
 	std::unique_ptr<CHLMVSettings> m_EditableSettings;
-
-	wxNotebook* m_pPages;
 
 	CGeneralOptions* m_pGeneral;
 	CCompilerOptions* m_pCompiler;

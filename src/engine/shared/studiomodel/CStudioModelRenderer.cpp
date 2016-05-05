@@ -598,7 +598,7 @@ void CStudioModelRenderer::SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4
 
 /*
 ================
-StudioModel::SetupLighting
+CStudioModelRenderer::SetupLighting
 set some global variables based on entity position
 inputs:
 outputs:
@@ -624,7 +624,7 @@ void CStudioModelRenderer::SetupLighting()
 
 /*
 =================
-StudioModel::SetupModel
+CStudioModelRenderer::SetupModel
 based on the body part, figure out which mesh it should be using.
 inputs:
 currententity
@@ -637,7 +637,7 @@ void CStudioModelRenderer::SetupModel( int bodypart )
 {
 	if( bodypart > m_pStudioHdr->numbodyparts )
 	{
-		// Con_DPrintf ("StudioModel::SetupModel: no such bodypart %d\n", bodypart);
+		// Con_DPrintf ("CStudioModelRenderer::SetupModel: no such bodypart %d\n", bodypart);
 		bodypart = 0;
 	}
 

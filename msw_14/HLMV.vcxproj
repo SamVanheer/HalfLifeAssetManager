@@ -207,7 +207,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\bin;$(SolutionDir)..\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;opengl32.lib;glu32.lib;glew32.lib;wxbase31ud.lib;wxmsw31ud_core.lib;wxmsw31ud_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;opengl32.lib;glu32.lib;glew32.lib;wxbase31ud.lib;wxmsw31ud_core.lib;wxmsw31ud_gl.lib;wxmsw31ud_adv.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>C:\wxWidgets-3.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -245,7 +245,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\bin;$(SolutionDir)..\external\GLEW\lib;C:\wxWidgets-3.1.0\lib\vc140_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;opengl32.lib;glu32.lib;glew32.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LibHLCore.lib;LibKeyvalues.lib;LibHLStdLib.lib;LibCVar.lib;opengl32.lib;glu32.lib;glew32.lib;wxbase31u.lib;wxmsw31u_core.lib;wxmsw31u_gl.lib;wxmsw31u_adv.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>C:\wxWidgets-3.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
