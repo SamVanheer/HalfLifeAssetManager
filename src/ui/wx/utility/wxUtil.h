@@ -55,6 +55,26 @@ Color wxToColor( const wxColor& color );
 *	@return true on success, false otherwise.
 */
 bool LaunchDefaultTextEditor( const wxString& szFilename );
+
+/**
+*	@brief Given an array of checkboxes and a maximum number of columns, returns a sizer containing the checkboxes, arranged in columns.
+*
+*	Example:
+*	CheckBox 1, CheckBox 2, CheckBox 3, 2 columns:
+*	
+*	CheckBox 1	|	CheckBox 3
+*	CheckBox 2	|
+*
+*	@param ppCheckBoxes Array of checkboxes.
+*	@param uiNumCheckBoxes Number of checkboxes.
+*	@param uiMaxColumns Number of columns.
+*	@param flag Sizer flags.
+*	@param border Sizer border flags.
+*	@return Sizer containing the given checkboxes.
+*/
+wxSizer* CreateCheckBoxSizer( wxCheckBox** ppCheckBoxes, const size_t uiNumCheckBoxes, const size_t uiNumColumns, 
+							  int flag = 0,
+							  int border = 0 );
 }
 
 #endif //UI_UTILITY_WXUTIL_H

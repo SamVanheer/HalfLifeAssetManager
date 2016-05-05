@@ -25,14 +25,15 @@ public:
 		{
 			FIRST = 0,
 			SHOW_HITBOXES = FIRST,
-			SHOW_GROUND,
 			SHOW_BONES,
-			MIRROR_ON_GROUND,
 			SHOW_ATTACHMENTS,
-			SHOW_BACKGROUND,
 			SHOW_EYE_POSITION,
-			WIREFRAME_OVERLAY,
 			BACKFACE_CULLING,
+
+			SHOW_GROUND,
+			MIRROR_ON_GROUND,
+			SHOW_BACKGROUND,
+			WIREFRAME_OVERLAY,
 
 			COUNT,
 			LAST = COUNT - 1	//Must be last.
@@ -44,13 +45,10 @@ public:
 		CheckBox& operator=( const CheckBox& ) = delete;
 	};
 
-	static const size_t CONTROLS_ROWS = 4;
-	static const size_t CONTROLS_COLS = 5;
-
 	static const size_t CONTROLS_ROW_GAP = 5;
 	static const size_t CONTROLS_COL_GAP = 5;
 
-	static const size_t NUM_CHECKBOXES_PER_ROW = 2;
+	static const size_t NUM_CHECKBOX_COLS = 2;
 
 	static const size_t OPACITY_MIN = 0;
 	static const size_t OPACITY_MAX = 100;

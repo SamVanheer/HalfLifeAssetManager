@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include <wx/mimetype.h>
+#include <wx/gbsizer.h>
 
 #include "wxUtil.h"
 
@@ -52,5 +52,22 @@ bool LaunchDefaultTextEditor( const wxString& szFilename )
 	}
 
 	return bResult;
+}
+
+wxSizer* CreateCheckBoxSizer( wxCheckBox** ppCheckBoxes, const size_t uiNumCheckBoxes, const size_t uiNumColumns, int flag, int border )
+{
+	wxASSERT( ppCheckBoxes );
+	wxASSERT( uiNumCheckBoxes > 0 );
+
+	auto pSizer = new wxGridBagSizer( 5, 5 );
+
+	const int iCheckBoxesPerRow = ceil( static_cast<float>( uiNumCheckBoxes ) / uiNumColumns );
+
+	for( size_t uiIndex = 0; uiIndex < uiNumCheckBoxes; ++uiIndex )
+	{
+		pSizer->Add( ppCheckBoxes[ uiIndex ], wxGBPosition( uiIndex % iCheckBoxesPerRow, uiIndex / iCheckBoxesPerRow ), wxGBSpan( 1, 1 ), flag, border );
+	}
+
+	return pSizer;
 }
 }
