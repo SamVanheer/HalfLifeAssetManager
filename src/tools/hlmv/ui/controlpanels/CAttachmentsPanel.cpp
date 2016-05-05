@@ -18,7 +18,7 @@ CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	auto pAttachmentsText = new wxStaticText( pElemParent, wxID_ANY, "Attachments:" );
 
-	m_pAttachments = new wxComboBox( pElemParent, wxID_ATTACH_ATTACHMENT, "", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
+	m_pAttachments = new wxComboBox( pElemParent, wxID_ATTACH_ATTACHMENT, "", wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
 
 	m_pAttachments->SetEditable( false );
 

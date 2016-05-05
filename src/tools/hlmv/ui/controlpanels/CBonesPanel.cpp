@@ -28,7 +28,7 @@ CBonesPanel::CBonesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pBones = new wxComboBox( pElemParent, wxID_BONES_BONES, wxEmptyString, wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
 	m_pBones->SetEditable( false );
 
-	m_pBoneInfo = new wxPanel( pElemParent, wxID_ANY, wxDefaultPosition, wxSize( 425, wxDefaultSize.GetHeight() ) );
+	m_pBoneInfo = new wxPanel( pElemParent );
 
 	m_pBoneName			= new wxStaticText( m_pBoneInfo, wxID_ANY, "Bone Name: Undefined", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
 	m_pParentBone		= new wxStaticText( m_pBoneInfo, wxID_ANY, "Parent Bone: Undefined", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
@@ -40,29 +40,29 @@ CBonesPanel::CBonesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	auto pBoneBoneControllersText = new wxStaticText( m_pBoneInfo, wxID_ANY, "Bone Controller (Current Bone):" );
 
-	m_pBoneBoneControllers = new wxComboBox( m_pBoneInfo, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
+	m_pBoneBoneControllers = new wxComboBox( m_pBoneInfo, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
 	m_pBoneBoneControllers->SetEditable( false );
 
 	m_pShowBoneControllerInfo = new wxButton( m_pBoneInfo, wxID_BONES_SHOWBONECONTROLLERINFO, ">>" );
 
 	auto pBoneControllersText = new wxStaticText( pElemParent, wxID_ANY, "Bone Controller:" );
 
-	m_pBoneControllers = new wxComboBox( pElemParent, wxID_BONES_BONECONTROLLERS, wxEmptyString, wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
+	m_pBoneControllers = new wxComboBox( pElemParent, wxID_BONES_BONECONTROLLERS, wxEmptyString, wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
 	m_pBoneControllers->SetEditable( false );
 
 	m_pShowBoneInfo = new wxButton( pElemParent, wxID_BONES_SHOWBONEINFO, "<<" );
 
-	m_pBoneControllerInfo = new wxPanel( pElemParent, wxID_ANY, wxDefaultPosition, wxSize( 425, wxDefaultSize.GetHeight() ) );
+	m_pBoneControllerInfo = new wxPanel( pElemParent );
 
-	m_pControllerBone	= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "Bone: Undefined", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
-	m_pType				= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "Type: Undefined", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
-	m_pStart			= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "Start: Undefined", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
-	m_pEnd				= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "End: Undefined", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
-	m_pRest				= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "Rest: Undefined", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
-	m_pIndex			= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "Index: Undefined", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
+	m_pControllerBone	= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "Bone: Undefined", wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
+	m_pType				= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "Type: Undefined", wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
+	m_pStart			= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "Start: Undefined", wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
+	m_pEnd				= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "End: Undefined", wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
+	m_pRest				= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "Rest: Undefined", wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
+	m_pIndex			= new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "Index: Undefined", wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
 
 	auto pTypesText = new wxStaticText( m_pBoneControllerInfo, wxID_ANY, "Types:" );
-	m_pTypes = new wxListBox( m_pBoneControllerInfo, wxID_ANY, wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
+	m_pTypes = new wxListBox( m_pBoneControllerInfo, wxID_ANY, wxDefaultPosition, wxSize( 100, wxDefaultSize.GetHeight() ) );
 
 	m_pTypesCheatSheet = new wxButton( pElemParent, wxID_BONES_SHOWTYPESCHEATSHEET, "Types Cheat Sheet" );
 
@@ -71,54 +71,74 @@ CBonesPanel::CBonesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	int iCol = 0;
 
-	pSizer->Add( pBoneText, wxGBPosition( 0, iCol ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pSizer->Add( m_pBones, wxGBPosition( 1, iCol++ ), wxGBSpan( 1, 1 ), wxEXPAND );
+	{
+		auto pBonesSizer = new wxBoxSizer( wxVERTICAL );
 
-	auto pBoneInfoSizer = new wxGridBagSizer( 5, 5 );
+		pBonesSizer->Add( pBoneText, wxSizerFlags().Expand() );
+		pBonesSizer->Add( m_pBones, wxSizerFlags().Expand() );
 
-	pBoneInfoSizer->Add( m_pBoneName, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pBoneInfoSizer->Add( m_pParentBone, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pBoneInfoSizer->Add( m_pBoneFlags, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pBoneInfoSizer->Add( m_Position, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pBoneInfoSizer->Add( m_pPositionScale, wxGBPosition( 4, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pBoneInfoSizer->Add( m_pRotation, wxGBPosition( 5, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pBoneInfoSizer->Add( m_pRotationScale, wxGBPosition( 6, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
+		pSizer->Add( pBonesSizer, wxGBPosition( 0, iCol++ ), wxGBSpan( 2, 1 ), wxEXPAND );
+	}
 
-	pBoneInfoSizer->Add( pBoneBoneControllersText, wxGBPosition( 0, 1 ), wxGBSpan( 1, 2 ), wxEXPAND );
-	pBoneInfoSizer->Add( m_pBoneBoneControllers, wxGBPosition( 1, 1 ), wxGBSpan( 1, 2 ), wxEXPAND );
-	pBoneInfoSizer->Add( m_pShowBoneControllerInfo, wxGBPosition( 2, 2 ), wxGBSpan( 1, 1 ), wxEXPAND );
+	{
+		auto pBoneInfoSizer = new wxGridBagSizer( 5, 5 );
 
-	m_pBoneInfo->SetSizer( pBoneInfoSizer );
+		{
+			auto pBoneInfoTextSizer = new wxBoxSizer( wxVERTICAL );
+
+			pBoneInfoTextSizer->Add( m_pBoneName, wxSizerFlags().Expand() );
+			pBoneInfoTextSizer->Add( m_pParentBone, wxSizerFlags().Expand() );
+			pBoneInfoTextSizer->Add( m_pBoneFlags, wxSizerFlags().Expand() );
+			pBoneInfoTextSizer->Add( m_Position, wxSizerFlags().Expand() );
+			pBoneInfoTextSizer->Add( m_pPositionScale, wxSizerFlags().Expand() );
+			pBoneInfoTextSizer->Add( m_pRotation, wxSizerFlags().Expand() );
+			pBoneInfoTextSizer->Add( m_pRotationScale, wxSizerFlags().Expand() );
+
+			pBoneInfoSizer->Add( pBoneInfoTextSizer, wxGBPosition( 0, 0 ), wxGBSpan( 4, 1 ), wxEXPAND );
+		}
+
+		pBoneInfoSizer->Add( pBoneBoneControllersText, wxGBPosition( 0, 1 ), wxGBSpan( 1, 2 ), wxEXPAND );
+		pBoneInfoSizer->Add( m_pBoneBoneControllers, wxGBPosition( 1, 1 ), wxGBSpan( 1, 2 ), wxEXPAND );
+		pBoneInfoSizer->Add( m_pShowBoneControllerInfo, wxGBPosition( 2, 2 ), wxGBSpan( 1, 1 ), wxEXPAND );
+
+		m_pBoneInfo->SetSizer( pBoneInfoSizer );
+	}
 
 	pSizer->Add( m_pBoneInfo, wxGBPosition( 0, iCol++ ), wxGBSpan( 4, 1 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
 	pSizer->Add( new wxStaticLine( pElemParent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL ), wxGBPosition( 0, iCol++ ), wxGBSpan( 4, 1 ), wxEXPAND );
 
-	pSizer->Add( pBoneControllersText, wxGBPosition( 0, iCol ), wxGBSpan( 1, 2 ), wxEXPAND );
-	pSizer->Add( m_pBoneControllers, wxGBPosition( 1, iCol ), wxGBSpan( 1, 2 ), wxEXPAND );
-	pSizer->Add( m_pShowBoneInfo, wxGBPosition( 2, iCol ), wxGBSpan( 1, 1 ), wxEXPAND );
+	{
+		auto pBoneControllersSizer = new wxGridBagSizer( 5, 5 );
+
+		pBoneControllersSizer->Add( pBoneControllersText, wxGBPosition( 0, 0 ), wxGBSpan( 1, 2 ), wxEXPAND );
+		pBoneControllersSizer->Add( m_pBoneControllers, wxGBPosition( 1, 0 ), wxGBSpan( 1, 2 ), wxEXPAND );
+		pBoneControllersSizer->Add( m_pShowBoneInfo, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
+
+		pSizer->Add( pBoneControllersSizer, wxGBPosition( 0, iCol++ ), wxGBSpan( 4, 1 ), wxEXPAND );
+	}
+
+	{
+		auto pInfoSizer = new wxGridBagSizer( 5, 5 );
+
+		pInfoSizer->Add( m_pControllerBone, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
+		pInfoSizer->Add( m_pType, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
+		pInfoSizer->Add( m_pStart, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
+		pInfoSizer->Add( m_pEnd, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
+		pInfoSizer->Add( m_pRest, wxGBPosition( 4, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
+		pInfoSizer->Add( m_pIndex, wxGBPosition( 5, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
+
+		pInfoSizer->Add( pTypesText, wxGBPosition( 0, 1 ), wxGBSpan( 1, 1 ), wxEXPAND );
+		pInfoSizer->Add( m_pTypes, wxGBPosition( 1, 1 ), wxGBSpan( 5, 1 ), wxEXPAND );
+
+		m_pBoneControllerInfo->SetSizer( pInfoSizer );
+
+		pSizer->Add( m_pBoneControllerInfo, wxGBPosition( 0, iCol ), wxGBSpan( 4, 2 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
+	}
 
 	iCol += 2;
 
-	auto pInfoSizer = new wxGridBagSizer( 5, 5 );
-
-	pInfoSizer->Add( m_pControllerBone, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pInfoSizer->Add( m_pType, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pInfoSizer->Add( m_pStart, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pInfoSizer->Add( m_pEnd, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pInfoSizer->Add( m_pRest, wxGBPosition( 4, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pInfoSizer->Add( m_pIndex, wxGBPosition( 5, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-
-	pInfoSizer->Add( pTypesText, wxGBPosition( 0, 1 ), wxGBSpan( 1, 1 ), wxEXPAND );
-	pInfoSizer->Add( m_pTypes, wxGBPosition( 1, 1 ), wxGBSpan( 5, 1 ), wxEXPAND );
-
-	m_pBoneControllerInfo->SetSizer( pInfoSizer );
-
-	pSizer->Add( m_pBoneControllerInfo, wxGBPosition( 0, iCol ), wxGBSpan( 4, 2 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
-
-	iCol += 2;
-
-	pSizer->Add( m_pTypesCheatSheet, wxGBPosition( 0, iCol++ ), wxGBSpan( 1, 1 ), wxEXPAND );
+	pSizer->Add( m_pTypesCheatSheet, wxGBPosition( 1, iCol++ ), wxGBSpan( 1, 1 ), wxEXPAND );
 
 	GetMainSizer()->Add( pSizer );
 }
