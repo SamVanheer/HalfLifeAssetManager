@@ -6,6 +6,8 @@
 #include "CBaseControlPanel.h"
 
 class wxToggleButton;
+class wxSpinCtrlDouble;
+class wxSpinDoubleEvent;
 
 namespace hlmv
 {
@@ -53,6 +55,8 @@ private:
 
 	void UpdateEventInfo( int iIndex );
 
+	void UpdateOrigin();
+
 	void SequenceChanged( wxCommandEvent& event );
 
 	void TogglePlay( wxCommandEvent& event );
@@ -71,7 +75,9 @@ private:
 
 	void PitchFramerateChanged( wxCommandEvent& event );
 
-	void TestOrigins( wxCommandEvent& event );
+	void OnOriginChanged( wxSpinDoubleEvent& event );
+
+	void TestOrigin( wxCommandEvent& event );
 
 private:
 	wxComboBox* m_pSequence;
@@ -103,9 +109,7 @@ private:
 	wxStaticText* m_pOptions;
 	wxStaticText* m_pType;
 
-	wxTextCtrl* m_pXOrigin;
-	wxTextCtrl* m_pYOrigin;
-	wxTextCtrl* m_pZOrigin;
+	wxSpinCtrlDouble* m_pOrigin[ 3 ];
 
 	wxButton* m_pTestOrigins;
 

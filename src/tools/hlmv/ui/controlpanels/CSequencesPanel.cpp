@@ -1,6 +1,9 @@
+#include <cfloat>
+
 #include <wx/sizer.h>
 #include <wx/gbsizer.h>
 #include <wx/tglbtn.h>
+#include <wx/spinctrl.h>
 
 #include "utility/Color.h"
 
@@ -24,7 +27,8 @@ wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseControlPanel )
 	EVT_COMBOBOX( wxID_SEQUENCE_EVENT, CSequencesPanel::EventChanged )
 	EVT_CHECKBOX( wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged )
 	EVT_CHECKBOX( wxID_SEQUENCE_PITCHFRAMERATE, CSequencesPanel::PitchFramerateChanged )
-	EVT_BUTTON( wxID_SEQUENCE_TESTORIGINS, CSequencesPanel::TestOrigins )
+	EVT_SPINCTRLDOUBLE( wxID_SEQUENCE_ORIGIN, CSequencesPanel::OnOriginChanged )
+	EVT_BUTTON( wxID_SEQUENCE_ORIGIN, CSequencesPanel::TestOrigin )
 wxEND_EVENT_TABLE()
 
 CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
@@ -102,16 +106,21 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pOptions	= new wxStaticText( m_pEventInfo, wxID_ANY, "Options: Undefined", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
 	m_pType		= new wxStaticText( m_pEventInfo, wxID_ANY, "Type: Undefined" );
 
-	//TODO: use float only controls here
-	m_pXOrigin = new wxTextCtrl( pElemParent, wxID_ANY, "Undefined" );
-	m_pYOrigin = new wxTextCtrl( pElemParent, wxID_ANY, "Undefined" );
-	m_pZOrigin = new wxTextCtrl( pElemParent, wxID_ANY, "Undefined" );
+	m_pOrigin[ 0 ] = new wxSpinCtrlDouble( pElemParent, wxID_SEQUENCE_ORIGIN, "0" );
+	m_pOrigin[ 1 ] = new wxSpinCtrlDouble( pElemParent, wxID_SEQUENCE_ORIGIN, "0" );
+	m_pOrigin[ 2 ] = new wxSpinCtrlDouble( pElemParent, wxID_SEQUENCE_ORIGIN, "0" );
+
+	for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
+	{
+		m_pOrigin[ uiIndex ]->SetRange( DBL_MIN, DBL_MAX );
+		m_pOrigin[ uiIndex ]->SetDigits( 6 );
+	}
 
 	wxStaticText* pXOrigin = new wxStaticText( pElemParent, wxID_ANY, "Origin X" );
 	wxStaticText* pYOrigin = new wxStaticText( pElemParent, wxID_ANY, "Origin Y" );
 	wxStaticText* pZOrigin = new wxStaticText( pElemParent, wxID_ANY, "Origin Z" );
 
-	m_pTestOrigins = new wxButton( pElemParent, wxID_SEQUENCE_TESTORIGINS, "Test Origins" );
+	m_pTestOrigins = new wxButton( pElemParent, wxID_SEQUENCE_ORIGIN, "Test Origin" );
 
 	m_pShowCrosshair = new wxCheckBox( pElemParent, wxID_ANY, "Show Crosshair" );
 	m_pShowGuidelines = new wxCheckBox( pElemParent, wxID_ANY, "Show Guidelines" );
@@ -155,9 +164,9 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	iCol += 2;
 
-	pSizer->Add( m_pXOrigin, wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pYOrigin, wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pZOrigin, wxGBPosition( 2, iCol ), wxDefaultSpan, wxEXPAND );
+	pSizer->Add( m_pOrigin[ 0 ], wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
+	pSizer->Add( m_pOrigin[ 1 ], wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
+	pSizer->Add( m_pOrigin[ 2 ], wxGBPosition( 2, iCol ), wxDefaultSpan, wxEXPAND );
 
 	pSizer->Add( m_pTestOrigins, wxGBPosition( 3, iCol++ ), wxDefaultSpan, wxEXPAND );
 
@@ -357,9 +366,10 @@ void CSequencesPanel::InitializeUI()
 
 	const glm::vec3& vecWeaponOrigin = m_pHLMV->GetState()->weaponOriginCamera.GetOrigin();
 
-	m_pXOrigin->SetLabelText( wxString::Format( "%.6f", vecWeaponOrigin[ 0 ] ) );
-	m_pYOrigin->SetLabelText( wxString::Format( "%.6f", vecWeaponOrigin[ 1 ] ) );
-	m_pZOrigin->SetLabelText( wxString::Format( "%.6f", vecWeaponOrigin[ 2 ] ) );
+	for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
+	{
+		m_pOrigin[ uiIndex ]->SetValue( vecWeaponOrigin[ uiIndex ] );
+	}
 }
 
 void CSequencesPanel::SetSequence( int iIndex )
@@ -533,6 +543,18 @@ void CSequencesPanel::UpdateEventInfo( int iIndex )
 	m_pEventInfo->Show( true );
 }
 
+void CSequencesPanel::UpdateOrigin()
+{
+	glm::vec3 vecWeaponOrigin;
+
+	for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
+	{
+		vecWeaponOrigin[ uiIndex ] = m_pOrigin[ uiIndex ]->GetValue();
+	}
+
+	m_pHLMV->GetState()->weaponOriginCamera.SetOrigin( vecWeaponOrigin );
+}
+
 void CSequencesPanel::SequenceChanged( wxCommandEvent& event )
 {
 	SetSequence( m_pSequence->GetSelection() );
@@ -600,27 +622,13 @@ void CSequencesPanel::PitchFramerateChanged( wxCommandEvent& event )
 	cvar::cvars().SetCVarFloat( "s_ent_pitchframerate", m_pPitchFramerate->GetValue() ? 1 : 0 );
 }
 
-static void GetDoubleFromTextCtrl( wxTextCtrl* const pCtrl, vec_t& flInOutValue )
+void CSequencesPanel::OnOriginChanged( wxSpinDoubleEvent& event )
 {
-	double flValue = 0;
-
-	if( pCtrl->GetValue().ToDouble( &flValue ) )
-		flInOutValue = flValue;
-	else
-	{
-		//Invalid content, reset.
-		pCtrl->ChangeValue( wxString::Format( "%.6f", flInOutValue ) );
-	}
+	UpdateOrigin();
 }
 
-void CSequencesPanel::TestOrigins( wxCommandEvent& event )
+void CSequencesPanel::TestOrigin( wxCommandEvent& event )
 {
-	glm::vec3 vecWeaponOrigin = m_pHLMV->GetState()->weaponOriginCamera.GetOrigin();
-
-	GetDoubleFromTextCtrl( m_pXOrigin, vecWeaponOrigin[ 0 ] );
-	GetDoubleFromTextCtrl( m_pYOrigin, vecWeaponOrigin[ 1 ] );
-	GetDoubleFromTextCtrl( m_pZOrigin, vecWeaponOrigin[ 2 ] );
-
-	m_pHLMV->GetState()->weaponOriginCamera.SetOrigin( vecWeaponOrigin );
+	UpdateOrigin();
 }
 }
