@@ -1,3 +1,6 @@
+#include <cfloat>
+
+#include <wx/spinctrl.h>
 #include <wx/gbsizer.h>
 
 #include "CFOVCtrl.h"
@@ -10,13 +13,13 @@ wxDEFINE_EVENT( wxEVT_FOV_CHANGED, wxCommandEvent );
 
 enum FOVCtrlId
 {
-	FOV_TEXT_CTRL = wxID_HIGHEST + 1,
+	FOV_VALUE = wxID_HIGHEST + 1,
 	FOV_SET_BUTTON,
 	FOV_SET_DEFAULT,
 };
 
 wxBEGIN_EVENT_TABLE( CFOVCtrl, wxPanel )
-	EVT_TEXT_ENTER( FOV_TEXT_CTRL, CFOVCtrl::OnSetFOV )
+	EVT_SPINCTRLDOUBLE( FOV_VALUE, CFOVCtrl::OnFOVChanged )
 	EVT_BUTTON( FOV_SET_BUTTON, CFOVCtrl::OnSetFOV )
 	EVT_BUTTON( FOV_SET_DEFAULT, CFOVCtrl::OnSetDefault )
 wxEND_EVENT_TABLE()
@@ -32,9 +35,13 @@ CFOVCtrl::CFOVCtrl( wxWindow *parent,
 	: wxPanel( parent, winid, pos, size, style, name )
 {
 	m_pText = new wxStaticText( this, wxID_ANY, szLabelText );
-	m_pValue = new wxTextCtrl( this, FOV_TEXT_CTRL, wxEmptyString, wxDefaultPosition, wxSize( 50, wxDefaultSize.GetHeight() ) );
+	m_pValue = new wxSpinCtrlDouble( this, FOV_VALUE, wxEmptyString, wxDefaultPosition, wxSize( 75, wxDefaultSize.GetHeight() ) );
 	m_pSet = new wxButton( this, FOV_SET_BUTTON, "Set FOV", wxDefaultPosition, wxSize( 75, wxDefaultSize.GetHeight() ) );
 	m_pDefault = new wxButton( this, FOV_SET_DEFAULT, "Default", wxDefaultPosition, wxSize( 75, wxDefaultSize.GetHeight() ) );
+
+	//Because why not, maximum DBL value.
+	m_pValue->SetRange( 0, DBL_MAX );
+	m_pValue->SetDigits( 1 );
 
 	//Layout
 	auto pSizer = new wxGridBagSizer( 5, 5 );
@@ -75,17 +82,12 @@ void CFOVCtrl::ResetToDefault()
 
 float CFOVCtrl::GetValue() const
 {
-	double flValue;
-
-	if( m_pValue->GetValue().ToDouble( &flValue ) )
-		return static_cast<float>( flValue );
-
-	return m_flDefault;
+	return m_pValue->GetValue();
 }
 
 void CFOVCtrl::ChangeValue( const float flValue )
 {
-	m_pValue->SetValue( wxString::Format( "%.1f", flValue ) );
+	m_pValue->SetValue( flValue );
 }
 
 void CFOVCtrl::SetValue( const float flValue )
@@ -101,6 +103,11 @@ void CFOVCtrl::ValueChanged()
 	event.SetEventObject( this );
 
 	ProcessWindowEvent( event );
+}
+
+void CFOVCtrl::OnFOVChanged( wxSpinDoubleEvent& event )
+{
+	ValueChanged();
 }
 
 void CFOVCtrl::OnSetFOV( wxCommandEvent& event )

@@ -3,6 +3,9 @@
 
 #include "../wxInclude.h"
 
+class wxSpinCtrlDouble;
+class wxSpinDoubleEvent;
+
 namespace ui
 {
 enum FOVCtrlStyle
@@ -77,15 +80,17 @@ protected:
 private:
 	void ValueChanged();
 
+	void OnFOVChanged( wxSpinDoubleEvent& event );
+
 	void OnSetFOV( wxCommandEvent& event );
 
 	void OnSetDefault( wxCommandEvent& event );
 
 private:
-	wxStaticText*	m_pText;
-	wxTextCtrl*		m_pValue;
-	wxButton*		m_pSet;
-	wxButton*		m_pDefault;
+	wxStaticText*		m_pText;
+	wxSpinCtrlDouble*	m_pValue;
+	wxButton*			m_pSet;
+	wxButton*			m_pDefault;
 
 	float m_flDefault;
 
