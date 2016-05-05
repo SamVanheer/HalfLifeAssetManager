@@ -121,15 +121,21 @@ CBonesPanel::CBonesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	{
 		auto pInfoSizer = new wxGridBagSizer( 5, 5 );
 
-		pInfoSizer->Add( m_pControllerBone, wxGBPosition( 0, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-		pInfoSizer->Add( m_pType, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-		pInfoSizer->Add( m_pStart, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-		pInfoSizer->Add( m_pEnd, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-		pInfoSizer->Add( m_pRest, wxGBPosition( 4, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
-		pInfoSizer->Add( m_pIndex, wxGBPosition( 5, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
+		{
+			auto pInfoTextSizer = new wxBoxSizer( wxVERTICAL );
+
+			pInfoTextSizer->Add( m_pControllerBone, wxSizerFlags().Expand() );
+			pInfoTextSizer->Add( m_pType, wxSizerFlags().Expand() );
+			pInfoTextSizer->Add( m_pStart, wxSizerFlags().Expand() );
+			pInfoTextSizer->Add( m_pEnd, wxSizerFlags().Expand() );
+			pInfoTextSizer->Add( m_pRest, wxSizerFlags().Expand() );
+			pInfoTextSizer->Add( m_pIndex, wxSizerFlags().Expand() );
+
+			pInfoSizer->Add( pInfoTextSizer, wxGBPosition( 0, 0 ), wxGBSpan( 5, 1 ), wxEXPAND );
+		}
 
 		pInfoSizer->Add( pTypesText, wxGBPosition( 0, 1 ), wxGBSpan( 1, 1 ), wxEXPAND );
-		pInfoSizer->Add( m_pTypes, wxGBPosition( 1, 1 ), wxGBSpan( 5, 1 ), wxEXPAND );
+		pInfoSizer->Add( m_pTypes, wxGBPosition( 1, 1 ), wxGBSpan( 4, 1 ), wxEXPAND );
 
 		m_pBoneControllerInfo->SetSizer( pInfoSizer );
 
