@@ -34,8 +34,6 @@ C3DView::C3DView( wxWindow* pParent, CHLMV* const pHLMV, wxNotebook* const pCont
 	, m_pListener( pListener )
 {
 	wxASSERT( pControlPanels );
-
-	SetCamera( &m_pHLMV->GetState()->camera );
 }
 
 C3DView::~C3DView()
@@ -49,15 +47,6 @@ C3DView::~C3DView()
 void C3DView::PrepareForLoad()
 {
 	SetCurrent( *GetContext() );
-}
-
-void C3DView::SetCamera( graphics::CCamera* pCamera )
-{
-	m_pCamera = pCamera;
-	//Also set the old camera so no leftover data gets used.
-
-	if( pCamera )
-		m_OldCamera = *pCamera;
 }
 
 void C3DView::UpdateView()
@@ -107,11 +96,10 @@ void C3DView::OnDraw()
 
 void C3DView::ApplyCameraToScene()
 {
-	if( !m_pCamera )
-		return;
+	auto pCamera = m_pHLMV->GetState()->GetCurrentCamera();
 
-	const auto& vecOrigin = m_pCamera->GetOrigin();
-	const auto vecAngles = m_pCamera->GetViewDirection();
+	const auto& vecOrigin = pCamera->GetOrigin();
+	const auto vecAngles = pCamera->GetViewDirection();
 
 	glTranslatef( -vecOrigin[ 0 ], -vecOrigin[ 1 ], -vecOrigin[ 2 ] );
 
@@ -121,12 +109,6 @@ void C3DView::ApplyCameraToScene()
 
 void C3DView::MouseEvents( wxMouseEvent& event )
 {
-	if( !m_pCamera )
-	{
-		event.Skip();
-		return;
-	}
-
 	//Default to no operations if we couldn't find the page.
 	MouseOpFlags_t flags = MOUSEOPF_NONE;
 
@@ -138,17 +120,19 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 	}
 
 	//Disable translation and rotation when weapon origin view mode is enabled.
-	if( m_pHLMV->GetState()->useWeaponOrigin )
+	if( m_pHLMV->GetState()->UsingWeaponOrigin() )
 	{
 		flags &= ~( MOUSEOPF_TRANSLATE | MOUSEOPF_ROTATE );
 	}
 
 	//Always handle button down and up events so state isn't invalid in some edge cases.
 
+	auto pCamera = m_pHLMV->GetState()->GetCurrentCamera();
+
 	if( event.ButtonDown() )
 	{
-		m_OldCamera.SetOrigin( m_pCamera->GetOrigin() );
-		m_OldCamera.SetViewDirection( m_pCamera->GetViewDirection() );
+		m_OldCamera.SetOrigin( pCamera->GetOrigin() );
+		m_OldCamera.SetViewDirection( pCamera->GetViewDirection() );
 		m_vecOldCoords.x = event.GetX();
 		m_vecOldCoords.y = event.GetY();
 
@@ -166,8 +150,8 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 			{
 				if( flags & MOUSEOPF_TRANSLATE )
 				{
-					m_pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x - ( float ) ( event.GetX() - m_vecOldCoords.x );
-					m_pCamera->GetOrigin().y = m_OldCamera.GetOrigin().y + ( float ) ( event.GetY() - m_vecOldCoords.y );
+					pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x - ( float ) ( event.GetX() - m_vecOldCoords.x );
+					pCamera->GetOrigin().y = m_OldCamera.GetOrigin().y + ( float ) ( event.GetY() - m_vecOldCoords.y );
 				}
 			}
 			else if( event.GetModifiers() & wxMOD_CONTROL )
@@ -215,7 +199,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 					vecViewDir.x += ( float ) ( event.GetY() - m_vecOldCoords.y );
 					vecViewDir.y += ( float ) ( event.GetX() - m_vecOldCoords.x );
 
-					m_pCamera->SetViewDirection( vecViewDir );
+					pCamera->SetViewDirection( vecViewDir );
 				}
 			}
 		}
@@ -223,7 +207,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 		{
 			if( flags & MOUSEOPF_TRANSLATE )
 			{
-				m_pCamera->GetOrigin().z = m_OldCamera.GetOrigin().z + ( float ) ( event.GetY() - m_vecOldCoords.y );
+				pCamera->GetOrigin().z = m_OldCamera.GetOrigin().z + ( float ) ( event.GetY() - m_vecOldCoords.y );
 			}
 		}
 
@@ -268,30 +252,20 @@ void C3DView::DrawModel()
 		graphics::helpers::DrawBackground( m_BackgroundTexture );
 	}
 
-	graphics::helpers::SetProjection( !m_pHLMV->GetState()->useWeaponOrigin ? 65.0f : 74.0f, size.GetWidth(), size.GetHeight() );
+	graphics::helpers::SetProjection( m_pHLMV->GetState()->GetCurrentFOV(), size.GetWidth(), size.GetHeight() );
 
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
 	glLoadIdentity();
 
-	if( m_pHLMV->GetState()->useWeaponOrigin )
-	{
-		glTranslatef( -m_pHLMV->GetState()->weaponOrigin[ 0 ], -m_pHLMV->GetState()->weaponOrigin[ 1 ], -m_pHLMV->GetState()->weaponOrigin[ 2 ] );
+	ApplyCameraToScene();
 
-		glRotatef( -90, 1.0f, 0.0f, 0.0f );
-		glRotatef( 90, 0.0f, 0.0f, 1.0f );
-	}
-	else
-	{
-		ApplyCameraToScene();
-	}
-
-	studiomodel::renderer().SetViewerOrigin( !m_pHLMV->GetState()->useWeaponOrigin ? m_pHLMV->GetState()->camera.GetOrigin() : m_pHLMV->GetState()->weaponOrigin );
+	studiomodel::renderer().SetViewerOrigin( m_pHLMV->GetState()->GetCurrentCamera()->GetOrigin() );
 
 	//Originally this was calculated as:
 	//vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = vecOrigin[ 2 ];
 	//But that vector was incorrect. It mostly affects chrome because of its reflective nature.
-	const glm::vec3 vecViewerRight = AnglesToVector( !m_pHLMV->GetState()->useWeaponOrigin ? m_pHLMV->GetState()->camera.GetViewDirection() : glm::vec3( -90, 90, 0 ) );
+	const glm::vec3 vecViewerRight = AnglesToVector( m_pHLMV->GetState()->GetCurrentCamera()->GetViewDirection() );
 
 	studiomodel::renderer().SetViewerRight( vecViewerRight );
 

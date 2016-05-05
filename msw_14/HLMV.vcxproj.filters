@@ -255,6 +255,9 @@
     <ClCompile Include="..\src\tools\shared\ui\CStudioTypesCheatSheet.cpp">
       <Filter>Source Files\tools\shared\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\ui\wx\shared\CFOVCtrl.cpp">
+      <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\Constants.h">
@@ -415,6 +418,9 @@
     </ClInclude>
     <ClInclude Include="..\src\tools\hlmv\ui\MouseOpFlag.h">
       <Filter>Header Files\tools\hlmv\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ui\wx\shared\CFOVCtrl.h">
+      <Filter>Header Files\ui\wx\shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

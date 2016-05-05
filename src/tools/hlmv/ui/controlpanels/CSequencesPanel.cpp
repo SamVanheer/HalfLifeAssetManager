@@ -355,9 +355,11 @@ void CSequencesPanel::InitializeUI()
 
 	UpdateEvents();
 
-	m_pXOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 0 ] ) );
-	m_pYOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 1 ] ) );
-	m_pZOrigin->SetLabelText( wxString::Format( "%.6f", m_pHLMV->GetState()->weaponOrigin[ 2 ] ) );
+	const glm::vec3& vecWeaponOrigin = m_pHLMV->GetState()->weaponOriginCamera.GetOrigin();
+
+	m_pXOrigin->SetLabelText( wxString::Format( "%.6f", vecWeaponOrigin[ 0 ] ) );
+	m_pYOrigin->SetLabelText( wxString::Format( "%.6f", vecWeaponOrigin[ 1 ] ) );
+	m_pZOrigin->SetLabelText( wxString::Format( "%.6f", vecWeaponOrigin[ 2 ] ) );
 }
 
 void CSequencesPanel::SetSequence( int iIndex )
@@ -613,8 +615,12 @@ static void GetDoubleFromTextCtrl( wxTextCtrl* const pCtrl, vec_t& flInOutValue 
 
 void CSequencesPanel::TestOrigins( wxCommandEvent& event )
 {
-	GetDoubleFromTextCtrl( m_pXOrigin, m_pHLMV->GetState()->weaponOrigin[ 0 ] );
-	GetDoubleFromTextCtrl( m_pYOrigin, m_pHLMV->GetState()->weaponOrigin[ 1 ] );
-	GetDoubleFromTextCtrl( m_pZOrigin, m_pHLMV->GetState()->weaponOrigin[ 2 ] );
+	glm::vec3 vecWeaponOrigin = m_pHLMV->GetState()->weaponOriginCamera.GetOrigin();
+
+	GetDoubleFromTextCtrl( m_pXOrigin, vecWeaponOrigin[ 0 ] );
+	GetDoubleFromTextCtrl( m_pYOrigin, vecWeaponOrigin[ 1 ] );
+	GetDoubleFromTextCtrl( m_pZOrigin, vecWeaponOrigin[ 2 ] );
+
+	m_pHLMV->GetState()->weaponOriginCamera.SetOrigin( vecWeaponOrigin );
 }
 }

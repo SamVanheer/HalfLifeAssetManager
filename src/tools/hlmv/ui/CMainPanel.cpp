@@ -319,7 +319,7 @@ void CMainPanel::TakeScreenshot()
 
 void CMainPanel::ViewOriginChanged( wxCommandEvent& event )
 {
-	m_pHLMV->GetState()->useWeaponOrigin = m_pViewOrigin->GetSelection() == VIEWORIGIN_WEAPON;
+	m_pHLMV->GetState()->SetUseWeaponOrigin( m_pViewOrigin->GetSelection() == VIEWORIGIN_WEAPON );
 }
 
 void CMainPanel::ResetLightVector( wxCommandEvent& event )

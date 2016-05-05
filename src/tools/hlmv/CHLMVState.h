@@ -27,6 +27,10 @@ class CHLMVState final
 public:
 	static const glm::vec3 DEFAULT_ROTATION;
 
+	static const float DEFAULT_FOV;
+
+	static const float DEFAULT_FP_FOV;
+
 public:
 	CHLMVState();
 	~CHLMVState();
@@ -49,6 +53,14 @@ public:
 
 	void SetEntity( CHLMVStudioModelEntity* pEntity );
 
+	bool UsingWeaponOrigin() const { return useWeaponOrigin; }
+
+	graphics::CCamera* GetCurrentCamera() const { return pCurrentCamera; }
+
+	float GetCurrentFOV() const { return *pCurrentFOV; }
+
+	void SetUseWeaponOrigin( const bool bUse );
+
 	bool DumpModelInfo( const char* const pszFilename );
 
 public:
@@ -57,6 +69,26 @@ public:
 	//Do not reset this; the user inits this!
 	graphics::CCamera savedCamera;
 
+	graphics::CCamera weaponOriginCamera;
+
+	/**
+	*	Third person FOV
+	*/
+	float flFOV;
+
+	/**
+	*	First person FOV
+	*/
+	float flFPFOV;
+
+private:
+	bool useWeaponOrigin;
+
+	graphics::CCamera* pCurrentCamera = &camera;
+
+	float* pCurrentFOV = &flFOV;
+
+public:
 	bool showBackground;
 
 	bool showTexture;
@@ -87,10 +119,6 @@ public:
 	bool wireframeOverlay;
 
 	bool backfaceCulling;
-
-	glm::vec3 weaponOrigin;
-
-	bool useWeaponOrigin;
 
 	bool showUVMap;
 

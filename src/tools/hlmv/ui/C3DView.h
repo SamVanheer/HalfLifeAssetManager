@@ -39,21 +39,6 @@ public:
 	const CHLMV* GetHLMV() const { return m_pHLMV; }
 	CHLMV* GetHLMV() { return m_pHLMV; }
 
-	/**
-	*	Gets the current camera.
-	*/
-	const graphics::CCamera* GetCamera() const { return m_pCamera; }
-
-	/**
-	*	@copydoc GetCamera() const
-	*/
-	graphics::CCamera* GetCamera() { return m_pCamera; }
-
-	/**
-	*	Sets the current camera.
-	*/
-	void SetCamera( graphics::CCamera* pCamera );
-
 	//Tells the 3D view to prepare for model loading.
 	void PrepareForLoad();
 
@@ -94,8 +79,6 @@ private:
 	wxNotebook* const m_pControlPanels;
 
 	I3DViewListener* m_pListener;
-
-	graphics::CCamera* m_pCamera = nullptr;
 
 	//Used for rotation and translation.
 	graphics::CCamera m_OldCamera;

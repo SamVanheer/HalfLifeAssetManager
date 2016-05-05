@@ -8,6 +8,10 @@ namespace hlmv
 {
 const glm::vec3 CHLMVState::DEFAULT_ROTATION = glm::vec3( -90.0f, 0, 0 );
 
+const float CHLMVState::DEFAULT_FOV = 65.0f;
+
+const float CHLMVState::DEFAULT_FP_FOV = 74.0f;
+
 CHLMVState::CHLMVState()
 	: m_pEntity( nullptr )
 {
@@ -24,7 +28,11 @@ void CHLMVState::ResetModelData()
 	camera.SetOrigin( {} );
 	camera.SetViewDirection( DEFAULT_ROTATION );
 
-	weaponOrigin[ 0 ] = weaponOrigin[ 1 ] = weaponOrigin[ 2 ] = 0;
+	weaponOriginCamera.SetOrigin( glm::vec3( 0 ) );
+	weaponOriginCamera.SetViewDirection( glm::vec3( -90, 90, 0 ) );
+
+	flFOV = DEFAULT_FOV;
+	flFPFOV = DEFAULT_FP_FOV;
 
 	texture = 0;
 
@@ -61,7 +69,7 @@ void CHLMVState::ResetToDefaults()
 
 	backfaceCulling = true;
 
-	useWeaponOrigin = false;
+	SetUseWeaponOrigin( false );
 
 	showUVMap = false;
 
@@ -133,6 +141,15 @@ void CHLMVState::SetEntity( CHLMVStudioModelEntity* pEntity )
 
 	if( pEntity )
 		m_pEntity = pEntity;
+}
+
+void CHLMVState::SetUseWeaponOrigin( const bool bUse )
+{
+	useWeaponOrigin = bUse;
+
+	pCurrentCamera = bUse ? &weaponOriginCamera : &camera;
+
+	pCurrentFOV = bUse ? &flFPFOV : &flFOV;
 }
 
 bool CHLMVState::DumpModelInfo( const char* const pszFilename )

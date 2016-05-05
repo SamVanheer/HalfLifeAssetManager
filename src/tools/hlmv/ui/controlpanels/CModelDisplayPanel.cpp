@@ -2,6 +2,8 @@
 
 #include "../CHLMV.h"
 
+#include "ui/wx/shared/CFOVCtrl.h"
+
 #include "cvar/CCVarSystem.h"
 
 #include "CModelDisplayPanel.h"
@@ -15,6 +17,8 @@ wxBEGIN_EVENT_TABLE( CModelDisplayPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_MDLDISP_SCALEMESH, CModelDisplayPanel::ScaleMesh )
 	EVT_BUTTON( wxID_MDLDISP_SCALEBONES, CModelDisplayPanel::ScaleBones )
 	EVT_CHECKBOX( wxID_MDLDISP_MIRROR, CModelDisplayPanel::OnMirrorAxis )
+	EVT_FOV_CHANGED( wxID_MDLDISP_FOVCHANGED, CModelDisplayPanel::OnFOVChanged )
+	EVT_FOV_CHANGED( wxID_MDLDISP_FPFOVCHANGED, CModelDisplayPanel::OnFOVFPChanged )
 wxEND_EVENT_TABLE()
 
 //Client data for the mirror checkboxes
@@ -69,6 +73,10 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pMirror[ 1 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on Y axis" );
 	m_pMirror[ 2 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on Z axis" );
 
+	m_pFOV = new ui::CFOVCtrl( this, wxID_MDLDISP_FOVCHANGED, CHLMVState::DEFAULT_FOV, "Field Of View" );
+
+	m_pFPFOV = new ui::CFOVCtrl( this, wxID_MDLDISP_FPFOVCHANGED, CHLMVState::DEFAULT_FP_FOV, "First Person Field Of View" );
+
 	for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
 	{
 		m_pMirror[ uiIndex ]->SetClientData( const_cast<size_t*>( &MIRROR[ uiIndex ] ) );
@@ -109,6 +117,10 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	pControlsSizer->Add( m_pMirror[ 1 ], wxGBPosition( 1, 5 ), wxDefaultSpan, wxEXPAND );
 	pControlsSizer->Add( m_pMirror[ 2 ], wxGBPosition( 2, 5 ), wxDefaultSpan, wxEXPAND );
 
+	pControlsSizer->Add( m_pFOV, wxGBPosition( 0, 6 ), wxDefaultSpan, wxEXPAND );
+
+	pControlsSizer->Add( m_pFPFOV, wxGBPosition( 1, 6 ), wxDefaultSpan, wxEXPAND );
+
 	GetMainSizer()->Add( pControlsSizer );
 
 	cvar::cvars().InstallGlobalCVarHandler( this );
@@ -135,6 +147,9 @@ void CModelDisplayPanel::InitializeUI()
 
 		m_pMirror[ uiIndex ]->Enable( pEntity != nullptr );
 	}
+
+	m_pFOV->ChangeToDefault();
+	m_pFPFOV->ChangeToDefault();
 }
 
 void CModelDisplayPanel::SetRenderMode( RenderMode renderMode )
@@ -329,6 +344,16 @@ void CModelDisplayPanel::OnMirrorAxis( wxCommandEvent& event )
 	const size_t uiIndex = *reinterpret_cast<const size_t*>( static_cast<wxCheckBox*>( event.GetEventObject() )->GetClientData() );
 
 	pEntity->GetScale()[ uiIndex ] *= -1;
+}
+
+void CModelDisplayPanel::OnFOVChanged( wxCommandEvent& event )
+{
+	m_pHLMV->GetState()->flFOV = m_pFOV->GetValue();
+}
+
+void CModelDisplayPanel::OnFOVFPChanged( wxCommandEvent& event )
+{
+	m_pHLMV->GetState()->flFPFOV = m_pFPFOV->GetValue();
 }
 
 void CModelDisplayPanel::HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue )

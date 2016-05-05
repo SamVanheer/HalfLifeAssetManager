@@ -56,6 +56,7 @@
     <ClCompile Include="..\src\ui\wx\CwxBaseApp.cpp" />
     <ClCompile Include="..\src\ui\wx\CwxOpenGL.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CEditGameConfigsDialog.cpp" />
+    <ClCompile Include="..\src\ui\wx\shared\CFOVCtrl.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CGameConfigurationsPanel.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CMessagesWindow.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CProcessDialog.cpp" />
@@ -107,6 +108,7 @@
     <ClInclude Include="..\src\ui\wx\CwxBaseApp.h" />
     <ClInclude Include="..\src\ui\wx\CwxOpenGL.h" />
     <ClInclude Include="..\src\ui\wx\shared\CEditGameConfigsDialog.h" />
+    <ClInclude Include="..\src\ui\wx\shared\CFOVCtrl.h" />
     <ClInclude Include="..\src\ui\wx\shared\CGameConfigurationsPanel.h" />
     <ClInclude Include="..\src\ui\wx\shared\CMessagesWindow.h" />
     <ClInclude Include="..\src\ui\wx\shared\CProcessDialog.h" />

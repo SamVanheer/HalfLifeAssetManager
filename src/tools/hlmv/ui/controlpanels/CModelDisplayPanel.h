@@ -7,6 +7,11 @@
 
 #include "cvar/CCVar.h"
 
+namespace ui
+{
+class CFOVCtrl;
+}
+
 namespace hlmv
 {
 class CModelDisplayPanel final : public CBaseControlPanel, public cvar::ICVarHandler
@@ -82,6 +87,10 @@ private:
 
 	void OnMirrorAxis( wxCommandEvent& event );
 
+	void OnFOVChanged( wxCommandEvent& event );
+
+	void OnFOVFPChanged( wxCommandEvent& event );
+
 	void HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue ) override final;
 
 private:
@@ -99,6 +108,9 @@ private:
 	wxButton* m_pBonesScaleButton;
 
 	wxCheckBox* m_pMirror[ 3 ];
+
+	ui::CFOVCtrl* m_pFOV;
+	ui::CFOVCtrl* m_pFPFOV;
 
 private:
 	CModelDisplayPanel( const CModelDisplayPanel& ) = delete;
