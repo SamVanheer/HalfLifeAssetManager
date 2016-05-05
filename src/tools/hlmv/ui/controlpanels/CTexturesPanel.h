@@ -19,7 +19,7 @@ public:
 	static const size_t TEXTUREVIEW_SLIDER_MAX = 4;
 	static const size_t TEXTUREVIEW_SLIDER_DEFAULT = TEXTUREVIEW_SLIDER_MIN;
 
-	static const size_t NUM_CHECKBOXES_PER_ROW = 2;
+	static const size_t NUM_CHECKBOX_COLS = 2;
 
 	class CheckBox final
 	{
@@ -28,10 +28,11 @@ public:
 		{
 			FIRST				= 0,
 			CHROME				= FIRST,
-			SHOW_UV_MAP,
 			ADDITIVE,
-			OVERLAY_UV_MAP,
 			TRANSPARENT,
+
+			SHOW_UV_MAP,
+			OVERLAY_UV_MAP,
 			ANTI_ALIAS_LINES,
 
 			COUNT,
@@ -56,6 +57,13 @@ public:
 
 	void InitializeUI() override;
 
+	void SetTexture( int iIndex );
+
+	void SetScale( int iScale, const bool bSetSlider = true );
+
+protected:
+	wxDECLARE_EVENT_TABLE();
+
 	void TextureChanged( wxCommandEvent& event );
 
 	void ScaleChanged( wxCommandEvent& event );
@@ -69,13 +77,6 @@ public:
 	void ExportTexture( wxCommandEvent& event );
 
 	void ExportUVMap( wxCommandEvent& event );
-
-	void SetTexture( int iIndex );
-
-	void SetScale( int iScale, const bool bSetSlider = true );
-
-protected:
-	wxDECLARE_EVENT_TABLE();
 
 private:
 	wxStaticText* m_pTextureSize;

@@ -4,6 +4,8 @@
 #include <wx/gbsizer.h>
 #include <wx/image.h>
 
+#include "ui/wx/utility/wxUtil.h"
+
 #include "graphics/GraphicsHelpers.h"
 #include "graphics/Palette.h"
 #include "graphics/BMPFile.h"
@@ -46,14 +48,19 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pScaleTextureView = new wxSlider( pTextureSettingPanel, wxID_TEX_SCALE, TEXTUREVIEW_SLIDER_DEFAULT, TEXTUREVIEW_SLIDER_MIN, TEXTUREVIEW_SLIDER_MAX );
 
-	wxPanel* pCheckBoxPanel = new wxPanel( pElemParent );
+	m_pCheckBoxes[ CheckBox::CHROME ]				= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Chrome" );
+	m_pCheckBoxes[ CheckBox::ADDITIVE ]				= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Additive" );
+	m_pCheckBoxes[ CheckBox::TRANSPARENT ]			= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Transparent" );
+	m_pCheckBoxes[ CheckBox::SHOW_UV_MAP ]			= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Show UV Map" );
+	m_pCheckBoxes[ CheckBox::OVERLAY_UV_MAP ]		= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Overlay UV Map" );
+	m_pCheckBoxes[ CheckBox::ANTI_ALIAS_LINES ]		= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Anti-Alias Lines" );
 
-	m_pCheckBoxes[ CheckBox::CHROME ]				= new wxCheckBox( pCheckBoxPanel, wxID_TEX_CHECKBOX, "Chrome" );
-	m_pCheckBoxes[ CheckBox::SHOW_UV_MAP ]			= new wxCheckBox( pCheckBoxPanel, wxID_TEX_CHECKBOX, "Show UV Map" );
-	m_pCheckBoxes[ CheckBox::ADDITIVE ]				= new wxCheckBox( pCheckBoxPanel, wxID_TEX_CHECKBOX, "Additive" );
-	m_pCheckBoxes[ CheckBox::OVERLAY_UV_MAP ]		= new wxCheckBox( pCheckBoxPanel, wxID_TEX_CHECKBOX, "Overlay UV Map" );
-	m_pCheckBoxes[ CheckBox::TRANSPARENT ]			= new wxCheckBox( pCheckBoxPanel, wxID_TEX_CHECKBOX, "Transparent" );
-	m_pCheckBoxes[ CheckBox::ANTI_ALIAS_LINES ]		= new wxCheckBox( pCheckBoxPanel, wxID_TEX_CHECKBOX, "Anti-Alias Lines" );
+	for( size_t uiIndex = CheckBox::FIRST; uiIndex < CheckBox::COUNT; ++uiIndex )
+	{
+		wxASSERT( m_pCheckBoxes[ uiIndex ] );
+
+		m_pCheckBoxes[ uiIndex ]->SetClientData( reinterpret_cast<void*>( uiIndex ) );
+	}
 
 	m_pMesh = new wxComboBox( pElemParent, wxID_TEX_MESH, "" );
 	m_pMesh->SetEditable( false );
@@ -67,32 +74,20 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	int iCol = 0;
 
-	wxGridBagSizer* pTextureSettingSizer = new wxGridBagSizer( 5, 5 );
-
-	pTextureSettingSizer->Add( m_pTextureSize, wxGBPosition( 0, 0 ), wxDefaultSpan, wxEXPAND | wxALIGN_CENTER_VERTICAL );
-	pTextureSettingSizer->Add( m_pTexture, wxGBPosition( 1, 0 ), wxDefaultSpan, wxEXPAND );
-	pTextureSettingSizer->Add( m_pScaleTextureViewSize, wxGBPosition( 2, 0 ), wxDefaultSpan, wxEXPAND );
-	pTextureSettingSizer->Add( m_pScaleTextureView, wxGBPosition( 3, 0 ), wxDefaultSpan, wxEXPAND );
-
-	pTextureSettingPanel->SetSizer( pTextureSettingSizer );
-
-	pSizer->Add( pTextureSettingPanel, wxGBPosition( 0, iCol++ ), wxGBSpan( 3, 1 ), wxEXPAND );
-
-	wxGridBagSizer* pCheckBoxSizer = new wxGridBagSizer( 5, 5 );
-
-	for( size_t uiIndex = CheckBox::FIRST; uiIndex < CheckBox::COUNT; ++uiIndex )
 	{
-		if( !m_pCheckBoxes[ uiIndex ] )
-			wxLogError( "CTexturesPanel::CTexturesPanel: Null checkbox %u!\n", uiIndex );
+		auto pTextureSettingSizer = new wxBoxSizer( wxVERTICAL );
 
-		pCheckBoxSizer->Add( m_pCheckBoxes[ uiIndex ], wxGBPosition( uiIndex / NUM_CHECKBOXES_PER_ROW, ( uiIndex % NUM_CHECKBOXES_PER_ROW ) ), wxDefaultSpan, wxEXPAND );
+		pTextureSettingSizer->Add( m_pTextureSize, wxSizerFlags().Expand() );
+		pTextureSettingSizer->Add( m_pTexture, wxSizerFlags().Expand() );
+		pTextureSettingSizer->Add( m_pScaleTextureViewSize, wxSizerFlags().Expand() );
+		pTextureSettingSizer->Add( m_pScaleTextureView, wxSizerFlags().Expand() );
 
-		m_pCheckBoxes[ uiIndex ]->SetClientData( reinterpret_cast<void*>( uiIndex ) );
+		pTextureSettingPanel->SetSizer( pTextureSettingSizer );
+
+		pSizer->Add( pTextureSettingPanel, wxGBPosition( 0, iCol++ ), wxGBSpan( 3, 1 ), wxEXPAND );
 	}
 
-	pCheckBoxPanel->SetSizer( pCheckBoxSizer );
-
-	pSizer->Add( pCheckBoxPanel, wxGBPosition( 0, iCol ), wxGBSpan( 2, 1 ) );
+	pSizer->Add( wx::CreateCheckBoxSizer( m_pCheckBoxes, ARRAYSIZE( m_pCheckBoxes ), NUM_CHECKBOX_COLS, wxEXPAND ), wxGBPosition( 0, iCol ), wxGBSpan( 2, 1 ), wxEXPAND );
 
 	pSizer->Add( m_pMesh, wxGBPosition( 2, iCol++ ), wxGBSpan( 1, 1 ), wxEXPAND );
 
@@ -163,6 +158,89 @@ void CTexturesPanel::InitializeUI()
 		m_pTexture->Enable( false );
 		m_pMesh->Enable( false );
 	}
+
+	this->Enable( bSuccess );
+}
+
+void CTexturesPanel::SetTexture( int iIndex )
+{
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
+	if( !pEntity )
+	{
+		m_pTextureSize->SetLabelText( "Texture" );
+		return;
+	}
+
+	auto pStudioModel = pEntity->GetModel();
+
+	wxASSERT( pStudioModel );
+
+	const studiohdr_t* const pHdr = pStudioModel->GetStudioHeader();
+	const studiohdr_t* const pTexHdr = pStudioModel->GetTextureHeader();
+
+	m_pMesh->Clear();
+
+	if( !pHdr || !pTexHdr )
+	{
+		m_pMesh->Enable( false );
+		return;
+	}
+
+	if( iIndex < 0 || iIndex >= pTexHdr->numtextures )
+		iIndex = 0;
+
+	const mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pTexHdr + pTexHdr->textureindex ) ) [ iIndex ];
+
+	m_pTexture->Select( iIndex );
+
+	m_pTextureSize->SetLabelText( wxString::Format( "Texture (size: %d x %d)", texture.width, texture.height ) );
+
+	m_pCheckBoxes[ CheckBox::CHROME ]->SetValue( ( texture.flags & STUDIO_NF_CHROME ) != 0 );
+	m_pCheckBoxes[ CheckBox::ADDITIVE ]->SetValue( ( texture.flags & STUDIO_NF_ADDITIVE ) != 0 );
+	m_pCheckBoxes[ CheckBox::TRANSPARENT ]->SetValue( ( texture.flags & STUDIO_NF_MASKED ) != 0 );
+
+	const CStudioModelEntity::MeshList_t meshes = pEntity->ComputeMeshList( iIndex );
+
+	m_pMesh->Enable( true );
+
+	size_t uiIndex;
+
+	for( uiIndex = 0; uiIndex < meshes.size(); ++uiIndex )
+	{
+		m_pMesh->Append( wxString::Format( "Mesh %u", uiIndex + 1 ), new ui::CMeshClientData( meshes[ uiIndex ] ) );
+	}
+
+	if( uiIndex > 0 )
+	{
+		m_pHLMV->GetState()->pUVMesh = meshes[ 0 ];
+
+		if( uiIndex > 1 )
+		{
+			m_pMesh->Append( "All" );
+		}
+	}
+	else
+	{
+		m_pHLMV->GetState()->pUVMesh = nullptr;
+	}
+
+	m_pMesh->Select( 0 );
+
+	m_pHLMV->GetState()->texture = iIndex;
+}
+
+void CTexturesPanel::SetScale( int iScale, const bool bSetSlider )
+{
+	if( iScale < TEXTUREVIEW_SLIDER_MIN || iScale > TEXTUREVIEW_SLIDER_MAX )
+		iScale = TEXTUREVIEW_SLIDER_DEFAULT;
+
+	m_pHLMV->GetState()->textureScale = iScale;
+
+	if( bSetSlider )
+		m_pScaleTextureView->SetValue( iScale );
+
+	m_pScaleTextureViewSize->SetLabelText( wxString::Format( "Scale Texture View (%dx)", iScale ) );
 }
 
 void CTexturesPanel::TextureChanged( wxCommandEvent& event )
@@ -355,9 +433,9 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 
 	if( texture.width != image.GetWidth() || texture.height != image.GetHeight() )
 	{
-		wxMessageBox( wxString::Format( "Image \"%s\" does not have matching dimensions to the current texture (src: %d x %d, dest: %d x %d)", 
-										szFilename.c_str(), 
-										image.GetWidth(), image.GetHeight(), 
+		wxMessageBox( wxString::Format( "Image \"%s\" does not have matching dimensions to the current texture (src: %d x %d, dest: %d x %d)",
+										szFilename.c_str(),
+										image.GetWidth(), image.GetHeight(),
 										texture.width, texture.height ) );
 		return;
 	}
@@ -384,9 +462,9 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 	{
 		if( palette.GetRGB( uiIndex, &r, &g, &b ) )
 		{
-			convPal[ uiIndex * PALETTE_CHANNELS ]		= r;
-			convPal[ uiIndex * PALETTE_CHANNELS + 1 ]	= g;
-			convPal[ uiIndex * PALETTE_CHANNELS + 2 ]	= b;
+			convPal[ uiIndex * PALETTE_CHANNELS ] = r;
+			convPal[ uiIndex * PALETTE_CHANNELS + 1 ] = g;
+			convPal[ uiIndex * PALETTE_CHANNELS + 2 ] = b;
 		}
 	}
 
@@ -462,86 +540,5 @@ void CTexturesPanel::ExportUVMap( wxCommandEvent& event )
 	const wxString szFilename = dlg.GetPath();
 
 	m_pHLMV->SaveUVMap( szFilename, iTextureIndex );
-}
-
-void CTexturesPanel::SetTexture( int iIndex )
-{
-	auto pEntity = m_pHLMV->GetState()->GetEntity();
-
-	if( !pEntity )
-	{
-		m_pTextureSize->SetLabelText( "Texture" );
-		return;
-	}
-
-	auto pStudioModel = pEntity->GetModel();
-
-	wxASSERT( pStudioModel );
-
-	const studiohdr_t* const pHdr = pStudioModel->GetStudioHeader();
-	const studiohdr_t* const pTexHdr = pStudioModel->GetTextureHeader();
-
-	m_pMesh->Clear();
-
-	if( !pHdr || !pTexHdr )
-	{
-		m_pMesh->Enable( false );
-		return;
-	}
-
-	if( iIndex < 0 || iIndex >= pTexHdr->numtextures )
-		iIndex = 0;
-
-	const mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pTexHdr + pTexHdr->textureindex ) ) [ iIndex ];
-
-	m_pTexture->Select( iIndex );
-
-	m_pTextureSize->SetLabelText( wxString::Format( "Texture (size: %d x %d)", texture.width, texture.height ) );
-
-	m_pCheckBoxes[ CheckBox::CHROME ]->SetValue( ( texture.flags & STUDIO_NF_CHROME ) != 0 );
-	m_pCheckBoxes[ CheckBox::ADDITIVE ]->SetValue( ( texture.flags & STUDIO_NF_ADDITIVE ) != 0 );
-	m_pCheckBoxes[ CheckBox::TRANSPARENT ]->SetValue( ( texture.flags & STUDIO_NF_MASKED ) != 0 );
-
-	const CStudioModelEntity::MeshList_t meshes = pEntity->ComputeMeshList( iIndex );
-
-	m_pMesh->Enable( true );
-
-	size_t uiIndex;
-
-	for( uiIndex = 0; uiIndex < meshes.size(); ++uiIndex )
-	{
-		m_pMesh->Append( wxString::Format( "Mesh %u", uiIndex + 1 ), new ui::CMeshClientData( meshes[ uiIndex ] ) );
-	}
-
-	if( uiIndex > 0 )
-	{
-		m_pHLMV->GetState()->pUVMesh = meshes[ 0 ];
-
-		if( uiIndex > 1 )
-		{
-			m_pMesh->Append( "All" );
-		}
-	}
-	else
-	{
-		m_pHLMV->GetState()->pUVMesh = nullptr;
-	}
-
-	m_pMesh->Select( 0 );
-
-	m_pHLMV->GetState()->texture = iIndex;
-}
-
-void CTexturesPanel::SetScale( int iScale, const bool bSetSlider )
-{
-	if( iScale < TEXTUREVIEW_SLIDER_MIN || iScale > TEXTUREVIEW_SLIDER_MAX )
-		iScale = TEXTUREVIEW_SLIDER_DEFAULT;
-
-	m_pHLMV->GetState()->textureScale = iScale;
-
-	if( bSetSlider )
-		m_pScaleTextureView->SetValue( iScale );
-
-	m_pScaleTextureViewSize->SetLabelText( wxString::Format( "Scale Texture View (%dx)", iScale ) );
 }
 }
