@@ -14,6 +14,7 @@ class GLRenderTarget final
 public:
 	/**
 	*	Constructs a new render target. If bCreate is true, initializes its GL data.
+	*	@param bCreate Whether or not to create the render target.
 	*/
 	GLRenderTarget( const bool bCreate );
 	~GLRenderTarget();
@@ -35,7 +36,7 @@ public:
 
 	/**
 	*	Creates the render target if it doesn't exist yet.
-	*	@param true on success, false otherwise.
+	*	@return true on success, false otherwise.
 	*/
 	bool Create();
 
@@ -48,12 +49,13 @@ public:
 	*	Sets the render target's dimensions, and sets up the depth buffer.
 	*	@param iWidth Width, in pixels.
 	*	@param iHeight Height, in pixels.
+	*	@param bUseDepthBuffer Whether to use a depth buffer or not.
 	*/
 	void Setup( const GLsizei iWidth, const GLsizei iHeight, const bool bUseDepthBuffer );
 
 	/**
 	*	Binds the render target.
-	*	@param true on success, false otherwise.
+	*	@return true on success, false otherwise.
 	*/
 	bool Bind();
 

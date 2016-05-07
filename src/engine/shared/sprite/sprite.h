@@ -6,7 +6,7 @@
 #include "graphics/OpenGL.h"
 
 /**
-*	@file Sprite file and memory definitions
+*	@file sprite.h Sprite file and memory definitions
 */
 
 /**

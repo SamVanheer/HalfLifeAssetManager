@@ -29,7 +29,6 @@ class CStudioModel;
 /**
 *	Loads a studio model.
 *	@param pszFilename Name of the model to load. This is the entire path, including the extension.
-*	@param bFilterTextures Whether to filter textures uploaded for this model.
 *	@param pModel The model, if it was successfully loaded in.
 *	@return StudioModelLoadResult::SUCCESS on success, an error code in all other cases.
 */

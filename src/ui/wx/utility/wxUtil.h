@@ -59,15 +59,17 @@ bool LaunchDefaultTextEditor( const wxString& szFilename );
 /**
 *	@brief Given an array of checkboxes and a maximum number of columns, returns a sizer containing the checkboxes, arranged in columns.
 *
+*	<pre>
 *	Example:
 *	CheckBox 1, CheckBox 2, CheckBox 3, 2 columns:
 *	
 *	CheckBox 1	|	CheckBox 3
 *	CheckBox 2	|
+*	</pre>
 *
 *	@param ppCheckBoxes Array of checkboxes.
 *	@param uiNumCheckBoxes Number of checkboxes.
-*	@param uiMaxColumns Number of columns.
+*	@param uiNumColumns Number of columns.
 *	@param flag Sizer flags.
 *	@param border Sizer border flags.
 *	@return Sizer containing the given checkboxes.

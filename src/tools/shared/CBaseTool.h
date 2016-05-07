@@ -46,6 +46,7 @@ protected:
 	/**
 	*	Constructor.
 	*	@param szDisplayName Display name.
+	*	@param toolIcon The icon to use for windows.
 	*/
 	CBaseTool( const wxString szDisplayName, const wxIcon& toolIcon );
 

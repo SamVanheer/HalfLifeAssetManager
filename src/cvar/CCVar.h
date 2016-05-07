@@ -205,6 +205,7 @@ class CCVar : public CBaseConCommand
 public:
 	/**
 	*	Creates a cvar with the given name and arguments.
+	*	@param pszName CVar name.
 	*	@param args Arguments.
 	*	@see CBaseConCommand::CBaseConCommand( const char* const pszName, const char* const pszHelpInfo )
 	*/

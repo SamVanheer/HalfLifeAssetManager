@@ -8,7 +8,7 @@
 class CHTMLElement;
 
 /**
-*	HTML element that represents the <head> element.
+*	HTML element that represents the \<head\> element.
 */
 class CHTMLHeader : public IHTMLObject
 {

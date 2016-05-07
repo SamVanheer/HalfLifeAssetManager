@@ -33,7 +33,7 @@ public:
 	/**
 	*	Initializes the command with the given arguments.
 	*	@param iArgc Argument count.
-	*	@param ppArgv Argument vector.
+	*	@param ppArgV Argument vector.
 	*/
 	CCommand( const int iArgc, char** ppArgV );
 

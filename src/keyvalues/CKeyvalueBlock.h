@@ -37,7 +37,7 @@ public:
 	*	Constructs a keyvalue node with a key.
 	*	The given child is made the first child.
 	*	@param pszKey Key. Must be non-null.
-	*	@param pFirstChild. First child. Must be non-null.
+	*	@param pFirstChild First child. Must be non-null.
 	*/
 	CKeyvalueBlock( const char* pszKey, CKeyvalueNode* pFirstChild );
 

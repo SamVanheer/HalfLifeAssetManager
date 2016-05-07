@@ -115,7 +115,7 @@ public:
 
 	/**
 	*	Truncates the list to uiCount files. Note: if you wish to remove all files, use RemoveAll instead.
-	*	@param Maximum number of files to keep in the list.
+	*	@param uiCount Maximum number of files to keep in the list.
 	*/
 	void TruncateToCount( const size_t uiCount );
 

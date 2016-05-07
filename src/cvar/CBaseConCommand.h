@@ -15,6 +15,7 @@ protected:
 	/**
 	*	Constructor. Creates a command with the given name.
 	*	@param pszName Name of this command. Must be non-null and not empty.
+	*	@param flags Flags. @see cvar::Flag::Flag
 	*	@param pszHelpInfo Optional help info.
 	*/
 	CBaseConCommand( const char* const pszName, const Flags_t flags = Flag::NONE, const char* const pszHelpInfo = "" );

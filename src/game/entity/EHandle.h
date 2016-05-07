@@ -21,6 +21,7 @@ public:
 
 	/**
 	*	Creates a handle that represents the given entity.
+	*	@param pEntity Entity that this handle should represent.
 	*/
 	EHandle( CBaseEntity* pEntity );
 
@@ -70,7 +71,7 @@ public:
 	void Set( CBaseEntity* pEntity );
 
 	/**
-	*	@copydoc Set( CbaseEntity* pEntity )
+	*	@copydoc Set( CBaseEntity* pEntity )
 	*/
 	EHandle& operator=( CBaseEntity* pEntity );
 

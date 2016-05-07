@@ -4,7 +4,7 @@
 #include "CHTMLComposite.h"
 
 /**
-*	Convenience wrapper for the <body> element.
+*	Convenience wrapper for the \<body\> element.
 */
 class CHTMLBody : public CHTMLComposite
 {

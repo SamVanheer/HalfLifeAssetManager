@@ -57,14 +57,20 @@ public:
 public:
 	/**
 	*	Creates a command with the given name and a function to call on execution.
+	*	@param pszName Command name.
 	*	@param callbackFn Function to call on execution. Must be non-null.
+	*	@param flags Flags.
+	*	@param pszHelpInfo Help info.
 	*	@see CBaseConCommand::CBaseConCommand( const char* const pszName, const char* const pszHelpInfo )
 	*/
 	CConCommand( const char* const pszName, const CommandCallback callbackFn, const Flags_t flags = Flag::NONE, const char* const pszHelpInfo = "" );
 
 	/**
 	*	Creates a command with the given name and a function to call on execution.
+	*	@param pszName Command name.
 	*	@param pCallbackObj Object to call on execution. May be null. @see SetCommandHandler
+	*	@param flags Flags.
+	*	@param pszHelpInfo Help info.
 	*	@see CBaseConCommand::CBaseConCommand( const char* const pszName, const char* const pszHelpInfo )
 	*/
 	CConCommand( const char* const pszName, IConCommandHandler* pCallbackObj, const Flags_t flags = Flag::NONE, const char* const pszHelpInfo = "" );

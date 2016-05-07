@@ -44,7 +44,7 @@ void SetupRenderMode( RenderMode renderMode, const bool bBackfaceCulling );
 *	Draws a texture onto the screen. Optionally draws a UV map, either on a black background, or on top of the texture.
 *	@param iWidth			Width of the viewport
 *	@param iHeight			Height of the viewport
-*	@param pStudioModel		Model whose texture is being drawn
+*	@param pEntity			Entity whose model's texture is being drawn
 *	@param iTexture			Index of the texture to draw
 *	@param flTextureScale	Zoom level
 *	@param bShowUVMap		If true, draws the UV map
@@ -88,16 +88,17 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 
 /**
 *	Draws a wireframe overlay over a model
-*	@param model Model to draw
+*	@param pEntity Entity to draw
 */
 unsigned int DrawWireframeOverlay( CStudioModelEntity* pEntity );
 
 /**
 *	Draws a mirrored model.
-*	@param model				Model to draw
+*	@param pEntity				Entity to draw
 *	@param renderMode			Render mode to use
 *	@param bWireframeOverlay	Whether to render a wireframe overlay on top of the model
 *	@param flSideLength			Length of one side of the floor
+*	@param bBackfaceCulling		Whether to perform backface culling or not
 */
 unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength, const bool bBackfaceCulling );
 

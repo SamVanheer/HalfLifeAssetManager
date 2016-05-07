@@ -25,7 +25,7 @@ public:
 	/**
 	*	Called when the active config changes.
 	*	@param oldConfig The old configuration. May be null.
-	*	@param newConfig. The new configuration. May be null.
+	*	@param newConfig The new configuration. May be null.
 	*/
 	virtual void ActiveConfigChanged( const std::shared_ptr<CGameConfig>& oldConfig, const std::shared_ptr<CGameConfig>& newConfig ) = 0;
 };
@@ -139,7 +139,7 @@ public:
 	*	Renames a given config to the given name. The config must be managed by this manager, and the given name must be unique.
 	*	@param config Config to rename. Must be non-null.
 	*	@param pszNewName New name to assign to the config.
-	*	@param true if the config was renamed, false otherwise.
+	*	@return true if the config was renamed, false otherwise.
 	*/
 	bool RenameConfig( const std::shared_ptr<CGameConfig>& config, const char* const pszNewName );
 
