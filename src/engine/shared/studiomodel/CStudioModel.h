@@ -77,6 +77,12 @@ public:
 
 	void			ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte *pal, GLuint textureId );
 
+	/**
+	*	Reuploads a texture. Useful for making changes made to the texture's pixel, palette or flag data show up in the model itself.
+	*	@param ptexture Texture to reupload. Must be a texture that is part of this model.
+	*/
+	void ReuploadTexture( mstudiotexture_t* ptexture );
+
 private:
 	studiohdr_t*	m_pStudioHdr;
 	studiohdr_t*	m_pTextureHdr;

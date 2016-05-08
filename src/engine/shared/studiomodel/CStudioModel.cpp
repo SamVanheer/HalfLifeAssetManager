@@ -2,6 +2,7 @@
 #include <memory>
 
 #include "shared/Platform.h"
+#include "shared/Logging.h"
 
 #include "cvar/CCVar.h"
 
@@ -257,6 +258,27 @@ void CStudioModel::ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte 
 	glDeleteTextures( 1, &textureId );
 
 	UploadTexture( ptexture, data, pal, textureId, r_filtertextures.GetBool() );
+}
+
+void CStudioModel::ReuploadTexture( mstudiotexture_t* ptexture )
+{
+	assert( ptexture );
+
+	const int iIndex = ptexture - m_pTextureHdr->GetTextures();
+
+	if( iIndex < 0 || iIndex >= m_pTextureHdr->numtextures )
+	{
+		Error( "CStudioModel::ReuploadTexture: Invalid texture!" );
+		return;
+	}
+
+	GLuint textureId = m_Textures[ iIndex ];
+
+	glDeleteTextures( 1, &textureId );
+
+	UploadTexture( ptexture, 
+				   m_pTextureHdr->GetData() + ptexture->index, 
+				   m_pTextureHdr->GetData() + ptexture->index + ptexture->width * ptexture->height, textureId, r_filtertextures.GetBool() );
 }
 
 namespace

@@ -342,6 +342,8 @@ void CTexturesPanel::CheckBoxChanged( wxCommandEvent& event )
 				texture.flags &= ~STUDIO_NF_MASKED;
 			}
 
+			pModel->ReuploadTexture( &texture );
+
 			break;
 		}
 

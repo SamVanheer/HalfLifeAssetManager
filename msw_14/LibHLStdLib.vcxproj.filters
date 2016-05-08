@@ -123,9 +123,6 @@
     <ClInclude Include="..\src\stdlib\graphics\OpenGL.h">
       <Filter>Header Files\stdlib\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModel.h">
-      <Filter>Header Files\engine\shared\studiomodel</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\engine\shared\studiomodel\studio.h">
       <Filter>Header Files\engine\shared\studiomodel</Filter>
     </ClInclude>
@@ -164,6 +161,9 @@
     </ClInclude>
     <ClInclude Include="..\src\stdlib\graphics\CCamera.h">
       <Filter>Header Files\stdlib\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModel.h">
+      <Filter>Header Files\engine\shared\studiomodel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
