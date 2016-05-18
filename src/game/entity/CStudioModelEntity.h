@@ -68,7 +68,7 @@ public:
 	int SetFrame( const int iFrame );
 
 private:
-	studiomodel::CStudioModel* m_pModel = nullptr;
+	studiomdl::CStudioModel* m_pModel = nullptr;
 
 	int		m_iSequence			= 0;				// sequence index
 	int		m_iBodygroup		= 0;				// bodypart selection	
@@ -84,12 +84,12 @@ public:
 	/**
 	*	Gets the model.
 	*/
-	studiomodel::CStudioModel* GetModel() const { return m_pModel; }
+	studiomdl::CStudioModel* GetModel() const { return m_pModel; }
 
 	/**
 	*	Sets the model.
 	*/
-	void SetModel( studiomodel::CStudioModel* pModel );
+	void SetModel( studiomdl::CStudioModel* pModel );
 
 	/**
 	*	Gets the number of frames that the current sequence has.

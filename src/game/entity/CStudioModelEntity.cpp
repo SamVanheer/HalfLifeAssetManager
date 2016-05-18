@@ -39,12 +39,12 @@ bool CStudioModelEntity::Spawn()
 
 void CStudioModelEntity::Draw( entity::DrawFlags_t flags )
 {
-	studiomodel::DrawFlags_t drawFlags = studiomodel::DRAWF_NONE;
+	studiomdl::DrawFlags_t drawFlags = studiomdl::DRAWF_NONE;
 
 	//The entity and studiomodel flags don't necessarily cover the same things.
 	if( flags & entity::DRAWF_WIREFRAME_ONLY )
 	{
-		drawFlags |= studiomodel::DRAWF_WIREFRAME_ONLY;
+		drawFlags |= studiomdl::DRAWF_WIREFRAME_ONLY;
 	}
 
 	studiomdl::CModelRenderInfo renderInfo;
@@ -237,7 +237,7 @@ int CStudioModelEntity::SetFrame( const int iFrame )
 	return static_cast<int>( m_flFrame );
 }
 
-void CStudioModelEntity::SetModel( studiomodel::CStudioModel* pModel )
+void CStudioModelEntity::SetModel( studiomdl::CStudioModel* pModel )
 {
 	//TODO: release old model.
 	m_pModel = pModel;
@@ -534,7 +534,7 @@ mstudiomodel_t* CStudioModelEntity::GetModelByBodyPart( const int iBodyPart ) co
 
 CStudioModelEntity::MeshList_t CStudioModelEntity::ComputeMeshList( const int iTexture ) const
 {
-	const studiomodel::CStudioModel* pStudioModel = GetModel();
+	const studiomdl::CStudioModel* pStudioModel = GetModel();
 
 	assert( pStudioModel );
 

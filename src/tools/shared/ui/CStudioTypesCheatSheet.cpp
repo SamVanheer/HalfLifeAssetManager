@@ -18,7 +18,7 @@ CStudioTypesCheatSheet::CStudioTypesCheatSheet( wxWindow* pParent )
 
 	for( int iType = STUDIO_CONTROL_FIRST; iType <= STUDIO_CONTROL_LAST; iType <<= 1 )
 	{
-		texts.push_back( new wxStaticText( this, wxID_ANY, wxString::Format( "%s: %s", studiomodel::ControlToString( iType ), studiomodel::ControlToStringDescription( iType ) ) ) );
+		texts.push_back( new wxStaticText( this, wxID_ANY, wxString::Format( "%s: %s", studiomdl::ControlToString( iType ), studiomdl::ControlToStringDescription( iType ) ) ) );
 	}
 
 	auto pOk = this->CreateSeparatedButtonSizer( wxOK );

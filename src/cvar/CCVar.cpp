@@ -81,10 +81,7 @@ CCVar::CCVar( const char* const pszName, const CCVarArgsBuilder& args )
 
 CCVar::~CCVar()
 {
-	if( this == m_pParent )
-	{
-		delete[] m_pszValue;
-	}
+	delete[] m_pszValue;
 }
 
 CallbackType CCVar::GetCallbackType() const

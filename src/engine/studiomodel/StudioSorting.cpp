@@ -4,7 +4,7 @@
 
 #include "StudioSorting.h"
 
-namespace studiomodel
+namespace studiomdl
 {
 bool CompareSortedMeshes( const SortedMesh_t& lhs, const SortedMesh_t& rhs )
 {

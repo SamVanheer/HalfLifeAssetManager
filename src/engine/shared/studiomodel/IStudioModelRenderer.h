@@ -15,13 +15,10 @@
 *	@{
 */
 
-namespace studiomodel
-{
-class CStudioModel;
-}
-
 namespace studiomdl
 {
+class CStudioModel;
+
 /**
 *	Data structure used to pass model render info into the engine.
 *	TODO: this should only explicitly declare variables for studiomodel specific settings. Common settings should be accessed through a shared interface.
@@ -32,7 +29,7 @@ struct CModelRenderInfo
 	glm::vec3 vecAngles;
 	glm::vec3 vecScale;
 
-	studiomodel::CStudioModel* pModel;
+	CStudioModel* pModel;
 
 	float flTransparency;
 
@@ -126,7 +123,7 @@ public:
 	*	@return Number of polygons that were drawn.
 	*	TODO: remove dependency on entity itself.
 	*/
-	virtual unsigned int DrawModel( CModelRenderInfo* const pRenderInfo, const studiomodel::DrawFlags_t flags = studiomodel::DRAWF_NONE ) = 0;
+	virtual unsigned int DrawModel( CModelRenderInfo* const pRenderInfo, const DrawFlags_t flags = DRAWF_NONE ) = 0;
 };
 }
 

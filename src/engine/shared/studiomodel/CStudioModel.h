@@ -14,7 +14,7 @@
 
 #include "studio.h"
 
-namespace studiomodel
+namespace studiomdl
 {
 enum class StudioModelLoadResult
 {

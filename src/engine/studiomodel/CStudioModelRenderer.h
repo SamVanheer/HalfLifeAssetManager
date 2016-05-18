@@ -13,7 +13,7 @@
 
 #include "shared/studiomodel/IStudioModelRenderer.h"
 
-namespace studiomodel
+namespace studiomdl
 {
 class CStudioModel;
 
@@ -60,15 +60,23 @@ public:
 		m_lightvec = lightvec;
 	}
 
-	unsigned int DrawModel( studiomdl::CModelRenderInfo* const pRenderInfo, const DrawFlags_t flags = DRAWF_NONE ) override final;
+	unsigned int DrawModel( CModelRenderInfo* const pRenderInfo, const DrawFlags_t flags = DRAWF_NONE ) override final;
 
 private:
+	void DrawBones();
+
+	void DrawAttachments();
+
+	void DrawEyePosition();
+
+	void DrawHitBoxes();
+
 	void SetUpBones();
-	void CalcRotations( glm::vec3 *pos, glm::vec4 *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f );
+	void CalcRotations( glm::vec3* pos, glm::vec4* q, const mstudioseqdesc_t* const pseqdesc, const mstudioanim_t* panim, const float f );
 
 	void CalcBoneAdj();
-	void CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec4& q );
-	void CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec3& pos );
+	void CalcBoneQuaternion( const int frame, const float s, const mstudiobone_t* const pbone, const mstudioanim_t* const panim, glm::vec4& q );
+	void CalcBonePosition( const int frame, const float s, const mstudiobone_t* const pbone, const mstudioanim_t* const panim, glm::vec3& pos );
 	void SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s );
 
 	void SetupLighting();

@@ -13,7 +13,7 @@
 
 #include "CStudioModel.h"
 
-namespace studiomodel
+namespace studiomdl
 {
 namespace
 {
@@ -500,7 +500,7 @@ void ScaleMeshes( CStudioModel* pStudioModel, const float flScale )
 
 			if( bodypart > pStudioHdr->numbodyparts )
 			{
-				// Con_DPrintf ("studiomodel::SetupModel: no such bodypart %d\n", bodypart);
+				// Message( "studiomdl::ScaleMeshes: no such bodypart %d\n", bodypart );
 				bodypart = 0;
 			}
 

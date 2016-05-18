@@ -3,7 +3,7 @@
 
 #include "shared/studiomodel/studio.h"
 
-namespace studiomodel
+namespace studiomdl
 {
 struct SortedMesh_t
 {

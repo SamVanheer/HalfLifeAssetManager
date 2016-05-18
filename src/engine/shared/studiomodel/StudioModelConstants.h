@@ -5,7 +5,7 @@
 
 #include "shared/Utility.h"
 
-namespace studiomodel
+namespace studiomdl
 {
 typedef uint32_t DrawFlags_t;
 

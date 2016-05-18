@@ -321,7 +321,7 @@ void CBonesPanel::SetBoneController( int iIndex )
 	{
 		if( iType & pBoneController->type )
 		{
-			types.push_back( studiomodel::ControlToString( iType ) );
+			types.push_back( studiomdl::ControlToString( iType ) );
 		}
 	}
 

@@ -204,32 +204,32 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 
 	auto szCFilename = szFilename.char_str( wxMBConvUTF8() );
 
-	studiomodel::CStudioModel* pModel;
+	studiomdl::CStudioModel* pModel;
 
-	const auto res = studiomodel::LoadStudioModel( szFilename.c_str(), pModel );
+	const auto res = studiomdl::LoadStudioModel( szFilename.c_str(), pModel );
 
 	switch( res )
 	{
 	default:
-	case studiomodel::StudioModelLoadResult::FAILURE:
+	case studiomdl::StudioModelLoadResult::FAILURE:
 		{
 			wxMessageBox( wxString::Format( "Error loading model \"%s\"\n", szCFilename.data() ), "Error" );
 			return false;
 		}
 
-	case studiomodel::StudioModelLoadResult::POSTLOADFAILURE:
+	case studiomdl::StudioModelLoadResult::POSTLOADFAILURE:
 		{
 			wxMessageBox( wxString::Format( "Error post-loading model \"%s\"\n", szCFilename.data() ), "Error" );
 			return false;
 		}
 
-	case studiomodel::StudioModelLoadResult::VERSIONDIFFERS:
+	case studiomdl::StudioModelLoadResult::VERSIONDIFFERS:
 		{
 			wxMessageBox( wxString::Format( "Error loading model \"%s\": version differs\n", szCFilename.data() ), "Error" );
 			return false;
 		}
 
-	case studiomodel::StudioModelLoadResult::SUCCESS: break;
+	case studiomdl::StudioModelLoadResult::SUCCESS: break;
 	}
 
 	CHLMVStudioModelEntity* pEntity = static_cast<CHLMVStudioModelEntity*>( CBaseEntity::Create( "studiomodel", glm::vec3(), glm::vec3(), false ) );

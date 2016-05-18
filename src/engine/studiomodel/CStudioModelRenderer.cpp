@@ -29,7 +29,7 @@ cvar::CCVar g_ShowHitboxes( "r_showhitboxes", cvar::CCVarArgsBuilder().FloatValu
 DEFINE_COLOR_CVAR( , r_lighting, 255, 255, 255, "Lighting", cvar::CCVarArgsBuilder().Flags( cvar::Flag::ARCHIVE ).Callback( cvar::ColorCVarChanged ) );
 DEFINE_COLOR_CVAR( , r_wireframecolor, 255, 0, 0, "Wireframe overlay color", cvar::CCVarArgsBuilder().Flags( cvar::Flag::ARCHIVE ).Callback( cvar::ColorCVarChanged ) );
 
-namespace studiomodel
+namespace studiomdl
 {
 REGISTER_SINGLE_INTERFACE( ISTUDIOMODELRENDERER_NAME, CStudioModelRenderer );
 
@@ -110,165 +110,25 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 			uiDrawnPolys += DrawPoints( ( flags & DRAWF_WIREFRAME_ONLY ) != 0 );
 	}
 
-	//TODO: separate out into methods.
-
 	// draw bones
 	if( g_ShowBones.GetBool() )
 	{
-		mstudiobone_t *pbones = m_pStudioHdr->GetBones();
-		glDisable( GL_TEXTURE_2D );
-		glDisable( GL_DEPTH_TEST );
-
-		for( int i = 0; i < m_pStudioHdr->numbones; i++ )
-		{
-			if( pbones[ i ].parent >= 0 )
-			{
-				glPointSize( 3.0f );
-				glColor3f( 1, 0.7f, 0 );
-				glBegin( GL_LINES );
-				glVertex3f( m_bonetransform[ pbones[ i ].parent ][ 0 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 1 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 2 ][ 3 ] );
-				glVertex3f( m_bonetransform[ i ][ 0 ][ 3 ], m_bonetransform[ i ][ 1 ][ 3 ], m_bonetransform[ i ][ 2 ][ 3 ] );
-				glEnd();
-
-				glColor3f( 0, 0, 0.8f );
-				glBegin( GL_POINTS );
-				if( pbones[ pbones[ i ].parent ].parent != -1 )
-					glVertex3f( m_bonetransform[ pbones[ i ].parent ][ 0 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 1 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 2 ][ 3 ] );
-				glVertex3f( m_bonetransform[ i ][ 0 ][ 3 ], m_bonetransform[ i ][ 1 ][ 3 ], m_bonetransform[ i ][ 2 ][ 3 ] );
-				glEnd();
-			}
-			else
-			{
-				// draw parent bone node
-				glPointSize( 5.0f );
-				glColor3f( 0.8f, 0, 0 );
-				glBegin( GL_POINTS );
-				glVertex3f( m_bonetransform[ i ][ 0 ][ 3 ], m_bonetransform[ i ][ 1 ][ 3 ], m_bonetransform[ i ][ 2 ][ 3 ] );
-				glEnd();
-			}
-		}
-
-		glPointSize( 1.0f );
+		DrawBones();
 	}
 
 	if( g_ShowAttachments.GetBool() )
 	{
-		glDisable( GL_TEXTURE_2D );
-		glDisable( GL_CULL_FACE );
-		glDisable( GL_DEPTH_TEST );
-
-		for( int i = 0; i < m_pStudioHdr->numattachments; i++ )
-		{
-			mstudioattachment_t *pattachments = m_pStudioHdr->GetAttachments();
-			glm::vec3 v[ 4 ];
-			VectorTransform( pattachments[ i ].org, m_bonetransform[ pattachments[ i ].bone ], v[ 0 ] );
-			VectorTransform( pattachments[ i ].vectors[ 0 ], m_bonetransform[ pattachments[ i ].bone ], v[ 1 ] );
-			VectorTransform( pattachments[ i ].vectors[ 1 ], m_bonetransform[ pattachments[ i ].bone ], v[ 2 ] );
-			VectorTransform( pattachments[ i ].vectors[ 2 ], m_bonetransform[ pattachments[ i ].bone ], v[ 3 ] );
-			glBegin( GL_LINES );
-			glColor3f( 1, 0, 0 );
-			glVertex3fv( glm::value_ptr( v[ 0 ] ) );
-			glColor3f( 1, 1, 1 );
-			glVertex3fv( glm::value_ptr( v[ 1 ] ) );
-			glColor3f( 1, 0, 0 );
-			glVertex3fv( glm::value_ptr( v[ 0 ] ) );
-			glColor3f( 1, 1, 1 );
-			glVertex3fv( glm::value_ptr( v[ 2 ] ) );
-			glColor3f( 1, 0, 0 );
-			glVertex3fv( glm::value_ptr( v[ 0 ] ) );
-			glColor3f( 1, 1, 1 );
-			glVertex3fv( glm::value_ptr( v[ 3 ] ) );
-			glEnd();
-
-			glPointSize( 5 );
-			glColor3f( 0, 1, 0 );
-			glBegin( GL_POINTS );
-			glVertex3fv( glm::value_ptr( v[ 0 ] ) );
-			glEnd();
-			glPointSize( 1 );
-		}
+		DrawAttachments();
 	}
 
 	if( g_ShowEyePosition.GetBool() )
 	{
-		glDisable( GL_TEXTURE_2D );
-		glDisable( GL_CULL_FACE );
-		glDisable( GL_DEPTH_TEST );
-
-		glPointSize( 7 );
-		glColor3f( 1, 0, 1 );
-		glBegin( GL_POINTS );
-		glVertex3fv( glm::value_ptr( m_pStudioHdr->eyeposition ) );
-		glEnd();
-		glPointSize( 1 );
+		DrawEyePosition();
 	}
 
 	if( g_ShowHitboxes.GetBool() )
 	{
-		glDisable( GL_TEXTURE_2D );
-		glDisable( GL_CULL_FACE );
-		if( m_pRenderInfo->flTransparency < 1.0f )
-			glDisable( GL_DEPTH_TEST );
-		else
-			glEnable( GL_DEPTH_TEST );
-
-		glColor4f( 1, 0, 0, 0.5f );
-
-		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-		glEnable( GL_BLEND );
-		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-		for( int i = 0; i < m_pStudioHdr->numhitboxes; i++ )
-		{
-			mstudiobbox_t *pbboxes = m_pStudioHdr->GetHitBoxes();
-			glm::vec3 v[ 8 ], v2[ 8 ];
-
-			glm::vec3 bbmin = pbboxes[ i ].bbmin;
-			glm::vec3 bbmax = pbboxes[ i ].bbmax;
-
-			v[ 0 ][ 0 ] = bbmin[ 0 ];
-			v[ 0 ][ 1 ] = bbmax[ 1 ];
-			v[ 0 ][ 2 ] = bbmin[ 2 ];
-
-			v[ 1 ][ 0 ] = bbmin[ 0 ];
-			v[ 1 ][ 1 ] = bbmin[ 1 ];
-			v[ 1 ][ 2 ] = bbmin[ 2 ];
-
-			v[ 2 ][ 0 ] = bbmax[ 0 ];
-			v[ 2 ][ 1 ] = bbmax[ 1 ];
-			v[ 2 ][ 2 ] = bbmin[ 2 ];
-
-			v[ 3 ][ 0 ] = bbmax[ 0 ];
-			v[ 3 ][ 1 ] = bbmin[ 1 ];
-			v[ 3 ][ 2 ] = bbmin[ 2 ];
-
-			v[ 4 ][ 0 ] = bbmax[ 0 ];
-			v[ 4 ][ 1 ] = bbmax[ 1 ];
-			v[ 4 ][ 2 ] = bbmax[ 2 ];
-
-			v[ 5 ][ 0 ] = bbmax[ 0 ];
-			v[ 5 ][ 1 ] = bbmin[ 1 ];
-			v[ 5 ][ 2 ] = bbmax[ 2 ];
-
-			v[ 6 ][ 0 ] = bbmin[ 0 ];
-			v[ 6 ][ 1 ] = bbmax[ 1 ];
-			v[ 6 ][ 2 ] = bbmax[ 2 ];
-
-			v[ 7 ][ 0 ] = bbmin[ 0 ];
-			v[ 7 ][ 1 ] = bbmin[ 1 ];
-			v[ 7 ][ 2 ] = bbmax[ 2 ];
-
-			VectorTransform( v[ 0 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 0 ] );
-			VectorTransform( v[ 1 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 1 ] );
-			VectorTransform( v[ 2 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 2 ] );
-			VectorTransform( v[ 3 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 3 ] );
-			VectorTransform( v[ 4 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 4 ] );
-			VectorTransform( v[ 5 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 5 ] );
-			VectorTransform( v[ 6 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 6 ] );
-			VectorTransform( v[ 7 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 7 ] );
-
-			graphics::DrawBox( v2 );
-		}
+		DrawHitBoxes();
 	}
 
 	glPopMatrix();
@@ -278,41 +138,192 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 	return uiDrawnPolys;
 }
 
+void CStudioModelRenderer::DrawBones()
+{
+	mstudiobone_t *pbones = m_pStudioHdr->GetBones();
+	glDisable( GL_TEXTURE_2D );
+	glDisable( GL_DEPTH_TEST );
+
+	for( int i = 0; i < m_pStudioHdr->numbones; i++ )
+	{
+		if( pbones[ i ].parent >= 0 )
+		{
+			glPointSize( 3.0f );
+			glColor3f( 1, 0.7f, 0 );
+			glBegin( GL_LINES );
+			glVertex3f( m_bonetransform[ pbones[ i ].parent ][ 0 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 1 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 2 ][ 3 ] );
+			glVertex3f( m_bonetransform[ i ][ 0 ][ 3 ], m_bonetransform[ i ][ 1 ][ 3 ], m_bonetransform[ i ][ 2 ][ 3 ] );
+			glEnd();
+
+			glColor3f( 0, 0, 0.8f );
+			glBegin( GL_POINTS );
+			if( pbones[ pbones[ i ].parent ].parent != -1 )
+				glVertex3f( m_bonetransform[ pbones[ i ].parent ][ 0 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 1 ][ 3 ], m_bonetransform[ pbones[ i ].parent ][ 2 ][ 3 ] );
+			glVertex3f( m_bonetransform[ i ][ 0 ][ 3 ], m_bonetransform[ i ][ 1 ][ 3 ], m_bonetransform[ i ][ 2 ][ 3 ] );
+			glEnd();
+		}
+		else
+		{
+			// draw parent bone node
+			glPointSize( 5.0f );
+			glColor3f( 0.8f, 0, 0 );
+			glBegin( GL_POINTS );
+			glVertex3f( m_bonetransform[ i ][ 0 ][ 3 ], m_bonetransform[ i ][ 1 ][ 3 ], m_bonetransform[ i ][ 2 ][ 3 ] );
+			glEnd();
+		}
+	}
+
+	glPointSize( 1.0f );
+}
+
+void CStudioModelRenderer::DrawAttachments()
+{
+	glDisable( GL_TEXTURE_2D );
+	glDisable( GL_CULL_FACE );
+	glDisable( GL_DEPTH_TEST );
+
+	for( int i = 0; i < m_pStudioHdr->numattachments; i++ )
+	{
+		mstudioattachment_t *pattachments = m_pStudioHdr->GetAttachments();
+		glm::vec3 v[ 4 ];
+		VectorTransform( pattachments[ i ].org, m_bonetransform[ pattachments[ i ].bone ], v[ 0 ] );
+		VectorTransform( pattachments[ i ].vectors[ 0 ], m_bonetransform[ pattachments[ i ].bone ], v[ 1 ] );
+		VectorTransform( pattachments[ i ].vectors[ 1 ], m_bonetransform[ pattachments[ i ].bone ], v[ 2 ] );
+		VectorTransform( pattachments[ i ].vectors[ 2 ], m_bonetransform[ pattachments[ i ].bone ], v[ 3 ] );
+		glBegin( GL_LINES );
+		glColor3f( 1, 0, 0 );
+		glVertex3fv( glm::value_ptr( v[ 0 ] ) );
+		glColor3f( 1, 1, 1 );
+		glVertex3fv( glm::value_ptr( v[ 1 ] ) );
+		glColor3f( 1, 0, 0 );
+		glVertex3fv( glm::value_ptr( v[ 0 ] ) );
+		glColor3f( 1, 1, 1 );
+		glVertex3fv( glm::value_ptr( v[ 2 ] ) );
+		glColor3f( 1, 0, 0 );
+		glVertex3fv( glm::value_ptr( v[ 0 ] ) );
+		glColor3f( 1, 1, 1 );
+		glVertex3fv( glm::value_ptr( v[ 3 ] ) );
+		glEnd();
+
+		glPointSize( 5 );
+		glColor3f( 0, 1, 0 );
+		glBegin( GL_POINTS );
+		glVertex3fv( glm::value_ptr( v[ 0 ] ) );
+		glEnd();
+		glPointSize( 1 );
+	}
+}
+
+void CStudioModelRenderer::DrawEyePosition()
+{
+	glDisable( GL_TEXTURE_2D );
+	glDisable( GL_CULL_FACE );
+	glDisable( GL_DEPTH_TEST );
+
+	glPointSize( 7 );
+	glColor3f( 1, 0, 1 );
+	glBegin( GL_POINTS );
+	glVertex3fv( glm::value_ptr( m_pStudioHdr->eyeposition ) );
+	glEnd();
+	glPointSize( 1 );
+}
+
+void CStudioModelRenderer::DrawHitBoxes()
+{
+	glDisable( GL_TEXTURE_2D );
+	glDisable( GL_CULL_FACE );
+	if( m_pRenderInfo->flTransparency < 1.0f )
+		glDisable( GL_DEPTH_TEST );
+	else
+		glEnable( GL_DEPTH_TEST );
+
+	glColor4f( 1, 0, 0, 0.5f );
+
+	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+	for( int i = 0; i < m_pStudioHdr->numhitboxes; i++ )
+	{
+		mstudiobbox_t *pbboxes = m_pStudioHdr->GetHitBoxes();
+		glm::vec3 v[ 8 ], v2[ 8 ];
+
+		glm::vec3 bbmin = pbboxes[ i ].bbmin;
+		glm::vec3 bbmax = pbboxes[ i ].bbmax;
+
+		v[ 0 ][ 0 ] = bbmin[ 0 ];
+		v[ 0 ][ 1 ] = bbmax[ 1 ];
+		v[ 0 ][ 2 ] = bbmin[ 2 ];
+
+		v[ 1 ][ 0 ] = bbmin[ 0 ];
+		v[ 1 ][ 1 ] = bbmin[ 1 ];
+		v[ 1 ][ 2 ] = bbmin[ 2 ];
+
+		v[ 2 ][ 0 ] = bbmax[ 0 ];
+		v[ 2 ][ 1 ] = bbmax[ 1 ];
+		v[ 2 ][ 2 ] = bbmin[ 2 ];
+
+		v[ 3 ][ 0 ] = bbmax[ 0 ];
+		v[ 3 ][ 1 ] = bbmin[ 1 ];
+		v[ 3 ][ 2 ] = bbmin[ 2 ];
+
+		v[ 4 ][ 0 ] = bbmax[ 0 ];
+		v[ 4 ][ 1 ] = bbmax[ 1 ];
+		v[ 4 ][ 2 ] = bbmax[ 2 ];
+
+		v[ 5 ][ 0 ] = bbmax[ 0 ];
+		v[ 5 ][ 1 ] = bbmin[ 1 ];
+		v[ 5 ][ 2 ] = bbmax[ 2 ];
+
+		v[ 6 ][ 0 ] = bbmin[ 0 ];
+		v[ 6 ][ 1 ] = bbmax[ 1 ];
+		v[ 6 ][ 2 ] = bbmax[ 2 ];
+
+		v[ 7 ][ 0 ] = bbmin[ 0 ];
+		v[ 7 ][ 1 ] = bbmin[ 1 ];
+		v[ 7 ][ 2 ] = bbmax[ 2 ];
+
+		VectorTransform( v[ 0 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 0 ] );
+		VectorTransform( v[ 1 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 1 ] );
+		VectorTransform( v[ 2 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 2 ] );
+		VectorTransform( v[ 3 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 3 ] );
+		VectorTransform( v[ 4 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 4 ] );
+		VectorTransform( v[ 5 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 5 ] );
+		VectorTransform( v[ 6 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 6 ] );
+		VectorTransform( v[ 7 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 7 ] );
+
+		graphics::DrawBox( v2 );
+	}
+}
+
 void CStudioModelRenderer::SetUpBones()
 {
-	int					i;
-
-	mstudiobone_t		*pbones;
-	mstudioseqdesc_t	*pseqdesc;
-	mstudioanim_t		*panim;
-
-	static glm::vec3		pos[ MAXSTUDIOBONES ];
-	static glm::vec4		q[ MAXSTUDIOBONES ];
-
-	static glm::vec3		pos2[ MAXSTUDIOBONES ];
-	static glm::vec4		q2[ MAXSTUDIOBONES ];
-	static glm::vec3		pos3[ MAXSTUDIOBONES ];
-	static glm::vec4		q3[ MAXSTUDIOBONES ];
-	static glm::vec3		pos4[ MAXSTUDIOBONES ];
-	static glm::vec4		q4[ MAXSTUDIOBONES ];
+	static glm::vec3 pos[ MAXSTUDIOBONES ];
+	static glm::vec4 q[ MAXSTUDIOBONES ];
+					 
+	static glm::vec3 pos2[ MAXSTUDIOBONES ];
+	static glm::vec4 q2[ MAXSTUDIOBONES ];
+	static glm::vec3 pos3[ MAXSTUDIOBONES ];
+	static glm::vec4 q3[ MAXSTUDIOBONES ];
+	static glm::vec3 pos4[ MAXSTUDIOBONES ];
+	static glm::vec4 q4[ MAXSTUDIOBONES ];
 
 	if( m_pRenderInfo->iSequence >= m_pStudioHdr->numseq )
 	{
 		m_pRenderInfo->iSequence = 0;
 	}
 
-	pseqdesc = m_pStudioHdr->GetSequence( m_pRenderInfo->iSequence );
+	mstudioseqdesc_t* const pseqdesc = m_pStudioHdr->GetSequence( m_pRenderInfo->iSequence );
 
-	panim = m_pRenderInfo->pModel->GetAnim( pseqdesc );
+	const mstudioanim_t* panim = m_pRenderInfo->pModel->GetAnim( pseqdesc );
+
 	CalcRotations( pos, q, pseqdesc, panim, m_pRenderInfo->flFrame );
 
 	if( pseqdesc->numblends > 1 )
 	{
-		float				s;
-
 		panim += m_pStudioHdr->numbones;
 		CalcRotations( pos2, q2, pseqdesc, panim, m_pRenderInfo->flFrame );
-		s = m_pRenderInfo->iBlender[ 0 ] / 255.0;
+		float s = m_pRenderInfo->iBlender[ 0 ] / 255.0;
 
 		SlerpBones( q, pos, q2, pos2, s );
 
@@ -332,11 +343,11 @@ void CStudioModelRenderer::SetUpBones()
 		}
 	}
 
-	pbones = m_pStudioHdr->GetBones();
+	const mstudiobone_t* const pbones = m_pStudioHdr->GetBones();
 
 	glm::mat3x4 bonematrix;
 
-	for( i = 0; i < m_pStudioHdr->numbones; i++ )
+	for( int i = 0; i < m_pStudioHdr->numbones; i++ )
 	{
 		QuaternionMatrix( q[ i ], bonematrix );
 
@@ -348,27 +359,24 @@ void CStudioModelRenderer::SetUpBones()
 		{
 			m_bonetransform[ i ] = bonematrix;
 		}
-		else {
+		else
+		{
 			R_ConcatTransforms( m_bonetransform[ pbones[ i ].parent ], bonematrix, m_bonetransform[ i ] );
 		}
 	}
 }
 
-void CStudioModelRenderer::CalcRotations( glm::vec3 *pos, glm::vec4 *q, mstudioseqdesc_t *pseqdesc, mstudioanim_t *panim, float f )
+void CStudioModelRenderer::CalcRotations( glm::vec3* pos, glm::vec4* q, const mstudioseqdesc_t* const pseqdesc, const mstudioanim_t* panim, const float f )
 {
-	int					i;
-	int					frame;
-	mstudiobone_t		*pbone;
-	float				s;
-
-	frame = ( int ) f;
-	s = ( f - frame );
+	const int frame = ( int ) f;
+	const float s = ( f - frame );
 
 	// add in programatic controllers
 	CalcBoneAdj();
 
-	pbone = m_pStudioHdr->GetBones();
-	for( i = 0; i < m_pStudioHdr->numbones; i++, pbone++, panim++ )
+	mstudiobone_t* pbone = m_pStudioHdr->GetBones();
+
+	for( int i = 0; i < m_pStudioHdr->numbones; i++, pbone++, panim++ )
 	{
 		CalcBoneQuaternion( frame, s, pbone, panim, q[ i ] );
 		CalcBonePosition( frame, s, pbone, panim, pos[ i ] );
@@ -384,13 +392,12 @@ void CStudioModelRenderer::CalcRotations( glm::vec3 *pos, glm::vec4 *q, mstudios
 
 void CStudioModelRenderer::CalcBoneAdj()
 {
-	int					i, j;
-	float				value;
-	mstudiobonecontroller_t *pbonecontroller;
+	int		i;
+	float	value;
 
-	pbonecontroller = m_pStudioHdr->GetBoneControllers();
+	const mstudiobonecontroller_t* const pbonecontroller = m_pStudioHdr->GetBoneControllers();
 
-	for( j = 0; j < m_pStudioHdr->numbonecontrollers; j++ )
+	for( int j = 0; j < m_pStudioHdr->numbonecontrollers; j++ )
 	{
 		i = pbonecontroller[ j ].index;
 		if( i <= 3 )
@@ -432,14 +439,13 @@ void CStudioModelRenderer::CalcBoneAdj()
 	}
 }
 
-void CStudioModelRenderer::CalcBoneQuaternion( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec4& q )
+void CStudioModelRenderer::CalcBoneQuaternion( const int frame, const float s, const mstudiobone_t* const pbone, const mstudioanim_t* const panim, glm::vec4& q )
 {
-	int					j, k;
-	glm::vec4			q1, q2;
+	int					k;
 	glm::vec3			angle1, angle2;
-	mstudioanimvalue_t	*panimvalue;
+	const mstudioanimvalue_t* panimvalue;
 
-	for( j = 0; j < 3; j++ )
+	for( int j = 0; j < 3; j++ )
 	{
 		if( panim->offset[ j + 3 ] == 0 )
 		{
@@ -447,7 +453,7 @@ void CStudioModelRenderer::CalcBoneQuaternion( int frame, float s, mstudiobone_t
 		}
 		else
 		{
-			panimvalue = ( mstudioanimvalue_t * ) ( ( byte * ) panim + panim->offset[ j + 3 ] );
+			panimvalue = ( const mstudioanimvalue_t* ) ( ( const byte* ) panim + panim->offset[ j + 3 ] );
 			k = frame;
 			while( panimvalue->num.total <= k )
 			{
@@ -496,6 +502,8 @@ void CStudioModelRenderer::CalcBoneQuaternion( int frame, float s, mstudiobone_t
 
 	if( !VectorCompare( angle1, angle2 ) )
 	{
+		glm::vec4 q1, q2;
+
 		AngleQuaternion( angle1, q1 );
 		AngleQuaternion( angle2, q2 );
 		QuaternionSlerp( q1, q2, s, q );
@@ -506,7 +514,7 @@ void CStudioModelRenderer::CalcBoneQuaternion( int frame, float s, mstudiobone_t
 	}
 }
 
-void CStudioModelRenderer::CalcBonePosition( int frame, float s, mstudiobone_t *pbone, mstudioanim_t *panim, glm::vec3& pos )
+void CStudioModelRenderer::CalcBonePosition( const int frame, const float s, const mstudiobone_t* const pbone, const mstudioanim_t* const panim, glm::vec3& pos )
 {
 	int					j, k;
 	mstudioanimvalue_t	*panimvalue;
@@ -560,16 +568,14 @@ void CStudioModelRenderer::CalcBonePosition( int frame, float s, mstudiobone_t *
 
 void CStudioModelRenderer::SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s )
 {
-	int			i;
-	glm::vec4	q3;
-	float		s1;
+	glm::vec4 q3;
 
 	if( s < 0 ) s = 0;
 	else if( s > 1.0 ) s = 1.0;
 
-	s1 = 1.0 - s;
+	const float s1 = 1.0 - s;
 
-	for( i = 0; i < m_pStudioHdr->numbones; i++ )
+	for( int i = 0; i < m_pStudioHdr->numbones; i++ )
 	{
 		QuaternionSlerp( q1[ i ], q2[ i ], s, q3 );
 		q1[ i ][ 0 ] = q3[ 0 ];

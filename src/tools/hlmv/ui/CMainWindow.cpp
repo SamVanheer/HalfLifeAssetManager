@@ -208,7 +208,7 @@ bool CMainWindow::SaveModel( const wxString& szFilename )
 
 	auto pModel = m_pHLMV->GetState()->GetEntity()->GetModel();
 
-	const bool bSuccess = studiomodel::SaveStudioModel( szFilename.c_str(), pModel );
+	const bool bSuccess = studiomdl::SaveStudioModel( szFilename.c_str(), pModel );
 
 	if( !bSuccess )
 	{
