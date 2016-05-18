@@ -5,7 +5,6 @@
 #include "shared/Logging.h"
 
 #include "cvar/CVar.h"
-#include "cvar/CCVarSystem.h"
 #include "cvar/CVarUtils.h"
 
 #include "utility/Color.h"
@@ -109,7 +108,7 @@ bool LoadArchiveCVars( const kv::Block& cvars )
 
 		auto kv = static_cast<kv::KV*>( child );
 
-		cvar::cvars().SetCVarString( kv->GetKey().CStr(), kv->GetValue().CStr() );
+		g_pCVar->SetCVarString( kv->GetKey().CStr(), kv->GetValue().CStr() );
 	}
 
 	return true;
@@ -129,7 +128,7 @@ bool SaveArchiveCVars( kv::Writer& writer, const char* const pszBlockName )
 {
 	writer.BeginBlock( pszBlockName );
 
-	cvar::cvars().ArchiveCVars( &SaveArchiveCVarsCallback, &writer );
+	g_pCVar->ArchiveCVars( &SaveArchiveCVarsCallback, &writer );
 
 	writer.EndBlock();
 

@@ -18,107 +18,34 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\cvar\CBaseConCommand.h" />
-    <ClInclude Include="..\src\cvar\CConCommand.h" />
-    <ClInclude Include="..\src\cvar\CCVar.h" />
-    <ClInclude Include="..\src\cvar\ConVarConstants.h" />
-    <ClInclude Include="..\src\cvar\CVar.h" />
-    <ClInclude Include="..\src\cvar\CVarUtils.h" />
-    <ClInclude Include="..\src\cvar\ICVarSystem.h" />
-    <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModel.h" />
-    <ClInclude Include="..\src\engine\shared\studiomodel\IStudioModelRenderer.h" />
-    <ClInclude Include="..\src\engine\shared\studiomodel\studio.h" />
-    <ClInclude Include="..\src\engine\shared\studiomodel\StudioModelConstants.h" />
-    <ClInclude Include="..\src\html\CHTMLBody.h" />
-    <ClInclude Include="..\src\html\CHTMLComposite.h" />
-    <ClInclude Include="..\src\html\CHTMLElement.h" />
-    <ClInclude Include="..\src\html\CHTMLHeader.h" />
-    <ClInclude Include="..\src\html\CHTMLPage.h" />
-    <ClInclude Include="..\src\html\IHTMLObject.h" />
-    <ClInclude Include="..\src\lib\ILibSystem.h" />
-    <ClInclude Include="..\src\stdlib\graphics\BMPFile.h" />
-    <ClInclude Include="..\src\stdlib\graphics\CCamera.h" />
-    <ClInclude Include="..\src\stdlib\graphics\GLRenderTarget.h" />
-    <ClInclude Include="..\src\stdlib\graphics\GraphicsUtils.h" />
-    <ClInclude Include="..\src\stdlib\graphics\OpenGL.h" />
-    <ClInclude Include="..\src\stdlib\graphics\Palette.h" />
-    <ClInclude Include="..\src\stdlib\settings\CBaseSettings.h" />
-    <ClInclude Include="..\src\stdlib\settings\CGameConfig.h" />
-    <ClInclude Include="..\src\stdlib\settings\CGameConfigManager.h" />
-    <ClInclude Include="..\src\stdlib\settings\CRecentFiles.h" />
-    <ClInclude Include="..\src\stdlib\settings\GameConfigIO.h" />
-    <ClInclude Include="..\src\stdlib\utility\BoundingBox.h" />
-    <ClInclude Include="..\src\stdlib\utility\ByteSwap.h" />
-    <ClInclude Include="..\src\stdlib\utility\CCommand.h" />
-    <ClInclude Include="..\src\stdlib\utility\CEscapeSequences.h" />
-    <ClInclude Include="..\src\stdlib\utility\CMemory.h" />
-    <ClInclude Include="..\src\stdlib\utility\Color.h" />
-    <ClInclude Include="..\src\stdlib\utility\CString.h" />
-    <ClInclude Include="..\src\stdlib\utility\IOUtils.h" />
-    <ClInclude Include="..\src\stdlib\utility\mathlib.h" />
-    <ClInclude Include="..\src\stdlib\utility\StringUtils.h" />
-    <ClInclude Include="..\src\stdlib\utility\Tokenization.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\cvar\CBaseConCommand.cpp" />
-    <ClCompile Include="..\src\cvar\CConCommand.cpp" />
-    <ClCompile Include="..\src\cvar\CCVar.cpp" />
-    <ClCompile Include="..\src\cvar\CVar.cpp" />
-    <ClCompile Include="..\src\cvar\CVarUtils.cpp" />
-    <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModel.cpp" />
-    <ClCompile Include="..\src\html\CHTMLBody.cpp" />
-    <ClCompile Include="..\src\html\CHTMLComposite.cpp" />
-    <ClCompile Include="..\src\html\CHTMLElement.cpp" />
-    <ClCompile Include="..\src\html\CHTMLHeader.cpp" />
-    <ClCompile Include="..\src\html\CHTMLPage.cpp" />
-    <ClCompile Include="..\src\stdlib\graphics\BMPFile.cpp" />
-    <ClCompile Include="..\src\stdlib\graphics\CCamera.cpp" />
-    <ClCompile Include="..\src\stdlib\graphics\GLRenderTarget.cpp" />
-    <ClCompile Include="..\src\stdlib\graphics\GraphicsUtils.cpp" />
-    <ClCompile Include="..\src\stdlib\graphics\OpenGL.cpp" />
-    <ClCompile Include="..\src\stdlib\settings\CBaseSettings.cpp" />
-    <ClCompile Include="..\src\stdlib\settings\CGameConfig.cpp" />
-    <ClCompile Include="..\src\stdlib\settings\CGameConfigManager.cpp" />
-    <ClCompile Include="..\src\stdlib\settings\CRecentFiles.cpp" />
-    <ClCompile Include="..\src\stdlib\settings\GameConfigIO.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\ByteSwap.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\CCommand.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\CEscapeSequences.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\Color.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\CString.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\IOUtils.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\mathlib.cpp" />
-    <ClCompile Include="..\src\stdlib\utility\Tokenization.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8C0DA16C-64EE-4114-B0C8-FD90E3F7D358}</ProjectGuid>
+    <ProjectGuid>{3B34B13A-9E7D-4F13-B25C-E63489F6DC3D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>LibHLStdLib</RootNamespace>
+    <RootNamespace>LibRenderer</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -132,36 +59,46 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="Shared.props" />
-    <Import Project="Lib_Shared.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="Shared.props" />
-    <Import Project="Lib_Shared.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="Shared.props" />
-    <Import Project="Lib_Shared.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="Shared.props" />
-    <Import Project="Lib_Shared.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBRENDERER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>LibHLCore.lib;LibHLStdLib.lib;opengl32.lib;glu32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\bin;$(SolutionDir)..\external\GLEW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -170,11 +107,12 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;LIBRENDERER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -185,13 +123,16 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBRENDERER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>LibHLCore.lib;LibHLStdLib.lib;opengl32.lib;glu32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\lib;$(SolutionDir)..\bin;$(SolutionDir)..\external\GLEW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -202,15 +143,29 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;LIBRENDERER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\engine\renderer\CRendererLibrary.cpp" />
+    <ClCompile Include="..\src\engine\studiomodel\CStudioModelRenderer.cpp" />
+    <ClCompile Include="..\src\engine\studiomodel\StudioSorting.cpp" />
+    <ClCompile Include="..\src\lib\LibInterface.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\engine\renderer\CRendererLibrary.h" />
+    <ClInclude Include="..\src\engine\shared\renderer\IRendererLibrary.h" />
+    <ClInclude Include="..\src\engine\studiomodel\CStudioModelRenderer.h" />
+    <ClInclude Include="..\src\engine\studiomodel\StudioSorting.h" />
+    <ClInclude Include="..\src\lib\LibInterface.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

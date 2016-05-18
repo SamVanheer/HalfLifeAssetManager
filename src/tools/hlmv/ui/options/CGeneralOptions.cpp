@@ -10,7 +10,6 @@
 #include "../../settings/CHLMVSettings.h"
 
 #include "cvar/CVar.h"
-#include "cvar/CCVarSystem.h"
 #include "cvar/CVarUtils.h"
 
 #include "CGeneralOptions.h"
@@ -101,12 +100,12 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 
 	Initialize();
 
-	cvar::cvars().InstallGlobalCVarHandler( this );
+	g_pCVar->InstallGlobalCVarHandler( this );
 }
 
 CGeneralOptions::~CGeneralOptions()
 {
-	cvar::cvars().RemoveGlobalCVarHandler( this );
+	g_pCVar->RemoveGlobalCVarHandler( this );
 }
 
 void CGeneralOptions::Save()

@@ -16,6 +16,8 @@
 class wxGLAttributes;
 class wxGLContextAttrs;
 
+class ILibSystem;
+
 namespace filesystem
 {
 class IFileSystem;
@@ -214,7 +216,10 @@ private:
 
 	wxString m_szLogFileName;
 
+	CLibrary m_CVarSystemLib;
 	CLibrary m_FileSystemLib;
+	CLibrary m_RendererLib;
+	ILibSystem* m_pRendererLib = nullptr;
 	CLibrary m_SoundSystemLib;
 
 	filesystem::IFileSystem* m_pFileSystem = nullptr;

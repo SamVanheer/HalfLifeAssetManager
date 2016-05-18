@@ -3,9 +3,12 @@
 
 #include "shared/studiomodel/CStudioModel.h"
 
-#include "shared/studiomodel/CStudioModelRenderer.h"
+#include "shared/studiomodel/IStudioModelRenderer.h"
 
 #include "CStudioModelEntity.h"
+
+//TODO: remove
+extern studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer;
 
 void CStudioModelEntity::OnDestroy()
 {
@@ -44,7 +47,33 @@ void CStudioModelEntity::Draw( entity::DrawFlags_t flags )
 		drawFlags |= studiomodel::DRAWF_WIREFRAME_ONLY;
 	}
 
-	studiomodel::renderer().DrawModel( this, drawFlags );
+	studiomdl::CModelRenderInfo renderInfo;
+
+	renderInfo.vecOrigin = GetOrigin();
+	renderInfo.vecAngles = GetAngles();
+	renderInfo.vecScale = GetScale();
+
+	renderInfo.pModel = GetModel();
+
+	renderInfo.flTransparency = GetTransparency();
+	renderInfo.iSequence = GetSequence();
+	renderInfo.flFrame = GetFrame();
+	renderInfo.iBodygroup = GetBodygroup();
+	renderInfo.iSkin = GetSkin();
+
+	for( int iIndex = 0; iIndex < 2; ++iIndex )
+	{
+		renderInfo.iBlender[ iIndex ] = GetBlendingByIndex( iIndex );
+	}
+
+	for( int iIndex = 0; iIndex < 4; ++iIndex )
+	{
+		renderInfo.iController[ iIndex ] = GetControllerByIndex( iIndex );
+	}
+
+	renderInfo.iMouth = GetMouth();
+
+	g_pStudioMdlRenderer->DrawModel( &renderInfo, drawFlags );
 }
 
 float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )

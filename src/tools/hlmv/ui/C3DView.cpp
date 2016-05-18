@@ -10,16 +10,20 @@
 #include "MouseOpFlag.h"
 #include "controlpanels/CBaseControlPanel.h"
 
+#include "graphics/GraphicsUtils.h"
 #include "graphics/GraphicsHelpers.h"
 #include "graphics/GLRenderTarget.h"
 
-#include "shared/studiomodel/CStudioModelRenderer.h"
+#include "shared/studiomodel/IStudioModelRenderer.h"
 
 #include "game/entity/CStudioModelEntity.h"
 
 #include "ui/wx/CwxOpenGL.h"
 
 #include "C3DView.h"
+
+//TODO: remove
+extern studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer;
 
 namespace hlmv
 {
@@ -158,7 +162,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 			{
 				if( flags & MOUSEOPF_LIGHTVECTOR )
 				{
-					glm::vec3 vecLightDir = studiomodel::renderer().GetLightVector();
+					glm::vec3 vecLightDir = g_pStudioMdlRenderer->GetLightVector();
 
 					const float DELTA = 0.05f;
 
@@ -186,7 +190,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 					vecLightDir.x = clamp( vecLightDir.x, -1.0f, 0.0f );
 					vecLightDir.y = clamp( vecLightDir.y, -1.0f, 1.0f );
 
-					studiomodel::renderer().SetLightVector( vecLightDir );
+					g_pStudioMdlRenderer->SetLightVector( vecLightDir );
 				}
 			}
 			else
@@ -249,10 +253,10 @@ void C3DView::DrawModel()
 
 	if( m_pHLMV->GetState()->showBackground && m_BackgroundTexture != GL_INVALID_TEXTURE_ID && !m_pHLMV->GetState()->showTexture )
 	{
-		graphics::helpers::DrawBackground( m_BackgroundTexture );
+		graphics::DrawBackground( m_BackgroundTexture );
 	}
 
-	graphics::helpers::SetProjection( m_pHLMV->GetState()->GetCurrentFOV(), size.GetWidth(), size.GetHeight() );
+	graphics::SetProjection( m_pHLMV->GetState()->GetCurrentFOV(), size.GetWidth(), size.GetHeight() );
 
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
@@ -260,16 +264,16 @@ void C3DView::DrawModel()
 
 	ApplyCameraToScene();
 
-	studiomodel::renderer().SetViewerOrigin( m_pHLMV->GetState()->GetCurrentCamera()->GetOrigin() );
+	g_pStudioMdlRenderer->SetViewerOrigin( m_pHLMV->GetState()->GetCurrentCamera()->GetOrigin() );
 
 	//Originally this was calculated as:
 	//vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = vecOrigin[ 2 ];
 	//But that vector was incorrect. It mostly affects chrome because of its reflective nature.
 	const glm::vec3 vecViewerRight = AnglesToVector( m_pHLMV->GetState()->GetCurrentCamera()->GetViewDirection() );
 
-	studiomodel::renderer().SetViewerRight( vecViewerRight );
+	g_pStudioMdlRenderer->SetViewerRight( vecViewerRight );
 
-	const unsigned int uiOldPolys = studiomodel::renderer().GetDrawnPolygonsCount();
+	const unsigned int uiOldPolys = g_pStudioMdlRenderer->GetDrawnPolygonsCount();
 
 	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
@@ -314,7 +318,7 @@ void C3DView::DrawModel()
 		graphics::helpers::DrawFloor( m_pHLMV->GetSettings()->GetFloorLength(), m_GroundTexture, m_pHLMV->GetSettings()->GetGroundColor(), m_pHLMV->GetState()->mirror );
 	}
 
-	m_pHLMV->GetState()->drawnPolys = studiomodel::renderer().GetDrawnPolygonsCount() - uiOldPolys;
+	m_pHLMV->GetState()->drawnPolys = g_pStudioMdlRenderer->GetDrawnPolygonsCount() - uiOldPolys;
 
 	glPopMatrix();
 }
@@ -411,7 +415,7 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 	pScratchTarget->Unbind();
 
 	//We have to flip the image vertically, since OpenGL reads it upside down.
-	graphics::helpers::FlipImageVertically( texture.width, texture.height, rgbData.get() );
+	graphics::FlipImageVertically( texture.width, texture.height, rgbData.get() );
 
 	wxImage image( texture.width, texture.height, rgbData.get(), true );
 
@@ -450,7 +454,7 @@ void C3DView::TakeScreenshot()
 	const wxString szFilename = dlg.GetPath();
 
 	//We have to flip the image vertically, since OpenGL reads it upside down.
-	graphics::helpers::FlipImageVertically( size.GetWidth(), size.GetHeight(), rgbData.get() );
+	graphics::FlipImageVertically( size.GetWidth(), size.GetHeight(), rgbData.get() );
 
 	wxImage image( size.GetWidth(), size.GetHeight(), rgbData.get(), true );
 

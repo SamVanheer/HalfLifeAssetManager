@@ -4,15 +4,15 @@
 
 #include "shared/Logging.h"
 
+#include "lib/LibInterface.h"
+
 #include "cvar/CCVar.h"
 #include "cvar/CVarUtils.h"
 
-#include "graphics/GraphicsHelpers.h"
+#include "graphics/GraphicsUtils.h"
 
 #include "shared/studiomodel/CStudioModel.h"
 #include "StudioSorting.h"
-
-#include "game/entity/CStudioModelEntity.h"
 
 #include "CStudioModelRenderer.h"
 
@@ -31,15 +31,7 @@ DEFINE_COLOR_CVAR( , r_wireframecolor, 255, 0, 0, "Wireframe overlay color", cva
 
 namespace studiomodel
 {
-namespace
-{
-static CStudioModelRenderer g_Renderer;
-}
-
-CStudioModelRenderer& renderer()
-{
-	return g_Renderer;
-}
+REGISTER_SINGLE_INTERFACE( ISTUDIOMODELRENDERER_NAME, CStudioModelRenderer );
 
 CStudioModelRenderer::CStudioModelRenderer()
 {
@@ -66,22 +58,20 @@ void CStudioModelRenderer::RunFrame()
 {
 }
 
-unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity, const DrawFlags_t flags )
+unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const pRenderInfo, const DrawFlags_t flags )
 {
-	m_pEntity = pEntity;
-
-	if( !pEntity )
+	if( !pRenderInfo )
 	{
-		Error( "CStudioModelRenderer::DrawModel: Called with null entity!\n" );
+		Error( "CStudioModelRenderer::DrawModel: Called with null render info!\n" );
 		return 0;
 	}
 
-	m_pCurrentModel = pEntity->GetModel();
+	m_pRenderInfo = pRenderInfo;
 
-	if( m_pCurrentModel )
+	if( pRenderInfo->pModel )
 	{
-		m_pStudioHdr = m_pCurrentModel->GetStudioHeader();
-		m_pTextureHdr = m_pCurrentModel->GetTextureHeader();
+		m_pStudioHdr = pRenderInfo->pModel->GetStudioHeader();
+		m_pTextureHdr = pRenderInfo->pModel->GetTextureHeader();
 	}
 	else
 	{
@@ -99,17 +89,13 @@ unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity,
 
 	glPushMatrix();
 
-	const glm::vec3& vecOrigin	= m_pEntity->GetOrigin();
-	const glm::vec3& vecAngles	= m_pEntity->GetAngles();
-	const glm::vec3& vecScale	= m_pEntity->GetScale();
+	glTranslatef( m_pRenderInfo->vecOrigin[ 0 ], m_pRenderInfo->vecOrigin[ 1 ], m_pRenderInfo->vecOrigin[ 2 ] );
 
-	glTranslatef( vecOrigin[ 0 ], vecOrigin[ 1 ], vecOrigin[ 2 ] );
+	glRotatef( m_pRenderInfo->vecAngles[ 1 ], 0, 0, 1 );
+	glRotatef( m_pRenderInfo->vecAngles[ 0 ], 0, 1, 0 );
+	glRotatef( m_pRenderInfo->vecAngles[ 2 ], 1, 0, 0 );
 
-	glRotatef( vecAngles[ 1 ], 0, 0, 1 );
-	glRotatef( vecAngles[ 0 ], 0, 1, 0 );
-	glRotatef( vecAngles[ 2 ], 1, 0, 0 );
-
-	glScalef( vecScale.x, vecScale.y, vecScale.z );
+	glScalef( m_pRenderInfo->vecScale.x, m_pRenderInfo->vecScale.y, m_pRenderInfo->vecScale.z );
 
 	SetUpBones();
 
@@ -120,7 +106,7 @@ unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity,
 	for( int i = 0; i < m_pStudioHdr->numbodyparts; i++ )
 	{
 		SetupModel( i );
-		if( m_pEntity->GetTransparency() > 0.0f )
+		if( m_pRenderInfo->flTransparency > 0.0f )
 			uiDrawnPolys += DrawPoints( ( flags & DRAWF_WIREFRAME_ONLY ) != 0 );
 	}
 
@@ -221,7 +207,7 @@ unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity,
 	{
 		glDisable( GL_TEXTURE_2D );
 		glDisable( GL_CULL_FACE );
-		if( m_pEntity->GetTransparency() < 1.0f )
+		if( m_pRenderInfo->flTransparency < 1.0f )
 			glDisable( GL_DEPTH_TEST );
 		else
 			glEnable( GL_DEPTH_TEST );
@@ -281,7 +267,7 @@ unsigned int CStudioModelRenderer::DrawModel( CStudioModelEntity* const pEntity,
 			VectorTransform( v[ 6 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 6 ] );
 			VectorTransform( v[ 7 ], m_bonetransform[ pbboxes[ i ].bone ], v2[ 7 ] );
 
-			graphics::helpers::DrawBox( v2 );
+			graphics::DrawBox( v2 );
 		}
 	}
 
@@ -310,38 +296,38 @@ void CStudioModelRenderer::SetUpBones()
 	static glm::vec3		pos4[ MAXSTUDIOBONES ];
 	static glm::vec4		q4[ MAXSTUDIOBONES ];
 
-	if( m_pEntity->GetSequence() >= m_pStudioHdr->numseq )
+	if( m_pRenderInfo->iSequence >= m_pStudioHdr->numseq )
 	{
-		m_pEntity->SetSequence( 0 );
+		m_pRenderInfo->iSequence = 0;
 	}
 
-	pseqdesc = m_pStudioHdr->GetSequence( m_pEntity->GetSequence() );
+	pseqdesc = m_pStudioHdr->GetSequence( m_pRenderInfo->iSequence );
 
-	panim = m_pCurrentModel->GetAnim( pseqdesc );
-	CalcRotations( pos, q, pseqdesc, panim, m_pEntity->GetFrame() );
+	panim = m_pRenderInfo->pModel->GetAnim( pseqdesc );
+	CalcRotations( pos, q, pseqdesc, panim, m_pRenderInfo->flFrame );
 
 	if( pseqdesc->numblends > 1 )
 	{
 		float				s;
 
 		panim += m_pStudioHdr->numbones;
-		CalcRotations( pos2, q2, pseqdesc, panim, m_pEntity->GetFrame() );
-		s = m_pEntity->GetBlendingByIndex( 0 ) / 255.0;
+		CalcRotations( pos2, q2, pseqdesc, panim, m_pRenderInfo->flFrame );
+		s = m_pRenderInfo->iBlender[ 0 ] / 255.0;
 
 		SlerpBones( q, pos, q2, pos2, s );
 
 		if( pseqdesc->numblends == 4 )
 		{
 			panim += m_pStudioHdr->numbones;
-			CalcRotations( pos3, q3, pseqdesc, panim, m_pEntity->GetFrame() );
+			CalcRotations( pos3, q3, pseqdesc, panim, m_pRenderInfo->flFrame );
 
 			panim += m_pStudioHdr->numbones;
-			CalcRotations( pos4, q4, pseqdesc, panim, m_pEntity->GetFrame() );
+			CalcRotations( pos4, q4, pseqdesc, panim, m_pRenderInfo->flFrame );
 
-			s = m_pEntity->GetBlendingByIndex( 0 ) / 255.0;
+			s = m_pRenderInfo->iBlender[ 0 ] / 255.0;
 			SlerpBones( q3, pos3, q4, pos4, s );
 
-			s = m_pEntity->GetBlendingByIndex( 1 ) / 255.0;
+			s = m_pRenderInfo->iBlender[ 1 ] / 255.0;
 			SlerpBones( q, pos, q3, pos3, s );
 		}
 	}
@@ -412,11 +398,11 @@ void CStudioModelRenderer::CalcBoneAdj()
 			// check for 360% wrapping
 			if( pbonecontroller[ j ].type & STUDIO_RLOOP )
 			{
-				value = m_pEntity->GetControllerByIndex( i ) * ( 360.0 / 256.0 ) + pbonecontroller[ j ].start;
+				value = m_pRenderInfo->iController[ i ] * ( 360.0 / 256.0 ) + pbonecontroller[ j ].start;
 			}
 			else
 			{
-				value = m_pEntity->GetControllerByIndex(  i ) / 255.0;
+				value = m_pRenderInfo->iController[ i ] / 255.0;
 				if( value < 0 ) value = 0;
 				if( value > 1.0 ) value = 1.0;
 				value = ( 1.0 - value ) * pbonecontroller[ j ].start + value * pbonecontroller[ j ].end;
@@ -425,7 +411,7 @@ void CStudioModelRenderer::CalcBoneAdj()
 		}
 		else
 		{
-			value = m_pEntity->GetMouth() / 64.0;
+			value = m_pRenderInfo->iMouth / 64.0;
 			if( value > 1.0 ) value = 1.0;
 			value = ( 1.0 - value ) * pbonecontroller[ j ].start + value * pbonecontroller[ j ].end;
 			// Con_DPrintf("%d %f\n", mouthopen, value );
@@ -641,7 +627,7 @@ void CStudioModelRenderer::SetupModel( int bodypart )
 		bodypart = 0;
 	}
 
-	m_pModel = m_pEntity->GetModelByBodyPart( bodypart );
+	m_pModel = m_pRenderInfo->pModel->GetModelByBodyPart( m_pRenderInfo->iBodygroup, bodypart );
 }
 
 unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
@@ -668,7 +654,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 
 	pskinref = m_pTextureHdr->GetSkins();
 
-	const int iSkinNum = m_pEntity->GetSkin();
+	const int iSkinNum = m_pRenderInfo->iSkin;
 
 	if( iSkinNum != 0 && iSkinNum < m_pTextureHdr->numskinfamilies )
 		pskinref += ( iSkinNum * m_pTextureHdr->numskinref );
@@ -714,7 +700,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 		glColor4f( r_wireframecolor_r.GetFloat() / 255.0f, 
 				   r_wireframecolor_g.GetFloat() / 255.0f, 
 				   r_wireframecolor_b.GetFloat() / 255.0f, 
-				   m_pEntity->GetTransparency() );
+				   m_pRenderInfo->flTransparency );
 
 	for( j = 0; j < m_pModel->nummesh; j++ )
 	{
@@ -740,7 +726,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 			glEnable( GL_BLEND );
 			glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 		}
-		else if( m_pEntity->GetTransparency() < 1.0f )
+		else if( m_pRenderInfo->flTransparency < 1.0f )
 		{
 			glEnable( GL_BLEND );
 			glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -756,7 +742,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 
 		if( !wireframeOnly )
 		{
-			glBindTexture( GL_TEXTURE_2D, m_pCurrentModel->GetTextureId( pskinref[ pmesh->skinref ] ) );
+			glBindTexture( GL_TEXTURE_2D, m_pRenderInfo->pModel->GetTextureId( pskinref[ pmesh->skinref ] ) );
 		}
 
 		while( i = *( ptricmds++ ) )
@@ -790,12 +776,12 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 
 					if( texture.flags & STUDIO_NF_ADDITIVE )
 					{
-						glColor4f( 1.0f, 1.0f, 1.0f, m_pEntity->GetTransparency() );
+						glColor4f( 1.0f, 1.0f, 1.0f, m_pRenderInfo->flTransparency );
 					}
 					else
 					{
 						const glm::vec3& lightVec = m_pvlightvalues[ ptricmds[ 1 ] ];
-						glColor4f( lightVec[ 0 ], lightVec[ 1 ], lightVec[ 2 ], m_pEntity->GetTransparency() );
+						glColor4f( lightVec[ 0 ], lightVec[ 1 ], lightVec[ 2 ], m_pRenderInfo->flTransparency );
 					}
 				}
 

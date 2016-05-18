@@ -12,9 +12,11 @@
 #include "CConCommand.h"
 #include "CCVar.h"
 
+#include "ICVarSystem.h"
+
 namespace cvar
 {
-class CCVarSystem final : public IConCommandHandler
+class CCVarSystem final : public ICVarSystem, public IConCommandHandler
 {
 private:
 	//The default hasher and equal comparator for const char* operate on the memory address, not the string itself.
@@ -34,93 +36,43 @@ public:
 	CCVarSystem();
 	~CCVarSystem();
 
-	/**
-	*	Returns whether the system has been initialized.
-	*/
-	bool IsInitialized() const { return m_bInitialized; }
+	bool IsInitialized() const override final { return m_bInitialized; }
 
-	/**
-	*	Initializes the system.
-	*	@return true on success, false otherwise.
-	*/
-	bool Initialize();
+	bool Initialize() override final;
 
-	/**
-	*	Shuts down the system.
-	*/
-	void Shutdown();
+	void Shutdown() override final;
 
-	/**
-	*	Processes commands.
-	*	Must be called every frame.
-	*/
-	void RunFrame();
+	void RunFrame() override final;
 
-	/**
-	*	Adds the given command to the system. The command must not already be managed by the system, and must have a unique name.
-	*	@param pCommand Command to add.
-	*	@return true on success, false otherwise.
-	*/
-	bool AddCommand( CBaseConCommand* const pCommand );
+	bool AddCommand( CBaseConCommand* const pCommand ) override final;
 
-	/**
-	*	Removes the given command from the system, if it is managed by it.
-	*/
-	void RemoveCommand( CBaseConCommand* const pCommand );
+	void RemoveCommand( CBaseConCommand* const pCommand ) override final;
 
-	/**
-	*	Removes a command by name.
-	*/
-	void RemoveCommand( const char* const pszName );
+	void RemoveCommand( const char* const pszName ) override final;
 
-	/**
-	*	Enqueues a command for execution.
-	*/
-	void Command( const char* const pszCommand );
+	void Command( const char* const pszCommand ) override final;
 
-	/**
-	*	Executes the current command buffer.
-	*/
-	void Execute();
+	void Execute() override final;
 
-	/**
-	*	Finds a command by name.
-	*/
-	CBaseConCommand* FindCommand( const char* const pszName );
+	CBaseConCommand* FindCommand( const char* const pszName ) override final;
 
 private:
 	CCVar* GetCVarForSet( const char* const pszCVar );
 
 public:
-	void SetCVarString( const char* const pszCVar, const char* const pszValue );
+	void SetCVarString( const char* const pszCVar, const char* const pszValue ) override final;
 
-	void SetCVarFloat( const char* const pszCVar, const float flValue );
+	void SetCVarFloat( const char* const pszCVar, const float flValue ) override final;
 
-	void CVarChanged( CCVar& cvar, const char* pszOldValue, float flOldValue );
+	void CVarChanged( CCVar& cvar, const char* pszOldValue, float flOldValue ) override final;
 
-	/**
-	*	Enumerates all CVars and calls pCallback for all CVars marked with the ARCHIVE flag.
-	*/
-	void ArchiveCVars( const CVarArchiveCallback pCallback, void* pObject = nullptr );
+	void ArchiveCVars( const CVarArchiveCallback pCallback, void* pObject = nullptr ) override final;
 
-	//TODO: move this to its own class.
-	/**
-	*	Returns whether the given handler is currently installed.
-	*/
-	bool HasGlobalCVarHandler( ICVarHandler* pHandler ) const;
+	bool HasGlobalCVarHandler( ICVarHandler* pHandler ) const override final;
 
-	/**
-	*	Installs a global cvar handler.
-	*	@param pHandler Handler to install.
-	*	@return true on success, false otherwise.
-	*/
-	bool InstallGlobalCVarHandler( ICVarHandler* pHandler );
+	bool InstallGlobalCVarHandler( ICVarHandler* pHandler ) override final;
 
-	/**
-	*	Removes a global cvar handler.
-	*	@param pHandler Handler to remove.
-	*/
-	void RemoveGlobalCVarHandler( ICVarHandler* pHandler );
+	void RemoveGlobalCVarHandler( ICVarHandler* pHandler ) override final;
 
 private:
 	void ProcessCommand( const util::CCommand& args );
@@ -147,9 +99,6 @@ private:
 	CCVarSystem( const CCVarSystem& ) = delete;
 	CCVarSystem& operator=( const CCVarSystem& ) = delete;
 };
-
-//TODO move to its own library
-CCVarSystem& cvars();
 }
 
 #endif //CVAR_CCVARSYSTEM_H

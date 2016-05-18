@@ -64,6 +64,12 @@
     <Filter Include="Header Files\lib">
       <UniqueIdentifier>{9de24d78-de3b-434f-8a8a-92f68a819673}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\cvar">
+      <UniqueIdentifier>{824bcb18-6dc8-4723-885b-5490313820dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cvar">
+      <UniqueIdentifier>{fd1902bd-35ff-40a9-8416-d686dceee91d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\stdlib\utility\CString.h">
@@ -126,13 +132,7 @@
     <ClInclude Include="..\src\engine\shared\studiomodel\studio.h">
       <Filter>Header Files\engine\shared\studiomodel</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModelRenderer.h">
-      <Filter>Header Files\engine\shared\studiomodel</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\engine\shared\studiomodel\StudioModelConstants.h">
-      <Filter>Header Files\engine\shared\studiomodel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\engine\shared\studiomodel\StudioSorting.h">
       <Filter>Header Files\engine\shared\studiomodel</Filter>
     </ClInclude>
     <ClInclude Include="..\src\html\CHTMLBody.h">
@@ -164,6 +164,33 @@
     </ClInclude>
     <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModel.h">
       <Filter>Header Files\engine\shared\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\studiomodel\IStudioModelRenderer.h">
+      <Filter>Header Files\engine\shared\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\CBaseConCommand.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\CConCommand.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\CCVar.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\CVar.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\CVarUtils.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\ICVarSystem.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cvar\ConVarConstants.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\graphics\GraphicsUtils.h">
+      <Filter>Header Files\stdlib\graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -215,12 +242,6 @@
     <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModel.cpp">
       <Filter>Source Files\engine\shared\studiomodel</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModelRenderer.cpp">
-      <Filter>Source Files\engine\shared\studiomodel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\engine\shared\studiomodel\StudioSorting.cpp">
-      <Filter>Source Files\engine\shared\studiomodel</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\html\CHTMLBody.cpp">
       <Filter>Source Files\stdlib\html</Filter>
     </ClCompile>
@@ -240,6 +261,24 @@
       <Filter>Source Files\stdlib\utility</Filter>
     </ClCompile>
     <ClCompile Include="..\src\stdlib\graphics\CCamera.cpp">
+      <Filter>Source Files\stdlib\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cvar\CBaseConCommand.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cvar\CConCommand.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cvar\CCVar.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cvar\CVarUtils.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cvar\CVar.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\graphics\GraphicsUtils.cpp">
       <Filter>Source Files\stdlib\graphics</Filter>
     </ClCompile>
   </ItemGroup>

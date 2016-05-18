@@ -19,45 +19,27 @@
     <Filter Include="Source Files\cvar">
       <UniqueIdentifier>{5e7c032e-0964-4b9d-b983-80e89db515fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\lib">
+      <UniqueIdentifier>{2e7fce19-59d3-4254-9568-b381db782cbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lib">
+      <UniqueIdentifier>{fc0e4c19-c0b4-4cc2-845d-e05a65afa038}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\cvar\CBaseConCommand.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CConCommand.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CCVar.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\cvar\CCVarSystem.h">
       <Filter>Header Files\cvar</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\cvar\ConVarConstants.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CVar.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CVarUtils.h">
-      <Filter>Header Files\cvar</Filter>
+    <ClInclude Include="..\src\lib\LibInterface.h">
+      <Filter>Header Files\lib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\cvar\CBaseConCommand.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cvar\CConCommand.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cvar\CCVar.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cvar\CCVarSystem.cpp">
       <Filter>Source Files\cvar</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cvar\CVarUtils.cpp">
-      <Filter>Source Files\cvar</Filter>
+    <ClCompile Include="..\src\lib\LibInterface.cpp">
+      <Filter>Source Files\lib</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

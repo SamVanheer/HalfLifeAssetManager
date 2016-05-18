@@ -7,7 +7,7 @@
 
 #include "utility/Color.h"
 
-#include "cvar/CCVarSystem.h"
+#include "cvar/CVar.h"
 
 #include "../CHLMV.h"
 #include "../../settings/CHLMVSettings.h"
@@ -185,12 +185,12 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pEventInfo->Show( false );
 
-	cvar::cvars().InstallGlobalCVarHandler( this );
+	g_pCVar->InstallGlobalCVarHandler( this );
 }
 
 CSequencesPanel::~CSequencesPanel()
 {
-	cvar::cvars().RemoveGlobalCVarHandler( this );
+	g_pCVar->RemoveGlobalCVarHandler( this );
 }
 
 void CSequencesPanel::Draw3D( const wxSize& size )
@@ -614,12 +614,12 @@ void CSequencesPanel::EventChanged( wxCommandEvent& event )
 
 void CSequencesPanel::PlaySoundChanged( wxCommandEvent& event )
 {
-	cvar::cvars().Command( wxString::Format( "s_ent_playsounds %d", m_pPlaySound->GetValue() ? 1 : 0 ).c_str() );
+	g_pCVar->Command( wxString::Format( "s_ent_playsounds %d", m_pPlaySound->GetValue() ? 1 : 0 ).c_str() );
 }
 
 void CSequencesPanel::PitchFramerateChanged( wxCommandEvent& event )
 {
-	cvar::cvars().SetCVarFloat( "s_ent_pitchframerate", m_pPitchFramerate->GetValue() ? 1 : 0 );
+	g_pCVar->SetCVarFloat( "s_ent_pitchframerate", m_pPitchFramerate->GetValue() ? 1 : 0 );
 }
 
 void CSequencesPanel::OnOriginChanged( wxSpinDoubleEvent& event )

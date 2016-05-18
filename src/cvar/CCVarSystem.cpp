@@ -4,9 +4,13 @@
 
 #include "shared/Logging.h"
 
+#include "lib/LibInterface.h"
+
 #include "CBaseConCommand.h"
 #include "CConCommand.h"
 #include "CCVar.h"
+
+#include "CVar.h"
 
 #include "CCVarSystem.h"
 
@@ -23,14 +27,13 @@ static CCVar g_ShowWait( "showwait", CCVarArgsBuilder().FloatValue( 0 ).HelpInfo
 static CConCommand g_Find( "find", &g_CVars, Flag::NONE, "Finds commands by searching by name and through help info" );
 }
 
-CCVarSystem& cvars()
-{
-	return g_CVars;
-}
+REGISTER_INTERFACE_GLOBAL( ICVARSYSTEM_NAME, CCVarSystem, &g_CVars );
 
 CCVarSystem::CCVarSystem()
 {
 	memset( m_szCommandBuffer, 0, sizeof( m_szCommandBuffer ) );
+
+	g_pCVar = this;
 }
 
 CCVarSystem::~CCVarSystem()
@@ -75,10 +78,84 @@ bool CCVarSystem::AddCommand( CBaseConCommand* const pCommand )
 		return false;
 	}
 
-	if( m_Commands.find( pCommand->GetName() ) != m_Commands.end() )
 	{
-		Warning( "Attempted to add duplicate command \"%s\"!\n", pCommand->GetName() );
-		return false;
+		auto it = m_Commands.find( pCommand->GetName() );
+
+		//Duplicate command; check if they're compatible or not.
+		if( it != m_Commands.end() )
+		{
+			auto pParent = it->second;
+
+			if( pParent->GetType() != pCommand->GetType() )
+			{
+				Warning( "Attempted to add duplicate command \"%s\" with different types!\n", pCommand->GetName() );
+				return false;
+			}
+
+			if( pParent == pCommand )
+			{
+				Warning( "Attempted to add command \"%s\" twice!\n", pCommand->GetName() );
+				return false;
+			}
+
+			switch( pCommand->GetType() )
+			{
+			case CommandType::COMMAND:
+				{
+					auto pConCommand = static_cast<CConCommand*>( pCommand );
+					auto pParentCommand = static_cast<CConCommand*>( pParent );
+
+					if( pConCommand->GetCallbackType() != pParentCommand->GetCallbackType() )
+					{
+						Warning( "ConCommand \"%s\" has child with different callback type!\n", pCommand->GetName() );
+						return false;
+					}
+
+					if( pConCommand->GetCallbackType() == CallbackType::FUNCTION ? 
+						( pConCommand->GetCallbackFn() != pParentCommand->GetCallbackFn() ) : 
+						( pConCommand->GetHandler() != pParentCommand->GetHandler() ) )
+					{
+						Warning( "ConCommand \"%s\" has child with different callback!\n", pCommand->GetName() );
+						return false;
+					}
+
+					break;
+				}
+
+			case CommandType::CVAR:
+				{
+					auto pConVar = static_cast<CCVar*>( pCommand );
+					auto pParentVar = static_cast<CCVar*>( pParent );
+
+					if( pConVar->GetCallbackType() != pParentVar->GetCallbackType() )
+					{
+						Warning( "ConVar \"%s\" has child with different callback type!\n", pCommand->GetName() );
+						return false;
+					}
+
+					if( pConVar->GetCallbackType() == CallbackType::FUNCTION ?
+						( pConVar->GetCallbackFn() != pParentVar->GetCallbackFn() ) :
+						( pConVar->GetHandler() != pParentVar->GetHandler() ) )
+					{
+						Warning( "ConVar \"%s\" has child with different callback!\n", pCommand->GetName() );
+						return false;
+					}
+
+					//Bind child to parent so everything uses the same one.
+					pConVar->m_pParent = pParentVar;
+
+					break;
+				}
+
+			default:
+				{
+					Warning( "Unknown command type %u for command \"%s\"!\n", pCommand->GetType(), pCommand->GetName() );
+					return false;
+				}
+			}
+
+			return true;
+		}
 	}
 
 	auto it = m_Commands.insert( std::make_pair( pCommand->GetName(), pCommand ) );

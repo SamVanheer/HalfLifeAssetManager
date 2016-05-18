@@ -6,7 +6,7 @@
 #include "../settings/CSpriteViewerSettings.h"
 #include "../CSpriteViewerState.h"
 
-#include "graphics/GraphicsHelpers.h"
+#include "graphics/GraphicsUtils.h"
 
 #include "game/entity/CSpriteEntity.h"
 #include "engine/shared/sprite/CSpriteRenderer.h"
@@ -98,10 +98,10 @@ void C3DView::DrawSprite()
 
 	if( m_pSpriteViewer->GetState()->showBackground && m_BackgroundTexture != GL_INVALID_TEXTURE_ID )
 	{
-		graphics::helpers::DrawBackground( m_BackgroundTexture );
+		graphics::DrawBackground( m_BackgroundTexture );
 	}
 
-	graphics::helpers::SetProjection( 65.0f, size.GetWidth(), size.GetHeight() );
+	graphics::SetProjection( 65.0f, size.GetWidth(), size.GetHeight() );
 
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
@@ -170,7 +170,7 @@ void C3DView::TakeScreenshot()
 	const wxString szFilename = dlg.GetPath();
 
 	//We have to flip the image vertically, since OpenGL reads it upside down.
-	graphics::helpers::FlipImageVertically( size.GetWidth(), size.GetHeight(), rgbData.get() );
+	graphics::FlipImageVertically( size.GetWidth(), size.GetHeight(), rgbData.get() );
 
 	wxImage image( size.GetWidth(), size.GetHeight(), rgbData.get(), true );
 

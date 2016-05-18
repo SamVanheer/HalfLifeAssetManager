@@ -24,7 +24,7 @@ public:
 	*	@param fileSystemFactory Factory function used to create filesystems.
 	*	@return true on success, false otherwise.
 	*/
-	virtual bool Connect( CreateInterfaceFn appFactory, CreateInterfaceFn fileSystemFactory ) = 0;
+	virtual bool Connect( const CreateInterfaceFn* const pFactories, const size_t uiNumFactories ) = 0;
 
 	/**
 	*	Disconnects the library.

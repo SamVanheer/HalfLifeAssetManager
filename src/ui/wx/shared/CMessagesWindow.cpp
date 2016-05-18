@@ -2,7 +2,7 @@
 
 #include "ui/wx/utility/IWindowCloseListener.h"
 
-#include "cvar/CCVarSystem.h"
+#include "cvar/CVar.h"
 
 #include "CMessagesWindow.h"
 
@@ -170,7 +170,7 @@ void CMessagesWindow::CommandEntered( wxCommandEvent& event )
 
 	if( !szCommand.IsEmpty() )
 	{
-		cvar::cvars().Command( szCommand.c_str() );
+		g_pCVar->Command( szCommand.c_str() );
 	}
 }
 

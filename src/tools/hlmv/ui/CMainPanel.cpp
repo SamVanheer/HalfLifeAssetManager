@@ -15,7 +15,7 @@
 #include "controlpanels/CFullscreenPanel.h"
 
 #include "shared/studiomodel/CStudioModel.h"
-#include "shared/studiomodel/CStudioModelRenderer.h"
+#include "shared/studiomodel/IStudioModelRenderer.h"
 #include "game/entity/CStudioModelEntity.h"
 #include "game/entity/CBaseEntityList.h"
 
@@ -23,6 +23,9 @@
 #include "../CHLMVState.h"
 
 #include "CMainPanel.h"
+
+//TODO: remove
+extern studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer;
 
 namespace hlmv
 {
@@ -167,11 +170,11 @@ void CMainPanel::RunFrame()
 		m_uiCurrentFPS = 0;
 	}
 
-	const glm::vec3 vecLight = studiomodel::renderer().GetLightVector();
+	const glm::vec3 vecLight = g_pStudioMdlRenderer->GetLightVector();
 
-	if( m_vecPrevLightVec != studiomodel::renderer().GetLightVector() )
+	if( m_vecPrevLightVec != vecLight )
 	{
-		m_vecPrevLightVec = studiomodel::renderer().GetLightVector();
+		m_vecPrevLightVec = vecLight;
 
 		m_pLightVector->SetLabelText( wxString::Format( "Light Vector: %.2f %.2f %.2f", m_vecPrevLightVec[ 0 ], m_vecPrevLightVec[ 1 ], m_vecPrevLightVec[ 2 ] ) );
 	}
@@ -264,7 +267,7 @@ void CMainPanel::InitializeUI()
 {
 	ForEachPanel( &CBaseControlPanel::InitializeUI );
 
-	studiomodel::renderer().SetLightVector( DEFAULT_LIGHT_VECTOR );
+	g_pStudioMdlRenderer->SetLightVector( DEFAULT_LIGHT_VECTOR );
 }
 
 void CMainPanel::PageChanged( wxBookCtrlEvent& event )
@@ -324,6 +327,6 @@ void CMainPanel::ViewOriginChanged( wxCommandEvent& event )
 
 void CMainPanel::ResetLightVector( wxCommandEvent& event )
 {
-	studiomodel::renderer().SetLightVector( DEFAULT_LIGHT_VECTOR );
+	g_pStudioMdlRenderer->SetLightVector( DEFAULT_LIGHT_VECTOR );
 }
 }

@@ -45,7 +45,7 @@ public:
 	CSoundSystem();
 	~CSoundSystem();
 
-	bool Connect( CreateInterfaceFn appFactory, CreateInterfaceFn fileSystemFactory ) override final;
+	bool Connect( const CreateInterfaceFn* const pFactories, const size_t uiNumFactories ) override final;
 
 	void Disconnect() override final;
 

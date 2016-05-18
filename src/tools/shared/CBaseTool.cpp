@@ -1,7 +1,7 @@
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
 
-#include "cvar/CCVarSystem.h"
+#include "cvar/CVar.h"
 #include "filesystem/IFileSystem.h"
 #include "soundsystem/ISoundSystem.h"
 
@@ -17,10 +17,13 @@
 
 #include "game/entity/CEntityManager.h"
 
-#include "shared/studiomodel/CStudioModelRenderer.h"
+#include "shared/renderer/IRendererLibrary.h"
+
+#include "shared/studiomodel/IStudioModelRenderer.h"
 
 #include "CBaseTool.h"
 
+studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer = nullptr;
 soundsystem::ISoundSystem* g_pSoundSystem = nullptr;
 
 namespace tools
@@ -86,12 +89,30 @@ bool CBaseTool::Initialize()
 
 	UTIL_InitRandom();
 
+	if( !m_CVarSystemLib.Load( "LibCVar.dll" ) )
+	{
+		wxMessageBox( "Failed to load cvar system library", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	const CreateInterfaceFn cvarSystemFactory = static_cast<CreateInterfaceFn>( m_CVarSystemLib.GetFunctionAddress( CREATEINTERFACE_NAME ) );
+
+	if( !cvarSystemFactory )
+	{
+		wxMessageBox( "Failed to get cvar system factory", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	g_pCVar = static_cast<cvar::ICVarSystem*>( cvarSystemFactory( ICVARSYSTEM_NAME, nullptr ) );
+
 	//TODO: these message boxes can be put into an UTIL_FatalError function or something
-	if( !cvar::cvars().Initialize() )
+	if( !g_pCVar || !g_pCVar->Initialize() )
 	{
 		wxMessageBox( "Failed to initialize cvar system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
 	}
+
+	cvar::ConnectCVars();
 
 	//This can probably be automated.
 	if( !m_FileSystemLib.Load( "LibFileSystem.dll" ) )
@@ -110,11 +131,18 @@ bool CBaseTool::Initialize()
 
 	m_pFileSystem = static_cast<filesystem::IFileSystem*>( fileSystemFactory( IFILESYSTEM_NAME, nullptr ) );
 
-	if( !m_pFileSystem->Initialize() )
+	if( !m_pFileSystem || !m_pFileSystem->Initialize() )
 	{
 		wxMessageBox( "Failed to initialize file system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
 	}
+
+	const CreateInterfaceFn factories[] =
+	{
+		CreateInterface,
+		cvarSystemFactory,
+		fileSystemFactory
+	};
 
 	//Set up OpenGL parameters.
 	CwxOpenGL::CreateInstance();
@@ -133,7 +161,37 @@ bool CBaseTool::Initialize()
 		return false;
 	}
 
-	if( !studiomodel::renderer().Initialize() )
+	if( !m_RendererLib.Load( "LibRenderer.dll" ) )
+	{
+		wxMessageBox( "Failed to load renderer library", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	const CreateInterfaceFn rendererFactory = static_cast<CreateInterfaceFn>( m_RendererLib.GetFunctionAddress( CREATEINTERFACE_NAME ) );
+
+	if( !rendererFactory )
+	{
+		wxMessageBox( "Failed to get renderer factory", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	m_pRendererLib = static_cast<ILibSystem*>( rendererFactory( IRENDERERLIBRARY_NAME, nullptr ) );
+
+	if( !m_pRendererLib || !m_pRendererLib->Connect( factories, ARRAYSIZE( factories ) ) )
+	{
+		wxMessageBox( "Failed to connect renderer", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	g_pStudioMdlRenderer = static_cast<studiomdl::IStudioModelRenderer*>( rendererFactory( ISTUDIOMODELRENDERER_NAME, nullptr ) );
+
+	if( !g_pStudioMdlRenderer )
+	{
+		wxMessageBox( "Failed to create studiomodel renderer", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	if( !g_pStudioMdlRenderer->Initialize() )
 	{
 		wxMessageBox( "Failed to initialize StudioModel renderer", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
@@ -157,7 +215,7 @@ bool CBaseTool::Initialize()
 
 	g_pSoundSystem = m_pSoundSystem = static_cast<soundsystem::ISoundSystem*>( soundSystemFactory( ISOUNDSYSTEM_NAME, nullptr ) );
 
-	if( !m_pSoundSystem->Connect( &CreateInterface, fileSystemFactory ) )
+	if( !m_pSoundSystem || !m_pSoundSystem->Connect( factories, ARRAYSIZE( factories ) ) )
 	{
 		wxMessageBox( "Failed to connect sound system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
@@ -252,10 +310,22 @@ void CBaseTool::Shutdown()
 
 	m_SoundSystemLib.Free();
 
+	if( m_pRendererLib )
+	{
+		if( g_pStudioMdlRenderer )
+		{
+			g_pStudioMdlRenderer->Shutdown();
+			g_pStudioMdlRenderer = nullptr;
+		}
+
+		m_pRendererLib->Disconnect();
+		m_pRendererLib = nullptr;
+	}
+
+	m_RendererLib.Free();
+
 	if( CwxOpenGL::InstanceExists() )
 	{
-		studiomodel::renderer().Shutdown();
-
 		wxOpenGL().Shutdown();
 
 		CwxOpenGL::DestroyInstance();
@@ -269,7 +339,13 @@ void CBaseTool::Shutdown()
 
 	m_FileSystemLib.Free();
 
-	cvar::cvars().Shutdown();
+	if( g_pCVar )
+	{
+		g_pCVar->Shutdown();
+		g_pCVar = nullptr;
+	}
+
+	m_CVarSystemLib.Free();
 
 	//Don't close the log file just yet. It'll be closed when the program is unloaded, so anything that happens between now and then should be logged.
 }
@@ -298,9 +374,9 @@ void CBaseTool::ToolRunFrame()
 
 	EntityManager().RunFrame();
 
-	cvar::cvars().RunFrame();
+	g_pCVar->RunFrame();
 
-	studiomodel::renderer().RunFrame();
+	g_pStudioMdlRenderer->RunFrame();
 
 	m_pSoundSystem->RunFrame();
 

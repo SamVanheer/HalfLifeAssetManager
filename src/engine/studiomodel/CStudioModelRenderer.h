@@ -11,18 +11,13 @@
 
 #include "shared/studiomodel/studio.h"
 
-#include "StudioModelConstants.h"
-
-class CStudioModelEntity;
+#include "shared/studiomodel/IStudioModelRenderer.h"
 
 namespace studiomodel
 {
 class CStudioModel;
 
-/**
-*	Used to render studio models. Only one instance of this class should be used, and should be kept around, in order to achieve reasonably performant and consistent rendering.
-*/
-class CStudioModelRenderer final
+class CStudioModelRenderer final : public studiomdl::IStudioModelRenderer
 {
 public:
 	/**
@@ -35,56 +30,37 @@ public:
 	*/
 	~CStudioModelRenderer();
 
-	/**
-	*	Initializes the renderer. This sets up the renderer's state for a single "map".
-	*	@return true on success, false otherwise.
-	*/
-	bool Initialize();
+	bool Initialize() override final;
 
-	/**
-	*	Shuts down the renderer. This clears all state.
-	*/
-	void Shutdown();
+	void Shutdown() override final;
 
-	/**
-	*	Should be called once per game frame.
-	*/
-	void RunFrame();
+	void RunFrame() override final;
 
-	/**
-	*	Gets the number of models that have been drawn during this map.
-	*/
-	unsigned int GetModelsDrawnCount() const { return m_uiModelsDrawnCount; }
+	unsigned int GetModelsDrawnCount() const override final { return m_uiModelsDrawnCount; }
 
-	/**
-	*	Gets the number of polygons drawn since the last call to Prepare.
-	*/
-	unsigned int GetDrawnPolygonsCount() const { return m_uiDrawnPolygonsCount; }
+	unsigned int GetDrawnPolygonsCount() const override final { return m_uiDrawnPolygonsCount; }
 
-	float GetLambert() const { return m_flLambert; }
+	float GetLambert() const override final { return m_flLambert; }
 
-	const glm::vec3& GetViewerOrigin() const { return m_vecViewerOrigin; }
+	const glm::vec3& GetViewerOrigin() const override final { return m_vecViewerOrigin; }
 
-	void SetViewerOrigin( const glm::vec3& vecViewerOrigin )
+	void SetViewerOrigin( const glm::vec3& vecViewerOrigin ) override final
 	{
 		m_vecViewerOrigin = vecViewerOrigin;
 	}
 
-	const glm::vec3& GetViewerRight() const { return m_vecViewerRight; }
+	const glm::vec3& GetViewerRight() const override final { return m_vecViewerRight; }
 
-	void SetViewerRight( const glm::vec3& vecViewerRight ) { m_vecViewerRight = vecViewerRight; }
+	void SetViewerRight( const glm::vec3& vecViewerRight ) override final { m_vecViewerRight = vecViewerRight; }
 
-	const glm::vec3& GetLightVector() const { return m_lightvec; }
+	const glm::vec3& GetLightVector() const override final { return m_lightvec; }
 
-	void SetLightVector( const glm::vec3& lightvec )
+	void SetLightVector( const glm::vec3& lightvec ) override final
 	{
 		m_lightvec = lightvec;
 	}
 
-	/**
-	*	Draws the given model.
-	*/
-	unsigned int DrawModel( CStudioModelEntity* const pEntity, const DrawFlags_t flags = DRAWF_NONE );
+	unsigned int DrawModel( studiomdl::CModelRenderInfo* const pRenderInfo, const DrawFlags_t flags = DRAWF_NONE ) override final;
 
 private:
 	void SetUpBones();
@@ -110,11 +86,7 @@ private:
 	*/
 	unsigned int m_uiModelsDrawnCount = 0;
 
-	/**
-	*	The current model being rendered.
-	*/
-	CStudioModel* m_pCurrentModel = nullptr;
-	CStudioModelEntity* m_pEntity = nullptr;
+	studiomdl::CModelRenderInfo* m_pRenderInfo;
 
 	studiohdr_t* m_pStudioHdr = nullptr;
 	studiohdr_t* m_pTextureHdr = nullptr;
@@ -155,9 +127,6 @@ private:
 	CStudioModelRenderer( const CStudioModelRenderer& ) = delete;
 	CStudioModelRenderer& operator=( const CStudioModelRenderer& ) = delete;
 };
-
-//TODO: avoid using a global
-CStudioModelRenderer& renderer();
 }
 
 #endif //GAME_STUDIOMODEL_CSTUDIOMODELRENDERER_H

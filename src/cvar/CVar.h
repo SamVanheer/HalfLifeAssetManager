@@ -7,4 +7,16 @@
 #include "CConCommand.h"
 #include "CCVar.h"
 
+#include "ICVarSystem.h"
+
+extern cvar::ICVarSystem* g_pCVar;
+
+namespace cvar
+{
+/**
+*	Connects this library's cvars with the cvar system.
+*/
+void ConnectCVars();
+}
+
 #endif //CVAR_CVAR_H

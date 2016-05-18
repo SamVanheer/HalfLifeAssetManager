@@ -4,9 +4,11 @@
 #include "shared/Platform.h"
 #include "shared/Logging.h"
 
+#include "utility/StringUtils.h"
+
 #include "cvar/CCVar.h"
 
-#include "graphics/GraphicsHelpers.h"
+#include "graphics/GraphicsUtils.h"
 #include "graphics/Palette.h"
 
 #include "CStudioModel.h"
@@ -15,6 +17,7 @@ namespace studiomodel
 {
 namespace
 {
+//TODO: change to cvarref
 static cvar::CCVar r_filtertextures( "r_filtertextures", cvar::CCVarArgsBuilder().FloatValue( 1 ).HelpInfo( "Whether to filter textures or not" ) );
 
 void UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId, const bool bFilterTextures )
@@ -38,7 +41,7 @@ void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, byte* pa
 	int outwidth;
 	int outheight;
 
-	if( !graphics::helpers::CalculateImageDimensions( ptexture->width, ptexture->height, outwidth, outheight ) )
+	if( !graphics::CalculateImageDimensions( ptexture->width, ptexture->height, outwidth, outheight ) )
 		return;
 
 	const size_t uiSize = outwidth * outheight * 4;

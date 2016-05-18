@@ -8,7 +8,7 @@
 #include "ui/wx/shared/CFOVCtrl.h"
 #include "ui/wx/utility/wxUtil.h"
 
-#include "cvar/CCVarSystem.h"
+#include "cvar/CVar.h"
 
 #include "CModelDisplayPanel.h"
 
@@ -145,12 +145,12 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	GetMainSizer()->Add( pSizer );
 
-	cvar::cvars().InstallGlobalCVarHandler( this );
+	g_pCVar->InstallGlobalCVarHandler( this );
 }
 
 CModelDisplayPanel::~CModelDisplayPanel()
 {
-	cvar::cvars().RemoveGlobalCVarHandler( this );
+	g_pCVar->RemoveGlobalCVarHandler( this );
 }
 
 void CModelDisplayPanel::InitializeUI()
@@ -228,7 +228,7 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 	{
 	case CheckBox::SHOW_HITBOXES:
 		{
-			cvar::cvars().Command( wxString::Format( "r_showhitboxes %d", bValue ? 1 : 0 ).c_str() );
+			g_pCVar->Command( wxString::Format( "r_showhitboxes %d", bValue ? 1 : 0 ).c_str() );
 			break;
 		}
 
@@ -246,7 +246,7 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 
 	case CheckBox::SHOW_BONES:
 		{
-			cvar::cvars().Command( wxString::Format( "r_showbones %d", bValue ? 1 : 0 ).c_str() );
+			g_pCVar->Command( wxString::Format( "r_showbones %d", bValue ? 1 : 0 ).c_str() );
 
 			break;
 		}
@@ -265,7 +265,7 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 
 	case CheckBox::SHOW_ATTACHMENTS:
 		{
-			cvar::cvars().Command( wxString::Format( "r_showattachments %d", bValue ? 1 : 0 ).c_str() );
+			g_pCVar->Command( wxString::Format( "r_showattachments %d", bValue ? 1 : 0 ).c_str() );
 			break;
 		}
 
@@ -277,7 +277,7 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 
 	case CheckBox::SHOW_EYE_POSITION:
 		{
-			cvar::cvars().Command( wxString::Format( "r_showeyeposition %d", bValue ? 1 : 0 ).c_str() );
+			g_pCVar->Command( wxString::Format( "r_showeyeposition %d", bValue ? 1 : 0 ).c_str() );
 			break;
 		}
 

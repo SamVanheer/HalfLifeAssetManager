@@ -14,25 +14,6 @@ namespace graphics
 {
 namespace helpers
 {
-/**
-*	Converts image dimensions to power of 2.
-*	Returns true on success, false otherwise.
-*/
-bool CalculateImageDimensions( const int iWidth, const int iHeight, int& iOutWidth, int& iOutHeight );
-
-/**
-*	Converts an 8 bit image to a 24 bit RGB image.
-*/
-void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData );
-
-/**
-*	Flips an image vertically. This allows conversion between OpenGL and image formats. The image is flipped in place.
-*	@param iWidth Image width, in pixels.
-*	@param iHeight Image height, in pixels.
-*	@param pData Pixel data, in RGB 24 bit.
-*/
-void FlipImageVertically( const int iWidth, const int iHeight, byte* const pData );
-
 /*
 *	Sets up OpenGL for the specified render mode.
 *	@param renderMode Render mode to set up. Must be valid.
@@ -56,20 +37,6 @@ void DrawTexture( const int iWidth, const int iHeight,
 				  CStudioModelEntity* pEntity,
 				  const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines,
 				  const mstudiomesh_t* const pUVMesh );
-
-/**
-*	Draws a background texture, fitted to the viewport.
-*	@param backgroundTexture OpenGL texture id that represents the background texture
-*/
-void DrawBackground( GLuint backgroundTexture );
-
-/**
-*	Sets the projection matrix to the default perspective settings.
-*	@param flFOV Field Of View.
-*	@param iWidth Width of the viewport
-*	@param iHeight Height of the viewport
-*/
-void SetProjection( const float flFOV, const int iWidth, const int iHeight );
 
 /**
 *	Draws a floor quad.
@@ -101,11 +68,6 @@ unsigned int DrawWireframeOverlay( CStudioModelEntity* pEntity );
 *	@param bBackfaceCulling		Whether to perform backface culling or not
 */
 unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength, const bool bBackfaceCulling );
-
-/**
-*	Draws a box using an array of 8 vectors as corner points.
-*/
-void DrawBox( const glm::vec3* const v );
 }
 }
 

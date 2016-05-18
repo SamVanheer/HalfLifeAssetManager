@@ -43,9 +43,15 @@ CSoundSystem::~CSoundSystem()
 {
 }
 
-bool CSoundSystem::Connect( CreateInterfaceFn appFactory, CreateInterfaceFn fileSystemFactory )
+bool CSoundSystem::Connect( const CreateInterfaceFn* const pFactories, const size_t uiNumFactories )
 {
-	m_pFileSystem = static_cast<filesystem::IFileSystem*>(fileSystemFactory( IFILESYSTEM_NAME, nullptr ) );
+	for( size_t uiIndex = 0; uiIndex < uiNumFactories; ++uiIndex )
+	{
+		if( !m_pFileSystem )
+		{
+			m_pFileSystem = static_cast<filesystem::IFileSystem*>( pFactories[ uiIndex ]( IFILESYSTEM_NAME, nullptr ) );
+		}
+	}
 
 	return m_pFileSystem != nullptr;
 }

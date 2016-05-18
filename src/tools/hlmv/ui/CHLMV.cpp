@@ -1,5 +1,7 @@
 #include "shared/Logging.h"
 
+#include "lib/LibInterface.h"
+
 #include "CMainWindow.h"
 #include "CFullscreenWindow.h"
 

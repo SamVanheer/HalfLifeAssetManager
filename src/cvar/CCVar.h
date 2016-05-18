@@ -11,6 +11,7 @@
 */
 namespace cvar
 {
+class CCVarSystem;
 class CCVar;
 
 /**
@@ -202,6 +203,9 @@ inline CCVarArgsBuilder& CCVarArgsBuilder::Handler( ICVarHandler* pCallbackObj )
 
 class CCVar : public CBaseConCommand
 {
+protected:
+	friend class CCVarSystem;
+
 public:
 	/**
 	*	Creates a cvar with the given name and arguments.
@@ -217,12 +221,12 @@ public:
 	/**
 	*	Gets the callback type.
 	*/
-	CallbackType GetCallbackType() const { return m_CallbackType; }
+	CallbackType GetCallbackType() const;
 
 	/**
 	*	Gets the callback as a function. Only valid if GetCallbackType == CallbackType::FUNCTION.
 	*/
-	CVarCallback GetCallbackFn() const { return m_CallbackFn; }
+	CVarCallback GetCallbackFn() const;
 
 	/**
 	*	Sets the callback as a function.
@@ -233,7 +237,7 @@ public:
 	/**
 	*	Gets the callback as an object. Only valid if GetCallbackType == CallbackType::INTERFACE.
 	*/
-	ICVarHandler* GetHandler() const { return m_pCallbackObj; }
+	ICVarHandler* GetHandler() const;
 
 	/**
 	*	Sets the callback as an object.
@@ -244,73 +248,76 @@ public:
 	/**
 	*	Gets the value as a string.
 	*/
-	const char* GetString() const	{ return m_pszValue; }
+	const char* GetString() const;
 
 	/**
 	*	Gets the value as a float.
 	*/
-	float		GetFloat() const	{ return m_flValue; }
+	float GetFloat() const;
 
 	/**
 	*	Gets the value as an int.
 	*/
-	int			GetInt() const		{ return static_cast<int>( m_flValue ); }
+	int	GetInt() const;
 
 	/**
 	*	Gets the value as a boolean.
 	*/
-	bool		GetBool() const		{ return m_flValue != 0; }
+	bool GetBool() const;
 
 	/**
 	*	Sets the value as a string.
 	*/
-	void SetString( const char* const pszValue );
+	virtual void SetString( const char* const pszValue );
 
 	/**
 	*	Sets the value as a float.
 	*/
-	void SetFloat( float flValue );
+	virtual void SetFloat( float flValue );
 
 	/**
 	*	Sets the value as an int. Conversion to float is performed.
 	*/
-	void SetInt( int iValue );
+	virtual void SetInt( int iValue );
 
 	/**
 	*	Sets the value as an int. Conversion to int is performed.
 	*/
-	void SetBool( const bool bValue );
+	virtual void SetBool( const bool bValue );
 
 	/**
 	*	Gets the minimum value. Only valid if HasMinValue returns true.
 	*	@see HasMinValue
 	*/
-	float GetMinValue() const { return m_flMinValue; }
+	float GetMinValue() const;
 
 	/**
 	*	Returns whether a minimum value has been set.
 	*/
-	bool HasMinValue() const { return m_bHasMinValue; }
+	bool HasMinValue() const;
 
 	/**
 	*	Gets the maximum value. Only valid if HasMaxValue returns true.
 	*	@see HasMaxValue
 	*/
-	float GetMaxValue() const { return m_flMaxValue; }
+	float GetMaxValue() const;
 
 	/**
 	*	Returns whether a maximum value has been set.
 	*/
-	bool HasMaxValue() const { return m_bHasMaxValue; }
+	bool HasMaxValue() const;
 
 private:
 	void Clamp( float& flValue );
+
+	void SetStringValue( const char* pszValue );
 
 	void SetFloatValue( float flValue, const bool bFormatFloat );
 
 	void ValueChanged( const char* pszOldValue, const float flOldValue );
 
 private:
+	CCVar* m_pParent;
 
 	union
 	{
@@ -333,35 +340,6 @@ private:
 	CCVar( const CCVar& ) = delete;
 	CCVar& operator=( const CCVar& ) = delete;
 };
-
-inline void CCVar::SetCallbackFn( const CVarCallback callbackFn )
-{
-	m_CallbackFn = callbackFn;
-
-	m_CallbackType = CallbackType::FUNCTION;
-}
-
-inline void CCVar::SetHandler( ICVarHandler* pCallbackObj )
-{
-	m_pCallbackObj = pCallbackObj;
-
-	m_CallbackType = CallbackType::INTERFACE;
-}
-
-inline void CCVar::SetFloat( float flValue )
-{
-	SetFloatValue( flValue, true );
-}
-
-inline void CCVar::SetInt( int iValue )
-{
-	SetFloatValue( static_cast<float>( iValue ), false );
-}
-
-inline void CCVar::SetBool( const bool bValue )
-{
-	SetInt( bValue ? 1 : 0 );
-}
 }
 
 /**@}*/

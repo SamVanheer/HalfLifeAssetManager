@@ -8,7 +8,6 @@
 #include "settings/CGameConfigManager.h"
 
 #include "cvar/CVar.h"
-#include "cvar/CCVarSystem.h"
 
 #include "CHLMVSettings.h"
 

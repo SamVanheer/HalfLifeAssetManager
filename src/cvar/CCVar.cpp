@@ -4,7 +4,7 @@
 #include "shared/Platform.h"
 #include "shared/Logging.h"
 
-#include "CCVarSystem.h"
+#include "CVar.h"
 
 #include "CCVar.h"
 
@@ -45,6 +45,8 @@ CCVar::CCVar( const char* const pszName, const CCVarArgsBuilder& args )
 	, m_bHasMinValue( args.HasMinValue() )
 	, m_bHasMaxValue( args.HasMaxValue() )
 {
+	m_pParent = this;
+
 	if( args.UsingStringValue() )
 	{
 		SetString( args.GetStringValue() );
@@ -79,11 +81,118 @@ CCVar::CCVar( const char* const pszName, const CCVarArgsBuilder& args )
 
 CCVar::~CCVar()
 {
-	delete[] m_pszValue;
+	if( this == m_pParent )
+	{
+		delete[] m_pszValue;
+	}
+}
+
+CallbackType CCVar::GetCallbackType() const
+{
+	return m_pParent->m_CallbackType;
+}
+
+CVarCallback CCVar::GetCallbackFn() const
+{
+	return m_pParent->m_CallbackFn;
+}
+
+void CCVar::SetCallbackFn( const CVarCallback callbackFn )
+{
+	m_pParent->m_CallbackFn = callbackFn;
+
+	m_pParent->m_CallbackType = CallbackType::FUNCTION;
+}
+
+ICVarHandler* CCVar::GetHandler() const
+{
+	return m_pParent->m_pCallbackObj;
+}
+
+void CCVar::SetHandler( ICVarHandler* pCallbackObj )
+{
+	m_pParent->m_pCallbackObj = pCallbackObj;
+
+	m_pParent->m_CallbackType = CallbackType::INTERFACE;
+}
+
+const char* CCVar::GetString() const
+{
+	return m_pParent->m_pszValue;
+}
+
+float CCVar::GetFloat() const
+{
+	return m_pParent->m_flValue;
+}
+
+int CCVar::GetInt() const
+{
+	return static_cast<int>( m_pParent->m_flValue );
+}
+
+bool CCVar::GetBool() const
+{
+	return ( m_pParent->m_flValue ) != 0;
 }
 
 void CCVar::SetString( const char* const pszValue )
 {
+	m_pParent->SetStringValue( pszValue );
+}
+
+void CCVar::SetFloat( float flValue )
+{
+	m_pParent->SetFloatValue( flValue, true );
+}
+
+void CCVar::SetInt( int iValue )
+{
+	m_pParent->SetFloatValue( static_cast<float>( iValue ), false );
+}
+
+void CCVar::SetBool( const bool bValue )
+{
+	m_pParent->SetInt( bValue ? 1 : 0 );
+}
+
+float CCVar::GetMinValue() const
+{
+	return m_pParent->m_flMinValue;
+}
+
+bool CCVar::HasMinValue() const
+{
+	return m_pParent->m_bHasMinValue;
+}
+
+float CCVar::GetMaxValue() const
+{
+	return m_pParent->m_flMaxValue;
+}
+
+bool CCVar::HasMaxValue() const
+{
+	return m_pParent->m_bHasMaxValue;
+}
+
+void CCVar::Clamp( float& flValue )
+{
+	if( m_pParent->m_bHasMinValue && flValue < m_pParent->m_flMinValue )
+	{
+		flValue = m_pParent->m_flMinValue;
+	}
+
+	if( m_pParent->m_bHasMaxValue && flValue > m_pParent->m_flMaxValue )
+	{
+		flValue = m_pParent->m_flMaxValue;
+	}
+}
+
+void CCVar::SetStringValue( const char* pszValue )
+{
+	assert( this == m_pParent );
+
 	assert( pszValue );
 
 	char* pszOldValue = m_pszValue;
@@ -114,21 +223,10 @@ void CCVar::SetString( const char* const pszValue )
 	delete[] pszOldValue;
 }
 
-void CCVar::Clamp( float& flValue )
-{
-	if( m_bHasMinValue && flValue < m_flMinValue )
-	{
-		flValue = m_flMinValue;
-	}
-
-	if( m_bHasMaxValue && flValue > m_flMaxValue )
-	{
-		flValue = m_flMaxValue;
-	}
-}
-
 void CCVar::SetFloatValue( float flValue, const bool bFormatFloat )
 {
+	assert( this == m_pParent );
+
 	Clamp( flValue );
 
 	const float flOldValue = m_flValue;
@@ -155,6 +253,8 @@ void CCVar::SetFloatValue( float flValue, const bool bFormatFloat )
 
 void CCVar::ValueChanged( const char* pszOldValue, const float flOldValue )
 {
+	assert( this == m_pParent );
+
 	if( !pszOldValue )
 		pszOldValue = "";
 
@@ -189,6 +289,9 @@ void CCVar::ValueChanged( const char* pszOldValue, const float flOldValue )
 		}
 	}
 
-	cvars().CVarChanged( *this, pszOldValue, flOldValue );
+	if( g_pCVar )
+	{
+		g_pCVar->CVarChanged( *this, pszOldValue, flOldValue );
+	}
 }
 }
