@@ -18,13 +18,13 @@
 namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseControlPanel )
-	EVT_COMBOBOX( wxID_SEQUENCE_SEQCHANGED, CSequencesPanel::SequenceChanged )
+	EVT_CHOICE( wxID_SEQUENCE_SEQCHANGED, CSequencesPanel::SequenceChanged )
 	EVT_TOGGLEBUTTON( wxID_SEQUENCE_TOGGLEPLAY, CSequencesPanel::TogglePlay )
 	EVT_BUTTON( wxID_SEQUENCE_PREVFRAME, CSequencesPanel::PrevFrame )
 	EVT_BUTTON( wxID_SEQUENCE_NEXTFRAME, CSequencesPanel::NextFrame )
 	EVT_TEXT( wxID_SEQUENCE_FRAME, CSequencesPanel::FrameChanged )
 	EVT_SLIDER( WXID_SEQUENCE_ANIMSPEED, CSequencesPanel::AnimSpeedChanged )
-	EVT_COMBOBOX( wxID_SEQUENCE_EVENT, CSequencesPanel::EventChanged )
+	EVT_CHOICE( wxID_SEQUENCE_EVENT, CSequencesPanel::EventChanged )
 	EVT_CHECKBOX( wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged )
 	EVT_CHECKBOX( wxID_SEQUENCE_PITCHFRAMERATE, CSequencesPanel::PitchFramerateChanged )
 	EVT_SPINCTRLDOUBLE( wxID_SEQUENCE_ORIGIN, CSequencesPanel::OnOriginChanged )
@@ -38,9 +38,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	wxStaticText* pSequence = new wxStaticText( pElemParent, wxID_ANY, "Animation Sequence" );
 
-	m_pSequence = new wxComboBox( pElemParent, wxID_SEQUENCE_SEQCHANGED, "", wxDefaultPosition, wxSize( 400, wxDefaultSize.GetY() ) );
-
-	m_pSequence->SetEditable( false );
+	m_pSequence = new wxChoice( pElemParent, wxID_SEQUENCE_SEQCHANGED, wxDefaultPosition, wxSize( 400, wxDefaultSize.GetY() ) );
 
 	m_pTogglePlayButton = new wxToggleButton( pElemParent, wxID_SEQUENCE_TOGGLEPLAY, "Stop" );
 	m_pPrevFrameButton = new wxButton( pElemParent, wxID_SEQUENCE_PREVFRAME, "<<" );
@@ -92,8 +90,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	wxStaticText* pEvents = new wxStaticText( pElemParent, wxID_ANY, "Events" );
 
-	m_pEvent = new wxComboBox( pElemParent, wxID_SEQUENCE_EVENT, "" );
-	m_pEvent->SetEditable( false );
+	m_pEvent = new wxChoice( pElemParent, wxID_SEQUENCE_EVENT );
 
 	m_pPlaySound = new wxCheckBox( pElemParent, wxID_SEQUENCE_PLAYSOUND, "Play Sound" );
 	m_pPitchFramerate = new wxCheckBox( pElemParent, wxID_SEQUENCE_PITCHFRAMERATE, "Pitch *= Framerate" );

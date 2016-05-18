@@ -49,11 +49,11 @@ private:
 private:
 	std::shared_ptr<settings::CGameConfigManager> m_Manager;
 
-	wxComboBox* m_pActiveConfig;
+	wxChoice* m_pActiveConfig;
 
-	wxComboBox* m_pConfigs;
+	wxChoice* m_pConfigs;
 
-	//wxComboBox does not track the previous selection.
+	//wxChoice does not track the previous selection.
 	int m_iCurrentConfig = wxNOT_FOUND;
 
 	wxDirPickerCtrl* m_pBasePath;

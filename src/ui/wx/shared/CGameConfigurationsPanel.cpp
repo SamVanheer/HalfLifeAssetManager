@@ -11,7 +11,7 @@
 namespace ui
 {
 wxBEGIN_EVENT_TABLE( CGameConfigurationsPanel, wxPanel )
-	EVT_COMBOBOX( wxID_SHARED_GAMECONFIGS_CONFIG_CHANGED, CGameConfigurationsPanel::ConfigChanged )
+	EVT_CHOICE( wxID_SHARED_GAMECONFIGS_CONFIG_CHANGED, CGameConfigurationsPanel::ConfigChanged )
 	EVT_BUTTON( wxID_SHARED_GAMECONFIGS_EDIT, CGameConfigurationsPanel::EditConfigs )
 wxEND_EVENT_TABLE()
 
@@ -21,11 +21,9 @@ CGameConfigurationsPanel::CGameConfigurationsPanel( wxWindow* pParent, std::shar
 {
 	wxASSERT( manager != nullptr );
 
-	m_pActiveConfig = new wxComboBox( this, wxID_ANY );
-	m_pActiveConfig->SetEditable( false );
+	m_pActiveConfig = new wxChoice( this, wxID_ANY );
 
-	m_pConfigs = new wxComboBox( this, wxID_SHARED_GAMECONFIGS_CONFIG_CHANGED );
-	m_pConfigs->SetEditable( false );
+	m_pConfigs = new wxChoice( this, wxID_SHARED_GAMECONFIGS_CONFIG_CHANGED );
 
 	wxButton* pEditConfigs = new wxButton( this, wxID_SHARED_GAMECONFIGS_EDIT, "Edit" );
 
@@ -181,7 +179,7 @@ void CGameConfigurationsPanel::Initialize()
 
 void CGameConfigurationsPanel::SetCurrentConfig( int iIndex )
 {
-	if( m_pConfigs->IsListEmpty() )
+	if( m_pConfigs->IsEmpty() )
 	{
 		m_pBasePath->SetPath( "" );
 		m_pGameDir->SetValue( "" );

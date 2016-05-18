@@ -46,7 +46,7 @@ private:
 	void OnShowTypesCheatSheet( wxCommandEvent& event );
 
 private:
-	wxComboBox* m_pBones;
+	wxChoice* m_pBones;
 
 	wxPanel* m_pBoneInfo;
 
@@ -58,10 +58,10 @@ private:
 	wxStaticText* m_pRotation;
 	wxStaticText* m_pRotationScale;
 
-	wxComboBox* m_pBoneBoneControllers;
+	wxChoice* m_pBoneBoneControllers;
 	wxButton* m_pShowBoneControllerInfo;
 
-	wxComboBox* m_pBoneControllers;
+	wxChoice* m_pBoneControllers;
 
 	wxButton* m_pShowBoneInfo;
 

@@ -80,14 +80,14 @@ protected:
 
 private:
 	wxStaticText* m_pTextureSize;
-	wxComboBox* m_pTexture;
+	wxChoice* m_pTexture;
 
 	wxStaticText* m_pScaleTextureViewSize;
 	wxSlider* m_pScaleTextureView;
 
 	wxCheckBox* m_pCheckBoxes[ CheckBox::COUNT ];
 
-	wxComboBox* m_pMesh;
+	wxChoice* m_pMesh;
 
 	wxButton* m_pImportTexButton;
 	wxButton* m_pExportTexButton;

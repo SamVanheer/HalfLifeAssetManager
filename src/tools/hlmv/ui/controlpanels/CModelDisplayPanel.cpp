@@ -15,7 +15,7 @@
 namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( CModelDisplayPanel, CBaseControlPanel )
-	EVT_COMBOBOX( wxID_MDLDISP_RENDERMODE, CModelDisplayPanel::RenderModeChanged )
+	EVT_CHOICE( wxID_MDLDISP_RENDERMODE, CModelDisplayPanel::RenderModeChanged )
 	EVT_SLIDER( wxID_MDLDISP_OPACITY, CModelDisplayPanel::OpacityChanged )
 	EVT_CHECKBOX( wxID_MDLDISP_CHECKBOX, CModelDisplayPanel::CheckBoxChanged )
 	EVT_BUTTON( wxID_MDLDISP_SCALEMESH, CModelDisplayPanel::ScaleMesh )
@@ -42,7 +42,7 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pOpacitySlider = new wxSlider( pElemParent, wxID_MDLDISP_OPACITY, OPACITY_DEFAULT, OPACITY_MIN, OPACITY_MAX );
 
-	m_pRenderMode = new wxComboBox( pElemParent, wxID_MDLDISP_RENDERMODE );
+	m_pRenderMode = new wxChoice( pElemParent, wxID_MDLDISP_RENDERMODE );
 
 	for( int iRenderMode = static_cast<int>( RenderMode::FIRST ); iRenderMode < static_cast<int>( RenderMode::COUNT ); ++iRenderMode )
 	{
@@ -50,8 +50,6 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	}
 
 	m_pRenderMode->SetSelection( static_cast<int>( RenderMode::TEXTURE_SHADED ) );
-
-	m_pRenderMode->SetEditable( false );
 
 	m_pCheckBoxes[ CheckBox::SHOW_HITBOXES ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Hit Boxes" );
 	m_pCheckBoxes[ CheckBox::SHOW_BONES ]			= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Bones" );

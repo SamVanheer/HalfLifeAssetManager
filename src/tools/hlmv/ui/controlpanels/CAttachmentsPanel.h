@@ -44,7 +44,7 @@ private:
 	void OnAttachmentChanged( wxCommandEvent& event );
 
 private:
-	wxComboBox* m_pAttachments;
+	wxChoice* m_pAttachments;
 
 	wxPanel* m_pAttachmentInfo;
 

@@ -52,11 +52,11 @@ private:
 	void SetModelInfo( const studiohdr_t& hdr, const studiohdr_t& texHdr );
 
 private:
-	wxComboBox* m_pBodypart;
-	wxComboBox* m_pSubmodel;
-	wxComboBox* m_pSkin;
+	wxChoice* m_pBodypart;
+	wxChoice* m_pSubmodel;
+	wxChoice* m_pSkin;
 
-	wxComboBox* m_pController;
+	wxChoice* m_pController;
 
 	wxSlider* m_pControllerSlider;
 	float m_flControllerSliderScale = 1.0f;	//The controller slider scale is used for ranges too small to work with integers.

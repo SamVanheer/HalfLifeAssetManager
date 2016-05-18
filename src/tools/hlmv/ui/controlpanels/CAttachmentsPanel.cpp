@@ -8,7 +8,7 @@
 namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( CAttachmentsPanel, CBaseControlPanel )
-	EVT_COMBOBOX( wxID_ATTACH_ATTACHMENT, CAttachmentsPanel::OnAttachmentChanged )
+	EVT_CHOICE( wxID_ATTACH_ATTACHMENT, CAttachmentsPanel::OnAttachmentChanged )
 wxEND_EVENT_TABLE()
 
 CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CHLMV* const pHLMV )
@@ -18,9 +18,7 @@ CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	auto pAttachmentsText = new wxStaticText( pElemParent, wxID_ANY, "Attachments:" );
 
-	m_pAttachments = new wxComboBox( pElemParent, wxID_ATTACH_ATTACHMENT, "", wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
-
-	m_pAttachments->SetEditable( false );
+	m_pAttachments = new wxChoice( pElemParent, wxID_ATTACH_ATTACHMENT, wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
 
 	m_pAttachmentInfo = new wxPanel( pElemParent );
 

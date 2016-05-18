@@ -80,7 +80,7 @@ private:
 	void TestOrigin( wxCommandEvent& event );
 
 private:
-	wxComboBox* m_pSequence;
+	wxChoice* m_pSequence;
 
 	wxToggleButton* m_pTogglePlayButton;
 	wxButton* m_pPrevFrameButton;
@@ -97,7 +97,7 @@ private:
 	wxStaticText* m_pBlends;
 	wxStaticText* m_pEventCount;
 
-	wxComboBox* m_pEvent;
+	wxChoice* m_pEvent;
 
 	wxCheckBox* m_pPlaySound;
 	wxCheckBox* m_pPitchFramerate;

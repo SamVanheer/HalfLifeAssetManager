@@ -11,9 +11,9 @@
 namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( CBonesPanel, CBaseControlPanel )
-	EVT_COMBOBOX( wxID_BONES_BONES, CBonesPanel::OnBoneChanged )
+	EVT_CHOICE( wxID_BONES_BONES, CBonesPanel::OnBoneChanged )
 	EVT_BUTTON( wxID_BONES_SHOWBONECONTROLLERINFO, CBonesPanel::OnShowBoneController )
-	EVT_COMBOBOX( wxID_BONES_BONECONTROLLERS, CBonesPanel::OnBoneControllerChanged )
+	EVT_CHOICE( wxID_BONES_BONECONTROLLERS, CBonesPanel::OnBoneControllerChanged )
 	EVT_BUTTON( wxID_BONES_SHOWBONEINFO, CBonesPanel::OnShowBone )
 	EVT_BUTTON( wxID_BONES_SHOWTYPESCHEATSHEET, CBonesPanel::OnShowTypesCheatSheet )
 wxEND_EVENT_TABLE()
@@ -25,8 +25,7 @@ CBonesPanel::CBonesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	auto pBoneText = new wxStaticText( pElemParent, wxID_ANY, "Bone:" );
 
-	m_pBones = new wxComboBox( pElemParent, wxID_BONES_BONES, wxEmptyString, wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
-	m_pBones->SetEditable( false );
+	m_pBones = new wxChoice( pElemParent, wxID_BONES_BONES, wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
 
 	m_pBoneInfo = new wxPanel( pElemParent );
 
@@ -40,15 +39,13 @@ CBonesPanel::CBonesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	auto pBoneBoneControllersText = new wxStaticText( m_pBoneInfo, wxID_ANY, "Bone Controller (Current Bone):" );
 
-	m_pBoneBoneControllers = new wxComboBox( m_pBoneInfo, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
-	m_pBoneBoneControllers->SetEditable( false );
+	m_pBoneBoneControllers = new wxChoice( m_pBoneInfo, wxID_ANY, wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
 
 	m_pShowBoneControllerInfo = new wxButton( m_pBoneInfo, wxID_BONES_SHOWBONECONTROLLERINFO, ">>" );
 
 	auto pBoneControllersText = new wxStaticText( pElemParent, wxID_ANY, "Bone Controller:" );
 
-	m_pBoneControllers = new wxComboBox( pElemParent, wxID_BONES_BONECONTROLLERS, wxEmptyString, wxDefaultPosition, wxSize( 125, wxDefaultSize.GetHeight() ) );
-	m_pBoneControllers->SetEditable( false );
+	m_pBoneControllers = new wxChoice( pElemParent, wxID_BONES_BONECONTROLLERS, wxDefaultPosition, wxSize( 175, wxDefaultSize.GetHeight() ) );
 
 	m_pShowBoneInfo = new wxButton( pElemParent, wxID_BONES_SHOWBONEINFO, "<<" );
 

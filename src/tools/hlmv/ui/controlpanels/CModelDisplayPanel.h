@@ -94,7 +94,7 @@ private:
 	void HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue ) override final;
 
 private:
-	wxComboBox* m_pRenderMode;
+	wxChoice* m_pRenderMode;
 
 	wxStaticText* m_pOpacity;
 	wxSlider* m_pOpacitySlider;

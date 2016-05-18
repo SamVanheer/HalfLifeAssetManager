@@ -8,10 +8,10 @@
 namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( CBodyPartsPanel, CBaseControlPanel )
-	EVT_COMBOBOX( wxID_BODY_BODYPARTS, CBodyPartsPanel::BodypartChanged )
-	EVT_COMBOBOX( wxID_BODY_SUBMODELS, CBodyPartsPanel::SubmodelChanged )
-	EVT_COMBOBOX( wxID_BODY_SKIN, CBodyPartsPanel::SkinChanged )
-	EVT_COMBOBOX( wxID_BODY_CONTROLLER, CBodyPartsPanel::ControllerChanged )
+	EVT_CHOICE( wxID_BODY_BODYPARTS, CBodyPartsPanel::BodypartChanged )
+	EVT_CHOICE( wxID_BODY_SUBMODELS, CBodyPartsPanel::SubmodelChanged )
+	EVT_CHOICE( wxID_BODY_SKIN, CBodyPartsPanel::SkinChanged )
+	EVT_CHOICE( wxID_BODY_CONTROLLER, CBodyPartsPanel::ControllerChanged )
 	EVT_SLIDER( wxID_BODY_CONTROLLER_SLIDER, CBodyPartsPanel::ControllerSliderChanged )
 wxEND_EVENT_TABLE()
 
@@ -20,23 +20,19 @@ CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV )
 {
 	wxWindow* const pElemParent = GetElementParent();
 
-	m_pBodypart = new wxComboBox( pElemParent, wxID_BODY_BODYPARTS, "", wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
-	m_pBodypart->SetEditable( false );
+	m_pBodypart = new wxChoice( pElemParent, wxID_BODY_BODYPARTS, wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
 
 	wxStaticText* pBodypart = new wxStaticText( pElemParent, wxID_ANY, "Part" );
 
-	m_pSubmodel = new wxComboBox( pElemParent, wxID_BODY_SUBMODELS, "", wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
-	m_pSubmodel->SetEditable( false );
+	m_pSubmodel = new wxChoice( pElemParent, wxID_BODY_SUBMODELS, wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
 
 	wxStaticText* pSubmodel = new wxStaticText( pElemParent, wxID_ANY, "Sub-model" );
 
-	m_pSkin = new wxComboBox( pElemParent, wxID_BODY_SKIN, "", wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
-	m_pSkin->SetEditable( false );
+	m_pSkin = new wxChoice( pElemParent, wxID_BODY_SKIN, wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
 
 	wxStaticText* pSkin = new wxStaticText( pElemParent, wxID_ANY, "Skin" );
 
-	m_pController = new wxComboBox( pElemParent, wxID_BODY_CONTROLLER, "", wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
-	m_pController->SetEditable( false );
+	m_pController = new wxChoice( pElemParent, wxID_BODY_CONTROLLER, wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
 
 	wxStaticText* pController = new wxStaticText( pElemParent, wxID_ANY, "Controller" );
 

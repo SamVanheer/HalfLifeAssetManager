@@ -20,10 +20,10 @@
 namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( CTexturesPanel, CBaseControlPanel )
-	EVT_COMBOBOX( wxID_TEX_CHANGED, CTexturesPanel::TextureChanged )
+	EVT_CHOICE( wxID_TEX_CHANGED, CTexturesPanel::TextureChanged )
 	EVT_SLIDER( wxID_TEX_SCALE, CTexturesPanel::ScaleChanged )
 	EVT_CHECKBOX( wxID_TEX_CHECKBOX, CTexturesPanel::CheckBoxChanged )
-	EVT_COMBOBOX( wxID_TEX_MESH, CTexturesPanel::MeshChanged )
+	EVT_CHOICE( wxID_TEX_MESH, CTexturesPanel::MeshChanged )
 	EVT_BUTTON( wxID_TEX_IMPORTTEXTURE, CTexturesPanel::ImportTexture )
 	EVT_BUTTON( wxID_TEX_EXPORTTEXTURE, CTexturesPanel::ExportTexture )
 	EVT_BUTTON( wxID_TEX_EXPORTUVMAP, CTexturesPanel::ExportUVMap )
@@ -41,8 +41,7 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pTextureSize = new wxStaticText( pTextureSettingPanel, wxID_ANY, "Texture (size: Undefined x Undefined)" );
 
-	m_pTexture = new wxComboBox( pTextureSettingPanel, wxID_TEX_CHANGED, "", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
-	m_pTexture->SetEditable( false );
+	m_pTexture = new wxChoice( pTextureSettingPanel, wxID_TEX_CHANGED, wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
 
 	m_pScaleTextureViewSize = new wxStaticText( pTextureSettingPanel, wxID_ANY, "Scale Texture View (Undefinedx)" );
 
@@ -62,8 +61,7 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 		m_pCheckBoxes[ uiIndex ]->SetClientData( reinterpret_cast<void*>( uiIndex ) );
 	}
 
-	m_pMesh = new wxComboBox( pElemParent, wxID_TEX_MESH, "" );
-	m_pMesh->SetEditable( false );
+	m_pMesh = new wxChoice( pElemParent, wxID_TEX_MESH );
 
 	m_pImportTexButton = new wxButton( pElemParent, wxID_TEX_IMPORTTEXTURE, "Import Texture" );
 	m_pExportTexButton = new wxButton( pElemParent, wxID_TEX_EXPORTTEXTURE, "Export Texture" );
