@@ -27,6 +27,8 @@ public:
 
 	void InitializeUI() override final;
 
+	void OnPostDraw( studiomdl::IStudioModelRenderer& renderer, const studiomdl::CModelRenderInfo& info ) override final;
+
 	/**
 	*	Sets the attachment whose info should be displayed.
 	*	@param iIndex Attachment index. Must be valid.

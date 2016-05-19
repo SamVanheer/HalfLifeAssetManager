@@ -1,6 +1,8 @@
 #include <wx/gbsizer.h>
 #include <wx/statline.h>
 
+#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
+
 #include "tools/shared/ui/CStudioTypesCheatSheet.h"
 
 #include "../CHLMV.h"
@@ -207,6 +209,11 @@ void CBonesPanel::InitializeUI()
 
 	SetBone( 0 );
 	SetBoneController( 0 );
+}
+
+void CBonesPanel::OnPostDraw( studiomdl::IStudioModelRenderer& renderer, const studiomdl::CModelRenderInfo& info )
+{
+	renderer.DrawSingleBone( m_pBones->GetSelection() );
 }
 
 void CBonesPanel::SetBone( int iIndex )

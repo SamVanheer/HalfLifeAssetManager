@@ -7,6 +7,12 @@
 
 #include "../MouseOpFlag.h"
 
+namespace studiomdl
+{
+class IStudioModelRenderer;
+struct CModelRenderInfo;
+}
+
 namespace hlmv
 {
 class CHLMV;
@@ -34,6 +40,8 @@ public:
 
 	//Called when the 3D view is drawing.
 	virtual void Draw3D( const wxSize& size ) {}
+
+	virtual void OnPostDraw( studiomdl::IStudioModelRenderer& renderer, const studiomdl::CModelRenderInfo& info ) {}
 
 	//Called every time the 3D view is updated.
 	virtual void ViewUpdated() {}

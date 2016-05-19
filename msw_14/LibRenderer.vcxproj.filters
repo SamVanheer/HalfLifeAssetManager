@@ -80,5 +80,11 @@
     <ClInclude Include="..\src\engine\renderer\studiomodel\StudioSorting.h">
       <Filter>Header Files\engine\renderer\studiomodel</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\engine\shared\renderer\studiomodel\IStudioModelRendererListener.h">
+      <Filter>Header Files\engine\shared\renderer\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\renderer\studiomodel\CModelRenderInfo.h">
+      <Filter>Header Files\engine\shared\renderer\studiomodel</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

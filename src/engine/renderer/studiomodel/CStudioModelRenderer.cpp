@@ -12,6 +12,7 @@
 #include "graphics/GraphicsUtils.h"
 
 #include "shared/studiomodel/CStudioModel.h"
+#include "shared/renderer/studiomodel/IStudioModelRendererListener.h"
 #include "StudioSorting.h"
 
 #include "CStudioModelRenderer.h"
@@ -103,6 +104,9 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 
 	unsigned int uiDrawnPolys = 0;
 
+	if( m_pListener )
+		m_pListener->OnPreDraw( *this, *m_pRenderInfo );
+
 	for( int i = 0; i < m_pStudioHdr->numbodyparts; i++ )
 	{
 		SetupModel( i );
@@ -131,6 +135,10 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 		DrawHitBoxes();
 	}
 
+	//Call this after the above debug operations so overlaying works properly.
+	if( m_pListener )
+		m_pListener->OnPostDraw( *this, *m_pRenderInfo );
+
 	glPopMatrix();
 
 	m_uiDrawnPolygonsCount += uiDrawnPolys;
@@ -138,9 +146,85 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 	return uiDrawnPolys;
 }
 
+void CStudioModelRenderer::DrawSingleBone( const int iBone )
+{
+	if( !m_pStudioHdr || iBone < 0 || iBone >= m_pStudioHdr->numbones )
+		return;
+
+	const mstudiobone_t* const pbones = m_pStudioHdr->GetBones();
+	glDisable( GL_TEXTURE_2D );
+	glDisable( GL_DEPTH_TEST );
+
+	if( pbones[ iBone ].parent >= 0 )
+	{
+		glPointSize( 10.0f );
+		glColor3f( 0, 0.7f, 1 );
+		glBegin( GL_LINES );
+		glVertex3f( m_bonetransform[ pbones[ iBone ].parent ][ 0 ][ 3 ], m_bonetransform[ pbones[ iBone ].parent ][ 1 ][ 3 ], m_bonetransform[ pbones[ iBone ].parent ][ 2 ][ 3 ] );
+		glVertex3f( m_bonetransform[ iBone ][ 0 ][ 3 ], m_bonetransform[ iBone ][ 1 ][ 3 ], m_bonetransform[ iBone ][ 2 ][ 3 ] );
+		glEnd();
+
+		glColor3f( 0, 0, 0.8f );
+		glBegin( GL_POINTS );
+		if( pbones[ pbones[ iBone ].parent ].parent != -1 )
+			glVertex3f( m_bonetransform[ pbones[ iBone ].parent ][ 0 ][ 3 ], m_bonetransform[ pbones[ iBone ].parent ][ 1 ][ 3 ], m_bonetransform[ pbones[ iBone ].parent ][ 2 ][ 3 ] );
+		glVertex3f( m_bonetransform[ iBone ][ 0 ][ 3 ], m_bonetransform[ iBone ][ 1 ][ 3 ], m_bonetransform[ iBone ][ 2 ][ 3 ] );
+		glEnd();
+	}
+	else
+	{
+		// draw parent bone node
+		glPointSize( 10.0f );
+		glColor3f( 0.8f, 0, 0 );
+		glBegin( GL_POINTS );
+		glVertex3f( m_bonetransform[ iBone ][ 0 ][ 3 ], m_bonetransform[ iBone ][ 1 ][ 3 ], m_bonetransform[ iBone ][ 2 ][ 3 ] );
+		glEnd();
+	}
+
+	glPointSize( 1.0f );
+}
+
+void CStudioModelRenderer::DrawSingleAttachment( const int iAttachment )
+{
+	if( !m_pStudioHdr || iAttachment < 0 || iAttachment >= m_pStudioHdr->numattachments )
+		return;
+
+	glDisable( GL_TEXTURE_2D );
+	glDisable( GL_CULL_FACE );
+	glDisable( GL_DEPTH_TEST );
+
+	mstudioattachment_t *pattachments = m_pStudioHdr->GetAttachments();
+	glm::vec3 v[ 4 ];
+	VectorTransform( pattachments[ iAttachment ].org, m_bonetransform[ pattachments[ iAttachment ].bone ], v[ 0 ] );
+	VectorTransform( pattachments[ iAttachment ].vectors[ 0 ], m_bonetransform[ pattachments[ iAttachment ].bone ], v[ 1 ] );
+	VectorTransform( pattachments[ iAttachment ].vectors[ 1 ], m_bonetransform[ pattachments[ iAttachment ].bone ], v[ 2 ] );
+	VectorTransform( pattachments[ iAttachment ].vectors[ 2 ], m_bonetransform[ pattachments[ iAttachment ].bone ], v[ 3 ] );
+	glBegin( GL_LINES );
+	glColor3f( 0, 1, 1 );
+	glVertex3fv( glm::value_ptr( v[ 0 ] ) );
+	glColor3f( 1, 1, 1 );
+	glVertex3fv( glm::value_ptr( v[ 1 ] ) );
+	glColor3f( 0, 1, 1 );
+	glVertex3fv( glm::value_ptr( v[ 0 ] ) );
+	glColor3f( 1, 1, 1 );
+	glVertex3fv( glm::value_ptr( v[ 2 ] ) );
+	glColor3f( 0, 1, 1 );
+	glVertex3fv( glm::value_ptr( v[ 0 ] ) );
+	glColor3f( 1, 1, 1 );
+	glVertex3fv( glm::value_ptr( v[ 3 ] ) );
+	glEnd();
+
+	glPointSize( 10 );
+	glColor3f( 0, 1, 0 );
+	glBegin( GL_POINTS );
+	glVertex3fv( glm::value_ptr( v[ 0 ] ) );
+	glEnd();
+	glPointSize( 1 );
+}
+
 void CStudioModelRenderer::DrawBones()
 {
-	mstudiobone_t *pbones = m_pStudioHdr->GetBones();
+	const mstudiobone_t* const pbones = m_pStudioHdr->GetBones();
 	glDisable( GL_TEXTURE_2D );
 	glDisable( GL_DEPTH_TEST );
 

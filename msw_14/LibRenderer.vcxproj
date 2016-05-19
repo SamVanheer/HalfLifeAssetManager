@@ -164,7 +164,9 @@
     <ClInclude Include="..\src\engine\renderer\studiomodel\CStudioModelRenderer.h" />
     <ClInclude Include="..\src\engine\renderer\studiomodel\StudioSorting.h" />
     <ClInclude Include="..\src\engine\shared\renderer\IRendererLibrary.h" />
+    <ClInclude Include="..\src\engine\shared\renderer\studiomodel\CModelRenderInfo.h" />
     <ClInclude Include="..\src\engine\shared\renderer\studiomodel\IStudioModelRenderer.h" />
+    <ClInclude Include="..\src\engine\shared\renderer\studiomodel\IStudioModelRendererListener.h" />
     <ClInclude Include="..\src\lib\LibInterface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

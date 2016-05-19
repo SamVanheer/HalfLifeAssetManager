@@ -137,10 +137,13 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	this->SetSizer( pSizer );
 
 	InitializeUI();
+
+	g_pStudioMdlRenderer->SetRendererListener( this );
 }
 
 CMainPanel::~CMainPanel()
 {
+	g_pStudioMdlRenderer->SetRendererListener( nullptr );
 }
 
 void CMainPanel::RunFrame()
@@ -318,6 +321,14 @@ void CMainPanel::SaveUVMap( const wxString& szFilename, const int iTexture )
 void CMainPanel::TakeScreenshot()
 {
 	m_p3DView->TakeScreenshot();
+}
+
+void CMainPanel::OnPostDraw( studiomdl::IStudioModelRenderer& renderer, const studiomdl::CModelRenderInfo& info )
+{
+	auto pPage = static_cast<CBaseControlPanel*>( m_pControlPanels->GetCurrentPage() );
+
+	if( pPage )
+		pPage->OnPostDraw( renderer, info );
 }
 
 void CMainPanel::ViewOriginChanged( wxCommandEvent& event )

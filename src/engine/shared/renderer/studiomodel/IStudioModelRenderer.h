@@ -9,6 +9,8 @@
 
 #include "shared/studiomodel/StudioModelConstants.h"
 
+#include "CModelRenderInfo.h"
+
 /**
 *	@defgroup StudioModelRenderer StudioModel Renderer.
 *
@@ -18,31 +20,7 @@
 namespace studiomdl
 {
 class CStudioModel;
-
-/**
-*	Data structure used to pass model render info into the engine.
-*	TODO: this should only explicitly declare variables for studiomodel specific settings. Common settings should be accessed through a shared interface.
-*/
-struct CModelRenderInfo
-{
-	glm::vec3 vecOrigin;
-	glm::vec3 vecAngles;
-	glm::vec3 vecScale;
-
-	CStudioModel* pModel;
-
-	float flTransparency;
-
-	int iSequence;
-	float flFrame;
-	int iBodygroup;
-	int iSkin;
-
-	byte iBlender[ 2 ];
-
-	byte iController[ 4 ];
-	byte iMouth;
-};
+class IStudioModelRendererListener;
 
 /**
 *	Used to render studio models. Only one instance of this class should be used, and should be kept around, in order to achieve reasonably performant and consistent rendering.
@@ -123,6 +101,33 @@ public:
 	*	@return Number of polygons that were drawn.
 	*/
 	virtual unsigned int DrawModel( CModelRenderInfo* const pRenderInfo, const DrawFlags_t flags = DRAWF_NONE ) = 0;
+
+	/*
+	*	Tool only operations.
+	*/
+
+	/**
+	*	@return The current renderer listener, if any.
+	*/
+	virtual IStudioModelRendererListener* GetRendererListener() const = 0;
+
+	/**
+	*	Sets the current renderer listener.
+	*	@param pListener Listener to set. May be null.
+	*/
+	virtual void SetRendererListener( IStudioModelRendererListener* pListener ) = 0;
+
+	/**
+	*	Draws a single bone.
+	*	@param iBone Index of the bone to draw.
+	*/
+	virtual void DrawSingleBone( const int iBone ) = 0;
+
+	/**
+	*	Draws a single attachment.
+	*	@param iAttachment Index of the attachment to draw.
+	*/
+	virtual void DrawSingleAttachment( const int iAttachment ) = 0;
 };
 }
 

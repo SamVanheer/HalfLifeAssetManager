@@ -5,6 +5,8 @@
 
 #include "shared/Utility.h"
 
+#include "shared/renderer/studiomodel/IStudioModelRendererListener.h"
+
 #include "controlpanels/CBaseControlPanel.h"
 
 #include "C3DView.h"
@@ -24,7 +26,7 @@ class CTexturesPanel;
 class CSequencesPanel;
 class CFullscreenPanel;
 
-class CMainPanel final : public wxPanel, public I3DViewListener
+class CMainPanel final : public wxPanel, public I3DViewListener, public studiomdl::IStudioModelRendererListener
 {
 public:
 
@@ -114,6 +116,8 @@ private:
 			( pPanel->*func )( args... );
 		}
 	}
+
+	void OnPostDraw( studiomdl::IStudioModelRenderer& renderer, const studiomdl::CModelRenderInfo& info ) override final;
 
 	void ViewOriginChanged( wxCommandEvent& event );
 

@@ -1,5 +1,7 @@
 #include <wx/gbsizer.h>
 
+#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
+
 #include "../CHLMV.h"
 #include "../../CHLMVState.h"
 
@@ -93,6 +95,11 @@ void CAttachmentsPanel::InitializeUI()
 	SetAttachment( 0 );
 
 	m_pAttachments->Enable( bSuccess );
+}
+
+void CAttachmentsPanel::OnPostDraw( studiomdl::IStudioModelRenderer& renderer, const studiomdl::CModelRenderInfo& info )
+{
+	renderer.DrawSingleAttachment( m_pAttachments->GetSelection() );
 }
 
 void CAttachmentsPanel::SetAttachment( int iIndex )

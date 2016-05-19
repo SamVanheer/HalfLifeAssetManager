@@ -62,6 +62,17 @@ public:
 
 	unsigned int DrawModel( CModelRenderInfo* const pRenderInfo, const DrawFlags_t flags = DRAWF_NONE ) override final;
 
+	IStudioModelRendererListener* GetRendererListener() const override final { return m_pListener; }
+
+	void SetRendererListener( IStudioModelRendererListener* pListener ) override final
+	{
+		m_pListener = pListener;
+	}
+
+	void DrawSingleBone( const int iBone ) override final;
+
+	void DrawSingleAttachment( const int iAttachment ) override final;
+
 private:
 	void DrawBones();
 
@@ -100,6 +111,8 @@ private:
 	studiohdr_t* m_pTextureHdr = nullptr;
 
 	mstudiomodel_t* m_pModel = nullptr;
+
+	IStudioModelRendererListener* m_pListener = nullptr;
 
 	/**
 	*	The number of polygons drawn since the last call to Initialize.
