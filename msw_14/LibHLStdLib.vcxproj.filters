@@ -165,9 +165,6 @@
     <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModel.h">
       <Filter>Header Files\engine\shared\studiomodel</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\engine\shared\studiomodel\IStudioModelRenderer.h">
-      <Filter>Header Files\engine\shared\studiomodel</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\cvar\CBaseConCommand.h">
       <Filter>Header Files\cvar</Filter>
     </ClInclude>

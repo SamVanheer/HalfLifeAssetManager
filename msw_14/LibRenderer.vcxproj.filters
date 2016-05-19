@@ -25,12 +25,6 @@
     <Filter Include="Source Files\lib">
       <UniqueIdentifier>{f0f09d20-04b1-45e0-a257-93c6f5e80ac1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\engine\studiomodel">
-      <UniqueIdentifier>{c5e2f4c7-c5e6-4132-b3ea-2bf69f0dfe64}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\engine\studiomodel">
-      <UniqueIdentifier>{df25ab9b-43f1-45a1-b205-2608fe95ecb3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\engine\renderer">
       <UniqueIdentifier>{2baaabea-e83e-4213-bf56-e3fd52367de8}</UniqueIdentifier>
     </Filter>
@@ -43,36 +37,48 @@
     <Filter Include="Header Files\engine\shared\renderer">
       <UniqueIdentifier>{faf6b75d-7734-43a0-b30f-ff6622cde7f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\engine\shared\renderer\studiomodel">
+      <UniqueIdentifier>{c0ca6550-ac27-4577-a3ca-5ff08a07858a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\renderer\studiomodel">
+      <UniqueIdentifier>{4277c127-6726-4813-9e20-7332f25656e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\renderer\studiomodel">
+      <UniqueIdentifier>{7a931f98-44b3-48c0-833a-7070f9a404d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\lib\LibInterface.cpp">
       <Filter>Source Files\lib</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\engine\studiomodel\CStudioModelRenderer.cpp">
-      <Filter>Source Files\engine\studiomodel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\engine\studiomodel\StudioSorting.cpp">
-      <Filter>Source Files\engine\studiomodel</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\engine\renderer\CRendererLibrary.cpp">
       <Filter>Source Files\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\renderer\studiomodel\CStudioModelRenderer.cpp">
+      <Filter>Source Files\engine\renderer\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\renderer\studiomodel\StudioSorting.cpp">
+      <Filter>Source Files\engine\renderer\studiomodel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\lib\LibInterface.h">
       <Filter>Header Files\lib</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\engine\studiomodel\StudioSorting.h">
-      <Filter>Header Files\engine\studiomodel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\engine\studiomodel\CStudioModelRenderer.h">
-      <Filter>Header Files\engine\studiomodel</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\engine\renderer\CRendererLibrary.h">
       <Filter>Header Files\engine\renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\src\engine\shared\renderer\IRendererLibrary.h">
       <Filter>Header Files\engine\shared\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\renderer\studiomodel\IStudioModelRenderer.h">
+      <Filter>Header Files\engine\shared\renderer\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\renderer\studiomodel\CStudioModelRenderer.h">
+      <Filter>Header Files\engine\renderer\studiomodel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\renderer\studiomodel\StudioSorting.h">
+      <Filter>Header Files\engine\renderer\studiomodel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@
 
 #include "utility/Color.h"
 
-#include "shared/studiomodel/IStudioModelRenderer.h"
+#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
 #include "GraphicsHelpers.h"
 

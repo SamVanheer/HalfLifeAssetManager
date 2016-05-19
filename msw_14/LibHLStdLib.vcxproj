@@ -27,7 +27,6 @@
     <ClInclude Include="..\src\cvar\CVarUtils.h" />
     <ClInclude Include="..\src\cvar\ICVarSystem.h" />
     <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModel.h" />
-    <ClInclude Include="..\src\engine\shared\studiomodel\IStudioModelRenderer.h" />
     <ClInclude Include="..\src\engine\shared\studiomodel\studio.h" />
     <ClInclude Include="..\src\engine\shared\studiomodel\StudioModelConstants.h" />
     <ClInclude Include="..\src\html\CHTMLBody.h" />

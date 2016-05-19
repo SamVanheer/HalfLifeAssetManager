@@ -11,7 +11,7 @@
 
 #include "shared/studiomodel/studio.h"
 
-#include "shared/studiomodel/IStudioModelRenderer.h"
+#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
 namespace studiomdl
 {

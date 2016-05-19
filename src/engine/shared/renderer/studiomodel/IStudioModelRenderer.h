@@ -7,7 +7,7 @@
 
 #include "shared/Const.h"
 
-#include "StudioModelConstants.h"
+#include "shared/studiomodel/StudioModelConstants.h"
 
 /**
 *	@defgroup StudioModelRenderer StudioModel Renderer.
@@ -121,7 +121,6 @@ public:
 	*	@param pRenderInfo Render info that describes the model.
 	*	@param flags Flags.
 	*	@return Number of polygons that were drawn.
-	*	TODO: remove dependency on entity itself.
 	*/
 	virtual unsigned int DrawModel( CModelRenderInfo* const pRenderInfo, const DrawFlags_t flags = DRAWF_NONE ) = 0;
 };

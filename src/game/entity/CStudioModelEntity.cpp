@@ -3,7 +3,7 @@
 
 #include "shared/studiomodel/CStudioModel.h"
 
-#include "shared/studiomodel/IStudioModelRenderer.h"
+#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
 #include "CStudioModelEntity.h"
 

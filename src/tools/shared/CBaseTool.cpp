@@ -19,7 +19,7 @@
 
 #include "shared/renderer/IRendererLibrary.h"
 
-#include "shared/studiomodel/IStudioModelRenderer.h"
+#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
 #include "CBaseTool.h"
 

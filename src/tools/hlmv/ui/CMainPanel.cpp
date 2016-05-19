@@ -15,7 +15,7 @@
 #include "controlpanels/CFullscreenPanel.h"
 
 #include "shared/studiomodel/CStudioModel.h"
-#include "shared/studiomodel/IStudioModelRenderer.h"
+#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 #include "game/entity/CStudioModelEntity.h"
 #include "game/entity/CBaseEntityList.h"
 

@@ -14,7 +14,7 @@
 #include "graphics/GraphicsHelpers.h"
 #include "graphics/GLRenderTarget.h"
 
-#include "shared/studiomodel/IStudioModelRenderer.h"
+#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
 #include "game/entity/CStudioModelEntity.h"
 
