@@ -20,6 +20,10 @@
 
 #include "ui/wx/CwxOpenGL.h"
 
+#include "CMainPanel.h"
+
+#include "controlpanels/CTexturesPanel.h"
+
 #include "C3DView.h"
 
 //TODO: remove
@@ -31,13 +35,13 @@ wxBEGIN_EVENT_TABLE( C3DView, CwxBase3DView )
 	EVT_MOUSE_EVENTS( C3DView::MouseEvents )
 wxEND_EVENT_TABLE()
 
-C3DView::C3DView( wxWindow* pParent, CHLMV* const pHLMV, wxNotebook* const pControlPanels, I3DViewListener* pListener )
+C3DView::C3DView( wxWindow* pParent, CHLMV* const pHLMV, CMainPanel* const pMainPanel, I3DViewListener* pListener )
 	: CwxBase3DView( pParent, nullptr, wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
-	, m_pControlPanels( pControlPanels )
+	, m_pMainPanel( pMainPanel )
 	, m_pListener( pListener )
 {
-	wxASSERT( pControlPanels );
+	wxASSERT( pMainPanel );
 }
 
 C3DView::~C3DView()
@@ -116,11 +120,13 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 	//Default to no operations if we couldn't find the page.
 	MouseOpFlags_t flags = MOUSEOPF_NONE;
 
-	const int iPage = m_pControlPanels->GetSelection();
+	auto pControlPanels = m_pMainPanel->GetControlPanels();
+
+	const int iPage = pControlPanels->GetSelection();
 
 	if( iPage != wxNOT_FOUND )
 	{
-		flags = static_cast<CBaseControlPanel*>( m_pControlPanels->GetPage( iPage ) )->GetAllowedMouseOperations();
+		flags = static_cast<CBaseControlPanel*>( pControlPanels->GetPage( iPage ) )->GetAllowedMouseOperations();
 	}
 
 	//Disable translation and rotation when weapon origin view mode is enabled.
@@ -133,10 +139,27 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 
 	auto pCamera = m_pHLMV->GetState()->GetCurrentCamera();
 
+	const bool bWasTexPanelData = m_bTexPanelMouseData;
+
+	m_bTexPanelMouseData = pControlPanels->GetCurrentPage() == m_pMainPanel->GetTexturesPanel();
+
 	if( event.ButtonDown() )
 	{
-		m_OldCamera.SetOrigin( pCamera->GetOrigin() );
-		m_OldCamera.SetViewDirection( pCamera->GetViewDirection() );
+		if( !m_bTexPanelMouseData )
+		{
+			m_OldCamera.SetOrigin( pCamera->GetOrigin() );
+			m_OldCamera.SetViewDirection( pCamera->GetViewDirection() );
+		}
+		else
+		{
+			auto pState = m_pHLMV->GetState();
+
+			pState->iOldTextureXOffset = pState->iTextureXOffset;
+			pState->iOldTextureYOffset = pState->iTextureYOffset;
+
+			m_flOldTextureScale = pState->textureScale;
+		}
+
 		m_vecOldCoords.x = event.GetX();
 		m_vecOldCoords.y = event.GetY();
 
@@ -148,70 +171,96 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 	}
 	else if( event.Dragging() )
 	{
-		if( event.LeftIsDown() && m_iButtonsDown & wxMOUSE_BTN_LEFT )
+		//Reset data if the panel changed.
+		if( bWasTexPanelData != m_bTexPanelMouseData )
 		{
-			if( event.GetModifiers() & wxMOD_SHIFT )
+			m_vecOldCoords.x = event.GetX();
+			m_vecOldCoords.y = event.GetY();
+		}
+
+		if( !m_bTexPanelMouseData )
+		{
+			if( event.LeftIsDown() && m_iButtonsDown & wxMOUSE_BTN_LEFT )
+			{
+				if( event.GetModifiers() & wxMOD_SHIFT )
+				{
+					if( flags & MOUSEOPF_TRANSLATE )
+					{
+						pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x - ( float ) ( event.GetX() - m_vecOldCoords.x );
+						pCamera->GetOrigin().y = m_OldCamera.GetOrigin().y + ( float ) ( event.GetY() - m_vecOldCoords.y );
+					}
+				}
+				else if( event.GetModifiers() & wxMOD_CONTROL )
+				{
+					if( flags & MOUSEOPF_LIGHTVECTOR )
+					{
+						glm::vec3 vecLightDir = g_pStudioMdlRenderer->GetLightVector();
+
+						const float DELTA = 0.05f;
+
+						if( m_vecOldCoords.x <= event.GetX() )
+						{
+							vecLightDir.x += DELTA;
+						}
+						else
+						{
+							vecLightDir.x -= DELTA;
+						}
+
+						if( m_vecOldCoords.y <= event.GetY() )
+						{
+							vecLightDir.y += DELTA;
+						}
+						else
+						{
+							vecLightDir.y -= DELTA;
+						}
+
+						m_vecOldCoords.x = event.GetX();
+						m_vecOldCoords.y = event.GetY();
+
+						vecLightDir.x = clamp( vecLightDir.x, -1.0f, 0.0f );
+						vecLightDir.y = clamp( vecLightDir.y, -1.0f, 1.0f );
+
+						g_pStudioMdlRenderer->SetLightVector( vecLightDir );
+					}
+				}
+				else
+				{
+					if( flags & MOUSEOPF_ROTATE )
+					{
+						//TODO: this should be a vector, not an angle
+						glm::vec3 vecViewDir = m_OldCamera.GetViewDirection();
+
+						vecViewDir.x += ( float ) ( event.GetY() - m_vecOldCoords.y );
+						vecViewDir.y += ( float ) ( event.GetX() - m_vecOldCoords.x );
+
+						pCamera->SetViewDirection( vecViewDir );
+					}
+				}
+			}
+			else if( event.RightIsDown() && m_iButtonsDown & wxMOUSE_BTN_RIGHT )
 			{
 				if( flags & MOUSEOPF_TRANSLATE )
 				{
-					pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x - ( float ) ( event.GetX() - m_vecOldCoords.x );
-					pCamera->GetOrigin().y = m_OldCamera.GetOrigin().y + ( float ) ( event.GetY() - m_vecOldCoords.y );
-				}
-			}
-			else if( event.GetModifiers() & wxMOD_CONTROL )
-			{
-				if( flags & MOUSEOPF_LIGHTVECTOR )
-				{
-					glm::vec3 vecLightDir = g_pStudioMdlRenderer->GetLightVector();
-
-					const float DELTA = 0.05f;
-
-					if( m_vecOldCoords.x <= event.GetX() )
-					{
-						vecLightDir.x += DELTA;
-					}
-					else
-					{
-						vecLightDir.x -= DELTA;
-					}
-
-					if( m_vecOldCoords.y <= event.GetY() )
-					{
-						vecLightDir.y += DELTA;
-					}
-					else
-					{
-						vecLightDir.y -= DELTA;
-					}
-
-					m_vecOldCoords.x = event.GetX();
-					m_vecOldCoords.y = event.GetY();
-
-					vecLightDir.x = clamp( vecLightDir.x, -1.0f, 0.0f );
-					vecLightDir.y = clamp( vecLightDir.y, -1.0f, 1.0f );
-
-					g_pStudioMdlRenderer->SetLightVector( vecLightDir );
-				}
-			}
-			else
-			{
-				if( flags & MOUSEOPF_ROTATE )
-				{
-					//TODO: this should be a vector, not an angle
-					glm::vec3 vecViewDir = m_OldCamera.GetViewDirection();
-
-					vecViewDir.x += ( float ) ( event.GetY() - m_vecOldCoords.y );
-					vecViewDir.y += ( float ) ( event.GetX() - m_vecOldCoords.x );
-
-					pCamera->SetViewDirection( vecViewDir );
+					pCamera->GetOrigin().z = m_OldCamera.GetOrigin().z + ( float ) ( event.GetY() - m_vecOldCoords.y );
 				}
 			}
 		}
-		else if( event.RightIsDown() && m_iButtonsDown & wxMOUSE_BTN_RIGHT )
+		else
 		{
-			if( flags & MOUSEOPF_TRANSLATE )
+			if( event.LeftIsDown() && m_iButtonsDown & wxMOUSE_BTN_LEFT )
 			{
-				pCamera->GetOrigin().z = m_OldCamera.GetOrigin().z + ( float ) ( event.GetY() - m_vecOldCoords.y );
+				auto pState = m_pHLMV->GetState();
+
+				pState->iTextureXOffset = pState->iOldTextureXOffset + ( float ) ( event.GetX() - m_vecOldCoords.x );
+				pState->iTextureYOffset = pState->iOldTextureYOffset + ( float ) ( event.GetY() - m_vecOldCoords.y );
+			}
+			else if( event.RightIsDown() && m_iButtonsDown & wxMOUSE_BTN_RIGHT )
+			{
+				const float flDiff = ( event.GetY() - m_vecOldCoords.y ) / -20.0f;
+
+				m_pMainPanel->GetTexturesPanel()->SetScale( static_cast<int>( m_flOldTextureScale + flDiff ) );
 			}
 		}
 
@@ -240,7 +289,154 @@ void C3DView::DrawTexture( const int iTexture, const float flTextureScale, const
 
 	const wxSize size = GetClientSize();
 
-	graphics::helpers::DrawTexture( size.GetX(), size.GetY(), pEntity, iTexture, flTextureScale, bShowUVMap, bOverlayUVMap, bAntiAliasLines, pUVMesh );
+	DrawTexture( m_pHLMV->GetState()->iTextureXOffset, m_pHLMV->GetState()->iTextureYOffset, size.GetWidth(), size.GetHeight(), 
+				 pEntity, iTexture, flTextureScale, bShowUVMap, bOverlayUVMap, bAntiAliasLines, pUVMesh );
+}
+
+void C3DView::DrawTexture( const int iXOffset, const int iYOffset, const int iWidth, const int iHeight,
+				  CStudioModelEntity* pEntity,
+				  const int iTexture, const float flTextureScale, const bool bShowUVMap, const bool bOverlayUVMap, const bool bAntiAliasLines,
+				  const mstudiomesh_t* const pUVMesh )
+{
+	assert( pEntity );
+
+	auto pModel = pEntity->GetModel();
+
+	assert( pModel );
+
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+
+	glOrtho( 0.0f, ( float ) iWidth, ( float ) iHeight, 0.0f, 1.0f, -1.0f );
+
+	const studiohdr_t* const hdr = pModel->GetTextureHeader();
+
+	if( hdr )
+	{
+		mstudiotexture_t *ptextures = ( mstudiotexture_t * ) ( ( byte * ) hdr + hdr->textureindex );
+
+		const mstudiotexture_t& texture = ptextures[ iTexture ];
+
+		float w = ( float ) texture.width * flTextureScale;
+		float h = ( float ) texture.height * flTextureScale;
+
+		glMatrixMode( GL_MODELVIEW );
+		glPushMatrix();
+		glLoadIdentity();
+
+		glDisable( GL_CULL_FACE );
+		glDisable( GL_BLEND );
+
+		if( texture.flags & STUDIO_NF_MASKED )
+		{
+			glEnable( GL_ALPHA_TEST );
+			glAlphaFunc( GL_GREATER, 0.0f );
+		}
+
+		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		float x = ( ( ( float ) iWidth - w ) / 2 ) + iXOffset;
+		float y = ( ( ( float ) iHeight - h ) / 2 ) + iYOffset;
+
+		glDisable( GL_DEPTH_TEST );
+
+		if( bShowUVMap && !bOverlayUVMap )
+		{
+			glColor4f( 0.0f, 0.0f, 0.0f, 1.0f );
+			glDisable( GL_TEXTURE_2D );
+			glRectf( x, y, x + w, y + h );
+		}
+
+		if( !bShowUVMap || bOverlayUVMap )
+		{
+			glEnable( GL_TEXTURE_2D );
+			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+			glBindTexture( GL_TEXTURE_2D, pModel->GetTextureId( iTexture ) );
+
+			glBegin( GL_TRIANGLE_STRIP );
+
+			glTexCoord2f( 0, 0 );
+			glVertex2f( x, y );
+
+			glTexCoord2f( 1, 0 );
+			glVertex2f( x + w, y );
+
+			glTexCoord2f( 0, 1 );
+			glVertex2f( x, y + h );
+
+			glTexCoord2f( 1, 1 );
+			glVertex2f( x + w, y + h );
+
+			glEnd();
+
+			glBindTexture( GL_TEXTURE_2D, 0 );
+		}
+
+		if( bShowUVMap )
+		{
+			glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+
+			CStudioModelEntity::MeshList_t meshes;
+
+			if( pUVMesh )
+			{
+				meshes.push_back( pUVMesh );
+			}
+			else
+			{
+				meshes = pEntity->ComputeMeshList( iTexture );
+			}
+
+			graphics::helpers::SetupRenderMode( RenderMode::WIREFRAME, true );
+
+			if( bAntiAliasLines )
+			{
+				glEnable( GL_BLEND );
+				glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+				glEnable( GL_LINE_SMOOTH );
+			}
+
+			int i;
+
+			const mstudiomesh_t* const* ppMeshes = meshes.data();
+
+			for( size_t uiIndex = 0; uiIndex < meshes.size(); ++uiIndex, ++ppMeshes )
+			{
+				const short* ptricmds = ( short* ) ( ( byte* ) pModel->GetStudioHeader() + ( *ppMeshes )->triindex );
+
+				while( i = *( ptricmds++ ) )
+				{
+					if( i < 0 )
+					{
+						glBegin( GL_TRIANGLE_FAN );
+						i = -i;
+					}
+					else
+					{
+						glBegin( GL_TRIANGLE_STRIP );
+					}
+
+					for( ; i > 0; i--, ptricmds += 4 )
+					{
+						// FIX: put these in as integer coords, not floats
+						glVertex2f( x + ptricmds[ 2 ] * flTextureScale, y + ptricmds[ 3 ] * flTextureScale );
+					}
+					glEnd();
+				}
+			}
+
+			if( bAntiAliasLines )
+			{
+				glDisable( GL_LINE_SMOOTH );
+			}
+		}
+
+		glPopMatrix();
+
+		glClear( GL_DEPTH_BUFFER_BIT );
+
+		if( texture.flags & STUDIO_NF_MASKED )
+			glDisable( GL_ALPHA_TEST );
+	}
 }
 
 void C3DView::DrawModel()
@@ -404,7 +600,7 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
-	graphics::helpers::DrawTexture( texture.width, texture.height, pEntity, iTexture, 1.0f, true, false, false, m_pHLMV->GetState()->pUVMesh );
+	DrawTexture( 0, 0, texture.width, texture.height, pEntity, iTexture, 1.0f, true, false, false, m_pHLMV->GetState()->pUVMesh );
 
 	pScratchTarget->FinishDraw();
 

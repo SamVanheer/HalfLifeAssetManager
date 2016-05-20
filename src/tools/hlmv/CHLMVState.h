@@ -96,6 +96,12 @@ public:
 	//Index of the texture to draw onscreen in Texture mode.
 	int texture;
 
+	int iTextureXOffset;
+	int iTextureYOffset;
+
+	int iOldTextureXOffset;
+	int iOldTextureYOffset;
+
 	float textureScale;
 
 	char backgroundTextureFile[ MAX_PATH_LENGTH ];

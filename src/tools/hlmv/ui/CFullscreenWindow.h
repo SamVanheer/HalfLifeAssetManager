@@ -3,17 +3,16 @@
 
 #include "wxHLMV.h"
 
-class wxNotebook;
-
 namespace hlmv
 {
 class CHLMV;
 class C3DView;
+class CMainPanel;
 
 class CFullscreenWindow final : public wxFrame
 {
 public:
-	CFullscreenWindow( CHLMV* const pHLMV, wxNotebook* const pControlPanels );
+	CFullscreenWindow( CHLMV* const pHLMV, CMainPanel* const pMainPanel );
 	~CFullscreenWindow();
 
 	void RunFrame();

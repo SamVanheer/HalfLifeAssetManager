@@ -16,7 +16,7 @@ class CTexturesPanel final : public CBaseControlPanel
 {
 public:
 	static const size_t TEXTUREVIEW_SLIDER_MIN = 1;
-	static const size_t TEXTUREVIEW_SLIDER_MAX = 4;
+	static const size_t TEXTUREVIEW_SLIDER_MAX = 10;
 	static const size_t TEXTUREVIEW_SLIDER_DEFAULT = TEXTUREVIEW_SLIDER_MIN;
 
 	static const size_t NUM_CHECKBOX_COLS = 2;

@@ -78,6 +78,16 @@ public:
 
 	void Draw3D( const wxSize& size ) override final;
 
+	wxNotebook* GetControlPanels() { return m_pControlPanels; }
+
+	CModelDisplayPanel*		GetModelDisplayPanel() { return m_pModelDisplay; }
+	CBodyPartsPanel*		GetBodyPartsPanel() { return m_pBodyParts; }
+	CBonesPanel*			GetBonesPanel() { return m_pBones; }
+	CAttachmentsPanel*		GetAttachmentsPanel() { return m_pAttachments; }
+	CTexturesPanel*			GetTexturesPanel() { return m_pTextures; }
+	CSequencesPanel*		GetSequencesPanel() { return m_pSequencesPanel; }
+	CFullscreenPanel*		GetFullscreenPanel() { return m_pFullscreen; }
+
 	bool LoadModel( const wxString& szFilename );
 
 	void FreeModel();

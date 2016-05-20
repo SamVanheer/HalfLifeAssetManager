@@ -36,6 +36,9 @@ void CHLMVState::ResetModelData()
 
 	texture = 0;
 
+	iTextureXOffset = 0;
+	iTextureYOffset = 0;
+
 	pUVMesh = nullptr;
 }
 

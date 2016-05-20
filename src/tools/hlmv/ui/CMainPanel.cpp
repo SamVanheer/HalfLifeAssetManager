@@ -68,7 +68,7 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pControlPanels = new wxNotebook( m_pControlPanel, wxID_MAIN_PAGECHANGED );
 
-	m_p3DView = new C3DView( this, m_pHLMV, m_pControlPanels, this );
+	m_p3DView = new C3DView( this, m_pHLMV, this, this );
 
 	m_pModelDisplay = new CModelDisplayPanel( m_pControlPanels, m_pHLMV );
 
@@ -82,7 +82,7 @@ CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	m_pSequencesPanel = new CSequencesPanel( m_pControlPanels, m_pHLMV );
 
-	m_pFullscreen = new CFullscreenPanel( m_pControlPanels, m_pHLMV, m_pControlPanels );
+	m_pFullscreen = new CFullscreenPanel( m_pControlPanels, m_pHLMV, this );
 
 	CBaseControlPanel* const panels[] = 
 	{

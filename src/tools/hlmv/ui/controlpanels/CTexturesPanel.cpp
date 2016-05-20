@@ -162,6 +162,11 @@ void CTexturesPanel::InitializeUI()
 
 void CTexturesPanel::SetTexture( int iIndex )
 {
+	auto pState = m_pHLMV->GetState();
+
+	//Reset all of these no matter what.
+	pState->iOldTextureXOffset = pState->iOldTextureYOffset = pState->iTextureXOffset = pState->iTextureYOffset = 0;
+
 	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
 	if( !pEntity )
@@ -230,8 +235,7 @@ void CTexturesPanel::SetTexture( int iIndex )
 
 void CTexturesPanel::SetScale( int iScale, const bool bSetSlider )
 {
-	if( iScale < TEXTUREVIEW_SLIDER_MIN || iScale > TEXTUREVIEW_SLIDER_MAX )
-		iScale = TEXTUREVIEW_SLIDER_DEFAULT;
+	iScale = clamp( iScale, static_cast<int>( TEXTUREVIEW_SLIDER_MIN ), static_cast<int>( TEXTUREVIEW_SLIDER_MAX ) );
 
 	m_pHLMV->GetState()->textureScale = iScale;
 
