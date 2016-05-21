@@ -23,6 +23,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat3x4.hpp>
+#include <glm/mat4x4.hpp>
 
 //TODO: typedef glm::* types into the global namespace, using doublevec_t to decide whether to use float or double.
 #ifdef DOUBLEVEC_T
@@ -144,11 +145,18 @@ void QuaternionSlerp( const glm::vec4& p, glm::vec4& q, float t, glm::vec4& qt )
 */
 glm::vec3 VectorToAngles( const glm::vec3& vec );
 
+void AngleVectors( const glm::vec3& vecAngles, glm::vec3* pForward, glm::vec3* pRight, glm::vec3* pUp );
+
 /**
 *	Converts angles to a vector.
 *	@param angles Angles.
 *	@return Vector.
 */
 glm::vec3 AnglesToVector( const glm::vec3& angles );
+
+/**
+*	@return The model view matrix for the GoldSource engine.
+*/
+glm::mat4x4 Mat4x4ModelView();
 
 #endif

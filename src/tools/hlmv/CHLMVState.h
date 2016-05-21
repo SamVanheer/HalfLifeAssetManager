@@ -134,6 +134,8 @@ public:
 
 	bool antiAliasUVLines;
 
+	bool drawAxes;
+
 private:
 	CHLMVStudioModelEntity* m_pEntity;
 

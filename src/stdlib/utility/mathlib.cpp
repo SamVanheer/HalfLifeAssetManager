@@ -281,11 +281,56 @@ glm::vec3 VectorToAngles( const glm::vec3& vec )
 	return glm::vec3( pitch, yaw, 0 );
 }
 
+void SinCos( float flRadians, float& flSin, float& flCos )
+{
+	flSin = sin( flRadians );
+	flCos = cos( flRadians );
+}
+
+void AngleVectors( const glm::vec3& vecAngles, glm::vec3* pForward, glm::vec3* pRight, glm::vec3* pUp )
+{
+	float	sr, sp, sy, cr, cp, cy;
+
+	SinCos( glm::radians( vecAngles[ 1 ] ), sy, cy );
+	SinCos( glm::radians( vecAngles[ 0 ] ), sp, cp );
+	SinCos( glm::radians( vecAngles[ 2 ] ), sr, cr );
+
+	if( pForward )
+	{
+		( *pForward )[ 0 ] = cp * cy;
+		( *pForward )[ 1 ] = cp * sy;
+		( *pForward )[ 2 ] = -sp;
+	}
+
+	if( pRight )
+	{
+		( *pRight )[ 0 ] = ( -1.0f * sr * sp * cy + -1.0f * cr * -sy );
+		( *pRight )[ 1 ] = ( -1.0f * sr * sp * sy + -1.0f * cr * cy );
+		( *pRight )[ 2 ] = ( -1.0f * sr * cp );
+	}
+
+	if( pUp )
+	{
+		( *pUp )[ 0 ] = ( cr * sp * cy + -sr * -sy );
+		( *pUp )[ 1 ] = ( cr * sp * sy + -sr * cy );
+		( *pUp )[ 2 ] = ( cr * cp );
+	}
+}
+
 glm::vec3 AnglesToVector( const glm::vec3& angles )
 {
-	return glm::vec3(
-		cos( glm::radians( angles.y ) ) * cos( glm::radians( angles.x ) ),
-		sin( glm::radians( angles.y ) ) * cos( glm::radians( angles.x ) ),
-		sin( glm::radians( angles.x ) )
-	);
+	glm::vec3 forward, right, up;
+
+	AngleVectors( angles, &forward, &right, &up );
+
+	return forward + right + up;
+}
+
+glm::mat4x4 Mat4x4ModelView()
+{
+	return glm::mat4x4(
+		0, -1, 0, 0,
+		0, 0, 1, 0,
+		-1, 0, 0, 0,
+		0, 0, 0, 1 );
 }

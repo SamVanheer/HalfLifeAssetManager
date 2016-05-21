@@ -36,6 +36,7 @@ public:
 			MIRROR_ON_GROUND,
 			SHOW_BACKGROUND,
 			WIREFRAME_OVERLAY,
+			AXES,
 
 			COUNT,
 			LAST = COUNT - 1	//Must be last.

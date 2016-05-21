@@ -6,7 +6,7 @@
 
 namespace hlmv
 {
-const glm::vec3 CHLMVState::DEFAULT_ROTATION = glm::vec3( -90.0f, 0, 0 );
+const glm::vec3 CHLMVState::DEFAULT_ROTATION = glm::vec3( -90.0f, 0, -90.0f );
 
 const float CHLMVState::DEFAULT_FOV = 65.0f;
 
@@ -29,7 +29,7 @@ void CHLMVState::ResetModelData()
 	camera.SetViewDirection( DEFAULT_ROTATION );
 
 	weaponOriginCamera.SetOrigin( glm::vec3( 0 ) );
-	weaponOriginCamera.SetViewDirection( glm::vec3( -90, 90, 0 ) );
+	weaponOriginCamera.SetViewDirection( glm::vec3( -90, 0, 90 ) );
 
 	flFOV = DEFAULT_FOV;
 	flFPFOV = DEFAULT_FP_FOV;
@@ -79,6 +79,8 @@ void CHLMVState::ResetToDefaults()
 	overlayUVMap = false;
 
 	antiAliasUVLines = false;
+
+	drawAxes = false;
 }
 
 void CHLMVState::CenterView()
@@ -103,12 +105,12 @@ void CHLMVState::CenterView()
 	glm::vec3 trans;
 	glm::vec3 rot;
 
-	trans[ 0 ] = 0;
-	trans[ 1 ] = min[ 2 ] + dz / 2;
-	trans[ 2 ] = d * 1.0f;
+	trans[ 2 ] = 0;
+	trans[ 0 ] = -( min[ 2 ] + dz / 2 );
+	trans[ 1 ] = d * 1.0f;
 	rot[ 0 ] = -90.0f;
-	rot[ 1 ] = -90.0f;
-	rot[ 2 ] = 0.0f;
+	rot[ 1 ] = 0.0f;
+	rot[ 2 ] = -90.0f;
 
 	camera.SetOrigin( trans );
 	camera.SetViewDirection( rot );

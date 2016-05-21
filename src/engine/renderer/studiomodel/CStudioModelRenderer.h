@@ -97,7 +97,7 @@ private:
 	unsigned int DrawPoints( const bool wireframeOnly = false );
 
 	void Lighting( glm::vec3& lv, int bone, int flags, const glm::vec3& normal );
-	void Chrome( glm::ivec2& chrome, int bone, const glm::vec3& normal );
+	void Chrome( glm::vec2& chrome, int bone, const glm::vec3& normal );
 
 private:
 	/**
@@ -135,7 +135,7 @@ private:
 	Color			m_lightcolor;
 	glm::vec3		m_blightvec[ MAXSTUDIOBONES ];		// light vectors in bone reference frames
 
-	glm::ivec2		m_chrome[ MAXSTUDIOVERTS ];			// texture coords for surface normals
+	glm::vec2		m_chrome[ MAXSTUDIOVERTS ];			// texture coords for surface normals
 	unsigned int	m_chromeage[ MAXSTUDIOBONES ];		// last time chrome vectors were updated
 	glm::vec3		m_chromeup[ MAXSTUDIOBONES ];		// chrome vector "up" in bone reference frames
 	glm::vec3		m_chromeright[ MAXSTUDIOBONES ];	// chrome vector "right" in bone reference frames

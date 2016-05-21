@@ -1,5 +1,9 @@
 #include <memory>
 
+#include <glm/mat4x4.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <wx/image.h>
 #include <wx/notebook.h>
 
@@ -109,10 +113,19 @@ void C3DView::ApplyCameraToScene()
 	const auto& vecOrigin = pCamera->GetOrigin();
 	const auto vecAngles = pCamera->GetViewDirection();
 
-	glTranslatef( -vecOrigin[ 0 ], -vecOrigin[ 1 ], -vecOrigin[ 2 ] );
+	const glm::mat4x4 identity = Mat4x4ModelView();
 
-	glRotatef( vecAngles[ 0 ], 1.0f, 0.0f, 0.0f );
-	glRotatef( vecAngles[ 1 ], 0.0f, 0.0f, 1.0f );
+	auto mat = Mat4x4ModelView();
+
+	mat *= glm::translate( -vecOrigin );
+
+	mat *= glm::rotate( glm::radians( vecAngles[ 2 ] ), glm::vec3{ 1, 0, 0 } );
+
+	mat *= glm::rotate( glm::radians( vecAngles[ 0 ] ), glm::vec3{ 0, 1, 0 } );
+
+	mat *= glm::rotate( glm::radians( vecAngles[ 1 ] ), glm::vec3{ 0, 0, 1 } );
+
+	glLoadMatrixf( glm::value_ptr( mat ) );
 }
 
 void C3DView::MouseEvents( wxMouseEvent& event )
@@ -186,8 +199,8 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 				{
 					if( flags & MOUSEOPF_TRANSLATE )
 					{
-						pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x - ( float ) ( event.GetX() - m_vecOldCoords.x );
-						pCamera->GetOrigin().y = m_OldCamera.GetOrigin().y + ( float ) ( event.GetY() - m_vecOldCoords.y );
+						pCamera->GetOrigin().z = m_OldCamera.GetOrigin().z - ( float ) ( event.GetX() - m_vecOldCoords.x );
+						pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x + ( float ) ( event.GetY() - m_vecOldCoords.y );
 					}
 				}
 				else if( event.GetModifiers() & wxMOD_CONTROL )
@@ -232,8 +245,8 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 						//TODO: this should be a vector, not an angle
 						glm::vec3 vecViewDir = m_OldCamera.GetViewDirection();
 
-						vecViewDir.x += ( float ) ( event.GetY() - m_vecOldCoords.y );
 						vecViewDir.y += ( float ) ( event.GetX() - m_vecOldCoords.x );
+						vecViewDir.x += ( float ) ( event.GetY() - m_vecOldCoords.y );
 
 						pCamera->SetViewDirection( vecViewDir );
 					}
@@ -243,7 +256,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 			{
 				if( flags & MOUSEOPF_TRANSLATE )
 				{
-					pCamera->GetOrigin().z = m_OldCamera.GetOrigin().z + ( float ) ( event.GetY() - m_vecOldCoords.y );
+					pCamera->GetOrigin().y = m_OldCamera.GetOrigin().y + ( float ) ( event.GetY() - m_vecOldCoords.y );
 				}
 			}
 		}
@@ -460,14 +473,64 @@ void C3DView::DrawModel()
 
 	ApplyCameraToScene();
 
-	g_pStudioMdlRenderer->SetViewerOrigin( m_pHLMV->GetState()->GetCurrentCamera()->GetOrigin() );
+	if( m_pHLMV->GetState()->drawAxes )
+	{
+		const float flLength = 50.0f;
+
+		glLineWidth( 1.0f );
+
+		glBegin( GL_LINES );
+
+		glColor3f( 1.0f, 0, 0 );
+
+		glVertex3f( 0, 0, 0 );
+		glVertex3f( flLength, 0, 0 );
+
+		glColor3f( 0, 1, 0 );
+
+		glVertex3f( 0, 0, 0 );
+		glVertex3f( 0, flLength, 0 );
+
+		glColor3f( 0, 0, 1.0f );
+
+		glVertex3f( 0, 0, 0 );
+		glVertex3f( 0, 0, flLength );
+
+		glEnd();
+	}
+
+	const auto vecAngles = m_pHLMV->GetState()->GetCurrentCamera()->GetViewDirection();
+
+	auto mat = Mat4x4ModelView();
+
+	mat *= glm::translate( -m_pHLMV->GetState()->GetCurrentCamera()->GetOrigin() );
+
+	mat *= glm::rotate( glm::radians( vecAngles[ 2 ] ), glm::vec3{ 1, 0, 0 } );
+
+	mat *= glm::rotate( glm::radians( vecAngles[ 0 ] ), glm::vec3{ 0, 1, 0 } );
+
+	mat *= glm::rotate( glm::radians( vecAngles[ 1 ] ), glm::vec3{ 0, 0, 1 } );
+
+	const auto vecAbsOrigin = glm::inverse( mat )[ 3 ];
+	
+	g_pStudioMdlRenderer->SetViewerOrigin( glm::vec3( vecAbsOrigin ) );
 
 	//Originally this was calculated as:
 	//vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = vecOrigin[ 2 ];
 	//But that vector was incorrect. It mostly affects chrome because of its reflective nature.
-	const glm::vec3 vecViewerRight = AnglesToVector( m_pHLMV->GetState()->GetCurrentCamera()->GetViewDirection() );
 
-	g_pStudioMdlRenderer->SetViewerRight( vecViewerRight );
+	//Grab the angles that the player would have in-game. Since model viewer rotates the world, rather than moving the camera, this has to be adjusted.
+	glm::vec3 angViewerDir = -m_pHLMV->GetState()->GetCurrentCamera()->GetViewDirection();
+
+	angViewerDir = angViewerDir + 180.0f;
+
+	glm::vec3 vecViewerRight;
+
+	//We're using the up vector here since the in-game look can only be matched if chrome is rotated.
+	AngleVectors( angViewerDir, nullptr, nullptr, &vecViewerRight );
+
+	//Invert it so it points down instead of up. This allows chrome to match the in-game look.
+	g_pStudioMdlRenderer->SetViewerRight( -vecViewerRight );
 
 	const unsigned int uiOldPolys = g_pStudioMdlRenderer->GetDrawnPolygonsCount();
 

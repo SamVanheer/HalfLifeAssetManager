@@ -932,7 +932,7 @@ void CStudioModelRenderer::Lighting( glm::vec3& lv, int bone, int flags, const g
 }
 
 
-void CStudioModelRenderer::Chrome( glm::ivec2& chrome, int bone, const glm::vec3& normal )
+void CStudioModelRenderer::Chrome( glm::vec2& chrome, int bone, const glm::vec3& normal )
 {
 	float n;
 
@@ -950,12 +950,12 @@ void CStudioModelRenderer::Chrome( glm::ivec2& chrome, int bone, const glm::vec3
 		tmp[ 2 ] += m_bonetransform[ bone ][ 2 ][ 3 ];
 
 		VectorNormalize( tmp );
-		chromeupvec = glm::cross( tmp, m_vecViewerRight );
+		chromeupvec = glm::cross( tmp, -m_vecViewerRight );
 		VectorNormalize( chromeupvec );
 		chromerightvec = glm::cross( tmp, chromeupvec );
 		VectorNormalize( chromerightvec );
 
-		VectorIRotate( chromeupvec, m_bonetransform[ bone ], m_chromeup[ bone ] );
+		VectorIRotate( -chromeupvec, m_bonetransform[ bone ], m_chromeup[ bone ] );
 		VectorIRotate( chromerightvec, m_bonetransform[ bone ], m_chromeright[ bone ] );
 
 		m_chromeage[ bone ] = m_uiModelsDrawnCount;

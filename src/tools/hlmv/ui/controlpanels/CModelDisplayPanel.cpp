@@ -61,6 +61,7 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pCheckBoxes[ CheckBox::MIRROR_ON_GROUND ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Mirror Model On Ground" );
 	m_pCheckBoxes[ CheckBox::SHOW_BACKGROUND ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Background" );
 	m_pCheckBoxes[ CheckBox::WIREFRAME_OVERLAY ]	= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Wireframe Overlay" );
+	m_pCheckBoxes[ CheckBox::AXES ]					= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Axes" );
 
 	for( size_t uiIndex = CheckBox::FIRST; uiIndex < CheckBox::COUNT; ++uiIndex )
 	{
@@ -288,6 +289,12 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 	case CheckBox::BACKFACE_CULLING:
 		{
 			m_pHLMV->GetState()->backfaceCulling = bValue;
+			break;
+		}
+
+	case CheckBox::AXES:
+		{
+			m_pHLMV->GetState()->drawAxes = bValue;
 			break;
 		}
 
