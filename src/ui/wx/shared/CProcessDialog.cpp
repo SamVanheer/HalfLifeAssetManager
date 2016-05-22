@@ -79,6 +79,8 @@ int CProcessDialog::ShowModal()
 	if( m_szCommand.IsEmpty() )
 		return NO_COMMAND;
 
+	m_pOutput->AppendText( wxString::Format( "Command line parameters: %s\n", m_szCommand ) );
+
 	m_pProcess = new wxProcess( this );
 
 	m_pProcess->Redirect();

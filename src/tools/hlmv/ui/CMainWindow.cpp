@@ -3,6 +3,7 @@
 #include "ui/wx/CwxOpenGL.h"
 
 #include "ui/wx/shared/CMessagesWindow.h"
+#include "ui/wx/shared/CCmdLineConfigDialog.h"
 #include "ui/wx/shared/CProcessDialog.h"
 #include "ui/wx/utility/wxUtil.h"
 
@@ -410,9 +411,17 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 
 	const wxString szPath = dlg.GetPath();
 
+	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure StudioMdl" );
+
+	if( commandLineDlg.ShowModal() == wxID_CANCEL )
+		return;
+
+	auto parameters = commandLineDlg.GetParameters();
+	parameters.emplace_back( std::make_pair( szPath, "" ) );
+
 	ui::CProcessDialog processDlg( this, wxID_ANY, "StudioMdl Compiler" );
 
-	processDlg.SetCommand( wxString::Format( "%s \"%s\"", szStudioMdl, szPath ) );
+	processDlg.SetCommand( wx::FormatCommandLine( szStudioMdl, parameters ) );
 
 	wxFileName cwd( szPath );
 
@@ -430,7 +439,7 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 	}
 	else
 	{
-		Message( "Compiled QC file \"%s\\n", szPath.c_str().AsChar() );
+		Message( "Compiled QC file \"%s\"\n", szPath.c_str().AsChar() );
 	}
 }
 
@@ -453,9 +462,17 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 
 	const wxString szPath = dlg.GetPath();
 
+	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure MdlDec" );
+
+	if( commandLineDlg.ShowModal() == wxID_CANCEL )
+		return;
+
+	auto parameters = commandLineDlg.GetParameters();
+	parameters.emplace_back( std::make_pair( szPath, "" ) );
+
 	ui::CProcessDialog processDlg( this, wxID_ANY, "MdlDec Decompiler" );
 
-	processDlg.SetCommand( wxString::Format( "%s \"%s\"", szMdlDec, szPath ) );
+	processDlg.SetCommand( wx::FormatCommandLine( szMdlDec, parameters ) );
 
 	wxFileName cwd( szPath );
 
@@ -473,7 +490,7 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 	}
 	else
 	{
-		Message( "Decompiled MDL file \"%s\\n", szPath.c_str().AsChar() );
+		Message( "Decompiled MDL file \"%s\"\n", szPath.c_str().AsChar() );
 	}
 }
 

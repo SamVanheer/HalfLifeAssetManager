@@ -77,6 +77,47 @@ bool LaunchDefaultTextEditor( const wxString& szFilename );
 wxSizer* CreateCheckBoxSizer( wxCheckBox** ppCheckBoxes, const size_t uiNumCheckBoxes, const size_t uiNumColumns, 
 							  int flag = 0,
 							  int border = 0 );
+
+/**
+*	Formats a list of command line parameters as a single string.
+*	@param params List of parameters.
+*	@tparam Container type that can be iterated over. Must store a pair of strings.
+*/
+template<typename T>
+wxString FormatCommandLine( const T& parameters )
+{
+	wxString szParameters;
+
+	for( const auto& param : parameters )
+	{
+		szParameters += wxString::Format( " \"%s\"", param.first );
+
+		if( !param.second.empty() )
+		{
+			szParameters += wxString::Format( " \"%s\"", param.second );
+		}
+	}
+
+	//Remove the space at the beginning.
+	if( !szParameters.IsEmpty() )
+	{
+		szParameters.erase( szParameters.begin() );
+	}
+
+	return szParameters;
+}
+
+/**
+*	Formats a program name and list of command line parameters as a single string.
+*	@param szProgram Name of the program to execute.
+*	@param params List of parameters.
+*	@tparam Container type that can be iterated over. Must store a pair of strings.
+*/
+template<typename T>
+wxString FormatCommandLine( const wxString& szProgram, const T& parameters )
+{
+	return wxString::Format( "\"%s\" %s", szProgram, FormatCommandLine( parameters ) );
+}
 }
 
 #endif //UI_UTILITY_WXUTIL_H
