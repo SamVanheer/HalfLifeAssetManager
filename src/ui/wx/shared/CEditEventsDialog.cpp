@@ -107,8 +107,17 @@ void CEditEventsDialog::SetEvent( const int iIndex )
 {
 	const size_t uiIndex = static_cast<size_t>( iIndex );
 
-	if( iIndex < 0 || uiIndex >= m_Events.size() )
+	const bool bIsValid = iIndex >= 0 && uiIndex < m_Events.size();
+
+	m_pFrame->Enable( bIsValid );
+	m_pEvent->Enable( bIsValid );
+	m_pOptions->Enable( bIsValid );
+	m_pType->Enable( bIsValid );
+
+	if( !bIsValid )
+	{
 		return;
+	}
 
 	//Save current event data.
 	if( m_CurrentEvent.first )
