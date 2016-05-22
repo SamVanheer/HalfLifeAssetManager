@@ -1,3 +1,5 @@
+#include <wx/dir.h>
+#include <wx/filename.h>
 #include <wx/txtstrm.h>
 
 #include "CProcessDialog.h"
@@ -257,6 +259,58 @@ void CProcessDialog::Ended()
 	m_pSendInput->Enable( false );
 }
 
+void CProcessDialog::CopyOutputFiles()
+{
+	if( m_szOutputDir.IsEmpty() )
+	{
+		wxMessageBox( "Cannot copy output files, output directory unspecified!", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return;
+	}
+
+	if( m_OutputFileFilters.IsEmpty() )
+	{
+		m_pOutput->AppendText( "No output file filters specified\n" );
+		return;
+	}
+
+	const wxFileName inputDir( m_pEnv ? m_pEnv->cwd : "." );
+
+	wxDir dir( inputDir.GetFullPath() );
+
+	if( dir.IsOpened() )
+	{
+		wxString szFilename;
+
+		size_t uiNumCopied = 0;
+
+		for( const auto& szFilter : m_OutputFileFilters )
+		{
+			for( bool bContinue = dir.GetFirst( &szFilename, szFilter, wxDIR_FILES ); bContinue; bContinue = dir.GetNext( &szFilename ) )
+			{
+				const wxString szIn = dir.GetNameWithSep() + szFilename;
+				const wxString szOut = m_szOutputDir + '/' + szFilename;
+
+				if( wxCopyFile( szIn, szOut, true ) )
+				{
+					++uiNumCopied;
+
+					m_pOutput->AppendText( wxString::Format( "Copied \"%s\"\n", szFilename ) );
+				}
+				else
+				{
+					m_pOutput->AppendText( wxString::Format( "Failed to copy \"%s\"\n", szFilename ) );
+				}
+			}
+		}
+
+		m_pOutput->AppendText( wxString::Format( "%u file%s copied to %s\n", uiNumCopied, uiNumCopied != 1 ? "s" : "", m_szOutputDir ) );
+	}
+	else
+	{
+		wxMessageBox( wxString::Format( "Couldn't access directory \"%s\" contents", inputDir.GetPath() ), wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+	}
+}
+
 void CProcessDialog::OnSendInput( wxCommandEvent& event )
 {
 	SendCurrentInput();
@@ -274,6 +328,13 @@ void CProcessDialog::OnTerminated( wxProcessEvent& event )
 	m_pProcess = nullptr;
 
 	Ended();
+
+	if( m_bShouldCopyFiles )
+	{
+		m_pOutput->AppendText( "\n" );
+
+		CopyOutputFiles();
+	}
 
 	m_pTerminate->Enable( false );
 	m_pClose->Enable( true );

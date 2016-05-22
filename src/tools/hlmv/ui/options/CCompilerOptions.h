@@ -4,6 +4,7 @@
 #include "../wxHLMV.h"
 
 class wxFilePickerCtrl;
+class wxDirPickerCtrl;
 
 namespace hlmv
 {
@@ -25,6 +26,7 @@ private:
 
 	wxFilePickerCtrl* m_pStudioMdl;
 	wxFilePickerCtrl* m_pMdlDec;
+	wxDirPickerCtrl* m_pMDLOutputDir;
 
 private:
 	CCompilerOptions( const CCompilerOptions& ) = delete;

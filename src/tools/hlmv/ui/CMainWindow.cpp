@@ -396,9 +396,7 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 {
 	const wxString szStudioMdl = m_pHLMV->GetSettings()->GetStudioMdl().CStr();
 
-	wxFileName fileName( szStudioMdl );
-
-	if( !fileName.Exists() )
+	if( !wxFileName( szStudioMdl ).Exists() )
 	{
 		wxMessageBox( "Couldn't find studiomdl compiler!", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return;
@@ -413,6 +411,8 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 
 	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure StudioMdl" );
 
+	commandLineDlg.SetCopySupportEnabled( true );
+
 	if( commandLineDlg.ShowModal() == wxID_CANCEL )
 		return;
 
@@ -423,13 +423,27 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 
 	processDlg.SetCommand( wx::FormatCommandLine( szStudioMdl, parameters ) );
 
-	wxFileName cwd( szPath );
+	const wxFileName cwd( szPath );
 
 	wxExecuteEnv* pEnv = new wxExecuteEnv;
 
 	pEnv->cwd = cwd.GetPath();
 
 	processDlg.SetExecuteEnv( pEnv );
+
+	processDlg.SetShouldCopyFiles( commandLineDlg.ShouldCopyFiles() );
+
+	processDlg.SetOutputDirectory( m_pHLMV->GetSettings()->GetMDLOutputDirectory().CStr() );
+
+	if( commandLineDlg.ShouldCopyFiles() )
+	{
+		wxArrayString filters = commandLineDlg.GetOutputFileFilters();
+
+		//Copy output model(s)
+		filters.Add( wxString::Format( "%s*.mdl", cwd.GetName() ) );
+
+		processDlg.SetOutputFileFilters( filters );
+	}
 
 	const int iResult = processDlg.ShowModal();
 
@@ -447,9 +461,7 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 {
 	const wxString szMdlDec = m_pHLMV->GetSettings()->GetMdlDec().CStr();
 
-	wxFileName fileName( szMdlDec );
-
-	if( !fileName.Exists() )
+	if( !wxFileName( szMdlDec ).Exists() )
 	{
 		wxMessageBox( "Couldn't find mdldec decompiler!", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return;

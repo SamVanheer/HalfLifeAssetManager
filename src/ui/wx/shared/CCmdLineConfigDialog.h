@@ -31,6 +31,21 @@ public:
 	*/
 	std::vector<std::pair<std::string, std::string>> GetParameters() const;
 
+	/**
+	*	@return Whether or not to copy output files on completion.
+	*/
+	bool ShouldCopyFiles() const;
+
+	/**
+	*	Sets whether file copying support is enabled or not.
+	*/
+	void SetCopySupportEnabled( const bool bEnabled );
+
+	/**
+	*	@return List of filters to use for output file copying.
+	*/
+	wxArrayString GetOutputFileFilters() const;
+
 protected:
 	wxDECLARE_EVENT_TABLE();
 
@@ -41,8 +56,14 @@ private:
 
 	void OnRemoveParameter( wxCommandEvent& event );
 
+	void OnCopyFilesChanged( wxCommandEvent& event );
+
 private:
 	wxPropertyGrid* m_pParameterGrid;
+
+	wxCheckBox* m_pCopyFiles;
+
+	wxEditableListBox* m_pOutputFilters;
 
 private:
 	CCmdLineConfigDialog( const CCmdLineConfigDialog& ) = delete;

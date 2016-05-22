@@ -100,6 +100,46 @@ public:
 	void SetExecuteEnv( wxExecuteEnv* pEnv );
 
 	/**
+	*	@return Whether or not output files will be copied on completion.
+	*	Default false.
+	*/
+	bool ShouldCopyFiles() const { return m_bShouldCopyFiles; }
+
+	/**
+	*	Sets whether or not output files will be copied on completion.
+	*/
+	void SetShouldCopyFiles( const bool bEnable )
+	{
+		m_bShouldCopyFiles = bEnable;
+	}
+
+	/**
+	*	@return The directory that output files are copied to.
+	*/
+	const wxString& GetOutputDirectory() const { return m_szOutputDir; }
+
+	/**
+	*	Sets the directory that output files are copied to.
+	*/
+	void SetOutputDirectory( const wxString& szOutputDir )
+	{
+		m_szOutputDir = szOutputDir;
+	}
+
+	/**
+	*	@return List of filters used to copy output files.
+	*/
+	const wxArrayString& GetOutputFileFilters() const { return m_OutputFileFilters; }
+
+	/**
+	*	Sets the list of filters used to copy output files.
+	*/
+	void SetOutputFileFilters( const wxArrayString& filters )
+	{
+		m_OutputFileFilters = filters;
+	}
+
+	/**
 	*	Sends input to the process.
 	*	@param szInput Input to send.
 	*	@return true if the input was sent, false otherwise.
@@ -122,6 +162,8 @@ private:
 	void SendCurrentInput();
 
 	void Ended();
+
+	void CopyOutputFiles();
 
 	void OnSendInput( wxCommandEvent& event );
 
@@ -149,6 +191,12 @@ private:
 	wxString m_szCommand;
 
 	wxExecuteEnv* m_pEnv = nullptr;
+
+	bool m_bShouldCopyFiles = false;
+
+	wxString m_szOutputDir;
+
+	wxArrayString m_OutputFileFilters;
 
 	bool m_bTerminated = false;
 

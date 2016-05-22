@@ -122,6 +122,19 @@ public:
 		m_szMdlDec = szMdlDec;
 	}
 
+	/**
+	*	@return The directory where compiled models are placed.
+	*/
+	const CString& GetMDLOutputDirectory() const { return m_szMDLOutputDir; }
+
+	/**
+	*	Sets the directory where compiled models are placed.
+	*/
+	void SetMDLOutputDirectory( const CString& szMDLOutputDir )
+	{
+		m_szMDLOutputDir = szMDLOutputDir;
+	}
+
 protected:
 	bool PostInitialize( const char* const pszFilename ) override final;
 
@@ -147,6 +160,8 @@ private:
 
 	CString m_szStudioMdl;
 	CString m_szMdlDec;
+
+	CString m_szMDLOutputDir;
 };
 }
 

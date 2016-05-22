@@ -32,6 +32,11 @@ CCompilerOptions::CCompilerOptions( wxWindow* pParent, CHLMVSettings* const pSet
 									  "All files (*.*)|*.*", 
 									  wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE | wxFLP_USE_TEXTCTRL | wxFLP_SMALL );
 
+	auto pMDLOutputDirText = new wxStaticText( this, wxID_ANY, "Directory where compiled models are copied to" );
+
+	m_pMDLOutputDir = new wxDirPickerCtrl( this, wxID_ANY, wxEmptyString, wxDirSelectorPromptStr, 
+										   wxDefaultPosition, wxDefaultSize, wxDIRP_DEFAULT_STYLE | wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL );
+
 	//Layout
 	auto pSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -45,6 +50,11 @@ CCompilerOptions::CCompilerOptions( wxWindow* pParent, CHLMVSettings* const pSet
 	pSizer->Add( pMdlDecText, wxSizerFlags().Expand() );
 	pSizer->Add( m_pMdlDec, wxSizerFlags().Expand() );
 
+	pSizer->AddSpacer( 20 );
+
+	pSizer->Add( pMDLOutputDirText, wxSizerFlags().Expand() );
+	pSizer->Add( m_pMDLOutputDir, wxSizerFlags().Expand() );
+
 	this->SetSizer( pSizer );
 
 	Initialize();
@@ -54,11 +64,13 @@ void CCompilerOptions::Save()
 {
 	m_pSettings->SetStudioMdl( m_pStudioMdl->GetPath().c_str().AsChar() );
 	m_pSettings->SetMdlDec( m_pMdlDec->GetPath().c_str().AsChar() );
+	m_pSettings->SetMDLOutputDirectory( m_pMDLOutputDir->GetPath().c_str().AsChar() );
 }
 
 void CCompilerOptions::Initialize()
 {
 	m_pStudioMdl->SetPath( m_pSettings->GetStudioMdl().CStr() );
 	m_pMdlDec->SetPath( m_pSettings->GetMdlDec().CStr() );
+	m_pMDLOutputDir->SetPath( m_pSettings->GetMDLOutputDirectory().CStr() );
 }
 }

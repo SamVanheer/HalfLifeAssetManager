@@ -1,4 +1,6 @@
+#include <wx/editlbox.h>
 #include <wx/sizer.h>
+#include <wx/statline.h>
 
 #include "CCmdLineConfigDialog.h"
 
@@ -11,12 +13,15 @@ enum
 	wxID_ADD_PARAMETER = wxID_FIRST_ID,
 	wxID_EDIT_PARAMETER_NAME,
 	wxID_REMOVE_PARAMETER,
+	
+	wxID_SHOULD_COPY_FILES,
 };
 
 wxBEGIN_EVENT_TABLE( CCmdLineConfigDialog, wxDialog )
 	EVT_BUTTON( wxID_ADD_PARAMETER, CCmdLineConfigDialog::OnAddParameter )
 	EVT_BUTTON( wxID_EDIT_PARAMETER_NAME, CCmdLineConfigDialog::OnEditParameterName )
 	EVT_BUTTON( wxID_REMOVE_PARAMETER, CCmdLineConfigDialog::OnRemoveParameter )
+	EVT_CHECKBOX( wxID_SHOULD_COPY_FILES, CCmdLineConfigDialog::OnCopyFilesChanged )
 wxEND_EVENT_TABLE()
 
 CCmdLineConfigDialog::CCmdLineConfigDialog( wxWindow *parent, wxWindowID id,
@@ -37,10 +42,19 @@ CCmdLineConfigDialog::CCmdLineConfigDialog( wxWindow *parent, wxWindowID id,
 
 	auto pRemoveParam = new wxButton( this, wxID_REMOVE_PARAMETER, "Remove" );
 
+	m_pCopyFiles = new wxCheckBox( this, wxID_SHOULD_COPY_FILES, "Copy Output Files?" );
+	m_pCopyFiles->Enable( false );
+
+	m_pOutputFilters = new wxEditableListBox( this, wxID_ANY, "Filters",
+											  wxDefaultPosition, wxSize( wxDefaultSize.GetWidth(), 200 ), 
+											  wxEL_ALLOW_NEW | wxEL_ALLOW_EDIT | wxEL_ALLOW_DELETE | wxEL_NO_REORDER );
+
+	m_pOutputFilters->Enable( false );
+
 	//Layout
 	auto pSizer = new wxBoxSizer( wxVERTICAL );
 
-	pSizer->Add( new wxStaticText( this, wxID_ANY, "Command Line Parameters" ), wxSizerFlags() );
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "Command Line Parameters" ), wxSizerFlags().DoubleBorder() );
 
 	{
 		auto pScrollSizer = new wxBoxSizer( wxVERTICAL );
@@ -50,7 +64,7 @@ CCmdLineConfigDialog::CCmdLineConfigDialog( wxWindow *parent, wxWindowID id,
 		pScroll->SetSizer( pScrollSizer );
 	}
 
-	pSizer->Add( pScroll, wxSizerFlags().Expand() );
+	pSizer->Add( pScroll, wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT ) );
 
 	{
 		auto pButtonsSizer = new wxBoxSizer( wxHORIZONTAL );
@@ -61,10 +75,18 @@ CCmdLineConfigDialog::CCmdLineConfigDialog( wxWindow *parent, wxWindowID id,
 
 		pButtonsSizer->Add( pRemoveParam, wxSizerFlags() );
 
-		pSizer->Add( pButtonsSizer, wxSizerFlags().Expand() );
+		pSizer->Add( pButtonsSizer, wxSizerFlags().Expand().DoubleBorder() );
 	}
 
-	pSizer->Add( this->CreateSeparatedButtonSizer( wxOK | wxCANCEL ), wxSizerFlags().Expand() );
+	pSizer->Add( new wxStaticLine( this ), wxSizerFlags().Expand().DoubleBorder() );
+
+	pSizer->Add( m_pCopyFiles, wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT ) );
+
+	pSizer->Add( m_pOutputFilters, wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT | wxUP ) );
+
+	pSizer->Add( new wxStaticLine( this ), wxSizerFlags().Expand().DoubleBorder() );
+
+	pSizer->Add( this->CreateButtonSizer( wxOK | wxCANCEL ), wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT | wxDOWN ) );
 
 	this->SetSizer( pSizer );
 
@@ -89,6 +111,35 @@ std::vector<std::pair<std::string, std::string>> CCmdLineConfigDialog::GetParame
 	}
 
 	return parameters;
+}
+
+bool CCmdLineConfigDialog::ShouldCopyFiles() const
+{
+	return m_pCopyFiles->GetValue();
+}
+
+void CCmdLineConfigDialog::SetCopySupportEnabled( const bool bEnabled )
+{
+	m_pCopyFiles->Enable( bEnabled );
+	m_pOutputFilters->Enable( bEnabled && m_pCopyFiles->GetValue() );
+}
+
+wxArrayString CCmdLineConfigDialog::GetOutputFileFilters() const
+{
+	wxArrayString filters;
+
+	m_pOutputFilters->GetStrings( filters );
+
+	wxArrayString result;
+
+	//Duplicate filters should be removed so avoid copying multiple times.
+	for( const auto& filter : filters )
+	{
+		if( result.Index( filter ) == wxNOT_FOUND )
+			result.Add( filter );
+	}
+
+	return result;
 }
 
 void CCmdLineConfigDialog::OnAddParameter( wxCommandEvent& event )
@@ -125,5 +176,10 @@ void CCmdLineConfigDialog::OnRemoveParameter( wxCommandEvent& event )
 	}
 
 	m_pParameterGrid->DeleteProperty( pProp );
+}
+
+void CCmdLineConfigDialog::OnCopyFilesChanged( wxCommandEvent& event )
+{
+	m_pOutputFilters->Enable( m_pCopyFiles->IsEnabled() && m_pCopyFiles->GetValue() );
 }
 }
