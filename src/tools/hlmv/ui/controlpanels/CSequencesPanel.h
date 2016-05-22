@@ -71,6 +71,8 @@ private:
 
 	void EventChanged( wxCommandEvent& event );
 
+	void OnEditEvents( wxCommandEvent& event );
+
 	void PlaySoundChanged( wxCommandEvent& event );
 
 	void PitchFramerateChanged( wxCommandEvent& event );
@@ -101,6 +103,8 @@ private:
 
 	wxCheckBox* m_pPlaySound;
 	wxCheckBox* m_pPitchFramerate;
+
+	wxButton* m_pEditEvents;
 
 	wxPanel* m_pEventInfo;
 

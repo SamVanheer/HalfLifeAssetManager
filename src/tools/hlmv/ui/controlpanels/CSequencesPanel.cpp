@@ -9,6 +9,8 @@
 
 #include "cvar/CVar.h"
 
+#include "ui/wx/shared/CEditEventsDialog.h"
+
 #include "../CHLMV.h"
 #include "../../settings/CHLMVSettings.h"
 #include "../../CHLMVState.h"
@@ -25,6 +27,7 @@ wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseControlPanel )
 	EVT_TEXT( wxID_SEQUENCE_FRAME, CSequencesPanel::FrameChanged )
 	EVT_SLIDER( WXID_SEQUENCE_ANIMSPEED, CSequencesPanel::AnimSpeedChanged )
 	EVT_CHOICE( wxID_SEQUENCE_EVENT, CSequencesPanel::EventChanged )
+	EVT_BUTTON( wxID_SEQUENCE_EDITEVENTS, CSequencesPanel::OnEditEvents )
 	EVT_CHECKBOX( wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged )
 	EVT_CHECKBOX( wxID_SEQUENCE_PITCHFRAMERATE, CSequencesPanel::PitchFramerateChanged )
 	EVT_SPINCTRLDOUBLE( wxID_SEQUENCE_ORIGIN, CSequencesPanel::OnOriginChanged )
@@ -95,6 +98,8 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pPlaySound = new wxCheckBox( pElemParent, wxID_SEQUENCE_PLAYSOUND, "Play Sound" );
 	m_pPitchFramerate = new wxCheckBox( pElemParent, wxID_SEQUENCE_PITCHFRAMERATE, "Pitch *= Framerate" );
 
+	m_pEditEvents = new wxButton( pElemParent, wxID_SEQUENCE_EDITEVENTS, "Edit Events" );
+
 	m_pEventInfo = new wxPanel( pElemParent );
 	m_pEventInfo->SetSize( wxSize( 200, wxDefaultSize.GetY() ) );
 
@@ -149,6 +154,8 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	pSizer->Add( m_pEvent, wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
 	pSizer->Add( m_pPlaySound, wxGBPosition( 2, iCol ), wxDefaultSpan, wxEXPAND );
 	pSizer->Add( m_pPitchFramerate, wxGBPosition( 3, iCol++ ), wxDefaultSpan, wxEXPAND );
+
+	pSizer->Add( m_pEditEvents, wxGBPosition( 0, iCol ), wxGBSpan( 1, 2 ), wxEXPAND );
 
 	wxBoxSizer* pEventSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -347,6 +354,8 @@ void CSequencesPanel::InitializeUI()
 
 			m_pSequenceInfo->Show( true );
 
+			m_pEditEvents->Enable( true );
+
 			bSuccess = true;
 		}
 	}
@@ -357,6 +366,7 @@ void CSequencesPanel::InitializeUI()
 	{
 		m_pSequence->Enable( false );
 		m_pSequenceInfo->Show( false );
+		m_pEditEvents->Enable( false );
 	}
 
 	UpdateEvents();
@@ -606,6 +616,36 @@ void CSequencesPanel::AnimSpeedChanged( wxCommandEvent& event )
 
 void CSequencesPanel::EventChanged( wxCommandEvent& event )
 {
+	UpdateEventInfo( m_pEvent->GetSelection() );
+}
+
+void CSequencesPanel::OnEditEvents( wxCommandEvent& event )
+{
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
+	if( !pEntity )
+	{
+		return;
+	}
+
+	auto pModel = pEntity->GetModel();
+
+	const studiohdr_t* const pHdr = pModel->GetStudioHeader();
+
+	if( !pHdr )
+		return;
+
+	const mstudioseqdesc_t& sequence = *pHdr->GetSequence( m_pSequence->GetSelection() );
+
+	ui::CEditEventsDialog dlg( this, wxID_ANY, "Edit Events", ( mstudioevent_t* ) ( pHdr->GetData() + sequence.eventindex ), static_cast<size_t>( sequence.numevents ) );
+
+	//Start on the current event for convenience.
+	dlg.SetEvent( m_pEvent->GetSelection() );
+
+	//Note: if the user clicks on apply and then cancel, we should still update our state.
+	dlg.ShowModal();
+
+	//Current event may have been updated.
 	UpdateEventInfo( m_pEvent->GetSelection() );
 }
 
