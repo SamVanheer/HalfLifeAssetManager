@@ -476,6 +476,8 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 
 	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure MdlDec" );
 
+	commandLineDlg.SetCopySupportEnabled( true );
+
 	if( commandLineDlg.ShowModal() == wxID_CANCEL )
 		return;
 
@@ -493,6 +495,20 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 	pEnv->cwd = cwd.GetPath();
 
 	processDlg.SetExecuteEnv( pEnv );
+
+	processDlg.SetShouldCopyFiles( commandLineDlg.ShouldCopyFiles() );
+
+	processDlg.SetOutputDirectory( m_pHLMV->GetSettings()->GetMDLOutputDirectory().CStr() );
+
+	if( commandLineDlg.ShouldCopyFiles() )
+	{
+		wxArrayString filters = commandLineDlg.GetOutputFileFilters();
+
+		//Copy output qc
+		filters.Add( wxString::Format( "%s.qc", cwd.GetName() ) );
+
+		processDlg.SetOutputFileFilters( filters );
+	}
 
 	const int iResult = processDlg.ShowModal();
 
