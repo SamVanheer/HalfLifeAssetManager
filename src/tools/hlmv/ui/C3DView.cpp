@@ -195,15 +195,7 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 		{
 			if( event.LeftIsDown() && m_iButtonsDown & wxMOUSE_BTN_LEFT )
 			{
-				if( event.GetModifiers() & wxMOD_SHIFT )
-				{
-					if( flags & MOUSEOPF_TRANSLATE )
-					{
-						pCamera->GetOrigin().z = m_OldCamera.GetOrigin().z - ( float ) ( event.GetX() - m_vecOldCoords.x );
-						pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x + ( float ) ( event.GetY() - m_vecOldCoords.y );
-					}
-				}
-				else if( event.GetModifiers() & wxMOD_CONTROL )
+				if( event.GetModifiers() & wxMOD_CONTROL )
 				{
 					if( flags & MOUSEOPF_LIGHTVECTOR )
 					{
@@ -211,31 +203,57 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 
 						const float DELTA = 0.05f;
 
-						if( m_vecOldCoords.x <= event.GetX() )
+						if( event.GetModifiers() & wxMOD_SHIFT )
 						{
-							vecLightDir.x += DELTA;
+							if( m_vecOldCoords.x <= event.GetX() )
+							{
+								vecLightDir.z += DELTA;
+							}
+							else
+							{
+								vecLightDir.z -= DELTA;
+							}
+
+							m_vecOldCoords.x = event.GetX();
+
+							vecLightDir.z = clamp( vecLightDir.z, -1.0f, 1.0f );
 						}
 						else
 						{
-							vecLightDir.x -= DELTA;
-						}
+							if( m_vecOldCoords.x <= event.GetX() )
+							{
+								vecLightDir.x += DELTA;
+							}
+							else
+							{
+								vecLightDir.x -= DELTA;
+							}
 
-						if( m_vecOldCoords.y <= event.GetY() )
-						{
-							vecLightDir.y += DELTA;
-						}
-						else
-						{
-							vecLightDir.y -= DELTA;
-						}
+							if( m_vecOldCoords.y <= event.GetY() )
+							{
+								vecLightDir.y += DELTA;
+							}
+							else
+							{
+								vecLightDir.y -= DELTA;
+							}
 
-						m_vecOldCoords.x = event.GetX();
-						m_vecOldCoords.y = event.GetY();
+							m_vecOldCoords.x = event.GetX();
+							m_vecOldCoords.y = event.GetY();
 
-						vecLightDir.x = clamp( vecLightDir.x, -1.0f, 0.0f );
-						vecLightDir.y = clamp( vecLightDir.y, -1.0f, 1.0f );
+							vecLightDir.x = clamp( vecLightDir.x, -1.0f, 1.0f );
+							vecLightDir.y = clamp( vecLightDir.y, -1.0f, 1.0f );
+						}
 
 						g_pStudioMdlRenderer->SetLightVector( vecLightDir );
+					}
+				}
+				else if( event.GetModifiers() & wxMOD_SHIFT )
+				{
+					if( flags & MOUSEOPF_TRANSLATE )
+					{
+						pCamera->GetOrigin().z = m_OldCamera.GetOrigin().z - ( float ) ( event.GetX() - m_vecOldCoords.x );
+						pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x + ( float ) ( event.GetY() - m_vecOldCoords.y );
 					}
 				}
 				else
