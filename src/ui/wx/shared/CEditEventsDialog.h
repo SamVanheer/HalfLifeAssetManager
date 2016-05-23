@@ -34,6 +34,11 @@ public:
 	~CEditEventsDialog();
 
 	/**
+	*	@return Whether any changes have been saved so far.
+	*/
+	bool ChangesSaved() const { return m_bChangedSaved; }
+
+	/**
 	*	Sets the event that is currently being edited.
 	*/
 	void SetEvent( const int iIndex );
@@ -71,6 +76,8 @@ private:
 	*	second: Current event index
 	*/
 	std::pair<bool, size_t> m_CurrentEvent = { false, 0 };
+
+	bool m_bChangedSaved = false;
 
 private:
 	CEditEventsDialog( const CEditEventsDialog& ) = delete;

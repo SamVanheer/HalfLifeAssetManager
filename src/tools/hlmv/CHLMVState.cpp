@@ -40,6 +40,8 @@ void CHLMVState::ResetModelData()
 	iTextureYOffset = 0;
 
 	pUVMesh = nullptr;
+
+	modelChanged = false;
 }
 
 void CHLMVState::ResetToDefaults()

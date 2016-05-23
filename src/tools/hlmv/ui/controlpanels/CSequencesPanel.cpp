@@ -647,6 +647,9 @@ void CSequencesPanel::OnEditEvents( wxCommandEvent& event )
 
 	//Current event may have been updated.
 	UpdateEventInfo( m_pEvent->GetSelection() );
+
+	if( dlg.ChangesSaved() )
+		m_pHLMV->GetState()->modelChanged = true;
 }
 
 void CSequencesPanel::PlaySoundChanged( wxCommandEvent& event )

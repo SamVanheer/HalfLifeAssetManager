@@ -369,6 +369,18 @@ void CTexturesPanel::CheckBoxChanged( wxCommandEvent& event )
 
 			break;
 		}
+	}
+
+	switch( checkbox )
+	{
+	case CheckBox::CHROME:
+	case CheckBox::ADDITIVE:
+	case CheckBox::TRANSPARENT:
+		{
+			m_pHLMV->GetState()->modelChanged = true;
+
+			break;
+		}
 
 	default: break;
 	}
@@ -477,6 +489,8 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 	memcpy( ( byte* ) pHdr + texture.index + image.GetWidth() * image.GetHeight(), convPal, PALETTE_SIZE );
 
 	pStudioModel->ReplaceTexture( &texture, texData.get(), convPal, pStudioModel->GetTextureId( iTextureIndex ) );
+
+	m_pHLMV->GetState()->modelChanged = true;
 }
 
 void CTexturesPanel::ExportTexture( wxCommandEvent& event )

@@ -75,6 +75,8 @@ public:
 private:
 	wxDECLARE_EVENT_TABLE();
 
+	bool ShowUnsavedWarning();
+
 	void LoadModel( wxCommandEvent& event );
 	void LoadBackgroundTexture( wxCommandEvent& event );
 	void LoadGroundTexture( wxCommandEvent& event );

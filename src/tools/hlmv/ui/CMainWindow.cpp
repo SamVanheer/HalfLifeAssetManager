@@ -194,6 +194,12 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 
 bool CMainWindow::PromptLoadModel()
 {
+	if( m_pHLMV->GetState()->modelChanged )
+	{
+		if( !ShowUnsavedWarning() )
+			return false;
+	}
+
 	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "Half-Life Models (*.mdl)|*.mdl" );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
@@ -215,6 +221,9 @@ bool CMainWindow::SaveModel( const wxString& szFilename )
 	{
 		wxMessageBox( wxString::Format( "An error occurred while saving the model \"%s\"", szFilename.c_str() ) );
 	}
+
+	if( bSuccess )
+		m_pHLMV->GetState()->modelChanged = false;
 
 	return bSuccess;
 }
@@ -319,6 +328,14 @@ void CMainWindow::DumpModelInfo()
 	}
 }
 
+bool CMainWindow::ShowUnsavedWarning()
+{
+	//The question icon isn't supported due to Microsoft style guideline changes.
+	wxMessageDialog dlg( this, "You have made changes to the current model.\nAre you sure you want to load a new one?", "Model has changed", wxCENTRE | wxYES_NO | wxICON_EXCLAMATION );
+
+	return dlg.ShowModal() == wxID_YES;
+}
+
 void CMainWindow::LoadModel( wxCommandEvent& event )
 {
 	PromptLoadModel();
@@ -346,6 +363,12 @@ void CMainWindow::SaveModel( wxCommandEvent& event )
 
 void CMainWindow::OpenRecentFile( wxCommandEvent& event )
 {
+	if( m_pHLMV->GetState()->modelChanged )
+	{
+		if( !ShowUnsavedWarning() )
+			return;
+	}
+
 	wxString szFilename;
 
 	if( !m_RecentFiles.OnOpenRecentFile( event, szFilename ) )

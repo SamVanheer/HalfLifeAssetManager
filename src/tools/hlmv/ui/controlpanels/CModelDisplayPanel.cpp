@@ -334,7 +334,11 @@ void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
 	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
 	if( pEntity )
+	{
 		studiomdl::ScaleMeshes( pEntity->GetModel(), m_pMeshScale->GetValue() );
+
+		m_pHLMV->GetState()->modelChanged = true;
+	}
 }
 
 void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
@@ -342,7 +346,11 @@ void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
 	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
 	if( pEntity )
+	{
 		studiomdl::ScaleBones( pEntity->GetModel(), m_pBonesScale->GetValue() );
+
+		m_pHLMV->GetState()->modelChanged = true;
+	}
 }
 
 void CModelDisplayPanel::OnMirrorAxis( wxCommandEvent& event )

@@ -208,6 +208,8 @@ void CEditEventsDialog::OnButton( wxCommandEvent& event )
 			//Save state to events.
 			CopyToEvents( m_pDestEvents, m_Events.size() );
 
+			m_bChangedSaved = true;
+
 			break;
 		}
 

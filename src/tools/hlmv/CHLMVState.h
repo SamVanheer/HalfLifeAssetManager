@@ -136,6 +136,8 @@ public:
 
 	bool drawAxes;
 
+	bool modelChanged;
+
 private:
 	CHLMVStudioModelEntity* m_pEntity;
 
