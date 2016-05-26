@@ -25,19 +25,25 @@
     <Filter Include="Source Files\lib">
       <UniqueIdentifier>{970ff582-ec62-4514-8406-2fcd4641e2ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\soundsystem\shared">
+      <UniqueIdentifier>{331d3f94-e8ef-4ede-b28b-384916af95ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\soundsystem\CSoundSystem.h">
       <Filter>Header Files\soundsystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\soundsystem\SoundConstants.h">
-      <Filter>Header Files\soundsystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\soundsystem\ISoundSystem.h">
-      <Filter>Header Files\soundsystem</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\lib\LibInterface.h">
       <Filter>Header Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\soundsystem\shared\ISoundSystem.h">
+      <Filter>Header Files\soundsystem\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\soundsystem\shared\SoundConstants.h">
+      <Filter>Header Files\soundsystem\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\soundsystem\FMODDebug.h">
+      <Filter>Header Files\soundsystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +52,9 @@
     </ClCompile>
     <ClCompile Include="..\src\lib\LibInterface.cpp">
       <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\soundsystem\FMODDebug.cpp">
+      <Filter>Source Files\soundsystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

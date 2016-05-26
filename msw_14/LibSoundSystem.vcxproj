@@ -21,12 +21,14 @@
   <ItemGroup>
     <ClInclude Include="..\src\lib\LibInterface.h" />
     <ClInclude Include="..\src\soundsystem\CSoundSystem.h" />
-    <ClInclude Include="..\src\soundsystem\ISoundSystem.h" />
-    <ClInclude Include="..\src\soundsystem\SoundConstants.h" />
+    <ClInclude Include="..\src\soundsystem\FMODDebug.h" />
+    <ClInclude Include="..\src\soundsystem\shared\ISoundSystem.h" />
+    <ClInclude Include="..\src\soundsystem\shared\SoundConstants.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\lib\LibInterface.cpp" />
     <ClCompile Include="..\src\soundsystem\CSoundSystem.cpp" />
+    <ClCompile Include="..\src\soundsystem\FMODDebug.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DA1BCE0D-BABE-4E13-9422-2E39E6BF4BDA}</ProjectGuid>

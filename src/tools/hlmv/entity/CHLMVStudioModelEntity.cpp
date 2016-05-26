@@ -1,5 +1,5 @@
-#include "soundsystem/SoundConstants.h"
-#include "soundsystem/ISoundSystem.h"
+#include "soundsystem/shared/SoundConstants.h"
+#include "soundsystem/shared/ISoundSystem.h"
 
 #include "cvar/CCVar.h"
 

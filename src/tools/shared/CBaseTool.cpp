@@ -3,7 +3,7 @@
 
 #include "cvar/CVar.h"
 #include "filesystem/IFileSystem.h"
-#include "soundsystem/ISoundSystem.h"
+#include "soundsystem/shared/ISoundSystem.h"
 
 #include "ui/wx/CwxOpenGL.h"
 

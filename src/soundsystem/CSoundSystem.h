@@ -3,9 +3,9 @@
 
 #include <list>
 
-#include "SoundConstants.h"
+#include "shared/SoundConstants.h"
 
-#include "ISoundSystem.h"
+#include "shared/ISoundSystem.h"
 
 namespace FMOD
 {

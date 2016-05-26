@@ -11,28 +11,13 @@
 
 #include "filesystem/IFileSystem.h"
 
+#include "FMODDebug.h"
+
 #include "CSoundSystem.h"
 
 namespace soundsystem
 {
 REGISTER_SINGLE_INTERFACE( ISOUNDSYSTEM_NAME, CSoundSystem );
-
-/**
-*	Checks the result of an FMOD operation. If the result is not ok, returns true.
-*	@param result Result to check
-*	@return true if the result is not ok
-*/
-bool CheckFMODResult( const FMOD_RESULT result )
-{
-	if( result == FMOD_OK )
-		return false;
-
-	const char* pszError = FMOD_ErrorString( result );
-
-	Error( "FMOD Error: %s (error code: %d)\n", static_cast<const char*>( pszError ), static_cast<int>( result ) );
-
-	return true;
-}
 
 CSoundSystem::CSoundSystem()
 {
@@ -338,11 +323,12 @@ size_t CSoundSystem::GetSoundForPlayback()
 
 	Sound_t& sound = m_Sounds[ uiIndex ];
 
-	m_Sounds[ uiIndex ] = Sound_t{};
-
 	CheckFMODResult( sound.pChannel->stop() );
 	
 	CheckFMODResult( sound.pSound->release() );
+
+	//Reset the sound data. Must be done after the above actions so it doesn't try to access null pointers.
+	m_Sounds[ uiIndex ] = Sound_t{};
 
 	return uiIndex;
 }
