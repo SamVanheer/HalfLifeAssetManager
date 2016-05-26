@@ -22,6 +22,7 @@ class CCmdLineConfigDialog : public wxDialog
 public:
 	CCmdLineConfigDialog( wxWindow *parent, wxWindowID id,
 						  const wxString& title,
+						  const wxString& szDefaultOutputFileDir,
 						  std::shared_ptr<settings::CCmdLineConfigManager> manager,
 						  const wxPoint& pos = wxDefaultPosition,
 						  const wxSize& size = wxDefaultSize,
@@ -67,6 +68,8 @@ private:
 	void OnRemoveConfig( wxCommandEvent& event );
 
 private:
+	const wxString m_szDefaultOutputFileDir;
+
 	//Original settings that will be updated on OK.
 	std::shared_ptr<settings::CCmdLineConfigManager> m_Manager;
 

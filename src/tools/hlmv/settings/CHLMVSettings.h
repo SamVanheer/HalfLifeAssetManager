@@ -143,16 +143,16 @@ public:
 	std::shared_ptr<settings::CCmdLineConfigManager> GetMdlDecConfigManager() { return m_MdlDecConfigs; }
 
 	/**
-	*	@return The directory where compiled models are placed.
+	*	@return The directory where command line output files are copied to by default.
 	*/
-	const CString& GetMDLOutputDirectory() const { return m_szMDLOutputDir; }
+	const CString& GetDefaultOutputFileDirectory() const { return m_szDefaultOutputFileDir; }
 
 	/**
-	*	Sets the directory where compiled models are placed.
+	*	Sets the directory where command line output files are copied to by default.
 	*/
-	void SetMDLOutputDirectory( const CString& szMDLOutputDir )
+	void SetDefaultOutputFileDirectory( const CString& szDefaultOutputFileDir )
 	{
-		m_szMDLOutputDir = szMDLOutputDir;
+		m_szDefaultOutputFileDir = szDefaultOutputFileDir;
 	}
 
 protected:
@@ -185,7 +185,7 @@ private:
 
 	std::shared_ptr<settings::CCmdLineConfigManager> m_MdlDecConfigs = std::make_shared<settings::CCmdLineConfigManager>();
 
-	CString m_szMDLOutputDir;
+	CString m_szDefaultOutputFileDir;
 };
 }
 

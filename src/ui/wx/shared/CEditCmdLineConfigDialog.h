@@ -8,6 +8,8 @@
 
 #include "../wxInclude.h"
 
+#include <wx/filepicker.h>
+
 #include "settings/CCmdLineConfig.h"
 
 #include <wx/propgrid/propgrid.h>
@@ -89,6 +91,8 @@ private:
 	wxButton* m_pRemoveParam;
 
 	wxCheckBox* m_pCopyFiles;
+
+	wxDirPickerCtrl* m_pOutputFileDir;
 
 	wxEditableListBox* m_pOutputFilters;
 

@@ -63,6 +63,12 @@ CEditCmdLineConfigDialog::CEditCmdLineConfigDialog( wxWindow *parent, wxWindowID
 	m_pCopyFiles = new wxCheckBox( this, wxID_SHOULD_COPY_FILES, "Copy Output Files?" );
 	m_pCopyFiles->Enable( false );
 
+	m_pOutputFileDir = new wxDirPickerCtrl( this, wxID_ANY, wxEmptyString, wxDirSelectorPromptStr, 
+											wxDefaultPosition, wxDefaultSize, 
+											wxDIRP_DEFAULT_STYLE | wxDIRP_USE_TEXTCTRL | wxDIRP_SMALL );
+
+	m_pOutputFileDir->Enable( false );
+
 	m_pOutputFilters = new wxEditableListBox( this, wxID_ANY, "Filters",
 											  wxDefaultPosition, wxSize( wxDefaultSize.GetWidth(), 200 ),
 											  wxEL_ALLOW_NEW | wxEL_ALLOW_EDIT | wxEL_ALLOW_DELETE | wxEL_NO_REORDER );
@@ -100,6 +106,10 @@ CEditCmdLineConfigDialog::CEditCmdLineConfigDialog( wxWindow *parent, wxWindowID
 
 	pSizer->Add( m_pCopyFiles, wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT ) );
 
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "Output file destination directory" ), wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT | wxUP ) );
+
+	pSizer->Add( m_pOutputFileDir, wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT ) );
+
 	pSizer->Add( m_pOutputFilters, wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT | wxUP ) );
 
 	pSizer->Add( new wxStaticLine( this ), wxSizerFlags().Expand().DoubleBorder() );
@@ -123,6 +133,7 @@ void CEditCmdLineConfigDialog::SetCopySupportEnabled( const bool bEnabled )
 {
 	m_pCopyFiles->Enable( bEnabled );
 	m_pCopyFiles->SetValue( bEnabled && m_MutableConfig->ShouldCopyOutputFiles() );
+	m_pOutputFileDir->Enable( bEnabled && m_pCopyFiles->GetValue() );
 	m_pOutputFilters->Enable( bEnabled && m_pCopyFiles->GetValue() );
 }
 
@@ -162,7 +173,13 @@ void CEditCmdLineConfigDialog::InitFromConfig( const std::shared_ptr<const setti
 	m_pRemoveParam->Enable( !config->GetParameters().empty() );
 
 	m_pCopyFiles->SetValue( m_pCopyFiles->IsEnabled() && config->ShouldCopyOutputFiles() );
+
+	const bool bCopyFiles = m_pCopyFiles->IsEnabled() && m_pCopyFiles->GetValue();
+
+	m_pOutputFileDir->Enable( bCopyFiles );
 	m_pOutputFilters->Enable( m_pCopyFiles->IsEnabled() && m_pCopyFiles->GetValue() );
+
+	m_pOutputFileDir->SetPath( config->GetOutputFileDirectory() );
 
 	wxArrayString filters;
 
@@ -180,6 +197,7 @@ void CEditCmdLineConfigDialog::SaveToConfig( const std::shared_ptr<settings::CCm
 
 	config->SetParameters( GetParameters() );
 	config->SetCopyOutputFiles( ShouldCopyFiles() );
+	config->SetOutputFileDirectory( m_pOutputFileDir->GetPath().ToStdString() );
 
 	settings::CCmdLineConfig::Filters_t filters;
 
@@ -265,7 +283,10 @@ void CEditCmdLineConfigDialog::OnRemoveParameter( wxCommandEvent& event )
 
 void CEditCmdLineConfigDialog::OnCopyFilesChanged( wxCommandEvent& event )
 {
-	m_pOutputFilters->Enable( m_pCopyFiles->IsEnabled() && m_pCopyFiles->GetValue() );
+	const bool bEnabled = m_pCopyFiles->IsEnabled() && m_pCopyFiles->GetValue();
+
+	m_pOutputFileDir->Enable( bEnabled );
+	m_pOutputFilters->Enable( bEnabled );
 }
 
 void CEditCmdLineConfigDialog::OnButtonPressed( wxCommandEvent& event )

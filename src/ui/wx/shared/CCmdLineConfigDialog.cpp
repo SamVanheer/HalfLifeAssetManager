@@ -29,12 +29,14 @@ wxEND_EVENT_TABLE()
 
 CCmdLineConfigDialog::CCmdLineConfigDialog( wxWindow *parent, wxWindowID id,
 											const wxString& title,
+											const wxString& szDefaultOutputFileDir,
 											std::shared_ptr<settings::CCmdLineConfigManager> manager,
 											const wxPoint& pos,
 											const wxSize& size,
 											long style,
 											const wxString& name )
 	: wxDialog( parent, id, title, pos, size, style, name )
+	, m_szDefaultOutputFileDir( szDefaultOutputFileDir )
 	, m_Manager( manager )
 	, m_MutableManager( std::make_shared<settings::CCmdLineConfigManager>( *manager ) )
 {
@@ -173,6 +175,8 @@ void CCmdLineConfigDialog::OnAddConfig( wxCommandEvent& event )
 
 	wxString szName;
 
+	std::shared_ptr<settings::CCmdLineConfig> config;
+
 	do
 	{
 		if( dlg.ShowModal() == wxID_CANCEL )
@@ -188,7 +192,9 @@ void CCmdLineConfigDialog::OnAddConfig( wxCommandEvent& event )
 
 		if( !szName.IsEmpty() && !m_MutableManager->HasConfig( szName ) )
 		{
-			if( m_MutableManager->AddConfig( std::make_shared<settings::CCmdLineConfig>( szName.c_str().AsChar() ) ) )
+			config = std::make_shared<settings::CCmdLineConfig>( szName.c_str().AsChar() );
+
+			if( m_MutableManager->AddConfig( config ) )
 			{
 				bValid = true;
 			}
@@ -199,6 +205,8 @@ void CCmdLineConfigDialog::OnAddConfig( wxCommandEvent& event )
 		}
 	}
 	while( !bValid );
+
+	config->SetOutputFileDirectory( m_szDefaultOutputFileDir.c_str().AsChar() );
 
 	m_pConfigs->Append( szName );
 

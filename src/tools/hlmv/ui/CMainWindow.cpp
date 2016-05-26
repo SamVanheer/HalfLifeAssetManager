@@ -434,7 +434,8 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 
 	const wxString szPath = dlg.GetPath();
 
-	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure StudioMdl", m_pHLMV->GetSettings()->GetStudioMdlConfigManager() );
+	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure StudioMdl", 
+											 m_pHLMV->GetSettings()->GetDefaultOutputFileDirectory().CStr(), m_pHLMV->GetSettings()->GetStudioMdlConfigManager() );
 
 	commandLineDlg.SetCopySupportEnabled( true );
 
@@ -465,7 +466,7 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 
 	processDlg.SetShouldCopyFiles( config->ShouldCopyOutputFiles() );
 
-	processDlg.SetOutputDirectory( m_pHLMV->GetSettings()->GetMDLOutputDirectory().CStr() );
+	processDlg.SetOutputDirectory( config->GetOutputFileDirectory() );
 
 	if( config->ShouldCopyOutputFiles() )
 	{
@@ -511,7 +512,8 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 
 	const wxString szPath = dlg.GetPath();
 
-	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure MdlDec", m_pHLMV->GetSettings()->GetMdlDecConfigManager() );
+	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure MdlDec",
+											 m_pHLMV->GetSettings()->GetDefaultOutputFileDirectory().CStr(), m_pHLMV->GetSettings()->GetMdlDecConfigManager() );
 
 	commandLineDlg.SetCopySupportEnabled( true );
 
@@ -542,7 +544,7 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 
 	processDlg.SetShouldCopyFiles( config->ShouldCopyOutputFiles() );
 
-	processDlg.SetOutputDirectory( m_pHLMV->GetSettings()->GetMDLOutputDirectory().CStr() );
+	processDlg.SetOutputDirectory( config->GetOutputFileDirectory() );
 
 	if( config->ShouldCopyOutputFiles() )
 	{

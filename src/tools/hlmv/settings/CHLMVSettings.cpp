@@ -73,7 +73,7 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 	*m_StudioMdlConfigs = *other.m_StudioMdlConfigs;
 	*m_MdlDecConfigs	= *other.m_MdlDecConfigs;
 
-	m_szMDLOutputDir	= other.m_szMDLOutputDir;
+	m_szDefaultOutputFileDir = other.m_szDefaultOutputFileDir;
 }
 
 void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameConfig>& oldConfig, const std::shared_ptr<settings::CGameConfig>& newConfig )
@@ -177,9 +177,9 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 			m_MdlDecConfigs->SetActiveConfig( activeConfig->GetValue().CStr() );
 		}
 
-		if( auto outputdir = settings->FindFirstChild<kv::KV>( "mdlOutputDir" ) )
+		if( auto outputdir = settings->FindFirstChild<kv::KV>( "defaultOutputFileDir" ) )
 		{
-			m_szMDLOutputDir = outputdir->GetValue();
+			m_szDefaultOutputFileDir = outputdir->GetValue();
 		}
 	}
 
@@ -247,7 +247,7 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 		writer.WriteKeyvalue( "activeMdlDecConfig", config->GetName().c_str() );
 	}
 
-	writer.WriteKeyvalue( "mdlOutputDir", m_szMDLOutputDir.CStr() );
+	writer.WriteKeyvalue( "defaultOutputFileDir", m_szDefaultOutputFileDir.CStr() );
 
 	writer.EndBlock();
 

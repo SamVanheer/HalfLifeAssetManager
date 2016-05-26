@@ -26,7 +26,7 @@ private:
 
 	wxFilePickerCtrl* m_pStudioMdl;
 	wxFilePickerCtrl* m_pMdlDec;
-	wxDirPickerCtrl* m_pMDLOutputDir;
+	wxDirPickerCtrl* m_pDefaultOutputFileDir;
 
 private:
 	CCompilerOptions( const CCompilerOptions& ) = delete;

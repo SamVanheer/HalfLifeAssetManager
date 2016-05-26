@@ -47,18 +47,20 @@ public:
 	*	@param szName Name of this setting.
 	*	@param parameters Command line parameters to use.
 	*	@param bCopyOutputFiles Whether to copy output files or not.
+	*	@param szOutputFileDir Directory to copy output files to.
 	*	@param filters Filters to use.
 	*/
-	CCmdLineConfig( const std::string& szName, const Parameters_t& parameters, const bool bCopyOutputFiles, const Filters_t& filters );
+	CCmdLineConfig( const std::string& szName, const Parameters_t& parameters, const bool bCopyOutputFiles, const std::string& szOutputFileDir, const Filters_t& filters );
 
 	/**
 	*	Constructor.
 	*	@param szName Name of this setting.
 	*	@param parameters Command line parameters to use.
 	*	@param bCopyOutputFiles Whether to copy output files or not.
+	*	@param szOutputFileDir Directory to copy output files to.
 	*	@param filters Filters to use.
 	*/
-	CCmdLineConfig( std::string&& szName, Parameters_t&& parameters, const bool bCopyOutputFiles, Filters_t&& filters );
+	CCmdLineConfig( std::string&& szName, Parameters_t&& parameters, const bool bCopyOutputFiles, std::string&& szOutputFileDir, Filters_t&& filters );
 
 	/**
 	*	Constructor.
@@ -122,6 +124,27 @@ public:
 	}
 
 	/**
+	*	@return Directory where output files are copied to.
+	*/
+	const std::string& GetOutputFileDirectory() const { return m_szOutputFileDir; }
+
+	/**
+	*	Sets the directory where output files are copied to.
+	*/
+	void SetOutputFileDirectory( const std::string& szOutputFileDir )
+	{
+		m_szOutputFileDir = szOutputFileDir;
+	}
+
+	/**
+	*	@copydoc SetOutputFileDirectory( const std::string& szOutputFileDir )
+	*/
+	void SetOutputFileDirectory( std::string&& szOutputFileDir )
+	{
+		m_szOutputFileDir = std::move( szOutputFileDir );
+	}
+
+	/**
 	*	@return List of filters to use for output file copying.
 	*/
 	const Filters_t& GetFilters() const { return m_Filters; }
@@ -148,6 +171,8 @@ private:
 	Parameters_t m_Parameters;
 
 	bool m_bCopyOutputFiles = false;
+
+	std::string m_szOutputFileDir;
 
 	Filters_t m_Filters;
 };
