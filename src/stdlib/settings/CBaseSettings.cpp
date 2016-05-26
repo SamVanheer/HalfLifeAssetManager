@@ -2,9 +2,7 @@
 
 #include "shared/Logging.h"
 
-#include "CGameConfig.h"
-#include "CGameConfigManager.h"
-
+#include "ConfigIO.h"
 #include "GameConfigIO.h"
 
 #include "keyvalues/Keyvalues.h"
@@ -277,7 +275,7 @@ bool CBaseSettings::LoadGameConfigs( const kv::Block& root )
 
 	if( configs )
 	{
-		const auto result = settings::LoadGameConfigs( *configs, m_ConfigManager );
+		const auto result = settings::LoadGameConfigs( *configs, m_ConfigManager, LoadGameConfig );
 
 		if( result.first < result.second )
 			Warning( "%u game configurations failed to load\n", result.second - result.first );
@@ -291,7 +289,7 @@ bool CBaseSettings::SaveGameConfigs( kv::Writer& writer )
 	//TODO: make stack allocated
 	auto gameConfigs = std::make_shared<kv::Block>( "gameConfigs" );
 
-	settings::SaveGameConfigs( m_ConfigManager, *gameConfigs );
+	settings::SaveGameConfigs( std::static_pointer_cast<const CGameConfigManager>( m_ConfigManager ), *gameConfigs, SaveGameConfig );
 
 	return writer.WriteBlock( *gameConfigs );
 }

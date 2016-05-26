@@ -1,11 +1,14 @@
 #ifndef UI_WX_SHARED_CCMDLINECONFIGDIALOG_H
 #define UI_WX_SHARED_CCMDLINECONFIGDIALOG_H
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "../wxInclude.h"
+
+#include "settings/CCmdLineConfig.h"
 
 #include <wx/propgrid/propgrid.h>
 
@@ -19,6 +22,7 @@ class CCmdLineConfigDialog : public wxDialog
 public:
 	CCmdLineConfigDialog( wxWindow *parent, wxWindowID id,
 						  const wxString& title,
+						  std::shared_ptr<settings::CCmdLineConfigManager> manager,
 						  const wxPoint& pos = wxDefaultPosition,
 						  const wxSize& size = wxDefaultSize,
 						  long style = wxDEFAULT_DIALOG_STYLE,
@@ -27,14 +31,9 @@ public:
 	~CCmdLineConfigDialog();
 
 	/**
-	*	@return A vector of pairs containing the command line parameters.
+	*	@return Whether file copying support is enabled or not.
 	*/
-	std::vector<std::pair<std::string, std::string>> GetParameters() const;
-
-	/**
-	*	@return Whether or not to copy output files on completion.
-	*/
-	bool ShouldCopyFiles() const;
+	bool IsCopySupportEnabled() const { return m_bCopyOutputFilesEnabled; }
 
 	/**
 	*	Sets whether file copying support is enabled or not.
@@ -42,28 +41,44 @@ public:
 	void SetCopySupportEnabled( const bool bEnabled );
 
 	/**
-	*	@return List of filters to use for output file copying.
+	*	Sets the current config by name.
 	*/
-	wxArrayString GetOutputFileFilters() const;
+	void SetConfig( const char* const pszName );
+
+	/**
+	*	Sets the current config by index.
+	*/
+	void SetConfig( int iIndex );
+
+	void Save();
 
 protected:
 	wxDECLARE_EVENT_TABLE();
 
 private:
-	void OnAddParameter( wxCommandEvent& event );
+	void Initialize();
 
-	void OnEditParameterName( wxCommandEvent& event );
+	void OnConfigChanged( wxCommandEvent& event );
 
-	void OnRemoveParameter( wxCommandEvent& event );
+	void OnEditConfig( wxCommandEvent& event );
 
-	void OnCopyFilesChanged( wxCommandEvent& event );
+	void OnAddConfig( wxCommandEvent& event );
+
+	void OnRemoveConfig( wxCommandEvent& event );
 
 private:
-	wxPropertyGrid* m_pParameterGrid;
+	//Original settings that will be updated on OK.
+	std::shared_ptr<settings::CCmdLineConfigManager> m_Manager;
 
-	wxCheckBox* m_pCopyFiles;
+	//Settings that can be modified at will.
+	std::shared_ptr<settings::CCmdLineConfigManager> m_MutableManager;
 
-	wxEditableListBox* m_pOutputFilters;
+	wxChoice* m_pConfigs;
+
+	wxButton* m_pEditConfig;
+	wxButton* m_pRemoveConfig;
+
+	bool m_bCopyOutputFilesEnabled = false;
 
 private:
 	CCmdLineConfigDialog( const CCmdLineConfigDialog& ) = delete;

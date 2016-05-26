@@ -3,6 +3,8 @@
 
 #include "shared/Utility.h"
 
+#include "CBaseConfigManager.h"
+
 /**
 *	@defgroup GameConfig Game configurations
 *
@@ -13,8 +15,6 @@
 
 namespace settings
 {
-class CGameConfigManager;
-
 /**
 *	@brief Defines a single game configuration.
 *
@@ -60,6 +60,13 @@ public:
 	const char* GetName() const { return m_szName; }
 
 	/**
+	*	Sets the name of this config. The name must not be null or empty.
+	*	@param pszName New name of this config.
+	*	@return true if the name has changed, false otherwise.
+	*/
+	bool SetName( const char* const pszName );
+
+	/**
 	*	Gets the base path for this configuration.
 	*	@return Base path.
 	*	@see filesystem::IFileSystem
@@ -98,14 +105,6 @@ public:
 	void SetModDir( const char* pszDirectory );
 
 private:
-	friend class CGameConfigManager;
-
-	/**
-	*	Sets the name of this config. The name must not be null or empty.
-	*	@param pszName New name of this config.
-	*	@return true if the name has changed, false otherwise.
-	*/
-	bool SetName( const char* const pszName );
 
 	/**
 	*	Copies the given configuration's settings into this one.
@@ -134,6 +133,28 @@ private:
 	*/
 	char m_szModDir[ MAX_PATH_LENGTH ];
 };
+
+/**
+*	@brief Specialization for CGameConfig.
+*	@see CConfigTraits
+*	@see CGameConfig
+*/
+template<>
+class CConfigTraits<CGameConfig> final : public CBaseConfigTraits<CGameConfig, CConfigTraits<CGameConfig>>
+{
+public:
+	static const char* GetName( const CGameConfig& config )
+	{
+		return config.GetName();
+	}
+
+	static bool SetName( CGameConfig& config, const char* const pszName )
+	{
+		return config.SetName( pszName );
+	}
+};
+
+typedef CBaseConfigManager<CGameConfig> CGameConfigManager;
 }
 
 /** @} */

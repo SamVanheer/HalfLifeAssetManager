@@ -6,14 +6,14 @@
 
 #include "settings/CBaseSettings.h"
 #include "settings/CRecentFiles.h"
-#include "settings/CGameConfigManager.h"
+#include "settings/CCmdLineConfig.h"
 
 namespace hlmv
 {
 /**
 *	Settings for HLMV.
 */
-class CHLMVSettings final : public settings::CBaseSettings, public settings::IGameConfigListener
+class CHLMVSettings final : public settings::CBaseSettings, public settings::CGameConfigManager::ConfigListener_t
 {
 public:
 	static const size_t MAX_RECENT_FILES = 4;
@@ -123,6 +123,26 @@ public:
 	}
 
 	/**
+	*	@return The StudioMdl config manager.
+	*/
+	std::shared_ptr<const settings::CCmdLineConfigManager> GetStudioMdlConfigManager() const { return m_StudioMdlConfigs; }
+
+	/**
+	*	@copydoc GetStudioMdlConfigManager() const
+	*/
+	std::shared_ptr<settings::CCmdLineConfigManager> GetStudioMdlConfigManager() { return m_StudioMdlConfigs; }
+
+	/**
+	*	@return The MdlDec config manager.
+	*/
+	std::shared_ptr<const settings::CCmdLineConfigManager> GetMdlDecConfigManager() const { return m_MdlDecConfigs; }
+
+	/**
+	*	@copydoc GetMdlDecConfigManager() const
+	*/
+	std::shared_ptr<settings::CCmdLineConfigManager> GetMdlDecConfigManager() { return m_MdlDecConfigs; }
+
+	/**
 	*	@return The directory where compiled models are placed.
 	*/
 	const CString& GetMDLOutputDirectory() const { return m_szMDLOutputDir; }
@@ -160,6 +180,10 @@ private:
 
 	CString m_szStudioMdl;
 	CString m_szMdlDec;
+
+	std::shared_ptr<settings::CCmdLineConfigManager> m_StudioMdlConfigs = std::make_shared<settings::CCmdLineConfigManager>();
+
+	std::shared_ptr<settings::CCmdLineConfigManager> m_MdlDecConfigs = std::make_shared<settings::CCmdLineConfigManager>();
 
 	CString m_szMDLOutputDir;
 };

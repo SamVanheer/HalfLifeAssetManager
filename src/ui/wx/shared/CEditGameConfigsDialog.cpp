@@ -1,6 +1,5 @@
 #include <wx/gbsizer.h>
 
-#include "settings/CGameConfigManager.h"
 #include "settings/CGameConfig.h"
 
 #include "CGameConfigurationsPanel.h"

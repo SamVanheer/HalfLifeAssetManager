@@ -42,9 +42,11 @@
     <ClInclude Include="..\src\stdlib\graphics\GraphicsUtils.h" />
     <ClInclude Include="..\src\stdlib\graphics\OpenGL.h" />
     <ClInclude Include="..\src\stdlib\graphics\Palette.h" />
+    <ClInclude Include="..\src\stdlib\settings\CBaseConfigManager.h" />
     <ClInclude Include="..\src\stdlib\settings\CBaseSettings.h" />
+    <ClInclude Include="..\src\stdlib\settings\CCmdLineConfig.h" />
+    <ClInclude Include="..\src\stdlib\settings\ConfigIO.h" />
     <ClInclude Include="..\src\stdlib\settings\CGameConfig.h" />
-    <ClInclude Include="..\src\stdlib\settings\CGameConfigManager.h" />
     <ClInclude Include="..\src\stdlib\settings\CRecentFiles.h" />
     <ClInclude Include="..\src\stdlib\settings\GameConfigIO.h" />
     <ClInclude Include="..\src\stdlib\utility\BoundingBox.h" />
@@ -77,8 +79,8 @@
     <ClCompile Include="..\src\stdlib\graphics\GraphicsUtils.cpp" />
     <ClCompile Include="..\src\stdlib\graphics\OpenGL.cpp" />
     <ClCompile Include="..\src\stdlib\settings\CBaseSettings.cpp" />
+    <ClCompile Include="..\src\stdlib\settings\CCmdLineConfig.cpp" />
     <ClCompile Include="..\src\stdlib\settings\CGameConfig.cpp" />
-    <ClCompile Include="..\src\stdlib\settings\CGameConfigManager.cpp" />
     <ClCompile Include="..\src\stdlib\settings\CRecentFiles.cpp" />
     <ClCompile Include="..\src\stdlib\settings\GameConfigIO.cpp" />
     <ClCompile Include="..\src\stdlib\utility\ByteSwap.cpp" />

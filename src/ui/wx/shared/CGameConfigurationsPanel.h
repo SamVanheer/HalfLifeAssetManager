@@ -5,12 +5,9 @@
 
 #include "ui/wx/wxInclude.h"
 
-class wxDirPickerCtrl;
+#include "settings/CBaseSettings.h"
 
-namespace settings
-{
-class CGameConfigManager;
-}
+class wxDirPickerCtrl;
 
 namespace ui
 {

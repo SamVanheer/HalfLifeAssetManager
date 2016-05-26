@@ -105,9 +105,6 @@
     <ClInclude Include="..\src\stdlib\settings\CGameConfig.h">
       <Filter>Header Files\stdlib\settings</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\stdlib\settings\CGameConfigManager.h">
-      <Filter>Header Files\stdlib\settings</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\stdlib\settings\CRecentFiles.h">
       <Filter>Header Files\stdlib\settings</Filter>
     </ClInclude>
@@ -189,6 +186,15 @@
     <ClInclude Include="..\src\stdlib\graphics\GraphicsUtils.h">
       <Filter>Header Files\stdlib\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\stdlib\settings\CBaseConfigManager.h">
+      <Filter>Header Files\stdlib\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\settings\CCmdLineConfig.h">
+      <Filter>Header Files\stdlib\settings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\settings\ConfigIO.h">
+      <Filter>Header Files\stdlib\settings</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\stdlib\utility\CString.cpp">
@@ -213,9 +219,6 @@
       <Filter>Source Files\stdlib\settings</Filter>
     </ClCompile>
     <ClCompile Include="..\src\stdlib\settings\CGameConfig.cpp">
-      <Filter>Source Files\stdlib\settings</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stdlib\settings\CGameConfigManager.cpp">
       <Filter>Source Files\stdlib\settings</Filter>
     </ClCompile>
     <ClCompile Include="..\src\stdlib\settings\CRecentFiles.cpp">
@@ -277,6 +280,9 @@
     </ClCompile>
     <ClCompile Include="..\src\stdlib\graphics\GraphicsUtils.cpp">
       <Filter>Source Files\stdlib\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\settings\CCmdLineConfig.cpp">
+      <Filter>Source Files\stdlib\settings</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

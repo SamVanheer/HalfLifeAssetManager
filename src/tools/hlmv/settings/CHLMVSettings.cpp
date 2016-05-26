@@ -5,7 +5,8 @@
 #include "utility/IOUtils.h"
 
 #include "settings/CGameConfig.h"
-#include "settings/CGameConfigManager.h"
+#include "settings/CCmdLineConfig.h"
+#include "settings/ConfigIO.h"
 
 #include "cvar/CVar.h"
 
@@ -68,6 +69,10 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 
 	m_szStudioMdl		= other.m_szStudioMdl;
 	m_szMdlDec			= other.m_szMdlDec;
+
+	*m_StudioMdlConfigs = *other.m_StudioMdlConfigs;
+	*m_MdlDecConfigs	= *other.m_MdlDecConfigs;
+
 	m_szMDLOutputDir	= other.m_szMDLOutputDir;
 }
 
@@ -152,6 +157,26 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 			m_szMdlDec = mdldec->GetValue();
 		}
 
+		if( auto cmdLineSettingsList = settings->FindFirstChild<kv::Block>( "StudioMdlConfigs" ) )
+		{
+			settings::LoadGameConfigs( *cmdLineSettingsList, m_StudioMdlConfigs, settings::LoadCmdLineConfig, settings::CCmdLineConfig::IO_BLOCK_NAME );
+		}
+
+		if( auto cmdLineSettingsList = settings->FindFirstChild<kv::Block>( "MdlDecConfigs" ) )
+		{
+			settings::LoadGameConfigs( *cmdLineSettingsList, m_MdlDecConfigs, settings::LoadCmdLineConfig );
+		}
+
+		if( auto activeConfig = settings->FindFirstChild<kv::KV>( "activeStudioMdlConfig" ) )
+		{
+			m_StudioMdlConfigs->SetActiveConfig( activeConfig->GetValue().CStr() );
+		}
+
+		if( auto activeConfig = settings->FindFirstChild<kv::KV>( "activeMdlDecConfig" ) )
+		{
+			m_MdlDecConfigs->SetActiveConfig( activeConfig->GetValue().CStr() );
+		}
+
 		if( auto outputdir = settings->FindFirstChild<kv::KV>( "mdlOutputDir" ) )
 		{
 			m_szMDLOutputDir = outputdir->GetValue();
@@ -199,6 +224,29 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 
 	writer.WriteKeyvalue( "studiomdl", m_szStudioMdl.CStr() );
 	writer.WriteKeyvalue( "mdldec", m_szMdlDec.CStr() );
+
+	writer.BeginBlock( "StudioMdlConfigs" );
+
+	settings::SaveGameConfigs( std::static_pointer_cast<const settings::CCmdLineConfigManager>( m_StudioMdlConfigs ), writer, settings::SaveCmdLineConfig );
+
+	writer.EndBlock();
+
+	writer.BeginBlock( "MdlDecConfigs" );
+
+	settings::SaveGameConfigs( std::static_pointer_cast<const settings::CCmdLineConfigManager>( m_MdlDecConfigs ), writer, settings::SaveCmdLineConfig );
+
+	writer.EndBlock();
+
+	if( auto config = m_StudioMdlConfigs->GetActiveConfig() )
+	{
+		writer.WriteKeyvalue( "activeStudioMdlConfig", config->GetName().c_str() );
+	}
+
+	if( auto config = m_MdlDecConfigs->GetActiveConfig() )
+	{
+		writer.WriteKeyvalue( "activeMdlDecConfig", config->GetName().c_str() );
+	}
+
 	writer.WriteKeyvalue( "mdlOutputDir", m_szMDLOutputDir.CStr() );
 
 	writer.EndBlock();

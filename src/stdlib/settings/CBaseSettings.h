@@ -5,6 +5,8 @@
 
 #include "keyvalues/KVForward.h"
 
+#include "CGameConfig.h"
+
 namespace filesystem
 {
 class IFileSystem;
@@ -12,9 +14,6 @@ class IFileSystem;
 
 namespace settings
 {
-class CGameConfig;
-class CGameConfigManager;
-
 /**
 *	Listener for settings.
 *	TODO: replace with cvars

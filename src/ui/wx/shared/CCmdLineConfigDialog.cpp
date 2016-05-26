@@ -1,6 +1,10 @@
+#include <algorithm>
+
 #include <wx/editlbox.h>
 #include <wx/sizer.h>
 #include <wx/statline.h>
+
+#include "CEditCmdLineConfigDialog.h"
 
 #include "CCmdLineConfigDialog.h"
 
@@ -10,79 +14,56 @@ enum
 {
 	wxID_FIRST_ID = wxID_HIGHEST + 1,
 
-	wxID_ADD_PARAMETER = wxID_FIRST_ID,
-	wxID_EDIT_PARAMETER_NAME,
-	wxID_REMOVE_PARAMETER,
-	
-	wxID_SHOULD_COPY_FILES,
+	wxID_CONFIG = wxID_FIRST_ID,
+	wxID_EDIT_CONFIG,
+	wxID_ADD_CONFIG,
+	wxID_REMOVE_CONFIG,
 };
 
 wxBEGIN_EVENT_TABLE( CCmdLineConfigDialog, wxDialog )
-	EVT_BUTTON( wxID_ADD_PARAMETER, CCmdLineConfigDialog::OnAddParameter )
-	EVT_BUTTON( wxID_EDIT_PARAMETER_NAME, CCmdLineConfigDialog::OnEditParameterName )
-	EVT_BUTTON( wxID_REMOVE_PARAMETER, CCmdLineConfigDialog::OnRemoveParameter )
-	EVT_CHECKBOX( wxID_SHOULD_COPY_FILES, CCmdLineConfigDialog::OnCopyFilesChanged )
+	EVT_CHOICE( wxID_CONFIG, CCmdLineConfigDialog::OnConfigChanged )
+	EVT_BUTTON( wxID_EDIT_CONFIG, CCmdLineConfigDialog::OnEditConfig )
+	EVT_BUTTON( wxID_ADD_CONFIG, CCmdLineConfigDialog::OnAddConfig )
+	EVT_BUTTON( wxID_REMOVE_CONFIG, CCmdLineConfigDialog::OnRemoveConfig )
 wxEND_EVENT_TABLE()
 
 CCmdLineConfigDialog::CCmdLineConfigDialog( wxWindow *parent, wxWindowID id,
 											const wxString& title,
+											std::shared_ptr<settings::CCmdLineConfigManager> manager,
 											const wxPoint& pos,
 											const wxSize& size,
 											long style,
 											const wxString& name )
 	: wxDialog( parent, id, title, pos, size, style, name )
+	, m_Manager( manager )
+	, m_MutableManager( std::make_shared<settings::CCmdLineConfigManager>( *manager ) )
 {
-	auto pScroll = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxSize( 400, 200 ) );
+	m_pConfigs = new wxChoice( this, wxID_CONFIG, wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
 
-	m_pParameterGrid = new wxPropertyGrid( pScroll, wxID_ANY, wxDefaultPosition, wxSize( wxDefaultSize.GetWidth(), pScroll->GetClientSize().GetHeight() ) );
+	m_pEditConfig = new wxButton( this, wxID_EDIT_CONFIG, "Edit" );
 
-	auto pAddParam = new wxButton( this, wxID_ADD_PARAMETER, "Add New" );
+	auto pAddConfig = new wxButton( this, wxID_ADD_CONFIG, "Add" );
 
-	auto pEditParamName = new wxButton( this, wxID_EDIT_PARAMETER_NAME, "Edit Name" );
-
-	auto pRemoveParam = new wxButton( this, wxID_REMOVE_PARAMETER, "Remove" );
-
-	m_pCopyFiles = new wxCheckBox( this, wxID_SHOULD_COPY_FILES, "Copy Output Files?" );
-	m_pCopyFiles->Enable( false );
-
-	m_pOutputFilters = new wxEditableListBox( this, wxID_ANY, "Filters",
-											  wxDefaultPosition, wxSize( wxDefaultSize.GetWidth(), 200 ), 
-											  wxEL_ALLOW_NEW | wxEL_ALLOW_EDIT | wxEL_ALLOW_DELETE | wxEL_NO_REORDER );
-
-	m_pOutputFilters->Enable( false );
+	m_pRemoveConfig = new wxButton( this, wxID_REMOVE_CONFIG, "Remove" );
 
 	//Layout
 	auto pSizer = new wxBoxSizer( wxVERTICAL );
 
-	pSizer->Add( new wxStaticText( this, wxID_ANY, "Command Line Parameters" ), wxSizerFlags().DoubleBorder() );
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "Configuration" ), wxSizerFlags().Expand().DoubleBorder() );
 
 	{
-		auto pScrollSizer = new wxBoxSizer( wxVERTICAL );
+		auto pConfigsSizer = new wxBoxSizer( wxHORIZONTAL );
 
-		pScrollSizer->Add( m_pParameterGrid, wxSizerFlags().Expand() );
+		pConfigsSizer->Add( m_pConfigs, wxSizerFlags().Expand() );
 
-		pScroll->SetSizer( pScrollSizer );
+		pConfigsSizer->Add( m_pEditConfig, wxSizerFlags().Expand() );
+
+		pConfigsSizer->Add( pAddConfig, wxSizerFlags().Expand() );
+
+		pConfigsSizer->Add( m_pRemoveConfig, wxSizerFlags().Expand() );
+
+		pSizer->Add( pConfigsSizer, wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT ) );
 	}
-
-	pSizer->Add( pScroll, wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT ) );
-
-	{
-		auto pButtonsSizer = new wxBoxSizer( wxHORIZONTAL );
-
-		pButtonsSizer->Add( pAddParam, wxSizerFlags() );
-
-		pButtonsSizer->Add( pEditParamName, wxSizerFlags() );
-
-		pButtonsSizer->Add( pRemoveParam, wxSizerFlags() );
-
-		pSizer->Add( pButtonsSizer, wxSizerFlags().Expand().DoubleBorder() );
-	}
-
-	pSizer->Add( new wxStaticLine( this ), wxSizerFlags().Expand().DoubleBorder() );
-
-	pSizer->Add( m_pCopyFiles, wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT ) );
-
-	pSizer->Add( m_pOutputFilters, wxSizerFlags().Expand().DoubleBorder( wxLEFT | wxRIGHT | wxUP ) );
 
 	pSizer->Add( new wxStaticLine( this ), wxSizerFlags().Expand().DoubleBorder() );
 
@@ -93,93 +74,160 @@ CCmdLineConfigDialog::CCmdLineConfigDialog( wxWindow *parent, wxWindowID id,
 	this->Fit();
 
 	this->CenterOnScreen();
+
+	Initialize();
 }
 
 CCmdLineConfigDialog::~CCmdLineConfigDialog()
 {
 }
 
-std::vector<std::pair<std::string, std::string>> CCmdLineConfigDialog::GetParameters() const
-{
-	std::vector<std::pair<std::string, std::string>> parameters;
-
-	for( auto it = m_pParameterGrid->GetIterator(); !it.AtEnd(); it.Next( false ) )
-	{
-		auto pProp = static_cast<wxStringProperty*>( it.GetProperty() );
-
-		parameters.emplace_back( std::make_pair( pProp->GetLabel(), pProp->GetValue() ) );
-	}
-
-	return parameters;
-}
-
-bool CCmdLineConfigDialog::ShouldCopyFiles() const
-{
-	return m_pCopyFiles->GetValue();
-}
-
 void CCmdLineConfigDialog::SetCopySupportEnabled( const bool bEnabled )
 {
-	m_pCopyFiles->Enable( bEnabled );
-	m_pOutputFilters->Enable( bEnabled && m_pCopyFiles->GetValue() );
+	m_bCopyOutputFilesEnabled = bEnabled;
 }
 
-wxArrayString CCmdLineConfigDialog::GetOutputFileFilters() const
+void CCmdLineConfigDialog::SetConfig( const char* const pszName )
 {
-	wxArrayString filters;
+	wxASSERT( pszName );
 
-	m_pOutputFilters->GetStrings( filters );
+	m_pConfigs->SetSelection( m_pConfigs->FindString( pszName ) );
+}
 
-	wxArrayString result;
+void CCmdLineConfigDialog::SetConfig( int iIndex )
+{
+	if( iIndex < 0 || static_cast<size_t>( iIndex ) >= m_pConfigs->GetCount() )
+		iIndex = 0;
 
-	//Duplicate filters should be removed so avoid copying multiple times.
-	for( const auto& filter : filters )
+	SetConfig( m_pConfigs->GetString( iIndex ) );
+}
+
+void CCmdLineConfigDialog::Initialize()
+{
+	m_pConfigs->Clear();
+
+	wxArrayString list;
+
+	for( const auto& config : m_MutableManager->GetConfigs() )
 	{
-		if( result.Index( filter ) == wxNOT_FOUND )
-			result.Add( filter );
+		list.push_back( config->GetName() );
 	}
 
-	return result;
-}
+	m_pConfigs->Append( list );
 
-void CCmdLineConfigDialog::OnAddParameter( wxCommandEvent& event )
-{
-	wxTextEntryDialog dlg( this, "Enter a parameter name", "Enter name" );
+	m_pConfigs->Enable( !list.IsEmpty() );
 
-	if( dlg.ShowModal() == wxID_CANCEL )
-		return;
+	m_pEditConfig->Enable( !list.IsEmpty() );
+	m_pRemoveConfig->Enable( !list.IsEmpty() );
 
-	m_pParameterGrid->Append( new wxStringProperty( dlg.GetValue(), wxEmptyString, wxEmptyString ) );
-}
-
-void CCmdLineConfigDialog::OnEditParameterName( wxCommandEvent& event )
-{
-	auto pProp = m_pParameterGrid->GetSelectedProperty();
-
-	if( !pProp )
+	if( auto config = m_MutableManager->GetActiveConfig() )
 	{
-		wxMessageBox( "No parameter selected!" );
+		SetConfig( config->GetName().c_str() );
+	}
+	else
+	{
+		SetConfig( 0 );
+	}
+}
+
+void CCmdLineConfigDialog::Save()
+{
+	std::shared_ptr<settings::CCmdLineConfig> activeConfig;
+
+	if( m_pConfigs->GetSelection() != wxNOT_FOUND )
+	{
+		activeConfig = m_MutableManager->GetConfig( m_pConfigs->GetStringSelection() );
+	}
+
+	m_MutableManager->SetActiveConfig( activeConfig );
+
+	*m_Manager = *m_MutableManager;
+}
+
+void CCmdLineConfigDialog::OnConfigChanged( wxCommandEvent& event )
+{
+	SetConfig( m_pConfigs->GetSelection() );
+}
+
+void CCmdLineConfigDialog::OnEditConfig( wxCommandEvent& event )
+{
+	if( m_pConfigs->GetSelection() == wxNOT_FOUND )
+	{
 		return;
 	}
 
-	m_pParameterGrid->BeginLabelEdit( 0 );
+	auto activeConfig = m_MutableManager->GetConfig( m_pConfigs->GetStringSelection() );
+
+	ui::CEditCmdLineConfigDialog editDlg( this, wxID_ANY, m_MutableManager, activeConfig );
+
+	editDlg.SetCopySupportEnabled( m_bCopyOutputFilesEnabled );
+
+	editDlg.ShowModal();
 }
 
-void CCmdLineConfigDialog::OnRemoveParameter( wxCommandEvent& event )
+void CCmdLineConfigDialog::OnAddConfig( wxCommandEvent& event )
 {
-	auto pProp = m_pParameterGrid->GetSelectedProperty();
+	wxTextEntryDialog dlg( this, "Enter a unique name for the configuration", "Add new configuration" );
 
-	if( !pProp )
+	bool bValid = false;
+
+	wxString szName;
+
+	do
 	{
-		wxMessageBox( "No parameter selected!" );
+		if( dlg.ShowModal() == wxID_CANCEL )
+			return;
+
+		szName = dlg.GetValue();
+
+		szName.Trim( true );
+		szName.Trim( false );
+
+		//TODO: use a validator to prevent leading and trailing whitespace from being entered.
+		dlg.SetValue( szName );
+
+		if( !szName.IsEmpty() && !m_MutableManager->HasConfig( szName ) )
+		{
+			if( m_MutableManager->AddConfig( std::make_shared<settings::CCmdLineConfig>( szName.c_str().AsChar() ) ) )
+			{
+				bValid = true;
+			}
+			else
+			{
+				wxMessageBox( wxString::Format( "Error adding configuration \"%s\"", szName ) );
+			}
+		}
+	}
+	while( !bValid );
+
+	m_pConfigs->Append( szName );
+
+	m_pConfigs->Enable( true );
+	m_pEditConfig->Enable( true );
+	m_pRemoveConfig->Enable( true );
+
+	//Change to new config.
+	SetConfig( m_pConfigs->GetCount() - 1 );
+}
+
+void CCmdLineConfigDialog::OnRemoveConfig( wxCommandEvent& event )
+{
+	const int iCurrent = m_pConfigs->GetSelection();
+
+	if( iCurrent == wxNOT_FOUND )
 		return;
+
+	m_MutableManager->RemoveConfig( m_pConfigs->GetStringSelection() );
+
+	m_pConfigs->Delete( iCurrent );
+
+	if( m_pConfigs->IsEmpty() )
+	{
+		m_pConfigs->Enable( false );
+		m_pEditConfig->Enable( false );
+		m_pRemoveConfig->Enable( false );
 	}
 
-	m_pParameterGrid->DeleteProperty( pProp );
-}
-
-void CCmdLineConfigDialog::OnCopyFilesChanged( wxCommandEvent& event )
-{
-	m_pOutputFilters->Enable( m_pCopyFiles->IsEnabled() && m_pCopyFiles->GetValue() );
+	SetConfig( m_pConfigs->GetSelection() );
 }
 }

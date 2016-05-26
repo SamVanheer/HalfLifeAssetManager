@@ -13,10 +13,6 @@
 
 #include "tools/hlmv/entity/CHLMVStudioModelEntity.h"
 
-#include "settings/CGameConfig.h"
-#include "settings/CGameConfigManager.h"
-#include "settings/CRecentFiles.h"
-
 /*
 *	Contains all settings used by the HLMV application.
 */

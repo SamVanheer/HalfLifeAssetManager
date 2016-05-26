@@ -13,6 +13,8 @@
 
 #include "tools/shared/Credits.h"
 
+#include "settings/CCmdLineConfig.h"
+
 #include "CMainPanel.h"
 
 #include "CMainWindow.h"
@@ -432,14 +434,21 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 
 	const wxString szPath = dlg.GetPath();
 
-	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure StudioMdl" );
+	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure StudioMdl", m_pHLMV->GetSettings()->GetStudioMdlConfigManager() );
 
 	commandLineDlg.SetCopySupportEnabled( true );
 
 	if( commandLineDlg.ShowModal() == wxID_CANCEL )
 		return;
 
-	auto parameters = commandLineDlg.GetParameters();
+	commandLineDlg.Save();
+
+	auto config = m_pHLMV->GetSettings()->GetStudioMdlConfigManager()->GetActiveConfig();
+
+	if( !config )
+		config = std::make_shared<settings::CCmdLineConfig>( "Empty config" );
+
+	auto parameters = config->GetParameters();
 	parameters.emplace_back( std::make_pair( szPath, "" ) );
 
 	ui::CProcessDialog processDlg( this, wxID_ANY, "StudioMdl Compiler" );
@@ -454,13 +463,18 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 
 	processDlg.SetExecuteEnv( pEnv );
 
-	processDlg.SetShouldCopyFiles( commandLineDlg.ShouldCopyFiles() );
+	processDlg.SetShouldCopyFiles( config->ShouldCopyOutputFiles() );
 
 	processDlg.SetOutputDirectory( m_pHLMV->GetSettings()->GetMDLOutputDirectory().CStr() );
 
-	if( commandLineDlg.ShouldCopyFiles() )
+	if( config->ShouldCopyOutputFiles() )
 	{
-		wxArrayString filters = commandLineDlg.GetOutputFileFilters();
+		wxArrayString filters;
+		
+		for( const auto& filter : config->GetFilters() )
+		{
+			filters.Add( filter );
+		}
 
 		//Copy output model(s)
 		filters.Add( wxString::Format( "%s*.mdl", cwd.GetName() ) );
@@ -497,14 +511,21 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 
 	const wxString szPath = dlg.GetPath();
 
-	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure MdlDec" );
+	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure MdlDec", m_pHLMV->GetSettings()->GetMdlDecConfigManager() );
 
 	commandLineDlg.SetCopySupportEnabled( true );
 
 	if( commandLineDlg.ShowModal() == wxID_CANCEL )
 		return;
 
-	auto parameters = commandLineDlg.GetParameters();
+	commandLineDlg.Save();
+
+	auto config = m_pHLMV->GetSettings()->GetMdlDecConfigManager()->GetActiveConfig();
+
+	if( !config )
+		config = std::make_shared<settings::CCmdLineConfig>( "Empty config" );
+
+	auto parameters = config->GetParameters();
 	parameters.emplace_back( std::make_pair( szPath, "" ) );
 
 	ui::CProcessDialog processDlg( this, wxID_ANY, "MdlDec Decompiler" );
@@ -519,13 +540,18 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 
 	processDlg.SetExecuteEnv( pEnv );
 
-	processDlg.SetShouldCopyFiles( commandLineDlg.ShouldCopyFiles() );
+	processDlg.SetShouldCopyFiles( config->ShouldCopyOutputFiles() );
 
 	processDlg.SetOutputDirectory( m_pHLMV->GetSettings()->GetMDLOutputDirectory().CStr() );
 
-	if( commandLineDlg.ShouldCopyFiles() )
+	if( config->ShouldCopyOutputFiles() )
 	{
-		wxArrayString filters = commandLineDlg.GetOutputFileFilters();
+		wxArrayString filters;
+
+		for( const auto& filter : config->GetFilters() )
+		{
+			filters.Add( filter );
+		}
 
 		//Copy output qc
 		filters.Add( wxString::Format( "%s.qc", cwd.GetName() ) );

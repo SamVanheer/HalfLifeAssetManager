@@ -2,7 +2,6 @@
 #include <wx/filepicker.h>
 
 #include "settings/CGameConfig.h"
-#include "settings/CGameConfigManager.h"
 
 #include "CEditGameConfigsDialog.h"
 

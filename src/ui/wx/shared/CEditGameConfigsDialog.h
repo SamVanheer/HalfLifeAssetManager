@@ -5,10 +5,7 @@
 
 #include "ui/wx/wxInclude.h"
 
-namespace settings
-{
-class CGameConfigManager;
-}
+#include "settings/CBaseSettings.h"
 
 class wxListEvent;
 
