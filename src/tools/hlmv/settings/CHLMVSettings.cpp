@@ -164,7 +164,7 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 
 		if( auto cmdLineSettingsList = settings->FindFirstChild<kv::Block>( "MdlDecConfigs" ) )
 		{
-			settings::LoadGameConfigs( *cmdLineSettingsList, m_MdlDecConfigs, settings::LoadCmdLineConfig );
+			settings::LoadGameConfigs( *cmdLineSettingsList, m_MdlDecConfigs, settings::LoadCmdLineConfig, settings::CCmdLineConfig::IO_BLOCK_NAME );
 		}
 
 		if( auto activeConfig = settings->FindFirstChild<kv::KV>( "activeStudioMdlConfig" ) )

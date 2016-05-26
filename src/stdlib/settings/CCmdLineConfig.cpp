@@ -50,7 +50,7 @@ std::shared_ptr<CCmdLineConfig> LoadCmdLineConfig( const kv::Block& kvSettings )
 	auto name = kvSettings.FindFirstChild<kv::KV>( CMDLINECONFIG_NAME_KEY );
 	auto params = kvSettings.FindFirstChild<kv::Block>( CMDLINECONFIG_PARAMS_BLOCK );
 	auto shouldCopyFiles = kvSettings.FindFirstChild<kv::KV>( CMDLINECONFIG_COPYOUTPUTFILES_KEY );
-	auto outputFileDir = kvSettings.FindFirstChild<kv::KV>( CMDLINECONFIG_COPYOUTPUTFILES_KEY );
+	auto outputFileDir = kvSettings.FindFirstChild<kv::KV>( CMDLINECONFIG_OUTPUTFILEDIR_KEY );
 	auto filters = kvSettings.FindFirstChild<kv::Block>( CMDLINECONFIG_FILTERS_BLOCK );
 
 	if( !name || !params || !shouldCopyFiles || !outputFileDir || !filters )
@@ -109,7 +109,7 @@ bool SaveCmdLineConfig( const CCmdLineConfig& settings, kv::Writer& writer )
 
 	writer.WriteKeyvalue( CMDLINECONFIG_COPYOUTPUTFILES_KEY, settings.ShouldCopyOutputFiles() ? "1" : "0" );
 
-	writer.WriteKeyvalue( CMDLINECONFIG_COPYOUTPUTFILES_KEY, settings.GetOutputFileDirectory().c_str() );
+	writer.WriteKeyvalue( CMDLINECONFIG_OUTPUTFILEDIR_KEY, settings.GetOutputFileDirectory().c_str() );
 
 	writer.BeginBlock( CMDLINECONFIG_FILTERS_BLOCK );
 
