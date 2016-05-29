@@ -24,6 +24,7 @@ cvar::CCVar g_ShowBones( "r_showbones", cvar::CCVarArgsBuilder().FloatValue( 0 )
 cvar::CCVar g_ShowAttachments( "r_showattachments", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model attachments" ) );
 cvar::CCVar g_ShowEyePosition( "r_showeyeposition", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model eye position" ) );
 cvar::CCVar g_ShowHitboxes( "r_showhitboxes", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model hitboxes" ) );
+cvar::CCVar g_ShowStudioNormals( "r_showstudionormals", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows studio normals" ) );
 
 //TODO: this is temporary until lighting can be moved somewhere else
 
@@ -133,6 +134,11 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 	if( g_ShowHitboxes.GetBool() )
 	{
 		DrawHitBoxes();
+	}
+
+	if( g_ShowStudioNormals.GetBool() )
+	{
+		DrawNormals();
 	}
 
 	//Call this after the above debug operations so overlaying works properly.
@@ -378,6 +384,138 @@ void CStudioModelRenderer::DrawHitBoxes()
 
 		graphics::DrawBox( v2 );
 	}
+}
+
+void CStudioModelRenderer::DrawNormals()
+{
+	glDisable( GL_TEXTURE_2D );
+
+	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+	glBegin( GL_LINES );
+
+	for( int iBodyPart = 0; iBodyPart < m_pStudioHdr->numbodyparts; ++iBodyPart )
+	{
+		SetupModel( iBodyPart );
+
+		auto pvertbone = ( const byte* ) ( m_pStudioHdr->GetData() + m_pModel->vertinfoindex );
+		auto pnormbone = ( const byte* ) ( m_pStudioHdr->GetData() + m_pModel->norminfoindex );
+		auto ptexture = m_pTextureHdr->GetTextures();
+
+		auto pMeshes = ( const mstudiomesh_t* ) ( m_pStudioHdr->GetData() + m_pModel->meshindex );
+
+		auto pstudioverts = ( const glm::vec3* ) ( m_pStudioHdr->GetData() + m_pModel->vertindex );
+		auto pstudionorms = ( const glm::vec3* ) ( m_pStudioHdr->GetData() + m_pModel->normindex );
+
+		auto pskinref = m_pTextureHdr->GetSkins();
+
+		const int iSkinNum = m_pRenderInfo->iSkin;
+
+		if( iSkinNum != 0 && iSkinNum < m_pTextureHdr->numskinfamilies )
+			pskinref += ( iSkinNum * m_pTextureHdr->numskinref );
+
+		for( int i = 0; i < m_pModel->numverts; i++ )
+		{
+			VectorTransform( pstudioverts[ i ], m_bonetransform[ pvertbone[ i ] ], m_pxformverts[ i ] );
+		}
+
+		//
+		// clip and draw all triangles
+		//
+
+		glm::vec3* lv = m_pvlightvalues;
+
+		for( int j = 0; j < m_pModel->nummesh; j++ )
+		{
+			int flags = ptexture[ pskinref[ pMeshes[ j ].skinref ] ].flags;
+
+			for( int i = 0; i < pMeshes[ j ].numnorms; i++, ++lv, ++pstudionorms, pnormbone++ )
+			{
+				Lighting( *lv, *pnormbone, flags, *pstudionorms );
+
+				// FIX: move this check out of the inner loop
+				if( flags & STUDIO_NF_CHROME )
+					Chrome( m_chrome[ reinterpret_cast<glm::vec3*>( lv ) - m_pvlightvalues ], *pnormbone, *pstudionorms );
+			}
+		}
+
+		//Reset
+		pstudionorms = ( const glm::vec3* ) ( m_pStudioHdr->GetData() + m_pModel->normindex );
+
+		for( int j = 0; j < m_pModel->nummesh; j++ )
+		{
+			auto& mesh = pMeshes[ j ];
+			auto ptricmds = ( const short* ) ( m_pStudioHdr->GetData() + mesh.triindex );
+
+			const mstudiotexture_t& texture = ptexture[ pskinref[ mesh.skinref ] ];
+
+			const glm::vec3* vecTriangles[ 3 ];
+
+			int i;
+
+			while( i = *( ptricmds++ ) )
+			{
+				//Keep track of the total number of vertices. Used to invert strip normals.
+				const int total = i;
+
+				if( i < 0 )
+				{
+					i = -i;
+
+					vecTriangles[ 0 ] = &m_pxformverts[ ptricmds[ 0 ] ];
+					vecTriangles[ 1 ] = &m_pxformverts[ ptricmds[ 4 ] ];
+
+					i -= 2;
+					ptricmds += 8;
+
+					for( ; i > 0; --i, ptricmds += 4 )
+					{
+						vecTriangles[ 2 ] = &m_pxformverts[ ptricmds[ 0 ] ];
+						
+						const glm::vec3 vecCenter( ( *( vecTriangles[ 0 ] ) + *( vecTriangles[ 1 ] ) + *( vecTriangles[ 2 ] ) ) / 3.0f );
+
+						glm::vec3 vecNormal( glm::cross( *( vecTriangles[ 2 ] ) - *( vecTriangles[ 0 ] ), *( vecTriangles[ 1 ] ) - *( vecTriangles[ 0 ] ) ) );
+
+						vecNormal = glm::normalize( vecNormal );
+
+						glVertex3fv( glm::value_ptr( vecCenter ) );
+						glVertex3fv( glm::value_ptr( vecCenter + vecNormal ) );
+
+						vecTriangles[ 1 ] = vecTriangles[ 2 ];
+					}
+				}
+				else
+				{
+					vecTriangles[ 0 ] = &m_pxformverts[ ptricmds[ 0 ] ];
+					vecTriangles[ 1 ] = &m_pxformverts[ ptricmds[ 4 ] ];
+
+					i -= 2;
+					ptricmds += 8;
+
+					for( ; i > 0; --i, ptricmds += 4 )
+					{
+						vecTriangles[ 2 ] = &m_pxformverts[ ptricmds[ 0 ] ];
+
+						const glm::vec3 vecCenter( ( *( vecTriangles[ 0 ] ) + *( vecTriangles[ 1 ] ) + *( vecTriangles[ 2 ] ) ) / 3.0f );
+
+						glm::vec3 vecNormal( glm::cross( *( vecTriangles[ 2 ] ) - *( vecTriangles[ 0 ] ), *( vecTriangles[ 1 ] ) - *( vecTriangles[ 0 ] ) ) );
+
+						vecNormal = glm::normalize( vecNormal );
+
+						if( ( ( i % 2 ) == 0 ) ^ ( ( total % 2 ) == 0 ) )
+							vecNormal *= -1;
+
+						glVertex3fv( glm::value_ptr( vecCenter ) );
+						glVertex3fv( glm::value_ptr( vecCenter + vecNormal ) );
+
+						vecTriangles[ 0 ] = vecTriangles[ 1 ];
+						vecTriangles[ 1 ] = vecTriangles[ 2 ];
+					}
+				}
+			}
+		}
+	}
+
+	glEnd();
 }
 
 void CStudioModelRenderer::SetUpBones()

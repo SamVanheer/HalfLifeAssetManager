@@ -82,6 +82,8 @@ private:
 
 	void DrawHitBoxes();
 
+	void DrawNormals();
+
 	void SetUpBones();
 	void CalcRotations( glm::vec3* pos, glm::vec4* q, const mstudioseqdesc_t* const pseqdesc, const mstudioanim_t* panim, const float f );
 

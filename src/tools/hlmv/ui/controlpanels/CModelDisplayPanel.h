@@ -37,6 +37,7 @@ public:
 			SHOW_BACKGROUND,
 			WIREFRAME_OVERLAY,
 			AXES,
+			NORMALS,
 
 			COUNT,
 			LAST = COUNT - 1	//Must be last.

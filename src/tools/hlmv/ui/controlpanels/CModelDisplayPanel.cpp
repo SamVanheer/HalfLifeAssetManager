@@ -62,6 +62,7 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
 	m_pCheckBoxes[ CheckBox::SHOW_BACKGROUND ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Background" );
 	m_pCheckBoxes[ CheckBox::WIREFRAME_OVERLAY ]	= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Wireframe Overlay" );
 	m_pCheckBoxes[ CheckBox::AXES ]					= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Axes" );
+	m_pCheckBoxes[ CheckBox::NORMALS ]				= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Normals" );
 
 	for( size_t uiIndex = CheckBox::FIRST; uiIndex < CheckBox::COUNT; ++uiIndex )
 	{
@@ -298,6 +299,12 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 			break;
 		}
 
+	case CheckBox::NORMALS:
+		{
+			g_pCVar->SetCVarFloat( "r_showstudionormals", bValue ? 1 : 0 );
+			break;
+		}
+
 	default: break;
 	}
 }
@@ -394,6 +401,10 @@ void CModelDisplayPanel::HandleCVar( cvar::CCVar& cvar, const char* pszOldValue,
 	else if( strcmp( cvar.GetName(), "r_showhitboxes" ) == 0 )
 	{
 		SetCheckBox( CheckBox::SHOW_HITBOXES, cvar.GetBool() );
+	}
+	else if( strcmp( cvar.GetName(), "r_showstudionormals" ) == 0 )
+	{
+		SetCheckBox( CheckBox::NORMALS, cvar.GetBool() );
 	}
 }
 }
