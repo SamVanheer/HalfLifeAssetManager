@@ -114,7 +114,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
 
 	for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
 	{
-		m_pOrigin[ uiIndex ]->SetRange( DBL_MIN, DBL_MAX );
+		m_pOrigin[ uiIndex ]->SetRange( -DBL_MAX, DBL_MAX );
 		m_pOrigin[ uiIndex ]->SetDigits( 6 );
 	}
 
