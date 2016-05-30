@@ -1,4 +1,51 @@
-table, td, th
-{
-	border: 1px solid black;
+@import url('https://fonts.googleapis.com/css?family=Inconsolata:400,700');
+/*!
+Pure v0.6.0
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+https://github.com/yahoo/pure/blob/master/LICENSE.md
+*/
+table {
+    /* Remove spacing between table cells (from Normalize.css) */
+    border-collapse: collapse;
+    border-spacing: 0;
+    empty-cells: show;
+    border: 1px solid #cbcbcb;
+}
+td,
+th {
+    border-left: 1px solid #cbcbcb;/*  inner column border */
+    border-bottom: 1px solid #cbcbcb;
+    border-width: 0 0 1px 1px;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible; /*to make ths where the title is really long work*/
+    padding: 0.5em 1em; /* cell padding */
+}
+td:first-child,
+th:first-child {
+    border-left-width: 0;
+}
+tr:first-child {
+    background-color: #d0d0e0;
+    color: #000;
+    text-align: center;
+    vertical-align: bottom;
+}
+tr:nth-child(2n-1) td {
+    background-color: #f2f2f2;
+}
+tbody > tr:last-child > td {
+    border-bottom-width: 0;
+}
+tbody > tr:last-child > td {
+    border-bottom-width: 0;
+}
+/* End purecss tables.css */
+/**************************/
+
+/* Custom CSS */
+html {
+   font-family: Inconsolata, Consolas, monospace;
+   font-size: 18px;
 }
