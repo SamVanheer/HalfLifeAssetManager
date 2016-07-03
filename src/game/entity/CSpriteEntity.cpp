@@ -24,15 +24,9 @@ bool CSpriteEntity::Spawn()
 	return true;
 }
 
-void CSpriteEntity::Draw( entity::DrawFlags_t flags )
+void CSpriteEntity::Draw( renderer::DrawFlags_t flags )
 {
-	sprite::DrawFlags_t drawFlags = sprite::DRAWF_NONE;
-
-	//TODO: this needs to be redesigned
-	if( flags & entity::DRAWF_WIREFRAME_ONLY )
-		drawFlags |= sprite::DRAWF_WIREFRAME_OVERLAY | sprite::DRAWF_NODRAW;
-
-	sprite::Renderer().DrawSprite( this, drawFlags );
+	sprite::Renderer().DrawSprite( this, flags );
 }
 
 void CSpriteEntity::AnimThink()

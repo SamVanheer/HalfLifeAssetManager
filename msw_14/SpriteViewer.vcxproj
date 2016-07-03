@@ -159,7 +159,6 @@
     <ClInclude Include="..\src\engine\shared\sprite\CSprite.h" />
     <ClInclude Include="..\src\engine\shared\sprite\CSpriteRenderer.h" />
     <ClInclude Include="..\src\engine\shared\sprite\sprite.h" />
-    <ClInclude Include="..\src\engine\shared\sprite\SpriteConstants.h" />
     <ClInclude Include="..\src\game\entity\CBaseAnimating.h" />
     <ClInclude Include="..\src\game\entity\CBaseEntity.h" />
     <ClInclude Include="..\src\game\entity\CBaseEntityList.h" />

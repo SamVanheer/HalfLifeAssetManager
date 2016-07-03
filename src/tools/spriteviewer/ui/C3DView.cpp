@@ -118,7 +118,7 @@ void C3DView::DrawSprite()
 
 		glCullFace( flScale > 0 ? GL_FRONT : GL_BACK );
 
-		pEntity->Draw( entity::DRAWF_NONE );
+		pEntity->Draw( renderer::DrawFlag::NONE );
 	}
 
 	glPopMatrix();

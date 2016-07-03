@@ -71,18 +71,6 @@ inline void GetHandleData( const EntHandle_t handle, EntIndex_t& index, EntSeria
 	serial = GetHandleSerial( handle);
 }
 
-typedef unsigned int DrawFlags_t;
-
-enum DrawFlag : DrawFlags_t
-{
-	DRAWF_NONE				= 0,
-
-	/**
-	*	Only draw wireframe overlay.
-	*/
-	DRAWF_WIREFRAME_ONLY	= Bit( 0 ),
-};
-
 typedef unsigned int Flags_t;
 
 enum Flag : Flags_t

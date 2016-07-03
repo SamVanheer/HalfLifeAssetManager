@@ -577,13 +577,15 @@ void C3DView::DrawModel()
 
 		glCullFace( flScale > 0 ? GL_FRONT : GL_BACK );
 
-		pEntity->Draw( entity::DRAWF_NONE );
+		renderer::DrawFlags_t flags = renderer::DrawFlag::NONE;
 
 		//Draw wireframe overlay
 		if( m_pHLMV->GetState()->wireframeOverlay )
 		{
-			graphics::helpers::DrawWireframeOverlay( pEntity );
+			flags |= renderer::DrawFlag::WIREFRAME_OVERLAY;
 		}
+
+		pEntity->Draw( flags );
 	}
 
 	//

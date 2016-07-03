@@ -60,7 +60,7 @@ void CStudioModelRenderer::RunFrame()
 {
 }
 
-unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const pRenderInfo, const DrawFlags_t flags )
+unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const pRenderInfo, const renderer::DrawFlags_t flags )
 {
 	if( !pRenderInfo )
 	{
@@ -108,11 +108,30 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 	if( m_pListener )
 		m_pListener->OnPreDraw( *this, *m_pRenderInfo );
 
-	for( int i = 0; i < m_pStudioHdr->numbodyparts; i++ )
+	if( !( flags & renderer::DrawFlag::NODRAW ) )
 	{
-		SetupModel( i );
-		if( m_pRenderInfo->flTransparency > 0.0f )
-			uiDrawnPolys += DrawPoints( ( flags & DRAWF_WIREFRAME_ONLY ) != 0 );
+		for( int i = 0; i < m_pStudioHdr->numbodyparts; i++ )
+		{
+			SetupModel( i );
+			if( m_pRenderInfo->flTransparency > 0.0f )
+				uiDrawnPolys += DrawPoints( false );
+		}
+	}
+
+	if( flags & renderer::DrawFlag::WIREFRAME_OVERLAY )
+	{
+		//TODO: restore render mode after this? - Solokiller
+		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		glDisable( GL_TEXTURE_2D );
+		glDisable( GL_CULL_FACE );
+		glEnable( GL_DEPTH_TEST );
+
+		for( int i = 0; i < m_pStudioHdr->numbodyparts; i++ )
+		{
+			SetupModel( i );
+			if( m_pRenderInfo->flTransparency > 0.0f )
+				uiDrawnPolys += DrawPoints( true );
+		}
 	}
 
 	// draw bones
@@ -858,7 +877,7 @@ void CStudioModelRenderer::SetupModel( int bodypart )
 	m_pModel = m_pRenderInfo->pModel->GetModelByBodyPart( m_pRenderInfo->iBodygroup, bodypart );
 }
 
-unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
+unsigned int CStudioModelRenderer::DrawPoints( const bool bWireframe )
 {
 	int					i, j;
 	mstudiomesh_t		*pmesh;
@@ -923,22 +942,37 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 
 	// glCullFace(GL_FRONT);
 
+	uiDrawnPolys += DrawMeshes( bWireframe, meshes, ptexture, pskinref );
+
+	glDepthMask( GL_TRUE );
+
+	return uiDrawnPolys;
+}
+
+unsigned int CStudioModelRenderer::DrawMeshes( const bool bWireframe, const SortedMesh_t* pMeshes, const mstudiotexture_t* pTextures, const short* pSkinRef )
+{
+	mstudiomesh_t* pmesh;
+
 	//Set here since it never changes. Much more efficient.
-	if( wireframeOnly )
-		glColor4f( r_wireframecolor_r.GetFloat() / 255.0f, 
-				   r_wireframecolor_g.GetFloat() / 255.0f, 
-				   r_wireframecolor_b.GetFloat() / 255.0f, 
+	if( bWireframe )
+		glColor4f( r_wireframecolor_r.GetFloat() / 255.0f,
+				   r_wireframecolor_g.GetFloat() / 255.0f,
+				   r_wireframecolor_b.GetFloat() / 255.0f,
 				   m_pRenderInfo->flTransparency );
 
-	for( j = 0; j < m_pModel->nummesh; j++ )
+	unsigned int uiDrawnPolys = 0;
+
+	int i;
+
+	for( int j = 0; j < m_pModel->nummesh; j++ )
 	{
 		float s, t;
 		short		*ptricmds;
 
-		pmesh = meshes[ j ].pMesh;
+		pmesh = pMeshes[ j ].pMesh;
 		ptricmds = ( short * ) ( ( byte * ) m_pStudioHdr + pmesh->triindex );
 
-		const mstudiotexture_t& texture = ptexture[ pskinref[ pmesh->skinref ] ];
+		const mstudiotexture_t& texture = pTextures[ pSkinRef[ pmesh->skinref ] ];
 
 		s = 1.0 / ( float ) texture.width;
 		t = 1.0 / ( float ) texture.height;
@@ -968,9 +1002,9 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 			glAlphaFunc( GL_GREATER, 0.5f );
 		}
 
-		if( !wireframeOnly )
+		if( !bWireframe )
 		{
-			glBindTexture( GL_TEXTURE_2D, m_pRenderInfo->pModel->GetTextureId( pskinref[ pmesh->skinref ] ) );
+			glBindTexture( GL_TEXTURE_2D, m_pRenderInfo->pModel->GetTextureId( pSkinRef[ pmesh->skinref ] ) );
 		}
 
 		while( i = *( ptricmds++ ) )
@@ -989,7 +1023,7 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 
 			for( ; i > 0; i--, ptricmds += 4 )
 			{
-				if( !wireframeOnly )
+				if( !bWireframe )
 				{
 					if( texture.flags & STUDIO_NF_CHROME )
 					{
@@ -1021,8 +1055,6 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool wireframeOnly )
 		if( texture.flags & STUDIO_NF_MASKED )
 			glDisable( GL_ALPHA_TEST );
 	}
-
-	glDepthMask( GL_TRUE );
 
 	return uiDrawnPolys;
 }

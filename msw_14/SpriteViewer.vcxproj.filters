@@ -213,9 +213,6 @@
     <ClInclude Include="..\src\engine\shared\sprite\CSpriteRenderer.h">
       <Filter>Header Files\engine\shared\sprite</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\engine\shared\sprite\SpriteConstants.h">
-      <Filter>Header Files\engine\shared\sprite</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ui\wx\utility\CwxRecentFiles.h">
       <Filter>Header Files\ui\wx\utility</Filter>
     </ClInclude>

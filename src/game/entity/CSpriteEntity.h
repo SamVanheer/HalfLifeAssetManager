@@ -17,7 +17,7 @@ public:
 
 	virtual bool Spawn() override;
 
-	virtual void Draw( entity::DrawFlags_t flags ) override;
+	virtual void Draw( renderer::DrawFlags_t flags ) override;
 
 	void AnimThink();
 

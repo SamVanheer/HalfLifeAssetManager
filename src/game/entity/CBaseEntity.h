@@ -5,6 +5,8 @@
 
 #include "shared/Class.h"
 
+#include "engine/shared/renderer/DrawConstants.h"
+
 #include "EntityConstants.h"
 #include "EHandle.h"
 #include "CEntityDict.h"
@@ -52,7 +54,7 @@ public:
 	/**
 	*	Draws this entity.
 	*/
-	virtual void Draw( entity::DrawFlags_t flags ) {}
+	virtual void Draw( renderer::DrawFlags_t flags ) {}
 
 private:
 	const char* m_pszClassName = nullptr;

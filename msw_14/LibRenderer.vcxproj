@@ -163,6 +163,7 @@
     <ClInclude Include="..\src\engine\renderer\CRendererLibrary.h" />
     <ClInclude Include="..\src\engine\renderer\studiomodel\CStudioModelRenderer.h" />
     <ClInclude Include="..\src\engine\renderer\studiomodel\StudioSorting.h" />
+    <ClInclude Include="..\src\engine\shared\renderer\DrawConstants.h" />
     <ClInclude Include="..\src\engine\shared\renderer\IRendererLibrary.h" />
     <ClInclude Include="..\src\engine\shared\renderer\studiomodel\CModelRenderInfo.h" />
     <ClInclude Include="..\src\engine\shared\renderer\studiomodel\IStudioModelRenderer.h" />

@@ -37,12 +37,6 @@ void DrawFloorQuad( float flSideLength );
 void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundColor, const bool bMirror );
 
 /**
-*	Draws a wireframe overlay over a model
-*	@param pEntity Entity to draw
-*/
-unsigned int DrawWireframeOverlay( CStudioModelEntity* pEntity );
-
-/**
 *	Draws a mirrored model.
 *	@param pEntity				Entity to draw
 *	@param renderMode			Render mode to use

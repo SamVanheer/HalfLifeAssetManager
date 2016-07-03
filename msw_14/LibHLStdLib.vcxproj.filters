@@ -129,9 +129,6 @@
     <ClInclude Include="..\src\engine\shared\studiomodel\studio.h">
       <Filter>Header Files\engine\shared\studiomodel</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\engine\shared\studiomodel\StudioModelConstants.h">
-      <Filter>Header Files\engine\shared\studiomodel</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\html\CHTMLBody.h">
       <Filter>Header Files\stdlib\html</Filter>
     </ClInclude>

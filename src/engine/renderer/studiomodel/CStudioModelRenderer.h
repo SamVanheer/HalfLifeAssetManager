@@ -60,7 +60,7 @@ public:
 		m_lightvec = lightvec;
 	}
 
-	unsigned int DrawModel( CModelRenderInfo* const pRenderInfo, const DrawFlags_t flags = DRAWF_NONE ) override final;
+	unsigned int DrawModel( CModelRenderInfo* const pRenderInfo, const renderer::DrawFlags_t flags ) override final;
 
 	IStudioModelRendererListener* GetRendererListener() const override final { return m_pListener; }
 
@@ -96,7 +96,9 @@ private:
 
 	void SetupModel( int bodypart );
 
-	unsigned int DrawPoints( const bool wireframeOnly = false );
+	unsigned int DrawPoints( const bool bWireframe );
+
+	unsigned int DrawMeshes( const bool bWireframe, const SortedMesh_t* pMeshes, const mstudiotexture_t* pTextures, const short* pSkinRef );
 
 	void Lighting( glm::vec3& lv, int bone, int flags, const glm::vec3& normal );
 	void Chrome( glm::vec2& chrome, int bone, const glm::vec3& normal );

@@ -4,7 +4,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-#include "SpriteConstants.h"
+#include "engine/shared/renderer/DrawConstants.h"
 
 class CSpriteEntity;
 
@@ -18,15 +18,15 @@ public:
 	CSpriteRenderer();
 	~CSpriteRenderer();
 
-	void DrawSprite( CSpriteEntity* pEntity, const DrawFlags_t flags );
+	void DrawSprite( CSpriteEntity* pEntity, const renderer::DrawFlags_t flags );
 
-	void DrawSprite2D( const float flX, const float flY, const float flWidth, const float flHeight, const msprite_t* pSprite, const DrawFlags_t flags = DRAWF_NONE );
+	void DrawSprite2D( const float flX, const float flY, const float flWidth, const float flHeight, const msprite_t* pSprite, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE );
 
-	void DrawSprite2D( const float flX, const float flY, const msprite_t* pSprite, const float flScale = 1, const DrawFlags_t flags = DRAWF_NONE );
+	void DrawSprite2D( const float flX, const float flY, const msprite_t* pSprite, const float flScale = 1, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE );
 
 private:
 
-	void DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& vecSize, const msprite_t* pSprite, const int iFrame, const DrawFlags_t flags );
+	void DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& vecSize, const msprite_t* pSprite, const int iFrame, const renderer::DrawFlags_t flags );
 
 private:
 	CSpriteRenderer( const CSpriteRenderer& ) = delete;

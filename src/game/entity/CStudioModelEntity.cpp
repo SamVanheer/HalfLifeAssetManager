@@ -39,16 +39,8 @@ bool CStudioModelEntity::Spawn()
 	return true;
 }
 
-void CStudioModelEntity::Draw( entity::DrawFlags_t flags )
+void CStudioModelEntity::Draw( renderer::DrawFlags_t flags )
 {
-	studiomdl::DrawFlags_t drawFlags = studiomdl::DRAWF_NONE;
-
-	//The entity and studiomodel flags don't necessarily cover the same things.
-	if( flags & entity::DRAWF_WIREFRAME_ONLY )
-	{
-		drawFlags |= studiomdl::DRAWF_WIREFRAME_ONLY;
-	}
-
 	studiomdl::CModelRenderInfo renderInfo;
 
 	renderInfo.vecOrigin = GetOrigin();
@@ -75,7 +67,7 @@ void CStudioModelEntity::Draw( entity::DrawFlags_t flags )
 
 	renderInfo.iMouth = GetMouth();
 
-	g_pStudioMdlRenderer->DrawModel( &renderInfo, drawFlags );
+	g_pStudioMdlRenderer->DrawModel( &renderInfo, flags );
 }
 
 float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )

@@ -86,5 +86,8 @@
     <ClInclude Include="..\src\engine\shared\renderer\studiomodel\CModelRenderInfo.h">
       <Filter>Header Files\engine\shared\renderer\studiomodel</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\engine\shared\renderer\DrawConstants.h">
+      <Filter>Header Files\engine\shared\renderer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

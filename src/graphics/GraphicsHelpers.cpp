@@ -153,17 +153,6 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 		glEnable( GL_CULL_FACE );
 }
 
-unsigned int DrawWireframeOverlay( CStudioModelEntity* pEntity )
-{
-	SetupRenderMode( RenderMode::WIREFRAME, true );
-
-	const unsigned int uiOldPolys = g_pStudioMdlRenderer->GetDrawnPolygonsCount();
-
-	pEntity->Draw( entity::DRAWF_WIREFRAME_ONLY );
-
-	return g_pStudioMdlRenderer->GetDrawnPolygonsCount() - uiOldPolys;
-}
-
 unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength, const bool bBackfaceCulling )
 {
 	/* Don't update color or depth. */
@@ -217,13 +206,15 @@ unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode re
 
 	const unsigned int uiOldPolys = g_pStudioMdlRenderer->GetDrawnPolygonsCount();
 
-	pEntity->Draw( entity::DRAWF_NONE );
+	renderer::DrawFlags_t flags = renderer::DrawFlag::NONE;
 
 	//Draw wireframe overlay
 	if( bWireframeOverlay )
 	{
-		DrawWireframeOverlay( pEntity );
+		flags |= renderer::DrawFlag::WIREFRAME_OVERLAY;
 	}
+
+	pEntity->Draw( flags );
 
 	glDisable( GL_CLIP_PLANE0 );
 

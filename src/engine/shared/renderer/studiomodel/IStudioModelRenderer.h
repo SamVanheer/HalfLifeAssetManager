@@ -7,7 +7,7 @@
 
 #include "shared/Const.h"
 
-#include "shared/studiomodel/StudioModelConstants.h"
+#include "engine/shared/renderer/DrawConstants.h"
 
 #include "CModelRenderInfo.h"
 
@@ -100,7 +100,7 @@ public:
 	*	@param flags Flags.
 	*	@return Number of polygons that were drawn.
 	*/
-	virtual unsigned int DrawModel( CModelRenderInfo* const pRenderInfo, const DrawFlags_t flags = DRAWF_NONE ) = 0;
+	virtual unsigned int DrawModel( CModelRenderInfo* const pRenderInfo, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE ) = 0;
 
 	/*
 	*	Tool only operations.

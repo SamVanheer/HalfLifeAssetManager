@@ -31,7 +31,7 @@ CSpriteRenderer::~CSpriteRenderer()
 {
 }
 
-void CSpriteRenderer::DrawSprite( CSpriteEntity* pEntity, const DrawFlags_t flags )
+void CSpriteRenderer::DrawSprite( CSpriteEntity* pEntity, const renderer::DrawFlags_t flags )
 {
 	assert( pEntity );
 
@@ -43,7 +43,7 @@ void CSpriteRenderer::DrawSprite( CSpriteEntity* pEntity, const DrawFlags_t flag
 	DrawSprite( pEntity->GetOrigin(), { frame->width, frame->height }, pSprite, static_cast<int>( pEntity->GetFrame() ), flags );
 }
 
-void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const float flWidth, const float flHeight, const msprite_t* pSprite, const DrawFlags_t flags )
+void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const float flWidth, const float flHeight, const msprite_t* pSprite, const renderer::DrawFlags_t flags )
 {
 	const int iFrame = static_cast<int>( fmod( WorldTime.GetCurrentTime() * 10, pSprite->numframes ) );
 
@@ -51,7 +51,7 @@ void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const floa
 	DrawSprite( { flX, flY, 0 }, { flWidth, flHeight }, pSprite, iFrame, flags );
 }
 
-void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const msprite_t* pSprite, const float flScale, const DrawFlags_t flags )
+void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const msprite_t* pSprite, const float flScale, const renderer::DrawFlags_t flags )
 {
 	assert( pSprite );
 
@@ -64,7 +64,7 @@ void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const mspr
 	DrawSprite2D( flX, flY, static_cast<float>( frame->width * flScale ), static_cast<float>( frame->height * flScale ), pSprite, flags );
 }
 
-void CSpriteRenderer::DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& vecSize, const msprite_t* pSprite, const int iFrame, const DrawFlags_t flags )
+void CSpriteRenderer::DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& vecSize, const msprite_t* pSprite, const int iFrame, const renderer::DrawFlags_t flags )
 {
 	assert( pSprite );
 
@@ -110,7 +110,7 @@ void CSpriteRenderer::DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& v
 
 	const glm::vec4 vecRect{ vecOrigin.x - vecSize.x / 2, vecOrigin.y - vecSize.y / 2, vecOrigin.x + vecSize.x / 2, vecOrigin.y + vecSize.y / 2 };
 
-	if( !( flags & DRAWF_NODRAW ) )
+	if( !( flags & renderer::DrawFlag::NODRAW ) )
 	{
 		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 		glEnable( GL_TEXTURE_2D );
@@ -136,7 +136,7 @@ void CSpriteRenderer::DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& v
 		glEnd();
 	}
 
-	if( flags & DRAWF_WIREFRAME_OVERLAY )
+	if( flags & renderer::DrawFlag::WIREFRAME_OVERLAY )
 	{
 		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		glDisable( GL_TEXTURE_2D );
