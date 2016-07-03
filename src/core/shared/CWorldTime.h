@@ -6,7 +6,7 @@
 /**
 *	Represents the time in the world. Multiple time values are tracked.
 */
-class CWorldTime final
+class HLCORE_API CWorldTime final
 {
 public:
 	CWorldTime() = default;
@@ -62,6 +62,11 @@ public:
 	*	Sets the previous real time. Avoid using this.
 	*/
 	void SetPreviousRealTime( const double flRealTime ) { m_flPrevRealTime = flRealTime; }
+
+	/**
+	*	Call with the new current time to update world time.
+	*/
+	void TimeChanged( const double flCurrentTime );
 
 private:
 	float m_flCurrentTime	= 1.0f;

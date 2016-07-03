@@ -1,3 +1,5 @@
+#include <glm/geometric.hpp>
+
 #include "shared/Logging.h"
 #include "shared/CWorldTime.h"
 
@@ -271,7 +273,7 @@ void CStudioModelEntity::GetSequenceInfo( float& flFrameRate, float& flGroundSpe
 	if( pseqdesc->numframes > 1 )
 	{
 		flFrameRate = pseqdesc->fps;
-		flGroundSpeed = static_cast<float>( pseqdesc->linearmovement.length() );
+		flGroundSpeed = static_cast<float>( glm::length( pseqdesc->linearmovement ) );
 		flGroundSpeed = flGroundSpeed * pseqdesc->fps / ( pseqdesc->numframes - 1 );
 	}
 	else

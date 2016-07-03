@@ -367,10 +367,7 @@ void CBaseTool::ToolRunFrame()
 		return;
 		*/
 
-	WorldTime.SetPreviousTime( WorldTime.GetCurrentTime() );
-	WorldTime.SetCurrentTime( WorldTime.GetCurrentTime() + flFrameTime );
-	WorldTime.SetFrameTime( flFrameTime );
-	WorldTime.SetPreviousRealTime( WorldTime.GetRealTime() );
+	WorldTime.TimeChanged( flCurTime );
 
 	EntityManager().RunFrame();
 
