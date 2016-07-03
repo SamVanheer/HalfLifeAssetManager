@@ -9,11 +9,14 @@
 #include "graphics/GraphicsUtils.h"
 
 #include "game/entity/CSpriteEntity.h"
-#include "engine/shared/sprite/CSpriteRenderer.h"
+#include "engine/shared/renderer/sprite/ISpriteRenderer.h"
 
 #include "ui/wx/CwxOpenGL.h"
 
 #include "C3DView.h"
+
+//TODO: remove
+extern sprite::ISpriteRenderer* g_pSpriteRenderer;
 
 namespace sprview
 {
@@ -82,7 +85,7 @@ void C3DView::DrawSpriteInfo()
 
 	if( auto pEntity = m_pSpriteViewer->GetState()->GetEntity() )
 	{
-		sprite::Renderer().DrawSprite2D( size.GetWidth() / 2, size.GetHeight() / 2, pEntity->GetSprite(), 4 );
+		g_pSpriteRenderer->DrawSprite2D( size.GetWidth() / 2, size.GetHeight() / 2, pEntity->GetSprite(), 4 );
 	}
 
 	glPopMatrix();

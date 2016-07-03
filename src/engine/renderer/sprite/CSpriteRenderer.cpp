@@ -1,27 +1,22 @@
+#include <cassert>
+
 #include <glm/vec4.hpp>
+
+#include "core/shared/Logging.h"
 
 #include "graphics/OpenGL.h"
 
 #include "shared/CWorldTime.h"
 
-#include "game/entity/CSpriteEntity.h"
+#include "engine/shared/renderer/sprite/CSpriteRenderInfo.h"
 
-#include "sprite.h"
+#include "engine/shared/sprite/sprite.h"
 
 #include "CSpriteRenderer.h"
 
 namespace sprite
 {
-namespace
-{
-static CSpriteRenderer g_Renderer;
-}
-
-//TODO: remove global
-CSpriteRenderer& Renderer()
-{
-	return g_Renderer;
-}
+REGISTER_SINGLE_INTERFACE( ISPRITERENDERER_NAME, CSpriteRenderer );
 
 CSpriteRenderer::CSpriteRenderer()
 {
@@ -31,16 +26,22 @@ CSpriteRenderer::~CSpriteRenderer()
 {
 }
 
-void CSpriteRenderer::DrawSprite( CSpriteEntity* pEntity, const renderer::DrawFlags_t flags )
+void CSpriteRenderer::DrawSprite( const CSpriteRenderInfo* pRenderInfo, const renderer::DrawFlags_t flags )
 {
-	assert( pEntity );
+	assert( pRenderInfo );
 
-	const auto pSprite = pEntity->GetSprite();
+	if( !pRenderInfo )
+	{
+		Error( "CSpriteRenderer::DrawSprite: Null render info!\n" );
+		return;
+	}
 
-	const auto& framedesc = pSprite->frames[ static_cast<int>( pEntity->GetFrame() ) ];
+	const auto pSprite = pRenderInfo->pSprite;
+
+	const auto& framedesc = pSprite->frames[ static_cast<int>( pRenderInfo->flFrame ) ];
 	const auto& frame = framedesc.frameptr;
 
-	DrawSprite( pEntity->GetOrigin(), { frame->width, frame->height }, pSprite, static_cast<int>( pEntity->GetFrame() ), flags );
+	DrawSprite( pRenderInfo->vecOrigin, { frame->width, frame->height }, pSprite, static_cast<int>( pRenderInfo->flFrame ), flags );
 }
 
 void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const float flWidth, const float flHeight, const msprite_t* pSprite, const renderer::DrawFlags_t flags )

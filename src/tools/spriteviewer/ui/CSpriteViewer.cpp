@@ -1,10 +1,14 @@
 #include "shared/Logging.h"
 
+#include "engine/shared/renderer/sprite/ISpriteRenderer.h"
+
 #include "wxSpriteViewer.h"
 
 #include "CMainWindow.h"
 
 #include "CSpriteViewer.h"
+
+sprite::ISpriteRenderer* g_pSpriteRenderer = nullptr;
 
 namespace sprview
 {
@@ -22,6 +26,27 @@ CSpriteViewer::~CSpriteViewer()
 settings::CBaseSettings* CSpriteViewer::CreateSettings()
 {
 	return new CSpriteViewerSettings( GetFileSystem() );
+}
+
+bool CSpriteViewer::InitializeTool()
+{
+	const CreateInterfaceFn rendererFactory = static_cast<CreateInterfaceFn>( GetRendererLib().GetFunctionAddress( CREATEINTERFACE_NAME ) );
+
+	if( !rendererFactory )
+	{
+		wxMessageBox( "Failed to get renderer factory", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	g_pSpriteRenderer = static_cast<sprite::ISpriteRenderer*>( rendererFactory( ISPRITERENDERER_NAME, nullptr ) );
+
+	if( !g_pSpriteRenderer )
+	{
+		wxMessageBox( "Failed to create sprite renderer", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	return true;
 }
 
 bool CSpriteViewer::PostInitialize()

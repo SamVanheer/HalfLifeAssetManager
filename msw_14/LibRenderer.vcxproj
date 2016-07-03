@@ -155,16 +155,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\engine\renderer\CRendererLibrary.cpp" />
+    <ClCompile Include="..\src\engine\renderer\sprite\CSpriteRenderer.cpp" />
     <ClCompile Include="..\src\engine\renderer\studiomodel\CStudioModelRenderer.cpp" />
     <ClCompile Include="..\src\engine\renderer\studiomodel\StudioSorting.cpp" />
     <ClCompile Include="..\src\lib\LibInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\engine\renderer\CRendererLibrary.h" />
+    <ClInclude Include="..\src\engine\renderer\sprite\CSpriteRenderer.h" />
     <ClInclude Include="..\src\engine\renderer\studiomodel\CStudioModelRenderer.h" />
     <ClInclude Include="..\src\engine\renderer\studiomodel\StudioSorting.h" />
     <ClInclude Include="..\src\engine\shared\renderer\DrawConstants.h" />
     <ClInclude Include="..\src\engine\shared\renderer\IRendererLibrary.h" />
+    <ClInclude Include="..\src\engine\shared\renderer\sprite\CSpriteRenderInfo.h" />
+    <ClInclude Include="..\src\engine\shared\renderer\sprite\ISpriteRenderer.h" />
     <ClInclude Include="..\src\engine\shared\renderer\studiomodel\CModelRenderInfo.h" />
     <ClInclude Include="..\src\engine\shared\renderer\studiomodel\IStudioModelRenderer.h" />
     <ClInclude Include="..\src\engine\shared\renderer\studiomodel\IStudioModelRendererListener.h" />

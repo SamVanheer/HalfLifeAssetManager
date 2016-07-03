@@ -46,6 +46,15 @@
     <Filter Include="Source Files\engine\renderer\studiomodel">
       <UniqueIdentifier>{7a931f98-44b3-48c0-833a-7070f9a404d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\engine\shared\renderer\sprite">
+      <UniqueIdentifier>{5b1258ba-75f4-449e-8865-8cf9ccad37a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\renderer\sprite">
+      <UniqueIdentifier>{31705484-7439-4218-9810-b597cf9e7c58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\renderer\sprite">
+      <UniqueIdentifier>{4c8eb2bc-21f9-493c-bc79-be04699c87a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\lib\LibInterface.cpp">
@@ -59,6 +68,9 @@
     </ClCompile>
     <ClCompile Include="..\src\engine\renderer\studiomodel\StudioSorting.cpp">
       <Filter>Source Files\engine\renderer\studiomodel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\renderer\sprite\CSpriteRenderer.cpp">
+      <Filter>Source Files\engine\renderer\sprite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +100,15 @@
     </ClInclude>
     <ClInclude Include="..\src\engine\shared\renderer\DrawConstants.h">
       <Filter>Header Files\engine\shared\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\renderer\sprite\ISpriteRenderer.h">
+      <Filter>Header Files\engine\shared\renderer\sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\renderer\sprite\CSpriteRenderInfo.h">
+      <Filter>Header Files\engine\shared\renderer\sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\renderer\sprite\CSpriteRenderer.h">
+      <Filter>Header Files\engine\renderer\sprite</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

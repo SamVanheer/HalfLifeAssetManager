@@ -6,23 +6,23 @@
 
 #include "engine/shared/renderer/DrawConstants.h"
 
-class CSpriteEntity;
+#include "engine/shared/renderer/sprite/ISpriteRenderer.h"
 
 namespace sprite
 {
 struct msprite_t;
 
-class CSpriteRenderer final
+class CSpriteRenderer final : public ISpriteRenderer
 {
 public:
 	CSpriteRenderer();
 	~CSpriteRenderer();
 
-	void DrawSprite( CSpriteEntity* pEntity, const renderer::DrawFlags_t flags );
+	void DrawSprite( const CSpriteRenderInfo* pRenderInfo, const renderer::DrawFlags_t flags ) override;
 
-	void DrawSprite2D( const float flX, const float flY, const float flWidth, const float flHeight, const msprite_t* pSprite, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE );
+	void DrawSprite2D( const float flX, const float flY, const float flWidth, const float flHeight, const msprite_t* pSprite, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE ) override;
 
-	void DrawSprite2D( const float flX, const float flY, const msprite_t* pSprite, const float flScale = 1, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE );
+	void DrawSprite2D( const float flX, const float flY, const msprite_t* pSprite, const float flScale = 1, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE ) override;
 
 private:
 
@@ -32,8 +32,6 @@ private:
 	CSpriteRenderer( const CSpriteRenderer& ) = delete;
 	CSpriteRenderer& operator=( const CSpriteRenderer& ) = delete;
 };
-
-CSpriteRenderer& Renderer();
 }
 
 #endif //ENGINE_SHARED_SPRITE_CSPRITERENDERER_H

@@ -227,6 +227,12 @@ bool CBaseTool::Initialize()
 		return false;
 	}
 
+	if( !InitializeTool() )
+	{
+		wxMessageBox( "Failed to initialize tool specific code", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
 	if( !EntityManager().Initialize() )
 	{
 		wxMessageBox( "Failed to initialize entity manager", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );

@@ -32,7 +32,9 @@ typedef double vec_t;
 typedef float vec_t;
 #endif
 
+typedef glm::tvec2<vec_t, glm::highp> Vector2D;
 typedef glm::tvec3<vec_t, glm::highp> Vector;
+typedef glm::tvec4<vec_t, glm::highp> Vector4D;
 typedef glm::tmat3x4<vec_t, glm::highp> Mat3x4;
 typedef glm::tmat4x4<vec_t, glm::highp> Mat4x4;
 

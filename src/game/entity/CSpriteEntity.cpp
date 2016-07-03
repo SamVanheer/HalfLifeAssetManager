@@ -2,9 +2,13 @@
 
 #include "engine/shared/sprite/sprite.h"
 #include "engine/shared/sprite/CSprite.h"
-#include "engine/shared/sprite/CSpriteRenderer.h"
+#include "engine/shared/renderer/sprite/ISpriteRenderer.h"
+#include "engine/shared/renderer/sprite/CSpriteRenderInfo.h"
 
 #include "CSpriteEntity.h"
+
+//TODO: remove
+extern sprite::ISpriteRenderer* g_pSpriteRenderer;
 
 LINK_ENTITY_TO_CLASS( sprite, CSpriteEntity );
 
@@ -26,7 +30,19 @@ bool CSpriteEntity::Spawn()
 
 void CSpriteEntity::Draw( renderer::DrawFlags_t flags )
 {
-	sprite::Renderer().DrawSprite( this, flags );
+	sprite::CSpriteRenderInfo info;
+
+	info.vecOrigin = GetOrigin();
+	info.vecAngles = GetAngles();
+	info.vecScale = GetScale();
+
+	info.pSprite = GetSprite();
+
+	info.flTransparency = GetTransparency();
+
+	info.flFrame = GetFrame();
+
+	g_pSpriteRenderer->DrawSprite( &info, flags );
 }
 
 void CSpriteEntity::AnimThink()

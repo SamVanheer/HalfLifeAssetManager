@@ -29,6 +29,8 @@ public:
 protected:
 	settings::CBaseSettings* CreateSettings() override final;
 
+	bool InitializeTool() override final;
+
 	bool PostInitialize() override final;
 
 	void PreShutdown() override final;

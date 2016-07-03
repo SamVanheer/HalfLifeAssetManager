@@ -91,24 +91,6 @@
     <Filter Include="Header Files\graphics">
       <UniqueIdentifier>{bffd1570-bc81-4709-ae21-1bb73fb3aa28}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\engine">
-      <UniqueIdentifier>{8d884a1c-6189-4c50-95c6-546b74b41c34}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\engine\shared">
-      <UniqueIdentifier>{82908dd8-bcc9-46bc-bedd-7c5e1322db36}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\engine\shared\sprite">
-      <UniqueIdentifier>{781f8138-c18a-43f6-9a43-258dfbbc75c5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\engine">
-      <UniqueIdentifier>{3ea5cd0b-1c2a-4a2c-af26-aaa1f75f40b5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\engine\shared">
-      <UniqueIdentifier>{8b192e57-74f7-41f6-8e31-bd6ab1a22fc5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\engine\shared\sprite">
-      <UniqueIdentifier>{ad30220c-ae50-4d06-ac93-e7bed6f95bad}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\tools\shared\CBaseTool.h">
@@ -204,15 +186,6 @@
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\engine\shared\sprite\CSprite.h">
-      <Filter>Header Files\engine\shared\sprite</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\engine\shared\sprite\sprite.h">
-      <Filter>Header Files\engine\shared\sprite</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\engine\shared\sprite\CSpriteRenderer.h">
-      <Filter>Header Files\engine\shared\sprite</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ui\wx\utility\CwxRecentFiles.h">
       <Filter>Header Files\ui\wx\utility</Filter>
     </ClInclude>
@@ -301,12 +274,6 @@
     </ClCompile>
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp">
       <Filter>Source Files\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\engine\shared\sprite\CSprite.cpp">
-      <Filter>Source Files\engine\shared\sprite</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\engine\shared\sprite\CSpriteRenderer.cpp">
-      <Filter>Source Files\engine\shared\sprite</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ui\wx\utility\CwxRecentFiles.cpp">
       <Filter>Source Files\ui\wx\utility</Filter>

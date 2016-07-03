@@ -187,6 +187,12 @@ protected:
 	virtual settings::CBaseSettings* CreateSettings() = 0;
 
 	/**
+	*	Called after all shared tool code has initialized. Initializes any tool specific code.
+	*	@return true on success, false otherwise.
+	*/
+	virtual bool InitializeTool() { return true; }
+
+	/**
 	*	Called after the tool has been initialized.
 	*	@return true on success, false otherwise.
 	*/
@@ -209,6 +215,9 @@ protected:
 
 private:
 	void MessagesWindowClosed();
+
+protected:
+	CLibrary& GetRendererLib() { return m_RendererLib; }
 
 private:
 	const wxString m_szDisplayName;

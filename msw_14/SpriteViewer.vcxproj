@@ -156,9 +156,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\engine\shared\sprite\CSprite.h" />
-    <ClInclude Include="..\src\engine\shared\sprite\CSpriteRenderer.h" />
-    <ClInclude Include="..\src\engine\shared\sprite\sprite.h" />
     <ClInclude Include="..\src\game\entity\CBaseAnimating.h" />
     <ClInclude Include="..\src\game\entity\CBaseEntity.h" />
     <ClInclude Include="..\src\game\entity\CBaseEntityList.h" />
@@ -195,8 +192,6 @@
     <ClInclude Include="..\src\ui\wx\wxLogging.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\engine\shared\sprite\CSprite.cpp" />
-    <ClCompile Include="..\src\engine\shared\sprite\CSpriteRenderer.cpp" />
     <ClCompile Include="..\src\game\entity\CBaseAnimating.cpp" />
     <ClCompile Include="..\src\game\entity\CBaseEntity.cpp" />
     <ClCompile Include="..\src\game\entity\CBaseEntityList.cpp" />

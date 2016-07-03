@@ -70,6 +70,12 @@
     <Filter Include="Source Files\cvar">
       <UniqueIdentifier>{fd1902bd-35ff-40a9-8416-d686dceee91d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\engine\shared\sprite">
+      <UniqueIdentifier>{aa82061f-dd70-40af-94d9-a1d03d4d11e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\shared\sprite">
+      <UniqueIdentifier>{26309068-4a4e-4a5b-8d50-4233a32517e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\stdlib\utility\CString.h">
@@ -192,6 +198,12 @@
     <ClInclude Include="..\src\stdlib\settings\ConfigIO.h">
       <Filter>Header Files\stdlib\settings</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\engine\shared\sprite\CSprite.h">
+      <Filter>Header Files\engine\shared\sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\sprite\sprite.h">
+      <Filter>Header Files\engine\shared\sprite</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\stdlib\utility\CString.cpp">
@@ -280,6 +292,9 @@
     </ClCompile>
     <ClCompile Include="..\src\stdlib\settings\CCmdLineConfig.cpp">
       <Filter>Source Files\stdlib\settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\shared\sprite\CSprite.cpp">
+      <Filter>Source Files\engine\shared\sprite</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
