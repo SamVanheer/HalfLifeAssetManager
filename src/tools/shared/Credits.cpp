@@ -8,7 +8,7 @@ wxString GetSharedCredits()
 		"This product contains software technology licensed from Id Software, Inc.\n"
 		"( \"Id Technology\" ). Id Technology © 1996 Id Software, Inc.\n"
 		"All Rights Reserved.\n\n"
-		"Copyright © 1998-2002, Valve LLC.\n"	//TODO: Should this be the current year?
+		"Copyright © 1998-2002, Valve LLC.\n"
 		"All rights reserved.\n\n"
 		"Contains FMOD, Copyright © Firelight Technologies Pty, Ltd., 2012-2016.\n\n"
 		"Contains The OpenGL Extension Wrangler Library (GLEW)\n"

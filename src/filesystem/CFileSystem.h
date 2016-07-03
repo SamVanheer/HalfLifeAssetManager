@@ -54,6 +54,9 @@ public:
 	bool FileExists( const char* const pszFilename ) const override final;
 
 private:
+	bool CheckFileExists( const char* const pszCompletePath, const size_t uiLength, char* pszOutPath, size_t uiBufferSize ) const;
+
+private:
 	char m_szBasePath[ MAX_PATH_LENGTH ];
 
 	SearchPaths_t m_SearchPaths;

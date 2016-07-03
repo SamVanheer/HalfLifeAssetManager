@@ -101,7 +101,6 @@ byte* LoadSpriteFrame( byte* pIn, mspriteframe_t** ppFrame, const int iFrame, co
 	pSpriteFrame->left		= static_cast<float>( vecOrigin[ 0 ] );
 	pSpriteFrame->right		= static_cast<float>( iWidth + vecOrigin[ 0 ] );
 
-	//TODO: load texture
 	byte* pPixelData = reinterpret_cast<byte*>( pFrame + 1 );
 
 	glGenTextures( 1, &pSpriteFrame->gl_texturenum );

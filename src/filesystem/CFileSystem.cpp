@@ -115,10 +115,9 @@ void CFileSystem::RemoveAllSearchPaths()
 	m_SearchPaths.clear();
 }
 
-//TODO: move into CFileSystem
-static bool RelativePath_CheckFileExists( CFileSystem& fileSystem, const char* const pszCompletePath, const size_t uiLength, char* pszOutPath, size_t uiBufferSize )
+bool CFileSystem::CheckFileExists( const char* const pszCompletePath, const size_t uiLength, char* pszOutPath, size_t uiBufferSize ) const
 {
-	if( fileSystem.FileExists( pszCompletePath ) )
+	if( FileExists( pszCompletePath ) )
 	{
 		//Buffer too small
 		if( uiLength >= uiBufferSize )
@@ -168,7 +167,7 @@ bool CFileSystem::GetRelativePath( const char* const pszFilename, char* pszOutPa
 			return true;
 		}
 
-		if( RelativePath_CheckFileExists( *this, szCompletePath, static_cast<size_t>( iRet ), pszOutPath, uiBufferSize ) )
+		if( CheckFileExists( szCompletePath, static_cast<size_t>( iRet ), pszOutPath, uiBufferSize ) )
 			return true;
 	}
 
@@ -177,7 +176,7 @@ bool CFileSystem::GetRelativePath( const char* const pszFilename, char* pszOutPa
 	if( !PrintfSuccess( iRet, sizeof( szCompletePath ) ) )
 		return false;
 
-	return RelativePath_CheckFileExists( *this, szCompletePath, static_cast<size_t>( iRet ), pszOutPath, uiBufferSize );
+	return CheckFileExists( szCompletePath, static_cast<size_t>( iRet ), pszOutPath, uiBufferSize );
 }
 
 bool CFileSystem::FileExists( const char* const pszFilename ) const
