@@ -69,6 +69,7 @@
     <ClCompile Include="..\src\cvar\CVar.cpp" />
     <ClCompile Include="..\src\cvar\CVarUtils.cpp" />
     <ClCompile Include="..\src\engine\shared\sprite\CSprite.cpp" />
+    <ClCompile Include="..\src\engine\shared\sprite\sprite.cpp" />
     <ClCompile Include="..\src\engine\shared\studiomodel\CStudioModel.cpp" />
     <ClCompile Include="..\src\html\CHTMLBody.cpp" />
     <ClCompile Include="..\src\html\CHTMLComposite.cpp" />

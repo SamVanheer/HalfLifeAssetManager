@@ -16,6 +16,8 @@ class CSpriteViewer;
 
 class CSpriteListBox;
 
+class CSpriteInfoPanel;
+
 class CMainPanel final : public wxPanel, public I3DViewListener
 {
 public:
@@ -45,6 +47,23 @@ public:
 protected:
 	wxDECLARE_EVENT_TABLE();
 
+	/*
+	*	Helper function to inform all control panels.
+	*	Important: pass by reference.
+	*/
+	template<typename FUNC, typename... ARGS>
+	void ForEachPanel( FUNC func, ARGS&... args )
+	{
+		const size_t uiPageCount = m_pControlPanels->GetPageCount();
+
+		for( size_t uiIndex = 0; uiIndex < uiPageCount; ++uiIndex )
+		{
+			CBaseControlPanel* const pPanel = static_cast<CBaseControlPanel*>( m_pControlPanels->GetPage( uiIndex ) );
+
+			( pPanel->*func )( args... );
+		}
+	}
+
 private:
 	CSpriteViewer* const m_pSpriteViewer;
 
@@ -60,6 +79,8 @@ private:
 	unsigned int m_uiCurrentFPS = 0;
 
 	wxStaticText* m_pFPS;
+
+	CSpriteInfoPanel* m_pSpriteInfoPanel;
 
 	wxNotebook* m_pControlPanels;
 

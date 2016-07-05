@@ -176,6 +176,7 @@
     <ClInclude Include="..\src\tools\spriteviewer\ui\CMainPanel.h" />
     <ClInclude Include="..\src\tools\spriteviewer\ui\CMainWindow.h" />
     <ClInclude Include="..\src\tools\spriteviewer\ui\controlpanels\CBaseControlPanel.h" />
+    <ClInclude Include="..\src\tools\spriteviewer\ui\controlpanels\CSpriteInfoPanel.h" />
     <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteListBox.h" />
     <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteViewer.h" />
     <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteViewerApp.h" />
@@ -213,6 +214,7 @@
     <ClCompile Include="..\src\tools\spriteviewer\ui\CMainPanel.cpp" />
     <ClCompile Include="..\src\tools\spriteviewer\ui\CMainWindow.cpp" />
     <ClCompile Include="..\src\tools\spriteviewer\ui\controlpanels\CBaseControlPanel.cpp" />
+    <ClCompile Include="..\src\tools\spriteviewer\ui\controlpanels\CSpriteInfoPanel.cpp" />
     <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteListBox.cpp" />
     <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteViewer.cpp" />
     <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteViewerApp.cpp" />

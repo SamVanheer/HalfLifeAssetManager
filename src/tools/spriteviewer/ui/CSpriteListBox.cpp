@@ -186,14 +186,20 @@ void CSpriteListBox::OnDrawItem( wxDC& dc, const wxRect& rect, size_t n ) const
 
 		if( frame->uiFrame == 0 )
 		{
+			dc.SetLogicalScale( GetGroupTextScale(), GetGroupTextScale() );
+
+			wxPoint topLeftText( dc.DeviceToLogicalXRel( rect.GetLeft() ), dc.DeviceToLogicalYRel( rect.GetTop() ) );
+
 			const wxString szText = wxString::Format( GROUP_TITLE_TEXT, n );
-			dc.DrawText( szText, topLeft );
+			dc.DrawText( szText, topLeftText );
 
 			int height = dc.GetTextExtent( szText ).GetHeight();
 
 			yOffset = dc.LogicalToDeviceYRel( height );
 
-			topLeft.y += height;
+			dc.SetLogicalScale( GetBitmapScale(), GetBitmapScale() );
+
+			topLeft.y += dc.DeviceToLogicalYRel( yOffset );
 		}
 
 		//Offset the group frames.
@@ -264,12 +270,13 @@ wxCoord CSpriteListBox::OnMeasureItem( size_t n ) const
 
 			dc.SetFont( m_Font );
 
-			height += dc.GetTextExtent( GROUP_TITLE_TEXT ).GetHeight() * GetTextScale();
+			height += dc.GetTextExtent( GROUP_TITLE_TEXT ).GetHeight() * GetGroupTextScale();
 		}
 	}
 
 	height += frame->bitmap->GetHeight() * GetBitmapScale();
 
-	return height;
+	//Give it some space between each frame.
+	return height + 20;
 }
 }

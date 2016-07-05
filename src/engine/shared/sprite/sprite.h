@@ -72,6 +72,21 @@ enum class Type_t : int
 };
 
 /**
+*	Returns the string representation of the given type.
+*	@param type Type.
+*	@return String representation.
+*/
+const char* TypeToString( const Type_t type );
+
+/**
+*	Attempts to convert a string to a type.
+*	@param pszString String. Must be non-null.
+*	@param pbSuccess If not null, contains whether the conversion succeeded or not.
+*	@return Type. Only valid if pbSuccess is true.
+*/
+Type_t StringToType( const char* const pszString, bool* pbSuccess );
+
+/**
 *	Texture format.
 */
 enum class TexFormat_t : int
@@ -114,6 +129,21 @@ enum class TexFormat_t : int
 	*/
 	SPR_ALPHTEST	 = 3
 };
+
+/**
+*	Converts a texture format to its string representation.
+*	@param format Texture format.
+*	@return String representation.
+*/
+const char* TexFormatToString( const TexFormat_t format );
+
+/**
+*	Attempts to convert a string to a texture format.
+*	@param pszString String. Must be non-null.
+*	@param pbSuccess If not null, contains whether the conversion succeeded or not.
+*	@return Texture format. Only valid if pbSuccess is true.
+*/
+TexFormat_t StringToTexFormat( const char* const pszString, bool* pbSuccess );
 
 /**
 *	The type of a frame.

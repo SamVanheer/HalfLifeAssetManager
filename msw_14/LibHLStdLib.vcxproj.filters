@@ -296,5 +296,8 @@
     <ClCompile Include="..\src\engine\shared\sprite\CSprite.cpp">
       <Filter>Source Files\engine\shared\sprite</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\engine\shared\sprite\sprite.cpp">
+      <Filter>Source Files\engine\shared\sprite</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

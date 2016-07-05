@@ -7,6 +7,8 @@
 
 #include "CSpriteListBox.h"
 
+#include "controlpanels/CSpriteInfoPanel.h"
+
 #include "engine/shared/sprite/sprite.h"
 #include "engine/shared/sprite/CSprite.h"
 #include "game/entity/CSpriteEntity.h"
@@ -44,8 +46,19 @@ CMainPanel::CMainPanel( wxWindow* pParent, CSpriteViewer* const pSpriteViewer )
 
 	m_pControlPanels = new wxNotebook( m_pControlPanel, wxID_MAIN_PAGECHANGED );
 
-	//TODO:
-	//m_pControlPanels->SetSelection( 0 );
+	m_pSpriteInfoPanel = new CSpriteInfoPanel( m_pControlPanels, m_pSpriteViewer );
+
+	CBaseControlPanel* const panels[] =
+	{
+		m_pSpriteInfoPanel
+	};
+
+	for( auto& pPanel : panels )
+	{
+		m_pControlPanels->AddPage( pPanel, pPanel->GetPanelName() );
+	}
+
+	m_pControlPanels->SetSelection( 0 );
 
 	//Layout
 	wxGridBagSizer* pBarSizer = new wxGridBagSizer( 5, 5 );
@@ -107,11 +120,9 @@ void CMainPanel::Draw3D( const wxSize& size )
 
 	if( iPage != wxNOT_FOUND )
 	{
-		/*
 		CBaseControlPanel* const pPage = static_cast<CBaseControlPanel*>( m_pControlPanels->GetPage( iPage ) );
 
 		pPage->Draw3D( size );
-		*/
 	}
 }
 
@@ -169,7 +180,7 @@ void CMainPanel::FreeSprite()
 
 void CMainPanel::InitializeUI()
 {
-	//ForEachPanel( &CBaseControlPanel::InitializeUI );
+	ForEachPanel( &CBaseControlPanel::InitializeUI );
 }
 
 void CMainPanel::PageChanged( wxBookCtrlEvent& event )
@@ -177,7 +188,6 @@ void CMainPanel::PageChanged( wxBookCtrlEvent& event )
 	const int iOldIndex = event.GetOldSelection();
 	const int iNewIndex = event.GetSelection();
 
-	/*
 	if( iOldIndex != wxNOT_FOUND )
 	{
 		CBaseControlPanel* const pPage = static_cast<CBaseControlPanel*>( m_pControlPanels->GetPage( iOldIndex ) );
@@ -191,7 +201,6 @@ void CMainPanel::PageChanged( wxBookCtrlEvent& event )
 
 		pPage->PanelActivated();
 	}
-	*/
 }
 
 bool CMainPanel::LoadBackgroundTexture( const wxString& szFilename )

@@ -57,6 +57,8 @@ protected:
 
 	float GetTextScale() const { return m_flScale / 4.0f; }
 
+	float GetGroupTextScale() const { return GetTextScale() * 2; }
+
 	float GetBitmapScale() const { return m_flScale; }
 
 private:
