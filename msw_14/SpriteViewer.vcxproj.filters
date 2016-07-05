@@ -91,6 +91,12 @@
     <Filter Include="Header Files\graphics">
       <UniqueIdentifier>{bffd1570-bc81-4709-ae21-1bb73fb3aa28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\tools\spriteviewer\ui\controlpanels">
+      <UniqueIdentifier>{d808b57b-be1a-4095-8837-3801f3117684}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tools\spriteviewer\ui\controlpanels">
+      <UniqueIdentifier>{5f63cf74-bdd8-48e4-a32a-3e712eb1d091}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\tools\shared\CBaseTool.h">
@@ -195,6 +201,12 @@
     <ClInclude Include="..\src\ui\wx\shared\CwxBase3DView.h">
       <Filter>Header Files\ui\wx\shared</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tools\spriteviewer\ui\controlpanels\CBaseControlPanel.h">
+      <Filter>Header Files\tools\spriteviewer\ui\controlpanels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteListBox.h">
+      <Filter>Header Files\tools\spriteviewer\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
@@ -283,6 +295,12 @@
     </ClCompile>
     <ClCompile Include="..\src\ui\wx\shared\CwxBase3DView.cpp">
       <Filter>Source Files\ui\wx\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\spriteviewer\ui\controlpanels\CBaseControlPanel.cpp">
+      <Filter>Source Files\tools\spriteviewer\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteListBox.cpp">
+      <Filter>Source Files\tools\spriteviewer\ui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

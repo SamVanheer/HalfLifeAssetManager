@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cmath>
 
 #include <glm/vec4.hpp>
 
@@ -17,6 +18,8 @@
 namespace sprite
 {
 REGISTER_SINGLE_INTERFACE( ISPRITERENDERER_NAME, CSpriteRenderer );
+
+const float CSpriteRenderer::DEFAULT_FRAMERATE = 10;
 
 CSpriteRenderer::CSpriteRenderer()
 {
@@ -41,40 +44,88 @@ void CSpriteRenderer::DrawSprite( const CSpriteRenderInfo* pRenderInfo, const re
 	const auto& framedesc = pSprite->frames[ static_cast<int>( pRenderInfo->flFrame ) ];
 	const auto& frame = framedesc.frameptr;
 
-	DrawSprite( pRenderInfo->vecOrigin, { frame->width, frame->height }, pSprite, static_cast<int>( pRenderInfo->flFrame ), flags );
+	DrawSprite( pRenderInfo->vecOrigin, { frame->width, frame->height }, pSprite, pRenderInfo->flFrame, flags );
 }
 
 void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const float flWidth, const float flHeight, const msprite_t* pSprite, const renderer::DrawFlags_t flags )
 {
-	const int iFrame = static_cast<int>( fmod( WorldTime.GetCurrentTime() * 10, pSprite->numframes ) );
+	const float flFrame = static_cast<float>( fmod( WorldTime.GetCurrentTime() * DEFAULT_FRAMERATE, pSprite->numframes ) );
 
 	//TODO: calculate frame
-	DrawSprite( { flX, flY, 0 }, { flWidth, flHeight }, pSprite, iFrame, flags );
+	DrawSprite( { flX, flY, 0 }, { flWidth, flHeight }, pSprite, flFrame, flags );
 }
 
 void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const msprite_t* pSprite, const float flScale, const renderer::DrawFlags_t flags )
 {
 	assert( pSprite );
 
-	const int iFrame = static_cast<int>( fmod( WorldTime.GetCurrentTime() * 10, pSprite->numframes ) );
+	const int iFrame = static_cast<int>( fmod( WorldTime.GetCurrentTime() * DEFAULT_FRAMERATE, pSprite->numframes ) );
 
 	//TODO: calculate frame
 	const auto& framedesc = pSprite->frames[ iFrame ];
-	const auto& frame = framedesc.frameptr;
+	
+	mspriteframe_t* pFrame;
 
-	DrawSprite2D( flX, flY, static_cast<float>( frame->width * flScale ), static_cast<float>( frame->height * flScale ), pSprite, flags );
+	if( framedesc.type == spriteframetype_t::SINGLE )
+	{
+		pFrame = framedesc.frameptr;
+	}
+	else
+	{
+		auto pGroup = framedesc.GetGroup();
+
+		pFrame = pGroup->frames[ 0 ];
+	}
+
+	DrawSprite2D( flX, flY, static_cast<float>( pFrame->width * flScale ), static_cast<float>( pFrame->height * flScale ), pSprite, flags );
 }
 
-void CSpriteRenderer::DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& vecSize, const msprite_t* pSprite, const int iFrame, const renderer::DrawFlags_t flags )
+void CSpriteRenderer::DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& vecSize, const msprite_t* pSprite, const float flFrame, const renderer::DrawFlags_t flags )
 {
 	assert( pSprite );
 
-	const auto& framedesc = pSprite->frames[ iFrame ];
-	const auto& frame = framedesc.frameptr;
+	const auto& framedesc = pSprite->frames[ static_cast<int>( floor( flFrame ) ) ];
+
+	mspriteframe_t* pFrame;
+
+	if( framedesc.type == spriteframetype_t::SINGLE )
+	{
+		pFrame = framedesc.frameptr;
+	}
+	else
+	{
+		auto pGroup = framedesc.GetGroup();
+
+		float* pflIntervals = pGroup->intervals;
+
+		float flInt;
+
+		const float flFraction = modf( flFrame, &flInt );
+
+		int iIndex;
+
+		for( iIndex = 0; iIndex < pGroup->numframes; ++iIndex )
+		{
+			Message( "%f\n", pflIntervals[ iIndex ] );
+		}
+
+		for( iIndex = 0; iIndex < pGroup->numframes; ++iIndex )
+		{
+			if( pflIntervals[ iIndex ] > flFraction )
+				break;
+		}
+
+		if( iIndex == pGroup->numframes )
+			iIndex = pGroup->numframes - 1;
+
+		assert( iIndex >= 0 );
+
+		pFrame = pGroup->frames[ iIndex ];
+	}
 
 	glEnable( GL_TEXTURE_2D );
 	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-	glBindTexture( GL_TEXTURE_2D, frame->gl_texturenum );
+	glBindTexture( GL_TEXTURE_2D, pFrame->gl_texturenum );
 
 	//TODO: set up the sprite's orientation in the world according to its type.
 	//TODO: the size of the sprite should change based on its distance from the viewer.

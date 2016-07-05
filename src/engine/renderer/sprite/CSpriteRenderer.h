@@ -14,6 +14,9 @@ struct msprite_t;
 
 class CSpriteRenderer final : public ISpriteRenderer
 {
+private:
+	static const float DEFAULT_FRAMERATE;
+
 public:
 	CSpriteRenderer();
 	~CSpriteRenderer();
@@ -26,7 +29,7 @@ public:
 
 private:
 
-	void DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& vecSize, const msprite_t* pSprite, const int iFrame, const renderer::DrawFlags_t flags );
+	void DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& vecSize, const msprite_t* pSprite, const float flFrame, const renderer::DrawFlags_t flags );
 
 private:
 	CSpriteRenderer( const CSpriteRenderer& ) = delete;

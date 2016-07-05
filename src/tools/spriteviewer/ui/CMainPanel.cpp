@@ -5,6 +5,8 @@
 
 #include "C3DView.h"
 
+#include "CSpriteListBox.h"
+
 #include "engine/shared/sprite/sprite.h"
 #include "engine/shared/sprite/CSprite.h"
 #include "game/entity/CSpriteEntity.h"
@@ -27,6 +29,12 @@ CMainPanel::CMainPanel( wxWindow* pParent, CSpriteViewer* const pSpriteViewer )
 	wxASSERT( pSpriteViewer != nullptr );
 
 	m_p3DView = new C3DView( this, m_pSpriteViewer, this );
+
+	m_pFramesList = new CSpriteListBox( this, nullptr );
+
+	m_pFramesList->SetSize( wxSize( 100, 400 ) );
+
+	m_pFramesList->SetScale( 3.0 );
 
 	m_pControlPanel = new wxPanel( this );
 
@@ -56,8 +64,13 @@ CMainPanel::CMainPanel( wxWindow* pParent, CSpriteViewer* const pSpriteViewer )
 
 	wxBoxSizer* pSizer = new wxBoxSizer( wxVERTICAL );
 
+	auto p3DSizer = new wxBoxSizer( wxHORIZONTAL );
+
+	p3DSizer->Add( m_p3DView, wxSizerFlags().Expand().Proportion( 3 ) );
+	p3DSizer->Add( m_pFramesList, wxSizerFlags().Expand().Proportion( 1 ) );
+
 	//3D view takes up 3/4th of the main area
-	pSizer->Add( m_p3DView, wxSizerFlags().Expand().Proportion( 3 ) );
+	pSizer->Add( p3DSizer, wxSizerFlags().Expand().Proportion( 3 ) );
 	pSizer->Add( m_pControlPanel, wxSizerFlags().Expand().Proportion( 1 ) );
 
 	this->SetSizer( pSizer );
@@ -134,6 +147,8 @@ bool CMainPanel::LoadSprite( const wxString& szFilename )
 		pEntity->Spawn();
 
 		m_pSpriteViewer->GetState()->SetEntity( pEntity );
+
+		m_pFramesList->SetSprite( pSprite );
 	}
 	else
 	{

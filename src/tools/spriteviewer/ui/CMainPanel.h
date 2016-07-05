@@ -14,6 +14,8 @@ namespace sprview
 {
 class CSpriteViewer;
 
+class CSpriteListBox;
+
 class CMainPanel final : public wxPanel, public I3DViewListener
 {
 public:
@@ -47,6 +49,8 @@ private:
 	CSpriteViewer* const m_pSpriteViewer;
 
 	C3DView* m_p3DView;
+
+	CSpriteListBox* m_pFramesList;
 
 	wxPanel* m_pControlPanel;
 
