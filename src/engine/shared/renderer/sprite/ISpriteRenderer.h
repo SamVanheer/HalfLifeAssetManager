@@ -15,6 +15,7 @@ namespace sprite
 {
 struct msprite_t;
 struct CSpriteRenderInfo;
+struct C2DSpriteRenderInfo;
 
 /**
 *	Sprite renderer interface.
@@ -51,6 +52,13 @@ public:
 	*	@param flags Draw flags.
 	*/
 	virtual void DrawSprite2D( const float flX, const float flY, const msprite_t* pSprite, const float flScale = 1, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE ) = 0;
+
+	/**
+	*	Draws a 2D sprite.
+	*	@param pRenderInfo Render info.
+	*	@param flags Draw flags.
+	*/
+	virtual void DrawSprite2D( const C2DSpriteRenderInfo* pRenderInfo, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE ) = 0;
 };
 
 inline ISpriteRenderer::~ISpriteRenderer()

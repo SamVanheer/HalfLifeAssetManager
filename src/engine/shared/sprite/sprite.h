@@ -86,16 +86,20 @@ const char* TypeToString( const Type_t type );
 */
 Type_t StringToType( const char* const pszString, bool* pbSuccess );
 
+namespace TexFormat
+{
 /**
 *	Texture format.
 */
-enum class TexFormat_t : int
+enum TexFormat : int
 {
+	FIRST			= 0,
+
 	/**
 	*	No transparency or translucency.
 	*	This sprite will appear as a rectangle in the world, animating with whatever design you create it with.
 	*/
-	SPR_NORMAL		 = 0,
+	SPR_NORMAL		 = FIRST,
 
 	/**
 	*	Looks best for explosions, steam, lasers, or other gaseous or light effect.
@@ -127,15 +131,20 @@ enum class TexFormat_t : int
 	*	The appearance of Alphatest sprites is similar to that of Masked Textures used on brushmodels,
 	*	excepting that Masked Textures respond to the light level of their situations while Alphatest sprites do not.
 	*/
-	SPR_ALPHTEST	 = 3
+	SPR_ALPHTEST	 = 3,
+
+	LAST = SPR_ALPHTEST,
+
+	COUNT
 };
+}
 
 /**
 *	Converts a texture format to its string representation.
 *	@param format Texture format.
 *	@return String representation.
 */
-const char* TexFormatToString( const TexFormat_t format );
+const char* TexFormatToString( const TexFormat::TexFormat format );
 
 /**
 *	Attempts to convert a string to a texture format.
@@ -143,7 +152,7 @@ const char* TexFormatToString( const TexFormat_t format );
 *	@param pbSuccess If not null, contains whether the conversion succeeded or not.
 *	@return Texture format. Only valid if pbSuccess is true.
 */
-TexFormat_t StringToTexFormat( const char* const pszString, bool* pbSuccess );
+TexFormat::TexFormat StringToTexFormat( const char* const pszString, bool* pbSuccess );
 
 /**
 *	The type of a frame.
@@ -216,7 +225,7 @@ struct dsprite_t final
 	/**
 	*	Texture format. This indicates how to interpret the sprite's data.
 	*/
-	TexFormat_t texFormat;
+	TexFormat::TexFormat texFormat;
 
 	/**
 	*	Radius of a sphere that covers the sprite. This sphere touches the edges of the sprite at the middle of the widest side.
@@ -397,7 +406,7 @@ struct msprite_t final
 	/**
 	*	The texture format used by the sprite.
 	*/
-	TexFormat_t texFormat;
+	TexFormat::TexFormat texFormat;
 
 	/**
 	*	Largest width that any frame in this sprite has.

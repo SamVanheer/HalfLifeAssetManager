@@ -19,6 +19,7 @@ CSpriteViewerState::~CSpriteViewerState()
 
 void CSpriteViewerState::ResetModelData()
 {
+	ClearTexFormatOverride();
 }
 
 void CSpriteViewerState::ResetToDefaults()

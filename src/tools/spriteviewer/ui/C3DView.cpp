@@ -10,6 +10,7 @@
 
 #include "game/entity/CSpriteEntity.h"
 #include "engine/shared/renderer/sprite/ISpriteRenderer.h"
+#include "engine/shared/renderer/sprite/CSpriteRenderInfo.h"
 
 #include "ui/wx/CwxOpenGL.h"
 
@@ -85,7 +86,28 @@ void C3DView::DrawSpriteInfo()
 
 	if( auto pEntity = m_pSpriteViewer->GetState()->GetEntity() )
 	{
-		g_pSpriteRenderer->DrawSprite2D( size.GetWidth() / 2, size.GetHeight() / 2, pEntity->GetSprite(), 4 );
+		const glm::vec3& vecScale = pEntity->GetScale();
+
+		//g_pSpriteRenderer->DrawSprite2D( size.GetWidth() / 2, size.GetHeight() / 2, pEntity->GetSprite(), 4 );
+
+		sprite::C2DSpriteRenderInfo renderInfo;
+
+		renderInfo.vecPos			= Vector2D( size.GetWidth() / 2, size.GetHeight() / 2 );
+		renderInfo.vecScale			= Vector2D( vecScale.x, vecScale.y );
+		renderInfo.pSprite			= pEntity->GetSprite();
+		renderInfo.flTransparency	= pEntity->GetTransparency();
+		renderInfo.flFrame			= pEntity->GetFrame();
+
+		if( m_pSpriteViewer->GetState()->IsTexFormatOverridden() )
+		{
+			renderInfo.texFormat = m_pSpriteViewer->GetState()->GetTexFormatOverride();
+			renderInfo.bOverrideTexFormat = true;
+		}
+
+		//Scale it up a bit to make it more visible.
+		renderInfo.vecScale *= 4;
+
+		g_pSpriteRenderer->DrawSprite2D( &renderInfo, renderer::DrawFlag::NONE );
 	}
 
 	glPopMatrix();

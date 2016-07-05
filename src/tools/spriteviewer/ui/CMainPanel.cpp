@@ -7,6 +7,7 @@
 
 #include "CSpriteListBox.h"
 
+#include "controlpanels/CSpriteDisplayPanel.h"
 #include "controlpanels/CSpriteInfoPanel.h"
 
 #include "engine/shared/sprite/sprite.h"
@@ -46,10 +47,13 @@ CMainPanel::CMainPanel( wxWindow* pParent, CSpriteViewer* const pSpriteViewer )
 
 	m_pControlPanels = new wxNotebook( m_pControlPanel, wxID_MAIN_PAGECHANGED );
 
+	m_pSpriteDisplayPanel = new CSpriteDisplayPanel( m_pControlPanels, m_pSpriteViewer );
+
 	m_pSpriteInfoPanel = new CSpriteInfoPanel( m_pControlPanels, m_pSpriteViewer );
 
 	CBaseControlPanel* const panels[] =
 	{
+		m_pSpriteDisplayPanel,
 		m_pSpriteInfoPanel
 	};
 

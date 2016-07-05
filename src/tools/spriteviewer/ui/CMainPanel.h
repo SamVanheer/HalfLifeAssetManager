@@ -16,6 +16,7 @@ class CSpriteViewer;
 
 class CSpriteListBox;
 
+class CSpriteDisplayPanel;
 class CSpriteInfoPanel;
 
 class CMainPanel final : public wxPanel, public I3DViewListener
@@ -80,6 +81,7 @@ private:
 
 	wxStaticText* m_pFPS;
 
+	CSpriteDisplayPanel* m_pSpriteDisplayPanel;
 	CSpriteInfoPanel* m_pSpriteInfoPanel;
 
 	wxNotebook* m_pControlPanels;

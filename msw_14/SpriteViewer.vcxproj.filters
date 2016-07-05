@@ -210,6 +210,9 @@
     <ClInclude Include="..\src\tools\spriteviewer\ui\controlpanels\CSpriteInfoPanel.h">
       <Filter>Header Files\tools\spriteviewer\ui\controlpanels</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tools\spriteviewer\ui\controlpanels\CSpriteDisplayPanel.h">
+      <Filter>Header Files\tools\spriteviewer\ui\controlpanels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
@@ -306,6 +309,9 @@
       <Filter>Source Files\tools\spriteviewer\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tools\spriteviewer\ui\controlpanels\CSpriteInfoPanel.cpp">
+      <Filter>Source Files\tools\spriteviewer\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\spriteviewer\ui\controlpanels\CSpriteDisplayPanel.cpp">
       <Filter>Source Files\tools\spriteviewer\ui\controlpanels</Filter>
     </ClCompile>
   </ItemGroup>

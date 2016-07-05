@@ -63,52 +63,52 @@ Type_t StringToType( const char* const pszString, bool* pbSuccess )
 	return result;
 }
 
-const char* TexFormatToString( const TexFormat_t format )
+const char* TexFormatToString( const TexFormat::TexFormat format )
 {
 	switch( format )
 	{
-	case TexFormat_t::SPR_NORMAL:		return "NORMAL";
-	case TexFormat_t::SPR_ADDITIVE:		return "ADDITIVE";
-	case TexFormat_t::SPR_INDEXALPHA:	return "INDEXALPHA";
-	case TexFormat_t::SPR_ALPHTEST:		return "ALPHATEST";
+	case TexFormat::SPR_NORMAL:			return "NORMAL";
+	case TexFormat::SPR_ADDITIVE:		return "ADDITIVE";
+	case TexFormat::SPR_INDEXALPHA:		return "INDEXALPHA";
+	case TexFormat::SPR_ALPHTEST:		return "ALPHATEST";
 	default:							return "UNKNOWN";
 	}
 }
 
-TexFormat_t StringToTexFormat( const char* const pszString, bool* pbSuccess )
+TexFormat::TexFormat StringToTexFormat( const char* const pszString, bool* pbSuccess )
 {
 	if( !pszString )
 	{
 		if( pbSuccess )
 			*pbSuccess = false;
 
-		return TexFormat_t::SPR_NORMAL;
+		return TexFormat::SPR_NORMAL;
 	}
 
-	TexFormat_t result;
+	TexFormat::TexFormat result;
 
 	if( strcasecmp( pszString, "NORMAL" ) == 0 )
 	{
-		result = TexFormat_t::SPR_NORMAL;
+		result = TexFormat::SPR_NORMAL;
 	}
 	else if( strcasecmp( pszString, "ADDITIVE" ) == 0 )
 	{
-		result = TexFormat_t::SPR_ADDITIVE;
+		result = TexFormat::SPR_ADDITIVE;
 	}
 	else if( strcasecmp( pszString, "INDEXALPHA" ) == 0 )
 	{
-		result = TexFormat_t::SPR_INDEXALPHA;
+		result = TexFormat::SPR_INDEXALPHA;
 	}
 	else if( strcasecmp( pszString, "ALPHATEST" ) == 0 )
 	{
-		result = TexFormat_t::SPR_ALPHTEST;
+		result = TexFormat::SPR_ALPHTEST;
 	}
 	else
 	{
 		if( pbSuccess )
 			*pbSuccess = false;
 
-		return TexFormat_t::SPR_NORMAL;
+		return TexFormat::SPR_NORMAL;
 	}
 
 	if( pbSuccess )

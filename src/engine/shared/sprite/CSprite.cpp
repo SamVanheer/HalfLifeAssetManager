@@ -20,7 +20,7 @@ namespace
 *	@param pRGBAPalette 32 bit RGBA palette.
 *	@param format Texture format to convert to.
 */
-void Convert8To32Bit( const byte* pInPalette, byte* pRGBAPalette, const TexFormat_t format )
+void Convert8To32Bit( const byte* pInPalette, byte* pRGBAPalette, const TexFormat::TexFormat format )
 {
 	assert( pInPalette );
 	assert( pRGBAPalette );
@@ -30,8 +30,8 @@ void Convert8To32Bit( const byte* pInPalette, byte* pRGBAPalette, const TexForma
 	switch( format )
 	{
 	default: //TODO: warn
-	case TexFormat_t::SPR_NORMAL:
-	case TexFormat_t::SPR_ADDITIVE:
+	case TexFormat::SPR_NORMAL:
+	case TexFormat::SPR_ADDITIVE:
 		{
 			for( size_t uiIndex = 0; uiIndex < PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
 			{
@@ -44,7 +44,7 @@ void Convert8To32Bit( const byte* pInPalette, byte* pRGBAPalette, const TexForma
 			break;
 		}
 
-	case TexFormat_t::SPR_INDEXALPHA:
+	case TexFormat::SPR_INDEXALPHA:
 		{
 			for( size_t uiIndex = 0; uiIndex < PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
 			{
@@ -57,7 +57,7 @@ void Convert8To32Bit( const byte* pInPalette, byte* pRGBAPalette, const TexForma
 			break;
 		}
 
-	case TexFormat_t::SPR_ALPHTEST:
+	case TexFormat::SPR_ALPHTEST:
 		{
 			for( size_t uiIndex = 0; uiIndex < PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
 			{
@@ -196,7 +196,7 @@ bool LoadSpriteInternal( byte* pIn, msprite_t*& pSprite )
 		return false;
 	}
 
-	const TexFormat_t texFormat = LittleEnumValue( pHeader->texFormat );
+	const TexFormat::TexFormat texFormat = LittleEnumValue( pHeader->texFormat );
 
 	byte convertedPalette[ PALETTE_ENTRIES * 4 ];
 

@@ -35,8 +35,6 @@ CSpriteInfoPanel::CSpriteInfoPanel( wxWindow* pParent, CSpriteViewer* pHLSV )
 	pSizer->Add( m_pInfoPanel, wxSizerFlags().Expand().ReserveSpaceEvenIfHidden() );
 
 	GetMainSizer()->Add( pSizer );
-
-	InitializeUI();
 }
 
 void CSpriteInfoPanel::InitializeUI()
