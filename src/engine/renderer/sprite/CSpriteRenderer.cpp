@@ -104,19 +104,11 @@ void CSpriteRenderer::DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& v
 
 		int iIndex;
 
-		for( iIndex = 0; iIndex < pGroup->numframes; ++iIndex )
-		{
-			Message( "%f\n", pflIntervals[ iIndex ] );
-		}
-
-		for( iIndex = 0; iIndex < pGroup->numframes; ++iIndex )
+		for( iIndex = 0; iIndex < ( pGroup->numframes - 1 ); ++iIndex )
 		{
 			if( pflIntervals[ iIndex ] > flFraction )
 				break;
 		}
-
-		if( iIndex == pGroup->numframes )
-			iIndex = pGroup->numframes - 1;
 
 		assert( iIndex >= 0 );
 
