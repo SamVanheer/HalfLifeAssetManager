@@ -37,6 +37,8 @@ typedef glm::tvec3<vec_t, glm::highp> Vector;
 typedef glm::tvec4<vec_t, glm::highp> Vector4D;
 typedef glm::tmat3x4<vec_t, glm::highp> Mat3x4;
 typedef glm::tmat4x4<vec_t, glm::highp> Mat4x4;
+typedef glm::tvec3<float, glm::highp> Color24;
+typedef glm::tvec4<float, glm::highp> Color32;
 
 #define	SIDE_FRONT		0
 #define	SIDE_ON			2

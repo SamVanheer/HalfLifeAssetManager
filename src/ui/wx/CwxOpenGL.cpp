@@ -4,7 +4,12 @@
 
 #include "graphics/GLRenderTarget.h"
 
+#include "engine/shared/renderer/IRenderContext.h"
+
 #include "CwxOpenGL.h"
+
+//TODO: remove.
+extern renderer::IRenderContext* g_pRenderContext;
 
 CwxOpenGL* CwxOpenGL::m_pInstance = nullptr;
 
@@ -182,8 +187,6 @@ GLuint CwxOpenGL::glLoadImage( const char* const pszFilename )
 
 	std::unique_ptr<GLubyte[]> pImageData( new GLubyte[ image.GetWidth() * image.GetHeight() * BPP ] );
 
-	const int iHeight = image.GetHeight() - 1;
-
 	for( int y = 0; y < image.GetHeight(); ++y )
 	{
 		for( int x = 0; x < image.GetWidth(); ++x )
@@ -200,15 +203,14 @@ GLuint CwxOpenGL::glLoadImage( const char* const pszFilename )
 		}
 	}
 
-	GLuint textureId;
+	const renderer::ImageFormat format = image.HasAlpha() ? renderer::ImageFormat::RGBA : renderer::ImageFormat::RGB;
 
-	glGenTextures( 1, &textureId );
+	renderer::HTexture_t tex = g_pRenderContext->CreateTexture( 0, format, image.GetWidth(), image.GetHeight(), pImageData.get() );
 
-	glBindTexture( GL_TEXTURE_2D, textureId );
-	glTexImage2D( GL_TEXTURE_2D, 0, 3, image.GetWidth(), image.GetHeight(), 0, image.HasAlpha() ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, pImageData.get() );
-	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	g_pRenderContext->BindTexture( tex );
 
-	return textureId;
+	g_pRenderContext->SetMinMagFilters( renderer::MinFilter::LINEAR, renderer::MagFilter::LINEAR );
+
+	//TODO: update all uses to use HTexture_t
+	return ( GLuint ) tex;
 }

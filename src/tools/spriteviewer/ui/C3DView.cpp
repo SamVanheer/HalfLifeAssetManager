@@ -8,6 +8,8 @@
 
 #include "graphics/GraphicsUtils.h"
 
+#include "engine/shared/renderer/IRenderContext.h"
+
 #include "game/entity/CSpriteEntity.h"
 #include "engine/shared/renderer/sprite/ISpriteRenderer.h"
 #include "engine/shared/renderer/sprite/CSpriteRenderInfo.h"
@@ -18,6 +20,7 @@
 
 //TODO: remove
 extern sprite::ISpriteRenderer* g_pSpriteRenderer;
+extern renderer::IRenderContext* g_pRenderContext;
 
 namespace sprview
 {
@@ -53,13 +56,13 @@ void C3DView::DrawScene()
 {
 	const Color& backgroundColor = m_pSpriteViewer->GetSettings()->GetBackgroundColor();
 
-	glClearColor( backgroundColor.GetRed() / 255.0f, backgroundColor.GetGreen() / 255.0f, backgroundColor.GetBlue() / 255.0f, 1.0 );
+	g_pRenderContext->ClearColor( backgroundColor.GetRed() / 255.0f, backgroundColor.GetGreen() / 255.0f, backgroundColor.GetBlue() / 255.0f, 1.0 );
+
+	g_pRenderContext->Clear( renderer::ClearBit::COLOR | renderer::ClearBit::DEPTH );
 
 	const wxSize size = GetClientSize();
 
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-	glViewport( 0, 0, size.GetX(), size.GetY() );
+	g_pRenderContext->Viewport( 0, 0, size.GetWidth(), size.GetHeight() );
 
 	DrawSpriteInfo();
 
@@ -71,18 +74,20 @@ void C3DView::DrawSpriteInfo()
 {
 	const wxSize size = GetClientSize();
 
-	//TODO: these matrices shouldn't be here.
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
+	g_pRenderContext->MatrixMode( renderer::MatrixMode::PROJECTION );
+	g_pRenderContext->LoadIdentity();
 
-	//TODO: get size from window
-	glOrtho( 0.0f, ( float ) size.GetWidth(), ( float ) size.GetHeight(), 0.0f, 1.0f, -1.0f );
+	g_pRenderContext->Ortho( 0.0f, ( vec_t ) size.GetWidth(), ( vec_t ) size.GetHeight(), 0.0f, 1.0f, -1.0f );
 
-	glMatrixMode( GL_MODELVIEW );
-	glPushMatrix();
-	glLoadIdentity();
+	g_pRenderContext->MatrixMode( renderer::MatrixMode::MODEL );
+	g_pRenderContext->PushMatrix();
+	g_pRenderContext->LoadIdentity();
 
-	glCullFace( GL_FRONT );
+	g_pRenderContext->MatrixMode( renderer::MatrixMode::VIEW );
+	g_pRenderContext->PushMatrix();
+	g_pRenderContext->LoadIdentity();
+
+	g_pRenderContext->SetCullFace( renderer::CullFace::FRONT );
 
 	if( auto pEntity = m_pSpriteViewer->GetState()->GetEntity() )
 	{
@@ -109,7 +114,10 @@ void C3DView::DrawSpriteInfo()
 		g_pSpriteRenderer->DrawSprite2D( &renderInfo, renderer::DrawFlag::NONE );
 	}
 
-	glPopMatrix();
+	g_pRenderContext->PopMatrix();
+
+	g_pRenderContext->MatrixMode( renderer::MatrixMode::MODEL );
+	g_pRenderContext->PopMatrix();
 }
 
 void C3DView::DrawSprite()
@@ -127,9 +135,13 @@ void C3DView::DrawSprite()
 
 	graphics::SetProjection( 65.0f, size.GetWidth(), size.GetHeight() );
 
-	glMatrixMode( GL_MODELVIEW );
-	glPushMatrix();
-	glLoadIdentity();
+	g_pRenderContext->MatrixMode( renderer::MatrixMode::MODEL );
+	g_pRenderContext->PushMatrix();
+	g_pRenderContext->LoadIdentity();
+
+	g_pRenderContext->MatrixMode( renderer::MatrixMode::VIEW );
+	g_pRenderContext->PushMatrix();
+	g_pRenderContext->LoadIdentity();
 
 	auto pEntity = m_pSpriteViewer->GetState()->GetEntity();
 
@@ -140,12 +152,16 @@ void C3DView::DrawSprite()
 		//Determine if an odd number of scale values are negative. The cull face has to be changed if so.
 		const float flScale = vecScale.x * vecScale.y * vecScale.z;
 
-		glCullFace( flScale > 0 ? GL_FRONT : GL_BACK );
+		g_pRenderContext->SetCullFace( flScale > 0 ? renderer::CullFace::FRONT : renderer::CullFace::BACK );
 
 		pEntity->Draw( renderer::DrawFlag::NONE );
 	}
 
-	glPopMatrix();
+	g_pRenderContext->PopMatrix();
+
+	g_pRenderContext->MatrixMode( renderer::MatrixMode::MODEL );
+
+	g_pRenderContext->PopMatrix();
 }
 
 bool C3DView::LoadBackgroundTexture( const wxString& szFilename )
@@ -173,17 +189,15 @@ void C3DView::TakeScreenshot()
 
 	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( size.GetWidth() * size.GetHeight() * 3 );
 
-	GLint oldReadBuffer;
-
-	glGetIntegerv( GL_READ_BUFFER, &oldReadBuffer );
+	const renderer::ReadBuffer oldReadBuffer = g_pRenderContext->GetReadBuffer();
 
 	//Read currently displayed buffer.
-	glReadBuffer( GL_FRONT );
+	g_pRenderContext->SetReadBuffer( renderer::ReadBuffer::FRONT );
 
 	//Grab the image from the 3D view itself.
-	glReadPixels( 0, 0, size.GetWidth(), size.GetHeight(), GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
+	g_pRenderContext->ReadPixels( 0, 0, size.GetWidth(), size.GetHeight(), renderer::ImageFormat::RGB, rgbData.get() );
 
-	glReadBuffer( oldReadBuffer );
+	g_pRenderContext->SetReadBuffer( oldReadBuffer );
 
 	//Now ask for a filename.
 	wxFileDialog dlg( this );
@@ -198,6 +212,7 @@ void C3DView::TakeScreenshot()
 
 	wxImage image( size.GetWidth(), size.GetHeight(), rgbData.get(), true );
 
+	//TODO: set default extension to bmp if none is given. Also do this for HLMV.
 	if( !image.SaveFile( szFilename, wxBITMAP_TYPE_BMP ) )
 	{
 		wxMessageBox( wxString::Format( "Failed to save image \"%s\"!", szFilename.c_str() ) );

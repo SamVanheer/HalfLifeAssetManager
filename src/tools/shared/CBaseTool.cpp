@@ -19,12 +19,17 @@
 
 #include "shared/renderer/IRendererLibrary.h"
 
+#include "shared/renderer/IRenderContext.h"
+
 #include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
 #include "CBaseTool.h"
 
 studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer = nullptr;
 soundsystem::ISoundSystem* g_pSoundSystem = nullptr;
+
+//TODO: remove
+renderer::IRenderContext* g_pRenderContext = nullptr;
 
 namespace tools
 {
@@ -180,6 +185,14 @@ bool CBaseTool::Initialize()
 	if( !m_pRendererLib || !m_pRendererLib->Connect( factories, ARRAYSIZE( factories ) ) )
 	{
 		wxMessageBox( "Failed to connect renderer", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		return false;
+	}
+
+	g_pRenderContext = static_cast<renderer::IRenderContext*>( rendererFactory( IRENDERCONTEXT_NAME, nullptr ) );
+
+	if( !g_pRenderContext )
+	{
+		wxMessageBox( "Failed to create render context", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
 	}
 

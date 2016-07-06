@@ -55,6 +55,24 @@
     <Filter Include="Source Files\engine\renderer\sprite">
       <UniqueIdentifier>{4c8eb2bc-21f9-493c-bc79-be04699c87a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\engine\renderer\util">
+      <UniqueIdentifier>{7c1e3ba7-c93f-482c-a23a-394f4c28fd46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\renderer\util">
+      <UniqueIdentifier>{8abd8e3d-3097-4080-97cf-7e2b2a6ffdd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\renderer\gl">
+      <UniqueIdentifier>{c596d4c7-6d86-464f-b1be-59214877b157}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\renderer\gl\imode">
+      <UniqueIdentifier>{ec5ed0a0-b654-43ab-be5c-149c1c750142}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\renderer\gl">
+      <UniqueIdentifier>{8ff468da-629d-49fc-9476-855c6683ee28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\renderer\gl\imode">
+      <UniqueIdentifier>{c895c169-f58a-44e0-9c53-68ac25832d00}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\lib\LibInterface.cpp">
@@ -71,6 +89,18 @@
     </ClCompile>
     <ClCompile Include="..\src\engine\renderer\sprite\CSpriteRenderer.cpp">
       <Filter>Source Files\engine\renderer\sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\renderer\CBaseRenderContext.cpp">
+      <Filter>Source Files\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\renderer\util\CMatrixStack.cpp">
+      <Filter>Source Files\engine\renderer\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\renderer\gl\imode\CRenderContextIMode.cpp">
+      <Filter>Source Files\engine\renderer\gl\imode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\renderer\gl\CBaseGLRenderContext.cpp">
+      <Filter>Source Files\engine\renderer\gl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +139,21 @@
     </ClInclude>
     <ClInclude Include="..\src\engine\renderer\sprite\CSpriteRenderer.h">
       <Filter>Header Files\engine\renderer\sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\shared\renderer\IRenderContext.h">
+      <Filter>Header Files\engine\shared\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\renderer\CBaseRenderContext.h">
+      <Filter>Header Files\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\renderer\util\CMatrixStack.h">
+      <Filter>Header Files\engine\renderer\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\renderer\gl\imode\CRenderContextIMode.h">
+      <Filter>Header Files\engine\renderer\gl\imode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\engine\renderer\gl\CBaseGLRenderContext.h">
+      <Filter>Header Files\engine\renderer\gl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
