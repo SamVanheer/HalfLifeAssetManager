@@ -35,6 +35,22 @@ public:
 
 	void SetEntity( CSpriteEntity* pEntity );
 
+	sprite::Type::Type GetTypeOverride() const { return m_TypeOverride; }
+
+	bool IsTypeOverridden() const { return m_bTypeOverride; }
+
+	void SetTypeOverride( const sprite::Type::Type type )
+	{
+		m_TypeOverride = type;
+		m_bTypeOverride = true;
+	}
+
+	void ClearTypeOverride()
+	{
+		m_TypeOverride = sprite::Type::VP_PARALLEL_UPRIGHT;
+		m_bTypeOverride = false;
+	}
+
 	sprite::TexFormat::TexFormat GetTexFormatOverride() const { return m_TexFormatOverride; }
 
 	bool IsTexFormatOverridden() const { return m_bTexFormatOverride; }
@@ -59,6 +75,10 @@ public:
 
 private:
 	CSpriteEntity* m_pEntity;
+
+	sprite::Type::Type m_TypeOverride = sprite::Type::VP_PARALLEL_UPRIGHT;
+
+	bool m_bTypeOverride = false;
 
 	sprite::TexFormat::TexFormat m_TexFormatOverride = sprite::TexFormat::SPR_NORMAL;
 

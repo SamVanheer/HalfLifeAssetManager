@@ -40,15 +40,19 @@
 
 namespace sprite
 {
+namespace Type
+{
 /**
 *	Sprite orientation type.
 */
-enum class Type_t : int
+enum Type : int
 {
+	FIRST					= 0,
+
 	/**
 	*	The sprite faces upward. The sprite's right vector is parallel to the viewer's viewplane.
 	*/
-	VP_PARALLEL_UPRIGHT		= 0,
+	VP_PARALLEL_UPRIGHT		= FIRST,
 
 	/**
 	*	The sprite faces upward. The sprite's right vector is perpendicular to the entity's origin.
@@ -68,15 +72,20 @@ enum class Type_t : int
 	/**
 	*	The sprite faces the viewer, but rotates in the axis that points to the viewer.
 	*/
-	VP_PARALLEL_ORIENTED	= 4
+	VP_PARALLEL_ORIENTED	= 4,
+
+	LAST = VP_PARALLEL_ORIENTED,
+
+	COUNT
 };
+}
 
 /**
 *	Returns the string representation of the given type.
 *	@param type Type.
 *	@return String representation.
 */
-const char* TypeToString( const Type_t type );
+const char* TypeToString( const Type::Type type );
 
 /**
 *	Attempts to convert a string to a type.
@@ -84,7 +93,7 @@ const char* TypeToString( const Type_t type );
 *	@param pbSuccess If not null, contains whether the conversion succeeded or not.
 *	@return Type. Only valid if pbSuccess is true.
 */
-Type_t StringToType( const char* const pszString, bool* pbSuccess );
+Type::Type StringToType( const char* const pszString, bool* pbSuccess );
 
 namespace TexFormat
 {
@@ -220,7 +229,7 @@ struct dsprite_t final
 	/**
 	*	Sprite orientation type.
 	*/
-	Type_t type;
+	Type::Type type;
 
 	/**
 	*	Texture format. This indicates how to interpret the sprite's data.
@@ -401,7 +410,7 @@ struct msprite_t final
 	/**
 	*	The type of the sprite.
 	*/
-	Type_t type;
+	Type::Type type;
 
 	/**
 	*	The texture format used by the sprite.

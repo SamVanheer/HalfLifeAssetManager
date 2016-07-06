@@ -53,7 +53,9 @@ void CSpriteRenderer::DrawSprite( const CSpriteRenderInfo* pRenderInfo, const re
 	//TODO: get correct frame when it's a group.
 	const auto& frame = framedesc.frameptr;
 
-	DrawSprite( pRenderInfo->vecOrigin, { frame->width, frame->height }, pSprite, pRenderInfo->flFrame, flags );
+	const sprite::Type::Type* pTypeOverride = pRenderInfo->bOverrideType ? &pRenderInfo->type : nullptr;
+
+	DrawSprite( pRenderInfo->vecOrigin, { frame->width, frame->height }, pSprite, pRenderInfo->flFrame, flags, pTypeOverride );
 }
 
 void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const float flWidth, const float flHeight, const msprite_t* pSprite, const renderer::DrawFlags_t flags )
@@ -130,12 +132,12 @@ void CSpriteRenderer::DrawSprite2D( const C2DSpriteRenderInfo* pRenderInfo, cons
 
 	DrawSprite( glm::vec3( pRenderInfo->vecPos, 0 ), 
 				glm::vec2( pRenderInfo->vecScale.x * pFrame->width, pRenderInfo->vecScale.y * pFrame->height ), 
-				pRenderInfo->pSprite, pRenderInfo->flFrame, flags, pTexFormatOverride );
+				pRenderInfo->pSprite, pRenderInfo->flFrame, flags, nullptr, pTexFormatOverride );
 }
 
 void CSpriteRenderer::DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& vecSize, 
 								  const msprite_t* pSprite, const float flFrame, 
-								  const renderer::DrawFlags_t flags, const sprite::TexFormat::TexFormat* pTexFormatOverride )
+								  const renderer::DrawFlags_t flags, const sprite::Type::Type* pTypeOverride, const sprite::TexFormat::TexFormat* pTexFormatOverride )
 {
 	assert( pSprite );
 

@@ -22,6 +22,10 @@ struct CSpriteRenderInfo final
 	float flTransparency;
 
 	float flFrame;
+
+	sprite::Type::Type type = sprite::Type::VP_PARALLEL_UPRIGHT;
+
+	bool bOverrideType = false;
 };
 
 /**

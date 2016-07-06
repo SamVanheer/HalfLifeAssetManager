@@ -15,9 +15,12 @@ public:
 protected:
 	wxDECLARE_EVENT_TABLE();
 
+	void OnTypeChanged( wxCommandEvent& event );
+
 	void OnTexFormatChanged( wxCommandEvent& event );
 
 private:
+	wxChoice* m_pType;
 	wxChoice* m_pTextureFormat;
 };
 }

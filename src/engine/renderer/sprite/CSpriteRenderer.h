@@ -31,7 +31,9 @@ public:
 
 private:
 
-	void DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& vecSize, const msprite_t* pSprite, const float flFrame, const renderer::DrawFlags_t flags, const sprite::TexFormat::TexFormat* pTexFormatOverride = nullptr );
+	void DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& vecSize, 
+					 const msprite_t* pSprite, const float flFrame, 
+					 const renderer::DrawFlags_t flags, const sprite::Type::Type* pTypeOverride = nullptr, const sprite::TexFormat::TexFormat* pTexFormatOverride = nullptr );
 
 private:
 	CSpriteRenderer( const CSpriteRenderer& ) = delete;
