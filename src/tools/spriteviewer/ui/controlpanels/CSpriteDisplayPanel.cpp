@@ -15,12 +15,15 @@ namespace sprview
 enum
 {
 	wxID_TYPE = wxID_HIGHEST + 1,
-	wxID_TEXTUREFORMAT
+	wxID_TEXTUREFORMAT,
+
+	wxID_SCALE
 };
 
 wxBEGIN_EVENT_TABLE( CSpriteDisplayPanel, CBaseControlPanel )
 	EVT_CHOICE( wxID_TYPE, CSpriteDisplayPanel::OnTypeChanged )
 	EVT_CHOICE( wxID_TEXTUREFORMAT, CSpriteDisplayPanel::OnTexFormatChanged )
+	EVT_SLIDER( wxID_SCALE, CSpriteDisplayPanel::OnScaleChanged )
 wxEND_EVENT_TABLE()
 
 namespace
@@ -61,6 +64,8 @@ CSpriteDisplayPanel::CSpriteDisplayPanel( wxWindow* pParent, CSpriteViewer* pHLS
 		m_pTextureFormat->Select( 0 );
 	}
 
+	m_pScale = new wxSlider( this, wxID_SCALE, SCALE_DEFAULT, SCALE_MIN, SCALE_MAX, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_LABELS );
+
 	//Layout
 	auto pSizer = new wxGridBagSizer( 5, 5 );
 
@@ -74,6 +79,10 @@ CSpriteDisplayPanel::CSpriteDisplayPanel( wxWindow* pParent, CSpriteViewer* pHLS
 	pSizer->Add( new wxStaticText( this, wxID_ANY, "Texture Format:" ), wxGBPosition( row++, col ), wxGBSpan( 1, 2 ), wxEXPAND );
 
 	pSizer->Add( m_pTextureFormat, wxGBPosition( row++, col ), wxGBSpan( 1, 2 ), wxEXPAND );
+
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "Scale:" ), wxGBPosition( row++, col ), wxGBSpan( 1, 2 ), wxEXPAND );
+
+	pSizer->Add( m_pScale, wxGBPosition( row++, col ), wxGBSpan( 1, 2 ), wxEXPAND );
 
 	GetMainSizer()->Add( pSizer, wxSizerFlags().Expand() );
 }
@@ -96,6 +105,11 @@ void CSpriteDisplayPanel::InitializeUI()
 
 	m_pType->Select( 0 );
 	m_pTextureFormat->Select( 0 );
+
+	m_pScale->SetValue( SCALE_DEFAULT );
+
+	//In case the scale was already the default, set the scale in the state to sync it.
+	m_pHLSV->GetState()->SetScale( m_pScale->GetValue() );
 }
 
 void CSpriteDisplayPanel::OnTypeChanged( wxCommandEvent& event )
@@ -128,5 +142,10 @@ void CSpriteDisplayPanel::OnTexFormatChanged( wxCommandEvent& event )
 	{
 		m_pHLSV->GetState()->SetTexFormatOverride( format );
 	}
+}
+
+void CSpriteDisplayPanel::OnScaleChanged( wxCommandEvent& event )
+{
+	m_pHLSV->GetState()->SetScale( m_pScale->GetValue() );
 }
 }

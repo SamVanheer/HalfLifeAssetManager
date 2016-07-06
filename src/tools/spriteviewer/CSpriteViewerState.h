@@ -67,6 +67,13 @@ public:
 		m_bTexFormatOverride = false;
 	}
 
+	float GetScale() const { return m_flScale; }
+
+	void SetScale( const float flScale )
+	{
+		m_flScale = flScale;
+	}
+
 	bool DumpSpriteInfo( const char* const pszFilename );
 
 public:
@@ -83,6 +90,8 @@ private:
 	sprite::TexFormat::TexFormat m_TexFormatOverride = sprite::TexFormat::SPR_NORMAL;
 
 	bool m_bTexFormatOverride = false;
+
+	float m_flScale = 1.0f;
 
 private:
 	CSpriteViewerState( const CSpriteViewerState& ) = delete;

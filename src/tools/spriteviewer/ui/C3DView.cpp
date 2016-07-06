@@ -104,8 +104,7 @@ void C3DView::DrawSpriteInfo()
 			renderInfo.bOverrideTexFormat = true;
 		}
 
-		//Scale it up a bit to make it more visible.
-		renderInfo.vecScale *= 4;
+		renderInfo.vecScale *= m_pSpriteViewer->GetState()->GetScale();
 
 		g_pSpriteRenderer->DrawSprite2D( &renderInfo, renderer::DrawFlag::NONE );
 	}
