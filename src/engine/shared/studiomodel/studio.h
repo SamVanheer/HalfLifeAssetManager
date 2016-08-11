@@ -27,21 +27,33 @@ Studio models are position independent, so the cache manager can move them.
 
 enum
 {
-	MAXSTUDIOTRIANGLES		 = 20000,	// TODO: tune this
-	MAXSTUDIOVERTS			 = 2048,	// TODO: tune this
-	MAXSTUDIOSEQUENCES		 = 2048,	// total animation sequences -- KSH incremented
-	MAXSTUDIOSKINS			 = 100,		// total textures
-	MAXSTUDIOSRCBONES		 = 512,		// bones allowed at source movement
-	MAXSTUDIOBONES			 = 128,		// total bones actually used
-	MAXSTUDIOMODELS			 = 32,		// sub-models per model
-	MAXSTUDIOBODYPARTS		 = 32,
-	MAXSTUDIOGROUPS			 = 16,
-	MAXSTUDIOANIMATIONS		 = 2048,		
-	MAXSTUDIOMESHES			 = 256,
-	MAXSTUDIOEVENTS			 = 1024,
-	MAXSTUDIOPIVOTS			 = 256,
-	MAXSTUDIOCONTROLLERS	 = 8,
-	STUDIO_VERSION			 = 10
+	MAXSTUDIOTRIANGLES				= 20000,	// TODO: tune this
+	MAXSTUDIOVERTS					= 2048,	// TODO: tune this
+	MAXSTUDIOSEQUENCES				= 2048,	// total animation sequences -- KSH incremented
+	MAXSTUDIOSKINS					= 100,		// total textures
+	MAXSTUDIOSRCBONES				= 512,		// bones allowed at source movement
+	MAXSTUDIOBONES					= 128,		// total bones actually used
+	MAXSTUDIOMODELS					= 32,		// sub-models per model
+	MAXSTUDIOBODYPARTS				= 32,
+	MAXSTUDIOGROUPS					= 16,
+	MAXSTUDIOANIMATIONS				= 2048,		
+	MAXSTUDIOMESHES					= 256,
+	MAXSTUDIOEVENTS					= 1024,
+	MAXSTUDIOPIVOTS					= 256,
+	MAXSTUDIOCONTROLLERS			= 8,
+	STUDIO_VERSION					= 10,
+
+	/**
+	*	Maximum length for the event options string.
+	*/
+	STUDIO_MAX_EVENT_OPTIONS_LENGTH = 64,
+
+	/**
+	*	Maximum number of bone controllers per bone.
+	*/
+	STUDIO_MAX_PER_BONE_CONTROLLERS	= 6,
+
+	STUDIO_ATTACH_NUM_VECTORS		= 3
 };
 
 // header for demand loaded sequence group data
@@ -60,9 +72,9 @@ struct mstudiobone_t
 	char	name[ 32 ];	// bone name for symbolic links
 	int		parent;		// parent bone
 	int		flags;		// ??
-	int		bonecontroller[ 6 ];	// bone controller index, -1 == none
-	float	value[ 6 ];	// default DoF values
-	float	scale[ 6 ];   // scale for delta DoF values
+	int		bonecontroller[ STUDIO_MAX_PER_BONE_CONTROLLERS ];	// bone controller index, -1 == none
+	float	value[ STUDIO_MAX_PER_BONE_CONTROLLERS ];	// default DoF values
+	float	scale[ STUDIO_MAX_PER_BONE_CONTROLLERS ];   // scale for delta DoF values
 };
 
 
@@ -151,8 +163,6 @@ struct mstudioseqdesc_t
 	int			nextseq;		// auto advancing sequences
 };
 
-const size_t STUDIO_MAX_EVENT_OPTIONS_LENGTH = 64;
-
 // events
 struct mstudioevent_t
 {
@@ -168,11 +178,6 @@ struct mstudiopivot_t
 	glm::vec3		org;	// pivot point
 	int			start;
 	int			end;
-};
-
-enum
-{
-	STUDIO_ATTACH_NUM_VECTORS = 3
 };
 
 // attachment

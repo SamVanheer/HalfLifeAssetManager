@@ -262,8 +262,7 @@ void CBonesPanel::SetBone( int iIndex )
 
 	wxArrayString items;
 
-	//TODO: magic number
-	for( int iController = 0; iController < 6; ++iController )
+	for( int iController = 0; iController < STUDIO_MAX_PER_BONE_CONTROLLERS; ++iController )
 	{
 		if( pBone->bonecontroller[ iController ] != -1 )
 			items.push_back( wxString::Format( "Controller %d = %d", iController, pBone->bonecontroller[ iController ] ) );
