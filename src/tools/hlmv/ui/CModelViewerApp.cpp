@@ -63,8 +63,6 @@ bool CModelViewerApp::PreRunApp()
 		return false;
 	}
 
-	//GetSettings()->SetSettingsListener( this );
-
 	//Must be called before we create the main window, since it accesses the window.
 	UseMessagesWindow( true );
 

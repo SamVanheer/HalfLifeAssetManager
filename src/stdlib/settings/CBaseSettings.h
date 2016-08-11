@@ -15,22 +15,6 @@ class IFileSystem;
 namespace settings
 {
 /**
-*	Listener for settings.
-*	TODO: replace with cvars
-*/
-class ISettingsListener
-{
-public:
-	virtual ~ISettingsListener() = 0;
-
-	virtual void FPSChanged( const double flOldFPS, const double flNewFPS ) = 0;
-};
-
-inline ISettingsListener::~ISettingsListener()
-{
-}
-
-/**
 *	This class manages settings that are shared between all tools.
 *	This class is abstract.
 */
@@ -68,19 +52,6 @@ public:
 	*	Destructor.
 	*/
 	virtual ~CBaseSettings();
-
-	/**
-	*	Gets the settings listener.
-	*/
-	ISettingsListener* GetSettingsListener() { return m_pListener; }
-
-	/**
-	*	Sets the settings listener.
-	*/
-	void SetSettingsListener( ISettingsListener* const pListener )
-	{
-		m_pListener = pListener;
-	}
 
 	/**
 	*	Gets the config manager.
@@ -178,7 +149,6 @@ private:
 
 private:
 	filesystem::IFileSystem* const m_pFileSystem;
-	ISettingsListener* m_pListener = nullptr;
 
 	/**
 	*	The config manager. This keeps track of all game configurations, as well as the active configuration.

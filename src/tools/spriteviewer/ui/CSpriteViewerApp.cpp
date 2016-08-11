@@ -82,17 +82,13 @@ bool CSpriteViewerApp::PreRunApp()
 		return false;
 	}
 
-	//GetSettings()->SetSettingsListener( this );
-
 	//Must be called before we create the main window, since it accesses the window.
 	UseMessagesWindow( true );
 
-	/*
 	if( !GetSettings()->Initialize( SPRITEVIEWER_SETTINGS_FILE ) )
 	{
 		return false;
 	}
-	*/
 
 	m_pMainWindow = new sprview::CMainWindow( this );
 	
