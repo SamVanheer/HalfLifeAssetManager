@@ -4,6 +4,8 @@
 
 #include "shared/Logging.h"
 
+#include "utility/StringUtils.h"
+
 #include "lib/LibInterface.h"
 
 #include "CBaseConCommand.h"
@@ -434,6 +436,8 @@ void CCVarSystem::ProcessCommand( const util::CCommand& args )
 {
 	assert( args.IsValid() );
 
+	Message( "] %s\n", args.GetCommandString() );
+
 	const char* const pszName = args.Arg( 0 );
 
 	auto it = m_Commands.find( pszName );
@@ -536,26 +540,13 @@ void CCVarSystem::HandleConCommand( const CConCommand& command, const util::CCom
 
 		const char* const pszToken = args.Arg( 1 );
 
-		//TODO: this should be done better. "*" should find everything, "*token" should find everything ending with token, etc.
-		if( strcmp( pszToken, "*" ) == 0 )
+		for( auto it = m_Commands.begin(), end = m_Commands.end(); it != end; ++it )
 		{
-			for( auto it = m_Commands.begin(), end = m_Commands.end(); it != end; ++it )
-			{
-				const CBaseConCommand* const pCommand = it->second;
+			const CBaseConCommand* const pCommand = it->second;
 
+			if( UTIL_TokenMatches( pCommand->GetName(), pszToken ) || UTIL_TokenMatches( pCommand->GetHelpInfo(), pszToken ) )
+			{
 				Message( "%s: %s\n", pCommand->GetName(), pCommand->GetHelpInfo() );
-			}
-		}
-		else
-		{
-			for( auto it = m_Commands.begin(), end = m_Commands.end(); it != end; ++it )
-			{
-				const CBaseConCommand* const pCommand = it->second;
-
-				if( strstr( pCommand->GetName(), pszToken ) || strstr( pCommand->GetHelpInfo(), pszToken ) )
-				{
-					Message( "%s: %s\n", pCommand->GetName(), pCommand->GetHelpInfo() );
-				}
 			}
 		}
 	}
