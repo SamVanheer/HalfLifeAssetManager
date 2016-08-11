@@ -123,9 +123,6 @@
     <ClCompile Include="..\src\graphics\Constants.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
-      <Filter>Source Files\tools\shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\tools\shared\Credits.cpp">
       <Filter>Source Files\tools\shared</Filter>
     </ClCompile>
@@ -197,9 +194,6 @@
     </ClCompile>
     <ClCompile Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.cpp">
       <Filter>Source Files\tools\hlmv\entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ui\wx\CwxBaseApp.cpp">
-      <Filter>Source Files\ui\wx</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ui\wx\CwxOpenGL.cpp">
       <Filter>Source Files\ui\wx</Filter>
@@ -278,9 +272,6 @@
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tools\shared\CBaseTool.h">
-      <Filter>Header Files\tools\shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\tools\shared\Credits.h">
       <Filter>Header Files\tools\shared</Filter>
     </ClInclude>
@@ -358,9 +349,6 @@
     </ClInclude>
     <ClInclude Include="..\src\tools\hlmv\entity\CHLMVStudioModelEntity.h">
       <Filter>Header Files\tools\hlmv\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\wx\CwxBaseApp.h">
-      <Filter>Header Files\ui\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ui\wx\CwxOpenGL.h">
       <Filter>Header Files\ui\wx</Filter>

@@ -20,6 +20,8 @@ extern studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer;
 
 namespace tools
 {
+static cvar::CCVar max_fps( "max_fps", cvar::CCVarArgsBuilder().HelpInfo( "The maximum FPS that this program will redraw at" ).FloatValue( 60.0f ) );
+
 bool CBaseWXToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories )
 {
 	if( !CBaseToolApp::Connect( pFactories, uiNumFactories ) )
@@ -224,11 +226,8 @@ void CBaseWXToolApp::OnIdle( wxIdleEvent& event )
 		flFrameTime = 0.1;
 
 	//Don't use this when using wxTimer, since it lowers the FPS by a fair amount.
-	//TODO: implement frame limiter using cvar, removing fps setting from settings class - Solokiller
-	/*
-	if( flFrameTime < ( 1.0 / 60.0f ) )
+	if( flFrameTime < ( 1.0 / max_fps.GetFloat() ) )
 		return;
-		*/
 
 	WorldTime.TimeChanged( flCurTime );
 

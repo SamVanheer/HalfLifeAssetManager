@@ -168,7 +168,6 @@
     <ClInclude Include="..\src\graphics\GraphicsHelpers.h" />
     <ClInclude Include="..\src\lib\CLibrary.h" />
     <ClInclude Include="..\src\lib\LibInterface.h" />
-    <ClInclude Include="..\src\tools\shared\CBaseTool.h" />
     <ClInclude Include="..\src\tools\shared\CBaseToolApp.h" />
     <ClInclude Include="..\src\tools\shared\CBaseWXToolApp.h" />
     <ClInclude Include="..\src\tools\shared\Credits.h" />
@@ -183,7 +182,6 @@
     <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteListBox.h" />
     <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteViewerApp.h" />
     <ClInclude Include="..\src\tools\spriteviewer\ui\wxSpriteViewer.h" />
-    <ClInclude Include="..\src\ui\wx\CwxBaseApp.h" />
     <ClInclude Include="..\src\ui\wx\CwxOpenGL.h" />
     <ClInclude Include="..\src\ui\wx\shared\CMessagesWindow.h" />
     <ClInclude Include="..\src\ui\wx\shared\CwxBase3DView.h" />
@@ -208,7 +206,6 @@
     <ClCompile Include="..\src\graphics\GraphicsHelpers.cpp" />
     <ClCompile Include="..\src\lib\CLibrary.cpp" />
     <ClCompile Include="..\src\lib\LibInterface.cpp" />
-    <ClCompile Include="..\src\tools\shared\CBaseTool.cpp" />
     <ClCompile Include="..\src\tools\shared\CBaseToolApp.cpp" />
     <ClCompile Include="..\src\tools\shared\CBaseWXToolApp.cpp" />
     <ClCompile Include="..\src\tools\shared\Credits.cpp" />
@@ -222,7 +219,6 @@
     <ClCompile Include="..\src\tools\spriteviewer\ui\controlpanels\CSpriteInfoPanel.cpp" />
     <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteListBox.cpp" />
     <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteViewerApp.cpp" />
-    <ClCompile Include="..\src\ui\wx\CwxBaseApp.cpp" />
     <ClCompile Include="..\src\ui\wx\CwxOpenGL.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CMessagesWindow.cpp" />
     <ClCompile Include="..\src\ui\wx\shared\CwxBase3DView.cpp" />

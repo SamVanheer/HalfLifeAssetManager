@@ -16,11 +16,11 @@
 
 #include "CBaseToolApp.h"
 
-extern studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer;
-extern soundsystem::ISoundSystem* g_pSoundSystem;
+studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer = nullptr;
+soundsystem::ISoundSystem* g_pSoundSystem = nullptr;
 
 //TODO: remove
-extern renderer::IRenderContext* g_pRenderContext;
+renderer::IRenderContext* g_pRenderContext = nullptr;
 
 namespace tools
 {

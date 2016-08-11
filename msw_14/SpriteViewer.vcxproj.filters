@@ -99,9 +99,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\tools\shared\CBaseTool.h">
-      <Filter>Header Files\tools\shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\tools\shared\Credits.h">
       <Filter>Header Files\tools\shared</Filter>
     </ClInclude>
@@ -155,9 +152,6 @@
     </ClInclude>
     <ClInclude Include="..\src\lib\LibInterface.h">
       <Filter>Header Files\lib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\wx\CwxBaseApp.h">
-      <Filter>Header Files\ui\wx</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ui\wx\CwxOpenGL.h">
       <Filter>Header Files\ui\wx</Filter>
@@ -218,9 +212,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
-      <Filter>Source Files\tools\shared</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\tools\shared\Credits.cpp">
       <Filter>Source Files\tools\shared</Filter>
     </ClCompile>
@@ -268,9 +259,6 @@
     </ClCompile>
     <ClCompile Include="..\src\lib\LibInterface.cpp">
       <Filter>Source Files\lib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ui\wx\CwxBaseApp.cpp">
-      <Filter>Source Files\ui\wx</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ui\wx\CwxOpenGL.cpp">
       <Filter>Source Files\ui\wx</Filter>
