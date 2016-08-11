@@ -44,12 +44,7 @@ CEditEventsDialog::CEditEventsDialog( wxWindow *parent, wxWindowID id,
 
 	m_pOptions = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 150, wxDefaultSize.GetHeight() ) );
 
-	//TODO: these things should be defined somewhere
-	{
-		mstudioevent_t event;
-
-		m_pOptions->SetMaxLength( ARRAYSIZE( event.options ) - 1 );
-	}
+	m_pOptions->SetMaxLength( STUDIO_MAX_EVENT_OPTIONS_LENGTH - 1 );
 
 	m_pType = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 150, wxDefaultSize.GetHeight() ) );
 	m_pType->SetRange( INT_MIN, INT_MAX );

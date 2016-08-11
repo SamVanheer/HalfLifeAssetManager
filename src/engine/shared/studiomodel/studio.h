@@ -151,13 +151,15 @@ struct mstudioseqdesc_t
 	int			nextseq;		// auto advancing sequences
 };
 
+const size_t STUDIO_MAX_EVENT_OPTIONS_LENGTH = 64;
+
 // events
 struct mstudioevent_t
 {
 	int 	frame;
 	int		event;
 	int		type;
-	char	options[64];
+	char	options[ STUDIO_MAX_EVENT_OPTIONS_LENGTH ];
 };
 
 // pivots
