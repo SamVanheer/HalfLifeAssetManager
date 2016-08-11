@@ -540,11 +540,13 @@ void CCVarSystem::HandleConCommand( const CConCommand& command, const util::CCom
 
 		const char* const pszToken = args.Arg( 1 );
 
+		auto findFn = strchr( pszToken, '*' ) ? UTIL_TokenMatches : []( const char* pszString, const char* pszSubString ) -> bool { return !!strstr( pszString, pszSubString ); };
+
 		for( auto it = m_Commands.begin(), end = m_Commands.end(); it != end; ++it )
 		{
 			const CBaseConCommand* const pCommand = it->second;
 
-			if( UTIL_TokenMatches( pCommand->GetName(), pszToken ) || UTIL_TokenMatches( pCommand->GetHelpInfo(), pszToken ) )
+			if( findFn( pCommand->GetName(), pszToken ) || findFn( pCommand->GetHelpInfo(), pszToken ) )
 			{
 				Message( "%s: %s\n", pCommand->GetName(), pCommand->GetHelpInfo() );
 			}
