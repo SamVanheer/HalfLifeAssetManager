@@ -94,6 +94,9 @@ void CBaseWXToolApp::GetGLContextAttributes( wxGLContextAttrs& attrs )
 
 bool CBaseWXToolApp::OnInit()
 {
+	if( !wxApp::OnInit() )
+		return false;
+
 	//Install the wxWidgets specific default log listener.
 	SetDefaultLogListener( GetwxDefaultLogListener() );
 
