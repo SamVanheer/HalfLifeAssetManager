@@ -61,6 +61,12 @@ protected:
 
 	void ShutdownApp() override;
 
+	/**
+	*	Initialize OpenGL. This is GUI specific at the moment.
+	*	@return true on success, false otherwise.
+	*/
+	virtual bool InitOpenGL() = 0;
+
 private:
 	std::string m_szLogFilename;
 
