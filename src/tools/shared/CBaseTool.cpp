@@ -162,7 +162,7 @@ bool CBaseTool::Initialize()
 
 	if( !wxOpenGL().Initialize( canvasAttributes, &contextAttributes ) )
 	{
-		wxMessageBox( "Failed to initialize file system", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		wxMessageBox( "Failed to initialize OpenGL", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
 	}
 
