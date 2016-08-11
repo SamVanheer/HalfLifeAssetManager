@@ -20,7 +20,13 @@ extern studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer;
 
 namespace tools
 {
-static cvar::CCVar max_fps( "max_fps", cvar::CCVarArgsBuilder().HelpInfo( "The maximum FPS that this program will redraw at" ).FloatValue( 60.0f ) );
+static cvar::CCVar max_fps( 
+	"max_fps", 
+	cvar::CCVarArgsBuilder()
+	.HelpInfo( "The maximum FPS that this program will redraw at" )
+	.FloatValue( 60.0f )
+	.Flags( cvar::Flag::ARCHIVE )
+);
 
 bool CBaseWXToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories )
 {
