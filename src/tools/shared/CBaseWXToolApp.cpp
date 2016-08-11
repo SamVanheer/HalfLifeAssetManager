@@ -117,6 +117,9 @@ bool CBaseWXToolApp::OnInit()
 
 	wxApp::Connect( wxEVT_IDLE, wxIdleEventHandler( CBaseWXToolApp::OnIdle ) );
 
+	//Reduce the idle event strain on the system a bit.
+	wxIdleEvent::SetMode( wxIDLE_PROCESS_SPECIFIED );
+
 	return true;
 }
 
