@@ -27,6 +27,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, ui::CwxBaseFrame )
 	EVT_MENU( wxID_MAINWND_LOADGROUND, CMainWindow::LoadGroundTexture )
 	EVT_MENU( wxID_MAINWND_UNLOADGROUND, CMainWindow::UnloadGroundTexture )
 	EVT_MENU( wxID_MAINWND_SAVEMODEL, CMainWindow::SaveModel )
+	EVT_CLOSE( CMainWindow::OnClose )
 	EVT_MENU( wxID_EXIT, CMainWindow::OnExit )
 	EVT_MENU( wxID_MAINWND_CENTERVIEW, CMainWindow::CenterView )
 	EVT_MENU( wxID_MAINWND_SAVEVIEW, CMainWindow::SaveView )
@@ -380,6 +381,11 @@ void CMainWindow::OpenRecentFile( wxCommandEvent& event )
 	}
 
 	LoadModel( szFilename );
+}
+
+void CMainWindow::OnClose( wxCloseEvent& event )
+{
+	Destroy();
 }
 
 void CMainWindow::OnExit( wxCommandEvent& event )

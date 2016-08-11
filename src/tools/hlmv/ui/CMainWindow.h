@@ -83,6 +83,7 @@ private:
 	void UnloadGroundTexture( wxCommandEvent& event );
 	void SaveModel( wxCommandEvent& event );
 	void OpenRecentFile( wxCommandEvent& event );
+	void OnClose( wxCloseEvent& event );
 	void OnExit( wxCommandEvent& event );
 
 	void CenterView( wxCommandEvent& event );
