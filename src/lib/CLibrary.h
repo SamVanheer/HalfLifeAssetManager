@@ -1,6 +1,8 @@
 #ifndef LIB_CLIBRARY_H
 #define LIB_CLIBRARY_H
 
+#include <string>
+
 /**
 *	Represents a handle to single dynamic/shared library that can be loaded.
 */
@@ -10,7 +12,7 @@ public:
 	/**
 	*	Type used to represent libraries internally.
 	*/
-	typedef void* LibraryHandle_t;
+	using LibraryHandle_t = void*;
 
 	/**
 	*	Constant that represents a null library handle. Implemented as a function due to compiler limitations (const LibraryHandle_t const triggers a warning).
@@ -42,6 +44,11 @@ public:
 	~CLibrary();
 
 	/**
+	*	@return The name of this library.
+	*/
+	const std::string& GetName() const { return m_szName; }
+
+	/**
 	*	Returns the internal handle to the library. This is a platform specific handle.
 	*/
 	LibraryHandle_t GetLibraryHandle() const { return m_hLibrary; }
@@ -71,6 +78,23 @@ public:
 	void* GetFunctionAddress( const char* const pszName ) const;
 
 private:
+	/**
+	*	Does the actual of loading the library.
+	*/
+	static LibraryHandle_t DoLoad( const char* const pszFilename );
+
+	/**
+	*	Does the actual freeing of the library.
+	*/
+	static void DoFree( LibraryHandle_t hLibrary );
+
+	/**
+	*	Does the actual getting of the address.
+	*/
+	static void* DoGetFunctionAddress( LibraryHandle_t hLibrary, const char* const pszName );
+
+private:
+	std::string m_szName;
 	LibraryHandle_t m_hLibrary = NULL_HANDLE();
 
 private:

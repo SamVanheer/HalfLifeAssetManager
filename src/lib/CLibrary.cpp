@@ -17,6 +17,7 @@ CLibrary::CLibrary()
 
 CLibrary::CLibrary( CLibrary&& other )
 {
+	std::swap( m_szName, other.m_szName );
 	std::swap( m_hLibrary, other.m_hLibrary );
 }
 
@@ -24,6 +25,7 @@ CLibrary& CLibrary::operator=( CLibrary&& other )
 {
 	Free();
 
+	std::swap( m_szName, other.m_szName );
 	std::swap( m_hLibrary, other.m_hLibrary );
 
 	return *this;
@@ -34,24 +36,30 @@ CLibrary::~CLibrary()
 	Free();
 }
 
-#ifdef WIN32
 bool CLibrary::Load( const char* const pszFilename )
 {
 	assert( pszFilename );
 
 	Free();
 
-	m_hLibrary = LoadLibraryA( pszFilename );
+	m_hLibrary = DoLoad( pszFilename );
 
-	return IsLoaded();
+	if( !IsLoaded() )
+		return false;
+
+	m_szName = pszFilename;
+
+	return true;
 }
 
 void CLibrary::Free()
 {
 	if( IsLoaded() )
 	{
-		FreeLibrary( static_cast<HMODULE>( m_hLibrary ) );
+		DoFree( m_hLibrary );
 		m_hLibrary = NULL_HANDLE();
+
+		m_szName.clear();
 	}
 }
 
@@ -60,34 +68,37 @@ void* CLibrary::GetFunctionAddress( const char* const pszName ) const
 	assert( IsLoaded() );
 	assert( pszName );
 
-	return GetProcAddress( static_cast<HMODULE>( m_hLibrary ), pszName );
+	return DoGetFunctionAddress( m_hLibrary, pszName );
+}
+
+#ifdef WIN32
+CLibrary::LibraryHandle_t CLibrary::DoLoad( const char* const pszFilename )
+{
+	return LoadLibraryA( pszFilename );
+}
+
+void CLibrary::DoFree( LibraryHandle_t hLibrary )
+{
+	FreeLibrary( static_cast<HMODULE>( hLibrary ) );
+}
+
+void* CLibrary::DoGetFunctionAddress( LibraryHandle_t hLibrary, const char* const pszName )
+{
+	return GetProcAddress( static_cast<HMODULE>( hLibrary ), pszName );
 }
 #else
-bool CLibrary::Load( const char* const pszFilename )
+CLibrary::LibraryHandle_t CLibrary::DoLoad( const char* const pszFilename )
 {
-	assert( pszFilename );
-
-	Free();
-
-	m_hLibrary = dlopen( pszFilename, RTLD_NOW );
-
-	return IsLoaded();
+	return dlopen( pszFilename, RTLD_NOW );
 }
 
-void CLibrary::Free()
+void CLibrary::DoFree( LibraryHandle_t hLibrary )
 {
-	if( IsLoaded() )
-	{
-		dlclose( static_cast<void*>( m_hLibrary ) );
-		m_hLibrary = NULL_HANDLE();
-	}
+	dlclose( static_cast<void*>( hLibrary ) );
 }
 
-void* CLibrary::GetFunctionAddress( const char* const pszName ) const
+void* CLibrary::DoGetFunctionAddress( LibraryHandle_t hLibrary, const char* const pszName )
 {
-	assert( IsLoaded() );
-	assert( pszName );
-
-	return dlsym( static_cast<void*>( m_hLibrary ), pszName );
+	return dlsym( static_cast<void*>( hLibrary ), pszName );
 }
 #endif
