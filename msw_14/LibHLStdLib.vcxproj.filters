@@ -76,6 +76,15 @@
     <Filter Include="Source Files\engine\shared\sprite">
       <UniqueIdentifier>{26309068-4a4e-4a5b-8d50-4233a32517e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\app">
+      <UniqueIdentifier>{3a2dd229-fae4-4d07-9d03-e9e608862062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\app">
+      <UniqueIdentifier>{8f73099f-fcf9-4eb1-bf54-110425ab2c28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lib">
+      <UniqueIdentifier>{2998fb97-fd10-4f52-adbf-ab031fe0e243}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\stdlib\utility\CString.h">
@@ -204,6 +213,15 @@
     <ClInclude Include="..\src\engine\shared\sprite\sprite.h">
       <Filter>Header Files\engine\shared\sprite</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\app\CAppSystem.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lib\CLibrary.h">
+      <Filter>Header Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\utility\PlatUtils.h">
+      <Filter>Header Files\stdlib\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\stdlib\utility\CString.cpp">
@@ -298,6 +316,15 @@
     </ClCompile>
     <ClCompile Include="..\src\engine\shared\sprite\sprite.cpp">
       <Filter>Source Files\engine\shared\sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\app\CAppSystem.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\lib\CLibrary.cpp">
+      <Filter>Source Files\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\utility\PlatUtils.cpp">
+      <Filter>Source Files\stdlib\utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

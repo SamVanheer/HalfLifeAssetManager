@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\app\CAppSystem.h" />
     <ClInclude Include="..\src\cvar\CBaseConCommand.h" />
     <ClInclude Include="..\src\cvar\CConCommand.h" />
     <ClInclude Include="..\src\cvar\CCVar.h" />
@@ -36,6 +37,7 @@
     <ClInclude Include="..\src\html\CHTMLHeader.h" />
     <ClInclude Include="..\src\html\CHTMLPage.h" />
     <ClInclude Include="..\src\html\IHTMLObject.h" />
+    <ClInclude Include="..\src\lib\CLibrary.h" />
     <ClInclude Include="..\src\lib\ILibSystem.h" />
     <ClInclude Include="..\src\stdlib\graphics\BMPFile.h" />
     <ClInclude Include="..\src\stdlib\graphics\CCamera.h" />
@@ -59,10 +61,12 @@
     <ClInclude Include="..\src\stdlib\utility\CString.h" />
     <ClInclude Include="..\src\stdlib\utility\IOUtils.h" />
     <ClInclude Include="..\src\stdlib\utility\mathlib.h" />
+    <ClInclude Include="..\src\stdlib\utility\PlatUtils.h" />
     <ClInclude Include="..\src\stdlib\utility\StringUtils.h" />
     <ClInclude Include="..\src\stdlib\utility\Tokenization.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\app\CAppSystem.cpp" />
     <ClCompile Include="..\src\cvar\CBaseConCommand.cpp" />
     <ClCompile Include="..\src\cvar\CConCommand.cpp" />
     <ClCompile Include="..\src\cvar\CCVar.cpp" />
@@ -76,6 +80,7 @@
     <ClCompile Include="..\src\html\CHTMLElement.cpp" />
     <ClCompile Include="..\src\html\CHTMLHeader.cpp" />
     <ClCompile Include="..\src\html\CHTMLPage.cpp" />
+    <ClCompile Include="..\src\lib\CLibrary.cpp" />
     <ClCompile Include="..\src\stdlib\graphics\BMPFile.cpp" />
     <ClCompile Include="..\src\stdlib\graphics\CCamera.cpp" />
     <ClCompile Include="..\src\stdlib\graphics\GLRenderTarget.cpp" />
@@ -93,6 +98,7 @@
     <ClCompile Include="..\src\stdlib\utility\CString.cpp" />
     <ClCompile Include="..\src\stdlib\utility\IOUtils.cpp" />
     <ClCompile Include="..\src\stdlib\utility\mathlib.cpp" />
+    <ClCompile Include="..\src\stdlib\utility\PlatUtils.cpp" />
     <ClCompile Include="..\src\stdlib\utility\Tokenization.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
