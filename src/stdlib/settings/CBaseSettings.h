@@ -93,16 +93,6 @@ public:
 	std::shared_ptr<CGameConfigManager> GetConfigManager() { return m_ConfigManager; }
 
 	/**
-	*	Gets the FPS.
-	*/
-	double GetFPS() const { return m_flFPS; }
-
-	/**
-	*	Sets the FPS.
-	*/
-	void SetFPS( const double flFPS );
-
-	/**
 	*	Returns whether the settings object is initialized or not.
 	*/
 	bool IsInitialized() const { return m_bInitialized; }

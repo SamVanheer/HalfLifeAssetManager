@@ -20,8 +20,7 @@ const double CBaseSettings::DEFAULT_FPS = 30.0;
 
 const double CBaseSettings::MIN_FPS = 15.0;
 
-//wxTimer seems to have issues going higher than ~64 FPS. Might be good to use a more game engine like main loop instead of a timer.
-const double CBaseSettings::MAX_FPS = 60.0; //500.0;
+const double CBaseSettings::MAX_FPS = 500.0;
 
 CBaseSettings::CBaseSettings( filesystem::IFileSystem* const pFileSystem )
 	: m_pFileSystem( pFileSystem )
@@ -55,21 +54,6 @@ void CBaseSettings::Copy( const CBaseSettings& other )
 	//Don't copy the filesystem.
 
 	*m_ConfigManager = *other.m_ConfigManager;
-
-	SetFPS( other.GetFPS() );
-}
-
-void CBaseSettings::SetFPS( const double flFPS )
-{
-	if( flFPS == m_flFPS )
-		return;
-
-	const double flOldFPS = m_flFPS;
-
-	m_flFPS = clamp( flFPS, MIN_FPS, MAX_FPS );
-
-	if( m_pListener )
-		m_pListener->FPSChanged( flOldFPS, m_flFPS );
 }
 
 bool CBaseSettings::Initialize( const char* const pszFilename )
@@ -235,11 +219,6 @@ bool CBaseSettings::LoadCommonSettings( const kv::Block& root )
 {
 	if( auto common = root.FindFirstChild<kv::Block>( "commonSettings" ) )
 	{
-		if( auto fps = common->FindFirstChild<kv::KV>( "fps" ) )
-		{
-			SetFPS( strtod( fps->GetValue().CStr(), nullptr ) );
-		}
-
 		if( auto cvars = common->FindFirstChild<kv::Block>( "cvars" ) )
 		{
 			if( !LoadArchiveCVars( *cvars ) )
@@ -253,13 +232,6 @@ bool CBaseSettings::LoadCommonSettings( const kv::Block& root )
 bool CBaseSettings::SaveCommonSettings( kv::Writer& writer )
 {
 	writer.BeginBlock( "commonSettings" );
-
-	char szBuffer[ MAX_BUFFER_LENGTH ];
-
-	if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%f", GetFPS() ), sizeof( szBuffer ) ) )
-		return false;
-
-	writer.WriteKeyvalue( "fps", szBuffer );
 
 	if( !SaveArchiveCVars( writer, "cvars" ) )
 		return false;

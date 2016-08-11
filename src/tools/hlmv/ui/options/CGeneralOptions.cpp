@@ -42,7 +42,7 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 
 	m_pWireframeColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( CHLMVSettings::DEFAULT_WIREFRAME_COLOR ), wxDefaultPosition, wxDefaultSize );
 
-	m_pFPS = new wxSlider( this, wxID_ANY, m_pSettings->GetFPS(), hlmv::CHLMVSettings::MIN_FPS, hlmv::CHLMVSettings::MAX_FPS, 
+	m_pFPS = new wxSlider( this, wxID_ANY, 60, hlmv::CHLMVSettings::MIN_FPS, hlmv::CHLMVSettings::MAX_FPS, 
 						   wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ), wxSL_HORIZONTAL | wxSL_TOP | wxSL_LABELS );
 
 	m_pFloorLength = new wxSlider( this, wxID_ANY, m_pSettings->GetFloorLength(), CHLMVSettings::MIN_FLOOR_LENGTH, CHLMVSettings::MAX_FLOOR_LENGTH,
@@ -136,7 +136,7 @@ void CGeneralOptions::Save()
 		pLightingB->SetInt( color.GetBlue() );
 	}
 
-	m_pSettings->SetFPS( m_pFPS->GetValue() );
+	g_pCVar->SetCVarFloat( "max_fps", m_pFPS->GetValue() );
 	m_pSettings->SetFloorLength( m_pFloorLength->GetValue() );
 }
 
@@ -160,7 +160,7 @@ void CGeneralOptions::Initialize()
 		m_pWireframeColor->SetColour( wx::ColorTowx( Color( pLightingR->GetInt(), pLightingG->GetInt(), pLightingB->GetInt() ) ) );
 	}
 
-	m_pFPS->SetValue( m_pSettings->GetFPS() );
+	m_pFPS->SetValue( g_pCVar->GetCVarFloat( "max_fps" ) );
 	m_pFloorLength->SetValue( m_pSettings->GetFloorLength() );
 }
 
