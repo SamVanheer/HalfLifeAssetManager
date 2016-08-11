@@ -17,6 +17,7 @@ namespace app
 enum class AppState
 {
 	CONSTRUCTING = 0,
+	STARTING_UP,
 	LOADING_LIBS,
 	LOADING_IFACES,
 	RUNNING,
@@ -59,6 +60,12 @@ private:
 	void Shutdown();
 
 protected:
+	/**
+	*	Lets the app run code on startup. This is called after the current working directory has been set.
+	*	@return true on success, false otherwise.
+	*/
+	virtual bool StartupApp() { return true; }
+
 	/**
 	*	Lets the app load any libraries it may need.
 	*	@return true on success, false otherwise.

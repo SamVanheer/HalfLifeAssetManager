@@ -1,4 +1,9 @@
+#include <experimental/filesystem>
+
 #include "core/shared/Logging.h"
+#include "core/shared/Utility.h"
+
+#include "utility/PlatUtils.h"
 
 #include "cvar/CVar.h"
 
@@ -19,6 +24,38 @@ extern renderer::IRenderContext* g_pRenderContext;
 
 namespace tools
 {
+bool CBaseToolApp::StartupApp()
+{
+	//No log file provided, initialize to executable filename.
+	if( m_szLogFilename.empty() )
+	{
+		bool bSuccess;
+		auto szExePath = plat::GetExeFileName( &bSuccess );
+
+		if( bSuccess )
+		{
+			std::experimental::filesystem::path path( szExePath );
+
+			m_szLogFilename = path.stem().string();
+		}
+
+		if( m_szLogFilename.empty() )
+		{
+			Warning( "CBaseToolApp::StartupApp: Couldn't get executable name, defaulting log filename to \"tool\"\n" );
+			m_szLogFilename = "tool";
+		}
+	}
+
+	const std::string szLogFilename = m_szLogFilename + ".log";
+
+	//Overwrite previous session log.
+	logging().OpenLogFile( szLogFilename.c_str(), false );
+
+	UTIL_InitRandom();
+
+	return true;
+}
+
 bool CBaseToolApp::LoadAppLibraries()
 {
 	//TODO: needs to use platform agnostic library names - Solokiller

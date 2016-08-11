@@ -1,6 +1,8 @@
 #ifndef TOOLS_SHARED_CBASETOOLAPP_H
 #define TOOLS_SHARED_CBASETOOLAPP_H
 
+#include <string>
+
 #include "app/CAppSystem.h"
 
 namespace filesystem
@@ -24,6 +26,19 @@ class CBaseToolApp : public app::CAppSystem
 {
 public:
 	/**
+	*	@return The log filename.
+	*/
+	const std::string& GetLogFilename() const { return m_szLogFilename; }
+
+	/**
+	*	Sets the log filename.
+	*/
+	void SetLogFilename( std::string&& szFilename )
+	{
+		m_szLogFilename = std::move( szFilename );
+	}
+
+	/**
 	*	Gets the filesystem.
 	*	@return Filesystem instance.
 	*/
@@ -36,6 +51,8 @@ public:
 	soundsystem::ISoundSystem* GetSoundSystem() { return m_pSoundSystem; }
 
 protected:
+	bool StartupApp() override;
+
 	bool LoadAppLibraries() override;
 
 	bool Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories ) override;
@@ -45,6 +62,8 @@ protected:
 	void ShutdownApp() override;
 
 private:
+	std::string m_szLogFilename;
+
 	filesystem::IFileSystem* m_pFileSystem = nullptr;
 	soundsystem::ISoundSystem* m_pSoundSystem = nullptr;
 

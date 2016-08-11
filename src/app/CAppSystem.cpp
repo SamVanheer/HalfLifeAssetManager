@@ -76,6 +76,14 @@ bool CAppSystem::Startup()
 		}
 	}
 
+	m_State = AppState::STARTING_UP;
+
+	if( !StartupApp() )
+	{
+		Error( "CAppSystem::Startup: Failed to start up app!\n" );
+		return false;
+	}
+
 	m_State = AppState::LOADING_LIBS;
 
 	if( !LoadAppLibraries() )
