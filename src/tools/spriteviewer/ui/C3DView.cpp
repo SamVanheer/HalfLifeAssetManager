@@ -2,7 +2,7 @@
 
 #include <wx/image.h>
 
-#include "CSpriteViewer.h"
+#include "CSpriteViewerApp.h"
 #include "../settings/CSpriteViewerSettings.h"
 #include "../CSpriteViewerState.h"
 
@@ -27,7 +27,7 @@ namespace sprview
 wxBEGIN_EVENT_TABLE( C3DView, CwxBaseGLCanvas )
 wxEND_EVENT_TABLE()
 
-C3DView::C3DView( wxWindow* pParent, CSpriteViewer* const pSpriteViewer, I3DViewListener* pListener )
+C3DView::C3DView( wxWindow* pParent, CSpriteViewerApp* const pSpriteViewer, I3DViewListener* pListener )
 	: CwxBaseGLCanvas( pParent, wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pSpriteViewer( pSpriteViewer )
 	, m_pListener( pListener )

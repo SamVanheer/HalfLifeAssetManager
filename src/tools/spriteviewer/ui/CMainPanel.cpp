@@ -15,7 +15,7 @@
 #include "game/entity/CSpriteEntity.h"
 #include "game/entity/CBaseEntityList.h"
 
-#include "CSpriteViewer.h"
+#include "CSpriteViewerApp.h"
 
 #include "CMainPanel.h"
 
@@ -25,7 +25,7 @@ wxBEGIN_EVENT_TABLE( CMainPanel, wxPanel )
 	EVT_NOTEBOOK_PAGE_CHANGED( wxID_MAIN_PAGECHANGED, CMainPanel::PageChanged )
 wxEND_EVENT_TABLE()
 
-CMainPanel::CMainPanel( wxWindow* pParent, CSpriteViewer* const pSpriteViewer )
+CMainPanel::CMainPanel( wxWindow* pParent, CSpriteViewerApp* const pSpriteViewer )
 	: wxPanel( pParent )
 	, m_pSpriteViewer( pSpriteViewer )
 {

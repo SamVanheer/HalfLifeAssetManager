@@ -3,28 +3,62 @@
 
 #include "wxSpriteViewer.h"
 
-#include "ui/wx/CwxBaseApp.h"
+#include "tools/shared/CBaseWXToolApp.h"
 
-#include "CSpriteViewer.h"
+#include "../settings/CSpriteViewerSettings.h"
+#include "../CSpriteViewerState.h"
 
-class CSpriteViewerApp final : public CwxBaseApp
+namespace sprview
+{
+class CMainWindow;
+
+class CSpriteViewerApp final : public tools::CBaseWXToolApp
 {
 public:
+	bool OnInit() override;
+
 	virtual void OnInitCmdLine( wxCmdLineParser& parser ) override;
 
 	virtual bool OnCmdLineParsed( wxCmdLineParser& parser ) override;
 
-	sprview::CSpriteViewer* GetTool() { return static_cast<sprview::CSpriteViewer*>( CwxBaseApp::GetTool() ); }
+	const CSpriteViewerState* GetState() const { return m_pState; }
+	CSpriteViewerState* GetState() { return m_pState; }
+
+	const CSpriteViewerSettings* GetSettings() const { return m_pSettings; }
+	CSpriteViewerSettings* GetSettings() { return m_pSettings; }
+
+	/**
+	*	Gets the main window.
+	*/
+	CMainWindow* GetMainWindow() { return m_pMainWindow; }
+
+	/**
+	*	Sets the main window.
+	*/
+	void SetMainWindow( CMainWindow* const pMainWindow );
+
+	bool LoadSprite( const wxString& szFilename );
+
+protected:
+	bool Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories ) override;
+
+	bool PreRunApp() override;
+
+	void ShutdownApp() override;
+
+	void RunFrame() override;
+
+	void OnExit( const bool bMainWndClosed ) override final;
 
 private:
-	virtual sprview::CSpriteViewer* CreateTool() override { return new sprview::CSpriteViewer(); }
+	CSpriteViewerState* m_pState = nullptr;
+	CSpriteViewerSettings* m_pSettings = nullptr;
+	sprview::CMainWindow* m_pMainWindow = nullptr;
 
-	virtual bool PostInitialize() override;
-
-private:
 	wxString m_szSprite;		//Sprite to load on startup, if any.
 };
+}
 
-wxDECLARE_APP( CSpriteViewerApp );
+wxDECLARE_APP( sprview::CSpriteViewerApp );
 
 #endif //SPRITEVIEWER_UI_CSPRITEVIEWERAPP_H

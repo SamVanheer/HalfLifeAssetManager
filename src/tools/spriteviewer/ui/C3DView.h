@@ -11,7 +11,7 @@
 
 namespace sprview
 {
-class CSpriteViewer;
+class CSpriteViewerApp;
 
 class I3DViewListener
 {
@@ -28,11 +28,11 @@ inline I3DViewListener::~I3DViewListener()
 class C3DView final : public ui::CwxBaseGLCanvas
 {
 public:
-	C3DView( wxWindow* pParent, CSpriteViewer* const pSpriteViewer, I3DViewListener* pListener = nullptr );
+	C3DView( wxWindow* pParent, CSpriteViewerApp* const pSpriteViewer, I3DViewListener* pListener = nullptr );
 	~C3DView();
 
-	const CSpriteViewer* GetSpriteViewer() const { return m_pSpriteViewer; }
-	CSpriteViewer* GetSpriteViewer() { return m_pSpriteViewer; }
+	const CSpriteViewerApp* GetSpriteViewer() const { return m_pSpriteViewer; }
+	CSpriteViewerApp* GetSpriteViewer() { return m_pSpriteViewer; }
 
 	//Tells the 3D view to prepare for model loading.
 	void PrepareForLoad();
@@ -55,7 +55,7 @@ private:
 	void DrawSprite();
 
 private:
-	CSpriteViewer* const m_pSpriteViewer;
+	CSpriteViewerApp* const m_pSpriteViewer;
 
 	I3DViewListener* m_pListener;
 

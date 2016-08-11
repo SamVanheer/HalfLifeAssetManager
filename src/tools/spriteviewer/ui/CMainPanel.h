@@ -12,7 +12,7 @@ class wxBookCtrlEvent;
 
 namespace sprview
 {
-class CSpriteViewer;
+class CSpriteViewerApp;
 
 class CSpriteListBox;
 
@@ -22,11 +22,11 @@ class CSpriteInfoPanel;
 class CMainPanel final : public wxPanel, public I3DViewListener
 {
 public:
-	CMainPanel( wxWindow* pParent, CSpriteViewer* const pSpriteViewer );
+	CMainPanel( wxWindow* pParent, CSpriteViewerApp* const pSpriteViewer );
 	~CMainPanel();
 
-	const CSpriteViewer* GetSpriteViewer() const { return m_pSpriteViewer; }
-	CSpriteViewer* GetSpriteViewer() { return m_pSpriteViewer; }
+	const CSpriteViewerApp* GetSpriteViewer() const { return m_pSpriteViewer; }
+	CSpriteViewerApp* GetSpriteViewer() { return m_pSpriteViewer; }
 
 	void RunFrame();
 
@@ -66,7 +66,7 @@ protected:
 	}
 
 private:
-	CSpriteViewer* const m_pSpriteViewer;
+	CSpriteViewerApp* const m_pSpriteViewer;
 
 	C3DView* m_p3DView;
 

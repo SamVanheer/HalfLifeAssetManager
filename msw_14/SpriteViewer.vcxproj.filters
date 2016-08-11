@@ -105,9 +105,6 @@
     <ClInclude Include="..\src\tools\shared\Credits.h">
       <Filter>Header Files\tools\shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteViewer.h">
-      <Filter>Header Files\tools\spriteviewer\ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\tools\spriteviewer\ui\CSpriteViewerApp.h">
       <Filter>Header Files\tools\spriteviewer\ui</Filter>
     </ClInclude>
@@ -213,6 +210,12 @@
     <ClInclude Include="..\src\tools\spriteviewer\ui\controlpanels\CSpriteDisplayPanel.h">
       <Filter>Header Files\tools\spriteviewer\ui\controlpanels</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tools\shared\CBaseToolApp.h">
+      <Filter>Header Files\tools\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\shared\CBaseWXToolApp.h">
+      <Filter>Header Files\tools\shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\tools\shared\CBaseTool.cpp">
@@ -220,9 +223,6 @@
     </ClCompile>
     <ClCompile Include="..\src\tools\shared\Credits.cpp">
       <Filter>Source Files\tools\shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteViewer.cpp">
-      <Filter>Source Files\tools\spriteviewer\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tools\spriteviewer\ui\CSpriteViewerApp.cpp">
       <Filter>Source Files\tools\spriteviewer\ui</Filter>
@@ -313,6 +313,12 @@
     </ClCompile>
     <ClCompile Include="..\src\tools\spriteviewer\ui\controlpanels\CSpriteDisplayPanel.cpp">
       <Filter>Source Files\tools\spriteviewer\ui\controlpanels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\shared\CBaseToolApp.cpp">
+      <Filter>Source Files\tools\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\shared\CBaseWXToolApp.cpp">
+      <Filter>Source Files\tools\shared</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

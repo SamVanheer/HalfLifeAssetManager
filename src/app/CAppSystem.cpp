@@ -14,15 +14,32 @@ namespace app
 {
 bool CAppSystem::Run( int iArgc, wchar_t* pszArgV[] )
 {
-	const bool bResult = Startup();
+	bool bResult = Start();
+
+	if( bResult )
+	{
+		RunApp( iArgc, pszArgV );
+	}
+
+	OnShutdown();
+
+	return bResult;
+}
+
+bool CAppSystem::Start()
+{
+	bool bResult = Startup();
 
 	if( bResult )
 	{
 		m_State = AppState::RUNNING;
-
-		RunApp( iArgc, pszArgV );
 	}
 
+	return bResult;
+}
+
+void CAppSystem::OnShutdown()
+{
 	m_State = AppState::SHUTTING_DOWN;
 
 	ShutdownApp();
@@ -30,8 +47,6 @@ bool CAppSystem::Run( int iArgc, wchar_t* pszArgV[] )
 	Shutdown();
 
 	m_State = AppState::SHUT_DOWN;
-
-	return bResult;
 }
 
 bool CAppSystem::Startup()

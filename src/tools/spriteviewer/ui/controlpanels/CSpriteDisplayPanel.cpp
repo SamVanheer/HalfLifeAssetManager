@@ -2,7 +2,7 @@
 
 #include <wx/gbsizer.h>
 
-#include "../CSpriteViewer.h"
+#include "../CSpriteViewerApp.h"
 
 #include "game/entity/CSpriteEntity.h"
 
@@ -31,7 +31,7 @@ namespace
 static const wxString USE_SPRITE_SETTING_STRING( "Use Sprite Setting" );
 }
 
-CSpriteDisplayPanel::CSpriteDisplayPanel( wxWindow* pParent, CSpriteViewer* pHLSV )
+CSpriteDisplayPanel::CSpriteDisplayPanel( wxWindow* pParent, CSpriteViewerApp* pHLSV )
 	: CBaseControlPanel( pParent, "Sprite Display", pHLSV )
 {
 	{

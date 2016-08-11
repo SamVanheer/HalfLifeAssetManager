@@ -10,17 +10,17 @@
 
 namespace sprview
 {
-class CSpriteViewer;
+class CSpriteViewerApp;
 class CMainPanel;
 
 class CMainWindow final : public ui::CwxBaseFrame
 {
 public:
-	CMainWindow( CSpriteViewer* const pSpriteViewer );
+	CMainWindow( CSpriteViewerApp* const pSpriteViewer );
 	~CMainWindow();
 
-	const CSpriteViewer* GetSpriteViewer() const { return m_pSpriteViewer; }
-	CSpriteViewer* GetSpriteViewer() { return m_pSpriteViewer; }
+	const CSpriteViewerApp* GetSpriteViewer() const { return m_pSpriteViewer; }
+	CSpriteViewerApp* GetSpriteViewer() { return m_pSpriteViewer; }
 
 	void RunFrame();
 
@@ -46,6 +46,7 @@ private:
 	void LoadBackgroundTexture( wxCommandEvent& event );
 	void SaveSprite( wxCommandEvent& event );
 	void OpenRecentFile( wxCommandEvent& event );
+	void OnClose( wxCloseEvent& event );
 	void OnExit( wxCommandEvent& event );
 
 	void TakeScreenshot( wxCommandEvent& event );
@@ -58,7 +59,7 @@ private:
 	void OnMessagesWindowClosed( wxCloseEvent& event );
 
 private:
-	CSpriteViewer* m_pSpriteViewer;
+	CSpriteViewerApp* m_pSpriteViewer;
 	CMainPanel* m_pMainPanel;
 
 	ui::CwxRecentFiles m_RecentFiles;

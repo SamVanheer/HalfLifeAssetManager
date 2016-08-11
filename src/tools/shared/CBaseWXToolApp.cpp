@@ -1,10 +1,22 @@
-#include "ui/wx/wxInclude.h"
-
 #include "core/shared/Platform.h"
 
-#include "ui/wx/CwxOpenGL.h"
+#include "core/shared/Logging.h"
+
+#include "core/shared/Utility.h"
+#include "core/shared/CWorldTime.h"
+
+#include "cvar/CVar.h"
+
+#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
+#include "soundsystem/shared/ISoundSystem.h"
+
+#include "ui/wx/wxLogging.h"
+
+#include "ui/wx/shared/CMessagesWindow.h"
 
 #include "CBaseWXToolApp.h"
+
+extern studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer;
 
 namespace tools
 {
@@ -16,14 +28,6 @@ bool CBaseWXToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t 
 	wxInitAllImageHandlers();
 
 	return true;
-}
-
-bool CBaseWXToolApp::RunApp( int iArgc, wchar_t* pszArgV[] )
-{
-	if( !PreRunApp( iArgc, pszArgV ) )
-		return false;
-
-	return RunWXApp( iArgc, pszArgV );
 }
 
 bool CBaseWXToolApp::InitOpenGL()
@@ -48,6 +52,16 @@ bool CBaseWXToolApp::InitOpenGL()
 	return true;
 }
 
+void CBaseWXToolApp::ShutdownOpenGL()
+{
+	if( CwxOpenGL::InstanceExists() )
+	{
+		wxOpenGL().Shutdown();
+
+		CwxOpenGL::DestroyInstance();
+	}
+}
+
 void CBaseWXToolApp::GetGLCanvasAttributes( wxGLAttributes& attrs )
 {
 	attrs
@@ -70,17 +84,159 @@ void CBaseWXToolApp::GetGLContextAttributes( wxGLContextAttrs& attrs )
 		.EndList();
 }
 
-bool CBaseWXToolApp::RunWXApp( int iArgc, wchar_t* pszArgV[] )
+bool CBaseWXToolApp::OnInit()
 {
-	int iReturnCode;
+	//Install the wxWidgets specific default log listener.
+	SetDefaultLogListener( GetwxDefaultLogListener() );
 
-#ifdef __WXMSW__
-	//TODO: could probably pass this in instead of using a hack. - Solokiller
-	iReturnCode = wxEntry( static_cast<HINSTANCE>( HINST_THISCOMPONENT ), NULL, nullptr, 1 );
-#else
-	iReturnCode = wxEntry( iArgc, pszArgV );
-#endif
+	const bool bResult = [ = ]
+	{
+		if( !Start() )
+			return false;
 
-	return iReturnCode == 0;
+		if( !PreRunApp() )
+			return false;
+
+		return true;
+	}();
+
+	if( !bResult )
+	{
+		OnShutdown();
+
+		return false;
+	}
+
+	wxApp::Connect( wxEVT_IDLE, wxIdleEventHandler( CBaseWXToolApp::OnIdle ) );
+
+	return true;
+}
+
+int CBaseWXToolApp::OnExit()
+{
+	wxApp::Disconnect( wxEVT_IDLE, wxIdleEventHandler( CBaseWXToolApp::OnIdle ) );
+
+	OnShutdown();
+
+	UseMessagesWindow( false );
+
+	return wxApp::OnExit();
+}
+
+void CBaseWXToolApp::Exit( const bool bMainWndClosed )
+{
+	//Don't call multiple times.
+	if( m_bExiting )
+		return;
+
+	m_bExiting = true;
+
+	//Close messages window if needed.
+	UseMessagesWindow( false );
+
+	//Don't let any log message boxes pop up during shutdown.
+	logging().SetLogListener( GetNullLogListener() );
+
+	OnExit( bMainWndClosed );
+}
+
+void CBaseWXToolApp::OnWindowClose( wxFrame* pWindow, wxCloseEvent& event )
+{
+	if( pWindow == m_pMessagesWindow )
+	{
+		if( !event.CanVeto() )
+		{
+			MessagesWindowClosed();
+		}
+	}
+}
+
+void CBaseWXToolApp::UseMessagesWindow( const bool bUse )
+{
+	//Don't allow creation during exit.
+	if( bUse && m_bExiting )
+		return;
+
+	//No change
+	if( bUse == ( m_pMessagesWindow != nullptr ) )
+		return;
+
+	if( bUse )
+	{
+		m_pMessagesWindow = new ui::CMessagesWindow( m_uiMaxMessagesCount, this );
+
+		m_pMessagesWindow->SetIcon( GetToolIcon() );
+		
+		logging().SetLogListener( m_pMessagesWindow );
+	}
+	else
+	{
+		m_pMessagesWindow->Close( true );
+
+		//Don't call MessagesWindowClosed; Close calls this.
+	}
+}
+
+void CBaseWXToolApp::ShowMessagesWindow( const bool bShow )
+{
+	if( !m_pMessagesWindow )
+		return;
+
+	m_pMessagesWindow->Show( bShow );
+}
+
+size_t CBaseWXToolApp::GetMaxMessagesCount() const
+{
+	if( !m_pMessagesWindow )
+		return m_uiMaxMessagesCount;
+
+	return m_pMessagesWindow->GetMaxMessagesCount();
+}
+
+void CBaseWXToolApp::SetMaxMessagesCount( const size_t uiMaxMessagesCount )
+{
+	m_uiMaxMessagesCount = uiMaxMessagesCount;
+
+	if( m_pMessagesWindow )
+	{
+		m_pMessagesWindow->SetMaxMessagesCount( uiMaxMessagesCount );
+	}
+}
+
+void CBaseWXToolApp::MessagesWindowClosed()
+{
+	m_pMessagesWindow = nullptr;
+
+	logging().SetLogListener( nullptr );
+}
+
+void CBaseWXToolApp::OnIdle( wxIdleEvent& event )
+{
+	event.RequestMore();
+
+	const double flCurTime = GetCurrentTime();
+
+	double flFrameTime = flCurTime - WorldTime.GetPreviousRealTime();
+
+	WorldTime.SetRealTime( flCurTime );
+
+	if( flFrameTime > 1.0 )
+		flFrameTime = 0.1;
+
+	//Don't use this when using wxTimer, since it lowers the FPS by a fair amount.
+	/*
+	if( flFrameTime < ( 1.0 / GetSettings()->GetFPS() ) )
+	return;
+	*/
+
+	WorldTime.TimeChanged( flCurTime );
+
+	g_pCVar->RunFrame();
+
+	g_pStudioMdlRenderer->RunFrame();
+
+	GetSoundSystem()->RunFrame();
+
+	RunFrame();
 }
 }

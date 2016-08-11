@@ -7,7 +7,7 @@
 
 namespace sprview
 {
-class CSpriteViewer;
+class CSpriteViewerApp;
 
 class CBaseControlPanel : public wxPanel
 {
@@ -16,8 +16,8 @@ public:
 
 	const wxString& GetPanelName() const { return m_szName; }
 
-	const CSpriteViewer* GetHLSV() const { return m_pHLSV; }
-	CSpriteViewer* GetHLSV() { return m_pHLSV; }
+	const CSpriteViewerApp* GetHLSV() const { return m_pHLSV; }
+	CSpriteViewerApp* GetHLSV() { return m_pHLSV; }
 
 	virtual void InitializeUI() {}
 
@@ -37,7 +37,7 @@ public:
 	virtual void PanelDeactivated() {}
 
 protected:
-	CBaseControlPanel( wxWindow* pParent, const wxString& szName, CSpriteViewer* const pHLSV );
+	CBaseControlPanel( wxWindow* pParent, const wxString& szName, CSpriteViewerApp* const pHLSV );
 
 	/**
 	*	Gets the window to use as the direct parent for child elements.
@@ -50,7 +50,7 @@ protected:
 	wxSizer* GetMainSizer() { return m_pMainSizer; }
 
 protected:
-	CSpriteViewer* const m_pHLSV;
+	CSpriteViewerApp* const m_pHLSV;
 
 private:
 	const wxString m_szName;

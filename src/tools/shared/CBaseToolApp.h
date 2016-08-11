@@ -57,8 +57,6 @@ protected:
 
 	bool Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories ) override;
 
-	bool RunApp( int iArgc, wchar_t* pszArgV[] ) = 0;
-
 	void ShutdownApp() override;
 
 	/**
@@ -66,6 +64,11 @@ protected:
 	*	@return true on success, false otherwise.
 	*/
 	virtual bool InitOpenGL() = 0;
+
+	/**
+	*	Shuts down OpenGL. This is GUI specific at the moment.
+	*/
+	virtual void ShutdownOpenGL() = 0;
 
 private:
 	std::string m_szLogFilename;

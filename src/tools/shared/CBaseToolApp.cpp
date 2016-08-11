@@ -96,6 +96,11 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 		return false;
 	}
 
+	if( !InitOpenGL() )
+	{
+		return false;
+	}
+
 	if( !m_pRendererLib->Connect( pFactories, uiNumFactories ) )
 	{
 		//TODO: use fatal error.
@@ -132,6 +137,7 @@ void CBaseToolApp::ShutdownApp()
 	if( m_pSoundSystem )
 	{
 		m_pSoundSystem->Shutdown();
+		m_pSoundSystem->Disconnect();
 		m_pSoundSystem = nullptr;
 	}
 
@@ -152,6 +158,8 @@ void CBaseToolApp::ShutdownApp()
 		m_pRendererLib = nullptr;
 	}
 
+	ShutdownOpenGL();
+
 	if( m_pFileSystem )
 	{
 		m_pFileSystem->Shutdown();
@@ -163,5 +171,7 @@ void CBaseToolApp::ShutdownApp()
 		g_pCVar->Shutdown();
 		g_pCVar = nullptr;
 	}
+
+	//Don't close the log file just yet. It'll be closed when the program is unloaded, so anything that happens between now and then should be logged.
 }
 }

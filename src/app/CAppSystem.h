@@ -49,6 +49,16 @@ public:
 	*/
 	bool Run( int iArgc, wchar_t* pszArgV[] );
 
+	/**
+	*	Starts the app.
+	*/
+	bool Start();
+
+	/**
+	*	Should be called on shutdown.
+	*/
+	void OnShutdown();
+
 private:
 	/**
 	*	Starts up the application.
@@ -88,12 +98,12 @@ protected:
 	virtual bool Initialize() { return true; }
 
 	/**
-	*	Run the app.
+	*	Run the app. Only called if the GUI isn't running the main loop.
 	*	@param iArgc Argument count.
 	*	@param pszArgV Argument vector.
 	*	@return true on success, false otherwise.
 	*/
-	virtual bool RunApp( int iArgc, wchar_t* pszArgV[] ) = 0;
+	virtual bool RunApp( int iArgc, wchar_t* pszArgV[] ) { return false; }
 
 	/**
 	*	Lets the app clean up on shutdown.

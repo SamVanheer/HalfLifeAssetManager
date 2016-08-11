@@ -5,7 +5,7 @@
 #include "ui/wx/shared/CMessagesWindow.h"
 #include "ui/wx/utility/wxUtil.h"
 
-#include "CSpriteViewer.h"
+#include "CSpriteViewerApp.h"
 
 #include "game/entity/CSpriteEntity.h"
 
@@ -21,6 +21,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, ui::CwxBaseFrame )
 	EVT_MENU( wxID_MAINWND_LOADSPRITE, CMainWindow::LoadSprite )
 	EVT_MENU( wxID_MAINWND_LOADBACKGROUND, CMainWindow::LoadBackgroundTexture )
 	EVT_MENU( wxID_MAINWND_SAVESPRITE, CMainWindow::SaveSprite )
+	EVT_CLOSE( CMainWindow::OnClose )
 	EVT_MENU( wxID_EXIT, CMainWindow::OnExit )
 	EVT_MENU( wxID_MAINWND_TAKESCREENSHOT, CMainWindow::TakeScreenshot )
 	EVT_MENU( wxID_MAINWND_DUMPSPRITEINFO, CMainWindow::DumpSpriteInfo )
@@ -28,7 +29,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, ui::CwxBaseFrame )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
 wxEND_EVENT_TABLE()
 
-CMainWindow::CMainWindow( CSpriteViewer* const pSpriteViewer )
+CMainWindow::CMainWindow( CSpriteViewerApp* const pSpriteViewer )
 	: CwxBaseFrame( nullptr, wxID_ANY, SPRITEVIEWER_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pSpriteViewer( pSpriteViewer )
 	, m_RecentFiles( pSpriteViewer->GetSettings()->GetRecentFiles() )
@@ -268,6 +269,11 @@ void CMainWindow::OpenRecentFile( wxCommandEvent& event )
 	}
 
 	LoadSprite( szFilename );
+}
+
+void CMainWindow::OnClose( wxCloseEvent& event )
+{
+	Destroy();
 }
 
 void CMainWindow::OnExit( wxCommandEvent& event )

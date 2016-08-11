@@ -2,7 +2,7 @@
 
 namespace sprview
 {
-CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName, CSpriteViewer* const pHLSV )
+CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName, CSpriteViewerApp* const pHLSV )
 	: wxPanel( pParent )
 	, m_szName( szName )
 	, m_pHLSV( pHLSV )

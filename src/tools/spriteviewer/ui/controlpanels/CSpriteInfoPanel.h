@@ -8,7 +8,7 @@ namespace sprview
 class CSpriteInfoPanel : public CBaseControlPanel
 {
 public:
-	CSpriteInfoPanel( wxWindow* pParent, CSpriteViewer* pHLSV );
+	CSpriteInfoPanel( wxWindow* pParent, CSpriteViewerApp* pHLSV );
 
 	void InitializeUI() override;
 

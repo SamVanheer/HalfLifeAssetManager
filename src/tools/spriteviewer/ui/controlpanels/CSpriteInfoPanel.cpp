@@ -1,4 +1,4 @@
-#include "../CSpriteViewer.h"
+#include "../CSpriteViewerApp.h"
 
 #include "game/entity/CSpriteEntity.h"
 
@@ -8,7 +8,7 @@
 
 namespace sprview
 {
-CSpriteInfoPanel::CSpriteInfoPanel( wxWindow* pParent, CSpriteViewer* pHLSV )
+CSpriteInfoPanel::CSpriteInfoPanel( wxWindow* pParent, CSpriteViewerApp* pHLSV )
 	: CBaseControlPanel( pParent, "Sprite Info", pHLSV )
 {
 	m_pInfoPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );

@@ -15,7 +15,7 @@ private:
 	static const int SCALE_DEFAULT = 4;
 
 public:
-	CSpriteDisplayPanel( wxWindow* pParent, CSpriteViewer* pHLSV );
+	CSpriteDisplayPanel( wxWindow* pParent, CSpriteViewerApp* pHLSV );
 
 	void InitializeUI() override;
 
