@@ -74,7 +74,16 @@ public:
 	/**
 	*	Finds a command by name.
 	*/
+	virtual const CBaseConCommand* FindCommand( const char* const pszName ) const = 0;
+
+	/**
+	*	Finds a command by name.
+	*/
 	virtual CBaseConCommand* FindCommand( const char* const pszName ) = 0;
+
+	virtual const char* GetCVarString( const char* const pszCVar ) const = 0;
+
+	virtual float GetCVarFloat( const char* const pszCVar ) const = 0;
 
 	virtual void SetCVarString( const char* const pszCVar, const char* const pszValue ) = 0;
 

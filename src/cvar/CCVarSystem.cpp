@@ -316,7 +316,7 @@ void CCVarSystem::Execute()
 	}
 }
 
-CBaseConCommand* CCVarSystem::FindCommand( const char* const pszName )
+const CBaseConCommand* CCVarSystem::FindCommand( const char* const pszName ) const
 {
 	assert( pszName );
 
@@ -333,7 +333,12 @@ CBaseConCommand* CCVarSystem::FindCommand( const char* const pszName )
 	return it->second;
 }
 
-CCVar* CCVarSystem::GetCVarForSet( const char* const pszCVar )
+CBaseConCommand* CCVarSystem::FindCommand( const char* const pszName )
+{
+	return const_cast<CBaseConCommand*>( const_cast<const CCVarSystem* const>( this )->FindCommand( pszName ) );
+}
+
+const CCVar* CCVarSystem::GetCVarWarn( const char* const pszCVar ) const
 {
 	assert( pszCVar );
 
@@ -351,14 +356,34 @@ CCVar* CCVarSystem::GetCVarForSet( const char* const pszCVar )
 		return nullptr;
 	}
 
-	return static_cast<CCVar*>( pCommand );
+	return static_cast<const CCVar*>( pCommand );
+}
+
+const char* CCVarSystem::GetCVarString( const char* const pszCVar ) const
+{
+	const CCVar* pCVar = GetCVarWarn( pszCVar );
+
+	if( !pCVar )
+		return "";
+
+	return pCVar->GetString();
+}
+
+float CCVarSystem::GetCVarFloat( const char* const pszCVar ) const
+{
+	const CCVar* pCVar = GetCVarWarn( pszCVar );
+
+	if( !pCVar )
+		return 0;
+
+	return pCVar->GetFloat();
 }
 
 void CCVarSystem::SetCVarString( const char* const pszCVar, const char* const pszValue )
 {
 	assert( pszValue );
 
-	CCVar* pCVar = GetCVarForSet( pszCVar );
+	CCVar* pCVar = const_cast<CCVar*>( GetCVarWarn( pszCVar ) );
 
 	if( !pCVar )
 		return;
@@ -368,7 +393,7 @@ void CCVarSystem::SetCVarString( const char* const pszCVar, const char* const ps
 
 void CCVarSystem::SetCVarFloat( const char* const pszCVar, const float flValue )
 {
-	CCVar* pCVar = GetCVarForSet( pszCVar );
+	CCVar* pCVar = const_cast<CCVar*>( GetCVarWarn( pszCVar ) );
 
 	if( !pCVar )
 		return;

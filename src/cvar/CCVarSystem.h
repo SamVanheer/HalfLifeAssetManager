@@ -54,12 +54,18 @@ public:
 
 	void Execute() override final;
 
+	const CBaseConCommand* FindCommand( const char* const pszName ) const override final;
+
 	CBaseConCommand* FindCommand( const char* const pszName ) override final;
 
 private:
-	CCVar* GetCVarForSet( const char* const pszCVar );
+	const CCVar* GetCVarWarn( const char* const pszCVar ) const;
 
 public:
+	const char* GetCVarString( const char* const pszCVar ) const override final;
+
+	float GetCVarFloat( const char* const pszCVar ) const override final;
+
 	void SetCVarString( const char* const pszCVar, const char* const pszValue ) override final;
 
 	void SetCVarFloat( const char* const pszCVar, const float flValue ) override final;
