@@ -99,6 +99,7 @@
     <ClCompile Include="..\src\stdlib\utility\IOUtils.cpp" />
     <ClCompile Include="..\src\stdlib\utility\mathlib.cpp" />
     <ClCompile Include="..\src\stdlib\utility\PlatUtils.cpp" />
+    <ClCompile Include="..\src\stdlib\utility\StringUtils.cpp" />
     <ClCompile Include="..\src\stdlib\utility\Tokenization.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

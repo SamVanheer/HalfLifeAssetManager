@@ -57,4 +57,23 @@ struct EqualTo_C_String final
 	}
 };
 
+/**
+*	Works like strstr, but the substring length is given.
+*/
+const char* strnstr( const char* pszString, const char* pszSubString, const size_t uiLength );
+
+/**
+*	Works like strrstr, but the substring length is given.
+*/
+const char* strnrstr( const char* pszString, const char* pszSubString, const size_t uiLength );
+
+/**
+*	Checks whether a token matches a string.
+*	The token can have '*' characters to signal 0 or more characters that can span the space between given characters.
+*	@param pszString String to match against.
+*	@param pszToken Token to match.
+*	@return Whether the token matches.
+*/
+bool UTIL_TokenMatches( const char* pszString, const char* pszToken );
+
 #endif //STDLIB_STRINGUTILS_H

@@ -326,5 +326,8 @@
     <ClCompile Include="..\src\stdlib\utility\PlatUtils.cpp">
       <Filter>Source Files\stdlib\utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\stdlib\utility\StringUtils.cpp">
+      <Filter>Source Files\stdlib\utility</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
