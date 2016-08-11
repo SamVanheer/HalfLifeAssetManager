@@ -129,8 +129,10 @@ void CAttachmentsPanel::SetAttachment( int iIndex )
 
 	const auto attachment = pStudioHdr->GetAttachment( iIndex );
 
-	//TODO: use some other means of indicating that the name is empty so the name (empty) can't be confusing.
+	//Signal empty names by setting it to (empty) and making it red.
 	m_pName->SetLabelText( wxString::Format( "Name: %s", *attachment->name ? attachment->name : "(empty)" ) );
+	m_pName->SetForegroundColour( *attachment->name ? wxColor( 0, 0, 0 ) : wxColor( 255, 0, 0 ) );
+
 	m_pType->SetLabelText( wxString::Format( "Type: %d", attachment->type ) );
 	m_pBone->SetLabelText( wxString::Format( "Bone: %d", attachment->bone ) );
 	m_pOrigin->SetLabelText( wxString::Format( "Origin: %f %f %f", attachment->org.x, attachment->org.y, attachment->org.z ) );
