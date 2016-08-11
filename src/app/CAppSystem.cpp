@@ -118,6 +118,14 @@ bool CAppSystem::Startup()
 		return false;
 	}
 
+	m_State = AppState::INITIALIZING;
+
+	if( !Initialize() )
+	{
+		Error( "CAppSystem::Startup: Failed to initialize app!\n" );
+		return false;
+	}
+
 	return true;
 }
 
