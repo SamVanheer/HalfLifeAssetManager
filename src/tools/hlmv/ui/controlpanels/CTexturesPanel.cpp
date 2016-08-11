@@ -12,7 +12,7 @@
 
 #include "shared/studiomodel/CStudioModel.h"
 
-#include "../CHLMV.h"
+#include "../CModelViewerApp.h"
 #include "../../CHLMVState.h"
 
 #include "CTexturesPanel.h"
@@ -29,7 +29,7 @@ wxBEGIN_EVENT_TABLE( CTexturesPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_TEX_EXPORTUVMAP, CTexturesPanel::ExportUVMap )
 wxEND_EVENT_TABLE()
 
-CTexturesPanel::CTexturesPanel( wxWindow* pParent, CHLMV* const pHLMV )
+CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	: CBaseControlPanel( pParent, "Textures", pHLMV )
 {
 	//Helps catch errors if we miss one.

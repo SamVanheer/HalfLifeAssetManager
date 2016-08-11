@@ -15,7 +15,7 @@ struct CModelRenderInfo;
 
 namespace hlmv
 {
-class CHLMV;
+class CModelViewerApp;
 
 class CBaseControlPanel : public wxPanel
 {
@@ -24,8 +24,8 @@ public:
 
 	const wxString& GetPanelName() const { return m_szName; }
 
-	const CHLMV* GetHLMV() const { return m_pHLMV; }
-	CHLMV* GetHLMV() { return m_pHLMV; }
+	const CModelViewerApp* GetHLMV() const { return m_pHLMV; }
+	CModelViewerApp* GetHLMV() { return m_pHLMV; }
 
 	/**
 	*	Returns a bit vector containing all of the allowed mouse operations.
@@ -53,7 +53,7 @@ public:
 	virtual void PanelDeactivated() {}
 
 protected:
-	CBaseControlPanel( wxWindow* pParent, const wxString& szName, CHLMV* const pHLMV );
+	CBaseControlPanel( wxWindow* pParent, const wxString& szName, CModelViewerApp* const pHLMV );
 
 	/**
 	*	Gets the window to use as the direct parent for child elements.
@@ -66,7 +66,7 @@ protected:
 	wxSizer* GetMainSizer() { return m_pMainSizer; }
 
 protected:
-	CHLMV* const m_pHLMV;
+	CModelViewerApp* const m_pHLMV;
 
 private:
 	const wxString m_szName;

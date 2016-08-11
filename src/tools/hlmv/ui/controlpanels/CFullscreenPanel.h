@@ -10,7 +10,7 @@ class CMainPanel;
 class CFullscreenPanel final : public CBaseControlPanel
 {
 public:
-	CFullscreenPanel( wxWindow* pParent, CHLMV* const pHLMV, CMainPanel* const pMainPanel );
+	CFullscreenPanel( wxWindow* pParent, CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel );
 	~CFullscreenPanel();
 
 protected:

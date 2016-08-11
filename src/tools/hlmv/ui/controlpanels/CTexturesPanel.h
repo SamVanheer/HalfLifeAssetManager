@@ -46,7 +46,7 @@ public:
 	};
 
 public:
-	CTexturesPanel( wxWindow* pParent, CHLMV* const pHLMV );
+	CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV );
 	~CTexturesPanel();
 
 	MouseOpFlags_t GetAllowedMouseOperations() const override final { return MOUSEOPF_NONE; }

@@ -1,6 +1,6 @@
 #include <wx/gbsizer.h>
 
-#include "../CHLMV.h"
+#include "../CModelViewerApp.h"
 #include "../../CHLMVState.h"
 
 #include "CBodyPartsPanel.h"
@@ -15,7 +15,7 @@ wxBEGIN_EVENT_TABLE( CBodyPartsPanel, CBaseControlPanel )
 	EVT_SLIDER( wxID_BODY_CONTROLLER_SLIDER, CBodyPartsPanel::ControllerSliderChanged )
 wxEND_EVENT_TABLE()
 
-CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CHLMV* const pHLMV )
+CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	: CBaseControlPanel( pParent, "Body Parts", pHLMV )
 {
 	wxWindow* const pElemParent = GetElementParent();

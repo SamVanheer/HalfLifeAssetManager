@@ -2,7 +2,7 @@
 
 #include "../CFullscreenWindow.h"
 
-#include "../CHLMV.h"
+#include "../CModelViewerApp.h"
 
 #include "CFullscreenPanel.h"
 
@@ -12,7 +12,7 @@ wxBEGIN_EVENT_TABLE( CFullscreenPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_FULLSCREEN_GO, CFullscreenPanel::GoFullscreen )
 wxEND_EVENT_TABLE()
 
-CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, CHLMV* const pHLMV, CMainPanel* const pMainPanel )
+CFullscreenPanel::CFullscreenPanel( wxWindow* pParent, CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel )
 	: CBaseControlPanel( pParent, "Fullscreen", pHLMV )
 	, m_pMainPanel( pMainPanel )
 {

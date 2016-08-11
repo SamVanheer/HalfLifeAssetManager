@@ -3,7 +3,7 @@
 #include <wx/spinctrl.h>
 #include <wx/gbsizer.h>
 
-#include "../CHLMV.h"
+#include "../CModelViewerApp.h"
 
 #include "ui/wx/shared/CFOVCtrl.h"
 #include "ui/wx/utility/wxUtil.h"
@@ -28,7 +28,7 @@ wxEND_EVENT_TABLE()
 //Client data for the mirror checkboxes
 static const size_t MIRROR[ 3 ] = { 0, 1, 2 };
 
-CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV )
+CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	: CBaseControlPanel( pParent, "Model Display", pHLMV )
 {
 	//Helps catch errors if we miss one.

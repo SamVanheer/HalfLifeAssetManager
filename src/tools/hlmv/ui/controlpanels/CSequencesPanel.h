@@ -32,7 +32,7 @@ private:
 	static const int GUIDELINES_EDGE_WIDTH = 4;
 
 public:
-	CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV );
+	CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV );
 	~CSequencesPanel();
 
 	void Draw3D( const wxSize& size ) override;

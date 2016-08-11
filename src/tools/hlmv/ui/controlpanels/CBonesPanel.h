@@ -18,7 +18,7 @@ public:
 	*	@param pParent Parent window.
 	*	@param pHLMV HLMV instance.
 	*/
-	CBonesPanel( wxWindow* pParent, CHLMV* const pHLMV );
+	CBonesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV );
 
 	/**
 	*	Destructor.

@@ -224,10 +224,11 @@ void CBaseWXToolApp::OnIdle( wxIdleEvent& event )
 		flFrameTime = 0.1;
 
 	//Don't use this when using wxTimer, since it lowers the FPS by a fair amount.
+	//TODO: implement frame limiter using cvar, removing fps setting from settings class - Solokiller
 	/*
-	if( flFrameTime < ( 1.0 / GetSettings()->GetFPS() ) )
-	return;
-	*/
+	if( flFrameTime < ( 1.0 / 60.0f ) )
+		return;
+		*/
 
 	WorldTime.TimeChanged( flCurTime );
 

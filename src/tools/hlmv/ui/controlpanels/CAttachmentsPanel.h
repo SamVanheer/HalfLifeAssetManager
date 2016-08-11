@@ -18,7 +18,7 @@ public:
 	*	@param pParent Parent window.
 	*	@param pHLMV HLMV instance.
 	*/
-	CAttachmentsPanel( wxWindow* pParent, CHLMV* const pHLMV );
+	CAttachmentsPanel( wxWindow* pParent, CModelViewerApp* const pHLMV );
 
 	/**
 	*	Destructor.

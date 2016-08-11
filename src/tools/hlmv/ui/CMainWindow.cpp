@@ -7,7 +7,7 @@
 #include "ui/wx/shared/CProcessDialog.h"
 #include "ui/wx/utility/wxUtil.h"
 
-#include "CHLMV.h"
+#include "CModelViewerApp.h"
 
 #include "options/COptionsDialog.h"
 
@@ -41,7 +41,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, ui::CwxBaseFrame )
 	EVT_MENU( wxID_ABOUT, CMainWindow::OnAbout )
 wxEND_EVENT_TABLE()
 
-CMainWindow::CMainWindow( CHLMV* const pHLMV )
+CMainWindow::CMainWindow( CModelViewerApp* const pHLMV )
 	: CwxBaseFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
 	, m_RecentFiles( pHLMV->GetSettings()->GetRecentFiles() )

@@ -16,7 +16,7 @@ class wxBookCtrlEvent;
 
 namespace hlmv
 {
-class CHLMV;
+class CModelViewerApp;
 
 class CModelDisplayPanel;
 class CBodyPartsPanel;
@@ -68,11 +68,11 @@ public:
 	static const glm::vec3 DEFAULT_LIGHT_VECTOR;
 
 public:
-	CMainPanel( wxWindow* pParent, CHLMV* const pHLMV );
+	CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV );
 	~CMainPanel();
 
-	const CHLMV* GetHLMV() const { return m_pHLMV; }
-	CHLMV* GetHLMV() { return m_pHLMV; }
+	const CModelViewerApp* GetHLMV() const { return m_pHLMV; }
+	CModelViewerApp* GetHLMV() { return m_pHLMV; }
 
 	void RunFrame();
 
@@ -134,7 +134,7 @@ private:
 	void ResetLightVector( wxCommandEvent& event );
 
 private:
-	CHLMV* const m_pHLMV;
+	CModelViewerApp* const m_pHLMV;
 
 	C3DView* m_p3DView;
 

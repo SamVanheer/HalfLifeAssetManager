@@ -16,7 +16,7 @@ class CStudioModelEntity;
 
 namespace hlmv
 {
-class CHLMV;
+class CModelViewerApp;
 class CMainPanel;
 
 class I3DViewListener
@@ -34,11 +34,11 @@ inline I3DViewListener::~I3DViewListener()
 class C3DView final : public ui::CwxBase3DView
 {
 public:
-	C3DView( wxWindow* pParent, CHLMV* const pHLMV, CMainPanel* const pMainPanel, I3DViewListener* pListener = nullptr );
+	C3DView( wxWindow* pParent, CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel, I3DViewListener* pListener = nullptr );
 	~C3DView();
 
-	const CHLMV* GetHLMV() const { return m_pHLMV; }
-	CHLMV* GetHLMV() { return m_pHLMV; }
+	const CModelViewerApp* GetHLMV() const { return m_pHLMV; }
+	CModelViewerApp* GetHLMV() { return m_pHLMV; }
 
 	//Tells the 3D view to prepare for model loading.
 	void PrepareForLoad();
@@ -95,7 +95,7 @@ private:
 	void DrawModel();
 
 private:
-	CHLMV* const m_pHLMV;
+	CModelViewerApp* const m_pHLMV;
 
 	CMainPanel* const m_pMainPanel;
 

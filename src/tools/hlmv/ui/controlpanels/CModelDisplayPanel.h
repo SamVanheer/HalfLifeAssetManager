@@ -59,7 +59,7 @@ public:
 	static const size_t OPACITY_DEFAULT = OPACITY_MAX;
 
 public:
-	CModelDisplayPanel( wxWindow* pParent, CHLMV* const pHLMV );
+	CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* const pHLMV );
 	~CModelDisplayPanel();
 
 	void InitializeUI() override;

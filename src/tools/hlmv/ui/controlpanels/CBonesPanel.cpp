@@ -5,7 +5,7 @@
 
 #include "tools/shared/ui/CStudioTypesCheatSheet.h"
 
-#include "../CHLMV.h"
+#include "../CModelViewerApp.h"
 #include "../../CHLMVState.h"
 
 #include "CBonesPanel.h"
@@ -20,7 +20,7 @@ wxBEGIN_EVENT_TABLE( CBonesPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_BONES_SHOWTYPESCHEATSHEET, CBonesPanel::OnShowTypesCheatSheet )
 wxEND_EVENT_TABLE()
 
-CBonesPanel::CBonesPanel( wxWindow* pParent, CHLMV* const pHLMV )
+CBonesPanel::CBonesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	: CBaseControlPanel( pParent, "Bones", pHLMV )
 {
 	auto pElemParent = GetElementParent();

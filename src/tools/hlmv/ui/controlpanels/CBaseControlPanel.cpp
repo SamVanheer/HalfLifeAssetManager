@@ -2,7 +2,7 @@
 
 namespace hlmv
 {
-CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName, CHLMV* const pHLMV )
+CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName, CModelViewerApp* const pHLMV )
 	: wxPanel( pParent )
 	, m_szName( szName )
 	, m_pHLMV( pHLMV )

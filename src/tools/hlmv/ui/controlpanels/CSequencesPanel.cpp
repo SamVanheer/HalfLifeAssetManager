@@ -11,7 +11,7 @@
 
 #include "ui/wx/shared/CEditEventsDialog.h"
 
-#include "../CHLMV.h"
+#include "../CModelViewerApp.h"
 #include "../../settings/CHLMVSettings.h"
 #include "../../CHLMVState.h"
 
@@ -34,7 +34,7 @@ wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_SEQUENCE_ORIGIN, CSequencesPanel::TestOrigin )
 wxEND_EVENT_TABLE()
 
-CSequencesPanel::CSequencesPanel( wxWindow* pParent, CHLMV* const pHLMV )
+CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	: CBaseControlPanel( pParent, "Sequences", pHLMV )
 {
 	wxWindow* const pElemParent = GetElementParent();

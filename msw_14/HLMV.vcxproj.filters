@@ -141,9 +141,6 @@
     <ClCompile Include="..\src\tools\hlmv\ui\CFullscreenWindow.cpp">
       <Filter>Source Files\tools\hlmv\ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\tools\hlmv\ui\CHLMV.cpp">
-      <Filter>Source Files\tools\hlmv\ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\tools\hlmv\ui\CMainPanel.cpp">
       <Filter>Source Files\tools\hlmv\ui</Filter>
     </ClCompile>
@@ -267,6 +264,12 @@
     <ClCompile Include="..\src\ui\wx\shared\CEditCmdLineConfigDialog.cpp">
       <Filter>Source Files\ui\wx\shared</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\tools\shared\CBaseToolApp.cpp">
+      <Filter>Source Files\tools\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\shared\CBaseWXToolApp.cpp">
+      <Filter>Source Files\tools\shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\graphics\Constants.h">
@@ -291,9 +294,6 @@
       <Filter>Header Files\tools\hlmv\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tools\hlmv\ui\CFullscreenWindow.h">
-      <Filter>Header Files\tools\hlmv\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tools\hlmv\ui\CHLMV.h">
       <Filter>Header Files\tools\hlmv\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tools\hlmv\ui\CMainPanel.h">
@@ -439,6 +439,12 @@
     </ClInclude>
     <ClInclude Include="..\src\ui\wx\shared\CEditCmdLineConfigDialog.h">
       <Filter>Header Files\ui\wx\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\shared\CBaseToolApp.h">
+      <Filter>Header Files\tools\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tools\shared\CBaseWXToolApp.h">
+      <Filter>Header Files\tools\shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

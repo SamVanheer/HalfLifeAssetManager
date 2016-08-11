@@ -5,14 +5,14 @@
 
 namespace hlmv
 {
-class CHLMV;
+class CModelViewerApp;
 class C3DView;
 class CMainPanel;
 
 class CFullscreenWindow final : public wxFrame
 {
 public:
-	CFullscreenWindow( CHLMV* const pHLMV, CMainPanel* const pMainPanel );
+	CFullscreenWindow( CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel );
 	~CFullscreenWindow();
 
 	void RunFrame();
@@ -24,7 +24,7 @@ private:
 	void KeyDown( wxKeyEvent& event );
 
 private:
-	CHLMV* m_pHLMV;
+	CModelViewerApp* m_pHLMV;
 
 	C3DView* m_p3DView;
 

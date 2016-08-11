@@ -19,7 +19,7 @@
 #include "game/entity/CStudioModelEntity.h"
 #include "game/entity/CBaseEntityList.h"
 
-#include "CHLMV.h"
+#include "CModelViewerApp.h"
 #include "../CHLMVState.h"
 
 #include "CMainPanel.h"
@@ -45,7 +45,7 @@ wxBEGIN_EVENT_TABLE( CMainPanel, wxPanel )
 	EVT_BUTTON( wxID_MAIN_RESETLIGHTVECTOR, CMainPanel::ResetLightVector )
 wxEND_EVENT_TABLE()
 
-CMainPanel::CMainPanel( wxWindow* pParent, CHLMV* const pHLMV )
+CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	: wxPanel( pParent )
 	, m_pHLMV( pHLMV )
 {

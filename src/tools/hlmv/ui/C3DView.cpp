@@ -7,7 +7,7 @@
 #include <wx/image.h>
 #include <wx/notebook.h>
 
-#include "CHLMV.h"
+#include "CModelViewerApp.h"
 #include "../settings/CHLMVSettings.h"
 #include "../CHLMVState.h"
 
@@ -39,7 +39,7 @@ wxBEGIN_EVENT_TABLE( C3DView, CwxBase3DView )
 	EVT_MOUSE_EVENTS( C3DView::MouseEvents )
 wxEND_EVENT_TABLE()
 
-C3DView::C3DView( wxWindow* pParent, CHLMV* const pHLMV, CMainPanel* const pMainPanel, I3DViewListener* pListener )
+C3DView::C3DView( wxWindow* pParent, CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel, I3DViewListener* pListener )
 	: CwxBase3DView( pParent, nullptr, wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
 	, m_pMainPanel( pMainPanel )

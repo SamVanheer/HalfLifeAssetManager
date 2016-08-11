@@ -13,7 +13,7 @@
 
 namespace hlmv
 {
-class CHLMV;
+class CModelViewerApp;
 class CMainPanel;
 class CMainWindow;
 
@@ -34,11 +34,11 @@ private:
 class CMainWindow final : public ui::CwxBaseFrame
 {
 public:
-	CMainWindow( CHLMV* const pHLMV );
+	CMainWindow( CModelViewerApp* const pHLMV );
 	~CMainWindow();
 
-	const CHLMV* GetHLMV() const { return m_pHLMV; }
-	CHLMV* GetHLMV() { return m_pHLMV; }
+	const CModelViewerApp* GetHLMV() const { return m_pHLMV; }
+	CModelViewerApp* GetHLMV() { return m_pHLMV; }
 
 	void RunFrame();
 
@@ -102,7 +102,7 @@ private:
 	void OnMessagesWindowClosed( wxCloseEvent& event );
 
 private:
-	CHLMV* m_pHLMV;
+	CModelViewerApp* m_pHLMV;
 	CMainPanel* m_pMainPanel;
 
 	ui::CwxRecentFiles m_RecentFiles;

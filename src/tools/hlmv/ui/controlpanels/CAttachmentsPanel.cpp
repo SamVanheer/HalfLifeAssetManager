@@ -2,7 +2,7 @@
 
 #include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
-#include "../CHLMV.h"
+#include "../CModelViewerApp.h"
 #include "../../CHLMVState.h"
 
 #include "CAttachmentsPanel.h"
@@ -13,7 +13,7 @@ wxBEGIN_EVENT_TABLE( CAttachmentsPanel, CBaseControlPanel )
 	EVT_CHOICE( wxID_ATTACH_ATTACHMENT, CAttachmentsPanel::OnAttachmentChanged )
 wxEND_EVENT_TABLE()
 
-CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CHLMV* const pHLMV )
+CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	: CBaseControlPanel( pParent, "Attachments", pHLMV )
 {
 	auto pElemParent = GetElementParent();

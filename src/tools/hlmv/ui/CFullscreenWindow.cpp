@@ -1,6 +1,6 @@
 #include <wx/sizer.h>
 
-#include "CHLMV.h"
+#include "CModelViewerApp.h"
 #include "../CHLMVState.h"
 
 #include "C3DView.h"
@@ -13,7 +13,7 @@ wxBEGIN_EVENT_TABLE( CFullscreenWindow, wxFrame )
 	EVT_CHAR_HOOK( CFullscreenWindow::KeyDown )
 wxEND_EVENT_TABLE()
 
-CFullscreenWindow::CFullscreenWindow( CHLMV* const pHLMV, CMainPanel* const pMainPanel )
+CFullscreenWindow::CFullscreenWindow( CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel )
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE )
 	, m_pHLMV( pHLMV )
 {
