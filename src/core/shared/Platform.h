@@ -7,6 +7,8 @@
 #define NOMINMAX
 #include <Windows.h>
 
+#include <direct.h>
+
 #undef GetCurrentTime
 #undef ARRAYSIZE
 
@@ -16,10 +18,17 @@
 #define strncasecmp _strnicmp
 
 #define getcwd _getcwd
-#define setcwd _setcwd
+#define setcwd _chdir
 
 #define DLLEXPORT __declspec( dllexport )
 #define DLLIMPORT __declspec( dllimport )
+
+/*
+*	NOTENOTE: This assumes that an MSVC compiler is being used for Windows targets.
+*	See https://blogs.msdn.microsoft.com/oldnewthing/20041025-00/?p=37483
+*/
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#define HINST_THISCOMPONENT ( ( HINSTANCE ) &__ImageBase )
 
 #else
 
