@@ -12,13 +12,19 @@
 
 namespace
 {
-//TODO: the actual list should be defined by the application.
-static CBaseEntityList g_EntityList;
+static CBaseEntityList* g_pEntityList = nullptr;
 }
 
 CBaseEntityList& GetEntityList()
 {
-	return g_EntityList;
+	assert( g_pEntityList );
+
+	return *g_pEntityList;
+}
+
+void SetEntityList( CBaseEntityList* pList )
+{
+	g_pEntityList = pList;
 }
 
 CBaseEntityList::CBaseEntityList()

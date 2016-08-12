@@ -115,6 +115,16 @@ private:
 	CBaseEntityList& operator=( const CBaseEntityList& ) = delete;
 };
 
+/**
+*	@return The entity list. Must be installed prior to use using SetEntityList.
+*	@see SetEntityList
+*/
 CBaseEntityList& GetEntityList();
+
+/**
+*	Sets the entity list.
+*	@see GetEntityList
+*/
+void SetEntityList( CBaseEntityList* pList );
 
 #endif //GAME_ENTITY_CBASEENTITYLIST_H

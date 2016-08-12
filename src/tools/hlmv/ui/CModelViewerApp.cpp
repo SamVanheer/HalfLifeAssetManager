@@ -3,6 +3,7 @@
 #include <wx/cmdline.h>
 
 #include "game/entity/CEntityManager.h"
+#include "game/entity/CBaseEntityList.h"
 
 #include "CFullscreenWindow.h"
 #include "CMainWindow.h"
@@ -13,6 +14,12 @@ wxIMPLEMENT_APP( hlmv::CModelViewerApp );
 
 namespace hlmv
 {
+namespace
+{
+//Use the default list class for now.
+static CBaseEntityList g_EntityList;
+}
+
 bool CModelViewerApp::OnInit()
 {
 	SetAppDisplayName( HLMV_TITLE );
@@ -55,6 +62,8 @@ bool CModelViewerApp::PreRunApp()
 	m_pSettings = new CHLMVSettings( GetFileSystem() );
 
 	SetToolIcon( wxICON( HLMV_ICON ) );
+
+	SetEntityList( &g_EntityList );
 
 	//TODO: move this
 	if( !EntityManager().OnMapBegin() )

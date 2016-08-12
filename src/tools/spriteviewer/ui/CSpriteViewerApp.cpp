@@ -5,6 +5,7 @@
 #include "engine/shared/renderer/sprite/ISpriteRenderer.h"
 
 #include "game/entity/CEntityManager.h"
+#include "game/entity/CBaseEntityList.h"
 
 #include "CMainWindow.h"
 
@@ -18,6 +19,12 @@ wxIMPLEMENT_APP( sprview::CSpriteViewerApp );
 
 namespace sprview
 {
+namespace
+{
+//Use the default list class for now.
+static CBaseEntityList g_EntityList;
+}
+
 bool CSpriteViewerApp::OnInit()
 {
 	SetAppDisplayName( SPRITEVIEWER_TITLE );
@@ -74,6 +81,8 @@ bool CSpriteViewerApp::PreRunApp()
 	m_pSettings = new sprview::CSpriteViewerSettings( GetFileSystem() );
 
 	SetToolIcon( wxICON( HLMV_ICON ) );
+
+	SetEntityList( &g_EntityList );
 
 	//TODO: move this
 	if( !EntityManager().OnMapBegin() )
