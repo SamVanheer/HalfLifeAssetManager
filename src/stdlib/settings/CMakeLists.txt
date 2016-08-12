@@ -1,0 +1,24 @@
+add_sources(
+	CBaseConfigManager.h
+	CBaseSettings.h
+	CBaseSettings.cpp
+	CCmdLineConfig.h
+	CCmdLineConfig.cpp
+	CGameConfig.h
+	CGameConfig.cpp
+	ConfigIO.h
+	CRecentFiles.h
+	CRecentFiles.cpp
+	GameConfigIO.h
+	GameConfigIO.cpp
+)
+
+add_includes(
+	CBaseConfigManager.h
+	CBaseSettings.h
+	CCmdLineConfig.h
+	CGameConfig.h
+	ConfigIO.h
+	CRecentFiles.h
+	GameConfigIO.h
+)
