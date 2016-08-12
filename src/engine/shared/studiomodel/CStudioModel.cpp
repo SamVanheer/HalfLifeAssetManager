@@ -17,7 +17,8 @@ namespace studiomdl
 {
 namespace
 {
-//TODO: change to cvarref
+//Note: multiple libraries can include this file and define this cvar. The first library to register theirs wins.
+//All others will point to that one. - Solokiller
 static cvar::CCVar r_filtertextures( "r_filtertextures", cvar::CCVarArgsBuilder().FloatValue( 1 ).HelpInfo( "Whether to filter textures or not" ) );
 
 void UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId, const bool bFilterTextures )
