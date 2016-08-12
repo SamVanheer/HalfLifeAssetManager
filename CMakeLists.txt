@@ -136,8 +136,21 @@ macro(configure_msvc_runtime)
   endif()
 endmacro()
 
+macro( copy_dependencies project_name base_dir )
+	foreach( lib ${ARGN} )
+		add_custom_command( TARGET ${project_name} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		"${CMAKE_SOURCE_DIR}/${base_dir}/${lib}"
+		"$<TARGET_FILE_DIR:${project_name}>"
+	)
+	endforeach()
+endmacro()
+
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin )
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin )
 
 project( HL_Tools )
 
@@ -191,6 +204,8 @@ else()
 endif()
 
 set( SHARED_DEFS 
+	UNICODE
+	_UNICODE
 	_CRT_SECURE_NO_WARNINGS
 	_SCL_SECURE_NO_WARNINGS
 	IS_LITTLE_ENDIAN=${IS_LITTLE_ENDIAN_VALUE}
@@ -209,6 +224,19 @@ set( SHARED_INCLUDEPATHS
 #Find shared dependencies
 
 set( SHARED_DEPENDENCIES
+)
+
+#TODO shared compile flags
+
+#Shared linker settings
+if( WIN32 )
+	set( SUBSYSTEM_WINDOWS "/SUBSYSTEM:WINDOWS" )
+else()
+	set( SUBSYSTEM_WINDOWS "" )
+endif()
+
+set( SHARED_LINK_FLAGS
+	"${LINUX_32BIT_FLAG} ${SUBSYSTEM_WINDOWS}"
 )
 
 #Include source code

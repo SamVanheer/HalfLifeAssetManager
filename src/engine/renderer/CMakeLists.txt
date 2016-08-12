@@ -33,9 +33,6 @@ endif()
 
 include_directories(
 	${OPENGL_INCLUDE_DIR}
-)
-
-include_directories(
 	"${SHARED_INCLUDEPATHS}"
 )
 
@@ -48,10 +45,8 @@ target_compile_definitions( Renderer PRIVATE
 target_link_libraries( Renderer
 	HLStdLib
 	HLCore
-)
-
-target_link_libraries( Renderer
 	${OPENGL_LIBRARIES}
+	${SHARED_DEPENDENCIES}
 )
 
 #Create filters

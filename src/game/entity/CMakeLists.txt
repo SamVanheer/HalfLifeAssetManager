@@ -1,0 +1,19 @@
+add_sources(
+	CBaseAnimating.h
+	CBaseAnimating.cpp
+	CBaseEntity.h
+	CBaseEntity.cpp
+	CBaseEntityList.h
+	CBaseEntityList.cpp
+	CEntityDict.h
+	CEntityDict.cpp
+	CEntityManager.h
+	CEntityManager.cpp
+	CSpriteEntity.h
+	CSpriteEntity.cpp
+	CStudioModelEntity.h
+	CStudioModelEntity.cpp
+	EHandle.h
+	EHandle.cpp
+	EntityConstants.h
+)

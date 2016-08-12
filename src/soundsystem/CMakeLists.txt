@@ -42,3 +42,7 @@ target_link_libraries( SoundSystem
 create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 clear_sources()
+
+if( WIN32 )
+	copy_dependencies( SoundSystem external/FMOD/lib fmodex.dll )
+endif()

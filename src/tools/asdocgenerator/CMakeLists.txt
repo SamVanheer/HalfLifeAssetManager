@@ -1,5 +1,5 @@
 #
-#ASDocGenerator library
+#ASDocGenerator exe
 #
 
 #Add in the shared sources
