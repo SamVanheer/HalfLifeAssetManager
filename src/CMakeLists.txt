@@ -1,5 +1,6 @@
 add_subdirectory( core )
 add_subdirectory( cvar )
+add_subdirectory( engine )
 add_subdirectory( filesystem )
 add_subdirectory( soundsystem )
 add_subdirectory( stdlib )
