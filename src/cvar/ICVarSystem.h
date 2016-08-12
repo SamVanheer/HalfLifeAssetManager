@@ -96,7 +96,6 @@ public:
 	*/
 	virtual void ArchiveCVars( const CVarArchiveCallback pCallback, void* pObject = nullptr ) = 0;
 
-	//TODO: move this to its own class.
 	/**
 	*	Returns whether the given handler is currently installed.
 	*/
