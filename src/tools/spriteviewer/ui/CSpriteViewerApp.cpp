@@ -84,10 +84,9 @@ bool CSpriteViewerApp::PreRunApp()
 
 	SetEntityList( &g_EntityList );
 
-	//TODO: move this
 	if( !EntityManager().OnMapBegin() )
 	{
-		wxMessageBox( "Failed to initialize start map", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
+		FatalError( "Failed to initialize start map", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR );
 		return false;
 	}
 

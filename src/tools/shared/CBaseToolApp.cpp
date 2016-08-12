@@ -83,8 +83,7 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 
 	if( !g_pCVar->Initialize() )
 	{
-		//TODO: use fatal error.
-		Error( "Failed to initialize CVar system!\n" );
+		FatalError( "Failed to initialize CVar system!\n" );
 		return false;
 	}
 
@@ -95,8 +94,7 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 
 	if( !m_pFileSystem->Initialize() )
 	{
-		//TODO: use fatal error.
-		Error( "Failed to initialize file system!\n" );
+		FatalError( "Failed to initialize file system!\n" );
 		return false;
 	}
 
@@ -107,29 +105,25 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 
 	if( !m_pRendererLib->Connect( pFactories, uiNumFactories ) )
 	{
-		//TODO: use fatal error.
-		Error( "Failed to connect renderer!\n" );
+		FatalError( "Failed to connect renderer!\n" );
 		return false;
 	}
 
 	if( !g_pStudioMdlRenderer->Initialize() )
 	{
-		//TODO: use fatal error.
-		Error( "Failed to initialize StudioModel renderer!\n" );
+		FatalError( "Failed to initialize StudioModel renderer!\n" );
 		return false;
 	}
 
 	if( !m_pSoundSystem->Connect( pFactories, uiNumFactories ) )
 	{
-		//TODO: use fatal error.
-		Error( "Failed to connect sound system!\n" );
+		FatalError( "Failed to connect sound system!\n" );
 		return false;
 	}
 
 	if( !m_pSoundSystem->Initialize() )
 	{
-		//TODO: use fatal error.
-		Error( "Failed to initialize sound system!\n" );
+		FatalError( "Failed to initialize sound system!\n" );
 		return false;
 	}
 

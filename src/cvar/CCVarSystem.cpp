@@ -223,8 +223,7 @@ void CCVarSystem::Command( const char* const pszCommand )
 		uiBufferLength + uiCommandLength >= MAX_COMMAND_BUFFER ||
 		uiBufferLength + uiCommandLength < uiBufferLength )
 	{
-		//TODO: replace with FatalError
-		Error( "Command buffer full!\n" );
+		Error( "Command buffer full, cannot add \"%s\"!\n", pszCommand );
 		return;
 	}
 

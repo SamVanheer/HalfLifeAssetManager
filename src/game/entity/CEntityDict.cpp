@@ -35,7 +35,6 @@ bool CEntityDict::AddEntity( const CBaseEntityRegistry* pRegistry )
 	if( FindEntity( pRegistry->GetClassname() ) )
 	{
 		//This shouldn't happen, since there'd be duplicate symbols in the library.
-		//TODO: replace with FatalError
 		Error( "CEntityDict::AddEntity: Duplicate entity \"%s\" added!\n", pRegistry->GetClassname() );
 		return false;
 	}
@@ -71,7 +70,6 @@ void CEntityDict::DestroyEntity( CBaseEntity* pEntity ) const
 
 	if( !pReg )
 	{
-		//TODO: replace with FatalError
 		Error( "CEntityDict::DestroyEntity: Tried to destroy unknown entity \"%s\"!\n", pEntity->GetClassName() );
 		return;
 	}
