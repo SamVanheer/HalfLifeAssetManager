@@ -81,3 +81,6 @@ msw_14/Release/RCa37624
 *.aps
 bin/SpriteViewerSettings.txt
 bin/sprifile.txt
+
+#CMake build directories
+bin_*/*
