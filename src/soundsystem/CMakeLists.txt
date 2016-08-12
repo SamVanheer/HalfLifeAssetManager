@@ -39,6 +39,6 @@ target_link_libraries( SoundSystem
 )
 
 #Create filters
-create_source_groups( "${CMAKE_SOURCE_DIR}" )
+create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 clear_sources()
