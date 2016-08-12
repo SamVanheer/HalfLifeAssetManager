@@ -22,6 +22,11 @@ public:
 	~CEntityDict() = default;
 
 	/**
+	*	@return The singleton instance of this class.
+	*/
+	static CEntityDict& GetInstance();
+
+	/**
 	*	Returns whether the requested entity type exists.
 	*/
 	bool HasEntity( const char* const pszClassName ) const;

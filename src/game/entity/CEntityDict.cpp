@@ -4,14 +4,17 @@
 
 #include "CEntityDict.h"
 
-namespace
-{
-static CEntityDict g_EntityDict;
-}
-
 CEntityDict& GetEntityDict()
 {
-	return g_EntityDict;
+	return CEntityDict::GetInstance();
+}
+
+CEntityDict& CEntityDict::GetInstance()
+{
+	//Changed to use this approach so the instance is constructed the first time something needs the dictionary. - Solokiller
+	static CEntityDict instance;
+
+	return instance;
 }
 
 bool CEntityDict::HasEntity( const char* const pszClassName ) const
