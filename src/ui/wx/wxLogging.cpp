@@ -32,6 +32,13 @@ void CwxDefaultLogListener::LogMessage( const LogType type, const char* const ps
 			iStyle = wxICON_ERROR;
 			break;
 		}
+
+	case LogType::FATAL_ERROR:
+		{
+			szCaption = "Fatal Error";
+			iStyle = wxICON_ERROR;
+			break;
+		}
 	}
 
 	wxMessageBox( pszMessage, szCaption, wxOK | wxCENTRE | iStyle );

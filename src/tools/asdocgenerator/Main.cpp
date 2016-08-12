@@ -14,26 +14,7 @@ class CPrintfLogListener final : public ILogListener
 public:
 	void LogMessage( const LogType type, const char* const pszMessage ) override final
 	{
-		const char* pszPrefix = "";
-
-		switch( type )
-		{
-		case LogType::WARNING:
-			{
-				pszPrefix = "Warning: ";
-				break;
-			}
-
-		case LogType::ERROR:
-			{
-				pszPrefix = "Error: ";
-				break;
-			}
-
-		default: break;
-		}
-
-		printf( "%s%s", pszPrefix, pszMessage );
+		printf( "%s%s", GetLogTypePrefix( type ), pszMessage );
 	}
 };
 

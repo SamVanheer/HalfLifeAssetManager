@@ -14,9 +14,10 @@ const char* GetLogTypePrefix( const LogType type )
 	switch( type )
 	{
 	default:
-	case LogType::MESSAGE:	return "";
-	case LogType::WARNING:	return "Warning: ";
-	case LogType::ERROR:	return "Error: ";
+	case LogType::MESSAGE:		return "";
+	case LogType::WARNING:		return "Warning: ";
+	case LogType::ERROR:		return "Error: ";
+	case LogType::FATAL_ERROR:	return "Fatal Error: ";
 	}
 }
 
@@ -239,6 +240,17 @@ void Error( const char* const pszFormat, ... )
 	va_start( list, pszFormat );
 
 	logging().VLog( LogType::ERROR, pszFormat, list );
+
+	va_end( list );
+}
+
+void FatalError( const char* const pszFormat, ... )
+{
+	va_list list;
+
+	va_start( list, pszFormat );
+
+	logging().VLog( LogType::FATAL_ERROR, pszFormat, list );
 
 	va_end( list );
 }

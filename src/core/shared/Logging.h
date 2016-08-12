@@ -17,7 +17,12 @@ enum class LogType
 {
 	MESSAGE,
 	WARNING,
-	ERROR
+	ERROR,
+
+	/**
+	*	Special handling by implementation.
+	*/
+	FATAL_ERROR
 };
 
 /**
@@ -176,6 +181,12 @@ extern "C" HLCORE_API void Warning( const char* const pszFormat, ... );
 *	Logs an error.
 */
 extern "C" HLCORE_API void Error( const char* const pszFormat, ... );
+
+/**
+*	Logs a fatal error.
+*	This will only log the error and display it in a manner determined by the implementation, it won't terminate the program.
+*/
+extern "C" HLCORE_API void FatalError( const char* const pszFormat, ... );
 
 /**
 *	Logs a developer message.

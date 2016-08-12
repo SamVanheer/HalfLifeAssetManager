@@ -100,6 +100,13 @@ void CMessagesWindow::AddMessage( const LogType type, const wxString& szMessage 
 			szPrefix = "ERROR: ";
 			break;
 		}
+
+	case LogType::FATAL_ERROR:
+		{
+			item.SetTextColour( wxColor( 255, 0, 0 ) );
+			szPrefix = "FATAL ERROR: ";
+			break;
+		}
 	}
 
 	item.SetText( szPrefix + szMessage );
@@ -109,6 +116,11 @@ void CMessagesWindow::AddMessage( const LogType type, const wxString& szMessage 
 	Truncate();
 
 	UpdateHeader();
+
+	if( type == LogType::FATAL_ERROR )
+	{
+		wxMessageBox( szMessage, "Fatal Error", wxCENTRE | wxOK | wxICON_ERROR );
+	}
 }
 
 void CMessagesWindow::TruncateToCount( size_t uiCount )
