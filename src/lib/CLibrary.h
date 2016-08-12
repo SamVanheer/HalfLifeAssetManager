@@ -71,6 +71,19 @@ public:
 	void Free();
 
 	/**
+	*	If a library failed to load, this will return string describing the error. Must be called right after calling Load.
+	*	The returned string should not be expected to remain valid for any length of time; copy it if needed.
+	*/
+	static const char* GetLoadErrorDescription();
+
+	/**
+	*	Gets the absolute filename of this library.
+	*	The returned string should not be expected to remain valid for any length of time; copy it if needed.
+	*	@return If the library is loaded, returns the absolute filename. Otherwise, returns an empty string.
+	*/
+	const char* GetAbsoluteFilename() const;
+
+	/**
 	*	Gets a function from the library by name.
 	*	@param pszName Name of the function to get.
 	*	@return Pointer to the function on success, null otherwise.
@@ -87,6 +100,11 @@ private:
 	*	Does the actual freeing of the library.
 	*/
 	static void DoFree( LibraryHandle_t hLibrary );
+
+	/**
+	*	Does the actual retrieval of the library filename.
+	*/
+	static const char* DoGetAbsoluteFilename( LibraryHandle_t hLibrary, char* pszBuffer, const size_t uiBufferSize );
 
 	/**
 	*	Does the actual getting of the address.
