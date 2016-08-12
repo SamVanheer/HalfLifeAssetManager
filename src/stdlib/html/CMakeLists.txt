@@ -1,0 +1,22 @@
+add_sources(
+	CHTMLBody.h
+	CHTMLBody.cpp
+	CHTMLComposite.h
+	CHTMLComposite.cpp
+	CHTMLElement.h
+	CHTMLElement.cpp
+	CHTMLHeader.h
+	CHTMLHeader.cpp
+	CHTMLPage.h
+	CHTMLPage.cpp
+	IHTMLObject.h
+)
+
+add_includes(
+	CHTMLBody.h
+	CHTMLComposite.h
+	CHTMLElement.h
+	CHTMLHeader.h
+	CHTMLPage.h
+	IHTMLObject.h
+)
