@@ -8,11 +8,11 @@
 
 #include "lib/LibInterface.h"
 
-#include "CBaseConCommand.h"
-#include "CConCommand.h"
-#include "CCVar.h"
+#include "cvar/CBaseConCommand.h"
+#include "cvar/CConCommand.h"
+#include "cvar/CCVar.h"
 
-#include "CVar.h"
+#include "cvar/CVar.h"
 
 #include "CCVarSystem.h"
 

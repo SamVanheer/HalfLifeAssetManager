@@ -8,11 +8,7 @@
 
 #include "utility/CCommand.h"
 
-#include "CBaseConCommand.h"
-#include "CConCommand.h"
-#include "CCVar.h"
-
-#include "ICVarSystem.h"
+#include "cvar/ICVarSystem.h"
 
 namespace cvar
 {

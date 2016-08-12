@@ -174,27 +174,6 @@
     <ClInclude Include="..\src\engine\shared\studiomodel\CStudioModel.h">
       <Filter>Header Files\engine\shared\studiomodel</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\cvar\CBaseConCommand.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CConCommand.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CCVar.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CVar.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\CVarUtils.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\ICVarSystem.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\cvar\ConVarConstants.h">
-      <Filter>Header Files\cvar</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\stdlib\graphics\GraphicsUtils.h">
       <Filter>Header Files\stdlib\graphics</Filter>
     </ClInclude>
@@ -221,6 +200,27 @@
     </ClInclude>
     <ClInclude Include="..\src\stdlib\utility\PlatUtils.h">
       <Filter>Header Files\stdlib\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\CBaseConCommand.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\CConCommand.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\CCVar.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\ConVarConstants.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\CVar.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\CVarUtils.h">
+      <Filter>Header Files\cvar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdlib\cvar\ICVarSystem.h">
+      <Filter>Header Files\cvar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -290,21 +290,6 @@
     <ClCompile Include="..\src\stdlib\graphics\CCamera.cpp">
       <Filter>Source Files\stdlib\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cvar\CBaseConCommand.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cvar\CConCommand.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cvar\CCVar.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cvar\CVarUtils.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cvar\CVar.cpp">
-      <Filter>Source Files\cvar</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\stdlib\graphics\GraphicsUtils.cpp">
       <Filter>Source Files\stdlib\graphics</Filter>
     </ClCompile>
@@ -328,6 +313,21 @@
     </ClCompile>
     <ClCompile Include="..\src\stdlib\utility\StringUtils.cpp">
       <Filter>Source Files\stdlib\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\cvar\CBaseConCommand.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\cvar\CConCommand.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\cvar\CCVar.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\cvar\CVar.cpp">
+      <Filter>Source Files\cvar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdlib\cvar\CVarUtils.cpp">
+      <Filter>Source Files\cvar</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
