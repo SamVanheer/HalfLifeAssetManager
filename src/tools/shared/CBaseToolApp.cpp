@@ -60,7 +60,7 @@ bool CBaseToolApp::StartupApp()
 bool CBaseToolApp::LoadAppLibraries()
 {
 	//TODO: needs to use platform agnostic library names - Solokiller
-	if( !LoadLibraries( "LibCVar.dll", "LibFileSystem.dll", "LibSoundSystem.dll", "LibRenderer.dll" ) )
+	if( !LoadLibraries( "CVar.dll", "FileSystem.dll", "SoundSystem.dll", "Renderer.dll" ) )
 		return false;
 
 	return true;
