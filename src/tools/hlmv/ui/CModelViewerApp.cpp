@@ -10,6 +10,14 @@
 
 #include "CModelViewerApp.h"
 
+//TODO: this is temporary until the renderers can be moved into contexts - Solokiller
+namespace sprite
+{
+class ISpriteRenderer;
+}
+
+sprite::ISpriteRenderer* g_pSpriteRenderer = nullptr;
+
 wxIMPLEMENT_APP( hlmv::CModelViewerApp );
 
 namespace hlmv

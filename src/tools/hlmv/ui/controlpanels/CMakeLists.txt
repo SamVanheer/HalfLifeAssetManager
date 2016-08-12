@@ -1,0 +1,18 @@
+add_sources(
+	CAttachmentsPanel.h
+	CAttachmentsPanel.cpp
+	CBaseControlPanel.h
+	CBaseControlPanel.cpp
+	CBodyPartsPanel.h
+	CBodyPartsPanel.cpp
+	CBonesPanel.h
+	CBonesPanel.cpp
+	CFullscreenPanel.h
+	CFullscreenPanel.cpp
+	CModelDisplayPanel.h
+	CModelDisplayPanel.cpp
+	CSequencesPanel.h
+	CSequencesPanel.cpp
+	CTexturesPanel.h
+	CTexturesPanel.cpp
+)
