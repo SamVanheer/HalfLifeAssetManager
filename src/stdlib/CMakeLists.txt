@@ -7,6 +7,7 @@ add_sources( "${SHARED_SRCS}" )
 
 #Add sources
 
+add_subdirectory( app )
 add_subdirectory( cvar )
 add_subdirectory( graphics )
 add_subdirectory( settings )
