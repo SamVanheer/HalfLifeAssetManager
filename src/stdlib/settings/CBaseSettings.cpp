@@ -258,11 +258,10 @@ bool CBaseSettings::LoadGameConfigs( const kv::Block& root )
 
 bool CBaseSettings::SaveGameConfigs( kv::Writer& writer )
 {
-	//TODO: make stack allocated
-	auto gameConfigs = std::make_shared<kv::Block>( "gameConfigs" );
+	kv::Block gameConfigs( "gameConfigs" );
 
-	settings::SaveGameConfigs( std::static_pointer_cast<const CGameConfigManager>( m_ConfigManager ), *gameConfigs, SaveGameConfig );
+	settings::SaveGameConfigs( std::static_pointer_cast<const CGameConfigManager>( m_ConfigManager ), gameConfigs, SaveGameConfig );
 
-	return writer.WriteBlock( *gameConfigs );
+	return writer.WriteBlock( gameConfigs );
 }
 }
