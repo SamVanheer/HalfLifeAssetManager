@@ -136,6 +136,9 @@ macro(configure_msvc_runtime)
   endif()
 endmacro()
 
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+
 project( HL_Tools )
 
 #Needs static CRT to avoid alloc issues.

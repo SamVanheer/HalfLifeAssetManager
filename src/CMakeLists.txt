@@ -3,6 +3,7 @@ add_subdirectory( cvar )
 add_subdirectory( filesystem )
 add_subdirectory( soundsystem )
 add_subdirectory( stdlib )
+add_subdirectory( tools )
 add_subdirectory( keyvalues )
 #TODO
 #add_subdirectory( ui )
