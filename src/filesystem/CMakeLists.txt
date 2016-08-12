@@ -15,6 +15,8 @@ add_sources(
 	IFileSystem.h
 )
 
+add_subdirectory( ../lib ${CMAKE_CURRENT_BINARY_DIR}/lib )
+
 preprocess_sources()
 
 include_directories(
