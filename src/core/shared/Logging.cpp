@@ -3,7 +3,11 @@
 
 #include "utility/StringUtils.h"
 
+#include "cvar/CCVar.h"
+
 #include "Logging.h"
+
+static cvar::CCVar developer( "developer", cvar::CCVarArgsBuilder().HelpInfo( "Developer level for logging" ).FloatValue( 0 ) );
 
 const char* GetLogTypePrefix( const LogType type )
 {
@@ -13,6 +17,17 @@ const char* GetLogTypePrefix( const LogType type )
 	case LogType::MESSAGE:	return "";
 	case LogType::WARNING:	return "Warning: ";
 	case LogType::ERROR:	return "Error: ";
+	}
+}
+
+const char* DevLevelToString( const DevLevel::DevLevel devLevel )
+{
+	switch( devLevel )
+	{
+	default:
+	case DevLevel::ALWAYS:		return "ALWAYS";
+	case DevLevel::DEV:			return "DEV";
+	case DevLevel::VERBOSE:		return "VERBOSE";
 	}
 }
 
@@ -106,11 +121,32 @@ void CLogging::Log( const LogType type, const char* const pszFormat, ... )
 	va_end( list );
 }
 
+void CLogging::Log( const LogType type, const DevLevel::DevLevel devLevel, const char* const pszFormat, ... )
+{
+	assert( pszFormat != nullptr && *pszFormat );
+
+	va_list list;
+
+	va_start( list, pszFormat );
+
+	VLog( type, devLevel, pszFormat, list );
+
+	va_end( list );
+}
+
 void CLogging::VLog( const LogType type, const char* const pszFormat, va_list list )
+{
+	return VLog( type, DevLevel::ALWAYS, pszFormat, list );
+}
+
+void CLogging::VLog( const LogType type, const DevLevel::DevLevel devLevel, const char* const pszFormat, va_list list )
 {
 	assert( pszFormat != nullptr && *pszFormat );
 
 	if( m_bInLog )
+		return;
+
+	if( developer.GetInt() < devLevel )
 		return;
 
 	m_bInLog = true;
@@ -203,6 +239,39 @@ void Error( const char* const pszFormat, ... )
 	va_start( list, pszFormat );
 
 	logging().VLog( LogType::ERROR, pszFormat, list );
+
+	va_end( list );
+}
+
+void DevMsg( const int devLevel, const char* const pszFormat, ... )
+{
+	va_list list;
+
+	va_start( list, pszFormat );
+
+	logging().VLog( LogType::MESSAGE, static_cast<DevLevel::DevLevel>( devLevel ), pszFormat, list );
+
+	va_end( list );
+}
+
+void DevWarning( const int devLevel, const char* const pszFormat, ... )
+{
+	va_list list;
+
+	va_start( list, pszFormat );
+
+	logging().VLog( LogType::WARNING, static_cast<DevLevel::DevLevel>( devLevel ), pszFormat, list );
+
+	va_end( list );
+}
+
+void DevError( const int devLevel, const char* const pszFormat, ... )
+{
+	va_list list;
+
+	va_start( list, pszFormat );
+
+	logging().VLog( LogType::ERROR, static_cast<DevLevel::DevLevel>( devLevel ), pszFormat, list );
 
 	va_end( list );
 }

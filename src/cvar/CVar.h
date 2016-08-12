@@ -14,6 +14,11 @@ extern cvar::ICVarSystem* g_pCVar;
 namespace cvar
 {
 /**
+*	Connects this library's cvars with the given cvar system.
+*/
+void ConnectCVars( cvar::ICVarSystem* pCVarSystem );
+
+/**
 *	Connects this library's cvars with the cvar system.
 */
 void ConnectCVars();

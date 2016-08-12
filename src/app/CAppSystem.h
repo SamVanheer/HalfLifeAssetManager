@@ -230,7 +230,6 @@ protected:
 				Error( "Failed to load interface \"%s\"!\n", iface.pszDescription );
 				return false;
 			}
-			//TODO: consider outputting info in dev mode indicating failure to load optional interfaces.
 		}
 
 		return true;

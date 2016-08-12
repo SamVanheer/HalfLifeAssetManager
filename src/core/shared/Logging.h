@@ -25,6 +25,22 @@ enum class LogType
 */
 extern "C" HLCORE_API const char* GetLogTypePrefix( const LogType type );
 
+namespace DevLevel
+{
+/**
+*	Defines developer log levels.
+*	Weakly typed so code can define its own levels more easily.
+*/
+enum DevLevel
+{
+	ALWAYS = 0,
+	DEV,
+	VERBOSE
+};
+}
+
+extern "C" HLCORE_API const char* DevLevelToString( const DevLevel::DevLevel devLevel );
+
 /**
 *	This interface defines a log listener. Classes can implement this to receive log messages.
 */
@@ -95,10 +111,28 @@ public:
 	/**
 	*	Logs a message.
 	*	@param type Message type.
+	*	@param devLevel Developer level.
+	*	@param pszFormat Format string.
+	*	@param ... Varargs parameters.
+	*/
+	void Log( const LogType type, const DevLevel::DevLevel devLevel, const char* const pszFormat, ... );
+
+	/**
+	*	Logs a message.
+	*	@param type Message type.
 	*	@param pszFormat Format string.
 	*	@param list Varargs list.
 	*/
 	void VLog( const LogType type, const char* const pszFormat, va_list list );
+
+	/**
+	*	Logs a message.
+	*	@param type Message type.
+	*	@param devLevel Developer level.
+	*	@param pszFormat Format string.
+	*	@param list Varargs list.
+	*/
+	void VLog( const LogType type, const DevLevel::DevLevel devLevel, const char* const pszFormat, va_list list );
 
 	bool IsLogFileOpen() const { return m_pLogFile != nullptr; }
 
@@ -142,5 +176,23 @@ extern "C" HLCORE_API void Warning( const char* const pszFormat, ... );
 *	Logs an error.
 */
 extern "C" HLCORE_API void Error( const char* const pszFormat, ... );
+
+/**
+*	Logs a developer message.
+*	@param devLevel Developer level to filter with. If the developer cvar setting is less than this, the message is ignored.
+*/
+extern "C" HLCORE_API void DevMsg( const int devLevel, const char* const pszFormat, ... );
+
+/**
+*	Logs a developer warning.
+*	@param devLevel Developer level to filter with. If the developer cvar setting is less than this, the message is ignored.
+*/
+extern "C" HLCORE_API void DevWarning( const int devLevel, const char* const pszFormat, ... );
+
+/**
+*	Logs an developer error.
+*	@param devLevel Developer level to filter with. If the developer cvar setting is less than this, the message is ignored.
+*/
+extern "C" HLCORE_API void DevError( const int devLevel, const char* const pszFormat, ... );
 
 #endif //COMMON_LOGGING_H

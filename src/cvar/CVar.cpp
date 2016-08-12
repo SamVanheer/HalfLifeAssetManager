@@ -6,13 +6,18 @@ cvar::ICVarSystem* g_pCVar = nullptr;
 
 namespace cvar
 {
+void ConnectCVars( cvar::ICVarSystem* pCVarSystem )
+{
+	for( auto pCVar = cvar::CBaseConCommand::GetHead(); pCVar; pCVar = pCVar->GetNext() )
+	{
+		pCVarSystem->AddCommand( pCVar );
+	}
+}
+
 void ConnectCVars()
 {
 	assert( g_pCVar );
 
-	for( auto pCVar = cvar::CBaseConCommand::GetHead(); pCVar; pCVar = pCVar->GetNext() )
-	{
-		g_pCVar->AddCommand( pCVar );
-	}
+	ConnectCVars( g_pCVar );
 }
 }
