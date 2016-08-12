@@ -64,17 +64,17 @@ bool CAppSystem::Startup()
 
 		std::experimental::filesystem::path exePath( szExePath );
 
-		std::error_code canonialError;
+		std::error_code canonicalError;
 
 		auto exeDir = exePath.parent_path();
 
-		exeDir = std::experimental::filesystem::canonical( exeDir, canonialError );
+		exeDir = std::experimental::filesystem::canonical( exeDir, canonicalError );
 
-		if( canonialError )
+		if( canonicalError )
 		{
 			Error(
 				"CAppSystem::Startup: Failed to canonicalize  \"%s\" with error \"%s\"!\n",
-				exeDir.string().c_str(), canonialError.message().c_str() );
+				exeDir.string().c_str(), canonicalError.message().c_str() );
 			return false;
 		}
 
@@ -184,7 +184,7 @@ bool CAppSystem::LoadLibrary( const char* const pszName )
 
 	if( !lib.Load( pszName ) )
 	{
-		Error( "CAppSystem::LoadLibrary: Failed to load library \"%s\"!\n", pszName );
+		FatalError( "CAppSystem::LoadLibrary: Failed to load library \"%s\"\nThe error given was \"%s\"\n", pszName, CLibrary::GetLoadErrorDescription() );
 		return false;
 	}
 
