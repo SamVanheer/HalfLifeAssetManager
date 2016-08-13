@@ -80,7 +80,8 @@ bool CSpriteViewerApp::PreRunApp()
 	m_pState = new sprview::CSpriteViewerState();
 	m_pSettings = new sprview::CSpriteViewerSettings( GetFileSystem() );
 
-	SetToolIcon( wxICON( HLMV_ICON ) );
+	//TODO get this working on Linux - Solokiller
+	//SetToolIcon( wxICON( HLMV_ICON ) );
 
 	SetEntityList( &g_EntityList );
 
