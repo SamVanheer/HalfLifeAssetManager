@@ -456,7 +456,7 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 		config = std::make_shared<settings::CCmdLineConfig>( "Empty config" );
 
 	auto parameters = config->GetParameters();
-	parameters.emplace_back( std::make_pair( szPath, "" ) );
+	parameters.emplace_back( szPath.ToStdString(), "" );
 
 	ui::CProcessDialog processDlg( this, wxID_ANY, "StudioMdl Compiler" );
 
@@ -534,7 +534,7 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 		config = std::make_shared<settings::CCmdLineConfig>( "Empty config" );
 
 	auto parameters = config->GetParameters();
-	parameters.emplace_back( std::make_pair( szPath, "" ) );
+	parameters.emplace_back( szPath.ToStdString(), "" );
 
 	ui::CProcessDialog processDlg( this, wxID_ANY, "MdlDec Decompiler" );
 

@@ -217,7 +217,7 @@ std::vector<std::pair<std::string, std::string>> CEditCmdLineConfigDialog::GetPa
 	{
 		auto pProp = static_cast<wxStringProperty*>( it.GetProperty() );
 
-		parameters.emplace_back( std::make_pair( pProp->GetLabel(), pProp->GetValue() ) );
+		parameters.emplace_back( pProp->GetLabel().ToStdString(), pProp->GetValue().GetString().ToStdString() );
 	}
 
 	return parameters;
