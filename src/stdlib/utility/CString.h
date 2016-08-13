@@ -256,7 +256,7 @@ protected:
 	* Sets this string's data pointer to a static string
 	* Must be called from a subclass constructor
 	*/
-	void SetStaticString( char* pszString, size_type iLength = INVALID_INDEX );
+	void SetStaticString( const char* pszString, size_type iLength = INVALID_INDEX );
 
 private:
 

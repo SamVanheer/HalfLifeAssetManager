@@ -1051,11 +1051,11 @@ void CString::Truncate( const size_type uiMaxLength )
 	m_uiLength = uiMaxLength;
 }
 
-void CString::SetStaticString( char* pszString, size_type iLength )
+void CString::SetStaticString( const char* pszString, size_type iLength )
 {
 	assert( pszString );
 
-	m_pszString = pszString;
+	m_pszString = const_cast<char*>( pszString );
 
 	if( iLength == INVALID_INDEX )
 		iLength = strlen( pszString );
