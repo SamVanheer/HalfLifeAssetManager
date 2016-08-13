@@ -157,7 +157,7 @@ void CSpriteRenderer::DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& v
 
 		double flInt;
 
-		const float flFraction = modf( flFrame, &flInt );
+		const float flFraction = static_cast<float>( modf( flFrame, &flInt ) );
 
 		int iIndex;
 
