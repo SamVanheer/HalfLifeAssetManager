@@ -1,6 +1,7 @@
 #ifndef SETTINGS_CBASECONFIGMANAGER_H
 #define SETTINGS_CBASECONFIGMANAGER_H
 
+#include <cassert>
 #include <vector>
 #include <memory>
 
@@ -62,12 +63,12 @@ class CConfigTraits final : public CBaseConfigTraits<CONFIG, CConfigTraits<CONFI
 public:
 	static const char* GetName( const CONFIG& config )
 	{
-		static_assert( false, "CConfigTraits: Implement GetName" );
+		assert( !"CConfigTraits: Implement GetName" );
 	}
 
 	static bool SetName( CONFIG& config, const char* const pszName )
 	{
-		static_assert( false, "CConfigTraits: Implement SetName" );
+		assert( !"CConfigTraits: Implement SetName" );
 
 		return false;
 	}
