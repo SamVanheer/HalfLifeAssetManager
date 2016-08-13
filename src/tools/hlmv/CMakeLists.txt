@@ -30,8 +30,14 @@ if( NOT OPENGL_FOUND )
 	MESSAGE( FATAL_ERROR "Could not locate OpenGL library" )
 endif()
 
+if( WIN32 )
+	set( WXWIDGETS_LIB_INCLUDE ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll/mswud )
+else()
+	set( WXWIDGETS_LIB_INCLUDE ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk/wx/include/gtk2-unicode-3.1 )
+endif()
+
 include_directories(
-	${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll/mswud
+	${WXWIDGETS_LIB_INCLUDE}
 	${CMAKE_SOURCE_DIR}/external/wxWidgets/include
 	${OPENGL_INCLUDE_DIR}
 	"${SHARED_INCLUDEPATHS}"
@@ -41,45 +47,69 @@ add_executable( HLMV ${PREP_SRCS} )
 
 target_compile_definitions( HLMV PRIVATE	
 	WXUSINGDLL
-	"${SHARED_DEFS}"
+	"${SHARED_WX_DEFS}"
 )
 
-find_library( GLEW glew32 PATHS ${CMAKE_SOURCE_DIR}/external/GLEW/lib )
+if( WIN32 )
+	find_library( GLEW glew32 PATHS ${CMAKE_SOURCE_DIR}/external/GLEW/lib )
+else()
+	find_library( GLEW libGLEW.so.2.0.0 PATHS ${CMAKE_SOURCE_DIR}/external/GLEW/lib )
+endif()
 
-find_library( WXBASED wxbase31ud PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-find_library( WXCORED wxmsw31ud_core PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-find_library( WXGLD wxmsw31ud_gl PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-find_library( WXADVD wxmsw31ud_adv PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-find_library( WXPROPGRIDD wxmsw31ud_propgrid PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
+if( WIN32 )
+	find_library( WXBASED wxbase31ud PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
+	find_library( WXCORED wxmsw31ud_core PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
+	find_library( WXGLD wxmsw31ud_gl PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
+	find_library( WXADVD wxmsw31ud_adv PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
+	find_library( WXPROPGRIDD wxmsw31ud_propgrid PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
 
-find_library( WXBASE wxbase31u PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-find_library( WXCORE wxmsw31u_core PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-find_library( WXGL wxmsw31u_gl PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-find_library( WXADV wxmsw31u_adv PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-find_library( WXPROPGRID wxmsw31u_propgrid PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
+	find_library( WXBASE wxbase31u PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
+	find_library( WXCORE wxmsw31u_core PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
+	find_library( WXGL wxmsw31u_gl PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
+	find_library( WXADV wxmsw31u_adv PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
+	find_library( WXPROPGRID wxmsw31u_propgrid PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
+	
+	set( WXWIDGETS_LIBS
+		${WXPROPGRID} 	optimized
+		${WXADV} 		optimized
+		${WXGL} 		optimized
+		${WXCORE} 		optimized
+		${WXBASE} 		optimized
+		${WXPROPGRIDD} 	#debug
+		${WXADVD} 		#debug
+		${WXGLD} 		#debug
+		${WXCORED} 		#debug
+		${WXBASED} 		#debug
+	)
+else()
+	find_library( WXBASE wx_baseu-3.1 PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk )
+	find_library( WXCORE wx_gtk2u_core-3.1 PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk )
+	find_library( WXGL wx_gtk2u_gl-3.1 PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk )
+	find_library( WXADV wx_gtk2u_adv-3.1 PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk )
+	find_library( WXPROPGRID wx_gtk2u_propgrid-3.1 PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk )
+	
+	set( WXWIDGETS_LIBS
+		${WXPROPGRID}
+		${WXADV}
+		${WXGL}
+		${WXCORE}
+		${WXBASE}
+	)
+endif()
 
 target_link_libraries( HLMV
 	HLCore
-	${WXPROPGRID} optimized
-	${WXADV} optimized
-	${WXGL} optimized
-	${WXCORE} optimized
-	${WXBASE} optimized
-	${WXPROPGRIDD} 	#debug
-	${WXADVD} 		#debug
-	${WXGLD} 		#debug
-	${WXCORED} 		#debug
-	${WXBASED} 		#debug
+	Keyvalues
+	${WXWIDGETS_LIBS}
 	${GLEW}
 	${OPENGL_LIBRARIES}
 	"${SHARED_DEPENDENCIES}"
 )
 
-
-
 set_target_properties( HLMV 
-	PROPERTIES COMPILE_FLAGS "${LINUX_32BIT_FLAG}" 
-	LINK_FLAGS "${SHARED_LINK_FLAGS}" )
+	PROPERTIES COMPILE_FLAGS "${WX_SHARED_COMPILE_FLAGS}" 
+	LINK_FLAGS "${SHARED_WX_LINK_FLAGS}"
+)
 
 #Create filters
 create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
@@ -102,4 +132,6 @@ if( WIN32 )
 	)
 	
 	copy_dependencies( HLMV external/GLEW/lib glew32.dll )
+else()
+	copy_dependencies( HLMV external/GLEW/lib libGLEW.so.2.0.0 )
 endif()
