@@ -16,6 +16,8 @@
 #ifndef GAME_STUDIOMODEL_STUDIO_H
 #define GAME_STUDIOMODEL_STUDIO_H
 
+#include "shared/Const.h"
+
 /*
 ==============================================================================
 

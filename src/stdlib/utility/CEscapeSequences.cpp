@@ -1,5 +1,5 @@
 #include <cassert>
-#include <memory>
+#include <cstring>
 
 #include "shared/Utility.h"
 

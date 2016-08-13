@@ -1,5 +1,6 @@
 #include <array>
 #include <chrono>
+#include <functional>
 #include <random>
 
 #include "Utility.h"

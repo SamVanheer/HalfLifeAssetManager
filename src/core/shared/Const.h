@@ -1,7 +1,7 @@
 #ifndef COMMON_CONST_H
 #define COMMON_CONST_H
 
-#include <cstdint>
+#include <climits>
 
 #include <glm/vec3.hpp>
 

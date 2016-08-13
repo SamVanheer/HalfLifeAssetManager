@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstring>
 #include <limits>
 
 #include "shared/Platform.h"

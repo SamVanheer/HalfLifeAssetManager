@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstring>
 #include <utility>
 
 #include "shared/Platform.h"

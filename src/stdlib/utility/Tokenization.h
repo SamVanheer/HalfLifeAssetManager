@@ -1,6 +1,8 @@
 #ifndef UTILITY_TOKENIZATION_H
 #define UTILITY_TOKENIZATION_H
 
+#include <cstring>
+
 /**
 *	@defgroup Tokenization Tokenization utility code.
 *	@{
