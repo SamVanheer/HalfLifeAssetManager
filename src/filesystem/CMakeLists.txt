@@ -34,6 +34,10 @@ set_target_properties( FileSystem
 	LINK_FLAGS "${SHARED_LINK_FLAGS}"
 )
 
+target_link_libraries( FileSystem
+	HLStdLib
+)
+
 #Create filters
 create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
 
