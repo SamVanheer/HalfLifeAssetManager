@@ -155,7 +155,7 @@ void CSpriteRenderer::DrawSprite( const glm::vec3& vecOrigin, const glm::vec2& v
 
 		float* pflIntervals = pGroup->intervals;
 
-		float flInt;
+		double flInt;
 
 		const float flFraction = modf( flFrame, &flInt );
 
