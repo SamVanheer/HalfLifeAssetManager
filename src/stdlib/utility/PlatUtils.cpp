@@ -1,5 +1,4 @@
 #include <cassert>
-#include <filesystem>
 #include <vector>
 
 #include "core/shared/Platform.h"
@@ -50,16 +49,18 @@ std::string GetExeFileName( bool* pSuccess )
 
 #else
 	//TODO: untested.
-	std::error_code error_code;
+	char szBuffer[ MAX_PATH ];
 
-	auto path = std::experimental::filesystem::read_symlink( "/proc/self/exe", error_code );
+	ssize_t iResult = readlink( "/proc/self/exe", szBuffer, sizeof( szBuffer ) - 1 );
 
-	if( !error_code )
+	if( iResult != -1 )
 	{
 		if( pSuccess )
 			*pSuccess = true;
 
-		return path.string();
+		szBuffer[ iResult ] = '\0';
+
+		return szBuffer;
 	}
 #endif
 
