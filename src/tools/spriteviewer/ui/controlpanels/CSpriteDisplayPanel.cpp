@@ -118,7 +118,7 @@ void CSpriteDisplayPanel::OnTypeChanged( wxCommandEvent& event )
 
 	const auto orientationType = static_cast<sprite::Type::Type>( type - 1 );
 
-	if( type == wxNOT_FOUND || type == 0 || orientationType < sprite::TexFormat::FIRST || orientationType >= sprite::TexFormat::LAST )
+	if( type == wxNOT_FOUND || type == 0 || orientationType < sprite::Type::FIRST || orientationType >= sprite::Type::LAST )
 	{
 		m_pHLSV->GetState()->ClearTypeOverride();
 	}
