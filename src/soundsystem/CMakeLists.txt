@@ -30,12 +30,21 @@ target_compile_definitions( SoundSystem PRIVATE
 	"${SHARED_DEFS}"
 )
 
-find_library( FMOD fmodex_vc.lib PATHS "${CMAKE_SOURCE_DIR}/external/FMOD/lib" )
+if( WIN32 )
+	find_library( FMOD fmodex_vc.lib PATHS "${CMAKE_SOURCE_DIR}/external/FMOD/lib" )
+else()
+	find_library( FMOD fmodex PATHS "${CMAKE_SOURCE_DIR}/external/FMOD/lib" )
+endif()
 
 target_link_libraries( SoundSystem
 	"${FMOD}"
 	HLCore
 	"${SHARED_DEPENDENCIES}"
+)
+
+set_target_properties( SoundSystem 
+	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
+	LINK_FLAGS "${SHARED_LINK_FLAGS}"
 )
 
 #Create filters
@@ -45,4 +54,6 @@ clear_sources()
 
 if( WIN32 )
 	copy_dependencies( SoundSystem external/FMOD/lib fmodex.dll )
+else()
+	copy_dependencies( SoundSystem external/FMOD/lib libfmodex.so )
 endif()
