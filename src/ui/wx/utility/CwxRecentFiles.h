@@ -33,7 +33,7 @@ public:
 	CwxRecentFiles( const std::shared_ptr<settings::CRecentFiles>& recentFiles );
 	~CwxRecentFiles();
 
-	const std::shared_ptr<const settings::CRecentFiles>& GetRecentFiles() const { return m_RecentFiles; }
+	std::shared_ptr<const settings::CRecentFiles> GetRecentFiles() const { return m_RecentFiles; }
 	const std::shared_ptr<settings::CRecentFiles>& GetRecentFiles() { return m_RecentFiles; }
 
 	/**
