@@ -32,8 +32,10 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 #else
 
-#error "Not implemented"
+#include <linux/limits.h>
+#include <strings.h>
 
+#define MAX_PATH PATH_MAX
 #define MAX_PATH_LENGTH PATH_MAX
 
 #define DLLEXPORT __attribute__( ( visibility( "default" ) ) )
