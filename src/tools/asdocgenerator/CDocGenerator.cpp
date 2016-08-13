@@ -7,10 +7,10 @@
 
 #include "keyvalues/Keyvalues.h"
 
-#include "html\CHTMLPage.h"
-#include "html\CHTMLHeader.h"
-#include "html\CHTMLBody.h"
-#include "html\CHTMLElement.h"
+#include "html/CHTMLPage.h"
+#include "html/CHTMLHeader.h"
+#include "html/CHTMLBody.h"
+#include "html/CHTMLElement.h"
 
 #include "CDocGenerator.h"
 
@@ -439,9 +439,9 @@ std::pair<bool, std::shared_ptr<CHTMLElement>> CDocGenerator::GenerateTable( con
 
 	auto tableHeader = std::make_shared<CHTMLElement>( "tr" );
 
-	for( const auto& content : content.vecContent )
+	for( const auto& contentEntry : content.vecContent )
 	{
-		tableHeader->AddObject( std::make_shared<CHTMLElement>( "th", content.szHeaderName ) );
+		tableHeader->AddObject( std::make_shared<CHTMLElement>( "th", contentEntry.szHeaderName ) );
 	}
 
 	table->AddObject( tableHeader );
