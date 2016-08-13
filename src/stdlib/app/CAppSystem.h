@@ -212,7 +212,7 @@ protected:
 		if( iface.pInterface )
 			return;
 
-		iface.pInterface = static_cast<std::remove_reference<decltype( iface.pInterface )>::type>( factory( iface.pszInterfaceName, nullptr ) );
+		iface.pInterface = static_cast<typename std::remove_reference<decltype( iface.pInterface )>::type>( factory( iface.pszInterfaceName, nullptr ) );
 	}
 
 	/**
