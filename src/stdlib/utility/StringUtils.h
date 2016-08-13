@@ -17,7 +17,7 @@ inline bool PrintfSuccess( const int iRet, const size_t uiBufferSize )
 */
 inline size_t StringHash( const char* const pszString )
 {
-#if defined(_WIN64)
+#if defined( _WIN64 ) || ( defined( __GNUC__ ) && ( __x86_64__ || __ppc64__ ) )
 	static_assert( sizeof( size_t ) == 8, "This code is for 64-bit size_t." );
 	const size_t _FNV_offset_basis = 14695981039346656037ULL;
 	const size_t _FNV_prime = 1099511628211ULL;
