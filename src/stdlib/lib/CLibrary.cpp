@@ -4,6 +4,8 @@
 
 #include "shared/Platform.h"
 
+#include "lib/LibConstants.h"
+
 #ifdef WIN32
 //Nothing so far
 #else
@@ -52,6 +54,47 @@ bool CLibrary::Load( const char* const pszFilename )
 	m_szName = pszFilename;
 
 	return true;
+}
+
+bool CLibrary::Load( const CLibArgs& args )
+{
+	Free();
+
+	const auto& platform = CPlatform::GetCurrentPlatform();
+
+	char szBuffer[ MAX_PATH ];
+
+	const char* pszPrefix = !args.ShouldDisablePrefixes() ? platform.GetDefaultLibPrefix() : "";
+
+	//Handle the override extension as a list of 1 extension.
+	const char* const pszOverrideExt[] = 
+	{
+		args.GetOverrideExtension()
+	};
+
+	const char* const* pszExts = !args.GetOverrideExtension() ? platform.GetLibExts() : pszOverrideExt;
+
+	const size_t uiCount = !args.GetOverrideExtension() ? platform.GetNumLibExts() : 1;
+
+	for( size_t uiIndex = 0; uiIndex < uiCount; ++uiIndex )
+	{
+		const int iResult = snprintf( szBuffer, sizeof( szBuffer ), "%s%s%s%s%s", args.GetPath(), *args.GetPath() ? "/" : "", pszPrefix, args.GetFilename(), pszExts[ uiIndex ] );
+
+		if( iResult < 0 || static_cast<size_t>( iResult ) >= sizeof( szBuffer ) )
+			return false;
+
+		m_hLibrary = DoLoad( szBuffer );
+
+		if( IsLoaded() )
+		{
+			//Use the base name so users can compare it.
+			m_szName = args.GetFilename();
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void CLibrary::Free()

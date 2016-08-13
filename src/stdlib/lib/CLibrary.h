@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "lib/CLibArgs.h"
+
 /**
 *	Represents a handle to single dynamic/shared library that can be loaded.
 */
@@ -64,6 +66,13 @@ public:
 	*	@return true if the library was successfully loaded, false otherwise.
 	*/
 	bool Load( const char* const pszFilename );
+
+	/**
+	*	Loads the given library. If this handle already has a handle to a library, it will be freed.
+	*	@param args CLibArgs instance that contains library information.
+	*	@return true if the library was successfully loaded, false otherwise.
+	*/
+	bool Load( const CLibArgs& args );
 
 	/**
 	*	If the library is loaded, this will free the library.
