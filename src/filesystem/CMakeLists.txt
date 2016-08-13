@@ -29,6 +29,11 @@ target_compile_definitions( FileSystem PRIVATE
 	"${SHARED_DEFS}"
 )
 
+set_target_properties( FileSystem 
+	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
+	LINK_FLAGS "${SHARED_LINK_FLAGS}"
+)
+
 #Create filters
 create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
 

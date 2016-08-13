@@ -49,6 +49,15 @@ target_compile_definitions( Keyvalues PRIVATE
 	"${SHARED_DEFS}"
 )
 
+set_target_properties( Keyvalues 
+	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
+	LINK_FLAGS "${SHARED_LINK_FLAGS}"
+)
+
+target_link_libraries( Keyvalues
+	HLStdLib
+)
+
 #Create filters
 create_source_groups( "${CMAKE_SOURCE_DIR}" )
 

@@ -32,6 +32,11 @@ target_link_libraries( CVar
 	"${SHARED_DEPENDENCIES}"
 )
 
+set_target_properties( CVar 
+	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
+	LINK_FLAGS "${SHARED_LINK_FLAGS}"
+)
+
 #Create filters
 create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
 
