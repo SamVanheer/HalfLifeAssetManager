@@ -1,7 +1,9 @@
 #ifndef UTILITY_BYTESWAP_H
 #define UTILITY_BYTESWAP_H
 
+#include <cassert>
 #include <cstdint>
+#include <cstring>
 #include <type_traits>
 
 /**
@@ -102,7 +104,7 @@ public:
 	*/
 	static constexpr bool IsLittleEndian()
 	{
-		static_assert( false, "Undefined byte swap order!" );
+		assert( !"Undefined byte swap order!" );
 		return false;
 	}
 
@@ -112,7 +114,7 @@ public:
 	template<typename T>
 	static T LittleValue( T value )
 	{
-		static_assert( false, "Undefined byte swap order!" );
+		assert( !"Undefined byte swap order!" );
 	}
 
 	/**
@@ -121,7 +123,7 @@ public:
 	template<typename T>
 	static T BigValue( T value )
 	{
-		static_assert( false, "Undefined byte swap order!" );
+		assert( !"Undefined byte swap order!" );
 	}
 };
 
@@ -187,7 +189,7 @@ T LittleValue( T value )
 template<typename T>
 T LittleEnumValue( T value )
 {
-	return static_cast<T>( ByteSwap<>::LittleValue( static_cast<std::underlying_type<T>::type>( value ) ) );
+	return static_cast<T>( ByteSwap<>::LittleValue( static_cast<typename std::underlying_type<T>::type>( value ) ) );
 }
 
 /**
@@ -206,7 +208,7 @@ T BigValue( T value )
 template<typename T>
 T BigEnumValue( T value )
 {
-	return static_cast<T>( ByteSwap<>::BigValue( static_cast<std::underlying_type<T>::type>( value ) ) );
+	return static_cast<T>( ByteSwap<>::BigValue( static_cast<typename std::underlying_type<T>::type>( value ) ) );
 }
 
 /** @} */
