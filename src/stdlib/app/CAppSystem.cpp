@@ -173,18 +173,16 @@ bool CAppSystem::IsLibraryLoaded( const char* const pszName ) const
 	return GetLibraryByName( pszName ) != nullptr;
 }
 
-bool CAppSystem::LoadLibrary( const char* const pszName )
+bool CAppSystem::LoadLibrary( const CLibArgs& args )
 {
-	assert( pszName );
-
-	if( IsLibraryLoaded( pszName ) )
+	if( IsLibraryLoaded( args.GetFilename() ) )
 		return true;
 
 	CLibrary lib;
 
-	if( !lib.Load( pszName ) )
+	if( !lib.Load( args ) )
 	{
-		FatalError( "CAppSystem::LoadLibrary: Failed to load library \"%s\"\nThe error given was \"%s\"\n", pszName, CLibrary::GetLoadErrorDescription() );
+		FatalError( "CAppSystem::LoadLibrary: Failed to load library \"%s\"\nThe error given was \"%s\"\n", args.GetFilename(), CLibrary::GetLoadErrorDescription() );
 		return false;
 	}
 

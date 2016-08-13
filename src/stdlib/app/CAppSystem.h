@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "lib/CLibArgs.h"
 #include "lib/CLibrary.h"
 #include "lib/LibInterface.h"
 
@@ -134,21 +135,21 @@ protected:
 
 	/**
 	*	Loads a single library.
-	*	@param pszName Library name. Includes path and extension.
+	*	@param args Library args.
 	*	@return true on success, false otherwise.
 	*/
-	bool LoadLibrary( const char* const pszName );
+	bool LoadLibrary( const CLibArgs& args );
 
 	/**
 	*	Loads a number of libraries.
-	*	@param pszLibrary Name of the library to load.
+	*	@param args CLibArgs instance that represents a library.
 	*	@param libraries Libraries to load next.
 	*	@return true if all libraries were loaded successfully; false otherwise.
 	*/
 	template<typename... LIBRARIES>
-	bool LoadLibraries( const char* pszLibrary, LIBRARIES... libraries )
+	bool LoadLibraries( const CLibArgs& args, LIBRARIES... libraries )
 	{
-		if( !LoadLibrary( pszLibrary ) )
+		if( !LoadLibrary( args ) )
 			return false;
 
 		return LoadLibraries( libraries... );
