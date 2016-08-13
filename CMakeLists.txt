@@ -184,6 +184,14 @@ endif()
 #C++14 support
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y" )
 
+#Hide symbols from static libraries so they don't merge and cause issues
+if( UNIX )
+	if( CMAKE_COMPILER_IS_GNUCC )
+		set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,--exclude-libs,ALL" )
+		set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--exclude-libs,ALL" )
+	endif()
+endif()
+
 #Shared directories
 
 #Save the shares sources into SHARED_SRCS
