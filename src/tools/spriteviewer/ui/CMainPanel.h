@@ -3,12 +3,13 @@
 
 #include "wxSpriteViewer.h"
 
+#include <wx/notebook.h>
+
 #include "shared/Utility.h"
 
-#include "C3DView.h"
+#include "controlpanels/CBaseControlPanel.h"
 
-class wxNotebook;
-class wxBookCtrlEvent;
+#include "C3DView.h"
 
 namespace sprview
 {

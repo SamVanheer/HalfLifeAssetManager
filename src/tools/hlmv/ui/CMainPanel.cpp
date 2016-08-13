@@ -1,6 +1,5 @@
 #include <memory>
 
-#include <wx/notebook.h>
 #include <wx/gbsizer.h>
 #include <wx/collpane.h>
 

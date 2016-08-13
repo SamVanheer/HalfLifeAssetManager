@@ -3,6 +3,8 @@
 
 #include "wxHLMV.h"
 
+#include <wx/notebook.h>
+
 #include "shared/Utility.h"
 
 #include "shared/renderer/studiomodel/IStudioModelRendererListener.h"
@@ -10,9 +12,6 @@
 #include "controlpanels/CBaseControlPanel.h"
 
 #include "C3DView.h"
-
-class wxNotebook;
-class wxBookCtrlEvent;
 
 namespace hlmv
 {
