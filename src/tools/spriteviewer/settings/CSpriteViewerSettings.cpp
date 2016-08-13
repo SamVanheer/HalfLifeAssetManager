@@ -8,6 +8,8 @@
 
 namespace sprview
 {
+const size_t CSpriteViewerSettings::MAX_RECENT_FILES = 4;
+
 const Color CSpriteViewerSettings::DEFAULT_BACKGROUND_COLOR = Color( 63, 127, 127 );
 
 CSpriteViewerSettings::CSpriteViewerSettings( filesystem::IFileSystem* const pFileSystem )

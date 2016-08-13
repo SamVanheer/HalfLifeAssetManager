@@ -14,7 +14,7 @@ namespace sprview
 class CSpriteViewerSettings final : public settings::CBaseSettings
 {
 public:
-	static const size_t MAX_RECENT_FILES = 4;
+	static const size_t MAX_RECENT_FILES;
 
 	static const Color DEFAULT_BACKGROUND_COLOR;
 
