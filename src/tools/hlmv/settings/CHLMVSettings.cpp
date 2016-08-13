@@ -14,6 +14,8 @@
 
 namespace hlmv
 {
+const size_t CHLMVSettings::MAX_RECENT_FILES = 4;
+
 const Color CHLMVSettings::DEFAULT_GROUND_COLOR = Color( 216, 216, 175 );
 
 const Color CHLMVSettings::DEFAULT_BACKGROUND_COLOR = Color( 63, 127, 127 );
@@ -87,7 +89,7 @@ void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameCo
 
 void CHLMVSettings::SetFloorLength( float flLength )
 {
-	m_flFloorLength = clamp( abs( flLength ), MIN_FLOOR_LENGTH, MAX_FLOOR_LENGTH );
+	m_flFloorLength = clamp( static_cast<float>( fabs( flLength ) ), MIN_FLOOR_LENGTH, MAX_FLOOR_LENGTH );
 }
 
 bool CHLMVSettings::PostInitialize( const char* const pszFilename )

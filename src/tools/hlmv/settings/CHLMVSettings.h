@@ -16,7 +16,7 @@ namespace hlmv
 class CHLMVSettings final : public settings::CBaseSettings, public settings::CGameConfigManager::ConfigListener_t
 {
 public:
-	static const size_t MAX_RECENT_FILES = 4;
+	static const size_t MAX_RECENT_FILES;
 
 	static const Color DEFAULT_GROUND_COLOR;
 
