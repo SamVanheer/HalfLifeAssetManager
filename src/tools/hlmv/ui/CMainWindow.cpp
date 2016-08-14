@@ -144,10 +144,6 @@ CMainWindow::CMainWindow( CModelViewerApp* const pHLMV )
 
 CMainWindow::~CMainWindow()
 {
-	//Clear the studio model here, while the context is still valid.
-	m_pMainPanel->FreeModel();
-
-	m_pHLMV->Exit( true );
 }
 
 void CMainWindow::RunFrame()
@@ -385,7 +381,13 @@ void CMainWindow::OpenRecentFile( wxCommandEvent& event )
 
 void CMainWindow::OnClose( wxCloseEvent& event )
 {
+	//Clear the studio model here, while the context is still valid.
+	m_pMainPanel->FreeModel();
+
 	Destroy();
+	DestroyChildren();
+
+	m_pHLMV->Exit( true );
 }
 
 void CMainWindow::OnExit( wxCommandEvent& event )

@@ -163,6 +163,8 @@ void CModelViewerApp::OnExit( const bool bMainWndClosed )
 		m_pMainWindow->Close( true );
 		m_pMainWindow = nullptr;
 	}
+
+	wxOpenGL().Shutdown();
 }
 
 bool CModelViewerApp::LoadModel( const char* const pszFilename )
