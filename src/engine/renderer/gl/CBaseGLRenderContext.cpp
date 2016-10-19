@@ -177,6 +177,7 @@ HTexture_t CBaseGLRenderContext::CreateTexture( const int mipmaps, const ImageFo
 	//TODO: error handling.
 
 	//TODO: make this customizable?
+	//TODO: wrong target
 	glTexEnvi( GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
 	return GLToTexHandle( texture );
