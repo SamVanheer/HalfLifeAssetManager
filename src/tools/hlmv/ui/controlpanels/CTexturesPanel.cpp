@@ -50,6 +50,7 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 	m_pCheckBoxes[ CheckBox::CHROME ]				= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Chrome" );
 	m_pCheckBoxes[ CheckBox::ADDITIVE ]				= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Additive" );
 	m_pCheckBoxes[ CheckBox::TRANSPARENT ]			= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Transparent" );
+	m_pCheckBoxes[ CheckBox::FULLBRIGHT ]			= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Fullbright" );
 	m_pCheckBoxes[ CheckBox::SHOW_UV_MAP ]			= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Show UV Map" );
 	m_pCheckBoxes[ CheckBox::OVERLAY_UV_MAP ]		= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Overlay UV Map" );
 	m_pCheckBoxes[ CheckBox::ANTI_ALIAS_LINES ]		= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Anti-Alias Lines" );
@@ -202,6 +203,7 @@ void CTexturesPanel::SetTexture( int iIndex )
 	m_pCheckBoxes[ CheckBox::CHROME ]->SetValue( ( texture.flags & STUDIO_NF_CHROME ) != 0 );
 	m_pCheckBoxes[ CheckBox::ADDITIVE ]->SetValue( ( texture.flags & STUDIO_NF_ADDITIVE ) != 0 );
 	m_pCheckBoxes[ CheckBox::TRANSPARENT ]->SetValue( ( texture.flags & STUDIO_NF_MASKED ) != 0 );
+	m_pCheckBoxes[ CheckBox::FULLBRIGHT ]->SetValue( ( texture.flags & STUDIO_NF_FULLBRIGHT ) != 0 );
 
 	const CStudioModelEntity::MeshList_t meshes = pEntity->ComputeMeshList( iIndex );
 
@@ -349,6 +351,20 @@ void CTexturesPanel::CheckBoxChanged( wxCommandEvent& event )
 			break;
 		}
 
+	case CheckBox::FULLBRIGHT:
+		{
+			if( pCheckBox->GetValue() )
+			{
+				texture.flags |= STUDIO_NF_FULLBRIGHT;
+			}
+			else
+			{
+				texture.flags &= ~STUDIO_NF_FULLBRIGHT;
+			}
+
+			break;
+		}
+
 	case CheckBox::SHOW_UV_MAP:
 		{
 			m_pHLMV->GetState()->showUVMap = pCheckBox->GetValue();
@@ -376,6 +392,7 @@ void CTexturesPanel::CheckBoxChanged( wxCommandEvent& event )
 	case CheckBox::CHROME:
 	case CheckBox::ADDITIVE:
 	case CheckBox::TRANSPARENT:
+	case CheckBox::FULLBRIGHT:
 		{
 			m_pHLMV->GetState()->modelChanged = true;
 

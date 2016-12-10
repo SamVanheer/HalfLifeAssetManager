@@ -361,7 +361,7 @@ void C3DView::DrawTexture( const int iXOffset, const int iYOffset, const int iWi
 		if( texture.flags & STUDIO_NF_MASKED )
 		{
 			glEnable( GL_ALPHA_TEST );
-			glAlphaFunc( GL_GREATER, 0.0f );
+			glAlphaFunc( GL_GREATER, 0.5f );
 		}
 
 		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );

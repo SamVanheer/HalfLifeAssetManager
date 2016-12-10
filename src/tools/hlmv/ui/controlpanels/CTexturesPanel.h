@@ -30,6 +30,7 @@ public:
 			CHROME				= FIRST,
 			ADDITIVE,
 			TRANSPARENT,
+			FULLBRIGHT,
 
 			SHOW_UV_MAP,
 			OVERLAY_UV_MAP,

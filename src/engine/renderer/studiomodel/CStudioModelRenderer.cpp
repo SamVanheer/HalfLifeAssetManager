@@ -964,6 +964,9 @@ unsigned int CStudioModelRenderer::DrawMeshes( const bool bWireframe, const Sort
 
 	int i;
 
+	//Polygons may overlap, so make sure they can blend together. - Solokiller
+	glDepthFunc( GL_LEQUAL );
+
 	for( int j = 0; j < m_pModel->nummesh; j++ )
 	{
 		float s, t;
@@ -1065,7 +1068,12 @@ void CStudioModelRenderer::Lighting( glm::vec3& lv, int bone, int flags, const g
 	const float shade = m_shadelight / 255.0f;
 	glm::vec3 illum{ ambient };
 
-	if( flags & STUDIO_NF_FLATSHADE )
+	if( flags & STUDIO_NF_FULLBRIGHT )
+	{
+		lv = glm::vec3{ 1, 1, 1 };
+		return;
+	}
+	else if( flags & STUDIO_NF_FLATSHADE )
 	{
 		VectorMA( illum, 0.8f, glm::vec3{ shade }, illum );
 	}
@@ -1098,7 +1106,6 @@ void CStudioModelRenderer::Lighting( glm::vec3& lv, int bone, int flags, const g
 	const glm::vec3 lightcolor{ m_lightcolor.GetRed() / 255.0f, m_lightcolor.GetGreen() / 255.0f, m_lightcolor.GetBlue() / 255.0f };
 
 	lv *= lightcolor;
-
 }
 
 
