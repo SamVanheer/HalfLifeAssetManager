@@ -1,6 +1,8 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#include <cstdio>
+
 #ifdef WIN32
 
 #define WIN32_LEAN_AND_MEAN
