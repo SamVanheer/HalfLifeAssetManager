@@ -12,6 +12,8 @@
 
 #include "CHLMVSettings.h"
 
+#include <cmath>
+
 namespace hlmv
 {
 const size_t CHLMVSettings::MAX_RECENT_FILES = 4;
