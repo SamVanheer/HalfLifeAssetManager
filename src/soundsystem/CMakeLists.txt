@@ -31,9 +31,9 @@ target_compile_definitions( SoundSystem PRIVATE
 )
 
 if( WIN32 )
-	find_library( FMOD fmodex_vc.lib PATHS "${CMAKE_SOURCE_DIR}/external/FMOD/lib" )
+	find_library( FMOD fmod_vc.lib PATHS "${CMAKE_SOURCE_DIR}/external/FMOD/lib" )
 else()
-	find_library( FMOD fmodex PATHS "${CMAKE_SOURCE_DIR}/external/FMOD/lib" )
+	find_library( FMOD fmod PATHS "${CMAKE_SOURCE_DIR}/external/FMOD/lib" )
 endif()
 
 target_link_libraries( SoundSystem
@@ -53,7 +53,7 @@ create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
 clear_sources()
 
 if( WIN32 )
-	copy_dependencies( SoundSystem external/FMOD/lib fmodex.dll )
+	copy_dependencies( SoundSystem external/FMOD/lib fmod.dll )
 else()
-	copy_dependencies( SoundSystem external/FMOD/lib libfmodex.so )
+	copy_dependencies( SoundSystem external/FMOD/lib libfmod.so )
 endif()
