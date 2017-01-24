@@ -40,8 +40,11 @@ inline size_t StringHash( const char* const pszString )
 }
 
 template<typename STR>
-struct Hash_C_String final : public std::unary_function<STR*, size_t>
+struct Hash_C_String final
 {
+	typedef STR* argument_type;
+	typedef size_t result_type;
+
 	std::size_t operator()( STR pszStr ) const
 	{
 		return StringHash( pszStr );
@@ -51,6 +54,10 @@ struct Hash_C_String final : public std::unary_function<STR*, size_t>
 template<typename STR, int( *COMPARE )( STR lhs, STR rhs ) = strcmp>
 struct EqualTo_C_String final
 {
+	typedef STR first_argument_type;
+	typedef STR second_argument_type;
+	typedef bool result_type;
+
 	constexpr bool operator()( STR lhs, STR rhs ) const
 	{
 		return COMPARE( lhs, rhs ) == 0;
