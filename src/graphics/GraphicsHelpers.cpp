@@ -89,7 +89,7 @@ void SetupRenderMode( RenderMode renderMode, const bool bBackfaceCulling )
 
 void DrawFloorQuad( float flSideLength )
 {
-	flSideLength = abs( flSideLength );
+	flSideLength = std::abs( flSideLength );
 
 	glBegin( GL_TRIANGLE_STRIP );
 	glTexCoord2f( 0.0f, 0.0f );
