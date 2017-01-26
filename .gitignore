@@ -76,7 +76,6 @@ bin/HLMVSettings.txt
 msw_14/Release/RCa37524
 msw_14/Release/RCa37624
 *.exp
-*.lib
 *.lastcodeanalysissucceeded
 *.nativecodeanalysis.all.xml
 *.nativecodeanalysis.xml
