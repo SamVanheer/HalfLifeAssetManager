@@ -88,59 +88,6 @@ bool CSoundSystem::Initialize()
 			if( CheckFMODResult( result ) )
 				return false;
 		}
-		else
-		{
-			{
-				FMOD_CAPS caps;
-				FMOD_SPEAKERMODE speakerMode;
-
-				result = m_pSystem->getDriverCaps( 0, &caps, nullptr, &speakerMode );
-
-				if( CheckFMODResult( result ) )
-					return false;
-
-				/*
-				Set the user selected speaker mode.
-				*/
-				result = m_pSystem->setSpeakerMode( speakerMode );
-
-				if( CheckFMODResult( result ) )
-					return false;
-
-				if( caps & FMOD_CAPS_HARDWARE_EMULATED )
-				{
-					/*
-					The user has the 'Acceleration' slider set to off! This is really bad
-					for latency! You might want to warn the user about this.
-					*/
-					result = m_pSystem->setDSPBufferSize( 1024, 10 );
-
-					if( CheckFMODResult( result ) )
-						return false;
-				}
-			}
-
-			{
-				char szDriverName[ 256 ];
-
-				result = m_pSystem->getDriverInfo( 0, szDriverName, sizeof( szDriverName ), 0 );
-		
-				if( CheckFMODResult( result ) )
-					return false;
-
-				if( strstr( szDriverName, "SigmaTel" ) )
-				{
-					/*
-					Sigmatel sound devices crackle for some reason if the format is PCM 16bit.
-					PCM floating point output seems to solve it.
-					*/
-					result = m_pSystem->setSoftwareFormat( 48000, FMOD_SOUND_FORMAT_PCMFLOAT, 0, 0,
-														FMOD_DSP_RESAMPLER_LINEAR );
-					if( CheckFMODResult( result ) )
-						return false;
-				}
-			}
-		}
 	}
 
 	result = m_pSystem->init( 100, FMOD_INIT_NORMAL, 0 );
@@ -151,7 +98,7 @@ bool CSoundSystem::Initialize()
 		Ok, the speaker mode selected isn't supported by this soundcard. Switch it
 		back to stereo...
 		*/
-		result = m_pSystem->setSpeakerMode( FMOD_SPEAKERMODE_STEREO );
+		result = m_pSystem->setSoftwareFormat( 0, FMOD_SPEAKERMODE_STEREO, 0 );
 
 		if( CheckFMODResult( result ) )
 			return false;
@@ -243,7 +190,7 @@ void CSoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitc
 
 	Sound_t sound{};
 
-	FMOD_RESULT result = m_pSystem->createSound( szFullFilename, FMOD_HARDWARE, nullptr, &sound.pSound );
+	FMOD_RESULT result = m_pSystem->createSound( szFullFilename, FMOD_LOOP_OFF | FMOD_2D, nullptr, &sound.pSound );
 
 	if( result == FMOD_ERR_FILE_NOTFOUND )
 	{
@@ -253,7 +200,7 @@ void CSoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitc
 	if( CheckFMODResult( result ) )
 		return;
 
-	if( CheckFMODResult( m_pSystem->playSound( FMOD_CHANNEL_FREE, sound.pSound, false, &sound.pChannel ) ) )
+	if( CheckFMODResult( m_pSystem->playSound( sound.pSound, 0, false, &sound.pChannel ) ) )
 	{
 		CheckFMODResult( sound.pSound->release() );
 		return;

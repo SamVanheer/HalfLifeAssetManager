@@ -58,11 +58,13 @@ Debug/HLMV.log
 *.opendb
 *.db
 *.suo
-*.dll
 *.log
 *.idb
 uvmap.bmp
-external/*
+external/Angelscript
+external/GLEW
+external/GLM
+external/wxWidgets
 *.ilk
 *.user
 *.bmp
@@ -74,7 +76,6 @@ bin/HLMVSettings.txt
 msw_14/Release/RCa37524
 msw_14/Release/RCa37624
 *.exp
-*.lib
 *.lastcodeanalysissucceeded
 *.nativecodeanalysis.all.xml
 *.nativecodeanalysis.xml
