@@ -58,7 +58,6 @@ Debug/HLMV.log
 *.opendb
 *.db
 *.suo
-*.dll
 *.log
 *.idb
 uvmap.bmp
