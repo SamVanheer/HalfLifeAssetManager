@@ -2,8 +2,10 @@
 #HLCore library
 #
 
+set( TARGET_NAME HLCore )
+
 #Add in the shared sources
-add_sources( "${SHARED_SRCS}" )
+add_sources( ${SHARED_SRCS} )
 
 #Add sources
 add_sources(
@@ -15,24 +17,25 @@ add_subdirectory( shared )
 
 preprocess_sources()
 
-include_directories(
-	"${SHARED_INCLUDEPATHS}"
+add_library( ${TARGET_NAME} SHARED ${PREP_SRCS} )
+
+target_include_directories( ${TARGET_NAME} PRIVATE
+	${SHARED_INCLUDEPATHS}
 )
 
-add_library( HLCore SHARED ${PREP_SRCS} )
-
-target_compile_definitions( HLCore PRIVATE	
-	"${SHARED_DEFS}"
+#TODO: CMake adds exports macros automatically - Solokiller
+target_compile_definitions( ${TARGET_NAME} PRIVATE	
+	${SHARED_DEFS}
 	LIBHLCORE_EXPORTS
 )
 
-target_link_libraries( HLCore
+target_link_libraries( ${TARGET_NAME}
 	Keyvalues
 	HLStdLib
-	"${SHARED_DEPENDENCIES}"
+	${SHARED_DEPENDENCIES}
 )
 
-set_target_properties( HLCore 
+set_target_properties( ${TARGET_NAME} 
 	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
 	LINK_FLAGS "${SHARED_LINK_FLAGS}"
 )

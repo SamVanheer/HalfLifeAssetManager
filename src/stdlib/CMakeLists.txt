@@ -2,8 +2,10 @@
 #HLStdLib library
 #
 
+set( TARGET_NAME HLStdLib )
+
 #Add in the shared sources
-add_sources( "${SHARED_SRCS}" )
+add_sources( ${SHARED_SRCS} )
 
 #Add sources
 
@@ -16,17 +18,17 @@ add_subdirectory( utility )
 
 preprocess_sources()
 
-include_directories(
-	"${SHARED_INCLUDEPATHS}"
+add_library( ${TARGET_NAME} STATIC ${PREP_SRCS} )
+
+target_include_directories( ${TARGET_NAME} PRIVATE
+	${SHARED_INCLUDEPATHS}
 )
 
-add_library( HLStdLib STATIC ${PREP_SRCS} )
-
-target_compile_definitions( HLStdLib PRIVATE	
-	"${SHARED_DEFS}"
+target_compile_definitions( ${TARGET_NAME} PRIVATE	
+	${SHARED_DEFS}
 )
 
-set_target_properties( HLStdLib 
+set_target_properties( ${TARGET_NAME} 
 	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
 	LINK_FLAGS "${SHARED_LINK_FLAGS}"
 )
@@ -43,7 +45,7 @@ if( NOT OPENGL_FOUND )
 	MESSAGE( FATAL_ERROR "Could not locate OpenGL library" )
 endif()
 
-target_link_libraries( HLStdLib
+target_link_libraries( ${TARGET_NAME}
 	Keyvalues
 	${GLEW}
 	${OPENGL_LIBRARIES}

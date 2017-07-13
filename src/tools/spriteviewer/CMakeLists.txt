@@ -2,8 +2,10 @@
 #SpriteViewer exe
 #
 
+set( TARGET_NAME SpriteViewer )
+
 #Add in the shared sources
-add_sources( "${SHARED_SRCS}" )
+add_sources( ${SHARED_SRCS} )
 
 #Add sources
 add_sources(
@@ -34,18 +36,18 @@ else()
 	set( WXWIDGETS_LIB_INCLUDE ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk/wx/include/gtk2-unicode-3.1 )
 endif()
 
-include_directories(
+add_executable( ${TARGET_NAME} ${PREP_SRCS} )
+
+target_include_directories( ${TARGET_NAME} PRIVATE
 	${WXWIDGETS_LIB_INCLUDE}
 	${CMAKE_SOURCE_DIR}/external/wxWidgets/include
 	${OPENGL_INCLUDE_DIR}
-	"${SHARED_INCLUDEPATHS}"
+	${SHARED_INCLUDEPATHS}
 )
 
-add_executable( SpriteViewer ${PREP_SRCS} )
-
-target_compile_definitions( SpriteViewer PRIVATE	
+target_compile_definitions( ${TARGET_NAME} PRIVATE	
 	WXUSINGDLL
-	"${SHARED_WX_DEFS}"
+	${SHARED_WX_DEFS}
 )
 
 if( WIN32 )
@@ -95,15 +97,15 @@ else()
 	)
 endif()
 
-target_link_libraries( SpriteViewer
+target_link_libraries( ${TARGET_NAME}
 	HLCore
 	${WXWIDGETS_LIBS}
 	${GLEW}
 	${OPENGL_LIBRARIES}
-	"${SHARED_DEPENDENCIES}"
+	${SHARED_DEPENDENCIES}
 )
 
-set_target_properties( SpriteViewer 
+set_target_properties( ${TARGET_NAME} 
 	PROPERTIES COMPILE_FLAGS "${WX_SHARED_COMPILE_FLAGS}" 
 	LINK_FLAGS "${SHARED_WX_LINK_FLAGS}"
 )
@@ -115,7 +117,7 @@ clear_sources()
 
 if( WIN32 )
 	#Copy wxWidgets libraries
-	copy_dependencies( SpriteViewer external/wxWidgets/lib/vc140_dll
+	copy_dependencies( ${TARGET_NAME} external/wxWidgets/lib/vc140_dll
 		wxbase310ud_vc140.dll
 		wxmsw310ud_core_vc140.dll
 		wxmsw310ud_gl_vc140.dll
@@ -128,5 +130,5 @@ if( WIN32 )
 		wxmsw310u_propgrid_vc140.dll
 	)
 	
-	copy_dependencies( SpriteViewer external/GLEW/lib glew32.dll )
+	copy_dependencies( ${TARGET_NAME} external/GLEW/lib glew32.dll )
 endif()

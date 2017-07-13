@@ -2,8 +2,10 @@
 #Keyvalues library
 #
 
+set( TARGET_NAME Keyvalues )
+
 #Add in the shared sources
-add_sources( "${SHARED_SRCS}" )
+add_sources( ${SHARED_SRCS} )
 
 #Add sources
 
@@ -39,22 +41,22 @@ add_includes(
 
 preprocess_sources()
 
-include_directories(
-	"${SHARED_INCLUDEPATHS}"
+add_library( ${TARGET_NAME} STATIC ${PREP_SRCS} )
+
+target_include_directories( ${TARGET_NAME} PRIVATE
+	${SHARED_INCLUDEPATHS}
 )
 
-add_library( Keyvalues STATIC ${PREP_SRCS} )
-
-target_compile_definitions( Keyvalues PRIVATE	
-	"${SHARED_DEFS}"
+target_compile_definitions( ${TARGET_NAME} PRIVATE	
+	${SHARED_DEFS}
 )
 
-set_target_properties( Keyvalues 
+set_target_properties( ${TARGET_NAME} 
 	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
 	LINK_FLAGS "${SHARED_LINK_FLAGS}"
 )
 
-target_link_libraries( Keyvalues
+target_link_libraries( ${TARGET_NAME}
 	HLStdLib
 )
 

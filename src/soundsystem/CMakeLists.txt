@@ -2,8 +2,10 @@
 #SoundSystem library
 #
 
+set( TARGET_NAME SoundSystem )
+
 #Add in the shared sources
-add_sources( "${SHARED_SRCS}" )
+add_sources( ${SHARED_SRCS} )
 
 #Add sources
 add_sources(
@@ -19,15 +21,15 @@ add_subdirectory( ../lib ${CMAKE_CURRENT_BINARY_DIR}/lib )
 
 preprocess_sources()
 
-include_directories(
-	"${CMAKE_SOURCE_DIR}/external/FMOD/include"
-	"${SHARED_INCLUDEPATHS}"
+add_library( ${TARGET_NAME} SHARED ${PREP_SRCS} )
+
+target_include_directories( ${TARGET_NAME} PRIVATE
+	${CMAKE_SOURCE_DIR}/external/FMOD/include
+	${SHARED_INCLUDEPATHS}
 )
 
-add_library( SoundSystem SHARED ${PREP_SRCS} )
-
-target_compile_definitions( SoundSystem PRIVATE	
-	"${SHARED_DEFS}"
+target_compile_definitions( ${TARGET_NAME} PRIVATE	
+	${SHARED_DEFS}
 )
 
 if( WIN32 )
@@ -36,13 +38,13 @@ else()
 	find_library( FMOD fmod PATHS "${CMAKE_SOURCE_DIR}/external/FMOD/lib" )
 endif()
 
-target_link_libraries( SoundSystem
-	"${FMOD}"
+target_link_libraries( ${TARGET_NAME}
+	${FMOD}
 	HLCore
-	"${SHARED_DEPENDENCIES}"
+	${SHARED_DEPENDENCIES}
 )
 
-set_target_properties( SoundSystem 
+set_target_properties( ${TARGET_NAME} 
 	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
 	LINK_FLAGS "${SHARED_LINK_FLAGS}"
 )
@@ -53,7 +55,7 @@ create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
 clear_sources()
 
 if( WIN32 )
-	copy_dependencies( SoundSystem external/FMOD/lib fmod.dll )
+	copy_dependencies( ${TARGET_NAME} external/FMOD/lib fmod.dll )
 else()
-	copy_dependencies( SoundSystem external/FMOD/lib libfmod.so )
+	copy_dependencies( ${TARGET_NAME} external/FMOD/lib libfmod.so )
 endif()
