@@ -70,7 +70,7 @@ bool CModelViewerApp::PreRunApp()
 	m_pSettings = new CHLMVSettings( GetFileSystem() );
 
 	//TODO: fix on Linux - Solokiller
-	//SetToolIcon( wxICON( HLMV_ICON ) );
+	SetToolIcon( wxICON( HLMV_ICON ) );
 
 	SetEntityList( &g_EntityList );
 

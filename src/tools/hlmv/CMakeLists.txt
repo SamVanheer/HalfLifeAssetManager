@@ -13,6 +13,12 @@ add_sources(
 	CHLMVState.cpp
 )
 
+if( MSVC )
+	add_sources(
+		${SRC_DIR}/msw/tools/hlmv.rc
+	)
+endif()
+
 add_subdirectory( entity )
 add_subdirectory( settings )
 add_subdirectory( ui )

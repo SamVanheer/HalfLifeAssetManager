@@ -31,6 +31,8 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin )
 
 project( HL_Tools )
 
+set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
+
 if( UNIX )	
 	set( LINUX_32BIT_FLAG "-m32" )
 else()
