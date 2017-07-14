@@ -12,6 +12,7 @@
 #include "controlpanels/CTexturesPanel.h"
 #include "controlpanels/CSequencesPanel.h"
 #include "controlpanels/CFullscreenPanel.h"
+#include "controlpanels/CGlobalFlagsPanel.h"
 
 #include "shared/studiomodel/CStudioModel.h"
 #include "shared/renderer/studiomodel/IStudioModelRenderer.h"
@@ -71,6 +72,8 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 
 	m_pModelDisplay = new CModelDisplayPanel( m_pControlPanels, m_pHLMV );
 
+	m_pGlobalFlags = new CGlobalFlagsPanel( m_pControlPanels, m_pHLMV );
+
 	m_pBodyParts = new CBodyPartsPanel( m_pControlPanels, m_pHLMV );
 
 	m_pBones = new CBonesPanel( m_pControlPanels, m_pHLMV );
@@ -86,6 +89,7 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	CBaseControlPanel* const panels[] = 
 	{
 		m_pModelDisplay,
+		m_pGlobalFlags,
 		m_pBodyParts,
 		m_pBones,
 		m_pAttachments,

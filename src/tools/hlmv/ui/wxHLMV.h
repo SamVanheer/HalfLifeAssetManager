@@ -44,6 +44,9 @@ enum wxIdentifier
 	wxID_MDLDISP_FOVCHANGED,
 	wxID_MDLDISP_FPFOVCHANGED,
 
+	//Global flags panel
+	wxID_GLOBALFLAGS_CHECKBOX,
+
 	//Body Parts panel
 	wxID_BODY_BODYPARTS,
 	wxID_BODY_SUBMODELS,

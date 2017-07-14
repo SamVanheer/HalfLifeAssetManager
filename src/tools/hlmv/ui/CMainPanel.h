@@ -18,6 +18,7 @@ namespace hlmv
 class CModelViewerApp;
 
 class CModelDisplayPanel;
+class CGlobalFlagsPanel;
 class CBodyPartsPanel;
 class CBonesPanel;
 class CAttachmentsPanel;
@@ -80,6 +81,7 @@ public:
 	wxNotebook* GetControlPanels() { return m_pControlPanels; }
 
 	CModelDisplayPanel*		GetModelDisplayPanel() { return m_pModelDisplay; }
+	CGlobalFlagsPanel*		GetGlobalFlagsPanel() { return m_pGlobalFlags; }
 	CBodyPartsPanel*		GetBodyPartsPanel() { return m_pBodyParts; }
 	CBonesPanel*			GetBonesPanel() { return m_pBones; }
 	CAttachmentsPanel*		GetAttachmentsPanel() { return m_pAttachments; }
@@ -161,6 +163,7 @@ private:
 	wxNotebook* m_pControlPanels;
 
 	CModelDisplayPanel*		m_pModelDisplay;
+	CGlobalFlagsPanel*		m_pGlobalFlags;
 	CBodyPartsPanel*		m_pBodyParts;
 	CBonesPanel*			m_pBones;
 	CAttachmentsPanel*		m_pAttachments;

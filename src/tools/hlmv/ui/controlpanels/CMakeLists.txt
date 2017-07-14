@@ -9,6 +9,8 @@ add_sources(
 	CBonesPanel.cpp
 	CFullscreenPanel.h
 	CFullscreenPanel.cpp
+	CGlobalFlagsPanel.cpp
+	CGlobalFlagsPanel.h
 	CModelDisplayPanel.h
 	CModelDisplayPanel.cpp
 	CSequencesPanel.h
