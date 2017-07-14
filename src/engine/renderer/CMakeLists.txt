@@ -35,6 +35,8 @@ endif()
 
 add_library( ${TARGET_NAME} SHARED ${PREP_SRCS} )
 
+check_winxp_support( ${TARGET_NAME} )
+
 target_include_directories( ${TARGET_NAME} PRIVATE
 	${OPENGL_INCLUDE_DIR}
 	${SHARED_INCLUDEPATHS}

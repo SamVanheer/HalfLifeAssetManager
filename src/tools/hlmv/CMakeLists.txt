@@ -40,6 +40,8 @@ endif()
 
 add_executable( ${TARGET_NAME} ${PREP_SRCS} )
 
+check_winxp_support( ${TARGET_NAME} )
+
 target_include_directories( ${TARGET_NAME} PRIVATE
 	${WXWIDGETS_LIB_INCLUDE}
 	${CMAKE_SOURCE_DIR}/external/wxWidgets/include
