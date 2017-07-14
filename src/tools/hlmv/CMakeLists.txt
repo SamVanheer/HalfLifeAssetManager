@@ -46,6 +46,8 @@ endif()
 
 add_executable( ${TARGET_NAME} ${PREP_SRCS} )
 
+check_winxp_support( ${TARGET_NAME} )
+
 target_include_directories( ${TARGET_NAME} PRIVATE
 	${WXWIDGETS_LIB_INCLUDE}
 	${CMAKE_SOURCE_DIR}/external/wxWidgets/include
@@ -144,4 +146,4 @@ else()
 	copy_dependencies( ${TARGET_NAME} external/GLEW/lib libGLEW.so.2.0.0 )
 endif()
 
-set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TARGET_NAME} )
+set_property( DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TARGET_NAME} )
