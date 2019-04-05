@@ -510,8 +510,8 @@ enum
 */
 #define STUDIOMDL_SEQ_ID "IDSQ"
 
-//Mugsy - upped the maximum texture size to 512. All changes are the replacement of '256'
+//Mugsy - upped the maximum texture size to 4096. All changes are the replacement of '256'
 //with this define, MAX_TEXTURE_DIMS
-#define MAX_TEXTURE_DIMS 512
+#define MAX_TEXTURE_DIMS 4096
 
 #endif //GAME_STUDIOMODEL_STUDIO_H
