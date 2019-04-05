@@ -112,8 +112,9 @@ void CBodyPartsPanel::InitializeUI()
 		auto pModel = pEntity->GetModel();
 
 		const studiohdr_t* const pHdr = pModel->GetStudioHeader();
+		const auto pTextureHdr = pModel->GetTextureHeader();
 
-		if( pHdr )
+		if( pHdr && pTextureHdr )
 		{
 			const mstudiobodyparts_t* const pbodyparts = ( mstudiobodyparts_t* ) ( ( byte* ) pHdr + pHdr->bodypartindex );
 
@@ -140,9 +141,9 @@ void CBodyPartsPanel::InitializeUI()
 				m_pSubmodel->Enable( false );
 			}
 
-			m_pSkin->Enable( pHdr->numskinfamilies > 0 );
+			m_pSkin->Enable( pTextureHdr->numskinfamilies > 0 );
 
-			for( int i = 0; i < pHdr->numskinfamilies; ++i )
+			for( int i = 0; i < pTextureHdr->numskinfamilies; ++i )
 			{
 				names.Add( wxString::Format( "Skin %d", i + 1 ) );
 			}
@@ -317,7 +318,7 @@ void CBodyPartsPanel::SetModelInfo( const studiohdr_t& hdr, const studiohdr_t& t
 	m_pSequenceGroups	->SetLabelText( wxString::Format( "Sequence Groups: %d", hdr.numseqgroups ) );
 
 	m_pTextures			->SetLabelText( wxString::Format( "Textures: %d", texHdr.numtextures ) );
-	m_pSkinFamilies		->SetLabelText( wxString::Format( "Skin Families: %d", hdr.numskinfamilies ) );
+	m_pSkinFamilies		->SetLabelText( wxString::Format( "Skin Families: %d", texHdr.numskinfamilies ) );
 	m_pBodyparts		->SetLabelText( wxString::Format( "Bodyparts: %d", hdr.numbodyparts ) );
 	m_pAttachments		->SetLabelText( wxString::Format( "Attachments: %d", hdr.numattachments ) );
 	m_pTransitions		->SetLabelText( wxString::Format( "Transitions: %d", hdr.numtransitions ) );

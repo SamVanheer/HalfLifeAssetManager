@@ -172,6 +172,7 @@ bool CHLMVState::DumpModelInfo( const char* const pszFilename )
 		const auto pModel = m_pEntity->GetModel();
 
 		const studiohdr_t* const pHdr = pModel->GetStudioHeader();
+		const auto pTextureHdr = pModel->GetTextureHeader();
 
 		const byte* const pByte = reinterpret_cast<const byte* const>( pHdr );
 
@@ -375,8 +376,8 @@ bool CHLMVState::DumpModelInfo( const char* const pszFilename )
 		fprintf( pFile,
 				 "Number of Skin References: %d\n"
 				 "Number of Skin Families: %d\n\n",
-				 pHdr->numskinref,
-				 pHdr->numskinfamilies
+			pTextureHdr->numskinref,
+			pTextureHdr->numskinfamilies
 		);
 
 		fprintf( pFile,

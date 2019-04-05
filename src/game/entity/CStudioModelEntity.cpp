@@ -294,7 +294,7 @@ int CStudioModelEntity::SetSkin( const int iSkin )
 	if( !m_pModel )
 		return 0;
 
-	if( iSkin < m_pModel->GetStudioHeader()->numskinfamilies )
+	if( iSkin < m_pModel->GetTextureHeader()->numskinfamilies )
 	{
 		m_iSkin = iSkin;
 	}
