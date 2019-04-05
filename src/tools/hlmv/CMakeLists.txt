@@ -38,25 +38,20 @@ if( NOT OPENGL_FOUND )
 	MESSAGE( FATAL_ERROR "Could not locate OpenGL library" )
 endif()
 
-if( WIN32 )
-	set( WXWIDGETS_LIB_INCLUDE ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll/mswud )
-else()
-	set( WXWIDGETS_LIB_INCLUDE ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk/wx/include/gtk2-unicode-3.1 )
-endif()
+find_package( wxWidgets REQUIRED COMPONENTS gl adv propgrid core base )
+include(${wxWidgets_USE_FILE})
 
 add_executable( ${TARGET_NAME} ${PREP_SRCS} )
 
 check_winxp_support( ${TARGET_NAME} )
 
 target_include_directories( ${TARGET_NAME} PRIVATE
-	${WXWIDGETS_LIB_INCLUDE}
-	${CMAKE_SOURCE_DIR}/external/wxWidgets/include
 	${OPENGL_INCLUDE_DIR}
 	${SHARED_INCLUDEPATHS}
 )
 
 target_compile_definitions( ${TARGET_NAME} PRIVATE	
-	WXUSINGDLL
+	${wxWidgets_DEFINITIONS}
 	${SHARED_WX_DEFS}
 )
 
@@ -66,51 +61,10 @@ else()
 	find_library( GLEW libGLEW.so.2.0.0 PATHS ${CMAKE_SOURCE_DIR}/external/GLEW/lib )
 endif()
 
-if( WIN32 )
-	find_library( WXBASED wxbase31ud PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-	find_library( WXCORED wxmsw31ud_core PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-	find_library( WXGLD wxmsw31ud_gl PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-	find_library( WXADVD wxmsw31ud_adv PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-	find_library( WXPROPGRIDD wxmsw31ud_propgrid PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-
-	find_library( WXBASE wxbase31u PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-	find_library( WXCORE wxmsw31u_core PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-	find_library( WXGL wxmsw31u_gl PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-	find_library( WXADV wxmsw31u_adv PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-	find_library( WXPROPGRID wxmsw31u_propgrid PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/vc140_dll )
-	
-	set( WXWIDGETS_LIBS
-		${WXPROPGRID} 	optimized
-		${WXADV} 		optimized
-		${WXGL} 		optimized
-		${WXCORE} 		optimized
-		${WXBASE} 		optimized
-		${WXPROPGRIDD} 	#debug
-		${WXADVD} 		#debug
-		${WXGLD} 		#debug
-		${WXCORED} 		#debug
-		${WXBASED} 		#debug
-	)
-else()
-	find_library( WXBASE wx_baseu-3.1 PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk )
-	find_library( WXCORE wx_gtk2u_core-3.1 PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk )
-	find_library( WXGL wx_gtk2u_gl-3.1 PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk )
-	find_library( WXADV wx_gtk2u_adv-3.1 PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk )
-	find_library( WXPROPGRID wx_gtk2u_propgrid-3.1 PATHS ${CMAKE_SOURCE_DIR}/external/wxWidgets/lib/Linux_gtk )
-	
-	set( WXWIDGETS_LIBS
-		${WXPROPGRID}
-		${WXADV}
-		${WXGL}
-		${WXCORE}
-		${WXBASE}
-	)
-endif()
-
 target_link_libraries( ${TARGET_NAME}
 	HLCore
 	Keyvalues
-	${WXWIDGETS_LIBS}
+	${wxWidgets_LIBRARIES}
 	${GLEW}
 	${OPENGL_LIBRARIES}
 	${SHARED_DEPENDENCIES}
@@ -127,20 +81,6 @@ create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
 clear_sources()
 
 if( WIN32 )
-	#Copy wxWidgets libraries
-	copy_dependencies( ${TARGET_NAME} external/wxWidgets/lib/vc140_dll
-		wxbase310ud_vc140.dll
-		wxmsw310ud_core_vc140.dll
-		wxmsw310ud_gl_vc140.dll
-		wxmsw310ud_adv_vc140.dll
-		wxmsw310ud_propgrid_vc140.dll
-		wxbase310u_vc140.dll
-		wxmsw310u_core_vc140.dll
-		wxmsw310u_gl_vc140.dll
-		wxmsw310u_adv_vc140.dll
-		wxmsw310u_propgrid_vc140.dll
-	)
-	
 	copy_dependencies( ${TARGET_NAME} external/GLEW/lib glew32.dll )
 else()
 	copy_dependencies( ${TARGET_NAME} external/GLEW/lib libGLEW.so.2.0.0 )
