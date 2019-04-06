@@ -32,6 +32,8 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 {
 	wxASSERT( pSettings );
 
+	m_pPowerOf2Textures = new wxCheckBox(this, wxID_ANY, "Rescale textures to power of 2" );
+
 	m_pGroundColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( m_pSettings->GetGroundColor() ), wxDefaultPosition, wxDefaultSize );
 
 	m_pBackgroundColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( m_pSettings->GetBackgroundColor() ), wxDefaultPosition, wxDefaultSize );
@@ -54,6 +56,12 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 	int iRow = 0;
 
 	const int iNumCols = 10;
+
+	pSizer->Add( new wxStaticText( this, wxID_ANY, "General:" ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, iNumCols ) );
+
+	pSizer->Add( new wxStaticLine( this ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, iNumCols ), wxEXPAND );
+
+	pSizer->Add( m_pPowerOf2Textures, wxGBPosition( iRow++, 0), wxGBSpan( 1, iNumCols ), wxEXPAND );
 
 	pSizer->Add( new wxStaticText( this, wxID_ANY, "Colors:" ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, iNumCols ) );
 
@@ -110,6 +118,10 @@ CGeneralOptions::~CGeneralOptions()
 
 void CGeneralOptions::Save()
 {
+	auto pPowerOf2 = static_cast<cvar::CCVar*>( g_pCVar->FindCommand( "r_powerof2textures") );
+
+	pPowerOf2->SetBool( m_pPowerOf2Textures ->GetValue() );
+
 	m_pSettings->SetGroundColor( wx::wxToColor( m_pGroundColor->GetColour() ) );
 	m_pSettings->SetBackgroundColor( wx::wxToColor( m_pBackgroundColor->GetColour() ) );
 	m_pSettings->SetCrosshairColor( wx::wxToColor( m_pCrosshairColor->GetColour() ) );
@@ -142,6 +154,10 @@ void CGeneralOptions::Save()
 
 void CGeneralOptions::Initialize()
 {
+	auto pPowerOf2 = static_cast< cvar::CCVar* >( g_pCVar->FindCommand( "r_powerof2textures" ) );
+
+	m_pPowerOf2Textures->SetValue( pPowerOf2->GetBool() );
+
 	m_pGroundColor->SetColour( wx::ColorTowx( m_pSettings->GetGroundColor() ) );
 	m_pBackgroundColor->SetColour( wx::ColorTowx( m_pSettings->GetBackgroundColor() ) );
 	m_pCrosshairColor->SetColour( wx::ColorTowx( m_pSettings->GetCrosshairColor() ) );

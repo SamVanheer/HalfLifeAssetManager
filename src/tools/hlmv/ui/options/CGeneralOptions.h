@@ -36,6 +36,8 @@ private:
 private:
 	CHLMVSettings* const m_pSettings;
 
+	wxCheckBox* m_pPowerOf2Textures;
+
 	wxColourPickerCtrl* m_pGroundColor;
 	wxColourPickerCtrl* m_pBackgroundColor;
 	wxColourPickerCtrl* m_pCrosshairColor;

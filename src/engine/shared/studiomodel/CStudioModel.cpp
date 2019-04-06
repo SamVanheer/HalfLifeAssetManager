@@ -21,6 +21,14 @@ namespace
 //All others will point to that one. - Solokiller
 static cvar::CCVar r_filtertextures( "r_filtertextures", cvar::CCVarArgsBuilder().FloatValue( 1 ).HelpInfo( "Whether to filter textures or not" ) );
 
+static cvar::CCVar r_powerof2textures( "r_powerof2textures",
+	cvar::CCVarArgsBuilder()
+	.Flags( cvar::Flag::ARCHIVE )
+	.FloatValue( 1 )
+	.MinValue( 0 )
+	.MaxValue( 1 )
+	.HelpInfo( "Whether to resize textures to power of 2 dimensions" ) );
+
 void UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId, const bool bFilterTextures )
 {
 	glBindTexture( GL_TEXTURE_2D, textureId );
@@ -30,7 +38,7 @@ void UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST );
 }
 
-void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, byte* pal, int name, const bool bFilterTextures )
+void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, byte* pal, int name, const bool bFilterTextures, const bool bPowerOf2 )
 {
 	// unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight;
 	int		i, j;
@@ -42,8 +50,16 @@ void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, byte* pa
 	int outwidth;
 	int outheight;
 
-	if( !graphics::CalculateImageDimensions( ptexture->width, ptexture->height, outwidth, outheight ) )
-		return;
+	if( bPowerOf2 )
+	{
+		if( !graphics::CalculateImageDimensions( ptexture->width, ptexture->height, outwidth, outheight ) )
+			return;
+	}
+	else
+	{
+		outwidth = ptexture->width;
+		outheight = ptexture->height;
+	}
 
 	const size_t uiSize = outwidth * outheight * 4;
 
@@ -125,7 +141,7 @@ void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, byte* pa
 	free( tex );
 }
 
-size_t UploadTextures( studiohdr_t& textureHdr, GLuint* pTextures, const bool bFilterTextures )
+size_t UploadTextures( studiohdr_t& textureHdr, GLuint* pTextures, const bool bFilterTextures, const bool bPowerOf2 )
 {
 	size_t uiNumTextures = 0;
 
@@ -144,7 +160,7 @@ size_t UploadTextures( studiohdr_t& textureHdr, GLuint* pTextures, const bool bF
 			glBindTexture( GL_TEXTURE_2D, 0 );
 			glGenTextures( 1, &name );
 
-			UploadTexture( &ptexture[ i ], pIn + ptexture[ i ].index, pIn + ptexture[ i ].width * ptexture[ i ].height + ptexture[ i ].index, name, bFilterTextures );
+			UploadTexture( &ptexture[ i ], pIn + ptexture[ i ].index, pIn + ptexture[ i ].width * ptexture[ i ].height + ptexture[ i ].index, name, bFilterTextures, bPowerOf2 );
 
 			pTextures[ i ] = name;
 		}
@@ -261,7 +277,7 @@ void CStudioModel::ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte 
 {
 	glDeleteTextures( 1, &textureId );
 
-	UploadTexture( ptexture, data, pal, textureId, r_filtertextures.GetBool() );
+	UploadTexture( ptexture, data, pal, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool() );
 }
 
 void CStudioModel::ReuploadTexture( mstudiotexture_t* ptexture )
@@ -282,7 +298,7 @@ void CStudioModel::ReuploadTexture( mstudiotexture_t* ptexture )
 
 	UploadTexture( ptexture, 
 				   m_pTextureHdr->GetData() + ptexture->index, 
-				   m_pTextureHdr->GetData() + ptexture->index + ptexture->width * ptexture->height, textureId, r_filtertextures.GetBool() );
+				   m_pTextureHdr->GetData() + ptexture->index + ptexture->width * ptexture->height, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool() );
 }
 
 namespace
@@ -396,7 +412,7 @@ StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioMod
 		}
 	}
 
-	UploadTextures( *studioModel->m_pTextureHdr, studioModel->m_Textures, r_filtertextures.GetBool() );
+	UploadTextures( *studioModel->m_pTextureHdr, studioModel->m_Textures, r_filtertextures.GetBool(), r_powerof2textures.GetBool() );
 
 	pModel = studioModel.release();
 
