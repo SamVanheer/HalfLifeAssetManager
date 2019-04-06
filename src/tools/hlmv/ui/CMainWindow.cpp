@@ -199,7 +199,7 @@ bool CMainWindow::PromptLoadModel()
 			return false;
 	}
 
-	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "Half-Life Models (*.mdl)|*.mdl" );
+	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "PC Half-Life Models (*.mdl)|*.mdl|PS2 Half-Life Models (*.dol)|*.dol|All Files (*.*)|*.*" );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
 		return false;

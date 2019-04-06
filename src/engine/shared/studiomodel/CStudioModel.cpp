@@ -1,4 +1,5 @@
 #include <cassert>
+#include <filesystem>
 #include <memory>
 
 #include "shared/Platform.h"
@@ -29,13 +30,81 @@ static cvar::CCVar r_powerof2textures( "r_powerof2textures",
 	.MaxValue( 1 )
 	.HelpInfo( "Whether to resize textures to power of 2 dimensions" ) );
 
-void UploadRGBATexture( const int iWidth, const int iHeight, byte* pData, GLuint textureId, const bool bFilterTextures )
+void UploadRGBATexture( const int iWidth, const int iHeight, const byte* pData, GLuint textureId, const bool bFilterTextures )
 {
 	glBindTexture( GL_TEXTURE_2D, textureId );
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, iWidth, iHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData );
 	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST );
+}
+
+//Dol differs only in texture storage
+//Instead of pixels followed by RGB palette, it has a 32 byte texture name (name of file without extension), followed by an RGBA palette and pixels
+void ConvertDolToMdl( byte* pBuffer, const mstudiotexture_t& texture )
+{
+	const int RGBA_PALETTE_CHANNELS = 4;
+
+	auto palette = std::make_unique<byte[]>( PALETTE_SIZE );
+
+	//Starts off with 32 byte texture name
+	auto pSourcePalette = pBuffer + texture.index + 32;
+
+	//Discard alpha value
+	//TODO: convert alpha value somehow? is it even used?
+	for( int i = 0; i < PALETTE_ENTRIES; ++i )
+	{
+		for( int j = 0; j < PALETTE_CHANNELS; ++j )
+		{
+			palette[ i * PALETTE_CHANNELS + j ] = pSourcePalette[ i * RGBA_PALETTE_CHANNELS + j ];
+		}
+	}
+
+	const auto size = texture.width * texture.height;
+
+	auto pixels = std::make_unique<byte[]>( size );
+
+	auto pSourcePixels = pSourcePalette + PALETTE_ENTRIES * RGBA_PALETTE_CHANNELS;
+
+	for( int i = 0; i < size; ++i )
+	{
+		auto pixel = pSourcePixels[ i ];
+
+		auto masked = pixel & 0x1F;
+
+		//Adjust the index to map to the correct palette entry
+		if( masked >= 8 )
+		{
+			if( masked >= 16 )
+			{
+				if( masked < 24 )
+				{
+					pixel -= 8;
+				}
+			}
+			else
+			{
+				pixel += 8;
+			}
+		}
+
+		pixels[ i ] = pixel;
+	}
+
+	//Now write the correct data to the model buffer
+	auto pDestPixels = pBuffer + texture.index;
+
+	for( int i = 0; i < size; ++i )
+	{
+		pDestPixels[ i ] = pixels[ i ];
+	}
+
+	auto pDestPalette = pBuffer + texture.index + texture.width * texture.height;
+
+	memcpy( pDestPalette, palette.get(), PALETTE_SIZE );
+
+	//Some data will be left dangling after the palette and before the next texture/end of file. Nothing will reference it though
+	//in the SL version this will not be a problem since the file isn't loaded in one chunk
 }
 
 void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, byte* pal, int name, const bool bFilterTextures, const bool bPowerOf2 )
@@ -141,7 +210,7 @@ void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, byte* pa
 	free( tex );
 }
 
-size_t UploadTextures( studiohdr_t& textureHdr, GLuint* pTextures, const bool bFilterTextures, const bool bPowerOf2 )
+size_t UploadTextures( studiohdr_t& textureHdr, GLuint* pTextures, const bool bFilterTextures, const bool bPowerOf2, const bool bIsDol )
 {
 	size_t uiNumTextures = 0;
 
@@ -159,6 +228,11 @@ size_t UploadTextures( studiohdr_t& textureHdr, GLuint* pTextures, const bool bF
 
 			glBindTexture( GL_TEXTURE_2D, 0 );
 			glGenTextures( 1, &name );
+
+			if( bIsDol )
+			{
+				ConvertDolToMdl( pIn, ptexture[ i ] );
+			}
 
 			UploadTexture( &ptexture[ i ], pIn + ptexture[ i ].index, pIn + ptexture[ i ].width * ptexture[ i ].height + ptexture[ i ].index, name, bFilterTextures, bPowerOf2 );
 
@@ -360,6 +434,8 @@ StudioModelLoadResult LoadStudioHeader( const char* const pszFilename, const boo
 
 StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioModel*& pModel )
 {
+	const auto bIsDol = std::experimental::filesystem::path( pszFilename ).extension() == ".dol";
+
 	//Takes care of cleanup on failure.
 	std::unique_ptr<CStudioModel> studioModel( new CStudioModel() );
 
@@ -374,10 +450,12 @@ StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioMod
 	// preload textures
 	if( studioModel->m_pStudioHdr->numtextures == 0 )
 	{
+		const auto extension = bIsDol ? "T.dol" : "T.mdl";
+
 		char texturename[ MAX_PATH_LENGTH ];
 
 		strcpy( texturename, pszFilename );
-		strcpy( &texturename[ strlen( texturename ) - 4 ], "T.mdl" );
+		strcpy( &texturename[ strlen( texturename ) - 4 ], extension );
 
 		result = LoadStudioHeader( texturename, true, studioModel->m_pTextureHdr );
 
@@ -398,9 +476,11 @@ StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioMod
 
 		for( int i = 1; i < studioModel->m_pStudioHdr->numseqgroups; ++i )
 		{
+			const auto suffix = bIsDol ? "%02d.dol" : "%02d.mdl";
+
 			strcpy( seqgroupname, pszFilename );
 
-			if( !PrintfSuccess( snprintf( &seqgroupname[ strlen( seqgroupname ) - 4 ], sizeof( seqgroupname ), "%02d.mdl", i ), sizeof( seqgroupname ) ) )
+			if( !PrintfSuccess( snprintf( &seqgroupname[ strlen( seqgroupname ) - 4 ], sizeof( seqgroupname ), suffix, i ), sizeof( seqgroupname ) ) )
 				return StudioModelLoadResult::FAILURE;
 
 			result = LoadStudioHeader( seqgroupname, true, studioModel->m_pSeqHdrs[ i ] );
@@ -412,7 +492,7 @@ StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioMod
 		}
 	}
 
-	UploadTextures( *studioModel->m_pTextureHdr, studioModel->m_Textures, r_filtertextures.GetBool(), r_powerof2textures.GetBool() );
+	UploadTextures( *studioModel->m_pTextureHdr, studioModel->m_Textures, r_filtertextures.GetBool(), r_powerof2textures.GetBool(), bIsDol );
 
 	pModel = studioModel.release();
 
