@@ -1,3 +1,5 @@
+#include "shared/Utility.h"
+
 #include "shared/studiomodel/CStudioModel.h"
 
 #include "game/entity/CBaseEntityList.h"
@@ -92,6 +94,14 @@ void CHLMVState::CenterView()
 
 	glm::vec3 min, max;
 	m_pEntity->ExtractBbox( min, max );
+
+	//Clamp the values to a reasonable range
+	for( int i = 0; i < 3; ++i )
+	{
+		//Use different limits for min and max so centering won't end up setting origin to 0 0 0
+		min[ i ] = clamp( min[ i ], -2000.f, 2000.f );
+		max[ i ] = clamp( max[ i ], -1000.f, 1000.f );
+	}
 
 	float dx = max[ 0 ] - min[ 0 ];
 	float dy = max[ 1 ] - min[ 1 ];

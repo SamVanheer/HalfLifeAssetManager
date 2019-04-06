@@ -119,7 +119,7 @@ void SetProjection( const float flFOV, const int iWidth, const int iHeight )
 {
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	gluPerspective( flFOV, ( GLfloat ) iWidth / ( GLfloat ) iHeight, 1.0f, 4096.0f );
+	gluPerspective( flFOV, ( GLfloat ) iWidth / ( GLfloat ) iHeight, 1.0f, 1 << 24 );
 }
 
 void DrawBox( const glm::vec3* const v )
