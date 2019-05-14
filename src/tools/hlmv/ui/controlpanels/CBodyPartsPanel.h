@@ -76,6 +76,8 @@ private:
 	wxStaticText* m_pAttachments;
 	wxStaticText* m_pTransitions;
 
+	wxTextCtrl* m_pBodyValue;
+
 private:
 	CBodyPartsPanel( const CBodyPartsPanel& ) = delete;
 	CBodyPartsPanel& operator=( const CBodyPartsPanel& ) = delete;

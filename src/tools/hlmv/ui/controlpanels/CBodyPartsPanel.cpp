@@ -54,6 +54,12 @@ CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 	m_pAttachments = new wxStaticText( m_pModelInfo, wxID_ANY, "Attachments: Undefined" );
 	m_pTransitions = new wxStaticText( m_pModelInfo, wxID_ANY, "Transitions: Undefined" );
 
+	auto pBodyValue = new wxStaticText( m_pModelInfo, wxID_ANY, "Body value: " );
+
+	m_pBodyValue = new wxTextCtrl( m_pModelInfo, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_RIGHT );
+
+	m_pBodyValue->SetEditable( false );
+
 	//Layout
 	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );
 
@@ -86,6 +92,9 @@ CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 	pInfoSizer->Add( m_pBodyparts, wxGBPosition( 2, 1 ), wxDefaultSpan, wxEXPAND );
 	pInfoSizer->Add( m_pAttachments, wxGBPosition( 3, 1 ), wxDefaultSpan, wxEXPAND );
 	pInfoSizer->Add( m_pTransitions, wxGBPosition( 4, 1 ), wxDefaultSpan, wxEXPAND );
+
+	pInfoSizer->Add( pBodyValue, wxGBPosition( 0, 2 ), wxDefaultSpan, wxEXPAND );
+	pInfoSizer->Add( m_pBodyValue , wxGBPosition( 0, 3 ), wxDefaultSpan, wxEXPAND );
 
 	m_pModelInfo->SetSizer( pInfoSizer );
 
@@ -199,6 +208,8 @@ void CBodyPartsPanel::InitializeUI()
 	}
 
 	SetController( 0 );
+
+	m_pBodyValue->SetValue( "0" );
 }
 
 void CBodyPartsPanel::BodypartChanged( wxCommandEvent& event )
@@ -262,6 +273,8 @@ void CBodyPartsPanel::SetSubmodel( int iIndex )
 
 	m_pSubmodel->Select( iIndex );
 	pEntity->SetBodygroup( m_pBodypart->GetSelection(), iIndex );
+
+	m_pBodyValue->SetValue( wxString::Format( "%d", pEntity->GetBodygroup() ) );
 }
 
 void CBodyPartsPanel::SetSkin( int iIndex )
