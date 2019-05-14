@@ -585,6 +585,11 @@ void C3DView::DrawModel()
 			flags |= renderer::DrawFlag::WIREFRAME_OVERLAY;
 		}
 
+		if( m_pHLMV->GetState()->UsingWeaponOrigin() )
+		{
+			flags |= renderer::DrawFlag::IS_VIEW_MODEL;
+		}
+
 		pEntity->Draw( flags );
 	}
 

@@ -26,7 +26,12 @@ enum DrawFlag : DrawFlags_t
 	/**
 	*	Draw wireframe overlay.
 	*/
-	WIREFRAME_OVERLAY	= Bit( 1 )
+	WIREFRAME_OVERLAY	= Bit( 1 ),
+
+	/**
+	*	Whether this is a view model
+	*/
+	IS_VIEW_MODEL		= Bit( 2 ),
 };
 }
 }

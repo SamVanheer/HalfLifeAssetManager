@@ -91,7 +91,16 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 
 	glPushMatrix();
 
-	glTranslatef( m_pRenderInfo->vecOrigin[ 0 ], m_pRenderInfo->vecOrigin[ 1 ], m_pRenderInfo->vecOrigin[ 2 ] );
+	auto origin = m_pRenderInfo->vecOrigin;
+
+	//The game applies a 1 unit offset to make view models look nicer
+	//See https://github.com/ValveSoftware/halflife/blob/c76dd531a79a176eef7cdbca5a80811123afbbe2/cl_dll/view.cpp#L665-L668
+	if( flags & renderer::DrawFlag::IS_VIEW_MODEL )
+	{
+		origin.z -= 1;
+	}
+
+	glTranslatef( origin[ 0 ], origin[ 1 ], origin[ 2 ] );
 
 	glRotatef( m_pRenderInfo->vecAngles[ 1 ], 0, 0, 1 );
 	glRotatef( m_pRenderInfo->vecAngles[ 0 ], 0, 1, 0 );
