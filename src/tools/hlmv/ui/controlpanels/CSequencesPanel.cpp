@@ -552,12 +552,13 @@ void CSequencesPanel::UpdateEventInfo( int iIndex )
 
 void CSequencesPanel::UpdateOrigin()
 {
-	glm::vec3 vecWeaponOrigin;
-
-	for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
+	//TODO: need to grab the vector and apply the initial transform matrix to it to get the correct coordinate system
+	glm::vec3 vecWeaponOrigin
 	{
-		vecWeaponOrigin[ uiIndex ] = m_pOrigin[ uiIndex ]->GetValue();
-	}
+		-m_pOrigin[ 2 ]->GetValue(),
+		m_pOrigin[ 1 ]->GetValue(),
+		m_pOrigin[ 0 ]->GetValue()
+	};
 
 	m_pHLMV->GetState()->weaponOriginCamera.SetOrigin( vecWeaponOrigin );
 }
