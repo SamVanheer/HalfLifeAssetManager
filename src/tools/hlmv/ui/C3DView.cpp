@@ -713,21 +713,33 @@ void C3DView::TakeScreenshot()
 {
 	SetCurrent( *GetContext() );
 
-	const wxSize size = GetClientSize();
+	//Use the actual viewport size
+	GLint viewportSize[ 4 ];
 
-	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( size.GetWidth() * size.GetHeight() * 3 );
+	glGetIntegerv( GL_VIEWPORT, viewportSize );
+
+	const auto width = viewportSize[ 2 ];
+	const auto height = viewportSize[ 3 ];
+
+	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( width * height * 3 );
 
 	GLint oldReadBuffer;
+	GLint oldPackAlignment;
 
 	glGetIntegerv( GL_READ_BUFFER, &oldReadBuffer );
+	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment );
 
 	//Read currently displayed buffer.
 	glReadBuffer( GL_FRONT );
 
+	//Set pack alignment to 1 so no padding is added
+	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+
 	//Grab the image from the 3D view itself.
-	glReadPixels( 0, 0, size.GetWidth(), size.GetHeight(), GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
+	glReadPixels( viewportSize[ 0 ], viewportSize[ 1 ], width, height, GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
 
 	glReadBuffer( oldReadBuffer );
+	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );
 
 	//Now ask for a filename.
 	wxFileDialog dlg( this, _( "Save screenshot" ), wxEmptyString, "screenshot.bmp",
@@ -739,9 +751,9 @@ void C3DView::TakeScreenshot()
 	const wxString szFilename = dlg.GetPath();
 
 	//We have to flip the image vertically, since OpenGL reads it upside down.
-	graphics::FlipImageVertically( size.GetWidth(), size.GetHeight(), rgbData.get() );
+	graphics::FlipImageVertically( width, height, rgbData.get() );
 
-	wxImage image( size.GetWidth(), size.GetHeight(), rgbData.get(), true );
+	wxImage image( width, height, rgbData.get(), true );
 
 	//Let extension determine format
 	if( !image.SaveFile( szFilename ) )
