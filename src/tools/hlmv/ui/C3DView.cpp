@@ -730,7 +730,8 @@ void C3DView::TakeScreenshot()
 	glReadBuffer( oldReadBuffer );
 
 	//Now ask for a filename.
-	wxFileDialog dlg( this );
+	wxFileDialog dlg( this, _( "Save screenshot" ), wxEmptyString, "screenshot.bmp",
+		"BMP files (*.bmp)|*.bmp|PNG files (*.png)|*.png|JPG files(*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
 		return;
@@ -742,7 +743,8 @@ void C3DView::TakeScreenshot()
 
 	wxImage image( size.GetWidth(), size.GetHeight(), rgbData.get(), true );
 
-	if( !image.SaveFile( szFilename, wxBITMAP_TYPE_BMP ) )
+	//Let extension determine format
+	if( !image.SaveFile( szFilename ) )
 	{
 		wxMessageBox( wxString::Format( "Failed to save image \"%s\"!", szFilename.c_str() ) );
 	}
