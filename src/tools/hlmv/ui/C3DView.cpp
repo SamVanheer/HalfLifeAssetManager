@@ -662,6 +662,8 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 
 	SetCurrent( *GetContext() );
 
+	//This is the old way UV render to texture was done, but it doesn't work with some 2.1 compliant GPUs so a workaround is used
+	/*
 	GLRenderTarget* const pScratchTarget = wxOpenGL().GetScratchTarget();
 
 	if( !pScratchTarget )
@@ -700,6 +702,43 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 	pScratchTarget->GetPixels( texture.width, texture.height, GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
 
 	pScratchTarget->Unbind();
+	*/
+
+	//Save off all settings we're about to modify
+	//Don't need to restore the viewport since it's reset every frame anyway
+	GLint oldReadBuffer;
+	GLint oldDrawBuffer;
+	GLint oldPackAlignment;
+
+	glGetIntegerv( GL_READ_BUFFER, &oldReadBuffer );
+	glGetIntegerv( GL_DRAW_BUFFER, &oldDrawBuffer );
+	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment );
+
+	//Use the back buffer to avoid modifying displayed data
+	glReadBuffer( GL_BACK );
+	glDrawBuffer( GL_BACK );
+
+	//Set pack alignment to 1 so no padding is added
+	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+
+	glViewport( 0, 0, texture.width, texture.height );
+
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	DrawTexture( 0, 0, texture.width, texture.height, pEntity, iTexture, 1.0f, true, false, false, m_pHLMV->GetState()->pUVMesh );
+
+	glFlush();
+	glFinish();
+
+	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( texture.width * texture.height * 3 );
+
+	glReadPixels( 0, 0, texture.width, texture.height, GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
+
+	glReadBuffer( oldReadBuffer );
+	glDrawBuffer( oldDrawBuffer );
+	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );
 
 	//We have to flip the image vertically, since OpenGL reads it upside down.
 	graphics::FlipImageVertically( texture.width, texture.height, rgbData.get() );
