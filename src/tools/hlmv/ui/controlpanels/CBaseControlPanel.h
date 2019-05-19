@@ -3,6 +3,7 @@
 
 #include "../wxHLMV.h"
 
+#include <wx/scrolwin.h>
 #include <wx/sizer.h>
 
 #include "../MouseOpFlag.h"
@@ -17,7 +18,7 @@ namespace hlmv
 {
 class CModelViewerApp;
 
-class CBaseControlPanel : public wxPanel
+class CBaseControlPanel : public wxScrolledWindow
 {
 public:
 	virtual ~CBaseControlPanel();

@@ -52,7 +52,7 @@ public:
 	static const size_t CONTROLS_ROW_GAP = 5;
 	static const size_t CONTROLS_COL_GAP = 5;
 
-	static const size_t NUM_CHECKBOX_COLS = 2;
+	static const size_t NUM_CHECKBOX_COLS = 3;
 
 	static const size_t OPACITY_MIN = 0;
 	static const size_t OPACITY_MAX = 100;

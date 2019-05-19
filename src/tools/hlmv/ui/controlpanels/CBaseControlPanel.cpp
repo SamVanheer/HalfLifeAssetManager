@@ -3,7 +3,7 @@
 namespace hlmv
 {
 CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName, CModelViewerApp* const pHLMV )
-	: wxPanel( pParent )
+	: wxScrolledWindow( pParent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL )
 	, m_szName( szName )
 	, m_pHLMV( pHLMV )
 {
@@ -14,6 +14,8 @@ CBaseControlPanel::CBaseControlPanel( wxWindow* pParent, const wxString& szName,
 	m_pMainSizer = new wxBoxSizer( wxVERTICAL );
 
 	this->SetSizer( m_pMainSizer );
+
+	SetScrollRate( 5, 5 );
 }
 
 CBaseControlPanel::~CBaseControlPanel()
