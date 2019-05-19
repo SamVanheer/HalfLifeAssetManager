@@ -493,6 +493,9 @@ void C3DView::DrawModel()
 
 	if( m_pHLMV->GetState()->drawAxes )
 	{
+		glDisable( GL_TEXTURE_2D );
+		glEnable( GL_DEPTH_TEST );
+
 		const float flLength = 50.0f;
 
 		glLineWidth( 1.0f );
