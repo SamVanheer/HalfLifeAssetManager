@@ -156,6 +156,12 @@ GLRenderTarget* CwxOpenGL::GetScratchTarget()
 		return nullptr;
 	}
 
+	//If framebuffer creation is not supported, always report failure
+	if( !glGenFramebuffers )
+	{
+		return nullptr;
+	}
+
 	m_pScratchTarget = new GLRenderTarget( true );
 
 	return m_pScratchTarget;
