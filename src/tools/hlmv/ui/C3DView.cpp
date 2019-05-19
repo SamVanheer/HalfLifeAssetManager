@@ -742,8 +742,8 @@ void C3DView::TakeScreenshot()
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );
 
 	//Now ask for a filename.
-	wxFileDialog dlg( this, _( "Save screenshot" ), wxEmptyString, "screenshot.bmp",
-		"BMP files (*.bmp)|*.bmp|PNG files (*.png)|*.png|JPG files(*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+	wxFileDialog dlg( this, _( "Save screenshot" ), wxEmptyString, "screenshot.png",
+		"PNG files (*.png)|*.png|BMP files (*.bmp)|*.bmp|JPG files(*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
 		return;
