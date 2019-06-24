@@ -624,7 +624,7 @@ void CStudioModelRenderer::CalcRotations( glm::vec3* pos, glm::vec4* q, const ms
 	// add in programatic controllers
 	CalcBoneAdj();
 
-	mstudiobone_t* pbone = m_pStudioHdr->GetBones();
+	auto pbone = m_pStudioHdr->GetBones();
 
 	for( int i = 0; i < m_pStudioHdr->numbones; i++, pbone++, panim++ )
 	{
@@ -642,14 +642,14 @@ void CStudioModelRenderer::CalcRotations( glm::vec3* pos, glm::vec4* q, const ms
 
 void CStudioModelRenderer::CalcBoneAdj()
 {
-	int		i;
-	float	value;
-
-	const mstudiobonecontroller_t* const pbonecontroller = m_pStudioHdr->GetBoneControllers();
+	const auto* const pbonecontroller = m_pStudioHdr->GetBoneControllers();
 
 	for( int j = 0; j < m_pStudioHdr->numbonecontrollers; j++ )
 	{
-		i = pbonecontroller[ j ].index;
+		const auto i = pbonecontroller[ j ].index;
+
+		float value;
+
 		if( i <= 3 )
 		{
 			// check for 360% wrapping
@@ -691,9 +691,7 @@ void CStudioModelRenderer::CalcBoneAdj()
 
 void CStudioModelRenderer::CalcBoneQuaternion( const int frame, const float s, const mstudiobone_t* const pbone, const mstudioanim_t* const panim, glm::vec4& q )
 {
-	int					k;
 	glm::vec3			angle1, angle2;
-	const mstudioanimvalue_t* panimvalue;
 
 	for( int j = 0; j < 3; j++ )
 	{
@@ -703,8 +701,8 @@ void CStudioModelRenderer::CalcBoneQuaternion( const int frame, const float s, c
 		}
 		else
 		{
-			panimvalue = ( const mstudioanimvalue_t* ) ( ( const byte* ) panim + panim->offset[ j + 3 ] );
-			k = frame;
+			auto panimvalue = ( const mstudioanimvalue_t* ) ( ( const byte* ) panim + panim->offset[ j + 3 ] );
+			auto k = frame;
 			while( panimvalue->num.total <= k )
 			{
 				k -= panimvalue->num.total;
@@ -766,17 +764,14 @@ void CStudioModelRenderer::CalcBoneQuaternion( const int frame, const float s, c
 
 void CStudioModelRenderer::CalcBonePosition( const int frame, const float s, const mstudiobone_t* const pbone, const mstudioanim_t* const panim, glm::vec3& pos )
 {
-	int					j, k;
-	mstudioanimvalue_t	*panimvalue;
-
-	for( j = 0; j < 3; j++ )
+	for( int j = 0; j < 3; j++ )
 	{
 		pos[ j ] = pbone->value[ j ]; // default;
 		if( panim->offset[ j ] != 0 )
 		{
-			panimvalue = ( mstudioanimvalue_t * ) ( ( byte * ) panim + panim->offset[ j ] );
+			auto panimvalue = ( mstudioanimvalue_t * ) ( ( byte * ) panim + panim->offset[ j ] );
 
-			k = frame;
+			auto k = frame;
 			// find span of values that includes the frame we want
 			while( panimvalue->num.total <= k )
 			{
@@ -828,26 +823,12 @@ void CStudioModelRenderer::SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4
 	for( int i = 0; i < m_pStudioHdr->numbones; i++ )
 	{
 		QuaternionSlerp( q1[ i ], q2[ i ], s, q3 );
-		q1[ i ][ 0 ] = q3[ 0 ];
-		q1[ i ][ 1 ] = q3[ 1 ];
-		q1[ i ][ 2 ] = q3[ 2 ];
-		q1[ i ][ 3 ] = q3[ 3 ];
-		pos1[ i ][ 0 ] = pos1[ i ][ 0 ] * s1 + pos2[ i ][ 0 ] * s;
-		pos1[ i ][ 1 ] = pos1[ i ][ 1 ] * s1 + pos2[ i ][ 1 ] * s;
-		pos1[ i ][ 2 ] = pos1[ i ][ 2 ] * s1 + pos2[ i ][ 2 ] * s;
+		q1[ i ] = q3;
+
+		pos1[ i ] = pos1[ i ] * s1 + pos2[ i ] * s;
 	}
 }
 
-/*
-================
-CStudioModelRenderer::SetupLighting
-set some global variables based on entity position
-inputs:
-outputs:
-g_ambientlight
-g_shadelight
-================
-*/
 void CStudioModelRenderer::SetupLighting()
 {
 	m_ambientlight = 32;
@@ -857,24 +838,12 @@ void CStudioModelRenderer::SetupLighting()
 	m_lightcolor[ 1 ] = r_lighting_g.GetInt();
 	m_lightcolor[ 2 ] = r_lighting_b.GetInt();
 
-	// TODO: only do it for bones that actually have textures
 	for( int i = 0; i < m_pStudioHdr->numbones; i++ )
 	{
 		VectorIRotate( m_lightvec, m_bonetransform[ i ], m_blightvec[ i ] );
 	}
 }
 
-/*
-=================
-CStudioModelRenderer::SetupModel
-based on the body part, figure out which mesh it should be using.
-inputs:
-currententity
-outputs:
-pstudiomesh
-pmdl
-=================
-*/
 void CStudioModelRenderer::SetupModel( int bodypart )
 {
 	if( bodypart > m_pStudioHdr->numbodyparts )
@@ -888,36 +857,24 @@ void CStudioModelRenderer::SetupModel( int bodypart )
 
 unsigned int CStudioModelRenderer::DrawPoints( const bool bWireframe )
 {
-	int					i, j;
-	mstudiomesh_t		*pmesh;
-	byte				*pvertbone;
-	byte				*pnormbone;
-	const glm::vec3*			pstudioverts;
-	const glm::vec3*	pstudionorms;
-	mstudiotexture_t	*ptexture;
-	short				*pskinref;
-
 	unsigned int uiDrawnPolys = 0;
 
-	pvertbone = ( ( byte * ) m_pStudioHdr + m_pModel->vertinfoindex );
-	pnormbone = ( ( byte * ) m_pStudioHdr + m_pModel->norminfoindex );
-	ptexture = m_pTextureHdr->GetTextures();
+	auto pvertbone = ( ( byte * ) m_pStudioHdr + m_pModel->vertinfoindex );
+	auto pnormbone = ( ( byte * ) m_pStudioHdr + m_pModel->norminfoindex );
+	auto ptexture = m_pTextureHdr->GetTextures();
 
-	pmesh = ( mstudiomesh_t * ) ( ( byte * ) m_pStudioHdr + m_pModel->meshindex );
+	auto pmesh = ( mstudiomesh_t * ) ( ( byte * ) m_pStudioHdr + m_pModel->meshindex );
 
-	pstudioverts = ( const glm::vec3* ) ( ( const byte* ) m_pStudioHdr + m_pModel->vertindex );
-	pstudionorms = ( const glm::vec3* ) ( ( const byte* ) m_pStudioHdr + m_pModel->normindex );
+	auto pstudioverts = ( const glm::vec3* ) ( ( const byte* ) m_pStudioHdr + m_pModel->vertindex );
+	auto pstudionorms = ( const glm::vec3* ) ( ( const byte* ) m_pStudioHdr + m_pModel->normindex );
 
-	pskinref = m_pTextureHdr->GetSkins();
+	auto pskinref = m_pTextureHdr->GetSkins();
 
-	const int iSkinNum = m_pRenderInfo->iSkin;
+	if( m_pRenderInfo->iSkin != 0 && m_pRenderInfo->iSkin < m_pTextureHdr->numskinfamilies )
+		pskinref += ( m_pRenderInfo->iSkin * m_pTextureHdr->numskinref );
 
-	if( iSkinNum != 0 && iSkinNum < m_pTextureHdr->numskinfamilies )
-		pskinref += ( iSkinNum * m_pTextureHdr->numskinref );
-
-	for( i = 0; i < m_pModel->numverts; i++ )
+	for( int i = 0; i < m_pModel->numverts; i++ )
 	{
-		//glm::vec3 tmp = pstudioverts[ i ] * 12;
 		VectorTransform( pstudioverts[ i ], m_bonetransform[ pvertbone[ i ] ], m_pxformverts[ i ] );
 	}
 
@@ -928,14 +885,14 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool bWireframe )
 	//
 
 	glm::vec3* lv = m_pvlightvalues;
-	for( j = 0; j < m_pModel->nummesh; j++ )
+	for( int j = 0; j < m_pModel->nummesh; j++ )
 	{
 		int flags = ptexture[ pskinref[ pmesh[ j ].skinref ] ].flags;
 
 		meshes[ j ].pMesh = &pmesh[ j ];
 		meshes[ j ].flags = flags;
 
-		for( i = 0; i < pmesh[ j ].numnorms; i++, ++lv, ++pstudionorms, pnormbone++ )
+		for( int i = 0; i < pmesh[ j ].numnorms; i++, ++lv, ++pstudionorms, pnormbone++ )
 		{
 			Lighting( *lv, *pnormbone, flags, *pstudionorms );
 
@@ -949,8 +906,6 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool bWireframe )
 	//Masked meshes are drawn before solid meshes.
 	std::stable_sort( meshes, meshes + m_pModel->nummesh, CompareSortedMeshes );
 
-	// glCullFace(GL_FRONT);
-
 	uiDrawnPolys += DrawMeshes( bWireframe, meshes, ptexture, pskinref );
 
 	glDepthMask( GL_TRUE );
@@ -960,8 +915,6 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool bWireframe )
 
 unsigned int CStudioModelRenderer::DrawMeshes( const bool bWireframe, const SortedMesh_t* pMeshes, const mstudiotexture_t* pTextures, const short* pSkinRef )
 {
-	mstudiomesh_t* pmesh;
-
 	//Set here since it never changes. Much more efficient.
 	if( bWireframe )
 		glColor4f( r_wireframecolor_r.GetFloat() / 255.0f,
@@ -971,30 +924,24 @@ unsigned int CStudioModelRenderer::DrawMeshes( const bool bWireframe, const Sort
 
 	unsigned int uiDrawnPolys = 0;
 
-	int i;
-
 	//Polygons may overlap, so make sure they can blend together. - Solokiller
 	glDepthFunc( GL_LEQUAL );
 
 	for( int j = 0; j < m_pModel->nummesh; j++ )
 	{
-		float s, t;
-		short		*ptricmds;
-
-		pmesh = pMeshes[ j ].pMesh;
-		ptricmds = ( short * ) ( ( byte * ) m_pStudioHdr + pmesh->triindex );
+		auto pmesh = pMeshes[ j ].pMesh;
+		auto ptricmds = ( short * ) ( ( byte * ) m_pStudioHdr + pmesh->triindex );
 
 		const mstudiotexture_t& texture = pTextures[ pSkinRef[ pmesh->skinref ] ];
 
-		s = 1.0 / ( float ) texture.width;
-		t = 1.0 / ( float ) texture.height;
+		const auto s = 1.0 / ( float ) texture.width;
+		const auto t = 1.0 / ( float ) texture.height;
 
 		if( texture.flags & STUDIO_NF_ADDITIVE )
 			glDepthMask( GL_FALSE );
 		else
 			glDepthMask( GL_TRUE );
 
-		//TODO: additive textures should be drawn last, using the painter's algorithm.
 		if( texture.flags & STUDIO_NF_ADDITIVE )
 		{
 			glEnable( GL_BLEND );
@@ -1019,6 +966,8 @@ unsigned int CStudioModelRenderer::DrawMeshes( const bool bWireframe, const Sort
 			glBindTexture( GL_TEXTURE_2D, m_pRenderInfo->pModel->GetTextureId( pSkinRef[ pmesh->skinref ] ) );
 		}
 
+		int i;
+
 		while( i = *( ptricmds++ ) )
 		{
 			if( i < 0 )
@@ -1039,12 +988,10 @@ unsigned int CStudioModelRenderer::DrawMeshes( const bool bWireframe, const Sort
 				{
 					if( texture.flags & STUDIO_NF_CHROME )
 					{
-						// FIX: put these in as integer coords, not floats
 						glTexCoord2f( m_chrome[ ptricmds[ 1 ] ][ 0 ] * s, m_chrome[ ptricmds[ 1 ] ][ 1 ] * t );
 					}
 					else
 					{
-						// FIX: put these in as integer coords, not floats
 						glTexCoord2f( ptricmds[ 2 ] * s, ptricmds[ 3 ] * t );
 					}
 
@@ -1088,15 +1035,13 @@ void CStudioModelRenderer::Lighting( glm::vec3& lv, int bone, int flags, const g
 	}
 	else
 	{
-		float	r, lightcos;
-
-		lightcos = glm::dot( normal, m_blightvec[ bone ] ); // -1 colinear, 1 opposite
+		auto lightcos = glm::dot( normal, m_blightvec[ bone ] ); // -1 colinear, 1 opposite
 
 		if( lightcos > 1.0f ) lightcos = 1;
 
 		illum += m_shadelight / 255.0f;
 
-		r = m_flLambert;
+		auto r = m_flLambert;
 		if( r < 1.0f ) r = 1.0f;
 		lightcos = ( lightcos + ( r - 1.0f ) ) / r; // do modified hemispherical lighting
 		if( lightcos > 0.0f ) VectorMA( illum, -lightcos, glm::vec3{ shade }, illum );
@@ -1120,25 +1065,22 @@ void CStudioModelRenderer::Lighting( glm::vec3& lv, int bone, int flags, const g
 
 void CStudioModelRenderer::Chrome( glm::vec2& chrome, int bone, const glm::vec3& normal )
 {
-	float n;
-
 	if( m_chromeage[ bone ] != m_uiModelsDrawnCount )
 	{
 		// calculate vectors from the viewer to the bone. This roughly adjusts for position
-		glm::vec3 chromeupvec;		// g_chrome t vector in world reference frame
-		glm::vec3 chromerightvec;	// g_chrome s vector in world reference frame
-		glm::vec3 tmp;				// vector pointing at bone in world reference frame
-
-		tmp = m_vecViewerOrigin * -1.0f;
+		// vector pointing at bone in world reference frame
+		auto tmp = m_vecViewerOrigin * -1.0f;
 
 		tmp[ 0 ] += m_bonetransform[ bone ][ 0 ][ 3 ];
 		tmp[ 1 ] += m_bonetransform[ bone ][ 1 ][ 3 ];
 		tmp[ 2 ] += m_bonetransform[ bone ][ 2 ][ 3 ];
 
 		VectorNormalize( tmp );
-		chromeupvec = glm::cross( tmp, -m_vecViewerRight );
+		// g_chrome t vector in world reference frame
+		auto chromeupvec = glm::cross( tmp, -m_vecViewerRight );
 		VectorNormalize( chromeupvec );
-		chromerightvec = glm::cross( tmp, chromeupvec );
+		// g_chrome s vector in world reference frame
+		auto chromerightvec = glm::cross( tmp, chromeupvec );
 		VectorNormalize( chromerightvec );
 
 		VectorIRotate( -chromeupvec, m_bonetransform[ bone ], m_chromeup[ bone ] );
@@ -1148,11 +1090,11 @@ void CStudioModelRenderer::Chrome( glm::vec2& chrome, int bone, const glm::vec3&
 	}
 
 	// calc s coord
-	n = glm::dot( normal, m_chromeright[ bone ] );
-	chrome[ 0 ] = ( n + 1.0 ) * 32; // FIX: make this a float
+	auto n = glm::dot( normal, m_chromeright[ bone ] );
+	chrome[ 0 ] = ( n + 1.0 ) * 32;
 
-									// calc t coord
+	// calc t coord
 	n = glm::dot( normal, m_chromeup[ bone ] );
-	chrome[ 1 ] = ( n + 1.0 ) * 32; // FIX: make this a float
+	chrome[ 1 ] = ( n + 1.0 ) * 32;
 }
 }

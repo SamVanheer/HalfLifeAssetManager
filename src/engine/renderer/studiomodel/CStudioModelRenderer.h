@@ -92,8 +92,14 @@ private:
 	void CalcBonePosition( const int frame, const float s, const mstudiobone_t* const pbone, const mstudioanim_t* const panim, glm::vec3& pos );
 	void SlerpBones( glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s );
 
+	/**
+	*	@brief set some global variables based on entity position
+	*/
 	void SetupLighting();
 
+	/**
+	*	@brief based on the body part, figure out which mesh it should be using
+	*/
 	void SetupModel( int bodypart );
 
 	unsigned int DrawPoints( const bool bWireframe );
