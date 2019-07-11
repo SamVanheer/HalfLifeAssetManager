@@ -22,14 +22,14 @@ CCompilerOptions::CCompilerOptions( wxWindow* pParent, CHLMVSettings* const pSet
 
 	m_pStudioMdl = new wxFilePickerCtrl( this, wxID_ANY, wxEmptyString, wxFileSelectorPromptStr, 
 										 "Executables (*.exe;*.com)|*.exe;*.com"
-										 "All files (*.*)|*.*", 
+										 "|All files (*.*)|*.*", 
 										 wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE | wxFLP_USE_TEXTCTRL | wxFLP_SMALL );
 
 	auto pMdlDecText = new wxStaticText( this, wxID_ANY, "Path to \'mdldec.exe\'" );
 
 	m_pMdlDec = new wxFilePickerCtrl( this, wxID_ANY, wxEmptyString, wxFileSelectorPromptStr,
 									  "Executables (*.exe;*.com)|*.exe;*.com"
-									  "All files (*.*)|*.*", 
+									  "|All files (*.*)|*.*", 
 									  wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE | wxFLP_USE_TEXTCTRL | wxFLP_SMALL );
 
 	auto pMDLOutputDirText = new wxStaticText( this, wxID_ANY, "Default destination directory for command line output files" );
