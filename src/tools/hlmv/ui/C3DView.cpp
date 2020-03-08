@@ -260,11 +260,31 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 				{
 					if( flags & MOUSEOPF_ROTATE )
 					{
+						auto settings = m_pHLMV->GetSettings();
+
 						//TODO: this should be a vector, not an angle
 						glm::vec3 vecViewDir = m_OldCamera.GetViewDirection();
 
-						vecViewDir.y += ( float ) ( event.GetX() - m_vecOldCoords.x );
-						vecViewDir.x += ( float ) ( event.GetY() - m_vecOldCoords.y );
+						auto horizontalAdjust = (float) (event.GetX() - m_vecOldCoords.x);
+						auto verticalAdjust = (float) (event.GetY() - m_vecOldCoords.y);
+
+						if (settings->InvertHorizontalDraggingDirection())
+						{
+							vecViewDir.y -= horizontalAdjust;
+						}
+						else
+						{
+							vecViewDir.y += horizontalAdjust;
+						}
+
+						if (settings->InvertVerticalDraggingDirection())
+						{
+							vecViewDir.x -= verticalAdjust;
+						}
+						else
+						{
+							vecViewDir.x += verticalAdjust;
+						}
 
 						pCamera->SetViewDirection( vecViewDir );
 					}

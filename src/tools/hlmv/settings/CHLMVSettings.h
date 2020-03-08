@@ -53,6 +53,14 @@ public:
 	*/
 	std::shared_ptr<settings::CRecentFiles> GetRecentFiles() { return m_RecentFiles; }
 
+	bool InvertHorizontalDraggingDirection() const { return m_InvertHorizontalDraggingDirection; }
+
+	void SetInvertHoritonzalDraggingDirection(bool value) { m_InvertHorizontalDraggingDirection = value; }
+
+	bool InvertVerticalDraggingDirection() const { return m_InvertVerticalDraggingDirection; }
+
+	void SetInvertVerticalDraggingDirection(bool value) { m_InvertVerticalDraggingDirection = value; }
+
 	/**
 	*	Gets the user defined ground color.
 	*/
@@ -169,6 +177,10 @@ private:
 
 private:
 	std::shared_ptr<settings::CRecentFiles> m_RecentFiles = std::make_shared<settings::CRecentFiles>( MAX_RECENT_FILES );
+
+	bool m_InvertHorizontalDraggingDirection = false;
+
+	bool m_InvertVerticalDraggingDirection = false;
 
 	Color m_GroundColor = DEFAULT_GROUND_COLOR;
 

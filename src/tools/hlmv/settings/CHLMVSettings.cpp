@@ -65,6 +65,9 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 {
 	*m_RecentFiles		= *other.m_RecentFiles;
 
+	m_InvertHorizontalDraggingDirection = other.m_InvertHorizontalDraggingDirection;
+	m_InvertVerticalDraggingDirection = other.m_InvertVerticalDraggingDirection;
+
 	m_GroundColor		= other.m_GroundColor;
 	m_BackgroundColor	= other.m_BackgroundColor;
 	m_CrosshairColor	= other.m_CrosshairColor;
@@ -142,6 +145,16 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 			}
 		}
 
+		if (auto invertHorizontalDragging = settings->FindFirstChild<kv::KV>("invertHorizontalDraggingDirection"))
+		{
+			SetInvertHoritonzalDraggingDirection(invertHorizontalDragging->GetValue() == "true");
+		}
+
+		if (auto invertVerticalDragging = settings->FindFirstChild<kv::KV>("invertVerticalDraggingDirection"))
+		{
+			SetInvertVerticalDraggingDirection(invertVerticalDragging->GetValue() == "true");
+		}
+
 		LoadColorSetting( *settings, "groundColor", m_GroundColor );
 		LoadColorSetting( *settings, "backgroundColor", m_BackgroundColor );
 		LoadColorSetting( *settings, "crosshairColor", m_CrosshairColor );
@@ -216,6 +229,9 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 	}
 
 	writer.EndBlock();
+
+	writer.WriteKeyvalue("invertHorizontalDraggingDirection", m_InvertHorizontalDraggingDirection ? "true" : "false");
+	writer.WriteKeyvalue("invertVerticalDraggingDirection", m_InvertVerticalDraggingDirection ? "true" : "false");
 
 	SaveColorSetting( writer, "groundColor", m_GroundColor );
 	SaveColorSetting( writer, "backgroundColor", m_BackgroundColor );

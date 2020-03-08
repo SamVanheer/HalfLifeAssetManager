@@ -33,6 +33,8 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 	wxASSERT( pSettings );
 
 	m_pPowerOf2Textures = new wxCheckBox(this, wxID_ANY, "Rescale textures to power of 2" );
+	m_pInvertHorizontalDragging = new wxCheckBox(this, wxID_ANY, "Invert horizontal dragging direction");
+	m_pInvertVerticalDragging = new wxCheckBox(this, wxID_ANY, "Invert vertical dragging direction");
 
 	m_pGroundColor = new wxColourPickerCtrl( this, wxID_ANY, wx::ColorTowx( m_pSettings->GetGroundColor() ), wxDefaultPosition, wxDefaultSize );
 
@@ -62,6 +64,8 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 	pSizer->Add( new wxStaticLine( this ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, iNumCols ), wxEXPAND );
 
 	pSizer->Add( m_pPowerOf2Textures, wxGBPosition( iRow++, 0), wxGBSpan( 1, iNumCols ), wxEXPAND );
+	pSizer->Add(m_pInvertHorizontalDragging, wxGBPosition(iRow++, 0), wxGBSpan(1, iNumCols), wxEXPAND);
+	pSizer->Add(m_pInvertVerticalDragging, wxGBPosition(iRow++, 0), wxGBSpan(1, iNumCols), wxEXPAND);
 
 	pSizer->Add( new wxStaticText( this, wxID_ANY, "Colors:" ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, iNumCols ) );
 
@@ -122,6 +126,9 @@ void CGeneralOptions::Save()
 
 	pPowerOf2->SetBool( m_pPowerOf2Textures ->GetValue() );
 
+	m_pSettings->SetInvertHoritonzalDraggingDirection(m_pInvertHorizontalDragging->GetValue());
+	m_pSettings->SetInvertVerticalDraggingDirection(m_pInvertVerticalDragging->GetValue());
+
 	m_pSettings->SetGroundColor( wx::wxToColor( m_pGroundColor->GetColour() ) );
 	m_pSettings->SetBackgroundColor( wx::wxToColor( m_pBackgroundColor->GetColour() ) );
 	m_pSettings->SetCrosshairColor( wx::wxToColor( m_pCrosshairColor->GetColour() ) );
@@ -157,6 +164,8 @@ void CGeneralOptions::Initialize()
 	auto pPowerOf2 = static_cast< cvar::CCVar* >( g_pCVar->FindCommand( "r_powerof2textures" ) );
 
 	m_pPowerOf2Textures->SetValue( pPowerOf2->GetBool() );
+	m_pInvertHorizontalDragging->SetValue(m_pSettings->InvertHorizontalDraggingDirection());
+	m_pInvertVerticalDragging->SetValue(m_pSettings->InvertVerticalDraggingDirection());
 
 	m_pGroundColor->SetColour( wx::ColorTowx( m_pSettings->GetGroundColor() ) );
 	m_pBackgroundColor->SetColour( wx::ColorTowx( m_pSettings->GetBackgroundColor() ) );
