@@ -246,13 +246,15 @@ size_t UploadTextures( studiohdr_t& textureHdr, GLuint* pTextures, const bool bF
 }
 }
 
-CStudioModel::CStudioModel()
+CStudioModel::CStudioModel(std::string&& fileName)
+	: m_FileName(std::move(fileName))
 {
-	memset( this, 0, sizeof( *this ) );
 }
 
-CStudioModel::CStudioModel( studiohdr_t* pStudioHdr, studiohdr_t* pTextureHdr, studiohdr_t** ppSeqHdrs, const size_t uiNumSeqHdrs, GLuint* pTextures, const size_t uiNumTextures )
-	: m_pStudioHdr( pStudioHdr )
+CStudioModel::CStudioModel(std::string&& fileName, studiohdr_t* pStudioHdr, studiohdr_t* pTextureHdr, studiohdr_t** ppSeqHdrs, const size_t uiNumSeqHdrs,
+	GLuint* pTextures, const size_t uiNumTextures )
+	: m_FileName(std::move(fileName))
+	, m_pStudioHdr( pStudioHdr )
 	, m_pTextureHdr( pTextureHdr )
 {
 	assert( pStudioHdr );
@@ -437,7 +439,7 @@ StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioMod
 	const auto bIsDol = std::experimental::filesystem::path( pszFilename ).extension() == ".dol";
 
 	//Takes care of cleanup on failure.
-	std::unique_ptr<CStudioModel> studioModel( new CStudioModel() );
+	std::unique_ptr<CStudioModel> studioModel( new CStudioModel(pszFilename) );
 
 	//Load the model
 	StudioModelLoadResult result = LoadStudioHeader( pszFilename, false, studioModel->m_pStudioHdr );

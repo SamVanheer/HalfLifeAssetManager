@@ -1,6 +1,7 @@
 #ifndef GAME_STUDIOMODEL_CSTUDIOMODEL_H
 #define GAME_STUDIOMODEL_CSTUDIOMODEL_H
 
+#include <string>
 #include <vector>
 
 #include <glm/vec3.hpp>
@@ -59,9 +60,17 @@ public:
 	static const size_t MAX_TEXTURES = MAXSTUDIOSKINS;
 
 public:
-	CStudioModel();
-	CStudioModel( studiohdr_t* pStudioHdr, studiohdr_t* pTextureHdr, studiohdr_t** ppSeqHdrs, const size_t uiNumSeqHdrs, GLuint* pTextures, const size_t uiNumTextures );
+	CStudioModel(std::string&& fileName);
+	CStudioModel(std::string&& fileName, studiohdr_t* pStudioHdr, studiohdr_t* pTextureHdr, studiohdr_t** ppSeqHdrs, const size_t uiNumSeqHdrs,
+		GLuint* pTextures, const size_t uiNumTextures );
 	~CStudioModel();
+
+	const std::string& GetFileName() const { return m_FileName; }
+
+	void SetFileName(std::string&& fileName)
+	{
+		m_FileName = std::move(fileName);
+	}
 
 	studiohdr_t*	GetStudioHeader() const { return m_pStudioHdr; }
 	studiohdr_t*	GetTextureHeader() const { return m_pTextureHdr; }
@@ -84,12 +93,14 @@ public:
 	void ReuploadTexture( mstudiotexture_t* ptexture );
 
 private:
-	studiohdr_t*	m_pStudioHdr;
-	studiohdr_t*	m_pTextureHdr;
+	std::string m_FileName;
 
-	studiohdr_t*	m_pSeqHdrs[ MAX_SEQGROUPS ];
+	studiohdr_t* m_pStudioHdr = nullptr;
+	studiohdr_t* m_pTextureHdr = nullptr;
 
-	GLuint			m_Textures[ MAXSTUDIOSKINS ];
+	studiohdr_t* m_pSeqHdrs[MAX_SEQGROUPS] = {};
+
+	GLuint m_Textures[MAXSTUDIOSKINS] = {};
 
 private:
 	CStudioModel( const CStudioModel& ) = delete;

@@ -43,7 +43,7 @@ wxBEGIN_EVENT_TABLE( CMainWindow, ui::CwxBaseFrame )
 wxEND_EVENT_TABLE()
 
 CMainWindow::CMainWindow( CModelViewerApp* const pHLMV )
-	: CwxBaseFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ) )
+	: CwxBaseFrame( nullptr, wxID_ANY, HLMV_TITLE, wxDefaultPosition, wxSize( 600, 400 ), wxDEFAULT_FRAME_STYLE | wxWANTS_CHARS)
 	, m_pHLMV( pHLMV )
 	, m_RecentFiles( pHLMV->GetSettings()->GetRecentFiles() )
 {
@@ -52,6 +52,8 @@ CMainWindow::CMainWindow( CModelViewerApp* const pHLMV )
 	SetIcon( m_pHLMV->GetToolIcon() );
 
 	this->SetDropTarget( new CModelDropTarget( this ) );
+
+	this->Bind(wxEVT_CHAR_HOOK, &CMainWindow::OnKeyDown, this);
 
 	wxMenu* menuFile = new wxMenu;
 
@@ -212,17 +214,30 @@ bool CMainWindow::SaveModel( const wxString& szFilename )
 	if( !m_pHLMV->GetState()->GetEntity() )
 		return false;
 
+	auto absoluteFileName{wxFileName::FileName(szFilename)};
+
+	absoluteFileName.MakeAbsolute();
+
+	const auto fullPath = absoluteFileName.GetFullPath();
+
 	auto pModel = m_pHLMV->GetState()->GetEntity()->GetModel();
 
-	const bool bSuccess = studiomdl::SaveStudioModel( szFilename.c_str(), pModel );
+	const bool bSuccess = studiomdl::SaveStudioModel(fullPath.c_str(), pModel );
 
 	if( !bSuccess )
 	{
-		wxMessageBox( wxString::Format( "An error occurred while saving the model \"%s\"", szFilename.c_str() ) );
+		wxMessageBox( wxString::Format( "An error occurred while saving the model \"%s\"", fullPath.c_str() ) );
 	}
 
-	if( bSuccess )
+	if (bSuccess)
+	{
 		m_pHLMV->GetState()->modelChanged = false;
+
+		//Update filename to match current model
+		pModel->SetFileName(fullPath.ToStdString());
+
+		SetTitleContent(fullPath);
+	}
 
 	return bSuccess;
 }
@@ -631,6 +646,32 @@ void CMainWindow::OnMessagesWindowClosed( wxCloseEvent& event )
 	}
 
 	event.Skip();
+}
+
+void CMainWindow::OnKeyDown(wxKeyEvent& event)
+{
+	if (event.GetKeyCode() == wxKeyCode::WXK_F5)
+	{
+		//Reload current model
+
+		//First check if there are unsaved changes
+		if (m_pHLMV->GetState()->modelChanged)
+		{
+			if (!ShowUnsavedWarning())
+			{
+				return;
+			}
+		}
+
+		if (auto pEntity = m_pHLMV->GetState()->GetEntity())
+		{
+			auto pModel = pEntity->GetModel();
+
+			const wxString fileName = pModel->GetFileName();
+
+			LoadModel(fileName);
+		}
+	}
 }
 
 bool CMainWindow::OnDropFiles( wxCoord x, wxCoord y, const wxArrayString& filenames )

@@ -102,6 +102,8 @@ private:
 
 	void OnMessagesWindowClosed( wxCloseEvent& event );
 
+	void OnKeyDown(wxKeyEvent& event);
+
 private:
 	CModelViewerApp* m_pHLMV;
 	CMainPanel* m_pMainPanel;
