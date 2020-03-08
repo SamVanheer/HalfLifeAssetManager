@@ -530,18 +530,19 @@ void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 		return;
 	}
 
-	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "Windows Bitmap (*.bmp)|*.bmp", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+	studiohdr_t* const pHdr = pStudioModel->GetTextureHeader();
+
+	mstudiotexture_t& texture = ((mstudiotexture_t*) ((byte*) pHdr + pHdr->textureindex))[iTextureIndex];
+
+	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, texture.name, "Windows Bitmap (*.bmp)|*.bmp", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
 		return;
 
 	const wxString szFilename = dlg.GetPath();
 
-	studiohdr_t* const pHdr = pStudioModel->GetTextureHeader();
-
-	mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTextureIndex ];
-
-	if( !graphics::bmpfile::SaveBMPFile( szFilename.c_str(), texture.width, texture.height, ( uint8_t* ) pHdr + texture.index, ( uint8_t* ) pHdr + texture.index + texture.width * texture.height ) )
+	if( !graphics::bmpfile::SaveBMPFile( szFilename.c_str(), texture.width, texture.height,
+		( uint8_t* ) pHdr + texture.index, ( uint8_t* ) pHdr + texture.index + texture.width * texture.height ) )
 	{
 		wxMessageBox( wxString::Format( "Failed to save image \"%s\"!", szFilename.c_str() ) );
 	}
