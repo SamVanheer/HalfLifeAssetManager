@@ -10,6 +10,12 @@
 #undef TRANSPARENT
 #endif
 
+namespace studiomdl
+{
+class CStudioModel;
+struct studiohdr_t;
+}
+
 namespace hlmv
 {
 class CTexturesPanel final : public CBaseControlPanel
@@ -75,11 +81,16 @@ protected:
 
 	void ImportTexture( wxCommandEvent& event );
 
+	void ImportAllTextures(wxCommandEvent& event);
+
 	void ExportTexture( wxCommandEvent& event );
 
 	void ExportAllTextures(wxCommandEvent& event);
 
 	void ExportUVMap( wxCommandEvent& event );
+
+private:
+	void ImportTextureFrom(const wxString& fileName, studiomdl::CStudioModel* pStudioModel, studiohdr_t* pHdr, int textureIndex);
 
 private:
 	wxStaticText* m_pTextureSize;
@@ -93,6 +104,7 @@ private:
 	wxChoice* m_pMesh;
 
 	wxButton* m_pImportTexButton;
+	wxButton* m_pImportAllTexturesButton;
 	wxButton* m_pExportTexButton;
 	wxButton* m_pExportAllTexturesButton;
 	wxButton* m_pExportUVButton;

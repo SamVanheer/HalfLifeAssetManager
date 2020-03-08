@@ -26,6 +26,7 @@ wxBEGIN_EVENT_TABLE( CTexturesPanel, CBaseControlPanel )
 	EVT_CHECKBOX( wxID_TEX_CHECKBOX, CTexturesPanel::CheckBoxChanged )
 	EVT_CHOICE( wxID_TEX_MESH, CTexturesPanel::MeshChanged )
 	EVT_BUTTON( wxID_TEX_IMPORTTEXTURE, CTexturesPanel::ImportTexture )
+	EVT_BUTTON(wxID_TEX_IMPORTALLTEXTURES, CTexturesPanel::ImportAllTextures)
 	EVT_BUTTON( wxID_TEX_EXPORTTEXTURE, CTexturesPanel::ExportTexture )
 	EVT_BUTTON(wxID_TEX_EXPORTALLTEXTURES, CTexturesPanel::ExportAllTextures)
 	EVT_BUTTON( wxID_TEX_EXPORTUVMAP, CTexturesPanel::ExportUVMap )
@@ -66,10 +67,13 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 
 	m_pMesh = new wxChoice( pElemParent, wxID_TEX_MESH );
 
-	m_pImportTexButton = new wxButton( pElemParent, wxID_TEX_IMPORTTEXTURE, "Import Texture" );
-	m_pExportTexButton = new wxButton( pElemParent, wxID_TEX_EXPORTTEXTURE, "Export Texture" );
-	m_pExportAllTexturesButton = new wxButton(pElemParent, wxID_TEX_EXPORTALLTEXTURES, "Export All Textures");
-	m_pExportUVButton = new wxButton( pElemParent, wxID_TEX_EXPORTUVMAP, "Export UV Map" );
+	wxPanel* buttonsPanel = new wxPanel(pElemParent);
+
+	m_pImportTexButton = new wxButton(buttonsPanel, wxID_TEX_IMPORTTEXTURE, "Import Texture" );
+	m_pImportAllTexturesButton = new wxButton(buttonsPanel, wxID_TEX_IMPORTALLTEXTURES, "Import All Textures");
+	m_pExportTexButton = new wxButton(buttonsPanel, wxID_TEX_EXPORTTEXTURE, "Export Texture" );
+	m_pExportAllTexturesButton = new wxButton(buttonsPanel, wxID_TEX_EXPORTALLTEXTURES, "Export All Textures");
+	m_pExportUVButton = new wxButton(buttonsPanel, wxID_TEX_EXPORTUVMAP, "Export UV Map" );
 
 	//Layout
 	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );
@@ -93,10 +97,19 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 
 	pSizer->Add( m_pMesh, wxGBPosition( 3, iCol++ ), wxGBSpan( 1, 1 ), wxEXPAND );
 
-	pSizer->Add( m_pImportTexButton, wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pExportTexButton, wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add(m_pExportAllTexturesButton, wxGBPosition(2, iCol), wxDefaultSpan, wxEXPAND);
-	pSizer->Add( m_pExportUVButton, wxGBPosition( 3, iCol ), wxDefaultSpan, wxEXPAND );
+	{
+		auto buttonsSizer = new wxGridBagSizer(2, 3);
+
+		buttonsSizer->Add(m_pImportTexButton, wxGBPosition(0, 0), wxDefaultSpan, wxEXPAND);
+		buttonsSizer->Add(m_pImportAllTexturesButton, wxGBPosition(1, 0), wxDefaultSpan, wxEXPAND);
+		buttonsSizer->Add(m_pExportTexButton, wxGBPosition(0, 1), wxDefaultSpan, wxEXPAND);
+		buttonsSizer->Add(m_pExportAllTexturesButton, wxGBPosition(1, 1), wxDefaultSpan, wxEXPAND);
+		buttonsSizer->Add(m_pExportUVButton, wxGBPosition(0, 2), wxDefaultSpan, wxEXPAND);
+
+		buttonsPanel->SetSizer(buttonsSizer);
+
+		pSizer->Add(buttonsPanel, wxGBPosition(0, iCol), wxGBSpan(5, 1), wxEXPAND);
+	}
 
 	GetMainSizer()->Add( pSizer );
 }
@@ -420,6 +433,73 @@ void CTexturesPanel::MeshChanged( wxCommandEvent& event )
 	m_pHLMV->GetState()->pUVMesh = pMesh ? pMesh->m_pMesh : nullptr;
 }
 
+void CTexturesPanel::ImportTextureFrom(const wxString& fileName, studiomdl::CStudioModel* pStudioModel, studiohdr_t* pHdr, int textureIndex)
+{
+	//Must be BMP
+	wxImage image(fileName, wxBITMAP_TYPE_BMP);
+
+	if (!image.IsOk())
+	{
+		wxMessageBox(wxString::Format("Failed to load image \"%s\"!", fileName.c_str()));
+		return;
+	}
+
+	const wxPalette& palette = image.GetPalette();
+
+	if (!palette.IsOk())
+	{
+		wxMessageBox(wxString::Format("Palette for image \"%s\" does not exist!", fileName.c_str()));
+		return;
+	}
+
+	mstudiotexture_t& texture = ((mstudiotexture_t*) ((byte*) pHdr + pHdr->textureindex))[textureIndex];
+
+	if (texture.width != image.GetWidth() || texture.height != image.GetHeight())
+	{
+		wxMessageBox(wxString::Format("Image \"%s\" does not have matching dimensions to the current texture (src: %d x %d, dest: %d x %d)",
+			fileName.c_str(),
+			image.GetWidth(), image.GetHeight(),
+			texture.width, texture.height));
+		return;
+	}
+
+	//Convert to 8 bit palette based image.
+	std::unique_ptr<byte[]> texData = std::make_unique<byte[]>(image.GetWidth() * image.GetHeight());
+
+	byte* pDest = texData.get();
+
+	const unsigned char* pSourceData = image.GetData();
+
+	for (int i = 0; i < image.GetWidth() * image.GetHeight(); ++i, ++pDest, pSourceData += 3)
+	{
+		*pDest = palette.GetPixel(pSourceData[0], pSourceData[1], pSourceData[2]);
+	}
+
+	byte convPal[PALETTE_SIZE];
+
+	memset(convPal, 0, sizeof(convPal));
+
+	unsigned char r, g, b;
+
+	for (size_t uiIndex = 0; uiIndex < PALETTE_ENTRIES; ++uiIndex)
+	{
+		if (palette.GetRGB(uiIndex, &r, &g, &b))
+		{
+			convPal[uiIndex * PALETTE_CHANNELS] = r;
+			convPal[uiIndex * PALETTE_CHANNELS + 1] = g;
+			convPal[uiIndex * PALETTE_CHANNELS + 2] = b;
+		}
+	}
+
+	//Copy over the new image data to the texture.
+	memcpy((byte*) pHdr + texture.index, texData.get(), image.GetWidth() * image.GetHeight());
+	memcpy((byte*) pHdr + texture.index + image.GetWidth() * image.GetHeight(), convPal, PALETTE_SIZE);
+
+	pStudioModel->ReplaceTexture(&texture, texData.get(), convPal, pStudioModel->GetTextureId(textureIndex));
+
+	m_pHLMV->GetState()->modelChanged = true;
+}
+
 void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 {
 	auto pEntity = m_pHLMV->GetState()->GetEntity();
@@ -447,71 +527,44 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 
 	const wxString szFilename = dlg.GetPath();
 
-	//Must be BMP
-	wxImage image( szFilename, wxBITMAP_TYPE_BMP );
+	ImportTextureFrom(szFilename, pStudioModel, pStudioModel->GetTextureHeader(), iTextureIndex);
+}
 
-	if( !image.IsOk() )
+void CTexturesPanel::ImportAllTextures(wxCommandEvent& event)
+{
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
+	if (!pEntity || !pEntity->GetModel())
 	{
-		wxMessageBox( wxString::Format( "Failed to load image \"%s\"!", szFilename.c_str() ) );
+		wxMessageBox("No model loaded!");
 		return;
 	}
 
-	const wxPalette& palette = image.GetPalette();
+	wxDirDialog dlg(this, "Select the directory to import all textures from", wxEmptyString, wxDD_DEFAULT_STYLE | wxDD_NEW_DIR_BUTTON);
 
-	if( !palette.IsOk() )
+	if (dlg.ShowModal() == wxID_CANCEL)
 	{
-		wxMessageBox( wxString::Format( "Palette for image \"%s\" does not exist!", szFilename.c_str() ) );
 		return;
 	}
 
+	auto pStudioModel = pEntity->GetModel();
 	studiohdr_t* const pHdr = pStudioModel->GetTextureHeader();
 
-	mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTextureIndex ];
-
-	if( texture.width != image.GetWidth() || texture.height != image.GetHeight() )
+	//For each texture in the model, find if there is a file with the same name in the given directory
+	//If so, try to replace the texture
+	for (int i = 0; i < pHdr->numtextures; ++i)
 	{
-		wxMessageBox( wxString::Format( "Image \"%s\" does not have matching dimensions to the current texture (src: %d x %d, dest: %d x %d)",
-										szFilename.c_str(),
-										image.GetWidth(), image.GetHeight(),
-										texture.width, texture.height ) );
-		return;
-	}
+		mstudiotexture_t& texture = ((mstudiotexture_t*) ((byte*) pHdr + pHdr->textureindex))[i];
 
-	//Convert to 8 bit palette based image.
-	std::unique_ptr<byte[]> texData = std::make_unique<byte[]>( image.GetWidth() * image.GetHeight() );
+		auto fileName{wxFileName::DirName(dlg.GetPath())};
 
-	byte* pDest = texData.get();
+		fileName.SetName(texture.name);
 
-	const unsigned char* pSourceData = image.GetData();
-
-	for( int i = 0; i < image.GetWidth() * image.GetHeight(); ++i, ++pDest, pSourceData += 3 )
-	{
-		*pDest = palette.GetPixel( pSourceData[ 0 ], pSourceData[ 1 ], pSourceData[ 2 ] );
-	}
-
-	byte convPal[ PALETTE_SIZE ];
-
-	memset( convPal, 0, sizeof( convPal ) );
-
-	unsigned char r, g, b;
-
-	for( size_t uiIndex = 0; uiIndex < PALETTE_ENTRIES; ++uiIndex )
-	{
-		if( palette.GetRGB( uiIndex, &r, &g, &b ) )
+		if (fileName.FileExists())
 		{
-			convPal[ uiIndex * PALETTE_CHANNELS ] = r;
-			convPal[ uiIndex * PALETTE_CHANNELS + 1 ] = g;
-			convPal[ uiIndex * PALETTE_CHANNELS + 2 ] = b;
+			ImportTextureFrom(fileName.GetFullPath(), pStudioModel, pHdr, i);
 		}
 	}
-
-	//Copy over the new image data to the texture.
-	memcpy( ( byte* ) pHdr + texture.index, texData.get(), image.GetWidth() * image.GetHeight() );
-	memcpy( ( byte* ) pHdr + texture.index + image.GetWidth() * image.GetHeight(), convPal, PALETTE_SIZE );
-
-	pStudioModel->ReplaceTexture( &texture, texData.get(), convPal, pStudioModel->GetTextureId( iTextureIndex ) );
-
-	m_pHLMV->GetState()->modelChanged = true;
 }
 
 void CTexturesPanel::ExportTexture( wxCommandEvent& event )
