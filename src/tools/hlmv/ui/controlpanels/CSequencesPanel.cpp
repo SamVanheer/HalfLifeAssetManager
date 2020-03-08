@@ -131,9 +131,6 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 	m_pShowCrosshair = new wxCheckBox( pElemParent, wxID_ANY, "Show Crosshair" );
 	m_pShowGuidelines = new wxCheckBox( pElemParent, wxID_ANY, "Show Guidelines" );
 
-	wxStaticText* pOriginInfo = new wxStaticText( pElemParent, wxID_ANY, "Changes to the origin must be made by altering the $origin line in your model's QC file.",
-												  wxDefaultPosition, wxSize( 180, 40 ) );
-
 	//Layout
 	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );
 
@@ -185,8 +182,6 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 
 	pSizer->Add( m_pShowCrosshair, wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
 	pSizer->Add( m_pShowGuidelines, wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
-
-	pSizer->Add( pOriginInfo, wxGBPosition( 2, iCol ), wxGBSpan( 2, 1 ), wxEXPAND );
 
 	m_pEventInfo->SetSizer( pEventSizer );
 
@@ -341,8 +336,6 @@ void CSequencesPanel::InitializeUI()
 
 		if( pHdr )
 		{
-			m_pSequence->Enable( true );
-
 			const mstudioseqdesc_t* const pseqdescs = ( mstudioseqdesc_t* ) ( ( byte* ) pHdr + pHdr->seqindex );
 
 			//Insert all labels into the array, then append the array to the combo box. This is much faster than appending each label to the combo box directly.
@@ -359,7 +352,14 @@ void CSequencesPanel::InitializeUI()
 
 			m_pSequenceInfo->Show( true );
 
-			m_pEditEvents->Enable( true );
+			auto rootBone = pModel->GetRootBone();
+
+			if (rootBone)
+			{
+				m_OriginalRootBonePosition.x = rootBone->value[0];
+				m_OriginalRootBonePosition.y = rootBone->value[1];
+				m_OriginalRootBonePosition.z = rootBone->value[2];
+			}
 
 			bSuccess = true;
 		}
@@ -369,19 +369,12 @@ void CSequencesPanel::InitializeUI()
 
 	if( !bSuccess )
 	{
-		m_pSequence->Enable( false );
 		m_pSequenceInfo->Show( false );
-		m_pEditEvents->Enable( false );
 	}
 
 	UpdateEvents();
 
-	const glm::vec3& vecWeaponOrigin = m_pHLMV->GetState()->weaponOriginCamera.GetOrigin();
-
-	for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
-	{
-		m_pOrigin[ uiIndex ]->SetValue( vecWeaponOrigin[ uiIndex ] );
-	}
+	this->Enable(bSuccess);
 }
 
 void CSequencesPanel::SetSequence( int iIndex )
@@ -557,15 +550,24 @@ void CSequencesPanel::UpdateEventInfo( int iIndex )
 
 void CSequencesPanel::UpdateOrigin()
 {
-	//TODO: need to grab the vector and apply the initial transform matrix to it to get the correct coordinate system
-	glm::vec3 vecWeaponOrigin
+	if (auto pEntity = m_pHLMV->GetState()->GetEntity())
 	{
-		-m_pOrigin[ 2 ]->GetValue(),
-		m_pOrigin[ 1 ]->GetValue(),
-		m_pOrigin[ 0 ]->GetValue()
-	};
+		//Find the root bone
+		auto rootBone = pEntity->GetModel()->GetRootBone();
 
-	m_pHLMV->GetState()->weaponOriginCamera.SetOrigin( vecWeaponOrigin );
+		if (rootBone)
+		{
+			const glm::vec3 offset{-m_pOrigin[2]->GetValue(), m_pOrigin[1]->GetValue(), m_pOrigin[0]->GetValue()};
+
+			const auto newPosition = m_OriginalRootBonePosition + offset;
+
+			rootBone->value[0] = newPosition.x;
+			rootBone->value[1] = newPosition.y;
+			rootBone->value[2] = newPosition.z;
+
+			m_pHLMV->GetState()->modelChanged = true;
+		}
+	}
 }
 
 void CSequencesPanel::SequenceChanged( wxCommandEvent& event )

@@ -92,6 +92,21 @@ public:
 	*/
 	void ReuploadTexture( mstudiotexture_t* ptexture );
 
+	mstudiobone_t* GetRootBone()
+	{
+		for (int i = 0; i < m_pStudioHdr->numbones; ++i)
+		{
+			auto bone = m_pStudioHdr->GetBone(i);
+
+			if (bone->parent == -1)
+			{
+				return bone;
+			}
+		}
+
+		return nullptr;
+	}
+
 private:
 	std::string m_FileName;
 

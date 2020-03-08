@@ -1,6 +1,8 @@
 #ifndef CONTROLPANELS_CSEQUENCESPANEL_H
 #define CONTROLPANELS_CSEQUENCESPANEL_H
 
+#include <glm/vec3.hpp>
+
 #include "cvar/CCVar.h"
 
 #include "CBaseControlPanel.h"
@@ -122,6 +124,8 @@ private:
 
 	wxCheckBox* m_pShowCrosshair;
 	wxCheckBox* m_pShowGuidelines;
+
+	glm::vec3 m_OriginalRootBonePosition;
 
 private:
 	CSequencesPanel( const CSequencesPanel& ) = delete;
