@@ -352,6 +352,11 @@ void CSequencesPanel::InitializeUI()
 
 			m_pSequenceInfo->Show( true );
 
+			for (auto value : m_pOrigin)
+			{
+				value->SetValue(0);
+			}
+
 			auto rootBone = pModel->GetRootBone();
 
 			if (rootBone)
