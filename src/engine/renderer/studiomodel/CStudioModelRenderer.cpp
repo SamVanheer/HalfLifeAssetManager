@@ -965,8 +965,12 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool bWireframe )
 			Lighting( *lv, *pnormbone, flags, *pstudionorms );
 
 			// FIX: move this check out of the inner loop
-			if( flags & STUDIO_NF_CHROME )
-				Chrome( m_chrome[ reinterpret_cast<glm::vec3*>( lv ) - m_pvlightvalues ], *pnormbone, *pstudionorms );
+			if (flags & STUDIO_NF_CHROME)
+			{
+				auto& c = m_chrome[reinterpret_cast<glm::vec3*>(lv) - m_pvlightvalues];
+
+				Chrome(c, *pnormbone, *pstudionorms);
+			}
 		}
 	}
 
@@ -1056,7 +1060,9 @@ unsigned int CStudioModelRenderer::DrawMeshes( const bool bWireframe, const Sort
 				{
 					if( texture.flags & STUDIO_NF_CHROME )
 					{
-						glTexCoord2f( m_chrome[ ptricmds[ 1 ] ][ 0 ] * s, m_chrome[ ptricmds[ 1 ] ][ 1 ] * t );
+						const auto& c = m_chrome[ptricmds[1]];
+
+						glTexCoord2f(c[0], c[1]);
 					}
 					else
 					{
@@ -1159,10 +1165,10 @@ void CStudioModelRenderer::Chrome( glm::vec2& chrome, int bone, const glm::vec3&
 
 	// calc s coord
 	auto n = glm::dot( normal, m_chromeright[ bone ] );
-	chrome[ 0 ] = ( n + 1.0 ) * 32;
+	chrome[ 0 ] = ( n + 1.0 ) * 0.5;
 
 	// calc t coord
 	n = glm::dot( normal, m_chromeup[ bone ] );
-	chrome[ 1 ] = ( n + 1.0 ) * 32;
+	chrome[ 1 ] = ( n + 1.0 ) * 0.5;
 }
 }
