@@ -672,6 +672,10 @@ void CMainWindow::OnKeyDown(wxKeyEvent& event)
 			LoadModel(fileName);
 		}
 	}
+	else
+	{
+		event.Skip();
+	}
 }
 
 bool CMainWindow::OnDropFiles( wxCoord x, wxCoord y, const wxArrayString& filenames )
