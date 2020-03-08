@@ -84,6 +84,7 @@ enum wxIdentifier
 	wxID_TEX_MESH,
 	wxID_TEX_IMPORTTEXTURE,
 	wxID_TEX_EXPORTTEXTURE,
+	wxID_TEX_EXPORTALLTEXTURES,
 	wxID_TEX_EXPORTUVMAP,
 
 	//Fullscreen panel

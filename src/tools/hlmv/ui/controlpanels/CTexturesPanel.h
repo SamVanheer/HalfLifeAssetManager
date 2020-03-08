@@ -77,6 +77,8 @@ protected:
 
 	void ExportTexture( wxCommandEvent& event );
 
+	void ExportAllTextures(wxCommandEvent& event);
+
 	void ExportUVMap( wxCommandEvent& event );
 
 private:
@@ -92,6 +94,7 @@ private:
 
 	wxButton* m_pImportTexButton;
 	wxButton* m_pExportTexButton;
+	wxButton* m_pExportAllTexturesButton;
 	wxButton* m_pExportUVButton;
 
 private:

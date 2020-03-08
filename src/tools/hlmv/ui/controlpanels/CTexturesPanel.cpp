@@ -1,6 +1,7 @@
 #include <new>
 #include <memory>
 
+#include <wx/filename.h>
 #include <wx/gbsizer.h>
 #include <wx/image.h>
 
@@ -26,6 +27,7 @@ wxBEGIN_EVENT_TABLE( CTexturesPanel, CBaseControlPanel )
 	EVT_CHOICE( wxID_TEX_MESH, CTexturesPanel::MeshChanged )
 	EVT_BUTTON( wxID_TEX_IMPORTTEXTURE, CTexturesPanel::ImportTexture )
 	EVT_BUTTON( wxID_TEX_EXPORTTEXTURE, CTexturesPanel::ExportTexture )
+	EVT_BUTTON(wxID_TEX_EXPORTALLTEXTURES, CTexturesPanel::ExportAllTextures)
 	EVT_BUTTON( wxID_TEX_EXPORTUVMAP, CTexturesPanel::ExportUVMap )
 wxEND_EVENT_TABLE()
 
@@ -66,6 +68,7 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 
 	m_pImportTexButton = new wxButton( pElemParent, wxID_TEX_IMPORTTEXTURE, "Import Texture" );
 	m_pExportTexButton = new wxButton( pElemParent, wxID_TEX_EXPORTTEXTURE, "Export Texture" );
+	m_pExportAllTexturesButton = new wxButton(pElemParent, wxID_TEX_EXPORTALLTEXTURES, "Export All Textures");
 	m_pExportUVButton = new wxButton( pElemParent, wxID_TEX_EXPORTUVMAP, "Export UV Map" );
 
 	//Layout
@@ -83,16 +86,17 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 
 		pTextureSettingPanel->SetSizer( pTextureSettingSizer );
 
-		pSizer->Add( pTextureSettingPanel, wxGBPosition( 0, iCol++ ), wxGBSpan( 3, 1 ), wxEXPAND );
+		pSizer->Add( pTextureSettingPanel, wxGBPosition( 0, iCol++ ), wxGBSpan( 4, 1 ), wxEXPAND );
 	}
 
-	pSizer->Add( wx::CreateCheckBoxSizer( m_pCheckBoxes, ARRAYSIZE( m_pCheckBoxes ), NUM_CHECKBOX_COLS, wxEXPAND ), wxGBPosition( 0, iCol ), wxGBSpan( 2, 1 ), wxEXPAND );
+	pSizer->Add( wx::CreateCheckBoxSizer( m_pCheckBoxes, ARRAYSIZE( m_pCheckBoxes ), NUM_CHECKBOX_COLS, wxEXPAND ), wxGBPosition( 0, iCol ), wxGBSpan( 3, 1 ), wxEXPAND );
 
-	pSizer->Add( m_pMesh, wxGBPosition( 2, iCol++ ), wxGBSpan( 1, 1 ), wxEXPAND );
+	pSizer->Add( m_pMesh, wxGBPosition( 3, iCol++ ), wxGBSpan( 1, 1 ), wxEXPAND );
 
 	pSizer->Add( m_pImportTexButton, wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
 	pSizer->Add( m_pExportTexButton, wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pExportUVButton, wxGBPosition( 2, iCol ), wxDefaultSpan, wxEXPAND );
+	pSizer->Add(m_pExportAllTexturesButton, wxGBPosition(2, iCol), wxDefaultSpan, wxEXPAND);
+	pSizer->Add( m_pExportUVButton, wxGBPosition( 3, iCol ), wxDefaultSpan, wxEXPAND );
 
 	GetMainSizer()->Add( pSizer );
 }
@@ -545,6 +549,52 @@ void CTexturesPanel::ExportTexture( wxCommandEvent& event )
 		( uint8_t* ) pHdr + texture.index, ( uint8_t* ) pHdr + texture.index + texture.width * texture.height ) )
 	{
 		wxMessageBox( wxString::Format( "Failed to save image \"%s\"!", szFilename.c_str() ) );
+	}
+}
+
+void CTexturesPanel::ExportAllTextures(wxCommandEvent& event)
+{
+	auto pEntity = m_pHLMV->GetState()->GetEntity();
+
+	if (!pEntity || !pEntity->GetModel())
+	{
+		wxMessageBox("No model loaded!");
+		return;
+	}
+
+	auto pStudioModel = pEntity->GetModel();
+
+	wxDirDialog dlg(this, "Select the directory to export all textures to", wxEmptyString, wxDD_DEFAULT_STYLE | wxDD_NEW_DIR_BUTTON);
+
+	if (dlg.ShowModal() == wxID_CANCEL)
+	{
+		return;
+	}
+
+	studiohdr_t* const pHdr = pStudioModel->GetTextureHeader();
+
+	wxString errors;
+
+	for (int i = 0; i < pHdr->numtextures; ++i)
+	{
+		const auto& texture = ((mstudiotexture_t*) ((byte*) pHdr + pHdr->textureindex))[i];
+
+		auto fileName{wxFileName::DirName(dlg.GetPath())};
+
+		fileName.SetName(texture.name);
+
+		auto fullPath = fileName.GetFullPath();
+
+		if (!graphics::bmpfile::SaveBMPFile(fullPath.c_str(), texture.width, texture.height,
+			(uint8_t*) pHdr + texture.index, (uint8_t*) pHdr + texture.index + texture.width * texture.height))
+		{
+			errors += wxString::Format("\"%s\"\n", fullPath.c_str());
+		}
+	}
+
+	if (!errors.empty())
+	{
+		wxMessageBox(wxString::Format("Failed to save images:\n%s", errors.c_str()));
 	}
 }
 
