@@ -54,7 +54,6 @@ private:
 	wxStaticText* m_pType;
 	wxStaticText* m_pBone;
 	wxStaticText* m_pOrigin;
-	wxStaticText* m_pVectors[ STUDIO_ATTACH_NUM_VECTORS ];
 
 private:
 	CAttachmentsPanel( const CAttachmentsPanel& ) = delete;

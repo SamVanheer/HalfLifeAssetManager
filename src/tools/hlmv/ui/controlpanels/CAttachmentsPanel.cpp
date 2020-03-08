@@ -29,11 +29,6 @@ CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CModelViewerApp* const 
 	m_pBone = new wxStaticText( m_pAttachmentInfo, wxID_ANY, "Undefined", wxDefaultPosition, wxSize( 300, wxDefaultSize.GetHeight() ) );
 	m_pOrigin = new wxStaticText( m_pAttachmentInfo, wxID_ANY, "Undefined", wxDefaultPosition, wxSize( 300, wxDefaultSize.GetHeight() ) );
 
-	for( int iIndex = 0; iIndex < STUDIO_ATTACH_NUM_VECTORS; ++iIndex )
-	{
-		m_pVectors[ iIndex ] = new wxStaticText( m_pAttachmentInfo, wxID_ANY, "Undefined", wxDefaultPosition, wxSize( 300, wxDefaultSize.GetHeight() ) );
-	}
-
 	//Layout
 	auto pSizer = new wxGridBagSizer( 5, 5 );
 
@@ -47,11 +42,6 @@ CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CModelViewerApp* const 
 	pInfoSizer->Add( m_pType );
 	pInfoSizer->Add( m_pBone );
 	pInfoSizer->Add( m_pOrigin );
-
-	for( int iIndex = 0; iIndex < STUDIO_ATTACH_NUM_VECTORS; ++iIndex )
-	{
-		pInfoSizer->Add( m_pVectors[ iIndex ] );
-	}
 
 	m_pAttachmentInfo->SetSizer( pInfoSizer );
 
@@ -136,14 +126,6 @@ void CAttachmentsPanel::SetAttachment( int iIndex )
 	m_pType->SetLabelText( wxString::Format( "Type: %d", attachment->type ) );
 	m_pBone->SetLabelText( wxString::Format( "Bone: %d", attachment->bone ) );
 	m_pOrigin->SetLabelText( wxString::Format( "Origin: %f %f %f", attachment->org.x, attachment->org.y, attachment->org.z ) );
-
-	for( int iVec = 0; iVec < STUDIO_ATTACH_NUM_VECTORS; ++iVec )
-	{
-		m_pVectors[ iVec ]->SetLabelText( wxString::Format( "Vector %d: %f %f %f", 
-															iVec, attachment->vectors[ iVec ].x, 
-															attachment->vectors[ iVec ].y, 
-															attachment->vectors[ iVec ].z ) );
-	}
 
 	m_pAttachments->Select( iIndex );
 
