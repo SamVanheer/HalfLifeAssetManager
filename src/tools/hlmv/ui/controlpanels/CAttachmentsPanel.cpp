@@ -27,7 +27,18 @@ CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CModelViewerApp* const 
 	m_pName = new wxStaticText( m_pAttachmentInfo, wxID_ANY, "Undefined", wxDefaultPosition, wxSize( 300, wxDefaultSize.GetHeight() ) );
 	m_pType = new wxStaticText( m_pAttachmentInfo, wxID_ANY, "Undefined", wxDefaultPosition, wxSize( 300, wxDefaultSize.GetHeight() ) );
 	m_pBone = new wxStaticText( m_pAttachmentInfo, wxID_ANY, "Undefined", wxDefaultPosition, wxSize( 300, wxDefaultSize.GetHeight() ) );
-	m_pOrigin = new wxStaticText( m_pAttachmentInfo, wxID_ANY, "Undefined", wxDefaultPosition, wxSize( 300, wxDefaultSize.GetHeight() ) );
+
+	wxStaticText* pXOrigin = new wxStaticText(m_pAttachmentInfo, wxID_ANY, "Origin X");
+	wxStaticText* pYOrigin = new wxStaticText(m_pAttachmentInfo, wxID_ANY, "Origin Y");
+	wxStaticText* pZOrigin = new wxStaticText(m_pAttachmentInfo, wxID_ANY, "Origin Z");
+
+	for (int i = 0; i < 3; ++i)
+	{
+		m_pOrigin[i] = new wxSpinCtrlDouble(m_pAttachmentInfo, wxID_ANY);
+		m_pOrigin[i]->SetRange(-DBL_MAX, DBL_MAX);
+		m_pOrigin[i]->SetDigits(6);
+		m_pOrigin[i]->Bind(wxEVT_SPINCTRLDOUBLE, &CAttachmentsPanel::OnOriginChanged, this);
+	}
 
 	//Layout
 	auto pSizer = new wxGridBagSizer( 5, 5 );
@@ -36,12 +47,20 @@ CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CModelViewerApp* const 
 
 	pSizer->Add( m_pAttachments, wxGBPosition( 1, 0 ), wxGBSpan( 1, 1 ), wxEXPAND );
 
-	auto pInfoSizer = new wxBoxSizer( wxVERTICAL );
+	auto pInfoSizer = new wxGridBagSizer(5, 5);
 
-	pInfoSizer->Add( m_pName );
-	pInfoSizer->Add( m_pType );
-	pInfoSizer->Add( m_pBone );
-	pInfoSizer->Add( m_pOrigin );
+	pInfoSizer->Add(m_pName, wxGBPosition(0, 0), wxDefaultSpan, wxEXPAND);
+	pInfoSizer->Add(m_pType, wxGBPosition(1, 0), wxDefaultSpan, wxEXPAND);
+	pInfoSizer->Add(m_pBone, wxGBPosition(2, 0), wxDefaultSpan, wxEXPAND);
+
+	pInfoSizer->Add(pXOrigin, wxGBPosition(0, 1), wxDefaultSpan, wxEXPAND);
+	pInfoSizer->Add(pYOrigin, wxGBPosition(1, 1), wxDefaultSpan, wxEXPAND);
+	pInfoSizer->Add(pZOrigin, wxGBPosition(2, 1), wxDefaultSpan, wxEXPAND);
+
+	for (int i = 0; i < 3; ++i)
+	{
+		pInfoSizer->Add(m_pOrigin[i], wxGBPosition(i, 2), wxDefaultSpan, wxEXPAND);
+	}
 
 	m_pAttachmentInfo->SetSizer( pInfoSizer );
 
@@ -78,13 +97,14 @@ void CAttachmentsPanel::InitializeUI()
 
 			m_pAttachments->Append( attachments );
 
-			bSuccess = true;
+			//Only enable if there are attachments
+			bSuccess = pStudioHdr->numattachments > 0;
 		}
 	}
 
 	SetAttachment( 0 );
 
-	m_pAttachments->Enable( bSuccess );
+	this->Enable( bSuccess );
 }
 
 void CAttachmentsPanel::OnPostDraw( studiomdl::IStudioModelRenderer& renderer, const studiomdl::CModelRenderInfo& info )
@@ -125,7 +145,11 @@ void CAttachmentsPanel::SetAttachment( int iIndex )
 
 	m_pType->SetLabelText( wxString::Format( "Type: %d", attachment->type ) );
 	m_pBone->SetLabelText( wxString::Format( "Bone: %d", attachment->bone ) );
-	m_pOrigin->SetLabelText( wxString::Format( "Origin: %f %f %f", attachment->org.x, attachment->org.y, attachment->org.z ) );
+
+	for (int i = 0; i < 3; ++i)
+	{
+		m_pOrigin[i]->SetValue(attachment->org[i]);
+	}
 
 	m_pAttachments->Select( iIndex );
 
@@ -135,5 +159,19 @@ void CAttachmentsPanel::SetAttachment( int iIndex )
 void CAttachmentsPanel::OnAttachmentChanged( wxCommandEvent& event )
 {
 	SetAttachment( m_pAttachments->GetSelection() );
+}
+
+void CAttachmentsPanel::OnOriginChanged(wxSpinDoubleEvent& event)
+{
+	auto pStudioHdr = m_pHLMV->GetState()->GetEntity()->GetModel()->GetStudioHeader();
+
+	auto attachment = pStudioHdr->GetAttachment(m_pAttachments->GetSelection());
+
+	for (int i = 0; i < 3; ++i)
+	{
+		attachment->org[i] = m_pOrigin[i]->GetValue();
+	}
+
+	m_pHLMV->GetState()->modelChanged = true;
 }
 }

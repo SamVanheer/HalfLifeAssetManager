@@ -1,6 +1,8 @@
 #ifndef HLMV_UI_CONTROLPANELS_CATTACHMENTSPANEL_H
 #define HLMV_UI_CONTROLPANELS_CATTACHMENTSPANEL_H
 
+#include <wx/spinctrl.h>
+
 #include "engine/shared/studiomodel/studio.h"
 
 #include "CBaseControlPanel.h"
@@ -45,6 +47,8 @@ private:
 	*/
 	void OnAttachmentChanged( wxCommandEvent& event );
 
+	void OnOriginChanged(wxSpinDoubleEvent& event);
+
 private:
 	wxChoice* m_pAttachments;
 
@@ -53,7 +57,8 @@ private:
 	wxStaticText* m_pName;
 	wxStaticText* m_pType;
 	wxStaticText* m_pBone;
-	wxStaticText* m_pOrigin;
+
+	wxSpinCtrlDouble* m_pOrigin[3];
 
 private:
 	CAttachmentsPanel( const CAttachmentsPanel& ) = delete;
