@@ -22,6 +22,7 @@ class CGlobalFlagsPanel;
 class CBodyPartsPanel;
 class CBonesPanel;
 class CAttachmentsPanel;
+class CHitboxesPanel;
 class CTexturesPanel;
 class CSequencesPanel;
 class CFullscreenPanel;
@@ -167,6 +168,7 @@ private:
 	CBodyPartsPanel*		m_pBodyParts;
 	CBonesPanel*			m_pBones;
 	CAttachmentsPanel*		m_pAttachments;
+	CHitboxesPanel*			m_pHitboxes;
 	CTexturesPanel*			m_pTextures;
 	CSequencesPanel*		m_pSequencesPanel;
 	CFullscreenPanel*		m_pFullscreen;

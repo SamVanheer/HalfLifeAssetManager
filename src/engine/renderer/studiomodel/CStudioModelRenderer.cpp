@@ -256,6 +256,74 @@ void CStudioModelRenderer::DrawSingleAttachment( const int iAttachment )
 	glPointSize( 1 );
 }
 
+void CStudioModelRenderer::DrawSingleHitbox(const int hitboxIndex)
+{
+	if (!m_pStudioHdr || hitboxIndex < 0 || hitboxIndex >= m_pStudioHdr->numhitboxes)
+		return;
+
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_CULL_FACE);
+	if (m_pRenderInfo->flTransparency < 1.0f)
+		glDisable(GL_DEPTH_TEST);
+	else
+		glEnable(GL_DEPTH_TEST);
+
+	glColor4f(1, 0, 0, 0.5f);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	mstudiobbox_t* hitbox = m_pStudioHdr->GetHitBox(hitboxIndex);
+	glm::vec3 v[8], v2[8];
+
+	glm::vec3 bbmin = hitbox->bbmin;
+	glm::vec3 bbmax = hitbox->bbmax;
+
+	v[0][0] = bbmin[0];
+	v[0][1] = bbmax[1];
+	v[0][2] = bbmin[2];
+
+	v[1][0] = bbmin[0];
+	v[1][1] = bbmin[1];
+	v[1][2] = bbmin[2];
+
+	v[2][0] = bbmax[0];
+	v[2][1] = bbmax[1];
+	v[2][2] = bbmin[2];
+
+	v[3][0] = bbmax[0];
+	v[3][1] = bbmin[1];
+	v[3][2] = bbmin[2];
+
+	v[4][0] = bbmax[0];
+	v[4][1] = bbmax[1];
+	v[4][2] = bbmax[2];
+
+	v[5][0] = bbmax[0];
+	v[5][1] = bbmin[1];
+	v[5][2] = bbmax[2];
+
+	v[6][0] = bbmin[0];
+	v[6][1] = bbmax[1];
+	v[6][2] = bbmax[2];
+
+	v[7][0] = bbmin[0];
+	v[7][1] = bbmin[1];
+	v[7][2] = bbmax[2];
+
+	VectorTransform(v[0], m_bonetransform[hitbox->bone], v2[0]);
+	VectorTransform(v[1], m_bonetransform[hitbox->bone], v2[1]);
+	VectorTransform(v[2], m_bonetransform[hitbox->bone], v2[2]);
+	VectorTransform(v[3], m_bonetransform[hitbox->bone], v2[3]);
+	VectorTransform(v[4], m_bonetransform[hitbox->bone], v2[4]);
+	VectorTransform(v[5], m_bonetransform[hitbox->bone], v2[5]);
+	VectorTransform(v[6], m_bonetransform[hitbox->bone], v2[6]);
+	VectorTransform(v[7], m_bonetransform[hitbox->bone], v2[7]);
+
+	graphics::DrawBox(v2);
+}
+
 void CStudioModelRenderer::DrawBones()
 {
 	const mstudiobone_t* const pbones = m_pStudioHdr->GetBones();

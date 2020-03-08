@@ -73,6 +73,8 @@ public:
 
 	void DrawSingleAttachment( const int iAttachment ) override final;
 
+	void DrawSingleHitbox(const int hitboxIndex) override final;
+
 private:
 	void DrawBones();
 

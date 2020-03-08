@@ -9,6 +9,7 @@
 #include "controlpanels/CBodyPartsPanel.h"
 #include "controlpanels/CBonesPanel.h"
 #include "controlpanels/CAttachmentsPanel.h"
+#include "controlpanels/CHitboxesPanel.h"
 #include "controlpanels/CTexturesPanel.h"
 #include "controlpanels/CSequencesPanel.h"
 #include "controlpanels/CFullscreenPanel.h"
@@ -80,6 +81,8 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 
 	m_pAttachments = new CAttachmentsPanel( m_pControlPanels, m_pHLMV );
 
+	m_pHitboxes = new CHitboxesPanel(m_pControlPanels, m_pHLMV);
+
 	m_pTextures = new CTexturesPanel( m_pControlPanels, m_pHLMV );
 
 	m_pSequencesPanel = new CSequencesPanel( m_pControlPanels, m_pHLMV );
@@ -93,6 +96,7 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 		m_pBodyParts,
 		m_pBones,
 		m_pAttachments,
+		m_pHitboxes,
 		m_pTextures,
 		m_pSequencesPanel,
 		m_pFullscreen

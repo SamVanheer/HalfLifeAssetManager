@@ -11,6 +11,8 @@ add_sources(
 	CFullscreenPanel.cpp
 	CGlobalFlagsPanel.cpp
 	CGlobalFlagsPanel.h
+	CHitboxesPanel.cpp
+	CHitboxesPanel.h
 	CModelDisplayPanel.h
 	CModelDisplayPanel.cpp
 	CSequencesPanel.h
