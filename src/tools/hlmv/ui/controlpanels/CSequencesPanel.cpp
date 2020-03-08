@@ -557,7 +557,7 @@ void CSequencesPanel::UpdateOrigin()
 
 		if (rootBone)
 		{
-			const glm::vec3 offset{-m_pOrigin[2]->GetValue(), m_pOrigin[1]->GetValue(), m_pOrigin[0]->GetValue()};
+			const glm::vec3 offset{m_pOrigin[0]->GetValue(), m_pOrigin[1]->GetValue(), m_pOrigin[2]->GetValue()};
 
 			const auto newPosition = m_OriginalRootBonePosition + offset;
 
