@@ -4,7 +4,7 @@
 #include "lib/ILibSystem.h"
 
 /**
-*	@defgroup SoundSystem FMOD based sound system.
+*	@defgroup SoundSystem OpenAL based sound system.
 *
 *	@{
 */

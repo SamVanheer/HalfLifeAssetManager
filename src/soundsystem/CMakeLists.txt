@@ -4,6 +4,9 @@
 
 set( TARGET_NAME SoundSystem )
 
+# Disable module based lookup (OpenAL Soft uses CONFIG mode and MODULE mode only works with the Creative Labs version)
+find_package(OpenAL REQUIRED NO_MODULE)
+
 #Add in the shared sources
 add_sources( ${SHARED_SRCS} )
 
@@ -11,8 +14,6 @@ add_sources( ${SHARED_SRCS} )
 add_sources(
 	CSoundSystem.h
 	CSoundSystem.cpp
-	FMODDebug.h
-	FMODDebug.cpp
 )
 
 add_subdirectory( shared )
@@ -26,7 +27,7 @@ add_library( ${TARGET_NAME} SHARED ${PREP_SRCS} )
 check_winxp_support( ${TARGET_NAME} )
 
 target_include_directories( ${TARGET_NAME} PRIVATE
-	${CMAKE_SOURCE_DIR}/external/FMOD/include
+	${EXTERNAL_DIR}/AudioFile/include
 	${SHARED_INCLUDEPATHS}
 )
 
@@ -34,16 +35,10 @@ target_compile_definitions( ${TARGET_NAME} PRIVATE
 	${SHARED_DEFS}
 )
 
-if( WIN32 )
-	find_library( FMOD fmod_vc.lib PATHS "${CMAKE_SOURCE_DIR}/external/FMOD/lib" )
-else()
-	find_library( FMOD fmod PATHS "${CMAKE_SOURCE_DIR}/external/FMOD/lib" )
-endif()
-
 target_link_libraries( ${TARGET_NAME}
-	${FMOD}
 	HLCore
 	${SHARED_DEPENDENCIES}
+	OpenAL::OpenAL
 )
 
 set_target_properties( ${TARGET_NAME} 
@@ -55,9 +50,3 @@ set_target_properties( ${TARGET_NAME}
 create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 clear_sources()
-
-if( WIN32 )
-	copy_dependencies( ${TARGET_NAME} external/FMOD/lib fmod.dll )
-else()
-	copy_dependencies( ${TARGET_NAME} external/FMOD/lib libfmod.so )
-endif()

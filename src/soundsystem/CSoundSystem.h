@@ -2,17 +2,14 @@
 #define SOUNDSYSTEM_CSOUNDSYSTEM_H
 
 #include <list>
+#include <memory>
+
+#include <al.h>
+#include <alc.h>
 
 #include "shared/SoundConstants.h"
 
 #include "shared/ISoundSystem.h"
-
-namespace FMOD
-{
-class System;
-class Sound;
-class Channel;
-}
 
 namespace filesystem
 {
@@ -35,10 +32,22 @@ public:
 
 private:
 
-	struct Sound_t
+	struct Sound
 	{
-		FMOD::Sound* pSound;
-		FMOD::Channel* pChannel;
+		Sound()
+		{
+			alGenBuffers(1, &buffer);
+			alGenSources(1, &source);
+		}
+
+		~Sound()
+		{
+			alDeleteSources(1, &source);
+			alDeleteBuffers(1, &buffer);
+		}
+
+		ALuint buffer = 0;
+		ALuint source = 0;
 	};
 
 public:
@@ -68,9 +77,10 @@ private:
 private:
 	filesystem::IFileSystem* m_pFileSystem = nullptr;
 
-	FMOD::System* m_pSystem = nullptr;
+	ALCdevice* m_Device = nullptr;
+	ALCcontext* m_Context = nullptr;
 
-	Sound_t m_Sounds[ MAX_SOUNDS ];
+	std::unique_ptr<Sound> m_Sounds[MAX_SOUNDS];
 
 	std::list<size_t> m_SoundsLRU;
 
