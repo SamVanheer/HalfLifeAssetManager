@@ -69,6 +69,8 @@ private:
 
 	void AnimSpeedChanged( wxCommandEvent& event );
 
+	void ResetAnimSpeed(wxCommandEvent& event);
+
 	void EventChanged( wxCommandEvent& event );
 
 	void OnEditEvents( wxCommandEvent& event );
@@ -90,6 +92,7 @@ private:
 	wxButton* m_pNextFrameButton;
 
 	wxSlider* m_pAnimSpeed;
+	wxButton* m_pResetSpeedButton;
 
 	wxPanel* m_pSequenceInfo;
 

@@ -70,6 +70,10 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 
 	wxStaticText* pSpeed = new wxStaticText( pElemParent, wxID_ANY, "Speed" );
 
+	m_pResetSpeedButton = new wxButton(pElemParent, wxID_ANY, "Reset Speed");
+
+	m_pResetSpeedButton->Bind(wxEVT_BUTTON, &CSequencesPanel::ResetAnimSpeed, this);
+
 	m_pSequenceInfo = new wxPanel( pElemParent );
 
 	m_pSequenceIndex = new wxStaticText( m_pSequenceInfo, wxID_ANY, "Sequence #: Undefined" );
@@ -145,8 +149,9 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 
 	pSizer->Add( m_pAnimSpeed, wxGBPosition( 3, iCol ), wxGBSpan( 1, 3 ), wxEXPAND );
 	pSizer->Add( pSpeed, wxGBPosition( 3, iCol + 3 ), wxDefaultSpan, wxEXPAND );
+	pSizer->Add(m_pResetSpeedButton, wxGBPosition(3, iCol + 4), wxDefaultSpan, wxEXPAND);
 
-	iCol += 4;
+	iCol += 5;
 
 	pSizer->Add( m_pSequenceInfo, wxGBPosition( 1, iCol++ ), wxGBSpan( 3, 1 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
@@ -612,6 +617,15 @@ void CSequencesPanel::AnimSpeedChanged( wxCommandEvent& event )
 	if( auto pEntity = m_pHLMV->GetState()->GetEntity() )
 	{
 		pEntity->SetFrameRate( m_pAnimSpeed->GetValue() / static_cast<float>( ANIMSPEED_SLIDER_DEFAULT ) );
+	}
+}
+
+void CSequencesPanel::ResetAnimSpeed(wxCommandEvent& event)
+{
+	if (auto pEntity = m_pHLMV->GetState()->GetEntity())
+	{
+		m_pAnimSpeed->SetValue(ANIMSPEED_SLIDER_DEFAULT);
+		pEntity->SetFrameRate(1.f);
 	}
 }
 
