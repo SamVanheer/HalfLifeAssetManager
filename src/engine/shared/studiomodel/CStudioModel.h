@@ -92,19 +92,21 @@ public:
 	*/
 	void ReuploadTexture( mstudiotexture_t* ptexture );
 
-	mstudiobone_t* GetRootBone()
+	std::vector<mstudiobone_t*> GetRootBones()
 	{
+		std::vector<mstudiobone_t*> bones;
+
 		for (int i = 0; i < m_pStudioHdr->numbones; ++i)
 		{
 			auto bone = m_pStudioHdr->GetBone(i);
 
 			if (bone->parent == -1)
 			{
-				return bone;
+				bones.emplace_back(bone);
 			}
 		}
 
-		return nullptr;
+		return bones;
 	}
 
 private:

@@ -328,6 +328,8 @@ void CSequencesPanel::InitializeUI()
 
 	bool bSuccess = false;
 
+	m_RootBonePositions.clear();
+
 	if( pEntity )
 	{
 		auto pModel = pEntity->GetModel();
@@ -357,13 +359,21 @@ void CSequencesPanel::InitializeUI()
 				value->SetValue(0);
 			}
 
-			auto rootBone = pModel->GetRootBone();
+			auto rootBones = pModel->GetRootBones();
 
-			if (rootBone)
+			for (auto rootBone : rootBones)
 			{
-				m_OriginalRootBonePosition.x = rootBone->value[0];
-				m_OriginalRootBonePosition.y = rootBone->value[1];
-				m_OriginalRootBonePosition.z = rootBone->value[2];
+				m_RootBonePositions.emplace_back(
+					RootBoneData
+					{
+						rootBone,
+						glm::vec3
+						{
+							rootBone->value[0],
+							rootBone->value[1],
+							rootBone->value[2]
+						}
+					});
 			}
 
 			bSuccess = true;
@@ -557,18 +567,18 @@ void CSequencesPanel::UpdateOrigin()
 {
 	if (auto pEntity = m_pHLMV->GetState()->GetEntity())
 	{
-		//Find the root bone
-		auto rootBone = pEntity->GetModel()->GetRootBone();
-
-		if (rootBone)
+		if (!m_RootBonePositions.empty())
 		{
 			const glm::vec3 offset{m_pOrigin[0]->GetValue(), m_pOrigin[1]->GetValue(), m_pOrigin[2]->GetValue()};
 
-			const auto newPosition = m_OriginalRootBonePosition + offset;
+			for (auto& data : m_RootBonePositions)
+			{
+				const auto newPosition = data.OriginalRootBonePosition + offset;
 
-			rootBone->value[0] = newPosition.x;
-			rootBone->value[1] = newPosition.y;
-			rootBone->value[2] = newPosition.z;
+				data.Bone->value[0] = newPosition.x;
+				data.Bone->value[1] = newPosition.y;
+				data.Bone->value[2] = newPosition.z;
+			}
 
 			m_pHLMV->GetState()->modelChanged = true;
 		}

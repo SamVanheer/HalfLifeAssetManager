@@ -1,6 +1,8 @@
 #ifndef CONTROLPANELS_CSEQUENCESPANEL_H
 #define CONTROLPANELS_CSEQUENCESPANEL_H
 
+#include <vector>
+
 #include <glm/vec3.hpp>
 
 #include "cvar/CCVar.h"
@@ -10,6 +12,7 @@
 class wxToggleButton;
 class wxSpinCtrlDouble;
 class wxSpinDoubleEvent;
+struct mstudiobone_t;
 
 namespace hlmv
 {
@@ -32,6 +35,12 @@ private:
 	static const int GUIDELINES_OFFSET = GUIDELINES_LINE_LENGTH + ( GUIDELINES_POINT_LINE_OFFSET * 2 ) + GUIDELINES_LINE_WIDTH;
 
 	static const int GUIDELINES_EDGE_WIDTH = 4;
+
+	struct RootBoneData
+	{
+		mstudiobone_t* Bone;
+		glm::vec3 OriginalRootBonePosition;
+	};
 
 public:
 	CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV );
@@ -125,7 +134,7 @@ private:
 	wxCheckBox* m_pShowCrosshair;
 	wxCheckBox* m_pShowGuidelines;
 
-	glm::vec3 m_OriginalRootBonePosition;
+	std::vector<RootBoneData> m_RootBonePositions;
 
 private:
 	CSequencesPanel( const CSequencesPanel& ) = delete;
