@@ -2,11 +2,11 @@
 #HLMV exe
 #
 
-set( TARGET_NAME HLMV )
+set(TARGET_NAME HLMV)
 
 find_package(OpenGL REQUIRED)
 
-if( NOT OPENGL_FOUND )
+if(NOT OPENGL_FOUND)
 	message(FATAL_ERROR "Could not locate OpenGL library")
 endif()
 
