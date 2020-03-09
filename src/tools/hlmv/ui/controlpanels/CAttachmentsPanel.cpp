@@ -1,4 +1,5 @@
 #include <wx/gbsizer.h>
+#include <wx/textctrl.h>
 
 #include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
@@ -40,6 +41,12 @@ CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CModelViewerApp* const 
 		m_pOrigin[i]->Bind(wxEVT_SPINCTRLDOUBLE, &CAttachmentsPanel::OnOriginChanged, this);
 	}
 
+	m_pQCString = new wxTextCtrl(m_pAttachmentInfo, wxID_ANY);
+
+	m_pQCString->SetMinSize({400, wxDefaultSize.GetHeight()});
+
+	m_pQCString->SetEditable(false);
+
 	//Layout
 	auto pSizer = new wxGridBagSizer( 5, 5 );
 
@@ -61,6 +68,9 @@ CAttachmentsPanel::CAttachmentsPanel( wxWindow* pParent, CModelViewerApp* const 
 	{
 		pInfoSizer->Add(m_pOrigin[i], wxGBPosition(i, 2), wxDefaultSpan, wxEXPAND);
 	}
+
+	pInfoSizer->Add(new wxStaticText(m_pAttachmentInfo, wxID_ANY, "QC String"), wxGBPosition(0, 3), wxDefaultSpan, wxEXPAND);
+	pInfoSizer->Add(m_pQCString, wxGBPosition(0, 4), wxDefaultSpan);
 
 	m_pAttachmentInfo->SetSizer( pInfoSizer );
 
@@ -154,6 +164,8 @@ void CAttachmentsPanel::SetAttachment( int iIndex )
 	m_pAttachments->Select( iIndex );
 
 	m_pAttachmentInfo->Show( true );
+
+	UpdateQCString();
 }
 
 void CAttachmentsPanel::OnAttachmentChanged( wxCommandEvent& event )
@@ -173,5 +185,44 @@ void CAttachmentsPanel::OnOriginChanged(wxSpinDoubleEvent& event)
 	}
 
 	m_pHLMV->GetState()->modelChanged = true;
+
+	UpdateQCString();
+}
+
+void CAttachmentsPanel::UpdateQCString()
+{
+	bool success = false;
+
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		auto header = entity->GetModel()->GetStudioHeader();
+
+		if (header->numattachments > 0)
+		{
+			//The attachment index isn't actually used by the compiler,
+			//but it's generally used correctly to indicate the attachment index so just use the index in the list
+			auto attachment = header->GetAttachment(m_pAttachments->GetSelection());
+
+			if (attachment->bone > 0 && attachment->bone < header->numbones)
+			{
+				auto bone = header->GetBone(attachment->bone);
+
+				m_pQCString->SetLabelText(wxString::Format("$attachment %d \"%s\" %f %f %f",
+					m_pAttachments->GetSelection(), bone->name,
+					attachment->org[0], attachment->org[1], attachment->org[2]));
+			}
+			else
+			{
+				m_pQCString->SetLabelText(wxString::Format("Invalid bone index %d", attachment->bone));
+			}
+
+			success = true;
+		}
+	}
+
+	if (!success)
+	{
+		m_pQCString->SetLabelText({});
+	}
 }
 }

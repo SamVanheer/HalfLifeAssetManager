@@ -7,6 +7,8 @@
 
 #include "CBaseControlPanel.h"
 
+class wxTextCtrl;
+
 namespace hlmv
 {
 /**
@@ -36,6 +38,8 @@ private:
 
 	void OnMaxsChanged(wxSpinDoubleEvent& event);
 
+	void UpdateQCString();
+
 private:
 	wxChoice* m_pHitboxes;
 
@@ -48,6 +52,8 @@ private:
 
 	wxSpinCtrlDouble* m_pMins[3];
 	wxSpinCtrlDouble* m_pMaxs[3];
+
+	wxTextCtrl* m_pQCString;
 
 private:
 	CHitboxesPanel(const CHitboxesPanel&) = delete;

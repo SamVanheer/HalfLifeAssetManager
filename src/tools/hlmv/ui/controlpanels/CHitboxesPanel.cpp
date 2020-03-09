@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include <wx/gbsizer.h>
+#include <wx/textctrl.h>
 
 #include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
@@ -47,6 +48,12 @@ CHitboxesPanel::CHitboxesPanel(wxWindow* pParent, CModelViewerApp* const pHLMV)
 		m_pMaxs[i]->Bind(wxEVT_SPINCTRLDOUBLE, &CHitboxesPanel::OnMaxsChanged, this);
 	}
 
+	m_pQCString = new wxTextCtrl(m_pHitboxInfo, wxID_ANY);
+
+	m_pQCString->SetMinSize({500, wxDefaultSize.GetHeight()});
+
+	m_pQCString->SetEditable(false);
+
 	//Layout
 	auto pSizer = new wxGridBagSizer(5, 5);
 
@@ -76,6 +83,9 @@ CHitboxesPanel::CHitboxesPanel(wxWindow* pParent, CModelViewerApp* const pHLMV)
 		pInfoSizer->Add(m_pMins[i], wxGBPosition(i, 3), wxDefaultSpan, wxEXPAND);
 		pInfoSizer->Add(m_pMaxs[i], wxGBPosition(i, 5), wxDefaultSpan, wxEXPAND);
 	}
+
+	pInfoSizer->Add(new wxStaticText(m_pHitboxInfo, wxID_ANY, "QC String"), wxGBPosition(0, 6), wxDefaultSpan, wxEXPAND);
+	pInfoSizer->Add(m_pQCString, wxGBPosition(0, 7), wxDefaultSpan);
 
 	m_pHitboxInfo->SetSizer(pInfoSizer);
 
@@ -177,6 +187,8 @@ void CHitboxesPanel::SetHitbox(int index)
 	auto bone = pStudioHdr->GetBone(hitbox->bone);
 
 	m_pBoneName->SetLabelText(bone->name);
+
+	UpdateQCString();
 }
 
 void CHitboxesPanel::OnHitboxChanged(wxCommandEvent& event)
@@ -193,6 +205,8 @@ void CHitboxesPanel::OnBoneChanged(wxSpinEvent& event)
 	hitbox->bone = m_pBone->GetValue();
 
 	m_pHLMV->GetState()->modelChanged = true;
+
+	UpdateQCString();
 }
 
 void CHitboxesPanel::OnHitgroupChanged(wxSpinEvent& event)
@@ -204,6 +218,8 @@ void CHitboxesPanel::OnHitgroupChanged(wxSpinEvent& event)
 	hitbox->group = m_pHitgroup->GetValue();
 
 	m_pHLMV->GetState()->modelChanged = true;
+
+	UpdateQCString();
 }
 
 void CHitboxesPanel::OnMinsChanged(wxSpinDoubleEvent& event)
@@ -218,6 +234,8 @@ void CHitboxesPanel::OnMinsChanged(wxSpinDoubleEvent& event)
 	}
 
 	m_pHLMV->GetState()->modelChanged = true;
+
+	UpdateQCString();
 }
 
 void CHitboxesPanel::OnMaxsChanged(wxSpinDoubleEvent& event)
@@ -232,5 +250,43 @@ void CHitboxesPanel::OnMaxsChanged(wxSpinDoubleEvent& event)
 	}
 
 	m_pHLMV->GetState()->modelChanged = true;
+
+	UpdateQCString();
+}
+
+void CHitboxesPanel::UpdateQCString()
+{
+	bool success = false;
+
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		auto header = entity->GetModel()->GetStudioHeader();
+
+		if (header->numhitboxes > 0)
+		{
+			auto hitbox = header->GetHitBox(m_pHitboxes->GetSelection());
+
+			if (hitbox->bone > 0 && hitbox->bone < header->numbones)
+			{
+				auto bone = header->GetBone(hitbox->bone);
+
+				m_pQCString->SetLabelText(wxString::Format("$hbox %d \"%s\" %f %f %f %f %f %f",
+					hitbox->group, bone->name,
+					hitbox->bbmin[0], hitbox->bbmin[1], hitbox->bbmin[2],
+					hitbox->bbmax[0], hitbox->bbmax[1], hitbox->bbmax[2]));
+			}
+			else
+			{
+				m_pQCString->SetLabelText(wxString::Format("Invalid bone index %d", hitbox->bone));
+			}
+
+			success = true;
+		}
+	}
+
+	if (!success)
+	{
+		m_pQCString->SetLabelText({});
+	}
 }
 }

@@ -7,6 +7,8 @@
 
 #include "CBaseControlPanel.h"
 
+class wxTextCtrl;
+
 namespace hlmv
 {
 /**
@@ -49,6 +51,8 @@ private:
 
 	void OnOriginChanged(wxSpinDoubleEvent& event);
 
+	void UpdateQCString();
+
 private:
 	wxChoice* m_pAttachments;
 
@@ -59,6 +63,8 @@ private:
 	wxStaticText* m_pBone;
 
 	wxSpinCtrlDouble* m_pOrigin[3];
+
+	wxTextCtrl* m_pQCString;
 
 private:
 	CAttachmentsPanel( const CAttachmentsPanel& ) = delete;
