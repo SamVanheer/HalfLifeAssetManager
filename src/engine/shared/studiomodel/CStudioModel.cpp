@@ -1,6 +1,9 @@
 #include <cassert>
 #include <filesystem>
+#include <iomanip>
 #include <memory>
+#include <sstream>
+#include <string>
 
 #include "shared/Platform.h"
 #include "shared/Logging.h"
@@ -20,64 +23,64 @@ namespace
 {
 //Note: multiple libraries can include this file and define this cvar. The first library to register theirs wins.
 //All others will point to that one. - Solokiller
-static cvar::CCVar r_filtertextures( "r_filtertextures", cvar::CCVarArgsBuilder().FloatValue( 1 ).HelpInfo( "Whether to filter textures or not" ) );
+static cvar::CCVar r_filtertextures("r_filtertextures", cvar::CCVarArgsBuilder().FloatValue(1).HelpInfo("Whether to filter textures or not"));
 
-static cvar::CCVar r_powerof2textures( "r_powerof2textures",
+static cvar::CCVar r_powerof2textures("r_powerof2textures",
 	cvar::CCVarArgsBuilder()
-	.Flags( cvar::Flag::ARCHIVE )
-	.FloatValue( 1 )
-	.MinValue( 0 )
-	.MaxValue( 1 )
-	.HelpInfo( "Whether to resize textures to power of 2 dimensions" ) );
+	.Flags(cvar::Flag::ARCHIVE)
+	.FloatValue(1)
+	.MinValue(0)
+	.MaxValue(1)
+	.HelpInfo("Whether to resize textures to power of 2 dimensions"));
 
-void UploadRGBATexture( const int iWidth, const int iHeight, const byte* pData, GLuint textureId, const bool bFilterTextures )
+void UploadRGBATexture(const int iWidth, const int iHeight, const byte* pData, GLuint textureId, const bool bFilterTextures)
 {
-	glBindTexture( GL_TEXTURE_2D, textureId );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, iWidth, iHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData );
-	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST );
+	glBindTexture(GL_TEXTURE_2D, textureId);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iWidth, iHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST);
 }
 
 //Dol differs only in texture storage
 //Instead of pixels followed by RGB palette, it has a 32 byte texture name (name of file without extension), followed by an RGBA palette and pixels
-void ConvertDolToMdl( byte* pBuffer, const mstudiotexture_t& texture )
+void ConvertDolToMdl(byte* pBuffer, const mstudiotexture_t& texture)
 {
 	const int RGBA_PALETTE_CHANNELS = 4;
 
-	auto palette = std::make_unique<byte[]>( PALETTE_SIZE );
+	auto palette = std::make_unique<byte[]>(PALETTE_SIZE);
 
 	//Starts off with 32 byte texture name
 	auto pSourcePalette = pBuffer + texture.index + 32;
 
 	//Discard alpha value
 	//TODO: convert alpha value somehow? is it even used?
-	for( int i = 0; i < PALETTE_ENTRIES; ++i )
+	for (int i = 0; i < PALETTE_ENTRIES; ++i)
 	{
-		for( int j = 0; j < PALETTE_CHANNELS; ++j )
+		for (int j = 0; j < PALETTE_CHANNELS; ++j)
 		{
-			palette[ i * PALETTE_CHANNELS + j ] = pSourcePalette[ i * RGBA_PALETTE_CHANNELS + j ];
+			palette[i * PALETTE_CHANNELS + j] = pSourcePalette[i * RGBA_PALETTE_CHANNELS + j];
 		}
 	}
 
 	const auto size = texture.width * texture.height;
 
-	auto pixels = std::make_unique<byte[]>( size );
+	auto pixels = std::make_unique<byte[]>(size);
 
 	auto pSourcePixels = pSourcePalette + PALETTE_ENTRIES * RGBA_PALETTE_CHANNELS;
 
-	for( int i = 0; i < size; ++i )
+	for (int i = 0; i < size; ++i)
 	{
-		auto pixel = pSourcePixels[ i ];
+		auto pixel = pSourcePixels[i];
 
 		auto masked = pixel & 0x1F;
 
 		//Adjust the index to map to the correct palette entry
-		if( masked >= 8 )
+		if (masked >= 8)
 		{
-			if( masked >= 16 )
+			if (masked >= 16)
 			{
-				if( masked < 24 )
+				if (masked < 24)
 				{
 					pixel -= 8;
 				}
@@ -88,40 +91,40 @@ void ConvertDolToMdl( byte* pBuffer, const mstudiotexture_t& texture )
 			}
 		}
 
-		pixels[ i ] = pixel;
+		pixels[i] = pixel;
 	}
 
 	//Now write the correct data to the model buffer
 	auto pDestPixels = pBuffer + texture.index;
 
-	for( int i = 0; i < size; ++i )
+	for (int i = 0; i < size; ++i)
 	{
-		pDestPixels[ i ] = pixels[ i ];
+		pDestPixels[i] = pixels[i];
 	}
 
 	auto pDestPalette = pBuffer + texture.index + texture.width * texture.height;
 
-	memcpy( pDestPalette, palette.get(), PALETTE_SIZE );
+	memcpy(pDestPalette, palette.get(), PALETTE_SIZE);
 
 	//Some data will be left dangling after the palette and before the next texture/end of file. Nothing will reference it though
 	//in the SL version this will not be a problem since the file isn't loaded in one chunk
 }
 
-void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, byte* pal, int name, const bool bFilterTextures, const bool bPowerOf2 )
+void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, byte* pal, int name, const bool bFilterTextures, const bool bPowerOf2)
 {
 	// unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight;
 	int		i, j;
-	int		row1[ MAX_TEXTURE_DIMS ], row2[ MAX_TEXTURE_DIMS ], col1[ MAX_TEXTURE_DIMS ], col2[ MAX_TEXTURE_DIMS ];
-	const byte	*pix1, *pix2, *pix3, *pix4;
-	byte	*tex, *out;
+	int		row1[MAX_TEXTURE_DIMS], row2[MAX_TEXTURE_DIMS], col1[MAX_TEXTURE_DIMS], col2[MAX_TEXTURE_DIMS];
+	const byte* pix1, * pix2, * pix3, * pix4;
+	byte* tex, * out;
 
 	// convert texture to power of 2
 	int outwidth;
 	int outheight;
 
-	if( bPowerOf2 )
+	if (bPowerOf2)
 	{
-		if( !graphics::CalculateImageDimensions( ptexture->width, ptexture->height, outwidth, outheight ) )
+		if (!graphics::CalculateImageDimensions(ptexture->width, ptexture->height, outwidth, outheight))
 			return;
 	}
 	else
@@ -133,11 +136,11 @@ void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, byte* pa
 	const size_t uiSize = outwidth * outheight * 4;
 
 	//Needs at least one pixel (satisfies code analysis)
-	if( uiSize < 4 )
+	if (uiSize < 4)
 		return;
 
-	tex = out = ( byte * ) malloc( uiSize );
-	if( !out )
+	tex = out = (byte*) malloc(uiSize);
+	if (!out)
 	{
 		return;
 	}
@@ -159,84 +162,84 @@ void UploadTexture( const mstudiotexture_t* ptexture, const byte* data, byte* pa
 	free (in);
 	*/
 
-	for( i = 0; i < outwidth; i++ )
+	for (i = 0; i < outwidth; i++)
 	{
-		col1[ i ] = ( int ) ( ( i + 0.25 ) * ( ptexture->width / ( float ) outwidth ) );
-		col2[ i ] = ( int ) ( ( i + 0.75 ) * ( ptexture->width / ( float ) outwidth ) );
+		col1[i] = (int) ((i + 0.25) * (ptexture->width / (float) outwidth));
+		col2[i] = (int) ((i + 0.75) * (ptexture->width / (float) outwidth));
 	}
 
-	for( i = 0; i < outheight; i++ )
+	for (i = 0; i < outheight; i++)
 	{
-		row1[ i ] = ( int ) ( ( i + 0.25 ) * ( ptexture->height / ( float ) outheight ) ) * ptexture->width;
-		row2[ i ] = ( int ) ( ( i + 0.75 ) * ( ptexture->height / ( float ) outheight ) ) * ptexture->width;
+		row1[i] = (int) ((i + 0.25) * (ptexture->height / (float) outheight)) * ptexture->width;
+		row2[i] = (int) ((i + 0.75) * (ptexture->height / (float) outheight)) * ptexture->width;
 	}
 
-	const byte* const pAlpha = &pal[ PALETTE_ALPHA_INDEX ];
+	const byte* const pAlpha = &pal[PALETTE_ALPHA_INDEX];
 
 	//This modifies the model's data. Sets the mask color to black. This is also done by Jed's model viewer. (export texture has black)
-	if( ptexture->flags & STUDIO_NF_MASKED )
+	if (ptexture->flags & STUDIO_NF_MASKED)
 	{
-		pal[ 255 * 3 + 0 ] = pal[ 255 * 3 + 1 ] = pal[ 255 * 3 + 2 ] = 0;
+		pal[255 * 3 + 0] = pal[255 * 3 + 1] = pal[255 * 3 + 2] = 0;
 	}
 
 	// scale down and convert to 32bit RGB
-	for( i = 0; i<outheight; i++ )
+	for (i = 0; i < outheight; i++)
 	{
-		for( j = 0; j<outwidth; j++, out += 4 )
+		for (j = 0; j < outwidth; j++, out += 4)
 		{
-			pix1 = &pal[ data[ row1[ i ] + col1[ j ] ] * 3 ];
-			pix2 = &pal[ data[ row1[ i ] + col2[ j ] ] * 3 ];
-			pix3 = &pal[ data[ row2[ i ] + col1[ j ] ] * 3 ];
-			pix4 = &pal[ data[ row2[ i ] + col2[ j ] ] * 3 ];
+			pix1 = &pal[data[row1[i] + col1[j]] * 3];
+			pix2 = &pal[data[row1[i] + col2[j]] * 3];
+			pix3 = &pal[data[row2[i] + col1[j]] * 3];
+			pix4 = &pal[data[row2[i] + col2[j]] * 3];
 
-			out[ 0 ] = ( pix1[ 0 ] + pix2[ 0 ] + pix3[ 0 ] + pix4[ 0 ] ) >> 2;
-			out[ 1 ] = ( pix1[ 1 ] + pix2[ 1 ] + pix3[ 1 ] + pix4[ 1 ] ) >> 2;
-			out[ 2 ] = ( pix1[ 2 ] + pix2[ 2 ] + pix3[ 2 ] + pix4[ 2 ] ) >> 2;
+			out[0] = (pix1[0] + pix2[0] + pix3[0] + pix4[0]) >> 2;
+			out[1] = (pix1[1] + pix2[1] + pix3[1] + pix4[1]) >> 2;
+			out[2] = (pix1[2] + pix2[2] + pix3[2] + pix4[2]) >> 2;
 
-			if( ptexture->flags & STUDIO_NF_MASKED && pix1 == pAlpha && pix2 == pAlpha && pix3 == pAlpha && pix4 == pAlpha )
+			if (ptexture->flags & STUDIO_NF_MASKED && pix1 == pAlpha && pix2 == pAlpha && pix3 == pAlpha && pix4 == pAlpha)
 			{
 				//Set alpha to 0 to enable transparent pixel.
-				out[ 3 ] = 0x00;
+				out[3] = 0x00;
 			}
 			else
 			{
-				out[ 3 ] = 0xFF;
+				out[3] = 0xFF;
 			}
 		}
 	}
 
-	UploadRGBATexture( outwidth, outheight, tex, name, bFilterTextures );
+	UploadRGBATexture(outwidth, outheight, tex, name, bFilterTextures);
 
-	free( tex );
+	free(tex);
 }
 
-size_t UploadTextures( studiohdr_t& textureHdr, GLuint* pTextures, const bool bFilterTextures, const bool bPowerOf2, const bool bIsDol )
+size_t UploadTextures(studiohdr_t& textureHdr, std::vector<GLuint>& textures, const bool bFilterTextures, const bool bPowerOf2, const bool bIsDol)
 {
 	size_t uiNumTextures = 0;
 
-	if( textureHdr.textureindex > 0 && textureHdr.numtextures <= CStudioModel::MAX_TEXTURES )
+	if (textureHdr.textureindex > 0 && textureHdr.numtextures <= CStudioModel::MAX_TEXTURES)
 	{
 		mstudiotexture_t* ptexture = textureHdr.GetTextures();
 
-		byte* pIn = reinterpret_cast<byte*>( &textureHdr );
+		byte* pIn = reinterpret_cast<byte*>(&textureHdr);
 
 		const int n = textureHdr.numtextures;
 
-		for( int i = 0; i < n; ++i )
+		for (int i = 0; i < n; ++i)
 		{
 			GLuint name;
 
-			glBindTexture( GL_TEXTURE_2D, 0 );
-			glGenTextures( 1, &name );
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glGenTextures(1, &name);
 
-			if( bIsDol )
+			if (bIsDol)
 			{
-				ConvertDolToMdl( pIn, ptexture[ i ] );
+				ConvertDolToMdl(pIn, ptexture[i]);
 			}
 
-			UploadTexture( &ptexture[ i ], pIn + ptexture[ i ].index, pIn + ptexture[ i ].width * ptexture[ i ].height + ptexture[ i ].index, name, bFilterTextures, bPowerOf2 );
+			UploadTexture(&ptexture[i], pIn + ptexture[i].index, pIn + ptexture[i].width * ptexture[i].height + ptexture[i].index, name, bFilterTextures, bPowerOf2);
 
-			pTextures[ i ] = name;
+			textures.emplace_back(name);
 		}
 
 		uiNumTextures = n;
@@ -246,330 +249,291 @@ size_t UploadTextures( studiohdr_t& textureHdr, GLuint* pTextures, const bool bF
 }
 }
 
-CStudioModel::CStudioModel(std::string&& fileName)
+CStudioModel::CStudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& pStudioHdr, studio_ptr<studiohdr_t>&& pTextureHdr,
+	std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, std::vector<GLuint>&& textures)
 	: m_FileName(std::move(fileName))
+	, m_pStudioHdr(std::move(pStudioHdr))
+	, m_pTextureHdr(std::move(pTextureHdr))
+	, m_SequenceHeaders(std::move(sequenceHeaders))
+	, m_Textures(std::move(textures))
 {
-}
-
-CStudioModel::CStudioModel(std::string&& fileName, studiohdr_t* pStudioHdr, studiohdr_t* pTextureHdr, studiohdr_t** ppSeqHdrs, const size_t uiNumSeqHdrs,
-	GLuint* pTextures, const size_t uiNumTextures )
-	: m_FileName(std::move(fileName))
-	, m_pStudioHdr( pStudioHdr )
-	, m_pTextureHdr( pTextureHdr )
-{
-	assert( pStudioHdr );
-	assert( pTextureHdr );
-	assert( ppSeqHdrs );
-	assert( uiNumSeqHdrs <= MAX_SEQGROUPS );
-	assert( pTextures );
-	assert( uiNumTextures <= MAX_TEXTURES );
-
-	for( size_t uiIndex = 0; uiIndex < uiNumSeqHdrs; ++uiIndex )
-	{
-		m_pSeqHdrs[ uiIndex ] = ppSeqHdrs[ uiIndex ];
-	}
-
-	memset( m_pSeqHdrs + uiNumSeqHdrs, 0, sizeof( studiohdr_t* ) * MAX_SEQGROUPS - uiNumSeqHdrs );
-
-	memcpy( m_Textures, pTextureHdr, uiNumTextures );
-	memset( m_Textures + uiNumTextures, 0, sizeof( GLuint ) * MAX_TEXTURES - uiNumTextures );
+	assert(m_pStudioHdr);
 }
 
 CStudioModel::~CStudioModel()
 {
-	if( !m_pStudioHdr )
-		return;
-
-	// deleting textures
-	glDeleteTextures( m_pTextureHdr->numtextures, m_Textures );
-
-	for( auto pSeqHdr : m_pSeqHdrs )
-	{
-		delete[] pSeqHdr;
-	}
-
-	//Textures were in a T.mdl, free separately.
-	if( m_pTextureHdr != m_pStudioHdr )
-	{
-		delete[] m_pTextureHdr;
-	}
-
-	delete[] m_pStudioHdr;
+	glDeleteTextures(GetTextureHeader()->numtextures, m_Textures.data());
+	m_Textures.clear();
 }
 
-mstudioanim_t* CStudioModel::GetAnim( mstudioseqdesc_t* pseqdesc ) const
+mstudioanim_t* CStudioModel::GetAnim(mstudioseqdesc_t* pseqdesc) const
 {
-	mstudioseqgroup_t* pseqgroup = m_pStudioHdr->GetSequenceGroup( pseqdesc->seqgroup );
+	mstudioseqgroup_t* pseqgroup = m_pStudioHdr->GetSequenceGroup(pseqdesc->seqgroup);
 
-	if( pseqdesc->seqgroup == 0 )
+	if (pseqdesc->seqgroup == 0)
 	{
-		return ( mstudioanim_t * ) ( ( byte * ) m_pStudioHdr + pseqgroup->unused2 + pseqdesc->animindex );
+		return (mstudioanim_t*) ((byte*) m_pStudioHdr.get() + pseqgroup->unused2 + pseqdesc->animindex);
 	}
 
-	return ( mstudioanim_t * ) ( ( byte * ) m_pSeqHdrs[ pseqdesc->seqgroup ] + pseqdesc->animindex );
+	return (mstudioanim_t*) ((byte*) m_SequenceHeaders[pseqdesc->seqgroup].get() + pseqdesc->animindex);
 }
 
-mstudiomodel_t* CStudioModel::GetModelByBodyPart( const int iBody, const int iBodyPart ) const
+mstudiomodel_t* CStudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart) const
 {
-	mstudiobodyparts_t* pbodypart = m_pStudioHdr->GetBodypart( iBodyPart );
+	mstudiobodyparts_t* pbodypart = m_pStudioHdr->GetBodypart(iBodyPart);
 
 	int index = iBody / pbodypart->base;
 	index = index % pbodypart->nummodels;
 
-	return ( mstudiomodel_t * ) ( ( byte * ) m_pStudioHdr + pbodypart->modelindex ) + index;
+	return (mstudiomodel_t*) ((byte*) m_pStudioHdr.get() + pbodypart->modelindex) + index;
 }
 
-bool CStudioModel::CalculateBodygroup( const int iGroup, const int iValue, int& iInOutBodygroup ) const
+bool CStudioModel::CalculateBodygroup(const int iGroup, const int iValue, int& iInOutBodygroup) const
 {
-	if( iGroup > m_pStudioHdr->numbodyparts )
+	if (iGroup > m_pStudioHdr->numbodyparts)
 		return false;
 
-	const mstudiobodyparts_t* const pbodypart = m_pStudioHdr->GetBodypart( iGroup );
+	const mstudiobodyparts_t* const pbodypart = m_pStudioHdr->GetBodypart(iGroup);
 
-	int iCurrent = ( iInOutBodygroup / pbodypart->base ) % pbodypart->nummodels;
+	int iCurrent = (iInOutBodygroup / pbodypart->base) % pbodypart->nummodels;
 
-	if( iValue >= pbodypart->nummodels )
+	if (iValue >= pbodypart->nummodels)
 		return true;
 
-	iInOutBodygroup = ( iInOutBodygroup - ( iCurrent * pbodypart->base ) + ( iValue * pbodypart->base ) );
+	iInOutBodygroup = (iInOutBodygroup - (iCurrent * pbodypart->base) + (iValue * pbodypart->base));
 
 	return true;
 }
 
-GLuint CStudioModel::GetTextureId( const int iIndex ) const
+GLuint CStudioModel::GetTextureId(const int iIndex) const
 {
 	const studiohdr_t* const pHdr = GetTextureHeader();
 
-	if( !pHdr )
+	if (!pHdr)
 		return GL_INVALID_TEXTURE_ID;
 
-	if( iIndex < 0 || iIndex >= pHdr->numtextures )
+	if (iIndex < 0 || iIndex >= pHdr->numtextures)
 		return GL_INVALID_TEXTURE_ID;
 
-	return m_Textures[ iIndex ];
+	return m_Textures[iIndex];
 }
 
-void CStudioModel::ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte *pal, GLuint textureId )
+void CStudioModel::ReplaceTexture(mstudiotexture_t* ptexture, byte* data, byte* pal, GLuint textureId)
 {
-	glDeleteTextures( 1, &textureId );
+	glDeleteTextures(1, &textureId);
 
-	UploadTexture( ptexture, data, pal, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool() );
+	UploadTexture(ptexture, data, pal, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool());
 }
 
-void CStudioModel::ReuploadTexture( mstudiotexture_t* ptexture )
+void CStudioModel::ReuploadTexture(mstudiotexture_t* ptexture)
 {
-	assert( ptexture );
+	assert(ptexture);
 
 	const int iIndex = ptexture - m_pTextureHdr->GetTextures();
 
-	if( iIndex < 0 || iIndex >= m_pTextureHdr->numtextures )
+	if (iIndex < 0 || iIndex >= m_pTextureHdr->numtextures)
 	{
-		Error( "CStudioModel::ReuploadTexture: Invalid texture!" );
+		Error("CStudioModel::ReuploadTexture: Invalid texture!");
 		return;
 	}
 
-	GLuint textureId = m_Textures[ iIndex ];
+	GLuint textureId = m_Textures[iIndex];
 
-	glDeleteTextures( 1, &textureId );
+	glDeleteTextures(1, &textureId);
 
-	UploadTexture( ptexture, 
-				   m_pTextureHdr->GetData() + ptexture->index, 
-				   m_pTextureHdr->GetData() + ptexture->index + ptexture->width * ptexture->height, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool() );
+	UploadTexture(ptexture,
+		m_pTextureHdr->GetData() + ptexture->index,
+		m_pTextureHdr->GetData() + ptexture->index + ptexture->width * ptexture->height, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool());
 }
 
 namespace
 {
-/**
-*	Loads a single studio header.
-*/
-StudioModelLoadResult LoadStudioHeader( const char* const pszFilename, const bool bAllowSeqGroup, studiohdr_t*& pOutStudioHdr )
+template<typename T>
+studio_ptr<T> LoadStudioHeader(const char* const pszFilename, const bool bAllowSeqGroup)
 {
 	// load the model
-	FILE* pFile = fopen( pszFilename, "rb" );
+	FILE* pFile = fopen(pszFilename, "rb");
 
-	if( !pFile )
-		return StudioModelLoadResult::FAILURE;
-
-	fseek( pFile, 0, SEEK_END );
-	const size_t size = ftell( pFile );
-	fseek( pFile, 0, SEEK_SET );
-
-	std::unique_ptr<byte[]> buffer( new byte[ size ] );
-
-	studiohdr_t* pStudioHdr = reinterpret_cast<studiohdr_t*>( buffer.get() );
-
-	if( !pStudioHdr )
+	if (!pFile)
 	{
-		fclose( pFile );
-		return StudioModelLoadResult::FAILURE;
+		throw StudioModelNotFound(std::string{"File \""} + pszFilename + "\" not found");
 	}
 
-	const size_t uiRead = fread( pStudioHdr, size, 1, pFile );
-	fclose( pFile );
+	fseek(pFile, 0, SEEK_END);
+	const size_t size = ftell(pFile);
+	fseek(pFile, 0, SEEK_SET);
 
-	if( uiRead != 1 )
-		return StudioModelLoadResult::FAILURE;
+	auto buffer = std::make_unique<byte[]>(size);
 
-	if( strncmp( reinterpret_cast<const char*>( &pStudioHdr->id ), STUDIOMDL_HDR_ID, 4 ) &&
-		strncmp( reinterpret_cast<const char*>( &pStudioHdr->id ), STUDIOMDL_SEQ_ID, 4 ) )
+	auto pStudioHdr = reinterpret_cast<T*>(buffer.get());
+
+	const size_t uiRead = fread(pStudioHdr, size, 1, pFile);
+	fclose(pFile);
+
+	if (uiRead != 1)
 	{
-		return StudioModelLoadResult::FAILURE;
+		throw StudioModelInvalidFormat(std::string{"Error reading file\""} + pszFilename + "\"");
 	}
 
-	if( !bAllowSeqGroup && !strncmp( reinterpret_cast<const char*>( &pStudioHdr->id ), STUDIOMDL_SEQ_ID, 4 ) )
+	if (strncmp(reinterpret_cast<const char*>(&pStudioHdr->id), STUDIOMDL_HDR_ID, 4) &&
+		strncmp(reinterpret_cast<const char*>(&pStudioHdr->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		return StudioModelLoadResult::FAILURE;
+		throw StudioModelInvalidFormat(std::string{"The file \""} + pszFilename + "\" is neither a studio header nor a sequence header");
 	}
 
-	if( pStudioHdr->version != STUDIO_VERSION )
+	if (!bAllowSeqGroup && !strncmp(reinterpret_cast<const char*>(&pStudioHdr->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		return StudioModelLoadResult::VERSIONDIFFERS;
+		throw StudioModelInvalidFormat(std::string{"File \""} + pszFilename + "\": Expected a main studio model file, got a sequence file");
 	}
 
-	pOutStudioHdr = pStudioHdr;
+	if (pStudioHdr->version != STUDIO_VERSION)
+	{
+		throw StudioModelVersionDiffers(std::string{"File \""} + pszFilename + "\": version differs: expected \"" +
+			std::to_string(STUDIO_VERSION) + "\", got \"" + std::to_string(pStudioHdr->version) + "\"",
+			pStudioHdr->version);
+	}
 
 	buffer.release();
 
-	return StudioModelLoadResult::SUCCESS;
+	return studio_ptr<T>(pStudioHdr);
 }
 }
 
-StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioModel*& pModel )
+std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename)
 {
-	const auto bIsDol = std::filesystem::path( pszFilename ).extension() == ".dol";
+	const std::filesystem::path fileName{pszFilename};
 
-	//Takes care of cleanup on failure.
-	std::unique_ptr<CStudioModel> studioModel( new CStudioModel(pszFilename) );
+	std::filesystem::path baseFileName{fileName};
+
+	baseFileName.replace_extension();
+
+	const auto bIsDol = fileName.extension() == ".dol";
 
 	//Load the model
-	StudioModelLoadResult result = LoadStudioHeader( pszFilename, false, studioModel->m_pStudioHdr );
+	auto mainHeader = LoadStudioHeader<studiohdr_t>(pszFilename, false);
 
-	if( result != StudioModelLoadResult::SUCCESS )
-	{
-		return result;
-	}
+	studio_ptr<studiohdr_t> textureHeader;
 
 	// preload textures
-	if( studioModel->m_pStudioHdr->numtextures == 0 )
+	if (mainHeader->numtextures == 0)
 	{
 		const auto extension = bIsDol ? "T.dol" : "T.mdl";
 
-		char texturename[ MAX_PATH_LENGTH ];
+		auto texturename = baseFileName;
 
-		strcpy( texturename, pszFilename );
-		strcpy( &texturename[ strlen( texturename ) - 4 ], extension );
+		texturename += extension;
 
-		result = LoadStudioHeader( texturename, true, studioModel->m_pTextureHdr );
-
-		if( result != StudioModelLoadResult::SUCCESS )
-		{
-			return result;
-		}
+		textureHeader = LoadStudioHeader<studiohdr_t>(texturename.u8string().c_str(), true);
 	}
-	else
-	{
-		studioModel->m_pTextureHdr = studioModel->m_pStudioHdr;
-	}
+
+	std::vector<studio_ptr<studioseqhdr_t>> sequenceHeaders;
 
 	// preload animations
-	if( studioModel->m_pStudioHdr->numseqgroups > 1 )
+	if (mainHeader->numseqgroups > 1)
 	{
-		char seqgroupname[ MAX_PATH_LENGTH ];
+		sequenceHeaders.reserve(mainHeader->numseqgroups - 1);
 
-		for( int i = 1; i < studioModel->m_pStudioHdr->numseqgroups; ++i )
+		std::stringstream seqgroupname;
+
+		for (int i = 1; i < mainHeader->numseqgroups; ++i)
 		{
-			const auto suffix = bIsDol ? "%02d.dol" : "%02d.mdl";
+			seqgroupname.str({});
 
-			strcpy( seqgroupname, pszFilename );
+			const auto suffix = bIsDol ? ".dol" : ".mdl";
 
-			if( !PrintfSuccess( snprintf( &seqgroupname[ strlen( seqgroupname ) - 4 ], sizeof( seqgroupname ), suffix, i ), sizeof( seqgroupname ) ) )
-				return StudioModelLoadResult::FAILURE;
+			seqgroupname << baseFileName.u8string() <<
+				std::setfill('0') << std::setw(2) << i <<
+				std::setw(0) << suffix;
 
-			result = LoadStudioHeader( seqgroupname, true, studioModel->m_pSeqHdrs[ i ] );
-
-			if( result != StudioModelLoadResult::SUCCESS )
-			{
-				return result;
-			}
+			sequenceHeaders.emplace_back(LoadStudioHeader<studioseqhdr_t>(seqgroupname.str().c_str(), true));
 		}
 	}
 
-	UploadTextures( *studioModel->m_pTextureHdr, studioModel->m_Textures, r_filtertextures.GetBool(), r_powerof2textures.GetBool(), bIsDol );
+	std::vector<GLuint> textures;
 
-	pModel = studioModel.release();
+	UploadTextures(textureHeader ? *textureHeader : *mainHeader, textures, r_filtertextures.GetBool(), r_powerof2textures.GetBool(), bIsDol);
 
-	return StudioModelLoadResult::SUCCESS;
+	return std::make_unique<CStudioModel>(pszFilename, std::move(mainHeader), std::move(textureHeader),
+		std::move(sequenceHeaders), std::move(textures));
 }
 
-bool SaveStudioModel( const char* const pszFilename, const CStudioModel* const pModel )
+bool SaveStudioModel(const char* const pszFilename, const CStudioModel* const pModel)
 {
-	if( !pszFilename )
+	if (!pszFilename)
 		return false;
 
-	if( !pModel )
+	if (!pModel)
 		return false;
 
-	FILE* pFile = fopen( pszFilename, "wb" );
+	FILE* pFile = fopen(pszFilename, "wb");
 
-	if( !pFile )
+	if (!pFile)
 		return false;
 
 	const studiohdr_t* const pStudioHdr = pModel->GetStudioHeader();
 
-	bool bSuccess = fwrite( pStudioHdr, sizeof( byte ), pStudioHdr->length, pFile ) == pStudioHdr->length;
+	bool bSuccess = fwrite(pStudioHdr, sizeof(byte), pStudioHdr->length, pFile) == pStudioHdr->length;
 
-	fclose( pFile );
+	fclose(pFile);
 
-	if( !bSuccess )
+	if (!bSuccess)
 	{
 		return false;
 	}
 
-	const studiohdr_t* const pTextureHdr = pModel->GetTextureHeader();
+	const std::filesystem::path fileName{pszFilename};
+
+	auto baseFileName{fileName};
+
+	baseFileName.replace_extension();
 
 	// write texture model
-	if( pTextureHdr != pStudioHdr )
+	if (pModel->HasSeparateTextureHeader())
 	{
-		char texturename[ MAX_PATH_LENGTH ];
+		const studiohdr_t* const pTextureHdr = pModel->GetTextureHeader();
 
-		strcpy( texturename, pszFilename );
-		strcpy( &texturename[ strlen( texturename ) - 4 ], "T.mdl" );
+		auto texturename = baseFileName;
 
-		pFile = fopen( texturename, "wb" );
+		texturename += "T.mdl";
 
-		if( !pFile )
+		pFile = fopen(texturename.u8string().c_str(), "wb");
+
+		if (!pFile)
 			return false;
 
-		bSuccess = fwrite( pTextureHdr, sizeof( byte ), pTextureHdr->length, pFile ) == pTextureHdr->length;
-		fclose( pFile );
+		bSuccess = fwrite(pTextureHdr, sizeof(byte), pTextureHdr->length, pFile) == pTextureHdr->length;
+		fclose(pFile);
 
-		if( !bSuccess )
+		if (!bSuccess)
 		{
 			return false;
 		}
 	}
 
 	// write seq groups
-	if( pStudioHdr->numseqgroups > 1 )
+	if (pStudioHdr->numseqgroups > 1)
 	{
-		char seqgroupname[ MAX_PATH_LENGTH ];
+		std::stringstream seqgroupname;
 
-		for( int i = 1; i < pStudioHdr->numseqgroups; i++ )
+		for (int i = 1; i < pStudioHdr->numseqgroups; i++)
 		{
-			strcpy( seqgroupname, pszFilename );
-			sprintf( &seqgroupname[ strlen( seqgroupname ) - 4 ], "%02d.mdl", i );
+			seqgroupname.str({});
 
-			pFile = fopen( seqgroupname, "wb" );
+			seqgroupname << baseFileName.u8string() <<
+				std::setfill('0') << std::setw(2) << i <<
+				std::setw(0) << ".mdl";
 
-			if( !pFile )
+			pFile = fopen(seqgroupname.str().c_str(), "wb");
+
+			if (!pFile)
 				return false;
 
-			const auto pAnimHdr = pModel->GetSeqGroupHeader( i );
+			const auto pAnimHdr = pModel->GetSeqGroupHeader(i - 1);
 
-			bSuccess = fwrite( pAnimHdr, sizeof( byte ), pAnimHdr->length, pFile ) == pAnimHdr->length;
-			fclose( pFile );
+			bSuccess = fwrite(pAnimHdr, sizeof(byte), pAnimHdr->length, pFile) == pAnimHdr->length;
+			fclose(pFile);
 
-			if( !bSuccess )
+			if (!bSuccess)
 			{
 				return false;
 			}
@@ -579,83 +543,83 @@ bool SaveStudioModel( const char* const pszFilename, const CStudioModel* const p
 	return true;
 }
 
-void ScaleMeshes( CStudioModel* pStudioModel, const float flScale )
+void ScaleMeshes(CStudioModel* pStudioModel, const float flScale)
 {
-	assert( pStudioModel );
+	assert(pStudioModel);
 
 	auto pStudioHdr = pStudioModel->GetStudioHeader();
 
 	int iBodygroup = 0;
 
 	// scale verts
-	for( int i = 0; i < pStudioHdr->numbodyparts; i++ )
+	for (int i = 0; i < pStudioHdr->numbodyparts; i++)
 	{
-		mstudiobodyparts_t *pbodypart = pStudioHdr->GetBodypart( i );
-		for( int j = 0; j < pbodypart->nummodels; j++ )
+		mstudiobodyparts_t* pbodypart = pStudioHdr->GetBodypart(i);
+		for (int j = 0; j < pbodypart->nummodels; j++)
 		{
-			pStudioModel->CalculateBodygroup( i, j, iBodygroup );
+			pStudioModel->CalculateBodygroup(i, j, iBodygroup);
 
 			int bodypart = i;
 
-			if( bodypart > pStudioHdr->numbodyparts )
+			if (bodypart > pStudioHdr->numbodyparts)
 			{
 				// Message( "studiomdl::ScaleMeshes: no such bodypart %d\n", bodypart );
 				bodypart = 0;
 			}
 
-			mstudiomodel_t* pModel = pStudioModel->GetModelByBodyPart( iBodygroup, bodypart );
+			mstudiomodel_t* pModel = pStudioModel->GetModelByBodyPart(iBodygroup, bodypart);
 
-			glm::vec3 *pstudioverts = ( glm::vec3 * )( ( byte * ) pStudioHdr + pModel->vertindex );
+			glm::vec3* pstudioverts = (glm::vec3*)((byte*) pStudioHdr + pModel->vertindex);
 
-			for( int k = 0; k < pModel->numverts; k++ )
+			for (int k = 0; k < pModel->numverts; k++)
 			{
-				pstudioverts[ k ] *= flScale;
+				pstudioverts[k] *= flScale;
 			}
 		}
 	}
 
 	// scale complex hitboxes
-	mstudiobbox_t *pbboxes = pStudioHdr->GetHitBoxes();
+	mstudiobbox_t* pbboxes = pStudioHdr->GetHitBoxes();
 
-	for( int i = 0; i < pStudioHdr->numhitboxes; i++ )
+	for (int i = 0; i < pStudioHdr->numhitboxes; i++)
 	{
-		pbboxes[ i ].bbmin *= flScale;
-		pbboxes[ i ].bbmax *= flScale;
+		pbboxes[i].bbmin *= flScale;
+		pbboxes[i].bbmax *= flScale;
 	}
 
 	// scale bounding boxes
-	mstudioseqdesc_t *pseqdesc = pStudioHdr->GetSequences();
+	mstudioseqdesc_t* pseqdesc = pStudioHdr->GetSequences();
 
-	for( int i = 0; i < pStudioHdr->numseq; i++ )
+	for (int i = 0; i < pStudioHdr->numseq; i++)
 	{
-		pseqdesc[ i ].bbmin *= flScale;
-		pseqdesc[ i ].bbmax *= flScale;
+		pseqdesc[i].bbmin *= flScale;
+		pseqdesc[i].bbmax *= flScale;
 	}
 
 	// maybe scale exeposition, pivots, attachments
 }
 
-void ScaleBones( CStudioModel* pStudioModel, const float flScale )
+void ScaleBones(CStudioModel* pStudioModel, const float flScale)
 {
-	assert( pStudioModel );
+	assert(pStudioModel);
 
 	const auto pStudioHdr = pStudioModel->GetStudioHeader();
 
 	mstudiobone_t* const pbones = pStudioHdr->GetBones();
 
-	for( int i = 0; i < pStudioHdr->numbones; i++ )
+	for (int i = 0; i < pStudioHdr->numbones; i++)
 	{
-		for( int j = 0; j < 3; j++ )
+		for (int j = 0; j < 3; j++)
 		{
-			pbones[ i ].value[ j ] *= flScale;
-			pbones[ i ].scale[ j ] *= flScale;
+			pbones[i].value[j] *= flScale;
+			pbones[i].scale[j] *= flScale;
 		}
 	}
 }
 
-const char* ControlToString( const int iControl )
+const char* ControlToString(const int iControl)
 {
-	switch( iControl )
+	switch (iControl)
 	{
 	case STUDIO_X:		return "X";
 	case STUDIO_Y:		return "Y";
@@ -677,9 +641,9 @@ const char* ControlToString( const int iControl )
 	}
 }
 
-const char* ControlToStringDescription( const int iControl )
+const char* ControlToStringDescription(const int iControl)
 {
-	switch( iControl )
+	switch (iControl)
 	{
 	case STUDIO_X:		return "Sequence motiontype flag: Zeroes out movement in the X axis\nBone controller type flag: Sets X offset";
 	case STUDIO_Y:		return "Sequence motiontype flag: Zeroes out movement in the Y axis\nBone controller type flag: Sets Y offset";
@@ -701,25 +665,25 @@ const char* ControlToStringDescription( const int iControl )
 	}
 }
 
-int StringToControl( const char* const pszString )
+int StringToControl(const char* const pszString)
 {
-	assert( pszString );
+	assert(pszString);
 
-	if( strcasecmp( pszString, "X" ) == 0 ) return STUDIO_X;
-	if( strcasecmp( pszString, "Y" ) == 0 ) return STUDIO_Y;
-	if( strcasecmp( pszString, "Z" ) == 0 ) return STUDIO_Z;
-	if( strcasecmp( pszString, "XR" ) == 0 ) return STUDIO_XR;
-	if( strcasecmp( pszString, "YR" ) == 0 ) return STUDIO_YR;
-	if( strcasecmp( pszString, "ZR" ) == 0 ) return STUDIO_ZR;
-	if( strcasecmp( pszString, "LX" ) == 0 ) return STUDIO_LX;
-	if( strcasecmp( pszString, "LY" ) == 0 ) return STUDIO_LY;
-	if( strcasecmp( pszString, "LZ" ) == 0 ) return STUDIO_LZ;
-	if( strcasecmp( pszString, "AX" ) == 0 ) return STUDIO_AX;
-	if( strcasecmp( pszString, "AY" ) == 0 ) return STUDIO_AY;
-	if( strcasecmp( pszString, "AZ" ) == 0 ) return STUDIO_AZ;
-	if( strcasecmp( pszString, "AXR" ) == 0 ) return STUDIO_AXR;
-	if( strcasecmp( pszString, "AYR" ) == 0 ) return STUDIO_AYR;
-	if( strcasecmp( pszString, "AZR" ) == 0 ) return STUDIO_AZR;
+	if (strcasecmp(pszString, "X") == 0) return STUDIO_X;
+	if (strcasecmp(pszString, "Y") == 0) return STUDIO_Y;
+	if (strcasecmp(pszString, "Z") == 0) return STUDIO_Z;
+	if (strcasecmp(pszString, "XR") == 0) return STUDIO_XR;
+	if (strcasecmp(pszString, "YR") == 0) return STUDIO_YR;
+	if (strcasecmp(pszString, "ZR") == 0) return STUDIO_ZR;
+	if (strcasecmp(pszString, "LX") == 0) return STUDIO_LX;
+	if (strcasecmp(pszString, "LY") == 0) return STUDIO_LY;
+	if (strcasecmp(pszString, "LZ") == 0) return STUDIO_LZ;
+	if (strcasecmp(pszString, "AX") == 0) return STUDIO_AX;
+	if (strcasecmp(pszString, "AY") == 0) return STUDIO_AY;
+	if (strcasecmp(pszString, "AZ") == 0) return STUDIO_AZ;
+	if (strcasecmp(pszString, "AXR") == 0) return STUDIO_AXR;
+	if (strcasecmp(pszString, "AYR") == 0) return STUDIO_AYR;
+	if (strcasecmp(pszString, "AZR") == 0) return STUDIO_AZR;
 
 	return -1;
 }

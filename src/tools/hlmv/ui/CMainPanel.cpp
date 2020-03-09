@@ -214,56 +214,35 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 
 	auto szCFilename = szFilename.char_str( wxMBConvUTF8() );
 
-	studiomdl::CStudioModel* pModel;
-
-	const auto res = studiomdl::LoadStudioModel( szFilename.c_str(), pModel );
-
-	switch( res )
+	try
 	{
-	default:
-	case studiomdl::StudioModelLoadResult::FAILURE:
+		auto pModel = studiomdl::LoadStudioModel(szFilename.c_str());
+	
+		CHLMVStudioModelEntity* pEntity = static_cast<CHLMVStudioModelEntity*>( CBaseEntity::Create( "studiomodel", glm::vec3(), glm::vec3(), false ) );
+
+		if( pEntity )
 		{
-			wxMessageBox( wxString::Format( "Error loading model \"%s\"\n", szCFilename.data() ), "Error" );
-			return false;
+			pEntity->m_pState = m_pHLMV->GetState();
+
+			pEntity->SetModel( pModel.release() );
+
+			pEntity->Spawn();
+
+			m_pHLMV->GetState()->SetEntity( pEntity );
 		}
 
-	case studiomdl::StudioModelLoadResult::POSTLOADFAILURE:
-		{
-			wxMessageBox( wxString::Format( "Error post-loading model \"%s\"\n", szCFilename.data() ), "Error" );
-			return false;
-		}
+		InitializeUI();
 
-	case studiomdl::StudioModelLoadResult::VERSIONDIFFERS:
-		{
-			wxMessageBox( wxString::Format( "Error loading model \"%s\": version differs\n", szCFilename.data() ), "Error" );
-			return false;
-		}
+		m_pHLMV->GetState()->CenterView();
 
-	case studiomdl::StudioModelLoadResult::SUCCESS: break;
+		return true;
 	}
-
-	CHLMVStudioModelEntity* pEntity = static_cast<CHLMVStudioModelEntity*>( CBaseEntity::Create( "studiomodel", glm::vec3(), glm::vec3(), false ) );
-
-	if( pEntity )
+	catch (const studiomdl::StudioModelException& e)
 	{
-		pEntity->m_pState = m_pHLMV->GetState();
-
-		pEntity->SetModel( pModel );
-
-		pEntity->Spawn();
-
-		m_pHLMV->GetState()->SetEntity( pEntity );
-	}
-	else
-	{
-		delete pModel;
+		wxMessageBox(wxString::Format("Error loading model \"%s\":\n%s", szCFilename.data(), e.what()), "Error");
 	}
 
-	InitializeUI();
-
-	m_pHLMV->GetState()->CenterView();
-
-	return true;
+	return false;
 }
 
 void CMainPanel::FreeModel()

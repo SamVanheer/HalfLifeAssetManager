@@ -1,6 +1,8 @@
 #ifndef GAME_STUDIOMODEL_CSTUDIOMODEL_H
 #define GAME_STUDIOMODEL_CSTUDIOMODEL_H
 
+#include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -17,23 +19,80 @@
 
 namespace studiomdl
 {
-enum class StudioModelLoadResult
+/**
+*	@brief Base class for all studio model exceptions
+*/
+class StudioModelException : public std::runtime_error
 {
-	SUCCESS = 0,
-	FAILURE,			//Generic error on load.
-	POSTLOADFAILURE,	//Generic error on post load.
-	VERSIONDIFFERS		//Header version differs from current.
+public:
+	using std::runtime_error::runtime_error;
 };
+
+/**
+*	@brief Indicates that the studio model file does not exist
+*/
+class StudioModelNotFound : public StudioModelException
+{
+public:
+	using StudioModelException::StudioModelException;
+};
+
+/**
+*	@brief Indicates that a studio model file has the wrong format (i.e. not a studio model)
+*/
+class StudioModelInvalidFormat : public StudioModelException
+{
+public:
+	using StudioModelException::StudioModelException;
+};
+
+/**
+*	@brief Indicates that a studio model file has the wrong version (e.g. trying to load a Source model)
+*/
+class StudioModelVersionDiffers : public StudioModelException
+{
+public:
+	StudioModelVersionDiffers(const std::string& message, int version)
+		: StudioModelException(message)
+		, _version(version)
+	{
+	}
+
+	/**
+	*	@brief Gets the version that the model has
+	*/
+	int GetVersion() const { return _version; }
+
+private:
+	const int _version;
+};
+
+struct StudioDataDeleter
+{
+	void operator()(studiohdr_t* pointer) const
+	{
+		delete[] pointer;
+	}
+
+	void operator()(studioseqhdr_t* pointer) const
+	{
+		delete[] pointer;
+	}
+};
+
+template<typename T>
+using studio_ptr = std::unique_ptr<T, StudioDataDeleter>;
 
 class CStudioModel;
 
 /**
-*	Loads a studio model.
-*	@param pszFilename Name of the model to load. This is the entire path, including the extension.
-*	@param pModel The model, if it was successfully loaded in.
-*	@return StudioModelLoadResult::SUCCESS on success, an error code in all other cases.
+*	Loads a studio model
+*	@param pszFilename Name of the model to load. This is the entire path, including the extension
+*	@exception StudioModelNotFound If a file could not be found
+*	@exception StudioModelInvalidFormat If a file has an invalid format
+*	@exception StudioModelVersionDiffers If a file has the wrong studio version
 */
-StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioModel*& pModel );
+std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename);
 
 /**
 *	Saves a studio model.
@@ -53,16 +112,15 @@ private:
 	typedef std::vector<MeshList_t> TextureMeshMap_t;
 
 protected:
-	friend StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioModel*& pModel );
+	friend std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename);
 
 public:
 	static const size_t MAX_SEQGROUPS = 32;
 	static const size_t MAX_TEXTURES = MAXSTUDIOSKINS;
 
 public:
-	CStudioModel(std::string&& fileName);
-	CStudioModel(std::string&& fileName, studiohdr_t* pStudioHdr, studiohdr_t* pTextureHdr, studiohdr_t** ppSeqHdrs, const size_t uiNumSeqHdrs,
-		GLuint* pTextures, const size_t uiNumTextures );
+	CStudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& pStudioHdr, studio_ptr<studiohdr_t>&& pTextureHdr,
+		std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, std::vector<GLuint>&& textures);
 	~CStudioModel();
 
 	const std::string& GetFileName() const { return m_FileName; }
@@ -72,9 +130,21 @@ public:
 		m_FileName = std::move(fileName);
 	}
 
-	studiohdr_t*	GetStudioHeader() const { return m_pStudioHdr; }
-	studiohdr_t*	GetTextureHeader() const { return m_pTextureHdr; }
-	studiohdr_t*	GetSeqGroupHeader( const size_t i ) const { return m_pSeqHdrs[ i ]; }
+	studiohdr_t* GetStudioHeader() const { return m_pStudioHdr.get(); }
+
+	bool HasSeparateTextureHeader() const { return !!m_pTextureHdr; }
+
+	studiohdr_t* GetTextureHeader() const
+	{
+		if (m_pTextureHdr)
+		{
+			return m_pTextureHdr.get();
+		}
+
+		return m_pStudioHdr.get();
+	}
+
+	studioseqhdr_t*	GetSeqGroupHeader( const size_t i ) const { return m_SequenceHeaders[ i ].get(); }
 
 	mstudioanim_t*	GetAnim( mstudioseqdesc_t* pseqdesc ) const;
 
@@ -112,12 +182,12 @@ public:
 private:
 	std::string m_FileName;
 
-	studiohdr_t* m_pStudioHdr = nullptr;
-	studiohdr_t* m_pTextureHdr = nullptr;
+	studio_ptr<studiohdr_t> m_pStudioHdr;
+	studio_ptr<studiohdr_t> m_pTextureHdr;
 
-	studiohdr_t* m_pSeqHdrs[MAX_SEQGROUPS] = {};
+	std::vector<studio_ptr<studioseqhdr_t>> m_SequenceHeaders;
 
-	GLuint m_Textures[MAXSTUDIOSKINS] = {};
+	std::vector<GLuint> m_Textures;
 
 private:
 	CStudioModel( const CStudioModel& ) = delete;
