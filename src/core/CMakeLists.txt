@@ -2,47 +2,38 @@
 #HLCore library
 #
 
-set( TARGET_NAME HLCore )
+set(TARGET_NAME HLCore)
 
-#Add in the shared sources
-add_sources( ${SHARED_SRCS} )
+add_library(${TARGET_NAME} SHARED)
 
-#Add sources
-add_sources(
-	LibHLCore.h
-	LibHLCore.cpp
-)
+check_winxp_support(${TARGET_NAME})
 
-add_subdirectory( shared )
-
-preprocess_sources()
-
-add_library( ${TARGET_NAME} SHARED ${PREP_SRCS} )
-
-check_winxp_support( ${TARGET_NAME} )
-
-target_include_directories( ${TARGET_NAME} PRIVATE
-	${SHARED_INCLUDEPATHS}
-)
+target_include_directories(${TARGET_NAME} PRIVATE
+	${SHARED_INCLUDEPATHS})
 
 #TODO: CMake adds exports macros automatically - Solokiller
-target_compile_definitions( ${TARGET_NAME} PRIVATE	
-	${SHARED_DEFS}
-	LIBHLCORE_EXPORTS
-)
+target_compile_definitions(${TARGET_NAME}
+	PRIVATE	
+		${SHARED_DEFS}
+		LIBHLCORE_EXPORTS)
 
-target_link_libraries( ${TARGET_NAME}
-	Keyvalues
-	HLStdLib
-	${SHARED_DEPENDENCIES}
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		LibHLCore.cpp
+		LibHLCore.h)
 
-set_target_properties( ${TARGET_NAME} 
+add_subdirectory(shared)
+
+target_link_libraries(${TARGET_NAME}
+	PUBLIC
+		Keyvalues
+		HLStdLib
+		${SHARED_DEPENDENCIES})
+
+set_target_properties(${TARGET_NAME} 
 	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
-	LINK_FLAGS "${SHARED_LINK_FLAGS}"
-)
+	LINK_FLAGS "${SHARED_LINK_FLAGS}")
 
 #Create filters
-create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
-
-clear_sources()
+get_target_property(SOURCE_FILES ${TARGET_NAME} SOURCES)
+source_group(TREE ${SRC_DIR} FILES ${SOURCE_FILES})

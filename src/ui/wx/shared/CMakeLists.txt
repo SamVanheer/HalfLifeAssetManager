@@ -1,38 +1,24 @@
-add_sources(
-	CCmdLineConfigDialog.h
-	CCmdLineConfigDialog.cpp
-	CEditCmdLineConfigDialog.h
-	CEditCmdLineConfigDialog.cpp
-	CEditEventsDialog.h
-	CEditEventsDialog.cpp
-	CEditGameConfigsDialog.h
-	CEditGameConfigsDialog.cpp
-	CFOVCtrl.h
-	CFOVCtrl.cpp
-	CGameConfigurationsPanel.h
-	CGameConfigurationsPanel.cpp
-	CMessagesWindow.h
-	CMessagesWindow.cpp
-	CProcessDialog.h
-	CProcessDialog.cpp
-	CwxBase3DView.h
-	CwxBase3DView.cpp
-	CwxBaseFrame.h
-	CwxBaseFrame.cpp
-	CwxBaseGLCanvas.h
-	CwxBaseGLCanvas.cpp
-)
-
-add_includes(
-	CCmdLineConfigDialog.h
-	CEditCmdLineConfigDialog.h
-	CEditEventsDialog.h
-	CEditGameConfigsDialog.h
-	CFOVCtrl.h
-	CGameConfigurationsPanel.h
-	CMessagesWindow.h
-	CProcessDialog.h
-	CwxBase3DView.h
-	CwxBaseFrame.h
-	CwxBaseGLCanvas.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CCmdLineConfigDialog.cpp
+		CCmdLineConfigDialog.h
+		CEditCmdLineConfigDialog.cpp
+		CEditCmdLineConfigDialog.h
+		CEditEventsDialog.cpp
+		CEditEventsDialog.h
+		CEditGameConfigsDialog.cpp
+		CEditGameConfigsDialog.h
+		CFOVCtrl.cpp
+		CFOVCtrl.h
+		CGameConfigurationsPanel.cpp
+		CGameConfigurationsPanel.h
+		CMessagesWindow.cpp
+		CMessagesWindow.h
+		CProcessDialog.cpp
+		CProcessDialog.h
+		CwxBase3DView.cpp
+		CwxBase3DView.h
+		CwxBaseFrame.cpp
+		CwxBaseFrame.h
+		CwxBaseGLCanvas.cpp
+		CwxBaseGLCanvas.h)

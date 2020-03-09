@@ -1,17 +1,17 @@
-add_sources(
-	C3DView.h
-	C3DView.cpp
-	CFullscreenWindow.h
-	CFullscreenWindow.cpp
-	CMainPanel.h
-	CMainPanel.cpp
-	CMainWindow.h
-	CMainWindow.cpp
-	CModelViewerApp.h
-	CModelViewerApp.cpp
-	MouseOpFlag.h
-	wxHLMV.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		C3DView.cpp
+		C3DView.h
+		CFullscreenWindow.cpp
+		CFullscreenWindow.h
+		CMainPanel.cpp
+		CMainPanel.h
+		CMainWindow.cpp
+		CMainWindow.h
+		CModelViewerApp.cpp
+		CModelViewerApp.h
+		MouseOpFlag.h
+		wxHLMV.h)
 
-add_subdirectory( controlpanels )
-add_subdirectory( options )
+add_subdirectory(controlpanels)
+add_subdirectory(options)

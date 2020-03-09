@@ -1,7 +1,7 @@
-add_sources(
-	CLibArgs.h
-	CLibrary.h
-	CLibrary.cpp
-	LibConstants.h
-	LibConstants.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CLibArgs.h
+		CLibrary.cpp
+		CLibrary.h
+		LibConstants.cpp
+		LibConstants.h)

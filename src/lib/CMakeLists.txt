@@ -1,5 +1,5 @@
-add_sources(
-	ILibSystem.h
-	LibInterface.h
-	LibInterface.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		ILibSystem.h
+		LibInterface.cpp
+		LibInterface.h)

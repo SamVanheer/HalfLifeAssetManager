@@ -1,24 +1,14 @@
-add_sources(
-	CBaseConCommand.h
-	CBaseConCommand.cpp
-	CConCommand.h
-	CConCommand.cpp
-	CCVar.h
-	CCVar.cpp
-	ConVarConstants.h
-	CVar.h
-	CVar.cpp
-	CVarUtils.h
-	CVarUtils.cpp
-	ICVarSystem.h
-)
-
-add_includes(
-	CBaseConCommand.h
-	CConCommand.h
-	CCVar.h
-	ConVarConstants.h
-	CVar.h
-	CVarUtils.h
-	ICVarSystem.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CBaseConCommand.cpp
+		CBaseConCommand.h
+		CConCommand.cpp
+		CConCommand.h
+		CCVar.cpp
+		CCVar.h
+		ConVarConstants.h
+		CVar.cpp
+		CVar.h
+		CVarUtils.cpp
+		CVarUtils.h
+		ICVarSystem.h)

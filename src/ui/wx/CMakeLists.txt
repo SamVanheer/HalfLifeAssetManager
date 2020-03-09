@@ -1,17 +1,11 @@
-add_sources(
-	CwxOpenGL.h
-	CwxOpenGL.cpp
-	wxInclude.h
-	wxLogging.h
-	wxLogging.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CwxOpenGL.cpp
+		CwxOpenGL.h
+		wxInclude.h
+		wxLogging.cpp
+		wxLogging.h)
 
-add_includes(
-	CwxOpenGL.h
-	wxInclude.h
-	wxLogging.h
-)
-
-add_subdirectory( shared )
-add_subdirectory( utility )
+add_subdirectory(shared)
+add_subdirectory(utility)
 

@@ -1,22 +1,22 @@
-add_sources(
-	CAttachmentsPanel.h
-	CAttachmentsPanel.cpp
-	CBaseControlPanel.h
-	CBaseControlPanel.cpp
-	CBodyPartsPanel.h
-	CBodyPartsPanel.cpp
-	CBonesPanel.h
-	CBonesPanel.cpp
-	CFullscreenPanel.h
-	CFullscreenPanel.cpp
-	CGlobalFlagsPanel.cpp
-	CGlobalFlagsPanel.h
-	CHitboxesPanel.cpp
-	CHitboxesPanel.h
-	CModelDisplayPanel.h
-	CModelDisplayPanel.cpp
-	CSequencesPanel.h
-	CSequencesPanel.cpp
-	CTexturesPanel.h
-	CTexturesPanel.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CAttachmentsPanel.cpp
+		CAttachmentsPanel.h
+		CBaseControlPanel.cpp
+		CBaseControlPanel.h
+		CBodyPartsPanel.cpp
+		CBodyPartsPanel.h
+		CBonesPanel.cpp
+		CBonesPanel.h
+		CFullscreenPanel.cpp
+		CFullscreenPanel.h
+		CGlobalFlagsPanel.cpp
+		CGlobalFlagsPanel.h
+		CHitboxesPanel.cpp
+		CHitboxesPanel.h
+		CModelDisplayPanel.cpp
+		CModelDisplayPanel.h
+		CSequencesPanel.cpp
+		CSequencesPanel.h
+		CTexturesPanel.cpp
+		CTexturesPanel.h)

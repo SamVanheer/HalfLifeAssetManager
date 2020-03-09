@@ -1,4 +1,4 @@
-add_sources(
-	CSpriteViewerSettings.h
-	CSpriteViewerSettings.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CSpriteViewerSettings.cpp
+		CSpriteViewerSettings.h)

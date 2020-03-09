@@ -1,4 +1,4 @@
-add_sources(
-	CSpriteRenderer.h
-	CSpriteRenderer.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CSpriteRenderer.cpp
+		CSpriteRenderer.h)

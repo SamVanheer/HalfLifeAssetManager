@@ -1,22 +1,13 @@
-add_sources(
-	BMPFile.h
-	BMPFile.cpp
-	CCamera.h
-	CCamera.cpp
-	GLRenderTarget.h
-	GLRenderTarget.cpp
-	GraphicsUtils.h
-	GraphicsUtils.cpp
-	OpenGL.h
-	OpenGL.cpp
-	Palette.h
-)
-
-add_includes(
-	BMPFile.h
-	CCamera.h
-	GLRenderTarget.h
-	GraphicsUtils.h
-	OpenGL.h
-	Palette.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		BMPFile.cpp
+		BMPFile.h
+		CCamera.cpp
+		CCamera.h
+		GLRenderTarget.cpp
+		GLRenderTarget.h
+		GraphicsUtils.cpp
+		GraphicsUtils.h
+		OpenGL.cpp
+		OpenGL.h
+		Palette.h)

@@ -1,4 +1,4 @@
-add_sources(
-	CHLMVStudioModelEntity.h
-	CHLMVStudioModelEntity.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CHLMVStudioModelEntity.cpp
+		CHLMVStudioModelEntity.h)

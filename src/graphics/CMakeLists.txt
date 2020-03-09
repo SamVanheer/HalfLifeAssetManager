@@ -1,6 +1,6 @@
-add_sources(
-	Constants.h
-	Constants.cpp
-	GraphicsHelpers.h
-	GraphicsHelpers.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		Constants.cpp
+		Constants.h
+		GraphicsHelpers.cpp
+		GraphicsHelpers.h)

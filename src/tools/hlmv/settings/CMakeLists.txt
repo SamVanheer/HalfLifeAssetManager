@@ -1,4 +1,4 @@
-add_sources(
-	CHLMVSettings.h
-	CHLMVSettings.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CHLMVSettings.cpp
+		CHLMVSettings.h)

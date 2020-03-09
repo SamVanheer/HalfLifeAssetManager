@@ -5,9 +5,8 @@
 #                                                 #
 #                                                 #
 ###################################################
-cmake_minimum_required( VERSION 3.6 )
+cmake_minimum_required(VERSION 3.16)
 
-include( cmake/InputFilesList.cmake )
 include( cmake/MSVCRuntime.cmake )
 include( cmake/PDBUtils.cmake )
 include( cmake/Ternary.cmake )
@@ -51,13 +50,6 @@ if( UNIX )
 		set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--exclude-libs,ALL" )
 	endif()
 endif()
-
-#Shared directories
-
-#Save the shares sources into SHARED_SRCS
-get_property(SHARED_SRCS GLOBAL PROPERTY SRCS_LIST)
-
-clear_sources()
 
 #Shared preprocessor definitions
 #TODO: There's a file in CMake that can do this called TestBigEndian. See http://stackoverflow.com/questions/3877344/detect-endianness-with-cmake

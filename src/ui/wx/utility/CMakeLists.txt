@@ -1,17 +1,9 @@
-add_sources(
-	CMeshClientData.h
-	CTimer.h
-	CwxRecentFiles.h
-	CwxRecentFiles.cpp
-	IWindowCloseListener.h
-	wxUtil.h
-	wxUtil.cpp
-)
-
-add_includes(
-	CMeshClientData.h
-	CTimer.h
-	CwxRecentFiles.h
-	IWindowCloseListener.h
-	wxUtil.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CMeshClientData.h
+		CTimer.h
+		CwxRecentFiles.cpp
+		CwxRecentFiles.h
+		IWindowCloseListener.h
+		wxUtil.cpp
+		wxUtil.h)

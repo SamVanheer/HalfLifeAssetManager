@@ -1,39 +1,24 @@
-add_sources(
-	BoundingBox.h
-	ByteSwap.h
-	ByteSwap.cpp
-	CCommand.h
-	CCommand.cpp
-	CEscapeSequences.h
-	CEscapeSequences.cpp
-	CMemory.h
-	Color.h
-	Color.cpp
-	CString.h
-	CString.cpp
-	IOUtils.h
-	IOUtils.cpp
-	mathlib.h
-	mathlib.cpp
-	PlatUtils.h
-	PlatUtils.cpp
-	StringUtils.h
-	StringUtils.cpp
-	Tokenization.h
-	Tokenization.cpp
-)
-
-add_includes(
-	BoundingBox.h
-	ByteSwap.h
-	CCommand.h
-	CEscapeSequences.h
-	CMemory.h
-	Color.h
-	CString.h
-	IOUtils.h
-	mathlib.h
-	PlatUtils.h
-	StringUtils.h
-	Tokenization.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		BoundingBox.h
+		ByteSwap.cpp
+		ByteSwap.h
+		CCommand.cpp
+		CCommand.h
+		CEscapeSequences.cpp
+		CEscapeSequences.h
+		CMemory.h
+		Color.cpp
+		Color.h
+		CString.cpp
+		CString.h
+		IOUtils.cpp
+		IOUtils.h
+		mathlib.cpp
+		mathlib.h
+		PlatUtils.cpp
+		PlatUtils.h
+		StringUtils.cpp
+		StringUtils.h
+		Tokenization.cpp
+		Tokenization.h)

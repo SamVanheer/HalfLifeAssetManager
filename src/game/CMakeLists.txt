@@ -1,6 +1,6 @@
-add_sources(
-	CAnimEvent.h
-	Events.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CAnimEvent.h
+		Events.h)
 
-add_subdirectory( entity )
+add_subdirectory(entity)

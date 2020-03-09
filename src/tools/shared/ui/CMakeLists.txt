@@ -1,8 +1,4 @@
-add_sources(
-	CStudioTypesCheatSheet.h
-	CStudioTypesCheatSheet.cpp
-)
-
-add_includes(
-	CStudioTypesCheatSheet.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CStudioTypesCheatSheet.cpp
+		CStudioTypesCheatSheet.h)

@@ -1,4 +1,4 @@
-add_sources(
-	CMatrixStack.h
-	CMatrixStack.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CMatrixStack.cpp
+		CMatrixStack.h)

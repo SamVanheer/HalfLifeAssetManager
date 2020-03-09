@@ -1,4 +1,4 @@
-add_includes(
-	ISoundSystem.h
-	SoundConstants.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		ISoundSystem.h
+		SoundConstants.h)

@@ -1,19 +1,19 @@
-add_sources(
-	CBaseAnimating.h
-	CBaseAnimating.cpp
-	CBaseEntity.h
-	CBaseEntity.cpp
-	CBaseEntityList.h
-	CBaseEntityList.cpp
-	CEntityDict.h
-	CEntityDict.cpp
-	CEntityManager.h
-	CEntityManager.cpp
-	CSpriteEntity.h
-	CSpriteEntity.cpp
-	CStudioModelEntity.h
-	CStudioModelEntity.cpp
-	EHandle.h
-	EHandle.cpp
-	EntityConstants.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CBaseAnimating.cpp
+		CBaseAnimating.h
+		CBaseEntity.cpp
+		CBaseEntity.h
+		CBaseEntityList.cpp
+		CBaseEntityList.h
+		CEntityDict.cpp
+		CEntityDict.h
+		CEntityManager.cpp
+		CEntityManager.h
+		CSpriteEntity.cpp
+		CSpriteEntity.h
+		CStudioModelEntity.cpp
+		CStudioModelEntity.h
+		EHandle.cpp
+		EHandle.h
+		EntityConstants.h)

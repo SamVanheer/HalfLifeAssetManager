@@ -1,8 +1,8 @@
-add_sources(
-	CBaseControlPanel.h
-	CBaseControlPanel.cpp
-	CSpriteDisplayPanel.h
-	CSpriteDisplayPanel.cpp
-	CSpriteInfoPanel.h
-	CSpriteInfoPanel.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CBaseControlPanel.cpp
+		CBaseControlPanel.h
+		CSpriteDisplayPanel.cpp
+		CSpriteDisplayPanel.h
+		CSpriteInfoPanel.cpp
+		CSpriteInfoPanel.h)

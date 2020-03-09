@@ -1,1 +1,1 @@
-add_subdirectory( wx )
+add_subdirectory(wx)

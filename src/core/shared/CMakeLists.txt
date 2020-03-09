@@ -1,22 +1,13 @@
-add_sources(
-	Class.h
-	Const.h
-	Const.cpp
-	CWorldTime.h
-	CWorldTime.cpp
-	Logging.h
-	Logging.cpp
-	Platform.h
-	Platform.cpp
-	Utility.h
-	Utility.cpp
-)
-
-add_includes(
-	Class.h
-	Const.h
-	CWorldTime.h
-	Logging.h
-	Platform.h
-	Utility.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		Class.h
+		Const.cpp
+		Const.h
+		CWorldTime.cpp
+		CWorldTime.h
+		Logging.cpp
+		Logging.h
+		Platform.cpp
+		Platform.h
+		Utility.cpp
+		Utility.h)

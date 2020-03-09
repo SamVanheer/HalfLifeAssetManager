@@ -2,67 +2,46 @@
 #Keyvalues library
 #
 
-set( TARGET_NAME Keyvalues )
+set(TARGET_NAME Keyvalues)
 
-#Add in the shared sources
-add_sources( ${SHARED_SRCS} )
+add_library(${TARGET_NAME} STATIC)
 
-#Add sources
+check_winxp_support(${TARGET_NAME})
 
-add_sources(
-	CKeyvalue.h
-	CKeyvalue.cpp
-	CKeyvalueBlock.h
-	CKeyvalueBlock.cpp
-	CKeyvalueNode.h
-	CKeyvalueNode.cpp
-	CKeyvaluesLexer.h
-	CKeyvaluesLexer.cpp
-	CKeyvaluesParser.h
-	CKeyvaluesParser.cpp
-	CKeyvaluesWriter.h
-	CKeyvaluesWriter.cpp
-	Keyvalues.h
-	KeyvaluesConstants.h
-	KVForward.h
-)
+target_include_directories(${TARGET_NAME}
+	PRIVATE
+		${SHARED_INCLUDEPATHS})
 
-add_includes(
-	CKeyvalue.h
-	CKeyvalueBlock.h
-	CKeyvalueNode.h
-	CKeyvaluesLexer.h
-	CKeyvaluesParser.h
-	CKeyvaluesWriter.h
-	Keyvalues.h
-	KeyvaluesConstants.h
-	KVForward.h
-)
+target_compile_definitions(${TARGET_NAME}
+	PRIVATE	
+		${SHARED_DEFS})
 
-preprocess_sources()
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CKeyvalue.cpp
+		CKeyvalue.h
+		CKeyvalueBlock.cpp
+		CKeyvalueBlock.h
+		CKeyvalueNode.cpp
+		CKeyvalueNode.h
+		CKeyvaluesLexer.cpp
+		CKeyvaluesLexer.h
+		CKeyvaluesParser.cpp
+		CKeyvaluesParser.h
+		CKeyvaluesWriter.cpp
+		CKeyvaluesWriter.h
+		Keyvalues.h
+		KeyvaluesConstants.h
+		KVForward.h)
 
-add_library( ${TARGET_NAME} STATIC ${PREP_SRCS} )
-
-check_winxp_support( ${TARGET_NAME} )
-
-target_include_directories( ${TARGET_NAME} PRIVATE
-	${SHARED_INCLUDEPATHS}
-)
-
-target_compile_definitions( ${TARGET_NAME} PRIVATE	
-	${SHARED_DEFS}
-)
-
-set_target_properties( ${TARGET_NAME} 
+set_target_properties(${TARGET_NAME} 
 	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
-	LINK_FLAGS "${SHARED_LINK_FLAGS}"
-)
+	LINK_FLAGS "${SHARED_LINK_FLAGS}")
 
-target_link_libraries( ${TARGET_NAME}
-	HLStdLib
-)
+target_link_libraries(${TARGET_NAME}
+	PUBLIC
+		HLStdLib)
 
 #Create filters
-create_source_groups( "${CMAKE_SOURCE_DIR}" )
-
-clear_sources()
+get_target_property(SOURCE_FILES ${TARGET_NAME} SOURCES)
+source_group(TREE ${SRC_DIR} FILES ${SOURCE_FILES})

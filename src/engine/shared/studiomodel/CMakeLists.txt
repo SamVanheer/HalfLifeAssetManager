@@ -1,5 +1,5 @@
-add_sources(
-	CStudioModel.h
-	CStudioModel.cpp
-	studio.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CStudioModel.cpp
+		CStudioModel.h
+		studio.h)

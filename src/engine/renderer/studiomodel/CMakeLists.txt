@@ -1,6 +1,6 @@
-add_sources(
-	CStudioModelRenderer.h
-	CStudioModelRenderer.cpp
-	StudioSorting.h
-	StudioSorting.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CStudioModelRenderer.cpp
+		CStudioModelRenderer.h
+		StudioSorting.cpp
+		StudioSorting.h)

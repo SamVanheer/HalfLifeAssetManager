@@ -2,59 +2,50 @@
 #HLStdLib library
 #
 
-set( TARGET_NAME HLStdLib )
+set(TARGET_NAME HLStdLib)
 
-#Add in the shared sources
-add_sources( ${SHARED_SRCS} )
+add_library(${TARGET_NAME} STATIC)
 
-#Add sources
+check_winxp_support(${TARGET_NAME})
 
-add_subdirectory( app )
-add_subdirectory( cvar )
-add_subdirectory( graphics )
-add_subdirectory( lib )
-add_subdirectory( settings )
-add_subdirectory( utility )
+target_include_directories(${TARGET_NAME}
+	PRIVATE
+		${SHARED_INCLUDEPATHS})
 
-preprocess_sources()
+target_compile_definitions(${TARGET_NAME}
+	PRIVATE	
+		${SHARED_DEFS})
 
-add_library( ${TARGET_NAME} STATIC ${PREP_SRCS} )
+add_subdirectory(app)
+add_subdirectory(cvar)
+add_subdirectory(graphics)
+add_subdirectory(lib)
+add_subdirectory(settings)
+add_subdirectory(utility)
 
-check_winxp_support( ${TARGET_NAME} )
-
-target_include_directories( ${TARGET_NAME} PRIVATE
-	${SHARED_INCLUDEPATHS}
-)
-
-target_compile_definitions( ${TARGET_NAME} PRIVATE	
-	${SHARED_DEFS}
-)
-
-set_target_properties( ${TARGET_NAME} 
+set_target_properties(${TARGET_NAME} 
 	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
-	LINK_FLAGS "${SHARED_LINK_FLAGS}"
-)
+	LINK_FLAGS "${SHARED_LINK_FLAGS}")
 
-if( WIN32 )
-	find_library( GLEW glew32 PATHS ${CMAKE_SOURCE_DIR}/external/GLEW/lib )
+if(WIN32)
+	find_library(GLEW glew32 PATHS ${CMAKE_SOURCE_DIR}/external/GLEW/lib)
 else()
-	find_library( GLEW libGLEW.so.2.0.0 PATHS ${CMAKE_SOURCE_DIR}/external/GLEW/lib )
+	find_library(GLEW libGLEW.so.2.0.0 PATHS ${CMAKE_SOURCE_DIR}/external/GLEW/lib)
 endif()
 
-find_package( OpenGL REQUIRED )
+find_package(OpenGL REQUIRED)
 
-if( NOT OPENGL_FOUND )
-	MESSAGE( FATAL_ERROR "Could not locate OpenGL library" )
+if(NOT OPENGL_FOUND)
+	message(FATAL_ERROR "Could not locate OpenGL library")
 endif()
 
-target_link_libraries( ${TARGET_NAME}
+target_link_libraries(${TARGET_NAME}
+	PUBLIC
 	Keyvalues
-	${GLEW}
-	${OPENGL_LIBRARIES}
-	${SHARED_DEPENDENCIES}
-)
+		${GLEW}
+		${OPENGL_LIBRARIES}
+		${SHARED_DEPENDENCIES})
 
 #Create filters
-create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
-
-clear_sources()
+get_target_property(SOURCE_FILES ${TARGET_NAME} SOURCES)
+source_group(TREE ${SRC_DIR} FILES ${SOURCE_FILES})

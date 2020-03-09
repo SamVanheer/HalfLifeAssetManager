@@ -1,4 +1,4 @@
-add_sources(
-	CRenderContextIMode.h
-	CRenderContextIMode.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CRenderContextIMode.cpp
+		CRenderContextIMode.h)

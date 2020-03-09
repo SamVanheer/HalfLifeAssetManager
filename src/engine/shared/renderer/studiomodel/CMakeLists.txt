@@ -1,5 +1,5 @@
-add_sources(
-	CModelRenderInfo.h
-	IStudioModelRenderer.h
-	IStudioModelRendererListener.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CModelRenderInfo.h
+		IStudioModelRenderer.h
+		IStudioModelRendererListener.h)

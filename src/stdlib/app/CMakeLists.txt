@@ -1,8 +1,4 @@
-add_sources(
-	CAppSystem.h
-	CAppSystem.cpp
-)
-
-add_includes(
-	CAppSystem.h
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CAppSystem.cpp
+		CAppSystem.h)

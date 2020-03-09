@@ -2,51 +2,43 @@
 #SoundSystem library
 #
 
-set( TARGET_NAME SoundSystem )
+set(TARGET_NAME SoundSystem)
 
 # Disable module based lookup (OpenAL Soft uses CONFIG mode and MODULE mode only works with the Creative Labs version)
 find_package(OpenAL REQUIRED NO_MODULE)
 
-#Add in the shared sources
-add_sources( ${SHARED_SRCS} )
+add_library(${TARGET_NAME} SHARED)
 
-#Add sources
-add_sources(
-	CSoundSystem.h
-	CSoundSystem.cpp
-)
+check_winxp_support(${TARGET_NAME})
 
-add_subdirectory( shared )
+target_include_directories(${TARGET_NAME}
+	PRIVATE
+		${EXTERNAL_DIR}/AudioFile/include
+		${SHARED_INCLUDEPATHS})
 
-add_subdirectory( ../lib ${CMAKE_CURRENT_BINARY_DIR}/lib )
+target_compile_definitions(${TARGET_NAME}
+	PRIVATE	
+		${SHARED_DEFS})
 
-preprocess_sources()
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CSoundSystem.cpp
+		CSoundSystem.h)
 
-add_library( ${TARGET_NAME} SHARED ${PREP_SRCS} )
+add_subdirectory(shared)
 
-check_winxp_support( ${TARGET_NAME} )
+add_subdirectory(../lib ${CMAKE_CURRENT_BINARY_DIR}/lib)
 
-target_include_directories( ${TARGET_NAME} PRIVATE
-	${EXTERNAL_DIR}/AudioFile/include
-	${SHARED_INCLUDEPATHS}
-)
+target_link_libraries(${TARGET_NAME}
+	PRIVATE
+		HLCore
+		${SHARED_DEPENDENCIES}
+		OpenAL::OpenAL)
 
-target_compile_definitions( ${TARGET_NAME} PRIVATE	
-	${SHARED_DEFS}
-)
-
-target_link_libraries( ${TARGET_NAME}
-	HLCore
-	${SHARED_DEPENDENCIES}
-	OpenAL::OpenAL
-)
-
-set_target_properties( ${TARGET_NAME} 
+set_target_properties(${TARGET_NAME} 
 	PROPERTIES COMPILE_FLAGS "${SHARED_COMPILE_FLAGS}" 
-	LINK_FLAGS "${SHARED_LINK_FLAGS}"
-)
+	LINK_FLAGS "${SHARED_LINK_FLAGS}")
 
 #Create filters
-create_source_groups( "${CMAKE_CURRENT_SOURCE_DIR}" )
-
-clear_sources()
+get_target_property(SOURCE_FILES ${TARGET_NAME} SOURCES)
+source_group(TREE ${SRC_DIR} FILES ${SOURCE_FILES})

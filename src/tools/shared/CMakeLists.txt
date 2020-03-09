@@ -1,16 +1,10 @@
-add_sources(
-	CBaseToolApp.h
-	CBaseToolApp.cpp
-	CBaseWXToolApp.h
-	CBaseWXToolApp.cpp
-	Credits.h
-	Credits.cpp
-)
+target_sources(${TARGET_NAME}
+	PRIVATE
+		CBaseToolApp.cpp
+		CBaseToolApp.h
+		CBaseWXToolApp.cpp
+		CBaseWXToolApp.h
+		Credits.cpp
+		Credits.h)
 
-add_includes(
-	CBaseToolApp.h
-	CBaseWXToolApp.h
-	Credits.h
-)
-
-add_subdirectory( ui )
+add_subdirectory(ui)

@@ -1,8 +1,8 @@
-add_sources(
-	CCompilerOptions.h
+target_sources(${TARGET_NAME}
+	PRIVATE
 	CCompilerOptions.cpp
-	CGeneralOptions.h
+	CCompilerOptions.h
 	CGeneralOptions.cpp
-	COptionsDialog.h
+	CGeneralOptions.h
 	COptionsDialog.cpp
-)
+	COptionsDialog.h)
