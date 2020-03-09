@@ -143,6 +143,12 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 
 	this->SetSizer( pSizer );
 
+	//Force the control panel to be a little bigger than it gets laid out to be
+	//so it doesn't create vertical scroll bars
+	auto controlPanelSize = m_pControlPanel->GetMinSize();
+	controlPanelSize.SetHeight(175);
+	m_pControlPanel->SetMinClientSize(controlPanelSize);
+
 	InitializeUI();
 
 	g_pStudioMdlRenderer->SetRendererListener( this );
