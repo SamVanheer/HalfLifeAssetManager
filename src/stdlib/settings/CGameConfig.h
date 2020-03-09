@@ -1,7 +1,7 @@
 #ifndef SETTINGS_CGAMECONFIG_H
 #define SETTINGS_CGAMECONFIG_H
 
-#include "shared/Utility.h"
+#include <string>
 
 #include "CBaseConfigManager.h"
 
@@ -57,7 +57,7 @@ public:
 	*	Gets the name of this configuration.
 	*	@return Name.
 	*/
-	const char* GetName() const { return m_szName; }
+	const char* GetName() const { return m_szName.c_str(); }
 
 	/**
 	*	Sets the name of this config. The name must not be null or empty.
@@ -71,7 +71,7 @@ public:
 	*	@return Base path.
 	*	@see filesystem::IFileSystem
 	*/
-	const char* GetBasePath() const { return m_szBasePath; }
+	const char* GetBasePath() const { return m_szBasePath.c_str(); }
 
 	/**
 	*	Sets the base path.
@@ -84,7 +84,7 @@ public:
 	*	Gets the game directory for this configuration.
 	*	@return Game directory.
 	*/
-	const char* GetGameDir() const { return m_szGameDir; }
+	const char* GetGameDir() const { return m_szGameDir.c_str(); }
 
 	/**
 	*	Sets the game directory.
@@ -96,7 +96,7 @@ public:
 	*	Gets the mod directory for this configuration.
 	*	@return Mod directory.
 	*/
-	const char* GetModDir() const { return m_szModDir; }
+	const char* GetModDir() const { return m_szModDir.c_str(); }
 
 	/**
 	*	Sets the mod directory.
@@ -116,22 +116,22 @@ private:
 	/**
 	*	Name of this config. Must be unique.
 	*/
-	char m_szName[ MAX_BUFFER_LENGTH ];
+	std::string m_szName;
 
 	/**
 	*	Path to the base game directory, e.g. "C:\Program Files (x86)\Steam\steamapps\common\Half-life"
 	*/
-	char m_szBasePath[ MAX_PATH_LENGTH ];
+	std::string m_szBasePath;
 
 	/**
 	*	Name of the game directory, e.g. "valve"
 	*/
-	char m_szGameDir[ MAX_PATH_LENGTH ];
+	std::string m_szGameDir;
 
 	/**
 	*	Name of the mod directory, e.g. "gearbox"
 	*/
-	char m_szModDir[ MAX_PATH_LENGTH ];
+	std::string m_szModDir;
 };
 
 /**

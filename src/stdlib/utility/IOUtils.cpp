@@ -42,18 +42,9 @@ bool LoadColorSetting( const kv::Block& settings, const char* const pszName, Col
 
 bool SaveColorSetting( kv::Writer& writer, const char* const pszName, const Color& color, const bool bHasAlpha )
 {
-	char szBuffer[ MAX_BUFFER_LENGTH ];
+	const auto value = ColorToString(color, bHasAlpha);
 
-	if( ColorToString( color, szBuffer, sizeof( szBuffer ), bHasAlpha ) )
-	{
-		return writer.WriteKeyvalue( pszName, szBuffer );
-	}
-	else
-	{
-		Warning( "Failed to convert setting \"%s\" to string!\n", pszName );
-	}
-
-	return false;
+	return writer.WriteKeyvalue( pszName, value.c_str());
 }
 
 bool LoadColorCVarSetting( const kv::Block& settings, const char* const pszName, const char* const pszCVar, const bool bHasAlpha )

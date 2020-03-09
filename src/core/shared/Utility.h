@@ -69,9 +69,6 @@ constexpr inline size_t _ArraySizeof( T( &)[ SIZE ] )
 */
 #define ARRAYSIZE _ArraySizeof
 
-//TODO: remove
-#define MAX_BUFFER_LENGTH 512
-
 //TODO: this might be better off in a static library;
 
 /**

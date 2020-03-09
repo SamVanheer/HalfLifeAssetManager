@@ -1,6 +1,4 @@
-#include "shared/Utility.h"
-
-#include "utility/StringUtils.h"
+#include <string>
 
 #include "CVar.h"
 
@@ -22,30 +20,25 @@ bool GetColorCVars( const char* const pszCVar, CCVar** ppR, CCVar** ppG, CCVar**
 {
 	assert( pszCVar );
 
-	char szBuffer[ MAX_BUFFER_LENGTH ];
-
 	if( ppR )
 	{
-		if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%s_r", pszCVar ), sizeof( szBuffer ) ) )
-			return false;
+		const auto name{std::string{pszCVar} + "_r"};
 
-		*ppR = static_cast<cvar::CCVar*>( g_pCVar->FindCommand( szBuffer ) );
+		*ppR = static_cast<cvar::CCVar*>( g_pCVar->FindCommand(name.c_str()) );
 	}
 
 	if( ppG )
 	{
-		if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%s_g", pszCVar ), sizeof( szBuffer ) ) )
-			return false;
+		const auto name{std::string{pszCVar} +"_g"};
 
-		*ppG = static_cast<cvar::CCVar*>( g_pCVar->FindCommand( szBuffer ) );
+		*ppG = static_cast<cvar::CCVar*>( g_pCVar->FindCommand(name.c_str()) );
 	}
 
 	if( ppB )
 	{
-		if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%s_b", pszCVar ), sizeof( szBuffer ) ) )
-			return false;
+		const auto name{std::string{pszCVar} +"_b"};
 
-		*ppB = static_cast<cvar::CCVar*>( g_pCVar->FindCommand( szBuffer ) );
+		*ppB = static_cast<cvar::CCVar*>( g_pCVar->FindCommand(name.c_str()) );
 	}
 
 	return 

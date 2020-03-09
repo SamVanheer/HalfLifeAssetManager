@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <sstream>
 
 #include "Color.h"
 
@@ -31,24 +32,16 @@ bool ParseColor( const char* pszValue, Color& color, const bool bParseAlpha )
 	return true;
 }
 
-bool ColorToString( const Color& color, char* pszBuffer, size_t uiBufferSize, const bool bAddAlpha )
+std::string ColorToString( const Color& color, const bool bAddAlpha )
 {
-	if( !pszBuffer || !uiBufferSize )
-		return false;
+	std::ostringstream stream;
 
-	int iResult;
+	stream << std::to_string(color.GetRed()) << ' ' << std::to_string(color.GetGreen()) << ' ' << std::to_string(color.GetBlue());
+
+	if (bAddAlpha)
+	{
+		stream << ' ' << std::to_string(color.GetAlpha());
+	}
 	
-	if( bAddAlpha )
-	{
-		iResult = snprintf( pszBuffer, uiBufferSize, "%u %u %u %u", color.GetRed(), color.GetGreen(), color.GetBlue(), color.GetAlpha() );
-	}
-	else
-	{
-		iResult = snprintf( pszBuffer, uiBufferSize, "%u %u %u", color.GetRed(), color.GetGreen(), color.GetBlue() );
-	}
-
-	if( iResult < 0 || static_cast<size_t>( iResult ) >= uiBufferSize )
-		return false;
-
-	return true;
+	return stream.str();
 }

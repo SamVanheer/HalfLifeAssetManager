@@ -2,6 +2,7 @@
 #define UTILITY_COLOR_H
 
 #include <cassert>
+#include <string>
 
 #include "shared/Const.h"
 
@@ -146,6 +147,6 @@ private:
 };
 
 bool ParseColor( const char* pszValue, Color& color, const bool bParseAlpha = false );
-bool ColorToString( const Color& color, char* pszBuffer, size_t uiBufferSize, const bool bAddAlpha = false );
+std::string ColorToString( const Color& color, const bool bAddAlpha = false );
 
 #endif //UTILITY_COLOR_H

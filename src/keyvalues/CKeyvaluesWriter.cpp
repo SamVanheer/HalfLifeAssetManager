@@ -1,8 +1,8 @@
 #include <cassert>
+#include <sstream>
+#include <string>
 
 #include "shared/Logging.h"
-
-#include "shared/Utility.h"
 
 #include "utility/CEscapeSequences.h"
 
@@ -223,23 +223,9 @@ bool CKeyvaluesWriter::WriteTabs( const size_t uiTabs )
 	if( uiTabs == 0 )
 		return true;
 
-	if( uiTabs >= MAX_BUFFER_LENGTH )
-	{
-		Error( "CKeyvaluesWriter::PrintTabs: Tabs too large to output!\n" );
+	const std::string tabs(uiTabs, '\t');
 
-		return false;
-	}
-
-	char szBuffer[ MAX_BUFFER_LENGTH ];
-
-	for( size_t uiTab = 0; uiTab < uiTabs; ++uiTab )
-	{
-		szBuffer[ uiTab ] = '\t';
-	}
-
-	szBuffer[ uiTabs ] = '\0';
-
-	fprintf( m_pFile, "%s", szBuffer );
+	fprintf( m_pFile, "%s", tabs.c_str());
 
 	return true;
 }
@@ -253,14 +239,14 @@ bool CKeyvaluesWriter::WriteToken( const char* const pszToken )
 {
 	assert( pszToken );
 
-	char szBuffer[ MAX_BUFFER_LENGTH ];
+	std::ostringstream stream;
 
-	const bool busesQuotes = !( *pszToken ) || strchr( pszToken, ' ' );
+	const bool usesQuotes = !( *pszToken ) || strchr( pszToken, ' ' );
 
-	size_t uiBufIndex = 0;
-
-	if( busesQuotes )
-		szBuffer[ uiBufIndex++ ] = '\"';
+	if (usesQuotes)
+	{
+		stream << '\"';
+	}
 
 	const size_t uiLength = strlen( pszToken );
 
@@ -272,41 +258,20 @@ bool CKeyvaluesWriter::WriteToken( const char* const pszToken )
 		{
 			const size_t uiConvLength = m_pEscapeSeqConversion->GetStringLength( pszToken[ uiIndex ] );
 
-			if( ( uiBufIndex + uiConvLength ) >= sizeof( szBuffer ) )
-			{
-				Error( "CKeyvaluesWriter::WriteToken: Token too large!\n" );
-
-				return false;
-			}
-
-			strncpy( szBuffer + uiBufIndex, pszConv, uiConvLength );
-
-			uiBufIndex += uiConvLength;
+			stream.write(pszConv, uiConvLength);
 		}
 		else
-			szBuffer[ uiBufIndex++ ] = pszToken[ uiIndex ];
-
-		if( uiBufIndex >= sizeof( szBuffer ) )
 		{
-			Error( "CKeyvaluesWriter::WriteToken: Token too large!\n" );
-
-			return false;
+			stream << pszToken[uiIndex];
 		}
 	}
 
-	if( busesQuotes )
-		szBuffer[ uiBufIndex++ ] = '\"';
-
-	if( uiBufIndex >= sizeof( szBuffer ) )
+	if (usesQuotes)
 	{
-		Error( "CKeyvaluesWriter::WriteToken: Token too large!\n" );
-
-		return false;
+		stream << '\"';
 	}
 
-	szBuffer[ uiBufIndex ] = '\0';
-
-	fprintf( m_pFile, "%s", szBuffer );
+	fprintf(m_pFile, "%s", stream.str().c_str());
 
 	return true;
 }
