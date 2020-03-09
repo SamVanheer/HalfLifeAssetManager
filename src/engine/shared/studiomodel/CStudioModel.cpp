@@ -275,7 +275,7 @@ mstudioanim_t* CStudioModel::GetAnim(mstudioseqdesc_t* pseqdesc) const
 		return (mstudioanim_t*) ((byte*) m_pStudioHdr.get() + pseqgroup->unused2 + pseqdesc->animindex);
 	}
 
-	return (mstudioanim_t*) ((byte*) m_SequenceHeaders[pseqdesc->seqgroup].get() + pseqdesc->animindex);
+	return (mstudioanim_t*) ((byte*) m_SequenceHeaders[pseqdesc->seqgroup - 1].get() + pseqdesc->animindex);
 }
 
 mstudiomodel_t* CStudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart) const
