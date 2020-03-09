@@ -436,7 +436,7 @@ StudioModelLoadResult LoadStudioHeader( const char* const pszFilename, const boo
 
 StudioModelLoadResult LoadStudioModel( const char* const pszFilename, CStudioModel*& pModel )
 {
-	const auto bIsDol = std::experimental::filesystem::path( pszFilename ).extension() == ".dol";
+	const auto bIsDol = std::filesystem::path( pszFilename ).extension() == ".dol";
 
 	//Takes care of cleanup on failure.
 	std::unique_ptr<CStudioModel> studioModel( new CStudioModel(pszFilename) );

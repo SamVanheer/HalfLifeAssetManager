@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include <experimental/filesystem>
+#include <filesystem>
 
 #include "core/shared/Logging.h"
 
@@ -62,13 +62,13 @@ bool CAppSystem::Startup()
 			return false;
 		}
 
-		std::experimental::filesystem::path exePath( szExePath );
+		std::filesystem::path exePath( szExePath );
 
 		std::error_code canonicalError;
 
 		auto exeDir = exePath.parent_path();
 
-		exeDir = std::experimental::filesystem::canonical( exeDir, canonicalError );
+		exeDir = std::filesystem::canonical( exeDir, canonicalError );
 
 		if( canonicalError )
 		{
@@ -80,7 +80,7 @@ bool CAppSystem::Startup()
 
 		std::error_code cwdError;
 
-		std::experimental::filesystem::current_path( exeDir, cwdError );
+		std::filesystem::current_path( exeDir, cwdError );
 
 		if( cwdError )
 		{

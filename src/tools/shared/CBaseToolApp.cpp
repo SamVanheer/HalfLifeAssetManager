@@ -1,4 +1,4 @@
-#include <experimental/filesystem>
+#include <filesystem>
 
 #include "core/LibHLCore.h"
 #include "core/shared/Logging.h"
@@ -35,7 +35,7 @@ bool CBaseToolApp::StartupApp()
 
 		if( bSuccess )
 		{
-			std::experimental::filesystem::path path( szExePath );
+			std::filesystem::path path( szExePath );
 
 			m_szLogFilename = path.stem().string();
 		}

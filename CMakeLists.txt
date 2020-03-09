@@ -40,8 +40,9 @@ else()
 	set( LINUX_32BIT_FLAG "" )
 endif()
 
-#C++14 support
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y" )
+#C++17 support
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #Hide symbols from static libraries so they don't merge and cause issues
 if( UNIX )
@@ -116,7 +117,6 @@ if( WIN32 )
 else()
 	set( SHARED_DEPENDENCIES
 		dl
-		stdc++fs #C++17 experimental filesystem
 	)
 endif()
 

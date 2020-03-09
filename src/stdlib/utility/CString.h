@@ -339,7 +339,7 @@ struct CStringCaseInsensitiveLess
 namespace std
 {
 template<>
-struct hash<CString> : public std::unary_function<CString, size_t>
+struct hash<CString>
 {
 	std::size_t operator()( const CString& szStr ) const
 	{
