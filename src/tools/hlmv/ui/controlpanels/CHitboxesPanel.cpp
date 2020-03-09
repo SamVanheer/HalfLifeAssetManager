@@ -44,7 +44,7 @@ CHitboxesPanel::CHitboxesPanel(wxWindow* pParent, CModelViewerApp* const pHLMV)
 		m_pMaxs[i] = new wxSpinCtrlDouble(m_pHitboxInfo, wxID_ANY);
 		m_pMaxs[i]->SetRange(-DBL_MAX, DBL_MAX);
 		m_pMaxs[i]->SetDigits(6);
-		m_pMaxs[i]->Bind(wxEVT_SPINCTRLDOUBLE, &CHitboxesPanel::OnMinsChanged, this);
+		m_pMaxs[i]->Bind(wxEVT_SPINCTRLDOUBLE, &CHitboxesPanel::OnMaxsChanged, this);
 	}
 
 	//Layout
