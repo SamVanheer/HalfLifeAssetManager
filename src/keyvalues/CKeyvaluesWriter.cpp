@@ -168,7 +168,7 @@ bool CKeyvaluesWriter::WriteKeyvalue( const char* const pszKey, const char* cons
 
 bool CKeyvaluesWriter::WriteBlock( const CKeyvalueBlock& block )
 {
-	if( !BeginBlock( block.GetKey().CStr() ) )
+	if( !BeginBlock( block.GetKey().c_str() ) )
 		return false;
 
 	const CKeyvalueBlock::Children_t& children = block.GetChildren();
@@ -183,7 +183,7 @@ bool CKeyvaluesWriter::WriteBlock( const CKeyvalueBlock& block )
 
 bool CKeyvaluesWriter::WriteKeyvalue( const CKeyvalue& keyvalue )
 {
-	return WriteKeyvalue( keyvalue.GetKey().CStr(), keyvalue.GetValue().CStr() );
+	return WriteKeyvalue( keyvalue.GetKey().c_str(), keyvalue.GetValue().c_str() );
 }
 
 bool CKeyvaluesWriter::Write( const CKeyvalueNode& node )

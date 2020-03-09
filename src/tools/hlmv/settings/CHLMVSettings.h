@@ -1,8 +1,9 @@
 #ifndef HLMV_SETTINGS_CHLMVSETTINGS_H
 #define HLMV_SETTINGS_CHLMVSETTINGS_H
 
+#include <string>
+
 #include "utility/Color.h"
-#include "utility/CString.h"
 
 #include "settings/CBaseSettings.h"
 #include "settings/CRecentFiles.h"
@@ -107,12 +108,12 @@ public:
 	/**
 	*	Gets the path to the studiomdl compiler.
 	*/
-	const CString& GetStudioMdl() const { return m_szStudioMdl; }
+	const std::string& GetStudioMdl() const { return m_szStudioMdl; }
 
 	/**
 	*	Sets the path to the studiomdl compiler.
 	*/
-	void SetStudioMdl( const CString& szStudioMdl )
+	void SetStudioMdl( const std::string& szStudioMdl )
 	{
 		m_szStudioMdl = szStudioMdl;
 	}
@@ -120,12 +121,12 @@ public:
 	/**
 	*	Gets the path to the mdldec decompiler.
 	*/
-	const CString& GetMdlDec() const { return m_szMdlDec; }
+	const std::string& GetMdlDec() const { return m_szMdlDec; }
 
 	/**
 	*	Sets the path to the mdldec decompiler.
 	*/
-	void SetMdlDec( const CString& szMdlDec )
+	void SetMdlDec( const std::string& szMdlDec )
 	{
 		m_szMdlDec = szMdlDec;
 	}
@@ -153,12 +154,12 @@ public:
 	/**
 	*	@return The directory where command line output files are copied to by default.
 	*/
-	const CString& GetDefaultOutputFileDirectory() const { return m_szDefaultOutputFileDir; }
+	const std::string& GetDefaultOutputFileDirectory() const { return m_szDefaultOutputFileDir; }
 
 	/**
 	*	Sets the directory where command line output files are copied to by default.
 	*/
-	void SetDefaultOutputFileDirectory( const CString& szDefaultOutputFileDir )
+	void SetDefaultOutputFileDirectory( const std::string& szDefaultOutputFileDir )
 	{
 		m_szDefaultOutputFileDir = szDefaultOutputFileDir;
 	}
@@ -190,14 +191,14 @@ private:
 
 	float m_flFloorLength = DEFAULT_FLOOR_LENGTH;
 
-	CString m_szStudioMdl;
-	CString m_szMdlDec;
+	std::string m_szStudioMdl;
+	std::string m_szMdlDec;
 
 	std::shared_ptr<settings::CCmdLineConfigManager> m_StudioMdlConfigs = std::make_shared<settings::CCmdLineConfigManager>();
 
 	std::shared_ptr<settings::CCmdLineConfigManager> m_MdlDecConfigs = std::make_shared<settings::CCmdLineConfigManager>();
 
-	CString m_szDefaultOutputFileDir;
+	std::string m_szDefaultOutputFileDir;
 };
 }
 

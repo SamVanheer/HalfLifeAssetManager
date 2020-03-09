@@ -98,7 +98,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( CKeyvalueNode
 		}
 	}
 
-	CString szKey = !fIsUnnamed ? m_Lexer.GetToken() : "";
+	std::string szKey = !fIsUnnamed ? m_Lexer.GetToken() : "";
 
 	//Only read again if named
 	if( !fIsUnnamed )
@@ -118,7 +118,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( CKeyvalueNode
 			//If parsing the root, current depth is 1
 			if( m_iCurrentDepth == 1 || m_Settings.fAllowNestedBlocks )
 			{
-				auto pBlock = new CKeyvalueBlock( szKey.CStr() );
+				auto pBlock = new CKeyvalueBlock( szKey.c_str() );
 
 				pNode = pBlock;
 
@@ -134,7 +134,7 @@ CBaseKeyvaluesParser::ParseResult CBaseKeyvaluesParser::ParseNext( CKeyvalueNode
 
 	case TokenType::VALUE:
 		{
-			pNode = new CKeyvalue( szKey.CStr(), m_Lexer.GetToken().CStr() );
+			pNode = new CKeyvalue( szKey.c_str(), m_Lexer.GetToken().c_str() );
 			parseResult = ParseResult::SUCCESS;
 			break;
 		}

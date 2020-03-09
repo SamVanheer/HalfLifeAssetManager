@@ -442,7 +442,7 @@ void CMainWindow::ShowMessagesWindow( wxCommandEvent& event )
 
 void CMainWindow::OnCompileModel( wxCommandEvent& event )
 {
-	const wxString szStudioMdl = m_pHLMV->GetSettings()->GetStudioMdl().CStr();
+	const wxString szStudioMdl = m_pHLMV->GetSettings()->GetStudioMdl();
 
 	if( !wxFileName( szStudioMdl ).Exists() )
 	{
@@ -458,7 +458,7 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 	const wxString szPath = dlg.GetPath();
 
 	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure StudioMdl", 
-											 m_pHLMV->GetSettings()->GetDefaultOutputFileDirectory().CStr(), m_pHLMV->GetSettings()->GetStudioMdlConfigManager() );
+											 m_pHLMV->GetSettings()->GetDefaultOutputFileDirectory(), m_pHLMV->GetSettings()->GetStudioMdlConfigManager() );
 
 	commandLineDlg.SetCopySupportEnabled( true );
 
@@ -520,7 +520,7 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 
 void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 {
-	const wxString szMdlDec = m_pHLMV->GetSettings()->GetMdlDec().CStr();
+	const wxString szMdlDec = m_pHLMV->GetSettings()->GetMdlDec();
 
 	if( !wxFileName( szMdlDec ).Exists() )
 	{
@@ -536,7 +536,7 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 	const wxString szPath = dlg.GetPath();
 
 	ui::CCmdLineConfigDialog commandLineDlg( this, wxID_ANY, "Configure MdlDec",
-											 m_pHLMV->GetSettings()->GetDefaultOutputFileDirectory().CStr(), m_pHLMV->GetSettings()->GetMdlDecConfigManager() );
+											 m_pHLMV->GetSettings()->GetDefaultOutputFileDirectory(), m_pHLMV->GetSettings()->GetMdlDecConfigManager() );
 
 	commandLineDlg.SetCopySupportEnabled( true );
 

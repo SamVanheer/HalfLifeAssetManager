@@ -10,8 +10,6 @@ target_sources(${TARGET_NAME}
 		CMemory.h
 		Color.cpp
 		Color.h
-		CString.cpp
-		CString.h
 		IOUtils.cpp
 		IOUtils.h
 		mathlib.cpp

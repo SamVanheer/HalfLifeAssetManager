@@ -22,11 +22,11 @@ std::shared_ptr<CGameConfig> LoadGameConfig( const kv::Block& block )
 
 	try
 	{
-		auto newConfig = std::make_shared<settings::CGameConfig>( name->GetValue().CStr() );
+		auto newConfig = std::make_shared<settings::CGameConfig>( name->GetValue().c_str() );
 
-		newConfig->SetBasePath( basePath->GetValue().CStr() );
-		newConfig->SetGameDir( gameDir->GetValue().CStr() );
-		newConfig->SetModDir( modDir->GetValue().CStr() );
+		newConfig->SetBasePath( basePath->GetValue().c_str() );
+		newConfig->SetGameDir( gameDir->GetValue().c_str() );
+		newConfig->SetModDir( modDir->GetValue().c_str() );
 
 		return newConfig;
 	}

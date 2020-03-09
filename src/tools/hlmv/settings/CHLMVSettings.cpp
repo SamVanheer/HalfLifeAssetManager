@@ -122,7 +122,7 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 
 		if( active )
 		{
-			GetConfigManager()->SetActiveConfig( active->GetValue().CStr() );
+			GetConfigManager()->SetActiveConfig( active->GetValue().c_str() );
 		}
 
 		if( auto block = settings->FindFirstChild<kv::Block>( "recentFiles" ) )
@@ -141,7 +141,7 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 
 				auto file = static_cast<kv::KV*>( child );
 
-				m_RecentFiles->Add( file->GetValue().CStr() );
+				m_RecentFiles->Add(file->GetValue());
 			}
 		}
 
@@ -161,7 +161,7 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 
 		if( auto floor = settings->FindFirstChild<kv::KV>( "floorLength" ) )
 		{
-			SetFloorLength( static_cast<float>( strtod( floor->GetValue().CStr(), nullptr ) ) );
+			SetFloorLength(static_cast<float>(std::stod(floor->GetValue())));
 		}
 
 		if( auto studiomdl = settings->FindFirstChild<kv::KV>( "studiomdl" ) )
@@ -186,12 +186,12 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 
 		if( auto activeConfig = settings->FindFirstChild<kv::KV>( "activeStudioMdlConfig" ) )
 		{
-			m_StudioMdlConfigs->SetActiveConfig( activeConfig->GetValue().CStr() );
+			m_StudioMdlConfigs->SetActiveConfig(activeConfig->GetValue().c_str());
 		}
 
 		if( auto activeConfig = settings->FindFirstChild<kv::KV>( "activeMdlDecConfig" ) )
 		{
-			m_MdlDecConfigs->SetActiveConfig( activeConfig->GetValue().CStr() );
+			m_MdlDecConfigs->SetActiveConfig(activeConfig->GetValue().c_str());
 		}
 
 		if( auto outputdir = settings->FindFirstChild<kv::KV>( "defaultOutputFileDir" ) )
@@ -207,8 +207,6 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 {
 	if( !CBaseSettings::SaveToFile( writer ) )
 		return false;
-
-	char szBuffer[ MAX_BUFFER_LENGTH ];
 
 	writer.BeginBlock( "hlmvSettings" );
 
@@ -237,13 +235,12 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 	SaveColorSetting( writer, "backgroundColor", m_BackgroundColor );
 	SaveColorSetting( writer, "crosshairColor", m_CrosshairColor );
 
-	if( !PrintfSuccess( snprintf( szBuffer, sizeof( szBuffer ), "%f", GetFloorLength() ), sizeof( szBuffer ) ) )
-		return false;
+	auto floorLength = std::to_string(GetFloorLength());
 
-	writer.WriteKeyvalue( "floorLength", szBuffer );
+	writer.WriteKeyvalue( "floorLength", floorLength.c_str());
 
-	writer.WriteKeyvalue( "studiomdl", m_szStudioMdl.CStr() );
-	writer.WriteKeyvalue( "mdldec", m_szMdlDec.CStr() );
+	writer.WriteKeyvalue( "studiomdl", m_szStudioMdl.c_str() );
+	writer.WriteKeyvalue( "mdldec", m_szMdlDec.c_str() );
 
 	writer.BeginBlock( "StudioMdlConfigs" );
 
@@ -267,7 +264,7 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 		writer.WriteKeyvalue( "activeMdlDecConfig", config->GetName().c_str() );
 	}
 
-	writer.WriteKeyvalue( "defaultOutputFileDir", m_szDefaultOutputFileDir.CStr() );
+	writer.WriteKeyvalue( "defaultOutputFileDir", m_szDefaultOutputFileDir.c_str() );
 
 	writer.EndBlock();
 

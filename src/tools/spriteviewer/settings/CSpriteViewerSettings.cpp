@@ -80,7 +80,7 @@ bool CSpriteViewerSettings::LoadFromFile( const kv::Block& root )
 
 				auto file = static_cast<kv::KV*>( child );
 
-				m_RecentFiles->Add( file->GetValue().CStr() );
+				m_RecentFiles->Add(file->GetValue());
 			}
 		}
 

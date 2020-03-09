@@ -100,7 +100,7 @@ public:
 	*	@param pszKey Key. Must be non-null.
 	*	@return If found, the value. Otherwise, an empty string.
 	*/
-	CString FindFirstKeyvalue( const char* pszKey ) const;
+	std::string FindFirstKeyvalue( const char* pszKey ) const;
 
 	/**
 	*	Adds a keyvalue.

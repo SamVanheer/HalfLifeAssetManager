@@ -24,7 +24,7 @@ public:
 	/**
 	*	Gets the value.
 	*/
-	const CString& GetValue() const { return m_szValue; }
+	const std::string& GetValue() const { return m_szValue; }
 
 	/**
 	*	Sets the value.
@@ -35,13 +35,13 @@ public:
 	/**
 	*	@see SetValue( const char* const pszValue )
 	*/
-	void SetValue( const CString& szValue );
+	void SetValue( const std::string& szValue );
 
 	//TODO: move
 	virtual void Print( const size_t uiTabLevel = 0 ) const override;
 
 private:
-	CString m_szValue;
+	std::string m_szValue;
 
 private:
 	CKeyvalue( const CKeyvalue& ) = delete;

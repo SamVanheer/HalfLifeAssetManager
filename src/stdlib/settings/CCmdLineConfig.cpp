@@ -62,7 +62,7 @@ std::shared_ptr<CCmdLineConfig> LoadCmdLineConfig( const kv::Block& kvSettings )
 	{
 		if( auto param = dynamic_cast<kv::KV*>( child ) )
 		{
-			parameters.emplace_back( std::make_pair( param->GetKey().CStr(), param->GetValue().CStr() ) );
+			parameters.emplace_back( std::make_pair( param->GetKey(), param->GetValue() ) );
 		}
 		else
 		{
@@ -70,9 +70,9 @@ std::shared_ptr<CCmdLineConfig> LoadCmdLineConfig( const kv::Block& kvSettings )
 		}
 	}
 
-	const bool bCopyOutputFiles = atoi( shouldCopyFiles->GetValue().CStr() ) != 0;
+	const bool bCopyOutputFiles = atoi( shouldCopyFiles->GetValue().c_str() ) != 0;
 
-	const auto szOutputFileDir = std::string( outputFileDir->GetValue().CStr() );
+	const auto szOutputFileDir = outputFileDir->GetValue();
 
 	CCmdLineConfig::Filters_t filterList;
 
@@ -82,7 +82,7 @@ std::shared_ptr<CCmdLineConfig> LoadCmdLineConfig( const kv::Block& kvSettings )
 
 		if( filter && filter->GetKey() == CMDLINECONFIG_FILTER_KEY )
 		{
-			filterList.emplace_back( filter->GetValue().CStr() );
+			filterList.emplace_back( filter->GetValue() );
 		}
 		else
 		{
@@ -90,7 +90,7 @@ std::shared_ptr<CCmdLineConfig> LoadCmdLineConfig( const kv::Block& kvSettings )
 		}
 	}
 
-	return std::make_shared<CCmdLineConfig>( name->GetValue().CStr(), std::move( parameters ), bCopyOutputFiles, std::move( szOutputFileDir ), std::move( filterList ) );
+	return std::make_shared<CCmdLineConfig>( name->GetValue(), std::move( parameters ), bCopyOutputFiles, std::move( szOutputFileDir ), std::move( filterList ) );
 }
 
 bool SaveCmdLineConfig( const CCmdLineConfig& settings, kv::Writer& writer )

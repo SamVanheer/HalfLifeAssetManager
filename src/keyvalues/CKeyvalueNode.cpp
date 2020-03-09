@@ -17,8 +17,8 @@ void CKeyvalueNode::SetKey( const char* const pszKey )
 	m_szKey = pszKey;
 }
 
-void CKeyvalueNode::SetKey( const CString& szKey )
+void CKeyvalueNode::SetKey( const std::string& szKey )
 {
-	SetKey( szKey.CStr() );
+	SetKey( szKey.c_str() );
 }
 }

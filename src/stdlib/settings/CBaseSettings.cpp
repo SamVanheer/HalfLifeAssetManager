@@ -9,7 +9,6 @@
 
 #include "filesystem/IFileSystem.h"
 
-#include "utility/CString.h"
 #include "utility/IOUtils.h"
 
 #include "CBaseSettings.h"
@@ -141,7 +140,7 @@ bool CBaseSettings::InitializeFileSystem( const std::shared_ptr<const CGameConfi
 {
 	m_pFileSystem->SetBasePath( config->GetBasePath() );
 
-	CString szPath;
+	std::string szPath;
 
 	const char* const* ppszDirectoryExts;
 
@@ -152,17 +151,13 @@ bool CBaseSettings::InitializeFileSystem( const std::shared_ptr<const CGameConfi
 	{
 		for( size_t uiIndex = 0; uiIndex < uiNumExts; ++uiIndex )
 		{
-			szPath.Format( "%s%s", config->GetModDir(), ppszDirectoryExts[ uiIndex ] );
-
-			m_pFileSystem->AddSearchPath( szPath.CStr() );
+			m_pFileSystem->AddSearchPath((std::string{config->GetModDir()} + ppszDirectoryExts[uiIndex]).c_str());
 		}
 	}
 
 	for( size_t uiIndex = 0; uiIndex < uiNumExts; ++uiIndex )
 	{
-		szPath.Format( "%s%s", config->GetGameDir(), ppszDirectoryExts[ uiIndex ] );
-
-		m_pFileSystem->AddSearchPath( szPath.CStr() );
+		m_pFileSystem->AddSearchPath((std::string{config->GetGameDir()} + ppszDirectoryExts[uiIndex]).c_str());
 	}
 
 	return true;

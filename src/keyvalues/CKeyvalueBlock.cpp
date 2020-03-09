@@ -92,7 +92,7 @@ CKeyvalueNode* CKeyvalueBlock::FindFirstChild( const char* const pszKey ) const
 
 	for( const auto pChild : m_Children )
 	{
-		if( strcmp( pszKey, pChild->GetKey().CStr() ) == 0 )
+		if( strcmp( pszKey, pChild->GetKey().c_str() ) == 0 )
 			return pChild;
 	}
 
@@ -107,7 +107,7 @@ CKeyvalueNode* CKeyvalueBlock::FindFirstChild( const char* const pszKey, const N
 	{
 		if( pChild->GetType() == type )
 		{
-			if( strcmp( pszKey, pChild->GetKey().CStr() ) == 0 )
+			if( strcmp( pszKey, pChild->GetKey().c_str() ) == 0 )
 				return pChild;
 		}
 	}
@@ -115,7 +115,7 @@ CKeyvalueNode* CKeyvalueBlock::FindFirstChild( const char* const pszKey, const N
 	return nullptr;
 }
 
-CString CKeyvalueBlock::FindFirstKeyvalue( const char* const pszKey ) const
+std::string CKeyvalueBlock::FindFirstKeyvalue( const char* const pszKey ) const
 {
 	if( pszKey && *pszKey )
 	{
@@ -127,7 +127,7 @@ CString CKeyvalueBlock::FindFirstKeyvalue( const char* const pszKey ) const
 			{
 				CKeyvalue* pKV = static_cast<CKeyvalue*>( *it );
 
-				if( strcmp( pszKey, pKV->GetKey().CStr() ) == 0 )
+				if( strcmp( pszKey, pKV->GetKey().c_str() ) == 0 )
 					return pKV->GetValue();
 			}
 		}
@@ -146,7 +146,7 @@ void CKeyvalueBlock::AddKeyvalue( const char* const pszKey, const char* const ps
 
 void CKeyvalueBlock::Print( const size_t uiTabLevel ) const
 {
-	Message( "%*s\"%s\"\n%*s{\n", static_cast<int>( uiTabLevel * KEYVALUE_TAB_WIDTH ), "", GetKey().CStr(), static_cast<size_t>( uiTabLevel * KEYVALUE_TAB_WIDTH ), "" );
+	Message("%*s\"%s\"\n%*s{\n", static_cast<int>(uiTabLevel * KEYVALUE_TAB_WIDTH), "", GetKey().c_str(), static_cast<size_t>(uiTabLevel * KEYVALUE_TAB_WIDTH), "");
 
 	PrintChildren( uiTabLevel + 1 );
 

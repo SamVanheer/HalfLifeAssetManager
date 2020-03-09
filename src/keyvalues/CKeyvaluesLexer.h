@@ -1,9 +1,10 @@
 #ifndef CKEYVALUESLEXER_H
 #define CKEYVALUESLEXER_H
 
+#include <string>
+
 #include "utility/CEscapeSequences.h"
 #include "utility/CMemory.h"
-#include "utility/CString.h"
 
 #include "KeyvaluesConstants.h"
 
@@ -100,7 +101,7 @@ public:
 	/**
 	*	Gets the current token.
 	*/
-	const CString& GetToken() const { return m_szToken; }
+	const std::string& GetToken() const { return m_szToken; }
 
 	/**
 	*	Gets the escape sequences conversion object.
@@ -157,7 +158,7 @@ private:
 	const char*			m_pszCurrentPosition;
 
 	TokenType			m_TokenType;			//Type of the last token we read
-	CString				m_szToken;				//The last token we read
+	std::string			m_szToken;				//The last token we read
 
 	CEscapeSequences* m_pEscapeSeqConversion = &GetNoEscapeSeqConversion();
 

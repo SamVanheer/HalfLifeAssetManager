@@ -69,8 +69,8 @@ void CCompilerOptions::Save()
 
 void CCompilerOptions::Initialize()
 {
-	m_pStudioMdl->SetPath( m_pSettings->GetStudioMdl().CStr() );
-	m_pMdlDec->SetPath( m_pSettings->GetMdlDec().CStr() );
-	m_pDefaultOutputFileDir->SetPath( m_pSettings->GetDefaultOutputFileDirectory().CStr() );
+	m_pStudioMdl->SetPath( m_pSettings->GetStudioMdl() );
+	m_pMdlDec->SetPath( m_pSettings->GetMdlDec() );
+	m_pDefaultOutputFileDir->SetPath( m_pSettings->GetDefaultOutputFileDirectory() );
 }
 }

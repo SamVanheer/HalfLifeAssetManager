@@ -20,15 +20,15 @@ bool LoadColorSetting( const kv::Block& settings, const char* const pszName, Col
 	{
 		if( groundColor->GetType() == kv::NodeType::KEYVALUE )
 		{
-			const CString& sValue = static_cast<kv::KV*>( groundColor )->GetValue();
+			const std::string& sValue = static_cast<kv::KV*>( groundColor )->GetValue();
 
-			if( ParseColor( sValue.CStr(), color, bHasAlpha ) )
+			if( ParseColor( sValue.c_str(), color, bHasAlpha ) )
 			{
 				return true;
 			}
 			else
 			{
-				Warning( "Setting \"%s\" has invalid syntax! (value: \"%s\")\n", pszName, sValue.CStr() );
+				Warning( "Setting \"%s\" has invalid syntax! (value: \"%s\")\n", pszName, sValue.c_str() );
 			}
 		}
 		else
@@ -108,7 +108,7 @@ bool LoadArchiveCVars( const kv::Block& cvars )
 
 		auto kv = static_cast<kv::KV*>( child );
 
-		g_pCVar->SetCVarString( kv->GetKey().CStr(), kv->GetValue().CStr() );
+		g_pCVar->SetCVarString( kv->GetKey().c_str(), kv->GetValue().c_str() );
 	}
 
 	return true;
