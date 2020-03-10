@@ -10,7 +10,8 @@ check_winxp_support(${TARGET_NAME})
 
 target_include_directories(${TARGET_NAME}
 	PRIVATE
-		${SHARED_INCLUDEPATHS})
+		${SHARED_INCLUDEPATHS}
+		${SRC_DIR}/tools/hlmv/engine)
 
 target_compile_definitions(${TARGET_NAME}
 	PRIVATE	

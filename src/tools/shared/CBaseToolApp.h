@@ -15,8 +15,6 @@ namespace soundsystem
 class ISoundSystem;
 }
 
-class ILibSystem;
-
 namespace tools
 {
 /**
@@ -75,8 +73,6 @@ private:
 
 	filesystem::IFileSystem* m_pFileSystem = nullptr;
 	soundsystem::ISoundSystem* m_pSoundSystem = nullptr;
-
-	ILibSystem* m_pRendererLib = nullptr;
 };
 }
 

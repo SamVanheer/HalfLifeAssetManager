@@ -13,7 +13,6 @@
 
 #include "shared/studiomodel/CStudioModel.h"
 #include "shared/renderer/studiomodel/IStudioModelRendererListener.h"
-#include "StudioSorting.h"
 
 #include "CStudioModelRenderer.h"
 

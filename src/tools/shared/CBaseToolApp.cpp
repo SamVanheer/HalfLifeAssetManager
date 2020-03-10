@@ -14,7 +14,8 @@
 #include "soundsystem/CSoundSystem.h"
 #include "soundsystem/ISoundSystem.h"
 
-#include "engine/shared/renderer/IRendererLibrary.h"
+#include "engine/renderer/gl/imode/CRenderContextIMode.h"
+#include "engine/renderer/studiomodel/CStudioModelRenderer.h"
 #include "engine/shared/renderer/IRenderContext.h"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.h"
 
@@ -62,27 +63,18 @@ bool CBaseToolApp::StartupApp()
 
 bool CBaseToolApp::LoadAppLibraries()
 {
-	if( !LoadLibraries( "Renderer" ) )
-		return false;
-
 	return true;
 }
 
 bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories )
 {
-	if( !LoadAndCheckInterfaces( pFactories, uiNumFactories, 
-							IFace( IRENDERERLIBRARY_NAME, m_pRendererLib, "Render Library" ),
-							IFace( IRENDERCONTEXT_NAME, g_pRenderContext, "Render Context" ),
-							IFace( ISTUDIOMODELRENDERER_NAME, g_pStudioMdlRenderer, "StudioModel Renderer" ) ) )
-	{
-		return false;
-	}
-
 	//TODO: this is temporary until the modular design gets refactored out
 	//TODO: need to delete these at some point
 	m_pFileSystem = new filesystem::CFileSystem();
 	g_pCVar = new cvar::CCVarSystem();
 	g_pSoundSystem = m_pSoundSystem = new soundsystem::CSoundSystem();
+	g_pRenderContext = new renderer::CRenderContextIMode();
+	g_pStudioMdlRenderer = new studiomdl::CStudioModelRenderer();
 
 	if( !g_pCVar->Initialize() )
 	{
@@ -101,12 +93,6 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 
 	if( !InitOpenGL() )
 	{
-		return false;
-	}
-
-	if( !m_pRendererLib->Connect( pFactories, uiNumFactories ) )
-	{
-		FatalError( "Failed to connect renderer!\n" );
 		return false;
 	}
 
@@ -149,12 +135,6 @@ void CBaseToolApp::ShutdownApp()
 	if( g_pRenderContext )
 	{
 		g_pRenderContext = nullptr;
-	}
-
-	if( m_pRendererLib )
-	{
-		m_pRendererLib->Disconnect();
-		m_pRendererLib = nullptr;
 	}
 
 	ShutdownOpenGL();

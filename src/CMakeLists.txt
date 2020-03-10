@@ -1,5 +1,4 @@
 add_subdirectory( core )
-add_subdirectory( engine )
 add_subdirectory( stdlib )
 add_subdirectory( tools )
 add_subdirectory( keyvalues )

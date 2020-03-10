@@ -1,8 +1,9 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
-		DrawConstants.h
-		IRenderContext.h
-		IRendererLibrary.h)
+		CBaseRenderContext.cpp
+		CBaseRenderContext.h)
 
+add_subdirectory(gl)
 add_subdirectory(sprite)
 add_subdirectory(studiomodel)
+add_subdirectory(util)

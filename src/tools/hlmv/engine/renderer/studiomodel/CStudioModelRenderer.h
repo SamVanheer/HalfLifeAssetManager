@@ -13,6 +13,8 @@
 
 #include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
+#include "StudioSorting.h"
+
 namespace studiomdl
 {
 class CStudioModel;

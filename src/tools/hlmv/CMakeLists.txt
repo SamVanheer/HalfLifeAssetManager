@@ -25,7 +25,8 @@ target_include_directories(${TARGET_NAME}
 		${OPENGL_INCLUDE_DIR}
 		${EXTERNAL_DIR}/AudioFile/include
 		${SHARED_INCLUDEPATHS}
-		${CMAKE_CURRENT_SOURCE_DIR})
+		${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/engine)
 
 target_compile_definitions(${TARGET_NAME}
 	PRIVATE	
@@ -39,6 +40,7 @@ target_sources(${TARGET_NAME}
 		CHLMVState.h)
 
 add_subdirectory(cvar)
+add_subdirectory(engine)
 add_subdirectory(entity)
 add_subdirectory(filesystem)
 add_subdirectory(settings)
@@ -46,7 +48,7 @@ add_subdirectory(soundsystem)
 add_subdirectory(ui)
 
 add_subdirectory(../shared ${CMAKE_CURRENT_BINARY_DIR}/tools/shared)
-add_subdirectory(../../engine/shared ${CMAKE_CURRENT_BINARY_DIR}/engine/shared)
+add_subdirectory(engine/shared ${CMAKE_CURRENT_BINARY_DIR}/engine/shared)
 add_subdirectory(../../lib ${CMAKE_CURRENT_BINARY_DIR}/lib)
 add_subdirectory(../../game ${CMAKE_CURRENT_BINARY_DIR}/game)
 add_subdirectory(../../graphics ${CMAKE_CURRENT_BINARY_DIR}/graphics)
