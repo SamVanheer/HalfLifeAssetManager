@@ -34,6 +34,102 @@ bool _CheckALErrors(const char* file, int line)
 
 #define CheckALErrors() _CheckALErrors(__FILE__, __LINE__)
 
+static ALenum BufferFormat(const AudioFile<double>& file)
+{
+	switch (file.getBitDepth())
+	{
+	case 8: return file.isStereo() ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
+	case 16: return file.isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
+	default: return AL_INVALID;
+	}
+}
+
+struct DataConverter8Bit
+{
+	using Type = std::int8_t;
+
+	static Type Convert(double value)
+	{
+		value = (value + 1.) / 2.;
+		return static_cast<uint8_t> (value * 255.);
+	}
+};
+
+struct DataConverter16Bit
+{
+	using Type = std::int16_t;
+
+	static Type Convert(double value)
+	{
+		return static_cast<int16_t> (value * 32767.);
+	}
+};
+
+template<typename T>
+void ConvertToAL(const AudioFile<double>& file, std::vector<std::uint8_t>& data)
+{
+	std::size_t byteIndex = 0;
+
+	for (int i = 0; i < file.getNumSamplesPerChannel(); ++i)
+	{
+		for (int channel = 0; channel < file.getNumChannels(); ++channel)
+		{
+			auto& dest = *reinterpret_cast<T::Type*>(&data[byteIndex]);
+
+			auto value = file.samples[channel][i];
+
+			dest = T::Convert(value);
+
+			byteIndex += sizeof(T);
+		}
+	}
+}
+
+std::unique_ptr<CSoundSystem::Sound> TryLoadWaveFile(const std::string& fileName)
+{
+	AudioFile<double> file;
+
+	if (!file.load(fileName))
+	{
+		return {};
+	}
+
+	if (file.getBitDepth() != 8 && file.getBitDepth() != 16)
+	{
+		return {};
+	}
+
+	std::vector<std::uint8_t> data;
+
+	data.resize(file.getNumChannels() * file.getNumSamplesPerChannel());
+
+	switch (file.getBitDepth())
+	{
+	case 8:
+		ConvertToAL<DataConverter8Bit>(file, data);
+		break;
+
+	case 16:
+		ConvertToAL<DataConverter16Bit>(file, data);
+		break;
+
+	default: return {};
+	}
+
+	const auto format = BufferFormat(file);
+
+	auto sound = std::make_unique<CSoundSystem::Sound>();
+
+	alBufferData(sound->buffer, format, data.data(), data.size(), file.getSampleRate());
+
+	if (CheckALErrors())
+	{
+		return {};
+	}
+
+	return sound;
+}
+
 CSoundSystem::CSoundSystem()
 {
 }
@@ -113,57 +209,6 @@ void CSoundSystem::RunFrame()
 	}
 }
 
-static ALenum BufferFormat(const AudioFile<double>& file)
-{
-	switch (file.getBitDepth())
-	{
-	case 8: return file.isStereo() ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
-	case 16: return file.isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
-	default: return AL_INVALID;
-	}
-}
-
-struct DataConverter8Bit
-{
-	using Type = std::int8_t;
-
-	static Type Convert(double value)
-	{
-		value = (value + 1.) / 2.;
-		return static_cast<uint8_t> (value * 255.);
-	}
-};
-
-struct DataConverter16Bit
-{
-	using Type = std::int16_t;
-
-	static Type Convert(double value)
-	{
-		return static_cast<int16_t> (value * 32767.);
-	}
-};
-
-template<typename T>
-void ConvertToAL(const AudioFile<double>& file, std::vector<std::uint8_t>& data)
-{
-	std::size_t byteIndex = 0;
-
-	for (int i = 0; i < file.getNumSamplesPerChannel(); ++i)
-	{
-		for (int channel = 0; channel < file.getNumChannels(); ++channel)
-		{
-			auto& dest = *reinterpret_cast<T::Type*>(&data[byteIndex]);
-
-			auto value = file.samples[channel][i];
-
-			dest = T::Convert(value);
-
-			byteIndex += sizeof(T);
-		}
-	}
-}
-
 void CSoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitch )
 {
 	if( !pszFilename || !( *pszFilename ) )
@@ -198,42 +243,11 @@ void CSoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitc
 	flVolume = clamp( flVolume, 0.0f, 1.0f );
 	iPitch = clamp( iPitch, 0, 255 );
 
-	AudioFile<double> file;
+	std::unique_ptr<Sound> sound;
 
-	if (!file.load(szFullFilename))
-	{
-		return;
-	}
+	sound = TryLoadWaveFile(szFullFilename);
 
-	if (file.getBitDepth() != 8 && file.getBitDepth() != 16)
-	{
-		return;
-	}
-
-	std::vector<std::uint8_t> data;
-
-	data.resize(file.getNumChannels() * file.getNumSamplesPerChannel());
-
-	switch (file.getBitDepth())
-	{
-	case 8:
-		ConvertToAL<DataConverter8Bit>(file, data);
-		break;
-
-	case 16:
-		ConvertToAL<DataConverter16Bit>(file, data);
-		break;
-
-	default: return;
-	}
-
-	const auto format = BufferFormat(file);
-
-	auto sound = std::make_unique<Sound>();
-
-	alBufferData(sound->buffer, format, data.data(), data.size(), file.getSampleRate());
-
-	if (CheckALErrors())
+	if (!sound)
 	{
 		return;
 	}
