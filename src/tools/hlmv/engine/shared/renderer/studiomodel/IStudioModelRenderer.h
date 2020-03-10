@@ -3,8 +3,6 @@
 
 #include <glm/vec3.hpp>
 
-#include "lib/LibInterface.h"
-
 #include "shared/Const.h"
 
 #include "engine/shared/renderer/DrawConstants.h"
@@ -25,7 +23,7 @@ class IStudioModelRendererListener;
 /**
 *	Used to render studio models. Only one instance of this class should be used, and should be kept around, in order to achieve reasonably performant and consistent rendering.
 */
-class IStudioModelRenderer : public IBaseInterface
+class IStudioModelRenderer
 {
 public:
 	/**
@@ -132,11 +130,6 @@ public:
 	virtual void DrawSingleHitbox(const int hitboxIndex) = 0;
 };
 }
-
-/**
-*	StudioModel Renderer interface name.
-*/
-#define ISTUDIOMODELRENDERER_NAME "IStudioModelRendererV001"
 
 /** @ } */
 

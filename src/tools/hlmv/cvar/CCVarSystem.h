@@ -97,6 +97,10 @@ private:
 	*/
 	bool m_bWait = false;
 
+	std::vector<CBaseConCommand*> m_InternalCommands;
+
+	CCVar* m_ShowWait = nullptr;
+
 private:
 	CCVarSystem( const CCVarSystem& ) = delete;
 	CCVarSystem& operator=( const CCVarSystem& ) = delete;

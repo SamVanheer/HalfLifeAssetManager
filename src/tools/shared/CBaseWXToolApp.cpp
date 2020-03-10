@@ -28,9 +28,9 @@ static cvar::CCVar max_fps(
 	.Flags( cvar::Flag::ARCHIVE )
 );
 
-bool CBaseWXToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories )
+bool CBaseWXToolApp::Initialize()
 {
-	if( !CBaseToolApp::Connect( pFactories, uiNumFactories ) )
+	if( !CBaseToolApp::Initialize() )
 		return false;
 
 	wxInitAllImageHandlers();

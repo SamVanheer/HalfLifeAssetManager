@@ -8,16 +8,12 @@
 #include "shared/Logging.h"
 #include "shared/Utility.h"
 
-#include "lib/LibInterface.h"
-
 #include "filesystem/IFileSystem.h"
 
 #include "CSoundSystem.h"
 
 namespace soundsystem
 {
-REGISTER_SINGLE_INTERFACE( ISOUNDSYSTEM_NAME, CSoundSystem );
-
 bool _CheckALErrors(const char* file, int line)
 {
 	auto error = alGetError();
@@ -46,25 +42,15 @@ CSoundSystem::~CSoundSystem()
 {
 }
 
-bool CSoundSystem::Connect( const CreateInterfaceFn* const pFactories, const size_t uiNumFactories )
+bool CSoundSystem::Initialize(filesystem::IFileSystem* filesystem)
 {
-	for( size_t uiIndex = 0; uiIndex < uiNumFactories; ++uiIndex )
+	m_pFileSystem = filesystem;
+
+	if (!m_pFileSystem)
 	{
-		if( !m_pFileSystem )
-		{
-			m_pFileSystem = static_cast<filesystem::IFileSystem*>( pFactories[ uiIndex ]( IFILESYSTEM_NAME, nullptr ) );
-		}
+		return false;
 	}
 
-	return m_pFileSystem != nullptr;
-}
-
-void CSoundSystem::Disconnect()
-{
-}
-
-bool CSoundSystem::Initialize()
-{
 	m_Device = alcOpenDevice(nullptr);
 
 	if (!m_Device)

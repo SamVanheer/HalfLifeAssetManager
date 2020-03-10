@@ -17,8 +17,6 @@
 
 namespace sprite
 {
-REGISTER_SINGLE_INTERFACE( ISPRITERENDERER_NAME, CSpriteRenderer );
-
 const float CSpriteRenderer::DEFAULT_FRAMERATE = 10;
 
 CSpriteRenderer::CSpriteRenderer()

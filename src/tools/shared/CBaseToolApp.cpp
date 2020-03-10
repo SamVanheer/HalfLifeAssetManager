@@ -60,12 +60,7 @@ bool CBaseToolApp::StartupApp()
 	return true;
 }
 
-bool CBaseToolApp::LoadAppLibraries()
-{
-	return true;
-}
-
-bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories )
+bool CBaseToolApp::Initialize()
 {
 	//TODO: this is temporary until the modular design gets refactored out
 	//TODO: need to delete these at some point
@@ -98,13 +93,7 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 		return false;
 	}
 
-	if( !m_pSoundSystem->Connect( pFactories, uiNumFactories ) )
-	{
-		FatalError( "Failed to connect sound system!\n" );
-		return false;
-	}
-
-	if( !m_pSoundSystem->Initialize() )
+	if( !m_pSoundSystem->Initialize(m_pFileSystem) )
 	{
 		FatalError( "Failed to initialize sound system!\n" );
 		return false;
@@ -118,7 +107,6 @@ void CBaseToolApp::ShutdownApp()
 	if( m_pSoundSystem )
 	{
 		m_pSoundSystem->Shutdown();
-		m_pSoundSystem->Disconnect();
 		m_pSoundSystem = nullptr;
 	}
 

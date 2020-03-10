@@ -1,8 +1,6 @@
 #ifndef ENGINE_RENDERER_IRENDERCONTEXT_H
 #define ENGINE_RENDERER_IRENDERCONTEXT_H
 
-#include "lib/LibInterface.h"
-
 #include "core/shared/Const.h"
 #include "core/shared/Utility.h"
 
@@ -140,7 +138,7 @@ typedef void* HTexture_t;
 /**
 *	Renderer context. Provides access to a variety of context specific operations.
 */
-class IRenderContext : public IBaseInterface
+class IRenderContext
 {
 public:
 
@@ -320,10 +318,5 @@ public:
 	virtual void SetMinMagFilters( const MinFilter min, const MagFilter mag ) = 0;
 };
 }
-
-/**
-*	Render context interface name.
-*/
-#define IRENDERCONTEXT_NAME "IRenderContextV001"
 
 #endif //ENGINE_RENDERER_IRENDERCONTEXT_H

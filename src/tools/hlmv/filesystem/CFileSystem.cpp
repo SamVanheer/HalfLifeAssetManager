@@ -9,8 +9,6 @@
 
 namespace filesystem
 {
-REGISTER_SINGLE_INTERFACE( IFILESYSTEM_NAME, CFileSystem );
-
 CFileSystem::CFileSystem()
 {
 	memset( m_szBasePath, 0, sizeof( m_szBasePath ) );

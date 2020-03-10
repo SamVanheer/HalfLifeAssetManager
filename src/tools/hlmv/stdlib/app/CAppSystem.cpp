@@ -99,40 +99,6 @@ bool CAppSystem::Startup()
 		return false;
 	}
 
-	m_State = AppState::LOADING_LIBS;
-
-	if( !LoadAppLibraries() )
-	{
-		Error( "CAppSystem::Startup: Failed to load one or more libraries!\n" );
-		return false;
-	}
-
-	m_State = AppState::LOADING_IFACES;
-
-	//Create the list of functions for ease of use.
-	std::vector<CreateInterfaceFn> factories;
-
-	//Include this library's factory.
-	factories.reserve( m_Libraries.size() + 1 );
-
-	factories.push_back( &::CreateInterface );
-
-	for( auto& lib : m_Libraries )
-	{
-		if( auto pFunc = lib.GetFunctionAddress( CREATEINTERFACE_NAME ) )
-		{
-			factories.push_back( reinterpret_cast<CreateInterfaceFn>( pFunc ) );
-		}
-	}
-
-	factories.shrink_to_fit();
-
-	if( !Connect( factories.data(), factories.size() ) )
-	{
-		Error( "CAppSystem::Startup: Failed to connect one or more interfaces!\n" );
-		return false;
-	}
-
 	m_State = AppState::INITIALIZING;
 
 	if( !Initialize() )
@@ -146,48 +112,5 @@ bool CAppSystem::Startup()
 
 void CAppSystem::Shutdown()
 {
-	for( auto& lib : m_Libraries )
-	{
-		lib.Free();
-	}
-
-	m_Libraries.clear();
-	m_Libraries.shrink_to_fit();
-}
-
-const CLibrary* CAppSystem::GetLibraryByName( const char* const pszName ) const
-{
-	assert( pszName );
-
-	for( auto& lib : m_Libraries )
-	{
-		if( lib.GetName() == pszName )
-			return &lib;
-	}
-
-	return nullptr;
-}
-
-bool CAppSystem::IsLibraryLoaded( const char* const pszName ) const
-{
-	return GetLibraryByName( pszName ) != nullptr;
-}
-
-bool CAppSystem::LoadLibrary( const CLibArgs& args )
-{
-	if( IsLibraryLoaded( args.GetFilename() ) )
-		return true;
-
-	CLibrary lib;
-
-	if( !lib.Load( args ) )
-	{
-		FatalError( "CAppSystem::LoadLibrary: Failed to load library \"%s\"\nThe error given was \"%s\"\n", args.GetFilename(), CLibrary::GetLoadErrorDescription() );
-		return false;
-	}
-
-	m_Libraries.emplace_back( std::move( lib ) );
-
-	return true;
 }
 }

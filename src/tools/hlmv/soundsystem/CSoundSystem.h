@@ -54,11 +54,7 @@ public:
 	CSoundSystem();
 	~CSoundSystem();
 
-	bool Connect( const CreateInterfaceFn* const pFactories, const size_t uiNumFactories ) override final;
-
-	void Disconnect() override final;
-
-	bool Initialize() override final;
+	bool Initialize(filesystem::IFileSystem* filesystem) override final;
 	void Shutdown() override final;
 
 	void RunFrame() override final;

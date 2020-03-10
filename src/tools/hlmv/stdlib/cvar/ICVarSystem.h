@@ -1,8 +1,6 @@
 #ifndef CVAR_ICVARSYSTEM_H
 #define CVAR_ICVARSYSTEM_H
 
-#include "lib/LibInterface.h"
-
 /**
 * @defgroup CVar
 *
@@ -16,7 +14,7 @@ class CCVar;
 
 class ICVarHandler;
 
-class ICVarSystem : public IBaseInterface
+class ICVarSystem
 {
 public:
 	using CVarArchiveCallback = void( *)( void* pObject, const CCVar& cvar );
@@ -115,11 +113,6 @@ public:
 	virtual void RemoveGlobalCVarHandler( ICVarHandler* pHandler ) = 0;
 };
 }
-
-/**
-*	CVar system interface name.
-*/
-#define ICVARSYSTEM_NAME "ICVarSystemV001"
 
 /** @} */
 

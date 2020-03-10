@@ -24,7 +24,7 @@ public:
 public:
 
 protected:
-	bool Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories ) override;
+	bool Initialize() override;
 
 	bool InitOpenGL() override;
 

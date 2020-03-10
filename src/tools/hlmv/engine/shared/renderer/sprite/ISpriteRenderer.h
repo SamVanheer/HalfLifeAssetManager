@@ -1,8 +1,6 @@
 #ifndef ENGINE_RENDERER_SPRITE_ISPRITERENDERER_H
 #define ENGINE_RENDERER_SPRITE_ISPRITERENDERER_H
 
-#include "lib/LibInterface.h"
-
 #include "engine/shared/renderer/DrawConstants.h"
 
 /**
@@ -20,7 +18,7 @@ struct C2DSpriteRenderInfo;
 /**
 *	Sprite renderer interface.
 */
-class ISpriteRenderer : public IBaseInterface
+class ISpriteRenderer
 {
 public:
 	virtual ~ISpriteRenderer() = 0;
@@ -65,11 +63,6 @@ inline ISpriteRenderer::~ISpriteRenderer()
 {
 }
 }
-
-/**
-*	Sprite renderer interface name.
-*/
-#define ISPRITERENDERER_NAME "ISpriteRendererV001"
 
 /** @} */
 

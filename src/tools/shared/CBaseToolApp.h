@@ -51,9 +51,7 @@ public:
 protected:
 	bool StartupApp() override;
 
-	bool LoadAppLibraries() override;
-
-	bool Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories ) override;
+	bool Initialize() override;
 
 	void ShutdownApp() override;
 

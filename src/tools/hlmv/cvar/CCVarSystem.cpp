@@ -6,8 +6,6 @@
 
 #include "utility/StringUtils.h"
 
-#include "lib/LibInterface.h"
-
 #include "cvar/CBaseConCommand.h"
 #include "cvar/CConCommand.h"
 #include "cvar/CCVar.h"
@@ -18,24 +16,9 @@
 
 namespace cvar
 {
-namespace
-{
-static CCVarSystem g_CVars;
-
-static CConCommand g_Wait( "wait", &g_CVars, Flag::NONE, "Suspends command execution for the current frame" );
-
-static CCVar g_ShowWait( "showwait", CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, outputs text every time a wait command is processed" ) );
-
-static CConCommand g_Find( "find", &g_CVars, Flag::NONE, "Finds commands by searching by name and through help info" );
-}
-
-REGISTER_INTERFACE_GLOBAL( ICVARSYSTEM_NAME, CCVarSystem, &g_CVars );
-
 CCVarSystem::CCVarSystem()
 {
 	memset( m_szCommandBuffer, 0, sizeof( m_szCommandBuffer ) );
-
-	g_pCVar = this;
 }
 
 CCVarSystem::~CCVarSystem()
@@ -44,6 +27,12 @@ CCVarSystem::~CCVarSystem()
 
 bool CCVarSystem::Initialize()
 {
+	//These are added into the global list on construction
+	m_InternalCommands.emplace_back(new CConCommand("wait", this, Flag::NONE, "Suspends command execution for the current frame"));
+	m_ShowWait = new CCVar("showwait", CCVarArgsBuilder().FloatValue(0).HelpInfo("If non-zero, outputs text every time a wait command is processed"));
+	m_InternalCommands.emplace_back(m_ShowWait);
+	m_InternalCommands.emplace_back(new CConCommand("find", this, Flag::NONE, "Finds commands by searching by name and through help info"));
+
 	CBaseConCommand* pCommand = CBaseConCommand::GetHead();
 
 	while( pCommand )
@@ -63,6 +52,16 @@ void CCVarSystem::Shutdown()
 	m_bInitialized = false;
 
 	m_Commands.clear();
+
+	m_ShowWait = nullptr;
+
+	//The commands will remain in the global list, so it's not safe to shut down and reinitialize
+	for (auto command : m_InternalCommands)
+	{
+		delete command;
+	}
+
+	m_InternalCommands.clear();
 }
 
 void CCVarSystem::RunFrame()
@@ -288,7 +287,7 @@ void CCVarSystem::Execute()
 			{
 				m_bWait = false;
 
-				if( g_ShowWait.GetBool() )
+				if(m_ShowWait->GetBool() )
 				{
 					Message( "Waiting\n" );
 				}

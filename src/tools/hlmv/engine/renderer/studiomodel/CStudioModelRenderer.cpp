@@ -4,8 +4,6 @@
 
 #include "shared/Logging.h"
 
-#include "lib/LibInterface.h"
-
 #include "cvar/CCVar.h"
 #include "cvar/CVarUtils.h"
 
@@ -32,8 +30,6 @@ DEFINE_COLOR_CVAR( , r_wireframecolor, 255, 0, 0, "Wireframe overlay color", cva
 
 namespace studiomdl
 {
-REGISTER_SINGLE_INTERFACE( ISTUDIOMODELRENDERER_NAME, CStudioModelRenderer );
-
 CStudioModelRenderer::CStudioModelRenderer()
 {
 }

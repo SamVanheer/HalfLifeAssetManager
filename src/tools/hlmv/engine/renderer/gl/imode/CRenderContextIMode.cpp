@@ -9,18 +9,6 @@
 
 namespace renderer
 {
-namespace
-{
-static CRenderContextIMode g_GLIModeContext;
-}
-
-CRenderContextIMode* GLIModeContext()
-{
-	return &g_GLIModeContext;
-}
-
-REGISTER_INTERFACE_GLOBAL( IRENDERCONTEXT_NAME, CRenderContextIMode, &g_GLIModeContext );
-
 void CRenderContextIMode::MatrixMode( const MatrixMode::MatrixMode mode )
 {
 	BaseClass::MatrixMode( mode );

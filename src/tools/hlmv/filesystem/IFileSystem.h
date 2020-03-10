@@ -1,8 +1,6 @@
 #ifndef FILESYSTEM_IFILESYSTEM_H
 #define FILESYSTEM_IFILESYSTEM_H
 
-#include "lib/LibInterface.h"
-
 /** @file */
 
 /**
@@ -21,7 +19,7 @@ namespace filesystem
 *	All search paths are relative to this base path.
 *	</pre>
 */
-class IFileSystem : public IBaseInterface
+class IFileSystem
 {
 public:
 	virtual ~IFileSystem() = 0;
@@ -99,11 +97,6 @@ inline IFileSystem::~IFileSystem()
 {
 }
 }
-
-/**
-*	Filesystem interface name.
-*/
-#define IFILESYSTEM_NAME "IFileSystemV001"
 
 /** @} */
 

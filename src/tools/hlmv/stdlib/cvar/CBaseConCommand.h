@@ -19,9 +19,10 @@ protected:
 	*	@param pszHelpInfo Optional help info.
 	*/
 	CBaseConCommand( const char* const pszName, const Flags_t flags = Flag::NONE, const char* const pszHelpInfo = "" );
-	virtual ~CBaseConCommand() = 0;
 
 public:
+	virtual ~CBaseConCommand() = 0;
+
 	/**
 	*	Gets the head of the command list.
 	*/

@@ -32,11 +32,6 @@ public:
 
 	void MultTransposeMatrix( const Mat4x4& mat ) override;
 };
-
-/**
-*	Accessor for the Immediate Mode context.
-*/
-CRenderContextIMode* GLIModeContext();
 }
 
 #endif //ENGINE_RENDERER_GL_IMODE_CRENDERCONTEXTIMODE_H
