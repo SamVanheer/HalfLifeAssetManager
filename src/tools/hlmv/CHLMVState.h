@@ -11,7 +11,7 @@
 #include "graphics/Constants.h"
 #include "graphics/CCamera.h"
 
-#include "tools/hlmv/entity/CHLMVStudioModelEntity.h"
+#include "entity/CHLMVStudioModelEntity.h"
 
 /*
 *	Contains all settings used by the HLMV application.

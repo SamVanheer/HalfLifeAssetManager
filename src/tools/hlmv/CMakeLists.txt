@@ -1,7 +1,3 @@
-#
-#HLMV exe
-#
-
 set(TARGET_NAME HLMV)
 
 find_package(OpenGL REQUIRED)
@@ -9,8 +5,10 @@ find_package(OpenGL REQUIRED)
 # Disable module based lookup (OpenAL Soft uses CONFIG mode and MODULE mode only works with the Creative Labs version)
 find_package(OpenAL REQUIRED NO_MODULE)
 
-if(NOT OPENGL_FOUND)
-	message(FATAL_ERROR "Could not locate OpenGL library")
+if(WIN32)
+	find_library(GLEW glew32 PATHS ${EXTERNAL_DIR}/GLEW/lib)
+else()
+	find_library(GLEW libGLEW.so.2.0.0 PATHS ${EXTERNAL_DIR}/GLEW/lib)
 endif()
 
 find_package(wxWidgets REQUIRED COMPONENTS gl adv propgrid core base)
@@ -20,17 +18,13 @@ add_library(Ogg STATIC IMPORTED)
 
 set_target_properties(Ogg PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/ogg/lib/libogg_static.lib)
 
-target_include_directories(Ogg
-	INTERFACE
-		${EXTERNAL_DIR}/ogg/include)
+target_include_directories(Ogg INTERFACE ${EXTERNAL_DIR}/ogg/include)
 
 add_library(Vorbis STATIC IMPORTED)
 
 set_target_properties(Vorbis PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/vorbis/lib/libvorbis_static.lib)
 
-target_include_directories(Vorbis
-	INTERFACE
-		${EXTERNAL_DIR}/vorbis/include)
+target_include_directories(Vorbis INTERFACE ${EXTERNAL_DIR}/vorbis/include)
 
 add_library(VorbisFile STATIC IMPORTED)
 
@@ -42,9 +36,9 @@ check_winxp_support(${TARGET_NAME})
 
 target_include_directories(${TARGET_NAME}
 	PRIVATE
-		${OPENGL_INCLUDE_DIR}
 		${EXTERNAL_DIR}/AudioFile/include
-		${SHARED_INCLUDEPATHS}
+		${EXTERNAL_DIR}/GLEW/include
+		${EXTERNAL_DIR}/GLM/include
 		${CMAKE_CURRENT_SOURCE_DIR}
 		${CMAKE_CURRENT_SOURCE_DIR}/core
 		${CMAKE_CURRENT_SOURCE_DIR}/engine
@@ -53,7 +47,37 @@ target_include_directories(${TARGET_NAME}
 target_compile_definitions(${TARGET_NAME}
 	PRIVATE	
 		${wxWidgets_DEFINITIONS}
-		${SHARED_WX_DEFS})
+		$<$<CXX_COMPILER_ID:MSVC>:
+			UNICODE
+			_UNICODE
+			_CRT_SECURE_NO_WARNINGS
+			_SCL_SECURE_NO_WARNINGS>
+		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:
+			FILE_OFFSET_BITS=64
+			WXUSINGDLL
+			__WXGTK__>
+		IS_LITTLE_ENDIAN=${IS_LITTLE_ENDIAN_VALUE})
+
+target_link_libraries(${TARGET_NAME}
+	PRIVATE
+		${wxWidgets_LIBRARIES}
+		${GLEW}
+		OpenGL::GL
+		OpenAL::OpenAL
+		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:dl>
+		Ogg
+		Vorbis
+		VorbisFile)
+
+target_compile_options(${TARGET_NAME}
+	PRIVATE
+		${WX_SHARED_COMPILE_FLAGS}
+		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-m32 -fPIC>)
+
+target_link_options(${TARGET_NAME}
+	PRIVATE
+		$<$<CXX_COMPILER_ID:MSVC>:/SUBSYSTEM:WINDOWS>
+		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-m32 --exclude-libs,ALL>)
 
 target_sources(${TARGET_NAME}
 	PRIVATE
@@ -77,27 +101,6 @@ add_subdirectory(soundsystem)
 add_subdirectory(stdlib)
 add_subdirectory(ui)
 add_subdirectory(wx)
-
-if(WIN32)
-	find_library(GLEW glew32 PATHS ${CMAKE_SOURCE_DIR}/external/GLEW/lib)
-else()
-	find_library(GLEW libGLEW.so.2.0.0 PATHS ${CMAKE_SOURCE_DIR}/external/GLEW/lib)
-endif()
-
-target_link_libraries(${TARGET_NAME}
-	PRIVATE
-		${wxWidgets_LIBRARIES}
-		${GLEW}
-		${OPENGL_LIBRARIES}
-		OpenAL::OpenAL
-		${SHARED_DEPENDENCIES}
-		Ogg
-		Vorbis
-		VorbisFile)
-
-set_target_properties(${TARGET_NAME} 
-	PROPERTIES COMPILE_FLAGS "${WX_SHARED_COMPILE_FLAGS}" 
-	LINK_FLAGS "${SHARED_WX_LINK_FLAGS}")
 
 #Create filters
 get_target_property(SOURCE_FILES ${TARGET_NAME} SOURCES)
