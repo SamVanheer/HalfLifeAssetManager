@@ -1,6 +1,3 @@
-add_subdirectory( core )
-add_subdirectory( stdlib )
-add_subdirectory( tools )
-add_subdirectory( keyvalues )
+add_subdirectory(tools)
 #TODO
 #add_subdirectory( ui )

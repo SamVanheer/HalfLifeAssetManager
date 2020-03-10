@@ -1,12 +1,10 @@
 #ifndef COMMON_CWORLDTIME_H
 #define COMMON_CWORLDTIME_H
 
-#include "core/LibHLCore.h"
-
 /**
 *	Represents the time in the world. Multiple time values are tracked.
 */
-class HLCORE_API CWorldTime final
+class CWorldTime final
 {
 public:
 	CWorldTime() = default;
@@ -77,6 +75,6 @@ private:
 };
 
 //TODO: this should be managed by the application, not the core library.
-extern HLCORE_API CWorldTime WorldTime;
+extern CWorldTime WorldTime;
 
 #endif //COMMON_CWORLDTIME_H

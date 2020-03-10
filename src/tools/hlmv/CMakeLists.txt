@@ -26,7 +26,9 @@ target_include_directories(${TARGET_NAME}
 		${EXTERNAL_DIR}/AudioFile/include
 		${SHARED_INCLUDEPATHS}
 		${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/engine)
+		${CMAKE_CURRENT_SOURCE_DIR}/core
+		${CMAKE_CURRENT_SOURCE_DIR}/engine
+		${CMAKE_CURRENT_SOURCE_DIR}/stdlib)
 
 target_compile_definitions(${TARGET_NAME}
 	PRIVATE	
@@ -39,12 +41,15 @@ target_sources(${TARGET_NAME}
 		CHLMVState.cpp
 		CHLMVState.h)
 
+add_subdirectory(core)
 add_subdirectory(cvar)
 add_subdirectory(engine)
 add_subdirectory(entity)
 add_subdirectory(filesystem)
+add_subdirectory(keyvalues)
 add_subdirectory(settings)
 add_subdirectory(soundsystem)
+add_subdirectory(stdlib)
 add_subdirectory(ui)
 
 add_subdirectory(../shared ${CMAKE_CURRENT_BINARY_DIR}/tools/shared)
@@ -62,8 +67,6 @@ endif()
 
 target_link_libraries(${TARGET_NAME}
 	PRIVATE
-		HLCore
-		Keyvalues
 		${wxWidgets_LIBRARIES}
 		${GLEW}
 		${OPENGL_LIBRARIES}

@@ -1,6 +1,5 @@
 #include <filesystem>
 
-#include "core/LibHLCore.h"
 #include "core/shared/Logging.h"
 #include "core/shared/Utility.h"
 
@@ -81,9 +80,6 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 		FatalError( "Failed to initialize CVar system!\n" );
 		return false;
 	}
-
-	//Connect Core lib cvars first.
-	ConnectCoreCVars( g_pCVar );
 
 	if( !m_pFileSystem->Initialize() )
 	{

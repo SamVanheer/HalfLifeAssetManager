@@ -5,7 +5,6 @@
 #include <cstdint>
 
 #include "Platform.h"
-#include "core/LibHLCore.h"
 
 /**
 *	Utility functionality.
@@ -14,17 +13,17 @@
 /**
 *	Initializes the random number generator.
 */
-extern "C" HLCORE_API void UTIL_InitRandom();
+void UTIL_InitRandom();
 
 /**
 *	Gets a random 32 bit integer number in the range [iLow, iHigh]
 */
-extern "C" HLCORE_API int UTIL_RandomLong( int iLow, int iHigh );
+int UTIL_RandomLong( int iLow, int iHigh );
 
 /**
 *	Gets a random 32 bit floating point number in the range [flLow, flHigh]
 */
-extern "C" HLCORE_API float UTIL_RandomFloat( float flLow, float flHigh );
+float UTIL_RandomFloat( float flLow, float flHigh );
 
 /**
 *	Clamps a given value to a given range.
@@ -75,12 +74,12 @@ constexpr inline size_t _ArraySizeof( T( &)[ SIZE ] )
 *	Returns the current tick time, in milliseconds.
 *	@return Tick time, in milliseconds.
 */
-extern "C" HLCORE_API long long GetCurrentTick();
+long long GetCurrentTick();
 
 /**
 *	Gets the current time, in seconds.
 *	@return Current time, in seconds.
 */
-extern "C" HLCORE_API double GetCurrentTime();
+double GetCurrentTime();
 
 #endif //COMMON_UTILITY_H

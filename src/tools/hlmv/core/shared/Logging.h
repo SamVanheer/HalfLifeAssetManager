@@ -4,8 +4,6 @@
 #include <cstdarg>
 #include <cstdio>
 
-#include "core/LibHLCore.h"
-
 #ifdef ERROR
 #undef ERROR
 #endif
@@ -28,7 +26,7 @@ enum class LogType
 /**
 *	Gets a prefix to use for the given log type.
 */
-extern "C" HLCORE_API const char* GetLogTypePrefix( const LogType type );
+const char* GetLogTypePrefix( const LogType type );
 
 namespace DevLevel
 {
@@ -44,7 +42,7 @@ enum DevLevel
 };
 }
 
-extern "C" HLCORE_API const char* DevLevelToString( const DevLevel::DevLevel devLevel );
+const char* DevLevelToString( const DevLevel::DevLevel devLevel );
 
 /**
 *	This interface defines a log listener. Classes can implement this to receive log messages.
@@ -67,28 +65,28 @@ inline ILogListener::~ILogListener()
 /**
 *	Gets the null log listener. This listener does not log anything.
 */
-extern "C" HLCORE_API ILogListener* GetNullLogListener();
+ILogListener* GetNullLogListener();
 
 /**
 *	Gets the listener that outputs to stdout.
 */
-extern "C" HLCORE_API ILogListener* GetStdOutLogListener();
+ILogListener* GetStdOutLogListener();
 
 /**
 *	Gets the default log listener. If there is a way to log anything, this will provide a means to do so.
 *	Must be installed by the application itself.
 */
-extern "C" HLCORE_API ILogListener* GetDefaultLogListener();
+ILogListener* GetDefaultLogListener();
 
 /**
 *	Sets the default log listener.
 */
-extern "C" HLCORE_API void SetDefaultLogListener( ILogListener* pListener );
+void SetDefaultLogListener( ILogListener* pListener );
 
 /**
 *	This class manages logging state.
 */
-class HLCORE_API CLogging final
+class CLogging final
 {
 public:
 	CLogging();
@@ -161,7 +159,7 @@ private:
 /**
 *	Gets the log state manager.
 */
-extern "C" HLCORE_API CLogging& logging();
+CLogging& logging();
 
 /**
 *	The implementations for logging features are UI dependent.
@@ -170,40 +168,40 @@ extern "C" HLCORE_API CLogging& logging();
 /**
 *	Logs a message.
 */
-extern "C" HLCORE_API void Message( const char* const pszFormat, ... );
+void Message( const char* const pszFormat, ... );
 
 /**
 *	Logs a warning.
 */
-extern "C" HLCORE_API void Warning( const char* const pszFormat, ... );
+void Warning( const char* const pszFormat, ... );
 
 /**
 *	Logs an error.
 */
-extern "C" HLCORE_API void Error( const char* const pszFormat, ... );
+void Error( const char* const pszFormat, ... );
 
 /**
 *	Logs a fatal error.
 *	This will only log the error and display it in a manner determined by the implementation, it won't terminate the program.
 */
-extern "C" HLCORE_API void FatalError( const char* const pszFormat, ... );
+void FatalError( const char* const pszFormat, ... );
 
 /**
 *	Logs a developer message.
 *	@param devLevel Developer level to filter with. If the developer cvar setting is less than this, the message is ignored.
 */
-extern "C" HLCORE_API void DevMsg( const int devLevel, const char* const pszFormat, ... );
+void DevMsg( const int devLevel, const char* const pszFormat, ... );
 
 /**
 *	Logs a developer warning.
 *	@param devLevel Developer level to filter with. If the developer cvar setting is less than this, the message is ignored.
 */
-extern "C" HLCORE_API void DevWarning( const int devLevel, const char* const pszFormat, ... );
+void DevWarning( const int devLevel, const char* const pszFormat, ... );
 
 /**
 *	Logs an developer error.
 *	@param devLevel Developer level to filter with. If the developer cvar setting is less than this, the message is ignored.
 */
-extern "C" HLCORE_API void DevError( const int devLevel, const char* const pszFormat, ... );
+void DevError( const int devLevel, const char* const pszFormat, ... );
 
 #endif //COMMON_LOGGING_H
