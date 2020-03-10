@@ -9,7 +9,8 @@
 #include "cvar/CVar.h"
 
 #include "filesystem/IFileSystem.h"
-#include "soundsystem/shared/ISoundSystem.h"
+#include "soundsystem/CSoundSystem.h"
+#include "soundsystem/ISoundSystem.h"
 
 #include "engine/shared/renderer/IRendererLibrary.h"
 #include "engine/shared/renderer/IRenderContext.h"
@@ -59,7 +60,7 @@ bool CBaseToolApp::StartupApp()
 
 bool CBaseToolApp::LoadAppLibraries()
 {
-	if( !LoadLibraries( "CVar", "FileSystem", "SoundSystem", "Renderer" ) )
+	if( !LoadLibraries( "CVar", "FileSystem", "Renderer" ) )
 		return false;
 
 	return true;
@@ -70,7 +71,6 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 	if( !LoadAndCheckInterfaces( pFactories, uiNumFactories, 
 							IFace( ICVARSYSTEM_NAME, g_pCVar, "CVar System" ),
 							IFace( IFILESYSTEM_NAME, m_pFileSystem, "File System" ),
-							IFace( ISOUNDSYSTEM_NAME, m_pSoundSystem, "Sound System" ),
 							IFace( IRENDERERLIBRARY_NAME, m_pRendererLib, "Render Library" ),
 							IFace( IRENDERCONTEXT_NAME, g_pRenderContext, "Render Context" ),
 							IFace( ISTUDIOMODELRENDERER_NAME, g_pStudioMdlRenderer, "StudioModel Renderer" ) ) )
@@ -78,7 +78,9 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 		return false;
 	}
 
-	g_pSoundSystem = m_pSoundSystem;
+	//TODO: this is temporary until the modular design gets refactored out
+	//TODO: need to delete these at some point
+	g_pSoundSystem = m_pSoundSystem = new soundsystem::CSoundSystem();
 
 	if( !g_pCVar->Initialize() )
 	{

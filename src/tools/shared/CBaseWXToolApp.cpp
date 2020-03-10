@@ -8,7 +8,7 @@
 #include "cvar/CVar.h"
 
 #include "shared/renderer/studiomodel/IStudioModelRenderer.h"
-#include "soundsystem/shared/ISoundSystem.h"
+#include "soundsystem/ISoundSystem.h"
 
 #include "ui/wx/wxLogging.h"
 

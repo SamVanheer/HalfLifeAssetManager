@@ -6,6 +6,9 @@ set(TARGET_NAME HLMV)
 
 find_package(OpenGL REQUIRED)
 
+# Disable module based lookup (OpenAL Soft uses CONFIG mode and MODULE mode only works with the Creative Labs version)
+find_package(OpenAL REQUIRED NO_MODULE)
+
 if(NOT OPENGL_FOUND)
 	message(FATAL_ERROR "Could not locate OpenGL library")
 endif()
@@ -20,7 +23,9 @@ check_winxp_support(${TARGET_NAME})
 target_include_directories(${TARGET_NAME}
 	PRIVATE
 		${OPENGL_INCLUDE_DIR}
-		${SHARED_INCLUDEPATHS})
+		${EXTERNAL_DIR}/AudioFile/include
+		${SHARED_INCLUDEPATHS}
+		${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_definitions(${TARGET_NAME}
 	PRIVATE	
@@ -35,6 +40,7 @@ target_sources(${TARGET_NAME}
 
 add_subdirectory(entity)
 add_subdirectory(settings)
+add_subdirectory(soundsystem)
 add_subdirectory(ui)
 
 add_subdirectory(../shared ${CMAKE_CURRENT_BINARY_DIR}/tools/shared)
@@ -57,6 +63,7 @@ target_link_libraries(${TARGET_NAME}
 		${wxWidgets_LIBRARIES}
 		${GLEW}
 		${OPENGL_LIBRARIES}
+		OpenAL::OpenAL
 		${SHARED_DEPENDENCIES})
 
 set_target_properties(${TARGET_NAME} 
