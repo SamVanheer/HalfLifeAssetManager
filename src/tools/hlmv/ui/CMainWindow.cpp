@@ -11,7 +11,7 @@
 
 #include "options/COptionsDialog.h"
 
-#include "tools/shared/Credits.h"
+#include "Credits.h"
 
 #include "settings/CCmdLineConfig.h"
 

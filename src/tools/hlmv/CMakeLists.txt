@@ -39,7 +39,9 @@ target_sources(${TARGET_NAME}
 	PRIVATE
 		$<$<CXX_COMPILER_ID:MSVC>:hlmv.rc>
 		CHLMVState.cpp
-		CHLMVState.h)
+		CHLMVState.h
+		Credits.cpp
+		Credits.h)
 
 add_subdirectory(core)
 add_subdirectory(cvar)
@@ -52,7 +54,6 @@ add_subdirectory(soundsystem)
 add_subdirectory(stdlib)
 add_subdirectory(ui)
 
-add_subdirectory(../shared ${CMAKE_CURRENT_BINARY_DIR}/tools/shared)
 add_subdirectory(engine/shared ${CMAKE_CURRENT_BINARY_DIR}/engine/shared)
 add_subdirectory(game ${CMAKE_CURRENT_BINARY_DIR}/game)
 add_subdirectory(graphics ${CMAKE_CURRENT_BINARY_DIR}/graphics)

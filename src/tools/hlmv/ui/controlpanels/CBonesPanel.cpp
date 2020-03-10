@@ -3,7 +3,7 @@
 
 #include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
-#include "tools/shared/ui/CStudioTypesCheatSheet.h"
+#include "ui/CStudioTypesCheatSheet.h"
 
 #include "../CModelViewerApp.h"
 #include "../../CHLMVState.h"
