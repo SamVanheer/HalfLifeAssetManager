@@ -70,7 +70,6 @@ bool CModelViewerApp::OnInit()
 		return false;
 
 	SetAppDisplayName( HLMV_TITLE );
-	m_szLogFilename = HLMV_TITLE;
 
 	//Install the wxWidgets specific default log listener.
 	SetDefaultLogListener(GetwxDefaultLogListener());
@@ -161,27 +160,7 @@ bool CModelViewerApp::Startup()
 		}
 	}
 
-	//No log file provided, initialize to executable filename.
-	if (m_szLogFilename.empty())
-	{
-		bool bSuccess;
-		auto szExePath = plat::GetExeFileName(&bSuccess);
-
-		if (bSuccess)
-		{
-			std::filesystem::path path(szExePath);
-
-			m_szLogFilename = path.stem().string();
-		}
-
-		if (m_szLogFilename.empty())
-		{
-			Warning("CBaseToolApp::StartupApp: Couldn't get executable name, defaulting log filename to \"tool\"\n");
-			m_szLogFilename = "tool";
-		}
-	}
-
-	const std::string szLogFilename = m_szLogFilename + ".log";
+	const std::string szLogFilename = HLMV_TITLE + std::string{".log"};
 
 	//Overwrite previous session log.
 	logging().OpenLogFile(szLogFilename.c_str(), false);

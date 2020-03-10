@@ -163,8 +163,6 @@ public:
 	void SaveUVMap( const wxString& szFilename, const int iTexture );
 
 private:
-	std::string m_szLogFilename;
-
 	filesystem::IFileSystem* m_pFileSystem = nullptr;
 	soundsystem::ISoundSystem* m_pSoundSystem = nullptr;
 
