@@ -7,7 +7,8 @@
 
 #include "keyvalues/Keyvalues.h"
 
-#include "filesystem/IFileSystem.h"
+//TODO: fix this later
+#include "tools/hlmv/filesystem/IFileSystem.h"
 
 #include "utility/IOUtils.h"
 

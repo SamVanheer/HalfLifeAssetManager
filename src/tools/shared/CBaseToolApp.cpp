@@ -9,6 +9,7 @@
 #include "cvar/CVar.h"
 #include "cvar/CCVarSystem.h"
 
+#include "filesystem/CFileSystem.h"
 #include "filesystem/IFileSystem.h"
 #include "soundsystem/CSoundSystem.h"
 #include "soundsystem/ISoundSystem.h"
@@ -61,7 +62,7 @@ bool CBaseToolApp::StartupApp()
 
 bool CBaseToolApp::LoadAppLibraries()
 {
-	if( !LoadLibraries( "FileSystem", "Renderer" ) )
+	if( !LoadLibraries( "Renderer" ) )
 		return false;
 
 	return true;
@@ -70,7 +71,6 @@ bool CBaseToolApp::LoadAppLibraries()
 bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories )
 {
 	if( !LoadAndCheckInterfaces( pFactories, uiNumFactories, 
-							IFace( IFILESYSTEM_NAME, m_pFileSystem, "File System" ),
 							IFace( IRENDERERLIBRARY_NAME, m_pRendererLib, "Render Library" ),
 							IFace( IRENDERCONTEXT_NAME, g_pRenderContext, "Render Context" ),
 							IFace( ISTUDIOMODELRENDERER_NAME, g_pStudioMdlRenderer, "StudioModel Renderer" ) ) )
@@ -80,6 +80,7 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 
 	//TODO: this is temporary until the modular design gets refactored out
 	//TODO: need to delete these at some point
+	m_pFileSystem = new filesystem::CFileSystem();
 	g_pCVar = new cvar::CCVarSystem();
 	g_pSoundSystem = m_pSoundSystem = new soundsystem::CSoundSystem();
 
