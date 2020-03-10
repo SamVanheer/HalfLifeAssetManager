@@ -54,8 +54,8 @@ add_subdirectory(ui)
 
 add_subdirectory(../shared ${CMAKE_CURRENT_BINARY_DIR}/tools/shared)
 add_subdirectory(engine/shared ${CMAKE_CURRENT_BINARY_DIR}/engine/shared)
-add_subdirectory(../../game ${CMAKE_CURRENT_BINARY_DIR}/game)
-add_subdirectory(../../graphics ${CMAKE_CURRENT_BINARY_DIR}/graphics)
+add_subdirectory(game ${CMAKE_CURRENT_BINARY_DIR}/game)
+add_subdirectory(graphics ${CMAKE_CURRENT_BINARY_DIR}/graphics)
 add_subdirectory(../../ui/wx ${CMAKE_CURRENT_BINARY_DIR}/ui/wx)
 
 if(WIN32)
