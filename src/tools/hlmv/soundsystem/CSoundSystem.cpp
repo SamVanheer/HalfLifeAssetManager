@@ -170,7 +170,7 @@ std::unique_ptr<CSoundSystem::Sound> TryLoadOggVorbis(const std::string& fileNam
 		return {};
 	}
 
-	data.resize(sizeInBytes);
+	data.resize(static_cast<std::size_t>(sizeInBytes));
 
 	long size = 0;
 	int bitStream = 0;

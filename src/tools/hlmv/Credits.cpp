@@ -11,6 +11,7 @@ wxString GetSharedCredits()
 		"Copyright © 1998-2002, Valve LLC.\n"
 		"All rights reserved.\n\n"
 		"Contains OpenAL Soft\n"
+		"Contains Ogg Vorbis\n"
 		"Contains AudioFile, Copyright (c) 2017 Adam Stark\n"
 		"Contains The OpenGL Extension Wrangler Library (GLEW)\n"
 		"Copyright © 2008 - 2016, Nigel Stewart <nigels[]users sourceforge net>\n"
