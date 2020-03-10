@@ -185,9 +185,35 @@ bool CModelViewerApp::Startup()
 		return false;
 	}
 
-	if (!InitOpenGL())
 	{
-		return false;
+		//Set up OpenGL parameters.
+		CwxOpenGL::CreateInstance();
+
+		wxGLAttributes canvasAttributes;
+
+		canvasAttributes
+			.PlatformDefaults()
+			.RGBA()
+			.Depth(16)
+			.Stencil(8)
+			.DoubleBuffer()
+			.EndList();
+
+		wxGLContextAttrs contextAttributes;
+
+		//The default settings for OpenGL allow for Windows XP support. OpenGL 2.1 is typically supported by XP era hardware, making it the best choice.
+		//2.1 supports GLSL 120, which has some features that are nice to have in shaders.
+		contextAttributes
+			.PlatformDefaults()
+			.MajorVersion(2)
+			.MinorVersion(1)
+			.EndList();
+
+		if (!wxOpenGL().Initialize(canvasAttributes, &contextAttributes))
+		{
+			wxMessageBox("Failed to initialize OpenGL", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR);
+			return false;
+		}
 	}
 
 	if (!g_pStudioMdlRenderer->Initialize())
@@ -319,40 +345,6 @@ void CModelViewerApp::Shutdown()
 	//Don't close the log file just yet. It'll be closed when the program is unloaded, so anything that happens between now and then should be logged.
 }
 
-bool CModelViewerApp::InitOpenGL()
-{
-	//Set up OpenGL parameters.
-	CwxOpenGL::CreateInstance();
-
-	wxGLAttributes canvasAttributes;
-
-	canvasAttributes
-		.PlatformDefaults()
-		.RGBA()
-		.Depth(16)
-		.Stencil(8)
-		.DoubleBuffer()
-		.EndList();
-
-	wxGLContextAttrs contextAttributes;
-
-	//The default settings for OpenGL allow for Windows XP support. OpenGL 2.1 is typically supported by XP era hardware, making it the best choice.
-	//2.1 supports GLSL 120, which has some features that are nice to have in shaders.
-	contextAttributes
-		.PlatformDefaults()
-		.MajorVersion(2)
-		.MinorVersion(1)
-		.EndList();
-
-	if (!wxOpenGL().Initialize(canvasAttributes, &contextAttributes))
-	{
-		wxMessageBox("Failed to initialize OpenGL", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR);
-		return false;
-	}
-
-	return true;
-}
-
 void CModelViewerApp::RunFrame()
 {
 	EntityManager().RunFrame();
@@ -361,26 +353,6 @@ void CModelViewerApp::RunFrame()
 		m_pFullscreenWindow->RunFrame();
 	else if( m_pMainWindow )
 		m_pMainWindow->RunFrame();
-}
-
-void CModelViewerApp::OnExit( const bool bMainWndClosed )
-{
-	if( bMainWndClosed )
-		m_pMainWindow = nullptr;
-
-	if( m_pFullscreenWindow )
-	{
-		m_pFullscreenWindow->Close( true );
-		m_pFullscreenWindow = nullptr;
-	}
-
-	if( m_pMainWindow )
-	{
-		m_pMainWindow->Close( true );
-		m_pMainWindow = nullptr;
-	}
-
-	wxOpenGL().Shutdown();
 }
 
 void CModelViewerApp::Exit(const bool bMainWndClosed)
@@ -397,7 +369,22 @@ void CModelViewerApp::Exit(const bool bMainWndClosed)
 	//Don't let any log message boxes pop up during shutdown.
 	logging().SetLogListener(GetNullLogListener());
 
-	OnExit(bMainWndClosed);
+	if (bMainWndClosed)
+		m_pMainWindow = nullptr;
+
+	if (m_pFullscreenWindow)
+	{
+		m_pFullscreenWindow->Close(true);
+		m_pFullscreenWindow = nullptr;
+	}
+
+	if (m_pMainWindow)
+	{
+		m_pMainWindow->Close(true);
+		m_pMainWindow = nullptr;
+	}
+
+	wxOpenGL().Shutdown();
 }
 
 void CModelViewerApp::OnWindowClose(wxFrame* pWindow, wxCloseEvent& event)

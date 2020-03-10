@@ -41,9 +41,9 @@ public:
 
 	int OnExit() override;
 
-	virtual void OnInitCmdLine( wxCmdLineParser& parser ) override;
+	void OnInitCmdLine( wxCmdLineParser& parser ) override;
 
-	virtual bool OnCmdLineParsed( wxCmdLineParser& parser ) override;
+	bool OnCmdLineParsed( wxCmdLineParser& parser ) override;
 
 	CHLMVState* GetState() { return m_pState; }
 
@@ -65,20 +65,15 @@ public:
 
 	void Exit(const bool bMainWndClosed = false);
 
-protected:
+private:
 	bool Startup();
 
 	void Shutdown();
 
-	bool InitOpenGL();
-
 	void RunFrame();
-
-	void OnExit( const bool bMainWndClosed );
 
 	void OnIdle(wxIdleEvent& event);
 
-protected:
 	void OnWindowClose(wxFrame* pWindow, wxCloseEvent& event) override;
 
 	/**
@@ -87,7 +82,6 @@ protected:
 	*/
 	void UseMessagesWindow(const bool bUse);
 
-private:
 	void MessagesWindowClosed();
 
 public:
