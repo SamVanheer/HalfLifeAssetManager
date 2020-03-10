@@ -1,4 +1,3 @@
-add_subdirectory(app)
 add_subdirectory(cvar)
 add_subdirectory(graphics)
 add_subdirectory(settings)

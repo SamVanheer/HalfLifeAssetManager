@@ -102,8 +102,13 @@ bool CBaseWXToolApp::OnInit()
 
 	const bool bResult = [ = ]
 	{
-		if( !Start() )
+		if( !StartupApp() )
 			return false;
+
+		if (!Initialize())
+		{
+			return false;
+		}
 
 		if( !PreRunApp() )
 			return false;
@@ -113,7 +118,7 @@ bool CBaseWXToolApp::OnInit()
 
 	if( !bResult )
 	{
-		OnShutdown();
+		ShutdownApp();
 
 		return false;
 	}
@@ -130,7 +135,7 @@ int CBaseWXToolApp::OnExit()
 {
 	wxApp::Disconnect( wxEVT_IDLE, wxIdleEventHandler( CBaseWXToolApp::OnIdle ) );
 
-	OnShutdown();
+	ShutdownApp();
 
 	UseMessagesWindow( false );
 

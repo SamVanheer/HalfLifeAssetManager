@@ -30,6 +30,46 @@ namespace tools
 {
 bool CBaseToolApp::StartupApp()
 {
+	//Configure the working directory to be the exe directory.
+	{
+		bool bSuccess;
+		auto szExePath = plat::GetExeFileName(&bSuccess);
+
+		if (!bSuccess)
+		{
+			Error("CAppSystem::Startup: Failed to get executable filename!\n");
+			return false;
+		}
+
+		std::filesystem::path exePath(szExePath);
+
+		std::error_code canonicalError;
+
+		auto exeDir = exePath.parent_path();
+
+		exeDir = std::filesystem::canonical(exeDir, canonicalError);
+
+		if (canonicalError)
+		{
+			Error(
+				"CAppSystem::Startup: Failed to canonicalize  \"%s\" with error \"%s\"!\n",
+				exeDir.string().c_str(), canonicalError.message().c_str());
+			return false;
+		}
+
+		std::error_code cwdError;
+
+		std::filesystem::current_path(exeDir, cwdError);
+
+		if (cwdError)
+		{
+			Error(
+				"CAppSystem::Startup: Failed to set current working directory \"%s\" with error \"%s\"!\n",
+				exeDir.string().c_str(), cwdError.message().c_str());
+			return false;
+		}
+	}
+
 	//No log file provided, initialize to executable filename.
 	if( m_szLogFilename.empty() )
 	{

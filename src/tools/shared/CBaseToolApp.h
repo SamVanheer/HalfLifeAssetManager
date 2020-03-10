@@ -3,8 +3,6 @@
 
 #include <string>
 
-#include "app/CAppSystem.h"
-
 namespace filesystem
 {
 class IFileSystem;
@@ -20,7 +18,7 @@ namespace tools
 /**
 *	Base class for tools.
 */
-class CBaseToolApp : public app::CAppSystem
+class CBaseToolApp
 {
 public:
 	/**
@@ -49,11 +47,11 @@ public:
 	soundsystem::ISoundSystem* GetSoundSystem() { return m_pSoundSystem; }
 
 protected:
-	bool StartupApp() override;
+	virtual bool StartupApp();
 
-	bool Initialize() override;
+	virtual bool Initialize();
 
-	void ShutdownApp() override;
+	virtual void ShutdownApp();
 
 	/**
 	*	Initialize OpenGL. This is GUI specific at the moment.
