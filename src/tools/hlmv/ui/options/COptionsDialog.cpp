@@ -3,7 +3,7 @@
 
 #include "CGeneralOptions.h"
 #include "CCompilerOptions.h"
-#include "ui/wx/shared/CGameConfigurationsPanel.h"
+#include "ui/common/CGameConfigurationsPanel.h"
 
 #include "../../settings/CHLMVSettings.h"
 

@@ -1,7 +1,7 @@
 #ifndef UI_CWXOPENGL_H
 #define UI_CWXOPENGL_H
 
-#include "wxInclude.h"
+#include "ui/wxHLMV.h"
 
 #include "graphics/OpenGL.h"
 

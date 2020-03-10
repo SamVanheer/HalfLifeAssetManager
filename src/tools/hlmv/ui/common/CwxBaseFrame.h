@@ -1,7 +1,7 @@
 #ifndef UI_WX_SHARED_CWXBASEFRAME_H
 #define UI_WX_SHARED_CWXBASEFRAME_H
 
-#include "ui/wx/wxInclude.h"
+#include "ui/wxHLMV.h"
 
 namespace ui
 {

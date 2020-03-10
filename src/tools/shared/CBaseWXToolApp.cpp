@@ -12,7 +12,7 @@
 
 #include "ui/wx/wxLogging.h"
 
-#include "ui/wx/shared/CMessagesWindow.h"
+#include "ui/common/CMessagesWindow.h"
 
 #include "CBaseWXToolApp.h"
 

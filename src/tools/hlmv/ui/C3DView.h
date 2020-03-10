@@ -3,7 +3,7 @@
 
 #include "wxHLMV.h"
 
-#include "ui/wx/shared/CwxBase3DView.h"
+#include "common/CwxBase3DView.h"
 
 #include <glm/vec3.hpp>
 

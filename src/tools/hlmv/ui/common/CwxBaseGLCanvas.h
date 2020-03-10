@@ -1,7 +1,7 @@
 #ifndef UI_SHARED_CWXBASEHLCANVAS_H
 #define UI_SHARED_CWXBASEHLCANVAS_H
 
-#include "ui/wx/wxInclude.h"
+#include "ui/wxHLMV.h"
 
 #include "graphics/OpenGL.h"
 

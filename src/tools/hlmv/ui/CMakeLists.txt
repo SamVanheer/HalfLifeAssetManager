@@ -13,5 +13,6 @@ target_sources(${TARGET_NAME}
 		MouseOpFlag.h
 		wxHLMV.h)
 
+add_subdirectory(common)
 add_subdirectory(controlpanels)
 add_subdirectory(options)

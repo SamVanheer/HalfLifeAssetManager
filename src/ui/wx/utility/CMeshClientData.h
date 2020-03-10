@@ -1,7 +1,7 @@
 #ifndef UI_UTILITY_CMESHCLIENTDATA_H
 #define UI_UTILITY_CMESHCLIENTDATA_H
 
-#include "ui/wx/wxInclude.h"
+#include "ui/wxHLMV.h"
 
 #include "shared/studiomodel/studio.h"
 

@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "ui/wx/wxInclude.h"
+#include "ui/wxHLMV.h"
 
 #include "settings/CBaseSettings.h"
 

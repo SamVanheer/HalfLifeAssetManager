@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "ui/wx/wxInclude.h"
+#include "ui/wxHLMV.h"
 
 namespace settings
 {

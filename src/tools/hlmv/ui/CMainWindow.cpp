@@ -2,9 +2,9 @@
 
 #include "ui/wx/CwxOpenGL.h"
 
-#include "ui/wx/shared/CMessagesWindow.h"
-#include "ui/wx/shared/CCmdLineConfigDialog.h"
-#include "ui/wx/shared/CProcessDialog.h"
+#include "common/CMessagesWindow.h"
+#include "common/CCmdLineConfigDialog.h"
+#include "common/CProcessDialog.h"
 #include "ui/wx/utility/wxUtil.h"
 
 #include "CModelViewerApp.h"

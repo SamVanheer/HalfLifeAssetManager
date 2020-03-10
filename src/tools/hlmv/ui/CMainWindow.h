@@ -9,7 +9,7 @@
 #include "../CHLMVState.h"
 
 #include "ui/wx/utility/CwxRecentFiles.h"
-#include "ui/wx/shared/CwxBaseFrame.h"
+#include "common/CwxBaseFrame.h"
 
 namespace hlmv
 {

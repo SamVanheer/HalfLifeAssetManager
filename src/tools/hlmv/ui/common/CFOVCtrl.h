@@ -1,7 +1,7 @@
 #ifndef UI_WX_SHARED_CFOVCTRL_H
 #define UI_WX_SHARED_CFOVCTRL_H
 
-#include "../wxInclude.h"
+#include "ui/wxHLMV.h"
 
 class wxSpinCtrlDouble;
 class wxSpinDoubleEvent;

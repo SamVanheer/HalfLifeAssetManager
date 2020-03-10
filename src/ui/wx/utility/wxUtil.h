@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "ui/wx/wxInclude.h"
+#include "ui/wxHLMV.h"
 
 #include <wx/display.h>
 

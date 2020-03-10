@@ -1,7 +1,7 @@
 #ifndef UI_WX_SHARED_CPROCESSDIALOG_H
 #define UI_WX_SHARED_CPROCESSDIALOG_H
 
-#include "../wxInclude.h"
+#include "ui/wxHLMV.h"
 
 #include <wx/process.h>
 

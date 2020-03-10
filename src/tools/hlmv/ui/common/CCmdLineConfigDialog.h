@@ -6,7 +6,7 @@
 #include <utility>
 #include <vector>
 
-#include "../wxInclude.h"
+#include "ui/wxHLMV.h"
 
 #include "settings/CCmdLineConfig.h"
 

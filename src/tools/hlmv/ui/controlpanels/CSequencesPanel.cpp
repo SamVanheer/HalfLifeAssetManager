@@ -9,7 +9,7 @@
 
 #include "cvar/CVar.h"
 
-#include "ui/wx/shared/CEditEventsDialog.h"
+#include "ui/common/CEditEventsDialog.h"
 
 #include "../CModelViewerApp.h"
 #include "../../settings/CHLMVSettings.h"

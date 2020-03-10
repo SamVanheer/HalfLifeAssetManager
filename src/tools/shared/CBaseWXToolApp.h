@@ -1,7 +1,7 @@
 #ifndef TOOLS_SHARED_CBASEWXTOOLAPP_H
 #define TOOLS_SHARED_CBASEWXTOOLAPP_H
 
-#include "ui/wx/wxInclude.h"
+#include "ui/wxHLMV.h"
 
 #include "ui/wx/CwxOpenGL.h"
 
