@@ -1,7 +1,6 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
 		CMeshClientData.h
-		CTimer.h
 		CwxRecentFiles.cpp
 		CwxRecentFiles.h
 		IWindowCloseListener.h
