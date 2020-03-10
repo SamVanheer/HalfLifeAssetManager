@@ -20,6 +20,7 @@ namespace soundsystem
 class ISoundSystem
 {
 public:
+	virtual ~ISoundSystem() = 0 {}
 
 	/**
 	*	Initializes the sound system. Should be called on startup.

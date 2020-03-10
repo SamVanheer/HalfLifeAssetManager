@@ -26,6 +26,8 @@ class IStudioModelRendererListener;
 class IStudioModelRenderer
 {
 public:
+	virtual ~IStudioModelRenderer() = 0 {}
+
 	/**
 	*	Initializes the renderer. This sets up the renderer's state for a single "map".
 	*	@return true on success, false otherwise.

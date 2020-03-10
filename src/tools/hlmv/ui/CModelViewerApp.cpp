@@ -188,8 +188,6 @@ bool CModelViewerApp::Startup()
 
 	UTIL_InitRandom();
 
-	//TODO: this is temporary until the modular design gets refactored out
-	//TODO: need to delete these at some point
 	m_pFileSystem = new filesystem::CFileSystem();
 	g_pCVar = new cvar::CCVarSystem();
 	g_pSoundSystem = m_pSoundSystem = new soundsystem::CSoundSystem();
@@ -298,17 +296,20 @@ void CModelViewerApp::Shutdown()
 	if (m_pSoundSystem)
 	{
 		m_pSoundSystem->Shutdown();
+		delete m_pSoundSystem;
 		m_pSoundSystem = nullptr;
 	}
 
 	if (g_pStudioMdlRenderer)
 	{
 		g_pStudioMdlRenderer->Shutdown();
+		delete g_pStudioMdlRenderer;
 		g_pStudioMdlRenderer = nullptr;
 	}
 
 	if (g_pRenderContext)
 	{
+		delete g_pRenderContext;
 		g_pRenderContext = nullptr;
 	}
 
@@ -322,12 +323,14 @@ void CModelViewerApp::Shutdown()
 	if (m_pFileSystem)
 	{
 		m_pFileSystem->Shutdown();
+		delete m_pFileSystem;
 		m_pFileSystem = nullptr;
 	}
 
 	if (g_pCVar)
 	{
 		g_pCVar->Shutdown();
+		delete g_pCVar;
 		g_pCVar = nullptr;
 	}
 

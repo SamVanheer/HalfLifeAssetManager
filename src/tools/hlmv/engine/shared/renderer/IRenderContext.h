@@ -141,6 +141,7 @@ typedef void* HTexture_t;
 class IRenderContext
 {
 public:
+	virtual ~IRenderContext() = 0 {}
 
 	//Matrix operations
 	/**

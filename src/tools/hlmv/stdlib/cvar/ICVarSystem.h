@@ -20,6 +20,8 @@ public:
 	using CVarArchiveCallback = void( *)( void* pObject, const CCVar& cvar );
 
 public:
+	virtual ~ICVarSystem() = 0 {}
+
 	/**
 	*	@return Whether the system has been initialized.
 	*/
