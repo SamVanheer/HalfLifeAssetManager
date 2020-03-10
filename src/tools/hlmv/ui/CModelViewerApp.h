@@ -1,77 +1,122 @@
 #ifndef CMODELVIEWERAPP_H
 #define CMODELVIEWERAPP_H
 
+#include <string>
+
 #include "wxHLMV.h"
 
-#include "tools/shared/CBaseWXToolApp.h"
+#include <wx/app.h>
 
 #include "../CHLMVState.h"
 #include "../settings/CHLMVSettings.h"
+
+#include "ui/wx/utility/IWindowCloseListener.h"
+
+namespace filesystem
+{
+class IFileSystem;
+}
+
+namespace soundsystem
+{
+class ISoundSystem;
+}
+
+namespace ui
+{
+class CMessagesWindow;
+}
 
 namespace hlmv
 {
 class CMainWindow;
 class CFullscreenWindow;
 
-class CModelViewerApp : public tools::CBaseWXToolApp
+class CModelViewerApp : public wxApp, public IWindowCloseListener
 {
 public:
+	static const size_t DEFAULT_MAX_MESSAGES_COUNT = 100;
+
 	bool OnInit() override;
+
+	int OnExit() override;
 
 	virtual void OnInitCmdLine( wxCmdLineParser& parser ) override;
 
 	virtual bool OnCmdLineParsed( wxCmdLineParser& parser ) override;
 
-	/**
-	*	Gets the state object.
-	*/
-	const CHLMVState* GetState() const { return m_pState; }
-
-	/**
-	*	@copydoc GetState() const
-	*/
 	CHLMVState* GetState() { return m_pState; }
 
-	/**
-	*	Gets the settings object.
-	*/
-	const CHLMVSettings* GetSettings() const { return m_pSettings; }
-
-	/**
-	*	@copydoc GetSettings() const
-	*/
 	CHLMVSettings* GetSettings() { return m_pSettings; }
 
-	/**
-	*	Gets the main window.
-	*/
 	CMainWindow* GetMainWindow() { return m_pMainWindow; }
 
-	/**
-	*	Sets the main window.
-	*/
-	void SetMainWindow( CMainWindow* const pMainWindow );
+	void SetMainWindow( CMainWindow* const pMainWindow )
+	{
+		m_pMainWindow = pMainWindow;
+	}
 
-	/**
-	*	Gets the fullscreen window.
-	*/
 	CFullscreenWindow* GetFullscreenWindow() { return m_pFullscreenWindow; }
 
-	/**
-	*	Sets the fullscreen window.
-	*/
-	void SetFullscreenWindow( CFullscreenWindow* const pWindow );
+	void SetFullscreenWindow( CFullscreenWindow* const pWindow )
+	{
+		m_pFullscreenWindow = pWindow;
+	}
+
+	void Exit(const bool bMainWndClosed = false);
 
 protected:
-	bool PreRunApp() override;
+	bool Startup();
 
-	void ShutdownApp() override;
+	void Shutdown();
 
-	void RunFrame() override;
+	bool InitOpenGL();
 
-	void OnExit( const bool bMainWndClosed ) override final;
+	void RunFrame();
+
+	void OnExit( const bool bMainWndClosed );
+
+	void OnIdle(wxIdleEvent& event);
+
+protected:
+	void OnWindowClose(wxFrame* pWindow, wxCloseEvent& event) override;
+
+	/**
+	*	Allows an app to enable the messages window. This is a separate window containing log messages.
+	*	bUse Whether to use the messages window or not.
+	*/
+	void UseMessagesWindow(const bool bUse);
+
+private:
+	void MessagesWindowClosed();
 
 public:
+	const wxIcon& GetToolIcon() const { return m_ToolIcon; }
+
+	/**
+	*	Returns the messages window, if it exists.
+	*/
+	ui::CMessagesWindow* GetMessagesWindow() { return m_pMessagesWindow; }
+
+	/**
+	*	Returns whether the messages window is visible.
+	*/
+	bool IsUsingMessagesWindow() const { return m_pMessagesWindow != nullptr; }
+
+	/**
+	*	Shows or hides the messages window.
+	*/
+	void ShowMessagesWindow(const bool bShow);
+
+	/**
+	*	Gets the maximum messages count.
+	*/
+	size_t GetMaxMessagesCount() const;
+
+	/**
+	*	Sets the maximum messages count.
+	*/
+	void SetMaxMessagesCount(const size_t uiMaxMessagesCount);
 
 	//Load/Save model
 	/**
@@ -81,10 +126,6 @@ public:
 	*/
 	bool LoadModel( const char* const pszFilename );
 
-	/**
-	*	Prompts the user to load a model.
-	*	@return true if the user elected to load a model, and the model was successfully loaded, false otherwise.
-	*/
 	bool PromptLoadModel();
 
 	/**
@@ -94,10 +135,6 @@ public:
 	*/
 	bool SaveModel( const char* const pszFilename );
 
-	/**
-	*	Prompts the user to save the current model.
-	*	@return true if the user elected to save the model, and the model was successfully saved, false otherwise.
-	*/
 	bool PromptSaveModel();
 
 	//Background and Ground textures
@@ -108,15 +145,8 @@ public:
 	*/
 	bool LoadBackgroundTexture( const char* const pszFilename );
 
-	/**
-	*	Prompts the user to load a background texture.
-	*	@return true if the user elected to load a background texture, and the texture was successfully loaded, false otherwise.
-	*/
 	bool PromptLoadBackgroundTexture();
 
-	/**
-	*	Unloads the current background texture.
-	*/
 	void UnloadBackgroundTexture();
 
 	/**
@@ -126,23 +156,26 @@ public:
 	*/
 	bool LoadGroundTexture( const char* const pszFilename );
 
-	/**
-	*	Prompts the user to load a ground texture.
-	*	@return true if the user elected to load a ground texture, and the texture was successfully loaded, false otherwise.
-	*/
 	bool PromptGroundTexture();
 
-	/**
-	*	Unloads the current ground texture.
-	*/
 	void UnloadGroundTexture();
 
-	/**
-	*	Saves the given texture's UV map to the given file.
-	*/
 	void SaveUVMap( const wxString& szFilename, const int iTexture );
 
 private:
+	std::string m_szLogFilename;
+
+	filesystem::IFileSystem* m_pFileSystem = nullptr;
+	soundsystem::ISoundSystem* m_pSoundSystem = nullptr;
+
+	bool m_bExiting = false;
+
+	wxIcon m_ToolIcon;
+
+	ui::CMessagesWindow* m_pMessagesWindow = nullptr;
+
+	size_t m_uiMaxMessagesCount = DEFAULT_MAX_MESSAGES_COUNT;
+
 	CHLMVState* m_pState = nullptr;
 	CHLMVSettings* m_pSettings = nullptr;
 

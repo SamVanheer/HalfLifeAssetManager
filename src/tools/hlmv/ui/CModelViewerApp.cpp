@@ -1,12 +1,35 @@
-#include "shared/Logging.h"
+#include <filesystem>
 
 #include <wx/cmdline.h>
+
+#include "shared/Logging.h"
+#include "utility/PlatUtils.h"
+
+#include "core/shared/CWorldTime.h"
+
+#include "cvar/CVar.h"
+#include "cvar/CCVarSystem.h"
+
+#include "filesystem/CFileSystem.h"
+#include "filesystem/IFileSystem.h"
 
 #include "game/entity/CEntityManager.h"
 #include "game/entity/CBaseEntityList.h"
 
+#include "soundsystem/CSoundSystem.h"
+#include "soundsystem/ISoundSystem.h"
+
+#include "engine/renderer/gl/imode/CRenderContextIMode.h"
+#include "engine/renderer/studiomodel/CStudioModelRenderer.h"
+#include "engine/shared/renderer/IRenderContext.h"
+#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.h"
+
 #include "CFullscreenWindow.h"
 #include "CMainWindow.h"
+
+#include "ui/common/CMessagesWindow.h"
+#include "ui/wx/CwxOpenGL.h"
+#include "ui/wx/wxLogging.h"
 
 #include "CModelViewerApp.h"
 
@@ -16,6 +39,11 @@ namespace sprite
 class ISpriteRenderer;
 }
 
+//TODO: remove
+soundsystem::ISoundSystem* g_pSoundSystem = nullptr;
+
+renderer::IRenderContext* g_pRenderContext = nullptr;
+studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer = nullptr;
 sprite::ISpriteRenderer* g_pSpriteRenderer = nullptr;
 
 wxIMPLEMENT_APP( hlmv::CModelViewerApp );
@@ -28,12 +56,49 @@ namespace
 static CBaseEntityList g_EntityList;
 }
 
+static cvar::CCVar max_fps(
+	"max_fps",
+	cvar::CCVarArgsBuilder()
+	.HelpInfo("The maximum FPS that this program will redraw at")
+	.FloatValue(60.0f)
+	.Flags(cvar::Flag::ARCHIVE)
+);
+
 bool CModelViewerApp::OnInit()
 {
-	SetAppDisplayName( HLMV_TITLE );
-	SetLogFilename( HLMV_TITLE );
+	if (!wxApp::OnInit())
+		return false;
 
-	return CBaseWXToolApp::OnInit();
+	SetAppDisplayName( HLMV_TITLE );
+	m_szLogFilename = HLMV_TITLE;
+
+	//Install the wxWidgets specific default log listener.
+	SetDefaultLogListener(GetwxDefaultLogListener());
+
+	if (!Startup())
+	{
+		Shutdown();
+
+		return false;
+	}
+
+	wxApp::Connect(wxEVT_IDLE, wxIdleEventHandler(CModelViewerApp::OnIdle));
+
+	//Reduce the idle event strain on the system a bit.
+	wxIdleEvent::SetMode(wxIDLE_PROCESS_SPECIFIED);
+
+	return true;
+}
+
+int CModelViewerApp::OnExit()
+{
+	wxApp::Disconnect(wxEVT_IDLE, wxIdleEventHandler(CModelViewerApp::OnIdle));
+
+	Shutdown();
+
+	UseMessagesWindow(false);
+
+	return wxApp::OnExit();
 }
 
 void CModelViewerApp::OnInitCmdLine( wxCmdLineParser& parser )
@@ -54,51 +119,147 @@ bool CModelViewerApp::OnCmdLineParsed( wxCmdLineParser& parser )
 	return wxApp::OnCmdLineParsed( parser );
 }
 
-void CModelViewerApp::SetMainWindow( CMainWindow* const pMainWindow )
+bool CModelViewerApp::Startup()
 {
-	m_pMainWindow = pMainWindow;
-}
+	//Configure the working directory to be the exe directory.
+	{
+		bool bSuccess;
+		auto szExePath = plat::GetExeFileName(&bSuccess);
 
-void CModelViewerApp::SetFullscreenWindow( CFullscreenWindow* const pWindow )
-{
-	m_pFullscreenWindow = pWindow;
-}
+		if (!bSuccess)
+		{
+			Error("CAppSystem::Startup: Failed to get executable filename!\n");
+			return false;
+		}
 
-bool CModelViewerApp::PreRunApp()
-{
+		std::filesystem::path exePath(szExePath);
+
+		std::error_code canonicalError;
+
+		auto exeDir = exePath.parent_path();
+
+		exeDir = std::filesystem::canonical(exeDir, canonicalError);
+
+		if (canonicalError)
+		{
+			Error(
+				"CAppSystem::Startup: Failed to canonicalize  \"%s\" with error \"%s\"!\n",
+				exeDir.string().c_str(), canonicalError.message().c_str());
+			return false;
+		}
+
+		std::error_code cwdError;
+
+		std::filesystem::current_path(exeDir, cwdError);
+
+		if (cwdError)
+		{
+			Error(
+				"CAppSystem::Startup: Failed to set current working directory \"%s\" with error \"%s\"!\n",
+				exeDir.string().c_str(), cwdError.message().c_str());
+			return false;
+		}
+	}
+
+	//No log file provided, initialize to executable filename.
+	if (m_szLogFilename.empty())
+	{
+		bool bSuccess;
+		auto szExePath = plat::GetExeFileName(&bSuccess);
+
+		if (bSuccess)
+		{
+			std::filesystem::path path(szExePath);
+
+			m_szLogFilename = path.stem().string();
+		}
+
+		if (m_szLogFilename.empty())
+		{
+			Warning("CBaseToolApp::StartupApp: Couldn't get executable name, defaulting log filename to \"tool\"\n");
+			m_szLogFilename = "tool";
+		}
+	}
+
+	const std::string szLogFilename = m_szLogFilename + ".log";
+
+	//Overwrite previous session log.
+	logging().OpenLogFile(szLogFilename.c_str(), false);
+
+	UTIL_InitRandom();
+
+	//TODO: this is temporary until the modular design gets refactored out
+	//TODO: need to delete these at some point
+	m_pFileSystem = new filesystem::CFileSystem();
+	g_pCVar = new cvar::CCVarSystem();
+	g_pSoundSystem = m_pSoundSystem = new soundsystem::CSoundSystem();
+	g_pRenderContext = new renderer::CRenderContextIMode();
+	g_pStudioMdlRenderer = new studiomdl::CStudioModelRenderer();
+
+	if (!g_pCVar->Initialize())
+	{
+		FatalError("Failed to initialize CVar system!\n");
+		return false;
+	}
+
+	if (!m_pFileSystem->Initialize())
+	{
+		FatalError("Failed to initialize file system!\n");
+		return false;
+	}
+
+	if (!InitOpenGL())
+	{
+		return false;
+	}
+
+	if (!g_pStudioMdlRenderer->Initialize())
+	{
+		FatalError("Failed to initialize StudioModel renderer!\n");
+		return false;
+	}
+
+	if (!m_pSoundSystem->Initialize(m_pFileSystem))
+	{
+		FatalError("Failed to initialize sound system!\n");
+		return false;
+	}
+
+	wxInitAllImageHandlers();
+
 	m_pState = new CHLMVState();
-	m_pSettings = new CHLMVSettings( GetFileSystem() );
+	m_pSettings = new CHLMVSettings(m_pFileSystem);
 
 	//TODO: fix on Linux - Solokiller
-	SetToolIcon( wxICON( HLMV_ICON ) );
+	m_ToolIcon = wxICON(HLMV_ICON);
 
-	SetEntityList( &g_EntityList );
+	SetEntityList(&g_EntityList);
 
-	if( !EntityManager().OnMapBegin() )
+	if (!EntityManager().OnMapBegin())
 	{
-		FatalError( "Failed to start map\n" );
+		FatalError("Failed to start map\n");
 		return false;
 	}
 
 	//Must be called before we create the main window, since it accesses the window.
-	UseMessagesWindow( true );
+	UseMessagesWindow(true);
 
-	if( !GetSettings()->Initialize( HLMV_SETTINGS_FILE ) )
+	if (!GetSettings()->Initialize(HLMV_SETTINGS_FILE))
 	{
 		return false;
 	}
 
-	m_pMainWindow = new hlmv::CMainWindow( this );
+	m_pMainWindow = new hlmv::CMainWindow(this);
 
-	m_pMainWindow->Show( true );
+	m_pMainWindow->Show(true);
 
-	if( !m_szModel.IsEmpty() )
-		LoadModel( m_szModel );
+	if (!m_szModel.IsEmpty())
+		LoadModel(m_szModel);
 
 	return true;
 }
 
-void CModelViewerApp::ShutdownApp()
+void CModelViewerApp::Shutdown()
 {
 	if( auto pSettings = GetSettings() )
 	{
@@ -134,7 +295,77 @@ void CModelViewerApp::ShutdownApp()
 		m_pState = nullptr;
 	}
 
-	CBaseWXToolApp::ShutdownApp();
+	if (m_pSoundSystem)
+	{
+		m_pSoundSystem->Shutdown();
+		m_pSoundSystem = nullptr;
+	}
+
+	if (g_pStudioMdlRenderer)
+	{
+		g_pStudioMdlRenderer->Shutdown();
+		g_pStudioMdlRenderer = nullptr;
+	}
+
+	if (g_pRenderContext)
+	{
+		g_pRenderContext = nullptr;
+	}
+
+	if (CwxOpenGL::InstanceExists())
+	{
+		wxOpenGL().Shutdown();
+
+		CwxOpenGL::DestroyInstance();
+	}
+
+	if (m_pFileSystem)
+	{
+		m_pFileSystem->Shutdown();
+		m_pFileSystem = nullptr;
+	}
+
+	if (g_pCVar)
+	{
+		g_pCVar->Shutdown();
+		g_pCVar = nullptr;
+	}
+
+	//Don't close the log file just yet. It'll be closed when the program is unloaded, so anything that happens between now and then should be logged.
+}
+
+bool CModelViewerApp::InitOpenGL()
+{
+	//Set up OpenGL parameters.
+	CwxOpenGL::CreateInstance();
+
+	wxGLAttributes canvasAttributes;
+
+	canvasAttributes
+		.PlatformDefaults()
+		.RGBA()
+		.Depth(16)
+		.Stencil(8)
+		.DoubleBuffer()
+		.EndList();
+
+	wxGLContextAttrs contextAttributes;
+
+	//The default settings for OpenGL allow for Windows XP support. OpenGL 2.1 is typically supported by XP era hardware, making it the best choice.
+	//2.1 supports GLSL 120, which has some features that are nice to have in shaders.
+	contextAttributes
+		.PlatformDefaults()
+		.MajorVersion(2)
+		.MinorVersion(1)
+		.EndList();
+
+	if (!wxOpenGL().Initialize(canvasAttributes, &contextAttributes))
+	{
+		wxMessageBox("Failed to initialize OpenGL", wxMessageBoxCaptionStr, wxOK | wxCENTRE | wxICON_ERROR);
+		return false;
+	}
+
+	return true;
 }
 
 void CModelViewerApp::RunFrame()
@@ -165,6 +396,121 @@ void CModelViewerApp::OnExit( const bool bMainWndClosed )
 	}
 
 	wxOpenGL().Shutdown();
+}
+
+void CModelViewerApp::Exit(const bool bMainWndClosed)
+{
+	//Don't call multiple times.
+	if (m_bExiting)
+		return;
+
+	m_bExiting = true;
+
+	//Close messages window if needed.
+	UseMessagesWindow(false);
+
+	//Don't let any log message boxes pop up during shutdown.
+	logging().SetLogListener(GetNullLogListener());
+
+	OnExit(bMainWndClosed);
+}
+
+void CModelViewerApp::OnWindowClose(wxFrame* pWindow, wxCloseEvent& event)
+{
+	if (pWindow == m_pMessagesWindow)
+	{
+		if (!event.CanVeto())
+		{
+			MessagesWindowClosed();
+		}
+	}
+}
+
+void CModelViewerApp::UseMessagesWindow(const bool bUse)
+{
+	//Don't allow creation during exit.
+	if (bUse && m_bExiting)
+		return;
+
+	//No change
+	if (bUse == (m_pMessagesWindow != nullptr))
+		return;
+
+	if (bUse)
+	{
+		m_pMessagesWindow = new ui::CMessagesWindow(m_uiMaxMessagesCount, this);
+
+		m_pMessagesWindow->SetIcon(m_ToolIcon);
+
+		logging().SetLogListener(m_pMessagesWindow);
+	}
+	else
+	{
+		m_pMessagesWindow->Close(true);
+
+		//Don't call MessagesWindowClosed; Close calls this.
+	}
+}
+
+void CModelViewerApp::ShowMessagesWindow(const bool bShow)
+{
+	if (!m_pMessagesWindow)
+		return;
+
+	m_pMessagesWindow->Show(bShow);
+}
+
+size_t CModelViewerApp::GetMaxMessagesCount() const
+{
+	if (!m_pMessagesWindow)
+		return m_uiMaxMessagesCount;
+
+	return m_pMessagesWindow->GetMaxMessagesCount();
+}
+
+void CModelViewerApp::SetMaxMessagesCount(const size_t uiMaxMessagesCount)
+{
+	m_uiMaxMessagesCount = uiMaxMessagesCount;
+
+	if (m_pMessagesWindow)
+	{
+		m_pMessagesWindow->SetMaxMessagesCount(uiMaxMessagesCount);
+	}
+}
+
+void CModelViewerApp::MessagesWindowClosed()
+{
+	m_pMessagesWindow = nullptr;
+
+	logging().SetLogListener(nullptr);
+}
+
+void CModelViewerApp::OnIdle(wxIdleEvent& event)
+{
+	event.RequestMore();
+
+	const double flCurTime = GetCurrentTime();
+
+	double flFrameTime = flCurTime - WorldTime.GetPreviousRealTime();
+
+	WorldTime.SetRealTime(flCurTime);
+
+	if (flFrameTime > 1.0)
+		flFrameTime = 0.1;
+
+	//Don't use this when using wxTimer, since it lowers the FPS by a fair amount.
+	if (flFrameTime < (1.0 / max_fps.GetFloat()))
+		return;
+
+	WorldTime.TimeChanged(flCurTime);
+
+	g_pCVar->RunFrame();
+
+	g_pStudioMdlRenderer->RunFrame();
+
+	m_pSoundSystem->RunFrame();
+
+	RunFrame();
 }
 
 bool CModelViewerApp::LoadModel( const char* const pszFilename )
