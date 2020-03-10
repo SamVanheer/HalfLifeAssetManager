@@ -1,2 +1,1 @@
-add_subdirectory( hlmv )
-add_subdirectory( spriteviewer )
+add_subdirectory(hlmv)
