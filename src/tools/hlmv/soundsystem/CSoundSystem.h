@@ -30,8 +30,7 @@ public:
 	//Maximum number of sounds to play simultaneously.
 	static const size_t MAX_SOUNDS = 16;
 
-private:
-
+public:
 	struct Sound
 	{
 		Sound()

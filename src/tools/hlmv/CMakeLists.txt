@@ -16,6 +16,26 @@ endif()
 find_package(wxWidgets REQUIRED COMPONENTS gl adv propgrid core base)
 include(${wxWidgets_USE_FILE})
 
+add_library(Ogg STATIC IMPORTED)
+
+set_target_properties(Ogg PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/ogg/lib/libogg_static.lib)
+
+target_include_directories(Ogg
+	INTERFACE
+		${EXTERNAL_DIR}/ogg/include)
+
+add_library(Vorbis STATIC IMPORTED)
+
+set_target_properties(Vorbis PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/vorbis/lib/libvorbis_static.lib)
+
+target_include_directories(Vorbis
+	INTERFACE
+		${EXTERNAL_DIR}/vorbis/include)
+
+add_library(VorbisFile STATIC IMPORTED)
+
+set_target_properties(VorbisFile PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/vorbis/lib/libvorbisfile_static.lib)
+
 add_executable(${TARGET_NAME})
 
 check_winxp_support(${TARGET_NAME})
@@ -70,7 +90,10 @@ target_link_libraries(${TARGET_NAME}
 		${GLEW}
 		${OPENGL_LIBRARIES}
 		OpenAL::OpenAL
-		${SHARED_DEPENDENCIES})
+		${SHARED_DEPENDENCIES}
+		Ogg
+		Vorbis
+		VorbisFile)
 
 set_target_properties(${TARGET_NAME} 
 	PROPERTIES COMPILE_FLAGS "${WX_SHARED_COMPILE_FLAGS}" 

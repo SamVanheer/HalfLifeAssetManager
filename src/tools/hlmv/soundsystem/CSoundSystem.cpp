@@ -1,9 +1,12 @@
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <algorithm>
 #include <vector>
 
 #include "AudioFile/AudioFile.h"
+
+#include "vorbis/vorbisfile.h"
 
 #include "shared/Logging.h"
 #include "shared/Utility.h"
@@ -130,6 +133,73 @@ std::unique_ptr<CSoundSystem::Sound> TryLoadWaveFile(const std::string& fileName
 	return sound;
 }
 
+struct OggVorbisCleanup
+{
+	void operator()(OggVorbis_File* pointer) const
+	{
+		ov_clear(pointer);
+	}
+};
+
+std::unique_ptr<CSoundSystem::Sound> TryLoadOggVorbis(const std::string& fileName)
+{
+	OggVorbis_File vorbisData{};
+
+	auto result = ov_fopen(fileName.c_str(), &vorbisData);
+
+	if (result)
+	{
+		return {};
+	}
+
+	const std::unique_ptr<OggVorbis_File, OggVorbisCleanup> cleanup(&vorbisData);
+
+	const auto info = ov_info(&vorbisData, -1);
+
+	const ALenum format = info->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+
+	const auto pcmTotal = ov_pcm_total(&vorbisData, -1);
+
+	const ogg_int64_t sizeInBytes = pcmTotal * info->channels * 2;
+
+	std::vector<std::uint8_t> data;
+
+	if (sizeInBytes > data.max_size())
+	{
+		Error("CSoundSystem::TryLoadOggVorbis: File \"%s\" is too large to read (%dll > %u)\n", fileName.c_str(), sizeInBytes, data.max_size());
+		return {};
+	}
+
+	data.resize(sizeInBytes);
+
+	long size = 0;
+	int bitStream = 0;
+
+	for (std::size_t offset = 0;
+		(size = ov_read(&vorbisData, (char*) data.data() + offset, 4096, 0, 2, 1, &bitStream)) > 0;
+		offset += size)
+	{
+	}
+
+	//An error occurred while reading
+	if (size < 0)
+	{
+		Error("CSoundSystem::TryLoadOggVorbis: Error while reading file \"%s\" (%dl)\n", fileName.c_str(), size);
+		return {};
+	}
+
+	auto sound = std::make_unique<CSoundSystem::Sound>();
+
+	alBufferData(sound->buffer, format, data.data(), data.size(), info->rate);
+
+	if (CheckALErrors())
+	{
+		return {};
+	}
+
+	return sound;
+}
+
 CSoundSystem::CSoundSystem()
 {
 }
@@ -243,9 +313,12 @@ void CSoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitc
 	flVolume = clamp( flVolume, 0.0f, 1.0f );
 	iPitch = clamp( iPitch, 0, 255 );
 
-	std::unique_ptr<Sound> sound;
+	std::unique_ptr<Sound> sound = TryLoadWaveFile(szFullFilename);
 
-	sound = TryLoadWaveFile(szFullFilename);
+	if (!sound)
+	{
+		sound = TryLoadOggVorbis(szFullFilename);
+	}
 
 	if (!sound)
 	{
