@@ -7,6 +7,7 @@
 #include "utility/PlatUtils.h"
 
 #include "cvar/CVar.h"
+#include "cvar/CCVarSystem.h"
 
 #include "filesystem/IFileSystem.h"
 #include "soundsystem/CSoundSystem.h"
@@ -60,7 +61,7 @@ bool CBaseToolApp::StartupApp()
 
 bool CBaseToolApp::LoadAppLibraries()
 {
-	if( !LoadLibraries( "CVar", "FileSystem", "Renderer" ) )
+	if( !LoadLibraries( "FileSystem", "Renderer" ) )
 		return false;
 
 	return true;
@@ -69,7 +70,6 @@ bool CBaseToolApp::LoadAppLibraries()
 bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t uiNumFactories )
 {
 	if( !LoadAndCheckInterfaces( pFactories, uiNumFactories, 
-							IFace( ICVARSYSTEM_NAME, g_pCVar, "CVar System" ),
 							IFace( IFILESYSTEM_NAME, m_pFileSystem, "File System" ),
 							IFace( IRENDERERLIBRARY_NAME, m_pRendererLib, "Render Library" ),
 							IFace( IRENDERCONTEXT_NAME, g_pRenderContext, "Render Context" ),
@@ -80,6 +80,7 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 
 	//TODO: this is temporary until the modular design gets refactored out
 	//TODO: need to delete these at some point
+	g_pCVar = new cvar::CCVarSystem();
 	g_pSoundSystem = m_pSoundSystem = new soundsystem::CSoundSystem();
 
 	if( !g_pCVar->Initialize() )
@@ -90,8 +91,6 @@ bool CBaseToolApp::Connect( const CreateInterfaceFn* pFactories, const size_t ui
 
 	//Connect Core lib cvars first.
 	ConnectCoreCVars( g_pCVar );
-
-	cvar::ConnectCVars();
 
 	if( !m_pFileSystem->Initialize() )
 	{

@@ -38,6 +38,7 @@ target_sources(${TARGET_NAME}
 		CHLMVState.cpp
 		CHLMVState.h)
 
+add_subdirectory(cvar)
 add_subdirectory(entity)
 add_subdirectory(settings)
 add_subdirectory(soundsystem)
