@@ -243,13 +243,16 @@ void CModelViewerApp::Shutdown()
 		pSettings->Shutdown( HLMV_SETTINGS_FILE );
 	}
 
+	//If either window is still open at this time, force close them
 	if( m_pFullscreenWindow )
 	{
+		m_pFullscreenWindow->Close(true);
 		m_pFullscreenWindow = nullptr;
 	}
 
 	if( m_pMainWindow )
 	{
+		m_pMainWindow->Close(true);
 		m_pMainWindow = nullptr;
 	}
 
