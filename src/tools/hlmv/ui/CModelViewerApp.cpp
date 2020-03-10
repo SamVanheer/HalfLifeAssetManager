@@ -28,8 +28,8 @@
 #include "CMainWindow.h"
 
 #include "ui/common/CMessagesWindow.h"
-#include "ui/wx/CwxOpenGL.h"
-#include "ui/wx/wxLogging.h"
+#include "wx/CwxOpenGL.h"
+#include "wx/wxLogging.h"
 
 #include "CModelViewerApp.h"
 

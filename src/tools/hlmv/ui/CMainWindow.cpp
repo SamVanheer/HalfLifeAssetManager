@@ -1,11 +1,11 @@
 #include <wx/filename.h>
 
-#include "ui/wx/CwxOpenGL.h"
+#include "wx/CwxOpenGL.h"
 
 #include "common/CMessagesWindow.h"
 #include "common/CCmdLineConfigDialog.h"
 #include "common/CProcessDialog.h"
-#include "ui/wx/utility/wxUtil.h"
+#include "wx/utility/wxUtil.h"
 
 #include "CModelViewerApp.h"
 

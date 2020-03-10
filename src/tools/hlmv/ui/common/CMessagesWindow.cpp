@@ -1,6 +1,6 @@
 #include <wx/sizer.h>
 
-#include "ui/wx/utility/IWindowCloseListener.h"
+#include "wx/utility/IWindowCloseListener.h"
 
 #include "cvar/CVar.h"
 

@@ -2,7 +2,7 @@
 
 #include "shared/studiomodel/studio.h"
 
-#include "ui/wx/utility/wxUtil.h"
+#include "wx/utility/wxUtil.h"
 
 #include "CGlobalFlagsPanel.h"
 

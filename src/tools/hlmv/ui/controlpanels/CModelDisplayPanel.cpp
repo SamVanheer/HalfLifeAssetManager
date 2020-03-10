@@ -6,7 +6,7 @@
 #include "../CModelViewerApp.h"
 
 #include "ui/common/CFOVCtrl.h"
-#include "ui/wx/utility/wxUtil.h"
+#include "wx/utility/wxUtil.h"
 
 #include "cvar/CVar.h"
 

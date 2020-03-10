@@ -5,7 +5,7 @@
 #include <wx/gbsizer.h>
 #include <wx/image.h>
 
-#include "ui/wx/utility/wxUtil.h"
+#include "wx/utility/wxUtil.h"
 
 #include "graphics/GraphicsHelpers.h"
 #include "graphics/Palette.h"

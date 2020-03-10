@@ -22,7 +22,7 @@
 
 #include "game/entity/CStudioModelEntity.h"
 
-#include "ui/wx/CwxOpenGL.h"
+#include "wx/CwxOpenGL.h"
 
 #include "CMainPanel.h"
 

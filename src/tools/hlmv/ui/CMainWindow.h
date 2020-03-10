@@ -8,7 +8,7 @@
 #include "../settings/CHLMVSettings.h"
 #include "../CHLMVState.h"
 
-#include "ui/wx/utility/CwxRecentFiles.h"
+#include "wx/utility/CwxRecentFiles.h"
 #include "common/CwxBaseFrame.h"
 
 namespace hlmv

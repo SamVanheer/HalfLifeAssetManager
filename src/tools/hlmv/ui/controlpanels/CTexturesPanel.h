@@ -1,7 +1,7 @@
 #ifndef CONTROLPANELS_CTEXTURESPANEL_H
 #define CONTROLPANELS_CTEXTURESPANEL_H
 
-#include "ui/wx/utility/CMeshClientData.h"
+#include "wx/utility/CMeshClientData.h"
 
 #include "CBaseControlPanel.h"
 
