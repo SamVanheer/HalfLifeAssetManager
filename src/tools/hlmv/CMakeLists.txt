@@ -37,7 +37,7 @@ target_compile_definitions(${TARGET_NAME}
 
 target_sources(${TARGET_NAME}
 	PRIVATE
-		$<$<CXX_COMPILER_ID:MSVC>:${SRC_DIR}/msw/tools/hlmv.rc>
+		$<$<CXX_COMPILER_ID:MSVC>:hlmv.rc>
 		CHLMVState.cpp
 		CHLMVState.h)
 
