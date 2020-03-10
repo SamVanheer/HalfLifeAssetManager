@@ -78,7 +78,7 @@ set_target_properties(${TARGET_NAME}
 
 #Create filters
 get_target_property(SOURCE_FILES ${TARGET_NAME} SOURCES)
-source_group(TREE ${SRC_DIR} FILES ${SOURCE_FILES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_FILES})
 
 if(WIN32)
 	copy_dependencies(${TARGET_NAME} external/GLEW/lib glew32.dll)
