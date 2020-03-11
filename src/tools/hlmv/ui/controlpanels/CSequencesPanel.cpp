@@ -453,6 +453,8 @@ void CSequencesPanel::SetSequence( int iIndex )
 		m_pBlends->SetLabelText( wxString::Format( "Blends: %d", sequence.numblends ) );
 		m_pEventCount->SetLabelText( wxString::Format( "# of Events: %d", sequence.numevents ) );
 	}
+
+	UpdateEvents();
 }
 
 void CSequencesPanel::SetFrame( int iFrame )
@@ -615,8 +617,6 @@ void CSequencesPanel::UpdateOrigin()
 void CSequencesPanel::SequenceChanged( wxCommandEvent& event )
 {
 	SetSequence( m_pSequence->GetSelection() );
-
-	UpdateEvents();
 }
 
 void CSequencesPanel::TogglePlay( wxCommandEvent& event )
