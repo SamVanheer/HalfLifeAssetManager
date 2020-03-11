@@ -1,6 +1,15 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
+		BMPFile.cpp
+		BMPFile.h
+		CCamera.cpp
+		CCamera.h
 		Constants.cpp
 		Constants.h
 		GraphicsHelpers.cpp
-		GraphicsHelpers.h)
+		GraphicsHelpers.h
+		GraphicsUtils.cpp
+		GraphicsUtils.h
+		OpenGL.cpp
+		OpenGL.h
+		Palette.h)

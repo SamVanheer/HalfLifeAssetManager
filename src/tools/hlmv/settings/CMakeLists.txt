@@ -1,4 +1,16 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
+		CBaseConfigManager.h
+		CBaseSettings.cpp
+		CBaseSettings.h
+		CCmdLineConfig.cpp
+		CCmdLineConfig.h
+		CGameConfig.cpp
+		CGameConfig.h
 		CHLMVSettings.cpp
-		CHLMVSettings.h)
+		CHLMVSettings.h
+		ConfigIO.h
+		CRecentFiles.cpp
+		CRecentFiles.h
+		GameConfigIO.cpp
+		GameConfigIO.h)

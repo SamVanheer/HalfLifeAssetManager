@@ -98,8 +98,8 @@ add_subdirectory(graphics)
 add_subdirectory(keyvalues)
 add_subdirectory(settings)
 add_subdirectory(soundsystem)
-add_subdirectory(stdlib)
 add_subdirectory(ui)
+add_subdirectory(utility)
 add_subdirectory(wx)
 
 #Create filters
