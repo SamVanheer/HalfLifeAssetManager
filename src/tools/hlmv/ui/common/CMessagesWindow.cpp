@@ -1,7 +1,5 @@
 #include <wx/sizer.h>
 
-#include "wx/utility/IWindowCloseListener.h"
-
 #include "cvar/CVar.h"
 
 #include "CMessagesWindow.h"
@@ -17,10 +15,9 @@ wxBEGIN_EVENT_TABLE( CMessagesWindow, wxFrame )
 	EVT_CLOSE( CMessagesWindow::OnClose )
 wxEND_EVENT_TABLE()
 
-CMessagesWindow::CMessagesWindow( const size_t uiMaxMessagesCount, IWindowCloseListener* pWindowCloseListener )
+CMessagesWindow::CMessagesWindow(const size_t uiMaxMessagesCount)
 	: wxFrame( nullptr, wxID_ANY, "Messages Window", wxDefaultPosition, wxDefaultSize, ( wxDEFAULT_FRAME_STYLE ) )
 	, m_uiMaxMessagesCount( 0 )
-	, m_pWindowCloseListener( pWindowCloseListener )
 {
 
 	wxButton* pClear = new wxButton( this, wxID_SHARED_MESSAGES_CLEAR, "Clear" );
@@ -209,11 +206,7 @@ void CMessagesWindow::OnClose( wxCloseEvent& event )
 		//Clear command text
 		m_pCommand->ChangeValue( "" );
 	}
-
-	if( m_pWindowCloseListener )
-		m_pWindowCloseListener->OnWindowClose( this, event );
-
-	if( !event.CanVeto() )
+	else
 	{
 		event.Skip();
 	}

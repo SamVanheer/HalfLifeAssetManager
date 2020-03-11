@@ -10,8 +10,6 @@
 #include "../CHLMVState.h"
 #include "../settings/CHLMVSettings.h"
 
-#include "wx/utility/IWindowCloseListener.h"
-
 namespace filesystem
 {
 class IFileSystem;
@@ -32,7 +30,7 @@ namespace hlmv
 class CMainWindow;
 class CFullscreenWindow;
 
-class CModelViewerApp : public wxApp, public IWindowCloseListener
+class CModelViewerApp : public wxApp
 {
 public:
 	static const size_t DEFAULT_MAX_MESSAGES_COUNT = 100;
@@ -74,7 +72,7 @@ private:
 
 	void OnIdle(wxIdleEvent& event);
 
-	void OnWindowClose(wxFrame* pWindow, wxCloseEvent& event) override;
+	void OnWindowClose(wxCloseEvent& event);
 
 	/**
 	*	Allows an app to enable the messages window. This is a separate window containing log messages.

@@ -387,15 +387,18 @@ void CModelViewerApp::Exit(const bool bMainWndClosed)
 	wxOpenGL().Shutdown();
 }
 
-void CModelViewerApp::OnWindowClose(wxFrame* pWindow, wxCloseEvent& event)
+void CModelViewerApp::OnWindowClose(wxCloseEvent& event)
 {
-	if (pWindow == m_pMessagesWindow)
+	if (event.GetEventObject() == m_pMessagesWindow)
 	{
 		if (!event.CanVeto())
 		{
 			MessagesWindowClosed();
 		}
 	}
+
+	//Need to skip in all cases so other event handlers still run
+	event.Skip();
 }
 
 void CModelViewerApp::UseMessagesWindow(const bool bUse)
@@ -410,7 +413,9 @@ void CModelViewerApp::UseMessagesWindow(const bool bUse)
 
 	if (bUse)
 	{
-		m_pMessagesWindow = new ui::CMessagesWindow(m_uiMaxMessagesCount, this);
+		m_pMessagesWindow = new ui::CMessagesWindow(m_uiMaxMessagesCount);
+
+		m_pMessagesWindow->Bind(wxEVT_CLOSE_WINDOW, &CModelViewerApp::OnWindowClose, this);
 
 		m_pMessagesWindow->SetIcon(m_ToolIcon);
 

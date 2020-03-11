@@ -8,7 +8,6 @@
 #include "shared/Logging.h"
 
 class wxListView;
-class IWindowCloseListener;
 
 namespace ui
 {
@@ -18,7 +17,7 @@ namespace ui
 class CMessagesWindow final : public wxFrame, public ILogListener
 {
 public:
-	CMessagesWindow( const size_t uiMaxMessagesCount, IWindowCloseListener* pWindowCloseListener = nullptr );
+	CMessagesWindow(const size_t uiMaxMessagesCount);
 	~CMessagesWindow();
 
 	void LogMessage( const LogType type, const char* const pszMessage ) override final
@@ -29,13 +28,6 @@ public:
 	size_t GetMaxMessagesCount() const { return m_uiMaxMessagesCount; }
 
 	void SetMaxMessagesCount( const size_t uiMaxMessagesCount );
-
-	IWindowCloseListener* GetWindowCloseListener() { return m_pWindowCloseListener; }
-
-	void SetWindowCloseListener( IWindowCloseListener* pListener )
-	{
-		m_pWindowCloseListener = pListener;
-	}
 
 	void AddMessage( const LogType type, const wxString& szMessage );
 
@@ -65,8 +57,6 @@ private:
 
 private:
 	size_t m_uiMaxMessagesCount;
-
-	IWindowCloseListener* m_pWindowCloseListener;
 
 	wxListView* m_pList;
 
