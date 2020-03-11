@@ -23,7 +23,7 @@ CGlobalFlagsPanel::CGlobalFlagsPanel( wxWindow* pParent, CModelViewerApp* const 
 	m_pCheckBoxes[ CheckBox::ROCKET ] = new wxCheckBox( pElemParent, wxID_GLOBALFLAGS_CHECKBOX, "Rocket Trail" );
 	m_pCheckBoxes[ CheckBox::GRENADE ] = new wxCheckBox( pElemParent, wxID_GLOBALFLAGS_CHECKBOX, "Grenade Smoke" );
 	m_pCheckBoxes[ CheckBox::GIB ] = new wxCheckBox( pElemParent, wxID_GLOBALFLAGS_CHECKBOX, "Gib Blood" );
-	m_pCheckBoxes[ CheckBox::ROTATE ] = new wxCheckBox( pElemParent, wxID_GLOBALFLAGS_CHECKBOX, "Modle Rotate" );
+	m_pCheckBoxes[ CheckBox::ROTATE ] = new wxCheckBox( pElemParent, wxID_GLOBALFLAGS_CHECKBOX, "Model Rotate" );
 	m_pCheckBoxes[ CheckBox::TRACER ] = new wxCheckBox( pElemParent, wxID_GLOBALFLAGS_CHECKBOX, "Green Trail" );
 
 	m_pCheckBoxes[ CheckBox::ZOMGIB ] = new wxCheckBox( pElemParent, wxID_GLOBALFLAGS_CHECKBOX, "Zombie Blood" );
