@@ -1,4 +1,16 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
+		CBaseConCommand.cpp
+		CBaseConCommand.h
+		CConCommand.cpp
+		CConCommand.h
+		CCVar.cpp
+		CCVar.h
 		CCVarSystem.cpp
-		CCVarSystem.h)
+		CCVarSystem.h
+		ConVarConstants.h
+		CVar.cpp
+		CVar.h
+		CVarUtils.cpp
+		CVarUtils.h
+		ICVarSystem.h)
