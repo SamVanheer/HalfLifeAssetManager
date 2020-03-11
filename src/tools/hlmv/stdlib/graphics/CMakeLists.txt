@@ -4,8 +4,6 @@ target_sources(${TARGET_NAME}
 		BMPFile.h
 		CCamera.cpp
 		CCamera.h
-		GLRenderTarget.cpp
-		GLRenderTarget.h
 		GraphicsUtils.cpp
 		GraphicsUtils.h
 		OpenGL.cpp

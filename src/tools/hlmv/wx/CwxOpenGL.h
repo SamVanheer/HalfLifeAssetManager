@@ -7,8 +7,6 @@
 
 #include <wx/glcanvas.h>
 
-class GLRenderTarget;
-
 /*
 *	Singleton class that stores all OpenGL data used by any program.
 */
@@ -38,8 +36,6 @@ public:
 	*/
 	wxGLContext* GetContext( wxGLCanvas* pCanvas );
 
-	GLRenderTarget* GetScratchTarget();
-
 	using CBaseOpenGL::GetErrors;
 
 	GLuint glLoadImage( const char* const pszFilename ) override final;
@@ -56,8 +52,6 @@ private:
 	bool				m_bContextAttributesSet = false;	//Whether any context attributes have been set.
 
 	wxGLContext*		m_pContext = nullptr;				//The context used by all windows.
-
-	GLRenderTarget*		m_pScratchTarget = nullptr;			//Render target used for one off drawing and conversion operations.
 
 private:
 	CwxOpenGL( const CwxOpenGL& ) = delete;

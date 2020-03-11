@@ -16,7 +16,6 @@
 
 #include "graphics/GraphicsUtils.h"
 #include "graphics/GraphicsHelpers.h"
-#include "graphics/GLRenderTarget.h"
 
 #include "shared/renderer/studiomodel/IStudioModelRenderer.h"
 
@@ -681,48 +680,6 @@ void C3DView::SaveUVMap( const wxString& szFilename, const int iTexture )
 	const mstudiotexture_t& texture = ( ( mstudiotexture_t* ) ( ( byte* ) pHdr + pHdr->textureindex ) )[ iTexture ];
 
 	SetCurrent( *GetContext() );
-
-	//This is the old way UV render to texture was done, but it doesn't work with some 2.1 compliant GPUs so a workaround is used
-	/*
-	GLRenderTarget* const pScratchTarget = wxOpenGL().GetScratchTarget();
-
-	if( !pScratchTarget )
-	{
-		wxMessageBox( "Unable to create target to draw UV map to!" );
-		return;
-	}
-
-	pScratchTarget->Bind();
-
-	pScratchTarget->Setup( texture.width, texture.height, false );
-
-	const GLenum completeness = pScratchTarget->GetStatus();
-
-	if( completeness != GL_FRAMEBUFFER_COMPLETE )
-	{
-		wxMessageBox( wxString::Format( "UV map framebuffer is incomplete!\n%s (status code %d)", glFrameBufferStatusToString( completeness ), completeness ) );
-
-		pScratchTarget->Unbind();
-
-		return;
-	}
-
-	glViewport( 0, 0, texture.width, texture.height );
-
-	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-
-	glClear( GL_COLOR_BUFFER_BIT );
-
-	DrawTexture( 0, 0, texture.width, texture.height, pEntity, iTexture, 1.0f, true, false, false, m_pHLMV->GetState()->pUVMesh );
-
-	pScratchTarget->FinishDraw();
-
-	std::unique_ptr<byte[]> rgbData = std::make_unique<byte[]>( texture.width * texture.height * 3 );
-
-	pScratchTarget->GetPixels( texture.width, texture.height, GL_RGB, GL_UNSIGNED_BYTE, rgbData.get() );
-
-	pScratchTarget->Unbind();
-	*/
 
 	//Save off all settings we're about to modify
 	//Don't need to restore the viewport since it's reset every frame anyway
