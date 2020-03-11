@@ -64,6 +64,7 @@ struct DataConverter16Bit
 
 	static Type Convert(double value)
 	{
+		value = std::clamp(value, -1., 1.);
 		return static_cast<int16_t> (value * 32767.);
 	}
 };
@@ -83,7 +84,7 @@ void ConvertToAL(const AudioFile<double>& file, std::vector<std::uint8_t>& data)
 
 			dest = T::Convert(value);
 
-			byteIndex += sizeof(T);
+			byteIndex += sizeof(T::Type);
 		}
 	}
 }
@@ -104,7 +105,7 @@ std::unique_ptr<CSoundSystem::Sound> TryLoadWaveFile(const std::string& fileName
 
 	std::vector<std::uint8_t> data;
 
-	data.resize(file.getNumChannels() * file.getNumSamplesPerChannel());
+	data.resize(file.getNumChannels() * file.getNumSamplesPerChannel() * (file.getBitDepth() / 8));
 
 	switch (file.getBitDepth())
 	{
