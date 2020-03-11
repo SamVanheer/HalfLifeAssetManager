@@ -19,10 +19,10 @@ namespace hlmv
 class CSequencesPanel final : public CBaseControlPanel, public cvar::ICVarHandler
 {
 private:
-	//Divided by 10 to get a multiplier
-	static const size_t ANIMSPEED_SLIDER_MIN = 0;
-	static const size_t ANIMSPEED_SLIDER_MAX = 200;
-	static const size_t ANIMSPEED_SLIDER_DEFAULT = 40;
+	static const int ANIMSPEED_MIN = 0;
+	static const int ANIMSPEED_MAX = 10;
+	static const int ANIMSPEED_DEFAULT = 1;
+	static const int ANIMSPEED_SLIDER_MULTIPLIER = 40;
 
 	static const int CROSSHAIR_LINE_WIDTH = 3;
 	static const int CROSSHAIR_LINE_START = 5;
@@ -80,6 +80,8 @@ private:
 
 	void AnimSpeedChanged( wxCommandEvent& event );
 
+	void AnimSpeedSpinnerChanged(wxSpinDoubleEvent& event);
+
 	void ResetAnimSpeed(wxCommandEvent& event);
 
 	void EventChanged( wxCommandEvent& event );
@@ -103,6 +105,7 @@ private:
 	wxButton* m_pNextFrameButton;
 
 	wxSlider* m_pAnimSpeed;
+	wxSpinCtrlDouble* m_pAnimSpeedSpinner;
 	wxButton* m_pResetSpeedButton;
 
 	wxPanel* m_pSequenceInfo;
