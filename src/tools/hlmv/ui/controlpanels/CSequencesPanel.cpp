@@ -37,150 +37,147 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 {
 	wxWindow* const pElemParent = GetElementParent();
 
-	m_pSequence = new wxChoice( pElemParent, wxID_SEQUENCE_SEQCHANGED, wxDefaultPosition, wxSize( 400, wxDefaultSize.GetY() ) );
-
-	auto framePanel = new wxPanel(pElemParent);
-
-	m_pTogglePlayButton = new wxToggleButton(framePanel, wxID_SEQUENCE_TOGGLEPLAY, "Stop" );
-	m_pPrevFrameButton = new wxButton(framePanel, wxID_SEQUENCE_PREVFRAME, "<<" );
+	m_pSequence = new wxChoice(pElemParent, wxID_SEQUENCE_SEQCHANGED, wxDefaultPosition, wxSize(400, wxDefaultSize.GetY()));
 
 	//Validator so it only considers numbers
-	wxTextValidator validator( wxFILTER_INCLUDE_CHAR_LIST );
-
-	const wxString szCharacters( "0123456789" );
-
-	const size_t uiLength = szCharacters.Length();
+	wxTextValidator validator(wxFILTER_INCLUDE_CHAR_LIST);
 
 	wxArrayString list;
 
-	for( size_t uiIndex = 0; uiIndex < uiLength; ++uiIndex )
+	for (auto character : "0123456789")
 	{
-		list.Add( szCharacters.GetChar( uiIndex ) );
+		list.Add(character);
 	}
 
-	validator.SetIncludes( list );
+	validator.SetIncludes(list);
 
-	m_pSequenceFrame = new wxTextCtrl(framePanel, wxID_SEQUENCE_FRAME, "", wxDefaultPosition, wxDefaultSize, 0, validator );
-	m_pNextFrameButton = new wxButton(framePanel, wxID_SEQUENCE_NEXTFRAME, ">>" );
+	m_pTogglePlayButton = new wxToggleButton(pElemParent, wxID_SEQUENCE_TOGGLEPLAY, "Stop");
+	m_pPrevFrameButton = new wxButton(pElemParent, wxID_SEQUENCE_PREVFRAME, "<<");
+	m_pSequenceFrame = new wxTextCtrl(pElemParent, wxID_SEQUENCE_FRAME, "", wxDefaultPosition, wxDefaultSize, 0, validator);
+	m_pNextFrameButton = new wxButton(pElemParent, wxID_SEQUENCE_NEXTFRAME, ">>");
 
-	auto speedPanel = new wxPanel(pElemParent);
-
-	m_pAnimSpeed = new wxSlider(speedPanel, WXID_SEQUENCE_ANIMSPEED,
+	m_pAnimSpeed = new wxSlider(pElemParent, WXID_SEQUENCE_ANIMSPEED,
 		ANIMSPEED_DEFAULT * ANIMSPEED_SLIDER_MULTIPLIER,
 		ANIMSPEED_MIN * ANIMSPEED_SLIDER_MULTIPLIER,
 		ANIMSPEED_MAX * ANIMSPEED_SLIDER_MULTIPLIER,
-		wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
+		wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL);
 
-	m_pAnimSpeedSpinner = new wxSpinCtrlDouble(speedPanel, wxID_ANY, "0", wxDefaultPosition, wxSize(75, wxDefaultSize.GetHeight()));
+	m_pAnimSpeedSpinner = new wxSpinCtrlDouble(pElemParent, wxID_ANY, "0", wxDefaultPosition, wxSize(75, wxDefaultSize.GetHeight()));
 
 	m_pAnimSpeedSpinner->SetRange(ANIMSPEED_MIN, ANIMSPEED_MAX);
 	m_pAnimSpeedSpinner->SetIncrement(0.1);
 
 	m_pAnimSpeedSpinner->Bind(wxEVT_SPINCTRLDOUBLE, &CSequencesPanel::AnimSpeedSpinnerChanged, this);
 
-	m_pResetSpeedButton = new wxButton(speedPanel, wxID_ANY, "Reset Speed");
+	m_pResetSpeedButton = new wxButton(pElemParent, wxID_ANY, "Reset Speed");
 
 	m_pResetSpeedButton->Bind(wxEVT_BUTTON, &CSequencesPanel::ResetAnimSpeed, this);
 
-	m_pSequenceInfo = new wxPanel( pElemParent );
+	m_pSequenceInfo = new wxPanel(pElemParent);
 
-	m_pSequenceIndex = new wxStaticText( m_pSequenceInfo, wxID_ANY, "Sequence #: Undefined" );
-	m_pFrameCount = new wxStaticText( m_pSequenceInfo, wxID_ANY, "Frames: Undefined" );
-	m_pFrameRate = new wxStaticText( m_pSequenceInfo, wxID_ANY, "FPS: Undefined" );
-	m_pBlends = new wxStaticText( m_pSequenceInfo, wxID_ANY, "Blends: Undefined" );
-	m_pEventCount = new wxStaticText( m_pSequenceInfo, wxID_ANY, "# of Events: Undefined" );
+	m_pSequenceIndex = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Sequence #: Undefined");
+	m_pFrameCount = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Frames: Undefined");
+	m_pFrameRate = new wxStaticText(m_pSequenceInfo, wxID_ANY, "FPS: Undefined");
+	m_pBlends = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Blends: Undefined");
+	m_pEventCount = new wxStaticText(m_pSequenceInfo, wxID_ANY, "# of Events: Undefined");
 
 	//Info
-	wxBoxSizer* pInfoSizer = new wxBoxSizer( wxVERTICAL );
+	{
+		auto pInfoSizer = new wxBoxSizer(wxVERTICAL);
 
-	pInfoSizer->Add( m_pSequenceIndex, 0, wxEXPAND );
-	pInfoSizer->Add( m_pFrameCount, 0, wxEXPAND );
-	pInfoSizer->Add( m_pFrameRate, 0, wxEXPAND );
-	pInfoSizer->Add( m_pBlends, 0, wxEXPAND );
-	pInfoSizer->Add( m_pEventCount, 0, wxEXPAND );
+		pInfoSizer->Add(m_pSequenceIndex, 0, wxEXPAND);
+		pInfoSizer->Add(m_pFrameCount, 0, wxEXPAND);
+		pInfoSizer->Add(m_pFrameRate, 0, wxEXPAND);
+		pInfoSizer->Add(m_pBlends, 0, wxEXPAND);
+		pInfoSizer->Add(m_pEventCount, 0, wxEXPAND);
 
-	m_pSequenceInfo->SetSizer( pInfoSizer );
+		m_pSequenceInfo->SetSizer(pInfoSizer);
+	}
 
-	SetFrameControlsEnabled( false );
+	SetFrameControlsEnabled(false);
 
-	m_pEvent = new wxChoice( pElemParent, wxID_SEQUENCE_EVENT );
+	m_pEvent = new wxChoice(pElemParent, wxID_SEQUENCE_EVENT);
 
-	m_pPlaySound = new wxCheckBox( pElemParent, wxID_SEQUENCE_PLAYSOUND, "Play Sound" );
-	m_pPitchFramerate = new wxCheckBox( pElemParent, wxID_SEQUENCE_PITCHFRAMERATE, "Pitch *= Framerate" );
+	m_pPlaySound = new wxCheckBox(pElemParent, wxID_SEQUENCE_PLAYSOUND, "Play Sound");
+	m_pPitchFramerate = new wxCheckBox(pElemParent, wxID_SEQUENCE_PITCHFRAMERATE, "Pitch *= Framerate");
 
-	m_pEditEvents = new wxButton( pElemParent, wxID_SEQUENCE_EDITEVENTS, "Edit Events" );
+	m_pEditEvents = new wxButton(pElemParent, wxID_SEQUENCE_EDITEVENTS, "Edit Events");
 
-	m_pEventInfo = new wxPanel( pElemParent );
-	m_pEventInfo->SetSize( wxSize( 200, wxDefaultSize.GetY() ) );
+	m_pEventInfo = new wxPanel(pElemParent);
+	m_pEventInfo->SetSize(wxSize(200, wxDefaultSize.GetY()));
 
-	m_pFrame	= new wxStaticText( m_pEventInfo, wxID_ANY, "Frame: Undefined" );
-	m_pEventId	= new wxStaticText( m_pEventInfo, wxID_ANY, "Event: Undefined" );
-	m_pOptions	= new wxStaticText( m_pEventInfo, wxID_ANY, "Options: Undefined", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
-	m_pType		= new wxStaticText( m_pEventInfo, wxID_ANY, "Type: Undefined" );
+	m_pFrame = new wxStaticText(m_pEventInfo, wxID_ANY, "Frame: Undefined");
+	m_pEventId = new wxStaticText(m_pEventInfo, wxID_ANY, "Event: Undefined");
+	m_pOptions = new wxStaticText(m_pEventInfo, wxID_ANY, "Options: Undefined", wxDefaultPosition, wxSize(200, wxDefaultSize.GetHeight()));
+	m_pType = new wxStaticText(m_pEventInfo, wxID_ANY, "Type: Undefined");
 
 	//Layout
-	wxGridBagSizer* pSizer = new wxGridBagSizer(1, 1);
-
-	int iCol = 0;
-
-	pSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Animation Sequence"), wxGBPosition( 0, iCol ), wxGBSpan( 1, 4 ), wxALIGN_CENTER_VERTICAL );
-	pSizer->Add( m_pSequence, wxGBPosition( 1, iCol ), wxGBSpan( 1, 4 ) );
+	auto sizer = new wxGridBagSizer(1, 1);
 
 	{
-		auto frameSizer = new wxBoxSizer(wxHORIZONTAL);
+		auto sequenceSizer = new wxGridBagSizer(1, 1);
 
-		frameSizer->Add(m_pTogglePlayButton, wxSizerFlags().Expand());
-		frameSizer->Add(m_pPrevFrameButton, wxSizerFlags().Expand());
-		frameSizer->Add(m_pSequenceFrame, wxSizerFlags(1).Expand());
-		frameSizer->Add(m_pNextFrameButton, wxSizerFlags().Expand());
+		sequenceSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Animation Sequence"), wxGBPosition(0, 0), wxGBSpan(1, 1), wxALIGN_CENTER_VERTICAL);
+		sequenceSizer->Add(m_pSequence, wxGBPosition(1, 0), wxGBSpan(1, 1));
 
-		framePanel->SetSizer(frameSizer);
+		{
+			auto frameSizer = new wxBoxSizer(wxHORIZONTAL);
 
-		pSizer->Add(framePanel, wxGBPosition(2, iCol), wxGBSpan(1, 4), wxEXPAND);
+			frameSizer->Add(m_pTogglePlayButton, wxSizerFlags().Expand());
+			frameSizer->Add(m_pPrevFrameButton, wxSizerFlags().Expand());
+			frameSizer->Add(m_pSequenceFrame, wxSizerFlags(1).Expand());
+			frameSizer->Add(m_pNextFrameButton, wxSizerFlags().Expand());
+
+			sequenceSizer->Add(frameSizer, wxGBPosition(2, 0), wxGBSpan(1, 1), wxEXPAND);
+		}
+
+		{
+			auto speedSizer = new wxBoxSizer(wxHORIZONTAL);
+
+			speedSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Speed"), wxSizerFlags().Expand());
+			speedSizer->AddSpacer(5);
+			speedSizer->Add(m_pAnimSpeed, wxSizerFlags(1).Expand());
+			speedSizer->Add(m_pAnimSpeedSpinner, wxSizerFlags().Expand());
+			speedSizer->Add(m_pResetSpeedButton, wxSizerFlags().Expand());
+
+			sequenceSizer->Add(speedSizer, wxGBPosition(3, 0), wxGBSpan(1, 1), wxEXPAND);
+		}
+
+		sizer->Add(sequenceSizer, wxGBPosition(0, 0), wxGBSpan(1, 1), wxEXPAND);
+	}
+
+	sizer->Add(m_pSequenceInfo, wxGBPosition(0, 1), wxGBSpan(1, 1), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN);
+
+	{
+		auto eventsSizer = new wxGridBagSizer(1, 1);
+
+		eventsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Events"), wxGBPosition(0, 0), wxGBSpan(1, 1), wxEXPAND);
+		eventsSizer->Add(m_pEditEvents, wxGBPosition(0, 1), wxGBSpan(1, 1), wxEXPAND);
+		eventsSizer->Add(m_pEvent, wxGBPosition(1, 0), wxGBSpan(1, 2), wxEXPAND);
+		eventsSizer->Add(m_pPlaySound, wxGBPosition(2, 0), wxGBSpan(1, 2), wxEXPAND);
+		eventsSizer->Add(m_pPitchFramerate, wxGBPosition(3, 0), wxGBSpan(1, 2), wxEXPAND);
+
+		sizer->Add(eventsSizer, wxGBPosition(0, 2), wxDefaultSpan, wxEXPAND);
 	}
 
 	{
-		auto speedSizer = new wxBoxSizer(wxHORIZONTAL);
+		auto eventInfoSizer = new wxBoxSizer(wxVERTICAL);
 
-		speedSizer->Add(new wxStaticText(speedPanel, wxID_ANY, "Speed"), wxSizerFlags().Expand());
-		speedSizer->AddSpacer(5);
-		speedSizer->Add(m_pAnimSpeed, wxSizerFlags(1).Expand());
-		speedSizer->Add(m_pAnimSpeedSpinner, wxSizerFlags().Expand());
-		speedSizer->Add(m_pResetSpeedButton, wxSizerFlags().Expand());
+		eventInfoSizer->Add(m_pFrame, wxSizerFlags().Expand());
+		eventInfoSizer->Add(m_pEventId, wxSizerFlags().Expand());
+		eventInfoSizer->Add(m_pOptions, wxSizerFlags().Expand());
+		eventInfoSizer->Add(m_pType, wxSizerFlags().Expand());
 
-		speedPanel->SetSizer(speedSizer);
+		m_pEventInfo->SetSizer(eventInfoSizer);
 
-		pSizer->Add(speedPanel, wxGBPosition(3, iCol), wxGBSpan(1, 4), wxEXPAND);
+		sizer->Add(m_pEventInfo, wxGBPosition(0, 3), wxGBSpan(1, 1), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN);
 	}
 
-	iCol += 5;
+	GetMainSizer()->Add(sizer);
 
-	pSizer->Add( m_pSequenceInfo, wxGBPosition( 0, iCol++ ), wxGBSpan( 4, 1 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
+	m_pEventInfo->Show(false);
 
-	pSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Events"), wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add(m_pEditEvents, wxGBPosition(0, iCol + 1), wxGBSpan(1, 1), wxEXPAND);
-	pSizer->Add( m_pEvent, wxGBPosition( 1, iCol ), wxGBSpan(1, 2), wxEXPAND );
-	pSizer->Add( m_pPlaySound, wxGBPosition( 2, iCol ), wxGBSpan(1, 2), wxEXPAND );
-	pSizer->Add( m_pPitchFramerate, wxGBPosition( 3, iCol ), wxGBSpan(1, 2), wxEXPAND );
-
-	iCol += 2;
-
-	wxBoxSizer* pEventSizer = new wxBoxSizer( wxVERTICAL );
-
-	pEventSizer->Add( m_pFrame, wxSizerFlags().Expand() );
-	pEventSizer->Add( m_pEventId, wxSizerFlags().Expand() );
-	pEventSizer->Add( m_pOptions, wxSizerFlags().Expand() );
-	pEventSizer->Add( m_pType, wxSizerFlags().Expand() );
-
-	pSizer->Add( m_pEventInfo, wxGBPosition( 0, iCol ), wxGBSpan( 4, 1 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
-
-	m_pEventInfo->SetSizer( pEventSizer );
-
-	GetMainSizer()->Add( pSizer );
-
-	m_pEventInfo->Show( false );
-
-	g_pCVar->InstallGlobalCVarHandler( this );
+	g_pCVar->InstallGlobalCVarHandler(this);
 }
 
 CSequencesPanel::~CSequencesPanel()
