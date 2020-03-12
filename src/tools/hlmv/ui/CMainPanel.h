@@ -31,42 +31,6 @@ class CFullscreenPanel;
 class CMainPanel final : public wxPanel, public I3DViewListener, public studiomdl::IStudioModelRendererListener
 {
 public:
-
-	//Weakly typed, strongly scoped.
-	class CheckBox
-	{
-	public:
-		enum Type
-		{
-			FIRST				= 0,
-			SHOW_HITBOXES		= FIRST,
-			SHOW_GROUND,
-			SHOW_BONES,
-			MIRROR_ON_GROUND,
-			SHOW_ATTACHMENTS,
-			SHOW_BACKGROUND,
-			SHOW_EYE_POSITION,
-			WIREFRAME_OVERLAY,
-
-			COUNT,
-			LAST				= COUNT - 1	//Must be last.
-		};
-
-	private:
-		CheckBox() = delete;
-		CheckBox( const CheckBox& ) = delete;
-		CheckBox& operator=( const CheckBox& ) = delete;
-	};
-
-	static const size_t CONTROLS_ROWS = 4;
-	static const size_t CONTROLS_COLS = 5;
-
-	static const size_t NUM_CHECKBOXES_PER_ROW = 2;
-
-	static const size_t OPACITY_MIN = 0;
-	static const size_t OPACITY_MAX = 100;
-	static const size_t OPACITY_DEFAULT = OPACITY_MAX;
-
 	static const glm::vec3 DEFAULT_LIGHT_VECTOR;
 
 public:
