@@ -92,6 +92,8 @@ private:
 	wxStaticText* m_pBlends;
 	wxStaticText* m_pEventCount;
 	wxStaticText* m_pIsLooping;
+	wxStaticText* m_pActivity;
+	wxStaticText* m_pActWeight;
 
 	wxChoice* m_pLoopingMode;
 	wxButton* m_pRestartSequence;

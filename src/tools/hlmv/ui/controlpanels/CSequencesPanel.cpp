@@ -9,6 +9,8 @@
 
 #include "cvar/CVar.h"
 
+#include "engine/shared/activity.h"
+
 #include "ui/common/CEditEventsDialog.h"
 
 #include "../CModelViewerApp.h"
@@ -83,25 +85,30 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 
 	m_pSequenceInfo = new wxPanel(pElemParent);
 
-	m_pSequenceIndex = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Sequence #: Undefined");
-	m_pFrameCount = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Frames: Undefined");
-	m_pFrameRate = new wxStaticText(m_pSequenceInfo, wxID_ANY, "FPS: Undefined");
-	m_pBlends = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Blends: Undefined");
-	m_pEventCount = new wxStaticText(m_pSequenceInfo, wxID_ANY, "# of Events: Undefined");
-	m_pIsLooping = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Is Looping: Undefined");
+	m_pSequenceIndex = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Sequence #: 000");
+	m_pFrameCount = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Frames: 000");
+	m_pFrameRate = new wxStaticText(m_pSequenceInfo, wxID_ANY, "FPS: 000");
+	m_pBlends = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Blends: 0");
+	m_pEventCount = new wxStaticText(m_pSequenceInfo, wxID_ANY, "# of Events: 000");
+	m_pIsLooping = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Is Looping: Yes");
+	m_pActivity = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Activity: Undefined");
+	m_pActivity->SetMinSize(wxSize(190, wxDefaultSize.GetHeight()));
+	m_pActWeight = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Activity Weight: 000");
 
 	//Info
 	{
-		auto pInfoSizer = new wxBoxSizer(wxVERTICAL);
+		auto infoSizer = new wxGridBagSizer(1, 1);
 
-		pInfoSizer->Add(m_pSequenceIndex, 0, wxEXPAND);
-		pInfoSizer->Add(m_pFrameCount, 0, wxEXPAND);
-		pInfoSizer->Add(m_pFrameRate, 0, wxEXPAND);
-		pInfoSizer->Add(m_pBlends, 0, wxEXPAND);
-		pInfoSizer->Add(m_pEventCount, 0, wxEXPAND);
-		pInfoSizer->Add(m_pIsLooping, 0, wxEXPAND);
+		infoSizer->Add(m_pSequenceIndex, wxGBPosition(0, 0), wxDefaultSpan);
+		infoSizer->Add(m_pFrameCount, wxGBPosition(1, 0), wxDefaultSpan);
+		infoSizer->Add(m_pFrameRate, wxGBPosition(2, 0), wxDefaultSpan);
+		infoSizer->Add(m_pBlends, wxGBPosition(3, 0), wxDefaultSpan);
+		infoSizer->Add(m_pEventCount, wxGBPosition(4, 0), wxDefaultSpan);
+		infoSizer->Add(m_pIsLooping, wxGBPosition(5, 0), wxDefaultSpan);
+		infoSizer->Add(m_pActivity, wxGBPosition(0, 1), wxDefaultSpan);
+		infoSizer->Add(m_pActWeight, wxGBPosition(1, 1), wxDefaultSpan);
 
-		m_pSequenceInfo->SetSizer(pInfoSizer);
+		m_pSequenceInfo->SetSizer(infoSizer);
 	}
 
 	SetFrameControlsEnabled(false);
@@ -291,12 +298,21 @@ void CSequencesPanel::SetSequence( int iIndex )
 
 		const mstudioseqdesc_t& sequence = pHdr->numseq > 0 ? pseqdescs[ iIndex ] : nullSeq;
 
+		wxString activityName{"Unknown"};
+
+		if (sequence.activity >= ACT_IDLE && sequence.activity <= ACT_FLINCH_RIGHTLEG)
+		{
+			activityName = activity_map[sequence.activity - 1].name;
+		}
+
 		m_pSequenceIndex->SetLabelText( wxString::Format( "Sequence #: %d", iIndex ) );
 		m_pFrameCount->SetLabelText( wxString::Format( "Frames: %d", sequence.numframes ) );
 		m_pFrameRate->SetLabelText( wxString::Format( "FPS: %.2f", sequence.fps ) );
 		m_pBlends->SetLabelText( wxString::Format( "Blends: %d", sequence.numblends ) );
 		m_pEventCount->SetLabelText( wxString::Format( "# of Events: %d", sequence.numevents ) );
 		m_pIsLooping->SetLabelText(wxString::Format("Is Looping: %s", (sequence.flags & STUDIO_LOOPING) ? "Yes" : "No"));
+		m_pActivity->SetLabelText(wxString::Format("Activity: %s", activityName));
+		m_pActWeight->SetLabelText(wxString::Format("Activity Weight: %d", sequence.actweight));
 	}
 
 	UpdateEvents();
