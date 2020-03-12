@@ -306,6 +306,10 @@ void CSequencesPanel::SetSequence( int iIndex )
 		{
 			activityName = activity_map[sequence.activity - 1].name;
 		}
+		else if (sequence.activity == ACT_RESET)
+		{
+			activityName = "None";
+		}
 
 		m_pSequenceIndex->SetLabelText( wxString::Format( "Sequence #: %d", iIndex ) );
 		m_pFrameCount->SetLabelText( wxString::Format( "Frames: %d", sequence.numframes ) );
