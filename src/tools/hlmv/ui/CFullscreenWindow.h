@@ -7,12 +7,11 @@ namespace hlmv
 {
 class CModelViewerApp;
 class C3DView;
-class CMainPanel;
 
 class CFullscreenWindow final : public wxFrame
 {
 public:
-	CFullscreenWindow( CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel );
+	CFullscreenWindow( CModelViewerApp* const pHLMV, C3DView* const view3D);
 	~CFullscreenWindow();
 
 	void RunFrame();

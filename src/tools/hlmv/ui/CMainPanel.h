@@ -26,7 +26,6 @@ class CAttachmentsPanel;
 class CHitboxesPanel;
 class CTexturesPanel;
 class CSequencesPanel;
-class CFullscreenPanel;
 
 class CMainPanel final : public wxPanel, public I3DViewListener, public studiomdl::IStudioModelRendererListener
 {
@@ -53,7 +52,6 @@ public:
 	CAttachmentsPanel*		GetAttachmentsPanel() { return m_pAttachments; }
 	CTexturesPanel*			GetTexturesPanel() { return m_pTextures; }
 	CSequencesPanel*		GetSequencesPanel() { return m_pSequencesPanel; }
-	CFullscreenPanel*		GetFullscreenPanel() { return m_pFullscreen; }
 
 	bool LoadModel( const wxString& szFilename );
 
@@ -100,6 +98,10 @@ private:
 
 	void ResetLightVector( wxCommandEvent& event );
 
+	void OnGoFullscreen(wxCommandEvent& event);
+
+	void OnCloseFullscreenWindow(wxCloseEvent& event);
+
 private:
 	CModelViewerApp* const m_pHLMV;
 
@@ -110,6 +112,8 @@ private:
 	wxPanel* m_pMainControlBar;
 
 	wxRadioBox* m_pViewOrigin;
+
+	wxButton* m_pGoFullscreen;
 
 	unsigned int m_uiOldDrawnPolys = -1;
 
@@ -137,7 +141,6 @@ private:
 	CHitboxesPanel*			m_pHitboxes;
 	CTexturesPanel*			m_pTextures;
 	CSequencesPanel*		m_pSequencesPanel;
-	CFullscreenPanel*		m_pFullscreen;
 
 private:
 	CMainPanel( const CMainPanel& ) = delete;

@@ -13,7 +13,6 @@
 #include "controlpanels/CHitboxesPanel.h"
 #include "controlpanels/CTexturesPanel.h"
 #include "controlpanels/CSequencesPanel.h"
-#include "controlpanels/CFullscreenPanel.h"
 #include "controlpanels/CGlobalFlagsPanel.h"
 
 #include "shared/studiomodel/CStudioModel.h"
@@ -21,6 +20,7 @@
 #include "game/entity/CStudioModelEntity.h"
 #include "game/entity/CBaseEntityList.h"
 
+#include "CFullscreenWindow.h"
 #include "CModelViewerApp.h"
 #include "../CHLMVState.h"
 
@@ -60,6 +60,9 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	m_pViewOrigin = new wxRadioBox( m_pMainControlBar, wxID_MAIN_VIEWORIGINCHANGED, "View Origin", wxDefaultPosition, wxDefaultSize, 
 									wxArrayString( ARRAYSIZE( VIEWORIGINS ), VIEWORIGINS ), 2, wxRA_SPECIFY_COLS );
 
+	m_pGoFullscreen = new wxButton(m_pMainControlBar, wxID_ANY, "Fullscreen");
+	m_pGoFullscreen->Bind(wxEVT_BUTTON, &CMainPanel::OnGoFullscreen, this);
+
 	m_pDrawnPolys = new wxStaticText( m_pMainControlBar, wxID_ANY, "Drawn Polys: Undefined" );
 
 	m_pFPS = new wxStaticText( m_pMainControlBar, wxID_ANY, "FPS: 0" );
@@ -90,8 +93,6 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 
 	m_pSequencesPanel = new CSequencesPanel( m_pControlPanels, m_pHLMV );
 
-	m_pFullscreen = new CFullscreenPanel( m_pControlPanels, m_pHLMV, this );
-
 	CBaseControlPanel* const panels[] = 
 	{
 		m_pModelDisplay,
@@ -102,8 +103,7 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 		m_pAttachments,
 		m_pHitboxes,
 		m_pTextures,
-		m_pSequencesPanel,
-		m_pFullscreen
+		m_pSequencesPanel
 	};
 
 	for( auto& pPanel : panels )
@@ -114,7 +114,7 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	m_pControlPanels->SetSelection( 0 );
 
 	//Layout
-	wxGridBagSizer* pBarSizer = new wxGridBagSizer( 5, 5 );
+	wxGridBagSizer* pBarSizer = new wxGridBagSizer(1, 1);
 
 	int iRow = 0;
 
@@ -122,7 +122,8 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	pBarSizer->Add( m_pDrawnPolys, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL );
 	pBarSizer->Add( m_pFPS, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL );
 	pBarSizer->Add( m_pLightVector, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL | wxEXPAND );
-	pBarSizer->Add( m_pResetLightVector, wxGBPosition( iRow++, 0 ), wxGBSpan( 1, 1 ), wxALIGN_CENTER_VERTICAL );
+	pBarSizer->Add( m_pResetLightVector, wxGBPosition( iRow, 0 ), wxGBSpan( 1, 1 ), wxEXPAND);
+	pBarSizer->Add(m_pGoFullscreen, wxGBPosition(iRow++, 1), wxGBSpan(1, 1), wxEXPAND);
 
 	m_pMainControlBar->SetSizer( pBarSizer );
 
@@ -336,5 +337,38 @@ void CMainPanel::ViewOriginChanged( wxCommandEvent& event )
 void CMainPanel::ResetLightVector( wxCommandEvent& event )
 {
 	g_pStudioMdlRenderer->SetLightVector( DEFAULT_LIGHT_VECTOR );
+}
+
+void CMainPanel::OnGoFullscreen(wxCommandEvent& event)
+{
+	if (m_pHLMV->GetFullscreenWindow())
+	{
+		wxMessageBox("A fullscreen window is already open!");
+		return;
+	}
+
+	m_p3DView->GetContainingSizer()->Detach(m_p3DView);
+
+	auto window = new CFullscreenWindow(m_pHLMV, m_p3DView);
+
+	window->Bind(wxEVT_CLOSE_WINDOW, &CMainPanel::OnCloseFullscreenWindow, this);
+
+	m_pHLMV->SetFullscreenWindow(window);
+}
+
+void CMainPanel::OnCloseFullscreenWindow(wxCloseEvent& event)
+{
+	event.Skip();
+
+	m_pHLMV->SetFullscreenWindow(nullptr);
+
+	//Reparent the 3D view to this panel
+	m_p3DView->Reparent(this);
+
+	m_p3DView->GetContainingSizer()->Detach(m_p3DView);
+
+	GetSizer()->Insert(0, m_p3DView, wxSizerFlags(1).Expand());
+
+	Layout();
 }
 }

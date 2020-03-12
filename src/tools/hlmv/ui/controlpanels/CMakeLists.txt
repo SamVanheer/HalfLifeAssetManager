@@ -8,8 +8,6 @@ target_sources(${TARGET_NAME}
 		CBodyPartsPanel.h
 		CBonesPanel.cpp
 		CBonesPanel.h
-		CFullscreenPanel.cpp
-		CFullscreenPanel.h
 		CGlobalFlagsPanel.cpp
 		CGlobalFlagsPanel.h
 		CHitboxesPanel.cpp

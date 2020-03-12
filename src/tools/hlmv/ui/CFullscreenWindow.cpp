@@ -13,15 +13,15 @@ wxBEGIN_EVENT_TABLE( CFullscreenWindow, wxFrame )
 	EVT_CHAR_HOOK( CFullscreenWindow::KeyDown )
 wxEND_EVENT_TABLE()
 
-CFullscreenWindow::CFullscreenWindow( CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel )
+CFullscreenWindow::CFullscreenWindow( CModelViewerApp* const pHLMV, C3DView* const view3D)
 	: wxFrame( nullptr, wxID_ANY, HLMV_TITLE )
 	, m_pHLMV( pHLMV )
 {
-	m_pHLMV->SetFullscreenWindow( this );
-
 	SetIcon( m_pHLMV->GetToolIcon() );
 
-	m_p3DView = new C3DView( this, m_pHLMV, pMainPanel );
+	m_p3DView = view3D;
+
+	m_p3DView->Reparent(this);
 
 	wxBoxSizer* pSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -31,14 +31,9 @@ CFullscreenWindow::CFullscreenWindow( CModelViewerApp* const pHLMV, CMainPanel* 
 
 	this->ShowFullScreen( true );
 	this->SetFocus();
-
-	this->Show( true );
 }
 
-CFullscreenWindow::~CFullscreenWindow()
-{
-	m_pHLMV->SetFullscreenWindow( nullptr );
-}
+CFullscreenWindow::~CFullscreenWindow() = default;
 
 void CFullscreenWindow::RunFrame()
 {
@@ -52,6 +47,8 @@ void CFullscreenWindow::KeyDown( wxKeyEvent& event )
 		Close( true );
 	}
 	else
+	{
 		event.Skip();
+	}
 }
 }
