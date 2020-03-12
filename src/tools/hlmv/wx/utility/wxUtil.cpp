@@ -59,7 +59,7 @@ wxSizer* CreateCheckBoxSizer( wxCheckBox** ppCheckBoxes, const size_t uiNumCheck
 	wxASSERT( ppCheckBoxes );
 	wxASSERT( uiNumCheckBoxes > 0 );
 
-	auto pSizer = new wxGridBagSizer( 5, 5 );
+	auto pSizer = new wxGridBagSizer(1, 1);
 
 	const int iCheckBoxesPerRow = ceil( static_cast<float>( uiNumCheckBoxes ) / uiNumColumns );
 
