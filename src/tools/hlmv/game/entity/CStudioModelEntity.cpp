@@ -536,7 +536,9 @@ CStudioModelEntity::MeshList_t CStudioModelEntity::ComputeMeshList( const int iT
 
 	const auto pStudioHdr = pStudioModel->GetStudioHeader();
 
-	const short* const pskinref = pStudioModel->GetTextureHeader()->GetSkins();
+	const auto textureHeader = pStudioModel->GetTextureHeader();
+
+	const short* const pskinref = textureHeader->GetSkins();
 
 	int iBodygroup = 0;
 
@@ -552,11 +554,16 @@ CStudioModelEntity::MeshList_t CStudioModelEntity::ComputeMeshList( const int iT
 
 			for( int iMesh = 0; iMesh < pModel->nummesh; ++iMesh )
 			{
-				const mstudiomesh_t* pMesh = ( ( const mstudiomesh_t* ) ( ( const byte* ) pStudioModel->GetStudioHeader() + pModel->meshindex ) ) + iMesh;
+				const mstudiomesh_t* pMesh = ((const mstudiomesh_t*) ((const byte*) pStudioModel->GetStudioHeader() + pModel->meshindex)) + iMesh;
 
-				if( pskinref[ pMesh->skinref ] == iTexture )
+				//Check each skin family to detect textures used only by alternate skins (e.g. scientist hands)
+				for (int skinFamily = 0; skinFamily < textureHeader->numskinfamilies; ++skinFamily)
 				{
-					meshes.push_back( pMesh );
+					if (pskinref[(skinFamily * textureHeader->numskinref) + pMesh->skinref] == iTexture)
+					{
+						meshes.push_back(pMesh);
+						break;
+					}
 				}
 			}
 		}
