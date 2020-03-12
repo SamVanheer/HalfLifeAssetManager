@@ -158,11 +158,12 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 	pSizer->Add( m_pSequenceInfo, wxGBPosition( 0, iCol++ ), wxGBSpan( 4, 1 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
 	pSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Events"), wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pEvent, wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pPlaySound, wxGBPosition( 2, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pPitchFramerate, wxGBPosition( 3, iCol++ ), wxDefaultSpan, wxEXPAND );
+	pSizer->Add(m_pEditEvents, wxGBPosition(0, iCol + 1), wxGBSpan(1, 1), wxEXPAND);
+	pSizer->Add( m_pEvent, wxGBPosition( 1, iCol ), wxGBSpan(1, 2), wxEXPAND );
+	pSizer->Add( m_pPlaySound, wxGBPosition( 2, iCol ), wxGBSpan(1, 2), wxEXPAND );
+	pSizer->Add( m_pPitchFramerate, wxGBPosition( 3, iCol ), wxGBSpan(1, 2), wxEXPAND );
 
-	pSizer->Add( m_pEditEvents, wxGBPosition( 0, iCol ), wxGBSpan( 1, 2 ), wxEXPAND );
+	iCol += 2;
 
 	wxBoxSizer* pEventSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -171,7 +172,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 	pEventSizer->Add( m_pOptions, wxSizerFlags().Expand() );
 	pEventSizer->Add( m_pType, wxSizerFlags().Expand() );
 
-	pSizer->Add( m_pEventInfo, wxGBPosition( 1, iCol ), wxGBSpan( 3, 2 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
+	pSizer->Add( m_pEventInfo, wxGBPosition( 0, iCol ), wxGBSpan( 4, 1 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
 	m_pEventInfo->SetSizer( pEventSizer );
 
