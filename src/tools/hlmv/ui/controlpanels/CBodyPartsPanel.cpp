@@ -1,3 +1,4 @@
+#include <wx/sizer.h>
 #include <wx/gbsizer.h>
 
 #include "../CModelViewerApp.h"
@@ -20,87 +21,94 @@ CBodyPartsPanel::CBodyPartsPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 {
 	wxWindow* const pElemParent = GetElementParent();
 
-	m_pBodypart = new wxChoice( pElemParent, wxID_BODY_BODYPARTS, wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
+	m_pBodypart = new wxChoice(pElemParent, wxID_BODY_BODYPARTS, wxDefaultPosition, wxSize(COMBOBOX_WIDTH, wxDefaultSize.GetY()));
 
-	wxStaticText* pBodypart = new wxStaticText( pElemParent, wxID_ANY, "Part" );
+	m_pSubmodel = new wxChoice(pElemParent, wxID_BODY_SUBMODELS, wxDefaultPosition, wxSize(COMBOBOX_WIDTH, wxDefaultSize.GetY()));
 
-	m_pSubmodel = new wxChoice( pElemParent, wxID_BODY_SUBMODELS, wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
+	m_pSkin = new wxChoice(pElemParent, wxID_BODY_SKIN, wxDefaultPosition, wxSize(COMBOBOX_WIDTH, wxDefaultSize.GetY()));
 
-	wxStaticText* pSubmodel = new wxStaticText( pElemParent, wxID_ANY, "Sub-model" );
+	m_pController = new wxChoice(pElemParent, wxID_BODY_CONTROLLER, wxDefaultPosition, wxSize(COMBOBOX_WIDTH, wxDefaultSize.GetY()));
 
-	m_pSkin = new wxChoice( pElemParent, wxID_BODY_SKIN, wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
+	m_pControllerSlider = new wxSlider(pElemParent, wxID_BODY_CONTROLLER_SLIDER, CONTROLLER_SLIDER_DEFAULT, CONTROLLER_SLIDER_MIN, CONTROLLER_SLIDER_MAX);
 
-	wxStaticText* pSkin = new wxStaticText( pElemParent, wxID_ANY, "Skin" );
+	m_pModelInfo = new wxPanel(pElemParent);
 
-	m_pController = new wxChoice( pElemParent, wxID_BODY_CONTROLLER, wxDefaultPosition, wxSize( COMBOBOX_WIDTH, wxDefaultSize.GetY() ) );
+	m_pBones = new wxStaticText(m_pModelInfo, wxID_ANY, "Bones: Undefined");
+	m_pBoneControllers = new wxStaticText(m_pModelInfo, wxID_ANY, "Bone Controllers: Undefined");
+	m_pHitBoxes = new wxStaticText(m_pModelInfo, wxID_ANY, "Hit Boxes: Undefined");
+	m_pSequences = new wxStaticText(m_pModelInfo, wxID_ANY, "Sequences: Undefined");
+	m_pSequenceGroups = new wxStaticText(m_pModelInfo, wxID_ANY, "Sequence Groups: Undefined");
 
-	wxStaticText* pController = new wxStaticText( pElemParent, wxID_ANY, "Controller" );
+	m_pTextures = new wxStaticText(m_pModelInfo, wxID_ANY, "Textures: Undefined");
+	m_pSkinFamilies = new wxStaticText(m_pModelInfo, wxID_ANY, "Skin Families: Undefined");
+	m_pBodyparts = new wxStaticText(m_pModelInfo, wxID_ANY, "Bodyparts: Undefined");
+	m_pAttachments = new wxStaticText(m_pModelInfo, wxID_ANY, "Attachments: Undefined");
+	m_pTransitions = new wxStaticText(m_pModelInfo, wxID_ANY, "Transitions: Undefined");
 
-	m_pControllerSlider = new wxSlider( pElemParent, wxID_BODY_CONTROLLER_SLIDER, CONTROLLER_SLIDER_DEFAULT, CONTROLLER_SLIDER_MIN, CONTROLLER_SLIDER_MAX );
+	m_pBodyValue = new wxTextCtrl(m_pModelInfo, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_RIGHT);
 
-	wxStaticText* pControllerSlider = new wxStaticText( pElemParent, wxID_ANY, "Value" );
-
-	m_pModelInfo = new wxPanel( pElemParent );
-
-	m_pBones = new wxStaticText( m_pModelInfo, wxID_ANY, "Bones: Undefined" );
-	m_pBoneControllers = new wxStaticText( m_pModelInfo, wxID_ANY, "Bone Controllers: Undefined" );
-	m_pHitBoxes = new wxStaticText( m_pModelInfo, wxID_ANY, "Hit Boxes: Undefined" );
-	m_pSequences = new wxStaticText( m_pModelInfo, wxID_ANY, "Sequences: Undefined" );
-	m_pSequenceGroups = new wxStaticText( m_pModelInfo, wxID_ANY, "Sequence Groups: Undefined" );
-
-	m_pTextures = new wxStaticText( m_pModelInfo, wxID_ANY, "Textures: Undefined" );
-	m_pSkinFamilies = new wxStaticText( m_pModelInfo, wxID_ANY, "Skin Families: Undefined" );
-	m_pBodyparts = new wxStaticText( m_pModelInfo, wxID_ANY, "Bodyparts: Undefined" );
-	m_pAttachments = new wxStaticText( m_pModelInfo, wxID_ANY, "Attachments: Undefined" );
-	m_pTransitions = new wxStaticText( m_pModelInfo, wxID_ANY, "Transitions: Undefined" );
-
-	auto pBodyValue = new wxStaticText( m_pModelInfo, wxID_ANY, "Body value: " );
-
-	m_pBodyValue = new wxTextCtrl( m_pModelInfo, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_RIGHT );
-
-	m_pBodyValue->SetEditable( false );
+	m_pBodyValue->SetEditable(false);
 
 	//Layout
-	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );
+	auto sizer = new wxBoxSizer(wxHORIZONTAL);
 
-	pSizer->Add( m_pBodypart, wxGBPosition( 0, 0 ), wxDefaultSpan, wxCENTER );
-	pSizer->Add( pBodypart, wxGBPosition( 0, 1 ), wxDefaultSpan, wxCENTER | wxALIGN_LEFT );
+	{
+		auto partsSizer = new wxGridBagSizer(1, 1);
 
-	pSizer->Add( m_pSubmodel, wxGBPosition( 1, 0 ), wxDefaultSpan, wxCENTER );
-	pSizer->Add( pSubmodel, wxGBPosition( 1, 1 ), wxDefaultSpan, wxCENTER | wxALIGN_LEFT );
+		partsSizer->Add(m_pBodypart, wxGBPosition(0, 0), wxDefaultSpan, wxCENTER);
+		partsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Part"), wxGBPosition(0, 1), wxDefaultSpan, wxCENTER | wxALIGN_LEFT);
 
-	pSizer->Add( m_pSkin, wxGBPosition( 2, 0 ), wxDefaultSpan, wxCENTER );
-	pSizer->Add( pSkin, wxGBPosition( 2, 1 ), wxDefaultSpan, wxCENTER | wxALIGN_LEFT );
+		partsSizer->Add(m_pSubmodel, wxGBPosition(1, 0), wxDefaultSpan, wxCENTER);
+		partsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Sub-model"), wxGBPosition(1, 1), wxDefaultSpan, wxCENTER | wxALIGN_LEFT);
 
-	pSizer->Add( m_pController, wxGBPosition( 0, 2 ), wxDefaultSpan, wxCENTER );
-	pSizer->Add( pController, wxGBPosition( 0, 3 ), wxDefaultSpan, wxCENTER | wxALIGN_LEFT );
+		partsSizer->Add(m_pSkin, wxGBPosition(2, 0), wxDefaultSpan, wxCENTER);
+		partsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Skin"), wxGBPosition(2, 1), wxDefaultSpan, wxCENTER | wxALIGN_LEFT);
 
-	pSizer->Add( m_pControllerSlider, wxGBPosition( 1, 2 ), wxDefaultSpan, wxCENTER );
-	pSizer->Add( pControllerSlider, wxGBPosition( 1, 3 ), wxDefaultSpan, wxCENTER | wxALIGN_LEFT );
+		partsSizer->Add(m_pController, wxGBPosition(0, 2), wxDefaultSpan, wxCENTER);
+		partsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Controller"), wxGBPosition(0, 3), wxDefaultSpan, wxCENTER | wxALIGN_LEFT);
+
+		partsSizer->Add(m_pControllerSlider, wxGBPosition(1, 2), wxDefaultSpan, wxEXPAND | wxCENTER);
+		partsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Value"), wxGBPosition(1, 3), wxDefaultSpan, wxCENTER | wxALIGN_LEFT);
+
+		sizer->Add(partsSizer, wxSizerFlags().Expand());
+	}
+
+	sizer->AddSpacer(5);
 
 	//Info text
-	wxGridBagSizer* pInfoSizer = new wxGridBagSizer( 5, 5 );
+	{
+		auto infoSizer = new wxGridBagSizer(1, 1);
 
-	pInfoSizer->Add( m_pBones, wxGBPosition( 0, 0 ), wxDefaultSpan, wxEXPAND );
-	pInfoSizer->Add( m_pBoneControllers, wxGBPosition( 1, 0 ), wxDefaultSpan, wxEXPAND );
-	pInfoSizer->Add( m_pHitBoxes, wxGBPosition( 2, 0 ), wxDefaultSpan, wxEXPAND );
-	pInfoSizer->Add( m_pSequences, wxGBPosition( 3, 0 ), wxDefaultSpan, wxEXPAND );
-	pInfoSizer->Add( m_pSequenceGroups, wxGBPosition( 4, 0 ), wxDefaultSpan, wxEXPAND );
+		{
+			auto readonlySizer = new wxGridBagSizer(1, 1);
 
-	pInfoSizer->Add( m_pTextures, wxGBPosition( 0, 1 ), wxDefaultSpan, wxEXPAND );
-	pInfoSizer->Add( m_pSkinFamilies, wxGBPosition( 1, 1 ), wxDefaultSpan, wxEXPAND );
-	pInfoSizer->Add( m_pBodyparts, wxGBPosition( 2, 1 ), wxDefaultSpan, wxEXPAND );
-	pInfoSizer->Add( m_pAttachments, wxGBPosition( 3, 1 ), wxDefaultSpan, wxEXPAND );
-	pInfoSizer->Add( m_pTransitions, wxGBPosition( 4, 1 ), wxDefaultSpan, wxEXPAND );
+			readonlySizer->Add(m_pBones, wxGBPosition(0, 0), wxDefaultSpan, wxEXPAND);
+			readonlySizer->Add(m_pBoneControllers, wxGBPosition(1, 0), wxDefaultSpan, wxEXPAND);
+			readonlySizer->Add(m_pHitBoxes, wxGBPosition(2, 0), wxDefaultSpan, wxEXPAND);
+			readonlySizer->Add(m_pSequences, wxGBPosition(3, 0), wxDefaultSpan, wxEXPAND);
+			readonlySizer->Add(m_pSequenceGroups, wxGBPosition(4, 0), wxDefaultSpan, wxEXPAND);
 
-	pInfoSizer->Add( pBodyValue, wxGBPosition( 0, 2 ), wxDefaultSpan, wxEXPAND );
-	pInfoSizer->Add( m_pBodyValue , wxGBPosition( 0, 3 ), wxDefaultSpan, wxEXPAND );
+			readonlySizer->Add(new wxPanel(pElemParent, wxID_ANY, wxDefaultPosition, wxSize(5, wxDefaultSize.GetHeight())),
+				wxGBPosition(0, 1), wxGBSpan(4, 1), wxEXPAND);
 
-	m_pModelInfo->SetSizer( pInfoSizer );
+			readonlySizer->Add(m_pTextures, wxGBPosition(0, 2), wxDefaultSpan, wxEXPAND);
+			readonlySizer->Add(m_pSkinFamilies, wxGBPosition(1, 2), wxDefaultSpan, wxEXPAND);
+			readonlySizer->Add(m_pBodyparts, wxGBPosition(2, 2), wxDefaultSpan, wxEXPAND);
+			readonlySizer->Add(m_pAttachments, wxGBPosition(3, 2), wxDefaultSpan, wxEXPAND);
+			readonlySizer->Add(m_pTransitions, wxGBPosition(4, 2), wxDefaultSpan, wxEXPAND);
 
-	pSizer->Add( m_pModelInfo, wxGBPosition( 0, 4 ), wxGBSpan( 3, 2 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
+			infoSizer->Add(readonlySizer, wxGBPosition(0, 0), wxGBSpan(1, 1), wxEXPAND);
+		}
 
-	GetMainSizer()->Add( pSizer );
+		infoSizer->Add(new wxStaticText(m_pModelInfo, wxID_ANY, "Body value: "), wxGBPosition(0, 1), wxDefaultSpan);
+		infoSizer->Add(m_pBodyValue, wxGBPosition(0, 2), wxDefaultSpan);
+
+		m_pModelInfo->SetSizer(infoSizer);
+
+		sizer->Add(m_pModelInfo, wxSizerFlags().Expand().ReserveSpaceEvenIfHidden());
+	}
+
+	GetMainSizer()->Add(sizer);
 }
 
 CBodyPartsPanel::~CBodyPartsPanel()
