@@ -89,6 +89,7 @@ private:
 	wxStaticText* m_pSequenceIndex;
 	wxStaticText* m_pFrameCount;
 	wxStaticText* m_pFrameRate;
+	wxStaticText* m_pDuration;
 	wxStaticText* m_pBlends;
 	wxStaticText* m_pEventCount;
 	wxStaticText* m_pIsLooping;

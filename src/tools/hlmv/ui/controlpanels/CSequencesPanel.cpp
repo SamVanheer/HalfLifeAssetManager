@@ -88,6 +88,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 	m_pSequenceIndex = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Sequence #: 000");
 	m_pFrameCount = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Frames: 000");
 	m_pFrameRate = new wxStaticText(m_pSequenceInfo, wxID_ANY, "FPS: 000");
+	m_pDuration = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Duration: 0000.00s");
 	m_pBlends = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Blends: 0");
 	m_pEventCount = new wxStaticText(m_pSequenceInfo, wxID_ANY, "# of Events: 000");
 	m_pIsLooping = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Is Looping: Yes");
@@ -102,11 +103,12 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 		infoSizer->Add(m_pSequenceIndex, wxGBPosition(0, 0), wxDefaultSpan);
 		infoSizer->Add(m_pFrameCount, wxGBPosition(1, 0), wxDefaultSpan);
 		infoSizer->Add(m_pFrameRate, wxGBPosition(2, 0), wxDefaultSpan);
-		infoSizer->Add(m_pBlends, wxGBPosition(3, 0), wxDefaultSpan);
-		infoSizer->Add(m_pEventCount, wxGBPosition(4, 0), wxDefaultSpan);
-		infoSizer->Add(m_pIsLooping, wxGBPosition(5, 0), wxDefaultSpan);
-		infoSizer->Add(m_pActivity, wxGBPosition(0, 1), wxDefaultSpan);
-		infoSizer->Add(m_pActWeight, wxGBPosition(1, 1), wxDefaultSpan);
+		infoSizer->Add(m_pDuration, wxGBPosition(3, 0), wxDefaultSpan);
+		infoSizer->Add(m_pBlends, wxGBPosition(4, 0), wxDefaultSpan);
+		infoSizer->Add(m_pEventCount, wxGBPosition(0, 1), wxDefaultSpan);
+		infoSizer->Add(m_pIsLooping, wxGBPosition(1, 1), wxDefaultSpan);
+		infoSizer->Add(m_pActivity, wxGBPosition(2, 1), wxDefaultSpan);
+		infoSizer->Add(m_pActWeight, wxGBPosition(3, 1), wxDefaultSpan);
 
 		m_pSequenceInfo->SetSizer(infoSizer);
 	}
@@ -308,6 +310,11 @@ void CSequencesPanel::SetSequence( int iIndex )
 		m_pSequenceIndex->SetLabelText( wxString::Format( "Sequence #: %d", iIndex ) );
 		m_pFrameCount->SetLabelText( wxString::Format( "Frames: %d", sequence.numframes ) );
 		m_pFrameRate->SetLabelText( wxString::Format( "FPS: %.2f", sequence.fps ) );
+
+		const auto durationInSeconds = sequence.numframes / sequence.fps;
+
+		m_pDuration->SetLabelText(wxString::Format("Duration: %.2fs", durationInSeconds));
+
 		m_pBlends->SetLabelText( wxString::Format( "Blends: %d", sequence.numblends ) );
 		m_pEventCount->SetLabelText( wxString::Format( "# of Events: %d", sequence.numevents ) );
 		m_pIsLooping->SetLabelText(wxString::Format("Is Looping: %s", (sequence.flags & STUDIO_LOOPING) ? "Yes" : "No"));
