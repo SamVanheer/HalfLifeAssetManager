@@ -40,15 +40,13 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 
 	wxWindow* const pElemParent = GetElementParent();
 
-	wxPanel* pTextureSettingPanel = new wxPanel( pElemParent );
+	m_pTextureSize = new wxStaticText(pElemParent, wxID_ANY, "Texture (size: Undefined x Undefined)" );
 
-	m_pTextureSize = new wxStaticText( pTextureSettingPanel, wxID_ANY, "Texture (size: Undefined x Undefined)" );
+	m_pTexture = new wxChoice(pElemParent, wxID_TEX_CHANGED, wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
 
-	m_pTexture = new wxChoice( pTextureSettingPanel, wxID_TEX_CHANGED, wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
+	m_pScaleTextureViewSize = new wxStaticText(pElemParent, wxID_ANY, "Scale Texture View (Undefinedx)" );
 
-	m_pScaleTextureViewSize = new wxStaticText( pTextureSettingPanel, wxID_ANY, "Scale Texture View (Undefinedx)" );
-
-	m_pScaleTextureView = new wxSlider( pTextureSettingPanel, wxID_TEX_SCALE, TEXTUREVIEW_SLIDER_DEFAULT, TEXTUREVIEW_SLIDER_MIN, TEXTUREVIEW_SLIDER_MAX );
+	m_pScaleTextureView = new wxSlider(pElemParent, wxID_TEX_SCALE, TEXTUREVIEW_SLIDER_DEFAULT, TEXTUREVIEW_SLIDER_MIN, TEXTUREVIEW_SLIDER_MAX );
 
 	m_pCheckBoxes[ CheckBox::CHROME ]				= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Chrome" );
 	m_pCheckBoxes[ CheckBox::ADDITIVE ]				= new wxCheckBox( pElemParent, wxID_TEX_CHECKBOX, "Additive" );
@@ -76,29 +74,25 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 	m_pExportUVButton = new wxButton(buttonsPanel, wxID_TEX_EXPORTUVMAP, "Export UV Map" );
 
 	//Layout
-	wxGridBagSizer* pSizer = new wxGridBagSizer( 5, 5 );
-
-	int iCol = 0;
+	auto sizer = new wxGridBagSizer(1, 1);
 
 	{
-		auto pTextureSettingSizer = new wxBoxSizer( wxVERTICAL );
+		auto textureSettingSizer = new wxBoxSizer(wxVERTICAL);
 
-		pTextureSettingSizer->Add( m_pTextureSize, wxSizerFlags().Expand() );
-		pTextureSettingSizer->Add( m_pTexture, wxSizerFlags().Expand() );
-		pTextureSettingSizer->Add( m_pScaleTextureViewSize, wxSizerFlags().Expand() );
-		pTextureSettingSizer->Add( m_pScaleTextureView, wxSizerFlags().Expand() );
+		textureSettingSizer->Add(m_pTextureSize, wxSizerFlags().Expand());
+		textureSettingSizer->Add(m_pTexture, wxSizerFlags().Expand());
+		textureSettingSizer->Add(m_pScaleTextureViewSize, wxSizerFlags().Expand());
+		textureSettingSizer->Add(m_pScaleTextureView, wxSizerFlags().Expand());
 
-		pTextureSettingPanel->SetSizer( pTextureSettingSizer );
-
-		pSizer->Add( pTextureSettingPanel, wxGBPosition( 0, iCol++ ), wxGBSpan( 4, 1 ), wxEXPAND );
+		sizer->Add(textureSettingSizer, wxGBPosition(0, 0), wxGBSpan(1, 1), wxEXPAND);
 	}
 
-	pSizer->Add( wx::CreateCheckBoxSizer( m_pCheckBoxes, ARRAYSIZE( m_pCheckBoxes ), NUM_CHECKBOX_COLS, wxEXPAND ), wxGBPosition( 0, iCol ), wxGBSpan( 3, 1 ), wxEXPAND );
+	sizer->Add(wx::CreateCheckBoxSizer(m_pCheckBoxes, ARRAYSIZE(m_pCheckBoxes), NUM_CHECKBOX_COLS, wxEXPAND), wxGBPosition(0, 1), wxGBSpan(1, 1), wxEXPAND);
 
-	pSizer->Add( m_pMesh, wxGBPosition( 3, iCol++ ), wxGBSpan( 1, 1 ), wxEXPAND );
+	sizer->Add(m_pMesh, wxGBPosition(0, 2), wxGBSpan(1, 1));
 
 	{
-		auto buttonsSizer = new wxGridBagSizer(2, 3);
+		auto buttonsSizer = new wxGridBagSizer(1, 1);
 
 		buttonsSizer->Add(m_pImportTexButton, wxGBPosition(0, 0), wxDefaultSpan, wxEXPAND);
 		buttonsSizer->Add(m_pImportAllTexturesButton, wxGBPosition(1, 0), wxDefaultSpan, wxEXPAND);
@@ -108,10 +102,10 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 
 		buttonsPanel->SetSizer(buttonsSizer);
 
-		pSizer->Add(buttonsPanel, wxGBPosition(0, iCol), wxGBSpan(5, 1), wxEXPAND);
+		sizer->Add(buttonsPanel, wxGBPosition(0, 3), wxGBSpan(1, 1), wxEXPAND);
 	}
 
-	GetMainSizer()->Add( pSizer );
+	GetMainSizer()->Add(sizer);
 }
 
 CTexturesPanel::~CTexturesPanel()
