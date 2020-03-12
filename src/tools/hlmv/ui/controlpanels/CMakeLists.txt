@@ -14,6 +14,8 @@ target_sources(${TARGET_NAME}
 		CGlobalFlagsPanel.h
 		CHitboxesPanel.cpp
 		CHitboxesPanel.h
+		CModelDataPanel.cpp
+		CModelDataPanel.h
 		CModelDisplayPanel.cpp
 		CModelDisplayPanel.h
 		CSequencesPanel.cpp

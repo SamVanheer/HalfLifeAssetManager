@@ -18,6 +18,7 @@ namespace hlmv
 class CModelViewerApp;
 
 class CModelDisplayPanel;
+class CModelDataPanel;
 class CGlobalFlagsPanel;
 class CBodyPartsPanel;
 class CBonesPanel;
@@ -164,6 +165,7 @@ private:
 	wxNotebook* m_pControlPanels;
 
 	CModelDisplayPanel*		m_pModelDisplay;
+	CModelDataPanel*		m_pModelData;
 	CGlobalFlagsPanel*		m_pGlobalFlags;
 	CBodyPartsPanel*		m_pBodyParts;
 	CBonesPanel*			m_pBones;

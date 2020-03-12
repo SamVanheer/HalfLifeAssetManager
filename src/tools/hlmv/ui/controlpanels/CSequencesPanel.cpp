@@ -30,8 +30,6 @@ wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseControlPanel )
 	EVT_BUTTON( wxID_SEQUENCE_EDITEVENTS, CSequencesPanel::OnEditEvents )
 	EVT_CHECKBOX( wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged )
 	EVT_CHECKBOX( wxID_SEQUENCE_PITCHFRAMERATE, CSequencesPanel::PitchFramerateChanged )
-	EVT_SPINCTRLDOUBLE( wxID_SEQUENCE_ORIGIN, CSequencesPanel::OnOriginChanged )
-	EVT_BUTTON( wxID_SEQUENCE_ORIGIN, CSequencesPanel::TestOrigin )
 wxEND_EVENT_TABLE()
 
 CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
@@ -120,25 +118,6 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 	m_pOptions	= new wxStaticText( m_pEventInfo, wxID_ANY, "Options: Undefined", wxDefaultPosition, wxSize( 200, wxDefaultSize.GetHeight() ) );
 	m_pType		= new wxStaticText( m_pEventInfo, wxID_ANY, "Type: Undefined" );
 
-	m_pOrigin[ 0 ] = new wxSpinCtrlDouble( pElemParent, wxID_SEQUENCE_ORIGIN, "0" );
-	m_pOrigin[ 1 ] = new wxSpinCtrlDouble( pElemParent, wxID_SEQUENCE_ORIGIN, "0" );
-	m_pOrigin[ 2 ] = new wxSpinCtrlDouble( pElemParent, wxID_SEQUENCE_ORIGIN, "0" );
-
-	for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
-	{
-		m_pOrigin[ uiIndex ]->SetRange( -DBL_MAX, DBL_MAX );
-		m_pOrigin[ uiIndex ]->SetDigits( 6 );
-	}
-
-	wxStaticText* pXOrigin = new wxStaticText( pElemParent, wxID_ANY, "Origin X" );
-	wxStaticText* pYOrigin = new wxStaticText( pElemParent, wxID_ANY, "Origin Y" );
-	wxStaticText* pZOrigin = new wxStaticText( pElemParent, wxID_ANY, "Origin Z" );
-
-	m_pTestOrigins = new wxButton( pElemParent, wxID_SEQUENCE_ORIGIN, "Test Origin" );
-
-	m_pShowCrosshair = new wxCheckBox( pElemParent, wxID_ANY, "Show Crosshair" );
-	m_pShowGuidelines = new wxCheckBox( pElemParent, wxID_ANY, "Show Guidelines" );
-
 	//Layout
 	wxGridBagSizer* pSizer = new wxGridBagSizer(1, 1);
 
@@ -194,21 +173,6 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 
 	pSizer->Add( m_pEventInfo, wxGBPosition( 1, iCol ), wxGBSpan( 3, 2 ), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN );
 
-	iCol += 2;
-
-	pSizer->Add( m_pOrigin[ 0 ], wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pOrigin[ 1 ], wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pOrigin[ 2 ], wxGBPosition( 2, iCol ), wxDefaultSpan, wxEXPAND );
-
-	pSizer->Add( m_pTestOrigins, wxGBPosition( 3, iCol++ ), wxDefaultSpan, wxEXPAND );
-
-	pSizer->Add( pXOrigin, wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( pYOrigin, wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( pZOrigin, wxGBPosition( 2, iCol++ ), wxDefaultSpan, wxEXPAND );
-
-	pSizer->Add( m_pShowCrosshair, wxGBPosition( 0, iCol ), wxDefaultSpan, wxEXPAND );
-	pSizer->Add( m_pShowGuidelines, wxGBPosition( 1, iCol ), wxDefaultSpan, wxEXPAND );
-
 	m_pEventInfo->SetSizer( pEventSizer );
 
 	GetMainSizer()->Add( pSizer );
@@ -223,129 +187,6 @@ CSequencesPanel::~CSequencesPanel()
 	g_pCVar->RemoveGlobalCVarHandler( this );
 }
 
-void CSequencesPanel::Draw3D( const wxSize& size )
-{
-	const int x = size.GetX() / 2;
-	const int y = size.GetY() / 2;
-
-	if( m_pShowCrosshair->GetValue() )
-	{
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity();
-
-		glOrtho( 0.0f, ( float ) size.GetX(), ( float ) size.GetY(), 0.0f, 1.0f, -1.0f );
-
-		glMatrixMode( GL_MODELVIEW );
-		glPushMatrix();
-		glLoadIdentity();
-
-		glDisable( GL_CULL_FACE );
-
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
-		glDisable( GL_TEXTURE_2D );
-
-		const Color& crosshairColor = m_pHLMV->GetSettings()->GetCrosshairColor();
-
-		glColor4f( crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0 );
-
-		glPointSize( CROSSHAIR_LINE_WIDTH );
-		glLineWidth( CROSSHAIR_LINE_WIDTH );
-
-		glBegin( GL_POINTS );
-
-		glVertex2f( x - CROSSHAIR_LINE_WIDTH / 2, y + 1 );
-
-		glEnd();
-
-		glBegin( GL_LINES );
-
-		glVertex2f( x - CROSSHAIR_LINE_START, y );
-		glVertex2f( x - CROSSHAIR_LINE_END, y );
-
-		glVertex2f( x + CROSSHAIR_LINE_START, y );
-		glVertex2f( x + CROSSHAIR_LINE_END, y );
-
-		glVertex2f( x, y - CROSSHAIR_LINE_START );
-		glVertex2f( x, y - CROSSHAIR_LINE_END );
-
-		glVertex2f( x, y + CROSSHAIR_LINE_START );
-		glVertex2f( x, y + CROSSHAIR_LINE_END );
-
-		glEnd();
-
-		glPointSize( 1 );
-		glLineWidth( 1 );
-
-		glPopMatrix();
-	}
-
-	if( m_pShowGuidelines->GetValue() )
-	{
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity();
-
-		glOrtho( 0.0f, ( float ) size.GetX(), ( float ) size.GetY(), 0.0f, 1.0f, -1.0f );
-
-		glMatrixMode( GL_MODELVIEW );
-		glPushMatrix();
-		glLoadIdentity();
-
-		glDisable( GL_CULL_FACE );
-
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
-		glDisable( GL_TEXTURE_2D );
-
-		const Color& crosshairColor = m_pHLMV->GetSettings()->GetCrosshairColor();
-
-		glColor4f( crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0 );
-
-		glPointSize( GUIDELINES_LINE_WIDTH );
-		glLineWidth( GUIDELINES_LINE_WIDTH );
-
-		glBegin( GL_POINTS );
-
-		for( int yPos = size.GetY() - GUIDELINES_LINE_LENGTH; yPos >= y + CROSSHAIR_LINE_END; yPos -= GUIDELINES_OFFSET )
-		{
-			glVertex2f( x - GUIDELINES_LINE_WIDTH, yPos );
-		}
-
-		glEnd();
-
-		glBegin( GL_LINES );
-
-		for( int yPos = size.GetY() - GUIDELINES_LINE_LENGTH - GUIDELINES_POINT_LINE_OFFSET - GUIDELINES_LINE_WIDTH;
-			 yPos >= y + CROSSHAIR_LINE_END + GUIDELINES_LINE_LENGTH;
-			 yPos -= GUIDELINES_OFFSET )
-		{
-			glVertex2f( x, yPos );
-			glVertex2f( x, yPos - GUIDELINES_LINE_LENGTH );
-		}
-
-		glEnd();
-
-		const float flWidth = size.GetY() * ( 16 / 9.0 );
-
-		glLineWidth( GUIDELINES_EDGE_WIDTH );
-
-		glBegin( GL_LINES );
-
-		glVertex2f( ( size.GetX() / 2 ) - ( flWidth / 2 ), 0 );
-		glVertex2f( ( size.GetX() / 2 ) - ( flWidth / 2 ), size.GetY() );
-
-		glVertex2f( ( size.GetX() / 2 ) + ( flWidth / 2 ), 0 );
-		glVertex2f( ( size.GetX() / 2 ) + ( flWidth / 2 ), size.GetY() );
-
-		glEnd();
-
-		glPointSize( 1 );
-		glLineWidth( 1 );
-
-		glPopMatrix();
-	}
-}
-
 void CSequencesPanel::InitializeUI()
 {
 	m_pSequence->Clear();
@@ -353,8 +194,6 @@ void CSequencesPanel::InitializeUI()
 	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
 	bool bSuccess = false;
-
-	m_RootBonePositions.clear();
 
 	if( pEntity )
 	{
@@ -379,28 +218,6 @@ void CSequencesPanel::InitializeUI()
 			SetSequence( 0 );
 
 			m_pSequenceInfo->Show( true );
-
-			for (auto value : m_pOrigin)
-			{
-				value->SetValue(0);
-			}
-
-			auto rootBones = pModel->GetRootBones();
-
-			for (auto rootBone : rootBones)
-			{
-				m_RootBonePositions.emplace_back(
-					RootBoneData
-					{
-						rootBone,
-						glm::vec3
-						{
-							rootBone->value[0],
-							rootBone->value[1],
-							rootBone->value[2]
-						}
-					});
-			}
 
 			bSuccess = true;
 		}
@@ -592,28 +409,6 @@ void CSequencesPanel::UpdateEventInfo( int iIndex )
 	m_pEventInfo->Show( true );
 }
 
-void CSequencesPanel::UpdateOrigin()
-{
-	if (auto pEntity = m_pHLMV->GetState()->GetEntity())
-	{
-		if (!m_RootBonePositions.empty())
-		{
-			const glm::vec3 offset{m_pOrigin[0]->GetValue(), m_pOrigin[1]->GetValue(), m_pOrigin[2]->GetValue()};
-
-			for (auto& data : m_RootBonePositions)
-			{
-				const auto newPosition = data.OriginalRootBonePosition + offset;
-
-				data.Bone->value[0] = newPosition.x;
-				data.Bone->value[1] = newPosition.y;
-				data.Bone->value[2] = newPosition.z;
-			}
-
-			m_pHLMV->GetState()->modelChanged = true;
-		}
-	}
-}
-
 void CSequencesPanel::SequenceChanged( wxCommandEvent& event )
 {
 	SetSequence( m_pSequence->GetSelection() );
@@ -732,15 +527,5 @@ void CSequencesPanel::PlaySoundChanged( wxCommandEvent& event )
 void CSequencesPanel::PitchFramerateChanged( wxCommandEvent& event )
 {
 	g_pCVar->SetCVarFloat( "s_ent_pitchframerate", m_pPitchFramerate->GetValue() ? 1 : 0 );
-}
-
-void CSequencesPanel::OnOriginChanged( wxSpinDoubleEvent& event )
-{
-	UpdateOrigin();
-}
-
-void CSequencesPanel::TestOrigin( wxCommandEvent& event )
-{
-	UpdateOrigin();
 }
 }

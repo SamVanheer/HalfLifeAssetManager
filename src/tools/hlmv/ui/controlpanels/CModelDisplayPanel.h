@@ -58,9 +58,23 @@ public:
 	static const size_t OPACITY_MAX = 100;
 	static const size_t OPACITY_DEFAULT = OPACITY_MAX;
 
+	static const int CROSSHAIR_LINE_WIDTH = 3;
+	static const int CROSSHAIR_LINE_START = 5;
+	static const int CROSSHAIR_LINE_LENGTH = 10;
+	static const int CROSSHAIR_LINE_END = CROSSHAIR_LINE_START + CROSSHAIR_LINE_LENGTH;
+
+	static const int GUIDELINES_LINE_WIDTH = 1;
+	static const int GUIDELINES_LINE_LENGTH = 5;
+	static const int GUIDELINES_POINT_LINE_OFFSET = 2;
+	static const int GUIDELINES_OFFSET = GUIDELINES_LINE_LENGTH + (GUIDELINES_POINT_LINE_OFFSET * 2) + GUIDELINES_LINE_WIDTH;
+
+	static const int GUIDELINES_EDGE_WIDTH = 4;
+
 public:
 	CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* const pHLMV );
 	~CModelDisplayPanel();
+
+	void Draw3D(const wxSize& size) override;
 
 	void InitializeUI() override;
 
@@ -83,10 +97,6 @@ private:
 
 	void CheckBoxChanged( wxCommandEvent& event );
 
-	void ScaleMesh( wxCommandEvent& event );
-
-	void ScaleBones( wxCommandEvent& event );
-
 	void OnMirrorAxis( wxCommandEvent& event );
 
 	void OnFOVChanged( wxCommandEvent& event );
@@ -103,13 +113,10 @@ private:
 
 	wxCheckBox* m_pCheckBoxes[ CheckBox::COUNT ];
 
-	wxSpinCtrlDouble* m_pMeshScale;
-	wxButton* m_pMeshScaleButton;
-
-	wxSpinCtrlDouble* m_pBonesScale;
-	wxButton* m_pBonesScaleButton;
-
 	wxCheckBox* m_pMirror[ 3 ];
+
+	wxCheckBox* m_pShowCrosshair;
+	wxCheckBox* m_pShowGuidelines;
 
 	ui::CFOVCtrl* m_pFOV;
 	ui::CFOVCtrl* m_pFPFOV;

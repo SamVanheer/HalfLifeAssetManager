@@ -18,8 +18,6 @@ wxBEGIN_EVENT_TABLE( CModelDisplayPanel, CBaseControlPanel )
 	EVT_CHOICE( wxID_MDLDISP_RENDERMODE, CModelDisplayPanel::RenderModeChanged )
 	EVT_SLIDER( wxID_MDLDISP_OPACITY, CModelDisplayPanel::OpacityChanged )
 	EVT_CHECKBOX( wxID_MDLDISP_CHECKBOX, CModelDisplayPanel::CheckBoxChanged )
-	EVT_BUTTON( wxID_MDLDISP_SCALEMESH, CModelDisplayPanel::ScaleMesh )
-	EVT_BUTTON( wxID_MDLDISP_SCALEBONES, CModelDisplayPanel::ScaleBones )
 	EVT_CHECKBOX( wxID_MDLDISP_MIRROR, CModelDisplayPanel::OnMirrorAxis )
 	EVT_FOV_CHANGED( wxID_MDLDISP_FOVCHANGED, CModelDisplayPanel::OnFOVChanged )
 	EVT_FOV_CHANGED( wxID_MDLDISP_FPFOVCHANGED, CModelDisplayPanel::OnFOVFPChanged )
@@ -73,21 +71,12 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 
 	m_pCheckBoxes[ CheckBox::BACKFACE_CULLING ]->SetValue( true );
 
-	m_pMeshScale = new wxSpinCtrlDouble( pElemParent, wxID_ANY, "1.0" );
-	m_pMeshScaleButton = new wxButton( pElemParent, wxID_MDLDISP_SCALEMESH, "Scale Mesh" );
-
-	m_pMeshScale->SetRange( DBL_MIN, DBL_MAX );
-	m_pMeshScale->SetDigits( 2 );
-
-	m_pBonesScale = new wxSpinCtrlDouble( pElemParent, wxID_ANY, "1.0" );
-	m_pBonesScaleButton = new wxButton( pElemParent, wxID_MDLDISP_SCALEBONES, "Scale Bones" );
-
-	m_pBonesScale->SetRange( DBL_MIN, DBL_MAX );
-	m_pBonesScale->SetDigits( 2 );
-
 	m_pMirror[ 0 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on X axis" );
 	m_pMirror[ 1 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on Y axis" );
 	m_pMirror[ 2 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on Z axis" );
+
+	m_pShowCrosshair = new wxCheckBox(pElemParent, wxID_ANY, "Show Crosshair");
+	m_pShowGuidelines = new wxCheckBox(pElemParent, wxID_ANY, "Show Guidelines");
 
 	m_pFOV = new ui::CFOVCtrl( this, wxID_MDLDISP_FOVCHANGED, CHLMVState::DEFAULT_FOV, "Field Of View" );
 
@@ -115,16 +104,6 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 
 	pSizer->Add( pCheckBoxSizer, wxSizerFlags().Expand().Border() );
 
-	auto pScaleSizer = new wxGridBagSizer( 5, 5 );
-
-	pScaleSizer->Add( m_pMeshScale, wxGBPosition( 0, 0 ), wxDefaultSpan, wxEXPAND );
-	pScaleSizer->Add( m_pMeshScaleButton, wxGBPosition( 0, 1 ), wxDefaultSpan, wxEXPAND );
-
-	pScaleSizer->Add( m_pBonesScale, wxGBPosition( 1, 0 ), wxDefaultSpan, wxEXPAND );
-	pScaleSizer->Add( m_pBonesScaleButton, wxGBPosition( 1, 1 ), wxDefaultSpan, wxEXPAND );
-
-	pSizer->Add( pScaleSizer, wxSizerFlags().Expand().Border() );
-
 	auto pMirrorSizer = new wxBoxSizer( wxVERTICAL );
 
 	pMirrorSizer->Add( m_pMirror[ 0 ], wxSizerFlags().Expand() );
@@ -134,6 +113,14 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 	pMirrorSizer->Add( m_pMirror[ 2 ], wxSizerFlags().Expand() );
 
 	pSizer->Add( pMirrorSizer, wxSizerFlags().Expand().Border() );
+
+	auto helperSizer = new wxBoxSizer(wxVERTICAL);
+
+	helperSizer->Add(m_pShowCrosshair, wxSizerFlags().Expand());
+	helperSizer->AddSpacer(10);
+	helperSizer->Add(m_pShowGuidelines, wxSizerFlags().Expand());
+
+	pSizer->Add(helperSizer, wxSizerFlags().Expand());
 
 	auto pFOVSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -153,13 +140,133 @@ CModelDisplayPanel::~CModelDisplayPanel()
 	g_pCVar->RemoveGlobalCVarHandler( this );
 }
 
+void CModelDisplayPanel::Draw3D(const wxSize& size)
+{
+	const int x = size.GetX() / 2;
+	const int y = size.GetY() / 2;
+
+	if (m_pShowCrosshair->GetValue())
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		glOrtho(0.0f, (float) size.GetX(), (float) size.GetY(), 0.0f, 1.0f, -1.0f);
+
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+
+		glDisable(GL_CULL_FACE);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glDisable(GL_TEXTURE_2D);
+
+		const Color& crosshairColor = m_pHLMV->GetSettings()->GetCrosshairColor();
+
+		glColor4f(crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0);
+
+		glPointSize(CROSSHAIR_LINE_WIDTH);
+		glLineWidth(CROSSHAIR_LINE_WIDTH);
+
+		glBegin(GL_POINTS);
+
+		glVertex2f(x - CROSSHAIR_LINE_WIDTH / 2, y + 1);
+
+		glEnd();
+
+		glBegin(GL_LINES);
+
+		glVertex2f(x - CROSSHAIR_LINE_START, y);
+		glVertex2f(x - CROSSHAIR_LINE_END, y);
+
+		glVertex2f(x + CROSSHAIR_LINE_START, y);
+		glVertex2f(x + CROSSHAIR_LINE_END, y);
+
+		glVertex2f(x, y - CROSSHAIR_LINE_START);
+		glVertex2f(x, y - CROSSHAIR_LINE_END);
+
+		glVertex2f(x, y + CROSSHAIR_LINE_START);
+		glVertex2f(x, y + CROSSHAIR_LINE_END);
+
+		glEnd();
+
+		glPointSize(1);
+		glLineWidth(1);
+
+		glPopMatrix();
+	}
+
+	if (m_pShowGuidelines->GetValue())
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		glOrtho(0.0f, (float) size.GetX(), (float) size.GetY(), 0.0f, 1.0f, -1.0f);
+
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+
+		glDisable(GL_CULL_FACE);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glDisable(GL_TEXTURE_2D);
+
+		const Color& crosshairColor = m_pHLMV->GetSettings()->GetCrosshairColor();
+
+		glColor4f(crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0);
+
+		glPointSize(GUIDELINES_LINE_WIDTH);
+		glLineWidth(GUIDELINES_LINE_WIDTH);
+
+		glBegin(GL_POINTS);
+
+		for (int yPos = size.GetY() - GUIDELINES_LINE_LENGTH; yPos >= y + CROSSHAIR_LINE_END; yPos -= GUIDELINES_OFFSET)
+		{
+			glVertex2f(x - GUIDELINES_LINE_WIDTH, yPos);
+		}
+
+		glEnd();
+
+		glBegin(GL_LINES);
+
+		for (int yPos = size.GetY() - GUIDELINES_LINE_LENGTH - GUIDELINES_POINT_LINE_OFFSET - GUIDELINES_LINE_WIDTH;
+			yPos >= y + CROSSHAIR_LINE_END + GUIDELINES_LINE_LENGTH;
+			yPos -= GUIDELINES_OFFSET)
+		{
+			glVertex2f(x, yPos);
+			glVertex2f(x, yPos - GUIDELINES_LINE_LENGTH);
+		}
+
+		glEnd();
+
+		const float flWidth = size.GetY() * (16 / 9.0);
+
+		glLineWidth(GUIDELINES_EDGE_WIDTH);
+
+		glBegin(GL_LINES);
+
+		glVertex2f((size.GetX() / 2) - (flWidth / 2), 0);
+		glVertex2f((size.GetX() / 2) - (flWidth / 2), size.GetY());
+
+		glVertex2f((size.GetX() / 2) + (flWidth / 2), 0);
+		glVertex2f((size.GetX() / 2) + (flWidth / 2), size.GetY());
+
+		glEnd();
+
+		glPointSize(1);
+		glLineWidth(1);
+
+		glPopMatrix();
+	}
+}
+
 void CModelDisplayPanel::InitializeUI()
 {
 	SetRenderMode( RenderMode::TEXTURE_SHADED );
 	SetOpacity( OPACITY_DEFAULT );
-
-	m_pMeshScale->SetValue( "1.0" );
-	m_pBonesScale->SetValue( "1.0" );
 
 	auto pEntity = m_pHLMV->GetState()->GetEntity();
 
@@ -334,30 +441,6 @@ void CModelDisplayPanel::CheckBoxChanged( wxCommandEvent& event )
 		return;
 
 	InternalSetCheckBox( checkbox, pCheckBox->GetValue(), true );
-}
-
-void CModelDisplayPanel::ScaleMesh( wxCommandEvent& event )
-{
-	auto pEntity = m_pHLMV->GetState()->GetEntity();
-
-	if( pEntity )
-	{
-		studiomdl::ScaleMeshes( pEntity->GetModel(), m_pMeshScale->GetValue() );
-
-		m_pHLMV->GetState()->modelChanged = true;
-	}
-}
-
-void CModelDisplayPanel::ScaleBones( wxCommandEvent& event )
-{
-	auto pEntity = m_pHLMV->GetState()->GetEntity();
-
-	if( pEntity )
-	{
-		studiomdl::ScaleBones( pEntity->GetModel(), m_pBonesScale->GetValue() );
-
-		m_pHLMV->GetState()->modelChanged = true;
-	}
 }
 
 void CModelDisplayPanel::OnMirrorAxis( wxCommandEvent& event )

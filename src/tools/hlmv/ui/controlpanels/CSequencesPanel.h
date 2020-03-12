@@ -3,8 +3,6 @@
 
 #include <vector>
 
-#include <glm/vec3.hpp>
-
 #include "cvar/CCVar.h"
 
 #include "CBaseControlPanel.h"
@@ -24,29 +22,9 @@ private:
 	static const int ANIMSPEED_DEFAULT = 1;
 	static const int ANIMSPEED_SLIDER_MULTIPLIER = 40;
 
-	static const int CROSSHAIR_LINE_WIDTH = 3;
-	static const int CROSSHAIR_LINE_START = 5;
-	static const int CROSSHAIR_LINE_LENGTH = 10;
-	static const int CROSSHAIR_LINE_END = CROSSHAIR_LINE_START + CROSSHAIR_LINE_LENGTH;
-
-	static const int GUIDELINES_LINE_WIDTH = 1;
-	static const int GUIDELINES_LINE_LENGTH = 5;
-	static const int GUIDELINES_POINT_LINE_OFFSET = 2;
-	static const int GUIDELINES_OFFSET = GUIDELINES_LINE_LENGTH + ( GUIDELINES_POINT_LINE_OFFSET * 2 ) + GUIDELINES_LINE_WIDTH;
-
-	static const int GUIDELINES_EDGE_WIDTH = 4;
-
-	struct RootBoneData
-	{
-		mstudiobone_t* Bone;
-		glm::vec3 OriginalRootBonePosition;
-	};
-
 public:
 	CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV );
 	~CSequencesPanel();
-
-	void Draw3D( const wxSize& size ) override;
 
 	void InitializeUI() override;
 
@@ -65,8 +43,6 @@ private:
 	void UpdateEvents();
 
 	void UpdateEventInfo( int iIndex );
-
-	void UpdateOrigin();
 
 	void SequenceChanged( wxCommandEvent& event );
 
@@ -91,10 +67,6 @@ private:
 	void PlaySoundChanged( wxCommandEvent& event );
 
 	void PitchFramerateChanged( wxCommandEvent& event );
-
-	void OnOriginChanged( wxSpinDoubleEvent& event );
-
-	void TestOrigin( wxCommandEvent& event );
 
 private:
 	wxChoice* m_pSequence;
@@ -129,15 +101,6 @@ private:
 	wxStaticText* m_pEventId;
 	wxStaticText* m_pOptions;
 	wxStaticText* m_pType;
-
-	wxSpinCtrlDouble* m_pOrigin[ 3 ];
-
-	wxButton* m_pTestOrigins;
-
-	wxCheckBox* m_pShowCrosshair;
-	wxCheckBox* m_pShowGuidelines;
-
-	std::vector<RootBoneData> m_RootBonePositions;
 
 private:
 	CSequencesPanel( const CSequencesPanel& ) = delete;
