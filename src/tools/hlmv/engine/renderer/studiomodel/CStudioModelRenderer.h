@@ -134,6 +134,7 @@ private:
 	unsigned int m_uiDrawnPolygonsCount = 0;
 
 	glm::vec3		m_xformverts[ MAXSTUDIOVERTS ];		// transformed vertices
+	glm::vec3		m_xformnorms[MAXSTUDIOVERTS];
 	glm::vec3		m_lightvalues[ MAXSTUDIOVERTS ];	// light surface normals
 	glm::vec3*		m_pxformverts;
 	glm::vec3*		m_pvlightvalues;
