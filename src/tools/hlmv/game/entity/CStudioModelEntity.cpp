@@ -98,9 +98,29 @@ float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )
 			dt = flMax;
 	}
 
+	const float flOldFrame = m_flFrame;
+
+	bool shouldLoop;
+
+	switch (m_LoopingMode)
+	{
+	case StudioLoopingMode::AlwaysLoop:
+		shouldLoop = true;
+		break;
+	case StudioLoopingMode::NeverLoop:
+		shouldLoop = false;
+		break;
+	case StudioLoopingMode::UseSequenceSetting:
+		shouldLoop = (pseqdesc->flags & STUDIO_LOOPING) != 0;
+		break;
+	}
+
 	const float flIncrement = dt * pseqdesc->fps * m_flFrameRate;
 
-	m_flFrame += flIncrement;
+	if (m_flFrame < (pseqdesc->numframes - 1) || shouldLoop)
+	{
+		m_flFrame += flIncrement;
+	}
 
 	if( pseqdesc->numframes <= 1 )
 	{
@@ -108,10 +128,16 @@ float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )
 	}
 	else
 	{
-		const float flOldFrame = m_flFrame;
-
-		// wrap
-		m_flFrame -= ( int ) ( m_flFrame / ( pseqdesc->numframes - 1 ) ) * ( pseqdesc->numframes - 1 );
+		if (shouldLoop)
+		{
+			// wrap
+			m_flFrame -= (int) (m_flFrame / (pseqdesc->numframes - 1)) * (pseqdesc->numframes - 1);
+		}
+		else if (m_flFrame >= (pseqdesc->numframes - 1))
+		{
+			//Clamp frame to the last valid frame index
+			m_flFrame = static_cast<float>(pseqdesc->numframes - 1);
+		}
 
 		//Wrapped
 		if( flOldFrame > m_flFrame )

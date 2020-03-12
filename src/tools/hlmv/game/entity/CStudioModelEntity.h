@@ -10,6 +10,13 @@
 
 #include "CBaseAnimating.h"
 
+enum class StudioLoopingMode
+{
+	AlwaysLoop = 0,
+	NeverLoop,
+	UseSequenceSetting
+};
+
 /**
 *	Studio model entity.
 */
@@ -79,6 +86,8 @@ private:
 
 	float	m_flLastEventCheck	= 0;				//Last time we checked for animation events.
 	float	m_flAnimTime		= 0;				//Time when the frame was set.
+
+	StudioLoopingMode m_LoopingMode = StudioLoopingMode::AlwaysLoop;
 
 public:
 	/**
@@ -201,6 +210,13 @@ public:
 	*	Gets the last time this entity advanced its frame.
 	*/
 	float GetAnimTime() const { return m_flAnimTime; }
+
+	StudioLoopingMode GetLoopingMode() const { return m_LoopingMode; }
+
+	void SetLoopingMode(StudioLoopingMode value)
+	{
+		m_LoopingMode = value;
+	}
 
 	/**
 	*	Extracts the bounding box from the current sequence.

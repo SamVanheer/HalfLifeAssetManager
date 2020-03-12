@@ -19,18 +19,26 @@
 
 namespace hlmv
 {
-wxBEGIN_EVENT_TABLE( CSequencesPanel, CBaseControlPanel )
-	EVT_CHOICE( wxID_SEQUENCE_SEQCHANGED, CSequencesPanel::SequenceChanged )
-	EVT_TOGGLEBUTTON( wxID_SEQUENCE_TOGGLEPLAY, CSequencesPanel::TogglePlay )
-	EVT_BUTTON( wxID_SEQUENCE_PREVFRAME, CSequencesPanel::PrevFrame )
-	EVT_BUTTON( wxID_SEQUENCE_NEXTFRAME, CSequencesPanel::NextFrame )
-	EVT_TEXT( wxID_SEQUENCE_FRAME, CSequencesPanel::FrameChanged )
-	EVT_SLIDER( WXID_SEQUENCE_ANIMSPEED, CSequencesPanel::AnimSpeedChanged )
-	EVT_CHOICE( wxID_SEQUENCE_EVENT, CSequencesPanel::EventChanged )
-	EVT_BUTTON( wxID_SEQUENCE_EDITEVENTS, CSequencesPanel::OnEditEvents )
-	EVT_CHECKBOX( wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged )
-	EVT_CHECKBOX( wxID_SEQUENCE_PITCHFRAMERATE, CSequencesPanel::PitchFramerateChanged )
+wxBEGIN_EVENT_TABLE(CSequencesPanel, CBaseControlPanel)
+	EVT_CHOICE(wxID_SEQUENCE_SEQCHANGED, CSequencesPanel::SequenceChanged)
+	EVT_TOGGLEBUTTON(wxID_SEQUENCE_TOGGLEPLAY, CSequencesPanel::TogglePlay)
+	EVT_BUTTON(wxID_SEQUENCE_PREVFRAME, CSequencesPanel::PrevFrame)
+	EVT_BUTTON(wxID_SEQUENCE_NEXTFRAME, CSequencesPanel::NextFrame)
+	EVT_TEXT(wxID_SEQUENCE_FRAME, CSequencesPanel::FrameChanged)
+	EVT_SLIDER(WXID_SEQUENCE_ANIMSPEED, CSequencesPanel::AnimSpeedChanged)
+	EVT_CHOICE(wxID_SEQUENCE_EVENT, CSequencesPanel::EventChanged)
+	EVT_BUTTON(wxID_SEQUENCE_EDITEVENTS, CSequencesPanel::OnEditEvents)
+	EVT_CHECKBOX(wxID_SEQUENCE_PLAYSOUND, CSequencesPanel::PlaySoundChanged)
+	EVT_CHECKBOX(wxID_SEQUENCE_PITCHFRAMERATE, CSequencesPanel::PitchFramerateChanged)
 wxEND_EVENT_TABLE()
+
+//Must match StudioLoopingMode
+static const wxString LoopingModes[] =
+{
+	"Always Loop",
+	"Never Loop",
+	"Use Sequence Setting"
+};
 
 CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	: CBaseControlPanel( pParent, "Sequences", pHLMV )
@@ -80,6 +88,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 	m_pFrameRate = new wxStaticText(m_pSequenceInfo, wxID_ANY, "FPS: Undefined");
 	m_pBlends = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Blends: Undefined");
 	m_pEventCount = new wxStaticText(m_pSequenceInfo, wxID_ANY, "# of Events: Undefined");
+	m_pIsLooping = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Is Looping: Undefined");
 
 	//Info
 	{
@@ -90,11 +99,19 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 		pInfoSizer->Add(m_pFrameRate, 0, wxEXPAND);
 		pInfoSizer->Add(m_pBlends, 0, wxEXPAND);
 		pInfoSizer->Add(m_pEventCount, 0, wxEXPAND);
+		pInfoSizer->Add(m_pIsLooping, 0, wxEXPAND);
 
 		m_pSequenceInfo->SetSizer(pInfoSizer);
 	}
 
 	SetFrameControlsEnabled(false);
+
+	m_pLoopingMode = new wxChoice(pElemParent, wxID_ANY, wxDefaultPosition, wxDefaultSize, 3, LoopingModes);
+	m_pLoopingMode->SetSelection(0);
+	m_pLoopingMode->Bind(wxEVT_CHOICE, &CSequencesPanel::OnLoopingModeChanged, this);
+
+	m_pRestartSequence = new wxButton(pElemParent, wxID_ANY, "Restart Sequence");
+	m_pRestartSequence->Bind(wxEVT_BUTTON, &CSequencesPanel::OnRestartSequence, this);
 
 	m_pEvent = new wxChoice(pElemParent, wxID_SEQUENCE_EVENT);
 
@@ -146,7 +163,17 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 		sizer->Add(sequenceSizer, wxGBPosition(0, 0), wxGBSpan(1, 1), wxEXPAND);
 	}
 
-	sizer->Add(m_pSequenceInfo, wxGBPosition(0, 1), wxGBSpan(1, 1), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN);
+	{
+		auto controlsSizer = new wxGridBagSizer(1, 1);
+
+		controlsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Looping Mode"), wxGBPosition(0, 0), wxGBSpan(1, 1));
+		controlsSizer->Add(m_pLoopingMode, wxGBPosition(0, 1), wxGBSpan(1, 1));
+		controlsSizer->Add(m_pRestartSequence, wxGBPosition(1, 0), wxGBSpan(1, 2), wxEXPAND);
+
+		sizer->Add(controlsSizer, wxGBPosition(0, 1), wxGBSpan(1, 1), wxEXPAND);
+	}
+
+	sizer->Add(m_pSequenceInfo, wxGBPosition(0, 2), wxGBSpan(1, 1), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN);
 
 	{
 		auto eventsSizer = new wxGridBagSizer(1, 1);
@@ -157,7 +184,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 		eventsSizer->Add(m_pPlaySound, wxGBPosition(2, 0), wxGBSpan(1, 2), wxEXPAND);
 		eventsSizer->Add(m_pPitchFramerate, wxGBPosition(3, 0), wxGBSpan(1, 2), wxEXPAND);
 
-		sizer->Add(eventsSizer, wxGBPosition(0, 2), wxDefaultSpan, wxEXPAND);
+		sizer->Add(eventsSizer, wxGBPosition(0, 3), wxDefaultSpan, wxEXPAND);
 	}
 
 	{
@@ -170,7 +197,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 
 		m_pEventInfo->SetSizer(eventInfoSizer);
 
-		sizer->Add(m_pEventInfo, wxGBPosition(0, 3), wxGBSpan(1, 1), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN);
+		sizer->Add(m_pEventInfo, wxGBPosition(0, 5), wxGBSpan(1, 1), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN);
 	}
 
 	GetMainSizer()->Add(sizer);
@@ -195,6 +222,8 @@ void CSequencesPanel::InitializeUI()
 
 	if( pEntity )
 	{
+		pEntity->SetLoopingMode(static_cast<StudioLoopingMode>(m_pLoopingMode->GetSelection()));
+
 		auto pModel = pEntity->GetModel();
 
 		const studiohdr_t* const pHdr = pModel->GetStudioHeader();
@@ -267,6 +296,7 @@ void CSequencesPanel::SetSequence( int iIndex )
 		m_pFrameRate->SetLabelText( wxString::Format( "FPS: %.2f", sequence.fps ) );
 		m_pBlends->SetLabelText( wxString::Format( "Blends: %d", sequence.numblends ) );
 		m_pEventCount->SetLabelText( wxString::Format( "# of Events: %d", sequence.numevents ) );
+		m_pIsLooping->SetLabelText(wxString::Format("Is Looping: %s", (sequence.flags & STUDIO_LOOPING) ? "Yes" : "No"));
 	}
 
 	UpdateEvents();
@@ -476,6 +506,22 @@ void CSequencesPanel::ResetAnimSpeed(wxCommandEvent& event)
 		m_pAnimSpeed->SetValue(ANIMSPEED_DEFAULT * ANIMSPEED_SLIDER_MULTIPLIER);
 		m_pAnimSpeedSpinner->SetValue(ANIMSPEED_DEFAULT);
 		pEntity->SetFrameRate(1.f);
+	}
+}
+
+void CSequencesPanel::OnLoopingModeChanged(wxCommandEvent& event)
+{
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		entity->SetLoopingMode(static_cast<StudioLoopingMode>(m_pLoopingMode->GetSelection()));
+	}
+}
+
+void CSequencesPanel::OnRestartSequence(wxCommandEvent& event)
+{
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		entity->SetFrame(0);
 	}
 }
 

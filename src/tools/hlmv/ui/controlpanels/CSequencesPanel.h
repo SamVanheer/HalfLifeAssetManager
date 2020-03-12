@@ -60,6 +60,10 @@ private:
 
 	void ResetAnimSpeed(wxCommandEvent& event);
 
+	void OnLoopingModeChanged(wxCommandEvent& event);
+
+	void OnRestartSequence(wxCommandEvent& event);
+
 	void EventChanged( wxCommandEvent& event );
 
 	void OnEditEvents( wxCommandEvent& event );
@@ -87,6 +91,10 @@ private:
 	wxStaticText* m_pFrameRate;
 	wxStaticText* m_pBlends;
 	wxStaticText* m_pEventCount;
+	wxStaticText* m_pIsLooping;
+
+	wxChoice* m_pLoopingMode;
+	wxButton* m_pRestartSequence;
 
 	wxChoice* m_pEvent;
 
