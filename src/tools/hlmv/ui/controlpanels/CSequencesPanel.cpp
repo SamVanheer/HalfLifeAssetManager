@@ -93,7 +93,7 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 	m_pEventCount = new wxStaticText(m_pSequenceInfo, wxID_ANY, "# of Events: 000");
 	m_pIsLooping = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Is Looping: Yes");
 	m_pActivity = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Activity: Undefined");
-	m_pActivity->SetMinSize(wxSize(190, wxDefaultSize.GetHeight()));
+	m_pActivity->SetMinSize(wxSize(210, wxDefaultSize.GetHeight()));
 	m_pActWeight = new wxStaticText(m_pSequenceInfo, wxID_ANY, "Activity Weight: 000");
 
 	//Info
@@ -322,7 +322,7 @@ void CSequencesPanel::SetSequence( int iIndex )
 		m_pBlends->SetLabelText( wxString::Format( "Blends: %d", sequence.numblends ) );
 		m_pEventCount->SetLabelText( wxString::Format( "# of Events: %d", sequence.numevents ) );
 		m_pIsLooping->SetLabelText(wxString::Format("Is Looping: %s", (sequence.flags & STUDIO_LOOPING) ? "Yes" : "No"));
-		m_pActivity->SetLabelText(wxString::Format("Activity: %s", activityName));
+		m_pActivity->SetLabelText(wxString::Format("Activity: %s (%d)", activityName, sequence.activity));
 		m_pActWeight->SetLabelText(wxString::Format("Activity Weight: %d", sequence.actweight));
 	}
 
