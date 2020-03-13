@@ -217,6 +217,16 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 				m_IsWindowMaximized = maximized->GetValue() == "true";
 			}
 
+			if (auto x = block->FindFirstChild<kv::KV>("x"); x)
+			{
+				m_WindowX = std::stoi(x->GetValue());
+			}
+
+			if (auto y = block->FindFirstChild<kv::KV>("y"); y)
+			{
+				m_WindowY = std::stoi(y->GetValue());
+			}
+
 			if (auto width = block->FindFirstChild<kv::KV>("width"); width)
 			{
 				m_WindowWidth = std::stoi(width->GetValue());
@@ -299,6 +309,8 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 	writer.BeginBlock("window");
 
 	writer.WriteKeyvalue("maximized", m_IsWindowMaximized ? "true" : "false");
+	writer.WriteKeyvalue("x", std::to_string(m_WindowX).c_str());
+	writer.WriteKeyvalue("y", std::to_string(m_WindowY).c_str());
 	writer.WriteKeyvalue("width", std::to_string(m_WindowWidth).c_str());
 	writer.WriteKeyvalue("height", std::to_string(m_WindowHeight).c_str());
 

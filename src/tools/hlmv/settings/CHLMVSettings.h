@@ -172,6 +172,14 @@ public:
 
 	void SetWindowMaximized(bool value) { m_IsWindowMaximized = value; }
 
+	int GetWindowX() const { return m_WindowX; }
+
+	void SetWindowX(int value) { m_WindowX = value; }
+
+	int GetWindowY() const { return m_WindowY; }
+
+	void SetWindowY(int value) { m_WindowY = value; }
+
 	int GetWindowWidth() const { return m_WindowWidth; }
 
 	void SetWindowWidth(int value) { m_WindowWidth = value; }
@@ -219,6 +227,9 @@ private:
 	std::string m_szDefaultOutputFileDir;
 
 	bool m_IsWindowMaximized = true;
+
+	int m_WindowX = -1;
+	int m_WindowY = -1;
 
 	int m_WindowWidth = -1;
 	int m_WindowHeight = -1;

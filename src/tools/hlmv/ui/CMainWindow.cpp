@@ -136,15 +136,20 @@ CMainWindow::CMainWindow( CModelViewerApp* const pHLMV )
 
 	m_pMainPanel = new CMainPanel( this, m_pHLMV );
 
-	Maximize(m_pHLMV->GetSettings()->IsWindowMaximized());
+	auto settings = m_pHLMV->GetSettings();
+
+	Maximize(settings->IsWindowMaximized());
 
 	if (!IsMaximized())
 	{
-		auto width = m_pHLMV->GetSettings()->GetWindowWidth();
-		auto height = m_pHLMV->GetSettings()->GetWindowHeight();
+		const auto x = settings->GetWindowX();
+		const auto y = settings->GetWindowY();
+		const auto width = settings->GetWindowWidth();
+		const auto height = settings->GetWindowHeight();
 
-		if (width != -1 && height != -1)
+		if (x != -1 && y != -1 && width != -1 && height != -1)
 		{
+			SetPosition(wxPoint(x, y));
 			SetSize(width, height);
 		}
 	}
@@ -168,9 +173,12 @@ void CMainWindow::SaveWindowSettings()
 {
 	auto settings = m_pHLMV->GetSettings();
 
+	const auto position{GetPosition()};
 	const auto size{GetSize()};
 
 	settings->SetWindowMaximized(IsMaximized());
+	settings->SetWindowX(position.x);
+	settings->SetWindowY(position.y);
 	settings->SetWindowWidth(size.GetWidth());
 	settings->SetWindowHeight(size.GetHeight());
 }
