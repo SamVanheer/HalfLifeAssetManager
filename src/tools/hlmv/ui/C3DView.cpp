@@ -34,16 +34,19 @@ extern studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer;
 
 namespace hlmv
 {
-wxBEGIN_EVENT_TABLE( C3DView, CwxBase3DView )
-	EVT_MOUSE_EVENTS( C3DView::MouseEvents )
+wxBEGIN_EVENT_TABLE(C3DView, wxGLCanvas)
+	EVT_PAINT(C3DView::Paint)
+	EVT_MOUSE_EVENTS(C3DView::MouseEvents)
 wxEND_EVENT_TABLE()
 
 C3DView::C3DView( wxWindow* pParent, CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel )
-	: CwxBase3DView( pParent, wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
+	: wxGLCanvas( pParent, wxOpenGL().GetCanvasAttributes(), wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
 	, m_pMainPanel( pMainPanel )
 {
 	wxASSERT( pMainPanel );
+
+	m_pContext = wxOpenGL().GetContext(this);
 }
 
 C3DView::~C3DView()
@@ -68,7 +71,22 @@ void C3DView::UpdateView()
 	}
 }
 
-void C3DView::OnDraw()
+void C3DView::Paint(wxPaintEvent& event)
+{
+	SetCurrent(*m_pContext);
+
+	//Can't use the DC to draw anything since OpenGL draws over it.
+	wxPaintDC(this);
+
+	DrawScene();
+
+	SwapBuffers();
+
+	//Get any errors that were logged during this frame.
+	wxOpenGL().GetErrors();
+}
+
+void C3DView::DrawScene()
 {
 	const Color& backgroundColor = m_pHLMV->GetSettings()->GetBackgroundColor();
 

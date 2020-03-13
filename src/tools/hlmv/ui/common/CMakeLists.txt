@@ -16,9 +16,5 @@ target_sources(${TARGET_NAME}
 		CMessagesWindow.h
 		CProcessDialog.cpp
 		CProcessDialog.h
-		CwxBase3DView.cpp
-		CwxBase3DView.h
 		CwxBaseFrame.cpp
-		CwxBaseFrame.h
-		CwxBaseGLCanvas.cpp
-		CwxBaseGLCanvas.h)
+		CwxBaseFrame.h)

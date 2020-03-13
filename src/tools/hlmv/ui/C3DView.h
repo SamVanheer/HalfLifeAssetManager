@@ -3,7 +3,12 @@
 
 #include "wxHLMV.h"
 
-#include "common/CwxBase3DView.h"
+#include <glm/vec2.hpp>
+
+#include "graphics/OpenGL.h"
+
+//Must be included after OpenGL.h because GLEW replaces gl.h
+#include <wx/glcanvas.h>
 
 #include <glm/vec3.hpp>
 
@@ -19,7 +24,7 @@ namespace hlmv
 class CModelViewerApp;
 class CMainPanel;
 
-class C3DView final : public ui::CwxBase3DView
+class C3DView final : public wxGLCanvas
 {
 private:
 	static const int CROSSHAIR_LINE_WIDTH = 3;
@@ -59,8 +64,12 @@ public:
 protected:
 	wxDECLARE_EVENT_TABLE();
 
+	wxGLContext* GetContext() { return m_pContext; }
+
 private:
-	void OnDraw() override final;
+	void Paint(wxPaintEvent& event);
+
+	void DrawScene();
 
 	/**
 	*	Applies the current camera settings to the scene.
@@ -99,6 +108,8 @@ private:
 	CModelViewerApp* const m_pHLMV;
 
 	CMainPanel* const m_pMainPanel;
+
+	wxGLContext* m_pContext;
 
 	//Used for rotation and translation.
 	graphics::CCamera m_OldCamera;
