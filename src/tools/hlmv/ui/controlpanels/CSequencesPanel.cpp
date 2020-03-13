@@ -294,12 +294,14 @@ void CSequencesPanel::InitializeUI()
 		{
 			slider->SetRange(-1, 1);
 			slider->SetValue(0);
+			slider->Enable(false);
 		}
 
 		for (auto spinner : m_pBlendsSpinners)
 		{
 			spinner->SetRange(-1, 1);
 			spinner->SetValue(0);
+			spinner->Enable(false);
 		}
 
 		m_pSequenceInfo->Show(false);
