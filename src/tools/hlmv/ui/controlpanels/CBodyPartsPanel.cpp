@@ -396,6 +396,7 @@ void CBodyPartsPanel::SetController( int iIndex )
 
 	m_pControllerSlider->SetRange( ( int ) ( flStart * m_flControllerSliderScale ), ( int ) ( flEnd * m_flControllerSliderScale ) );
 
+	//TODO: value needs to be scaled as well
 	m_pControllerSlider->SetValue( pEntity->GetControllerValue( iIndex ) );
 	m_pControllerSlider->Enable( true );
 }

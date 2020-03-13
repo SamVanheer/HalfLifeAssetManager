@@ -74,9 +74,6 @@ void CHLMVStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 
 void CHLMVStudioModelEntity::AnimThink()
 {
-	SetBlending( 0, 0.0 );
-	SetBlending( 1, 0.0 );
-
 	if( !m_pState->playSequence )
 		return;
 

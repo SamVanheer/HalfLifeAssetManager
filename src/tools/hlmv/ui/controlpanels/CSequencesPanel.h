@@ -64,6 +64,10 @@ private:
 
 	void OnRestartSequence(wxCommandEvent& event);
 
+	void OnSliderChanged(wxCommandEvent& event);
+
+	void OnSpinnerChanged(wxSpinDoubleEvent& event);
+
 	void EventChanged( wxCommandEvent& event );
 
 	void OnEditEvents( wxCommandEvent& event );
@@ -98,6 +102,11 @@ private:
 
 	wxChoice* m_pLoopingMode;
 	wxButton* m_pRestartSequence;
+
+	wxSlider* m_pBlendsSliders[2];
+	wxSpinCtrlDouble* m_pBlendsSpinners[2];
+
+	float m_BlendsScales[2] = {1.f, 1.f};
 
 	wxChoice* m_pEvent;
 

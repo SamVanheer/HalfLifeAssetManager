@@ -122,6 +122,18 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 	m_pRestartSequence = new wxButton(pElemParent, wxID_ANY, "Restart Sequence");
 	m_pRestartSequence->Bind(wxEVT_BUTTON, &CSequencesPanel::OnRestartSequence, this);
 
+	for (auto& slider : m_pBlendsSliders)
+	{
+		slider = new wxSlider(pElemParent, wxID_ANY, 0, -1, 1, wxDefaultPosition, wxSize(100, wxDefaultSize.GetHeight()));
+		slider->Bind(wxEVT_SLIDER, &CSequencesPanel::OnSliderChanged, this);
+	}
+
+	for (auto& spinner : m_pBlendsSpinners)
+	{
+		spinner = new wxSpinCtrlDouble(pElemParent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(75, wxDefaultSize.GetHeight()));
+		spinner->Bind(wxEVT_SPINCTRLDOUBLE, &CSequencesPanel::OnSpinnerChanged, this);
+	}
+
 	m_pEvent = new wxChoice(pElemParent, wxID_SEQUENCE_EVENT);
 
 	m_pPlaySound = new wxCheckBox(pElemParent, wxID_SEQUENCE_PLAYSOUND, "Play Sound");
@@ -178,6 +190,20 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 		controlsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Looping Mode"), wxGBPosition(0, 0), wxGBSpan(1, 1));
 		controlsSizer->Add(m_pLoopingMode, wxGBPosition(0, 1), wxGBSpan(1, 1));
 		controlsSizer->Add(m_pRestartSequence, wxGBPosition(1, 0), wxGBSpan(1, 2), wxEXPAND);
+
+		{
+			auto blendsSizer = new wxGridBagSizer(1, 1);
+
+			blendsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Blend X"), wxGBPosition(0, 0), wxDefaultSpan, wxEXPAND);
+			blendsSizer->Add(m_pBlendsSliders[0], wxGBPosition(0, 1), wxDefaultSpan);
+			blendsSizer->Add(m_pBlendsSpinners[0], wxGBPosition(0, 2), wxDefaultSpan, wxEXPAND);
+
+			blendsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Blend Y"), wxGBPosition(1, 0), wxDefaultSpan, wxEXPAND);
+			blendsSizer->Add(m_pBlendsSliders[1], wxGBPosition(1, 1), wxDefaultSpan);
+			blendsSizer->Add(m_pBlendsSpinners[1], wxGBPosition(1, 2), wxDefaultSpan, wxEXPAND);
+
+			controlsSizer->Add(blendsSizer, wxGBPosition(2, 0), wxGBSpan(1, 2), wxEXPAND);
+		}
 
 		sizer->Add(controlsSizer, wxGBPosition(0, 1), wxGBSpan(1, 1), wxEXPAND);
 	}
@@ -264,7 +290,19 @@ void CSequencesPanel::InitializeUI()
 
 	if( !bSuccess )
 	{
-		m_pSequenceInfo->Show( false );
+		for (auto slider : m_pBlendsSliders)
+		{
+			slider->SetRange(-1, 1);
+			slider->SetValue(0);
+		}
+
+		for (auto spinner : m_pBlendsSpinners)
+		{
+			spinner->SetRange(-1, 1);
+			spinner->SetValue(0);
+		}
+
+		m_pSequenceInfo->Show(false);
 	}
 
 	UpdateEvents();
@@ -293,6 +331,11 @@ void CSequencesPanel::SetSequence( int iIndex )
 		m_pSequence->Select( iIndex );
 
 		pEntity->SetSequence( iIndex );
+
+		const float initialBlendValue = 0.f;
+
+		pEntity->SetBlending(0, initialBlendValue);
+		pEntity->SetBlending(1, initialBlendValue);
 
 		mstudioseqdesc_t nullSeq;
 
@@ -324,6 +367,64 @@ void CSequencesPanel::SetSequence( int iIndex )
 		m_pIsLooping->SetLabelText(wxString::Format("Is Looping: %s", (sequence.flags & STUDIO_LOOPING) ? "Yes" : "No"));
 		m_pActivity->SetLabelText(wxString::Format("Activity: %s (%d)", activityName, sequence.activity));
 		m_pActWeight->SetLabelText(wxString::Format("Activity Weight: %d", sequence.actweight));
+
+		for (int blender = 0; blender < 2; ++blender)
+		{
+			const auto hasBlender = sequence.blendtype[blender] != 0;
+
+			const auto slider = m_pBlendsSliders[blender];
+
+			const auto spinner = m_pBlendsSpinners[blender];
+
+			if (hasBlender)
+			{
+				float start, end;
+
+				//Swap values if the range is inverted
+				if (sequence.blendend[blender] < sequence.blendstart[blender])
+				{
+					start = sequence.blendend[blender];
+					end = sequence.blendstart[blender];
+				}
+				else
+				{
+					start = sequence.blendstart[blender];
+					end = sequence.blendend[blender];
+				}
+
+				//Should probably scale as needed so the range is sufficiently large
+				//This prevents ranges that cover less than a whole integer from not doing anything
+				if ((end - start) < 1.0f)
+				{
+					m_BlendsScales[blender] = 100.0f;
+				}
+				else
+				{
+					m_BlendsScales[blender] = 1.0f;
+				}
+
+				//Using this avoids the lossy round trip, which makes the value more accurate
+				const auto value = initialBlendValue;
+
+				slider->SetRange((int) (start * m_BlendsScales[blender]), (int) (end * m_BlendsScales[blender]));
+				slider->SetValue(value * m_BlendsScales[blender]);
+
+				spinner->SetRange(start, end);
+				spinner->SetValue(value);
+			}
+			else
+			{
+				//Make the slider be nice and centered
+				slider->SetRange(-1, 1);
+				slider->SetValue(0);
+
+				spinner->SetRange(-1, 1);
+				spinner->SetValue(0);
+			}
+
+			slider->Enable(hasBlender);
+			spinner->Enable(hasBlender);
+		}
 	}
 
 	UpdateEvents();
@@ -549,6 +650,30 @@ void CSequencesPanel::OnRestartSequence(wxCommandEvent& event)
 	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
 	{
 		entity->SetFrame(0);
+	}
+}
+
+void CSequencesPanel::OnSliderChanged(wxCommandEvent& event)
+{
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		const auto blender = event.GetEventObject() == m_pBlendsSliders[0] ? 0 : 1;
+
+		m_pBlendsSpinners[blender]->SetValue(m_pBlendsSliders[blender]->GetValue() / m_BlendsScales[blender]);
+
+		entity->SetBlending(blender, m_pBlendsSpinners[blender]->GetValue());
+	}
+}
+
+void CSequencesPanel::OnSpinnerChanged(wxSpinDoubleEvent& event)
+{
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		const auto blender = event.GetEventObject() == m_pBlendsSpinners[0] ? 0 : 1;
+
+		m_pBlendsSliders[blender]->SetValue(m_pBlendsSpinners[blender]->GetValue() * m_BlendsScales[blender]);
+
+		entity->SetBlending(blender, m_pBlendsSpinners[blender]->GetValue());
 	}
 }
 
