@@ -320,8 +320,6 @@ GLuint CStudioModel::GetTextureId(const int iIndex) const
 
 void CStudioModel::ReplaceTexture(mstudiotexture_t* ptexture, byte* data, byte* pal, GLuint textureId)
 {
-	glDeleteTextures(1, &textureId);
-
 	UploadTexture(ptexture, data, pal, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool());
 }
 
@@ -338,8 +336,6 @@ void CStudioModel::ReuploadTexture(mstudiotexture_t* ptexture)
 	}
 
 	GLuint textureId = m_Textures[iIndex];
-
-	glDeleteTextures(1, &textureId);
 
 	UploadTexture(ptexture,
 		m_pTextureHdr->GetData() + ptexture->index,
