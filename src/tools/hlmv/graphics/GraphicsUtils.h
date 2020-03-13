@@ -55,7 +55,7 @@ void DrawBox( const glm::vec3* const v );
 */
 bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high);
 
-void PaletteHueReplace(byte* palette, int newHue, int Start, int end);
+void PaletteHueReplace(byte* palette, int newHue, int start, int end);
 }
 
 #endif //GRAPHICS_GRAPHICSUTILS_H

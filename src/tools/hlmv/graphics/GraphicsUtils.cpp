@@ -201,18 +201,18 @@ bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high)
 	return false;
 }
 
-void PaletteHueReplace(byte* palette, int newHue, int Start, int end)
+void PaletteHueReplace(byte* palette, int newHue, int start, int end)
 {
 	const auto hue = (float) (newHue * (360.0 / 255));
 
-	for (int i = Start; i <= end; ++i)
+	for (int i = start; i <= end; ++i)
 	{
 		float r = palette[i * PALETTE_CHANNELS];
 		float g = palette[i * PALETTE_CHANNELS + 1];
 		float b = palette[i * PALETTE_CHANNELS + 2];
 
-		const auto maxcol = std::max(std::max(r, g), b) / 255.0f;
-		auto mincol = std::min(std::min(r, g), b) / 255.0f;
+		const auto maxcol = std::max({r, g, b}) / 255.0f;
+		auto mincol = std::min({r, g, b}) / 255.0f;
 
 		const auto val = maxcol;
 		const auto sat = (maxcol - mincol) / maxcol;
