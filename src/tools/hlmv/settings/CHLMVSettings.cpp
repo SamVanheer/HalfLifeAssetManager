@@ -83,6 +83,10 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 	*m_MdlDecConfigs	= *other.m_MdlDecConfigs;
 
 	m_szDefaultOutputFileDir = other.m_szDefaultOutputFileDir;
+
+	m_IsWindowMaximized = other.m_IsWindowMaximized;
+	m_WindowWidth = other.m_WindowWidth;
+	m_WindowHeight = other.m_WindowHeight;
 }
 
 void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameConfig>& oldConfig, const std::shared_ptr<settings::CGameConfig>& newConfig )
@@ -205,6 +209,24 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 		{
 			m_szDefaultOutputFileDir = outputdir->GetValue();
 		}
+
+		if (auto block = settings->FindFirstChild<kv::Block>("window"); block)
+		{
+			if (auto maximized = block->FindFirstChild<kv::KV>("maximized"); maximized)
+			{
+				m_IsWindowMaximized = maximized->GetValue() == "true";
+			}
+
+			if (auto width = block->FindFirstChild<kv::KV>("width"); width)
+			{
+				m_WindowWidth = std::stoi(width->GetValue());
+			}
+
+			if (auto height = block->FindFirstChild<kv::KV>("height"); height)
+			{
+				m_WindowHeight = std::stoi(height->GetValue());
+			}
+		}
 	}
 
 	return true;
@@ -273,6 +295,14 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 	}
 
 	writer.WriteKeyvalue( "defaultOutputFileDir", m_szDefaultOutputFileDir.c_str() );
+
+	writer.BeginBlock("window");
+
+	writer.WriteKeyvalue("maximized", m_IsWindowMaximized ? "true" : "false");
+	writer.WriteKeyvalue("width", std::to_string(m_WindowWidth).c_str());
+	writer.WriteKeyvalue("height", std::to_string(m_WindowHeight).c_str());
+
+	writer.EndBlock();
 
 	writer.EndBlock();
 

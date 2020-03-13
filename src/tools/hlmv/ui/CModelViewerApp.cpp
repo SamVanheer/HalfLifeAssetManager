@@ -280,9 +280,14 @@ bool CModelViewerApp::Startup()
 
 void CModelViewerApp::Shutdown()
 {
-	if( auto pSettings = GetSettings() )
+	if(auto settings = GetSettings(); settings)
 	{
-		pSettings->Shutdown( HLMV_SETTINGS_FILE );
+		if (m_pMainWindow)
+		{
+			m_pMainWindow->SaveWindowSettings();
+		}
+
+		settings->Shutdown( HLMV_SETTINGS_FILE );
 	}
 
 	//If either window is still open at this time, force close them

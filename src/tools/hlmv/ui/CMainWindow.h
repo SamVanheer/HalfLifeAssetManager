@@ -42,6 +42,8 @@ public:
 
 	void RunFrame();
 
+	void SaveWindowSettings();
+
 	bool LoadModel( const wxString& szFilename );
 	bool PromptLoadModel();
 

@@ -168,6 +168,18 @@ public:
 		m_szDefaultOutputFileDir = szDefaultOutputFileDir;
 	}
 
+	bool IsWindowMaximized() const { return m_IsWindowMaximized; }
+
+	void SetWindowMaximized(bool value) { m_IsWindowMaximized = value; }
+
+	int GetWindowWidth() const { return m_WindowWidth; }
+
+	void SetWindowWidth(int value) { m_WindowWidth = value; }
+
+	int GetWindowHeight() const { return m_WindowHeight; }
+
+	void SetWindowHeight(int value) { m_WindowHeight = value; }
+
 protected:
 	bool PostInitialize( const char* const pszFilename ) override final;
 
@@ -205,6 +217,11 @@ private:
 	std::shared_ptr<settings::CCmdLineConfigManager> m_MdlDecConfigs = std::make_shared<settings::CCmdLineConfigManager>();
 
 	std::string m_szDefaultOutputFileDir;
+
+	bool m_IsWindowMaximized = true;
+
+	int m_WindowWidth = -1;
+	int m_WindowHeight = -1;
 };
 }
 

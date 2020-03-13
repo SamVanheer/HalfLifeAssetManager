@@ -136,7 +136,18 @@ CMainWindow::CMainWindow( CModelViewerApp* const pHLMV )
 
 	m_pMainPanel = new CMainPanel( this, m_pHLMV );
 
-	Maximize( true );
+	Maximize(m_pHLMV->GetSettings()->IsWindowMaximized());
+
+	if (!IsMaximized())
+	{
+		auto width = m_pHLMV->GetSettings()->GetWindowWidth();
+		auto height = m_pHLMV->GetSettings()->GetWindowHeight();
+
+		if (width != -1 && height != -1)
+		{
+			SetSize(width, height);
+		}
+	}
 
 	if( ui::CMessagesWindow* pWindow = m_pHLMV->GetMessagesWindow() )
 	{
@@ -151,6 +162,17 @@ CMainWindow::~CMainWindow()
 void CMainWindow::RunFrame()
 {
 	m_pMainPanel->RunFrame();
+}
+
+void CMainWindow::SaveWindowSettings()
+{
+	auto settings = m_pHLMV->GetSettings();
+
+	const auto size{GetSize()};
+
+	settings->SetWindowMaximized(IsMaximized());
+	settings->SetWindowWidth(size.GetWidth());
+	settings->SetWindowHeight(size.GetHeight());
 }
 
 bool CMainWindow::LoadModel( const wxString& szFilename )
@@ -396,6 +418,8 @@ void CMainWindow::OpenRecentFile( wxCommandEvent& event )
 
 void CMainWindow::OnClose( wxCloseEvent& event )
 {
+	SaveWindowSettings();
+
 	//Clear the studio model here, while the context is still valid.
 	m_pMainPanel->FreeModel();
 
