@@ -59,8 +59,12 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 	m_pCheckBoxes[ CheckBox::MIRROR_ON_GROUND ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Mirror Model On Ground" );
 	m_pCheckBoxes[ CheckBox::SHOW_BACKGROUND ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Background" );
 	m_pCheckBoxes[ CheckBox::WIREFRAME_OVERLAY ]	= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Wireframe Overlay" );
-	m_pCheckBoxes[ CheckBox::AXES ]					= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Axes" );
-	m_pCheckBoxes[ CheckBox::NORMALS ]				= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Normals" );
+	m_pCheckBoxes[ CheckBox::SHOW_AXES ]			= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Axes" );
+	m_pCheckBoxes[ CheckBox::SHOW_NORMALS ]			= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Normals" );
+
+	m_pCheckBoxes[CheckBox::SHOW_CROSSHAIR] = new wxCheckBox(pElemParent, wxID_MDLDISP_CHECKBOX, "Show Crosshair");
+	m_pCheckBoxes[CheckBox::SHOW_GUIDELINES] = new wxCheckBox(pElemParent, wxID_MDLDISP_CHECKBOX, "Show Guidelines");
+	m_pCheckBoxes[CheckBox::SHOW_PLAYER_HITBOX] = new wxCheckBox(pElemParent, wxID_MDLDISP_CHECKBOX, "Show Player Hitbox");
 
 	for( size_t uiIndex = CheckBox::FIRST; uiIndex < CheckBox::COUNT; ++uiIndex )
 	{
@@ -74,15 +78,6 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 	m_pMirror[ 0 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on X axis" );
 	m_pMirror[ 1 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on Y axis" );
 	m_pMirror[ 2 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on Z axis" );
-
-	m_pShowCrosshair = new wxCheckBox(pElemParent, wxID_ANY, "Show Crosshair");
-	m_pShowCrosshair->Bind(wxEVT_CHECKBOX, &CModelDisplayPanel::OnShowCrosshairChanged, this);
-
-	m_pShowGuidelines = new wxCheckBox(pElemParent, wxID_ANY, "Show Guidelines");
-	m_pShowGuidelines->Bind(wxEVT_CHECKBOX, &CModelDisplayPanel::OnShowGuidelinesChanged, this);
-
-	m_pShowPlayerHitbox = new wxCheckBox(pElemParent, wxID_ANY, "Show Player Hitbox");
-	m_pShowPlayerHitbox->Bind(wxEVT_CHECKBOX, &CModelDisplayPanel::OnShowPlayerHitboxChanged, this);
 
 	m_pFOV = new ui::CFOVCtrl( this, wxID_MDLDISP_FOVCHANGED, CHLMVState::DEFAULT_FOV, "Field Of View" );
 
@@ -119,16 +114,6 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 	pMirrorSizer->Add( m_pMirror[ 2 ], wxSizerFlags().Expand() );
 
 	pSizer->Add( pMirrorSizer, wxSizerFlags().Expand().Border() );
-
-	auto helperSizer = new wxBoxSizer(wxVERTICAL);
-
-	helperSizer->Add(m_pShowCrosshair, wxSizerFlags().Expand());
-	helperSizer->AddSpacer(10);
-	helperSizer->Add(m_pShowGuidelines, wxSizerFlags().Expand());
-	helperSizer->AddSpacer(10);
-	helperSizer->Add(m_pShowPlayerHitbox, wxSizerFlags().Expand());
-
-	pSizer->Add(helperSizer, wxSizerFlags().Expand());
 
 	auto pFOVSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -285,17 +270,35 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 			break;
 		}
 
-	case CheckBox::AXES:
+	case CheckBox::SHOW_AXES:
 		{
 			m_pHLMV->GetState()->drawAxes = bValue;
 			break;
 		}
 
-	case CheckBox::NORMALS:
+	case CheckBox::SHOW_NORMALS:
 		{
 			g_pCVar->SetCVarFloat( "r_showstudionormals", bValue ? 1 : 0 );
 			break;
 		}
+
+	case CheckBox::SHOW_CROSSHAIR:
+	{
+		m_pHLMV->GetState()->drawCrosshair = bValue;
+		break;
+	}
+
+	case CheckBox::SHOW_GUIDELINES:
+	{
+		m_pHLMV->GetState()->drawGuidelines = bValue;
+		break;
+	}
+
+	case CheckBox::SHOW_PLAYER_HITBOX:
+	{
+		m_pHLMV->GetState()->drawPlayerHitbox = bValue;
+		break;
+	}
 
 	default: break;
 	}
@@ -342,21 +345,6 @@ void CModelDisplayPanel::OnMirrorAxis( wxCommandEvent& event )
 	pEntity->GetScale()[ uiIndex ] *= -1;
 }
 
-void CModelDisplayPanel::OnShowCrosshairChanged(wxCommandEvent& event)
-{
-	m_pHLMV->GetState()->drawCrosshair = m_pShowCrosshair->GetValue();
-}
-
-void CModelDisplayPanel::OnShowGuidelinesChanged(wxCommandEvent& event)
-{
-	m_pHLMV->GetState()->drawGuidelines = m_pShowGuidelines->GetValue();
-}
-
-void CModelDisplayPanel::OnShowPlayerHitboxChanged(wxCommandEvent& event)
-{
-	m_pHLMV->GetState()->drawPlayerHitbox = m_pShowPlayerHitbox->GetValue();
-}
-
 void CModelDisplayPanel::OnFOVChanged( wxCommandEvent& event )
 {
 	m_pHLMV->GetState()->flFOV = m_pFOV->GetValue();
@@ -387,7 +375,7 @@ void CModelDisplayPanel::HandleCVar( cvar::CCVar& cvar, const char* pszOldValue,
 	}
 	else if( strcmp( cvar.GetName(), "r_showstudionormals" ) == 0 )
 	{
-		SetCheckBox( CheckBox::NORMALS, cvar.GetBool() );
+		SetCheckBox( CheckBox::SHOW_NORMALS, cvar.GetBool() );
 	}
 }
 }

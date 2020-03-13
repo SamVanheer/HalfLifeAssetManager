@@ -36,8 +36,11 @@ public:
 			MIRROR_ON_GROUND,
 			SHOW_BACKGROUND,
 			WIREFRAME_OVERLAY,
-			AXES,
-			NORMALS,
+			SHOW_AXES,
+			SHOW_NORMALS,
+			SHOW_CROSSHAIR,
+			SHOW_GUIDELINES,
+			SHOW_PLAYER_HITBOX,
 
 			COUNT,
 			LAST = COUNT - 1	//Must be last.
@@ -49,10 +52,7 @@ public:
 		CheckBox& operator=( const CheckBox& ) = delete;
 	};
 
-	static const size_t CONTROLS_ROW_GAP = 5;
-	static const size_t CONTROLS_COL_GAP = 5;
-
-	static const size_t NUM_CHECKBOX_COLS = 3;
+	static const size_t NUM_CHECKBOX_COLS = 4;
 
 	static const size_t OPACITY_MIN = 0;
 	static const size_t OPACITY_MAX = 100;
@@ -85,12 +85,6 @@ private:
 
 	void OnMirrorAxis( wxCommandEvent& event );
 
-	void OnShowCrosshairChanged(wxCommandEvent& event);
-
-	void OnShowGuidelinesChanged(wxCommandEvent& event);
-
-	void OnShowPlayerHitboxChanged(wxCommandEvent& event);
-
 	void OnFOVChanged( wxCommandEvent& event );
 
 	void OnFOVFPChanged( wxCommandEvent& event );
@@ -106,10 +100,6 @@ private:
 	wxCheckBox* m_pCheckBoxes[ CheckBox::COUNT ];
 
 	wxCheckBox* m_pMirror[ 3 ];
-
-	wxCheckBox* m_pShowCrosshair;
-	wxCheckBox* m_pShowGuidelines;
-	wxCheckBox* m_pShowPlayerHitbox;
 
 	ui::CFOVCtrl* m_pFOV;
 	ui::CFOVCtrl* m_pFPFOV;
