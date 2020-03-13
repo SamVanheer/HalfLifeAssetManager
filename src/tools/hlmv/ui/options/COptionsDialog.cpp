@@ -5,6 +5,7 @@
 #include "CCompilerOptions.h"
 #include "ui/common/CGameConfigurationsPanel.h"
 
+#include "ui/CModelViewerApp.h"
 #include "../../settings/CHLMVSettings.h"
 
 #include "COptionsDialog.h"
@@ -15,8 +16,9 @@ wxBEGIN_EVENT_TABLE( COptionsDialog, wxDialog )
 	EVT_BUTTON( wxID_ANY, COptionsDialog::OnButton )
 wxEND_EVENT_TABLE()
 
-COptionsDialog::COptionsDialog( wxWindow* pParent, CHLMVSettings* const pSettings )
+COptionsDialog::COptionsDialog( wxWindow* pParent, CModelViewerApp* const pHLMV, CHLMVSettings* const pSettings )
 	: wxPropertySheetDialog()
+	, m_pHLMV(pHLMV)
 	, m_pSettings( pSettings )
 	, m_EditableSettings( std::make_unique<CHLMVSettings>( *pSettings ) )
 {
@@ -38,7 +40,7 @@ COptionsDialog::COptionsDialog( wxWindow* pParent, CHLMVSettings* const pSetting
 
 	pBook->ChangeSelection( 0 );
 
-	pBook->SetMinSize( wxSize( 600, 400 ) );
+	pBook->SetMinSize( wxSize( 600, 420 ) );
 
 	//Layout
 	LayoutDialog();
@@ -60,8 +62,15 @@ void COptionsDialog::OnButton( wxCommandEvent& event )
 			m_pCompiler->Save();
 			m_pGameConfigs->Save();
 
+			const bool updateTimer = m_pSettings->UseTimerForFrame() != m_EditableSettings->UseTimerForFrame();
+
 			//Copy over the settings to the actual settings object.
 			*m_pSettings = *m_EditableSettings;
+
+			if (updateTimer)
+			{
+				m_pHLMV->ResetTickImplementation();
+			}
 			break;
 		}
 

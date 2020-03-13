@@ -33,6 +33,7 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 	wxASSERT( pSettings );
 
 	m_pPowerOf2Textures = new wxCheckBox(this, wxID_ANY, "Rescale textures to power of 2" );
+	m_pUseTimerForFrame = new wxCheckBox(this, wxID_ANY, "Use timer for frame logic");
 	m_pInvertHorizontalDragging = new wxCheckBox(this, wxID_ANY, "Invert horizontal dragging direction");
 	m_pInvertVerticalDragging = new wxCheckBox(this, wxID_ANY, "Invert vertical dragging direction");
 
@@ -64,6 +65,7 @@ CGeneralOptions::CGeneralOptions( wxWindow* pParent, CHLMVSettings* const pSetti
 	pSizer->Add( new wxStaticLine( this ), wxGBPosition( iRow++, 0 ), wxGBSpan( 1, iNumCols ), wxEXPAND );
 
 	pSizer->Add( m_pPowerOf2Textures, wxGBPosition( iRow++, 0), wxGBSpan( 1, iNumCols ), wxEXPAND );
+	pSizer->Add(m_pUseTimerForFrame, wxGBPosition(iRow++, 0), wxGBSpan(1, iNumCols), wxEXPAND);
 	pSizer->Add(m_pInvertHorizontalDragging, wxGBPosition(iRow++, 0), wxGBSpan(1, iNumCols), wxEXPAND);
 	pSizer->Add(m_pInvertVerticalDragging, wxGBPosition(iRow++, 0), wxGBSpan(1, iNumCols), wxEXPAND);
 
@@ -127,6 +129,7 @@ void CGeneralOptions::Save()
 	pPowerOf2->SetBool( m_pPowerOf2Textures ->GetValue() );
 
 	m_pSettings->SetInvertHoritonzalDraggingDirection(m_pInvertHorizontalDragging->GetValue());
+	m_pSettings->SetUseTimerForFrame(m_pUseTimerForFrame->GetValue());
 	m_pSettings->SetInvertVerticalDraggingDirection(m_pInvertVerticalDragging->GetValue());
 
 	m_pSettings->SetGroundColor( wx::wxToColor( m_pGroundColor->GetColour() ) );
@@ -164,6 +167,7 @@ void CGeneralOptions::Initialize()
 	auto pPowerOf2 = static_cast< cvar::CCVar* >( g_pCVar->FindCommand( "r_powerof2textures" ) );
 
 	m_pPowerOf2Textures->SetValue( pPowerOf2->GetBool() );
+	m_pUseTimerForFrame->SetValue(m_pSettings->UseTimerForFrame());
 	m_pInvertHorizontalDragging->SetValue(m_pSettings->InvertHorizontalDraggingDirection());
 	m_pInvertVerticalDragging->SetValue(m_pSettings->InvertVerticalDraggingDirection());
 

@@ -1,6 +1,7 @@
 #include <filesystem>
 
 #include <wx/cmdline.h>
+#include <wx/private/timer.h>
 
 #include "shared/Logging.h"
 #include "utility/PlatUtils.h"
@@ -69,6 +70,8 @@ bool CModelViewerApp::OnInit()
 	if (!wxApp::OnInit())
 		return false;
 
+	max_fps.SetHandler(this);
+
 	SetAppDisplayName( HLMV_TITLE );
 
 	//Install the wxWidgets specific default log listener.
@@ -81,21 +84,23 @@ bool CModelViewerApp::OnInit()
 		return false;
 	}
 
-	wxApp::Connect(wxEVT_IDLE, wxIdleEventHandler(CModelViewerApp::OnIdle));
-
 	//Reduce the idle event strain on the system a bit.
 	wxIdleEvent::SetMode(wxIDLE_PROCESS_SPECIFIED);
+
+	ResetTickImplementation();
 
 	return true;
 }
 
 int CModelViewerApp::OnExit()
 {
-	wxApp::Disconnect(wxEVT_IDLE, wxIdleEventHandler(CModelViewerApp::OnIdle));
+	ClearTickImplementation();
 
 	Shutdown();
 
 	UseMessagesWindow(false);
+
+	max_fps.SetHandler(nullptr);
 
 	return wxApp::OnExit();
 }
@@ -116,6 +121,17 @@ bool CModelViewerApp::OnCmdLineParsed( wxCmdLineParser& parser )
 		m_szModel = parser.GetParam( parser.GetParamCount() - 1 );
 
 	return wxApp::OnCmdLineParsed( parser );
+}
+
+void CModelViewerApp::HandleCVar(cvar::CCVar& cvar, const char* pszOldValue, float flOldValue)
+{
+	if (!strcmp(cvar.GetName(), "max_fps"))
+	{
+		if (m_pTimer)
+		{
+			m_pTimer->Start(static_cast<int>((1 / max_fps.GetFloat()) * 1000.));
+		}
+	}
 }
 
 bool CModelViewerApp::Startup()
@@ -355,6 +371,79 @@ void CModelViewerApp::RunFrame()
 		m_pMainWindow->RunFrame();
 }
 
+void CModelViewerApp::OnTick()
+{
+	const double flCurTime = GetCurrentTime();
+
+	double flFrameTime = flCurTime - WorldTime.GetPreviousRealTime();
+
+	WorldTime.SetRealTime(flCurTime);
+
+	if (flFrameTime > 1.0)
+		flFrameTime = 0.1;
+
+	//Don't use this when using wxTimer, since it lowers the FPS by a fair amount.
+	if (!m_pTimer)
+	{
+		if (flFrameTime < (1.0 / max_fps.GetFloat()))
+		{
+			return;
+		}
+	}
+
+	WorldTime.TimeChanged(flCurTime);
+
+	g_pCVar->RunFrame();
+
+	g_pStudioMdlRenderer->RunFrame();
+
+	m_pSoundSystem->RunFrame();
+
+	RunFrame();
+}
+
+void CModelViewerApp::OnIdle(wxIdleEvent& event)
+{
+	event.RequestMore();
+
+	OnTick();
+}
+
+void CModelViewerApp::OnTimerTick(wxTimerEvent& event)
+{
+	OnTick();
+}
+
+void CModelViewerApp::ResetTickImplementation()
+{
+	ClearTickImplementation();
+
+	if (m_pSettings->UseTimerForFrame())
+	{
+		m_pTimer = new wxTimer();
+
+		m_pTimer->Bind(wxEVT_TIMER, &CModelViewerApp::OnTimerTick, this);
+
+		m_pTimer->Start(static_cast<int>((1 / max_fps.GetFloat()) * 1000.));
+	}
+	else
+	{
+		wxApp::Connect(wxEVT_IDLE, wxIdleEventHandler(CModelViewerApp::OnIdle));
+	}
+}
+
+void CModelViewerApp::ClearTickImplementation()
+{
+	if (m_pTimer)
+	{
+		m_pTimer->Stop();
+		delete m_pTimer;
+		m_pTimer = nullptr;
+	}
+
+	wxApp::Disconnect(wxEVT_IDLE, wxIdleEventHandler(CModelViewerApp::OnIdle));
+}
+
 void CModelViewerApp::Exit(const bool bMainWndClosed)
 {
 	//Don't call multiple times.
@@ -460,34 +549,6 @@ void CModelViewerApp::MessagesWindowClosed()
 	m_pMessagesWindow = nullptr;
 
 	logging().SetLogListener(nullptr);
-}
-
-void CModelViewerApp::OnIdle(wxIdleEvent& event)
-{
-	event.RequestMore();
-
-	const double flCurTime = GetCurrentTime();
-
-	double flFrameTime = flCurTime - WorldTime.GetPreviousRealTime();
-
-	WorldTime.SetRealTime(flCurTime);
-
-	if (flFrameTime > 1.0)
-		flFrameTime = 0.1;
-
-	//Don't use this when using wxTimer, since it lowers the FPS by a fair amount.
-	if (flFrameTime < (1.0 / max_fps.GetFloat()))
-		return;
-
-	WorldTime.TimeChanged(flCurTime);
-
-	g_pCVar->RunFrame();
-
-	g_pStudioMdlRenderer->RunFrame();
-
-	m_pSoundSystem->RunFrame();
-
-	RunFrame();
 }
 
 bool CModelViewerApp::LoadModel( const char* const pszFilename )

@@ -6,9 +6,12 @@
 #include "wxHLMV.h"
 
 #include <wx/app.h>
+#include <wx/timer.h>
 
 #include "../CHLMVState.h"
 #include "../settings/CHLMVSettings.h"
+
+#include "cvar/CCVar.h"
 
 namespace filesystem
 {
@@ -30,7 +33,7 @@ namespace hlmv
 class CMainWindow;
 class CFullscreenWindow;
 
-class CModelViewerApp : public wxApp
+class CModelViewerApp : public wxApp, public cvar::ICVarHandler
 {
 public:
 	static const size_t DEFAULT_MAX_MESSAGES_COUNT = 100;
@@ -42,6 +45,8 @@ public:
 	void OnInitCmdLine( wxCmdLineParser& parser ) override;
 
 	bool OnCmdLineParsed( wxCmdLineParser& parser ) override;
+
+	void HandleCVar(cvar::CCVar& cvar, const char* pszOldValue, float flOldValue) override;
 
 	CHLMVState* GetState() { return m_pState; }
 
@@ -63,6 +68,8 @@ public:
 
 	void Exit(const bool bMainWndClosed = false);
 
+	void ResetTickImplementation();
+
 private:
 	bool Startup();
 
@@ -70,7 +77,13 @@ private:
 
 	void RunFrame();
 
+	void OnTick();
+
 	void OnIdle(wxIdleEvent& event);
+
+	void OnTimerTick(wxTimerEvent& event);
+
+	void ClearTickImplementation();
 
 	void OnWindowClose(wxCloseEvent& event);
 
@@ -168,6 +181,8 @@ private:
 
 	CHLMVState* m_pState = nullptr;
 	CHLMVSettings* m_pSettings = nullptr;
+
+	wxTimer* m_pTimer = nullptr;
 
 	CMainWindow* m_pMainWindow = nullptr;
 	CFullscreenWindow* m_pFullscreenWindow = nullptr;

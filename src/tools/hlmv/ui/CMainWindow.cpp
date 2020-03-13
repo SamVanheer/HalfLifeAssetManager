@@ -608,7 +608,7 @@ void CMainWindow::OnEditQC( wxCommandEvent& event )
 
 void CMainWindow::OpenOptionsDialog( wxCommandEvent& event )
 {
-	COptionsDialog dlg( this, m_pHLMV->GetSettings() );
+	COptionsDialog dlg( this, m_pHLMV, m_pHLMV->GetSettings() );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
 		return;

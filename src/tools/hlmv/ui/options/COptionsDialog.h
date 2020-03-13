@@ -14,6 +14,7 @@ class CGameConfigurationsPanel;
 
 namespace hlmv
 {
+class CModelViewerApp;
 class CHLMVSettings;
 
 class CGeneralOptions;
@@ -22,7 +23,7 @@ class CCompilerOptions;
 class COptionsDialog final : public wxPropertySheetDialog
 {
 public:
-	COptionsDialog( wxWindow* pParent, CHLMVSettings* const pSettings );
+	COptionsDialog( wxWindow* pParent, CModelViewerApp* const pHLMV, CHLMVSettings* const pSettings );
 	~COptionsDialog();
 
 protected:
@@ -32,6 +33,7 @@ private:
 	void OnButton( wxCommandEvent& event );
 
 private:
+	CModelViewerApp* const m_pHLMV;
 	CHLMVSettings* const m_pSettings;
 	std::unique_ptr<CHLMVSettings> m_EditableSettings;
 

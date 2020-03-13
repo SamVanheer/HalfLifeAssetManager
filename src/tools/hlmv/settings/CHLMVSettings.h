@@ -54,6 +54,10 @@ public:
 	*/
 	std::shared_ptr<settings::CRecentFiles> GetRecentFiles() { return m_RecentFiles; }
 
+	bool UseTimerForFrame() const { return m_UseTimerForFrame; }
+
+	void SetUseTimerForFrame(bool value) { m_UseTimerForFrame = value; }
+
 	bool InvertHorizontalDraggingDirection() const { return m_InvertHorizontalDraggingDirection; }
 
 	void SetInvertHoritonzalDraggingDirection(bool value) { m_InvertHorizontalDraggingDirection = value; }
@@ -178,6 +182,8 @@ private:
 
 private:
 	std::shared_ptr<settings::CRecentFiles> m_RecentFiles = std::make_shared<settings::CRecentFiles>( MAX_RECENT_FILES );
+
+	bool m_UseTimerForFrame = false;
 
 	bool m_InvertHorizontalDraggingDirection = false;
 

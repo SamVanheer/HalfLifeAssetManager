@@ -65,6 +65,8 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 {
 	*m_RecentFiles		= *other.m_RecentFiles;
 
+	m_UseTimerForFrame = other.m_UseTimerForFrame;
+
 	m_InvertHorizontalDraggingDirection = other.m_InvertHorizontalDraggingDirection;
 	m_InvertVerticalDraggingDirection = other.m_InvertVerticalDraggingDirection;
 
@@ -143,6 +145,11 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 
 				m_RecentFiles->Add(file->GetValue());
 			}
+		}
+
+		if (auto useTimerForFrame = settings->FindFirstChild<kv::KV>("useTimerForFrame"); useTimerForFrame)
+		{
+			SetUseTimerForFrame(useTimerForFrame->GetValue() == "true");
 		}
 
 		if (auto invertHorizontalDragging = settings->FindFirstChild<kv::KV>("invertHorizontalDraggingDirection"))
@@ -228,6 +235,7 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 
 	writer.EndBlock();
 
+	writer.WriteKeyvalue("useTimerForFrame", m_UseTimerForFrame ? "true" : "false");
 	writer.WriteKeyvalue("invertHorizontalDraggingDirection", m_InvertHorizontalDraggingDirection ? "true" : "false");
 	writer.WriteKeyvalue("invertVerticalDraggingDirection", m_InvertVerticalDraggingDirection ? "true" : "false");
 

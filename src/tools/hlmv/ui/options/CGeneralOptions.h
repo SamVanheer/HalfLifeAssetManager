@@ -37,6 +37,7 @@ private:
 	CHLMVSettings* const m_pSettings;
 
 	wxCheckBox* m_pPowerOf2Textures;
+	wxCheckBox* m_pUseTimerForFrame;
 	wxCheckBox* m_pInvertHorizontalDragging;
 	wxCheckBox* m_pInvertVerticalDragging;
 
