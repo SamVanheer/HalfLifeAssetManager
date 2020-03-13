@@ -27,7 +27,7 @@ class CHitboxesPanel;
 class CTexturesPanel;
 class CSequencesPanel;
 
-class CMainPanel final : public wxPanel, public I3DViewListener, public studiomdl::IStudioModelRendererListener
+class CMainPanel final : public wxPanel, public studiomdl::IStudioModelRendererListener
 {
 public:
 	static const glm::vec3 DEFAULT_LIGHT_VECTOR;
@@ -40,8 +40,6 @@ public:
 	CModelViewerApp* GetHLMV() { return m_pHLMV; }
 
 	void RunFrame();
-
-	void Draw3D( const wxSize& size ) override final;
 
 	wxNotebook* GetControlPanels() { return m_pControlPanels; }
 

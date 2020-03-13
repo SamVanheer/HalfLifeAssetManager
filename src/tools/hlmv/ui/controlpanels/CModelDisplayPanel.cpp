@@ -76,7 +76,10 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 	m_pMirror[ 2 ] = new wxCheckBox( pElemParent, wxID_MDLDISP_MIRROR, "Mirror on Z axis" );
 
 	m_pShowCrosshair = new wxCheckBox(pElemParent, wxID_ANY, "Show Crosshair");
+	m_pShowCrosshair->Bind(wxEVT_CHECKBOX, &CModelDisplayPanel::OnShowCrosshairChanged, this);
+
 	m_pShowGuidelines = new wxCheckBox(pElemParent, wxID_ANY, "Show Guidelines");
+	m_pShowGuidelines->Bind(wxEVT_CHECKBOX, &CModelDisplayPanel::OnShowGuidelinesChanged, this);
 
 	m_pFOV = new ui::CFOVCtrl( this, wxID_MDLDISP_FOVCHANGED, CHLMVState::DEFAULT_FOV, "Field Of View" );
 
@@ -138,129 +141,6 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 CModelDisplayPanel::~CModelDisplayPanel()
 {
 	g_pCVar->RemoveGlobalCVarHandler( this );
-}
-
-void CModelDisplayPanel::Draw3D(const wxSize& size)
-{
-	const int x = size.GetX() / 2;
-	const int y = size.GetY() / 2;
-
-	if (m_pShowCrosshair->GetValue())
-	{
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-
-		glOrtho(0.0f, (float) size.GetX(), (float) size.GetY(), 0.0f, 1.0f, -1.0f);
-
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
-
-		glDisable(GL_CULL_FACE);
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		glDisable(GL_TEXTURE_2D);
-
-		const Color& crosshairColor = m_pHLMV->GetSettings()->GetCrosshairColor();
-
-		glColor4f(crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0);
-
-		glPointSize(CROSSHAIR_LINE_WIDTH);
-		glLineWidth(CROSSHAIR_LINE_WIDTH);
-
-		glBegin(GL_POINTS);
-
-		glVertex2f(x - CROSSHAIR_LINE_WIDTH / 2, y + 1);
-
-		glEnd();
-
-		glBegin(GL_LINES);
-
-		glVertex2f(x - CROSSHAIR_LINE_START, y);
-		glVertex2f(x - CROSSHAIR_LINE_END, y);
-
-		glVertex2f(x + CROSSHAIR_LINE_START, y);
-		glVertex2f(x + CROSSHAIR_LINE_END, y);
-
-		glVertex2f(x, y - CROSSHAIR_LINE_START);
-		glVertex2f(x, y - CROSSHAIR_LINE_END);
-
-		glVertex2f(x, y + CROSSHAIR_LINE_START);
-		glVertex2f(x, y + CROSSHAIR_LINE_END);
-
-		glEnd();
-
-		glPointSize(1);
-		glLineWidth(1);
-
-		glPopMatrix();
-	}
-
-	if (m_pShowGuidelines->GetValue())
-	{
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-
-		glOrtho(0.0f, (float) size.GetX(), (float) size.GetY(), 0.0f, 1.0f, -1.0f);
-
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
-
-		glDisable(GL_CULL_FACE);
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		glDisable(GL_TEXTURE_2D);
-
-		const Color& crosshairColor = m_pHLMV->GetSettings()->GetCrosshairColor();
-
-		glColor4f(crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0);
-
-		glPointSize(GUIDELINES_LINE_WIDTH);
-		glLineWidth(GUIDELINES_LINE_WIDTH);
-
-		glBegin(GL_POINTS);
-
-		for (int yPos = size.GetY() - GUIDELINES_LINE_LENGTH; yPos >= y + CROSSHAIR_LINE_END; yPos -= GUIDELINES_OFFSET)
-		{
-			glVertex2f(x - GUIDELINES_LINE_WIDTH, yPos);
-		}
-
-		glEnd();
-
-		glBegin(GL_LINES);
-
-		for (int yPos = size.GetY() - GUIDELINES_LINE_LENGTH - GUIDELINES_POINT_LINE_OFFSET - GUIDELINES_LINE_WIDTH;
-			yPos >= y + CROSSHAIR_LINE_END + GUIDELINES_LINE_LENGTH;
-			yPos -= GUIDELINES_OFFSET)
-		{
-			glVertex2f(x, yPos);
-			glVertex2f(x, yPos - GUIDELINES_LINE_LENGTH);
-		}
-
-		glEnd();
-
-		const float flWidth = size.GetY() * (16 / 9.0);
-
-		glLineWidth(GUIDELINES_EDGE_WIDTH);
-
-		glBegin(GL_LINES);
-
-		glVertex2f((size.GetX() / 2) - (flWidth / 2), 0);
-		glVertex2f((size.GetX() / 2) - (flWidth / 2), size.GetY());
-
-		glVertex2f((size.GetX() / 2) + (flWidth / 2), 0);
-		glVertex2f((size.GetX() / 2) + (flWidth / 2), size.GetY());
-
-		glEnd();
-
-		glPointSize(1);
-		glLineWidth(1);
-
-		glPopMatrix();
-	}
 }
 
 void CModelDisplayPanel::InitializeUI()
@@ -455,6 +335,16 @@ void CModelDisplayPanel::OnMirrorAxis( wxCommandEvent& event )
 	const size_t uiIndex = *reinterpret_cast<const size_t*>( static_cast<wxCheckBox*>( event.GetEventObject() )->GetClientData() );
 
 	pEntity->GetScale()[ uiIndex ] *= -1;
+}
+
+void CModelDisplayPanel::OnShowCrosshairChanged(wxCommandEvent& event)
+{
+	m_pHLMV->GetState()->drawCrosshair = m_pShowCrosshair->GetValue();
+}
+
+void CModelDisplayPanel::OnShowGuidelinesChanged(wxCommandEvent& event)
+{
+	m_pHLMV->GetState()->drawGuidelines = m_pShowGuidelines->GetValue();
 }
 
 void CModelDisplayPanel::OnFOVChanged( wxCommandEvent& event )

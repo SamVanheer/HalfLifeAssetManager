@@ -19,22 +19,23 @@ namespace hlmv
 class CModelViewerApp;
 class CMainPanel;
 
-class I3DViewListener
-{
-public:
-	virtual ~I3DViewListener() = 0;
-
-	virtual void Draw3D( const wxSize& size ) = 0;
-};
-
-inline I3DViewListener::~I3DViewListener()
-{
-}
-
 class C3DView final : public ui::CwxBase3DView
 {
+private:
+	static const int CROSSHAIR_LINE_WIDTH = 3;
+	static const int CROSSHAIR_LINE_START = 5;
+	static const int CROSSHAIR_LINE_LENGTH = 10;
+	static const int CROSSHAIR_LINE_END = CROSSHAIR_LINE_START + CROSSHAIR_LINE_LENGTH;
+
+	static const int GUIDELINES_LINE_WIDTH = 1;
+	static const int GUIDELINES_LINE_LENGTH = 5;
+	static const int GUIDELINES_POINT_LINE_OFFSET = 2;
+	static const int GUIDELINES_OFFSET = GUIDELINES_LINE_LENGTH + (GUIDELINES_POINT_LINE_OFFSET * 2) + GUIDELINES_LINE_WIDTH;
+
+	static const int GUIDELINES_EDGE_WIDTH = 4;
+
 public:
-	C3DView( wxWindow* pParent, CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel, I3DViewListener* pListener = nullptr );
+	C3DView( wxWindow* pParent, CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel);
 	~C3DView();
 
 	const CModelViewerApp* GetHLMV() const { return m_pHLMV; }
@@ -98,8 +99,6 @@ private:
 	CModelViewerApp* const m_pHLMV;
 
 	CMainPanel* const m_pMainPanel;
-
-	I3DViewListener* m_pListener;
 
 	//Used for rotation and translation.
 	graphics::CCamera m_OldCamera;

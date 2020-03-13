@@ -38,11 +38,10 @@ wxBEGIN_EVENT_TABLE( C3DView, CwxBase3DView )
 	EVT_MOUSE_EVENTS( C3DView::MouseEvents )
 wxEND_EVENT_TABLE()
 
-C3DView::C3DView( wxWindow* pParent, CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel, I3DViewListener* pListener )
-	: CwxBase3DView( pParent, nullptr, wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
+C3DView::C3DView( wxWindow* pParent, CModelViewerApp* const pHLMV, CMainPanel* const pMainPanel )
+	: CwxBase3DView( pParent, wxID_ANY, wxDefaultPosition, wxSize( 600, 400 ) )
 	, m_pHLMV( pHLMV )
 	, m_pMainPanel( pMainPanel )
-	, m_pListener( pListener )
 {
 	wxASSERT( pMainPanel );
 }
@@ -101,8 +100,125 @@ void C3DView::OnDraw()
 		DrawModel();
 	}
 
-	if( m_pListener )
-		m_pListener->Draw3D( size );
+	const int centerX = size.GetX() / 2;
+	const int centerY = size.GetY() / 2;
+
+	if (m_pHLMV->GetState()->drawCrosshair)
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		glOrtho(0.0f, (float) size.GetX(), (float) size.GetY(), 0.0f, 1.0f, -1.0f);
+
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+
+		glDisable(GL_CULL_FACE);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glDisable(GL_TEXTURE_2D);
+
+		const Color& crosshairColor = m_pHLMV->GetSettings()->GetCrosshairColor();
+
+		glColor4f(crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0);
+
+		glPointSize(CROSSHAIR_LINE_WIDTH);
+		glLineWidth(CROSSHAIR_LINE_WIDTH);
+
+		glBegin(GL_POINTS);
+
+		glVertex2f(centerX - CROSSHAIR_LINE_WIDTH / 2, centerY + 1);
+
+		glEnd();
+
+		glBegin(GL_LINES);
+
+		glVertex2f(centerX - CROSSHAIR_LINE_START, centerY);
+		glVertex2f(centerX - CROSSHAIR_LINE_END, centerY);
+
+		glVertex2f(centerX + CROSSHAIR_LINE_START, centerY);
+		glVertex2f(centerX + CROSSHAIR_LINE_END, centerY);
+
+		glVertex2f(centerX, centerY - CROSSHAIR_LINE_START);
+		glVertex2f(centerX, centerY - CROSSHAIR_LINE_END);
+
+		glVertex2f(centerX, centerY + CROSSHAIR_LINE_START);
+		glVertex2f(centerX, centerY + CROSSHAIR_LINE_END);
+
+		glEnd();
+
+		glPointSize(1);
+		glLineWidth(1);
+
+		glPopMatrix();
+	}
+
+	if (m_pHLMV->GetState()->drawGuidelines)
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		glOrtho(0.0f, (float) size.GetX(), (float) size.GetY(), 0.0f, 1.0f, -1.0f);
+
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+
+		glDisable(GL_CULL_FACE);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glDisable(GL_TEXTURE_2D);
+
+		const Color& crosshairColor = m_pHLMV->GetSettings()->GetCrosshairColor();
+
+		glColor4f(crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0);
+
+		glPointSize(GUIDELINES_LINE_WIDTH);
+		glLineWidth(GUIDELINES_LINE_WIDTH);
+
+		glBegin(GL_POINTS);
+
+		for (int yPos = size.GetY() - GUIDELINES_LINE_LENGTH; yPos >= centerY + CROSSHAIR_LINE_END; yPos -= GUIDELINES_OFFSET)
+		{
+			glVertex2f(centerX - GUIDELINES_LINE_WIDTH, yPos);
+		}
+
+		glEnd();
+
+		glBegin(GL_LINES);
+
+		for (int yPos = size.GetY() - GUIDELINES_LINE_LENGTH - GUIDELINES_POINT_LINE_OFFSET - GUIDELINES_LINE_WIDTH;
+			yPos >= centerY + CROSSHAIR_LINE_END + GUIDELINES_LINE_LENGTH;
+			yPos -= GUIDELINES_OFFSET)
+		{
+			glVertex2f(centerX, yPos);
+			glVertex2f(centerX, yPos - GUIDELINES_LINE_LENGTH);
+		}
+
+		glEnd();
+
+		const float flWidth = size.GetY() * (16 / 9.0);
+
+		glLineWidth(GUIDELINES_EDGE_WIDTH);
+
+		glBegin(GL_LINES);
+
+		glVertex2f((size.GetX() / 2) - (flWidth / 2), 0);
+		glVertex2f((size.GetX() / 2) - (flWidth / 2), size.GetY());
+
+		glVertex2f((size.GetX() / 2) + (flWidth / 2), 0);
+		glVertex2f((size.GetX() / 2) + (flWidth / 2), size.GetY());
+
+		glEnd();
+
+		glPointSize(1);
+		glLineWidth(1);
+
+		glPopMatrix();
+	}
 }
 
 void C3DView::ApplyCameraToScene()

@@ -132,6 +132,10 @@ public:
 
 	bool drawAxes;
 
+	bool drawCrosshair = false;
+
+	bool drawGuidelines = false;
+
 	bool modelChanged;
 
 private:

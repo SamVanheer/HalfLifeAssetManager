@@ -73,7 +73,7 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 
 	m_pControlPanels = new wxNotebook( m_pControlPanel, wxID_MAIN_PAGECHANGED );
 
-	m_p3DView = new C3DView( this, m_pHLMV, this, this );
+	m_p3DView = new C3DView(this, m_pHLMV, this);
 
 	m_pModelDisplay = new CModelDisplayPanel( m_pControlPanels, m_pHLMV );
 
@@ -202,18 +202,6 @@ void CMainPanel::RunFrame()
 	}
 
 	ForEachPanel( &CBaseControlPanel::ViewUpdated );
-}
-
-void CMainPanel::Draw3D( const wxSize& size )
-{
-	const int iPage = m_pControlPanels->GetSelection();
-
-	if( iPage != wxNOT_FOUND )
-	{
-		CBaseControlPanel* const pPage = static_cast<CBaseControlPanel*>( m_pControlPanels->GetPage( iPage ) );
-
-		pPage->Draw3D( size );
-	}
 }
 
 bool CMainPanel::LoadModel( const wxString& szFilename )
