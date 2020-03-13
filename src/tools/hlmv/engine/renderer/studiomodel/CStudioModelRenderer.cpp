@@ -557,29 +557,153 @@ void CStudioModelRenderer::SetUpBones()
 
 	const mstudioanim_t* panim = m_pRenderInfo->pModel->GetAnim( pseqdesc );
 
-	CalcRotations( pos, q, pseqdesc, panim, m_pRenderInfo->flFrame );
-
-	if( pseqdesc->numblends > 1 )
+	if (pseqdesc->numblends == 9)
 	{
-		panim += m_pStudioHdr->numbones;
-		CalcRotations( pos2, q2, pseqdesc, panim, m_pRenderInfo->flFrame );
-		float s = m_pRenderInfo->iBlender[ 0 ] / 255.0;
+		const auto f = m_pRenderInfo->flFrame;
 
-		SlerpBones( q, pos, q2, pos2, s );
+		const auto blendX = static_cast<double>(m_pRenderInfo->iBlender[0]);
+		const auto blendY = static_cast<double>(m_pRenderInfo->iBlender[1]);
 
-		if( pseqdesc->numblends == 4 )
+		const mstudioanim_t* lastanim;
+
+		double interpolantX;
+		double interpolantY;
+
+		if (blendX > 127.0)
+		{
+			interpolantX = blendX - 127.0 + blendX - 127.0;
+
+			if (blendY > 127.0)
+			{
+				interpolantY = blendY - 127.0 + blendY - 127.0;
+
+				auto panim4 = panim;
+				if (pseqdesc->numblends > 4)
+					panim4 += 4 * m_pStudioHdr->numbones;
+				CalcRotations(pos, q, pseqdesc, panim4, f);
+
+				auto panim5 = panim;
+				if (pseqdesc->numblends > 5)
+					panim5 += 5 * m_pStudioHdr->numbones;
+				CalcRotations(pos2, q2, pseqdesc, panim5, f);
+
+				auto panim7 = panim;
+				if (pseqdesc->numblends > 7)
+					panim7 += 7 * m_pStudioHdr->numbones;
+				CalcRotations(pos3, q3, pseqdesc, panim7, f);
+
+				lastanim = panim;
+				if (pseqdesc->numblends > 8)
+					lastanim += 8 * m_pStudioHdr->numbones;
+			}
+			else
+			{
+				interpolantY = blendY + blendY;
+
+				auto panim1 = panim;
+				if (pseqdesc->numblends > 1)
+					panim1 += m_pStudioHdr->numbones;
+				CalcRotations(pos, q, pseqdesc, panim1, f);
+
+				auto panim2 = panim;
+				if (pseqdesc->numblends > 2)
+					panim2 += 2 * m_pStudioHdr->numbones;
+				CalcRotations(pos2, q2, pseqdesc, panim2, f);
+
+				auto panim4 = panim;
+				if (pseqdesc->numblends > 4)
+					panim4 += 4 * m_pStudioHdr->numbones;
+				CalcRotations(pos3, q3, pseqdesc, panim4, f);
+
+				lastanim = panim;
+				if (pseqdesc->numblends > 5)
+					lastanim += 5 * m_pStudioHdr->numbones;
+			}
+		}
+		else
+		{
+			interpolantX = blendX + blendX;
+
+			if (blendY <= 127.0)
+			{
+				interpolantY = blendY + blendY;
+
+				CalcRotations(pos, q, pseqdesc, panim, f);
+
+				auto panim1 = panim;
+				if (pseqdesc->numblends > 1)
+					panim1 += m_pStudioHdr->numbones;
+				CalcRotations(pos2, q2, pseqdesc, panim1, f);
+
+				auto panim3 = panim;
+				if (pseqdesc->numblends > 3)
+					panim3 += 3 * m_pStudioHdr->numbones;
+				CalcRotations(pos3, q3, pseqdesc, panim3, f);
+
+				lastanim = panim;
+				if (pseqdesc->numblends > 4)
+					lastanim += 4 * m_pStudioHdr->numbones;
+			}
+			else
+			{
+				interpolantY = blendY - 127.0 + blendY - 127.0;
+
+				auto panim3 = panim;
+				if (pseqdesc->numblends > 3)
+					panim3 += 3 * m_pStudioHdr->numbones;
+				CalcRotations(pos, q, pseqdesc, panim3, f);
+
+				auto panim4 = panim;
+				if (pseqdesc->numblends > 4)
+					panim4 += 4 * m_pStudioHdr->numbones;
+				CalcRotations(pos2, q2, pseqdesc, panim4, f);
+
+				auto panim6 = panim;
+				if (pseqdesc->numblends > 6)
+					panim6 += 6 * m_pStudioHdr->numbones;
+				CalcRotations(pos3, q3, pseqdesc, panim6, f);
+
+				lastanim = panim;
+				if (pseqdesc->numblends > 7)
+					lastanim += 7 * m_pStudioHdr->numbones;
+			}
+		}
+
+		CalcRotations(pos4, q4, pseqdesc, lastanim, f);
+
+		const auto normalizedInterpolantX = interpolantX / 255.0;
+		SlerpBones(q, pos, q2, pos2, normalizedInterpolantX);
+		SlerpBones(q3, pos3, q4, pos4, normalizedInterpolantX);
+
+		const auto normalizedInterpolantY = interpolantY / 255.0;
+		SlerpBones(q, pos, q3, pos3, normalizedInterpolantY);
+	}
+	else
+	{
+		CalcRotations(pos, q, pseqdesc, panim, m_pRenderInfo->flFrame);
+
+		if (pseqdesc->numblends > 1)
 		{
 			panim += m_pStudioHdr->numbones;
-			CalcRotations( pos3, q3, pseqdesc, panim, m_pRenderInfo->flFrame );
+			CalcRotations(pos2, q2, pseqdesc, panim, m_pRenderInfo->flFrame);
+			float s = m_pRenderInfo->iBlender[0] / 255.0;
 
-			panim += m_pStudioHdr->numbones;
-			CalcRotations( pos4, q4, pseqdesc, panim, m_pRenderInfo->flFrame );
+			SlerpBones(q, pos, q2, pos2, s);
 
-			s = m_pRenderInfo->iBlender[ 0 ] / 255.0;
-			SlerpBones( q3, pos3, q4, pos4, s );
+			if (pseqdesc->numblends == 4)
+			{
+				panim += m_pStudioHdr->numbones;
+				CalcRotations(pos3, q3, pseqdesc, panim, m_pRenderInfo->flFrame);
 
-			s = m_pRenderInfo->iBlender[ 1 ] / 255.0;
-			SlerpBones( q, pos, q3, pos3, s );
+				panim += m_pStudioHdr->numbones;
+				CalcRotations(pos4, q4, pseqdesc, panim, m_pRenderInfo->flFrame);
+
+				s = m_pRenderInfo->iBlender[0] / 255.0;
+				SlerpBones(q3, pos3, q4, pos4, s);
+
+				s = m_pRenderInfo->iBlender[1] / 255.0;
+				SlerpBones(q, pos, q3, pos3, s);
+			}
 		}
 	}
 
