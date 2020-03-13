@@ -157,11 +157,47 @@ CMainPanel::CMainPanel( wxWindow* pParent, CModelViewerApp* const pHLMV )
 	InitializeUI();
 
 	g_pStudioMdlRenderer->SetRendererListener( this );
+
+	auto settings = m_pHLMV->GetSettings();
+
+	if (auto currentCameraName = settings->GetCurrentCameraName(); !currentCameraName.empty())
+	{
+		for (size_t i = 0; i < ARRAYSIZE(VIEWORIGINS); ++i)
+		{
+			if (VIEWORIGINS[i] == currentCameraName)
+			{
+				m_pViewOrigin->SetSelection(i);
+				m_pHLMV->GetState()->SetUseWeaponOrigin(m_pViewOrigin->GetSelection() == VIEWORIGIN_WEAPON);
+				break;
+			}
+		}
+	}
+
+	if (auto currentPanelName = settings->GetCurrentControlPanelName(); !currentPanelName.empty())
+	{
+		for (size_t i = 0; i < ARRAYSIZE(panels); ++i)
+		{
+			if (panels[i]->GetPanelName() == currentPanelName)
+			{
+				m_pControlPanels->SetSelection(i);
+				break;
+			}
+		}
+	}
 }
 
 CMainPanel::~CMainPanel()
 {
 	g_pStudioMdlRenderer->SetRendererListener( nullptr );
+}
+
+void CMainPanel::SaveWindowSettings()
+{
+	auto settings = m_pHLMV->GetSettings();
+
+	settings->SetCurrentCameraName(VIEWORIGINS[m_pViewOrigin->GetSelection()].ToStdString());
+
+	settings->SetCurrentControlPanelName(static_cast<CBaseControlPanel*>(m_pControlPanels->GetCurrentPage())->GetPanelName().ToStdString());
 }
 
 void CMainPanel::RunFrame()

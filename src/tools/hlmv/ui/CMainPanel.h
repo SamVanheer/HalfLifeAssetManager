@@ -51,6 +51,8 @@ public:
 	CTexturesPanel*			GetTexturesPanel() { return m_pTextures; }
 	CSequencesPanel*		GetSequencesPanel() { return m_pSequencesPanel; }
 
+	void SaveWindowSettings();
+
 	bool LoadModel( const wxString& szFilename );
 
 	void FreeModel();

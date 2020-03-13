@@ -181,6 +181,8 @@ void CMainWindow::SaveWindowSettings()
 	settings->SetWindowY(position.y);
 	settings->SetWindowWidth(size.GetWidth());
 	settings->SetWindowHeight(size.GetHeight());
+
+	m_pMainPanel->SaveWindowSettings();
 }
 
 bool CMainWindow::LoadModel( const wxString& szFilename )

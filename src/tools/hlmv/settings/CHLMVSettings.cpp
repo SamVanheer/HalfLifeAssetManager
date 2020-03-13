@@ -87,6 +87,9 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 	m_IsWindowMaximized = other.m_IsWindowMaximized;
 	m_WindowWidth = other.m_WindowWidth;
 	m_WindowHeight = other.m_WindowHeight;
+
+	m_CurrentCameraName = other.m_CurrentCameraName;
+	m_CurrentControlPanelName = other.m_CurrentControlPanelName;
 }
 
 void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameConfig>& oldConfig, const std::shared_ptr<settings::CGameConfig>& newConfig )
@@ -237,6 +240,19 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 				m_WindowHeight = std::stoi(height->GetValue());
 			}
 		}
+
+		if (auto block = settings->FindFirstChild<kv::Block>("controlPanelState"); block)
+		{
+			if (auto kv = block->FindFirstChild<kv::KV>("cameraName"); kv)
+			{
+				m_CurrentCameraName = kv->GetValue();
+			}
+
+			if (auto kv = block->FindFirstChild<kv::KV>("controlPanelName"); kv)
+			{
+				m_CurrentControlPanelName = kv->GetValue();
+			}
+		}
 	}
 
 	return true;
@@ -313,6 +329,13 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 	writer.WriteKeyvalue("y", std::to_string(m_WindowY).c_str());
 	writer.WriteKeyvalue("width", std::to_string(m_WindowWidth).c_str());
 	writer.WriteKeyvalue("height", std::to_string(m_WindowHeight).c_str());
+
+	writer.EndBlock();
+
+	writer.BeginBlock("controlPanelState");
+
+	writer.WriteKeyvalue("cameraName", m_CurrentCameraName.c_str());
+	writer.WriteKeyvalue("controlPanelName", m_CurrentControlPanelName.c_str());
 
 	writer.EndBlock();
 

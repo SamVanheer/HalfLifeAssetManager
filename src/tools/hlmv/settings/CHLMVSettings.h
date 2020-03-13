@@ -188,6 +188,20 @@ public:
 
 	void SetWindowHeight(int value) { m_WindowHeight = value; }
 
+	const std::string& GetCurrentCameraName() const { return m_CurrentCameraName; }
+
+	void SetCurrentCameraName(std::string&& value)
+	{
+		m_CurrentCameraName = std::move(value);
+	}
+
+	const std::string& GetCurrentControlPanelName() const { return m_CurrentControlPanelName; }
+
+	void SetCurrentControlPanelName(std::string&& value)
+	{
+		m_CurrentControlPanelName = std::move(value);
+	}
+
 protected:
 	bool PostInitialize( const char* const pszFilename ) override final;
 
@@ -233,6 +247,9 @@ private:
 
 	int m_WindowWidth = -1;
 	int m_WindowHeight = -1;
+
+	std::string m_CurrentCameraName;
+	std::string m_CurrentControlPanelName;
 };
 }
 
