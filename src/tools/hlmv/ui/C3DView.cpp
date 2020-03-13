@@ -105,6 +105,8 @@ void C3DView::DrawScene()
 
 	glViewport( 0, 0, size.GetX(), size.GetY() );
 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	m_pHLMV->GetState()->drawnPolys = 0;
 
 	if( m_pHLMV->GetState()->showTexture )
@@ -759,6 +761,65 @@ void C3DView::DrawModel()
 	}
 
 	m_pHLMV->GetState()->drawnPolys = g_pStudioMdlRenderer->GetDrawnPolygonsCount() - uiOldPolys;
+
+	if (m_pHLMV->GetState()->drawPlayerHitbox)
+	{
+		//Draw a transparent green box to display the player hitbox
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
+
+		const glm::vec3 bbmin{-16, -16, 0};
+		const glm::vec3 bbmax{16, 16, 72};
+
+		glm::vec3 v[8];
+
+		v[0][0] = bbmin[0];
+		v[0][1] = bbmax[1];
+		v[0][2] = bbmin[2];
+
+		v[1][0] = bbmin[0];
+		v[1][1] = bbmin[1];
+		v[1][2] = bbmin[2];
+
+		v[2][0] = bbmax[0];
+		v[2][1] = bbmax[1];
+		v[2][2] = bbmin[2];
+
+		v[3][0] = bbmax[0];
+		v[3][1] = bbmin[1];
+		v[3][2] = bbmin[2];
+
+		v[4][0] = bbmax[0];
+		v[4][1] = bbmax[1];
+		v[4][2] = bbmax[2];
+
+		v[5][0] = bbmax[0];
+		v[5][1] = bbmin[1];
+		v[5][2] = bbmax[2];
+
+		v[6][0] = bbmin[0];
+		v[6][1] = bbmax[1];
+		v[6][2] = bbmax[2];
+
+		v[7][0] = bbmin[0];
+		v[7][1] = bbmin[1];
+		v[7][2] = bbmax[2];
+
+		graphics::DrawBox(v);
+
+		//Draw dark green edges
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glColor4f(0.0f, 0.5f, 0.0f, 0.5f);
+
+		graphics::DrawBox(v);
+	}
 
 	glPopMatrix();
 }

@@ -136,6 +136,8 @@ public:
 
 	bool drawGuidelines = false;
 
+	bool drawPlayerHitbox = false;
+
 	bool modelChanged;
 
 private:

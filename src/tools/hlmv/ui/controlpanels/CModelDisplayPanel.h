@@ -89,6 +89,8 @@ private:
 
 	void OnShowGuidelinesChanged(wxCommandEvent& event);
 
+	void OnShowPlayerHitboxChanged(wxCommandEvent& event);
+
 	void OnFOVChanged( wxCommandEvent& event );
 
 	void OnFOVFPChanged( wxCommandEvent& event );
@@ -107,6 +109,7 @@ private:
 
 	wxCheckBox* m_pShowCrosshair;
 	wxCheckBox* m_pShowGuidelines;
+	wxCheckBox* m_pShowPlayerHitbox;
 
 	ui::CFOVCtrl* m_pFOV;
 	ui::CFOVCtrl* m_pFPFOV;

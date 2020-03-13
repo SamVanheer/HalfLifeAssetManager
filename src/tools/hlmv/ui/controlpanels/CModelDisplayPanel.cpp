@@ -81,6 +81,9 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 	m_pShowGuidelines = new wxCheckBox(pElemParent, wxID_ANY, "Show Guidelines");
 	m_pShowGuidelines->Bind(wxEVT_CHECKBOX, &CModelDisplayPanel::OnShowGuidelinesChanged, this);
 
+	m_pShowPlayerHitbox = new wxCheckBox(pElemParent, wxID_ANY, "Show Player Hitbox");
+	m_pShowPlayerHitbox->Bind(wxEVT_CHECKBOX, &CModelDisplayPanel::OnShowPlayerHitboxChanged, this);
+
 	m_pFOV = new ui::CFOVCtrl( this, wxID_MDLDISP_FOVCHANGED, CHLMVState::DEFAULT_FOV, "Field Of View" );
 
 	m_pFPFOV = new ui::CFOVCtrl( this, wxID_MDLDISP_FPFOVCHANGED, CHLMVState::DEFAULT_FP_FOV, "First Person Field Of View" );
@@ -122,6 +125,8 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 	helperSizer->Add(m_pShowCrosshair, wxSizerFlags().Expand());
 	helperSizer->AddSpacer(10);
 	helperSizer->Add(m_pShowGuidelines, wxSizerFlags().Expand());
+	helperSizer->AddSpacer(10);
+	helperSizer->Add(m_pShowPlayerHitbox, wxSizerFlags().Expand());
 
 	pSizer->Add(helperSizer, wxSizerFlags().Expand());
 
@@ -345,6 +350,11 @@ void CModelDisplayPanel::OnShowCrosshairChanged(wxCommandEvent& event)
 void CModelDisplayPanel::OnShowGuidelinesChanged(wxCommandEvent& event)
 {
 	m_pHLMV->GetState()->drawGuidelines = m_pShowGuidelines->GetValue();
+}
+
+void CModelDisplayPanel::OnShowPlayerHitboxChanged(wxCommandEvent& event)
+{
+	m_pHLMV->GetState()->drawPlayerHitbox = m_pShowPlayerHitbox->GetValue();
 }
 
 void CModelDisplayPanel::OnFOVChanged( wxCommandEvent& event )
