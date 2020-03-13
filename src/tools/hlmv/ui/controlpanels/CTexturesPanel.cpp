@@ -780,11 +780,11 @@ void CTexturesPanel::RemapTexture(int index)
 
 		memcpy(palette, reinterpret_cast<byte*>(textureHeader) + texture->index + texture->width * texture->height, PALETTE_SIZE);
 
-		graphics::PaletteHueReplace(palette, m_pColorSliders[0]->GetValue(), low, mid);
+		graphics::PaletteHueReplace(palette, m_pColorSliders[0]->GetValue(), low, mid - 1);
 
 		if (high)
 		{
-			graphics::PaletteHueReplace(palette, m_pColorSliders[1]->GetValue(), mid + 1, high);
+			graphics::PaletteHueReplace(palette, m_pColorSliders[1]->GetValue(), mid, high);
 		}
 
 		entity->GetModel()->ReplaceTexture(texture, reinterpret_cast<byte*>(textureHeader) + texture->index, palette, textureId);
