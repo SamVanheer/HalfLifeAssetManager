@@ -2,6 +2,7 @@
 #define GRAPHICS_GRAPHICSUTILS_H
 
 #include <algorithm>
+#include <string_view>
 
 #include <glm/vec3.hpp>
 
@@ -48,6 +49,13 @@ void SetProjection( const float flFOV, const int iWidth, const int iHeight );
 *	Draws a box using an array of 8 vectors as corner points.
 */
 void DrawBox( const glm::vec3* const v );
+
+/**
+*	@brief Tests if the given filename is a remap name, and returns the remap ranges if so
+*/
+bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high);
+
+void PaletteHueReplace(byte* palette, int newHue, int Start, int end);
 }
 
 #endif //GRAPHICS_GRAPHICSUTILS_H

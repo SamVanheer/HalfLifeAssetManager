@@ -1,4 +1,7 @@
+#include <algorithm>
 #include <cassert>
+#include <charconv>
+#include <cstring>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -7,6 +10,7 @@
 #include "shared/studiomodel/studio.h"
 
 #include "GraphicsUtils.h"
+#include "Palette.h"
 
 namespace graphics
 {
@@ -144,5 +148,123 @@ void DrawBox( const glm::vec3* const v )
 	glVertex3fv( glm::value_ptr( v[ 3 ] ) );
 	glVertex3fv( glm::value_ptr( v[ 5 ] ) );
 	glEnd();
+}
+
+const std::string_view DmBaseName{"DM_Base.bmp"};
+const std::string_view RemapName{"Remap"};
+
+const std::size_t SimpleRemapLength = 18;
+const std::size_t FullRemapLength = 22;
+
+const std::size_t LowOffset = 7;
+const std::size_t MidOffset = 11;
+const std::size_t HighOffset = 15;
+const std::size_t ValueLength = 3;
+
+bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high)
+{
+	if (fileName.length() == DmBaseName.length() &&
+		!_strnicmp(fileName.data(), DmBaseName.data(), DmBaseName.length()))
+	{
+		low = 160;
+		mid = 191;
+		high = 223;
+
+		return true;
+	}
+	else if ((fileName.length() == SimpleRemapLength || fileName.length() == FullRemapLength) &&
+		!_strnicmp(fileName.data(), RemapName.data(), RemapName.length()))
+	{
+		//from_chars does not set the out value unless parsing succeeds, unlike atoi which the engine uses
+		low = mid = high = 0;
+
+		if (fileName.length() == SimpleRemapLength)
+		{
+			const auto index = fileName[RemapName.length()];
+
+			if (index != 'c' && index != 'C')
+			{
+				return false;
+			}
+		}
+		else
+		{
+			std::from_chars(fileName.data() + HighOffset, fileName.data() + HighOffset + ValueLength, high);
+		}
+
+		std::from_chars(fileName.data() + LowOffset, fileName.data() + LowOffset + ValueLength, low);
+		std::from_chars(fileName.data() + MidOffset, fileName.data() + MidOffset + ValueLength, mid);
+
+		return true;
+	}
+
+	return false;
+}
+
+void PaletteHueReplace(byte* palette, int newHue, int Start, int end)
+{
+	const auto hue = (float) (newHue * (360.0 / 255));
+
+	for (int i = Start; i <= end; ++i)
+	{
+		float r = palette[i * PALETTE_CHANNELS];
+		float g = palette[i * PALETTE_CHANNELS + 1];
+		float b = palette[i * PALETTE_CHANNELS + 2];
+
+		const auto maxcol = std::max(std::max(r, g), b) / 255.0f;
+		auto mincol = std::min(std::min(r, g), b) / 255.0f;
+
+		const auto val = maxcol;
+		const auto sat = (maxcol - mincol) / maxcol;
+
+		mincol = val * (1.0f - sat);
+
+		if (hue <= 120)
+		{
+			b = mincol;
+			if (hue < 60)
+			{
+				r = val;
+				g = mincol + hue * (val - mincol) / (120 - hue);
+			}
+			else
+			{
+				g = val;
+				r = mincol + (120 - hue) * (val - mincol) / hue;
+			}
+		}
+		else if (hue <= 240)
+		{
+			r = mincol;
+			if (hue < 180)
+			{
+				g = val;
+				b = mincol + (hue - 120) * (val - mincol) / (240 - hue);
+			}
+			else
+			{
+				b = val;
+				g = mincol + (240 - hue) * (val - mincol) / (hue - 120);
+			}
+		}
+		else
+		{
+			g = mincol;
+			if (hue < 300)
+			{
+				b = val;
+				r = mincol + (hue - 240) * (val - mincol) / (360 - hue);
+			}
+			else
+			{
+				r = val;
+				b = mincol + (360 - hue) * (val - mincol) / (hue - 240);
+			}
+		}
+
+		palette[i* PALETTE_CHANNELS] = (byte) (r * 255);
+		palette[i* PALETTE_CHANNELS + 1] = (byte) (g * 255);
+		palette[i* PALETTE_CHANNELS + 2] = (byte) (b * 255);
+	}
 }
 }

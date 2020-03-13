@@ -8,6 +8,7 @@
 #include "wx/utility/wxUtil.h"
 
 #include "graphics/GraphicsHelpers.h"
+#include "graphics/GraphicsUtils.h"
 #include "graphics/Palette.h"
 #include "graphics/BMPFile.h"
 
@@ -73,6 +74,20 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 	m_pExportAllTexturesButton = new wxButton(buttonsPanel, wxID_TEX_EXPORTALLTEXTURES, "Export All Textures");
 	m_pExportUVButton = new wxButton(buttonsPanel, wxID_TEX_EXPORTUVMAP, "Export UV Map" );
 
+	for (auto& slider : m_pColorSliders)
+	{
+		slider = new wxSlider(pElemParent, wxID_ANY, ColorDefault, ColorMin, ColorMax);
+		slider->Bind(wxEVT_SLIDER, &CTexturesPanel::OnColorSliderChanged, this);
+	}
+
+	for (auto& spinner : m_pColorSpinners)
+	{
+		spinner = new wxSpinCtrl(pElemParent);
+		spinner->SetRange(ColorMin, ColorMax);
+		spinner->SetValue(ColorDefault);
+		spinner->Bind(wxEVT_SPINCTRL, &CTexturesPanel::OnColorSpinnerChanged, this);
+	}
+
 	//Layout
 	auto sizer = new wxGridBagSizer(1, 1);
 
@@ -95,14 +110,28 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 		auto buttonsSizer = new wxGridBagSizer(1, 1);
 
 		buttonsSizer->Add(m_pImportTexButton, wxGBPosition(0, 0), wxDefaultSpan, wxEXPAND);
-		buttonsSizer->Add(m_pImportAllTexturesButton, wxGBPosition(1, 0), wxDefaultSpan, wxEXPAND);
-		buttonsSizer->Add(m_pExportTexButton, wxGBPosition(0, 1), wxDefaultSpan, wxEXPAND);
+		buttonsSizer->Add(m_pImportAllTexturesButton, wxGBPosition(0, 1), wxDefaultSpan, wxEXPAND);
+		buttonsSizer->Add(m_pExportTexButton, wxGBPosition(1, 0), wxDefaultSpan, wxEXPAND);
 		buttonsSizer->Add(m_pExportAllTexturesButton, wxGBPosition(1, 1), wxDefaultSpan, wxEXPAND);
-		buttonsSizer->Add(m_pExportUVButton, wxGBPosition(0, 2), wxDefaultSpan, wxEXPAND);
+		buttonsSizer->Add(m_pExportUVButton, wxGBPosition(2, 0), wxDefaultSpan, wxEXPAND);
 
 		buttonsPanel->SetSizer(buttonsSizer);
 
 		sizer->Add(buttonsPanel, wxGBPosition(0, 3), wxGBSpan(1, 1), wxEXPAND);
+	}
+
+	{
+		auto colorsSizer = new wxGridBagSizer(1, 1);
+
+		colorsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Top Color"), wxGBPosition(0, 0), wxDefaultSpan, wxEXPAND);
+		colorsSizer->Add(m_pColorSliders[0], wxGBPosition(0, 1), wxDefaultSpan, wxEXPAND);
+		colorsSizer->Add(m_pColorSpinners[0], wxGBPosition(0, 2), wxDefaultSpan, wxEXPAND);
+
+		colorsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Bottom Color"), wxGBPosition(1, 0), wxDefaultSpan, wxEXPAND);
+		colorsSizer->Add(m_pColorSliders[1], wxGBPosition(1, 1), wxDefaultSpan, wxEXPAND);
+		colorsSizer->Add(m_pColorSpinners[1], wxGBPosition(1, 2), wxDefaultSpan, wxEXPAND);
+
+		sizer->Add(colorsSizer, wxGBPosition(0, 4), wxGBSpan(1, 1), wxEXPAND);
 	}
 
 	GetMainSizer()->Add(sizer);
@@ -169,7 +198,24 @@ void CTexturesPanel::InitializeUI()
 		m_pMesh->Enable( false );
 	}
 
+	for (auto slider : m_pColorSliders)
+	{
+		slider->SetValue(0);
+		slider->Enable(bSuccess);
+	}
+
+	for (auto spinner : m_pColorSpinners)
+	{
+		spinner->SetValue(0);
+		spinner->Enable(bSuccess);
+	}
+
 	this->Enable( bSuccess );
+
+	if (bSuccess)
+	{
+		RemapTextures();
+	}
 }
 
 void CTexturesPanel::SetTexture( int iIndex )
@@ -522,6 +568,8 @@ void CTexturesPanel::ImportTexture( wxCommandEvent& event )
 	const wxString szFilename = dlg.GetPath();
 
 	ImportTextureFrom(szFilename, pStudioModel, pStudioModel->GetTextureHeader(), iTextureIndex);
+
+	RemapTexture(iTextureIndex);
 }
 
 void CTexturesPanel::ImportAllTextures(wxCommandEvent& event)
@@ -559,6 +607,8 @@ void CTexturesPanel::ImportAllTextures(wxCommandEvent& event)
 			ImportTextureFrom(fileName.GetFullPath(), pStudioModel, pHdr, i);
 		}
 	}
+
+	RemapTextures();
 }
 
 void CTexturesPanel::ExportTexture( wxCommandEvent& event )
@@ -673,5 +723,71 @@ void CTexturesPanel::ExportUVMap( wxCommandEvent& event )
 	const wxString szFilename = dlg.GetPath();
 
 	m_pHLMV->SaveUVMap( szFilename, iTextureIndex );
+}
+
+void CTexturesPanel::OnColorSliderChanged(wxCommandEvent& event)
+{
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		const auto index = event.GetEventObject() == m_pColorSliders[0] ? 0 : 1;
+
+		m_pColorSpinners[index]->SetValue(m_pColorSliders[index]->GetValue());
+
+		RemapTextures();
+	}
+}
+
+void CTexturesPanel::OnColorSpinnerChanged(wxSpinEvent& event)
+{
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		const auto index = event.GetEventObject() == m_pColorSpinners[0] ? 0 : 1;
+
+		m_pColorSliders[index]->SetValue(m_pColorSpinners[index]->GetValue());
+
+		RemapTextures();
+	}
+}
+
+void CTexturesPanel::RemapTextures()
+{
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		auto textureHeader = entity->GetModel()->GetTextureHeader();
+
+		for (int i = 0; i < textureHeader->numtextures; ++i)
+		{
+			RemapTexture(i);
+		}
+	}
+}
+
+void CTexturesPanel::RemapTexture(int index)
+{
+	auto entity = m_pHLMV->GetState()->GetEntity();
+
+	auto textureHeader = entity->GetModel()->GetTextureHeader();
+
+	const auto texture = textureHeader->GetTexture(index);
+
+	const auto textureId = entity->GetModel()->GetTextureId(index);
+
+	int low, mid, high;
+
+	if (graphics::TryGetRemapColors(texture->name, low, mid, high))
+	{
+		byte palette[PALETTE_SIZE];
+
+		memcpy(palette, reinterpret_cast<byte*>(textureHeader) + texture->index + texture->width * texture->height, PALETTE_SIZE);
+
+		graphics::PaletteHueReplace(palette, m_pColorSliders[0]->GetValue(), low, mid);
+
+		if (high)
+		{
+			graphics::PaletteHueReplace(palette, m_pColorSliders[1]->GetValue(), mid, high);
+		}
+
+		entity->GetModel()->ReplaceTexture(texture, reinterpret_cast<byte*>(textureHeader) + texture->index, palette, textureId);
+	}
 }
 }

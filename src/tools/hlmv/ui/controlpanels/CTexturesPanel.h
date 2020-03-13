@@ -1,6 +1,8 @@
 #ifndef CONTROLPANELS_CTEXTURESPANEL_H
 #define CONTROLPANELS_CTEXTURESPANEL_H
 
+#include <wx/spinctrl.h>
+
 #include "wx/utility/CMeshClientData.h"
 
 #include "CBaseControlPanel.h"
@@ -52,6 +54,10 @@ public:
 		CheckBox& operator=( const CheckBox& ) = delete;
 	};
 
+	static const int ColorMin = 0;
+	static const int ColorMax = 255;
+	static const int ColorDefault = 0;
+
 public:
 	CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV );
 	~CTexturesPanel();
@@ -89,8 +95,16 @@ protected:
 
 	void ExportUVMap( wxCommandEvent& event );
 
+	void OnColorSliderChanged(wxCommandEvent& event);
+
+	void OnColorSpinnerChanged(wxSpinEvent& event);
+
 private:
 	void ImportTextureFrom(const wxString& fileName, studiomdl::CStudioModel* pStudioModel, studiohdr_t* pHdr, int textureIndex);
+
+	void RemapTextures();
+
+	void RemapTexture(int index);
 
 private:
 	wxStaticText* m_pTextureSize;
@@ -108,6 +122,9 @@ private:
 	wxButton* m_pExportTexButton;
 	wxButton* m_pExportAllTexturesButton;
 	wxButton* m_pExportUVButton;
+
+	wxSlider* m_pColorSliders[2];
+	wxSpinCtrl* m_pColorSpinners[2];
 
 private:
 	CTexturesPanel( const CTexturesPanel& ) = delete;
