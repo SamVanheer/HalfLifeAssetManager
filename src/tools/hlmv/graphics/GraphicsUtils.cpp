@@ -201,9 +201,6 @@ bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high)
 	return false;
 }
 
-//Optimizations break this function
-#pragma optimize("", off)
-
 void PaletteHueReplace(byte* palette, int newHue, int start, int end)
 {
 	const auto hue = (float) (newHue * (360.0 / 255));
@@ -270,6 +267,4 @@ void PaletteHueReplace(byte* palette, int newHue, int start, int end)
 		palette[i * PALETTE_CHANNELS + 2] = (byte) (b * 255);
 	}
 }
-
-#pragma optimize("", on)
 }

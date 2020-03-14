@@ -71,7 +71,7 @@ target_link_libraries(${TARGET_NAME}
 
 target_compile_options(${TARGET_NAME}
 	PRIVATE
-		${WX_SHARED_COMPILE_FLAGS}
+		$<$<CXX_COMPILER_ID:MSVC>:/fp:strict>
 		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-m32 -fPIC>)
 
 target_link_options(${TARGET_NAME}
