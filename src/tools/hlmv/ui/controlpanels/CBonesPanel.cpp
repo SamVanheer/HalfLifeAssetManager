@@ -209,6 +209,12 @@ void CBonesPanel::OnPostDraw( studiomdl::IStudioModelRenderer& renderer, const s
 	renderer.DrawSingleBone( m_pBones->GetSelection() );
 }
 
+void CBonesPanel::PanelActivated()
+{
+	//Because the root bones can be edited now, we need to refresh the data so reset the active bone to force this
+	SetBone(m_pBones->GetSelection());
+}
+
 void CBonesPanel::SetBone( int iIndex )
 {
 	auto pEntity = m_pHLMV->GetState()->GetEntity();

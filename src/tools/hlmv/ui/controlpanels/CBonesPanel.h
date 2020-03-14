@@ -29,6 +29,8 @@ public:
 
 	void OnPostDraw( studiomdl::IStudioModelRenderer& renderer, const studiomdl::CModelRenderInfo& info ) override final;
 
+	void PanelActivated() override;
+
 	void SetBone( int iIndex );
 
 	void SetBoneController( int iIndex );
