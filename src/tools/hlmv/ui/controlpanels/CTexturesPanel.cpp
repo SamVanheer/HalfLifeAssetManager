@@ -88,6 +88,9 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 		spinner->Bind(wxEVT_SPINCTRL, &CTexturesPanel::OnColorSpinnerChanged, this);
 	}
 
+	m_pColorMapValue = new wxTextCtrl(pElemParent, wxID_ANY);
+	m_pColorMapValue->SetEditable(false);
+
 	//Layout
 	auto sizer = new wxGridBagSizer(1, 1);
 
@@ -130,6 +133,9 @@ CTexturesPanel::CTexturesPanel( wxWindow* pParent, CModelViewerApp* const pHLMV 
 		colorsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Bottom Color"), wxGBPosition(1, 0), wxDefaultSpan, wxEXPAND);
 		colorsSizer->Add(m_pColorSliders[1], wxGBPosition(1, 1), wxDefaultSpan, wxEXPAND);
 		colorsSizer->Add(m_pColorSpinners[1], wxGBPosition(1, 2), wxDefaultSpan, wxEXPAND);
+
+		colorsSizer->Add(new wxStaticText(pElemParent, wxID_ANY, "Colormap Value"), wxGBPosition(2, 0), wxDefaultSpan, wxEXPAND);
+		colorsSizer->Add(m_pColorMapValue, wxGBPosition(2, 1), wxGBSpan(1, 2), wxEXPAND);
 
 		sizer->Add(colorsSizer, wxGBPosition(0, 4), wxGBSpan(1, 1), wxEXPAND);
 	}
@@ -209,6 +215,8 @@ void CTexturesPanel::InitializeUI()
 		spinner->SetValue(0);
 		spinner->Enable(bSuccess);
 	}
+
+	UpdateColorMapValue();
 
 	this->Enable( bSuccess );
 
@@ -733,6 +741,8 @@ void CTexturesPanel::OnColorSliderChanged(wxCommandEvent& event)
 
 		m_pColorSpinners[index]->SetValue(m_pColorSliders[index]->GetValue());
 
+		UpdateColorMapValue();
+
 		RemapTextures();
 	}
 }
@@ -745,8 +755,20 @@ void CTexturesPanel::OnColorSpinnerChanged(wxSpinEvent& event)
 
 		m_pColorSliders[index]->SetValue(m_pColorSpinners[index]->GetValue());
 
+		UpdateColorMapValue();
+
 		RemapTextures();
 	}
+}
+
+void CTexturesPanel::UpdateColorMapValue()
+{
+	const auto topColor = m_pColorSliders[0]->GetValue();
+	const auto bottomColor = m_pColorSliders[1]->GetValue();
+
+	const int colorMapValue = topColor & 0xFF | ((bottomColor & 0xFF) << 8);
+
+	m_pColorMapValue->SetValue(wxString::Format("%d", colorMapValue));
 }
 
 void CTexturesPanel::RemapTextures()

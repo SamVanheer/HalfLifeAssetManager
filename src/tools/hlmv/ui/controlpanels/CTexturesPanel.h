@@ -2,6 +2,7 @@
 #define CONTROLPANELS_CTEXTURESPANEL_H
 
 #include <wx/spinctrl.h>
+#include <wx/textctrl.h>
 
 #include "wx/utility/CMeshClientData.h"
 
@@ -102,6 +103,8 @@ protected:
 private:
 	void ImportTextureFrom(const wxString& fileName, studiomdl::CStudioModel* pStudioModel, studiohdr_t* pHdr, int textureIndex);
 
+	void UpdateColorMapValue();
+
 	void RemapTextures();
 
 	void RemapTexture(int index);
@@ -125,6 +128,8 @@ private:
 
 	wxSlider* m_pColorSliders[2];
 	wxSpinCtrl* m_pColorSpinners[2];
+
+	wxTextCtrl* m_pColorMapValue;
 
 private:
 	CTexturesPanel( const CTexturesPanel& ) = delete;
