@@ -110,13 +110,12 @@ void ConvertDolToMdl(byte* pBuffer, const mstudiotexture_t& texture)
 	//in the SL version this will not be a problem since the file isn't loaded in one chunk
 }
 
-void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, byte* pal, int name, const bool bFilterTextures, const bool bPowerOf2)
+void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, byte* pal, GLuint name, const bool bFilterTextures, const bool bPowerOf2)
 {
 	// unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight;
 	int		i, j;
 	int		row1[MAX_TEXTURE_DIMS], row2[MAX_TEXTURE_DIMS], col1[MAX_TEXTURE_DIMS], col2[MAX_TEXTURE_DIMS];
 	const byte* pix1, * pix2, * pix3, * pix4;
-	byte* tex, * out;
 
 	// convert texture to power of 2
 	int outwidth;
@@ -139,11 +138,8 @@ void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, byte* pal
 	if (uiSize < 4)
 		return;
 
-	tex = out = (byte*) malloc(uiSize);
-	if (!out)
-	{
-		return;
-	}
+	auto tex = std::make_unique<byte[]>(uiSize);
+
 	/*
 	int k = 0;
 	for (i = 0; i < ptexture->height; i++)
@@ -182,6 +178,8 @@ void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, byte* pal
 		pal[255 * 3 + 0] = pal[255 * 3 + 1] = pal[255 * 3 + 2] = 0;
 	}
 
+	auto out = tex.get();
+
 	// scale down and convert to 32bit RGB
 	for (i = 0; i < outheight; i++)
 	{
@@ -208,9 +206,7 @@ void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, byte* pal
 		}
 	}
 
-	UploadRGBATexture(outwidth, outheight, tex, name, bFilterTextures);
-
-	free(tex);
+	UploadRGBATexture(outwidth, outheight, tex.get(), name, bFilterTextures);
 }
 
 size_t UploadTextures(studiohdr_t& textureHdr, std::vector<GLuint>& textures, const bool bFilterTextures, const bool bPowerOf2, const bool bIsDol)
@@ -327,9 +323,11 @@ void CStudioModel::ReuploadTexture(mstudiotexture_t* ptexture)
 {
 	assert(ptexture);
 
-	const int iIndex = ptexture - m_pTextureHdr->GetTextures();
+	auto header = GetTextureHeader();
 
-	if (iIndex < 0 || iIndex >= m_pTextureHdr->numtextures)
+	const int iIndex = ptexture - header->GetTextures();
+
+	if (iIndex < 0 || iIndex >= header->numtextures)
 	{
 		Error("CStudioModel::ReuploadTexture: Invalid texture!");
 		return;
@@ -338,8 +336,8 @@ void CStudioModel::ReuploadTexture(mstudiotexture_t* ptexture)
 	GLuint textureId = m_Textures[iIndex];
 
 	UploadTexture(ptexture,
-		m_pTextureHdr->GetData() + ptexture->index,
-		m_pTextureHdr->GetData() + ptexture->index + ptexture->width * ptexture->height, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool());
+		header->GetData() + ptexture->index,
+		header->GetData() + ptexture->index + ptexture->width * ptexture->height, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool());
 }
 
 namespace
