@@ -387,8 +387,32 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 				{
 					if( flags & MOUSEOPF_TRANSLATE )
 					{
-						pCamera->GetOrigin().z = m_OldCamera.GetOrigin().z - ( float ) ( event.GetX() - m_vecOldCoords.x );
-						pCamera->GetOrigin().x = m_OldCamera.GetOrigin().x + ( float ) ( event.GetY() - m_vecOldCoords.y );
+						auto settings = m_pHLMV->GetSettings();
+
+						const auto horizontalAdjust = static_cast<float>(event.GetX() - m_vecOldCoords.x);
+						const auto verticalAdjust = static_cast<float>(event.GetY() - m_vecOldCoords.y);
+
+						auto origin = m_OldCamera.GetOrigin();
+
+						if (settings->InvertHorizontalDraggingDirection())
+						{
+							origin.z -= horizontalAdjust;
+						}
+						else
+						{
+							origin.z += horizontalAdjust;
+						}
+
+						if (settings->InvertVerticalDraggingDirection())
+						{
+							origin.x += verticalAdjust;
+						}
+						else
+						{
+							origin.x -= verticalAdjust;
+						}
+
+						pCamera->SetOrigin(origin);
 					}
 				}
 				else
