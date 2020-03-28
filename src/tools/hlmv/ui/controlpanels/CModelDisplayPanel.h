@@ -7,6 +7,7 @@
 
 #include "cvar/CCVar.h"
 
+class wxButton;
 class wxSpinCtrlDouble;
 
 namespace ui
@@ -89,6 +90,10 @@ private:
 
 	void OnFOVFPChanged( wxCommandEvent& event );
 
+	void OnCenterOnOrigin(wxCommandEvent& event);
+
+	void OnAlignOnGround(wxCommandEvent& event);
+
 	void HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue ) override final;
 
 private:
@@ -103,6 +108,9 @@ private:
 
 	ui::CFOVCtrl* m_pFOV;
 	ui::CFOVCtrl* m_pFPFOV;
+
+	wxButton* m_pCenterOnOriginButton;
+	wxButton* m_pAlignOnGroundButton;
 
 private:
 	CModelDisplayPanel( const CModelDisplayPanel& ) = delete;

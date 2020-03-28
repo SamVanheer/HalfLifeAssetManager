@@ -1,5 +1,6 @@
 #include <cfloat>
 
+#include <wx/button.h>
 #include <wx/spinctrl.h>
 #include <wx/gbsizer.h>
 
@@ -88,6 +89,12 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 		m_pMirror[ uiIndex ]->SetClientData( const_cast<size_t*>( &MIRROR[ uiIndex ] ) );
 	}
 
+	m_pCenterOnOriginButton = new wxButton(pElemParent, wxID_ANY, "Center Model On World Origin");
+	m_pCenterOnOriginButton->Bind(wxEVT_BUTTON, &CModelDisplayPanel::OnCenterOnOrigin, this);
+
+	m_pAlignOnGroundButton = new wxButton(pElemParent, wxID_ANY, "Align On Ground");
+	m_pAlignOnGroundButton->Bind(wxEVT_BUTTON, &CModelDisplayPanel::OnAlignOnGround, this);
+
 	//Layout
 	auto pSizer = new wxBoxSizer( wxHORIZONTAL );
 
@@ -123,6 +130,15 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 
 	pSizer->Add( pFOVSizer, wxSizerFlags().Expand() );
 
+	{
+		auto buttonsSizer = new wxBoxSizer(wxVERTICAL);
+
+		buttonsSizer->Add(m_pCenterOnOriginButton, wxSizerFlags().Expand());
+		buttonsSizer->Add(m_pAlignOnGroundButton, wxSizerFlags().Expand());
+
+		pSizer->Add(buttonsSizer);
+	}
+
 	GetMainSizer()->Add( pSizer );
 
 	g_pCVar->InstallGlobalCVarHandler( this );
@@ -149,6 +165,9 @@ void CModelDisplayPanel::InitializeUI()
 
 	m_pFOV->ChangeToDefault();
 	m_pFPFOV->ChangeToDefault();
+
+	m_pCenterOnOriginButton->Enable(pEntity != nullptr);
+	m_pAlignOnGroundButton->Enable(pEntity != nullptr);
 }
 
 void CModelDisplayPanel::SetRenderMode( RenderMode renderMode )
@@ -353,6 +372,50 @@ void CModelDisplayPanel::OnFOVChanged( wxCommandEvent& event )
 void CModelDisplayPanel::OnFOVFPChanged( wxCommandEvent& event )
 {
 	m_pHLMV->GetState()->flFPFOV = m_pFPFOV->GetValue();
+}
+
+void CModelDisplayPanel::OnCenterOnOrigin(wxCommandEvent& event)
+{
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		entity->SetOrigin({0, 0, 0});
+	}
+}
+
+void CModelDisplayPanel::OnAlignOnGround(wxCommandEvent& event)
+{
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		auto model = entity->GetModel();
+
+		auto header = model->GetStudioHeader();
+
+		//First try finding the idle sequence, since that typically represents a model "at rest"
+		//Failing that, use the first sequence
+		auto idleFinder = [&]() -> const mstudioseqdesc_t*
+		{
+			for (int i = 0; i < header->numseq; ++i)
+			{
+				const auto sequence = header->GetSequence(i);
+
+				if (!strcmp(sequence->label, "idle"))
+				{
+					return sequence;
+				}
+			}
+
+			return nullptr;
+		};
+
+		auto sequence = idleFinder();
+
+		if (!sequence)
+		{
+			sequence = header->GetSequence(0);
+		}
+
+		entity->SetOrigin({0, 0, -sequence->bbmin.z});
+	}
 }
 
 void CModelDisplayPanel::HandleCVar( cvar::CCVar& cvar, const char* pszOldValue, float flOldValue )
