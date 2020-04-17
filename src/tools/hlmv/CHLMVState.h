@@ -126,6 +126,10 @@ public:
 
 	bool overlayUVMap;
 
+	bool drawShadows;
+
+	bool fixShadowZFighting;
+
 	const mstudiomesh_t* pUVMesh;	//Null if all should be drawn.
 
 	bool antiAliasUVLines;

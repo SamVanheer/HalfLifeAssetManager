@@ -112,13 +112,22 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 	if( m_pListener )
 		m_pListener->OnPreDraw( *this, *m_pRenderInfo );
 
+	const bool fixShadowZFighting = (flags & renderer::DrawFlag::FIX_SHADOW_Z_FIGHTING) != 0;
+
 	if( !( flags & renderer::DrawFlag::NODRAW ) )
 	{
 		for( int i = 0; i < m_pStudioHdr->numbodyparts; i++ )
 		{
 			SetupModel( i );
-			if( m_pRenderInfo->flTransparency > 0.0f )
-				uiDrawnPolys += DrawPoints( false );
+			if (m_pRenderInfo->flTransparency > 0.0f)
+			{
+				uiDrawnPolys += DrawPoints(false);
+
+				if (flags & renderer::DrawFlag::DRAW_SHADOWS)
+				{
+					uiDrawnPolys += DrawShadows(fixShadowZFighting, false);
+				}
+			}
 		}
 	}
 
@@ -133,8 +142,15 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 		for( int i = 0; i < m_pStudioHdr->numbodyparts; i++ )
 		{
 			SetupModel( i );
-			if( m_pRenderInfo->flTransparency > 0.0f )
-				uiDrawnPolys += DrawPoints( true );
+			if (m_pRenderInfo->flTransparency > 0.0f)
+			{
+				uiDrawnPolys += DrawPoints(true);
+
+				if (flags & renderer::DrawFlag::DRAW_SHADOWS)
+				{
+					uiDrawnPolys += DrawShadows(fixShadowZFighting, true);
+				}
+			}
 		}
 	}
 
@@ -1136,6 +1152,113 @@ unsigned int CStudioModelRenderer::DrawMeshes( const bool bWireframe, const Sort
 	}
 
 	return uiDrawnPolys;
+}
+
+unsigned int CStudioModelRenderer::DrawShadows(const bool fixZFighting, const bool wireframe)
+{
+	if (!(m_pStudioHdr->flags & EF_NOSHADELIGHT))
+	{
+		GLint oldDepthMask;
+		glGetIntegerv(GL_DEPTH_WRITEMASK, &oldDepthMask);
+
+		if (fixZFighting)
+		{
+			glDepthMask(GL_FALSE);
+		}
+		else
+		{
+			glDepthMask(GL_TRUE);
+		}
+
+		const float r_blend = m_pRenderInfo->flTransparency;
+
+		const auto alpha = 0.5 * r_blend;
+
+		glDisable(GL_TEXTURE_2D);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+
+		if (wireframe)
+		{
+			glColor4f(r_wireframecolor_r.GetFloat() / 255.0f,
+				r_wireframecolor_g.GetFloat() / 255.0f,
+				r_wireframecolor_b.GetFloat() / 255.0f,
+				m_pRenderInfo->flTransparency);
+		}
+		else
+		{
+			//Render shadows as black
+			glColor4f(0.f, 0.f, 0.f, alpha);
+		}
+
+		glDepthFunc(GL_LESS);
+
+		const auto drawnPolys = InternalDrawShadows();
+
+		glDepthFunc(GL_LEQUAL);
+
+		glEnable(GL_TEXTURE_2D);
+		glDisable(GL_BLEND);
+		glColor4f(1.f, 1.f, 1.f, 1.f);
+		glShadeModel(GL_SMOOTH);
+
+		glDepthMask(static_cast<GLboolean>(oldDepthMask));
+
+		return drawnPolys;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+unsigned int CStudioModelRenderer::InternalDrawShadows()
+{
+	unsigned int drawnPolys = 0;
+
+	//Always at the entity origin
+	const auto lightSampleHeight = m_pRenderInfo->vecOrigin.z;
+	const auto shadowHeight = lightSampleHeight + 1.0;
+
+	for (int mesh = 0; mesh < m_pModel->nummesh; ++mesh)
+	{
+		auto v4 = reinterpret_cast<mstudiomesh_t*>(m_pStudioHdr->GetData() + m_pModel->meshindex) + mesh;
+		drawnPolys += v4->numtris;
+
+		auto triCmds = reinterpret_cast<short*>(m_pStudioHdr->GetData() + v4->triindex);
+
+		for (int i; (i = *triCmds++) != 0;)
+		{
+			if (i < 0)
+			{
+				i = -i;
+				glBegin(GL_TRIANGLE_FAN);
+			}
+			else
+			{
+				glBegin(GL_TRIANGLE_STRIP);
+			}
+
+			for (; i > 0; --i, triCmds += 4)
+			{
+				const auto vertex{m_pxformverts[triCmds[0]]};
+
+				const auto lightDistance = vertex.z - lightSampleHeight;
+
+				glm::vec3 point;
+
+				point.x = vertex.x - m_lightvec.x * lightDistance;
+				point.y = vertex.y - m_lightvec.y * lightDistance;
+				point.z = shadowHeight;
+
+				glVertex3fv(glm::value_ptr(point));
+			}
+
+			glEnd();
+		}
+	}
+
+	return drawnPolys;
 }
 
 void CStudioModelRenderer::Lighting( glm::vec3& lv, int bone, int flags, const glm::vec3& normal )

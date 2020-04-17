@@ -60,6 +60,8 @@ CModelDisplayPanel::CModelDisplayPanel( wxWindow* pParent, CModelViewerApp* cons
 	m_pCheckBoxes[ CheckBox::MIRROR_ON_GROUND ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Mirror Model On Ground" );
 	m_pCheckBoxes[ CheckBox::SHOW_BACKGROUND ]		= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Background" );
 	m_pCheckBoxes[ CheckBox::WIREFRAME_OVERLAY ]	= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Wireframe Overlay" );
+	m_pCheckBoxes[CheckBox::DRAW_SHADOWS]			= new wxCheckBox(pElemParent, wxID_MDLDISP_CHECKBOX, "Draw Shadows");
+	m_pCheckBoxes[CheckBox::FIX_SHADOW_Z_FIGHTING]	= new wxCheckBox(pElemParent, wxID_MDLDISP_CHECKBOX, "Fix Shadow Z Fighting");
 	m_pCheckBoxes[ CheckBox::SHOW_AXES ]			= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Axes" );
 	m_pCheckBoxes[ CheckBox::SHOW_NORMALS ]			= new wxCheckBox( pElemParent, wxID_MDLDISP_CHECKBOX, "Show Normals" );
 
@@ -280,6 +282,18 @@ void CModelDisplayPanel::InternalSetCheckBox( const CheckBox::Type checkBox, con
 	case CheckBox::WIREFRAME_OVERLAY:
 		{
 			m_pHLMV->GetState()->wireframeOverlay = bValue;
+			break;
+		}
+
+	case CheckBox::DRAW_SHADOWS:
+		{
+			m_pHLMV->GetState()->drawShadows = bValue;
+			break;
+		}
+
+	case CheckBox::FIX_SHADOW_Z_FIGHTING:
+		{
+			m_pHLMV->GetState()->fixShadowZFighting = bValue;
 			break;
 		}
 	

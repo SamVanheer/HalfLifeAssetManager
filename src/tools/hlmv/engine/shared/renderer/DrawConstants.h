@@ -32,6 +32,10 @@ enum DrawFlag : DrawFlags_t
 	*	Whether this is a view model
 	*/
 	IS_VIEW_MODEL		= Bit( 2 ),
+
+	DRAW_SHADOWS		= Bit(3), //! Whether to draw shadows
+
+	FIX_SHADOW_Z_FIGHTING = Bit(4) //! Whether to fix Shadow Z fighting
 };
 }
 }

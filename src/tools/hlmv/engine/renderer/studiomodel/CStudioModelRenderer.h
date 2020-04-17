@@ -110,6 +110,10 @@ private:
 
 	unsigned int DrawMeshes( const bool bWireframe, const SortedMesh_t* pMeshes, const mstudiotexture_t* pTextures, const short* pSkinRef );
 
+	unsigned int DrawShadows(const bool fixZFighting, const bool wireframe);
+
+	unsigned int InternalDrawShadows();
+
 	void Lighting( glm::vec3& lv, int bone, int flags, const glm::vec3& normal );
 	void Chrome( glm::vec2& chrome, int bone, const glm::vec3& normal );
 

@@ -772,6 +772,16 @@ void C3DView::DrawModel()
 			flags |= renderer::DrawFlag::IS_VIEW_MODEL;
 		}
 
+		if (m_pHLMV->GetState()->drawShadows)
+		{
+			flags |= renderer::DrawFlag::DRAW_SHADOWS;
+		}
+
+		if (m_pHLMV->GetState()->fixShadowZFighting)
+		{
+			flags |= renderer::DrawFlag::FIX_SHADOW_Z_FIGHTING;
+		}
+
 		pEntity->Draw( flags );
 	}
 

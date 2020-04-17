@@ -76,6 +76,10 @@ void CHLMVState::ResetToDefaults()
 
 	backfaceCulling = true;
 
+	drawShadows = false;
+
+	fixShadowZFighting = false;
+
 	SetUseWeaponOrigin( false );
 
 	showUVMap = false;
