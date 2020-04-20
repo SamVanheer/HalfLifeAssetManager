@@ -297,13 +297,19 @@ bool CMainWindow::SaveModel( const wxString& szFilename )
 
 bool CMainWindow::PromptSaveModel()
 {
-	if( m_pHLMV->GetState()->GetEntity() == nullptr )
+	auto entity = m_pHLMV->GetState()->GetEntity();
+
+	if(entity == nullptr)
 	{
 		wxMessageBox( "No model to save!" );
 		return false;
 	}
 
-	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "Half-Life Models (*.mdl)|*.mdl", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+	auto fileName{wxFileName::FileName(entity->GetModel()->GetFileName())};
+
+	fileName.MakeAbsolute();
+
+	wxFileDialog dlg( this, wxFileSelectorPromptStr, fileName.GetPath(), fileName.GetName(), "Half-Life Models (*.mdl)|*.mdl", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
 		return false;
