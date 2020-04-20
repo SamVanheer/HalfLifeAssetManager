@@ -80,6 +80,12 @@ private:
 	bool ShowUnsavedWarning();
 
 	void LoadModel( wxCommandEvent& event );
+
+	void LoadModelRelativeToCurrent(bool next);
+
+	void OnLoadPreviousModel(wxCommandEvent& event);
+	void OnLoadNextModel(wxCommandEvent& event);
+
 	void LoadBackgroundTexture( wxCommandEvent& event );
 	void LoadGroundTexture( wxCommandEvent& event );
 	void UnloadGroundTexture( wxCommandEvent& event );
@@ -109,6 +115,9 @@ private:
 private:
 	CModelViewerApp* m_pHLMV;
 	CMainPanel* m_pMainPanel;
+
+	wxMenuItem* m_pLoadPreviousModel;
+	wxMenuItem* m_pLoadNextModel;
 
 	ui::CwxRecentFiles m_RecentFiles;
 

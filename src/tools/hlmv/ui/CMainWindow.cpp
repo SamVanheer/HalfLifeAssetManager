@@ -1,3 +1,6 @@
+#include <cstdio>
+
+#include <wx/dir.h>
 #include <wx/filename.h>
 
 #include "wx/CwxOpenGL.h"
@@ -6,6 +9,8 @@
 #include "common/CCmdLineConfigDialog.h"
 #include "common/CProcessDialog.h"
 #include "wx/utility/wxUtil.h"
+
+#include "engine/shared/studiomodel/studio.h"
 
 #include "CModelViewerApp.h"
 
@@ -23,6 +28,8 @@ namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( CMainWindow, ui::CwxBaseFrame )
 	EVT_MENU( wxID_MAINWND_LOADMODEL, CMainWindow::LoadModel )
+	EVT_MENU(wxID_MAINWND_LOADPREVIOUSMODEL, CMainWindow::OnLoadPreviousModel)
+	EVT_MENU(wxID_MAINWND_LOADNEXTMODEL, CMainWindow::OnLoadNextModel)
 	EVT_MENU( wxID_MAINWND_LOADBACKGROUND, CMainWindow::LoadBackgroundTexture )
 	EVT_MENU( wxID_MAINWND_LOADGROUND, CMainWindow::LoadGroundTexture )
 	EVT_MENU( wxID_MAINWND_UNLOADGROUND, CMainWindow::UnloadGroundTexture )
@@ -59,6 +66,16 @@ CMainWindow::CMainWindow( CModelViewerApp* const pHLMV )
 
 	menuFile->Append( wxID_MAINWND_LOADMODEL, "&Load Model...",
 					  "Load a model" );
+
+	m_pLoadPreviousModel = menuFile->Append(wxID_MAINWND_LOADPREVIOUSMODEL,
+		"Load Previous Model\tLEFT", "Loads the previous model in the directory that the current model is contained in");
+
+	m_pLoadPreviousModel->Enable(false);
+
+	m_pLoadNextModel = menuFile->Append(wxID_MAINWND_LOADNEXTMODEL,
+		"Load Next Model\tRIGHT", "Loads the next model in the directory that the current model is contained in");
+
+	m_pLoadNextModel->Enable(false);
 
 	menuFile->AppendSeparator();
 
@@ -222,6 +239,9 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 	else
 		this->ClearTitleContent();
 
+	m_pLoadPreviousModel->Enable(bSuccess);
+	m_pLoadNextModel->Enable(bSuccess);
+
 	return bSuccess;
 }
 
@@ -233,7 +253,8 @@ bool CMainWindow::PromptLoadModel()
 			return false;
 	}
 
-	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString, "PC Half-Life Models (*.mdl)|*.mdl|PS2 Half-Life Models (*.dol)|*.dol|All Files (*.*)|*.*" );
+	wxFileDialog dlg( this, wxFileSelectorPromptStr, wxEmptyString, wxEmptyString,
+		"PC Half-Life Models (*.mdl)|*.mdl|PS2 Half-Life Models (*.dol)|*.dol|All Files (*.*)|*.*" );
 
 	if( dlg.ShowModal() == wxID_CANCEL )
 		return false;
@@ -377,7 +398,8 @@ void CMainWindow::DumpModelInfo()
 bool CMainWindow::ShowUnsavedWarning()
 {
 	//The question icon isn't supported due to Microsoft style guideline changes.
-	wxMessageDialog dlg( this, "You have made changes to the current model.\nAre you sure you want to load a new one?", "Model has changed", wxCENTRE | wxYES_NO | wxICON_EXCLAMATION );
+	wxMessageDialog dlg( this,
+		"You have made changes to the current model.\nAre you sure you want to load a new one?", "Model has changed", wxCENTRE | wxYES_NO | wxICON_EXCLAMATION );
 
 	return dlg.ShowModal() == wxID_YES;
 }
@@ -385,6 +407,96 @@ bool CMainWindow::ShowUnsavedWarning()
 void CMainWindow::LoadModel( wxCommandEvent& event )
 {
 	PromptLoadModel();
+}
+
+void CMainWindow::LoadModelRelativeToCurrent(bool next)
+{
+	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
+	{
+		auto fileName{wxFileName::FileName(entity->GetModel()->GetFileName())};
+
+		fileName.MakeAbsolute();
+
+		wxArrayString files;
+
+		wxDir::GetAllFiles(fileName.GetPath(), &files, "*.mdl", wxDIR_FILES | wxDIR_NO_FOLLOW);
+
+		const auto targetIndex = files.Index(fileName.GetFullPath());
+
+		if (targetIndex != -1)
+		{
+			//A valid model file must be:
+			//1. a studio model version 10 file with header id IDST
+			//2. not be a texture file (numbones == 0)
+			auto testValidFile = [](const wxString& fileName)
+			{
+				bool isValid = false;
+
+				if (FILE* file = fopen(fileName.c_str(), "rb"); file)
+				{
+					studiohdr_t header;
+
+					if (fread(&header, sizeof(studiohdr_t), 1, file) == 1)
+					{
+						if (!strncmp(reinterpret_cast<const char*>(&header.id), STUDIOMDL_HDR_ID, 4))
+						{
+							if (header.version == STUDIO_VERSION)
+							{
+								if (header.numbones > 0)
+								{
+									isValid = true;
+								}
+							}
+						}
+					}
+
+					fclose(file);
+				}
+
+				return isValid;
+			};
+
+			wxString result;
+
+			if (next)
+			{
+				for (auto index = targetIndex + 1; index < files.size(); ++index)
+				{
+					if (testValidFile(files[index]))
+					{
+						result = files[index];
+						break;
+					}
+				}
+			}
+			else
+			{
+				for (auto index = targetIndex - 1; index >= 0; --index)
+				{
+					if (testValidFile(files[index]))
+					{
+						result = files[index];
+						break;
+					}
+				}
+			}
+
+			if (!result.empty())
+			{
+				LoadModel(result);
+			}
+		}
+	}
+}
+
+void CMainWindow::OnLoadPreviousModel(wxCommandEvent& event)
+{
+	LoadModelRelativeToCurrent(false);
+}
+
+void CMainWindow::OnLoadNextModel(wxCommandEvent& event)
+{
+	LoadModelRelativeToCurrent(true);
 }
 
 void CMainWindow::LoadBackgroundTexture( wxCommandEvent& event )
