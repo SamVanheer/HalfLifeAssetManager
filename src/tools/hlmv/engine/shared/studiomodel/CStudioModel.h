@@ -67,6 +67,15 @@ private:
 	const int _version;
 };
 
+/**
+*	@brief Indicates that a studio model file is not a main header (e.g. trying to load texture header as a main header)
+*/
+class StudioModelIsNotMainHeader : public StudioModelException
+{
+public:
+	using StudioModelException::StudioModelException;
+};
+
 struct StudioDataDeleter
 {
 	void operator()(studiohdr_t* pointer) const

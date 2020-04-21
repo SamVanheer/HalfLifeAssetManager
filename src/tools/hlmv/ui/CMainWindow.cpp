@@ -433,7 +433,7 @@ void CMainWindow::LoadModelRelativeToCurrent(bool next)
 		{
 			//A valid model file must be:
 			//1. a studio model version 10 file with header id IDST
-			//2. not be a texture file (numbones == 0)
+			//2. not be a texture file (name[0] == '\0')
 			auto testValidFile = [](const wxString& fileName)
 			{
 				bool isValid = false;
@@ -448,7 +448,7 @@ void CMainWindow::LoadModelRelativeToCurrent(bool next)
 						{
 							if (header.version == STUDIO_VERSION)
 							{
-								if (header.numbones > 0)
+								if (header.name[0] != '\0')
 								{
 									isValid = true;
 								}

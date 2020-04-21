@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cctype>
 #include <filesystem>
 #include <iomanip>
 #include <memory>
@@ -405,6 +406,19 @@ std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename)
 
 	//Load the model
 	auto mainHeader = LoadStudioHeader<studiohdr_t>(pszFilename, false);
+
+	if (mainHeader->name[0] == '\0')
+	{
+		//Only the main hader sets the name, so this must be something else (probably texture header, but could be anything)
+		auto message = std::string{"The file \""} + pszFilename + "\" is not a studio model main header file";
+
+		if (!baseFileName.empty() && std::toupper(baseFileName.u8string().back()) == 'T')
+		{
+			message += " (it is probably a texture file)";
+		}
+
+		throw StudioModelIsNotMainHeader(message);
+	}
 
 	studio_ptr<studiohdr_t> textureHeader;
 
