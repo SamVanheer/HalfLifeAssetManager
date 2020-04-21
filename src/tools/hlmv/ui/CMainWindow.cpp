@@ -437,7 +437,7 @@ void CMainWindow::LoadModelRelativeToCurrent(bool next)
 
 		const auto targetIndex = files.Index(fileName.GetFullPath());
 
-		if (targetIndex != -1)
+		if (targetIndex != -1 && files.size() > 1)
 		{
 			//A valid model file must be:
 			//1. a studio model version 10 file with header id IDST
