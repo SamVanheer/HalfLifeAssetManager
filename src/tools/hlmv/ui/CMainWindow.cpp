@@ -474,8 +474,13 @@ void CMainWindow::LoadModelRelativeToCurrent(bool next)
 
 			if (next)
 			{
-				for (auto index = targetIndex + 1; index < files.size(); ++index)
+				for (auto index = targetIndex + 1; index != targetIndex; ++index)
 				{
+					if (index >= files.size())
+					{
+						index = 0;
+					}
+
 					if (testValidFile(files[index]))
 					{
 						result = files[index];
@@ -485,8 +490,13 @@ void CMainWindow::LoadModelRelativeToCurrent(bool next)
 			}
 			else
 			{
-				for (auto index = targetIndex - 1; index >= 0; --index)
+				for (auto index = targetIndex - 1; index != targetIndex; --index)
 				{
+					if (index < 0)
+					{
+						index = files.size() - 1;
+					}
+
 					if (testValidFile(files[index]))
 					{
 						result = files[index];
