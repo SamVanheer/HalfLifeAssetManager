@@ -419,6 +419,14 @@ void CMainWindow::LoadModelRelativeToCurrent(bool next)
 {
 	if (auto entity = m_pHLMV->GetState()->GetEntity(); entity)
 	{
+		if (m_pHLMV->GetState()->modelChanged)
+		{
+			if (!ShowUnsavedWarning())
+			{
+				return;
+			}
+		}
+
 		auto fileName{wxFileName::FileName(entity->GetModel()->GetFileName())};
 
 		fileName.MakeAbsolute();
