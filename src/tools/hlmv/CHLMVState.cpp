@@ -6,6 +6,8 @@
 
 #include "CHLMVState.h"
 
+#include "utility/IOUtils.h"
+
 namespace hlmv
 {
 const glm::vec3 CHLMVState::DEFAULT_ROTATION = glm::vec3( -90.0f, 0, -90.0f );
@@ -181,7 +183,7 @@ bool CHLMVState::DumpModelInfo( const char* const pszFilename )
 	if( !m_pEntity || !m_pEntity->GetModel() )
 		return false;
 
-	if( FILE* pFile = fopen( pszFilename, "w" ) )
+	if( FILE* pFile = utf8_fopen( pszFilename, "w" ) )
 	{
 		const auto pModel = m_pEntity->GetModel();
 

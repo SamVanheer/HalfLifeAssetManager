@@ -1,12 +1,16 @@
 #include <cassert>
 #include <cctype>
+#include <codecvt>
 #include <cstring>
 #include <cstdio>
 #include <algorithm>
+#include <locale>
 
 #include "shared/Logging.h"
 
 #include "CKeyvaluesLexer.h"
+
+#include "utility/IOUtils.h"
 
 namespace keyvalues
 {
@@ -47,7 +51,7 @@ CKeyvaluesLexer::CKeyvaluesLexer( const char* const pszFilename, const CKeyvalue
 {
 	assert( pszFilename );
 
-	FILE* pFile = fopen( pszFilename, "rb" );
+	FILE* pFile = utf8_fopen( pszFilename, "rb" );
 
 	if( pFile )
 	{
@@ -238,8 +242,12 @@ CKeyvaluesLexer::ReadResult CKeyvaluesLexer::ReadNext( const char*& pszBegin, co
 
 			pszBegin = m_pszCurrentPosition;
 
-			while( !isspace( *m_pszCurrentPosition ) && IsValidReadPosition() )
+			//isspace causes an assertion failure on UTF8 characters so assume they are all regular characters
+			while ((static_cast<unsigned char>(*m_pszCurrentPosition) > 127 || !isspace(*m_pszCurrentPosition))
+				&& IsValidReadPosition())
+			{
 				++m_pszCurrentPosition;
+			}
 
 			pszEnd = m_pszCurrentPosition;
 

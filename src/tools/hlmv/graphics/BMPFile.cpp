@@ -6,6 +6,8 @@
 
 #include "BMPFile.h"
 
+#include "utility/IOUtils.h"
+
 namespace graphics
 {
 namespace bmpfile
@@ -21,7 +23,7 @@ bool SaveBMPFile( const char* const pszFilename, const int iWidth, const int iHe
 	if( !pPixels || !( pPalette ) )
 		return false;
 
-	FILE* pFile = fopen( pszFilename, "wb" );
+	FILE* pFile = utf8_fopen( pszFilename, "wb" );
 
 	if( !pFile )
 		return false;

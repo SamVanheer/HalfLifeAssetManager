@@ -251,7 +251,7 @@ bool CMainPanel::LoadModel( const wxString& szFilename )
 
 	try
 	{
-		auto pModel = studiomdl::LoadStudioModel(szFilename.c_str());
+		auto pModel = studiomdl::LoadStudioModel(szFilename.utf8_str());
 	
 		CHLMVStudioModelEntity* pEntity = static_cast<CHLMVStudioModelEntity*>( CBaseEntity::Create( "studiomodel", glm::vec3(), glm::vec3(), false ) );
 

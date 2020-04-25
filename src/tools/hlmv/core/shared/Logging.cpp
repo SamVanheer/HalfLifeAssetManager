@@ -1,6 +1,7 @@
 #include <cassert>
 #include <chrono>
 
+#include "utility/IOUtils.h"
 #include "utility/StringUtils.h"
 
 #include "cvar/CCVar.h"
@@ -180,7 +181,7 @@ bool CLogging::OpenLogFile( const char* const pszFilename, const bool bAppend )
 
 	CloseLogFile();
 
-	m_pLogFile = fopen( pszFilename, bAppend ? "wa" : "w" );
+	m_pLogFile = utf8_fopen( pszFilename, bAppend ? "wa" : "w" );
 
 	if( m_pLogFile )
 	{

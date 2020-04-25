@@ -3,6 +3,7 @@
 
 #include "shared/Logging.h"
 #include "shared/Utility.h"
+#include "utility/IOUtils.h"
 #include "utility/StringUtils.h"
 
 #include "CFileSystem.h"
@@ -182,7 +183,7 @@ bool CFileSystem::FileExists( const char* const pszFilename ) const
 	if( !pszFilename || !( *pszFilename ) )
 		return false;
 
-	if( FILE* pFile = fopen( pszFilename, "r" ) )
+	if( FILE* pFile = utf8_fopen( pszFilename, "r" ) )
 	{
 		fclose( pFile );
 

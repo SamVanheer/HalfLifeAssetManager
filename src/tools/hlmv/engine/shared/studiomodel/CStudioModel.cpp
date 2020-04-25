@@ -9,6 +9,7 @@
 #include "shared/Platform.h"
 #include "shared/Logging.h"
 
+#include "utility/IOUtils.h"
 #include "utility/StringUtils.h"
 
 #include "cvar/CCVar.h"
@@ -347,7 +348,7 @@ template<typename T>
 studio_ptr<T> LoadStudioHeader(const char* const pszFilename, const bool bAllowSeqGroup)
 {
 	// load the model
-	FILE* pFile = fopen(pszFilename, "rb");
+	FILE* pFile = utf8_fopen(pszFilename, "rb");
 
 	if (!pFile)
 	{
@@ -396,7 +397,7 @@ studio_ptr<T> LoadStudioHeader(const char* const pszFilename, const bool bAllowS
 
 std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename)
 {
-	const std::filesystem::path fileName{pszFilename};
+	const std::filesystem::path fileName{std::filesystem::u8path(pszFilename)};
 
 	std::filesystem::path baseFileName{fileName};
 
@@ -473,7 +474,7 @@ bool SaveStudioModel(const char* const pszFilename, const CStudioModel* const pM
 	if (!pModel)
 		return false;
 
-	FILE* pFile = fopen(pszFilename, "wb");
+	FILE* pFile = utf8_fopen(pszFilename, "wb");
 
 	if (!pFile)
 		return false;
@@ -489,7 +490,7 @@ bool SaveStudioModel(const char* const pszFilename, const CStudioModel* const pM
 		return false;
 	}
 
-	const std::filesystem::path fileName{pszFilename};
+	const std::filesystem::path fileName{std::filesystem::u8path(pszFilename)};
 
 	auto baseFileName{fileName};
 
@@ -504,7 +505,7 @@ bool SaveStudioModel(const char* const pszFilename, const CStudioModel* const pM
 
 		texturename += "T.mdl";
 
-		pFile = fopen(texturename.u8string().c_str(), "wb");
+		pFile = utf8_fopen(texturename.u8string().c_str(), "wb");
 
 		if (!pFile)
 			return false;
@@ -531,7 +532,7 @@ bool SaveStudioModel(const char* const pszFilename, const CStudioModel* const pM
 				std::setfill('0') << std::setw(2) << i <<
 				std::setw(0) << ".mdl";
 
-			pFile = fopen(seqgroupname.str().c_str(), "wb");
+			pFile = utf8_fopen(seqgroupname.str().c_str(), "wb");
 
 			if (!pFile)
 				return false;

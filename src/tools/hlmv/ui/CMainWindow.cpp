@@ -20,6 +20,8 @@
 
 #include "settings/CCmdLineConfig.h"
 
+#include "utility/IOUtils.h"
+
 #include "CMainPanel.h"
 
 #include "CMainWindow.h"
@@ -214,7 +216,7 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 	{
 		wxMessageBox( wxString::Format( "The file \"%s\" does not exist.", szAbsFilename ) );
 
-		m_pHLMV->GetSettings()->GetRecentFiles()->Remove( std::string( szFilename.c_str() ) );
+		m_pHLMV->GetSettings()->GetRecentFiles()->Remove(szFilename.ToStdString());
 
 		m_RecentFiles.Refresh();
 
@@ -225,16 +227,13 @@ bool CMainWindow::LoadModel( const wxString& szFilename )
 
 	if( bSuccess )
 	{
-		const wxCStrData data = szAbsFilename.c_str();
-		const char* const pszAbsFilename = data.AsChar();
+		this->SetTitleContent(szAbsFilename);
 
-		this->SetTitleContent( pszAbsFilename );
-
-		m_pHLMV->GetSettings()->GetRecentFiles()->Add( pszAbsFilename );
+		m_pHLMV->GetSettings()->GetRecentFiles()->Add(szAbsFilename.ToStdString());
 
 		m_RecentFiles.Refresh();
 
-		Message( "Loaded model \"%s\"\n", pszAbsFilename );
+		Message( "Loaded model \"%s\"\n", szAbsFilename.utf8_str().data());
 	}
 	else
 		this->ClearTitleContent();
@@ -275,11 +274,11 @@ bool CMainWindow::SaveModel( const wxString& szFilename )
 
 	auto pModel = m_pHLMV->GetState()->GetEntity()->GetModel();
 
-	const bool bSuccess = studiomdl::SaveStudioModel(fullPath.c_str(), pModel );
+	const bool bSuccess = studiomdl::SaveStudioModel(fullPath.utf8_str(), pModel );
 
 	if( !bSuccess )
 	{
-		wxMessageBox( wxString::Format( "An error occurred while saving the model \"%s\"", fullPath.c_str() ) );
+		wxMessageBox( wxString::Format( "An error occurred while saving the model \"%s\"", fullPath ) );
 	}
 
 	if (bSuccess)
@@ -446,7 +445,7 @@ void CMainWindow::LoadModelRelativeToCurrent(bool next)
 			{
 				bool isValid = false;
 
-				if (FILE* file = fopen(fileName.c_str(), "rb"); file)
+				if (FILE* file = utf8_fopen(fileName.utf8_str(), "rb"); file)
 				{
 					studiohdr_t header;
 
@@ -684,7 +683,7 @@ void CMainWindow::OnCompileModel( wxCommandEvent& event )
 	}
 	else
 	{
-		Message( "Compiled QC file \"%s\"\n", szPath.c_str().AsChar() );
+		Message( "Compiled QC file \"%s\"\n", szPath.utf8_str().data() );
 	}
 }
 
@@ -762,7 +761,7 @@ void CMainWindow::OnDecompileModel( wxCommandEvent& event )
 	}
 	else
 	{
-		Message( "Decompiled MDL file \"%s\"\n", szPath.c_str().AsChar() );
+		Message( "Decompiled MDL file \"%s\"\n", szPath.utf8_str().data() );
 	}
 }
 

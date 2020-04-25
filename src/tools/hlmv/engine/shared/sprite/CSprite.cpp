@@ -5,6 +5,7 @@
 #include "shared/Const.h"
 
 #include "utility/ByteSwap.h"
+#include "utility/IOUtils.h"
 
 #include "graphics/Palette.h"
 
@@ -248,7 +249,7 @@ bool LoadSprite( const char* const pszFilename, msprite_t*& pSprite )
 
 	pSprite = nullptr;
 
-	FILE* pFile = fopen( pszFilename, "rb" );
+	FILE* pFile = utf8_fopen( pszFilename, "rb" );
 
 	if( !pFile )
 		return false;

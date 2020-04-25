@@ -5,6 +5,7 @@
 #include "shared/Logging.h"
 
 #include "utility/CEscapeSequences.h"
+#include "utility/IOUtils.h"
 
 #include "CKeyvalue.h"
 #include "CKeyvalueBlock.h"
@@ -38,7 +39,7 @@ bool CKeyvaluesWriter::Open( const char* const pszFilename )
 
 	Close();
 
-	m_pFile = fopen( pszFilename, "w" );
+	m_pFile = utf8_fopen( pszFilename, "w" );
 
 	strncpy( m_szFilename, pszFilename, sizeof( m_szFilename ) );
 	m_szFilename[ sizeof( m_szFilename ) - 1 ] = '\0';
