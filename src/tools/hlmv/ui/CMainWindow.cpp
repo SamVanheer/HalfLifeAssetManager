@@ -304,7 +304,7 @@ bool CMainWindow::PromptSaveModel()
 		return false;
 	}
 
-	auto fileName{wxFileName::FileName(entity->GetModel()->GetFileName())};
+	auto fileName{wxFileName::FileName(wxString::FromUTF8(entity->GetModel()->GetFileName().c_str()))};
 
 	fileName.MakeAbsolute();
 
@@ -426,7 +426,7 @@ void CMainWindow::LoadModelRelativeToCurrent(bool next)
 			}
 		}
 
-		auto fileName{wxFileName::FileName(entity->GetModel()->GetFileName())};
+		auto fileName{wxFileName::FileName(wxString::FromUTF8(entity->GetModel()->GetFileName().c_str()))};
 
 		fileName.MakeAbsolute();
 
@@ -836,7 +836,7 @@ void CMainWindow::OnKeyDown(wxKeyEvent& event)
 		{
 			auto pModel = pEntity->GetModel();
 
-			const wxString fileName = pModel->GetFileName();
+			const auto fileName{wxString::FromUTF8(pModel->GetFileName().c_str())};
 
 			LoadModel(fileName);
 		}
