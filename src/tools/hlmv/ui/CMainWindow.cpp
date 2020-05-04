@@ -157,21 +157,19 @@ CMainWindow::CMainWindow( CModelViewerApp* const pHLMV )
 
 	auto settings = m_pHLMV->GetSettings();
 
-	Maximize(settings->IsWindowMaximized());
+	//Always set position & size first so we're on the right display
+	const auto x = settings->GetWindowX();
+	const auto y = settings->GetWindowY();
+	const auto width = settings->GetWindowWidth();
+	const auto height = settings->GetWindowHeight();
 
-	if (!IsMaximized())
+	if (x != -1 && y != -1 && width != -1 && height != -1)
 	{
-		const auto x = settings->GetWindowX();
-		const auto y = settings->GetWindowY();
-		const auto width = settings->GetWindowWidth();
-		const auto height = settings->GetWindowHeight();
-
-		if (x != -1 && y != -1 && width != -1 && height != -1)
-		{
-			SetPosition(wxPoint(x, y));
-			SetSize(width, height);
-		}
+		SetPosition(wxPoint(x, y));
+		SetSize(width, height);
 	}
+
+	Maximize(settings->IsWindowMaximized());
 
 	if( ui::CMessagesWindow* pWindow = m_pHLMV->GetMessagesWindow() )
 	{
