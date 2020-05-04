@@ -473,8 +473,6 @@ void C3DView::MouseEvents( wxMouseEvent& event )
 				m_pMainPanel->GetTexturesPanel()->SetScale( static_cast<int>( m_flOldTextureScale + flDiff ) );
 			}
 		}
-
-		Refresh();
 	}
 	else
 	{
