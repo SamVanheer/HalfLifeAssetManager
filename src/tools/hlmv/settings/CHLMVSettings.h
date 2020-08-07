@@ -66,6 +66,10 @@ public:
 
 	void SetInvertVerticalDraggingDirection(bool value) { m_InvertVerticalDraggingDirection = value; }
 
+	bool ShouldCorrectSequenceGroupFileNames() const { return m_CorrectSequenceGroupFileNames; }
+
+	void SetShouldCorrectSequenceGroupFileNames(bool value) { m_CorrectSequenceGroupFileNames = value; }
+
 	/**
 	*	Gets the user defined ground color.
 	*/
@@ -250,6 +254,8 @@ private:
 
 	std::string m_CurrentCameraName;
 	std::string m_CurrentControlPanelName;
+
+	bool m_CorrectSequenceGroupFileNames = true;
 };
 }
 

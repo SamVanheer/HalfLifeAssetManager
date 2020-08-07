@@ -566,11 +566,6 @@ bool CModelViewerApp::PromptLoadModel()
 	return m_pMainWindow->PromptLoadModel();
 }
 
-bool CModelViewerApp::SaveModel( const char* const pszFilename )
-{
-	return m_pMainWindow->SaveModel( pszFilename );
-}
-
 bool CModelViewerApp::PromptSaveModel()
 {
 	return m_pMainWindow->PromptSaveModel();

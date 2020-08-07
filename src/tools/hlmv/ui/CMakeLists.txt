@@ -10,6 +10,8 @@ target_sources(${TARGET_NAME}
 		CMainWindow.h
 		CModelViewerApp.cpp
 		CModelViewerApp.h
+		CSaveModelDialog.cpp
+		CSaveModelDialog.h
 		CStudioTypesCheatSheet.cpp
 		CStudioTypesCheatSheet.h
 		MouseOpFlag.h

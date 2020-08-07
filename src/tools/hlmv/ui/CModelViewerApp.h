@@ -133,13 +133,6 @@ public:
 
 	bool PromptLoadModel();
 
-	/**
-	*	Saves the current model with the given filename.
-	*	@param pszFilename Filename to save the model as.
-	*	@return true if a model is currently loaded, and the model was successfully saved.
-	*/
-	bool SaveModel( const char* const pszFilename );
-
 	bool PromptSaveModel();
 
 	//Background and Ground textures

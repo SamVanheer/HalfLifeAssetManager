@@ -26,6 +26,8 @@
 
 #include "CMainWindow.h"
 
+#include "ui/CSaveModelDialog.h"
+
 namespace hlmv
 {
 wxBEGIN_EVENT_TABLE( CMainWindow, ui::CwxBaseFrame )
@@ -259,7 +261,7 @@ bool CMainWindow::PromptLoadModel()
 	return LoadModel( dlg.GetPath() );
 }
 
-bool CMainWindow::SaveModel( const wxString& szFilename )
+bool CMainWindow::SaveModel( const wxString& szFilename, bool correctSequenceGroupFileNames)
 {
 	if( !m_pHLMV->GetState()->GetEntity() )
 		return false;
@@ -270,26 +272,27 @@ bool CMainWindow::SaveModel( const wxString& szFilename )
 
 	const auto fullPath = absoluteFileName.GetFullPath();
 
-	auto pModel = m_pHLMV->GetState()->GetEntity()->GetModel();
-
-	const bool bSuccess = studiomdl::SaveStudioModel(fullPath.utf8_str(), pModel );
-
-	if( !bSuccess )
+	try
 	{
-		wxMessageBox( wxString::Format( "An error occurred while saving the model \"%s\"", fullPath ) );
-	}
+		auto pModel = m_pHLMV->GetState()->GetEntity()->GetModel();
 
-	if (bSuccess)
-	{
+		studiomdl::SaveStudioModel(fullPath.utf8_str(), *pModel, correctSequenceGroupFileNames);
+
 		m_pHLMV->GetState()->modelChanged = false;
 
 		//Update filename to match current model
 		pModel->SetFileName(fullPath.ToStdString());
 
 		SetTitleContent(fullPath);
+
+		return true;
+	}
+	catch (const studiomdl::StudioModelException& e)
+	{
+		wxMessageBox(wxString::Format("An error occurred while saving the model \"%s\":\n%s", fullPath, e.what()));
 	}
 
-	return bSuccess;
+	return false;
 }
 
 bool CMainWindow::PromptSaveModel()
@@ -302,16 +305,18 @@ bool CMainWindow::PromptSaveModel()
 		return false;
 	}
 
-	auto fileName{wxFileName::FileName(wxString::FromUTF8(entity->GetModel()->GetFileName().c_str()))};
+	CSaveModelDialog dlg(this, wxString::FromUTF8(entity->GetModel()->GetFileName().c_str()));
 
-	fileName.MakeAbsolute();
+	dlg.SetShouldCorrectSequenceGroupFileNames(m_pHLMV->GetSettings()->ShouldCorrectSequenceGroupFileNames());
 
-	wxFileDialog dlg( this, wxFileSelectorPromptStr, fileName.GetPath(), fileName.GetName(), "Half-Life Models (*.mdl)|*.mdl", wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
-
-	if( dlg.ShowModal() == wxID_CANCEL )
+	if (dlg.ShowModal() == wxID_CANCEL)
+	{
 		return false;
+	}
 
-	return SaveModel( dlg.GetPath() );
+	m_pHLMV->GetSettings()->SetShouldCorrectSequenceGroupFileNames(dlg.ShouldCorrectSequenceGroupFileNames());
+
+	return SaveModel(dlg.GetFileName(), dlg.ShouldCorrectSequenceGroupFileNames());
 }
 
 bool CMainWindow::LoadBackgroundTexture( const wxString& szFilename )

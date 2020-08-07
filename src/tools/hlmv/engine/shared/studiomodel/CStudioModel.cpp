@@ -466,20 +466,92 @@ std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename)
 		std::move(sequenceHeaders), std::move(textures));
 }
 
-bool SaveStudioModel(const char* const pszFilename, const CStudioModel* const pModel)
+void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool correctSequenceGroupFileNames)
 {
 	if (!pszFilename)
-		return false;
+	{
+		throw StudioModelException("Null filename provided");
+	}
 
-	if (!pModel)
-		return false;
+	if (!(*pszFilename))
+	{
+		throw StudioModelException("Empty filename provided");
+	}
+
+	studiohdr_t* const pStudioHdr = model.GetStudioHeader();
+
+	if (correctSequenceGroupFileNames)
+	{
+		std::filesystem::path baseFileName{pszFilename};
+
+		//Find the "models" directory to determine what the relative path is
+		auto relativeTo = baseFileName;
+
+		auto foundRelative = false;
+
+		//This will loop forever unless we test to see if relativeTo is the root path
+		while (!relativeTo.empty() && relativeTo != relativeTo.root_path())
+		{
+			relativeTo = relativeTo.parent_path();
+
+			if (relativeTo.stem() == "models")
+			{
+				relativeTo = relativeTo.parent_path();
+				foundRelative = true;
+				break;
+			}
+		}
+
+		if (!foundRelative)
+		{
+			throw StudioModelException("Could not find base directory \"models\" in model filename; needed to correct sequence group filenames");
+		}
+
+		std::error_code e;
+
+		baseFileName = std::filesystem::relative(baseFileName, relativeTo, e);
+
+		if (e)
+		{
+			throw StudioModelException("Could not determine base filename for model to correct sequence group filenames");
+		}
+
+		baseFileName.replace_extension();
+
+		const auto baseFileNameString = baseFileName.u8string();
+
+		std::stringstream seqgroupname;
+
+		//Group 0 is the main file and is never used to load files, and also doesn't have a filename set in the seqgroup structure
+		for (int i = 1; i < pStudioHdr->numseqgroups; i++)
+		{
+			seqgroupname.str({});
+
+			seqgroupname << baseFileNameString <<
+				std::setfill('0') << std::setw(2) << i <<
+				std::setw(0) << ".mdl";
+
+			const auto groupNameString = seqgroupname.str();
+
+			auto seqGroup = pStudioHdr->GetSequenceGroup(i);
+
+			if (groupNameString.length() >= sizeof(seqGroup->name))
+			{
+				throw StudioModelException("Sequence group filename is too long");
+			}
+
+			strncpy(seqGroup->name, groupNameString.c_str(), groupNameString.length());
+
+			seqGroup->name[sizeof(seqGroup->name) - 1] = '\0';
+		}
+	}
 
 	FILE* pFile = utf8_fopen(pszFilename, "wb");
 
 	if (!pFile)
-		return false;
-
-	const studiohdr_t* const pStudioHdr = pModel->GetStudioHeader();
+	{
+		throw StudioModelException("Could not open main file for writing");
+	}
 
 	bool bSuccess = fwrite(pStudioHdr, sizeof(byte), pStudioHdr->length, pFile) == pStudioHdr->length;
 
@@ -487,7 +559,7 @@ bool SaveStudioModel(const char* const pszFilename, const CStudioModel* const pM
 
 	if (!bSuccess)
 	{
-		return false;
+		throw StudioModelException("Error while writing to main file");
 	}
 
 	const std::filesystem::path fileName{std::filesystem::u8path(pszFilename)};
@@ -497,9 +569,9 @@ bool SaveStudioModel(const char* const pszFilename, const CStudioModel* const pM
 	baseFileName.replace_extension();
 
 	// write texture model
-	if (pModel->HasSeparateTextureHeader())
+	if (model.HasSeparateTextureHeader())
 	{
-		const studiohdr_t* const pTextureHdr = pModel->GetTextureHeader();
+		const studiohdr_t* const pTextureHdr = model.GetTextureHeader();
 
 		auto texturename = baseFileName;
 
@@ -508,14 +580,16 @@ bool SaveStudioModel(const char* const pszFilename, const CStudioModel* const pM
 		pFile = utf8_fopen(texturename.u8string().c_str(), "wb");
 
 		if (!pFile)
-			return false;
+		{
+			throw StudioModelException("Could not open texture file for writing");
+		}
 
 		bSuccess = fwrite(pTextureHdr, sizeof(byte), pTextureHdr->length, pFile) == pTextureHdr->length;
 		fclose(pFile);
 
 		if (!bSuccess)
 		{
-			return false;
+			throw StudioModelException("Error while writing to texture file");
 		}
 	}
 
@@ -535,21 +609,21 @@ bool SaveStudioModel(const char* const pszFilename, const CStudioModel* const pM
 			pFile = utf8_fopen(seqgroupname.str().c_str(), "wb");
 
 			if (!pFile)
-				return false;
+			{
+				throw StudioModelException("Could not open sequence file for writing");
+			}
 
-			const auto pAnimHdr = pModel->GetSeqGroupHeader(i - 1);
+			const auto pAnimHdr = model.GetSeqGroupHeader(i - 1);
 
 			bSuccess = fwrite(pAnimHdr, sizeof(byte), pAnimHdr->length, pFile) == pAnimHdr->length;
 			fclose(pFile);
 
 			if (!bSuccess)
 			{
-				return false;
+				throw StudioModelException("Error while writing to sequence file");
 			}
 		}
 	}
-
-	return true;
 }
 
 void ScaleMeshes(CStudioModel* pStudioModel, const float flScale)

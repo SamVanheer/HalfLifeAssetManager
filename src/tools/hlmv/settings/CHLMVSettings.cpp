@@ -90,6 +90,8 @@ void CHLMVSettings::Copy( const CHLMVSettings& other )
 
 	m_CurrentCameraName = other.m_CurrentCameraName;
 	m_CurrentControlPanelName = other.m_CurrentControlPanelName;
+
+	m_CorrectSequenceGroupFileNames = other.m_CorrectSequenceGroupFileNames;
 }
 
 void CHLMVSettings::ActiveConfigChanged( const std::shared_ptr<settings::CGameConfig>& oldConfig, const std::shared_ptr<settings::CGameConfig>& newConfig )
@@ -167,6 +169,11 @@ bool CHLMVSettings::LoadFromFile( const kv::Block& root )
 		if (auto invertVerticalDragging = settings->FindFirstChild<kv::KV>("invertVerticalDraggingDirection"))
 		{
 			SetInvertVerticalDraggingDirection(invertVerticalDragging->GetValue() == "true");
+		}
+
+		if (auto kv = settings->FindFirstChild<kv::KV>("correctSequenceGroupFileNames"); kv)
+		{
+			m_CorrectSequenceGroupFileNames = kv->GetValue() == "true";
 		}
 
 		LoadColorSetting( *settings, "groundColor", m_GroundColor );
@@ -286,6 +293,7 @@ bool CHLMVSettings::SaveToFile( kv::Writer& writer )
 	writer.WriteKeyvalue("useTimerForFrame", m_UseTimerForFrame ? "true" : "false");
 	writer.WriteKeyvalue("invertHorizontalDraggingDirection", m_InvertHorizontalDraggingDirection ? "true" : "false");
 	writer.WriteKeyvalue("invertVerticalDraggingDirection", m_InvertVerticalDraggingDirection ? "true" : "false");
+	writer.WriteKeyvalue("correctSequenceGroupFileNames", m_CorrectSequenceGroupFileNames ? "true" : "false");
 
 	SaveColorSetting( writer, "groundColor", m_GroundColor );
 	SaveColorSetting( writer, "backgroundColor", m_BackgroundColor );

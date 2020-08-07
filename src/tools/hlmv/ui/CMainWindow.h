@@ -47,7 +47,7 @@ public:
 	bool LoadModel( const wxString& szFilename );
 	bool PromptLoadModel();
 
-	bool SaveModel( const wxString& szFilename );
+	bool SaveModel( const wxString& szFilename, bool correctSequenceGroupFileNames );
 	bool PromptSaveModel();
 
 	bool LoadBackgroundTexture( const wxString& szFilename );

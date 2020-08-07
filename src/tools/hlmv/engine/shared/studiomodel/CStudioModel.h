@@ -106,10 +106,11 @@ std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename);
 /**
 *	Saves a studio model.
 *	@param pszFilename Name of the file to save the model to. This is the entire path, including the extension.
-*	@param pModel Model to save.
-*	@return true on success, false otherwise.
+*	@param model Model to save.
+* *	@param correctSequenceGroupFileNames Whether the sequence group filenames embedded in the main file should be corrected
+*	@exception StudioModelException If an error occurs or if the given data is invalid
 */
-bool SaveStudioModel( const char* const pszFilename, const CStudioModel* const pModel );
+void SaveStudioModel( const char* const pszFilename, CStudioModel& model, bool correctSequenceGroupFileNames );
 
 /**
 *	Container representing a studiomodel and its data.
