@@ -142,11 +142,11 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 	m_pEditEvents = new wxButton(pElemParent, wxID_SEQUENCE_EDITEVENTS, "Edit Events");
 
 	m_pEventInfo = new wxPanel(pElemParent);
-	m_pEventInfo->SetSize(wxSize(200, wxDefaultSize.GetY()));
+	m_pEventInfo->SetSize(wxSize(wxDefaultSize.GetWidth(), wxDefaultSize.GetHeight()));
 
 	m_pFrame = new wxStaticText(m_pEventInfo, wxID_ANY, "Frame: Undefined");
 	m_pEventId = new wxStaticText(m_pEventInfo, wxID_ANY, "Event: Undefined");
-	m_pOptions = new wxStaticText(m_pEventInfo, wxID_ANY, "Options: Undefined", wxDefaultPosition, wxSize(200, wxDefaultSize.GetHeight()));
+	m_pOptions = new wxStaticText(m_pEventInfo, wxID_ANY, "Options: Undefined", wxDefaultPosition, wxSize(wxDefaultSize.GetWidth(), wxDefaultSize.GetHeight()));
 	m_pType = new wxStaticText(m_pEventInfo, wxID_ANY, "Type: Undefined");
 
 	//Layout
@@ -232,7 +232,9 @@ CSequencesPanel::CSequencesPanel( wxWindow* pParent, CModelViewerApp* const pHLM
 
 		m_pEventInfo->SetSizer(eventInfoSizer);
 
-		sizer->Add(m_pEventInfo, wxGBPosition(0, 5), wxGBSpan(1, 1), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN);
+		sizer->Add(m_pEventInfo, wxGBPosition(0, 4), wxGBSpan(1, 1), wxEXPAND | wxRESERVE_SPACE_EVEN_IF_HIDDEN);
+
+		sizer->AddGrowableCol(4);
 	}
 
 	GetMainSizer()->Add(sizer);
