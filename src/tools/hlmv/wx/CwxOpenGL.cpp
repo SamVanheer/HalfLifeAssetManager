@@ -147,7 +147,7 @@ GLuint CwxOpenGL::glLoadImage( const char* const pszFilename )
 		return GL_INVALID_TEXTURE_ID;
 	}
 
-	wxImage image( pszFilename );
+	wxImage image(wxString::FromUTF8(pszFilename));
 
 	if( !image.IsOk() )
 	{
@@ -168,12 +168,12 @@ GLuint CwxOpenGL::glLoadImage( const char* const pszFilename )
 		{
 			for( int i = 0; i < 3; ++i )
 			{
-				pImageData[ ( x + y * image.GetWidth() ) * BPP + i ] = pData[ ( x + ( y ) * image.GetWidth() ) * 3 + i ];
+				pImageData[(((y * image.GetWidth()) + x) * BPP) + i] = pData[(((y * image.GetWidth()) + x) * 3) + i];
 			}
 
 			if( image.HasAlpha() )
 			{
-				pImageData[ ( x + y * image.GetWidth() ) * BPP + 3 ] = pAlpha[ x + ( y ) * image.GetWidth() ];
+				pImageData[(((y * image.GetWidth()) + x) * BPP) + 3] = pAlpha[(y * image.GetWidth()) + x];
 			}
 		}
 	}

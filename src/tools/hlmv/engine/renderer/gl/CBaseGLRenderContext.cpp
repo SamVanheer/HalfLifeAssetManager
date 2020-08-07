@@ -172,7 +172,16 @@ HTexture_t CBaseGLRenderContext::CreateTexture( const int mipmaps, const ImageFo
 
 	glBindTexture( GL_TEXTURE_2D, texture );
 
+	//Set pack alignment to 1 so images will load correctly if rows are not multiple of 4
+	GLint oldUnpackAlignment;
+
+	glGetIntegerv(GL_PACK_ALIGNMENT, &oldUnpackAlignment);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
 	glTexImage2D( GL_TEXTURE_2D, mipmaps, imageFormat, iWidth, iHeight, 0, imageFormat, GL_UNSIGNED_BYTE, pData );
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, oldUnpackAlignment);
 
 	//TODO: error handling.
 
