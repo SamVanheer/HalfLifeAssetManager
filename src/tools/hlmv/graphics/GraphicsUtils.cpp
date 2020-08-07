@@ -80,6 +80,8 @@ void DrawBackground( GLuint backgroundTexture )
 	if( backgroundTexture == GL_INVALID_TEXTURE_ID )
 		return;
 
+	glDisable(GL_BLEND);
+
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 
