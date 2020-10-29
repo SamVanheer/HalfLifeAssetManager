@@ -23,6 +23,11 @@ public:
 	virtual ~ISoundSystem() = 0 {}
 
 	/**
+	*	@brief Whether sound is available (i.e. is a device available)
+	*/
+	virtual bool IsSoundAvailable() const = 0;
+
+	/**
 	*	Initializes the sound system. Should be called on startup.
 	*	@return true on success, false otherwise.
 	*/

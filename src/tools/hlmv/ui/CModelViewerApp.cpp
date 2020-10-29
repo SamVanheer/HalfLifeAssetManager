@@ -18,7 +18,6 @@
 #include "game/entity/CBaseEntityList.h"
 
 #include "soundsystem/CSoundSystem.h"
-#include "soundsystem/DummySoundSystem.h"
 #include "soundsystem/ISoundSystem.h"
 
 #include "engine/renderer/gl/imode/CRenderContextIMode.h"
@@ -241,12 +240,8 @@ bool CModelViewerApp::Startup()
 
 	if (!m_pSoundSystem->Initialize(m_pFileSystem))
 	{
-		//No audio device available
-		//TODO: may need to check for errors specifically to distinguish between no device present and failure to start
-		m_pSoundSystem->Shutdown();
-		delete m_pSoundSystem;
-		
-		g_pSoundSystem = m_pSoundSystem = new soundsystem::DummySoundSystem();
+		FatalError("Failed to initialize sound system!\n");
+		return false;
 	}
 
 	wxInitAllImageHandlers();

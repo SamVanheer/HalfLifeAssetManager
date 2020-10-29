@@ -220,21 +220,19 @@ bool CSoundSystem::Initialize(filesystem::IFileSystem* filesystem)
 
 	m_Device = alcOpenDevice(nullptr);
 
-	if (!m_Device)
+	if (nullptr != m_Device)
 	{
-		return false;
+		m_Context = alcCreateContext(m_Device, nullptr);
+
+		if (!m_Context)
+		{
+			return false;
+		}
+
+		alcMakeContextCurrent(m_Context);
+
+		CheckALErrors();
 	}
-
-	m_Context = alcCreateContext(m_Device, nullptr);
-
-	if (!m_Context)
-	{
-		return false;
-	}
-
-	alcMakeContextCurrent(m_Context);
-
-	alGetError();
 
 	return true;
 }

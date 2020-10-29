@@ -53,6 +53,8 @@ public:
 	CSoundSystem();
 	~CSoundSystem();
 
+	bool IsSoundAvailable() const override final { return m_Device != nullptr; }
+
 	bool Initialize(filesystem::IFileSystem* filesystem) override final;
 	void Shutdown() override final;
 
