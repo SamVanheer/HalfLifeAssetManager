@@ -13,6 +13,6 @@ public:
 	~StudioModelEditWidget();
 
 private:
-	StudioModelAsset* _asset;
+	StudioModelAsset* const _asset;
 };
 }
