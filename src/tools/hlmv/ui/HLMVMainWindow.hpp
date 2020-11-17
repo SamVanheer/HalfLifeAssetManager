@@ -14,6 +14,9 @@ public:
 	HLMVMainWindow();
 	~HLMVMainWindow();
 
+private slots:
+	void OnShowAbout();
+
 private:
 	Ui_HLMVMainWindow _ui;
 };

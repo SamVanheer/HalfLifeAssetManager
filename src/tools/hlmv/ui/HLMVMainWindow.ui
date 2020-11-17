@@ -36,8 +36,15 @@
     <addaction name="ActionLoad"/>
     <addaction name="ActionSave"/>
    </widget>
+   <widget class="QMenu" name="MenuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="ActionAbout"/>
+   </widget>
    <addaction name="MenuFile"/>
    <addaction name="MenuTools"/>
+   <addaction name="MenuHelp"/>
   </widget>
   <action name="ActionOptions">
    <property name="text">
@@ -55,6 +62,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="ActionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

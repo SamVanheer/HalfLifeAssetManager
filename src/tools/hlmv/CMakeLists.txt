@@ -79,7 +79,7 @@ target_sources(${TARGET_NAME}
 		CHLMVState.cpp
 		CHLMVState.h
 		Credits.cpp
-		Credits.h
+		Credits.hpp
 		Main.cpp)
 
 add_subdirectory(application)
