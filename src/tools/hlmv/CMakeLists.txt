@@ -107,6 +107,11 @@ else()
 	copy_dependencies(${TARGET_NAME} external/GLEW/lib libGLEW.so.2.0.0)
 endif()
 
+add_custom_command(TARGET HLMV POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:OpenAL::OpenAL>
+        $<TARGET_FILE_DIR:HLMV>)
+
 # Copy the Qt libraries over automatically
 add_custom_command(TARGET HLMV POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
