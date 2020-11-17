@@ -24,7 +24,7 @@ namespace studiomdl
 namespace
 {
 //Note: multiple libraries can include this file and define this cvar. The first library to register theirs wins.
-//All others will point to that one. - Solokiller
+//All others will point to that one.
 static cvar::CCVar r_filtertextures("r_filtertextures", cvar::CCVarArgsBuilder().FloatValue(1).HelpInfo("Whether to filter textures or not"));
 
 static cvar::CCVar r_powerof2textures("r_powerof2textures",

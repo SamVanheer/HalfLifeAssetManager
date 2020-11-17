@@ -34,7 +34,7 @@
 
 #include "CModelViewerApp.h"
 
-//TODO: this is temporary until the renderers can be moved into contexts - Solokiller
+//TODO: this is temporary until the renderers can be moved into contexts
 namespace sprite
 {
 class ISpriteRenderer;
@@ -249,7 +249,7 @@ bool CModelViewerApp::Startup()
 	m_pState = new CHLMVState();
 	m_pSettings = new CHLMVSettings(m_pFileSystem);
 
-	//TODO: fix on Linux - Solokiller
+	//TODO: fix on Linux
 	m_ToolIcon = wxICON(HLMV_ICON);
 
 	SetEntityList(&g_EntityList);

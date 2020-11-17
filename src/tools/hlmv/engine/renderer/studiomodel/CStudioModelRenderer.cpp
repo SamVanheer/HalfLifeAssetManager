@@ -133,7 +133,7 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 
 	if( flags & renderer::DrawFlag::WIREFRAME_OVERLAY )
 	{
-		//TODO: restore render mode after this? - Solokiller
+		//TODO: restore render mode after this?
 		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		glDisable( GL_TEXTURE_2D );
 		glDisable( GL_CULL_FACE );
@@ -1058,7 +1058,7 @@ unsigned int CStudioModelRenderer::DrawMeshes( const bool bWireframe, const Sort
 
 	unsigned int uiDrawnPolys = 0;
 
-	//Polygons may overlap, so make sure they can blend together. - Solokiller
+	//Polygons may overlap, so make sure they can blend together.
 	glDepthFunc( GL_LEQUAL );
 
 	for( int j = 0; j < m_pModel->nummesh; j++ )

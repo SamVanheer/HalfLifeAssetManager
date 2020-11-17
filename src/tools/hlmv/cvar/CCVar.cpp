@@ -18,7 +18,6 @@ static char* CreateStringValue( const char* const pszFormat, const T value )
 {
 	assert( pszFormat );
 
-	//Get buffer size.
 	size_t uiSize = static_cast<size_t>( snprintf( nullptr, 0, pszFormat, value ) );
 
 	//Avoid overflow.
@@ -29,7 +28,6 @@ static char* CreateStringValue( const char* const pszFormat, const T value )
 
 	const int iRet = snprintf( pszValue, uiSize, pszFormat, value );
 
-	//Fallback
 	if( iRet < 0 )
 	{
 		pszValue[ 0 ] = '\0';
@@ -201,7 +199,6 @@ void CCVar::SetStringValue( const char* pszValue )
 
 	Clamp( m_flValue );
 
-	//Value was clamped, modify string.
 	if( m_flValue != flValue )
 	{
 		m_pszValue = CreateStringValue( "%.2f", m_flValue );
@@ -256,7 +253,6 @@ void CCVar::ValueChanged( const char* pszOldValue, const float flOldValue )
 	if( !pszOldValue )
 		pszOldValue = "";
 
-	//Invoke the callback.
 	switch( m_CallbackType )
 	{
 	case CallbackType::FUNCTION:

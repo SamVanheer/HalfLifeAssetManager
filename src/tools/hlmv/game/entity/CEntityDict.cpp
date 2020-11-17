@@ -11,7 +11,7 @@ CEntityDict& GetEntityDict()
 
 CEntityDict& CEntityDict::GetInstance()
 {
-	//Changed to use this approach so the instance is constructed the first time something needs the dictionary. - Solokiller
+	//Changed to use this approach so the instance is constructed the first time something needs the dictionary.
 	static CEntityDict instance;
 
 	return instance;
