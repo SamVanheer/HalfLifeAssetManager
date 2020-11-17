@@ -62,7 +62,8 @@ target_link_libraries(${TARGET_NAME}
 		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:dl>
 		Ogg
 		Vorbis
-		VorbisFile)
+		VorbisFile
+		EnTT::EnTT)
 
 target_compile_options(${TARGET_NAME}
 	PRIVATE

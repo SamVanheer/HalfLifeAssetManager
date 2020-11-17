@@ -27,4 +27,9 @@ function(copy_qt_dependencies target_name plugins)
 	endforeach()
 endfunction()
 
+add_library(EnTT INTERFACE)
+add_library(EnTT::EnTT ALIAS EnTT)
+
+target_include_directories(EnTT INTERFACE "../../external/EnTT/include")
+
 add_subdirectory(hlmv)
