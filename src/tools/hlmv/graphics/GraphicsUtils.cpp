@@ -3,6 +3,7 @@
 #include <charconv>
 #include <cstring>
 
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "shared/Const.h"
@@ -125,7 +126,9 @@ void SetProjection( const float flFOV, const int iWidth, const int iHeight )
 {
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	gluPerspective( flFOV, ( GLfloat ) iWidth / ( GLfloat ) iHeight, 1.0f, 1 << 24 );
+	//TODO: verify that this still works
+	auto matrix = glm::perspective(glm::radians(flFOV), (float)iWidth / (float)iHeight, 1.0f, static_cast<float>(1 << 24));
+	glLoadMatrixf(glm::value_ptr(matrix));
 }
 
 void DrawBox( const glm::vec3* const v )
