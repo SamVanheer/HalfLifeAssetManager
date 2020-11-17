@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ui::OptionsDialog</class>
+ <widget class="QDialog" name="ui::OptionsDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Options</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="OptionsPages"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QDialogButtonBox" name="DialogButtons">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>DialogButtons</sender>
+   <signal>accepted()</signal>
+   <receiver>ui::OptionsDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>147</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DialogButtons</sender>
+   <signal>rejected()</signal>
+   <receiver>ui::OptionsDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>147</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

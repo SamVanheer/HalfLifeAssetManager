@@ -3,6 +3,7 @@
 #include "Credits.hpp"
 
 #include "ui/HLMVMainWindow.hpp"
+#include "ui/options/OptionsDialog.hpp"
 
 namespace ui
 {
@@ -11,10 +12,18 @@ HLMVMainWindow::HLMVMainWindow()
 {
 	_ui.setupUi(this);
 
+	connect(_ui.ActionOptions, &QAction::triggered, this, &HLMVMainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &HLMVMainWindow::OnShowAbout);
 }
 
 HLMVMainWindow::~HLMVMainWindow() = default;
+
+void HLMVMainWindow::OnOpenOptionsDialog()
+{
+	options::OptionsDialog dialog{this};
+
+	dialog.exec();
+}
 
 void HLMVMainWindow::OnShowAbout()
 {

@@ -3,3 +3,5 @@ target_sources(HLMV
 		HLMVMainWindow.cpp
 		HLMVMainWindow.hpp
 		HLMVMainWindow.ui)
+
+add_subdirectory(options)
