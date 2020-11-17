@@ -13,7 +13,13 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="CentralWidget"/>
+  <widget class="QWidget" name="CentralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="AssetTabs"/>
+    </item>
+   </layout>
+  </widget>
   <widget class="QMenuBar" name="MenuBar">
    <property name="geometry">
     <rect>

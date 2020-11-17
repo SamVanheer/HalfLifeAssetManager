@@ -4,4 +4,5 @@ target_sources(HLMV
 		HLMVMainWindow.hpp
 		HLMVMainWindow.ui)
 
+add_subdirectory(assets)
 add_subdirectory(options)

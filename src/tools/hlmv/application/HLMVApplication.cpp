@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <memory>
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -13,6 +14,9 @@
 
 #include "application/HLMVApplication.hpp"
 #include "ui/HLMVMainWindow.hpp"
+
+#include "ui/assets/Assets.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
 int HLMVApplication::Run(int argc, char* argv[])
 {
@@ -89,7 +93,11 @@ int HLMVApplication::Run(int argc, char* argv[])
 		connect(singleInstance.get(), &SingleInstance::FileNameReceived, this, &HLMVApplication::OnFileNameReceived);
 	}
 
-	_mainWindow = new ui::HLMVMainWindow();
+	auto assetProviderRegistry = std::make_unique<ui::assets::AssetProviderRegistry>();
+
+	assetProviderRegistry->AddProvider(std::make_unique<ui::assets::studiomodel::StudioModelAssetProvider>());
+
+	_mainWindow = new ui::HLMVMainWindow(std::move(assetProviderRegistry));
 
 	//TODO: doesn't actually show maximized
 	_mainWindow->showMaximized();
