@@ -2,9 +2,10 @@
 
 namespace tools
 {
-wxString GetSharedCredits()
+std::string GetSharedCredits()
 {
-	return wxString::Format( 
+	//TODO: need to add Qt license
+	return std::string( 
 		"This product contains software technology licensed from Id Software, Inc.\n"
 		"( \"Id Technology\" ). Id Technology © 1996 Id Software, Inc.\n"
 		"All Rights Reserved.\n\n"
@@ -21,10 +22,6 @@ wxString GetSharedCredits()
 		"All rights reserved.\n\n"
 		"Contains The OpenGL Mathemathics library (GLM)\n"
 		"Copyright © 2005 - 2016 G-Truc Creation\n\n"
-		"Uses wxWidgets %d.%d.%d\n\n"
-		"Build Date: %s\n",
-		wxMAJOR_VERSION, wxMINOR_VERSION, wxRELEASE_NUMBER,
-		__DATE__
-	);
+		"Build Date: ") + __DATE__ + "\n";
 }
 }

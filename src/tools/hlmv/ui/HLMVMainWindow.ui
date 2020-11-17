@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ui::HLMVMainWindow</class>
+ <widget class="QMainWindow" name="ui::HLMVMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="CentralWidget"/>
+  <widget class="QMenuBar" name="MenuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="MenuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="ActionOptions"/>
+   </widget>
+   <widget class="QMenu" name="MenuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="ActionLoad"/>
+    <addaction name="ActionSave"/>
+   </widget>
+   <addaction name="MenuFile"/>
+   <addaction name="MenuTools"/>
+  </widget>
+  <action name="ActionOptions">
+   <property name="text">
+    <string>Options</string>
+   </property>
+  </action>
+  <action name="ActionLoad">
+   <property name="text">
+    <string>Load...</string>
+   </property>
+  </action>
+  <action name="ActionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
