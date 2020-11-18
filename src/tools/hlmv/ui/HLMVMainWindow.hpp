@@ -5,6 +5,7 @@
 
 #include <QMainWindow>
 #include <QString>
+#include <QTabWidget>
 
 #include "ui_HLMVMainWindow.h"
 
@@ -49,6 +50,8 @@ private:
 	};
 
 	Ui_HLMVMainWindow _ui;
+
+	QTabWidget* _assetTabs;
 
 	std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
 

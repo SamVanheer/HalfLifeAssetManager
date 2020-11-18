@@ -15,6 +15,13 @@ HLMVMainWindow::HLMVMainWindow(std::unique_ptr<assets::IAssetProviderRegistry>&&
 {
 	_ui.setupUi(this);
 
+	_assetTabs = new QTabWidget(this);
+
+	//Eliminate the border on the sides so the scene widget takes up all horizontal space
+	_assetTabs->setStyleSheet("QTabWidget::pane { padding: 0px; }");
+
+	setCentralWidget(_assetTabs);
+
 	connect(_ui.ActionLoad, &QAction::triggered, this, &HLMVMainWindow::OnOpenLoadAssetDialog);
 	connect(_ui.ActionOptions, &QAction::triggered, this, &HLMVMainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &HLMVMainWindow::OnShowAbout);
@@ -65,11 +72,11 @@ void HLMVMainWindow::LoadAsset(const QString& fileName)
 	{
 		auto editWidget = asset->CreateEditWidget();
 
-		const auto index = _ui.AssetTabs->addTab(editWidget, fileName);
+		const auto index = _assetTabs->addTab(editWidget, fileName);
 
 		_openAssets.emplace_back(std::move(asset), editWidget);
 
-		_ui.AssetTabs->setCurrentIndex(index);
+		_assetTabs->setCurrentIndex(index);
 	}
 }
 }
