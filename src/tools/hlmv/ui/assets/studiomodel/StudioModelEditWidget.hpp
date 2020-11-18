@@ -1,8 +1,13 @@
 #pragma once
 
+#include <QTabWidget>
 #include <QWidget>
 
-namespace ui::assets::studiomodel
+namespace ui
+{
+class SceneWidget;
+
+namespace assets::studiomodel
 {
 class StudioModelAsset;
 
@@ -14,5 +19,10 @@ public:
 
 private:
 	StudioModelAsset* const _asset;
+
+	SceneWidget* _sceneWidget;
+
+	QTabWidget* _dockPanels;
 };
+}
 }

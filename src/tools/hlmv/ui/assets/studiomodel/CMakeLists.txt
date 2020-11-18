@@ -4,3 +4,5 @@ target_sources(HLMV
 		StudioModelAsset.hpp
 		StudioModelEditWidget.cpp
 		StudioModelEditWidget.hpp)
+
+add_subdirectory(dockpanels)
