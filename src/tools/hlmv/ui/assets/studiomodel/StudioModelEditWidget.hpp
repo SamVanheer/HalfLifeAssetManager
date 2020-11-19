@@ -17,6 +17,11 @@ namespace ui
 class EditorUIContext;
 class SceneWidget;
 
+namespace camera_operators
+{
+class CameraOperator;
+}
+
 namespace assets::studiomodel
 {
 class StudioModelAsset;
@@ -27,8 +32,10 @@ public:
 	StudioModelEditWidget(EditorUIContext* editorContext, StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelEditWidget();
 
-public slots:
+private slots:
 	void OnTick();
+
+	void OnMouseEvent(QMouseEvent* event);
 
 private:
 	StudioModelAsset* const _asset;
@@ -39,6 +46,9 @@ private:
 	SceneWidget* _sceneWidget;
 
 	QTabWidget* _dockPanels;
+
+	//TODO: temporary; will need to be set up somewhere else eventually
+	std::unique_ptr<camera_operators::CameraOperator> _cameraOperator;
 };
 }
 }

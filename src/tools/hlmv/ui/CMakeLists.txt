@@ -9,4 +9,5 @@ target_sources(HLMV
 		SceneWidget.hpp)
 
 add_subdirectory(assets)
+add_subdirectory(camera_operators)
 add_subdirectory(options)

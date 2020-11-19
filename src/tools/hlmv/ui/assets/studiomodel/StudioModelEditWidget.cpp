@@ -14,6 +14,9 @@
 
 #include "ui/assets/studiomodel/dockpanels/StudioModelDisplayPanel.hpp"
 
+#include "ui/camera_operators/ArcBallCameraOperator.hpp"
+#include "ui/camera_operators/CameraOperator.hpp"
+
 namespace ui::assets::studiomodel
 {
 StudioModelEditWidget::StudioModelEditWidget(EditorUIContext* editorContext, StudioModelAsset* asset, QWidget* parent)
@@ -33,6 +36,8 @@ StudioModelEditWidget::StudioModelEditWidget(EditorUIContext* editorContext, Stu
 
 		_scene->SetEntity(entity);
 	}
+
+	_cameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>();
 
 	_sceneWidget = new SceneWidget(_scene.get(), this);
 
@@ -57,6 +62,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorUIContext* editorContext, Stu
 
 	//Listen to the main timer to update as needed
 	connect(editorContext, &EditorUIContext::Tick, this, &StudioModelEditWidget::OnTick);
+	connect(_sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelEditWidget::OnMouseEvent);
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
@@ -66,5 +72,10 @@ void StudioModelEditWidget::OnTick()
 	_scene->Tick();
 
 	_sceneWidget->requestUpdate();
+}
+
+void StudioModelEditWidget::OnMouseEvent(QMouseEvent* event)
+{
+	_cameraOperator->MouseEvent(*_scene->GetCamera(), *event);
 }
 }

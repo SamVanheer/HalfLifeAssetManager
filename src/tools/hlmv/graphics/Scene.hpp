@@ -33,6 +33,8 @@ public:
 
 	EntityContext* GetEntityContext() const { return _entityContext.get(); }
 
+	CCamera* GetCamera() { return &_camera; }
+
 	void UpdateWindowSize(unsigned int width, unsigned int height)
 	{
 		//TODO: recreate window sized resources
@@ -91,6 +93,8 @@ private:
 
 	std::unique_ptr<EntityContext> _entityContext;
 
+	CCamera _camera;
+
 	unsigned int _windowWidth = 0, _windowHeight = 0;
 
 	glm::vec3 _backgroundColor{0.5f, 0.5f, 0.5f};
@@ -99,8 +103,6 @@ private:
 	bool _showTexture = false;
 
 	unsigned int _drawnPolygonsCount = 0;
-
-	CCamera _camera;
 
 	CHLMVStudioModelEntity* _entity{};
 };
