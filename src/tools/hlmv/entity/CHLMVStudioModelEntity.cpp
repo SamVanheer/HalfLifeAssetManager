@@ -3,8 +3,6 @@
 
 #include "cvar/CCVar.h"
 
-#include "../CHLMVState.h"
-
 #include "CHLMVStudioModelEntity.h"
 
 //TODO: remove
@@ -74,8 +72,11 @@ void CHLMVStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 
 void CHLMVStudioModelEntity::AnimThink()
 {
+	//TODO: replace
+#if false
 	if( !m_pState->playSequence )
 		return;
+#endif
 
 	const float flTime = AdvanceFrame( 0.0f, 0.1f );
 

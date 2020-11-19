@@ -3,11 +3,6 @@
 
 #include "game/entity/CStudioModelEntity.h"
 
-namespace hlmv
-{
-class CHLMVState;
-}
-
 class CHLMVStudioModelEntity : public CStudioModelEntity
 {
 public:
@@ -21,8 +16,6 @@ public:
 	virtual void HandleAnimEvent( const CAnimEvent& event ) override;
 
 	void AnimThink();
-
-	hlmv::CHLMVState* m_pState = nullptr;
 };
 
 #endif //HLMV_ENTITY_CHLMVSTUDIOMODELENTITY_H

@@ -77,8 +77,6 @@ target_link_options(${TARGET_NAME}
 target_sources(${TARGET_NAME}
 	PRIVATE
 		$<$<CXX_COMPILER_ID:MSVC>:hlmv.rc>
-		CHLMVState.cpp
-		CHLMVState.h
 		Credits.cpp
 		Credits.hpp
 		Main.cpp)
