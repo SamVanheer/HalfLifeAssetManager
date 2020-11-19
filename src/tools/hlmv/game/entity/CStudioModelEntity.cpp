@@ -70,10 +70,10 @@ float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )
 
 	if( dt == 0.0 )
 	{
-		dt = ( WorldTime.GetCurrentTime() - m_flAnimTime );
+		dt = ( GetContext()->WorldTime->GetCurrentTime() - m_flAnimTime );
 		if( dt <= 0.001 )
 		{
-			m_flAnimTime = WorldTime.GetCurrentTime();
+			m_flAnimTime = GetContext()->WorldTime->GetCurrentTime();
 			return 0.0;
 		}
 	}
@@ -135,7 +135,7 @@ float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )
 		}
 	}
 
-	m_flAnimTime = WorldTime.GetCurrentTime();
+	m_flAnimTime = GetContext()->WorldTime->GetCurrentTime();
 
 	return dt;
 }
@@ -241,7 +241,7 @@ int CStudioModelEntity::SetFrame( const int iFrame )
 		m_flFrame -= ( int ) ( m_flFrame / ( pseqdesc->numframes - 1 ) ) * ( pseqdesc->numframes - 1 );
 	}
 
-	m_flAnimTime = WorldTime.GetCurrentTime();
+	m_flAnimTime = GetContext()->WorldTime->GetCurrentTime();
 
 	return static_cast<int>( m_flFrame );
 }

@@ -5,6 +5,7 @@
 
 class CBaseEntity;
 class CBaseEntityList;
+class CWorldTime;
 
 /**
 *	Manages entities.
@@ -12,7 +13,7 @@ class CBaseEntityList;
 class CEntityManager final
 {
 public:
-	CEntityManager(std::unique_ptr<CBaseEntityList>&& entityList);
+	CEntityManager(std::unique_ptr<CBaseEntityList>&& entityList, CWorldTime* worldTime);
 	~CEntityManager();
 
 	CBaseEntityList* GetEntityList() const { return _entityList.get(); }
@@ -62,6 +63,7 @@ public:
 
 private:
 	std::unique_ptr<CBaseEntityList> _entityList;
+	CWorldTime* const _worldTime;
 
 	bool m_bMapRunning = false;
 

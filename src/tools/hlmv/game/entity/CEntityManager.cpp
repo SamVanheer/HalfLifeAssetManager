@@ -8,8 +8,9 @@
 
 #include "CEntityManager.h"
 
-CEntityManager::CEntityManager(std::unique_ptr<CBaseEntityList>&& entityList)
+CEntityManager::CEntityManager(std::unique_ptr<CBaseEntityList>&& entityList, CWorldTime* worldTime)
 	: _entityList(std::move(entityList))
+	, _worldTime(worldTime)
 {
 	assert(nullptr != _entityList);
 }
@@ -51,11 +52,11 @@ void CEntityManager::RunFrame()
 
 		if( pEntity->AnyFlagsSet( entity::FL_ALWAYSTHINK ) ||
 			( pEntity->GetNextThinkTime() != 0 && 
-			pEntity->GetNextThinkTime() <= WorldTime.GetCurrentTime() && 
-			( WorldTime.GetCurrentTime() - WorldTime.GetFrameTime() ) >= pEntity->GetLastThinkTime() ) )
+			pEntity->GetNextThinkTime() <= _worldTime->GetCurrentTime() && 
+			(_worldTime->GetCurrentTime() - _worldTime->GetFrameTime() ) >= pEntity->GetLastThinkTime() ) )
 		{
 			//Set first so entities can do lastthink + delay.
-			pEntity->SetLastThinkTime( WorldTime.GetCurrentTime() );
+			pEntity->SetLastThinkTime(_worldTime->GetCurrentTime() );
 			pEntity->SetNextThinkTime( 0 );
 
 			pEntity->Think();

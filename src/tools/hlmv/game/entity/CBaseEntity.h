@@ -24,6 +24,7 @@ class IStudioModelRenderer;
 class CBaseEntity;
 class CBaseEntityList;
 class CEntityManager;
+class CWorldTime;
 
 /**
 *	Pointer to member function used for think methods.
@@ -33,12 +34,14 @@ using ThinkFunc_t = void ( CBaseEntity::* )();
 struct EntityContext final
 {
 	//TODO: improve this
+	CWorldTime* const WorldTime;
 	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
 	CBaseEntityList* const EntityList;
 	CEntityManager* const EntityManager;
 
-	EntityContext(studiomdl::IStudioModelRenderer* studioModelRenderer, CBaseEntityList* entityList, CEntityManager* entityManager)
-		: StudioModelRenderer(studioModelRenderer)
+	EntityContext(CWorldTime* worldTime, studiomdl::IStudioModelRenderer* studioModelRenderer, CBaseEntityList* entityList, CEntityManager* entityManager)
+		: WorldTime(worldTime)
+		, StudioModelRenderer(studioModelRenderer)
 		, EntityList(entityList)
 		, EntityManager(entityManager)
 	{

@@ -47,7 +47,7 @@ void CSpriteEntity::Draw( renderer::DrawFlags_t flags )
 
 void CSpriteEntity::AnimThink()
 {
-	m_flFrame += WorldTime.GetFrameTime() * 10;
+	m_flFrame += GetContext()->WorldTime->GetFrameTime() * 10;
 
 	if( m_flFrame >= m_pSprite->numframes )
 		m_flFrame = 0;

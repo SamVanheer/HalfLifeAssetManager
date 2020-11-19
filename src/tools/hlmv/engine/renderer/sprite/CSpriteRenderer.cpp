@@ -19,7 +19,8 @@ namespace sprite
 {
 const float CSpriteRenderer::DEFAULT_FRAMERATE = 10;
 
-CSpriteRenderer::CSpriteRenderer()
+CSpriteRenderer::CSpriteRenderer(CWorldTime* worldTime)
+	: _worldTime(worldTime)
 {
 }
 
@@ -58,7 +59,7 @@ void CSpriteRenderer::DrawSprite( const CSpriteRenderInfo* pRenderInfo, const re
 
 void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const float flWidth, const float flHeight, const msprite_t* pSprite, const renderer::DrawFlags_t flags )
 {
-	const float flFrame = static_cast<float>( fmod( WorldTime.GetCurrentTime() * DEFAULT_FRAMERATE, pSprite->numframes ) );
+	const float flFrame = static_cast<float>( fmod(_worldTime->GetCurrentTime() * DEFAULT_FRAMERATE, pSprite->numframes ) );
 
 	//TODO: calculate frame
 	DrawSprite( { flX, flY, 0 }, { flWidth, flHeight }, pSprite, flFrame, flags );
@@ -68,7 +69,7 @@ void CSpriteRenderer::DrawSprite2D( const float flX, const float flY, const mspr
 {
 	assert( pSprite );
 
-	const int iFrame = static_cast<int>( fmod( WorldTime.GetCurrentTime() * DEFAULT_FRAMERATE, pSprite->numframes ) );
+	const int iFrame = static_cast<int>( fmod(_worldTime->GetCurrentTime() * DEFAULT_FRAMERATE, pSprite->numframes ) );
 
 	//TODO: calculate frame
 	const auto& framedesc = pSprite->frames[ iFrame ];

@@ -74,7 +74,4 @@ private:
 	double m_flPrevRealTime = 0.0f;
 };
 
-//TODO: this should be managed by the application, not the core library.
-extern CWorldTime WorldTime;
-
 #endif //COMMON_CWORLDTIME_H

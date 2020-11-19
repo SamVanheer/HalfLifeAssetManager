@@ -10,6 +10,7 @@
 
 class CEntityManager;
 class CHLMVStudioModelEntity;
+class CWorldTime;
 struct EntityContext;
 
 namespace studiomdl
@@ -70,6 +71,8 @@ public:
 
 	void Shutdown();
 
+	void Tick();
+
 	void Draw();
 
 private:
@@ -81,6 +84,8 @@ private:
 
 private:
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
+
+	std::unique_ptr<CWorldTime> _worldTime;
 
 	std::unique_ptr<CEntityManager> _entityManager;
 

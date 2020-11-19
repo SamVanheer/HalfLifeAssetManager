@@ -4,6 +4,9 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "core/shared/CWorldTime.h"
+#include "core/shared/Utility.h"
+
 #include "engine/renderer/studiomodel/CStudioModelRenderer.h"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.h"
 #include "entity/CHLMVStudioModelEntity.h"
@@ -33,9 +36,10 @@ static const int GUIDELINES_EDGE_WIDTH = 4;
 
 Scene::Scene()
 	: _studioModelRenderer(std::make_unique<studiomdl::CStudioModelRenderer>())
+	, _worldTime(std::make_unique<CWorldTime>())
 	//Use the default list class for now
-	, _entityManager(std::make_unique<CEntityManager>(std::make_unique<CBaseEntityList>()))
-	, _entityContext(std::make_unique<EntityContext>(_studioModelRenderer.get(), _entityManager->GetEntityList(), _entityManager.get()))
+	, _entityManager(std::make_unique<CEntityManager>(std::make_unique<CBaseEntityList>(), _worldTime.get()))
+	, _entityContext(std::make_unique<EntityContext>(_worldTime.get(), _studioModelRenderer.get(), _entityManager->GetEntityList(), _entityManager.get()))
 {
 }
 
@@ -98,6 +102,32 @@ void Scene::Initialize()
 void Scene::Shutdown()
 {
 	_studioModelRenderer->Shutdown();
+}
+
+void Scene::Tick()
+{
+	const double flCurTime = GetCurrentTime();
+
+	double flFrameTime = flCurTime - _worldTime->GetPreviousRealTime();
+
+	_worldTime->SetRealTime(flCurTime);
+
+	if (flFrameTime > 1.0)
+		flFrameTime = 0.1;
+
+	//TODO:
+#if false
+	//Don't use this when using wxTimer, since it lowers the FPS by a fair amount.
+	if (!m_pTimer)
+	{
+		if (flFrameTime < (1.0 / max_fps.GetFloat()))
+		{
+			return;
+		}
+	}
+#endif
+
+	_worldTime->TimeChanged(flCurTime);
 }
 
 void Scene::Draw()

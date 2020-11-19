@@ -8,6 +8,8 @@
 
 #include "engine/shared/renderer/sprite/ISpriteRenderer.h"
 
+class CWorldTime;
+
 namespace sprite
 {
 struct msprite_t;
@@ -18,7 +20,7 @@ private:
 	static const float DEFAULT_FRAMERATE;
 
 public:
-	CSpriteRenderer();
+	CSpriteRenderer(CWorldTime* worldTime);
 	~CSpriteRenderer();
 
 	void DrawSprite( const CSpriteRenderInfo* pRenderInfo, const renderer::DrawFlags_t flags ) override;
@@ -38,6 +40,9 @@ private:
 private:
 	CSpriteRenderer( const CSpriteRenderer& ) = delete;
 	CSpriteRenderer& operator=( const CSpriteRenderer& ) = delete;
+
+private:
+	CWorldTime* _worldTime;
 };
 }
 
