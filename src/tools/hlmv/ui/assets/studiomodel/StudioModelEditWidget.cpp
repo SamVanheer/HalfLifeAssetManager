@@ -1,8 +1,14 @@
 #include <QBoxLayout>
 
+#include "entity/CHLMVStudioModelEntity.h"
+
+#include "game/entity/CBaseEntity.h"
+#include "game/entity/CBaseEntityList.h"
+#include "game/entity/CEntityManager.h"
 #include "graphics/Scene.hpp"
 
 #include "ui/SceneWidget.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
 #include "ui/assets/studiomodel/dockpanels/StudioModelDisplayPanel.hpp"
@@ -11,12 +17,22 @@ namespace ui::assets::studiomodel
 {
 StudioModelEditWidget::StudioModelEditWidget(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(new StudioModelContext(asset, this))
 	, _asset(asset)
+	, _scene(std::make_unique<graphics::Scene>())
+	, _context(new StudioModelContext(asset, _scene.get(), this))
 {
-	connect(_context, &StudioModelContext::BackgroundColorChanged, this, &StudioModelEditWidget::OnBackgroundColorChanged);
+	//TODO: set up asset in scene
+	auto entity = static_cast<CHLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
+		glm::vec3(), glm::vec3(), false));
 
-	_scene = std::make_unique<graphics::Scene>();
+	if (nullptr != entity)
+	{
+		entity->SetModel(_asset->GetStudioModel());
+
+		entity->Spawn();
+
+		_scene->SetEntity(entity);
+	}
 
 	_sceneWidget = new SceneWidget(_scene.get(), this);
 
@@ -42,8 +58,8 @@ StudioModelEditWidget::StudioModelEditWidget(StudioModelAsset* asset, QWidget* p
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
 
-void StudioModelEditWidget::OnBackgroundColorChanged(QColor color)
+void StudioModelEditWidget::OnTick()
 {
-	_scene->SetBackgroundColor({color.redF(), color.greenF(), color.blueF()});
+	_sceneWidget->requestUpdate();
 }
 }

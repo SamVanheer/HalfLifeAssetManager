@@ -3,6 +3,8 @@
 #include <QColor>
 #include <QObject>
 
+#include "graphics/Scene.hpp"
+
 namespace ui::assets::studiomodel
 {
 class StudioModelAsset;
@@ -15,9 +17,10 @@ class StudioModelContext final : public QObject
 	Q_OBJECT
 
 public:
-	StudioModelContext(StudioModelAsset* asset, QObject* parent = nullptr)
+	StudioModelContext(StudioModelAsset* asset, graphics::Scene* scene, QObject* parent = nullptr)
 		: QObject(parent)
 		, _asset(asset)
+		, _scene(scene)
 	{
 	}
 
@@ -25,24 +28,16 @@ public:
 
 	StudioModelAsset* GetAsset() { return _asset; }
 
-	QColor GetBackgroundColor() const { return _backgroundColor; }
-
-signals:
-	void BackgroundColorChanged(QColor color);
+	graphics::Scene* GetScene() { return _scene; }
 
 public slots:
 	void SetBackgroundColor(QColor color)
 	{
-		if (_backgroundColor != color)
-		{
-			_backgroundColor = color;
-
-			emit BackgroundColorChanged(_backgroundColor);
-		}
+		_scene->SetBackgroundColor({color.redF(), color.greenF(), color.blueF()});
 	}
 
 private:
 	StudioModelAsset* const _asset;
-	QColor _backgroundColor;
+	graphics::Scene* const _scene;
 };
 }

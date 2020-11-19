@@ -26,19 +26,18 @@ public:
 	StudioModelEditWidget(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelEditWidget();
 
-private slots:
-	void OnBackgroundColorChanged(QColor color);
+public slots:
+	void OnTick();
 
 private:
-	StudioModelContext* const _context;
-
 	StudioModelAsset* const _asset;
+	const std::unique_ptr<graphics::Scene> _scene;
+
+	StudioModelContext* const _context;
 
 	SceneWidget* _sceneWidget;
 
 	QTabWidget* _dockPanels;
-
-	std::unique_ptr<graphics::Scene> _scene;
 };
 }
 }

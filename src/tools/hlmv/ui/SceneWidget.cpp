@@ -7,26 +7,31 @@
 
 namespace ui
 {
-//TODO: implement rendering logic
 SceneWidget::SceneWidget(graphics::Scene* scene, QWidget* parent)
 	: QOpenGLWindow()
+	, _container(QWidget::createWindowContainer(this, parent))
 	, _scene(scene)
 {
 	assert(nullptr != scene);
-
-	_container = QWidget::createWindowContainer(this, parent);
 }
 
-SceneWidget::~SceneWidget() = default;
+SceneWidget::~SceneWidget()
+{
+	makeCurrent();
+
+	_scene->Shutdown();
+
+	doneCurrent();
+}
 
 void SceneWidget::initializeGL()
 {
-	//TODO: initialize
+	_scene->Initialize();
 }
 
 void SceneWidget::resizeGL(int w, int h)
 {
-	//TODO: notify listeners to recreate window sized resources
+	_scene->UpdateWindowSize(static_cast<unsigned int>(w), static_cast<unsigned int>(h));
 }
 
 void SceneWidget::paintGL()

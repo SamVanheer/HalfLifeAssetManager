@@ -29,7 +29,7 @@ protected:
 	void paintGL() override;
 
 private:
-	QWidget* _container;
+	QWidget* const _container;
 	graphics::Scene* const _scene;
 };
 }
