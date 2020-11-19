@@ -5,6 +5,8 @@
 #include <QTabWidget>
 #include <QWidget>
 
+#include "ui/assets/studiomodel/StudioModelContext.hpp"
+
 namespace graphics
 {
 class Scene;
@@ -24,7 +26,12 @@ public:
 	StudioModelEditWidget(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelEditWidget();
 
+private slots:
+	void OnBackgroundColorChanged(QColor color);
+
 private:
+	StudioModelContext* const _context;
+
 	StudioModelAsset* const _asset;
 
 	SceneWidget* _sceneWidget;

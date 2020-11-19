@@ -2,8 +2,9 @@
 
 namespace ui::assets::studiomodel
 {
-StudioModelDisplayPanel::StudioModelDisplayPanel(QWidget* parent)
+StudioModelDisplayPanel::StudioModelDisplayPanel(StudioModelContext* context, QWidget* parent)
 	: QWidget(parent)
+	, _context(context)
 {
 	_ui.setupUi(this);
 }
