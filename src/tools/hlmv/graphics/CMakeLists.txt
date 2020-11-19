@@ -12,4 +12,6 @@ target_sources(${TARGET_NAME}
 		GraphicsUtils.h
 		OpenGL.cpp
 		OpenGL.h
-		Palette.h)
+		Palette.h
+		Scene.cpp
+		Scene.hpp)

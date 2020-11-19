@@ -2,6 +2,11 @@
 
 #include <QOpenGLWindow>
 
+namespace graphics
+{
+class Scene;
+}
+
 namespace ui
 {
 /**
@@ -11,12 +16,20 @@ namespace ui
 class SceneWidget final : public QOpenGLWindow
 {
 public:
-	SceneWidget(QWidget* parent = nullptr);
+	SceneWidget(graphics::Scene* scene, QWidget* parent = nullptr);
 	~SceneWidget();
 
 	QWidget* GetContainer() { return _container; }
 
+	graphics::Scene* GetScene() { return _scene; }
+
+protected:
+	void initializeGL() override;
+	void resizeGL(int w, int h) override;
+	void paintGL() override;
+
 private:
 	QWidget* _container;
+	graphics::Scene* const _scene;
 };
 }

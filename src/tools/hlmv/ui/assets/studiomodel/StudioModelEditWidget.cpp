@@ -1,5 +1,7 @@
 #include <QBoxLayout>
 
+#include "graphics/Scene.hpp"
+
 #include "ui/SceneWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
@@ -11,9 +13,13 @@ StudioModelEditWidget::StudioModelEditWidget(StudioModelAsset* asset, QWidget* p
 	: QWidget(parent)
 	, _asset(asset)
 {
-	_sceneWidget = new SceneWidget(this);
+	_scene = std::make_unique<graphics::Scene>();
+
+	_sceneWidget = new SceneWidget(_scene.get(), this);
 
 	_dockPanels = new QTabWidget(this);
+
+	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; }");
 
 	_dockPanels->addTab(new StudioModelDisplayPanel(), "Model Display");
 

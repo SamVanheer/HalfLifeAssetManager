@@ -1,7 +1,14 @@
 #pragma once
 
+#include <memory>
+
 #include <QTabWidget>
 #include <QWidget>
+
+namespace graphics
+{
+class Scene;
+}
 
 namespace ui
 {
@@ -23,6 +30,8 @@ private:
 	SceneWidget* _sceneWidget;
 
 	QTabWidget* _dockPanels;
+
+	std::unique_ptr<graphics::Scene> _scene;
 };
 }
 }
