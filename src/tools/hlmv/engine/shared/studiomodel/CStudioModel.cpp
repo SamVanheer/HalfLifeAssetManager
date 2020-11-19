@@ -248,12 +248,12 @@ size_t UploadTextures(studiohdr_t& textureHdr, std::vector<GLuint>& textures, co
 }
 
 CStudioModel::CStudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& pStudioHdr, studio_ptr<studiohdr_t>&& pTextureHdr,
-	std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, std::vector<GLuint>&& textures)
+	std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, bool isDol)
 	: m_FileName(std::move(fileName))
 	, m_pStudioHdr(std::move(pStudioHdr))
 	, m_pTextureHdr(std::move(pTextureHdr))
 	, m_SequenceHeaders(std::move(sequenceHeaders))
-	, m_Textures(std::move(textures))
+	, m_IsDol(isDol)
 {
 	assert(m_pStudioHdr);
 }
@@ -314,6 +314,11 @@ GLuint CStudioModel::GetTextureId(const int iIndex) const
 		return GL_INVALID_TEXTURE_ID;
 
 	return m_Textures[iIndex];
+}
+
+void CStudioModel::CreateTextures()
+{
+	UploadTextures(*GetTextureHeader(), m_Textures, r_filtertextures.GetBool(), r_powerof2textures.GetBool(), m_IsDol);
 }
 
 void CStudioModel::ReplaceTexture(mstudiotexture_t* ptexture, byte* data, byte* pal, GLuint textureId)
@@ -458,12 +463,8 @@ std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename)
 		}
 	}
 
-	std::vector<GLuint> textures;
-
-	UploadTextures(textureHeader ? *textureHeader : *mainHeader, textures, r_filtertextures.GetBool(), r_powerof2textures.GetBool(), bIsDol);
-
 	return std::make_unique<CStudioModel>(pszFilename, std::move(mainHeader), std::move(textureHeader),
-		std::move(sequenceHeaders), std::move(textures));
+		std::move(sequenceHeaders), bIsDol);
 }
 
 void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool correctSequenceGroupFileNames)

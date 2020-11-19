@@ -130,7 +130,7 @@ public:
 
 public:
 	CStudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& pStudioHdr, studio_ptr<studiohdr_t>&& pTextureHdr,
-		std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, std::vector<GLuint>&& textures);
+		std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, bool isDol);
 	~CStudioModel();
 
 	const std::string& GetFileName() const { return m_FileName; }
@@ -163,6 +163,8 @@ public:
 	bool			CalculateBodygroup( const int iGroup, const int iValue, int& iInOutBodygroup ) const;
 
 	GLuint			GetTextureId( const int iIndex ) const;
+
+	void CreateTextures();
 
 	void			ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte *pal, GLuint textureId );
 
@@ -198,6 +200,8 @@ private:
 	std::vector<studio_ptr<studioseqhdr_t>> m_SequenceHeaders;
 
 	std::vector<GLuint> m_Textures;
+
+	bool m_IsDol;
 
 private:
 	CStudioModel( const CStudioModel& ) = delete;
