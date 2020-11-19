@@ -64,6 +64,8 @@ StudioModelEditWidget::~StudioModelEditWidget() = default;
 
 void StudioModelEditWidget::OnTick()
 {
+	_scene->Tick();
+
 	_sceneWidget->requestUpdate();
 }
 }

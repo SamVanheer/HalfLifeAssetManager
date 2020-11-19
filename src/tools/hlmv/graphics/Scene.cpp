@@ -128,6 +128,8 @@ void Scene::Tick()
 #endif
 
 	_worldTime->TimeChanged(flCurTime);
+
+	_entityManager->RunFrame();
 }
 
 void Scene::Draw()
