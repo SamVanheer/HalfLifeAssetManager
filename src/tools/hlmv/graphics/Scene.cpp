@@ -115,17 +115,12 @@ void Scene::Tick()
 	if (flFrameTime > 1.0)
 		flFrameTime = 0.1;
 
-	//TODO:
-#if false
-	//Don't use this when using wxTimer, since it lowers the FPS by a fair amount.
-	if (!m_pTimer)
+	//TODO: implement frame limiter setting
+	//TODO: investigate how to allow animation to work when framerate is very high
+	if (flFrameTime < (1.0 / /*max_fps.GetFloat()*/60.0f))
 	{
-		if (flFrameTime < (1.0 / max_fps.GetFloat()))
-		{
-			return;
-		}
+		return;
 	}
-#endif
 
 	_worldTime->TimeChanged(flCurTime);
 

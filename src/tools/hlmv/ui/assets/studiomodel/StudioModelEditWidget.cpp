@@ -22,7 +22,6 @@ StudioModelEditWidget::StudioModelEditWidget(EditorUIContext* editorContext, Stu
 	, _scene(std::make_unique<graphics::Scene>())
 	, _context(new StudioModelContext(asset, _scene.get(), this))
 {
-	//TODO: set up asset in scene
 	auto entity = static_cast<CHLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
 		glm::vec3(), glm::vec3(), false));
 
