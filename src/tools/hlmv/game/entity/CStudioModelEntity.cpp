@@ -9,9 +9,6 @@
 
 #include "CStudioModelEntity.h"
 
-//TODO: remove
-extern studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer;
-
 bool CStudioModelEntity::Spawn()
 {
 	SetSequence( 0 );
@@ -59,7 +56,7 @@ void CStudioModelEntity::Draw( renderer::DrawFlags_t flags )
 
 	renderInfo.iMouth = GetMouth();
 
-	g_pStudioMdlRenderer->DrawModel( &renderInfo, flags );
+	GetContext()->StudioModelRenderer->DrawModel( &renderInfo, flags );
 }
 
 float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )

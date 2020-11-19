@@ -13,9 +13,9 @@ void EHandle::Invalidate()
 	m_Handle = entity::INVALID_ENTITY_HANDLE;
 }
 
-CBaseEntity* EHandle::Get() const
+CBaseEntity* EHandle::Get(const CBaseEntityList& entityList) const
 {
-	return GetEntityList().GetEntityByHandle( *this );
+	return entityList.GetEntityByHandle( *this );
 }
 
 void EHandle::Set( CBaseEntity* pEntity )

@@ -16,12 +16,34 @@
 #undef GetClassName
 #endif
 
+namespace studiomdl
+{
+class IStudioModelRenderer;
+}
+
 class CBaseEntity;
+class CBaseEntityList;
+class CEntityManager;
 
 /**
 *	Pointer to member function used for think methods.
 */
 using ThinkFunc_t = void ( CBaseEntity::* )();
+
+struct EntityContext final
+{
+	//TODO: improve this
+	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
+	CBaseEntityList* const EntityList;
+	CEntityManager* const EntityManager;
+
+	EntityContext(studiomdl::IStudioModelRenderer* studioModelRenderer, CBaseEntityList* entityList, CEntityManager* entityManager)
+		: StudioModelRenderer(studioModelRenderer)
+		, EntityList(entityList)
+		, EntityManager(entityManager)
+	{
+	}
+};
 
 /**
 *	Base class for all entities.
@@ -60,12 +82,15 @@ private:
 	const char* m_pszClassName = nullptr;
 	EHandle m_EntHandle;
 
+	EntityContext* _context{};
+
 public:
 	/**
 	*	Called when the entity is constructed. Do not call directly.
-	*	@param pszClassName The entity's class name.
+	*	@param pszClassName The entity's class name
+	*	@param context Entity context
 	*/
-	void Construct( const char* const pszClassName );
+	void Construct(const char* const pszClassName, EntityContext* context);
 
 	/**
 	*	Gets the entity's class name.
@@ -82,15 +107,7 @@ public:
 	*/
 	void SetEntHandle( const EHandle& handle ) { m_EntHandle = handle; }
 
-	/**
-	*	Creates a new entity by classname. This is the one place where entities can be created.
-	*	@param pszClassName The entity's class name.
-	*	@param vecOrigin The entity's origin.
-	*	@param vecAngles The entity's angles.
-	*	@param bSpawn Whether to call spawn or not.
-	*	@return Newly created entity, or null.
-	*/
-	static CBaseEntity* Create( const char* const pszClassName, const glm::vec3& vecOrigin, const glm::vec3& vecAngles, const bool bSpawn = true );
+	EntityContext* GetContext() const { return _context; }
 
 private:
 	entity::Flags_t m_Flags = entity::FL_NONE;

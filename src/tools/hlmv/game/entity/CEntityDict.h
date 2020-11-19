@@ -9,6 +9,8 @@
 class CBaseEntity;
 class CBaseEntityRegistry;
 
+struct EntityContext;
+
 /**
 *	Class used to find entity registries by name and create/destroy entities.
 */
@@ -44,7 +46,7 @@ public:
 	/**
 	*	Creates an entity by entity name.
 	*/
-	CBaseEntity* CreateEntity( const char* const pszClassName ) const;
+	CBaseEntity* CreateEntity( const char* const pszClassName, EntityContext* context ) const;
 
 	/**
 	*	Destroys an entity.

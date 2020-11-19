@@ -1,14 +1,21 @@
 #ifndef GAME_ENTITY_CENTITYMANAGER_H
 #define GAME_ENTITY_CENTITYMANAGER_H
 
+#include <memory>
+
+class CBaseEntity;
+class CBaseEntityList;
+
 /**
 *	Manages entities.
 */
 class CEntityManager final
 {
 public:
-	CEntityManager();
+	CEntityManager(std::unique_ptr<CBaseEntityList>&& entityList);
 	~CEntityManager();
+
+	CBaseEntityList* GetEntityList() const { return _entityList.get(); }
 
 	/**
 	*	Called on startup. Initializes the manager.
@@ -41,14 +48,26 @@ public:
 	*/
 	void RunFrame();
 
+	/**
+	*	Creates a new entity by classname. This is the one place where entities can be created
+	*	@param pszClassName The entity's class name
+	*	@param context Entity context
+	*	@param vecOrigin The entity's origin
+	*	@param vecAngles The entity's angles
+	*	@param bSpawn Whether to call spawn
+	*	@return Newly created entity, or null
+	*/
+	CBaseEntity* Create(const char* const pszClassName, EntityContext* context,
+		const glm::vec3& vecOrigin, const glm::vec3& vecAngles, const bool bSpawn = true);
+
 private:
+	std::unique_ptr<CBaseEntityList> _entityList;
+
 	bool m_bMapRunning = false;
 
 private:
 	CEntityManager( const CEntityManager& ) = delete;
 	CEntityManager& operator=( const CEntityManager& ) = delete;
 };
-
-CEntityManager& EntityManager();
 
 #endif //GAME_ENTITY_CENTITYMANAGER_H

@@ -4,6 +4,7 @@
 #include "EntityConstants.h"
 
 class CBaseEntity;
+class CBaseEntityList;
 
 /**
 *	Class that represents an entity. Can be used to safely store references to entities.
@@ -43,27 +44,12 @@ public:
 	/**
 	*	Gets the entity that this handle represents, or null.
 	*/
-	CBaseEntity* Get() const;
-
-	/**
-	*	@copydoc Get() const
-	*/
-	operator CBaseEntity*() const { return Get(); }
-
-	/**
-	*	Overloaded operator-> to allow code to use entities through the handle.
-	*/
-	CBaseEntity* operator->() const { return Get(); }
+	CBaseEntity* Get(const CBaseEntityList& entityList) const;
 
 	/**
 	*	Returns whether this handle represents a valid entity.
 	*/
-	bool IsValid() const { return Get() != nullptr; }
-
-	/**
-	*	@copydoc IsValid() const
-	*/
-	operator bool() const { return IsValid(); }
+	bool IsValid(const CBaseEntityList& entityList) const { return Get(entityList) != nullptr; }
 
 	/**
 	*	Sets the entity that this handle represents.

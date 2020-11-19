@@ -47,7 +47,7 @@ bool CEntityDict::AddEntity( const CBaseEntityRegistry* pRegistry )
 	return true;
 }
 
-CBaseEntity* CEntityDict::CreateEntity( const char* const pszClassName ) const
+CBaseEntity* CEntityDict::CreateEntity( const char* const pszClassName, EntityContext* context) const
 {
 	const auto pReg = FindEntity( pszClassName );
 
@@ -56,7 +56,7 @@ CBaseEntity* CEntityDict::CreateEntity( const char* const pszClassName ) const
 
 	if( CBaseEntity* pEntity = pReg->Create() )
 	{
-		pEntity->Construct( pszClassName );
+		pEntity->Construct( pszClassName, context);
 		pEntity->OnCreate();
 
 		return pEntity;

@@ -1,27 +1,20 @@
+#include <cassert>
+
 #include "shared/CWorldTime.h"
+#include "shared/Logging.h"
 
 #include "CBaseEntity.h"
 #include "CBaseEntityList.h"
 
 #include "CEntityManager.h"
 
-namespace
+CEntityManager::CEntityManager(std::unique_ptr<CBaseEntityList>&& entityList)
+	: _entityList(std::move(entityList))
 {
-static CEntityManager g_EntityManager;
+	assert(nullptr != _entityList);
 }
 
-CEntityManager& EntityManager()
-{
-	return g_EntityManager;
-}
-
-CEntityManager::CEntityManager()
-{
-}
-
-CEntityManager::~CEntityManager()
-{
-}
+CEntityManager::~CEntityManager() = default;
 
 bool CEntityManager::Initialize()
 {
@@ -47,14 +40,14 @@ void CEntityManager::OnMapEnd()
 
 	m_bMapRunning = false;
 
-	GetEntityList().RemoveAll();
+	_entityList->RemoveAll();
 }
 
 void CEntityManager::RunFrame()
 {
-	for( EHandle entity = GetEntityList().GetFirstEntity(); entity; entity = GetEntityList().GetNextEntity( entity ) )
+	for( EHandle entity = _entityList->GetFirstEntity(); entity.IsValid(*_entityList); entity = _entityList->GetNextEntity( entity ) )
 	{
-		CBaseEntity* pEntity = entity;
+		CBaseEntity* pEntity = entity.Get(*_entityList);
 
 		if( pEntity->AnyFlagsSet( entity::FL_ALWAYSTHINK ) ||
 			( pEntity->GetNextThinkTime() != 0 && 
@@ -70,11 +63,47 @@ void CEntityManager::RunFrame()
 	}
 
 	//Remove all entities flagged with FL_KILLME.
-	for( EHandle entity = GetEntityList().GetFirstEntity(); entity; entity = GetEntityList().GetNextEntity( entity ) )
+	for( EHandle entity = _entityList->GetFirstEntity(); entity.IsValid(*_entityList); entity = _entityList->GetNextEntity( entity ) )
 	{
-		if( entity->GetFlags() & entity::FL_KILLME )
+		auto baseEntity = entity.Get(*_entityList);
+
+		if(baseEntity->GetFlags() & entity::FL_KILLME )
 		{
-			GetEntityList().Remove( entity );
+			_entityList->Remove(baseEntity);
 		}
 	}
+}
+
+CBaseEntity* CEntityManager::Create(const char* const pszClassName, EntityContext* context,
+	const glm::vec3& vecOrigin, const glm::vec3& vecAngles, const bool bSpawn)
+{
+	CBaseEntity* pEntity = GetEntityDict().CreateEntity(pszClassName, context);
+
+	//This is where you can handle custom entities.
+	if (!pEntity)
+	{
+		Error("Couldn't create \"%s\"!\n", pszClassName);
+		return nullptr;
+	}
+
+	if (_entityList->Add(pEntity) == entity::INVALID_ENTITY_INDEX)
+	{
+		GetEntityDict().DestroyEntity(pEntity);
+
+		return nullptr;
+	}
+
+	pEntity->SetOrigin(vecOrigin);
+	pEntity->SetAngles(vecAngles);
+
+	if (bSpawn)
+	{
+		if (!pEntity->Spawn())
+		{
+			_entityList->Remove(pEntity);
+			return nullptr;
+		}
+	}
+
+	return pEntity;
 }

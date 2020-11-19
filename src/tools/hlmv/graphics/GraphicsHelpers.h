@@ -10,6 +10,11 @@
 
 class Color;
 
+namespace studiomdl
+{
+class IStudioModelRenderer;
+}
+
 namespace graphics
 {
 namespace helpers
@@ -38,13 +43,15 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 
 /**
 *	Draws a mirrored model.
+*	@param studioModelRenderer Renderer to use
 *	@param pEntity				Entity to draw
 *	@param renderMode			Render mode to use
 *	@param bWireframeOverlay	Whether to render a wireframe overlay on top of the model
 *	@param flSideLength			Length of one side of the floor
 *	@param bBackfaceCulling		Whether to perform backface culling or not
 */
-unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength, const bool bBackfaceCulling );
+unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRenderer, CStudioModelEntity* pEntity,
+	const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength, const bool bBackfaceCulling);
 }
 }
 

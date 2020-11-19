@@ -10,9 +10,6 @@
 
 #include "GraphicsHelpers.h"
 
-//TODO: remove
-extern studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer;
-
 namespace graphics
 {
 namespace helpers
@@ -153,7 +150,8 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 		glEnable( GL_CULL_FACE );
 }
 
-unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength, const bool bBackfaceCulling )
+unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRenderer, CStudioModelEntity* pEntity,
+	const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength, const bool bBackfaceCulling)
 {
 	/* Don't update color or depth. */
 	glDisable( GL_DEPTH_TEST );
@@ -204,7 +202,7 @@ unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode re
 
 	glCullFace( flScale > 0 ? GL_BACK : GL_FRONT );
 
-	const unsigned int uiOldPolys = g_pStudioMdlRenderer->GetDrawnPolygonsCount();
+	const unsigned int uiOldPolys = studioModelRenderer.GetDrawnPolygonsCount();
 
 	renderer::DrawFlags_t flags = renderer::DrawFlag::NONE;
 
@@ -222,7 +220,7 @@ unsigned int DrawMirroredModel( CStudioModelEntity* pEntity, const RenderMode re
 
 	glDisable( GL_STENCIL_TEST );
 
-	return g_pStudioMdlRenderer->GetDrawnPolygonsCount() - uiOldPolys;
+	return studioModelRenderer.GetDrawnPolygonsCount() - uiOldPolys;
 }
 }
 }

@@ -10,23 +10,6 @@
 
 #include "CBaseEntityList.h"
 
-namespace
-{
-static CBaseEntityList* g_pEntityList = nullptr;
-}
-
-CBaseEntityList& GetEntityList()
-{
-	assert( g_pEntityList );
-
-	return *g_pEntityList;
-}
-
-void SetEntityList( CBaseEntityList* pList )
-{
-	g_pEntityList = pList;
-}
-
 CBaseEntityList::CBaseEntityList()
 {
 	memset( m_Entities, 0, sizeof( m_Entities ) );
@@ -64,7 +47,7 @@ EHandle CBaseEntityList::GetFirstEntity() const
 
 EHandle CBaseEntityList::GetNextEntity( const EHandle& previous ) const
 {
-	for( size_t uiIndex = previous.IsValid() ? previous.GetEntIndex() + 1 : 0; uiIndex < m_uiHighestEntIndex; ++uiIndex )
+	for( size_t uiIndex = previous.IsValid(*this) ? previous.GetEntIndex() + 1 : 0; uiIndex < m_uiHighestEntIndex; ++uiIndex )
 	{
 		if( m_Entities[ uiIndex ].pEntity )
 			return m_Entities[ uiIndex ].pEntity;
