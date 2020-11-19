@@ -8,7 +8,11 @@
 
 #include <entt/core/type_info.hpp>
 
-namespace ui::assets
+namespace ui
+{
+class EditorUIContext;
+
+namespace assets
 {
 class IAssetProvider;
 
@@ -24,8 +28,9 @@ public:
 
 	/**
 	*	@brief Creates a widget to view and edit this asset
+	*	@param editorContext The editor context used to communicate with the owner
 	*/
-	virtual QWidget* CreateEditWidget() = 0;
+	virtual QWidget* CreateEditWidget(EditorUIContext* editorContext) = 0;
 
 	virtual void Save(const std::string& fileName) = 0;
 };
@@ -76,4 +81,5 @@ public:
 private:
 	std::unordered_map<entt::id_type, std::unique_ptr<IAssetProvider>> _providers;
 };
+}
 }

@@ -14,6 +14,7 @@ class Scene;
 
 namespace ui
 {
+class EditorUIContext;
 class SceneWidget;
 
 namespace assets::studiomodel
@@ -23,7 +24,7 @@ class StudioModelAsset;
 class StudioModelEditWidget final : public QWidget
 {
 public:
-	StudioModelEditWidget(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelEditWidget(EditorUIContext* editorContext, StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelEditWidget();
 
 public slots:

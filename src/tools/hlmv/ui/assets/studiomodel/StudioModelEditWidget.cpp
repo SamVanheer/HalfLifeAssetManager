@@ -7,6 +7,7 @@
 #include "game/entity/CEntityManager.h"
 #include "graphics/Scene.hpp"
 
+#include "ui/EditorUIContext.hpp"
 #include "ui/SceneWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
@@ -15,7 +16,7 @@
 
 namespace ui::assets::studiomodel
 {
-StudioModelEditWidget::StudioModelEditWidget(StudioModelAsset* asset, QWidget* parent)
+StudioModelEditWidget::StudioModelEditWidget(EditorUIContext* editorContext, StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
 	, _scene(std::make_unique<graphics::Scene>())
@@ -54,6 +55,9 @@ StudioModelEditWidget::StudioModelEditWidget(StudioModelAsset* asset, QWidget* p
 
 	//TODO: need to initialize the background color to its default value here, as specified in the options dialog
 	_context->SetBackgroundColor({63, 127, 127});
+
+	//Listen to the main timer to update as needed
+	connect(editorContext, &EditorUIContext::Tick, this, &StudioModelEditWidget::OnTick);
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;

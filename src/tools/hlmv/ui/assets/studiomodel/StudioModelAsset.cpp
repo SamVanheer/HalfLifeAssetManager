@@ -5,9 +5,9 @@
 
 namespace ui::assets::studiomodel
 {
-QWidget* StudioModelAsset::CreateEditWidget()
+QWidget* StudioModelAsset::CreateEditWidget(EditorUIContext* editorContext)
 {
-	return new StudioModelEditWidget(this);
+	return new StudioModelEditWidget(editorContext, this);
 }
 
 void StudioModelAsset::Save(const std::string& fileName)

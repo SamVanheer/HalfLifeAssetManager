@@ -3,14 +3,18 @@
 
 #include "Credits.hpp"
 
+#include "ui/EditorUIContext.hpp"
 #include "ui/HLMVMainWindow.hpp"
 #include "ui/assets/Assets.hpp"
 #include "ui/options/OptionsDialog.hpp"
+
+#include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
 namespace ui
 {
 HLMVMainWindow::HLMVMainWindow(std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry)
 	: QMainWindow()
+	, _editorContext(new EditorUIContext(this))
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
 {
 	_ui.setupUi(this);
@@ -25,6 +29,8 @@ HLMVMainWindow::HLMVMainWindow(std::unique_ptr<assets::IAssetProviderRegistry>&&
 	connect(_ui.ActionLoad, &QAction::triggered, this, &HLMVMainWindow::OnOpenLoadAssetDialog);
 	connect(_ui.ActionOptions, &QAction::triggered, this, &HLMVMainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &HLMVMainWindow::OnShowAbout);
+
+	_editorContext->GetTimer()->start(0);
 }
 
 HLMVMainWindow::~HLMVMainWindow() = default;
@@ -70,11 +76,11 @@ void HLMVMainWindow::LoadAsset(const QString& fileName)
 
 	if (nullptr != asset)
 	{
-		auto editWidget = asset->CreateEditWidget();
+		auto editWidget = asset->CreateEditWidget(_editorContext);
+
+		_editorContext->GetLoadedAssets().emplace_back(std::move(asset), editWidget);
 
 		const auto index = _assetTabs->addTab(editWidget, fileName);
-
-		_openAssets.emplace_back(std::move(asset), editWidget);
 
 		_assetTabs->setCurrentIndex(index);
 	}

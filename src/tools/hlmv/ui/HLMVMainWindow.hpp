@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
 #include <QMainWindow>
 #include <QString>
@@ -13,6 +12,8 @@
 
 namespace ui
 {
+class EditorUIContext;
+
 namespace assets
 {
 class IAsset;
@@ -37,24 +38,12 @@ private:
 	void LoadAsset(const QString& fileName);
 
 private:
-	struct AssetData
-	{
-		AssetData(std::unique_ptr<assets::IAsset>&& asset, QWidget* editWidget)
-			: Asset(std::move(asset))
-			, EditWidget(editWidget)
-		{
-		}
-
-		std::unique_ptr<assets::IAsset> Asset;
-		QWidget* EditWidget;
-	};
-
 	Ui_HLMVMainWindow _ui;
+
+	EditorUIContext* const _editorContext;
 
 	QTabWidget* _assetTabs;
 
 	std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
-
-	std::vector<AssetData> _openAssets;
 };
 }
