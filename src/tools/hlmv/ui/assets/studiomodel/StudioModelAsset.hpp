@@ -1,5 +1,9 @@
 #pragma once
 
+#include <memory>
+
+#include "engine/shared/studiomodel/CStudioModel.h"
+
 #include "ui/assets/Assets.hpp"
 
 namespace ui::assets::studiomodel
@@ -10,8 +14,9 @@ class StudioModelAsset final : public IAsset
 {
 public:
 	//TODO: pass in loaded asset
-	StudioModelAsset(const StudioModelAssetProvider* provider)
+	StudioModelAsset(const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel)
 		: _provider(provider)
+		, _studioModel(std::move(studioModel))
 	{
 	}
 
@@ -27,8 +32,12 @@ public:
 
 	void Save(const std::string& fileName) override;
 
+	studiomdl::CStudioModel* GetStudioModel() { return _studioModel.get(); }
+
 private:
 	const StudioModelAssetProvider* const _provider;
+
+	std::unique_ptr<studiomdl::CStudioModel> _studioModel;
 };
 
 class StudioModelAssetProvider final : public IAssetProvider

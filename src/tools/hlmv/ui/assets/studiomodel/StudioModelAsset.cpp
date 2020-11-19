@@ -23,8 +23,10 @@ bool StudioModelAssetProvider::CanLoad(const std::string& fileName) const
 
 std::unique_ptr<IAsset> StudioModelAssetProvider::Load(const std::string& fileName) const
 {
-	//TODO: load model
-	return std::make_unique<StudioModelAsset>(this);
+	//TODO: this throws specific exceptions. They need to be generalized so the caller can handle them
+	auto studioModel = studiomdl::LoadStudioModel(fileName.c_str());
+
+	return std::make_unique<StudioModelAsset>(this, std::move(studioModel));
 }
 
 void StudioModelAssetProvider::Save(const std::string& fileName, IAsset& asset) const
