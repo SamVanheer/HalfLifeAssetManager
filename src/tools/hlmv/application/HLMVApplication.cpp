@@ -37,9 +37,9 @@ int HLMVApplication::Run(int argc, char* argv[])
 	{
 		QSurfaceFormat defaultFormat(QSurfaceFormat::FormatOption::DebugContext | QSurfaceFormat::FormatOption::DeprecatedFunctions);
 
-		defaultFormat.setMajorVersion(3);
-		defaultFormat.setMinorVersion(3);
-		defaultFormat.setProfile(QSurfaceFormat::OpenGLContextProfile::CoreProfile);
+		defaultFormat.setMajorVersion(2);
+		defaultFormat.setMinorVersion(0);
+		defaultFormat.setProfile(QSurfaceFormat::OpenGLContextProfile::CompatibilityProfile);
 
 		defaultFormat.setDepthBufferSize(24);
 		defaultFormat.setStencilBufferSize(8);
