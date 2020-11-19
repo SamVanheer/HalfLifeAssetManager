@@ -12,14 +12,6 @@
 //TODO: remove
 extern studiomdl::IStudioModelRenderer* g_pStudioMdlRenderer;
 
-void CStudioModelEntity::OnDestroy()
-{
-	//TODO: once models are managed by a cache, don't do this
-	delete m_pModel;
-
-	BaseClass::OnDestroy();
-}
-
 bool CStudioModelEntity::Spawn()
 {
 	SetSequence( 0 );

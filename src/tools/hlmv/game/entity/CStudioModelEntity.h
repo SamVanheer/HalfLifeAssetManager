@@ -29,8 +29,6 @@ public:
 	typedef std::vector<const mstudiomesh_t*> MeshList_t;
 
 public:
-	virtual void OnDestroy() override;
-
 	virtual bool Spawn() override;
 
 	virtual void Draw( renderer::DrawFlags_t flags ) override;
