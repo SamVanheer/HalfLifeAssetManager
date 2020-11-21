@@ -13,6 +13,7 @@
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
 #include "ui/assets/studiomodel/dockpanels/StudioModelDisplayPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
 
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
@@ -49,6 +50,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorUIContext* editorContext, Stu
 	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; }");
 
 	_dockPanels->addTab(new StudioModelDisplayPanel(_context), "Model Display");
+	_dockPanels->addTab(new StudioModelSequencesPanel(_context), "Sequences");
 
 	_timeline = new Timeline(_context, _controlAreaWidget);
 

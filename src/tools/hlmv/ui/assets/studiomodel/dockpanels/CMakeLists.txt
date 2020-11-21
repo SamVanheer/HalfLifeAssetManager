@@ -3,6 +3,12 @@ target_sources(HLMV
 		StudioModelDisplayPanel.cpp
 		StudioModelDisplayPanel.hpp
 		StudioModelDisplayPanel.ui
+		StudioModelEditEventsDialog.cpp
+		StudioModelEditEventsDialog.hpp
+		StudioModelEditEventsDialog.ui
+		StudioModelSequencesPanel.cpp
+		StudioModelSequencesPanel.hpp
+		StudioModelSequencesPanel.ui
 		Timeline.cpp
 		Timeline.hpp
 		Timeline.ui)
