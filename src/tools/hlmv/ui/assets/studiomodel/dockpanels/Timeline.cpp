@@ -15,6 +15,8 @@ Timeline::Timeline(StudioModelContext* context, QWidget* parent)
 {
 	_ui.setupUi(this);
 
+	connect(_context, &StudioModelContext::Tick, this, &Timeline::OnTick);
+
 	connect(_ui.FrameSlider, &QSlider::valueChanged, this, &Timeline::OnFrameSliderChanged);
 	connect(_ui.FrameSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Timeline::OnFrameSpinnerChanged);
 
@@ -45,21 +47,6 @@ Timeline::Timeline(StudioModelContext* context, QWidget* parent)
 }
 
 Timeline::~Timeline() = default;
-
-void Timeline::UpdateFrameValue()
-{
-	auto entity = _context->GetScene()->GetEntity();
-
-	const auto sequence = entity->GetModel()->GetStudioHeader()->GetSequence(entity->GetSequence());
-
-	//TODO: need to make sure the last frame can be correctly set and played
-	const int frameRange = sequence->numframes - 1;
-
-	_ui.FrameSlider->setRange(0, frameRange);
-	_ui.FrameSpinner->setRange(0, frameRange);
-
-	SetFrame(entity->GetFrame(), false);
-}
 
 void Timeline::SetFrame(double value, bool updateEntity)
 {
@@ -109,6 +96,21 @@ void Timeline::ModifyFrame(int amount)
 
 	//TODO: needs to be passed as a float
 	entity->SetFrame(newFrameValue);
+}
+
+void Timeline::OnTick()
+{
+	auto entity = _context->GetScene()->GetEntity();
+
+	const auto sequence = entity->GetModel()->GetStudioHeader()->GetSequence(entity->GetSequence());
+
+	//TODO: need to make sure the last frame can be correctly set and played
+	const int frameRange = sequence->numframes - 1;
+
+	_ui.FrameSlider->setRange(0, frameRange);
+	_ui.FrameSpinner->setRange(0, frameRange);
+
+	SetFrame(entity->GetFrame(), false);
 }
 
 void Timeline::OnFrameSliderChanged()

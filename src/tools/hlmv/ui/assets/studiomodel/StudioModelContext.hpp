@@ -30,6 +30,9 @@ public:
 
 	graphics::Scene* GetScene() { return _scene; }
 
+signals:
+	void Tick();
+
 public slots:
 	void SetBackgroundColor(QColor color)
 	{

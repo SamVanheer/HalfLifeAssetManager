@@ -87,7 +87,7 @@ void StudioModelEditWidget::OnTick()
 
 	_sceneWidget->requestUpdate();
 
-	_timeline->UpdateFrameValue();
+	emit _context->Tick();
 }
 
 void StudioModelEditWidget::OnMouseEvent(QMouseEvent* event)

@@ -22,8 +22,6 @@ public:
 
 	~Timeline();
 
-	void UpdateFrameValue();
-
 private:
 	void SetFrame(double value, bool updateEntity);
 	void SetFramerate(double value);
@@ -31,6 +29,8 @@ private:
 	void ModifyFrame(int amount);
 
 private slots:
+	void OnTick();
+
 	void OnFrameSliderChanged();
 	void OnFrameSpinnerChanged();
 
