@@ -16,6 +16,8 @@ public:
 	virtual void HandleAnimEvent( const CAnimEvent& event ) override;
 
 	void AnimThink();
+
+	bool PlaySequence = true;
 };
 
 #endif //HLMV_ENTITY_CHLMVSTUDIOMODELENTITY_H

@@ -25,6 +25,7 @@ class CameraOperator;
 namespace assets::studiomodel
 {
 class StudioModelAsset;
+class Timeline;
 
 class StudioModelEditWidget final : public QWidget
 {
@@ -45,7 +46,11 @@ private:
 
 	SceneWidget* _sceneWidget;
 
+	QWidget* _controlAreaWidget;
+
 	QTabWidget* _dockPanels;
+
+	Timeline* _timeline;
 
 	//TODO: temporary; will need to be set up somewhere else eventually
 	std::unique_ptr<camera_operators::CameraOperator> _cameraOperator;

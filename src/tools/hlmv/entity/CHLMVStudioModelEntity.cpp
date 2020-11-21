@@ -72,13 +72,10 @@ void CHLMVStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 
 void CHLMVStudioModelEntity::AnimThink()
 {
-	//TODO: replace
-#if false
-	if( !m_pState->playSequence )
-		return;
-#endif
+	if (PlaySequence)
+	{
+		const float flTime = AdvanceFrame(0.0f, 0.1f);
 
-	const float flTime = AdvanceFrame( 0.0f, 0.1f );
-
-	DispatchAnimEvents( true );
+		DispatchAnimEvents(true);
+	}
 }
