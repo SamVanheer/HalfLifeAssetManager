@@ -85,6 +85,41 @@ void Scene::SetEntity(CHLMVStudioModelEntity* entity)
 	_camera.SetViewDirection(rot);
 }
 
+void Scene::AlignOnGround()
+{
+	auto entity = GetEntity();
+
+	auto model = entity->GetModel();
+
+	auto header = model->GetStudioHeader();
+
+	//First try finding the idle sequence, since that typically represents a model "at rest"
+	//Failing that, use the first sequence
+	auto idleFinder = [&]() -> const mstudioseqdesc_t*
+	{
+		for (int i = 0; i < header->numseq; ++i)
+		{
+			const auto sequence = header->GetSequence(i);
+
+			if (!strcmp(sequence->label, "idle"))
+			{
+				return sequence;
+			}
+		}
+
+		return nullptr;
+	};
+
+	auto sequence = idleFinder();
+
+	if (!sequence)
+	{
+		sequence = header->GetSequence(0);
+	}
+
+	entity->SetOrigin({0, 0, -sequence->bbmin.z});
+}
+
 void Scene::Initialize()
 {
 	if (!_studioModelRenderer->Initialize())
@@ -131,7 +166,7 @@ void Scene::Draw()
 {
 	glClearColor(_backgroundColor.r, _backgroundColor.g, _backgroundColor.b, 1.0f);
 
-	if (ShouldMirrorOnGround())
+	if (MirrorOnGround)
 	{
 		glClearStencil(0);
 
@@ -146,26 +181,24 @@ void Scene::Draw()
 
 	_drawnPolygonsCount = 0;
 
-	//TODO: implement
-#if false
-	if (ShouldShowTexture())
+	if (ShowTexture)
 	{
+		//TODO: implement
+#if false
 		DrawTexture(m_pHLMV->GetState()->texture, m_pHLMV->GetState()->textureScale,
 			m_pHLMV->GetState()->showUVMap, m_pHLMV->GetState()->overlayUVMap,
 			m_pHLMV->GetState()->antiAliasUVLines, m_pHLMV->GetState()->pUVMesh);
+#endif
 	}
 	else
-#endif
 	{
 		DrawModel();
 	}
 
-	//TODO: implement
-#if false
 	const int centerX = _windowWidth / 2;
 	const int centerY = _windowHeight / 2;
 
-	if (m_pHLMV->GetState()->drawCrosshair)
+	if (ShowCrosshair)
 	{
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -218,7 +251,7 @@ void Scene::Draw()
 		glPopMatrix();
 	}
 
-	if (m_pHLMV->GetState()->drawGuidelines)
+	if (ShowGuidelines)
 	{
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -235,7 +268,8 @@ void Scene::Draw()
 
 		glDisable(GL_TEXTURE_2D);
 
-		const Color& crosshairColor = m_pHLMV->GetSettings()->GetCrosshairColor();
+		//TODO: implement
+		const Color crosshairColor = Color{255, 0, 0};// m_pHLMV->GetSettings()->GetCrosshairColor();
 
 		glColor4f(crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0);
 
@@ -282,7 +316,6 @@ void Scene::Draw()
 
 		glPopMatrix();
 	}
-#endif
 }
 
 void Scene::ApplyCameraToScene()
@@ -310,15 +343,10 @@ void Scene::ApplyCameraToScene()
 
 void Scene::SetupRenderMode(RenderMode renderMode)
 {
-	//TODO: implement
-#if false
 	if (renderMode == RenderMode::INVALID)
-		renderMode = m_pHLMV->GetState()->renderMode;
+		renderMode = CurrentRenderMode;
 
-	graphics::helpers::SetupRenderMode(renderMode, m_pHLMV->GetState()->backfaceCulling);
-#endif
-
-	graphics::helpers::SetupRenderMode(RenderMode::TEXTURE_SHADED, true);
+	graphics::helpers::SetupRenderMode(renderMode, EnableBackfaceCulling);
 }
 
 void Scene::DrawModel()
@@ -329,14 +357,13 @@ void Scene::DrawModel()
 
 	//TODO: implement
 #if false
-	if (m_pHLMV->GetState()->showBackground && m_BackgroundTexture != GL_INVALID_TEXTURE_ID && !m_pHLMV->GetState()->showTexture)
+	if (ShowBackground && m_BackgroundTexture != GL_INVALID_TEXTURE_ID && !ShowTexture)
 	{
 		graphics::DrawBackground(m_BackgroundTexture);
 	}
 #endif
 
-	//TODO: implement
-	graphics::SetProjection(/*m_pHLMV->GetState()->GetCurrentFOV()*/65.f, _windowWidth, _windowHeight);
+	graphics::SetProjection(*CurrentFOV, _windowWidth, _windowHeight);
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -344,9 +371,7 @@ void Scene::DrawModel()
 
 	ApplyCameraToScene();
 
-	//TODO: implement
-#if false
-	if (m_pHLMV->GetState()->drawAxes)
+	if (ShowAxes)
 	{
 		glDisable(GL_TEXTURE_2D);
 		glEnable(GL_DEPTH_TEST);
@@ -374,7 +399,6 @@ void Scene::DrawModel()
 
 		glEnd();
 	}
-#endif
 
 	//TODO: reimplement cameras
 	auto camera = &_camera;//m_pHLMV->GetState()->GetCurrentCamera()
@@ -417,17 +441,15 @@ void Scene::DrawModel()
 	if (nullptr != _entity)
 	{
 		// setup stencil buffer and draw mirror
-		//TODO: implement
-#if false
-		if (m_pHLMV->GetState()->mirror)
+		if (MirrorOnGround)
 		{
 			graphics::helpers::DrawMirroredModel(*_studioModelRenderer, _entity,
-				m_pHLMV->GetState()->renderMode,
-				m_pHLMV->GetState()->wireframeOverlay,
-				m_pHLMV->GetSettings()->GetFloorLength(),
-				m_pHLMV->GetState()->backfaceCulling);
+				CurrentRenderMode,
+				ShowWireframeOverlay,
+				//TODO: implement
+				/*m_pHLMV->GetSettings()->GetFloorLength()*/100,
+				EnableBackfaceCulling);
 		}
-#endif
 	}
 
 	SetupRenderMode();
@@ -443,29 +465,54 @@ void Scene::DrawModel()
 
 		renderer::DrawFlags_t flags = renderer::DrawFlag::NONE;
 
-		//Draw wireframe overlay
-		//TODO: implement
-#if false
-		if (m_pHLMV->GetState()->wireframeOverlay)
+		if (ShowWireframeOverlay)
 		{
 			flags |= renderer::DrawFlag::WIREFRAME_OVERLAY;
 		}
 
+		//TODO: implement
+#if false
 		if (m_pHLMV->GetState()->UsingWeaponOrigin())
 		{
 			flags |= renderer::DrawFlag::IS_VIEW_MODEL;
 		}
+#endif
 
-		if (m_pHLMV->GetState()->drawShadows)
+		if (DrawShadows)
 		{
 			flags |= renderer::DrawFlag::DRAW_SHADOWS;
 		}
 
-		if (m_pHLMV->GetState()->fixShadowZFighting)
+		if (FixShadowZFighting)
 		{
 			flags |= renderer::DrawFlag::FIX_SHADOW_Z_FIGHTING;
 		}
-#endif
+
+		//TODO: these should probably be made separate somehow
+		if (ShowHitboxes)
+		{
+			flags |= renderer::DrawFlag::DRAW_HITBOXES;
+		}
+
+		if (ShowBones)
+		{
+			flags |= renderer::DrawFlag::DRAW_BONES;
+		}
+
+		if (ShowAttachments)
+		{
+			flags |= renderer::DrawFlag::DRAW_ATTACHMENTS;
+		}
+
+		if (ShowEyePosition)
+		{
+			flags |= renderer::DrawFlag::DRAW_EYE_POSITION;
+		}
+
+		if (ShowNormals)
+		{
+			flags |= renderer::DrawFlag::DRAW_NORMALS;
+		}
 
 		_entity->Draw(flags);
 	}
@@ -474,22 +521,15 @@ void Scene::DrawModel()
 	// draw ground
 	//
 
-	//TODO: implement
-#if false
-	if (m_pHLMV->GetState()->showGround)
+	if (ShowGround)
 	{
-		graphics::helpers::DrawFloor(m_pHLMV->GetSettings()->GetFloorLength(), m_GroundTexture, m_pHLMV->GetSettings()->GetGroundColor(), m_pHLMV->GetState()->mirror);
+		//TODO: implement settings
+		graphics::helpers::DrawFloor(/*m_pHLMV->GetSettings()->GetFloorLength()*/100, /*m_GroundTexture*/0,/* m_pHLMV->GetSettings()->GetGroundColor()*/{255, 0, 0}, MirrorOnGround);
 	}
-#endif
-
-	//TODO: remove
-	graphics::helpers::DrawFloor(100, 0, Color(1, 0, 0), false);
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;
 
-	//TODO: implement
-#if false
-	if (m_pHLMV->GetState()->drawPlayerHitbox)
+	if (ShowPlayerHitbox)
 	{
 		//Draw a transparent green box to display the player hitbox
 		glDisable(GL_TEXTURE_2D);
@@ -547,7 +587,6 @@ void Scene::DrawModel()
 
 		graphics::DrawBox(v);
 	}
-#endif
 
 	glPopMatrix();
 }

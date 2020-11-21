@@ -26,6 +26,10 @@ namespace graphics
 class Scene
 {
 public:
+	//TOOD: these need to be defined somewhere else
+	static constexpr float DefaultFOV = 65.f;
+	static constexpr float DefaultFirstPersonFieldOfView = 74.f;
+
 	Scene();
 	~Scene();
 	Scene(const Scene&) = delete;
@@ -49,25 +53,13 @@ public:
 		_backgroundColor = value;
 	}
 
-	bool ShouldMirrorOnGround() const { return _mirrorOnGround; }
-
-	void SetMirrorOnGround(bool value)
-	{
-		_mirrorOnGround = value;
-	}
-
-	bool ShouldShowTexture() const { return _showTexture; }
-
-	void SetShowTexture(bool value)
-	{
-		_showTexture = value;
-	}
-
 	unsigned int GetDrawnPolygonsCount() const { return _drawnPolygonsCount; }
 
 	CHLMVStudioModelEntity* GetEntity() { return _entity; }
 
 	void SetEntity(CHLMVStudioModelEntity* entity);
+
+	void AlignOnGround();
 
 	void Initialize();
 
@@ -84,6 +76,34 @@ private:
 
 	void DrawModel();
 
+	//TODO: these are temporary until the graphics code can be refactored into an object based design
+public:
+	RenderMode CurrentRenderMode = RenderMode::TEXTURE_SHADED;
+
+	bool ShowHitboxes = false;
+	bool ShowBones = false;
+	bool ShowAttachments = false;
+	bool ShowEyePosition = false;
+	bool EnableBackfaceCulling = true;
+	bool ShowGround = false;
+	bool MirrorOnGround = false;
+	bool ShowBackground = false;
+	bool ShowWireframeOverlay = false;
+	bool DrawShadows = false;
+	bool FixShadowZFighting = false;
+	bool ShowAxes = false;
+	bool ShowNormals = false;
+	bool ShowCrosshair = false;
+	bool ShowGuidelines = false;
+	bool ShowPlayerHitbox = false;
+
+	float FieldOfView = DefaultFOV;
+	float FirstPersonFieldOfView = DefaultFirstPersonFieldOfView;
+
+	float* CurrentFOV = &FieldOfView;
+
+	bool ShowTexture = false;
+
 private:
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 
@@ -98,9 +118,6 @@ private:
 	unsigned int _windowWidth = 0, _windowHeight = 0;
 
 	glm::vec3 _backgroundColor{0.5f, 0.5f, 0.5f};
-
-	bool _mirrorOnGround = false;
-	bool _showTexture = false;
 
 	unsigned int _drawnPolygonsCount = 0;
 

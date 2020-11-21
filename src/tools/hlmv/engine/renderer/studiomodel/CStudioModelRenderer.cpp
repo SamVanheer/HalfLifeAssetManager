@@ -17,12 +17,6 @@
 //Double to float conversion
 #pragma warning( disable: 4244 )
 
-cvar::CCVar g_ShowBones( "r_showbones", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model bones" ) );
-cvar::CCVar g_ShowAttachments( "r_showattachments", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model attachments" ) );
-cvar::CCVar g_ShowEyePosition( "r_showeyeposition", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model eye position" ) );
-cvar::CCVar g_ShowHitboxes( "r_showhitboxes", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows model hitboxes" ) );
-cvar::CCVar g_ShowStudioNormals( "r_showstudionormals", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, shows studio normals" ) );
-
 //TODO: this is temporary until lighting can be moved somewhere else
 
 DEFINE_COLOR_CVAR( , r_lighting, 255, 255, 255, "Lighting", cvar::CCVarArgsBuilder().Flags( cvar::Flag::ARCHIVE ).Callback( cvar::ColorCVarChanged ) );
@@ -155,27 +149,27 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 	}
 
 	// draw bones
-	if( g_ShowBones.GetBool() )
+	if(flags & renderer::DrawFlag::DRAW_BONES)
 	{
 		DrawBones();
 	}
 
-	if( g_ShowAttachments.GetBool() )
+	if(flags & renderer::DrawFlag::DRAW_ATTACHMENTS)
 	{
 		DrawAttachments();
 	}
 
-	if( g_ShowEyePosition.GetBool() )
+	if(flags & renderer::DrawFlag::DRAW_EYE_POSITION)
 	{
 		DrawEyePosition();
 	}
 
-	if( g_ShowHitboxes.GetBool() )
+	if(flags & renderer::DrawFlag::DRAW_HITBOXES)
 	{
 		DrawHitBoxes();
 	}
 
-	if( g_ShowStudioNormals.GetBool() )
+	if(flags & renderer::DrawFlag::DRAW_NORMALS)
 	{
 		DrawNormals();
 	}

@@ -35,7 +35,17 @@ enum DrawFlag : DrawFlags_t
 
 	DRAW_SHADOWS		= Bit(3), //! Whether to draw shadows
 
-	FIX_SHADOW_Z_FIGHTING = Bit(4) //! Whether to fix Shadow Z fighting
+	FIX_SHADOW_Z_FIGHTING = Bit(4), //! Whether to fix Shadow Z fighting
+
+	DRAW_HITBOXES = Bit(5),
+
+	DRAW_BONES = Bit(6),
+
+	DRAW_ATTACHMENTS = Bit(7),
+
+	DRAW_EYE_POSITION = Bit(8),
+
+	DRAW_NORMALS = Bit(9),
 };
 }
 }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1124</width>
-    <height>74</height>
+    <width>987</width>
+    <height>75</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,53 +32,18 @@
    <property name="verticalSpacing">
     <number>0</number>
    </property>
-   <item row="0" column="4">
-    <widget class="QWidget" name="widget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="CenterModelOnWorldOrigin">
-        <property name="text">
-         <string>Center Model On World Origin</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="AlignOnGround">
-        <property name="text">
-         <string>Align On Ground</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>0</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
+   <item row="0" column="5">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item row="0" column="2">
     <widget class="QWidget" name="MirrorWidget" native="true">
@@ -182,9 +147,9 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QCheckBox" name="ShowHitBoxes">
+       <widget class="QCheckBox" name="ShowHitboxes">
         <property name="text">
-         <string>Show Hit Boxes</string>
+         <string>Show Hitboxes</string>
         </property>
        </widget>
       </item>
@@ -220,6 +185,9 @@
        <widget class="QCheckBox" name="BackfaceCulling">
         <property name="text">
          <string>Backface Culling</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -281,6 +249,19 @@
      </layout>
     </widget>
    </item>
+   <item row="1" column="0" colspan="5">
+    <spacer name="verticalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="0" column="3">
     <widget class="QWidget" name="FOVWidget" native="true">
      <layout class="QGridLayout" name="gridLayout_5">
@@ -299,56 +280,98 @@
       <property name="spacing">
        <number>0</number>
       </property>
-      <item row="3" column="1">
-       <widget class="QPushButton" name="FirstPersonFieldOfView">
-        <property name="text">
-         <string>Set FOV</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QDoubleSpinBox" name="FirstPersonFOVSpinner"/>
-      </item>
-      <item row="3" column="2">
-       <widget class="QPushButton" name="ResetFirstPersonFieldOfView">
-        <property name="text">
-         <string>Default</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QDoubleSpinBox" name="FOVSpinner"/>
-      </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="SetFOV">
-        <property name="text">
-         <string>Set FOV</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" colspan="3">
+      <item row="0" column="0" colspan="2">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>Field Of View</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
+      <item row="1" column="1">
        <widget class="QPushButton" name="ResetFOV">
         <property name="text">
          <string>Default</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="3">
+      <item row="3" column="0">
+       <widget class="QDoubleSpinBox" name="FirstPersonFOVSpinner">
+        <property name="maximum">
+         <double>360.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="0">
+       <widget class="QDoubleSpinBox" name="FOVSpinner">
+        <property name="maximum">
+         <double>360.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QPushButton" name="ResetFirstPersonFieldOfView">
+        <property name="text">
+         <string>Default</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>First Person Field Of View</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="0" colspan="3">
-       <spacer name="verticalSpacer_2">
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="CenterModelOnWorldOrigin">
+        <property name="text">
+         <string>Center Model On World Origin</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="AlignOnGround">
+        <property name="text">
+         <string>Align On Ground</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
@@ -365,6 +388,24 @@
    </item>
    <item row="0" column="0">
     <widget class="QWidget" name="RenderSettingsWidget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>100</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <layout class="QGridLayout" name="gridLayout">
       <property name="leftMargin">
        <number>0</number>
@@ -381,68 +422,14 @@
       <property name="spacing">
        <number>0</number>
       </property>
-      <item row="1" column="1">
-       <widget class="QSlider" name="OpacitySlider">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="RenderModeComboBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>16777215</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Render Mode:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>Opacity:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
+      <item row="4" column="0" colspan="2">
        <spacer name="verticalSpacer_4">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -455,34 +442,104 @@
         </property>
        </spacer>
       </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="OpacityValueLabel">
+        <property name="text">
+         <string>100%</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Render Mode:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QComboBox" name="RenderModeComboBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="currentText">
+         <string>Texture Shaded</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Wireframe</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Flat Shaded</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Smooth Shaded</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Texture Shaded</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QSlider" name="OpacitySlider">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="tickPosition">
+         <enum>QSlider::TicksAbove</enum>
+        </property>
+        <property name="tickInterval">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
-   </item>
-   <item row="1" column="0" colspan="5">
-    <spacer name="verticalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="5">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>0</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
