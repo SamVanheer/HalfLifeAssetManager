@@ -23,7 +23,7 @@ namespace ui::assets::studiomodel
 StudioModelEditWidget::StudioModelEditWidget(EditorUIContext* editorContext, StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
-	, _scene(std::make_unique<graphics::Scene>())
+	, _scene(std::make_unique<graphics::Scene>(editorContext->GetSoundSystem()))
 	, _context(new StudioModelContext(asset, _scene.get(), this))
 {
 	auto entity = static_cast<CHLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),

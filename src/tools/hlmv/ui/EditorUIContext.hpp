@@ -6,6 +6,16 @@
 #include <QObject>
 #include <QTimer>
 
+namespace filesystem
+{
+class IFileSystem;
+}
+
+namespace soundsystem
+{
+class ISoundSystem;
+}
+
 namespace ui
 {
 namespace assets
@@ -49,6 +59,10 @@ public:
 
 	QTimer* GetTimer() const { return _timer; }
 
+	filesystem::IFileSystem* GetFileSystem() const { return _fileSystem.get(); }
+
+	soundsystem::ISoundSystem* GetSoundSystem() const { return _soundSystem.get(); }
+
 	std::vector<LoadedAsset>& GetLoadedAssets() { return _loadedAssets; }
 
 signals:
@@ -62,6 +76,9 @@ private slots:
 
 private:
 	QTimer* const _timer;
+
+	std::unique_ptr<filesystem::IFileSystem> _fileSystem;
+	std::unique_ptr<soundsystem::ISoundSystem> _soundSystem;
 
 	std::vector<LoadedAsset> _loadedAssets;
 };

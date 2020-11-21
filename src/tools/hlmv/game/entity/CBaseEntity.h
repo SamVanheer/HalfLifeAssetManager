@@ -26,6 +26,11 @@ class CBaseEntityList;
 class CEntityManager;
 class CWorldTime;
 
+namespace soundsystem
+{
+class ISoundSystem;
+}
+
 /**
 *	Pointer to member function used for think methods.
 */
@@ -38,12 +43,15 @@ struct EntityContext final
 	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
 	CBaseEntityList* const EntityList;
 	CEntityManager* const EntityManager;
+	soundsystem::ISoundSystem* const SoundSystem;
 
-	EntityContext(CWorldTime* worldTime, studiomdl::IStudioModelRenderer* studioModelRenderer, CBaseEntityList* entityList, CEntityManager* entityManager)
+	EntityContext(CWorldTime* worldTime, studiomdl::IStudioModelRenderer* studioModelRenderer, CBaseEntityList* entityList, CEntityManager* entityManager,
+		soundsystem::ISoundSystem* soundSystem)
 		: WorldTime(worldTime)
 		, StudioModelRenderer(studioModelRenderer)
 		, EntityList(entityList)
 		, EntityManager(entityManager)
+		, SoundSystem(soundSystem)
 	{
 	}
 };

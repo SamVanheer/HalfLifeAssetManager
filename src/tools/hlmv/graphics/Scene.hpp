@@ -18,6 +18,11 @@ namespace studiomdl
 class IStudioModelRenderer;
 }
 
+namespace soundsystem
+{
+class ISoundSystem;
+}
+
 namespace graphics
 {
 /**
@@ -30,7 +35,7 @@ public:
 	static constexpr float DefaultFOV = 65.f;
 	static constexpr float DefaultFirstPersonFieldOfView = 74.f;
 
-	Scene();
+	Scene(soundsystem::ISoundSystem* soundSystem);
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;

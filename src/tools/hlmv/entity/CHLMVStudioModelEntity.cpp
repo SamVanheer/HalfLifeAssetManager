@@ -1,15 +1,7 @@
 #include "soundsystem/SoundConstants.h"
 #include "soundsystem/ISoundSystem.h"
 
-#include "cvar/CCVar.h"
-
 #include "CHLMVStudioModelEntity.h"
-
-//TODO: remove
-extern soundsystem::ISoundSystem* g_pSoundSystem;
-
-static cvar::CCVar s_ent_playsounds( "s_ent_playsounds", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "Whether or not to play sounds triggered by animation events" ) );
-static cvar::CCVar s_ent_pitchframerate( "s_ent_pitchframerate", cvar::CCVarArgsBuilder().FloatValue( 0 ).HelpInfo( "If non-zero, event sounds are pitch modulated based on the framerate" ) );
 
 LINK_ENTITY_TO_CLASS( studiomodel, CHLMVStudioModelEntity );
 
@@ -51,16 +43,16 @@ void CHLMVStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 	case SCRIPT_EVENT_SOUND_VOICE:
 	case SCRIPT_CLIENT_EVENT_SOUND:
 		{
-			if( s_ent_playsounds.GetBool() )
+			if(PlaySound)
 			{
 				int iPitch = soundsystem::PITCH_NORM;
 				
-				if( s_ent_pitchframerate.GetBool() )
+				if(PitchFramerateAmplitude)
 				{
 					iPitch = static_cast<int>( iPitch * GetFrameRate() );
 				}
 
-				g_pSoundSystem->PlaySound( event.pszOptions, soundsystem::VOLUME_NORM, iPitch );
+				GetContext()->SoundSystem->PlaySound( event.pszOptions, soundsystem::VOLUME_NORM, iPitch );
 			}
 
 			break;

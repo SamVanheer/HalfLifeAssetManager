@@ -17,7 +17,10 @@ public:
 
 	void AnimThink();
 
+	//TODO: these should be moved out of the class to eliminate overhead when multiple entities are in a scene
 	bool PlaySequence = true;
+	bool PlaySound = false;
+	bool PitchFramerateAmplitude = false;
 };
 
 #endif //HLMV_ENTITY_CHLMVSTUDIOMODELENTITY_H

@@ -34,12 +34,13 @@ static const int GUIDELINES_OFFSET = GUIDELINES_LINE_LENGTH + (GUIDELINES_POINT_
 
 static const int GUIDELINES_EDGE_WIDTH = 4;
 
-Scene::Scene()
+Scene::Scene(soundsystem::ISoundSystem* soundSystem)
 	: _studioModelRenderer(std::make_unique<studiomdl::CStudioModelRenderer>())
 	, _worldTime(std::make_unique<CWorldTime>())
 	//Use the default list class for now
 	, _entityManager(std::make_unique<CEntityManager>(std::make_unique<CBaseEntityList>(), _worldTime.get()))
-	, _entityContext(std::make_unique<EntityContext>(_worldTime.get(), _studioModelRenderer.get(), _entityManager->GetEntityList(), _entityManager.get()))
+	, _entityContext(std::make_unique<EntityContext>(_worldTime.get(), _studioModelRenderer.get(), _entityManager->GetEntityList(), _entityManager.get(),
+		soundSystem))
 {
 }
 
