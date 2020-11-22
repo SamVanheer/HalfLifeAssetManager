@@ -8,24 +8,16 @@
 
 #include "ui_HLMVMainWindow.h"
 
-#include "ui/assets/Assets.hpp"
-
 namespace ui
 {
 class EditorUIContext;
-
-namespace assets
-{
-class IAsset;
-class IAssetProviderRegistry;
-}
 
 class HLMVMainWindow final : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	HLMVMainWindow(std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry);
+	HLMVMainWindow(EditorUIContext* editorContext);
 	~HLMVMainWindow();
 
 private slots:
@@ -43,7 +35,5 @@ private:
 	EditorUIContext* const _editorContext;
 
 	QTabWidget* _assetTabs;
-
-	std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
 };
 }

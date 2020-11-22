@@ -12,10 +12,9 @@
 
 namespace ui
 {
-HLMVMainWindow::HLMVMainWindow(std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry)
+HLMVMainWindow::HLMVMainWindow(EditorUIContext* editorContext)
 	: QMainWindow()
-	, _editorContext(new EditorUIContext(this))
-	, _assetProviderRegistry(std::move(assetProviderRegistry))
+	, _editorContext(editorContext)
 {
 	_ui.setupUi(this);
 
@@ -72,7 +71,7 @@ void HLMVMainWindow::OnShowAbout()
 
 void HLMVMainWindow::LoadAsset(const QString& fileName)
 {
-	auto asset = _assetProviderRegistry->Load(fileName.toStdString());
+	auto asset = _editorContext->GetAssetProviderRegistry()->Load(fileName.toStdString());
 
 	if (nullptr != asset)
 	{

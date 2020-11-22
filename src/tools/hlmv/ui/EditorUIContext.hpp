@@ -21,6 +21,7 @@ namespace ui
 namespace assets
 {
 class IAsset;
+class IAssetProviderRegistry;
 }
 
 class LoadedAsset
@@ -56,7 +57,7 @@ public:
 	static constexpr int MaximumFloorLength = 2048;
 	static constexpr int DefaultFloorLength = 100;
 
-	EditorUIContext(QObject* parent = nullptr);
+	EditorUIContext(std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent = nullptr);
 	~EditorUIContext();
 	EditorUIContext(const EditorUIContext&) = delete;
 	EditorUIContext& operator=(const EditorUIContext&) = delete;
@@ -66,6 +67,8 @@ public:
 	filesystem::IFileSystem* GetFileSystem() const { return _fileSystem.get(); }
 
 	soundsystem::ISoundSystem* GetSoundSystem() const { return _soundSystem.get(); }
+
+	assets::IAssetProviderRegistry* GetAssetProviderRegistry() const { return _assetProviderRegistry.get(); }
 
 	std::vector<LoadedAsset>& GetLoadedAssets() { return _loadedAssets; }
 
@@ -98,6 +101,8 @@ private:
 
 	std::unique_ptr<filesystem::IFileSystem> _fileSystem;
 	std::unique_ptr<soundsystem::ISoundSystem> _soundSystem;
+
+	std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
 
 	std::vector<LoadedAsset> _loadedAssets;
 

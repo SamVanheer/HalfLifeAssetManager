@@ -13,6 +13,7 @@
 #include <QSurfaceFormat>
 
 #include "application/HLMVApplication.hpp"
+#include "ui/EditorUIContext.hpp"
 #include "ui/HLMVMainWindow.hpp"
 
 #include "ui/assets/Assets.hpp"
@@ -97,7 +98,9 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 	assetProviderRegistry->AddProvider(std::make_unique<ui::assets::studiomodel::StudioModelAssetProvider>());
 
-	_mainWindow = new ui::HLMVMainWindow(std::move(assetProviderRegistry));
+	_editorContext = new ui::EditorUIContext(std::move(assetProviderRegistry), this);
+
+	_mainWindow = new ui::HLMVMainWindow(_editorContext);
 
 	//TODO: doesn't actually show maximized
 	_mainWindow->showMaximized();

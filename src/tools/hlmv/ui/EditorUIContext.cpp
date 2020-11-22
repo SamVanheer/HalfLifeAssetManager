@@ -22,11 +22,12 @@ LoadedAsset::LoadedAsset(std::unique_ptr<assets::IAsset>&& asset, QWidget* editW
 
 LoadedAsset::~LoadedAsset() = default;
 
-EditorUIContext::EditorUIContext(QObject* parent)
+EditorUIContext::EditorUIContext(std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent)
 	: QObject(parent)
 	, _timer(new QTimer(this))
 	, _fileSystem(std::make_unique<filesystem::CFileSystem>())
 	, _soundSystem(std::make_unique<soundsystem::CSoundSystem>())
+	, _assetProviderRegistry(std::move(assetProviderRegistry))
 {
 	//TODO: set up filesystem based on game configuration
 	if (!_fileSystem->Initialize())

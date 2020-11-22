@@ -9,6 +9,7 @@
 
 namespace ui
 {
+class EditorUIContext;
 class HLMVMainWindow;
 }
 
@@ -31,7 +32,8 @@ private slots:
 	void OnFileNameReceived(const QString& fileName);
 
 private:
-	ui::HLMVMainWindow* _mainWindow;
+	ui::EditorUIContext* _editorContext{};
+	ui::HLMVMainWindow* _mainWindow{};
 
 	//Used to manage single-instance functionality
 	QScopedPointer<SingleInstance> singleInstance;
