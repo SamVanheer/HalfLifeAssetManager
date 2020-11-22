@@ -5,7 +5,11 @@
 
 #include "graphics/Scene.hpp"
 
-namespace ui::assets::studiomodel
+namespace ui
+{
+class EditorUIContext;
+
+namespace assets::studiomodel
 {
 class StudioModelAsset;
 
@@ -17,14 +21,17 @@ class StudioModelContext final : public QObject
 	Q_OBJECT
 
 public:
-	StudioModelContext(StudioModelAsset* asset, graphics::Scene* scene, QObject* parent = nullptr)
+	StudioModelContext(EditorUIContext* editorContext, StudioModelAsset* asset, graphics::Scene* scene, QObject* parent = nullptr)
 		: QObject(parent)
+		, _editorContext(editorContext)
 		, _asset(asset)
 		, _scene(scene)
 	{
 	}
 
 	~StudioModelContext() = default;
+
+	EditorUIContext* GetEditorContext() { return _editorContext; }
 
 	StudioModelAsset* GetAsset() { return _asset; }
 
@@ -40,7 +47,9 @@ public slots:
 	}
 
 private:
+	EditorUIContext* const _editorContext;
 	StudioModelAsset* const _asset;
 	graphics::Scene* const _scene;
 };
+}
 }

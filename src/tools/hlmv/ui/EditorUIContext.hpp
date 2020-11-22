@@ -52,6 +52,10 @@ class EditorUIContext final : public QObject
 	Q_OBJECT
 
 public:
+	static constexpr int MinimumFloorLength = 0;
+	static constexpr int MaximumFloorLength = 2048;
+	static constexpr int DefaultFloorLength = 100;
+
 	EditorUIContext(QObject* parent = nullptr);
 	~EditorUIContext();
 	EditorUIContext(const EditorUIContext&) = delete;
@@ -65,11 +69,26 @@ public:
 
 	std::vector<LoadedAsset>& GetLoadedAssets() { return _loadedAssets; }
 
+	int GetFloorLength() const { return _floorLength; }
+
 signals:
 	/**
 	*	@brief Emitted every time a frame tick occurs
 	*/
 	void Tick();
+
+	void FloorLengthChanged(int length);
+
+public slots:
+	void SetFloorLength(int value)
+	{
+		if (_floorLength != value)
+		{
+			_floorLength = value;
+
+			emit FloorLengthChanged(_floorLength);
+		}
+	}
 
 private slots:
 	void OnTimerTick();
@@ -81,5 +100,7 @@ private:
 	std::unique_ptr<soundsystem::ISoundSystem> _soundSystem;
 
 	std::vector<LoadedAsset> _loadedAssets;
+
+	int _floorLength = DefaultFloorLength;
 };
 }

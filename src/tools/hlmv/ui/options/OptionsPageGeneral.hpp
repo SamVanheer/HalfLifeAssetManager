@@ -5,20 +5,29 @@
 
 #include "ui_OptionsPageGeneral.h"
 
-namespace ui::options
+namespace ui
+{
+class EditorUIContext;
+
+namespace options
 {
 class OptionsPageGeneral final : public QWidget
 {
 	Q_OBJECT
 
 public:
-	OptionsPageGeneral(QWidget* parent = nullptr);
+	OptionsPageGeneral(EditorUIContext* editorContext, QWidget* parent = nullptr);
 	~OptionsPageGeneral();
 
 public slots:
 	void OnSaveChanges(QSettings& settings);
 
+	void OnResetFloorLength();
+
 private:
 	Ui_OptionsPageGeneral _ui;
+
+	EditorUIContext* const _editorContext;
 };
+}
 }

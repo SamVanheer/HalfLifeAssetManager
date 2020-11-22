@@ -25,8 +25,10 @@ StudioModelEditWidget::StudioModelEditWidget(EditorUIContext* editorContext, Stu
 	: QWidget(parent)
 	, _asset(asset)
 	, _scene(std::make_unique<graphics::Scene>(editorContext->GetSoundSystem()))
-	, _context(new StudioModelContext(asset, _scene.get(), this))
+	, _context(new StudioModelContext(editorContext, asset, _scene.get(), this))
 {
+	_scene->FloorLength = editorContext->GetFloorLength();
+
 	auto entity = static_cast<CHLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
 		glm::vec3(), glm::vec3(), false));
 
@@ -79,6 +81,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorUIContext* editorContext, Stu
 	//Listen to the main timer to update as needed
 	connect(editorContext, &EditorUIContext::Tick, this, &StudioModelEditWidget::OnTick);
 	connect(_sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelEditWidget::OnMouseEvent);
+	connect(editorContext, &EditorUIContext::FloorLengthChanged, this, &StudioModelEditWidget::OnFloorLengthChanged);
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
@@ -95,5 +98,10 @@ void StudioModelEditWidget::OnTick()
 void StudioModelEditWidget::OnMouseEvent(QMouseEvent* event)
 {
 	_cameraOperator->MouseEvent(*_scene->GetCamera(), *event);
+}
+
+void StudioModelEditWidget::OnFloorLengthChanged(int length)
+{
+	_scene->FloorLength = length;
 }
 }

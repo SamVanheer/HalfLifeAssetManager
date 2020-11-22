@@ -38,6 +38,8 @@ private slots:
 
 	void OnMouseEvent(QMouseEvent* event);
 
+	void OnFloorLengthChanged(int length);
+
 private:
 	StudioModelAsset* const _asset;
 	const std::unique_ptr<graphics::Scene> _scene;

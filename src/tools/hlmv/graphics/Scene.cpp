@@ -447,8 +447,7 @@ void Scene::DrawModel()
 			graphics::helpers::DrawMirroredModel(*_studioModelRenderer, _entity,
 				CurrentRenderMode,
 				ShowWireframeOverlay,
-				//TODO: implement
-				/*m_pHLMV->GetSettings()->GetFloorLength()*/100,
+				FloorLength,
 				EnableBackfaceCulling);
 		}
 	}
@@ -525,7 +524,7 @@ void Scene::DrawModel()
 	if (ShowGround)
 	{
 		//TODO: implement settings
-		graphics::helpers::DrawFloor(/*m_pHLMV->GetSettings()->GetFloorLength()*/100, /*m_GroundTexture*/0,/* m_pHLMV->GetSettings()->GetGroundColor()*/{255, 0, 0}, MirrorOnGround);
+		graphics::helpers::DrawFloor(FloorLength, /*m_GroundTexture*/0,/* m_pHLMV->GetSettings()->GetGroundColor()*/{255, 0, 0}, MirrorOnGround);
 	}
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;

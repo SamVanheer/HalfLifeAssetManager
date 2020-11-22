@@ -3,12 +3,13 @@
 
 namespace ui::options
 {
-OptionsDialog::OptionsDialog(QWidget* parent)
+OptionsDialog::OptionsDialog(EditorUIContext* editorContext, QWidget* parent)
 	: QDialog(parent)
+	, _editorContext(editorContext)
 {
 	_ui.setupUi(this);
 
-	_pageGeneral = new OptionsPageGeneral(this);
+	_pageGeneral = new OptionsPageGeneral(_editorContext, this);
 
 	_ui.OptionsPages->addTab(_pageGeneral, "General");
 

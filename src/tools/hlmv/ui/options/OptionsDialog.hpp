@@ -6,7 +6,11 @@
 
 #include "ui_OptionsDialog.h"
 
-namespace ui::options
+namespace ui
+{
+class EditorUIContext;
+
+namespace options
 {
 class OptionsPageGeneral;
 
@@ -15,7 +19,7 @@ class OptionsDialog final : public QDialog
 	Q_OBJECT
 
 public:
-	OptionsDialog(QWidget* parent = nullptr);
+	OptionsDialog(EditorUIContext* editorContext, QWidget* parent = nullptr);
 	~OptionsDialog();
 
 signals:
@@ -27,6 +31,9 @@ private slots:
 private:
 	ui::Ui_OptionsDialog _ui;
 
+	EditorUIContext* const _editorContext;
+
 	OptionsPageGeneral* _pageGeneral;
 };
+}
 }

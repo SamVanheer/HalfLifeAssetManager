@@ -107,6 +107,8 @@ public:
 
 	float* CurrentFOV = &FieldOfView;
 
+	int FloorLength = 0;
+
 	bool ShowTexture = false;
 
 private:

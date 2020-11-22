@@ -47,7 +47,7 @@ void HLMVMainWindow::OnOpenLoadAssetDialog()
 
 void HLMVMainWindow::OnOpenOptionsDialog()
 {
-	options::OptionsDialog dialog{this};
+	options::OptionsDialog dialog{_editorContext, this};
 
 	dialog.exec();
 }
