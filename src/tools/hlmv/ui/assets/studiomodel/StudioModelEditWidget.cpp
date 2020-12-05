@@ -14,6 +14,7 @@
 
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelDisplayPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelGlobalFlagsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
 
@@ -55,6 +56,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	_dockPanels->addTab(new StudioModelDisplayPanel(_context), "Model Display");
 	_dockPanels->addTab(new StudioModelSequencesPanel(_context), "Sequences");
 	_dockPanels->addTab(new StudioModelBodyPartsPanel(_context), "Body Parts");
+	_dockPanels->addTab(new StudioModelGlobalFlagsPanel(_context), "Global Flags");
 
 	_timeline = new Timeline(_context, _controlAreaWidget);
 

@@ -9,6 +9,9 @@ target_sources(HLMV
 		StudioModelEditEventsDialog.cpp
 		StudioModelEditEventsDialog.hpp
 		StudioModelEditEventsDialog.ui
+		StudioModelGlobalFlagsPanel.cpp
+		StudioModelGlobalFlagsPanel.hpp
+		StudioModelGlobalFlagsPanel.ui
 		StudioModelSequencesPanel.cpp
 		StudioModelSequencesPanel.hpp
 		StudioModelSequencesPanel.ui
