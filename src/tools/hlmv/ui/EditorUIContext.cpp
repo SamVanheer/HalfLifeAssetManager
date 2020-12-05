@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <cassert>
+#include <iterator>
 #include <stdexcept>
 
 #include <QMessageBox>
@@ -11,6 +14,9 @@
 #include "ui/EditorUIContext.hpp"
 
 #include "ui/assets/Assets.hpp"
+
+#include "ui/options/GameConfiguration.hpp"
+#include "ui/options/GameEnvironment.hpp"
 
 namespace ui
 {
@@ -50,6 +56,59 @@ EditorUIContext::~EditorUIContext()
 {
 	_soundSystem->Shutdown();
 	_fileSystem->Shutdown();
+}
+
+std::vector<options::GameEnvironment*> EditorUIContext::GetGameEnvironments() const
+{
+	std::vector<options::GameEnvironment*> environments;
+
+	environments.reserve(_gameEnvironments.size());
+
+	std::transform(_gameEnvironments.begin(), _gameEnvironments.end(), std::back_inserter(environments), [](const auto& environment)
+		{
+			return environment.get();
+		});
+
+	return environments;
+}
+
+options::GameEnvironment* EditorUIContext::GetGameEnvironmentById(const QUuid& id) const
+{
+	if (auto it = std::find_if(_gameEnvironments.begin(), _gameEnvironments.end(), [&](const auto& environment)
+		{
+			return environment->GetId() == id;
+		}
+	); it != _gameEnvironments.end())
+	{
+		return it->get();
+	}
+
+	return nullptr;
+}
+
+void EditorUIContext::AddGameEnvironment(std::unique_ptr<options::GameEnvironment>&& gameEnvironment)
+{
+	assert(gameEnvironment);
+
+	auto& ref = _gameEnvironments.emplace_back(std::move(gameEnvironment));
+
+	emit GameEnvironmentAdded(ref.get());
+}
+
+void EditorUIContext::RemoveGameEnvironment(const QUuid& id)
+{
+	if (auto it = std::find_if(_gameEnvironments.begin(), _gameEnvironments.end(), [&](const auto& environment)
+		{
+			return environment->GetId() == id;
+		}
+	); it != _gameEnvironments.end())
+	{
+		const std::unique_ptr<options::GameEnvironment> gameEnvironment{std::move(*it)};
+
+		_gameEnvironments.erase(it);
+
+		emit GameEnvironmentRemoved(gameEnvironment.get());
+	}
 }
 
 void EditorUIContext::OnTimerTick()

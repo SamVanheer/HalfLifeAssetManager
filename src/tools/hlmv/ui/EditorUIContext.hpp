@@ -1,10 +1,12 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include <QObject>
 #include <QTimer>
+#include <QUuid>
 
 namespace filesystem
 {
@@ -22,6 +24,12 @@ namespace assets
 {
 class IAsset;
 class IAssetProviderRegistry;
+}
+
+namespace options
+{
+class GameConfiguration;
+class GameEnvironment;
 }
 
 class LoadedAsset
@@ -72,6 +80,28 @@ public:
 
 	std::vector<LoadedAsset>& GetLoadedAssets() { return _loadedAssets; }
 
+	std::vector<options::GameEnvironment*> GetGameEnvironments() const;
+
+	options::GameEnvironment* GetGameEnvironmentById(const QUuid& id) const;
+
+	void AddGameEnvironment(std::unique_ptr<options::GameEnvironment>&& gameEnvironment);
+
+	void RemoveGameEnvironment(const QUuid& id);
+
+	std::pair<options::GameEnvironment*, options::GameConfiguration*> GetActiveConfiguration() const { return _activeConfiguration; }
+
+	void SetActiveConfiguration(const std::pair<options::GameEnvironment*, options::GameConfiguration*>& configuration)
+	{
+		if (_activeConfiguration != configuration)
+		{
+			const auto previous = _activeConfiguration;
+
+			_activeConfiguration = configuration;
+			
+			emit ActiveConfigurationChanged(configuration, previous);
+		}
+	}
+
 	int GetFloorLength() const { return _floorLength; }
 
 signals:
@@ -79,6 +109,12 @@ signals:
 	*	@brief Emitted every time a frame tick occurs
 	*/
 	void Tick();
+
+	void GameEnvironmentAdded(options::GameEnvironment* gameEnvironment);
+	void GameEnvironmentRemoved(options::GameEnvironment* gameEnvironment);
+
+	void ActiveConfigurationChanged(const std::pair<options::GameEnvironment*, options::GameConfiguration*>& current,
+		const std::pair<options::GameEnvironment*, options::GameConfiguration*>& previous);
 
 	void FloorLengthChanged(int length);
 
@@ -105,6 +141,11 @@ private:
 	std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
 
 	std::vector<LoadedAsset> _loadedAssets;
+
+	//TODO: game environments should be moved to a separate collection type
+	std::vector<std::unique_ptr<options::GameEnvironment>> _gameEnvironments;
+
+	std::pair<options::GameEnvironment*, options::GameConfiguration*> _activeConfiguration{};
 
 	int _floorLength = DefaultFloorLength;
 };
