@@ -28,7 +28,7 @@ public:
 
 	const IAssetProvider* GetProvider() const override;
 
-	QWidget* CreateEditWidget(EditorUIContext* editorContext) override;
+	QWidget* CreateEditWidget(EditorContext* editorContext) override;
 
 	void Save(const std::string& fileName) override;
 

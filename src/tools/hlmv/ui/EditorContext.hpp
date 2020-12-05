@@ -56,7 +56,7 @@ private:
 /**
 *	@brief Used to communicate between the main window and edit widgets
 */
-class EditorUIContext final : public QObject
+class EditorContext final : public QObject
 {
 	Q_OBJECT
 
@@ -65,10 +65,10 @@ public:
 	static constexpr int MaximumFloorLength = 2048;
 	static constexpr int DefaultFloorLength = 100;
 
-	EditorUIContext(std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent = nullptr);
-	~EditorUIContext();
-	EditorUIContext(const EditorUIContext&) = delete;
-	EditorUIContext& operator=(const EditorUIContext&) = delete;
+	EditorContext(std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent = nullptr);
+	~EditorContext();
+	EditorContext(const EditorContext&) = delete;
+	EditorContext& operator=(const EditorContext&) = delete;
 
 	QTimer* GetTimer() const { return _timer; }
 

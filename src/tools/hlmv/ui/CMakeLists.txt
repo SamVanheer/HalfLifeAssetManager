@@ -1,7 +1,7 @@
 target_sources(HLMV
 	PRIVATE
-		EditorUIContext.cpp
-		EditorUIContext.hpp
+		EditorContext.cpp
+		EditorContext.hpp
 		HLMVMainWindow.cpp
 		HLMVMainWindow.hpp
 		HLMVMainWindow.ui

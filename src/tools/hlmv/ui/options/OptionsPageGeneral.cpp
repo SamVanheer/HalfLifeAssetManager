@@ -1,9 +1,9 @@
-#include "ui/EditorUIContext.hpp"
+#include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 
 namespace ui::options
 {
-OptionsPageGeneral::OptionsPageGeneral(EditorUIContext* editorContext, QWidget* parent)
+OptionsPageGeneral::OptionsPageGeneral(EditorContext* editorContext, QWidget* parent)
 	: QWidget(parent)
 	, _editorContext(editorContext)
 {

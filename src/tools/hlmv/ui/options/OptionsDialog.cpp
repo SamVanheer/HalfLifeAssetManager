@@ -4,7 +4,7 @@
 
 namespace ui::options
 {
-OptionsDialog::OptionsDialog(EditorUIContext* editorContext, QWidget* parent)
+OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
 	: QDialog(parent)
 	, _editorContext(editorContext)
 {

@@ -10,14 +10,14 @@
 
 namespace ui
 {
-class EditorUIContext;
+class EditorContext;
 
 class HLMVMainWindow final : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	HLMVMainWindow(EditorUIContext* editorContext);
+	HLMVMainWindow(EditorContext* editorContext);
 	~HLMVMainWindow();
 
 private slots:
@@ -32,7 +32,7 @@ private:
 private:
 	Ui_HLMVMainWindow _ui;
 
-	EditorUIContext* const _editorContext;
+	EditorContext* const _editorContext;
 
 	QTabWidget* _assetTabs;
 };

@@ -9,7 +9,7 @@
 
 namespace ui
 {
-class EditorUIContext;
+class EditorContext;
 class HLMVMainWindow;
 }
 
@@ -32,7 +32,7 @@ private slots:
 	void OnFileNameReceived(const QString& fileName);
 
 private:
-	ui::EditorUIContext* _editorContext{};
+	ui::EditorContext* _editorContext{};
 	ui::HLMVMainWindow* _mainWindow{};
 
 	//Used to manage single-instance functionality

@@ -7,7 +7,7 @@
 
 namespace ui
 {
-class EditorUIContext;
+class EditorContext;
 
 namespace assets::studiomodel
 {
@@ -21,7 +21,7 @@ class StudioModelContext final : public QObject
 	Q_OBJECT
 
 public:
-	StudioModelContext(EditorUIContext* editorContext, StudioModelAsset* asset, graphics::Scene* scene, QObject* parent = nullptr)
+	StudioModelContext(EditorContext* editorContext, StudioModelAsset* asset, graphics::Scene* scene, QObject* parent = nullptr)
 		: QObject(parent)
 		, _editorContext(editorContext)
 		, _asset(asset)
@@ -31,7 +31,7 @@ public:
 
 	~StudioModelContext() = default;
 
-	EditorUIContext* GetEditorContext() { return _editorContext; }
+	EditorContext* GetEditorContext() { return _editorContext; }
 
 	StudioModelAsset* GetAsset() { return _asset; }
 
@@ -47,7 +47,7 @@ public slots:
 	}
 
 private:
-	EditorUIContext* const _editorContext;
+	EditorContext* const _editorContext;
 	StudioModelAsset* const _asset;
 	graphics::Scene* const _scene;
 };

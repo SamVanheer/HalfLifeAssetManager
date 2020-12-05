@@ -7,7 +7,7 @@
 #include <QSignalBlocker>
 #include <QStringLiteral>
 
-#include "ui/EditorUIContext.hpp"
+#include "ui/EditorContext.hpp"
 
 #include "ui/options/GameConfiguration.hpp"
 #include "ui/options/GameEnvironment.hpp"
@@ -46,7 +46,7 @@ static QString GenerateUniqueName(const QString& baseName, const Container& cont
 	return baseName + " (Duplicate)";
 }
 
-OptionsPageGameConfigurations::OptionsPageGameConfigurations(EditorUIContext* editorContext, QWidget* parent)
+OptionsPageGameConfigurations::OptionsPageGameConfigurations(EditorContext* editorContext, QWidget* parent)
 	: QWidget(parent)
 	, _editorContext(editorContext)
 {

@@ -14,7 +14,7 @@
 
 namespace ui
 {
-class EditorUIContext;
+class EditorContext;
 
 namespace options
 {
@@ -66,7 +66,7 @@ class OptionsPageGameConfigurations final : public QWidget
 	};
 
 public:
-	OptionsPageGameConfigurations(EditorUIContext* editorContext, QWidget* parent = nullptr);
+	OptionsPageGameConfigurations(EditorContext* editorContext, QWidget* parent = nullptr);
 	~OptionsPageGameConfigurations();
 
 private:
@@ -100,7 +100,7 @@ private slots:
 private:
 	Ui_OptionsPageGameConfigurations _ui;
 
-	EditorUIContext* const _editorContext;
+	EditorContext* const _editorContext;
 
 	std::vector<std::unique_ptr<GameEnvironment>> _gameEnvironments;
 

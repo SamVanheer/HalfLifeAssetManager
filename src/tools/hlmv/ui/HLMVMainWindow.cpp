@@ -3,7 +3,7 @@
 
 #include "Credits.hpp"
 
-#include "ui/EditorUIContext.hpp"
+#include "ui/EditorContext.hpp"
 #include "ui/HLMVMainWindow.hpp"
 #include "ui/assets/Assets.hpp"
 #include "ui/options/OptionsDialog.hpp"
@@ -12,7 +12,7 @@
 
 namespace ui
 {
-HLMVMainWindow::HLMVMainWindow(EditorUIContext* editorContext)
+HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	: QMainWindow()
 	, _editorContext(editorContext)
 {

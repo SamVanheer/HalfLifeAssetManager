@@ -7,7 +7,7 @@
 
 namespace ui
 {
-class EditorUIContext;
+class EditorContext;
 
 namespace options
 {
@@ -16,7 +16,7 @@ class OptionsPageGeneral final : public QWidget
 	Q_OBJECT
 
 public:
-	OptionsPageGeneral(EditorUIContext* editorContext, QWidget* parent = nullptr);
+	OptionsPageGeneral(EditorContext* editorContext, QWidget* parent = nullptr);
 	~OptionsPageGeneral();
 
 public slots:
@@ -27,7 +27,7 @@ public slots:
 private:
 	Ui_OptionsPageGeneral _ui;
 
-	EditorUIContext* const _editorContext;
+	EditorContext* const _editorContext;
 };
 }
 }

@@ -11,7 +11,7 @@
 #include "soundsystem/CSoundSystem.h"
 #include "soundsystem/ISoundSystem.h"
 
-#include "ui/EditorUIContext.hpp"
+#include "ui/EditorContext.hpp"
 
 #include "ui/assets/Assets.hpp"
 
@@ -28,7 +28,7 @@ LoadedAsset::LoadedAsset(std::unique_ptr<assets::IAsset>&& asset, QWidget* editW
 
 LoadedAsset::~LoadedAsset() = default;
 
-EditorUIContext::EditorUIContext(std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent)
+EditorContext::EditorContext(std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent)
 	: QObject(parent)
 	, _timer(new QTimer(this))
 	, _fileSystem(std::make_unique<filesystem::CFileSystem>())
@@ -49,16 +49,16 @@ EditorUIContext::EditorUIContext(std::unique_ptr<assets::IAssetProviderRegistry>
 		throw std::runtime_error("Failed to initialize sound system");
 	}
 
-	connect(_timer, &QTimer::timeout, this, &EditorUIContext::OnTimerTick);
+	connect(_timer, &QTimer::timeout, this, &EditorContext::OnTimerTick);
 }
 
-EditorUIContext::~EditorUIContext()
+EditorContext::~EditorContext()
 {
 	_soundSystem->Shutdown();
 	_fileSystem->Shutdown();
 }
 
-std::vector<options::GameEnvironment*> EditorUIContext::GetGameEnvironments() const
+std::vector<options::GameEnvironment*> EditorContext::GetGameEnvironments() const
 {
 	std::vector<options::GameEnvironment*> environments;
 
@@ -72,7 +72,7 @@ std::vector<options::GameEnvironment*> EditorUIContext::GetGameEnvironments() co
 	return environments;
 }
 
-options::GameEnvironment* EditorUIContext::GetGameEnvironmentById(const QUuid& id) const
+options::GameEnvironment* EditorContext::GetGameEnvironmentById(const QUuid& id) const
 {
 	if (auto it = std::find_if(_gameEnvironments.begin(), _gameEnvironments.end(), [&](const auto& environment)
 		{
@@ -86,7 +86,7 @@ options::GameEnvironment* EditorUIContext::GetGameEnvironmentById(const QUuid& i
 	return nullptr;
 }
 
-void EditorUIContext::AddGameEnvironment(std::unique_ptr<options::GameEnvironment>&& gameEnvironment)
+void EditorContext::AddGameEnvironment(std::unique_ptr<options::GameEnvironment>&& gameEnvironment)
 {
 	assert(gameEnvironment);
 
@@ -95,7 +95,7 @@ void EditorUIContext::AddGameEnvironment(std::unique_ptr<options::GameEnvironmen
 	emit GameEnvironmentAdded(ref.get());
 }
 
-void EditorUIContext::RemoveGameEnvironment(const QUuid& id)
+void EditorContext::RemoveGameEnvironment(const QUuid& id)
 {
 	if (auto it = std::find_if(_gameEnvironments.begin(), _gameEnvironments.end(), [&](const auto& environment)
 		{
@@ -111,7 +111,7 @@ void EditorUIContext::RemoveGameEnvironment(const QUuid& id)
 	}
 }
 
-void EditorUIContext::OnTimerTick()
+void EditorContext::OnTimerTick()
 {
 	//TODO: update frequency should be controllable
 	emit Tick();

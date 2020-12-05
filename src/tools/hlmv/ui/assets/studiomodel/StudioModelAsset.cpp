@@ -5,7 +5,7 @@
 
 namespace ui::assets::studiomodel
 {
-QWidget* StudioModelAsset::CreateEditWidget(EditorUIContext* editorContext)
+QWidget* StudioModelAsset::CreateEditWidget(EditorContext* editorContext)
 {
 	return new StudioModelEditWidget(editorContext, this);
 }

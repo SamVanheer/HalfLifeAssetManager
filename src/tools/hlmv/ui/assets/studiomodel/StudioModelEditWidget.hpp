@@ -14,7 +14,7 @@ class Scene;
 
 namespace ui
 {
-class EditorUIContext;
+class EditorContext;
 class SceneWidget;
 
 namespace camera_operators
@@ -30,7 +30,7 @@ class Timeline;
 class StudioModelEditWidget final : public QWidget
 {
 public:
-	StudioModelEditWidget(EditorUIContext* editorContext, StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelEditWidget();
 
 private slots:

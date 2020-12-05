@@ -7,7 +7,7 @@
 #include "game/entity/CEntityManager.h"
 #include "graphics/Scene.hpp"
 
-#include "ui/EditorUIContext.hpp"
+#include "ui/EditorContext.hpp"
 #include "ui/SceneWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
@@ -21,7 +21,7 @@
 
 namespace ui::assets::studiomodel
 {
-StudioModelEditWidget::StudioModelEditWidget(EditorUIContext* editorContext, StudioModelAsset* asset, QWidget* parent)
+StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
 	, _scene(std::make_unique<graphics::Scene>(editorContext->GetSoundSystem()))
@@ -79,9 +79,9 @@ StudioModelEditWidget::StudioModelEditWidget(EditorUIContext* editorContext, Stu
 	_context->SetBackgroundColor({63, 127, 127});
 
 	//Listen to the main timer to update as needed
-	connect(editorContext, &EditorUIContext::Tick, this, &StudioModelEditWidget::OnTick);
+	connect(editorContext, &EditorContext::Tick, this, &StudioModelEditWidget::OnTick);
 	connect(_sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelEditWidget::OnMouseEvent);
-	connect(editorContext, &EditorUIContext::FloorLengthChanged, this, &StudioModelEditWidget::OnFloorLengthChanged);
+	connect(editorContext, &EditorContext::FloorLengthChanged, this, &StudioModelEditWidget::OnFloorLengthChanged);
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;

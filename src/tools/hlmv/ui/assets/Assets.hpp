@@ -10,7 +10,7 @@
 
 namespace ui
 {
-class EditorUIContext;
+class EditorContext;
 
 namespace assets
 {
@@ -30,7 +30,7 @@ public:
 	*	@brief Creates a widget to view and edit this asset
 	*	@param editorContext The editor context used to communicate with the owner
 	*/
-	virtual QWidget* CreateEditWidget(EditorUIContext* editorContext) = 0;
+	virtual QWidget* CreateEditWidget(EditorContext* editorContext) = 0;
 
 	virtual void Save(const std::string& fileName) = 0;
 };

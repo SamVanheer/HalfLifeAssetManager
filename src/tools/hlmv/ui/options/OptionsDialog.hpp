@@ -8,7 +8,7 @@
 
 namespace ui
 {
-class EditorUIContext;
+class EditorContext;
 
 namespace options
 {
@@ -19,7 +19,7 @@ class OptionsDialog final : public QDialog
 	Q_OBJECT
 
 public:
-	OptionsDialog(EditorUIContext* editorContext, QWidget* parent = nullptr);
+	OptionsDialog(EditorContext* editorContext, QWidget* parent = nullptr);
 	~OptionsDialog();
 
 signals:
@@ -31,7 +31,7 @@ private slots:
 private:
 	ui::Ui_OptionsDialog _ui;
 
-	EditorUIContext* const _editorContext;
+	EditorContext* const _editorContext;
 
 	OptionsPageGeneral* _pageGeneral;
 };
