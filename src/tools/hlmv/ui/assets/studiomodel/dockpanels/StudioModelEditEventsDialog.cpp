@@ -148,6 +148,8 @@ void StudioModelEditEventsDialog::OnApply()
 	auto applyButton = _ui.DialogButtons->button(QDialogButtonBox::StandardButton::Apply);
 
 	applyButton->setEnabled(false);
+
+	//TODO: track data change for saving
 }
 
 void StudioModelEditEventsDialog::OnDataChanged()

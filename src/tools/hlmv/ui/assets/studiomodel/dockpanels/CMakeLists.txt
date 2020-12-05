@@ -12,6 +12,9 @@ target_sources(HLMV
 		StudioModelGlobalFlagsPanel.cpp
 		StudioModelGlobalFlagsPanel.hpp
 		StudioModelGlobalFlagsPanel.ui
+		StudioModelModelDataPanel.cpp
+		StudioModelModelDataPanel.hpp
+		StudioModelModelDataPanel.ui
 		StudioModelSequencesPanel.cpp
 		StudioModelSequencesPanel.hpp
 		StudioModelSequencesPanel.ui
