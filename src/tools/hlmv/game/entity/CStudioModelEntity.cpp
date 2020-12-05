@@ -290,6 +290,16 @@ void CStudioModelEntity::GetSequenceInfo( float& flFrameRate, float& flGroundSpe
 	}
 }
 
+int CStudioModelEntity::GetBodyValueForGroup(int group) const
+{
+	if (!m_pModel)
+	{
+		return -1;
+	}
+
+	return m_pModel->GetBodyValueForGroup(m_iBodygroup, group);
+}
+
 int CStudioModelEntity::SetBodygroup( const int iBodygroup, const int iValue )
 {
 	if( !m_pModel )

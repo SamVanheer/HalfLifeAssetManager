@@ -127,6 +127,8 @@ public:
 	*/
 	int GetBodygroup() const { return m_iBodygroup; }
 
+	int GetBodyValueForGroup(int group) const;
+
 	/**
 	*	Sets the value for the given bodygroup.
 	*	@param iBodygroup Bodygroup to set.

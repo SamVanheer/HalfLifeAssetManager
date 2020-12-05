@@ -1,5 +1,8 @@
 target_sources(HLMV
 	PRIVATE
+		StudioModelBodyPartsPanel.cpp
+		StudioModelBodyPartsPanel.hpp
+		StudioModelBodyPartsPanel.ui
 		StudioModelDisplayPanel.cpp
 		StudioModelDisplayPanel.hpp
 		StudioModelDisplayPanel.ui

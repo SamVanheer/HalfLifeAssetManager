@@ -286,6 +286,18 @@ mstudiomodel_t* CStudioModel::GetModelByBodyPart(const int iBody, const int iBod
 	return (mstudiomodel_t*) ((byte*) m_pStudioHdr.get() + pbodypart->modelindex) + index;
 }
 
+int CStudioModel::GetBodyValueForGroup(int compositeValue, int group) const
+{
+	if (group >= m_pStudioHdr->numbodyparts)
+	{
+		return -1;
+	}
+
+	const mstudiobodyparts_t* const bodyPart = m_pStudioHdr->GetBodypart(group);
+
+	return (compositeValue / bodyPart->base) % bodyPart->nummodels;
+}
+
 bool CStudioModel::CalculateBodygroup(const int iGroup, const int iValue, int& iInOutBodygroup) const
 {
 	if (iGroup > m_pStudioHdr->numbodyparts)
