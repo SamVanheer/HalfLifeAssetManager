@@ -72,6 +72,7 @@ target_compile_options(${TARGET_NAME}
 
 target_link_options(${TARGET_NAME}
 	PRIVATE
+		$<$<CXX_COMPILER_ID:MSVC>:/LTCG /INCREMENTAL:NO>
 		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-m32 --exclude-libs,ALL>)
 
 target_sources(${TARGET_NAME}
