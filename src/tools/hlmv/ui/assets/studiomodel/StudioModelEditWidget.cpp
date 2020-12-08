@@ -30,14 +30,16 @@ namespace ui::assets::studiomodel
 StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
-	, _scene(std::make_unique<graphics::Scene>(editorContext->GetSoundSystem()))
-	, _context(new StudioModelContext(editorContext, asset, _scene.get(), this))
 {
+	auto scene = std::make_unique<graphics::Scene>(editorContext->GetSoundSystem());
+
+	_context = new StudioModelContext(editorContext, asset, scene.get(), this);
+
 	_context->PushInputSink(this);
 
-	_scene->FloorLength = editorContext->GetFloorLength();
+	scene->FloorLength = editorContext->GetFloorLength();
 
-	auto entity = static_cast<CHLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
+	auto entity = static_cast<CHLMVStudioModelEntity*>(scene->GetEntityContext()->EntityManager->Create("studiomodel", scene->GetEntityContext(),
 		glm::vec3(), glm::vec3(), false));
 
 	if (nullptr != entity)
@@ -46,12 +48,13 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 		entity->Spawn();
 
-		_scene->SetEntity(entity);
+		scene->SetEntity(entity);
 	}
 
 	_cameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>();
 
-	_sceneWidget = new SceneWidget(_scene.get(), this);
+	//TODO: scene ownership needs to be reworked
+	_sceneWidget = new SceneWidget(std::move(scene), this);
 
 	_controlAreaWidget = new QWidget(this);
 
@@ -114,12 +117,12 @@ StudioModelEditWidget::~StudioModelEditWidget() = default;
 
 void StudioModelEditWidget::OnMouseEvent(QMouseEvent* event)
 {
-	_cameraOperator->MouseEvent(*_scene->GetCamera(), *event);
+	_cameraOperator->MouseEvent(*_sceneWidget->GetScene()->GetCamera(), *event);
 }
 
 void StudioModelEditWidget::OnTick()
 {
-	_scene->Tick();
+	_sceneWidget->GetScene()->Tick();
 
 	_sceneWidget->requestUpdate();
 
@@ -136,7 +139,7 @@ void StudioModelEditWidget::OnSceneWidgetMouseEvent(QMouseEvent* event)
 
 void StudioModelEditWidget::OnFloorLengthChanged(int length)
 {
-	_scene->FloorLength = length;
+	_sceneWidget->GetScene()->FloorLength = length;
 }
 
 void StudioModelEditWidget::OnTabChanged(int index)

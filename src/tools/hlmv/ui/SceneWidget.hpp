@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <GL/glew.h>
 
 #include <QOpenGLWindow>
@@ -44,12 +46,12 @@ class SceneWidget final : public QOpenGLWindow
 	Q_OBJECT
 
 public:
-	SceneWidget(graphics::Scene* scene, QWidget* parent = nullptr);
+	SceneWidget(std::unique_ptr<graphics::Scene>&& scene, QWidget* parent = nullptr);
 	~SceneWidget();
 
 	QWidget* GetContainer() { return _container; }
 
-	graphics::Scene* GetScene() { return _scene; }
+	graphics::Scene* GetScene() { return _scene.get(); }
 
 signals:
 	void CreateDeviceResources();
@@ -78,6 +80,6 @@ protected:
 
 private:
 	QWidget* const _container;
-	graphics::Scene* const _scene;
+	const std::unique_ptr<graphics::Scene> _scene;
 };
 }

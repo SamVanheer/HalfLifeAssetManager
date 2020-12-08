@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -23,11 +25,15 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	//Eliminate the border on the sides so the scene widget takes up all horizontal space
 	_assetTabs->setStyleSheet("QTabWidget::pane { padding: 0px; }");
 
+	_assetTabs->setTabsClosable(true);
+
 	setCentralWidget(_assetTabs);
 
 	connect(_ui.ActionLoad, &QAction::triggered, this, &HLMVMainWindow::OnOpenLoadAssetDialog);
 	connect(_ui.ActionOptions, &QAction::triggered, this, &HLMVMainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &HLMVMainWindow::OnShowAbout);
+
+	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &HLMVMainWindow::OnAssetTabCloseRequested);
 
 	_editorContext->GetTimer()->start(0);
 }
@@ -83,5 +89,22 @@ void HLMVMainWindow::LoadAsset(const QString& fileName)
 
 		_assetTabs->setCurrentIndex(index);
 	}
+}
+
+void HLMVMainWindow::OnAssetTabCloseRequested(int index)
+{
+	//TODO: ask to save, etc
+	auto editWidget = _assetTabs->widget(index);
+
+	_assetTabs->removeTab(index);
+
+	auto& assets = _editorContext->GetLoadedAssets();
+
+	assets.erase(std::remove_if(assets.begin(), assets.end(), [&](const auto& asset)
+		{
+			return asset.GetEditWidget() == editWidget;
+		}), assets.end());
+
+	delete editWidget;
 }
 }

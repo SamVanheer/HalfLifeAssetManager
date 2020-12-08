@@ -26,6 +26,8 @@ private slots:
 
 	void OnShowAbout();
 
+	void OnAssetTabCloseRequested(int index);
+
 private:
 	void LoadAsset(const QString& fileName);
 

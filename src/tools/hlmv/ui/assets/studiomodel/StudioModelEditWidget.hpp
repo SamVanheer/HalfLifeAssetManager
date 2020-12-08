@@ -52,9 +52,8 @@ private slots:
 
 private:
 	StudioModelAsset* const _asset;
-	const std::unique_ptr<graphics::Scene> _scene;
 
-	StudioModelContext* const _context;
+	StudioModelContext* _context;
 
 	SceneWidget* _sceneWidget;
 
