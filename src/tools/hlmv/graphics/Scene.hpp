@@ -123,6 +123,8 @@ public:
 
 	int FloorLength = 0;
 
+	int DrawSingleHitboxIndex = -1;
+
 	bool ShowTexture = false;
 
 	int TextureIndex{};

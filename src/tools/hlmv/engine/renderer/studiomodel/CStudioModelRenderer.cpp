@@ -261,10 +261,19 @@ void CStudioModelRenderer::DrawSingleAttachment( const int iAttachment )
 	glPointSize( 1 );
 }
 
-void CStudioModelRenderer::DrawSingleHitbox(const int hitboxIndex)
+void CStudioModelRenderer::DrawSingleHitbox(CModelRenderInfo& renderInfo, const int hitboxIndex)
 {
-	if (!m_pStudioHdr || hitboxIndex < 0 || hitboxIndex >= m_pStudioHdr->numhitboxes)
+	//TODO: rework how stuff is passed in
+	auto header = renderInfo.pModel->GetStudioHeader();
+
+	if (!header || hitboxIndex < 0 || hitboxIndex >= header->numhitboxes)
 		return;
+
+	m_pRenderInfo = &renderInfo;
+	m_pStudioHdr = header;
+	m_pTextureHdr = renderInfo.pModel->GetTextureHeader();
+
+	SetUpBones();
 
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
@@ -327,6 +336,10 @@ void CStudioModelRenderer::DrawSingleHitbox(const int hitboxIndex)
 	VectorTransform(v[7], m_bonetransform[hitbox->bone], v2[7]);
 
 	graphics::DrawBox(v2);
+
+	m_pStudioHdr = nullptr;
+	m_pTextureHdr = nullptr;
+	m_pRenderInfo = nullptr;
 }
 
 void CStudioModelRenderer::DrawBones()

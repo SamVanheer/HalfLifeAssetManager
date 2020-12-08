@@ -5,8 +5,6 @@
 
 #include "shared/studiomodel/CStudioModel.h"
 
-#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
-
 #include "CStudioModelEntity.h"
 
 bool CStudioModelEntity::Spawn()
@@ -30,6 +28,13 @@ bool CStudioModelEntity::Spawn()
 
 void CStudioModelEntity::Draw( renderer::DrawFlags_t flags )
 {
+	studiomdl::CModelRenderInfo renderInfo = GetRenderInfo();
+
+	GetContext()->StudioModelRenderer->DrawModel( &renderInfo, flags );
+}
+
+studiomdl::CModelRenderInfo CStudioModelEntity::GetRenderInfo() const
+{
 	studiomdl::CModelRenderInfo renderInfo;
 
 	renderInfo.vecOrigin = GetOrigin();
@@ -44,19 +49,19 @@ void CStudioModelEntity::Draw( renderer::DrawFlags_t flags )
 	renderInfo.iBodygroup = GetBodygroup();
 	renderInfo.iSkin = GetSkin();
 
-	for( int iIndex = 0; iIndex < 2; ++iIndex )
+	for (int iIndex = 0; iIndex < 2; ++iIndex)
 	{
-		renderInfo.iBlender[ iIndex ] = GetBlendingByIndex( iIndex );
+		renderInfo.iBlender[iIndex] = GetBlendingByIndex(iIndex);
 	}
 
-	for( int iIndex = 0; iIndex < 4; ++iIndex )
+	for (int iIndex = 0; iIndex < 4; ++iIndex)
 	{
-		renderInfo.iController[ iIndex ] = GetControllerByIndex( iIndex );
+		renderInfo.iController[iIndex] = GetControllerByIndex(iIndex);
 	}
 
 	renderInfo.iMouth = GetMouth();
 
-	GetContext()->StudioModelRenderer->DrawModel( &renderInfo, flags );
+	return renderInfo;
 }
 
 float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )

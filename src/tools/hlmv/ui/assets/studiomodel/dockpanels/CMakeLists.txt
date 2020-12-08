@@ -15,6 +15,9 @@ target_sources(HLMV
 		StudioModelGlobalFlagsPanel.cpp
 		StudioModelGlobalFlagsPanel.hpp
 		StudioModelGlobalFlagsPanel.ui
+		StudioModelHitboxesPanel.cpp
+		StudioModelHitboxesPanel.hpp
+		StudioModelHitboxesPanel.ui
 		StudioModelModelDataPanel.cpp
 		StudioModelModelDataPanel.hpp
 		StudioModelModelDataPanel.ui

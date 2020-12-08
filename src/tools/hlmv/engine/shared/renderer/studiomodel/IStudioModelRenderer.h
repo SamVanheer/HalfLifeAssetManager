@@ -129,7 +129,7 @@ public:
 	*/
 	virtual void DrawSingleAttachment( const int iAttachment ) = 0;
 
-	virtual void DrawSingleHitbox(const int hitboxIndex) = 0;
+	virtual void DrawSingleHitbox(CModelRenderInfo& renderInfo, const int hitboxIndex) = 0;
 };
 }
 

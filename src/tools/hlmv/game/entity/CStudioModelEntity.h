@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
+
 #include "shared/studiomodel/CStudioModel.h"
 
 #include "game/CAnimEvent.h"
@@ -32,6 +34,8 @@ public:
 	virtual bool Spawn() override;
 
 	virtual void Draw( renderer::DrawFlags_t flags ) override;
+
+	studiomdl::CModelRenderInfo GetRenderInfo() const;
 
 	/**
 	*	Advances the frame. If dt is 0, advances to current time, otherwise, advances by the given amount of time.

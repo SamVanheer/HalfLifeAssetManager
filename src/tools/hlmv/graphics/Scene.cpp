@@ -521,6 +521,13 @@ void Scene::DrawModel()
 		}
 
 		_entity->Draw(flags);
+
+		auto renderInfo = _entity->GetRenderInfo();
+
+		if (DrawSingleHitboxIndex != -1)
+		{
+			_entityContext->StudioModelRenderer->DrawSingleHitbox(renderInfo, DrawSingleHitboxIndex);
+		}
 	}
 
 	//
