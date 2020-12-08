@@ -25,6 +25,8 @@ class ISoundSystem;
 
 namespace graphics
 {
+class IGraphicsContext;
+
 /**
 *	@brief Contains all entities to be rendered for a particular scene
 */
@@ -39,6 +41,10 @@ public:
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
+
+	IGraphicsContext* GetGraphicsContext() const { return _graphicsContext.get(); }
+
+	void SetGraphicsContext(std::unique_ptr<IGraphicsContext>&& graphicsContext);
 
 	EntityContext* GetEntityContext() const { return _entityContext.get(); }
 
@@ -112,6 +118,8 @@ public:
 	bool ShowTexture = false;
 
 private:
+	std::unique_ptr<IGraphicsContext> _graphicsContext;
+
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 
 	std::unique_ptr<CWorldTime> _worldTime;

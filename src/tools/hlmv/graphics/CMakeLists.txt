@@ -10,6 +10,7 @@ target_sources(${TARGET_NAME}
 		GraphicsHelpers.h
 		GraphicsUtils.cpp
 		GraphicsUtils.h
+		IGraphicsContext.hpp
 		OpenGL.cpp
 		OpenGL.h
 		Palette.h

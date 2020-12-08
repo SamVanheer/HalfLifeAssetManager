@@ -13,6 +13,8 @@ SceneWidget::SceneWidget(graphics::Scene* scene, QWidget* parent)
 	, _scene(scene)
 {
 	assert(nullptr != scene);
+
+	_scene->SetGraphicsContext(std::make_unique<OpenGLGraphicsContext>(this));
 }
 
 SceneWidget::~SceneWidget()

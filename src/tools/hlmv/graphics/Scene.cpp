@@ -16,6 +16,7 @@
 
 #include "graphics/GraphicsHelpers.h"
 #include "graphics/GraphicsUtils.h"
+#include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
 
 #include "utility/Color.h"
@@ -45,6 +46,11 @@ Scene::Scene(soundsystem::ISoundSystem* soundSystem)
 }
 
 Scene::~Scene() = default;
+
+void Scene::SetGraphicsContext(std::unique_ptr<IGraphicsContext>&& graphicsContext)
+{
+	_graphicsContext = std::move(graphicsContext);
+}
 
 void Scene::SetEntity(CHLMVStudioModelEntity* entity)
 {
