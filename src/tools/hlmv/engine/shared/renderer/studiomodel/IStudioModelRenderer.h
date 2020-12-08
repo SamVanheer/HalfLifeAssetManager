@@ -127,7 +127,7 @@ public:
 	*	Draws a single attachment.
 	*	@param iAttachment Index of the attachment to draw.
 	*/
-	virtual void DrawSingleAttachment( const int iAttachment ) = 0;
+	virtual void DrawSingleAttachment(CModelRenderInfo& renderInfo, const int iAttachment) = 0;
 
 	virtual void DrawSingleHitbox(CModelRenderInfo& renderInfo, const int hitboxIndex) = 0;
 };

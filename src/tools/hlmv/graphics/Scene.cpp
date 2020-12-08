@@ -524,6 +524,11 @@ void Scene::DrawModel()
 
 		auto renderInfo = _entity->GetRenderInfo();
 
+		if (DrawSingleAttachmentIndex != -1)
+		{
+			_entityContext->StudioModelRenderer->DrawSingleAttachment(renderInfo, DrawSingleAttachmentIndex);
+		}
+
 		if (DrawSingleHitboxIndex != -1)
 		{
 			_entityContext->StudioModelRenderer->DrawSingleHitbox(renderInfo, DrawSingleHitboxIndex);

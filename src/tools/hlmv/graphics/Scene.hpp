@@ -123,6 +123,7 @@ public:
 
 	int FloorLength = 0;
 
+	int DrawSingleAttachmentIndex = -1;
 	int DrawSingleHitboxIndex = -1;
 
 	bool ShowTexture = false;

@@ -73,7 +73,7 @@ public:
 
 	void DrawSingleBone( const int iBone ) override final;
 
-	void DrawSingleAttachment( const int iAttachment ) override final;
+	void DrawSingleAttachment(CModelRenderInfo& renderInfo, const int iAttachment) override final;
 
 	void DrawSingleHitbox(CModelRenderInfo& renderInfo, const int hitboxIndex) override final;
 

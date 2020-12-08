@@ -12,6 +12,7 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
+#include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelDisplayPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelGlobalFlagsPanel.hpp"
@@ -59,6 +60,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; }");
 
 	auto texturesPanel = new StudioModelTexturesPanel(_context);
+	auto attachmentsPanel = new StudioModelAttachmentsPanel(_context);
 	auto hitboxesPanel = new StudioModelHitboxesPanel(_context);
 
 	_dockPanels->addTab(new StudioModelDisplayPanel(_context), "Model Display");
@@ -67,6 +69,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	_dockPanels->addTab(texturesPanel, "Textures");
 	_dockPanels->addTab(new StudioModelModelDataPanel(_context), "Model Data");
 	_dockPanels->addTab(new StudioModelGlobalFlagsPanel(_context), "Global Flags");
+	_dockPanels->addTab(attachmentsPanel, "Attachments");
 	_dockPanels->addTab(hitboxesPanel, "Hitboxes");
 
 	_timeline = new Timeline(_context, _controlAreaWidget);
@@ -103,6 +106,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
 	connect(this, &StudioModelEditWidget::DockPanelChanged, texturesPanel, &StudioModelTexturesPanel::OnDockPanelChanged);
 
+	connect(this, &StudioModelEditWidget::DockPanelChanged, attachmentsPanel, &StudioModelAttachmentsPanel::OnDockPanelChanged);
 	connect(this, &StudioModelEditWidget::DockPanelChanged, hitboxesPanel, &StudioModelHitboxesPanel::OnDockPanelChanged);
 }
 
