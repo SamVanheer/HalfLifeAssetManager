@@ -17,6 +17,7 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelGlobalFlagsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDataPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
 
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
@@ -56,9 +57,12 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; }");
 
+	auto texturesPanel = new StudioModelTexturesPanel(_context);
+
 	_dockPanels->addTab(new StudioModelDisplayPanel(_context), "Model Display");
 	_dockPanels->addTab(new StudioModelSequencesPanel(_context), "Sequences");
 	_dockPanels->addTab(new StudioModelBodyPartsPanel(_context), "Body Parts");
+	_dockPanels->addTab(texturesPanel, "Textures");
 	_dockPanels->addTab(new StudioModelModelDataPanel(_context), "Model Data");
 	_dockPanels->addTab(new StudioModelGlobalFlagsPanel(_context), "Global Flags");
 
@@ -90,6 +94,11 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	connect(editorContext, &EditorContext::Tick, this, &StudioModelEditWidget::OnTick);
 	connect(_sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelEditWidget::OnSceneWidgetMouseEvent);
 	connect(editorContext, &EditorContext::FloorLengthChanged, this, &StudioModelEditWidget::OnFloorLengthChanged);
+
+	connect(_dockPanels, &QTabWidget::currentChanged, this, &StudioModelEditWidget::OnTabChanged);
+
+	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
+	connect(this, &StudioModelEditWidget::DockPanelChanged, texturesPanel, &StudioModelTexturesPanel::OnDockPanelChanged);
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
@@ -119,5 +128,13 @@ void StudioModelEditWidget::OnSceneWidgetMouseEvent(QMouseEvent* event)
 void StudioModelEditWidget::OnFloorLengthChanged(int length)
 {
 	_scene->FloorLength = length;
+}
+
+void StudioModelEditWidget::OnTabChanged(int index)
+{
+	auto previous = _currentTab;
+	_currentTab = _dockPanels->currentWidget();
+
+	emit DockPanelChanged(_currentTab, previous);
 }
 }

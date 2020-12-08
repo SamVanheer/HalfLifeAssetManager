@@ -30,11 +30,16 @@ class Timeline;
 
 class StudioModelEditWidget final : public QWidget, public IInputSink
 {
+	Q_OBJECT
+
 public:
 	StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelEditWidget();
 
 	void OnMouseEvent(QMouseEvent* event) override;
+
+signals:
+	void DockPanelChanged(QWidget* current, QWidget* previous);
 
 private slots:
 	void OnTick();
@@ -42,6 +47,8 @@ private slots:
 	void OnSceneWidgetMouseEvent(QMouseEvent* event);
 
 	void OnFloorLengthChanged(int length);
+
+	void OnTabChanged(int index);
 
 private:
 	StudioModelAsset* const _asset;
@@ -54,6 +61,8 @@ private:
 	QWidget* _controlAreaWidget;
 
 	QTabWidget* _dockPanels;
+
+	QWidget* _currentTab{};
 
 	Timeline* _timeline;
 

@@ -9,6 +9,9 @@ target_sources(HLMV
 		StudioModelEditEventsDialog.cpp
 		StudioModelEditEventsDialog.hpp
 		StudioModelEditEventsDialog.ui
+		StudioModelExportUVMeshDialog.hpp
+		StudioModelExportUVMeshDialog.cpp
+		StudioModelExportUVMeshDialog.ui
 		StudioModelGlobalFlagsPanel.cpp
 		StudioModelGlobalFlagsPanel.hpp
 		StudioModelGlobalFlagsPanel.ui
@@ -18,6 +21,9 @@ target_sources(HLMV
 		StudioModelSequencesPanel.cpp
 		StudioModelSequencesPanel.hpp
 		StudioModelSequencesPanel.ui
+		StudioModelTexturesPanel.cpp
+		StudioModelTexturesPanel.hpp
+		StudioModelTexturesPanel.ui
 		Timeline.cpp
 		Timeline.hpp
 		Timeline.ui)

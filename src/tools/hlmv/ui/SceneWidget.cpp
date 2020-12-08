@@ -29,6 +29,8 @@ SceneWidget::~SceneWidget()
 void SceneWidget::initializeGL()
 {
 	_scene->Initialize();
+
+	emit CreateDeviceResources();
 }
 
 void SceneWidget::resizeGL(int w, int h)

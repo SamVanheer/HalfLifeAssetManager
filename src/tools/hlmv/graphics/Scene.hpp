@@ -2,7 +2,11 @@
 
 #include <memory>
 
+#include <GL/glew.h>
+
 #include <glm/vec3.hpp>
+
+#include "engine/shared/studiomodel/studio.h"
 
 #include "graphics/CCamera.h"
 
@@ -10,6 +14,7 @@
 
 class CEntityManager;
 class CHLMVStudioModelEntity;
+class CStudioModelEntity;
 class CWorldTime;
 struct EntityContext;
 
@@ -87,6 +92,9 @@ private:
 
 	void DrawModel();
 
+	void DrawTexture(const int xOffset, const int yOffset, const int width, const int height, CStudioModelEntity* entity,
+		const int textureIndex, const float textureScale, const bool showUVMap, const bool overlayUVMap);
+
 	//TODO: these are temporary until the graphics code can be refactored into an object based design
 public:
 	RenderMode CurrentRenderMode = RenderMode::TEXTURE_SHADED;
@@ -116,6 +124,17 @@ public:
 	int FloorLength = 0;
 
 	bool ShowTexture = false;
+
+	int TextureIndex{};
+
+	int TextureXOffset{}, TextureYOffset{};
+
+	float TextureScale{1.f};
+
+	bool ShowUVMap{};
+	bool OverlayUVMap{};
+
+	GLuint UVMeshTexture{0};
 
 private:
 	std::unique_ptr<IGraphicsContext> _graphicsContext;

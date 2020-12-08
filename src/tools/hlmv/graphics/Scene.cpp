@@ -139,10 +139,15 @@ void Scene::Initialize()
 		//TODO: should be replaced with an on-demand resource uploading stage in Draw()
 		_entity->GetModel()->CreateTextures();
 	}
+
+	glGenTextures(1, &UVMeshTexture);
 }
 
 void Scene::Shutdown()
 {
+	glDeleteTexture(UVMeshTexture);
+	UVMeshTexture = 0;
+
 	_studioModelRenderer->Shutdown();
 }
 
@@ -190,12 +195,7 @@ void Scene::Draw()
 
 	if (ShowTexture)
 	{
-		//TODO: implement
-#if false
-		DrawTexture(m_pHLMV->GetState()->texture, m_pHLMV->GetState()->textureScale,
-			m_pHLMV->GetState()->showUVMap, m_pHLMV->GetState()->overlayUVMap,
-			m_pHLMV->GetState()->antiAliasUVLines, m_pHLMV->GetState()->pUVMesh);
-#endif
+		DrawTexture(TextureXOffset, TextureYOffset, _windowWidth, _windowHeight, _entity, TextureIndex, TextureScale, ShowUVMap, OverlayUVMap);
 	}
 	else
 	{
@@ -595,5 +595,119 @@ void Scene::DrawModel()
 	}
 
 	glPopMatrix();
+}
+
+void Scene::DrawTexture(const int xOffset, const int yOffset, const int width, const int height, CStudioModelEntity* entity,
+	const int textureIndex, const float textureScale, const bool showUVMap, const bool overlayUVMap)
+{
+	assert(entity);
+
+	const auto model = entity->GetModel();
+
+	assert(model);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	glOrtho(0.0f, (float)width, (float)height, 0.0f, 1.0f, -1.0f);
+
+	const studiohdr_t* const header = model->GetTextureHeader();
+
+	assert(header);
+
+	const mstudiotexture_t& texture = *header->GetTexture(textureIndex);
+
+	const float w = texture.width * textureScale;
+	const float h = texture.height * textureScale;
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	const float x = ((static_cast<float>(width) - w) / 2) + xOffset;
+	const float y = ((static_cast<float>(height) - h) / 2) + yOffset;
+
+	glDisable(GL_DEPTH_TEST);
+
+	if (showUVMap && !overlayUVMap)
+	{
+		glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+		glDisable(GL_TEXTURE_2D);
+		glRectf(x, y, x + w, y + h);
+	}
+
+	if (!showUVMap || overlayUVMap)
+	{
+		if (texture.flags & STUDIO_NF_MASKED)
+		{
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.5f);
+		}
+
+		glEnable(GL_TEXTURE_2D);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glBindTexture(GL_TEXTURE_2D, model->GetTextureId(textureIndex));
+
+		glBegin(GL_TRIANGLE_STRIP);
+
+		glTexCoord2f(0, 0);
+		glVertex2f(x, y);
+
+		glTexCoord2f(1, 0);
+		glVertex2f(x + w, y);
+
+		glTexCoord2f(0, 1);
+		glVertex2f(x, y + h);
+
+		glTexCoord2f(1, 1);
+		glVertex2f(x + w, y + h);
+
+		glEnd();
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		if (texture.flags & STUDIO_NF_MASKED)
+		{
+			glDisable(GL_ALPHA_TEST);
+		}
+	}
+
+	if (showUVMap)
+	{
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.1f);
+
+		glEnable(GL_TEXTURE_2D);
+			
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glBindTexture(GL_TEXTURE_2D, UVMeshTexture);
+
+		glBegin(GL_TRIANGLE_STRIP);
+
+		glTexCoord2f(0, 0);
+		glVertex2f(x, y);
+
+		glTexCoord2f(1, 0);
+		glVertex2f(x + w, y);
+
+		glTexCoord2f(0, 1);
+		glVertex2f(x, y + h);
+
+		glTexCoord2f(1, 1);
+		glVertex2f(x + w, y + h);
+
+		glEnd();
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_ALPHA_TEST);
+	}
+
+	glPopMatrix();
+
+	glClear(GL_DEPTH_BUFFER_BIT);
 }
 }
