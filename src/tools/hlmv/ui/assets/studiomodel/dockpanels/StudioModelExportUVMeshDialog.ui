@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Export UV Image</string>
   </property>
   <property name="modal">
    <bool>true</bool>
