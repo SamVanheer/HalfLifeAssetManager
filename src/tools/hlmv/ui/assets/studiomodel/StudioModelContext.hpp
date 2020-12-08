@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cassert>
+#include <stack>
+
 #include <QColor>
 #include <QObject>
 
@@ -8,6 +11,7 @@
 namespace ui
 {
 class EditorContext;
+class IInputSink;
 
 namespace assets::studiomodel
 {
@@ -37,6 +41,20 @@ public:
 
 	graphics::Scene* GetScene() { return _scene; }
 
+	IInputSink* GetInputSink() const { return _inputSinks.top(); }
+
+	void PushInputSink(IInputSink* inputSink)
+	{
+		assert(inputSink);
+
+		_inputSinks.push(inputSink);
+	}
+
+	void PopInputSink()
+	{
+		_inputSinks.pop();
+	}
+
 signals:
 	void Tick();
 
@@ -50,6 +68,8 @@ private:
 	EditorContext* const _editorContext;
 	StudioModelAsset* const _asset;
 	graphics::Scene* const _scene;
+
+	std::stack<IInputSink*> _inputSinks;
 };
 }
 }

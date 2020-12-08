@@ -5,6 +5,7 @@
 #include <QTabWidget>
 #include <QWidget>
 
+#include "ui/IInputSink.hpp"
 #include "ui/assets/studiomodel/StudioModelContext.hpp"
 
 namespace graphics
@@ -27,16 +28,18 @@ namespace assets::studiomodel
 class StudioModelAsset;
 class Timeline;
 
-class StudioModelEditWidget final : public QWidget
+class StudioModelEditWidget final : public QWidget, public IInputSink
 {
 public:
 	StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelEditWidget();
 
+	void OnMouseEvent(QMouseEvent* event) override;
+
 private slots:
 	void OnTick();
 
-	void OnMouseEvent(QMouseEvent* event);
+	void OnSceneWidgetMouseEvent(QMouseEvent* event);
 
 	void OnFloorLengthChanged(int length);
 

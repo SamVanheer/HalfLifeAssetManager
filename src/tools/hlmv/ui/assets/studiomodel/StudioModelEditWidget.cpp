@@ -30,6 +30,8 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	, _scene(std::make_unique<graphics::Scene>(editorContext->GetSoundSystem()))
 	, _context(new StudioModelContext(editorContext, asset, _scene.get(), this))
 {
+	_context->PushInputSink(this);
+
 	_scene->FloorLength = editorContext->GetFloorLength();
 
 	auto entity = static_cast<CHLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
@@ -86,11 +88,16 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	//Listen to the main timer to update as needed
 	connect(editorContext, &EditorContext::Tick, this, &StudioModelEditWidget::OnTick);
-	connect(_sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelEditWidget::OnMouseEvent);
+	connect(_sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelEditWidget::OnSceneWidgetMouseEvent);
 	connect(editorContext, &EditorContext::FloorLengthChanged, this, &StudioModelEditWidget::OnFloorLengthChanged);
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
+
+void StudioModelEditWidget::OnMouseEvent(QMouseEvent* event)
+{
+	_cameraOperator->MouseEvent(*_scene->GetCamera(), *event);
+}
 
 void StudioModelEditWidget::OnTick()
 {
@@ -101,9 +108,12 @@ void StudioModelEditWidget::OnTick()
 	emit _context->Tick();
 }
 
-void StudioModelEditWidget::OnMouseEvent(QMouseEvent* event)
+void StudioModelEditWidget::OnSceneWidgetMouseEvent(QMouseEvent* event)
 {
-	_cameraOperator->MouseEvent(*_scene->GetCamera(), *event);
+	if (auto inputSink = _context->GetInputSink(); inputSink)
+	{
+		inputSink->OnMouseEvent(event);
+	}
 }
 
 void StudioModelEditWidget::OnFloorLengthChanged(int length)

@@ -5,6 +5,7 @@ target_sources(HLMV
 		HLMVMainWindow.cpp
 		HLMVMainWindow.hpp
 		HLMVMainWindow.ui
+		IInputSink.hpp
 		SceneWidget.cpp
 		SceneWidget.hpp)
 
