@@ -27,6 +27,8 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 
 	_assetTabs->setTabsClosable(true);
 
+	_assetTabs->setElideMode(Qt::TextElideMode::ElideLeft);
+
 	setCentralWidget(_assetTabs);
 
 	connect(_ui.ActionLoad, &QAction::triggered, this, &HLMVMainWindow::OnOpenLoadAssetDialog);
