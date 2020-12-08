@@ -52,6 +52,24 @@ StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelContext* context, 
 
 	this->setEnabled(header->numhitboxes > 0);
 
+	{
+		const QSignalBlocker blocker{_ui.Bone};
+
+		QStringList bones;
+
+		bones.reserve(header->numbones);
+
+		for (int i = 0; i < header->numbones; ++i)
+		{
+			bones.append(QString{"%1 (%2)"}.arg(header->GetBone(i)->name).arg(i));
+		}
+
+		_ui.Bone->addItems(bones);
+
+		//Start off with nothing selected
+		_ui.Bone->setCurrentIndex(-1);
+	}
+
 	if (header->numhitboxes > 0)
 	{
 		QStringList hitboxes;
@@ -104,22 +122,6 @@ void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 	const auto header = model->GetStudioHeader();
 
 	const auto hitbox = header->GetHitBox(index);
-
-	{
-		const QSignalBlocker blocker{_ui.Bone};
-		_ui.Bone->clear();
-
-		QStringList bones;
-
-		bones.reserve(header->numbones);
-
-		for (int i = 0; i < header->numbones; ++i)
-		{
-			bones.append(QString{"%1 (%2)"}.arg(header->GetBone(i)->name).arg(i));
-		}
-
-		_ui.Bone->addItems(bones);
-	}
 
 	_ui.Bone->setCurrentIndex(hitbox->bone);
 
