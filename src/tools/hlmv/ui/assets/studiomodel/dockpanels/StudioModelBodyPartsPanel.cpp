@@ -17,7 +17,9 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelContext* context
 	connect(_ui.Submodels, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnSubmodelChanged);
 	connect(_ui.Skins, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnSkinChanged);
 	connect(_ui.BoneControllers, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerChanged);
-	connect(_ui.BoneControllerValue, &QSlider::valueChanged, this, &StudioModelBodyPartsPanel::OnBoneControllerValueChanged);
+	connect(_ui.BoneControllerValueSlider, &QSlider::valueChanged, this, &StudioModelBodyPartsPanel::OnBoneControllerValueSliderChanged);
+	connect(_ui.BoneControllerValueSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged),
+		this, &StudioModelBodyPartsPanel::OnBoneControllerValueSpinnerChanged);
 
 	auto entity = _context->GetScene()->GetEntity();
 	auto model = entity->GetModel()->GetStudioHeader();
@@ -76,9 +78,13 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelContext* context
 	else
 	{
 		//Disable and center it
-		_ui.BoneControllerValue->setEnabled(false);
-		_ui.BoneControllerValue->setRange(0, 2);
-		_ui.BoneControllerValue->setValue(1);
+		_ui.BoneControllerValueSlider->setEnabled(false);
+		_ui.BoneControllerValueSlider->setRange(0, 2);
+		_ui.BoneControllerValueSlider->setValue(1);
+
+		_ui.BoneControllerValueSpinner->setEnabled(false);
+		_ui.BoneControllerValueSpinner->setRange(0, 1);
+		_ui.BoneControllerValueSpinner->setValue(0);
 	}
 
 	_ui.BoneControllers->setEnabled(model->numbonecontrollers > 0);
@@ -176,14 +182,27 @@ void StudioModelBodyPartsPanel::OnBoneControllerChanged(int index)
 
 	{
 		//Don't let the changes ripple back to change the current setting, because this will result in a loss of accuracy due to casting to integer
-		const QSignalBlocker blocker{_ui.BoneControllerValue};
+		const QSignalBlocker slider{_ui.BoneControllerValueSlider};
+		const QSignalBlocker spinner{_ui.BoneControllerValueSpinner};
 
-		_ui.BoneControllerValue->setRange((int)(start * _controllerSliderScale), (int)(end * _controllerSliderScale));
-		_ui.BoneControllerValue->setValue(static_cast<int>(entity->GetControllerValue(index) * _controllerSliderScale));
+		//TODO: due to floating point accuracy loss this is getting values that deviate slightly
+		//The entity should store off the original input value to avoid the round trip accuracy loss
+		const double value = entity->GetControllerValue(index);
+
+		_ui.BoneControllerValueSlider->setRange((int)(start * _controllerSliderScale), (int)(end * _controllerSliderScale));
+		_ui.BoneControllerValueSlider->setValue(static_cast<int>(value * _controllerSliderScale));
+
+		_ui.BoneControllerValueSpinner->setRange(start, end);
+		_ui.BoneControllerValueSpinner->setValue(value);
 	}
 }
 
-void StudioModelBodyPartsPanel::OnBoneControllerValueChanged(int value)
+void StudioModelBodyPartsPanel::OnBoneControllerValueSliderChanged(int value)
+{
+	OnBoneControllerValueSpinnerChanged(value / _controllerSliderScale);
+}
+
+void StudioModelBodyPartsPanel::OnBoneControllerValueSpinnerChanged(double value)
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
@@ -195,17 +214,23 @@ void StudioModelBodyPartsPanel::OnBoneControllerValueChanged(int value)
 
 		const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
 
-		const float adjustedValue = (static_cast<float>(value) / _controllerSliderScale);
-
 		//TODO: support multiple mouth controllers somehow.
 		if (boneController->index == STUDIO_MOUTH_CONTROLLER)
 		{
-			entity->SetMouth(adjustedValue);
+			entity->SetMouth(value);
 		}
 		else
 		{
-			entity->SetController(boneController->index, adjustedValue);
+			entity->SetController(boneController->index, value);
 		}
+	}
+
+	{
+		const QSignalBlocker slider{_ui.BoneControllerValueSlider};
+		const QSignalBlocker spinner{_ui.BoneControllerValueSpinner};
+
+		_ui.BoneControllerValueSlider->setValue(static_cast<int>(value * _controllerSliderScale));
+		_ui.BoneControllerValueSpinner->setValue(value);
 	}
 }
 }
