@@ -18,6 +18,8 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelContext* context, QWidge
 {
 	_ui.setupUi(this);
 
+	_ui.BoneFlags->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+
 	QDoubleSpinBox* const spinBoxes[] =
 	{
 		_ui.PositionX,
