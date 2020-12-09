@@ -54,7 +54,7 @@ void Timeline::SetFrame(double value, bool updateEntity)
 	const QSignalBlocker blockSlider(_ui.FrameSlider);
 	const QSignalBlocker blockSpinner(_ui.FrameSpinner);
 
-	_ui.FrameSlider->setValue(static_cast<int>(std::floor(value)));
+	_ui.FrameSlider->setValue(static_cast<int>(std::floor(value * FrameSliderRangeMultiplier)));
 	_ui.FrameSpinner->setValue(value);
 
 	if (updateEntity)
@@ -107,7 +107,7 @@ void Timeline::OnTick()
 	//TODO: need to make sure the last frame can be correctly set and played
 	const int frameRange = sequence->numframes - 1;
 
-	_ui.FrameSlider->setRange(0, frameRange);
+	_ui.FrameSlider->setRange(0, frameRange * FrameSliderRangeMultiplier);
 	_ui.FrameSpinner->setRange(0, frameRange);
 
 	SetFrame(entity->GetFrame(), false);
@@ -115,7 +115,7 @@ void Timeline::OnTick()
 
 void Timeline::OnFrameSliderChanged()
 {
-	SetFrame(_ui.FrameSlider->value(), true);
+	SetFrame(static_cast<double>(_ui.FrameSlider->value()) / FrameSliderRangeMultiplier, true);
 }
 
 void Timeline::OnFrameSpinnerChanged()

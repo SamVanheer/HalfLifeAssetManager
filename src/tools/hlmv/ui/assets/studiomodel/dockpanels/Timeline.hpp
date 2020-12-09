@@ -18,6 +18,8 @@ public:
 
 	static constexpr int SkipFramesAmount = 5;
 
+	static constexpr int FrameSliderRangeMultiplier = 10;
+
 	Timeline(StudioModelContext* context, QWidget* parent = nullptr);
 
 	~Timeline();
