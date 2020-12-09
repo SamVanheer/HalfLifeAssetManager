@@ -37,6 +37,8 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 
 	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &HLMVMainWindow::OnAssetTabCloseRequested);
 
+	_assetTabs->setVisible(false);
+
 	_editorContext->GetTimer()->start(0);
 }
 
@@ -90,6 +92,8 @@ void HLMVMainWindow::LoadAsset(const QString& fileName)
 		const auto index = _assetTabs->addTab(editWidget, fileName);
 
 		_assetTabs->setCurrentIndex(index);
+
+		_assetTabs->setVisible(true);
 	}
 }
 
@@ -108,5 +112,7 @@ void HLMVMainWindow::OnAssetTabCloseRequested(int index)
 		}), assets.end());
 
 	delete editWidget;
+
+	_assetTabs->setVisible(_assetTabs->count() > 0);
 }
 }
