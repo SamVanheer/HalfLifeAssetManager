@@ -1,3 +1,7 @@
+#include <cmath>
+#include <limits>
+
+#include <QMessageBox>
 #include <QSignalBlocker>
 
 #include "entity/CHLMVStudioModelEntity.h"
@@ -13,6 +17,19 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelContext* context
 {
 	_ui.setupUi(this);
 
+	_ui.BoneControllerRest->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+
+	QDoubleSpinBox* const spinBoxes[] =
+	{
+		_ui.BoneControllerStart,
+		_ui.BoneControllerEnd
+	};
+
+	for (auto spinBox : spinBoxes)
+	{
+		spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+	}
+
 	connect(_ui.BodyParts, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBodyPartChanged);
 	connect(_ui.Submodels, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnSubmodelChanged);
 	connect(_ui.Skins, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnSkinChanged);
@@ -21,9 +38,34 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelContext* context
 	connect(_ui.BoneControllerValueSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged),
 		this, &StudioModelBodyPartsPanel::OnBoneControllerValueSpinnerChanged);
 
+	connect(_ui.BoneControllerBone, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerBoneChanged);
+	connect(_ui.BoneControllerStart, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerRangeChanged);
+	connect(_ui.BoneControllerEnd, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerRangeChanged);
+	connect(_ui.BoneControllerRest, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerRestChanged);
+	connect(_ui.BoneControllerIndex, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerIndexChanged);
+	connect(_ui.BoneControllerType, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerTypeChanged);
+
 	auto entity = _context->GetScene()->GetEntity();
 	auto model = entity->GetModel()->GetStudioHeader();
 	auto textureHeader = entity->GetModel()->GetTextureHeader();
+
+	{
+		const QSignalBlocker blocker{_ui.BoneControllerBone};
+
+		QStringList bones;
+
+		bones.reserve(model->numbones);
+
+		for (int i = 0; i < model->numbones; ++i)
+		{
+			bones.append(QString{"%1 (%2)"}.arg(model->GetBone(i)->name).arg(i));
+		}
+
+		_ui.BoneControllerBone->addItems(bones);
+
+		//Start off with nothing selected
+		_ui.BoneControllerBone->setCurrentIndex(-1);
+	}
 
 	if (model->numbodyparts > 0)
 	{
@@ -95,6 +137,56 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelContext* context
 
 StudioModelBodyPartsPanel::~StudioModelBodyPartsPanel() = default;
 
+void StudioModelBodyPartsPanel::UpdateControllerRange()
+{
+	auto entity = _context->GetScene()->GetEntity();
+
+	auto model = entity->GetModel()->GetStudioHeader();
+
+	const auto boneController = model->GetBoneController(_ui.BoneControllers->currentIndex());
+
+	float start, end;
+
+	//Swap values if the range is inverted
+	if (boneController->end < boneController->start)
+	{
+		start = boneController->end;
+		end = boneController->start;
+	}
+	else
+	{
+		start = boneController->start;
+		end = boneController->end;
+	}
+
+	//Should probably scale as needed so the range is sufficiently large
+	//This prevents ranges that cover less than a whole integer from not doing anything
+	if ((end - start) < 1.0f)
+	{
+		_controllerSliderScale = 100.0f;
+	}
+	else
+	{
+		_controllerSliderScale = 1.0f;
+	}
+
+	{
+		//Don't let the changes ripple back to change the current setting, because this will result in a loss of accuracy due to casting to integer
+		const QSignalBlocker slider{_ui.BoneControllerValueSlider};
+		const QSignalBlocker spinner{_ui.BoneControllerValueSpinner};
+
+		//TODO: due to floating point accuracy loss this is getting values that deviate slightly
+		//The entity should store off the original input value to avoid the round trip accuracy loss
+		const double value = entity->GetControllerValue(_ui.BoneControllers->currentIndex());
+
+		_ui.BoneControllerValueSlider->setRange((int)(start * _controllerSliderScale), (int)(end * _controllerSliderScale));
+		_ui.BoneControllerValueSlider->setValue(static_cast<int>(value * _controllerSliderScale));
+
+		_ui.BoneControllerValueSpinner->setRange(start, end);
+		_ui.BoneControllerValueSpinner->setValue(value);
+	}
+}
+
 void StudioModelBodyPartsPanel::OnBodyPartChanged(int index)
 {
 	auto entity = _context->GetScene()->GetEntity();
@@ -155,45 +247,28 @@ void StudioModelBodyPartsPanel::OnBoneControllerChanged(int index)
 
 	const auto boneController = model->GetBoneController(index);
 
-	float start, end;
-
-	//Swap values if the range is inverted
-	if (boneController->end < boneController->start)
-	{
-		start = boneController->end;
-		end = boneController->start;
-	}
-	else
-	{
-		start = boneController->start;
-		end = boneController->end;
-	}
-
-	//Should probably scale as needed so the range is sufficiently large
-	//This prevents ranges that cover less than a whole integer from not doing anything
-	if ((end - start) < 1.0f)
-	{
-		_controllerSliderScale = 100.0f;
-	}
-	else
-	{
-		_controllerSliderScale = 1.0f;
-	}
+	UpdateControllerRange();
 
 	{
-		//Don't let the changes ripple back to change the current setting, because this will result in a loss of accuracy due to casting to integer
-		const QSignalBlocker slider{_ui.BoneControllerValueSlider};
-		const QSignalBlocker spinner{_ui.BoneControllerValueSpinner};
+		const QSignalBlocker boneName{_ui.BoneControllerBone};
+		const QSignalBlocker start{_ui.BoneControllerStart};
+		const QSignalBlocker end{_ui.BoneControllerEnd};
+		const QSignalBlocker rest{_ui.BoneControllerRest};
+		const QSignalBlocker index{_ui.BoneControllerIndex};
 
-		//TODO: due to floating point accuracy loss this is getting values that deviate slightly
-		//The entity should store off the original input value to avoid the round trip accuracy loss
-		const double value = entity->GetControllerValue(index);
+		const QSignalBlocker controllerType{_ui.BoneControllerType};
 
-		_ui.BoneControllerValueSlider->setRange((int)(start * _controllerSliderScale), (int)(end * _controllerSliderScale));
-		_ui.BoneControllerValueSlider->setValue(static_cast<int>(value * _controllerSliderScale));
+		_ui.BoneControllerBone->setCurrentIndex(boneController->bone);
+		_ui.BoneControllerStart->setValue(boneController->start);
+		_ui.BoneControllerEnd->setValue(boneController->end);
+		_ui.BoneControllerRest->setValue(boneController->rest);
+		_ui.BoneControllerIndex->setCurrentIndex(boneController->index);
 
-		_ui.BoneControllerValueSpinner->setRange(start, end);
-		_ui.BoneControllerValueSpinner->setValue(value);
+		const int type = boneController->type & STUDIO_BONECONTROLLER_TYPES;
+
+		const int typeIndex = static_cast<int>(std::log2(type));
+
+		_ui.BoneControllerType->setCurrentIndex(typeIndex);
 	}
 }
 
@@ -232,5 +307,132 @@ void StudioModelBodyPartsPanel::OnBoneControllerValueSpinnerChanged(double value
 		_ui.BoneControllerValueSlider->setValue(static_cast<int>(value * _controllerSliderScale));
 		_ui.BoneControllerValueSpinner->setValue(value);
 	}
+}
+
+void StudioModelBodyPartsPanel::OnBoneControllerBoneChanged(int index)
+{
+	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
+
+	const auto entity = _context->GetScene()->GetEntity();
+
+	const auto model = entity->GetModel()->GetStudioHeader();
+
+	const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
+
+	const int type = boneController->type & STUDIO_BONECONTROLLER_TYPES;
+
+	const int typeIndex = static_cast<int>(std::log2(type));
+
+	const auto newBone = model->GetBone(_ui.BoneControllerBone->currentIndex());
+
+	if (newBone->bonecontroller[typeIndex] != -1)
+	{
+		_ui.BoneControllerBone->setCurrentIndex(boneController->bone);
+
+		QMessageBox::critical(this, "Error",
+			QString{"Bone \"%1\" already has a bone controller attached on type \"%2\""}.arg(newBone->name).arg(_ui.BoneControllerType->itemText(typeIndex)));
+		return;
+	}
+
+	//Remove the reference to this controller from the old bone
+	const auto oldBone = model->GetBone(boneController->bone);
+
+	oldBone->bonecontroller[typeIndex] = -1;
+
+	boneController->bone = _ui.BoneControllerBone->currentIndex();
+
+	//Patch up the new bone reference
+	newBone->bonecontroller[typeIndex] = _ui.BoneControllers->currentIndex();
+
+	//TODO: mark model changed
+}
+
+void StudioModelBodyPartsPanel::OnBoneControllerRangeChanged()
+{
+	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
+
+	auto entity = _context->GetScene()->GetEntity();
+
+	auto model = entity->GetModel()->GetStudioHeader();
+
+	const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
+
+	boneController->start = _ui.BoneControllerStart->value();
+	boneController->end = _ui.BoneControllerEnd->value();
+
+	UpdateControllerRange();
+
+	//Reset the value back to 0
+	OnBoneControllerValueSpinnerChanged(0);
+
+	//TODO: mark model changed
+}
+
+void StudioModelBodyPartsPanel::OnBoneControllerRestChanged()
+{
+	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
+
+	auto entity = _context->GetScene()->GetEntity();
+
+	auto model = entity->GetModel()->GetStudioHeader();
+
+	const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
+
+	boneController->rest = _ui.BoneControllerRest->value();
+
+	//TODO: mark model changed
+}
+
+void StudioModelBodyPartsPanel::OnBoneControllerIndexChanged()
+{
+	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
+
+	auto entity = _context->GetScene()->GetEntity();
+
+	auto model = entity->GetModel()->GetStudioHeader();
+
+	const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
+
+	boneController->index = _ui.BoneControllerIndex->currentIndex();
+
+	//TODO: mark model changed
+}
+
+void StudioModelBodyPartsPanel::OnBoneControllerTypeChanged(int index)
+{
+	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
+
+	auto entity = _context->GetScene()->GetEntity();
+
+	auto model = entity->GetModel()->GetStudioHeader();
+
+	const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
+
+	const auto bone = model->GetBone(boneController->bone);
+
+	const int oldType = boneController->type & STUDIO_BONECONTROLLER_TYPES;
+	const int newType = 1 << index;
+
+	const int oldTypeIndex = static_cast<int>(std::log2(oldType));
+	const int newTypeIndex = static_cast<int>(std::log2(newType));
+
+	if (bone->bonecontroller[newTypeIndex] != -1)
+	{
+		_ui.BoneControllerType->setCurrentIndex(oldTypeIndex);
+
+		QMessageBox::critical(this, "Error",
+			QString{"Bone \"%1\" already has a controller attached on type \"%2\""}.arg(bone->name).arg(_ui.BoneControllerType->itemText(newTypeIndex)));
+		return;
+	}
+
+	bone->bonecontroller[oldTypeIndex] = -1;
+
+	boneController->type &= ~oldType;
+
+	boneController->type |= newType;
+
+	bone->bonecontroller[newTypeIndex] = _ui.BoneControllers->currentIndex();
+
+	//TODO: mark model changed
 }
 }

@@ -83,6 +83,7 @@ private:
 	int		m_iBodygroup		= 0;				// bodypart selection	
 	int		m_iSkin				= 0;				// skin group selection
 	byte	m_uiController[ STUDIO_MAX_CONTROLLERS ] = { 0, 0, 0, 0 };	// bone controllers
+	float m_ControllerValues[STUDIO_MAX_CONTROLLERS] = {};
 	byte	m_uiMouth			= 0;				// mouth position
 	byte	m_uiBlending[ STUDIO_MAX_BLENDERS ]	= { 0, 0 };			// animation blending
 

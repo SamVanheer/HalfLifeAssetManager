@@ -347,6 +347,9 @@ float CStudioModelEntity::GetControllerValue( const int iController ) const
 	if( iController < 0 || iController >= STUDIO_TOTAL_CONTROLLERS )
 		return 0;
 
+	return m_ControllerValues[iController];
+
+#if false
 	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
 
 	const mstudiobonecontroller_t* pbonecontroller = pStudioHdr->GetBoneControllers();
@@ -371,6 +374,7 @@ float CStudioModelEntity::GetControllerValue( const int iController ) const
 		uiValue = m_uiController[ iController ];
 
 	return static_cast<float>( uiValue * ( 1.0 / 255.0 ) * ( pbonecontroller->end - pbonecontroller->start ) + pbonecontroller->start );
+#endif
 }
 
 float CStudioModelEntity::SetController( const int iController, float flValue )
@@ -393,6 +397,8 @@ float CStudioModelEntity::SetController( const int iController, float flValue )
 
 	if( i >= pStudioHdr->numbonecontrollers )
 		return flValue;
+
+	m_ControllerValues[iController] = flValue;
 
 	// wrap 0..360 if it's a rotational controller
 	if( pbonecontroller->type & ( STUDIO_XR | STUDIO_YR | STUDIO_ZR ) )

@@ -14,6 +14,9 @@ public:
 	StudioModelBodyPartsPanel(StudioModelContext* context, QWidget* parent = nullptr);
 	~StudioModelBodyPartsPanel();
 
+private:
+	void UpdateControllerRange();
+
 private slots:
 	void OnBodyPartChanged(int index);
 
@@ -25,6 +28,14 @@ private slots:
 
 	void OnBoneControllerValueSliderChanged(int value);
 	void OnBoneControllerValueSpinnerChanged(double value);
+
+	void OnBoneControllerBoneChanged(int index);
+	void OnBoneControllerRangeChanged();
+
+	void OnBoneControllerRestChanged();
+	void OnBoneControllerIndexChanged();
+
+	void OnBoneControllerTypeChanged(int index);
 
 private:
 	Ui_StudioModelBodyPartsPanel _ui;
