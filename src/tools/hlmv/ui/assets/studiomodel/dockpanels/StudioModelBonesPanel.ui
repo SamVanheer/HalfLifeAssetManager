@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>705</width>
+    <width>697</width>
     <height>90</height>
    </rect>
   </property>
@@ -149,7 +149,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Bone Name:</string>
+        <string>Bone Name</string>
        </property>
       </widget>
      </item>
@@ -162,7 +162,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Parent Bone:</string>
+        <string>Parent Bone</string>
        </property>
       </widget>
      </item>
@@ -175,7 +175,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Bone Flags:</string>
+        <string>Bone Flags</string>
        </property>
       </widget>
      </item>
@@ -272,7 +272,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page">
       <property name="sizePolicy">
@@ -291,7 +291,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Y:</string>
+          <string>Y</string>
          </property>
         </widget>
        </item>
@@ -329,7 +329,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>X:</string>
+          <string>X</string>
          </property>
         </widget>
        </item>
@@ -342,7 +342,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Z:</string>
+          <string>Z</string>
          </property>
         </widget>
        </item>
@@ -409,7 +409,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Y:</string>
+          <string>Y</string>
          </property>
         </widget>
        </item>
@@ -422,7 +422,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Z:</string>
+          <string>Z</string>
          </property>
         </widget>
        </item>
@@ -435,7 +435,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>X:</string>
+          <string>X</string>
          </property>
         </widget>
        </item>
@@ -527,7 +527,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Y:</string>
+          <string>Y</string>
          </property>
         </widget>
        </item>
@@ -540,7 +540,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Z:</string>
+          <string>Z</string>
          </property>
         </widget>
        </item>
@@ -553,7 +553,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>X:</string>
+          <string>X</string>
          </property>
         </widget>
        </item>
@@ -645,7 +645,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>X:</string>
+          <string>X</string>
          </property>
         </widget>
        </item>
@@ -683,7 +683,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Y:</string>
+          <string>Y</string>
          </property>
         </widget>
        </item>
@@ -721,7 +721,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Z:</string>
+          <string>Z</string>
          </property>
         </widget>
        </item>

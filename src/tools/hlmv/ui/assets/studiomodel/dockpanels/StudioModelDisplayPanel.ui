@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>987</width>
+    <width>993</width>
     <height>75</height>
    </rect>
   </property>
@@ -452,7 +452,7 @@
       <item row="0" column="0" colspan="2">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Render Mode:</string>
+         <string>Render Mode</string>
         </property>
        </widget>
       </item>
@@ -477,7 +477,7 @@
          </size>
         </property>
         <property name="currentText">
-         <string>Texture Shaded</string>
+         <string>Wireframe</string>
         </property>
         <item>
          <property name="text">

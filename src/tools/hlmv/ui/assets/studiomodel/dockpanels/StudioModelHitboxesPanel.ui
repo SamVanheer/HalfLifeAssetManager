@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>743</width>
+    <width>731</width>
     <height>94</height>
    </rect>
   </property>
@@ -62,7 +62,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Bone:</string>
+        <string>Bone</string>
        </property>
       </widget>
      </item>
@@ -75,7 +75,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Minimum Z:</string>
+        <string>Minimum Z</string>
        </property>
       </widget>
      </item>
@@ -88,7 +88,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Minimum X:</string>
+        <string>Minimum X</string>
        </property>
       </widget>
      </item>
@@ -101,7 +101,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Maximum Y:</string>
+        <string>Maximum Y</string>
        </property>
       </widget>
      </item>
@@ -139,7 +139,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Maximum Z:</string>
+        <string>Maximum Z</string>
        </property>
       </widget>
      </item>
@@ -202,7 +202,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Minimum Y:</string>
+        <string>Minimum Y</string>
        </property>
       </widget>
      </item>
@@ -215,7 +215,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Maximum X:</string>
+        <string>Maximum X</string>
        </property>
       </widget>
      </item>
@@ -325,7 +325,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Hitgroup:</string>
+        <string>Hitgroup</string>
        </property>
       </widget>
      </item>
@@ -369,7 +369,7 @@
    <item row="3" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>QC String:</string>
+      <string>QC String</string>
      </property>
     </widget>
    </item>

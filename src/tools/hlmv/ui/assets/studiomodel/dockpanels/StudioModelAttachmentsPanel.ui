@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>548</width>
+    <width>540</width>
     <height>94</height>
    </rect>
   </property>
@@ -84,7 +84,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Origin Y:</string>
+        <string>Origin Y</string>
        </property>
       </widget>
      </item>
@@ -97,7 +97,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Origin X:</string>
+        <string>Origin X</string>
        </property>
       </widget>
      </item>
@@ -110,7 +110,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Name:</string>
+        <string>Name</string>
        </property>
       </widget>
      </item>
@@ -123,7 +123,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Bone:</string>
+        <string>Bone</string>
        </property>
       </widget>
      </item>
@@ -183,7 +183,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Type:</string>
+        <string>Type</string>
        </property>
       </widget>
      </item>
@@ -196,7 +196,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Origin Z:</string>
+        <string>Origin Z</string>
        </property>
       </widget>
      </item>
@@ -329,7 +329,7 @@
    <item row="3" column="0">
     <widget class="QLabel" name="label_7">
      <property name="text">
-      <string>QC String:</string>
+      <string>QC String</string>
      </property>
     </widget>
    </item>
