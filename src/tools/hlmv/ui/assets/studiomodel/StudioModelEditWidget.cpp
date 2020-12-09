@@ -88,6 +88,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	auto layout = new QVBoxLayout(this);
 
 	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setSpacing(0);
 
 	layout->addWidget(_sceneWidget->GetContainer(), 1);
 
@@ -97,6 +98,9 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	{
 		auto controlAreaLayout = new QVBoxLayout(_controlAreaWidget);
+
+		controlAreaLayout->setContentsMargins(0, 0, 0, 0);
+		controlAreaLayout->setSpacing(0);
 
 		controlAreaLayout->addWidget(_dockPanels);
 		controlAreaLayout->addWidget(_timeline);
