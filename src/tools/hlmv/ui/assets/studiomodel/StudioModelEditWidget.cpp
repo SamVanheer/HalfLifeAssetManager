@@ -19,6 +19,7 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelGlobalFlagsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelHitboxesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDataPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelModelInfoPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
@@ -63,12 +64,14 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; }");
 
+	auto modelDisplayPanel = new StudioModelDisplayPanel(_context);
 	auto texturesPanel = new StudioModelTexturesPanel(_context);
 	auto bonesPanel = new StudioModelBonesPanel(_context);
 	auto attachmentsPanel = new StudioModelAttachmentsPanel(_context);
 	auto hitboxesPanel = new StudioModelHitboxesPanel(_context);
 
-	_dockPanels->addTab(new StudioModelDisplayPanel(_context), "Model Display");
+	_dockPanels->addTab(new StudioModelModelInfoPanel(_context), "Model Info");
+	_dockPanels->addTab(modelDisplayPanel, "Model Display");
 	_dockPanels->addTab(new StudioModelSequencesPanel(_context), "Sequences");
 	_dockPanels->addTab(new StudioModelBodyPartsPanel(_context), "Body Parts");
 	_dockPanels->addTab(texturesPanel, "Textures");
@@ -77,6 +80,8 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	_dockPanels->addTab(bonesPanel, "Bones");
 	_dockPanels->addTab(attachmentsPanel, "Attachments");
 	_dockPanels->addTab(hitboxesPanel, "Hitboxes");
+
+	_dockPanels->setCurrentWidget(modelDisplayPanel);
 
 	_timeline = new Timeline(_context, _controlAreaWidget);
 

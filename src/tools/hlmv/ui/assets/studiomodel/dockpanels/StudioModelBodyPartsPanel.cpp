@@ -85,18 +85,6 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelContext* context
 
 	//Should already be set but if there are no body parts and/or submodels it won't have been
 	_ui.BodyValue->setText(QString::number(entity->GetBodygroup()));
-
-	_ui.BonesValue->setText(QString::number(model->numbones));
-	_ui.BoneControllersValue->setText(QString::number(model->numbonecontrollers));
-	_ui.HitBoxesValue->setText(QString::number(model->numhitboxes));
-	_ui.SequencesValue->setText(QString::number(model->numseq));
-	_ui.SequenceGroupsValue->setText(QString::number(model->numseqgroups));
-
-	_ui.TexturesValue->setText(QString::number(textureHeader->numtextures));
-	_ui.SkinFamiliesValue->setText(QString::number(textureHeader->numskinfamilies));
-	_ui.BodyPartsValue->setText(QString::number(model->numbodyparts));
-	_ui.AttachmentsValue->setText(QString::number(model->numattachments));
-	_ui.TransitionsValue->setText(QString::number(model->numtransitions));
 }
 
 StudioModelBodyPartsPanel::~StudioModelBodyPartsPanel() = default;

@@ -27,6 +27,9 @@ target_sources(HLMV
 		StudioModelModelDataPanel.cpp
 		StudioModelModelDataPanel.hpp
 		StudioModelModelDataPanel.ui
+		StudioModelModelInfoPanel.cpp
+		StudioModelModelInfoPanel.hpp
+		StudioModelModelInfoPanel.ui
 		StudioModelSequencesPanel.cpp
 		StudioModelSequencesPanel.hpp
 		StudioModelSequencesPanel.ui
