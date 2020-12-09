@@ -6,6 +6,9 @@ target_sources(HLMV
 		StudioModelBodyPartsPanel.cpp
 		StudioModelBodyPartsPanel.hpp
 		StudioModelBodyPartsPanel.ui
+		StudioModelBonesPanel.cpp
+		StudioModelBonesPanel.hpp
+		StudioModelBonesPanel.ui
 		StudioModelDisplayPanel.cpp
 		StudioModelDisplayPanel.hpp
 		StudioModelDisplayPanel.ui

@@ -121,7 +121,7 @@ public:
 	*	Draws a single bone.
 	*	@param iBone Index of the bone to draw.
 	*/
-	virtual void DrawSingleBone( const int iBone ) = 0;
+	virtual void DrawSingleBone(CModelRenderInfo& renderInfo, const int iBone) = 0;
 
 	/**
 	*	Draws a single attachment.

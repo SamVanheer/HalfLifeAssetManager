@@ -71,7 +71,7 @@ public:
 		m_pListener = pListener;
 	}
 
-	void DrawSingleBone( const int iBone ) override final;
+	void DrawSingleBone(CModelRenderInfo& renderInfo, const int iBone) override final;
 
 	void DrawSingleAttachment(CModelRenderInfo& renderInfo, const int iAttachment) override final;
 

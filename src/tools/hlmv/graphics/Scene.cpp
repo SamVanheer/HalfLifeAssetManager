@@ -524,6 +524,11 @@ void Scene::DrawModel()
 
 		auto renderInfo = _entity->GetRenderInfo();
 
+		if (DrawSingleBoneIndex != -1)
+		{
+			_entityContext->StudioModelRenderer->DrawSingleBone(renderInfo, DrawSingleBoneIndex);
+		}
+
 		if (DrawSingleAttachmentIndex != -1)
 		{
 			_entityContext->StudioModelRenderer->DrawSingleAttachment(renderInfo, DrawSingleAttachmentIndex);

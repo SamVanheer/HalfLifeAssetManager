@@ -14,6 +14,7 @@
 
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelBonesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelDisplayPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelGlobalFlagsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelHitboxesPanel.hpp"
@@ -63,6 +64,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; }");
 
 	auto texturesPanel = new StudioModelTexturesPanel(_context);
+	auto bonesPanel = new StudioModelBonesPanel(_context);
 	auto attachmentsPanel = new StudioModelAttachmentsPanel(_context);
 	auto hitboxesPanel = new StudioModelHitboxesPanel(_context);
 
@@ -72,6 +74,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	_dockPanels->addTab(texturesPanel, "Textures");
 	_dockPanels->addTab(new StudioModelModelDataPanel(_context), "Model Data");
 	_dockPanels->addTab(new StudioModelGlobalFlagsPanel(_context), "Global Flags");
+	_dockPanels->addTab(bonesPanel, "Bones");
 	_dockPanels->addTab(attachmentsPanel, "Attachments");
 	_dockPanels->addTab(hitboxesPanel, "Hitboxes");
 
@@ -109,6 +112,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
 	connect(this, &StudioModelEditWidget::DockPanelChanged, texturesPanel, &StudioModelTexturesPanel::OnDockPanelChanged);
 
+	connect(this, &StudioModelEditWidget::DockPanelChanged, bonesPanel, &StudioModelBonesPanel::OnDockPanelChanged);
 	connect(this, &StudioModelEditWidget::DockPanelChanged, attachmentsPanel, &StudioModelAttachmentsPanel::OnDockPanelChanged);
 	connect(this, &StudioModelEditWidget::DockPanelChanged, hitboxesPanel, &StudioModelHitboxesPanel::OnDockPanelChanged);
 }

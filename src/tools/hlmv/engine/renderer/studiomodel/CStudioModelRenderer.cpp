@@ -185,10 +185,19 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 	return uiDrawnPolys;
 }
 
-void CStudioModelRenderer::DrawSingleBone( const int iBone )
+void CStudioModelRenderer::DrawSingleBone(CModelRenderInfo& renderInfo, const int iBone)
 {
-	if( !m_pStudioHdr || iBone < 0 || iBone >= m_pStudioHdr->numbones )
+	//TODO: rework how stuff is passed in
+	auto header = renderInfo.pModel->GetStudioHeader();
+
+	if (!header || iBone < 0 || iBone >= header->numbones)
 		return;
+
+	m_pRenderInfo = &renderInfo;
+	m_pStudioHdr = header;
+	m_pTextureHdr = renderInfo.pModel->GetTextureHeader();
+
+	SetUpBones();
 
 	const mstudiobone_t* const pbones = m_pStudioHdr->GetBones();
 	glDisable( GL_TEXTURE_2D );
@@ -221,6 +230,10 @@ void CStudioModelRenderer::DrawSingleBone( const int iBone )
 	}
 
 	glPointSize( 1.0f );
+
+	m_pStudioHdr = nullptr;
+	m_pTextureHdr = nullptr;
+	m_pRenderInfo = nullptr;
 }
 
 void CStudioModelRenderer::DrawSingleAttachment(CModelRenderInfo& renderInfo, const int iAttachment)
