@@ -23,7 +23,7 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	_assetTabs = new QTabWidget(this);
 
 	//Eliminate the border on the sides so the scene widget takes up all horizontal space
-	_assetTabs->setStyleSheet("QTabWidget::pane { padding: 0px; }");
+	_assetTabs->setDocumentMode(true);
 
 	_assetTabs->setTabsClosable(true);
 
