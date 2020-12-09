@@ -62,7 +62,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_dockPanels = new QTabWidget(_controlAreaWidget);
 
-	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; }");
+	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; padding-left: 9px; }");
 
 	auto modelDisplayPanel = new StudioModelDisplayPanel(_context);
 	auto texturesPanel = new StudioModelTexturesPanel(_context);
