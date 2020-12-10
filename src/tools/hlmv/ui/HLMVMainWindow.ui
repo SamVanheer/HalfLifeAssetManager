@@ -42,7 +42,14 @@
     </property>
     <addaction name="ActionAbout"/>
    </widget>
+   <widget class="QMenu" name="MenuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="ActionFullscreen"/>
+   </widget>
    <addaction name="MenuFile"/>
+   <addaction name="MenuView"/>
    <addaction name="MenuTools"/>
    <addaction name="MenuHelp"/>
   </widget>
@@ -67,6 +74,14 @@
   <action name="ActionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="ActionFullscreen">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Fullscreen</string>
    </property>
   </action>
  </widget>

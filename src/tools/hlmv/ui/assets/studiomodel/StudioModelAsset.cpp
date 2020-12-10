@@ -1,5 +1,6 @@
 #include <stdexcept>
 
+#include "ui/FullscreenWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
@@ -8,6 +9,15 @@ namespace ui::assets::studiomodel
 QWidget* StudioModelAsset::CreateEditWidget(EditorContext* editorContext)
 {
 	return new StudioModelEditWidget(editorContext, this);
+}
+
+FullscreenWidget* StudioModelAsset::CreateFullscreenWidget(EditorContext* editorContext, QWidget* editWidget)
+{
+	const auto studioModelEditWidget = static_cast<StudioModelEditWidget*>(editWidget);
+
+	const auto fullscreenWidget = new FullscreenWidget(editorContext, studioModelEditWidget->GetContext()->GetScene());
+
+	return fullscreenWidget;
 }
 
 void StudioModelAsset::Save(const std::string& fileName)

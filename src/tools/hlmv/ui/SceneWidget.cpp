@@ -40,6 +40,15 @@ void SceneWidget::resizeGL(int w, int h)
 
 void SceneWidget::paintGL()
 {
-	_scene->Draw();
+	const QSize size{this->size()};
+
+	//Only draw something if the window has a size
+	//Otherwise problems could occur when the size is used to determine aspect ratios, viewports, etc
+	if (size.isValid())
+	{
+		//TODO: this is temporary until window sized resources can be decoupled from the scene class
+		_scene->UpdateWindowSize(static_cast<unsigned int>(size.width()), static_cast<unsigned int>(size.height()));
+		_scene->Draw();
+	}
 }
 }

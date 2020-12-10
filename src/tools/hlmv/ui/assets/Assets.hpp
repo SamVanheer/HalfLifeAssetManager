@@ -11,6 +11,7 @@
 namespace ui
 {
 class EditorContext;
+class FullscreenWidget;
 
 namespace assets
 {
@@ -31,6 +32,9 @@ public:
 	*	@param editorContext The editor context used to communicate with the owner
 	*/
 	virtual QWidget* CreateEditWidget(EditorContext* editorContext) = 0;
+
+	//TODO: probably shouldn't be passing in the edit widget here
+	virtual FullscreenWidget* CreateFullscreenWidget(EditorContext* editorContext, QWidget* editWidget) = 0;
 
 	virtual void Save(const std::string& fileName) = 0;
 };

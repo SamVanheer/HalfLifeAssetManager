@@ -29,6 +29,8 @@ public:
 
 	QWidget* CreateEditWidget(EditorContext* editorContext) override;
 
+	FullscreenWidget* CreateFullscreenWidget(EditorContext* editorContext, QWidget* editWidget) override;
+
 	void Save(const std::string& fileName) override;
 
 	studiomdl::CStudioModel* GetStudioModel() { return _studioModel.get(); }

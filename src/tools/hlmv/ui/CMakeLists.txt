@@ -2,6 +2,8 @@ target_sources(HLMV
 	PRIVATE
 		EditorContext.cpp
 		EditorContext.hpp
+		FullscreenWidget.cpp
+		FullscreenWidget.hpp
 		HLMVMainWindow.cpp
 		HLMVMainWindow.hpp
 		HLMVMainWindow.ui

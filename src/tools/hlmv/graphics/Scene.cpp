@@ -153,6 +153,7 @@ void Scene::Shutdown()
 
 void Scene::Tick()
 {
+	//TODO: needs to be moved out of this class
 	const double flCurTime = GetCurrentTime();
 
 	double flFrameTime = flCurTime - _worldTime->GetPreviousRealTime();

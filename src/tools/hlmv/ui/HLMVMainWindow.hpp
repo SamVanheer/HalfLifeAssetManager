@@ -11,6 +11,7 @@
 namespace ui
 {
 class EditorContext;
+class FullscreenWidget;
 
 class HLMVMainWindow final : public QMainWindow
 {
@@ -22,6 +23,11 @@ public:
 
 private slots:
 	void OnOpenLoadAssetDialog();
+
+	void OnGoFullscreen();
+
+	void OnFullscreenWidgetClosing(FullscreenWidget* widget);
+
 	void OnOpenOptionsDialog();
 
 	void OnShowAbout();

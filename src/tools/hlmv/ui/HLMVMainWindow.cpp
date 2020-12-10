@@ -1,11 +1,13 @@
 #include <algorithm>
 
+#include <QApplication>
 #include <QFileDialog>
 #include <QMessageBox>
 
 #include "Credits.hpp"
 
 #include "ui/EditorContext.hpp"
+#include "ui/FullscreenWidget.hpp"
 #include "ui/HLMVMainWindow.hpp"
 #include "ui/assets/Assets.hpp"
 #include "ui/options/OptionsDialog.hpp"
@@ -32,6 +34,7 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	setCentralWidget(_assetTabs);
 
 	connect(_ui.ActionLoad, &QAction::triggered, this, &HLMVMainWindow::OnOpenLoadAssetDialog);
+	connect(_ui.ActionFullscreen, &QAction::triggered, this, &HLMVMainWindow::OnGoFullscreen);
 	connect(_ui.ActionOptions, &QAction::triggered, this, &HLMVMainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &HLMVMainWindow::OnShowAbout);
 
@@ -51,6 +54,39 @@ void HLMVMainWindow::OnOpenLoadAssetDialog()
 		!fileName.isEmpty())
 	{
 		LoadAsset(fileName);
+	}
+}
+
+void HLMVMainWindow::OnGoFullscreen()
+{
+	auto& assets = _editorContext->GetLoadedAssets();
+
+	auto& currentAsset = assets[_assetTabs->currentIndex()];
+
+	if (!currentAsset.GetFullscreenWidget())
+	{
+		currentAsset.SetFullscreenWidget(currentAsset.GetAsset()->CreateFullscreenWidget(_editorContext, currentAsset.GetEditWidget()));
+
+		connect(currentAsset.GetFullscreenWidget(), &FullscreenWidget::Closing, this, &HLMVMainWindow::OnFullscreenWidgetClosing);
+	}
+
+	//TODO: needs to go fullscreen
+	auto fullscreenWidget = currentAsset.GetFullscreenWidget();
+	fullscreenWidget->raise();
+	fullscreenWidget->showFullScreen();
+	fullscreenWidget->activateWindow();
+}
+
+void HLMVMainWindow::OnFullscreenWidgetClosing(FullscreenWidget* widget)
+{
+	auto& assets = _editorContext->GetLoadedAssets();
+
+	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& asset)
+		{
+			return asset.GetFullscreenWidget() == widget;
+		}); it != assets.end())
+	{
+		it->SetFullscreenWidget(nullptr);
 	}
 }
 
@@ -94,6 +130,7 @@ void HLMVMainWindow::LoadAsset(const QString& fileName)
 		_assetTabs->setCurrentIndex(index);
 
 		_assetTabs->setVisible(true);
+		_ui.ActionFullscreen->setEnabled(true);
 	}
 }
 
@@ -106,13 +143,27 @@ void HLMVMainWindow::OnAssetTabCloseRequested(int index)
 
 	auto& assets = _editorContext->GetLoadedAssets();
 
-	assets.erase(std::remove_if(assets.begin(), assets.end(), [&](const auto& asset)
+	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& asset)
 		{
 			return asset.GetEditWidget() == editWidget;
-		}), assets.end());
+		}); it != assets.end())
+	{
+		//Remove the fullscreen widget if it's open
+		delete it->GetFullscreenWidget();
+		it->SetFullscreenWidget(nullptr);
+
+		assets.erase(it);
+	}
+	else
+	{
+		QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
+	}
 
 	delete editWidget;
 
-	_assetTabs->setVisible(_assetTabs->count() > 0);
+	const bool hasOpenAssets = _assetTabs->count() > 0;
+
+	_assetTabs->setVisible(hasOpenAssets);
+	_ui.ActionFullscreen->setEnabled(hasOpenAssets);
 }
 }
