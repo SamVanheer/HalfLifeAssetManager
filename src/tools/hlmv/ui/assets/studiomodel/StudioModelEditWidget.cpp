@@ -127,7 +127,11 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	connect(this, &StudioModelEditWidget::DockPanelChanged, hitboxesPanel, &StudioModelHitboxesPanel::OnDockPanelChanged);
 }
 
-StudioModelEditWidget::~StudioModelEditWidget() = default;
+StudioModelEditWidget::~StudioModelEditWidget()
+{
+	//Delete the scene widget now so the scene object is still valid
+	delete _sceneWidget;
+}
 
 void StudioModelEditWidget::OnMouseEvent(QMouseEvent* event)
 {
