@@ -12,6 +12,7 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
+#include "ui/assets/studiomodel/dockpanels/InfoBar.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBonesPanel.hpp"
@@ -83,6 +84,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_dockPanels->setCurrentWidget(modelDisplayPanel);
 
+	const auto infoBar = new InfoBar(_context, _controlAreaWidget);
 	_timeline = new Timeline(_context, _controlAreaWidget);
 
 	auto layout = new QVBoxLayout(this);
@@ -102,6 +104,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 		controlAreaLayout->setContentsMargins(0, 0, 0, 0);
 		controlAreaLayout->setSpacing(0);
 
+		controlAreaLayout->addWidget(infoBar);
 		controlAreaLayout->addWidget(_dockPanels);
 		controlAreaLayout->addWidget(_timeline);
 
@@ -118,6 +121,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	connect(_dockPanels, &QTabWidget::currentChanged, this, &StudioModelEditWidget::OnTabChanged);
 
+	connect(editorContext, &EditorContext::Tick, infoBar, &InfoBar::OnTick);
 	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
 	connect(this, &StudioModelEditWidget::DockPanelChanged, texturesPanel, &StudioModelTexturesPanel::OnDockPanelChanged);
 

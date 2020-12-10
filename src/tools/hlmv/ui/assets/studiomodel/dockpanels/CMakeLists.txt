@@ -1,5 +1,8 @@
 target_sources(HLMV
 	PRIVATE
+		InfoBar.cpp
+		InfoBar.hpp
+		InfoBar.ui
 		StudioModelAttachmentsPanel.cpp
 		StudioModelAttachmentsPanel.hpp
 		StudioModelAttachmentsPanel.ui
