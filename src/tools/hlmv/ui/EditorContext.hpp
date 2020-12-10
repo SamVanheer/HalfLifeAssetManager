@@ -44,13 +44,13 @@ public:
 	LoadedAsset(LoadedAsset&&) = default;
 	LoadedAsset& operator=(LoadedAsset&&) = default;
 
-	assets::IAsset* GetAsset() const { return Asset.get(); }
+	assets::IAsset* GetAsset() const { return _asset.get(); }
 
-	QWidget* GetEditWidget() const { return EditWidget; }
+	QWidget* GetEditWidget() const { return _editWidget; }
 
 private:
-	std::unique_ptr<assets::IAsset> Asset;
-	QWidget* EditWidget;
+	std::unique_ptr<assets::IAsset> _asset;
+	QWidget* _editWidget;
 };
 
 /**

@@ -46,12 +46,12 @@ class SceneWidget final : public QOpenGLWindow
 	Q_OBJECT
 
 public:
-	SceneWidget(std::unique_ptr<graphics::Scene>&& scene, QWidget* parent = nullptr);
+	SceneWidget(graphics::Scene* scene, QWidget* parent = nullptr);
 	~SceneWidget();
 
 	QWidget* GetContainer() { return _container; }
 
-	graphics::Scene* GetScene() { return _scene.get(); }
+	graphics::Scene* GetScene() { return _scene; }
 
 signals:
 	void CreateDeviceResources();
@@ -80,6 +80,6 @@ protected:
 
 private:
 	QWidget* const _container;
-	const std::unique_ptr<graphics::Scene> _scene;
+	graphics::Scene* const _scene;
 };
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <memory>
 #include <stack>
 
 #include <QColor>
@@ -25,11 +26,11 @@ class StudioModelContext final : public QObject
 	Q_OBJECT
 
 public:
-	StudioModelContext(EditorContext* editorContext, StudioModelAsset* asset, graphics::Scene* scene, QObject* parent = nullptr)
+	StudioModelContext(EditorContext* editorContext, StudioModelAsset* asset, std::unique_ptr<graphics::Scene>&& scene, QObject* parent = nullptr)
 		: QObject(parent)
 		, _editorContext(editorContext)
 		, _asset(asset)
-		, _scene(scene)
+		, _scene(std::move(scene))
 	{
 	}
 
@@ -39,7 +40,7 @@ public:
 
 	StudioModelAsset* GetAsset() { return _asset; }
 
-	graphics::Scene* GetScene() { return _scene; }
+	graphics::Scene* GetScene() { return _scene.get(); }
 
 	IInputSink* GetInputSink() const { return _inputSinks.top(); }
 
@@ -67,7 +68,7 @@ public slots:
 private:
 	EditorContext* const _editorContext;
 	StudioModelAsset* const _asset;
-	graphics::Scene* const _scene;
+	const std::unique_ptr<graphics::Scene> _scene;
 
 	std::stack<IInputSink*> _inputSinks;
 };

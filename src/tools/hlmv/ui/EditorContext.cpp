@@ -21,8 +21,8 @@
 namespace ui
 {
 LoadedAsset::LoadedAsset(std::unique_ptr<assets::IAsset>&& asset, QWidget* editWidget)
-	: Asset(std::move(asset))
-	, EditWidget(editWidget)
+	: _asset(std::move(asset))
+	, _editWidget(editWidget)
 {
 }
 

@@ -7,10 +7,10 @@
 
 namespace ui
 {
-SceneWidget::SceneWidget(std::unique_ptr<graphics::Scene>&& scene, QWidget* parent)
+SceneWidget::SceneWidget(graphics::Scene* scene, QWidget* parent)
 	: QOpenGLWindow()
 	, _container(QWidget::createWindowContainer(this, parent))
-	, _scene(std::move(scene))
+	, _scene(scene)
 {
 	assert(nullptr != _scene);
 

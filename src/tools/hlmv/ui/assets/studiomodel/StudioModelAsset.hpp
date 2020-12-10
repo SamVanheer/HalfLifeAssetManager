@@ -13,7 +13,6 @@ class StudioModelAssetProvider;
 class StudioModelAsset final : public IAsset
 {
 public:
-	//TODO: pass in loaded asset
 	StudioModelAsset(const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel)
 		: _provider(provider)
 		, _studioModel(std::move(studioModel))

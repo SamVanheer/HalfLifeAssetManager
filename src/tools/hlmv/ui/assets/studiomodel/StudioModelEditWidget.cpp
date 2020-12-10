@@ -32,11 +32,9 @@ namespace ui::assets::studiomodel
 {
 StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _asset(asset)
+	, _context(new StudioModelContext(editorContext, asset, std::make_unique<graphics::Scene>(editorContext->GetSoundSystem()), this))
 {
-	auto scene = std::make_unique<graphics::Scene>(editorContext->GetSoundSystem());
-
-	_context = new StudioModelContext(editorContext, asset, scene.get(), this);
+	const auto scene = _context->GetScene();
 
 	_context->PushInputSink(this);
 
@@ -47,7 +45,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	if (nullptr != entity)
 	{
-		entity->SetModel(_asset->GetStudioModel());
+		entity->SetModel(asset->GetStudioModel());
 
 		entity->Spawn();
 
@@ -56,8 +54,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_cameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>();
 
-	//TODO: scene ownership needs to be reworked
-	_sceneWidget = new SceneWidget(std::move(scene), this);
+	_sceneWidget = new SceneWidget(scene, this);
 
 	_controlAreaWidget = new QWidget(this);
 

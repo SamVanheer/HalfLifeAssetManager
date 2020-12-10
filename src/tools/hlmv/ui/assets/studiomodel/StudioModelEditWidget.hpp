@@ -36,6 +36,8 @@ public:
 	StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelEditWidget();
 
+	StudioModelContext* GetContext() const { return _context; }
+
 	void OnMouseEvent(QMouseEvent* event) override;
 
 signals:
@@ -51,9 +53,7 @@ private slots:
 	void OnTabChanged(int index);
 
 private:
-	StudioModelAsset* const _asset;
-
-	StudioModelContext* _context;
+	StudioModelContext* const _context;
 
 	SceneWidget* _sceneWidget;
 
