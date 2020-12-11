@@ -1,4 +1,5 @@
 #include <QKeyEvent>
+#include <QtPlatformHeaders/QWindowsWindowFunctions>
 
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
@@ -16,6 +17,12 @@ FullscreenWidget::FullscreenWidget(EditorContext* editorContext, graphics::Scene
 
 	//The window has to be deleted when closed so as to not leave any dangling references behind
 	setAttribute(Qt::WidgetAttribute::WA_DeleteOnClose, true);
+
+	//This has to be a native window for there to be a window handle
+	setAttribute(Qt::WidgetAttribute::WA_NativeWindow, true);
+
+	//Without this going fullscreen will cause black flickering
+	QWindowsWindowFunctions::setHasBorderInFullScreen(this->windowHandle(), true);
 
 	const auto sceneWidget = new SceneWidget(scene, this);
 
