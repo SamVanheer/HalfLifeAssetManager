@@ -20,7 +20,7 @@
 
 namespace ui
 {
-LoadedAsset::LoadedAsset(std::unique_ptr<assets::IAsset>&& asset, QWidget* editWidget)
+LoadedAsset::LoadedAsset(std::unique_ptr<assets::Asset>&& asset, QWidget* editWidget)
 	: _asset(std::move(asset))
 	, _editWidget(editWidget)
 {

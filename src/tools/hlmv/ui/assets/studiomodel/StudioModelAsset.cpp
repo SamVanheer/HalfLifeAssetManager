@@ -11,8 +11,10 @@
 
 namespace ui::assets::studiomodel
 {
-StudioModelAsset::StudioModelAsset(EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel)
-	: _provider(provider)
+StudioModelAsset::StudioModelAsset(QString&& fileName,
+	EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel)
+	: Asset(std::move(fileName))
+	, _provider(provider)
 	, _studioModel(std::move(studioModel))
 	, _context(std::make_unique<StudioModelContext>(editorContext, this, std::make_unique<graphics::Scene>(editorContext->GetSoundSystem())))
 {
@@ -48,15 +50,15 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName) const
 	return true;
 }
 
-std::unique_ptr<IAsset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName) const
+std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName) const
 {
 	//TODO: this throws specific exceptions. They need to be generalized so the caller can handle them
 	auto studioModel = studiomdl::LoadStudioModel(fileName.toStdString().c_str());
 
-	return std::make_unique<StudioModelAsset>(editorContext, this, std::move(studioModel));
+	return std::make_unique<StudioModelAsset>(QString{fileName}, editorContext, this, std::move(studioModel));
 }
 
-void StudioModelAssetProvider::Save(const QString& fileName, IAsset& asset) const
+void StudioModelAssetProvider::Save(const QString& fileName, Asset& asset) const
 {
 	//TODO:
 	if (asset.GetAssetType() == GetAssetType())

@@ -38,6 +38,7 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	connect(_ui.ActionOptions, &QAction::triggered, this, &HLMVMainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &HLMVMainWindow::OnShowAbout);
 
+	connect(_assetTabs, &QTabWidget::currentChanged, this, &HLMVMainWindow::OnAssetTabChanged);
 	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &HLMVMainWindow::OnAssetTabCloseRequested);
 
 	_assetTabs->setVisible(false);
@@ -54,6 +55,9 @@ void HLMVMainWindow::TryLoadAsset(const QString& fileName)
 
 	if (nullptr != asset)
 	{
+		connect(asset.get(), &assets::Asset::FileNameChanged, this, &HLMVMainWindow::OnAssetFileNameChanged);
+		connect(asset.get(), &assets::Asset::HasUnsavedChangesChanged, this, &HLMVMainWindow::OnAssetHasUnsavedChangesChanged);
+
 		auto editWidget = asset->CreateEditWidget(_editorContext);
 
 		_editorContext->GetLoadedAssets().emplace_back(std::move(asset), editWidget);
@@ -64,6 +68,97 @@ void HLMVMainWindow::TryLoadAsset(const QString& fileName)
 
 		_assetTabs->setVisible(true);
 		_ui.ActionFullscreen->setEnabled(true);
+	}
+}
+
+void HLMVMainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
+{
+	setWindowTitle(QString{"%1[*]"}.arg(fileName));
+	setWindowModified(hasUnsavedChanges);
+}
+
+void HLMVMainWindow::OnAssetTabChanged(int index)
+{
+	bool success = false;
+
+	if (index != -1)
+	{
+		const auto editWidget = _assetTabs->widget(index);
+
+		auto& assets = _editorContext->GetLoadedAssets();
+
+		if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& candidate)
+			{
+				return candidate.GetEditWidget() == editWidget;
+			}); it != assets.end())
+		{
+			UpdateTitle(it->GetAsset()->GetFileName(), it->GetAsset()->HasUnsavedChanges());
+			success = true;
+		}
+		else
+		{
+			QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
+		}
+	}
+
+	if (!success)
+	{
+		setWindowTitle({});
+	}
+}
+
+void HLMVMainWindow::OnAssetFileNameChanged(const QString& fileName)
+{
+	auto asset = static_cast<assets::Asset*>(sender());
+
+	auto& assets = _editorContext->GetLoadedAssets();
+
+	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& candidate)
+		{
+			return candidate.GetAsset() == asset;
+		}); it != assets.end())
+	{
+		const int index = _assetTabs->indexOf(it->GetEditWidget());
+
+		if (index != -1)
+		{
+			_assetTabs->setTabText(index, fileName);
+
+			if (_assetTabs->currentWidget() == it->GetEditWidget())
+			{
+				UpdateTitle(it->GetAsset()->GetFileName(), it->GetAsset()->HasUnsavedChanges());
+			}
+		}
+		else
+		{
+			QMessageBox::critical(this, "Internal Error", "Asset index not found in assets tab widget");
+		}
+	}
+	else
+	{
+		QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
+	}
+}
+
+void HLMVMainWindow::OnAssetHasUnsavedChangesChanged(bool value)
+{
+	auto asset = static_cast<assets::Asset*>(sender());
+
+	auto& assets = _editorContext->GetLoadedAssets();
+
+	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& candidate)
+		{
+			return candidate.GetAsset() == asset;
+		}); it != assets.end())
+	{
+		if (_assetTabs->currentWidget() == it->GetEditWidget())
+		{
+			setWindowModified(value);
+		}
+	}
+	else
+	{
+		QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
 	}
 }
 

@@ -11,10 +11,11 @@ namespace ui::assets::studiomodel
 class StudioModelAssetProvider;
 class StudioModelContext;
 
-class StudioModelAsset final : public IAsset
+class StudioModelAsset final : public Asset
 {
 public:
-	StudioModelAsset(EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel);
+	StudioModelAsset(QString&& fileName, 
+		EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel);
 
 	~StudioModelAsset();
 	StudioModelAsset(const StudioModelAsset&) = delete;
@@ -47,9 +48,9 @@ public:
 
 	bool CanLoad(const QString& fileName) const override;
 
-	std::unique_ptr<IAsset> Load(EditorContext* editorContext, const QString& fileName) const override;
+	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const override;
 
-	void Save(const QString& fileName, IAsset& asset) const override;
+	void Save(const QString& fileName, Asset& asset) const override;
 
 	void Save(const QString& fileName, StudioModelAsset& asset) const;
 };

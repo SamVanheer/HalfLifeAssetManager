@@ -6,6 +6,8 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
+#include "ui/assets/AssetDataChangeEvent.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelContext.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
 
@@ -344,7 +346,8 @@ void StudioModelBodyPartsPanel::OnBoneControllerBoneChanged(int index)
 	//Patch up the new bone reference
 	newBone->bonecontroller[typeIndex] = _ui.BoneControllers->currentIndex();
 
-	//TODO: mark model changed
+	//TODO: pass more information
+	_context->GetAsset()->EmitAssetDataChanged(AssetDataChangeEvent{AssetDataChangeType::Modification});
 }
 
 void StudioModelBodyPartsPanel::OnBoneControllerRangeChanged()

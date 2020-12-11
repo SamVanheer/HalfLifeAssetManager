@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 
+#include <QObject>
 #include <QString>
 #include <QWidget>
 
@@ -16,17 +17,48 @@ class FullscreenWidget;
 
 namespace assets
 {
+class AssetDataChangeEvent;
 class IAssetProvider;
 
-//TODO: add a way to access the underlying asset data, identifying the asset type (use EnTT)
-class IAsset
+class Asset : public QObject
 {
+	Q_OBJECT
+
+protected:
+	Asset(QString&& fileName)
+		: _fileName(std::move(fileName))
+	{
+	}
+
 public:
-	virtual ~IAsset() = 0 {}
+	virtual ~Asset() = 0 {}
 
 	virtual entt::id_type GetAssetType() const = 0;
 
 	virtual const IAssetProvider* GetProvider() const = 0;
+
+	QString GetFileName() const { return _fileName; }
+
+	void SetFileName(QString&& fileName)
+	{
+		if (_fileName != fileName)
+		{
+			_fileName = std::move(fileName);
+
+			emit FileNameChanged(fileName);
+		}
+	}
+
+	bool HasUnsavedChanges() const { return _hasUnsavedChanges; }
+
+	void SetHasUnsavedChanges(bool value)
+	{
+		if (_hasUnsavedChanges != value)
+		{
+			_hasUnsavedChanges = value;
+			emit HasUnsavedChangesChanged(_hasUnsavedChanges);
+		}
+	}
 
 	/**
 	*	@brief Creates a widget to view and edit this asset
@@ -37,6 +69,26 @@ public:
 	virtual void SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget) = 0;
 
 	virtual void Save(const QString& fileName) = 0;
+
+	void EmitAssetDataChanged(const AssetDataChangeEvent& event)
+	{
+		SetHasUnsavedChanges(true);
+		emit AssetDataChanged(event);
+	}
+
+signals:
+	void FileNameChanged(const QString& fileName);
+
+	void HasUnsavedChangesChanged(bool value);
+
+	/**
+	*	@brief Emitted when any data changes in the asset
+	*/
+	void AssetDataChanged(const AssetDataChangeEvent& event);
+
+protected:
+	QString _fileName;
+	bool _hasUnsavedChanges{false};
 };
 
 /**
@@ -52,9 +104,9 @@ public:
 	virtual bool CanLoad(const QString& fileName) const = 0;
 
 	//TODO: pass a filesystem object to resolve additional file locations with
-	virtual std::unique_ptr<IAsset> Load(EditorContext* editorContext, const QString& fileName) const = 0;
+	virtual std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const = 0;
 
-	virtual void Save(const QString& fileName, IAsset& asset) const = 0;
+	virtual void Save(const QString& fileName, Asset& asset) const = 0;
 };
 
 /**
@@ -67,7 +119,7 @@ public:
 
 	virtual void AddProvider(std::unique_ptr<IAssetProvider>&& provider) = 0;
 
-	virtual std::unique_ptr<IAsset> Load(EditorContext* editorContext, const std::string& fileName) const = 0;
+	virtual std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const = 0;
 };
 
 class AssetProviderRegistry final : public IAssetProviderRegistry
@@ -80,7 +132,7 @@ public:
 
 	void AddProvider(std::unique_ptr<IAssetProvider>&& provider) override;
 
-	std::unique_ptr<IAsset> Load(EditorContext* editorContext, const std::string& fileName) const override;
+	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const override;
 
 private:
 	std::unordered_map<entt::id_type, std::unique_ptr<IAssetProvider>> _providers;

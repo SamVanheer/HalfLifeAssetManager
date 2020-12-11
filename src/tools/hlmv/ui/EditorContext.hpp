@@ -22,7 +22,7 @@ namespace ui
 {
 namespace assets
 {
-class IAsset;
+class Asset;
 class IAssetProviderRegistry;
 }
 
@@ -36,7 +36,7 @@ class LoadedAsset
 {
 public:
 
-	LoadedAsset(std::unique_ptr<assets::IAsset>&& asset, QWidget* editWidget);
+	LoadedAsset(std::unique_ptr<assets::Asset>&& asset, QWidget* editWidget);
 	~LoadedAsset();
 
 	LoadedAsset(const LoadedAsset&) = delete;
@@ -44,12 +44,12 @@ public:
 	LoadedAsset(LoadedAsset&&) = default;
 	LoadedAsset& operator=(LoadedAsset&&) = default;
 
-	assets::IAsset* GetAsset() const { return _asset.get(); }
+	assets::Asset* GetAsset() const { return _asset.get(); }
 
 	QWidget* GetEditWidget() const { return _editWidget; }
 
 private:
-	std::unique_ptr<assets::IAsset> _asset;
+	std::unique_ptr<assets::Asset> _asset;
 	QWidget* _editWidget;
 };
 

@@ -13,6 +13,11 @@ namespace ui
 class EditorContext;
 class FullscreenWidget;
 
+namespace assets
+{
+class AssetDataChangeEvent;
+}
+
 class HLMVMainWindow final : public QMainWindow
 {
 	Q_OBJECT
@@ -23,7 +28,16 @@ public:
 
 	void TryLoadAsset(const QString& fileName);
 
+private:
+	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
+
 private slots:
+	void OnAssetTabChanged(int index);
+
+	void OnAssetFileNameChanged(const QString& fileName);
+
+	void OnAssetHasUnsavedChangesChanged(bool value);
+
 	void OnOpenLoadAssetDialog();
 
 	void OnGoFullscreen();
