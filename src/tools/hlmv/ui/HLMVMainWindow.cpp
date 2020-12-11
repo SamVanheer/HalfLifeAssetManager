@@ -124,10 +124,13 @@ void HLMVMainWindow::OnShowAbout()
 
 void HLMVMainWindow::OnAssetTabCloseRequested(int index)
 {
-	//Always exit the fullscreen window if we're getting a close request
-	//The user needs to be able to see the main window and interact with it,
-	//and the fullscreen window may be holding a reference to the asset being closed
-	_fullscreenWidget->ExitFullscreen();
+	if (_fullscreenWidget)
+	{
+		//Always exit the fullscreen window if we're getting a close request
+		//The user needs to be able to see the main window and interact with it,
+		//and the fullscreen window may be holding a reference to the asset being closed
+		_fullscreenWidget->ExitFullscreen();
+	}
 
 	//TODO: ask to save, etc
 
