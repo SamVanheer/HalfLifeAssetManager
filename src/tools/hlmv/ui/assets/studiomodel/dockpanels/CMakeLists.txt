@@ -12,9 +12,6 @@ target_sources(HLMV
 		StudioModelBonesPanel.cpp
 		StudioModelBonesPanel.hpp
 		StudioModelBonesPanel.ui
-		StudioModelDisplayPanel.cpp
-		StudioModelDisplayPanel.hpp
-		StudioModelDisplayPanel.ui
 		StudioModelEditEventsDialog.cpp
 		StudioModelEditEventsDialog.hpp
 		StudioModelEditEventsDialog.ui
@@ -30,6 +27,9 @@ target_sources(HLMV
 		StudioModelModelDataPanel.cpp
 		StudioModelModelDataPanel.hpp
 		StudioModelModelDataPanel.ui
+		StudioModelModelDisplayPanel.cpp
+		StudioModelModelDisplayPanel.hpp
+		StudioModelModelDisplayPanel.ui
 		StudioModelModelInfoPanel.cpp
 		StudioModelModelInfoPanel.hpp
 		StudioModelModelInfoPanel.ui

@@ -2,17 +2,17 @@
 
 #include <QWidget>
 
-#include "ui_StudioModelDisplayPanel.h"
+#include "ui_StudioModelModelDisplayPanel.h"
 
 namespace ui::assets::studiomodel
 {
 class StudioModelContext;
 
-class StudioModelDisplayPanel final : public QWidget
+class StudioModelModelDisplayPanel final : public QWidget
 {
 public:
-	StudioModelDisplayPanel(StudioModelContext* context, QWidget* parent = nullptr);
-	~StudioModelDisplayPanel();
+	StudioModelModelDisplayPanel(StudioModelContext* context, QWidget* parent = nullptr);
+	~StudioModelModelDisplayPanel();
 
 private:
 	void OnRenderModeChanged(int index);
@@ -55,7 +55,7 @@ private:
 	void OnAlignOnGround();
 
 private:
-	Ui_StudioModelDisplayPanel _ui;
+	Ui_StudioModelModelDisplayPanel _ui;
 	StudioModelContext* const _context;
 };
 }

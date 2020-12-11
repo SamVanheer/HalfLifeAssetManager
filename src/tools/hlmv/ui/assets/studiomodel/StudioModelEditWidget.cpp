@@ -16,10 +16,10 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBonesPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelDisplayPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelGlobalFlagsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelHitboxesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDataPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelModelDisplayPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelInfoPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
@@ -63,7 +63,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; padding-left: 9px; }");
 
-	auto modelDisplayPanel = new StudioModelDisplayPanel(_context);
+	auto modelDisplayPanel = new StudioModelModelDisplayPanel(_context);
 	auto texturesPanel = new StudioModelTexturesPanel(_context);
 	auto bonesPanel = new StudioModelBonesPanel(_context);
 	auto attachmentsPanel = new StudioModelAttachmentsPanel(_context);
