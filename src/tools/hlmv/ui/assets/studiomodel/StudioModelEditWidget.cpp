@@ -57,6 +57,8 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_sceneWidget = new SceneWidget(scene, this);
 
+	scene->SetGraphicsContext(std::make_unique<OpenGLGraphicsContext>(_sceneWidget));
+
 	_controlAreaWidget = new QWidget(this);
 
 	_dockPanels = new QTabWidget(_controlAreaWidget);

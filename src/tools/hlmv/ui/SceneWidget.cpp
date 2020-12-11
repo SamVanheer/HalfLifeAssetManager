@@ -13,9 +13,6 @@ SceneWidget::SceneWidget(graphics::Scene* scene, QWidget* parent)
 	, _scene(scene)
 {
 	assert(nullptr != _scene);
-	
-	//TODO: need to rework this to use the shared context instead since this can tie a context to a destroyed scene widget used in fullscreen mode
-	_scene->SetGraphicsContext(std::make_unique<OpenGLGraphicsContext>(this));
 }
 
 SceneWidget::~SceneWidget()
