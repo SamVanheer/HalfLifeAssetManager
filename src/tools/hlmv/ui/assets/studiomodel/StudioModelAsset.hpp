@@ -26,7 +26,7 @@ public:
 
 	QWidget* CreateEditWidget(EditorContext* editorContext) override;
 
-	FullscreenWidget* CreateFullscreenWidget(EditorContext* editorContext) override;
+	void SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget) override;
 
 	void Save(const std::string& fileName) override;
 

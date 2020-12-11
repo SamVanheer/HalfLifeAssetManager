@@ -20,8 +20,6 @@ class ISoundSystem;
 
 namespace ui
 {
-class FullscreenWidget;
-
 namespace assets
 {
 class IAsset;
@@ -50,17 +48,9 @@ public:
 
 	QWidget* GetEditWidget() const { return _editWidget; }
 
-	FullscreenWidget* GetFullscreenWidget() const { return _fullscreenWidget; }
-
-	void SetFullscreenWidget(FullscreenWidget* widget)
-	{
-		_fullscreenWidget = widget;
-	}
-
 private:
 	std::unique_ptr<assets::IAsset> _asset;
 	QWidget* _editWidget;
-	FullscreenWidget* _fullscreenWidget{};
 };
 
 /**

@@ -63,31 +63,18 @@ void HLMVMainWindow::OnGoFullscreen()
 
 	auto& currentAsset = assets[_assetTabs->currentIndex()];
 
-	if (!currentAsset.GetFullscreenWidget())
+	if (!_fullscreenWidget)
 	{
-		currentAsset.SetFullscreenWidget(currentAsset.GetAsset()->CreateFullscreenWidget(_editorContext));
-
-		connect(currentAsset.GetFullscreenWidget(), &FullscreenWidget::Closing, this, &HLMVMainWindow::OnFullscreenWidgetClosing);
+		//Note: creating this window as a child of the main window causes problems with OpenGL rendering
+		//This must be created with no parent to function properly
+		_fullscreenWidget = std::make_unique<FullscreenWidget>();
 	}
 
-	//TODO: needs to go fullscreen
-	auto fullscreenWidget = currentAsset.GetFullscreenWidget();
-	fullscreenWidget->raise();
-	fullscreenWidget->showFullScreen();
-	fullscreenWidget->activateWindow();
-}
+	currentAsset.GetAsset()->SetupFullscreenWidget(_editorContext, _fullscreenWidget.get());
 
-void HLMVMainWindow::OnFullscreenWidgetClosing(FullscreenWidget* widget)
-{
-	auto& assets = _editorContext->GetLoadedAssets();
-
-	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& asset)
-		{
-			return asset.GetFullscreenWidget() == widget;
-		}); it != assets.end())
-	{
-		it->SetFullscreenWidget(nullptr);
-	}
+	_fullscreenWidget->raise();
+	_fullscreenWidget->showFullScreen();
+	_fullscreenWidget->activateWindow();
 }
 
 void HLMVMainWindow::OnOpenOptionsDialog()
@@ -136,7 +123,13 @@ void HLMVMainWindow::LoadAsset(const QString& fileName)
 
 void HLMVMainWindow::OnAssetTabCloseRequested(int index)
 {
+	//Always exit the fullscreen window if we're getting a close request
+	//The user needs to be able to see the main window and interact with it,
+	//and the fullscreen window may be holding a reference to the asset being closed
+	_fullscreenWidget->ExitFullscreen();
+
 	//TODO: ask to save, etc
+
 	auto editWidget = _assetTabs->widget(index);
 
 	delete editWidget;
@@ -150,10 +143,6 @@ void HLMVMainWindow::OnAssetTabCloseRequested(int index)
 			return asset.GetEditWidget() == editWidget;
 		}); it != assets.end())
 	{
-		//Remove the fullscreen widget if it's open
-		delete it->GetFullscreenWidget();
-		it->SetFullscreenWidget(nullptr);
-
 		assets.erase(it);
 	}
 	else

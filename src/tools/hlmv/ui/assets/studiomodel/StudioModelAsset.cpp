@@ -4,6 +4,7 @@
 
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
+#include "ui/SceneWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelContext.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
@@ -24,11 +25,16 @@ QWidget* StudioModelAsset::CreateEditWidget(EditorContext* editorContext)
 	return new StudioModelEditWidget(editorContext, _context.get());
 }
 
-FullscreenWidget* StudioModelAsset::CreateFullscreenWidget(EditorContext* editorContext)
+void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget)
 {
-	const auto fullscreenWidget = new FullscreenWidget(editorContext, _context->GetScene());
+	const auto sceneWidget = new SceneWidget(_context->GetScene(), fullscreenWidget);
 
-	return fullscreenWidget;
+	fullscreenWidget->setCentralWidget(sceneWidget->GetContainer());
+
+	sceneWidget->connect(editorContext, &EditorContext::Tick, sceneWidget, &SceneWidget::requestUpdate);
+
+	//Filter key events on the scene widget so we can capture exit even if it has focus
+	sceneWidget->installEventFilter(fullscreenWidget);
 }
 
 void StudioModelAsset::Save(const std::string& fileName)

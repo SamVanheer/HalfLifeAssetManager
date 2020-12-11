@@ -33,7 +33,7 @@ public:
 	*/
 	virtual QWidget* CreateEditWidget(EditorContext* editorContext) = 0;
 
-	virtual FullscreenWidget* CreateFullscreenWidget(EditorContext* editorContext) = 0;
+	virtual void SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget) = 0;
 
 	virtual void Save(const std::string& fileName) = 0;
 };

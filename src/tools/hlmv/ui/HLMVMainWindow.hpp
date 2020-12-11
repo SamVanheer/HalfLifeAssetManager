@@ -26,8 +26,6 @@ private slots:
 
 	void OnGoFullscreen();
 
-	void OnFullscreenWidgetClosing(FullscreenWidget* widget);
-
 	void OnOpenOptionsDialog();
 
 	void OnShowAbout();
@@ -43,5 +41,7 @@ private:
 	EditorContext* const _editorContext;
 
 	QTabWidget* _assetTabs;
+
+	std::unique_ptr<FullscreenWidget> _fullscreenWidget;
 };
 }
