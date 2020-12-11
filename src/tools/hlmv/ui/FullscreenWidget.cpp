@@ -14,6 +14,9 @@ FullscreenWidget::FullscreenWidget(EditorContext* editorContext, graphics::Scene
 	//This is not a primary window so don't keep the app running if we're still alive
 	setAttribute(Qt::WidgetAttribute::WA_QuitOnClose, false);
 
+	//The window has to be deleted when closed so as to not leave any dangling references behind
+	setAttribute(Qt::WidgetAttribute::WA_DeleteOnClose, true);
+
 	const auto sceneWidget = new SceneWidget(scene, this);
 
 	setCentralWidget(sceneWidget->GetContainer());
