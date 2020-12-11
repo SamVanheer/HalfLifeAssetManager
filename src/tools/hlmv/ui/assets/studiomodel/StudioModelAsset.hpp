@@ -28,7 +28,7 @@ public:
 
 	void SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget) override;
 
-	void Save(const std::string& fileName) override;
+	void Save(const QString& fileName) override;
 
 	StudioModelContext* GetContext() const { return _context.get(); }
 
@@ -45,13 +45,13 @@ class StudioModelAssetProvider final : public IAssetProvider
 public:
 	entt::id_type GetAssetType() const override { return entt::type_index<StudioModelAsset>::value(); }
 
-	bool CanLoad(const std::string& fileName) const override;
+	bool CanLoad(const QString& fileName) const override;
 
-	std::unique_ptr<IAsset> Load(EditorContext* editorContext, const std::string& fileName) const override;
+	std::unique_ptr<IAsset> Load(EditorContext* editorContext, const QString& fileName) const override;
 
-	void Save(const std::string& fileName, IAsset& asset) const override;
+	void Save(const QString& fileName, IAsset& asset) const override;
 
-	void Save(const std::string& fileName, StudioModelAsset& asset) const;
+	void Save(const QString& fileName, StudioModelAsset& asset) const;
 };
 
 inline const IAssetProvider* StudioModelAsset::GetProvider() const

@@ -37,26 +37,26 @@ void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, Fulls
 	sceneWidget->installEventFilter(fullscreenWidget);
 }
 
-void StudioModelAsset::Save(const std::string& fileName)
+void StudioModelAsset::Save(const QString& fileName)
 {
 	_provider->Save(fileName, *this);
 }
 
-bool StudioModelAssetProvider::CanLoad(const std::string& fileName) const
+bool StudioModelAssetProvider::CanLoad(const QString& fileName) const
 {
 	//TODO:
 	return true;
 }
 
-std::unique_ptr<IAsset> StudioModelAssetProvider::Load(EditorContext* editorContext, const std::string& fileName) const
+std::unique_ptr<IAsset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName) const
 {
 	//TODO: this throws specific exceptions. They need to be generalized so the caller can handle them
-	auto studioModel = studiomdl::LoadStudioModel(fileName.c_str());
+	auto studioModel = studiomdl::LoadStudioModel(fileName.toStdString().c_str());
 
 	return std::make_unique<StudioModelAsset>(editorContext, this, std::move(studioModel));
 }
 
-void StudioModelAssetProvider::Save(const std::string& fileName, IAsset& asset) const
+void StudioModelAssetProvider::Save(const QString& fileName, IAsset& asset) const
 {
 	//TODO:
 	if (asset.GetAssetType() == GetAssetType())
@@ -70,7 +70,7 @@ void StudioModelAssetProvider::Save(const std::string& fileName, IAsset& asset) 
 	}
 }
 
-void StudioModelAssetProvider::Save(const std::string& fileName, StudioModelAsset& asset) const
+void StudioModelAssetProvider::Save(const QString& fileName, StudioModelAsset& asset) const
 {
 	//TODO:
 }

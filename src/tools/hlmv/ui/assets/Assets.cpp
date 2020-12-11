@@ -14,7 +14,7 @@ void AssetProviderRegistry::AddProvider(std::unique_ptr<IAssetProvider>&& provid
 	_providers.emplace(provider->GetAssetType(), std::move(provider));
 }
 
-std::unique_ptr<IAsset> AssetProviderRegistry::Load(EditorContext* editorContext, const std::string& fileName) const
+std::unique_ptr<IAsset> AssetProviderRegistry::Load(EditorContext* editorContext, const QString& fileName) const
 {
 	for (const auto& provider : _providers)
 	{

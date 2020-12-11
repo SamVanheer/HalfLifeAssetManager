@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 
+#include <QString>
 #include <QWidget>
 
 #include <entt/core/type_info.hpp>
@@ -35,7 +36,7 @@ public:
 
 	virtual void SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget) = 0;
 
-	virtual void Save(const std::string& fileName) = 0;
+	virtual void Save(const QString& fileName) = 0;
 };
 
 /**
@@ -48,12 +49,12 @@ public:
 
 	virtual entt::id_type GetAssetType() const = 0;
 
-	virtual bool CanLoad(const std::string& fileName) const = 0;
+	virtual bool CanLoad(const QString& fileName) const = 0;
 
 	//TODO: pass a filesystem object to resolve additional file locations with
-	virtual std::unique_ptr<IAsset> Load(EditorContext* editorContext, const std::string& fileName) const = 0;
+	virtual std::unique_ptr<IAsset> Load(EditorContext* editorContext, const QString& fileName) const = 0;
 
-	virtual void Save(const std::string& fileName, IAsset& asset) const = 0;
+	virtual void Save(const QString& fileName, IAsset& asset) const = 0;
 };
 
 /**

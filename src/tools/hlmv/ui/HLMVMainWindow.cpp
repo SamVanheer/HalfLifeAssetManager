@@ -50,7 +50,7 @@ HLMVMainWindow::~HLMVMainWindow() = default;
 void HLMVMainWindow::TryLoadAsset(const QString& fileName)
 {
 	//TODO: needs error handling
-	auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName.toStdString());
+	auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName);
 
 	if (nullptr != asset)
 	{
