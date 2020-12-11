@@ -102,10 +102,13 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 	_mainWindow = new ui::HLMVMainWindow(_editorContext);
 
-	//TODO: doesn't actually show maximized
-	_mainWindow->showMaximized();
+	if (!fileName.isEmpty())
+	{
+		_mainWindow->TryLoadAsset(fileName);
+	}
 
-	//TODO: open file specified on command line
+	//Note: must come after the file is loaded or it won't actually show maximized
+	_mainWindow->showMaximized();
 
 	return app.exec();
 }
@@ -122,8 +125,6 @@ void HLMVApplication::OnExit()
 
 void HLMVApplication::OnFileNameReceived(const QString& fileName)
 {
-	//TODO: load file
-
 	if (_mainWindow->isMaximized())
 	{
 		_mainWindow->showMaximized();
@@ -134,4 +135,6 @@ void HLMVApplication::OnFileNameReceived(const QString& fileName)
 	}
 
 	_mainWindow->activateWindow();
+
+	_mainWindow->TryLoadAsset(fileName);
 }

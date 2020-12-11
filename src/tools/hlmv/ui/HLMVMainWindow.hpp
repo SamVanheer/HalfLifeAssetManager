@@ -21,6 +21,8 @@ public:
 	HLMVMainWindow(EditorContext* editorContext);
 	~HLMVMainWindow();
 
+	void TryLoadAsset(const QString& fileName);
+
 private slots:
 	void OnOpenLoadAssetDialog();
 
@@ -31,9 +33,6 @@ private slots:
 	void OnShowAbout();
 
 	void OnAssetTabCloseRequested(int index);
-
-private:
-	void LoadAsset(const QString& fileName);
 
 private:
 	Ui_HLMVMainWindow _ui;

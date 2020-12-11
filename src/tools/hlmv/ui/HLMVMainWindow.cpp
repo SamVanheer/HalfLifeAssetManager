@@ -47,13 +47,33 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 
 HLMVMainWindow::~HLMVMainWindow() = default;
 
+void HLMVMainWindow::TryLoadAsset(const QString& fileName)
+{
+	//TODO: needs error handling
+	auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName.toStdString());
+
+	if (nullptr != asset)
+	{
+		auto editWidget = asset->CreateEditWidget(_editorContext);
+
+		_editorContext->GetLoadedAssets().emplace_back(std::move(asset), editWidget);
+
+		const auto index = _assetTabs->addTab(editWidget, fileName);
+
+		_assetTabs->setCurrentIndex(index);
+
+		_assetTabs->setVisible(true);
+		_ui.ActionFullscreen->setEnabled(true);
+	}
+}
+
 void HLMVMainWindow::OnOpenLoadAssetDialog()
 {
 	//TODO: compute filter based on available asset providers
 	if (const auto fileName = QFileDialog::getOpenFileName(this, "Select asset", {}, "Half-Life 1 Model Files (*.mdl *.dol);;All Files (*.*)");
 		!fileName.isEmpty())
 	{
-		LoadAsset(fileName);
+		TryLoadAsset(fileName);
 	}
 }
 
@@ -100,25 +120,6 @@ void HLMVMainWindow::OnShowAbout()
 			u8"%1")
 			.arg(QString::fromUtf8(tools::GetSharedCredits().c_str()))
 	);
-}
-
-void HLMVMainWindow::LoadAsset(const QString& fileName)
-{
-	auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName.toStdString());
-
-	if (nullptr != asset)
-	{
-		auto editWidget = asset->CreateEditWidget(_editorContext);
-
-		_editorContext->GetLoadedAssets().emplace_back(std::move(asset), editWidget);
-
-		const auto index = _assetTabs->addTab(editWidget, fileName);
-
-		_assetTabs->setCurrentIndex(index);
-
-		_assetTabs->setVisible(true);
-		_ui.ActionFullscreen->setEnabled(true);
-	}
 }
 
 void HLMVMainWindow::OnAssetTabCloseRequested(int index)
