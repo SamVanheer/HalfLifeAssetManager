@@ -129,6 +129,13 @@ void Scene::AlignOnGround()
 
 void Scene::Initialize()
 {
+	++_initializeCount;
+
+	if (_initializeCount != 1)
+	{
+		return;
+	}
+
 	if (!_studioModelRenderer->Initialize())
 	{
 		//TODO: handle error
@@ -145,6 +152,13 @@ void Scene::Initialize()
 
 void Scene::Shutdown()
 {
+	--_initializeCount;
+
+	if (_initializeCount != 0)
+	{
+		return;
+	}
+
 	glDeleteTexture(UVMeshTexture);
 	UVMeshTexture = 0;
 

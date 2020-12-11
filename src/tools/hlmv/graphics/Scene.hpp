@@ -141,6 +141,9 @@ public:
 	GLuint UVMeshTexture{0};
 
 private:
+	//Keep track of how many times we've been initialized and shut down so we don't do it at the wrong time
+	int _initializeCount{0};
+
 	std::unique_ptr<IGraphicsContext> _graphicsContext;
 
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
