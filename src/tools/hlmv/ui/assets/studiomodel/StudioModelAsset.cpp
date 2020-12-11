@@ -1,21 +1,32 @@
 #include <stdexcept>
 
+#include "graphics/Scene.hpp"
+
+#include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelContext.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
 namespace ui::assets::studiomodel
 {
-QWidget* StudioModelAsset::CreateEditWidget(EditorContext* editorContext)
+StudioModelAsset::StudioModelAsset(EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel)
+	: _provider(provider)
+	, _studioModel(std::move(studioModel))
+	, _context(std::make_unique<StudioModelContext>(editorContext, this, std::make_unique<graphics::Scene>(editorContext->GetSoundSystem())))
 {
-	return new StudioModelEditWidget(editorContext, this);
 }
 
-FullscreenWidget* StudioModelAsset::CreateFullscreenWidget(EditorContext* editorContext, QWidget* editWidget)
-{
-	const auto studioModelEditWidget = static_cast<StudioModelEditWidget*>(editWidget);
+StudioModelAsset::~StudioModelAsset() = default;
 
-	const auto fullscreenWidget = new FullscreenWidget(editorContext, studioModelEditWidget->GetContext()->GetScene());
+QWidget* StudioModelAsset::CreateEditWidget(EditorContext* editorContext)
+{
+	return new StudioModelEditWidget(editorContext, _context.get());
+}
+
+FullscreenWidget* StudioModelAsset::CreateFullscreenWidget(EditorContext* editorContext)
+{
+	const auto fullscreenWidget = new FullscreenWidget(editorContext, _context->GetScene());
 
 	return fullscreenWidget;
 }
@@ -31,12 +42,12 @@ bool StudioModelAssetProvider::CanLoad(const std::string& fileName) const
 	return true;
 }
 
-std::unique_ptr<IAsset> StudioModelAssetProvider::Load(const std::string& fileName) const
+std::unique_ptr<IAsset> StudioModelAssetProvider::Load(EditorContext* editorContext, const std::string& fileName) const
 {
 	//TODO: this throws specific exceptions. They need to be generalized so the caller can handle them
 	auto studioModel = studiomdl::LoadStudioModel(fileName.c_str());
 
-	return std::make_unique<StudioModelAsset>(this, std::move(studioModel));
+	return std::make_unique<StudioModelAsset>(editorContext, this, std::move(studioModel));
 }
 
 void StudioModelAssetProvider::Save(const std::string& fileName, IAsset& asset) const

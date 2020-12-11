@@ -33,7 +33,7 @@ class StudioModelEditWidget final : public QWidget, public IInputSink
 	Q_OBJECT
 
 public:
-	StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelEditWidget(EditorContext* editorContext, StudioModelContext* studioModelContext, QWidget* parent = nullptr);
 	~StudioModelEditWidget();
 
 	StudioModelContext* GetContext() const { return _context; }

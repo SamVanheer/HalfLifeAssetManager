@@ -33,8 +33,7 @@ public:
 	*/
 	virtual QWidget* CreateEditWidget(EditorContext* editorContext) = 0;
 
-	//TODO: probably shouldn't be passing in the edit widget here
-	virtual FullscreenWidget* CreateFullscreenWidget(EditorContext* editorContext, QWidget* editWidget) = 0;
+	virtual FullscreenWidget* CreateFullscreenWidget(EditorContext* editorContext) = 0;
 
 	virtual void Save(const std::string& fileName) = 0;
 };
@@ -52,7 +51,7 @@ public:
 	virtual bool CanLoad(const std::string& fileName) const = 0;
 
 	//TODO: pass a filesystem object to resolve additional file locations with
-	virtual std::unique_ptr<IAsset> Load(const std::string& fileName) const = 0;
+	virtual std::unique_ptr<IAsset> Load(EditorContext* editorContext, const std::string& fileName) const = 0;
 
 	virtual void Save(const std::string& fileName, IAsset& asset) const = 0;
 };
@@ -67,7 +66,7 @@ public:
 
 	virtual void AddProvider(std::unique_ptr<IAssetProvider>&& provider) = 0;
 
-	virtual std::unique_ptr<IAsset> Load(const std::string& fileName) const = 0;
+	virtual std::unique_ptr<IAsset> Load(EditorContext* editorContext, const std::string& fileName) const = 0;
 };
 
 class AssetProviderRegistry final : public IAssetProviderRegistry
@@ -80,7 +79,7 @@ public:
 
 	void AddProvider(std::unique_ptr<IAssetProvider>&& provider) override;
 
-	std::unique_ptr<IAsset> Load(const std::string& fileName) const override;
+	std::unique_ptr<IAsset> Load(EditorContext* editorContext, const std::string& fileName) const override;
 
 private:
 	std::unordered_map<entt::id_type, std::unique_ptr<IAssetProvider>> _providers;

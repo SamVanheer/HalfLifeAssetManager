@@ -65,7 +65,7 @@ void HLMVMainWindow::OnGoFullscreen()
 
 	if (!currentAsset.GetFullscreenWidget())
 	{
-		currentAsset.SetFullscreenWidget(currentAsset.GetAsset()->CreateFullscreenWidget(_editorContext, currentAsset.GetEditWidget()));
+		currentAsset.SetFullscreenWidget(currentAsset.GetAsset()->CreateFullscreenWidget(_editorContext));
 
 		connect(currentAsset.GetFullscreenWidget(), &FullscreenWidget::Closing, this, &HLMVMainWindow::OnFullscreenWidgetClosing);
 	}
@@ -117,7 +117,7 @@ void HLMVMainWindow::OnShowAbout()
 
 void HLMVMainWindow::LoadAsset(const QString& fileName)
 {
-	auto asset = _editorContext->GetAssetProviderRegistry()->Load(fileName.toStdString());
+	auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName.toStdString());
 
 	if (nullptr != asset)
 	{
@@ -139,6 +139,8 @@ void HLMVMainWindow::OnAssetTabCloseRequested(int index)
 	//TODO: ask to save, etc
 	auto editWidget = _assetTabs->widget(index);
 
+	delete editWidget;
+
 	_assetTabs->removeTab(index);
 
 	auto& assets = _editorContext->GetLoadedAssets();
@@ -158,8 +160,6 @@ void HLMVMainWindow::OnAssetTabCloseRequested(int index)
 	{
 		QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
 	}
-
-	delete editWidget;
 
 	const bool hasOpenAssets = _assetTabs->count() > 0;
 

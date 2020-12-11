@@ -9,17 +9,14 @@
 namespace ui::assets::studiomodel
 {
 class StudioModelAssetProvider;
+class StudioModelContext;
 
 class StudioModelAsset final : public IAsset
 {
 public:
-	StudioModelAsset(const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel)
-		: _provider(provider)
-		, _studioModel(std::move(studioModel))
-	{
-	}
+	StudioModelAsset(EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel);
 
-	~StudioModelAsset() = default;
+	~StudioModelAsset();
 	StudioModelAsset(const StudioModelAsset&) = delete;
 	StudioModelAsset& operator=(const StudioModelAsset&) = delete;
 
@@ -29,16 +26,18 @@ public:
 
 	QWidget* CreateEditWidget(EditorContext* editorContext) override;
 
-	FullscreenWidget* CreateFullscreenWidget(EditorContext* editorContext, QWidget* editWidget) override;
+	FullscreenWidget* CreateFullscreenWidget(EditorContext* editorContext) override;
 
 	void Save(const std::string& fileName) override;
+
+	StudioModelContext* GetContext() const { return _context.get(); }
 
 	studiomdl::CStudioModel* GetStudioModel() { return _studioModel.get(); }
 
 private:
 	const StudioModelAssetProvider* const _provider;
-
-	std::unique_ptr<studiomdl::CStudioModel> _studioModel;
+	const std::unique_ptr<studiomdl::CStudioModel> _studioModel;
+	const std::unique_ptr<StudioModelContext> _context;
 };
 
 class StudioModelAssetProvider final : public IAssetProvider
@@ -48,7 +47,7 @@ public:
 
 	bool CanLoad(const std::string& fileName) const override;
 
-	std::unique_ptr<IAsset> Load(const std::string& fileName) const override;
+	std::unique_ptr<IAsset> Load(EditorContext* editorContext, const std::string& fileName) const override;
 
 	void Save(const std::string& fileName, IAsset& asset) const override;
 

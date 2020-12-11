@@ -30,10 +30,11 @@
 
 namespace ui::assets::studiomodel
 {
-StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent)
+StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelContext* studioModelContext, QWidget* parent)
 	: QWidget(parent)
-	, _context(new StudioModelContext(editorContext, asset, std::make_unique<graphics::Scene>(editorContext->GetSoundSystem()), this))
+	, _context(studioModelContext)
 {
+	const auto asset = _context->GetAsset();
 	const auto scene = _context->GetScene();
 
 	_context->PushInputSink(this);
@@ -127,11 +128,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	connect(this, &StudioModelEditWidget::DockPanelChanged, hitboxesPanel, &StudioModelHitboxesPanel::OnDockPanelChanged);
 }
 
-StudioModelEditWidget::~StudioModelEditWidget()
-{
-	//Delete the scene widget now so the scene object is still valid
-	delete _sceneWidget;
-}
+StudioModelEditWidget::~StudioModelEditWidget() = default;
 
 void StudioModelEditWidget::OnMouseEvent(QMouseEvent* event)
 {
