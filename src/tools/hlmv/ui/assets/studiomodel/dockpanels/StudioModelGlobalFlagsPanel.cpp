@@ -4,16 +4,16 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelGlobalFlagsPanel.hpp"
 
 namespace ui::assets::studiomodel
 {
 const std::string_view CheckBoxModelFlagProperty{"CheckBoxFlagProperty"};
 
-StudioModelGlobalFlagsPanel::StudioModelGlobalFlagsPanel(StudioModelContext* context, QWidget* parent)
+StudioModelGlobalFlagsPanel::StudioModelGlobalFlagsPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 
@@ -60,7 +60,7 @@ StudioModelGlobalFlagsPanel::StudioModelGlobalFlagsPanel(StudioModelContext* con
 	_ui.HitboxCollision->setProperty(CheckBoxModelFlagProperty.data(), EF_HITBOXCOLLISIONS);
 	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty.data(), EF_FORCESKYLIGHT);
 
-	const int flags = _context->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->flags;
+	const int flags = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->flags;
 
 	for (auto checkBox : checkBoxes)
 	{
@@ -82,7 +82,7 @@ void StudioModelGlobalFlagsPanel::OnFlagChanged(int state)
 
 	const auto flagValue = checkBox->property(CheckBoxModelFlagProperty.data()).toInt();
 
-	auto model = _context->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+	auto model = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
 
 	if (state == Qt::CheckState::Checked)
 	{

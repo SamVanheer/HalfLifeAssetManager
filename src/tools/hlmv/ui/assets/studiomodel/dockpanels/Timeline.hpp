@@ -6,7 +6,7 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class Timeline final : public QWidget
 {
@@ -20,7 +20,7 @@ public:
 
 	static constexpr int FrameSliderRangeMultiplier = 10;
 
-	Timeline(StudioModelContext* context, QWidget* parent = nullptr);
+	Timeline(StudioModelAsset* asset, QWidget* parent = nullptr);
 
 	~Timeline();
 
@@ -52,6 +52,6 @@ private slots:
 private:
 	Ui_Timeline _ui;
 
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 };
 }

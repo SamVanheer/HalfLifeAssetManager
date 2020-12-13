@@ -6,7 +6,7 @@
 #include <QWidget>
 
 #include "ui/IInputSink.hpp"
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
 namespace graphics
 {
@@ -33,10 +33,10 @@ class StudioModelEditWidget final : public QWidget, public IInputSink
 	Q_OBJECT
 
 public:
-	StudioModelEditWidget(EditorContext* editorContext, StudioModelContext* studioModelContext, QWidget* parent = nullptr);
+	StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelEditWidget();
 
-	StudioModelContext* GetContext() const { return _context; }
+	StudioModelAsset* GetAsset() const { return _asset; }
 
 	void OnMouseEvent(QMouseEvent* event) override;
 
@@ -53,7 +53,7 @@ private slots:
 	void OnTabChanged(int index);
 
 private:
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 
 	SceneWidget* _sceneWidget;
 

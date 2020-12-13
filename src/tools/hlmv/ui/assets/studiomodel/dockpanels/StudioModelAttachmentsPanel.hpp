@@ -6,12 +6,12 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class StudioModelAttachmentsPanel final : public QWidget
 {
 public:
-	StudioModelAttachmentsPanel(StudioModelContext* context, QWidget* parent = nullptr);
+	StudioModelAttachmentsPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelAttachmentsPanel();
 
 private:
@@ -32,7 +32,7 @@ private slots:
 
 private:
 	Ui_StudioModelAttachmentsPanel _ui;
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 
 	bool _isActive{false};
 };

@@ -6,12 +6,12 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class StudioModelModelDisplayPanel final : public QWidget
 {
 public:
-	StudioModelModelDisplayPanel(StudioModelContext* context, QWidget* parent = nullptr);
+	StudioModelModelDisplayPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelModelDisplayPanel();
 
 private:
@@ -56,6 +56,6 @@ private:
 
 private:
 	Ui_StudioModelModelDisplayPanel _ui;
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 };
 }

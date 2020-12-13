@@ -4,7 +4,7 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelEditEventsDialog.hpp"
 
 namespace ui::assets::studiomodel
@@ -65,9 +65,9 @@ public:
 	}
 };
 
-StudioModelEditEventsDialog::StudioModelEditEventsDialog(StudioModelContext* context, int sequenceIndex, QWidget* parent)
+StudioModelEditEventsDialog::StudioModelEditEventsDialog(StudioModelAsset* asset, int sequenceIndex, QWidget* parent)
 	: QDialog(parent)
-	, _context(context)
+	, _asset(asset)
 	, _sequenceIndex(sequenceIndex)
 {
 	_ui.setupUi(this);
@@ -76,7 +76,7 @@ StudioModelEditEventsDialog::StudioModelEditEventsDialog(StudioModelContext* con
 
 	applyButton->setEnabled(false);
 
-	auto header = _context->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
 
 	auto sequence = header->GetSequence(_sequenceIndex);
 
@@ -124,7 +124,7 @@ void StudioModelEditEventsDialog::accept()
 
 void StudioModelEditEventsDialog::OnApply()
 {
-	auto header = _context->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
 
 	auto sequence = header->GetSequence(_sequenceIndex);
 

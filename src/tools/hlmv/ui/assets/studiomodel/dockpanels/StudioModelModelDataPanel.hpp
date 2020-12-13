@@ -12,7 +12,7 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class StudioModelModelDataPanel final : public QWidget
 {
@@ -24,7 +24,7 @@ private:
 	};
 
 public:
-	StudioModelModelDataPanel(StudioModelContext* context, QWidget* parent = nullptr);
+	StudioModelModelDataPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelModelDataPanel();
 
 private:
@@ -41,7 +41,7 @@ private slots:
 
 private:
 	Ui_StudioModelModelDataPanel _ui;
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 
 	std::vector<RootBoneData> _rootBonePositions;
 };

@@ -6,7 +6,6 @@
 #include "ui/FullscreenWidget.hpp"
 #include "ui/SceneWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
 namespace ui::assets::studiomodel
@@ -14,9 +13,10 @@ namespace ui::assets::studiomodel
 StudioModelAsset::StudioModelAsset(QString&& fileName,
 	EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel)
 	: Asset(std::move(fileName))
+	, _editorContext(editorContext)
 	, _provider(provider)
 	, _studioModel(std::move(studioModel))
-	, _context(std::make_unique<StudioModelContext>(editorContext, this, std::make_unique<graphics::Scene>(editorContext->GetSoundSystem())))
+	, _scene(std::make_unique<graphics::Scene>(editorContext->GetSoundSystem()))
 {
 }
 
@@ -24,12 +24,12 @@ StudioModelAsset::~StudioModelAsset() = default;
 
 QWidget* StudioModelAsset::CreateEditWidget(EditorContext* editorContext)
 {
-	return new StudioModelEditWidget(editorContext, _context.get());
+	return new StudioModelEditWidget(editorContext, this);
 }
 
 void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget)
 {
-	const auto sceneWidget = new SceneWidget(_context->GetScene(), fullscreenWidget);
+	const auto sceneWidget = new SceneWidget(GetScene(), fullscreenWidget);
 
 	fullscreenWidget->setCentralWidget(sceneWidget->GetContainer());
 

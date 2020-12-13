@@ -4,18 +4,18 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelInfoPanel.hpp"
 
 namespace ui::assets::studiomodel
 {
-StudioModelModelInfoPanel::StudioModelModelInfoPanel(StudioModelContext* context, QWidget* parent)
+StudioModelModelInfoPanel::StudioModelModelInfoPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 	auto model = entity->GetModel()->GetStudioHeader();
 	auto textureHeader = entity->GetModel()->GetTextureHeader();
 

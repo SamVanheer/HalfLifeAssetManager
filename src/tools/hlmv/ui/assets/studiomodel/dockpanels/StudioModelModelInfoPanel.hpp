@@ -6,16 +6,16 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class StudioModelModelInfoPanel final : public QWidget
 {
 public:
-	StudioModelModelInfoPanel(StudioModelContext* context, QWidget* parent = nullptr);
+	StudioModelModelInfoPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelModelInfoPanel();
 
 private:
 	Ui_StudioModelModelInfoPanel _ui;
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 };
 }

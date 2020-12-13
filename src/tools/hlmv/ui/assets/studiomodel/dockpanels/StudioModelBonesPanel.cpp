@@ -5,18 +5,17 @@
 #include "entity/CHLMVStudioModelEntity.h"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBonesPanel.hpp"
 
 namespace ui::assets::studiomodel
 {
-//Parentarent indices are offset by one so -1 becomes 0, 0 becomes 1, etc
+//Parent indices are offset by one so -1 becomes 0, 0 becomes 1, etc
 constexpr int ParentBoneOffset = 1;
 
-StudioModelBonesPanel::StudioModelBonesPanel(StudioModelContext* context, QWidget* parent)
+StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 
@@ -69,7 +68,7 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelContext* context, QWidge
 	connect(_ui.RotationScaleY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
 	connect(_ui.RotationScaleZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
 
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -108,7 +107,7 @@ StudioModelBonesPanel::~StudioModelBonesPanel() = default;
 
 void StudioModelBonesPanel::UpdateQCString()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -139,7 +138,7 @@ void StudioModelBonesPanel::OnDockPanelChanged(QWidget* current, QWidget* previo
 
 void StudioModelBonesPanel::OnBoneChanged(int index)
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -188,23 +187,23 @@ void StudioModelBonesPanel::OnBoneChanged(int index)
 
 void StudioModelBonesPanel::OnHightlightBoneChanged()
 {
-	_context->GetScene()->DrawSingleBoneIndex = (_isActive && _ui.HighlightBone->isChecked()) ? _ui.Bones->currentIndex() : -1;
+	_asset->GetScene()->DrawSingleBoneIndex = (_isActive && _ui.HighlightBone->isChecked()) ? _ui.Bones->currentIndex() : -1;
 }
 
 void StudioModelBonesPanel::OnBoneNameChanged()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
 	const auto bone = header->GetBone(_ui.Bones->currentIndex());
 
-	_context->GetAsset()->AddUndoCommand(new ModelBoneRenameCommand(model, _ui.Bones->currentIndex(), bone->name, _ui.BoneName->text()));
+	_asset->AddUndoCommand(new ModelBoneRenameCommand(model, _ui.Bones->currentIndex(), bone->name, _ui.BoneName->text()));
 }
 
 void StudioModelBonesPanel::OnBoneParentChanged(int index)
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -217,7 +216,7 @@ void StudioModelBonesPanel::OnBoneParentChanged(int index)
 
 void StudioModelBonesPanel::OnBoneFlagsChanged()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -230,7 +229,7 @@ void StudioModelBonesPanel::OnBoneFlagsChanged()
 
 void StudioModelBonesPanel::OnBonePropertyChanged()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 

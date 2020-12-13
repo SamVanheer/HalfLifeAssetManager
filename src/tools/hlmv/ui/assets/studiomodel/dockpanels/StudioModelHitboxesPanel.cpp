@@ -4,14 +4,14 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelHitboxesPanel.hpp"
 
 namespace ui::assets::studiomodel
 {
-StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelContext* context, QWidget* parent)
+StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 
@@ -46,7 +46,7 @@ StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelContext* context, 
 	connect(_ui.MaximumY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelHitboxesPanel::OnMinimumChanged);
 	connect(_ui.MaximumZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelHitboxesPanel::OnMaximumChanged);
 
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -89,7 +89,7 @@ StudioModelHitboxesPanel::~StudioModelHitboxesPanel() = default;
 
 void StudioModelHitboxesPanel::UpdateQCString()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -117,7 +117,7 @@ void StudioModelHitboxesPanel::OnDockPanelChanged(QWidget* current, QWidget* pre
 
 void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -154,12 +154,12 @@ void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 
 void StudioModelHitboxesPanel::OnHighlightHitboxChanged()
 {
-	_context->GetScene()->DrawSingleHitboxIndex = (_isActive && _ui.HighlightHitbox->isChecked()) ? _ui.Hitboxes->currentIndex() : -1;
+	_asset->GetScene()->DrawSingleHitboxIndex = (_isActive && _ui.HighlightHitbox->isChecked()) ? _ui.Hitboxes->currentIndex() : -1;
 }
 
 void StudioModelHitboxesPanel::OnBoneChanged()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -174,7 +174,7 @@ void StudioModelHitboxesPanel::OnBoneChanged()
 
 void StudioModelHitboxesPanel::OnHitgroupChanged()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -187,7 +187,7 @@ void StudioModelHitboxesPanel::OnHitgroupChanged()
 
 void StudioModelHitboxesPanel::OnMinimumChanged()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -202,7 +202,7 @@ void StudioModelHitboxesPanel::OnMinimumChanged()
 
 void StudioModelHitboxesPanel::OnMaximumChanged()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 

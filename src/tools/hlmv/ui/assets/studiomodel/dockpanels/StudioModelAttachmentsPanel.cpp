@@ -4,14 +4,14 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
 
 namespace ui::assets::studiomodel
 {
-StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelContext* context, QWidget* parent)
+StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 
@@ -39,7 +39,7 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelContext* con
 	connect(_ui.OriginY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
 	connect(_ui.OriginZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
 
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -82,7 +82,7 @@ StudioModelAttachmentsPanel::~StudioModelAttachmentsPanel() = default;
 
 void StudioModelAttachmentsPanel::UpdateQCString()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -107,7 +107,7 @@ void StudioModelAttachmentsPanel::OnDockPanelChanged(QWidget* current, QWidget* 
 
 void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -135,12 +135,12 @@ void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 
 void StudioModelAttachmentsPanel::OnHighlightAttachmentChanged()
 {
-	_context->GetScene()->DrawSingleAttachmentIndex = (_isActive && _ui.HighlightAttachment->isChecked()) ? _ui.Attachments->currentIndex() : -1;
+	_asset->GetScene()->DrawSingleAttachmentIndex = (_isActive && _ui.HighlightAttachment->isChecked()) ? _ui.Attachments->currentIndex() : -1;
 }
 
 void StudioModelAttachmentsPanel::OnNameChanged()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -156,7 +156,7 @@ void StudioModelAttachmentsPanel::OnNameChanged()
 
 void StudioModelAttachmentsPanel::OnTypeChanged()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -169,7 +169,7 @@ void StudioModelAttachmentsPanel::OnTypeChanged()
 
 void StudioModelAttachmentsPanel::OnBoneChanged()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 
@@ -182,7 +182,7 @@ void StudioModelAttachmentsPanel::OnBoneChanged()
 
 void StudioModelAttachmentsPanel::OnOriginChanged()
 {
-	const auto model = _context->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	const auto header = model->GetStudioHeader();
 

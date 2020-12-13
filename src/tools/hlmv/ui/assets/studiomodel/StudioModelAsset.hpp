@@ -1,20 +1,32 @@
 #pragma once
 
+#include <cassert>
 #include <memory>
+#include <stack>
+
+#include <QColor>
+#include <QObject>
 
 #include "engine/shared/studiomodel/CStudioModel.h"
 
+#include "graphics/Scene.hpp"
+
 #include "ui/assets/Assets.hpp"
 
-namespace ui::assets::studiomodel
+namespace ui
+{
+class IInputSink;
+
+namespace assets::studiomodel
 {
 class StudioModelAssetProvider;
-class StudioModelContext;
 
 class StudioModelAsset final : public Asset
 {
+	Q_OBJECT
+
 public:
-	StudioModelAsset(QString&& fileName, 
+	StudioModelAsset(QString&& fileName,
 		EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel);
 
 	~StudioModelAsset();
@@ -31,14 +43,42 @@ public:
 
 	void Save(const QString& fileName) override;
 
-	StudioModelContext* GetContext() const { return _context.get(); }
+	EditorContext* GetEditorContext() { return _editorContext; }
 
 	studiomdl::CStudioModel* GetStudioModel() { return _studioModel.get(); }
 
+	graphics::Scene* GetScene() { return _scene.get(); }
+
+	IInputSink* GetInputSink() const { return _inputSinks.top(); }
+
+	void PushInputSink(IInputSink* inputSink)
+	{
+		assert(inputSink);
+
+		_inputSinks.push(inputSink);
+	}
+
+	void PopInputSink()
+	{
+		_inputSinks.pop();
+	}
+
+signals:
+	void Tick();
+
+public slots:
+	void SetBackgroundColor(QColor color)
+	{
+		_scene->SetBackgroundColor({color.redF(), color.greenF(), color.blueF()});
+	}
+
 private:
+	EditorContext* const _editorContext;
 	const StudioModelAssetProvider* const _provider;
 	const std::unique_ptr<studiomdl::CStudioModel> _studioModel;
-	const std::unique_ptr<StudioModelContext> _context;
+	const std::unique_ptr<graphics::Scene> _scene;
+
+	std::stack<IInputSink*> _inputSinks;
 };
 
 class StudioModelAssetProvider final : public IAssetProvider
@@ -58,5 +98,6 @@ public:
 inline const IAssetProvider* StudioModelAsset::GetProvider() const
 {
 	return _provider;
+}
 }
 }

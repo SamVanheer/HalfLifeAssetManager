@@ -7,12 +7,12 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class StudioModelEditEventsDialog final : public QDialog
 {
 public:
-	StudioModelEditEventsDialog(StudioModelContext* context, int sequenceIndex, QWidget* parent = nullptr);
+	StudioModelEditEventsDialog(StudioModelAsset* asset, int sequenceIndex, QWidget* parent = nullptr);
 	~StudioModelEditEventsDialog();
 
 private slots:
@@ -24,7 +24,7 @@ private slots:
 
 private:
 	Ui_StudioModelEditEventsDialog _ui;
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 	const int _sequenceIndex;
 
 	QStandardItemModel* _model;

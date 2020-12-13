@@ -17,7 +17,7 @@
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Palette.h"
 
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelExportUVMeshDialog.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
 
@@ -38,9 +38,9 @@ static int GetMeshIndexForDrawing(QComboBox* comboBox)
 	return meshIndex;
 }
 
-StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelContext* context, QWidget* parent)
+StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 
@@ -85,7 +85,7 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelContext* context, 
 
 	_ui.UVLineWidthSlider->setValue(static_cast<int>(_ui.UVLineWidthSpinner->value() * UVLineWidthSliderRatio));
 
-	auto textureHeader = _context->GetScene()->GetEntity()->GetModel()->GetTextureHeader();
+	auto textureHeader = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader();
 
 	QStringList textures;
 
@@ -128,7 +128,7 @@ void StudioModelTexturesPanel::OnMouseEvent(QMouseEvent* event)
 
 		if (event->buttons() & Qt::MouseButton::LeftButton)
 		{
-			auto scene = _context->GetScene();
+			auto scene = _asset->GetScene();
 
 			scene->TextureXOffset += delta.x;
 			scene->TextureYOffset += delta.y;
@@ -253,23 +253,23 @@ void StudioModelTexturesPanel::OnCreateDeviceResources()
 
 void StudioModelTexturesPanel::OnDockPanelChanged(QWidget* current, QWidget* previous)
 {
-	const bool wasActive = _context->GetScene()->ShowTexture;
+	const bool wasActive = _asset->GetScene()->ShowTexture;
 
-	_context->GetScene()->ShowTexture = this == current;
+	_asset->GetScene()->ShowTexture = this == current;
 
-	if (_context->GetScene()->ShowTexture && !wasActive)
+	if (_asset->GetScene()->ShowTexture && !wasActive)
 	{
-		_context->PushInputSink(this);
+		_asset->PushInputSink(this);
 	}
-	else if (!_context->GetScene()->ShowTexture && wasActive)
+	else if (!_asset->GetScene()->ShowTexture && wasActive)
 	{
-		_context->PopInputSink();
+		_asset->PopInputSink();
 	}
 }
 
 void StudioModelTexturesPanel::OnTextureChanged(int index)
 {
-	auto scene = _context->GetScene();
+	auto scene = _asset->GetScene();
 
 	//Reset texture position to be centered
 	scene->TextureXOffset = scene->TextureYOffset = 0;
@@ -332,7 +332,7 @@ void StudioModelTexturesPanel::OnTextureViewScaleSliderChanged(int value)
 		_ui.ScaleTextureViewSpinner->setValue(newValue);
 	}
 
-	_context->GetScene()->TextureScale = newValue;
+	_asset->GetScene()->TextureScale = newValue;
 
 	UpdateUVMapTexture();
 }
@@ -344,7 +344,7 @@ void StudioModelTexturesPanel::OnTextureViewScaleSpinnerChanged(double value)
 		_ui.ScaleTextureViewSlider->setValue(static_cast<int>(value * UVLineWidthSliderRatio));
 	}
 
-	_context->GetScene()->TextureScale = value;
+	_asset->GetScene()->TextureScale = value;
 
 	UpdateUVMapTexture();
 }
@@ -377,7 +377,7 @@ void StudioModelTexturesPanel::OnUVLineWidthSpinnerChanged(double value)
 
 void StudioModelTexturesPanel::OnChromeChanged()
 {
-	auto texture = _context->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
 
 	//Chrome disables alpha testing
 	if (_ui.Chrome->isChecked())
@@ -400,7 +400,7 @@ void StudioModelTexturesPanel::OnChromeChanged()
 
 void StudioModelTexturesPanel::OnAdditiveChanged()
 {
-	auto texture = _context->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
 
 	//Additive disables alpha testing
 	if (_ui.Additive->isChecked())
@@ -423,7 +423,7 @@ void StudioModelTexturesPanel::OnAdditiveChanged()
 
 void StudioModelTexturesPanel::OnTransparentChanged()
 {
-	auto model = _context->GetScene()->GetEntity()->GetModel();
+	auto model = _asset->GetScene()->GetEntity()->GetModel();
 	auto texture = model->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
 
 	//Alpha testing disables chrome and additive
@@ -450,7 +450,7 @@ void StudioModelTexturesPanel::OnTransparentChanged()
 
 void StudioModelTexturesPanel::OnFullbrightChanged()
 {
-	auto texture = _context->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
 
 	if (_ui.Fullbright->isChecked())
 	{
@@ -472,7 +472,7 @@ void StudioModelTexturesPanel::OnShowUVMapChanged()
 
 void StudioModelTexturesPanel::OnOverlayUVMapChanged()
 {
-	_context->GetScene()->OverlayUVMap = _ui.OverlayUVMap->isChecked();
+	_asset->GetScene()->OverlayUVMap = _ui.OverlayUVMap->isChecked();
 }
 
 void StudioModelTexturesPanel::OnAntiAliasLinesChanged()
@@ -572,7 +572,7 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 
 void StudioModelTexturesPanel::RemapTexture(int index)
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto textureHeader = entity->GetModel()->GetTextureHeader();
 
@@ -601,7 +601,7 @@ void StudioModelTexturesPanel::RemapTexture(int index)
 
 void StudioModelTexturesPanel::RemapTextures()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto textureHeader = entity->GetModel()->GetTextureHeader();
 
@@ -628,7 +628,7 @@ void StudioModelTexturesPanel::UpdateUVMapTexture()
 		return;
 	}
 
-	auto scene = _context->GetScene();
+	auto scene = _asset->GetScene();
 
 	const int textureIndex = _ui.Textures->currentIndex();
 
@@ -677,7 +677,7 @@ void StudioModelTexturesPanel::UpdateUVMapTexture()
 
 void StudioModelTexturesPanel::OnImportTexture()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto pStudioModel = entity->GetModel();
 
@@ -703,7 +703,7 @@ void StudioModelTexturesPanel::OnImportTexture()
 
 void StudioModelTexturesPanel::OnExportTexture()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto pStudioModel = entity->GetModel();
 
@@ -735,7 +735,7 @@ void StudioModelTexturesPanel::OnExportTexture()
 
 void StudioModelTexturesPanel::OnExportUVMap()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	const int textureIndex = _ui.Textures->currentIndex();
 
@@ -795,7 +795,7 @@ void StudioModelTexturesPanel::OnExportUVMap()
 
 void StudioModelTexturesPanel::OnImportAllTextures()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	const auto path = QFileDialog::getExistingDirectory(this, "Select the directory to import all textures from");
 
@@ -826,7 +826,7 @@ void StudioModelTexturesPanel::OnImportAllTextures()
 
 void StudioModelTexturesPanel::OnExportAllTextures()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto pStudioModel = entity->GetModel();
 

@@ -6,12 +6,12 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class StudioModelBodyPartsPanel final : public QWidget
 {
 public:
-	StudioModelBodyPartsPanel(StudioModelContext* context, QWidget* parent = nullptr);
+	StudioModelBodyPartsPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelBodyPartsPanel();
 
 private:
@@ -39,7 +39,7 @@ private slots:
 
 private:
 	Ui_StudioModelBodyPartsPanel _ui;
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 
 	float _controllerSliderScale{1.f};
 };

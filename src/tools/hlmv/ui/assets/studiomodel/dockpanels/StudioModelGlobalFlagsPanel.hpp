@@ -6,12 +6,12 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class StudioModelGlobalFlagsPanel final : public QWidget
 {
 public:
-	StudioModelGlobalFlagsPanel(StudioModelContext* context, QWidget* parent = nullptr);
+	StudioModelGlobalFlagsPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelGlobalFlagsPanel();
 
 private slots:
@@ -19,6 +19,6 @@ private slots:
 
 private:
 	Ui_StudioModelGlobalFlagsPanel _ui;
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 };
 }

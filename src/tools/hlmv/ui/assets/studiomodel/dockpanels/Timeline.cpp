@@ -4,18 +4,18 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
 
 namespace ui::assets::studiomodel
 {
-Timeline::Timeline(StudioModelContext* context, QWidget* parent)
+Timeline::Timeline(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 
-	connect(_context, &StudioModelContext::Tick, this, &Timeline::OnTick);
+	connect(_asset, &StudioModelAsset::Tick, this, &Timeline::OnTick);
 
 	connect(_ui.FrameSlider, &QSlider::valueChanged, this, &Timeline::OnFrameSliderChanged);
 	connect(_ui.FrameSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Timeline::OnFrameSpinnerChanged);
@@ -59,7 +59,7 @@ void Timeline::SetFrame(double value, bool updateEntity)
 
 	if (updateEntity)
 	{
-		_context->GetScene()->GetEntity()->SetFrame(static_cast<float>(value));
+		_asset->GetScene()->GetEntity()->SetFrame(static_cast<float>(value));
 	}
 }
 
@@ -72,12 +72,12 @@ void Timeline::SetFramerate(double value)
 	_ui.FramerateSlider->setValue(static_cast<int>(std::round(value) * SpeedSliderMultiplier));
 	_ui.FramerateSpinner->setValue(value);
 
-	_context->GetScene()->GetEntity()->SetFrameRate(static_cast<float>(value));
+	_asset->GetScene()->GetEntity()->SetFrameRate(static_cast<float>(value));
 }
 
 void Timeline::ModifyFrame(int amount)
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	const auto sequence = entity->GetModel()->GetStudioHeader()->GetSequence(entity->GetSequence());
 
@@ -100,7 +100,7 @@ void Timeline::ModifyFrame(int amount)
 
 void Timeline::OnTick()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	const auto sequence = entity->GetModel()->GetStudioHeader()->GetSequence(entity->GetSequence());
 
@@ -135,12 +135,12 @@ void Timeline::OnFramerateSpinnerChanged()
 
 void Timeline::OnRestart()
 {
-	_context->GetScene()->GetEntity()->SetFrame(0);
+	_asset->GetScene()->GetEntity()->SetFrame(0);
 }
 
 void Timeline::OnTogglePlayback()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	entity->PlaySequence = !entity->PlaySequence;
 

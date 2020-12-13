@@ -8,12 +8,12 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class StudioModelSequencesPanel final : public QWidget
 {
 public:
-	StudioModelSequencesPanel(StudioModelContext* context, QWidget* parent = nullptr);
+	StudioModelSequencesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelSequencesPanel();
 
 private:
@@ -48,7 +48,7 @@ private slots:
 
 private:
 	Ui_StudioModelSequencesPanel _ui;
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 
 	//TODO: define constant for blend count
 	double _blendsScales[2];

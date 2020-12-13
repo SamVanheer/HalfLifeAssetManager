@@ -7,14 +7,13 @@
 #include "entity/CHLMVStudioModelEntity.h"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
 
 namespace ui::assets::studiomodel
 {
-StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelContext* context, QWidget* parent)
+StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 
@@ -46,7 +45,7 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelContext* context
 	connect(_ui.BoneControllerIndex, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerIndexChanged);
 	connect(_ui.BoneControllerType, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerTypeChanged);
 
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 	auto model = entity->GetModel()->GetStudioHeader();
 	auto textureHeader = entity->GetModel()->GetTextureHeader();
 
@@ -140,7 +139,7 @@ StudioModelBodyPartsPanel::~StudioModelBodyPartsPanel() = default;
 
 void StudioModelBodyPartsPanel::UpdateControllerRange()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto model = entity->GetModel()->GetStudioHeader();
 
@@ -188,7 +187,7 @@ void StudioModelBodyPartsPanel::UpdateControllerRange()
 
 void StudioModelBodyPartsPanel::OnBodyPartChanged(int index)
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto model = entity->GetModel()->GetStudioHeader();
 
@@ -224,7 +223,7 @@ void StudioModelBodyPartsPanel::OnBodyPartChanged(int index)
 
 void StudioModelBodyPartsPanel::OnSubmodelChanged(int index)
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	entity->SetBodygroup(_ui.BodyParts->currentIndex(), index);
 
@@ -233,14 +232,14 @@ void StudioModelBodyPartsPanel::OnSubmodelChanged(int index)
 
 void StudioModelBodyPartsPanel::OnSkinChanged(int index)
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	entity->SetSkin(index);
 }
 
 void StudioModelBodyPartsPanel::OnBoneControllerChanged(int index)
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto model = entity->GetModel()->GetStudioHeader();
 
@@ -282,7 +281,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerValueSpinnerChanged(double value
 
 	if (boneControllerLogicalIndex != -1)
 	{
-		auto entity = _context->GetScene()->GetEntity();
+		auto entity = _asset->GetScene()->GetEntity();
 
 		auto model = entity->GetModel()->GetStudioHeader();
 
@@ -312,7 +311,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerBoneChanged(int index)
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	const auto entity = _context->GetScene()->GetEntity();
+	const auto entity = _asset->GetScene()->GetEntity();
 
 	const auto model = entity->GetModel()->GetStudioHeader();
 
@@ -351,7 +350,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerRangeChanged()
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto model = entity->GetModel()->GetStudioHeader();
 
@@ -372,7 +371,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerRestChanged()
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto model = entity->GetModel()->GetStudioHeader();
 
@@ -387,7 +386,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerIndexChanged()
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto model = entity->GetModel()->GetStudioHeader();
 
@@ -402,7 +401,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerTypeChanged(int index)
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	auto model = entity->GetModel()->GetStudioHeader();
 

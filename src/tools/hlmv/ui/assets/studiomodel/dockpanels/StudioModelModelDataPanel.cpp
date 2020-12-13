@@ -2,14 +2,14 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDataPanel.hpp"
 
 namespace ui::assets::studiomodel
 {
-StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelContext* context, QWidget* parent)
+StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 
@@ -37,7 +37,7 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelContext* context
 	connect(_ui.ScaleMesh, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnScaleMesh);
 	connect(_ui.ScaleBones, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnScaleBones);
 
-	auto model = _context->GetScene()->GetEntity()->GetModel();
+	auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	for (auto rootBone : model->GetRootBones())
 	{
@@ -58,7 +58,7 @@ StudioModelModelDataPanel::~StudioModelModelDataPanel() = default;
 
 void StudioModelModelDataPanel::UpdateOrigin()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	if (!_rootBonePositions.empty())
 	{
@@ -90,7 +90,7 @@ void StudioModelModelDataPanel::OnSetOrigin()
 
 void StudioModelModelDataPanel::OnScaleMesh()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	studiomdl::ScaleMeshes(entity->GetModel(), _ui.ScaleMeshSpinner->value());
 
@@ -100,7 +100,7 @@ void StudioModelModelDataPanel::OnScaleMesh()
 
 void StudioModelModelDataPanel::OnScaleBones()
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	studiomdl::ScaleBones(entity->GetModel(), _ui.ScaleBonesSpinner->value());
 

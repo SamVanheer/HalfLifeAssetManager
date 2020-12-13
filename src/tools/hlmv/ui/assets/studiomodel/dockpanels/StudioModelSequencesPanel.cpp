@@ -2,15 +2,15 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelEditEventsDialog.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
 
 namespace ui::assets::studiomodel
 {
-StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelContext* context, QWidget* parent)
+StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 
@@ -36,7 +36,7 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelContext* context
 
 	_ui.EventInfoWidget->setVisible(false);
 
-	auto model = _context->GetScene()->GetEntity()->GetModel();
+	auto model = _asset->GetScene()->GetEntity()->GetModel();
 
 	auto header = model->GetStudioHeader();
 
@@ -65,14 +65,14 @@ void StudioModelSequencesPanel::UpdateBlendValue(int blender, BlendUpdateSource 
 		slider->setValue(spinner->value() * _blendsScales[blender]);
 	}
 
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	entity->SetBlending(blender, spinner->value());
 }
 
 void StudioModelSequencesPanel::OnSequenceChanged(int index)
 {
-	auto entity = _context->GetScene()->GetEntity();
+	auto entity = _asset->GetScene()->GetEntity();
 
 	entity->SetSequence(index);
 
@@ -201,7 +201,7 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 
 void StudioModelSequencesPanel::OnLoopingModeChanged(int index)
 {
-	_context->GetScene()->GetEntity()->SetLoopingMode(static_cast<StudioLoopingMode>(index));
+	_asset->GetScene()->GetEntity()->SetLoopingMode(static_cast<StudioLoopingMode>(index));
 }
 
 void StudioModelSequencesPanel::OnBlendXSliderChanged()
@@ -226,7 +226,7 @@ void StudioModelSequencesPanel::OnBlendYSpinnerChanged()
 
 void StudioModelSequencesPanel::OnEditEvents()
 {
-	StudioModelEditEventsDialog dialog(_context, _ui.SequenceComboBox->currentIndex(), this);
+	StudioModelEditEventsDialog dialog(_asset, _ui.SequenceComboBox->currentIndex(), this);
 
 	if (QDialog::DialogCode::Accepted == dialog.exec())
 	{
@@ -241,7 +241,7 @@ void StudioModelSequencesPanel::OnEventChanged(int index)
 
 	if (hasEvent)
 	{
-		auto entity = _context->GetScene()->GetEntity();
+		auto entity = _asset->GetScene()->GetEntity();
 
 		auto model = entity->GetModel();
 
@@ -260,11 +260,11 @@ void StudioModelSequencesPanel::OnEventChanged(int index)
 
 void StudioModelSequencesPanel::OnPlaySoundChanged()
 {
-	_context->GetScene()->GetEntity()->PlaySound = _ui.PlaySound->isChecked();
+	_asset->GetScene()->GetEntity()->PlaySound = _ui.PlaySound->isChecked();
 }
 
 void StudioModelSequencesPanel::OnPitchFramerateAmplitudeChanged()
 {
-	_context->GetScene()->GetEntity()->PitchFramerateAmplitude = _ui.PitchFramerateAmplitude->isChecked();
+	_asset->GetScene()->GetEntity()->PitchFramerateAmplitude = _ui.PitchFramerateAmplitude->isChecked();
 }
 }

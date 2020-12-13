@@ -1,13 +1,13 @@
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDisplayPanel.hpp"
 
 namespace ui::assets::studiomodel
 {
-StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelContext* context, QWidget* parent)
+StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 
@@ -47,7 +47,7 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelContext* c
 	connect(_ui.CenterModelOnWorldOrigin, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnCenterModelOnWorldOrigin);
 	connect(_ui.AlignOnGround, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnAlignOnGround);
 
-	auto scene = _context->GetScene();
+	auto scene = _asset->GetScene();
 
 	_ui.FOVSpinner->setValue(scene->FieldOfView);
 	_ui.FirstPersonFOVSpinner->setValue(scene->FirstPersonFieldOfView);
@@ -57,44 +57,44 @@ StudioModelModelDisplayPanel::~StudioModelModelDisplayPanel() = default;
 
 void StudioModelModelDisplayPanel::OnRenderModeChanged(int index)
 {
-	_context->GetScene()->CurrentRenderMode = static_cast<RenderMode>(index);
+	_asset->GetScene()->CurrentRenderMode = static_cast<RenderMode>(index);
 }
 
 void StudioModelModelDisplayPanel::OnOpacityChanged(int value)
 {
-	_context->GetScene()->GetEntity()->SetTransparency(value / 100.0f);
+	_asset->GetScene()->GetEntity()->SetTransparency(value / 100.0f);
 
 	_ui.OpacityValueLabel->setText(QString("%1%").arg(value));
 }
 
 void StudioModelModelDisplayPanel::OnShowHitboxesChanged()
 {
-	_context->GetScene()->ShowHitboxes = _ui.ShowHitboxes->isChecked();
+	_asset->GetScene()->ShowHitboxes = _ui.ShowHitboxes->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowBonesChanged()
 {
-	_context->GetScene()->ShowBones = _ui.ShowBones->isChecked();
+	_asset->GetScene()->ShowBones = _ui.ShowBones->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowAttachmentsChanged()
 {
-	_context->GetScene()->ShowAttachments = _ui.ShowAttachments->isChecked();
+	_asset->GetScene()->ShowAttachments = _ui.ShowAttachments->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowEyePositionChanged()
 {
-	_context->GetScene()->ShowEyePosition = _ui.ShowEyePosition->isChecked();
+	_asset->GetScene()->ShowEyePosition = _ui.ShowEyePosition->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnEnableBackfaceCullingChanged()
 {
-	_context->GetScene()->EnableBackfaceCulling = _ui.BackfaceCulling->isChecked();
+	_asset->GetScene()->EnableBackfaceCulling = _ui.BackfaceCulling->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowGroundChanged()
 {
-	auto scene = _context->GetScene();
+	auto scene = _asset->GetScene();
 
 	scene->ShowGround = _ui.ShowGround->isChecked();
 
@@ -106,7 +106,7 @@ void StudioModelModelDisplayPanel::OnShowGroundChanged()
 
 void StudioModelModelDisplayPanel::OnMirrorOnGroundChanged()
 {
-	auto scene = _context->GetScene();
+	auto scene = _asset->GetScene();
 
 	scene->MirrorOnGround = _ui.MirrorModelOnGround->isChecked();
 
@@ -118,67 +118,67 @@ void StudioModelModelDisplayPanel::OnMirrorOnGroundChanged()
 
 void StudioModelModelDisplayPanel::OnShowBackgroundChanged()
 {
-	_context->GetScene()->ShowBackground = _ui.ShowBackground->isChecked();
+	_asset->GetScene()->ShowBackground = _ui.ShowBackground->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnWireframeOverlayChanged()
 {
-	_context->GetScene()->ShowWireframeOverlay = _ui.WireframeOverlay->isChecked();
+	_asset->GetScene()->ShowWireframeOverlay = _ui.WireframeOverlay->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnDrawShadowsChanged()
 {
-	_context->GetScene()->DrawShadows = _ui.DrawShadows->isChecked();
+	_asset->GetScene()->DrawShadows = _ui.DrawShadows->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnFixShadowZFightingChanged()
 {
-	_context->GetScene()->FixShadowZFighting = _ui.FixShadowZFighting->isChecked();
+	_asset->GetScene()->FixShadowZFighting = _ui.FixShadowZFighting->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowAxesChanged()
 {
-	_context->GetScene()->ShowAxes = _ui.ShowAxes->isChecked();
+	_asset->GetScene()->ShowAxes = _ui.ShowAxes->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowNormalsChanged()
 {
-	_context->GetScene()->ShowNormals = _ui.ShowNormals->isChecked();
+	_asset->GetScene()->ShowNormals = _ui.ShowNormals->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowCrosshairChanged()
 {
-	_context->GetScene()->ShowCrosshair = _ui.ShowCrosshair->isChecked();
+	_asset->GetScene()->ShowCrosshair = _ui.ShowCrosshair->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowGuidelinesChanged()
 {
-	_context->GetScene()->ShowGuidelines = _ui.ShowGuidelines->isChecked();
+	_asset->GetScene()->ShowGuidelines = _ui.ShowGuidelines->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowPlayerHitboxChanged()
 {
-	_context->GetScene()->ShowPlayerHitbox = _ui.ShowPlayerHitbox->isChecked();
+	_asset->GetScene()->ShowPlayerHitbox = _ui.ShowPlayerHitbox->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnMirrorXAxisChanged()
 {
-	_context->GetScene()->GetEntity()->GetScale().x = _ui.MirrorOnXAxis->isChecked() ? -1 : 1;
+	_asset->GetScene()->GetEntity()->GetScale().x = _ui.MirrorOnXAxis->isChecked() ? -1 : 1;
 }
 
 void StudioModelModelDisplayPanel::OnMirrorYAxisChanged()
 {
-	_context->GetScene()->GetEntity()->GetScale().y = _ui.MirrorOnYAxis->isChecked() ? -1 : 1;
+	_asset->GetScene()->GetEntity()->GetScale().y = _ui.MirrorOnYAxis->isChecked() ? -1 : 1;
 }
 
 void StudioModelModelDisplayPanel::OnMirrorZAxisChanged()
 {
-	_context->GetScene()->GetEntity()->GetScale().z = _ui.MirrorOnZAxis->isChecked() ? -1 : 1;
+	_asset->GetScene()->GetEntity()->GetScale().z = _ui.MirrorOnZAxis->isChecked() ? -1 : 1;
 }
 
 void StudioModelModelDisplayPanel::OnFieldOfViewChanged(double value)
 {
-	_context->GetScene()->FieldOfView = static_cast<float>(value);
+	_asset->GetScene()->FieldOfView = static_cast<float>(value);
 }
 
 void StudioModelModelDisplayPanel::OnResetFieldOfView()
@@ -188,7 +188,7 @@ void StudioModelModelDisplayPanel::OnResetFieldOfView()
 
 void StudioModelModelDisplayPanel::OnFirstPersonFieldOfViewChanged(double value)
 {
-	_context->GetScene()->FirstPersonFieldOfView = static_cast<float>(value);
+	_asset->GetScene()->FirstPersonFieldOfView = static_cast<float>(value);
 }
 
 void StudioModelModelDisplayPanel::OnResetFirstPersonFieldOfView()
@@ -198,11 +198,11 @@ void StudioModelModelDisplayPanel::OnResetFirstPersonFieldOfView()
 
 void StudioModelModelDisplayPanel::OnCenterModelOnWorldOrigin()
 {
-	_context->GetScene()->GetEntity()->SetOrigin({0, 0, 0});
+	_asset->GetScene()->GetEntity()->SetOrigin({0, 0, 0});
 }
 
 void StudioModelModelDisplayPanel::OnAlignOnGround()
 {
-	_context->GetScene()->AlignOnGround();
+	_asset->GetScene()->AlignOnGround();
 }
 }

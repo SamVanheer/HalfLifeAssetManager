@@ -8,12 +8,12 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class InfoBar final : public QWidget
 {
 public:
-	InfoBar(StudioModelContext* context, QWidget* parent = nullptr);
+	InfoBar(StudioModelAsset* asset, QWidget* parent = nullptr);
 
 	~InfoBar();
 
@@ -23,7 +23,7 @@ public slots:
 private:
 	Ui_InfoBar _ui;
 
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 
 	long long _lastFPSUpdate{GetCurrentTick()};
 	unsigned int _currentFPS{0};

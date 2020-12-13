@@ -6,12 +6,12 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class StudioModelBonesPanel final : public QWidget
 {
 public:
-	StudioModelBonesPanel(StudioModelContext* context, QWidget* parent = nullptr);
+	StudioModelBonesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelBonesPanel();
 
 private:
@@ -34,7 +34,7 @@ private slots:
 
 private:
 	Ui_StudioModelBonesPanel _ui;
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 
 	bool _isActive{false};
 };

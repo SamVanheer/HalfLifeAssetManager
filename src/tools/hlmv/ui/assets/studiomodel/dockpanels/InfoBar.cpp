@@ -1,13 +1,13 @@
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/InfoBar.hpp"
 
 namespace ui::assets::studiomodel
 {
-InfoBar::InfoBar(StudioModelContext* context, QWidget* parent)
+InfoBar::InfoBar(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(context)
+	, _asset(asset)
 {
 	_ui.setupUi(this);
 }
@@ -29,7 +29,7 @@ void InfoBar::OnTick()
 		_currentFPS = 0;
 	}
 
-	const unsigned int drawnPolygonsCount = _context->GetScene()->GetDrawnPolygonsCount();
+	const unsigned int drawnPolygonsCount = _asset->GetScene()->GetDrawnPolygonsCount();
 
 	//Don't update if it's identical. Prevents flickering
 	if (_oldDrawnPolygonsCount != drawnPolygonsCount)

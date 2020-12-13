@@ -30,14 +30,13 @@
 
 namespace ui::assets::studiomodel
 {
-StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelContext* studioModelContext, QWidget* parent)
+StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
-	, _context(studioModelContext)
+	, _asset(asset)
 {
-	const auto asset = _context->GetAsset();
-	const auto scene = _context->GetScene();
+	const auto scene = _asset->GetScene();
 
-	_context->PushInputSink(this);
+	_asset->PushInputSink(this);
 
 	scene->FloorLength = editorContext->GetFloorLength();
 
@@ -65,27 +64,27 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; padding-left: 9px; }");
 
-	auto modelDisplayPanel = new StudioModelModelDisplayPanel(_context);
-	auto texturesPanel = new StudioModelTexturesPanel(_context);
-	auto bonesPanel = new StudioModelBonesPanel(_context);
-	auto attachmentsPanel = new StudioModelAttachmentsPanel(_context);
-	auto hitboxesPanel = new StudioModelHitboxesPanel(_context);
+	auto modelDisplayPanel = new StudioModelModelDisplayPanel(_asset);
+	auto texturesPanel = new StudioModelTexturesPanel(_asset);
+	auto bonesPanel = new StudioModelBonesPanel(_asset);
+	auto attachmentsPanel = new StudioModelAttachmentsPanel(_asset);
+	auto hitboxesPanel = new StudioModelHitboxesPanel(_asset);
 
-	_dockPanels->addTab(new StudioModelModelInfoPanel(_context), "Model Info");
+	_dockPanels->addTab(new StudioModelModelInfoPanel(_asset), "Model Info");
 	_dockPanels->addTab(modelDisplayPanel, "Model Display");
-	_dockPanels->addTab(new StudioModelSequencesPanel(_context), "Sequences");
-	_dockPanels->addTab(new StudioModelBodyPartsPanel(_context), "Body Parts");
+	_dockPanels->addTab(new StudioModelSequencesPanel(_asset), "Sequences");
+	_dockPanels->addTab(new StudioModelBodyPartsPanel(_asset), "Body Parts");
 	_dockPanels->addTab(texturesPanel, "Textures");
-	_dockPanels->addTab(new StudioModelModelDataPanel(_context), "Model Data");
-	_dockPanels->addTab(new StudioModelGlobalFlagsPanel(_context), "Global Flags");
+	_dockPanels->addTab(new StudioModelModelDataPanel(_asset), "Model Data");
+	_dockPanels->addTab(new StudioModelGlobalFlagsPanel(_asset), "Global Flags");
 	_dockPanels->addTab(bonesPanel, "Bones");
 	_dockPanels->addTab(attachmentsPanel, "Attachments");
 	_dockPanels->addTab(hitboxesPanel, "Hitboxes");
 
 	_dockPanels->setCurrentWidget(modelDisplayPanel);
 
-	const auto infoBar = new InfoBar(_context, _controlAreaWidget);
-	_timeline = new Timeline(_context, _controlAreaWidget);
+	const auto infoBar = new InfoBar(_asset, _controlAreaWidget);
+	_timeline = new Timeline(_asset, _controlAreaWidget);
 
 	auto layout = new QVBoxLayout(this);
 
@@ -112,7 +111,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	}
 
 	//TODO: need to initialize the background color to its default value here, as specified in the options dialog
-	_context->SetBackgroundColor({63, 127, 127});
+	_asset->SetBackgroundColor({63, 127, 127});
 
 	//Listen to the main timer to update as needed
 	connect(editorContext, &EditorContext::Tick, this, &StudioModelEditWidget::OnTick);
@@ -143,12 +142,12 @@ void StudioModelEditWidget::OnTick()
 
 	_sceneWidget->requestUpdate();
 
-	emit _context->Tick();
+	emit _asset->Tick();
 }
 
 void StudioModelEditWidget::OnSceneWidgetMouseEvent(QMouseEvent* event)
 {
-	if (auto inputSink = _context->GetInputSink(); inputSink)
+	if (auto inputSink = _asset->GetInputSink(); inputSink)
 	{
 		inputSink->OnMouseEvent(event);
 	}

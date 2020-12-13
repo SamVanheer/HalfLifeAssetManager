@@ -6,12 +6,12 @@
 
 namespace ui::assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class StudioModelHitboxesPanel final : public QWidget
 {
 public:
-	StudioModelHitboxesPanel(StudioModelContext* context, QWidget* parent = nullptr);
+	StudioModelHitboxesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelHitboxesPanel();
 
 private:
@@ -33,7 +33,7 @@ private slots:
 
 private:
 	Ui_StudioModelHitboxesPanel _ui;
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 
 	bool _isActive{false};
 };

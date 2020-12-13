@@ -19,12 +19,12 @@ class CameraOperator;
 
 namespace assets::studiomodel
 {
-class StudioModelContext;
+class StudioModelAsset;
 
 class StudioModelTexturesPanel final : public QWidget, public IInputSink
 {
 public:
-	StudioModelTexturesPanel(StudioModelContext* context, QWidget* parent = nullptr);
+	StudioModelTexturesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelTexturesPanel();
 
 	void OnMouseEvent(QMouseEvent* event) override;
@@ -81,7 +81,7 @@ private slots:
 
 private:
 	Ui_StudioModelTexturesPanel _ui;
-	StudioModelContext* const _context;
+	StudioModelAsset* const _asset;
 
 	glm::ivec2 _dragPosition{0};
 
