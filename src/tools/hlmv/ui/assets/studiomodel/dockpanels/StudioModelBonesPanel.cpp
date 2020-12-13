@@ -199,11 +199,7 @@ void StudioModelBonesPanel::OnBoneNameChanged()
 
 	const auto bone = header->GetBone(_ui.Bones->currentIndex());
 
-	auto command = new ModelBoneRenameCommand(model, _ui.Bones->currentIndex(), bone->name, _ui.BoneName->text());
-
-	command->redo();
-
-	_context->GetAsset()->AddUndoCommand(command);
+	_context->GetAsset()->AddUndoCommand(new ModelBoneRenameCommand(model, _ui.Bones->currentIndex(), bone->name, _ui.BoneName->text()));
 }
 
 void StudioModelBonesPanel::OnBoneParentChanged(int index)
