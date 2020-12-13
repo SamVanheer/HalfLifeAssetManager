@@ -48,7 +48,13 @@
     </property>
     <addaction name="ActionFullscreen"/>
    </widget>
+   <widget class="QMenu" name="MenuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+   </widget>
    <addaction name="MenuFile"/>
+   <addaction name="MenuEdit"/>
    <addaction name="MenuView"/>
    <addaction name="MenuTools"/>
    <addaction name="MenuHelp"/>

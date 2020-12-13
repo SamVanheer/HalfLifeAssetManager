@@ -22,6 +22,17 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 {
 	_ui.setupUi(this);
 
+	{
+		auto undo = _undoGroup->createUndoAction(this);
+		auto redo = _undoGroup->createRedoAction(this);
+
+		undo->setShortcut(QKeySequence::StandardKey::Undo);
+		redo->setShortcut(QKeySequence::StandardKey::Redo);
+
+		_ui.MenuEdit->addAction(undo);
+		_ui.MenuEdit->addAction(redo);
+	}
+
 	_assetTabs = new QTabWidget(this);
 
 	//Eliminate the border on the sides so the scene widget takes up all horizontal space
