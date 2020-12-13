@@ -4,7 +4,9 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelContext.hpp"
+#include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBonesPanel.hpp"
 
 namespace ui::assets::studiomodel
@@ -197,11 +199,11 @@ void StudioModelBonesPanel::OnBoneNameChanged()
 
 	const auto bone = header->GetBone(_ui.Bones->currentIndex());
 
-	strncpy(bone->name, _ui.BoneName->text().toUtf8().constData(), sizeof(bone->name) - 1);
-	bone->name[sizeof(bone->name) - 1] = '\0';
+	auto command = new ModelBoneRenameCommand(model, _ui.Bones->currentIndex(), bone->name, _ui.BoneName->text());
 
-	//TODO: mark model changed
-	//TODO: broadcast change to anyone who needs to know
+	command->redo();
+
+	_context->GetAsset()->AddUndoCommand(command);
 }
 
 void StudioModelBonesPanel::OnBoneParentChanged(int index)
@@ -213,6 +215,8 @@ void StudioModelBonesPanel::OnBoneParentChanged(int index)
 	const auto bone = header->GetBone(_ui.Bones->currentIndex());
 
 	bone->parent = index - ParentBoneOffset;
+
+	//TODO: mark model changed
 }
 
 void StudioModelBonesPanel::OnBoneFlagsChanged()

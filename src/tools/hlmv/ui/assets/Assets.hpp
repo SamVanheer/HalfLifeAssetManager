@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QUndoStack>
 #include <QWidget>
 
 #include <entt/core/type_info.hpp>
@@ -17,7 +18,6 @@ class FullscreenWidget;
 
 namespace assets
 {
-class AssetDataChangeEvent;
 class IAssetProvider;
 
 class Asset : public QObject
@@ -49,16 +49,7 @@ public:
 		}
 	}
 
-	bool HasUnsavedChanges() const { return _hasUnsavedChanges; }
-
-	void SetHasUnsavedChanges(bool value)
-	{
-		if (_hasUnsavedChanges != value)
-		{
-			_hasUnsavedChanges = value;
-			emit HasUnsavedChangesChanged(_hasUnsavedChanges);
-		}
-	}
+	QUndoStack* GetUndoStack() const { return _undoStack; }
 
 	/**
 	*	@brief Creates a widget to view and edit this asset
@@ -70,25 +61,23 @@ public:
 
 	virtual void Save(const QString& fileName) = 0;
 
-	void EmitAssetDataChanged(const AssetDataChangeEvent& event)
+	void AddUndoCommand(QUndoCommand* command)
 	{
-		SetHasUnsavedChanges(true);
-		emit AssetDataChanged(event);
+		_undoStack->push(command);
+		emit AssetChanged(command);
 	}
 
 signals:
 	void FileNameChanged(const QString& fileName);
 
-	void HasUnsavedChangesChanged(bool value);
-
 	/**
-	*	@brief Emitted when any data changes in the asset
+	*	@brief Emitted for every undo command that is added
 	*/
-	void AssetDataChanged(const AssetDataChangeEvent& event);
+	void AssetChanged(QUndoCommand* command);
 
 protected:
 	QString _fileName;
-	bool _hasUnsavedChanges{false};
+	QUndoStack* const _undoStack = new QUndoStack(this);
 };
 
 /**

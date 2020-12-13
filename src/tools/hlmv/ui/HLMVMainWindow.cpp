@@ -38,6 +38,8 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	connect(_ui.ActionOptions, &QAction::triggered, this, &HLMVMainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &HLMVMainWindow::OnShowAbout);
 
+	connect(_undoGroup, &QUndoGroup::cleanChanged, this, &HLMVMainWindow::OnAssetCleanChanged);
+
 	connect(_assetTabs, &QTabWidget::currentChanged, this, &HLMVMainWindow::OnAssetTabChanged);
 	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &HLMVMainWindow::OnAssetTabCloseRequested);
 
@@ -56,9 +58,10 @@ void HLMVMainWindow::TryLoadAsset(const QString& fileName)
 	if (nullptr != asset)
 	{
 		connect(asset.get(), &assets::Asset::FileNameChanged, this, &HLMVMainWindow::OnAssetFileNameChanged);
-		connect(asset.get(), &assets::Asset::HasUnsavedChangesChanged, this, &HLMVMainWindow::OnAssetHasUnsavedChangesChanged);
 
 		auto editWidget = asset->CreateEditWidget(_editorContext);
+
+		_undoGroup->addStack(asset->GetUndoStack());
 
 		_editorContext->GetLoadedAssets().emplace_back(std::move(asset), editWidget);
 
@@ -77,6 +80,11 @@ void HLMVMainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges
 	setWindowModified(hasUnsavedChanges);
 }
 
+void HLMVMainWindow::OnAssetCleanChanged(bool clean)
+{
+	setWindowModified(!clean);
+}
+
 void HLMVMainWindow::OnAssetTabChanged(int index)
 {
 	bool success = false;
@@ -92,7 +100,9 @@ void HLMVMainWindow::OnAssetTabChanged(int index)
 				return candidate.GetEditWidget() == editWidget;
 			}); it != assets.end())
 		{
-			UpdateTitle(it->GetAsset()->GetFileName(), it->GetAsset()->HasUnsavedChanges());
+			_undoGroup->setActiveStack(it->GetAsset()->GetUndoStack());
+
+			UpdateTitle(it->GetAsset()->GetFileName(), !_undoGroup->isClean());
 			success = true;
 		}
 		else
@@ -103,8 +113,48 @@ void HLMVMainWindow::OnAssetTabChanged(int index)
 
 	if (!success)
 	{
+		_undoGroup->setActiveStack(nullptr);
 		setWindowTitle({});
 	}
+}
+
+void HLMVMainWindow::OnAssetTabCloseRequested(int index)
+{
+	if (_fullscreenWidget)
+	{
+		//Always exit the fullscreen window if we're getting a close request
+		//The user needs to be able to see the main window and interact with it,
+		//and the fullscreen window may be holding a reference to the asset being closed
+		_fullscreenWidget->ExitFullscreen();
+	}
+
+	//TODO: ask to save, etc
+
+	auto editWidget = _assetTabs->widget(index);
+
+	delete editWidget;
+
+	_assetTabs->removeTab(index);
+
+	auto& assets = _editorContext->GetLoadedAssets();
+
+	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& asset)
+		{
+			return asset.GetEditWidget() == editWidget;
+		}); it != assets.end())
+	{
+		_undoGroup->removeStack(it->GetAsset()->GetUndoStack());
+		assets.erase(it);
+	}
+	else
+	{
+		QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
+	}
+
+	const bool hasOpenAssets = _assetTabs->count() > 0;
+
+	_assetTabs->setVisible(hasOpenAssets);
+	_ui.ActionFullscreen->setEnabled(hasOpenAssets);
 }
 
 void HLMVMainWindow::OnAssetFileNameChanged(const QString& fileName)
@@ -126,34 +176,12 @@ void HLMVMainWindow::OnAssetFileNameChanged(const QString& fileName)
 
 			if (_assetTabs->currentWidget() == it->GetEditWidget())
 			{
-				UpdateTitle(it->GetAsset()->GetFileName(), it->GetAsset()->HasUnsavedChanges());
+				UpdateTitle(it->GetAsset()->GetFileName(), !_undoGroup->isClean());
 			}
 		}
 		else
 		{
 			QMessageBox::critical(this, "Internal Error", "Asset index not found in assets tab widget");
-		}
-	}
-	else
-	{
-		QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
-	}
-}
-
-void HLMVMainWindow::OnAssetHasUnsavedChangesChanged(bool value)
-{
-	auto asset = static_cast<assets::Asset*>(sender());
-
-	auto& assets = _editorContext->GetLoadedAssets();
-
-	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& candidate)
-		{
-			return candidate.GetAsset() == asset;
-		}); it != assets.end())
-	{
-		if (_assetTabs->currentWidget() == it->GetEditWidget())
-		{
-			setWindowModified(value);
 		}
 	}
 	else
@@ -215,43 +243,5 @@ void HLMVMainWindow::OnShowAbout()
 			u8"%1")
 			.arg(QString::fromUtf8(tools::GetSharedCredits().c_str()))
 	);
-}
-
-void HLMVMainWindow::OnAssetTabCloseRequested(int index)
-{
-	if (_fullscreenWidget)
-	{
-		//Always exit the fullscreen window if we're getting a close request
-		//The user needs to be able to see the main window and interact with it,
-		//and the fullscreen window may be holding a reference to the asset being closed
-		_fullscreenWidget->ExitFullscreen();
-	}
-
-	//TODO: ask to save, etc
-
-	auto editWidget = _assetTabs->widget(index);
-
-	delete editWidget;
-
-	_assetTabs->removeTab(index);
-
-	auto& assets = _editorContext->GetLoadedAssets();
-
-	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& asset)
-		{
-			return asset.GetEditWidget() == editWidget;
-		}); it != assets.end())
-	{
-		assets.erase(it);
-	}
-	else
-	{
-		QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
-	}
-
-	const bool hasOpenAssets = _assetTabs->count() > 0;
-
-	_assetTabs->setVisible(hasOpenAssets);
-	_ui.ActionFullscreen->setEnabled(hasOpenAssets);
 }
 }

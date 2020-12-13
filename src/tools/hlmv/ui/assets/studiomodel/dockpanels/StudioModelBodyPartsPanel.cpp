@@ -6,7 +6,6 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "ui/assets/AssetDataChangeEvent.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelContext.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
@@ -177,8 +176,6 @@ void StudioModelBodyPartsPanel::UpdateControllerRange()
 		const QSignalBlocker slider{_ui.BoneControllerValueSlider};
 		const QSignalBlocker spinner{_ui.BoneControllerValueSpinner};
 
-		//TODO: due to floating point accuracy loss this is getting values that deviate slightly
-		//The entity should store off the original input value to avoid the round trip accuracy loss
 		const double value = entity->GetControllerValue(_ui.BoneControllers->currentIndex());
 
 		_ui.BoneControllerValueSlider->setRange((int)(start * _controllerSliderScale), (int)(end * _controllerSliderScale));
@@ -346,8 +343,8 @@ void StudioModelBodyPartsPanel::OnBoneControllerBoneChanged(int index)
 	//Patch up the new bone reference
 	newBone->bonecontroller[typeIndex] = _ui.BoneControllers->currentIndex();
 
-	//TODO: pass more information
-	_context->GetAsset()->EmitAssetDataChanged(AssetDataChangeEvent{AssetDataChangeType::Modification});
+	//TODO: pass undo command
+	//_context->GetAsset()->EmitAssetDataChanged(AssetDataChangeEvent{AssetDataChangeType::Modification});
 }
 
 void StudioModelBodyPartsPanel::OnBoneControllerRangeChanged()

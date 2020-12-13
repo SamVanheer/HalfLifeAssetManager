@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QString>
 #include <QTabWidget>
+#include <QUndoGroup>
 
 #include "ui_HLMVMainWindow.h"
 
@@ -32,11 +33,13 @@ private:
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
 
 private slots:
+	void OnAssetCleanChanged(bool clean);
+
 	void OnAssetTabChanged(int index);
 
-	void OnAssetFileNameChanged(const QString& fileName);
+	void OnAssetTabCloseRequested(int index);
 
-	void OnAssetHasUnsavedChangesChanged(bool value);
+	void OnAssetFileNameChanged(const QString& fileName);
 
 	void OnOpenLoadAssetDialog();
 
@@ -46,12 +49,12 @@ private slots:
 
 	void OnShowAbout();
 
-	void OnAssetTabCloseRequested(int index);
-
 private:
 	Ui_HLMVMainWindow _ui;
 
 	EditorContext* const _editorContext;
+
+	QUndoGroup* const _undoGroup = new QUndoGroup(this);
 
 	QTabWidget* _assetTabs;
 
