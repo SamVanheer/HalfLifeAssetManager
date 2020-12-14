@@ -22,6 +22,7 @@
 #include "ui/options/OptionsPageGameConfigurations.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/options/OptionsPageRegistry.hpp"
+#include "ui/settings/GeneralSettings.hpp"
 
 int HLMVApplication::Run(int argc, char* argv[])
 {
@@ -61,13 +62,12 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 	connect(&app, &QApplication::aboutToQuit, this, &HLMVApplication::OnExit);
 
-	QSettings settings;
+	auto settings{std::make_unique<QSettings>()};
+
+	auto generalSettings{std::make_unique<ui::settings::GeneralSettings>()};
 
 	//TODO: load settings
-	//TODO: improve settings loading to avoid having it be this messy
-	settings.beginGroup("startup");
-	const auto useSingleInstance = settings.value("useSingleInstance", false).toBool();
-	settings.endGroup();
+	generalSettings->LoadSettings(*settings);
 
 	QString fileName;
 
@@ -86,28 +86,28 @@ int HLMVApplication::Run(int argc, char* argv[])
 		}
 	}
 
-	if (useSingleInstance)
+	if (generalSettings->ShouldUseSingleInstance())
 	{
-		singleInstance.reset(new SingleInstance());
+		_singleInstance.reset(new SingleInstance());
 
-		if (!singleInstance->Create(programName, fileName))
+		if (!_singleInstance->Create(programName, fileName))
 		{
 			return EXIT_SUCCESS;
 		}
 
-		connect(singleInstance.get(), &SingleInstance::FileNameReceived, this, &HLMVApplication::OnFileNameReceived);
+		connect(_singleInstance.get(), &SingleInstance::FileNameReceived, this, &HLMVApplication::OnFileNameReceived);
 	}
 
 	auto optionsPageRegistry{std::make_unique<ui::options::OptionsPageRegistry>()};
 
-	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGeneral>());
+	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGeneral>(std::move(generalSettings)));
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGameConfigurations>());
 
 	auto assetProviderRegistry{std::make_unique<ui::assets::AssetProviderRegistry>()};
 
 	assetProviderRegistry->AddProvider(std::make_unique<ui::assets::studiomodel::StudioModelAssetProvider>());
 
-	_editorContext = new ui::EditorContext(std::move(optionsPageRegistry), std::move(assetProviderRegistry), this);
+	_editorContext = new ui::EditorContext(settings.release(), std::move(optionsPageRegistry), std::move(assetProviderRegistry), this);
 
 	_mainWindow = new ui::HLMVMainWindow(_editorContext);
 
@@ -126,9 +126,9 @@ void HLMVApplication::OnExit()
 {
 	_mainWindow = nullptr;
 
-	if (singleInstance)
+	if (_singleInstance)
 	{
-		singleInstance.reset();
+		_singleInstance.reset();
 	}
 }
 

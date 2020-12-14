@@ -35,6 +35,5 @@ private:
 	ui::EditorContext* _editorContext{};
 	ui::HLMVMainWindow* _mainWindow{};
 
-	//Used to manage single-instance functionality
-	QScopedPointer<SingleInstance> singleInstance;
+	QScopedPointer<SingleInstance> _singleInstance;
 };

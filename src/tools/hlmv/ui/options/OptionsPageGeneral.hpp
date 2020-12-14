@@ -12,6 +12,11 @@ namespace ui
 {
 class EditorContext;
 
+namespace settings
+{
+class GeneralSettings;
+}
+
 namespace options
 {
 extern const QString OptionsPageGeneralId;
@@ -19,7 +24,11 @@ extern const QString OptionsPageGeneralId;
 class OptionsPageGeneral : public OptionsPage
 {
 public:
-	OptionsPageGeneral();
+	OptionsPageGeneral(std::unique_ptr<settings::GeneralSettings>&& generalSettings);
+	~OptionsPageGeneral();
+
+private:
+	const std::unique_ptr<settings::GeneralSettings> _generalSettings;
 };
 
 class OptionsPageGeneralWidget final : public OptionsWidget
@@ -27,20 +36,20 @@ class OptionsPageGeneralWidget final : public OptionsWidget
 	Q_OBJECT
 
 public:
-	OptionsPageGeneralWidget(EditorContext* editorContext, QWidget* parent = nullptr);
+	OptionsPageGeneralWidget(EditorContext* editorContext, settings::GeneralSettings* generalSettings, QWidget* parent = nullptr);
 	~OptionsPageGeneralWidget();
 
 	void ApplyChanges(QSettings& settings) override;
 
-public slots:
-	void OnSaveChanges(QSettings& settings);
-
+private slots:
 	void OnResetFloorLength();
 
 private:
 	Ui_OptionsPageGeneral _ui;
 
 	EditorContext* const _editorContext;
+
+	settings::GeneralSettings* const _generalSettings;
 };
 }
 }

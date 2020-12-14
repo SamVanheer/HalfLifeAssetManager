@@ -9,11 +9,13 @@
 
 #include "ui/EditorContext.hpp"
 
-#include "ui/options/GameConfiguration.hpp"
-#include "ui/options/GameEnvironment.hpp"
 #include "ui/options/OptionsPageGameConfigurations.hpp"
+#include "ui/settings/GameConfiguration.hpp"
+#include "ui/settings/GameEnvironment.hpp"
 
 //TODO: implement automatic scanning of mods
+
+using namespace ui::settings;
 
 namespace ui::options
 {
@@ -144,44 +146,6 @@ OptionsPageGameConfigurationsWidget::~OptionsPageGameConfigurationsWidget() = de
 
 void OptionsPageGameConfigurationsWidget::ApplyChanges(QSettings& settings)
 {
-	//TODO:
-}
-
-OptionsPageGameConfigurationsWidget::ChangeSet* OptionsPageGameConfigurationsWidget::GetOrCreateGameConfigurationChangeSet(const QUuid& id)
-{
-	if (auto it = _gameConfigurationsChangeSet.find(id); it != _gameConfigurationsChangeSet.end())
-	{
-		return it->second.get();
-	}
-
-	auto it = _gameConfigurationsChangeSet.emplace(id, std::make_unique<ChangeSet>());
-
-	return it.first->second.get();
-}
-
-void OptionsPageGameConfigurationsWidget::AddGameEnvironment(std::unique_ptr<GameEnvironment>&& gameEnvironment)
-{
-	auto item = new QStandardItem(gameEnvironment->GetName());
-
-	item->setData(QVariant::fromValue(gameEnvironment.get()));
-
-	{
-		const QSignalBlocker blocker{_ui.GameEnvironmentList};
-
-		_gameEnvironmentsModel->insertRow(_gameEnvironmentsModel->rowCount(), item);
-
-		_ui.GameEnvironmentList->setCurrentIndex(item->index());
-	}
-
-	auto& ref = _gameEnvironments.emplace_back(std::move(gameEnvironment));
-
-	_ui.ActiveEnvironment->addItem(ref->GetName());
-
-	_ui.ActiveEnvironment->setEnabled(true);
-}
-
-void OptionsPageGameConfigurationsWidget::OnSaveChanges()
-{
 	for (const auto& environmentId : _gameEnvironmentsChangeSet.RemovedObjects)
 	{
 		_editorContext->RemoveGameEnvironment(environmentId);
@@ -268,6 +232,41 @@ void OptionsPageGameConfigurationsWidget::OnSaveChanges()
 	}
 
 	_editorContext->SetActiveConfiguration({activeEnvironment, activeConfiguration});
+
+	//TODO: save to settings
+}
+
+OptionsPageGameConfigurationsWidget::ChangeSet* OptionsPageGameConfigurationsWidget::GetOrCreateGameConfigurationChangeSet(const QUuid& id)
+{
+	if (auto it = _gameConfigurationsChangeSet.find(id); it != _gameConfigurationsChangeSet.end())
+	{
+		return it->second.get();
+	}
+
+	auto it = _gameConfigurationsChangeSet.emplace(id, std::make_unique<ChangeSet>());
+
+	return it.first->second.get();
+}
+
+void OptionsPageGameConfigurationsWidget::AddGameEnvironment(std::unique_ptr<GameEnvironment>&& gameEnvironment)
+{
+	auto item = new QStandardItem(gameEnvironment->GetName());
+
+	item->setData(QVariant::fromValue(gameEnvironment.get()));
+
+	{
+		const QSignalBlocker blocker{_ui.GameEnvironmentList};
+
+		_gameEnvironmentsModel->insertRow(_gameEnvironmentsModel->rowCount(), item);
+
+		_ui.GameEnvironmentList->setCurrentIndex(item->index());
+	}
+
+	auto& ref = _gameEnvironments.emplace_back(std::move(gameEnvironment));
+
+	_ui.ActiveEnvironment->addItem(ref->GetName());
+
+	_ui.ActiveEnvironment->setEnabled(true);
 }
 
 void OptionsPageGameConfigurationsWidget::OnActiveGameEnvironmentChanged(int index)

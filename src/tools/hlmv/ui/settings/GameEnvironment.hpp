@@ -10,9 +10,9 @@
 #include <QUuid>
 #include <QVariant>
 
-#include "ui/options/GameConfiguration.hpp"
+#include "ui/settings/GameConfiguration.hpp"
 
-namespace ui::options
+namespace ui::settings
 {
 /**
 *	@brief Defines a game installation along with a set of game configurations
@@ -144,4 +144,4 @@ private:
 };
 }
 
-Q_DECLARE_METATYPE(ui::options::GameEnvironment*)
+Q_DECLARE_METATYPE(ui::settings::GameEnvironment*)

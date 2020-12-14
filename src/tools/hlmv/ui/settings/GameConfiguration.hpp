@@ -4,7 +4,7 @@
 #include <QUuid>
 #include <QVariant>
 
-namespace ui::options
+namespace ui::settings
 {
 /**
 *	@brief Defines a mod
@@ -47,4 +47,4 @@ private:
 };
 }
 
-Q_DECLARE_METATYPE(ui::options::GameConfiguration*)
+Q_DECLARE_METATYPE(ui::settings::GameConfiguration*)

@@ -19,10 +19,13 @@ namespace ui
 {
 class EditorContext;
 
-namespace options
+namespace settings
 {
 class GameEnvironment;
+}
 
+namespace options
+{
 extern const QString OptionsPageGameConfigurationsId;
 
 class OptionsPageGameConfigurations final : public OptionsPage
@@ -85,10 +88,7 @@ public:
 private:
 	ChangeSet* GetOrCreateGameConfigurationChangeSet(const QUuid& id);
 
-	void AddGameEnvironment(std::unique_ptr<GameEnvironment>&& gameEnvironment);
-
-public slots:
-	void OnSaveChanges();
+	void AddGameEnvironment(std::unique_ptr<settings::GameEnvironment>&& gameEnvironment);
 
 private slots:
 	void OnActiveGameEnvironmentChanged(int index);
@@ -115,7 +115,7 @@ private:
 
 	EditorContext* const _editorContext;
 
-	std::vector<std::unique_ptr<GameEnvironment>> _gameEnvironments;
+	std::vector<std::unique_ptr<settings::GameEnvironment>> _gameEnvironments;
 
 	ChangeSet _gameEnvironmentsChangeSet;
 

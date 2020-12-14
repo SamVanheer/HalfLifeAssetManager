@@ -14,13 +14,9 @@ OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
 
 	_pages = _editorContext->GetOptionsPageRegistry()->GetPages();
 
+	for (auto page : _pages)
 	{
-		QSettings settings;
-
-		for (auto page : _pages)
-		{
-			_ui.OptionsPages->addTab(page->GetWidget(_editorContext), page->GetTitle());
-		}
+		_ui.OptionsPages->addTab(page->GetWidget(_editorContext), page->GetTitle());
 	}
 
 	connect(_ui.DialogButtons, &QDialogButtonBox::clicked, this, &OptionsDialog::OnButtonClicked);
@@ -41,12 +37,14 @@ void OptionsDialog::OnButtonClicked(QAbstractButton* button)
 	if (role == QDialogButtonBox::ButtonRole::AcceptRole ||
 		role == QDialogButtonBox::ButtonRole::ApplyRole)
 	{
-		QSettings settings;
+		auto settings = _editorContext->GetSettings();
 
 		for (auto page : _pages)
 		{
-			page->ApplyChanges(settings);
+			page->ApplyChanges(*settings);
 		}
+
+		settings->sync();
 	}
 }
 }

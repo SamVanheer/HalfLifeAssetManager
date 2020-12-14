@@ -15,9 +15,9 @@
 
 #include "ui/assets/Assets.hpp"
 
-#include "ui/options/GameConfiguration.hpp"
-#include "ui/options/GameEnvironment.hpp"
 #include "ui/options/OptionsPageRegistry.hpp"
+#include "ui/settings/GameConfiguration.hpp"
+#include "ui/settings/GameEnvironment.hpp"
 
 namespace ui
 {
@@ -30,15 +30,19 @@ LoadedAsset::LoadedAsset(std::unique_ptr<assets::Asset>&& asset, QWidget* editWi
 LoadedAsset::~LoadedAsset() = default;
 
 EditorContext::EditorContext(
+	QSettings* settings,
 	std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
 	std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent)
 	: QObject(parent)
+	, _settings(settings)
 	, _timer(new QTimer(this))
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
 	, _fileSystem(std::make_unique<filesystem::CFileSystem>())
 	, _soundSystem(std::make_unique<soundsystem::CSoundSystem>())
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
 {
+	_settings->setParent(this);
+
 	//TODO: set up filesystem based on game configuration
 	if (!_fileSystem->Initialize())
 	{
@@ -62,9 +66,9 @@ EditorContext::~EditorContext()
 	_fileSystem->Shutdown();
 }
 
-std::vector<options::GameEnvironment*> EditorContext::GetGameEnvironments() const
+std::vector<settings::GameEnvironment*> EditorContext::GetGameEnvironments() const
 {
-	std::vector<options::GameEnvironment*> environments;
+	std::vector<settings::GameEnvironment*> environments;
 
 	environments.reserve(_gameEnvironments.size());
 
@@ -76,7 +80,7 @@ std::vector<options::GameEnvironment*> EditorContext::GetGameEnvironments() cons
 	return environments;
 }
 
-options::GameEnvironment* EditorContext::GetGameEnvironmentById(const QUuid& id) const
+settings::GameEnvironment* EditorContext::GetGameEnvironmentById(const QUuid& id) const
 {
 	if (auto it = std::find_if(_gameEnvironments.begin(), _gameEnvironments.end(), [&](const auto& environment)
 		{
@@ -90,7 +94,7 @@ options::GameEnvironment* EditorContext::GetGameEnvironmentById(const QUuid& id)
 	return nullptr;
 }
 
-void EditorContext::AddGameEnvironment(std::unique_ptr<options::GameEnvironment>&& gameEnvironment)
+void EditorContext::AddGameEnvironment(std::unique_ptr<settings::GameEnvironment>&& gameEnvironment)
 {
 	assert(gameEnvironment);
 
@@ -107,7 +111,7 @@ void EditorContext::RemoveGameEnvironment(const QUuid& id)
 		}
 	); it != _gameEnvironments.end())
 	{
-		const std::unique_ptr<options::GameEnvironment> gameEnvironment{std::move(*it)};
+		const std::unique_ptr<settings::GameEnvironment> gameEnvironment{std::move(*it)};
 
 		_gameEnvironments.erase(it);
 

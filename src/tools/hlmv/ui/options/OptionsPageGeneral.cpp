@@ -1,22 +1,33 @@
+#include <cassert>
+
 #include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
+#include "ui/settings/GeneralSettings.hpp"
 
 namespace ui::options
 {
 const QString OptionsPageGeneralId{QStringLiteral("A.General")};
 
-OptionsPageGeneral::OptionsPageGeneral()
+OptionsPageGeneral::OptionsPageGeneral(std::unique_ptr<settings::GeneralSettings>&& generalSettings)
+	: _generalSettings(std::move(generalSettings))
 {
+	assert(_generalSettings);
+
 	SetId(QString{OptionsPageGeneralId});
 	SetTitle("General");
-	SetWidgetFactory([](EditorContext* editorContext) { return new OptionsPageGeneralWidget(editorContext); });
+	SetWidgetFactory([this](EditorContext* editorContext) { return new OptionsPageGeneralWidget(editorContext, _generalSettings.get()); });
 }
 
-OptionsPageGeneralWidget::OptionsPageGeneralWidget(EditorContext* editorContext, QWidget* parent)
+OptionsPageGeneral::~OptionsPageGeneral() = default;
+
+OptionsPageGeneralWidget::OptionsPageGeneralWidget(EditorContext* editorContext, settings::GeneralSettings* generalSettings, QWidget* parent)
 	: OptionsWidget(parent)
 	, _editorContext(editorContext)
+	, _generalSettings(generalSettings)
 {
 	_ui.setupUi(this);
+
+	_ui.UseSingleInstance->setChecked(_generalSettings->ShouldUseSingleInstance());
 
 	_ui.FloorLengthSlider->setRange(_editorContext->MinimumFloorLength, _editorContext->MaximumFloorLength);
 	_ui.FloorLengthSpinner->setRange(_editorContext->MinimumFloorLength, _editorContext->MaximumFloorLength);
@@ -33,16 +44,11 @@ OptionsPageGeneralWidget::~OptionsPageGeneralWidget() = default;
 
 void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 {
+	_generalSettings->SetUseSingleInstance(_ui.UseSingleInstance->isChecked());
 	_editorContext->SetFloorLength(_ui.FloorLengthSlider->value());
 
 	//TODO: save to settings object
-}
-
-void OptionsPageGeneralWidget::OnSaveChanges(QSettings& settings)
-{
-	_editorContext->SetFloorLength(_ui.FloorLengthSlider->value());
-
-	//TODO: save to settings object
+	_generalSettings->SaveSettings(settings);
 }
 
 void OptionsPageGeneralWidget::OnResetFloorLength()

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <QObject>
+#include <QSettings>
 #include <QTimer>
 #include <QUuid>
 
@@ -28,9 +29,13 @@ class IAssetProviderRegistry;
 
 namespace options
 {
+class OptionsPageRegistry;
+}
+
+namespace settings
+{
 class GameConfiguration;
 class GameEnvironment;
-class OptionsPageRegistry;
 }
 
 class LoadedAsset
@@ -67,11 +72,14 @@ public:
 	static constexpr int DefaultFloorLength = 100;
 
 	EditorContext(
+		QSettings* settings,
 		std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
 		std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent = nullptr);
 	~EditorContext();
 	EditorContext(const EditorContext&) = delete;
 	EditorContext& operator=(const EditorContext&) = delete;
+
+	QSettings* GetSettings() const { return _settings; }
 
 	QTimer* GetTimer() const { return _timer; }
 
@@ -85,17 +93,17 @@ public:
 
 	std::vector<LoadedAsset>& GetLoadedAssets() { return _loadedAssets; }
 
-	std::vector<options::GameEnvironment*> GetGameEnvironments() const;
+	std::vector<settings::GameEnvironment*> GetGameEnvironments() const;
 
-	options::GameEnvironment* GetGameEnvironmentById(const QUuid& id) const;
+	settings::GameEnvironment* GetGameEnvironmentById(const QUuid& id) const;
 
-	void AddGameEnvironment(std::unique_ptr<options::GameEnvironment>&& gameEnvironment);
+	void AddGameEnvironment(std::unique_ptr<settings::GameEnvironment>&& gameEnvironment);
 
 	void RemoveGameEnvironment(const QUuid& id);
 
-	std::pair<options::GameEnvironment*, options::GameConfiguration*> GetActiveConfiguration() const { return _activeConfiguration; }
+	std::pair<settings::GameEnvironment*, settings::GameConfiguration*> GetActiveConfiguration() const { return _activeConfiguration; }
 
-	void SetActiveConfiguration(const std::pair<options::GameEnvironment*, options::GameConfiguration*>& configuration)
+	void SetActiveConfiguration(const std::pair<settings::GameEnvironment*, settings::GameConfiguration*>& configuration)
 	{
 		if (_activeConfiguration != configuration)
 		{
@@ -115,11 +123,11 @@ signals:
 	*/
 	void Tick();
 
-	void GameEnvironmentAdded(options::GameEnvironment* gameEnvironment);
-	void GameEnvironmentRemoved(options::GameEnvironment* gameEnvironment);
+	void GameEnvironmentAdded(settings::GameEnvironment* gameEnvironment);
+	void GameEnvironmentRemoved(settings::GameEnvironment* gameEnvironment);
 
-	void ActiveConfigurationChanged(const std::pair<options::GameEnvironment*, options::GameConfiguration*>& current,
-		const std::pair<options::GameEnvironment*, options::GameConfiguration*>& previous);
+	void ActiveConfigurationChanged(const std::pair<settings::GameEnvironment*, settings::GameConfiguration*>& current,
+		const std::pair<settings::GameEnvironment*, settings::GameConfiguration*>& previous);
 
 	void FloorLengthChanged(int length);
 
@@ -138,6 +146,7 @@ private slots:
 	void OnTimerTick();
 
 private:
+	QSettings* const _settings;
 	QTimer* const _timer;
 
 	const std::unique_ptr<options::OptionsPageRegistry> _optionsPageRegistry;
@@ -150,9 +159,9 @@ private:
 	std::vector<LoadedAsset> _loadedAssets;
 
 	//TODO: game environments should be moved to a separate collection type
-	std::vector<std::unique_ptr<options::GameEnvironment>> _gameEnvironments;
+	std::vector<std::unique_ptr<settings::GameEnvironment>> _gameEnvironments;
 
-	std::pair<options::GameEnvironment*, options::GameConfiguration*> _activeConfiguration{};
+	std::pair<settings::GameEnvironment*, settings::GameConfiguration*> _activeConfiguration{};
 
 	int _floorLength = DefaultFloorLength;
 };

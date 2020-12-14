@@ -1,7 +1,5 @@
 target_sources(HLMV
 	PRIVATE
-		GameConfiguration.hpp
-		GameEnvironment.hpp
 		OptionsDialog.cpp
 		OptionsDialog.hpp
 		OptionsDialog.ui
