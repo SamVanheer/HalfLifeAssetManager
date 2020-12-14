@@ -1,10 +1,5 @@
 #include <QBoxLayout>
 
-#include "entity/CHLMVStudioModelEntity.h"
-
-#include "game/entity/CBaseEntity.h"
-#include "game/entity/CBaseEntityList.h"
-#include "game/entity/CEntityManager.h"
 #include "graphics/Scene.hpp"
 
 #include "ui/EditorContext.hpp"
@@ -28,33 +23,16 @@
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperator.hpp"
 
-#include "ui/settings/StudioModelSettings.hpp"
-
 namespace ui::assets::studiomodel
 {
 StudioModelEditWidget::StudioModelEditWidget(
-	EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings, StudioModelAsset* asset, QWidget* parent)
+	EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
 {
 	const auto scene = _asset->GetScene();
 
 	_asset->PushInputSink(this);
-
-	//TODO: should be moved to asset
-	scene->FloorLength = studioModelSettings->GetFloorLength();
-
-	auto entity = static_cast<CHLMVStudioModelEntity*>(scene->GetEntityContext()->EntityManager->Create("studiomodel", scene->GetEntityContext(),
-		glm::vec3(), glm::vec3(), false));
-
-	if (nullptr != entity)
-	{
-		entity->SetModel(asset->GetStudioModel());
-
-		entity->Spawn();
-
-		scene->SetEntity(entity);
-	}
 
 	_cameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>();
 
@@ -114,14 +92,9 @@ StudioModelEditWidget::StudioModelEditWidget(
 		_controlAreaWidget->setLayout(controlAreaLayout);
 	}
 
-	//TODO: need to initialize the background color to its default value here, as specified in the options dialog
-	_asset->SetBackgroundColor({63, 127, 127});
-
 	//Listen to the main timer to update as needed
 	connect(editorContext, &EditorContext::Tick, this, &StudioModelEditWidget::OnTick);
 	connect(_sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelEditWidget::OnSceneWidgetMouseEvent);
-	//TODO: should be moved to asset
-	connect(studioModelSettings, &settings::StudioModelSettings::FloorLengthChanged, this, &StudioModelEditWidget::OnFloorLengthChanged);
 
 	connect(_dockPanels, &QTabWidget::currentChanged, this, &StudioModelEditWidget::OnTabChanged);
 
@@ -134,7 +107,10 @@ StudioModelEditWidget::StudioModelEditWidget(
 	connect(this, &StudioModelEditWidget::DockPanelChanged, hitboxesPanel, &StudioModelHitboxesPanel::OnDockPanelChanged);
 }
 
-StudioModelEditWidget::~StudioModelEditWidget() = default;
+StudioModelEditWidget::~StudioModelEditWidget()
+{
+	_asset->PopInputSink();
+}
 
 void StudioModelEditWidget::OnMouseEvent(QMouseEvent* event)
 {
@@ -156,11 +132,6 @@ void StudioModelEditWidget::OnSceneWidgetMouseEvent(QMouseEvent* event)
 	{
 		inputSink->OnMouseEvent(event);
 	}
-}
-
-void StudioModelEditWidget::OnFloorLengthChanged(int length)
-{
-	_sceneWidget->GetScene()->FloorLength = length;
 }
 
 void StudioModelEditWidget::OnTabChanged(int index)

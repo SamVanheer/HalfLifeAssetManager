@@ -77,6 +77,8 @@ public slots:
 		_scene->SetBackgroundColor({color.redF(), color.greenF(), color.blueF()});
 	}
 
+	void OnFloorLengthChanged(int length);
+
 private:
 	EditorContext* const _editorContext;
 	const StudioModelAssetProvider* const _provider;

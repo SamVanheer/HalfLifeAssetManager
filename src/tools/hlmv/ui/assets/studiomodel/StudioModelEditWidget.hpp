@@ -23,11 +23,6 @@ namespace camera_operators
 class CameraOperator;
 }
 
-namespace settings
-{
-class StudioModelSettings;
-}
-
 namespace assets::studiomodel
 {
 class StudioModelAsset;
@@ -38,7 +33,7 @@ class StudioModelEditWidget final : public QWidget, public IInputSink
 	Q_OBJECT
 
 public:
-	StudioModelEditWidget(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings, StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelEditWidget();
 
 	StudioModelAsset* GetAsset() const { return _asset; }
@@ -52,8 +47,6 @@ private slots:
 	void OnTick();
 
 	void OnSceneWidgetMouseEvent(QMouseEvent* event);
-
-	void OnFloorLengthChanged(int length);
 
 	void OnTabChanged(int index);
 

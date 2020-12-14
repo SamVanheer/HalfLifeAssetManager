@@ -1,12 +1,20 @@
 #include <stdexcept>
 
+#include "entity/CHLMVStudioModelEntity.h"
+#include "game/entity/CBaseEntity.h"
+#include "game/entity/CBaseEntityList.h"
+#include "game/entity/CEntityManager.h"
+
 #include "graphics/Scene.hpp"
 
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/SceneWidget.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
+
+#include "ui/settings/StudioModelSettings.hpp"
 
 namespace ui::assets::studiomodel
 {
@@ -18,13 +26,30 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _studioModel(std::move(studioModel))
 	, _scene(std::make_unique<graphics::Scene>(editorContext->GetSoundSystem()))
 {
+	//TODO: need to initialize the background color to its default value here, as specified in the options dialog
+	SetBackgroundColor({63, 127, 127});
+	_scene->FloorLength = _provider->GetSettings()->GetFloorLength();
+
+	auto entity = static_cast<CHLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
+		glm::vec3(), glm::vec3(), false));
+
+	if (nullptr != entity)
+	{
+		entity->SetModel(GetStudioModel());
+
+		entity->Spawn();
+
+		_scene->SetEntity(entity);
+	}
+
+	connect(_provider->GetSettings(), &settings::StudioModelSettings::FloorLengthChanged, this, &StudioModelAsset::OnFloorLengthChanged);
 }
 
 StudioModelAsset::~StudioModelAsset() = default;
 
 QWidget* StudioModelAsset::CreateEditWidget(EditorContext* editorContext)
 {
-	return new StudioModelEditWidget(editorContext, _provider->GetSettings(), this);
+	return new StudioModelEditWidget(editorContext, this);
 }
 
 void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget)
@@ -42,6 +67,11 @@ void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, Fulls
 void StudioModelAsset::Save(const QString& fileName)
 {
 	_provider->Save(fileName, *this);
+}
+
+void StudioModelAsset::OnFloorLengthChanged(int length)
+{
+	_scene->FloorLength = length;
 }
 
 bool StudioModelAssetProvider::CanLoad(const QString& fileName) const
