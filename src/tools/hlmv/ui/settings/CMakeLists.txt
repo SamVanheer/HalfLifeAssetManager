@@ -3,4 +3,5 @@ target_sources(HLMV
 		GameConfiguration.hpp
 		GameEnvironment.hpp
 		GeneralSettings.hpp
+		RecentFilesSettings.hpp
 		StudioModelSettings.hpp)

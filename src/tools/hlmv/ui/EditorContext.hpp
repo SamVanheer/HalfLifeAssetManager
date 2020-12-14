@@ -37,6 +37,7 @@ namespace settings
 class GameConfiguration;
 class GameEnvironment;
 class GeneralSettings;
+class RecentFilesSettings;
 }
 
 class LoadedAsset
@@ -71,6 +72,7 @@ public:
 	EditorContext(
 		QSettings* settings,
 		const std::shared_ptr<settings::GeneralSettings>& generalSettings,
+		const std::shared_ptr<settings::RecentFilesSettings>& recentFilesSettings,
 		std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
 		std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent = nullptr);
 	~EditorContext();
@@ -80,6 +82,8 @@ public:
 	QSettings* GetSettings() const { return _settings; }
 
 	settings::GeneralSettings* GetGeneralSettings() const { return _generalSettings.get(); }
+
+	settings::RecentFilesSettings* GetRecentFiles() const { return _recentFilesSettings.get(); }
 
 	QTimer* GetTimer() const { return _timer; }
 
@@ -134,6 +138,7 @@ private:
 	QSettings* const _settings;
 
 	const std::shared_ptr<settings::GeneralSettings> _generalSettings;
+	const std::shared_ptr<settings::RecentFilesSettings> _recentFilesSettings;
 
 	QTimer* const _timer;
 

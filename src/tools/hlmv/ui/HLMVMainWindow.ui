@@ -33,8 +33,15 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="MenuRecentFiles">
+     <property name="title">
+      <string>Recent Files</string>
+     </property>
+    </widget>
     <addaction name="ActionLoad"/>
     <addaction name="ActionSave"/>
+    <addaction name="separator"/>
+    <addaction name="MenuRecentFiles"/>
    </widget>
    <widget class="QMenu" name="MenuHelp">
     <property name="title">

@@ -27,12 +27,16 @@ public:
 	HLMVMainWindow(EditorContext* editorContext);
 	~HLMVMainWindow();
 
-	void TryLoadAsset(const QString& fileName);
+	bool TryLoadAsset(const QString& fileName);
 
 private:
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
 
 private slots:
+	void OnRecentFilesChanged();
+
+	void OnOpenRecentFile();
+
 	void OnAssetCleanChanged(bool clean);
 
 	void OnAssetTabChanged(int index);

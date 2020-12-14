@@ -20,6 +20,7 @@
 #include "ui/settings/GameConfiguration.hpp"
 #include "ui/settings/GameEnvironment.hpp"
 #include "ui/settings/GeneralSettings.hpp"
+#include "ui/settings/RecentFilesSettings.hpp"
 
 namespace ui
 {
@@ -34,11 +35,13 @@ LoadedAsset::~LoadedAsset() = default;
 EditorContext::EditorContext(
 	QSettings* settings,
 	const std::shared_ptr<settings::GeneralSettings>& generalSettings,
+	const std::shared_ptr<settings::RecentFilesSettings>& recentFilesSettings,
 	std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
 	std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent)
 	: QObject(parent)
 	, _settings(settings)
 	, _generalSettings(generalSettings)
+	, _recentFilesSettings(recentFilesSettings)
 	, _timer(new QTimer(this))
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
 	, _fileSystem(std::make_unique<filesystem::CFileSystem>())

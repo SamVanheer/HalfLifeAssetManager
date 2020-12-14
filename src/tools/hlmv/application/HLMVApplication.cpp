@@ -25,6 +25,7 @@
 #include "ui/options/OptionsPageStudioModel.hpp"
 
 #include "ui/settings/GeneralSettings.hpp"
+#include "ui/settings/RecentFilesSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
 int HLMVApplication::Run(int argc, char* argv[])
@@ -67,11 +68,13 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 	auto settings{std::make_unique<QSettings>()};
 
-	auto generalSettings{std::make_shared<ui::settings::GeneralSettings>()};
+	const auto generalSettings{std::make_shared<ui::settings::GeneralSettings>()};
+	const auto recentFilesSettings{std::make_shared<ui::settings::RecentFilesSettings>()};
 	const auto studioModelSettings{std::make_shared<ui::settings::StudioModelSettings>()};
 
 	//TODO: load settings
 	generalSettings->LoadSettings(*settings);
+	recentFilesSettings->LoadSettings(*settings);
 	studioModelSettings->LoadSettings(*settings);
 
 	QString fileName;
@@ -105,7 +108,7 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 	auto optionsPageRegistry{std::make_unique<ui::options::OptionsPageRegistry>()};
 
-	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGeneral>(generalSettings));
+	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGeneral>(generalSettings, recentFilesSettings));
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGameConfigurations>());
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageStudioModel>(studioModelSettings));
 
@@ -113,7 +116,8 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 	assetProviderRegistry->AddProvider(std::make_unique<ui::assets::studiomodel::StudioModelAssetProvider>(studioModelSettings));
 
-	_editorContext = new ui::EditorContext(settings.release(), generalSettings, std::move(optionsPageRegistry), std::move(assetProviderRegistry), this);
+	_editorContext = new ui::EditorContext(
+		settings.release(), generalSettings, recentFilesSettings, std::move(optionsPageRegistry), std::move(assetProviderRegistry), this);
 
 	_mainWindow = new ui::HLMVMainWindow(_editorContext);
 
@@ -130,6 +134,12 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 void HLMVApplication::OnExit()
 {
+	const auto settings = _editorContext->GetSettings();
+
+	_editorContext->GetRecentFiles()->SaveSettings(*settings);
+
+	settings->sync();
+
 	_mainWindow = nullptr;
 
 	if (_singleInstance)

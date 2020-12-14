@@ -9,10 +9,12 @@
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/HLMVMainWindow.hpp"
-#include "ui/assets/Assets.hpp"
-#include "ui/options/OptionsDialog.hpp"
 
+#include "ui/assets/Assets.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
+
+#include "ui/options/OptionsDialog.hpp"
+#include "ui/settings/RecentFilesSettings.hpp"
 
 namespace ui
 {
@@ -49,6 +51,8 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	connect(_ui.ActionOptions, &QAction::triggered, this, &HLMVMainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &HLMVMainWindow::OnShowAbout);
 
+	connect(_editorContext->GetRecentFiles(), &settings::RecentFilesSettings::RecentFilesChanged, this, &HLMVMainWindow::OnRecentFilesChanged);
+
 	connect(_undoGroup, &QUndoGroup::cleanChanged, this, &HLMVMainWindow::OnAssetCleanChanged);
 
 	connect(_assetTabs, &QTabWidget::currentChanged, this, &HLMVMainWindow::OnAssetTabChanged);
@@ -57,11 +61,13 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	_assetTabs->setVisible(false);
 
 	_editorContext->GetTimer()->start(0);
+
+	OnRecentFilesChanged();
 }
 
 HLMVMainWindow::~HLMVMainWindow() = default;
 
-void HLMVMainWindow::TryLoadAsset(const QString& fileName)
+bool HLMVMainWindow::TryLoadAsset(const QString& fileName)
 {
 	//TODO: needs error handling
 	auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName);
@@ -82,13 +88,45 @@ void HLMVMainWindow::TryLoadAsset(const QString& fileName)
 
 		_assetTabs->setVisible(true);
 		_ui.ActionFullscreen->setEnabled(true);
+
+		_editorContext->GetRecentFiles()->Add(fileName);
+
+		return true;
 	}
+
+	return false;
 }
 
 void HLMVMainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
 {
 	setWindowTitle(QString{"%1[*]"}.arg(fileName));
 	setWindowModified(hasUnsavedChanges);
+}
+
+void HLMVMainWindow::OnRecentFilesChanged()
+{
+	const auto recentFiles = _editorContext->GetRecentFiles();
+
+	_ui.MenuRecentFiles->clear();
+
+	for (int i = 0; i < recentFiles->GetCount(); ++i)
+	{
+		_ui.MenuRecentFiles->addAction(recentFiles->At(i), this, &HLMVMainWindow::OnOpenRecentFile);
+	}
+
+	_ui.MenuRecentFiles->setEnabled(recentFiles->GetCount() > 0);
+}
+
+void HLMVMainWindow::OnOpenRecentFile()
+{
+	const auto action = static_cast<QAction*>(sender());
+
+	const QString fileName{action->text()};
+
+	if (!TryLoadAsset(fileName))
+	{
+		_editorContext->GetRecentFiles()->Remove(fileName);
+	}
 }
 
 void HLMVMainWindow::OnAssetCleanChanged(bool clean)

@@ -6,29 +6,55 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>121</height>
+    <width>454</width>
+    <height>221</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="0">
-    <widget class="QCheckBox" name="InvertMouseX">
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
-      <string>Invert X Axis</string>
+      <string>Maximum Recent Files (0 for unlimited):</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
+   <item row="1" column="1">
+    <widget class="QSpinBox" name="MaxRecentFiles">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="Line" name="line">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
     <widget class="QCheckBox" name="UseSingleInstance">
      <property name="text">
       <string>Use single instance</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="3" column="0" colspan="2">
     <widget class="QLabel" name="label">
      <property name="font">
       <font>
@@ -43,14 +69,21 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+   <item row="4" column="0" colspan="2">
+    <widget class="QCheckBox" name="InvertMouseX">
+     <property name="text">
+      <string>Invert X Axis</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="5" column="0" colspan="2">
+    <widget class="QCheckBox" name="InvertMouseY">
+     <property name="text">
+      <string>Invert Y Axis</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="2">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -62,13 +95,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="4" column="0">
-    <widget class="QCheckBox" name="InvertMouseY">
-     <property name="text">
-      <string>Invert Y Axis</string>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>
