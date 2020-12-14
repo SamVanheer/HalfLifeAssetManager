@@ -19,6 +19,7 @@ using namespace ui::settings;
 
 namespace ui::options
 {
+const QString OptionsPageGameConfigurationsCategory{QStringLiteral("T.GameConfigurations")};
 const QString OptionsPageGameConfigurationsId{QStringLiteral("T.GameConfigurations")};
 
 constexpr int GameConfigurationNameColumn = 0;
@@ -52,8 +53,10 @@ static QString GenerateUniqueName(const QString& baseName, const Container& cont
 
 OptionsPageGameConfigurations::OptionsPageGameConfigurations()
 {
+	SetCategory(QString{OptionsPageGameConfigurationsCategory});
+	SetCategoryTitle("Game Configurations");
 	SetId(QString{OptionsPageGameConfigurationsId});
-	SetTitle("Game Configurations");
+	SetPageTitle("Game Configurations");
 	SetWidgetFactory([](EditorContext* editorContext) {return new OptionsPageGameConfigurationsWidget(editorContext); });
 }
 

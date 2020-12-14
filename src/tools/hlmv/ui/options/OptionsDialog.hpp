@@ -23,6 +23,8 @@ public:
 	~OptionsDialog();
 
 private slots:
+	void OnPageSelected(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+
 	void OnButtonClicked(QAbstractButton* button);
 
 private:

@@ -37,9 +37,13 @@ public:
 
 	virtual ~OptionsPage() = default;
 
+	QString GetCategory() const { return _category; }
+
+	QString GetCategoryTitle() const { return _categoryTitle; }
+
 	QString GetId() const { return _id; }
 
-	QString GetTitle() const { return _title; }
+	QString GetPageTitle() const { return _pageTitle; }
 
 	virtual QWidget* GetWidget(EditorContext* editorContext);
 
@@ -48,14 +52,24 @@ public:
 	virtual void DestroyWidget();
 
 protected:
+	void SetCategory(QString&& category)
+	{
+		_category = std::move(category);
+	}
+
+	void SetCategoryTitle(QString&& title)
+	{
+		_categoryTitle = std::move(title);
+	}
+
 	void SetId(QString&& id)
 	{
 		_id = std::move(id);
 	}
 
-	void SetTitle(QString&& title)
+	void SetPageTitle(QString&& title)
 	{
-		_title = std::move(title);
+		_pageTitle = std::move(title);
 	}
 
 	void SetWidgetFactory(WidgetFactory&& factory)
@@ -64,8 +78,10 @@ protected:
 	}
 
 protected:
+	QString _category;
+	QString _categoryTitle;
 	QString _id;
-	QString _title;
+	QString _pageTitle;
 
 	WidgetFactory _widgetFactory;
 	QPointer<OptionsWidget> _widget;

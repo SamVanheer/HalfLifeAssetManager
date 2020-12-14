@@ -10,6 +10,11 @@ namespace ui::options
 {
 static bool ComparePages(const std::unique_ptr<OptionsPage>& lhs, const std::unique_ptr<OptionsPage>& rhs)
 {
+	if (lhs->GetCategory() != rhs->GetCategory())
+	{
+		return lhs->GetCategory().compare(rhs->GetCategory(), Qt::CaseSensitivity::CaseInsensitive) < 0;
+	}
+
 	return lhs->GetId().compare(rhs->GetId(), Qt::CaseSensitivity::CaseInsensitive) < 0;
 }
 
@@ -53,6 +58,30 @@ std::vector<OptionsPage*> OptionsPageRegistry::GetPages()
 void OptionsPageRegistry::AddPage(std::unique_ptr<OptionsPage>&& page)
 {
 	assert(page);
+
+	if (page->GetId().isEmpty())
+	{
+		qDebug() << "Options pages must have an id";
+		return;
+	}
+
+	if (page->GetCategory().isEmpty())
+	{
+		qDebug() << "The options page with id \"" << page->GetId() << "\" has no category";
+		return;
+	}
+
+	if (page->GetCategoryTitle().isEmpty())
+	{
+		qDebug() << "The options page with id \"" << page->GetId() << "\" has no category title";
+		return;
+	}
+
+	if (page->GetPageTitle().isEmpty())
+	{
+		qDebug() << "The options page with id \"" << page->GetId() << "\" has no page title";
+		return;
+	}
 
 	if (GetPageById(page->GetId()))
 	{

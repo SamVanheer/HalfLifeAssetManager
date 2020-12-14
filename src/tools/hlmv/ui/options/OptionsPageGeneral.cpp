@@ -6,6 +6,7 @@
 
 namespace ui::options
 {
+const QString OptionsPageGeneralCategory{QStringLiteral("A.General")};
 const QString OptionsPageGeneralId{QStringLiteral("A.General")};
 
 OptionsPageGeneral::OptionsPageGeneral(std::unique_ptr<settings::GeneralSettings>&& generalSettings)
@@ -13,8 +14,10 @@ OptionsPageGeneral::OptionsPageGeneral(std::unique_ptr<settings::GeneralSettings
 {
 	assert(_generalSettings);
 
+	SetCategory(QString{OptionsPageGeneralCategory});
+	SetCategoryTitle("General");
 	SetId(QString{OptionsPageGeneralId});
-	SetTitle("General");
+	SetPageTitle("General");
 	SetWidgetFactory([this](EditorContext* editorContext) { return new OptionsPageGeneralWidget(editorContext, _generalSettings.get()); });
 }
 
