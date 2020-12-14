@@ -11,11 +11,15 @@
 
 #include "graphics/Scene.hpp"
 
+#include "ui/IInputSink.hpp"
 #include "ui/assets/Assets.hpp"
 
 namespace ui
 {
-class IInputSink;
+namespace camera_operators
+{
+class CameraOperator;
+}
 
 namespace settings
 {
@@ -26,7 +30,7 @@ namespace assets::studiomodel
 {
 class StudioModelAssetProvider;
 
-class StudioModelAsset final : public Asset
+class StudioModelAsset final : public Asset, public IInputSink
 {
 	Q_OBJECT
 
@@ -47,6 +51,8 @@ public:
 	void SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget) override;
 
 	void Save(const QString& fileName) override;
+
+	void OnMouseEvent(QMouseEvent* event) override;
 
 	EditorContext* GetEditorContext() { return _editorContext; }
 
@@ -72,6 +78,8 @@ signals:
 	void Tick();
 
 public slots:
+	void OnSceneWidgetMouseEvent(QMouseEvent* event);
+
 	void SetBackgroundColor(QColor color)
 	{
 		_scene->SetBackgroundColor({color.redF(), color.greenF(), color.blueF()});
@@ -86,6 +94,8 @@ private:
 	const std::unique_ptr<graphics::Scene> _scene;
 
 	std::stack<IInputSink*> _inputSinks;
+	//TODO: temporary; will need to be set up somewhere else eventually
+	std::unique_ptr<camera_operators::CameraOperator> _cameraOperator;
 };
 
 class StudioModelAssetProvider final : public IAssetProvider

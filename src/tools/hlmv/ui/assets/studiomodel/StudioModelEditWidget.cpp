@@ -20,9 +20,6 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
 
-#include "ui/camera_operators/ArcBallCameraOperator.hpp"
-#include "ui/camera_operators/CameraOperator.hpp"
-
 namespace ui::assets::studiomodel
 {
 StudioModelEditWidget::StudioModelEditWidget(
@@ -31,10 +28,6 @@ StudioModelEditWidget::StudioModelEditWidget(
 	, _asset(asset)
 {
 	const auto scene = _asset->GetScene();
-
-	_asset->PushInputSink(this);
-
-	_cameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>();
 
 	_sceneWidget = new SceneWidget(scene, this);
 
@@ -94,7 +87,6 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	//Listen to the main timer to update as needed
 	connect(editorContext, &EditorContext::Tick, this, &StudioModelEditWidget::OnTick);
-	connect(_sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelEditWidget::OnSceneWidgetMouseEvent);
 
 	connect(_dockPanels, &QTabWidget::currentChanged, this, &StudioModelEditWidget::OnTabChanged);
 
@@ -107,15 +99,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	connect(this, &StudioModelEditWidget::DockPanelChanged, hitboxesPanel, &StudioModelHitboxesPanel::OnDockPanelChanged);
 }
 
-StudioModelEditWidget::~StudioModelEditWidget()
-{
-	_asset->PopInputSink();
-}
-
-void StudioModelEditWidget::OnMouseEvent(QMouseEvent* event)
-{
-	_cameraOperator->MouseEvent(*_sceneWidget->GetScene()->GetCamera(), *event);
-}
+StudioModelEditWidget::~StudioModelEditWidget() = default;
 
 void StudioModelEditWidget::OnTick()
 {
@@ -124,14 +108,6 @@ void StudioModelEditWidget::OnTick()
 	_sceneWidget->requestUpdate();
 
 	emit _asset->Tick();
-}
-
-void StudioModelEditWidget::OnSceneWidgetMouseEvent(QMouseEvent* event)
-{
-	if (auto inputSink = _asset->GetInputSink(); inputSink)
-	{
-		inputSink->OnMouseEvent(event);
-	}
 }
 
 void StudioModelEditWidget::OnTabChanged(int index)

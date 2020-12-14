@@ -14,6 +14,9 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
+#include "ui/camera_operators/ArcBallCameraOperator.hpp"
+#include "ui/camera_operators/CameraOperator.hpp"
+
 #include "ui/settings/StudioModelSettings.hpp"
 
 namespace ui::assets::studiomodel
@@ -26,6 +29,8 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _studioModel(std::move(studioModel))
 	, _scene(std::make_unique<graphics::Scene>(editorContext->GetSoundSystem()))
 {
+	PushInputSink(this);
+
 	//TODO: need to initialize the background color to its default value here, as specified in the options dialog
 	SetBackgroundColor({63, 127, 127});
 	_scene->FloorLength = _provider->GetSettings()->GetFloorLength();
@@ -42,14 +47,23 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_scene->SetEntity(entity);
 	}
 
+	_cameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>();
+
 	connect(_provider->GetSettings(), &settings::StudioModelSettings::FloorLengthChanged, this, &StudioModelAsset::OnFloorLengthChanged);
 }
 
-StudioModelAsset::~StudioModelAsset() = default;
+StudioModelAsset::~StudioModelAsset()
+{
+	PopInputSink();
+}
 
 QWidget* StudioModelAsset::CreateEditWidget(EditorContext* editorContext)
 {
-	return new StudioModelEditWidget(editorContext, this);
+	auto editWidget = new StudioModelEditWidget(editorContext, this);
+
+	editWidget->connect(editWidget->GetSceneWidget(), &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
+
+	return editWidget;
 }
 
 void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget)
@@ -59,6 +73,7 @@ void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, Fulls
 	fullscreenWidget->setCentralWidget(sceneWidget->GetContainer());
 
 	sceneWidget->connect(editorContext, &EditorContext::Tick, sceneWidget, &SceneWidget::requestUpdate);
+	sceneWidget->connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
 
 	//Filter key events on the scene widget so we can capture exit even if it has focus
 	sceneWidget->installEventFilter(fullscreenWidget);
@@ -67,6 +82,19 @@ void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, Fulls
 void StudioModelAsset::Save(const QString& fileName)
 {
 	_provider->Save(fileName, *this);
+}
+
+void StudioModelAsset::OnMouseEvent(QMouseEvent* event)
+{
+	_cameraOperator->MouseEvent(*_scene->GetCamera(), *event);
+}
+
+void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
+{
+	if (!_inputSinks.empty())
+	{
+		_inputSinks.top()->OnMouseEvent(event);
+	}
 }
 
 void StudioModelAsset::OnFloorLengthChanged(int length)

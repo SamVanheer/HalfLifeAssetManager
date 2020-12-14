@@ -5,7 +5,6 @@
 #include <QTabWidget>
 #include <QWidget>
 
-#include "ui/IInputSink.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
 namespace graphics
@@ -18,17 +17,12 @@ namespace ui
 class EditorContext;
 class SceneWidget;
 
-namespace camera_operators
-{
-class CameraOperator;
-}
-
 namespace assets::studiomodel
 {
 class StudioModelAsset;
 class Timeline;
 
-class StudioModelEditWidget final : public QWidget, public IInputSink
+class StudioModelEditWidget final : public QWidget
 {
 	Q_OBJECT
 
@@ -38,15 +32,13 @@ public:
 
 	StudioModelAsset* GetAsset() const { return _asset; }
 
-	void OnMouseEvent(QMouseEvent* event) override;
+	SceneWidget* GetSceneWidget() const { return _sceneWidget; }
 
 signals:
 	void DockPanelChanged(QWidget* current, QWidget* previous);
 
 private slots:
 	void OnTick();
-
-	void OnSceneWidgetMouseEvent(QMouseEvent* event);
 
 	void OnTabChanged(int index);
 
@@ -62,9 +54,6 @@ private:
 	QWidget* _currentTab{};
 
 	Timeline* _timeline;
-
-	//TODO: temporary; will need to be set up somewhere else eventually
-	std::unique_ptr<camera_operators::CameraOperator> _cameraOperator;
 };
 }
 }
