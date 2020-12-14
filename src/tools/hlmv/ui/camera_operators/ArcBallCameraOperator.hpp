@@ -13,7 +13,7 @@ public:
 	ArcBallCameraOperator() = default;
 	~ArcBallCameraOperator() = default;
 
-	void MouseEvent(graphics::CCamera& camera, QMouseEvent& event) override
+	void MouseEvent(const settings::GeneralSettings& generalSettings, graphics::CCamera& camera, QMouseEvent& event) override
 	{
 		//TODO: needs all of the original functionality to be reimplemented
 		switch (event.type())
@@ -48,6 +48,16 @@ public:
 					auto horizontalAdjust = static_cast<float>(event.x() - _oldCoordinates.x);
 					auto verticalAdjust = static_cast<float>(event.y() - _oldCoordinates.y);
 
+					if (generalSettings.ShouldInvertMouseX())
+					{
+						horizontalAdjust = -horizontalAdjust;
+					}
+
+					if (generalSettings.ShouldInvertMouseY())
+					{
+						verticalAdjust = -verticalAdjust;
+					}
+
 					vecViewDir.y += horizontalAdjust;
 					vecViewDir.x += verticalAdjust;
 
@@ -58,7 +68,14 @@ public:
 				}
 				else if (event.buttons() & Qt::MouseButton::RightButton)
 				{
-					camera.GetOrigin().y += static_cast<float>(event.y() - _oldCoordinates.y);
+					auto adjust = static_cast<float>(event.y() - _oldCoordinates.y);
+
+					if (generalSettings.ShouldInvertMouseY())
+					{
+						adjust = -adjust;
+					}
+
+					camera.GetOrigin().y += adjust;
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();

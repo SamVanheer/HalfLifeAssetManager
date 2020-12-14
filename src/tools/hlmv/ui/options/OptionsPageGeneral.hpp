@@ -24,11 +24,11 @@ extern const QString OptionsPageGeneralId;
 class OptionsPageGeneral : public OptionsPage
 {
 public:
-	OptionsPageGeneral(std::unique_ptr<settings::GeneralSettings>&& generalSettings);
+	OptionsPageGeneral(const std::shared_ptr<settings::GeneralSettings>& generalSettings);
 	~OptionsPageGeneral();
 
 private:
-	const std::unique_ptr<settings::GeneralSettings> _generalSettings;
+	const std::shared_ptr<settings::GeneralSettings> _generalSettings;
 };
 
 class OptionsPageGeneralWidget final : public OptionsWidget

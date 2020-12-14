@@ -86,7 +86,7 @@ void StudioModelAsset::Save(const QString& fileName)
 
 void StudioModelAsset::OnMouseEvent(QMouseEvent* event)
 {
-	_cameraOperator->MouseEvent(*_scene->GetCamera(), *event);
+	_cameraOperator->MouseEvent(*_editorContext->GetGeneralSettings(), *_scene->GetCamera(), *event);
 }
 
 void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)

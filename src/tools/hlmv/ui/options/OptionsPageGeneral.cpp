@@ -9,8 +9,8 @@ namespace ui::options
 const QString OptionsPageGeneralCategory{QStringLiteral("A.General")};
 const QString OptionsPageGeneralId{QStringLiteral("A.General")};
 
-OptionsPageGeneral::OptionsPageGeneral(std::unique_ptr<settings::GeneralSettings>&& generalSettings)
-	: _generalSettings(std::move(generalSettings))
+OptionsPageGeneral::OptionsPageGeneral(const std::shared_ptr<settings::GeneralSettings>& generalSettings)
+	: _generalSettings(generalSettings)
 {
 	assert(_generalSettings);
 
@@ -31,6 +31,8 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(EditorContext* editorContext,
 	_ui.setupUi(this);
 
 	_ui.UseSingleInstance->setChecked(_generalSettings->ShouldUseSingleInstance());
+	_ui.InvertMouseX->setChecked(_generalSettings->ShouldInvertMouseX());
+	_ui.InvertMouseY->setChecked(_generalSettings->ShouldInvertMouseY());
 }
 
 OptionsPageGeneralWidget::~OptionsPageGeneralWidget() = default;
@@ -38,6 +40,8 @@ OptionsPageGeneralWidget::~OptionsPageGeneralWidget() = default;
 void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 {
 	_generalSettings->SetUseSingleInstance(_ui.UseSingleInstance->isChecked());
+	_generalSettings->SetInvertMouseX(_ui.InvertMouseX->isChecked());
+	_generalSettings->SetInvertMouseY(_ui.InvertMouseY->isChecked());
 
 	_generalSettings->SaveSettings(settings);
 }

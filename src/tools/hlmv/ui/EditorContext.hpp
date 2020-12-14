@@ -36,6 +36,7 @@ namespace settings
 {
 class GameConfiguration;
 class GameEnvironment;
+class GeneralSettings;
 }
 
 class LoadedAsset
@@ -69,6 +70,7 @@ class EditorContext final : public QObject
 public:
 	EditorContext(
 		QSettings* settings,
+		const std::shared_ptr<settings::GeneralSettings>& generalSettings,
 		std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
 		std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent = nullptr);
 	~EditorContext();
@@ -76,6 +78,8 @@ public:
 	EditorContext& operator=(const EditorContext&) = delete;
 
 	QSettings* GetSettings() const { return _settings; }
+
+	settings::GeneralSettings* GetGeneralSettings() const { return _generalSettings.get(); }
 
 	QTimer* GetTimer() const { return _timer; }
 
@@ -128,6 +132,9 @@ private slots:
 
 private:
 	QSettings* const _settings;
+
+	const std::shared_ptr<settings::GeneralSettings> _generalSettings;
+
 	QTimer* const _timer;
 
 	const std::unique_ptr<options::OptionsPageRegistry> _optionsPageRegistry;

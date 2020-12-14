@@ -1,10 +1,11 @@
 #pragma once
 
+#include <QObject>
 #include <QSettings>
 
 namespace ui::settings
 {
-class GeneralSettings final
+class GeneralSettings final : public QObject
 {
 public:
 	GeneralSettings() = default;
@@ -13,6 +14,8 @@ public:
 	{
 		settings.beginGroup("startup");
 		_useSingleInstance = settings.value("UseSingleInstance", false).toBool();
+		_invertMouseX = settings.value("InvertMouseX", false).toBool();
+		_invertMouseY = settings.value("InvertMouseY", false).toBool();
 		settings.endGroup();
 	}
 
@@ -20,6 +23,8 @@ public:
 	{
 		settings.beginGroup("startup");
 		settings.setValue("UseSingleInstance", _useSingleInstance);
+		settings.setValue("InvertMouseX", _invertMouseX);
+		settings.setValue("InvertMouseY", _invertMouseY);
 		settings.endGroup();
 	}
 
@@ -30,7 +35,23 @@ public:
 		_useSingleInstance = value;
 	}
 
+	bool ShouldInvertMouseX() const { return _invertMouseX; }
+
+	void SetInvertMouseX(bool value)
+	{
+		_invertMouseX = value;
+	}
+
+	bool ShouldInvertMouseY() const { return _invertMouseY; }
+
+	void SetInvertMouseY(bool value)
+	{
+		_invertMouseY = value;
+	}
+
 private:
 	bool _useSingleInstance{false};
+	bool _invertMouseX{false};
+	bool _invertMouseY{false};
 };
 }

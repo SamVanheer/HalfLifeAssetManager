@@ -67,7 +67,7 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 	auto settings{std::make_unique<QSettings>()};
 
-	auto generalSettings{std::make_unique<ui::settings::GeneralSettings>()};
+	auto generalSettings{std::make_shared<ui::settings::GeneralSettings>()};
 	const auto studioModelSettings{std::make_shared<ui::settings::StudioModelSettings>()};
 
 	//TODO: load settings
@@ -105,7 +105,7 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 	auto optionsPageRegistry{std::make_unique<ui::options::OptionsPageRegistry>()};
 
-	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGeneral>(std::move(generalSettings)));
+	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGeneral>(generalSettings));
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGameConfigurations>());
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageStudioModel>(studioModelSettings));
 
@@ -113,7 +113,7 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 	assetProviderRegistry->AddProvider(std::make_unique<ui::assets::studiomodel::StudioModelAssetProvider>(studioModelSettings));
 
-	_editorContext = new ui::EditorContext(settings.release(), std::move(optionsPageRegistry), std::move(assetProviderRegistry), this);
+	_editorContext = new ui::EditorContext(settings.release(), generalSettings, std::move(optionsPageRegistry), std::move(assetProviderRegistry), this);
 
 	_mainWindow = new ui::HLMVMainWindow(_editorContext);
 

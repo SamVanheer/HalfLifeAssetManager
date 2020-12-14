@@ -16,8 +16,10 @@
 #include "ui/assets/Assets.hpp"
 
 #include "ui/options/OptionsPageRegistry.hpp"
+
 #include "ui/settings/GameConfiguration.hpp"
 #include "ui/settings/GameEnvironment.hpp"
+#include "ui/settings/GeneralSettings.hpp"
 
 namespace ui
 {
@@ -31,10 +33,12 @@ LoadedAsset::~LoadedAsset() = default;
 
 EditorContext::EditorContext(
 	QSettings* settings,
+	const std::shared_ptr<settings::GeneralSettings>& generalSettings,
 	std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
 	std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent)
 	: QObject(parent)
 	, _settings(settings)
+	, _generalSettings(generalSettings)
 	, _timer(new QTimer(this))
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
 	, _fileSystem(std::make_unique<filesystem::CFileSystem>())
