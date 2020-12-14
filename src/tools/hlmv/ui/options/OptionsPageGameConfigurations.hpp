@@ -36,9 +36,7 @@ public:
 
 class OptionsPageGameConfigurationsWidget final : public OptionsWidget
 {
-	Q_OBJECT
-
-		struct ChangeSet
+	struct ChangeSet
 	{
 		std::unordered_set<QUuid> NewObjects;
 		std::unordered_set<QUuid> RemovedObjects;

@@ -33,16 +33,11 @@ private:
 
 class OptionsPageGeneralWidget final : public OptionsWidget
 {
-	Q_OBJECT
-
 public:
 	OptionsPageGeneralWidget(EditorContext* editorContext, settings::GeneralSettings* generalSettings, QWidget* parent = nullptr);
 	~OptionsPageGeneralWidget();
 
 	void ApplyChanges(QSettings& settings) override;
-
-private slots:
-	void OnResetFloorLength();
 
 private:
 	Ui_OptionsPageGeneral _ui;

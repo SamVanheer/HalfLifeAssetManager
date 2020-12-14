@@ -67,10 +67,6 @@ class EditorContext final : public QObject
 	Q_OBJECT
 
 public:
-	static constexpr int MinimumFloorLength = 0;
-	static constexpr int MaximumFloorLength = 2048;
-	static constexpr int DefaultFloorLength = 100;
-
 	EditorContext(
 		QSettings* settings,
 		std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
@@ -115,8 +111,6 @@ public:
 		}
 	}
 
-	int GetFloorLength() const { return _floorLength; }
-
 signals:
 	/**
 	*	@brief Emitted every time a frame tick occurs
@@ -128,19 +122,6 @@ signals:
 
 	void ActiveConfigurationChanged(const std::pair<settings::GameEnvironment*, settings::GameConfiguration*>& current,
 		const std::pair<settings::GameEnvironment*, settings::GameConfiguration*>& previous);
-
-	void FloorLengthChanged(int length);
-
-public slots:
-	void SetFloorLength(int value)
-	{
-		if (_floorLength != value)
-		{
-			_floorLength = value;
-
-			emit FloorLengthChanged(_floorLength);
-		}
-	}
 
 private slots:
 	void OnTimerTick();
@@ -162,7 +143,5 @@ private:
 	std::vector<std::unique_ptr<settings::GameEnvironment>> _gameEnvironments;
 
 	std::pair<settings::GameEnvironment*, settings::GameConfiguration*> _activeConfiguration{};
-
-	int _floorLength = DefaultFloorLength;
 };
 }

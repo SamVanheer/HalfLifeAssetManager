@@ -24,7 +24,7 @@ StudioModelAsset::~StudioModelAsset() = default;
 
 QWidget* StudioModelAsset::CreateEditWidget(EditorContext* editorContext)
 {
-	return new StudioModelEditWidget(editorContext, this);
+	return new StudioModelEditWidget(editorContext, _provider->GetSettings(), this);
 }
 
 void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget)

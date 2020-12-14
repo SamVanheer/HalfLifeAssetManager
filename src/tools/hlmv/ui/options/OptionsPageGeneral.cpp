@@ -31,16 +31,6 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(EditorContext* editorContext,
 	_ui.setupUi(this);
 
 	_ui.UseSingleInstance->setChecked(_generalSettings->ShouldUseSingleInstance());
-
-	_ui.FloorLengthSlider->setRange(_editorContext->MinimumFloorLength, _editorContext->MaximumFloorLength);
-	_ui.FloorLengthSpinner->setRange(_editorContext->MinimumFloorLength, _editorContext->MaximumFloorLength);
-
-	_ui.FloorLengthSlider->setValue(_editorContext->GetFloorLength());
-	_ui.FloorLengthSpinner->setValue(_editorContext->GetFloorLength());
-
-	connect(_ui.FloorLengthSlider, &QSlider::valueChanged, _ui.FloorLengthSpinner, &QSpinBox::setValue);
-	connect(_ui.FloorLengthSpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.FloorLengthSlider, &QSlider::setValue);
-	connect(_ui.ResetFloorLength, &QPushButton::clicked, this, &OptionsPageGeneralWidget::OnResetFloorLength);
 }
 
 OptionsPageGeneralWidget::~OptionsPageGeneralWidget() = default;
@@ -48,15 +38,7 @@ OptionsPageGeneralWidget::~OptionsPageGeneralWidget() = default;
 void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 {
 	_generalSettings->SetUseSingleInstance(_ui.UseSingleInstance->isChecked());
-	_editorContext->SetFloorLength(_ui.FloorLengthSlider->value());
 
-	//TODO: save to settings object
 	_generalSettings->SaveSettings(settings);
-}
-
-void OptionsPageGeneralWidget::OnResetFloorLength()
-{
-	_ui.FloorLengthSlider->setValue(_editorContext->DefaultFloorLength);
-	_ui.FloorLengthSpinner->setValue(_editorContext->DefaultFloorLength);
 }
 }

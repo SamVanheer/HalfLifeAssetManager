@@ -28,9 +28,12 @@
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperator.hpp"
 
+#include "ui/settings/StudioModelSettings.hpp"
+
 namespace ui::assets::studiomodel
 {
-StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent)
+StudioModelEditWidget::StudioModelEditWidget(
+	EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings, StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
 {
@@ -38,7 +41,8 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_asset->PushInputSink(this);
 
-	scene->FloorLength = editorContext->GetFloorLength();
+	//TODO: should be moved to asset
+	scene->FloorLength = studioModelSettings->GetFloorLength();
 
 	auto entity = static_cast<CHLMVStudioModelEntity*>(scene->GetEntityContext()->EntityManager->Create("studiomodel", scene->GetEntityContext(),
 		glm::vec3(), glm::vec3(), false));
@@ -116,7 +120,8 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	//Listen to the main timer to update as needed
 	connect(editorContext, &EditorContext::Tick, this, &StudioModelEditWidget::OnTick);
 	connect(_sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelEditWidget::OnSceneWidgetMouseEvent);
-	connect(editorContext, &EditorContext::FloorLengthChanged, this, &StudioModelEditWidget::OnFloorLengthChanged);
+	//TODO: should be moved to asset
+	connect(studioModelSettings, &settings::StudioModelSettings::FloorLengthChanged, this, &StudioModelEditWidget::OnFloorLengthChanged);
 
 	connect(_dockPanels, &QTabWidget::currentChanged, this, &StudioModelEditWidget::OnTabChanged);
 

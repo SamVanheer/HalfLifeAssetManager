@@ -53,6 +53,8 @@ OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
 
 	connect(_ui.OptionsPagesList, &QTreeWidget::currentItemChanged, this, &OptionsDialog::OnPageSelected);
 	connect(_ui.DialogButtons, &QDialogButtonBox::clicked, this, &OptionsDialog::OnButtonClicked);
+
+	_ui.OptionsPagesList->setCurrentItem(_ui.OptionsPagesList->topLevelItem(0));
 }
 
 OptionsDialog::~OptionsDialog()

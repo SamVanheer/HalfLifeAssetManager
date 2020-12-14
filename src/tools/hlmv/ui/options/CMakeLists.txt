@@ -12,4 +12,7 @@ target_sources(HLMV
 		OptionsPageGeneral.hpp
 		OptionsPageGeneral.ui
 		OptionsPageRegistry.cpp
-		OptionsPageRegistry.hpp)
+		OptionsPageRegistry.hpp
+		OptionsPageStudioModel.cpp
+		OptionsPageStudioModel.hpp
+		OptionsPageStudioModel.ui)

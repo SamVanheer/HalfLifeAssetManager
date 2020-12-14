@@ -17,6 +17,11 @@ namespace ui
 {
 class IInputSink;
 
+namespace settings
+{
+class StudioModelSettings;
+}
+
 namespace assets::studiomodel
 {
 class StudioModelAssetProvider;
@@ -84,6 +89,11 @@ private:
 class StudioModelAssetProvider final : public IAssetProvider
 {
 public:
+	StudioModelAssetProvider(const std::shared_ptr<settings::StudioModelSettings>& studioModelSettings)
+		: _settings(studioModelSettings)
+	{
+	}
+
 	entt::id_type GetAssetType() const override { return entt::type_index<StudioModelAsset>::value(); }
 
 	bool CanLoad(const QString& fileName) const override;
@@ -93,6 +103,11 @@ public:
 	void Save(const QString& fileName, Asset& asset) const override;
 
 	void Save(const QString& fileName, StudioModelAsset& asset) const;
+
+	settings::StudioModelSettings* GetSettings() const { return _settings.get(); }
+
+private:
+	const std::shared_ptr<settings::StudioModelSettings> _settings;
 };
 
 inline const IAssetProvider* StudioModelAsset::GetProvider() const
