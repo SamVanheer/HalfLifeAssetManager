@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <QAbstractButton>
 #include <QDialog>
 #include <QSettings>
@@ -12,18 +14,13 @@ class EditorContext;
 
 namespace options
 {
-class OptionsPageGeneral;
+class OptionsPage;
 
 class OptionsDialog final : public QDialog
 {
-	Q_OBJECT
-
 public:
 	OptionsDialog(EditorContext* editorContext, QWidget* parent = nullptr);
 	~OptionsDialog();
-
-signals:
-	void SaveChanges(QSettings& settings);
 
 private slots:
 	void OnButtonClicked(QAbstractButton* button);
@@ -33,7 +30,7 @@ private:
 
 	EditorContext* const _editorContext;
 
-	OptionsPageGeneral* _pageGeneral;
+	std::vector<OptionsPage*> _pages;
 };
 }
 }

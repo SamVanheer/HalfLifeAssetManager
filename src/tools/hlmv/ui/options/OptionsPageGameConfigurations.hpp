@@ -6,11 +6,14 @@
 #include <vector>
 
 #include <QStandardItemModel>
+#include <QString>
 #include <QWidget>
 
 #include "ui_OptionsPageGameConfigurations.h"
 
 #include "qt/HashFunctions.hpp"
+
+#include "ui/options/OptionsPage.hpp"
 
 namespace ui
 {
@@ -20,7 +23,15 @@ namespace options
 {
 class GameEnvironment;
 
-class OptionsPageGameConfigurations final : public QWidget
+extern const QString OptionsPageGameConfigurationsId;
+
+class OptionsPageGameConfigurations final : public OptionsPage
+{
+public:
+	OptionsPageGameConfigurations();
+};
+
+class OptionsPageGameConfigurationsWidget final : public OptionsWidget
 {
 	Q_OBJECT
 
@@ -66,8 +77,10 @@ class OptionsPageGameConfigurations final : public QWidget
 	};
 
 public:
-	OptionsPageGameConfigurations(EditorContext* editorContext, QWidget* parent = nullptr);
-	~OptionsPageGameConfigurations();
+	OptionsPageGameConfigurationsWidget(EditorContext* editorContext, QWidget* parent = nullptr);
+	~OptionsPageGameConfigurationsWidget();
+
+	void ApplyChanges(QSettings& settings) override;
 
 private:
 	ChangeSet* GetOrCreateGameConfigurationChangeSet(const QUuid& id);

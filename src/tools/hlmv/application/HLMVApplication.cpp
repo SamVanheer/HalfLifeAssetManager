@@ -19,6 +19,10 @@
 #include "ui/assets/Assets.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
+#include "ui/options/OptionsPageGameConfigurations.hpp"
+#include "ui/options/OptionsPageGeneral.hpp"
+#include "ui/options/OptionsPageRegistry.hpp"
+
 int HLMVApplication::Run(int argc, char* argv[])
 {
 	const QString programName{"Half-Life Model Viewer"};
@@ -94,11 +98,16 @@ int HLMVApplication::Run(int argc, char* argv[])
 		connect(singleInstance.get(), &SingleInstance::FileNameReceived, this, &HLMVApplication::OnFileNameReceived);
 	}
 
-	auto assetProviderRegistry = std::make_unique<ui::assets::AssetProviderRegistry>();
+	auto optionsPageRegistry{std::make_unique<ui::options::OptionsPageRegistry>()};
+
+	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGeneral>());
+	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGameConfigurations>());
+
+	auto assetProviderRegistry{std::make_unique<ui::assets::AssetProviderRegistry>()};
 
 	assetProviderRegistry->AddProvider(std::make_unique<ui::assets::studiomodel::StudioModelAssetProvider>());
 
-	_editorContext = new ui::EditorContext(std::move(assetProviderRegistry), this);
+	_editorContext = new ui::EditorContext(std::move(optionsPageRegistry), std::move(assetProviderRegistry), this);
 
 	_mainWindow = new ui::HLMVMainWindow(_editorContext);
 

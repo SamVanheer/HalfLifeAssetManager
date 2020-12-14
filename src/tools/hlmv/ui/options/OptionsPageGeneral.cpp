@@ -3,8 +3,17 @@
 
 namespace ui::options
 {
-OptionsPageGeneral::OptionsPageGeneral(EditorContext* editorContext, QWidget* parent)
-	: QWidget(parent)
+const QString OptionsPageGeneralId{QStringLiteral("A.General")};
+
+OptionsPageGeneral::OptionsPageGeneral()
+{
+	SetId(QString{OptionsPageGeneralId});
+	SetTitle("General");
+	SetWidgetFactory([](EditorContext* editorContext) { return new OptionsPageGeneralWidget(editorContext); });
+}
+
+OptionsPageGeneralWidget::OptionsPageGeneralWidget(EditorContext* editorContext, QWidget* parent)
+	: OptionsWidget(parent)
 	, _editorContext(editorContext)
 {
 	_ui.setupUi(this);
@@ -17,19 +26,26 @@ OptionsPageGeneral::OptionsPageGeneral(EditorContext* editorContext, QWidget* pa
 
 	connect(_ui.FloorLengthSlider, &QSlider::valueChanged, _ui.FloorLengthSpinner, &QSpinBox::setValue);
 	connect(_ui.FloorLengthSpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.FloorLengthSlider, &QSlider::setValue);
-	connect(_ui.ResetFloorLength, &QPushButton::clicked, this, &OptionsPageGeneral::OnResetFloorLength);
+	connect(_ui.ResetFloorLength, &QPushButton::clicked, this, &OptionsPageGeneralWidget::OnResetFloorLength);
 }
 
-OptionsPageGeneral::~OptionsPageGeneral() = default;
+OptionsPageGeneralWidget::~OptionsPageGeneralWidget() = default;
 
-void OptionsPageGeneral::OnSaveChanges(QSettings& settings)
+void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 {
 	_editorContext->SetFloorLength(_ui.FloorLengthSlider->value());
 
 	//TODO: save to settings object
 }
 
-void OptionsPageGeneral::OnResetFloorLength()
+void OptionsPageGeneralWidget::OnSaveChanges(QSettings& settings)
+{
+	_editorContext->SetFloorLength(_ui.FloorLengthSlider->value());
+
+	//TODO: save to settings object
+}
+
+void OptionsPageGeneralWidget::OnResetFloorLength()
 {
 	_ui.FloorLengthSlider->setValue(_editorContext->DefaultFloorLength);
 	_ui.FloorLengthSpinner->setValue(_editorContext->DefaultFloorLength);

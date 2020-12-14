@@ -17,6 +17,8 @@
 
 namespace ui::options
 {
+const QString OptionsPageGameConfigurationsId{QStringLiteral("T.GameConfigurations")};
+
 constexpr int GameConfigurationNameColumn = 0;
 constexpr int GameConfigurationDirectoryColumn = 1;
 
@@ -46,8 +48,15 @@ static QString GenerateUniqueName(const QString& baseName, const Container& cont
 	return baseName + " (Duplicate)";
 }
 
-OptionsPageGameConfigurations::OptionsPageGameConfigurations(EditorContext* editorContext, QWidget* parent)
-	: QWidget(parent)
+OptionsPageGameConfigurations::OptionsPageGameConfigurations()
+{
+	SetId(QString{OptionsPageGameConfigurationsId});
+	SetTitle("Game Configurations");
+	SetWidgetFactory([](EditorContext* editorContext) {return new OptionsPageGameConfigurationsWidget(editorContext); });
+}
+
+OptionsPageGameConfigurationsWidget::OptionsPageGameConfigurationsWidget(EditorContext* editorContext, QWidget* parent)
+	: OptionsWidget(parent)
 	, _editorContext(editorContext)
 {
 	_ui.setupUi(this);
@@ -82,23 +91,23 @@ OptionsPageGameConfigurations::OptionsPageGameConfigurations(EditorContext* edit
 	_ui.EnvironmentConfiguration->setEnabled(false);
 	_ui.RemoveGameConfiguration->setEnabled(false);
 
-	connect(_ui.ActiveEnvironment, qOverload<int>(&QComboBox::currentIndexChanged), this, &OptionsPageGameConfigurations::OnActiveGameEnvironmentChanged);
+	connect(_ui.ActiveEnvironment, qOverload<int>(&QComboBox::currentIndexChanged), this, &OptionsPageGameConfigurationsWidget::OnActiveGameEnvironmentChanged);
 
-	connect(_gameEnvironmentsModel, &QStandardItemModel::dataChanged, this, &OptionsPageGameConfigurations::OnGameEnvironmentNameChanged);
+	connect(_gameEnvironmentsModel, &QStandardItemModel::dataChanged, this, &OptionsPageGameConfigurationsWidget::OnGameEnvironmentNameChanged);
 	connect(_ui.GameEnvironmentList->selectionModel(), &QItemSelectionModel::currentRowChanged,
-		this, &OptionsPageGameConfigurations::OnGameEnvironmentSelectionChanged);
-	connect(_ui.AddNewGameEnvironment, &QPushButton::clicked, this, &OptionsPageGameConfigurations::OnNewGameEnvironment);
-	connect(_ui.RemoveGameEnvironment, &QPushButton::clicked, this, &OptionsPageGameConfigurations::OnRemoveGameEnvironment);
+		this, &OptionsPageGameConfigurationsWidget::OnGameEnvironmentSelectionChanged);
+	connect(_ui.AddNewGameEnvironment, &QPushButton::clicked, this, &OptionsPageGameConfigurationsWidget::OnNewGameEnvironment);
+	connect(_ui.RemoveGameEnvironment, &QPushButton::clicked, this, &OptionsPageGameConfigurationsWidget::OnRemoveGameEnvironment);
 
-	connect(_ui.GameInstallLocation, &QLineEdit::textChanged, this, &OptionsPageGameConfigurations::OnGameInstallLocationChanged);
-	connect(_ui.BrowseGameInstallation, &QPushButton::clicked, this, &OptionsPageGameConfigurations::OnBrowseGameInstallation);
-	connect(_ui.DefaultGame, qOverload<int>(&QComboBox::currentIndexChanged), this, &OptionsPageGameConfigurations::OnDefaultGameChanged);
+	connect(_ui.GameInstallLocation, &QLineEdit::textChanged, this, &OptionsPageGameConfigurationsWidget::OnGameInstallLocationChanged);
+	connect(_ui.BrowseGameInstallation, &QPushButton::clicked, this, &OptionsPageGameConfigurationsWidget::OnBrowseGameInstallation);
+	connect(_ui.DefaultGame, qOverload<int>(&QComboBox::currentIndexChanged), this, &OptionsPageGameConfigurationsWidget::OnDefaultGameChanged);
 
-	connect(_gameConfigurationsModel, &QStandardItemModel::dataChanged, this, &OptionsPageGameConfigurations::OnGameConfigurationDataChanged);
+	connect(_gameConfigurationsModel, &QStandardItemModel::dataChanged, this, &OptionsPageGameConfigurationsWidget::OnGameConfigurationDataChanged);
 	connect(_ui.GameConfigurationList->selectionModel(), &QItemSelectionModel::currentRowChanged,
-		this, &OptionsPageGameConfigurations::OnGameConfigurationSelectionChanged);
-	connect(_ui.AddNewGameConfiguration, &QPushButton::clicked, this, &OptionsPageGameConfigurations::OnNewGameConfiguration);
-	connect(_ui.RemoveGameConfiguration, &QPushButton::clicked, this, &OptionsPageGameConfigurations::OnRemoveGameConfiguration);
+		this, &OptionsPageGameConfigurationsWidget::OnGameConfigurationSelectionChanged);
+	connect(_ui.AddNewGameConfiguration, &QPushButton::clicked, this, &OptionsPageGameConfigurationsWidget::OnNewGameConfiguration);
+	connect(_ui.RemoveGameConfiguration, &QPushButton::clicked, this, &OptionsPageGameConfigurationsWidget::OnRemoveGameConfiguration);
 
 	const auto environments = _editorContext->GetGameEnvironments();
 
@@ -131,9 +140,14 @@ OptionsPageGameConfigurations::OptionsPageGameConfigurations(EditorContext* edit
 	}
 }
 
-OptionsPageGameConfigurations::~OptionsPageGameConfigurations() = default;
+OptionsPageGameConfigurationsWidget::~OptionsPageGameConfigurationsWidget() = default;
 
-OptionsPageGameConfigurations::ChangeSet* OptionsPageGameConfigurations::GetOrCreateGameConfigurationChangeSet(const QUuid& id)
+void OptionsPageGameConfigurationsWidget::ApplyChanges(QSettings& settings)
+{
+	//TODO:
+}
+
+OptionsPageGameConfigurationsWidget::ChangeSet* OptionsPageGameConfigurationsWidget::GetOrCreateGameConfigurationChangeSet(const QUuid& id)
 {
 	if (auto it = _gameConfigurationsChangeSet.find(id); it != _gameConfigurationsChangeSet.end())
 	{
@@ -145,7 +159,7 @@ OptionsPageGameConfigurations::ChangeSet* OptionsPageGameConfigurations::GetOrCr
 	return it.first->second.get();
 }
 
-void OptionsPageGameConfigurations::AddGameEnvironment(std::unique_ptr<GameEnvironment>&& gameEnvironment)
+void OptionsPageGameConfigurationsWidget::AddGameEnvironment(std::unique_ptr<GameEnvironment>&& gameEnvironment)
 {
 	auto item = new QStandardItem(gameEnvironment->GetName());
 
@@ -166,7 +180,7 @@ void OptionsPageGameConfigurations::AddGameEnvironment(std::unique_ptr<GameEnvir
 	_ui.ActiveEnvironment->setEnabled(true);
 }
 
-void OptionsPageGameConfigurations::OnSaveChanges()
+void OptionsPageGameConfigurationsWidget::OnSaveChanges()
 {
 	for (const auto& environmentId : _gameEnvironmentsChangeSet.RemovedObjects)
 	{
@@ -256,7 +270,7 @@ void OptionsPageGameConfigurations::OnSaveChanges()
 	_editorContext->SetActiveConfiguration({activeEnvironment, activeConfiguration});
 }
 
-void OptionsPageGameConfigurations::OnActiveGameEnvironmentChanged(int index)
+void OptionsPageGameConfigurationsWidget::OnActiveGameEnvironmentChanged(int index)
 {
 	_ui.ActiveConfiguration->clear();
 
@@ -276,7 +290,7 @@ void OptionsPageGameConfigurations::OnActiveGameEnvironmentChanged(int index)
 	_currentEnvironmentIsActive = _ui.GameEnvironmentList->currentIndex().row() == index;
 }
 
-void OptionsPageGameConfigurations::OnGameEnvironmentNameChanged(const QModelIndex& topLeft)
+void OptionsPageGameConfigurationsWidget::OnGameEnvironmentNameChanged(const QModelIndex& topLeft)
 {
 	auto item = _gameEnvironmentsModel->itemFromIndex(topLeft);
 
@@ -306,7 +320,7 @@ void OptionsPageGameConfigurations::OnGameEnvironmentNameChanged(const QModelInd
 	}
 }
 
-void OptionsPageGameConfigurations::OnGameEnvironmentSelectionChanged(const QModelIndex& current, const QModelIndex& previous)
+void OptionsPageGameConfigurationsWidget::OnGameEnvironmentSelectionChanged(const QModelIndex& current, const QModelIndex& previous)
 {
 	if (current.isValid())
 	{
@@ -362,7 +376,7 @@ void OptionsPageGameConfigurations::OnGameEnvironmentSelectionChanged(const QMod
 	_currentEnvironmentIsActive = current.row() == _ui.ActiveEnvironment->currentIndex();
 }
 
-void OptionsPageGameConfigurations::OnNewGameEnvironment()
+void OptionsPageGameConfigurationsWidget::OnNewGameEnvironment()
 {
 	auto environmentName = GenerateUniqueName(DefaultGameEnvironmentName, _gameEnvironments, [](const auto& object, const QString& name)
 		{
@@ -376,7 +390,7 @@ void OptionsPageGameConfigurations::OnNewGameEnvironment()
 	AddGameEnvironment(std::move(gameEnvironment));
 }
 
-void OptionsPageGameConfigurations::OnRemoveGameEnvironment()
+void OptionsPageGameConfigurationsWidget::OnRemoveGameEnvironment()
 {
 	auto item = _gameEnvironmentsModel->itemFromIndex(_ui.GameEnvironmentList->currentIndex());
 
@@ -395,7 +409,7 @@ void OptionsPageGameConfigurations::OnRemoveGameEnvironment()
 	_ui.ActiveEnvironment->setEnabled(_ui.ActiveEnvironment->count() > 0);
 }
 
-void OptionsPageGameConfigurations::OnGameInstallLocationChanged(const QString& text)
+void OptionsPageGameConfigurationsWidget::OnGameInstallLocationChanged(const QString& text)
 {
 	auto gameEnvironment = _gameEnvironmentsModel->itemFromIndex(_ui.GameEnvironmentList->currentIndex())->data().value<GameEnvironment*>();
 
@@ -404,7 +418,7 @@ void OptionsPageGameConfigurations::OnGameInstallLocationChanged(const QString& 
 	_gameEnvironmentsChangeSet.MarkChanged(gameEnvironment->GetId());
 }
 
-void OptionsPageGameConfigurations::OnBrowseGameInstallation()
+void OptionsPageGameConfigurationsWidget::OnBrowseGameInstallation()
 {
 	const auto path = QFileDialog::getExistingDirectory(this, "Browse Game Installation", _ui.GameInstallLocation->text());
 
@@ -414,7 +428,7 @@ void OptionsPageGameConfigurations::OnBrowseGameInstallation()
 	}
 }
 
-void OptionsPageGameConfigurations::OnDefaultGameChanged()
+void OptionsPageGameConfigurationsWidget::OnDefaultGameChanged()
 {
 	const QModelIndex index = _ui.GameEnvironmentList->currentIndex();
 
@@ -426,7 +440,7 @@ void OptionsPageGameConfigurations::OnDefaultGameChanged()
 	}
 }
 
-void OptionsPageGameConfigurations::OnGameConfigurationDataChanged(const QModelIndex& topLeft)
+void OptionsPageGameConfigurationsWidget::OnGameConfigurationDataChanged(const QModelIndex& topLeft)
 {
 	if (topLeft.column() == GameConfigurationNameColumn)
 	{
@@ -447,12 +461,12 @@ void OptionsPageGameConfigurations::OnGameConfigurationDataChanged(const QModelI
 	}
 }
 
-void OptionsPageGameConfigurations::OnGameConfigurationSelectionChanged(const QModelIndex& current, const QModelIndex& previous)
+void OptionsPageGameConfigurationsWidget::OnGameConfigurationSelectionChanged(const QModelIndex& current, const QModelIndex& previous)
 {
 	_ui.RemoveGameConfiguration->setEnabled(current.isValid());
 }
 
-void OptionsPageGameConfigurations::OnNewGameConfiguration()
+void OptionsPageGameConfigurationsWidget::OnNewGameConfiguration()
 {
 	auto gameEnvironment = _gameEnvironmentsModel->itemFromIndex(_ui.GameEnvironmentList->currentIndex())->data().value<GameEnvironment*>();
 
@@ -493,7 +507,7 @@ void OptionsPageGameConfigurations::OnNewGameConfiguration()
 	_ui.GameConfigurationList->setCurrentIndex(name->index());
 }
 
-void OptionsPageGameConfigurations::OnRemoveGameConfiguration()
+void OptionsPageGameConfigurationsWidget::OnRemoveGameConfiguration()
 {
 	auto gameEnvironment = _gameEnvironmentsModel->itemFromIndex(_ui.GameEnvironmentList->currentIndex())->data().value<GameEnvironment*>();
 

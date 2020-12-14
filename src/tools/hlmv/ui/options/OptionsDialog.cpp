@@ -1,6 +1,8 @@
+#include "ui/EditorContext.hpp"
+
 #include "ui/options/OptionsDialog.hpp"
-#include "ui/options/OptionsPageGameConfigurations.hpp"
-#include "ui/options/OptionsPageGeneral.hpp"
+#include "ui/options/OptionsPage.hpp"
+#include "ui/options/OptionsPageRegistry.hpp"
 
 namespace ui::options
 {
@@ -10,19 +12,27 @@ OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
 {
 	_ui.setupUi(this);
 
-	_pageGeneral = new OptionsPageGeneral(_editorContext, this);
-	auto gameConfigurations = new OptionsPageGameConfigurations(_editorContext, this);
+	_pages = _editorContext->GetOptionsPageRegistry()->GetPages();
 
-	_ui.OptionsPages->addTab(_pageGeneral, "General");
-	_ui.OptionsPages->addTab(gameConfigurations, "Game Configurations");
+	{
+		QSettings settings;
+
+		for (auto page : _pages)
+		{
+			_ui.OptionsPages->addTab(page->GetWidget(_editorContext), page->GetTitle());
+		}
+	}
 
 	connect(_ui.DialogButtons, &QDialogButtonBox::clicked, this, &OptionsDialog::OnButtonClicked);
-
-	connect(this, &OptionsDialog::SaveChanges, _pageGeneral, &OptionsPageGeneral::OnSaveChanges);
-	connect(this, &OptionsDialog::SaveChanges, gameConfigurations, &OptionsPageGameConfigurations::OnSaveChanges);
 }
 
-OptionsDialog::~OptionsDialog() = default;
+OptionsDialog::~OptionsDialog()
+{
+	for (auto page : _pages)
+	{
+		page->DestroyWidget();
+	}
+}
 
 void OptionsDialog::OnButtonClicked(QAbstractButton* button)
 {
@@ -33,7 +43,10 @@ void OptionsDialog::OnButtonClicked(QAbstractButton* button)
 	{
 		QSettings settings;
 
-		SaveChanges(settings);
+		for (auto page : _pages)
+		{
+			page->ApplyChanges(settings);
+		}
 	}
 }
 }

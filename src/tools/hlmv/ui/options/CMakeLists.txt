@@ -5,9 +5,13 @@ target_sources(HLMV
 		OptionsDialog.cpp
 		OptionsDialog.hpp
 		OptionsDialog.ui
+		OptionsPage.cpp
+		OptionsPage.hpp
 		OptionsPageGameConfigurations.cpp
 		OptionsPageGameConfigurations.hpp
 		OptionsPageGameConfigurations.ui
 		OptionsPageGeneral.cpp
 		OptionsPageGeneral.hpp
-		OptionsPageGeneral.ui)
+		OptionsPageGeneral.ui
+		OptionsPageRegistry.cpp
+		OptionsPageRegistry.hpp)

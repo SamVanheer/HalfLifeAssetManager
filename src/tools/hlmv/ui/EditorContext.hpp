@@ -30,6 +30,7 @@ namespace options
 {
 class GameConfiguration;
 class GameEnvironment;
+class OptionsPageRegistry;
 }
 
 class LoadedAsset
@@ -65,12 +66,16 @@ public:
 	static constexpr int MaximumFloorLength = 2048;
 	static constexpr int DefaultFloorLength = 100;
 
-	EditorContext(std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent = nullptr);
+	EditorContext(
+		std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
+		std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent = nullptr);
 	~EditorContext();
 	EditorContext(const EditorContext&) = delete;
 	EditorContext& operator=(const EditorContext&) = delete;
 
 	QTimer* GetTimer() const { return _timer; }
+
+	options::OptionsPageRegistry* GetOptionsPageRegistry() const { return _optionsPageRegistry.get(); }
 
 	filesystem::IFileSystem* GetFileSystem() const { return _fileSystem.get(); }
 
@@ -134,6 +139,8 @@ private slots:
 
 private:
 	QTimer* const _timer;
+
+	const std::unique_ptr<options::OptionsPageRegistry> _optionsPageRegistry;
 
 	std::unique_ptr<filesystem::IFileSystem> _fileSystem;
 	std::unique_ptr<soundsystem::ISoundSystem> _soundSystem;

@@ -17,6 +17,7 @@
 
 #include "ui/options/GameConfiguration.hpp"
 #include "ui/options/GameEnvironment.hpp"
+#include "ui/options/OptionsPageRegistry.hpp"
 
 namespace ui
 {
@@ -28,9 +29,12 @@ LoadedAsset::LoadedAsset(std::unique_ptr<assets::Asset>&& asset, QWidget* editWi
 
 LoadedAsset::~LoadedAsset() = default;
 
-EditorContext::EditorContext(std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent)
+EditorContext::EditorContext(
+	std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
+	std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent)
 	: QObject(parent)
 	, _timer(new QTimer(this))
+	, _optionsPageRegistry(std::move(optionsPageRegistry))
 	, _fileSystem(std::make_unique<filesystem::CFileSystem>())
 	, _soundSystem(std::make_unique<soundsystem::CSoundSystem>())
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
