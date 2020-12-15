@@ -6,6 +6,8 @@
 
 #include "Credits.hpp"
 
+#include "filesystem/IFileSystem.h"
+
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/HLMVMainWindow.hpp"
@@ -14,6 +16,8 @@
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
 #include "ui/options/OptionsDialog.hpp"
+
+#include "ui/settings/GameConfigurationsSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
 
 namespace ui
@@ -59,11 +63,15 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	connect(_assetTabs, &QTabWidget::currentChanged, this, &HLMVMainWindow::OnAssetTabChanged);
 	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &HLMVMainWindow::OnAssetTabCloseRequested);
 
+	connect(_editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged,
+		this, &HLMVMainWindow::SetupFileSystem);
+
 	_assetTabs->setVisible(false);
 
 	_editorContext->GetTimer()->start(0);
 
 	OnRecentFilesChanged();
+	OnActiveConfigurationChanged(_editorContext->GetGameConfigurations()->GetActiveConfiguration(), {});
 }
 
 HLMVMainWindow::~HLMVMainWindow() = default;
@@ -300,5 +308,67 @@ void HLMVMainWindow::OnShowAbout()
 			u8"%1")
 			.arg(QString::fromUtf8(tools::GetSharedCredits().c_str()))
 	);
+}
+
+void HLMVMainWindow::SetupFileSystem(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration)
+{
+	auto fileSystem = _editorContext->GetFileSystem();
+
+	fileSystem->RemoveAllSearchPaths();
+
+	const auto environment = activeConfiguration.first;
+	const auto configuration = activeConfiguration.second;
+	const auto defaultGameConfiguration = environment->GetGameConfigurationById(environment->GetDefaultModId());
+
+	fileSystem->SetBasePath(environment->GetInstallationPath().toStdString().c_str());
+
+	const char* const* ppszDirectoryExts;
+
+	//TODO: rework this stuff to use std::string and separate out steampipe stuff
+	const size_t uiNumExts = fileSystem->GetSteamPipeDirectoryExtensions(ppszDirectoryExts);
+
+	const auto gameDir{defaultGameConfiguration->GetDirectory().toStdString()};
+	const auto modDir{configuration->GetDirectory().toStdString()};
+
+	//Add mod dirs first since they override game dirs
+	if (gameDir != modDir)
+	{
+		for (size_t uiIndex = 0; uiIndex < uiNumExts; ++uiIndex)
+		{
+			fileSystem->AddSearchPath((modDir + ppszDirectoryExts[uiIndex]).c_str());
+		}
+	}
+
+	for (size_t uiIndex = 0; uiIndex < uiNumExts; ++uiIndex)
+	{
+		fileSystem->AddSearchPath((gameDir + ppszDirectoryExts[uiIndex]).c_str());
+	}
+}
+
+void HLMVMainWindow::OnActiveConfigurationChanged(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> current,
+	std::pair<settings::GameEnvironment*, settings::GameConfiguration*> previous)
+{
+	if (previous.second)
+	{
+		disconnect(previous.second, &settings::GameConfiguration::DirectoryChanged, this, &HLMVMainWindow::OnGameConfigurationDirectoryChanged);
+	}
+
+	if (current.second)
+	{
+		connect(current.second, &settings::GameConfiguration::DirectoryChanged, this, &HLMVMainWindow::OnGameConfigurationDirectoryChanged);
+
+		SetupFileSystem(current);
+	}
+	else
+	{
+		auto fileSystem = _editorContext->GetFileSystem();
+
+		fileSystem->RemoveAllSearchPaths();
+	}
+}
+
+void HLMVMainWindow::OnGameConfigurationDirectoryChanged()
+{
+	SetupFileSystem(_editorContext->GetGameConfigurations()->GetActiveConfiguration());
 }
 }

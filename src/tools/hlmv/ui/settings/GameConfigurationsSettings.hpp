@@ -76,7 +76,7 @@ public:
 
 				if (!environmentDefaultMod.isNull() && environment->GetGameConfigurationById(environmentDefaultMod))
 				{
-					environment->SetDefaultMod(environmentDefaultMod);
+					environment->SetDefaultModId(environmentDefaultMod);
 				}
 
 				AddGameEnvironment(std::move(environment));
@@ -131,7 +131,7 @@ public:
 			settings.setValue("Id", environment->GetId());
 			settings.setValue("Name", environment->GetName());
 			settings.setValue("InstallationPath", environment->GetInstallationPath());
-			settings.setValue("DefaultMod", environment->GetDefaultMod());
+			settings.setValue("DefaultMod", environment->GetDefaultModId());
 
 			settings.remove("Configurations");
 
@@ -247,11 +247,17 @@ public:
 
 	std::pair<settings::GameEnvironment*, settings::GameConfiguration*> GetActiveConfiguration() const { return _activeConfiguration; }
 
-	void SetActiveConfiguration(const std::pair<settings::GameEnvironment*, settings::GameConfiguration*>& configuration)
+	void SetActiveConfiguration(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> configuration)
 	{
 		if (_activeConfiguration != configuration)
 		{
 			const auto previous = _activeConfiguration;
+
+			if (configuration.second && !configuration.first)
+			{
+				qDebug() << "The active configuration requires a valid environment if the configuration is not null";
+				configuration.second = nullptr;
+			}
 
 			_activeConfiguration = configuration;
 
@@ -263,8 +269,8 @@ signals:
 	void GameEnvironmentAdded(settings::GameEnvironment* gameEnvironment);
 	void GameEnvironmentRemoved(settings::GameEnvironment* gameEnvironment);
 
-	void ActiveConfigurationChanged(const std::pair<settings::GameEnvironment*, settings::GameConfiguration*>& current,
-		const std::pair<settings::GameEnvironment*, settings::GameConfiguration*>& previous);
+	void ActiveConfigurationChanged(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> current,
+		std::pair<settings::GameEnvironment*, settings::GameConfiguration*> previous);
 
 private:
 	std::vector<std::unique_ptr<settings::GameEnvironment>> _gameEnvironments;

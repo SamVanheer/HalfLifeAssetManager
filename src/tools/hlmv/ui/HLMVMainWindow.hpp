@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 
 #include <QMainWindow>
 #include <QString>
@@ -19,6 +20,12 @@ namespace assets
 class AssetDataChangeEvent;
 }
 
+namespace settings
+{
+class GameConfiguration;
+class GameEnvironment;
+}
+
 class HLMVMainWindow final : public QMainWindow
 {
 	Q_OBJECT
@@ -31,6 +38,8 @@ public:
 
 private:
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
+
+	void SetupFileSystem(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration);
 
 private slots:
 	void OnRecentFilesChanged();
@@ -54,6 +63,11 @@ private slots:
 	void OnOpenOptionsDialog();
 
 	void OnShowAbout();
+
+	void OnActiveConfigurationChanged(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> current,
+		std::pair<settings::GameEnvironment*, settings::GameConfiguration*> previous);
+
+	void OnGameConfigurationDirectoryChanged();
 
 private:
 	Ui_HLMVMainWindow _ui;

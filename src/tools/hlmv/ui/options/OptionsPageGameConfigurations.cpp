@@ -191,7 +191,7 @@ void OptionsPageGameConfigurationsWidget::ApplyChanges(QSettings& settings)
 
 		target->SetName(source->GetName());
 		target->SetInstallationPath(source->GetInstallationPath());
-		target->SetDefaultMod(source->GetDefaultMod());
+		target->SetDefaultModId(source->GetDefaultModId());
 
 		if (auto configIt = _gameConfigurationsChangeSet.find(environmentId); configIt != _gameConfigurationsChangeSet.end())
 		{
@@ -362,7 +362,7 @@ void OptionsPageGameConfigurationsWidget::OnGameEnvironmentSelectionChanged(cons
 			++row;
 		}
 
-		const auto& defaultModId = gameEnvironment->GetDefaultMod();
+		const auto& defaultModId = gameEnvironment->GetDefaultModId();
 
 		if (!defaultModId.isNull())
 		{
@@ -457,11 +457,11 @@ void OptionsPageGameConfigurationsWidget::OnDefaultGameChanged()
 		{
 			auto configuration = _ui.DefaultGame->currentData().value<GameConfiguration*>();
 
-			gameEnvironment->SetDefaultMod(configuration->GetId());
+			gameEnvironment->SetDefaultModId(configuration->GetId());
 		}
 		else
 		{
-			gameEnvironment->SetDefaultMod(QUuid{});
+			gameEnvironment->SetDefaultModId(QUuid{});
 		}
 
 		_gameEnvironmentsChangeSet.MarkChanged(gameEnvironment->GetId());
@@ -470,10 +470,17 @@ void OptionsPageGameConfigurationsWidget::OnDefaultGameChanged()
 
 void OptionsPageGameConfigurationsWidget::OnGameConfigurationDataChanged(const QModelIndex& topLeft)
 {
+	auto item = _gameConfigurationsModel->itemFromIndex(topLeft);
+
+	auto gameEnvironment = _gameEnvironmentsModel->itemFromIndex(_ui.GameEnvironmentList->currentIndex())->data().value<GameEnvironment*>();
+	auto gameConfiguration = _ui.DefaultGame->itemData(item->row()).value<GameConfiguration*>();
+
+	_gameEnvironmentsChangeSet.MarkChanged(gameEnvironment->GetId());
+
+	GetOrCreateGameConfigurationChangeSet(gameEnvironment->GetId())->MarkChanged(gameConfiguration->GetId());
+
 	if (topLeft.column() == GameConfigurationNameColumn)
 	{
-		auto item = _gameConfigurationsModel->itemFromIndex(topLeft);
-
 		_ui.DefaultGame->setItemText(topLeft.row(), item->text());
 
 		if (_currentEnvironmentIsActive)
@@ -481,11 +488,11 @@ void OptionsPageGameConfigurationsWidget::OnGameConfigurationDataChanged(const Q
 			_ui.ActiveConfiguration->setItemText(topLeft.row(), item->text());
 		}
 
-		auto gameEnvironment = _gameEnvironmentsModel->itemFromIndex(_ui.GameEnvironmentList->currentIndex())->data().value<GameEnvironment*>();
-
-		_gameEnvironmentsChangeSet.MarkChanged(gameEnvironment->GetId());
-
-		GetOrCreateGameConfigurationChangeSet(gameEnvironment->GetId())->MarkChanged(_ui.DefaultGame->itemData(item->row()).value<GameConfiguration*>()->GetId());
+		gameConfiguration->SetName(item->text());
+	}
+	else if (topLeft.column() == GameConfigurationDirectoryColumn)
+	{
+		gameConfiguration->SetDirectory(item->text());
 	}
 }
 

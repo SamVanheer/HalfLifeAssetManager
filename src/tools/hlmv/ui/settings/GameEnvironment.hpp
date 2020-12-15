@@ -68,9 +68,9 @@ public:
 		_installationPath = std::move(value);
 	}
 
-	const QUuid& GetDefaultMod() const { return _defaultMod; }
+	const QUuid& GetDefaultModId() const { return _defaultMod; }
 
-	void SetDefaultMod(const QUuid& value)
+	void SetDefaultModId(const QUuid& value)
 	{
 		_defaultMod = std::move(value);
 	}
