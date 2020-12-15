@@ -1,5 +1,6 @@
 #include <QDesktopServices>
 #include <QFileInfo>
+#include <QImageWriter>
 #include <QMessageBox>
 #include <QUrl>
 
@@ -18,5 +19,29 @@ bool LaunchDefaultProgram(const QString& fileName)
 	}
 
 	return true;
+}
+
+QString GetImagesFileFilter()
+{
+	static QString cachedFilter;
+
+	if (cachedFilter.isEmpty())
+	{
+		const auto formats = QImageWriter::supportedImageFormats();
+
+		QStringList formatsStrings;
+
+		formatsStrings.reserve(formats.size());
+
+		for (const auto& format : formats)
+		{
+			formatsStrings.append(QString{"*.%1"}.arg(QString{format}));
+		}
+
+		//TODO: one filter per format instead of lumping them all together
+		cachedFilter = QString{"Image Files (%1);;All Files (*.*)"}.arg(formatsStrings.join(' '));
+	}
+
+	return cachedFilter;
 }
 }

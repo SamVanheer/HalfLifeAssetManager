@@ -59,10 +59,9 @@ public:
 	virtual void PopulateAssetMenu(QMenu* menu) = 0;
 
 	/**
-	*	@brief Creates a widget to view and edit this asset
-	*	@param editorContext The editor context used to communicate with the owner
+	*	@brief Gets a widget to view and edit this asset
 	*/
-	virtual QWidget* CreateEditWidget(EditorContext* editorContext) = 0;
+	virtual QWidget* GetEditWidget() = 0;
 
 	virtual void SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget) = 0;
 

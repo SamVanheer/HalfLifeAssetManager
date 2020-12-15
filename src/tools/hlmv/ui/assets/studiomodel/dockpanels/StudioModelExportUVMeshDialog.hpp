@@ -51,7 +51,5 @@ private:
 	const QImage _texture;
 	QImage _uv;
 	QImage _preview;
-
-	QString _cachedFilter;
 };
 }

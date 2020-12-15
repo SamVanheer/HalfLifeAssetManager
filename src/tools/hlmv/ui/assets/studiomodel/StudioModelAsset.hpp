@@ -29,6 +29,7 @@ class StudioModelSettings;
 namespace assets::studiomodel
 {
 class StudioModelAssetProvider;
+class StudioModelEditWidget;
 
 class StudioModelAsset final : public Asset, public IInputSink
 {
@@ -48,7 +49,7 @@ public:
 
 	void PopulateAssetMenu(QMenu* menu) override;
 
-	QWidget* CreateEditWidget(EditorContext* editorContext) override;
+	QWidget* GetEditWidget() override;
 
 	void SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget) override;
 
@@ -91,6 +92,8 @@ private slots:
 
 	void OnDumpModelInfo();
 
+	void OnTakeScreenshot();
+
 private:
 	EditorContext* const _editorContext;
 	const StudioModelAssetProvider* const _provider;
@@ -100,6 +103,8 @@ private:
 	std::stack<IInputSink*> _inputSinks;
 	//TODO: temporary; will need to be set up somewhere else eventually
 	std::unique_ptr<camera_operators::CameraOperator> _cameraOperator;
+
+	StudioModelEditWidget* _editWidget{};
 };
 
 class StudioModelAssetProvider final : public IAssetProvider

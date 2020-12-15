@@ -13,7 +13,6 @@
 #include "ui/HLMVMainWindow.hpp"
 
 #include "ui/assets/Assets.hpp"
-#include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
 #include "ui/options/OptionsDialog.hpp"
 
@@ -86,7 +85,7 @@ bool HLMVMainWindow::TryLoadAsset(const QString& fileName)
 	{
 		connect(asset.get(), &assets::Asset::FileNameChanged, this, &HLMVMainWindow::OnAssetFileNameChanged);
 
-		auto editWidget = asset->CreateEditWidget(_editorContext);
+		auto editWidget = asset->GetEditWidget();
 
 		_undoGroup->addStack(asset->GetUndoStack());
 
@@ -204,8 +203,6 @@ void HLMVMainWindow::OnAssetTabCloseRequested(int index)
 	//TODO: ask to save, etc
 
 	auto editWidget = _assetTabs->widget(index);
-
-	delete editWidget;
 
 	_assetTabs->removeTab(index);
 

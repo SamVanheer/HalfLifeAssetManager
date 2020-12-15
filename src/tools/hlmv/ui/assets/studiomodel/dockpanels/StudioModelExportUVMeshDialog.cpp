@@ -6,6 +6,8 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
+#include "qt/QtUtilities.hpp"
+
 #include "ui/assets/studiomodel/dockpanels/StudioModelExportUVMeshDialog.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
 
@@ -35,19 +37,6 @@ StudioModelExportUVMeshDialog::StudioModelExportUVMeshDialog(
 	_ui.TextureNameLabel->setText(studioTexture->name);
 
 	_ui.OkButton->setEnabled(false);
-
-	const auto formats = QImageWriter::supportedImageFormats();
-
-	QStringList formatsStrings;
-
-	formatsStrings.reserve(formats.size());
-
-	for (const auto& format : formats)
-	{
-		formatsStrings.append(QString{"*.%1"}.arg(QString{format}));
-	}
-
-	_cachedFilter = QString{"Image Files (%1);;All Files (*.*)"}.arg(formatsStrings.join(' '));
 }
 
 StudioModelExportUVMeshDialog::~StudioModelExportUVMeshDialog() = default;
@@ -96,7 +85,7 @@ void StudioModelExportUVMeshDialog::OnFileNameChanged()
 
 void StudioModelExportUVMeshDialog::OnBrowseFileName()
 {
-	const QString fileName = QFileDialog::getSaveFileName(this, "Select Image Filename", {}, _cachedFilter);
+	const QString fileName = QFileDialog::getSaveFileName(this, "Select Image Filename", {}, qt::GetImagesFileFilter());
 
 	if (!fileName.isEmpty())
 	{

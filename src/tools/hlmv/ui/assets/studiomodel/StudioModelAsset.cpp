@@ -68,6 +68,8 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 StudioModelAsset::~StudioModelAsset()
 {
 	PopInputSink();
+
+	delete _editWidget;
 }
 
 void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
@@ -83,15 +85,22 @@ void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 				qt::LaunchDefaultProgram(fileName);
 			}
 		});
+
+	menu->addAction("Take Screenshot...", this, &StudioModelAsset::OnTakeScreenshot);
 }
 
-QWidget* StudioModelAsset::CreateEditWidget(EditorContext* editorContext)
+QWidget* StudioModelAsset::GetEditWidget()
 {
-	auto editWidget = new StudioModelEditWidget(editorContext, this);
+	if (_editWidget)
+	{
+		return _editWidget;
+	}
 
-	editWidget->connect(editWidget->GetSceneWidget(), &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
+	_editWidget = new StudioModelEditWidget(_editorContext, this);
 
-	return editWidget;
+	_editWidget->connect(_editWidget->GetSceneWidget(), &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
+
+	return _editWidget;
 }
 
 void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget)
@@ -151,6 +160,25 @@ void StudioModelAsset::OnDumpModelInfo()
 		else
 		{
 			QMessageBox::critical(nullptr, "Error", QString{"Could not open file \"%1\" for writing"}.arg(fileName));
+		}
+	}
+}
+
+void StudioModelAsset::OnTakeScreenshot()
+{
+	//Ensure the edit widget exists
+	//Should always be the case since the screenshot action is only available if the edit widget is open
+	GetEditWidget();
+
+	const QImage screenshot = _editWidget->GetSceneWidget()->grabFramebuffer();
+
+	const QString fileName{QFileDialog::getSaveFileName(nullptr, {}, {}, qt::GetImagesFileFilter())};
+
+	if (!fileName.isEmpty())
+	{
+		if (!screenshot.save(fileName))
+		{
+			QMessageBox::critical(nullptr, "Error", "An error occurred while saving screenshot");
 		}
 	}
 }
