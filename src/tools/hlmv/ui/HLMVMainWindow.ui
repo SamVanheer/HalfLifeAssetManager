@@ -40,6 +40,7 @@
     </widget>
     <addaction name="ActionLoad"/>
     <addaction name="ActionSave"/>
+    <addaction name="ActionSaveAs"/>
     <addaction name="separator"/>
     <addaction name="MenuRecentFiles"/>
     <addaction name="separator"/>
@@ -108,6 +109,11 @@
   <action name="ActionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="ActionSaveAs">
+   <property name="text">
+    <string>Save As...</string>
    </property>
   </action>
  </widget>

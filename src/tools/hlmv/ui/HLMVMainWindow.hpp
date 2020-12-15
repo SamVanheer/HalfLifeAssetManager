@@ -58,6 +58,10 @@ private slots:
 
 	void OnOpenLoadAssetDialog();
 
+	void OnSaveAsset();
+
+	void OnSaveAssetAs();
+
 	void OnGoFullscreen();
 
 	void OnOpenOptionsDialog();

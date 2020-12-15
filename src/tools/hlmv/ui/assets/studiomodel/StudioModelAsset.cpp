@@ -199,6 +199,7 @@ std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorConte
 
 void StudioModelAssetProvider::Save(const QString& fileName, StudioModelAsset& asset) const
 {
-	//TODO:
+	//TODO: add setting to correct groups
+	studiomdl::SaveStudioModel(fileName.toStdString().c_str(), *asset.GetStudioModel(), false);
 }
 }

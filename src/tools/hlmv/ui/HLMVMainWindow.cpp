@@ -50,6 +50,8 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	setCentralWidget(_assetTabs);
 
 	connect(_ui.ActionLoad, &QAction::triggered, this, &HLMVMainWindow::OnOpenLoadAssetDialog);
+	connect(_ui.ActionSave, &QAction::triggered, this, &HLMVMainWindow::OnSaveAsset);
+	connect(_ui.ActionSaveAs, &QAction::triggered, this, &HLMVMainWindow::OnSaveAssetAs);
 	connect(_ui.ActionExit, &QAction::triggered, this, &HLMVMainWindow::OnExit);
 	connect(_ui.ActionFullscreen, &QAction::triggered, this, &HLMVMainWindow::OnGoFullscreen);
 	connect(_ui.ActionOptions, &QAction::triggered, this, &HLMVMainWindow::OnOpenOptionsDialog);
@@ -65,6 +67,8 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	connect(_editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged,
 		this, &HLMVMainWindow::SetupFileSystem);
 
+	_ui.ActionSave->setEnabled(false);
+	_ui.ActionSaveAs->setEnabled(false);
 	_ui.MenuAsset->setEnabled(false);
 	_assetTabs->setVisible(false);
 
@@ -187,6 +191,8 @@ void HLMVMainWindow::OnAssetTabChanged(int index)
 		setWindowTitle({});
 	}
 
+	_ui.ActionSave->setEnabled(success);
+	_ui.ActionSaveAs->setEnabled(success);
 	_ui.MenuAsset->setEnabled(success);
 }
 
@@ -244,6 +250,8 @@ void HLMVMainWindow::OnAssetFileNameChanged(const QString& fileName)
 		{
 			_assetTabs->setTabText(index, fileName);
 
+			_editorContext->GetRecentFiles()->Add(fileName);
+
 			if (_assetTabs->currentWidget() == it->GetEditWidget())
 			{
 				UpdateTitle(it->GetAsset()->GetFileName(), !_undoGroup->isClean());
@@ -267,6 +275,39 @@ void HLMVMainWindow::OnOpenLoadAssetDialog()
 		!fileName.isEmpty())
 	{
 		TryLoadAsset(fileName);
+	}
+}
+
+void HLMVMainWindow::OnSaveAsset()
+{
+	auto& assets = _editorContext->GetLoadedAssets();
+
+	auto& currentAsset = assets[_assetTabs->currentIndex()];
+
+	auto asset = currentAsset.GetAsset();
+
+	auto undoStack = asset->GetUndoStack();
+
+	undoStack->setClean();
+
+	asset->Save(asset->GetFileName());
+}
+
+void HLMVMainWindow::OnSaveAssetAs()
+{
+	auto& assets = _editorContext->GetLoadedAssets();
+
+	auto& currentAsset = assets[_assetTabs->currentIndex()];
+
+	//TODO: compute filter based on available asset providers
+	QString fileName{QFileDialog::getSaveFileName(
+		this, {}, currentAsset.GetAsset()->GetFileName(), "Half-Life 1 Model Files (*.mdl *.dol);;All Files (*.*)")};
+
+	if (!fileName.isEmpty())
+	{
+		currentAsset.GetAsset()->SetFileName(std::move(fileName));
+
+		OnSaveAsset();
 	}
 }
 
