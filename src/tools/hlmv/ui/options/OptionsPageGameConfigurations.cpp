@@ -11,6 +11,7 @@
 
 #include "ui/options/OptionsPageGameConfigurations.hpp"
 #include "ui/settings/GameConfiguration.hpp"
+#include "ui/settings/GameConfigurationsSettings.hpp"
 #include "ui/settings/GameEnvironment.hpp"
 
 //TODO: implement automatic scanning of mods
@@ -51,7 +52,8 @@ static QString GenerateUniqueName(const QString& baseName, const Container& cont
 	return baseName + " (Duplicate)";
 }
 
-OptionsPageGameConfigurations::OptionsPageGameConfigurations()
+OptionsPageGameConfigurations::OptionsPageGameConfigurations(const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings)
+	: _gameConfigurationsSettings(gameConfigurationsSettings)
 {
 	SetCategory(QString{OptionsPageGameConfigurationsCategory});
 	SetCategoryTitle("Game Configurations");
@@ -114,9 +116,11 @@ OptionsPageGameConfigurationsWidget::OptionsPageGameConfigurationsWidget(EditorC
 	connect(_ui.AddNewGameConfiguration, &QPushButton::clicked, this, &OptionsPageGameConfigurationsWidget::OnNewGameConfiguration);
 	connect(_ui.RemoveGameConfiguration, &QPushButton::clicked, this, &OptionsPageGameConfigurationsWidget::OnRemoveGameConfiguration);
 
-	const auto environments = _editorContext->GetGameEnvironments();
+	const auto gameConfigurations = _editorContext->GetGameConfigurations();
 
-	const auto activeConfiguration = _editorContext->GetActiveConfiguration();
+	const auto environments = gameConfigurations->GetGameEnvironments();
+
+	const auto activeConfiguration = gameConfigurations->GetActiveConfiguration();
 
 	int index = 0;
 
@@ -149,9 +153,11 @@ OptionsPageGameConfigurationsWidget::~OptionsPageGameConfigurationsWidget() = de
 
 void OptionsPageGameConfigurationsWidget::ApplyChanges(QSettings& settings)
 {
+	const auto gameConfigurations = _editorContext->GetGameConfigurations();
+
 	for (const auto& environmentId : _gameEnvironmentsChangeSet.RemovedObjects)
 	{
-		_editorContext->RemoveGameEnvironment(environmentId);
+		gameConfigurations->RemoveGameEnvironment(environmentId);
 	}
 
 	for (const auto& environmentId : _gameEnvironmentsChangeSet.NewObjects)
@@ -164,7 +170,7 @@ void OptionsPageGameConfigurationsWidget::ApplyChanges(QSettings& settings)
 
 		assert(it != _gameEnvironments.end());
 
-		_editorContext->AddGameEnvironment(std::make_unique<GameEnvironment>(*(*it)));
+		gameConfigurations->AddGameEnvironment(std::make_unique<GameEnvironment>(*(*it)));
 	}
 
 	for (const auto& environmentId : _gameEnvironmentsChangeSet.UpdatedObjects)
@@ -179,7 +185,7 @@ void OptionsPageGameConfigurationsWidget::ApplyChanges(QSettings& settings)
 
 		auto source = it->get();
 
-		auto target = _editorContext->GetGameEnvironmentById(environmentId);
+		auto target = gameConfigurations->GetGameEnvironmentById(environmentId);
 
 		assert(target);
 
@@ -224,7 +230,7 @@ void OptionsPageGameConfigurationsWidget::ApplyChanges(QSettings& settings)
 
 		auto environment = item->data().value<GameEnvironment*>();
 
-		activeEnvironment = _editorContext->GetGameEnvironmentById(environment->GetId());
+		activeEnvironment = gameConfigurations->GetGameEnvironmentById(environment->GetId());
 	}
 
 	if (activeEnvironment && _ui.ActiveConfiguration->currentIndex() != -1)
@@ -234,9 +240,9 @@ void OptionsPageGameConfigurationsWidget::ApplyChanges(QSettings& settings)
 		activeConfiguration = activeEnvironment->GetGameConfigurationById(id);
 	}
 
-	_editorContext->SetActiveConfiguration({activeEnvironment, activeConfiguration});
+	gameConfigurations->SetActiveConfiguration({activeEnvironment, activeConfiguration});
 
-	//TODO: save to settings
+	gameConfigurations->SaveSettings(settings);
 }
 
 OptionsPageGameConfigurationsWidget::ChangeSet* OptionsPageGameConfigurationsWidget::GetOrCreateGameConfigurationChangeSet(const QUuid& id)
@@ -356,11 +362,20 @@ void OptionsPageGameConfigurationsWidget::OnGameEnvironmentSelectionChanged(cons
 			++row;
 		}
 
-		const auto defaultModName = gameEnvironment->GetDefaultMod();
+		const auto& defaultModId = gameEnvironment->GetDefaultMod();
 
-		if (!defaultModName.isEmpty())
+		if (!defaultModId.isNull())
 		{
-			_ui.DefaultGame->setCurrentText(defaultModName);
+			for (int i = 0; i < _ui.DefaultGame->count(); ++i)
+			{
+				auto configuration = _ui.DefaultGame->itemData(i).value<GameConfiguration*>();
+
+				if (configuration->GetId() == defaultModId)
+				{
+					_ui.DefaultGame->setCurrentText(configuration->GetName());
+					break;
+				}
+			}
 		}
 	}
 	else
@@ -437,6 +452,17 @@ void OptionsPageGameConfigurationsWidget::OnDefaultGameChanged()
 	if (index.isValid())
 	{
 		auto gameEnvironment = _gameEnvironmentsModel->itemFromIndex(index)->data().value<GameEnvironment*>();
+
+		if (_ui.DefaultGame->count() > 0)
+		{
+			auto configuration = _ui.DefaultGame->currentData().value<GameConfiguration*>();
+
+			gameEnvironment->SetDefaultMod(configuration->GetId());
+		}
+		else
+		{
+			gameEnvironment->SetDefaultMod(QUuid{});
+		}
 
 		_gameEnvironmentsChangeSet.MarkChanged(gameEnvironment->GetId());
 	}

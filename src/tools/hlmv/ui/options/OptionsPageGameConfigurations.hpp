@@ -21,6 +21,7 @@ class EditorContext;
 
 namespace settings
 {
+class GameConfigurationsSettings;
 class GameEnvironment;
 }
 
@@ -31,7 +32,10 @@ extern const QString OptionsPageGameConfigurationsId;
 class OptionsPageGameConfigurations final : public OptionsPage
 {
 public:
-	OptionsPageGameConfigurations();
+	OptionsPageGameConfigurations(const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings);
+
+private:
+	const std::shared_ptr<settings::GameConfigurationsSettings> _gameConfigurationsSettings;
 };
 
 class OptionsPageGameConfigurationsWidget final : public OptionsWidget

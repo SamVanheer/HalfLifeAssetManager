@@ -68,9 +68,9 @@ public:
 		_installationPath = std::move(value);
 	}
 
-	QString GetDefaultMod() const { return _defaultMod; }
+	const QUuid& GetDefaultMod() const { return _defaultMod; }
 
-	void SetDefaultMod(QString&& value)
+	void SetDefaultMod(const QUuid& value)
 	{
 		_defaultMod = std::move(value);
 	}
@@ -138,7 +138,7 @@ private:
 	QString _name;
 
 	QString _installationPath;
-	QString _defaultMod;
+	QUuid _defaultMod;
 
 	std::vector<std::unique_ptr<GameConfiguration>> _gameConfigurations;
 };

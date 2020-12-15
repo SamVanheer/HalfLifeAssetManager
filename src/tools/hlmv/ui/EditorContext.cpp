@@ -17,8 +17,7 @@
 
 #include "ui/options/OptionsPageRegistry.hpp"
 
-#include "ui/settings/GameConfiguration.hpp"
-#include "ui/settings/GameEnvironment.hpp"
+#include "ui/settings/GameConfigurationsSettings.hpp"
 #include "ui/settings/GeneralSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
 
@@ -36,12 +35,14 @@ EditorContext::EditorContext(
 	QSettings* settings,
 	const std::shared_ptr<settings::GeneralSettings>& generalSettings,
 	const std::shared_ptr<settings::RecentFilesSettings>& recentFilesSettings,
+	const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings,
 	std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
 	std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent)
 	: QObject(parent)
 	, _settings(settings)
 	, _generalSettings(generalSettings)
 	, _recentFilesSettings(recentFilesSettings)
+	, _gameConfigurationsSettings(gameConfigurationsSettings)
 	, _timer(new QTimer(this))
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
 	, _fileSystem(std::make_unique<filesystem::CFileSystem>())
@@ -71,59 +72,6 @@ EditorContext::~EditorContext()
 {
 	_soundSystem->Shutdown();
 	_fileSystem->Shutdown();
-}
-
-std::vector<settings::GameEnvironment*> EditorContext::GetGameEnvironments() const
-{
-	std::vector<settings::GameEnvironment*> environments;
-
-	environments.reserve(_gameEnvironments.size());
-
-	std::transform(_gameEnvironments.begin(), _gameEnvironments.end(), std::back_inserter(environments), [](const auto& environment)
-		{
-			return environment.get();
-		});
-
-	return environments;
-}
-
-settings::GameEnvironment* EditorContext::GetGameEnvironmentById(const QUuid& id) const
-{
-	if (auto it = std::find_if(_gameEnvironments.begin(), _gameEnvironments.end(), [&](const auto& environment)
-		{
-			return environment->GetId() == id;
-		}
-	); it != _gameEnvironments.end())
-	{
-		return it->get();
-	}
-
-	return nullptr;
-}
-
-void EditorContext::AddGameEnvironment(std::unique_ptr<settings::GameEnvironment>&& gameEnvironment)
-{
-	assert(gameEnvironment);
-
-	auto& ref = _gameEnvironments.emplace_back(std::move(gameEnvironment));
-
-	emit GameEnvironmentAdded(ref.get());
-}
-
-void EditorContext::RemoveGameEnvironment(const QUuid& id)
-{
-	if (auto it = std::find_if(_gameEnvironments.begin(), _gameEnvironments.end(), [&](const auto& environment)
-		{
-			return environment->GetId() == id;
-		}
-	); it != _gameEnvironments.end())
-	{
-		const std::unique_ptr<settings::GameEnvironment> gameEnvironment{std::move(*it)};
-
-		_gameEnvironments.erase(it);
-
-		emit GameEnvironmentRemoved(gameEnvironment.get());
-	}
 }
 
 void EditorContext::OnTimerTick()

@@ -34,8 +34,7 @@ class OptionsPageRegistry;
 
 namespace settings
 {
-class GameConfiguration;
-class GameEnvironment;
+class GameConfigurationsSettings;
 class GeneralSettings;
 class RecentFilesSettings;
 }
@@ -73,6 +72,7 @@ public:
 		QSettings* settings,
 		const std::shared_ptr<settings::GeneralSettings>& generalSettings,
 		const std::shared_ptr<settings::RecentFilesSettings>& recentFilesSettings,
+		const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings,
 		std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
 		std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent = nullptr);
 	~EditorContext();
@@ -84,6 +84,8 @@ public:
 	settings::GeneralSettings* GetGeneralSettings() const { return _generalSettings.get(); }
 
 	settings::RecentFilesSettings* GetRecentFiles() const { return _recentFilesSettings.get(); }
+
+	settings::GameConfigurationsSettings* GetGameConfigurations() const { return _gameConfigurationsSettings.get(); }
 
 	QTimer* GetTimer() const { return _timer; }
 
@@ -97,39 +99,11 @@ public:
 
 	std::vector<LoadedAsset>& GetLoadedAssets() { return _loadedAssets; }
 
-	std::vector<settings::GameEnvironment*> GetGameEnvironments() const;
-
-	settings::GameEnvironment* GetGameEnvironmentById(const QUuid& id) const;
-
-	void AddGameEnvironment(std::unique_ptr<settings::GameEnvironment>&& gameEnvironment);
-
-	void RemoveGameEnvironment(const QUuid& id);
-
-	std::pair<settings::GameEnvironment*, settings::GameConfiguration*> GetActiveConfiguration() const { return _activeConfiguration; }
-
-	void SetActiveConfiguration(const std::pair<settings::GameEnvironment*, settings::GameConfiguration*>& configuration)
-	{
-		if (_activeConfiguration != configuration)
-		{
-			const auto previous = _activeConfiguration;
-
-			_activeConfiguration = configuration;
-			
-			emit ActiveConfigurationChanged(configuration, previous);
-		}
-	}
-
 signals:
 	/**
 	*	@brief Emitted every time a frame tick occurs
 	*/
 	void Tick();
-
-	void GameEnvironmentAdded(settings::GameEnvironment* gameEnvironment);
-	void GameEnvironmentRemoved(settings::GameEnvironment* gameEnvironment);
-
-	void ActiveConfigurationChanged(const std::pair<settings::GameEnvironment*, settings::GameConfiguration*>& current,
-		const std::pair<settings::GameEnvironment*, settings::GameConfiguration*>& previous);
 
 private slots:
 	void OnTimerTick();
@@ -139,6 +113,7 @@ private:
 
 	const std::shared_ptr<settings::GeneralSettings> _generalSettings;
 	const std::shared_ptr<settings::RecentFilesSettings> _recentFilesSettings;
+	const std::shared_ptr<settings::GameConfigurationsSettings> _gameConfigurationsSettings;
 
 	QTimer* const _timer;
 
@@ -150,10 +125,5 @@ private:
 	std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
 
 	std::vector<LoadedAsset> _loadedAssets;
-
-	//TODO: game environments should be moved to a separate collection type
-	std::vector<std::unique_ptr<settings::GameEnvironment>> _gameEnvironments;
-
-	std::pair<settings::GameEnvironment*, settings::GameConfiguration*> _activeConfiguration{};
 };
 }
