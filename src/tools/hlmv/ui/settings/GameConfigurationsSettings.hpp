@@ -29,8 +29,6 @@ public:
 
 	void LoadSettings(QSettings& settings)
 	{
-		SetActiveConfiguration({nullptr, nullptr});
-
 		RemoveAllGameEnvironments();
 
 		settings.beginGroup("game_environments");
@@ -237,6 +235,8 @@ public:
 
 	void RemoveAllGameEnvironments()
 	{
+		SetActiveConfiguration({nullptr, nullptr});
+
 		for (auto it = _gameEnvironments.begin(); it != _gameEnvironments.end();)
 		{
 			const std::unique_ptr<settings::GameEnvironment> gameEnvironment{std::move(*it)};
