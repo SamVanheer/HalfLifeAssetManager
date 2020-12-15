@@ -47,6 +47,7 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	setCentralWidget(_assetTabs);
 
 	connect(_ui.ActionLoad, &QAction::triggered, this, &HLMVMainWindow::OnOpenLoadAssetDialog);
+	connect(_ui.ActionExit, &QAction::triggered, this, &HLMVMainWindow::OnExit);
 	connect(_ui.ActionFullscreen, &QAction::triggered, this, &HLMVMainWindow::OnGoFullscreen);
 	connect(_ui.ActionOptions, &QAction::triggered, this, &HLMVMainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &HLMVMainWindow::OnShowAbout);
@@ -127,6 +128,13 @@ void HLMVMainWindow::OnOpenRecentFile()
 	{
 		_editorContext->GetRecentFiles()->Remove(fileName);
 	}
+}
+
+void HLMVMainWindow::OnExit()
+{
+	//TODO: ask to save pending changes for each document
+
+	this->close();
 }
 
 void HLMVMainWindow::OnAssetCleanChanged(bool clean)

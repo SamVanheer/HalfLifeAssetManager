@@ -42,6 +42,8 @@
     <addaction name="ActionSave"/>
     <addaction name="separator"/>
     <addaction name="MenuRecentFiles"/>
+    <addaction name="separator"/>
+    <addaction name="ActionExit"/>
    </widget>
    <widget class="QMenu" name="MenuHelp">
     <property name="title">
@@ -95,6 +97,11 @@
    </property>
    <property name="text">
     <string>Fullscreen</string>
+   </property>
+  </action>
+  <action name="ActionExit">
+   <property name="text">
+    <string>Exit</string>
    </property>
   </action>
  </widget>

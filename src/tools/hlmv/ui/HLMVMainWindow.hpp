@@ -37,6 +37,8 @@ private slots:
 
 	void OnOpenRecentFile();
 
+	void OnExit();
+
 	void OnAssetCleanChanged(bool clean);
 
 	void OnAssetTabChanged(int index);
