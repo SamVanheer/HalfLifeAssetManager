@@ -1,17 +1,22 @@
+#include <cstdio>
 #include <stdexcept>
 
 #include <QAction>
-#include <QDesktopServices>
+#include <QDir>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QMenu>
 #include <QMessageBox>
 
+#include "engine/shared/studiomodel/DumpModelInfo.hpp"
 #include "entity/CHLMVStudioModelEntity.h"
 #include "game/entity/CBaseEntity.h"
 #include "game/entity/CBaseEntityList.h"
 #include "game/entity/CEntityManager.h"
 
 #include "graphics/Scene.hpp"
+
+#include "qt/QtUtilities.hpp"
 
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
@@ -24,6 +29,8 @@
 #include "ui/camera_operators/CameraOperator.hpp"
 
 #include "ui/settings/StudioModelSettings.hpp"
+
+#include "utility/IOUtils.h"
 
 namespace ui::assets::studiomodel
 {
@@ -65,16 +72,15 @@ StudioModelAsset::~StudioModelAsset()
 
 void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 {
+	menu->addAction("Dump Model Info...", this, &StudioModelAsset::OnDumpModelInfo);
+
 	menu->addAction("Edit QC File...", []
 		{
 			const QString fileName{QFileDialog::getOpenFileName(nullptr, "Select QC File", {}, "QC files (*.qc);;All Files (*.*)")};
 
 			if (!fileName.isEmpty())
 			{
-				if (!QDesktopServices::openUrl(QUrl::fromLocalFile(fileName)))
-				{
-					QMessageBox::critical(nullptr, "Error", "Unable to start default program\nMake sure the .qc extension is associated with a program");
-				}
+				qt::LaunchDefaultProgram(fileName);
 			}
 		});
 }
@@ -122,6 +128,31 @@ void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
 void StudioModelAsset::OnFloorLengthChanged(int length)
 {
 	_scene->FloorLength = length;
+}
+
+void StudioModelAsset::OnDumpModelInfo()
+{
+	const QFileInfo fileInfo{GetFileName()};
+
+	const auto suggestedFileName{QString{"%1%2%3_modelinfo.txt"}.arg(fileInfo.path()).arg(QDir::separator()).arg(fileInfo.completeBaseName())};
+
+	const QString fileName{QFileDialog::getSaveFileName(nullptr, {}, suggestedFileName, "Text Files (*.txt);;All Files (*.*)")};
+
+	if (!fileName.isEmpty())
+	{
+		if (FILE* file = utf8_fopen(fileName.toStdString().c_str(), "w"); file)
+		{
+			studiomdl::DumpModelInfo(file, *_studioModel);
+
+			fclose(file);
+
+			qt::LaunchDefaultProgram(fileName);
+		}
+		else
+		{
+			QMessageBox::critical(nullptr, "Error", QString{"Could not open file \"%1\" for writing"}.arg(fileName));
+		}
+	}
 }
 
 bool StudioModelAssetProvider::CanLoad(const QString& fileName) const

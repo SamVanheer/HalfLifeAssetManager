@@ -79,7 +79,7 @@ public:
 signals:
 	void Tick();
 
-public slots:
+private slots:
 	void OnSceneWidgetMouseEvent(QMouseEvent* event);
 
 	void SetBackgroundColor(QColor color)
@@ -88,6 +88,8 @@ public slots:
 	}
 
 	void OnFloorLengthChanged(int length);
+
+	void OnDumpModelInfo();
 
 private:
 	EditorContext* const _editorContext;

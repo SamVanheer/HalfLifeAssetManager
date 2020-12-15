@@ -1,3 +1,5 @@
 target_sources(HLMV
 	PRIVATE
-		HashFunctions.hpp)
+		HashFunctions.hpp
+		QtUtilities.cpp
+		QtUtilities.hpp)
