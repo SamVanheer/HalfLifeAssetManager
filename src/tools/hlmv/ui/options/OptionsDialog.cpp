@@ -1,6 +1,10 @@
+#include <cmath>
 #include <unordered_map>
 
-#include <qt/HashFunctions.hpp>
+#include <QApplication>
+#include <QDesktopWidget>
+
+#include "qt/HashFunctions.hpp"
 
 #include "ui/EditorContext.hpp"
 
@@ -17,6 +21,11 @@ OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
 	, _editorContext(editorContext)
 {
 	_ui.setupUi(this);
+
+	//Set the dialog size to a fraction of the current screen
+	const QRect screenSize = QApplication::desktop()->screenGeometry(this);
+
+	this->resize(static_cast<int>(std::ceil(screenSize.width() * 0.9)), static_cast<int>(std::ceil(screenSize.height() * 0.9)));
 
 	std::unordered_map<QString, QTreeWidgetItem*> categoryMap;
 
