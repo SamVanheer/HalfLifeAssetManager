@@ -11,6 +11,8 @@
 
 #include <entt/core/type_info.hpp>
 
+class QMenu;
+
 namespace ui
 {
 class EditorContext;
@@ -50,6 +52,11 @@ public:
 	}
 
 	QUndoStack* GetUndoStack() const { return _undoStack; }
+
+	/**
+	*	@brief Populates the Asset menu with actions and submenus specific to this asset
+	*/
+	virtual void PopulateAssetMenu(QMenu* menu) = 0;
 
 	/**
 	*	@brief Creates a widget to view and edit this asset

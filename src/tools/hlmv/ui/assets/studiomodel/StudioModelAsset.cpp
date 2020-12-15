@@ -1,5 +1,11 @@
 #include <stdexcept>
 
+#include <QAction>
+#include <QDesktopServices>
+#include <QFileDialog>
+#include <QMenu>
+#include <QMessageBox>
+
 #include "entity/CHLMVStudioModelEntity.h"
 #include "game/entity/CBaseEntity.h"
 #include "game/entity/CBaseEntityList.h"
@@ -55,6 +61,22 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 StudioModelAsset::~StudioModelAsset()
 {
 	PopInputSink();
+}
+
+void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
+{
+	menu->addAction("Edit QC File...", []
+		{
+			const QString fileName{QFileDialog::getOpenFileName(nullptr, "Select QC File", {}, "QC files (*.qc);;All Files (*.*)")};
+
+			if (!fileName.isEmpty())
+			{
+				if (!QDesktopServices::openUrl(QUrl::fromLocalFile(fileName)))
+				{
+					QMessageBox::critical(nullptr, "Error", "Unable to start default program\nMake sure the .qc extension is associated with a program");
+				}
+			}
+		});
 }
 
 QWidget* StudioModelAsset::CreateEditWidget(EditorContext* editorContext)

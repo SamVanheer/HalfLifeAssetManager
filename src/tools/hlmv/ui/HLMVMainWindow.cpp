@@ -66,6 +66,7 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	connect(_editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged,
 		this, &HLMVMainWindow::SetupFileSystem);
 
+	_ui.MenuAsset->setEnabled(false);
 	_assetTabs->setVisible(false);
 
 	_editorContext->GetTimer()->start(0);
@@ -152,6 +153,8 @@ void HLMVMainWindow::OnAssetCleanChanged(bool clean)
 
 void HLMVMainWindow::OnAssetTabChanged(int index)
 {
+	_ui.MenuAsset->clear();
+
 	bool success = false;
 
 	if (index != -1)
@@ -165,9 +168,12 @@ void HLMVMainWindow::OnAssetTabChanged(int index)
 				return candidate.GetEditWidget() == editWidget;
 			}); it != assets.end())
 		{
-			_undoGroup->setActiveStack(it->GetAsset()->GetUndoStack());
+			const auto asset = it->GetAsset();
 
-			UpdateTitle(it->GetAsset()->GetFileName(), !_undoGroup->isClean());
+			_undoGroup->setActiveStack(asset->GetUndoStack());
+
+			UpdateTitle(asset->GetFileName(), !_undoGroup->isClean());
+			asset->PopulateAssetMenu(_ui.MenuAsset);
 			success = true;
 		}
 		else
@@ -181,6 +187,8 @@ void HLMVMainWindow::OnAssetTabChanged(int index)
 		_undoGroup->setActiveStack(nullptr);
 		setWindowTitle({});
 	}
+
+	_ui.MenuAsset->setEnabled(success);
 }
 
 void HLMVMainWindow::OnAssetTabCloseRequested(int index)

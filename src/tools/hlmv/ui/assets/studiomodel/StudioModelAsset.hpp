@@ -46,6 +46,8 @@ public:
 
 	const IAssetProvider* GetProvider() const override;
 
+	void PopulateAssetMenu(QMenu* menu) override;
+
 	QWidget* CreateEditWidget(EditorContext* editorContext) override;
 
 	void SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget) override;

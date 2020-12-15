@@ -62,9 +62,15 @@
      <string>Edit</string>
     </property>
    </widget>
+   <widget class="QMenu" name="MenuAsset">
+    <property name="title">
+     <string>Asset</string>
+    </property>
+   </widget>
    <addaction name="MenuFile"/>
    <addaction name="MenuEdit"/>
    <addaction name="MenuView"/>
+   <addaction name="MenuAsset"/>
    <addaction name="MenuTools"/>
    <addaction name="MenuHelp"/>
   </widget>
