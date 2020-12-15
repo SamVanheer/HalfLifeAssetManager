@@ -121,8 +121,6 @@ public:
 
 	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const override;
 
-	void Save(const QString& fileName, Asset& asset) const override;
-
 	void Save(const QString& fileName, StudioModelAsset& asset) const;
 
 	settings::StudioModelSettings* GetSettings() const { return _settings.get(); }

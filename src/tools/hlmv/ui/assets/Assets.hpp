@@ -100,8 +100,6 @@ public:
 
 	//TODO: pass a filesystem object to resolve additional file locations with
 	virtual std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const = 0;
-
-	virtual void Save(const QString& fileName, Asset& asset) const = 0;
 };
 
 /**

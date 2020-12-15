@@ -197,20 +197,6 @@ std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorConte
 	return std::make_unique<StudioModelAsset>(QString{fileName}, editorContext, this, std::move(studioModel));
 }
 
-void StudioModelAssetProvider::Save(const QString& fileName, Asset& asset) const
-{
-	//TODO:
-	if (asset.GetAssetType() == GetAssetType())
-	{
-		Save(fileName, static_cast<StudioModelAsset&>(asset));
-	}
-	else
-	{
-		//TODO: maybe allow conversion from other asset types to this one, otherwise remove this method from the provider API
-		throw std::runtime_error("Cannot convert asset type to studiomodel");
-	}
-}
-
 void StudioModelAssetProvider::Save(const QString& fileName, StudioModelAsset& asset) const
 {
 	//TODO:
