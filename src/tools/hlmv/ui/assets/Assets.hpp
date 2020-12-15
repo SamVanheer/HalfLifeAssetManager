@@ -47,7 +47,7 @@ public:
 		{
 			_fileName = std::move(fileName);
 
-			emit FileNameChanged(fileName);
+			emit FileNameChanged(_fileName);
 		}
 	}
 
