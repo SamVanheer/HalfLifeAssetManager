@@ -43,4 +43,40 @@ void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& val
 		}
 	}
 }
+
+void ChangeAttachmentNameCommand::Apply(int index, const QString& value)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto attachment = header->GetAttachment(index);
+
+	strncpy(attachment->name, value.toUtf8().constData(), sizeof(attachment->name) - 1);
+	attachment->name[sizeof(attachment->name) - 1] = '\0';
+}
+
+void ChangeAttachmentTypeCommand::Apply(int index, const int& value)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto attachment = header->GetAttachment(index);
+
+	attachment->type = value;
+}
+
+void ChangeAttachmentBoneCommand::Apply(int index, const int& value)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto attachment = header->GetAttachment(index);
+
+	attachment->bone = value;
+}
+
+void ChangeAttachmentOriginCommand::Apply(int index, const glm::vec3& value)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto attachment = header->GetAttachment(index);
+
+	for (int i = 0; i < value.length(); ++i)
+	{
+		attachment->org[i] = value[i];
+	}
+}
 }

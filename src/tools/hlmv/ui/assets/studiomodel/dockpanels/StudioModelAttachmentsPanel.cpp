@@ -43,7 +43,6 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset
 	connect(_ui.OriginZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
 
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
 	const auto header = model->GetStudioHeader();
 
 	this->setEnabled(header->numattachments > 0);
@@ -86,7 +85,6 @@ StudioModelAttachmentsPanel::~StudioModelAttachmentsPanel() = default;
 void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
 	const auto header = model->GetStudioHeader();
 
 	switch (event.GetId())
@@ -103,17 +101,82 @@ void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 		UpdateQCString();
 		break;
 	}
+
+	case ModelChangeId::ChangeAttachmentName:
+	{
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
+		{
+			const auto attachment = header->GetAttachment(listChange.GetSourceIndex());
+
+			const QSignalBlocker name{_ui.Name};
+
+			_ui.Name->setText(attachment->name);
+			UpdateQCString();
+		}
+		break;
+	}
+
+	case ModelChangeId::ChangeAttachmentType:
+	{
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
+		{
+			const auto attachment = header->GetAttachment(listChange.GetSourceIndex());
+
+			const QSignalBlocker type{_ui.Type};
+
+			_ui.Type->setValue(attachment->type);
+			UpdateQCString();
+		}
+		break;
+	}
+
+	case ModelChangeId::ChangeAttachmentBone:
+	{
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
+		{
+			const auto attachment = header->GetAttachment(listChange.GetSourceIndex());
+
+			const QSignalBlocker bone{_ui.Bone};
+
+			_ui.Bone->setCurrentIndex(attachment->bone);
+			UpdateQCString();
+		}
+		break;
+	}
+
+	case ModelChangeId::ChangeAttachmentOrigin:
+	{
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
+		{
+			const auto attachment = header->GetAttachment(listChange.GetSourceIndex());
+
+			const QSignalBlocker originX{_ui.OriginX};
+			const QSignalBlocker originY{_ui.OriginY};
+			const QSignalBlocker originZ{_ui.OriginZ};
+
+			_ui.OriginX->setValue(attachment->org[0]);
+			_ui.OriginY->setValue(attachment->org[1]);
+			_ui.OriginZ->setValue(attachment->org[2]);
+			UpdateQCString();
+		}
+		break;
+	}
 	}
 }
 
 void StudioModelAttachmentsPanel::UpdateQCString()
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
 	const auto header = model->GetStudioHeader();
-
 	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
-
 	const auto bone = header->GetBone(attachment->bone);
 
 	_ui.QCString->setText(QString{"$attachment %1 \"%2\" %3 %4 %5"}
@@ -134,27 +197,25 @@ void StudioModelAttachmentsPanel::OnDockPanelChanged(QWidget* current, QWidget* 
 void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
 	const auto header = model->GetStudioHeader();
-
 	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
 
 	{
 		const QSignalBlocker name{_ui.Name};
 		const QSignalBlocker type{_ui.Type};
+		const QSignalBlocker bone{_ui.Bone};
 		const QSignalBlocker originX{_ui.OriginX};
 		const QSignalBlocker originY{_ui.OriginY};
 		const QSignalBlocker originZ{_ui.OriginZ};
 
 		_ui.Name->setText(attachment->name);
 		_ui.Type->setValue(attachment->type);
+		_ui.Bone->setCurrentIndex(attachment->bone);
 
 		_ui.OriginX->setValue(attachment->org[0]);
-		_ui.OriginX->setValue(attachment->org[1]);
-		_ui.OriginX->setValue(attachment->org[2]);
+		_ui.OriginY->setValue(attachment->org[1]);
+		_ui.OriginZ->setValue(attachment->org[2]);
 	}
-
-	_ui.Bone->setCurrentIndex(attachment->bone);
 
 	UpdateQCString();
 }
@@ -167,28 +228,21 @@ void StudioModelAttachmentsPanel::OnHighlightAttachmentChanged()
 void StudioModelAttachmentsPanel::OnNameChanged()
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
 	const auto header = model->GetStudioHeader();
-
 	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
 
-	strncpy(attachment->name, _ui.Name->text().toUtf8().constData(), sizeof(attachment->name) - 1);
-	attachment->name[sizeof(attachment->name) - 1] = '\0';
+	_asset->AddUndoCommand(new ChangeAttachmentNameCommand(_asset, _ui.Attachments->currentIndex(), attachment->name, _ui.Name->text()));
 
 	UpdateQCString();
-
-	//TODO: mark model changed
 }
 
 void StudioModelAttachmentsPanel::OnTypeChanged()
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
 	const auto header = model->GetStudioHeader();
-
 	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
 
-	attachment->type = _ui.Type->value();
+	_asset->AddUndoCommand(new ChangeAttachmentTypeCommand(_asset, _ui.Attachments->currentIndex(), attachment->type, _ui.Type->value()));
 
 	UpdateQCString();
 }
@@ -196,12 +250,10 @@ void StudioModelAttachmentsPanel::OnTypeChanged()
 void StudioModelAttachmentsPanel::OnBoneChanged()
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
 	const auto header = model->GetStudioHeader();
-
 	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
 
-	attachment->bone = _ui.Bone->currentIndex();
+	_asset->AddUndoCommand(new ChangeAttachmentBoneCommand(_asset, _ui.Attachments->currentIndex(), attachment->bone, _ui.Bone->currentIndex()));
 
 	UpdateQCString();
 }
@@ -209,14 +261,12 @@ void StudioModelAttachmentsPanel::OnBoneChanged()
 void StudioModelAttachmentsPanel::OnOriginChanged()
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
 	const auto header = model->GetStudioHeader();
-
 	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
 
-	attachment->org[0] = _ui.OriginX->value();
-	attachment->org[1] = _ui.OriginY->value();
-	attachment->org[2] = _ui.OriginZ->value();
+	_asset->AddUndoCommand(new ChangeAttachmentOriginCommand(_asset, _ui.Attachments->currentIndex(),
+		{attachment->org[0], attachment->org[1], attachment->org[2]},
+		{_ui.OriginX->value(), _ui.OriginY->value(), _ui.OriginZ->value()}));
 
 	UpdateQCString();
 }

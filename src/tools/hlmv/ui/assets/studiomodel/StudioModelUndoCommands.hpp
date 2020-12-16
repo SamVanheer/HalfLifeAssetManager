@@ -27,6 +27,7 @@ enum class ModelChangeId
 	ChangeAttachmentName,
 	ChangeAttachmentType,
 	ChangeAttachmentBone,
+	ChangeAttachmentOrigin,
 };
 
 /**
@@ -203,5 +204,57 @@ public:
 
 protected:
 	void Apply(int index, const ChangeBoneProperties& properties) override;
+};
+
+class ChangeAttachmentNameCommand : public ModelListUndoCommand<QString>
+{
+public:
+	ChangeAttachmentNameCommand(StudioModelAsset* asset, int attachmentIndex, const QString& oldName, const QString& newName)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeAttachmentName, attachmentIndex, oldName, newName)
+	{
+		setText("Change attachment name");
+	}
+
+protected:
+	void Apply(int index, const QString& value) override;
+};
+
+class ChangeAttachmentTypeCommand : public ModelListUndoCommand<int>
+{
+public:
+	ChangeAttachmentTypeCommand(StudioModelAsset* asset, int attachmentIndex, int oldType, int newType)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeAttachmentType, attachmentIndex, oldType, newType)
+	{
+		setText("Change attachment type");
+	}
+
+protected:
+	void Apply(int index, const int& value) override;
+};
+
+class ChangeAttachmentBoneCommand : public ModelListUndoCommand<int>
+{
+public:
+	ChangeAttachmentBoneCommand(StudioModelAsset* asset, int attachmentIndex, int oldBone, int newBone)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeAttachmentBone, attachmentIndex, oldBone, newBone)
+	{
+		setText("Change attachment bone");
+	}
+
+protected:
+	void Apply(int index, const int& value) override;
+};
+
+class ChangeAttachmentOriginCommand : public ModelListUndoCommand<glm::vec3>
+{
+public:
+	ChangeAttachmentOriginCommand(StudioModelAsset* asset, int attachmentIndex, const glm::vec3& oldOrigin, const glm::vec3& newOrigin)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeAttachmentOrigin, attachmentIndex, oldOrigin, newOrigin)
+	{
+		setText("Change attachment origin");
+	}
+
+protected:
+	void Apply(int index, const glm::vec3& value) override;
 };
 }
