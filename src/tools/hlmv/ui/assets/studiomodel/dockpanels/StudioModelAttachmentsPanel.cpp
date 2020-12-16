@@ -5,6 +5,7 @@
 #include "entity/CHLMVStudioModelEntity.h"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
 
 namespace ui::assets::studiomodel
@@ -28,6 +29,8 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset
 	{
 		spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	}
+
+	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelAttachmentsPanel::OnModelChanged);
 
 	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelAttachmentsPanel::OnAttachmentChanged);
 	connect(_ui.HighlightAttachment, &QCheckBox::stateChanged, this, &StudioModelAttachmentsPanel::OnHighlightAttachmentChanged);
@@ -79,6 +82,29 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset
 }
 
 StudioModelAttachmentsPanel::~StudioModelAttachmentsPanel() = default;
+
+void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
+{
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
+
+	const auto header = model->GetStudioHeader();
+
+	switch (event.GetId())
+	{
+	case ModelChangeId::BoneRename:
+	{
+		const QSignalBlocker boneBlocker{_ui.Bone};
+
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		const auto bone = header->GetBone(listChange.GetSourceIndex());
+
+		_ui.Bone->setItemText(listChange.GetSourceIndex(), QString{"%1 (%2)"}.arg(bone->name).arg(listChange.GetSourceIndex()));
+		UpdateQCString();
+		break;
+	}
+	}
+}
 
 void StudioModelAttachmentsPanel::UpdateQCString()
 {

@@ -19,7 +19,6 @@ class FullscreenWidget;
 namespace assets
 {
 class Asset;
-class AssetDataChangeEvent;
 }
 
 namespace settings

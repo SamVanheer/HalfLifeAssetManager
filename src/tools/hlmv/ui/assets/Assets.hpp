@@ -78,23 +78,12 @@ public:
 
 	virtual void Save(const QString& fileName) = 0;
 
-	void AddUndoCommand(QUndoCommand* command)
-	{
-		_undoStack->push(command);
-		emit AssetChanged(command);
-	}
-
 signals:
 	void FileNameChanged(const QString& fileName);
 
 	void IsActiveChanged(bool value);
 
-	/**
-	*	@brief Emitted for every undo command that is added
-	*/
-	void AssetChanged(QUndoCommand* command);
-
-protected:
+private:
 	QString _fileName;
 	QUndoStack* const _undoStack = new QUndoStack(this);
 	bool _isActive{false};

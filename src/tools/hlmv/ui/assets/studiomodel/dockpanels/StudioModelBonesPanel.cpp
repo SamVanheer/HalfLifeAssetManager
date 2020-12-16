@@ -42,6 +42,8 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 		spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	}
 
+	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelBonesPanel::OnModelChanged);
+
 	connect(_ui.Bones, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBonesPanel::OnBoneChanged);
 	connect(_ui.HighlightBone, &QCheckBox::stateChanged, this, &StudioModelBonesPanel::OnHightlightBoneChanged);
 
@@ -104,6 +106,39 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 }
 
 StudioModelBonesPanel::~StudioModelBonesPanel() = default;
+
+void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
+{
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
+
+	const auto header = model->GetStudioHeader();
+
+	switch (event.GetId())
+	{
+	case ModelChangeId::BoneRename:
+	{
+		const QSignalBlocker bones{_ui.Bones};
+		const QSignalBlocker boneName{_ui.BoneName};
+		const QSignalBlocker parentBone{_ui.ParentBone};
+
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		const auto bone = header->GetBone(listChange.GetSourceIndex());
+
+		const auto newName{QString{"%1 (%2)"}.arg(bone->name).arg(listChange.GetSourceIndex())};
+
+		_ui.Bones->setItemText(listChange.GetSourceIndex(), newName);
+		
+		if (_ui.Bones->currentIndex() == listChange.GetSourceIndex())
+		{
+			_ui.BoneName->setText(bone->name);
+		}
+
+		_ui.ParentBone->setItemText(listChange.GetSourceIndex() + ParentBoneOffset, newName);
+		break;
+	}
+	}
+}
 
 void StudioModelBonesPanel::UpdateQCString()
 {
@@ -198,7 +233,7 @@ void StudioModelBonesPanel::OnBoneNameChanged()
 
 	const auto bone = header->GetBone(_ui.Bones->currentIndex());
 
-	_asset->AddUndoCommand(new ModelBoneRenameCommand(model, _ui.Bones->currentIndex(), bone->name, _ui.BoneName->text()));
+	_asset->AddUndoCommand(new ModelBoneRenameCommand(_asset, _ui.Bones->currentIndex(), bone->name, _ui.BoneName->text()));
 }
 
 void StudioModelBonesPanel::OnBoneParentChanged(int index)

@@ -5,6 +5,7 @@
 #include "entity/CHLMVStudioModelEntity.h"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelHitboxesPanel.hpp"
 
 namespace ui::assets::studiomodel
@@ -31,6 +32,8 @@ StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset, QWid
 	{
 		spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	}
+
+	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelHitboxesPanel::OnModelChanged);
 
 	connect(_ui.Hitboxes, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelHitboxesPanel::OnHitboxChanged);
 	connect(_ui.HighlightHitbox, &QCheckBox::stateChanged, this, &StudioModelHitboxesPanel::OnHighlightHitboxChanged);
@@ -86,6 +89,29 @@ StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset, QWid
 }
 
 StudioModelHitboxesPanel::~StudioModelHitboxesPanel() = default;
+
+void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
+{
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
+
+	const auto header = model->GetStudioHeader();
+
+	switch (event.GetId())
+	{
+	case ModelChangeId::BoneRename:
+	{
+		const QSignalBlocker boneBlocker{_ui.Bone};
+
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		const auto bone = header->GetBone(listChange.GetSourceIndex());
+
+		_ui.Bone->setItemText(listChange.GetSourceIndex(), QString{"%1 (%2)"}.arg(bone->name).arg(listChange.GetSourceIndex()));
+		UpdateQCString();
+		break;
+	}
+	}
+}
 
 void StudioModelHitboxesPanel::UpdateQCString()
 {

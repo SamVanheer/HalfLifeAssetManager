@@ -7,6 +7,7 @@
 #include "entity/CHLMVStudioModelEntity.h"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
 
 namespace ui::assets::studiomodel
@@ -29,6 +30,8 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QW
 	{
 		spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	}
+
+	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelBodyPartsPanel::OnModelChanged);
 
 	connect(_ui.BodyParts, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBodyPartChanged);
 	connect(_ui.Submodels, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnSubmodelChanged);
@@ -136,6 +139,28 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QW
 }
 
 StudioModelBodyPartsPanel::~StudioModelBodyPartsPanel() = default;
+
+void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
+{
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
+
+	const auto header = model->GetStudioHeader();
+
+	switch (event.GetId())
+	{
+	case ModelChangeId::BoneRename:
+	{
+		const QSignalBlocker boneControllerBone{_ui.BoneControllerBone};
+
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		const auto bone = header->GetBone(listChange.GetSourceIndex());
+
+		_ui.BoneControllerBone->setItemText(listChange.GetSourceIndex(), QString{"%1 (%2)"}.arg(bone->name).arg(listChange.GetSourceIndex()));
+		break;
+	}
+	}
+}
 
 void StudioModelBodyPartsPanel::UpdateControllerRange()
 {

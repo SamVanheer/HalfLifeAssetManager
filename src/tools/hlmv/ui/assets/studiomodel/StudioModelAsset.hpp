@@ -28,6 +28,7 @@ class StudioModelSettings;
 
 namespace assets::studiomodel
 {
+class ModelChangeEvent;
 class StudioModelAssetProvider;
 class StudioModelEditWidget;
 
@@ -77,10 +78,22 @@ public:
 		_inputSinks.pop();
 	}
 
+	void AddUndoCommand(QUndoCommand* command)
+	{
+		GetUndoStack()->push(command);
+	}
+
+	void EmitModelChanged(const ModelChangeEvent& event)
+	{
+		emit ModelChanged(event);
+	}
+
 signals:
 	void Tick();
 
 	void Draw();
+
+	void ModelChanged(const ModelChangeEvent& event);
 
 private slots:
 	void OnTick();

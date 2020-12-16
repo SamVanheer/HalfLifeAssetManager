@@ -14,9 +14,58 @@ namespace ui::assets::studiomodel
 {
 class StudioModelAsset;
 
-enum class ModelUndoId
+enum class ModelChangeId
 {
 	BoneRename,
+};
+
+/**
+*	@brief Base class for all model change events
+*	Indicates that a change has been made to a model
+*/
+class ModelChangeEvent
+{
+public:
+	ModelChangeEvent(ModelChangeId id)
+		: _id(id)
+	{
+	}
+
+	ModelChangeEvent(const ModelChangeEvent&) = delete;
+	ModelChangeEvent& operator=(const ModelChangeEvent&) = delete;
+
+	ModelChangeId GetId() const { return _id; }
+
+private:
+	const ModelChangeId _id;
+};
+
+/**
+*	@brief Base class for all model change events that involve a change that occurred in a list
+*/
+class ModelListChangeEvent : public ModelChangeEvent
+{
+public:
+	ModelListChangeEvent(ModelChangeId id, int sourceIndex, int destinationIndex = -1)
+		: ModelChangeEvent(id)
+		, _sourceIndex(sourceIndex)
+		, _destinationIndex(destinationIndex)
+	{
+	}
+
+	/**
+	*	@brief The list entry being changed. If this change involves the moving of a list entry, this is where the entry was moved from
+	*/
+	int GetSourceIndex() const { return _sourceIndex; }
+
+	/**
+	*	@brief If this change involves the moving of a list entry, this is where the entry was moved to
+	*/
+	int GetDestinationIndex() const { return _destinationIndex; }
+
+private:
+	const int _sourceIndex;
+	const int _destinationIndex;
 };
 
 /**
@@ -25,27 +74,27 @@ enum class ModelUndoId
 class ModelUndoCommand : public QUndoCommand
 {
 public:
-	ModelUndoCommand(studiomdl::CStudioModel* model, ModelUndoId id)
-		: _model(model)
+	ModelUndoCommand(StudioModelAsset* asset, ModelChangeId id)
+		: _asset(asset)
 		, _id(id)
 	{
-		assert(_model);
+		assert(_asset);
 	}
 
 	int id() const override final { return static_cast<int>(_id); }
 
 protected:
-	studiomdl::CStudioModel* const _model;
+	StudioModelAsset* const _asset;
 
 private:
-	const ModelUndoId _id;
+	const ModelChangeId _id;
 };
 
 class ModelBoneRenameCommand : public ModelUndoCommand
 {
 public:
-	ModelBoneRenameCommand(studiomdl::CStudioModel* model, int boneIndex, QString&& oldName, QString&& newName)
-		: ModelUndoCommand(model, ModelUndoId::BoneRename)
+	ModelBoneRenameCommand(StudioModelAsset* asset, int boneIndex, QString&& oldName, QString&& newName)
+		: ModelUndoCommand(asset, ModelChangeId::BoneRename)
 		, _boneIndex(boneIndex)
 		, _oldName(std::move(oldName))
 		, _newName(std::move(newName))

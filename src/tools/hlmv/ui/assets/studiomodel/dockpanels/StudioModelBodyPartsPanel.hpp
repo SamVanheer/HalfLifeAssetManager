@@ -6,6 +6,7 @@
 
 namespace ui::assets::studiomodel
 {
+class ModelChangeEvent;
 class StudioModelAsset;
 
 class StudioModelBodyPartsPanel final : public QWidget
@@ -18,6 +19,8 @@ private:
 	void UpdateControllerRange();
 
 private slots:
+	void OnModelChanged(const ModelChangeEvent& event);
+
 	void OnBodyPartChanged(int index);
 
 	void OnSubmodelChanged(int index);
