@@ -34,6 +34,8 @@ enum class ModelChangeId
 	ChangeBoneControllerRest,
 	ChangeBoneControllerIndex,
 	ChangeBoneControllerType,
+
+	ChangeModelFlags,
 };
 
 /**
@@ -88,10 +90,10 @@ private:
 /**
 *	@brief Base class for all undo commands related to Studiomodel editing
 */
-class ModelUndoCommand : public QUndoCommand
+class BaseModelUndoCommand : public QUndoCommand
 {
 protected:
-	ModelUndoCommand(StudioModelAsset* asset, ModelChangeId id)
+	BaseModelUndoCommand(StudioModelAsset* asset, ModelChangeId id)
 		: _asset(asset)
 		, _id(id)
 	{
@@ -109,11 +111,55 @@ protected:
 };
 
 template<typename T>
-class ModelListUndoCommand : public ModelUndoCommand
+class ModelUndoCommand : public BaseModelUndoCommand
+{
+protected:
+	ModelUndoCommand(StudioModelAsset* asset, ModelChangeId id, const T& oldValue, const T& newValue)
+		: BaseModelUndoCommand(asset, id)
+		, _oldValue(oldValue)
+		, _newValue(newValue)
+	{
+	}
+
+public:
+	bool mergeWith(const QUndoCommand* other) override
+	{
+		if (id() != other->id())
+		{
+			return false;
+		}
+
+		_newValue = static_cast<const ModelUndoCommand*>(other)->_newValue;
+
+		return true;
+	}
+
+	void undo() override
+	{
+		Apply(_newValue, _oldValue);
+		_asset->EmitModelChanged(ModelChangeEvent{_id});
+	}
+
+	void redo() override
+	{
+		Apply(_oldValue, _newValue);
+		_asset->EmitModelChanged(ModelChangeEvent{_id});
+	}
+
+protected:
+	virtual void Apply(const T& oldValue, const T& newValue) = 0;
+
+protected:
+	const T _oldValue;
+	T _newValue;
+};
+
+template<typename T>
+class ModelListUndoCommand : public BaseModelUndoCommand
 {
 protected:
 	ModelListUndoCommand(StudioModelAsset* asset, ModelChangeId id, int index, const T& oldValue, const T& newValue)
-		: ModelUndoCommand(asset, id)
+		: BaseModelUndoCommand(asset, id)
 		, _index(index)
 		, _oldValue(oldValue)
 		, _newValue(newValue)
@@ -334,5 +380,18 @@ public:
 
 protected:
 	void Apply(int index, const int& oldValue, const int& newValue) override;
+};
+
+class ChangeModelFlagsCommand : public ModelUndoCommand<int>
+{
+public:
+	ChangeModelFlagsCommand(StudioModelAsset* asset, int oldFlags, int newFlags)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeModelFlags, oldFlags, newFlags)
+	{
+		setText("Change model flags");
+	}
+
+protected:
+	void Apply(const int& oldValue, const int& newValue) override;
 };
 }

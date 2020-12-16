@@ -5,6 +5,7 @@
 #include "entity/CHLMVStudioModelEntity.h"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelGlobalFlagsPanel.hpp"
 
 namespace ui::assets::studiomodel
@@ -16,6 +17,8 @@ StudioModelGlobalFlagsPanel::StudioModelGlobalFlagsPanel(StudioModelAsset* asset
 	, _asset(asset)
 {
 	_ui.setupUi(this);
+
+	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelGlobalFlagsPanel::OnModelChanged);
 
 	connect(_ui.RocketTrail, &QCheckBox::stateChanged, this, &StudioModelGlobalFlagsPanel::OnFlagChanged);
 	connect(_ui.GrenadeSmoke, &QCheckBox::stateChanged, this, &StudioModelGlobalFlagsPanel::OnFlagChanged);
@@ -31,21 +34,6 @@ StudioModelGlobalFlagsPanel::StudioModelGlobalFlagsPanel(StudioModelAsset* asset
 	connect(_ui.HitboxCollision, &QCheckBox::stateChanged, this, &StudioModelGlobalFlagsPanel::OnFlagChanged);
 	connect(_ui.ForceSkylight, &QCheckBox::stateChanged, this, &StudioModelGlobalFlagsPanel::OnFlagChanged);
 
-	QCheckBox* checkBoxes[] =
-	{
-		_ui.RocketTrail,
-		_ui.GrenadeSmoke,
-		_ui.GibBlood,
-		_ui.ModelRotate,
-		_ui.GreenTrail,
-		_ui.ZombieBlood,
-		_ui.OrangeTrail,
-		_ui.PurpleTrail,
-		_ui.NoShadeLight,
-		_ui.HitboxCollision,
-		_ui.ForceSkylight
-	};
-
 	_ui.RocketTrail->setProperty(CheckBoxModelFlagProperty.data(), EF_ROCKET);
 	_ui.GrenadeSmoke->setProperty(CheckBoxModelFlagProperty.data(), EF_GRENADE);
 	_ui.GibBlood->setProperty(CheckBoxModelFlagProperty.data(), EF_GIB);
@@ -60,7 +48,27 @@ StudioModelGlobalFlagsPanel::StudioModelGlobalFlagsPanel(StudioModelAsset* asset
 	_ui.HitboxCollision->setProperty(CheckBoxModelFlagProperty.data(), EF_HITBOXCOLLISIONS);
 	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty.data(), EF_FORCESKYLIGHT);
 
-	const int flags = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->flags;
+	SetFlags(_asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->flags);
+}
+
+StudioModelGlobalFlagsPanel::~StudioModelGlobalFlagsPanel() = default;
+
+void StudioModelGlobalFlagsPanel::SetFlags(int flags)
+{
+	QCheckBox* const checkBoxes[] =
+	{
+		_ui.RocketTrail,
+		_ui.GrenadeSmoke,
+		_ui.GibBlood,
+		_ui.ModelRotate,
+		_ui.GreenTrail,
+		_ui.ZombieBlood,
+		_ui.OrangeTrail,
+		_ui.PurpleTrail,
+		_ui.NoShadeLight,
+		_ui.HitboxCollision,
+		_ui.ForceSkylight
+	};
 
 	for (auto checkBox : checkBoxes)
 	{
@@ -74,23 +82,37 @@ StudioModelGlobalFlagsPanel::StudioModelGlobalFlagsPanel(StudioModelAsset* asset
 	}
 }
 
-StudioModelGlobalFlagsPanel::~StudioModelGlobalFlagsPanel() = default;
+void StudioModelGlobalFlagsPanel::OnModelChanged(const ModelChangeEvent& event)
+{
+	switch (event.GetId())
+	{
+	case ModelChangeId::ChangeModelFlags:
+	{
+		SetFlags(_asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->flags);
+		break;
+	}
+	}
+}
 
 void StudioModelGlobalFlagsPanel::OnFlagChanged(int state)
 {
-	auto checkBox = sender();
+	const auto checkBox = sender();
 
 	const auto flagValue = checkBox->property(CheckBoxModelFlagProperty.data()).toInt();
 
-	auto model = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+
+	int newFlags = model->flags;
 
 	if (state == Qt::CheckState::Checked)
 	{
-		model->flags |= flagValue;
+		newFlags |= flagValue;
 	}
 	else
 	{
-		model->flags &= ~flagValue;
+		newFlags &= ~flagValue;
 	}
+
+	_asset->AddUndoCommand(new ChangeModelFlagsCommand(_asset, model->flags, newFlags));
 }
 }

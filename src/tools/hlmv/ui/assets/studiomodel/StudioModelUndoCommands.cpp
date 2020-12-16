@@ -144,4 +144,11 @@ void ChangeBoneControllerTypeCommand::Apply(int index, const int& oldValue, cons
 
 	bone->bonecontroller[newTypeIndex] = index;
 }
+
+void ChangeModelFlagsCommand::Apply(const int& oldValue, const int& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+
+	header->flags = newValue;
+}
 }
