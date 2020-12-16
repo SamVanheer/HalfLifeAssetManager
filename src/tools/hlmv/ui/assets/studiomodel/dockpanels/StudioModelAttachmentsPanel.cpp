@@ -232,8 +232,6 @@ void StudioModelAttachmentsPanel::OnNameChanged()
 	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
 
 	_asset->AddUndoCommand(new ChangeAttachmentNameCommand(_asset, _ui.Attachments->currentIndex(), attachment->name, _ui.Name->text()));
-
-	UpdateQCString();
 }
 
 void StudioModelAttachmentsPanel::OnTypeChanged()
@@ -243,8 +241,6 @@ void StudioModelAttachmentsPanel::OnTypeChanged()
 	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
 
 	_asset->AddUndoCommand(new ChangeAttachmentTypeCommand(_asset, _ui.Attachments->currentIndex(), attachment->type, _ui.Type->value()));
-
-	UpdateQCString();
 }
 
 void StudioModelAttachmentsPanel::OnBoneChanged()
@@ -254,8 +250,6 @@ void StudioModelAttachmentsPanel::OnBoneChanged()
 	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
 
 	_asset->AddUndoCommand(new ChangeAttachmentBoneCommand(_asset, _ui.Attachments->currentIndex(), attachment->bone, _ui.Bone->currentIndex()));
-
-	UpdateQCString();
 }
 
 void StudioModelAttachmentsPanel::OnOriginChanged()
@@ -267,7 +261,5 @@ void StudioModelAttachmentsPanel::OnOriginChanged()
 	_asset->AddUndoCommand(new ChangeAttachmentOriginCommand(_asset, _ui.Attachments->currentIndex(),
 		{attachment->org[0], attachment->org[1], attachment->org[2]},
 		{_ui.OriginX->value(), _ui.OriginY->value(), _ui.OriginZ->value()}));
-
-	UpdateQCString();
 }
 }
