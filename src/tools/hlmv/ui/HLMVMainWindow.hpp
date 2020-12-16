@@ -38,6 +38,9 @@ public:
 
 	bool TryLoadAsset(const QString& fileName);
 
+protected:
+	void closeEvent(QCloseEvent* event) override;
+
 private:
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
 

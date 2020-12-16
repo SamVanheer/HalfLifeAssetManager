@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include <QApplication>
+#include <QCloseEvent>
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -78,7 +79,10 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	OnActiveConfigurationChanged(_editorContext->GetGameConfigurations()->GetActiveConfiguration(), {});
 }
 
-HLMVMainWindow::~HLMVMainWindow() = default;
+HLMVMainWindow::~HLMVMainWindow()
+{
+	_editorContext->GetTimer()->stop();
+}
 
 bool HLMVMainWindow::TryLoadAsset(const QString& fileName)
 {
@@ -108,6 +112,20 @@ bool HLMVMainWindow::TryLoadAsset(const QString& fileName)
 	}
 
 	return false;
+}
+
+void HLMVMainWindow::closeEvent(QCloseEvent* event)
+{
+	//TODO: ask to save pending changes for each document
+	//TODO: if the user cancels any close request cancel the window close event as well
+
+	//Close each asset
+	while (_assetTabs->count() > 0)
+	{
+		OnAssetTabCloseRequested(0);
+	}
+
+	event->accept();
 }
 
 void HLMVMainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
@@ -144,8 +162,6 @@ void HLMVMainWindow::OnOpenRecentFile()
 
 void HLMVMainWindow::OnExit()
 {
-	//TODO: ask to save pending changes for each document
-
 	this->close();
 }
 
