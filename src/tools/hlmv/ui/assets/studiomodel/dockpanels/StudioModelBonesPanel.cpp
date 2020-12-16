@@ -13,6 +13,25 @@ namespace ui::assets::studiomodel
 //Parent indices are offset by one so -1 becomes 0, 0 becomes 1, etc
 constexpr int ParentBoneOffset = 1;
 
+static void SyncBonePropertiesToUI(const mstudiobone_t& bone, Ui_StudioModelBonesPanel& ui)
+{
+	ui.PositionX->setValue(bone.value[0]);
+	ui.PositionY->setValue(bone.value[1]);
+	ui.PositionZ->setValue(bone.value[2]);
+
+	ui.PositionScaleX->setValue(bone.scale[0]);
+	ui.PositionScaleY->setValue(bone.scale[1]);
+	ui.PositionScaleZ->setValue(bone.scale[2]);
+
+	ui.RotationX->setValue(bone.value[3]);
+	ui.RotationY->setValue(bone.value[4]);
+	ui.RotationZ->setValue(bone.value[5]);
+
+	ui.RotationScaleX->setValue(bone.scale[3]);
+	ui.RotationScaleY->setValue(bone.scale[4]);
+	ui.RotationScaleZ->setValue(bone.scale[5]);
+}
+
 StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
@@ -118,7 +137,6 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 	case ModelChangeId::BoneRename:
 	{
 		const QSignalBlocker bones{_ui.Bones};
-		const QSignalBlocker boneName{_ui.BoneName};
 		const QSignalBlocker parentBone{_ui.ParentBone};
 
 		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
@@ -131,10 +149,67 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 		
 		if (_ui.Bones->currentIndex() == listChange.GetSourceIndex())
 		{
+			const QSignalBlocker boneName{_ui.BoneName};
 			_ui.BoneName->setText(bone->name);
 		}
 
 		_ui.ParentBone->setItemText(listChange.GetSourceIndex() + ParentBoneOffset, newName);
+		break;
+	}
+
+	case ModelChangeId::ChangeBoneParent:
+	{
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		if (_ui.Bones->currentIndex() == listChange.GetSourceIndex())
+		{
+			const QSignalBlocker parentBone{_ui.ParentBone};
+
+			const auto bone = header->GetBone(listChange.GetSourceIndex());
+
+			_ui.ParentBone->setCurrentIndex(bone->parent + ParentBoneOffset);
+		}
+		break;
+	}
+
+	case ModelChangeId::ChangeBoneFlags:
+	{
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		if (_ui.Bones->currentIndex() == listChange.GetSourceIndex())
+		{
+			const QSignalBlocker flags{_ui.BoneFlags};
+
+			const auto bone = header->GetBone(listChange.GetSourceIndex());
+
+			_ui.BoneFlags->setValue(bone->flags);
+		}
+		break;
+	}
+
+	case ModelChangeId::ChangeBoneProperty:
+	{
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		if (_ui.Bones->currentIndex() == listChange.GetSourceIndex())
+		{
+			const QSignalBlocker positionX{_ui.PositionX};
+			const QSignalBlocker positionY{_ui.PositionY};
+			const QSignalBlocker positionZ{_ui.PositionZ};
+			const QSignalBlocker positionScaleX{_ui.PositionScaleX};
+			const QSignalBlocker positionScaleY{_ui.PositionScaleY};
+			const QSignalBlocker positionScaleZ{_ui.PositionScaleZ};
+			const QSignalBlocker rotationX{_ui.RotationX};
+			const QSignalBlocker rotationY{_ui.RotationY};
+			const QSignalBlocker rotationZ{_ui.RotationZ};
+			const QSignalBlocker rotationScaleX{_ui.RotationScaleX};
+			const QSignalBlocker rotationScaleY{_ui.RotationScaleY};
+			const QSignalBlocker rotationScaleZ{_ui.RotationScaleZ};
+
+			const auto bone = header->GetBone(listChange.GetSourceIndex());
+			
+			SyncBonePropertiesToUI(*bone, _ui);
+		}
 		break;
 	}
 	}
@@ -200,21 +275,7 @@ void StudioModelBonesPanel::OnBoneChanged(int index)
 		_ui.ParentBone->setCurrentIndex(bone->parent + ParentBoneOffset);
 		_ui.BoneFlags->setValue(bone->flags);
 
-		_ui.PositionX->setValue(bone->value[0]);
-		_ui.PositionY->setValue(bone->value[1]);
-		_ui.PositionZ->setValue(bone->value[2]);
-
-		_ui.PositionScaleX->setValue(bone->scale[0]);
-		_ui.PositionScaleY->setValue(bone->scale[1]);
-		_ui.PositionScaleZ->setValue(bone->scale[2]);
-
-		_ui.RotationX->setValue(bone->value[3]);
-		_ui.RotationY->setValue(bone->value[4]);
-		_ui.RotationZ->setValue(bone->value[5]);
-
-		_ui.RotationScaleX->setValue(bone->scale[3]);
-		_ui.RotationScaleY->setValue(bone->scale[4]);
-		_ui.RotationScaleZ->setValue(bone->scale[5]);
+		SyncBonePropertiesToUI(*bone, _ui);
 	}
 
 	OnHightlightBoneChanged();
@@ -233,7 +294,7 @@ void StudioModelBonesPanel::OnBoneNameChanged()
 
 	const auto bone = header->GetBone(_ui.Bones->currentIndex());
 
-	_asset->AddUndoCommand(new ModelBoneRenameCommand(_asset, _ui.Bones->currentIndex(), bone->name, _ui.BoneName->text()));
+	_asset->AddUndoCommand(new BoneRenameCommand(_asset, _ui.Bones->currentIndex(), bone->name, _ui.BoneName->text()));
 }
 
 void StudioModelBonesPanel::OnBoneParentChanged(int index)
@@ -244,9 +305,7 @@ void StudioModelBonesPanel::OnBoneParentChanged(int index)
 
 	const auto bone = header->GetBone(_ui.Bones->currentIndex());
 
-	bone->parent = index - ParentBoneOffset;
-
-	//TODO: mark model changed
+	_asset->AddUndoCommand(new ChangeBoneParentCommand(_asset, _ui.Bones->currentIndex(), bone->parent, index - ParentBoneOffset));
 }
 
 void StudioModelBonesPanel::OnBoneFlagsChanged()
@@ -257,9 +316,7 @@ void StudioModelBonesPanel::OnBoneFlagsChanged()
 
 	const auto bone = header->GetBone(_ui.Bones->currentIndex());
 
-	bone->flags = _ui.BoneFlags->value();
-
-	//TODO: mark model changed
+	_asset->AddUndoCommand(new ChangeBoneFlagsCommand(_asset, _ui.Bones->currentIndex(), bone->flags, _ui.BoneFlags->value()));
 }
 
 void StudioModelBonesPanel::OnBonePropertyChanged()
@@ -270,22 +327,26 @@ void StudioModelBonesPanel::OnBonePropertyChanged()
 
 	const auto bone = header->GetBone(_ui.Bones->currentIndex());
 
-	bone->value[0] = _ui.PositionX->value();
-	bone->value[1] = _ui.PositionY->value();
-	bone->value[2] = _ui.PositionZ->value();
-
-	bone->scale[0] = _ui.PositionScaleX->value();
-	bone->scale[1] = _ui.PositionScaleY->value();
-	bone->scale[2] = _ui.PositionScaleZ->value();
-
-	bone->value[3] = _ui.RotationX->value();
-	bone->value[4] = _ui.RotationY->value();
-	bone->value[5] = _ui.RotationZ->value();
-
-	bone->scale[3] = _ui.RotationScaleX->value();
-	bone->scale[4] = _ui.RotationScaleY->value();
-	bone->scale[5] = _ui.RotationScaleZ->value();
-
-	//TODO: mark model changed
+	_asset->AddUndoCommand(new ChangeBonePropertyCommand(_asset, _ui.Bones->currentIndex(),
+		{
+			{
+				glm::vec3{bone->value[0], bone->value[1], bone->value[2]},
+				glm::vec3{bone->value[3], bone->value[4], bone->value[5]}
+			},
+			{
+				glm::vec3{bone->scale[0], bone->scale[1], bone->scale[2]},
+				glm::vec3{bone->scale[3], bone->scale[4], bone->scale[5]}
+			}
+		},
+		{
+			{
+				glm::vec3{_ui.PositionX->value(), _ui.PositionY->value(), _ui.PositionZ->value()},
+				glm::vec3{_ui.RotationX->value(), _ui.RotationY->value(), _ui.RotationZ->value()}
+			},
+			{
+				glm::vec3{_ui.PositionScaleX->value(), _ui.PositionScaleY->value(), _ui.PositionScaleZ->value()},
+				glm::vec3{_ui.RotationScaleX->value(), _ui.RotationScaleY->value(), _ui.RotationScaleZ->value()}
+			}
+		}));
 }
 }

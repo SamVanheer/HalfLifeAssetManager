@@ -1,9 +1,12 @@
 #pragma once
 
+#include <array>
 #include <cassert>
 
 #include <QString>
 #include <QUndoStack>
+
+#include <glm/vec3.hpp>
 
 namespace studiomdl
 {
@@ -17,6 +20,9 @@ class StudioModelAsset;
 enum class ModelChangeId
 {
 	BoneRename,
+	ChangeBoneParent,
+	ChangeBoneFlags,
+	ChangeBoneProperty,
 };
 
 /**
@@ -90,10 +96,10 @@ private:
 	const ModelChangeId _id;
 };
 
-class ModelBoneRenameCommand : public ModelUndoCommand
+class BoneRenameCommand : public ModelUndoCommand
 {
 public:
-	ModelBoneRenameCommand(StudioModelAsset* asset, int boneIndex, QString&& oldName, QString&& newName)
+	BoneRenameCommand(StudioModelAsset* asset, int boneIndex, QString&& oldName, QString&& newName)
 		: ModelUndoCommand(asset, ModelChangeId::BoneRename)
 		, _boneIndex(boneIndex)
 		, _oldName(std::move(oldName))
@@ -101,12 +107,6 @@ public:
 	{
 		setText("Rename bone");
 	}
-
-	int GetBoneIndex() const { return _boneIndex; }
-
-	QString GetOldName() const { return _oldName; }
-
-	QString GetNewName() const { return _newName; }
 
 	bool mergeWith(const QUndoCommand* other) override;
 
@@ -117,5 +117,80 @@ private:
 	const int _boneIndex;
 	const QString _oldName;
 	QString _newName;
+};
+
+class ChangeBoneParentCommand : public ModelUndoCommand
+{
+public:
+	ChangeBoneParentCommand(StudioModelAsset* asset, int boneIndex, int oldParent, int newParent)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeBoneParent)
+		, _boneIndex(boneIndex)
+		, _oldParent(oldParent)
+		, _newParent(newParent)
+	{
+		setText("Change bone parent");
+	}
+
+	bool mergeWith(const QUndoCommand* other) override;
+
+	void undo() override;
+	void redo() override;
+
+private:
+	const int _boneIndex;
+	const int _oldParent;
+	int _newParent;
+};
+
+class ChangeBoneFlagsCommand : public ModelUndoCommand
+{
+public:
+	ChangeBoneFlagsCommand(StudioModelAsset* asset, int boneIndex, int oldFlags, int newFlags)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeBoneParent)
+		, _boneIndex(boneIndex)
+		, _oldFlags(oldFlags)
+		, _newFlags(newFlags)
+	{
+		setText("Change bone flags");
+	}
+
+	bool mergeWith(const QUndoCommand* other) override;
+
+	void undo() override;
+	void redo() override;
+
+private:
+	const int _boneIndex;
+	const int _oldFlags;
+	int _newFlags;
+};
+
+class ChangeBonePropertyCommand : public ModelUndoCommand
+{
+public:
+	struct Properties
+	{
+		std::array<glm::vec3, 2> Values;
+		std::array<glm::vec3, 2> Scales;
+	};
+
+	ChangeBonePropertyCommand(StudioModelAsset* asset, int boneIndex, const Properties& oldProperties, const Properties& newProperties)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeBoneProperty)
+		, _boneIndex(boneIndex)
+		, _oldProperties(oldProperties)
+		, _newProperties(newProperties)
+	{
+		setText("Change bone property");
+	}
+
+	bool mergeWith(const QUndoCommand* other) override;
+
+	void undo() override;
+	void redo() override;
+
+private:
+	const int _boneIndex;
+	const Properties _oldProperties;
+	Properties _newProperties;
 };
 }
