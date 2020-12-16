@@ -25,7 +25,7 @@ void BoneRenameCommand::undo()
 	strncpy(bone->name, _oldName.toUtf8().constData(), sizeof(bone->name) - 1);
 	bone->name[sizeof(bone->name) - 1] = '\0';
 
-	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::BoneRename, _boneIndex});
+	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::RenameBone, _boneIndex});
 }
 
 void BoneRenameCommand::redo()
@@ -37,7 +37,7 @@ void BoneRenameCommand::redo()
 	strncpy(bone->name, _newName.toUtf8().constData(), sizeof(bone->name) - 1);
 	bone->name[sizeof(bone->name) - 1] = '\0';
 
-	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::BoneRename, _boneIndex});
+	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::RenameBone, _boneIndex});
 }
 
 bool ChangeBoneParentCommand::mergeWith(const QUndoCommand* other)

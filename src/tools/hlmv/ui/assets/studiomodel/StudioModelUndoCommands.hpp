@@ -19,7 +19,7 @@ class StudioModelAsset;
 
 enum class ModelChangeId
 {
-	BoneRename,
+	RenameBone,
 	ChangeBoneParent,
 	ChangeBoneFlags,
 	ChangeBoneProperty,
@@ -100,7 +100,7 @@ class BoneRenameCommand : public ModelUndoCommand
 {
 public:
 	BoneRenameCommand(StudioModelAsset* asset, int boneIndex, QString&& oldName, QString&& newName)
-		: ModelUndoCommand(asset, ModelChangeId::BoneRename)
+		: ModelUndoCommand(asset, ModelChangeId::RenameBone)
 		, _boneIndex(boneIndex)
 		, _oldName(std::move(oldName))
 		, _newName(std::move(newName))

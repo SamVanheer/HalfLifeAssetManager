@@ -148,7 +148,7 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 	switch (event.GetId())
 	{
-	case ModelChangeId::BoneRename:
+	case ModelChangeId::RenameBone:
 	{
 		const QSignalBlocker boneControllerBone{_ui.BoneControllerBone};
 
