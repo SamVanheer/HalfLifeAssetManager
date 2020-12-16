@@ -4,153 +4,43 @@
 
 namespace ui::assets::studiomodel
 {
-bool BoneRenameCommand::mergeWith(const QUndoCommand* other)
-{
-	if (id() != other->id())
-	{
-		return false;
-	}
-
-	_newName = static_cast<const BoneRenameCommand*>(other)->_newName;
-
-	return true;
-}
-
-void BoneRenameCommand::undo()
+void BoneRenameCommand::Apply(int index, const QString& value)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto bone = header->GetBone(index);
 
-	const auto bone = header->GetBone(_boneIndex);
-
-	strncpy(bone->name, _oldName.toUtf8().constData(), sizeof(bone->name) - 1);
+	strncpy(bone->name, value.toUtf8().constData(), sizeof(bone->name) - 1);
 	bone->name[sizeof(bone->name) - 1] = '\0';
-
-	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::RenameBone, _boneIndex});
 }
 
-void BoneRenameCommand::redo()
+void ChangeBoneParentCommand::Apply(int index, const int& value)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto bone = header->GetBone(index);
 
-	const auto bone = header->GetBone(_boneIndex);
-
-	strncpy(bone->name, _newName.toUtf8().constData(), sizeof(bone->name) - 1);
-	bone->name[sizeof(bone->name) - 1] = '\0';
-
-	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::RenameBone, _boneIndex});
+	bone->parent = value;
 }
 
-bool ChangeBoneParentCommand::mergeWith(const QUndoCommand* other)
+void ChangeBoneFlagsCommand::Apply(int index, const int& value)
 {
-	if (id() != other->id())
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto bone = header->GetBone(index);
+
+	bone->flags = value;
+}
+
+void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& value)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto bone = header->GetBone(index);
+
+	for (std::size_t j = 0; j < value.Values.size(); ++j)
 	{
-		return false;
-	}
-
-	_newParent = static_cast<const ChangeBoneParentCommand*>(other)->_newParent;
-
-	return true;
-}
-
-void ChangeBoneParentCommand::undo()
-{
-	const auto header = _asset->GetStudioModel()->GetStudioHeader();
-
-	const auto bone = header->GetBone(_boneIndex);
-
-	bone->parent = _oldParent;
-
-	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::ChangeBoneParent, _boneIndex});
-}
-
-void ChangeBoneParentCommand::redo()
-{
-	const auto header = _asset->GetStudioModel()->GetStudioHeader();
-
-	const auto bone = header->GetBone(_boneIndex);
-
-	bone->parent = _newParent;
-
-	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::ChangeBoneParent, _boneIndex});
-}
-
-bool ChangeBoneFlagsCommand::mergeWith(const QUndoCommand* other)
-{
-	if (id() != other->id())
-	{
-		return false;
-	}
-
-	_newFlags = static_cast<const ChangeBoneFlagsCommand*>(other)->_newFlags;
-
-	return true;
-}
-
-void ChangeBoneFlagsCommand::undo()
-{
-	const auto header = _asset->GetStudioModel()->GetStudioHeader();
-
-	const auto bone = header->GetBone(_boneIndex);
-
-	bone->flags = _oldFlags;
-
-	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::ChangeBoneFlags, _boneIndex});
-}
-
-void ChangeBoneFlagsCommand::redo()
-{
-	const auto header = _asset->GetStudioModel()->GetStudioHeader();
-
-	const auto bone = header->GetBone(_boneIndex);
-
-	bone->flags = _newFlags;
-
-	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::ChangeBoneFlags, _boneIndex});
-}
-
-bool ChangeBonePropertyCommand::mergeWith(const QUndoCommand* other)
-{
-	if (id() != other->id())
-	{
-		return false;
-	}
-
-	_newProperties = static_cast<const ChangeBonePropertyCommand*>(other)->_newProperties;
-
-	return true;
-}
-
-static constexpr void CopyProperties(mstudiobone_t& bone, const ChangeBonePropertyCommand::Properties& properties)
-{
-	for (std::size_t j = 0; j < properties.Values.size(); ++j)
-	{
-		for (int i = 0; i < properties.Values[j].length(); ++i)
+		for (int i = 0; i < value.Values[j].length(); ++i)
 		{
-			bone.value[(j * properties.Values[j].length()) + i] = properties.Values[j][i];
-			bone.scale[(j * properties.Scales[j].length()) + i] = properties.Scales[j][i];
+			bone->value[(j * value.Values[j].length()) + i] = value.Values[j][i];
+			bone->scale[(j * value.Scales[j].length()) + i] = value.Scales[j][i];
 		}
 	}
-}
-
-void ChangeBonePropertyCommand::undo()
-{
-	const auto header = _asset->GetStudioModel()->GetStudioHeader();
-
-	const auto bone = header->GetBone(_boneIndex);
-
-	CopyProperties(*bone, _oldProperties);
-
-	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::ChangeBoneProperty, _boneIndex});
-}
-
-void ChangeBonePropertyCommand::redo()
-{
-	const auto header = _asset->GetStudioModel()->GetStudioHeader();
-
-	const auto bone = header->GetBone(_boneIndex);
-
-	CopyProperties(*bone, _newProperties);
-
-	_asset->EmitModelChanged(ModelListChangeEvent{ModelChangeId::ChangeBoneProperty, _boneIndex});
 }
 }
