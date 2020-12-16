@@ -53,6 +53,17 @@ public:
 
 	QUndoStack* GetUndoStack() const { return _undoStack; }
 
+	bool IsActive() const { return _isActive; }
+
+	void SetActive(bool value)
+	{
+		if (_isActive != value)
+		{
+			_isActive = value;
+			emit IsActiveChanged(_isActive);
+		}
+	}
+
 	/**
 	*	@brief Populates the Asset menu with actions and submenus specific to this asset
 	*/
@@ -63,7 +74,7 @@ public:
 	*/
 	virtual QWidget* GetEditWidget() = 0;
 
-	virtual void SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget) = 0;
+	virtual void SetupFullscreenWidget(FullscreenWidget* fullscreenWidget) = 0;
 
 	virtual void Save(const QString& fileName) = 0;
 
@@ -76,6 +87,8 @@ public:
 signals:
 	void FileNameChanged(const QString& fileName);
 
+	void IsActiveChanged(bool value);
+
 	/**
 	*	@brief Emitted for every undo command that is added
 	*/
@@ -84,6 +97,7 @@ signals:
 protected:
 	QString _fileName;
 	QUndoStack* const _undoStack = new QUndoStack(this);
+	bool _isActive{false};
 };
 
 /**

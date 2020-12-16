@@ -38,8 +38,6 @@ signals:
 	void DockPanelChanged(QWidget* current, QWidget* previous);
 
 private slots:
-	void OnTick();
-
 	void OnTabChanged(int index);
 
 private:

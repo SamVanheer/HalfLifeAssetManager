@@ -40,7 +40,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _editorContext(editorContext)
 	, _provider(provider)
 	, _studioModel(std::move(studioModel))
-	, _scene(std::make_unique<graphics::Scene>(editorContext->GetSoundSystem()))
+	, _scene(std::make_unique<graphics::Scene>(editorContext->GetSoundSystem(), editorContext->GetWorldTime()))
 {
 	PushInputSink(this);
 
@@ -62,6 +62,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	_cameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>();
 
+	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
 	connect(_provider->GetSettings(), &settings::StudioModelSettings::FloorLengthChanged, this, &StudioModelAsset::OnFloorLengthChanged);
 }
 
@@ -103,13 +104,13 @@ QWidget* StudioModelAsset::GetEditWidget()
 	return _editWidget;
 }
 
-void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget)
+void StudioModelAsset::SetupFullscreenWidget(FullscreenWidget* fullscreenWidget)
 {
 	const auto sceneWidget = new SceneWidget(GetScene(), fullscreenWidget);
 
 	fullscreenWidget->setCentralWidget(sceneWidget->GetContainer());
 
-	sceneWidget->connect(editorContext, &EditorContext::Tick, sceneWidget, &SceneWidget::requestUpdate);
+	sceneWidget->connect(this, &StudioModelAsset::Draw, sceneWidget, &SceneWidget::requestUpdate);
 	sceneWidget->connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
 
 	//Filter key events on the scene widget so we can capture exit even if it has focus
@@ -119,6 +120,20 @@ void StudioModelAsset::SetupFullscreenWidget(EditorContext* editorContext, Fulls
 void StudioModelAsset::Save(const QString& fileName)
 {
 	_provider->Save(fileName, *this);
+}
+
+void StudioModelAsset::OnTick()
+{
+	//TODO: update asset-local world time
+	//TODO: pause all updates while not active
+	_scene->Tick();
+
+	emit Tick();
+
+	if (IsActive())
+	{
+		emit Draw();
+	}
 }
 
 void StudioModelAsset::OnMouseEvent(QMouseEvent* event)

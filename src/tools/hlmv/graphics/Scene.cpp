@@ -4,9 +4,6 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "core/shared/CWorldTime.h"
-#include "core/shared/Utility.h"
-
 #include "engine/renderer/studiomodel/CStudioModelRenderer.h"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.h"
 #include "entity/CHLMVStudioModelEntity.h"
@@ -35,12 +32,12 @@ static const int GUIDELINES_OFFSET = GUIDELINES_LINE_LENGTH + (GUIDELINES_POINT_
 
 static const int GUIDELINES_EDGE_WIDTH = 4;
 
-Scene::Scene(soundsystem::ISoundSystem* soundSystem)
+Scene::Scene(soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime)
 	: _studioModelRenderer(std::make_unique<studiomdl::CStudioModelRenderer>())
-	, _worldTime(std::make_unique<CWorldTime>())
+	, _worldTime(worldTime)
 	//Use the default list class for now
-	, _entityManager(std::make_unique<CEntityManager>(std::make_unique<CBaseEntityList>(), _worldTime.get()))
-	, _entityContext(std::make_unique<EntityContext>(_worldTime.get(), _studioModelRenderer.get(), _entityManager->GetEntityList(), _entityManager.get(),
+	, _entityManager(std::make_unique<CEntityManager>(std::make_unique<CBaseEntityList>(), _worldTime))
+	, _entityContext(std::make_unique<EntityContext>(_worldTime, _studioModelRenderer.get(), _entityManager->GetEntityList(), _entityManager.get(),
 		soundSystem))
 {
 }
@@ -167,25 +164,6 @@ void Scene::Shutdown()
 
 void Scene::Tick()
 {
-	//TODO: needs to be moved out of this class
-	const double flCurTime = GetCurrentTime();
-
-	double flFrameTime = flCurTime - _worldTime->GetPreviousRealTime();
-
-	_worldTime->SetRealTime(flCurTime);
-
-	if (flFrameTime > 1.0)
-		flFrameTime = 0.1;
-
-	//TODO: implement frame limiter setting
-	//TODO: investigate how to allow animation to work when framerate is very high
-	if (flFrameTime < (1.0 / /*max_fps.GetFloat()*/60.0f))
-	{
-		return;
-	}
-
-	_worldTime->TimeChanged(flCurTime);
-
 	_entityManager->RunFrame();
 }
 

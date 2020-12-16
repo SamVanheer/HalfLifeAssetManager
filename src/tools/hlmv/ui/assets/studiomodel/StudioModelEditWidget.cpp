@@ -85,8 +85,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 		_controlAreaWidget->setLayout(controlAreaLayout);
 	}
 
-	//Listen to the main timer to update as needed
-	connect(editorContext, &EditorContext::Tick, this, &StudioModelEditWidget::OnTick);
+	connect(asset, &StudioModelAsset::Draw, _sceneWidget, &SceneWidget::requestUpdate);
 
 	connect(_dockPanels, &QTabWidget::currentChanged, this, &StudioModelEditWidget::OnTabChanged);
 
@@ -100,15 +99,6 @@ StudioModelEditWidget::StudioModelEditWidget(
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
-
-void StudioModelEditWidget::OnTick()
-{
-	_sceneWidget->GetScene()->Tick();
-
-	_sceneWidget->requestUpdate();
-
-	emit _asset->Tick();
-}
 
 void StudioModelEditWidget::OnTabChanged(int index)
 {

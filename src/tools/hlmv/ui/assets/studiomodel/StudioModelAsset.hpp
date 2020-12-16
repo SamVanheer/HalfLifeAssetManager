@@ -51,7 +51,7 @@ public:
 
 	QWidget* GetEditWidget() override;
 
-	void SetupFullscreenWidget(EditorContext* editorContext, FullscreenWidget* fullscreenWidget) override;
+	void SetupFullscreenWidget(FullscreenWidget* fullscreenWidget) override;
 
 	void Save(const QString& fileName) override;
 
@@ -80,7 +80,11 @@ public:
 signals:
 	void Tick();
 
+	void Draw();
+
 private slots:
+	void OnTick();
+
 	void OnSceneWidgetMouseEvent(QMouseEvent* event);
 
 	void SetBackgroundColor(QColor color)

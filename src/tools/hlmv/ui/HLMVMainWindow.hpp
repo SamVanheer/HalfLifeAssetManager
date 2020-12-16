@@ -4,6 +4,7 @@
 #include <utility>
 
 #include <QMainWindow>
+#include <QPointer>
 #include <QString>
 #include <QTabWidget>
 #include <QUndoGroup>
@@ -17,6 +18,7 @@ class FullscreenWidget;
 
 namespace assets
 {
+class Asset;
 class AssetDataChangeEvent;
 }
 
@@ -81,6 +83,8 @@ private:
 	QUndoGroup* const _undoGroup = new QUndoGroup(this);
 
 	QTabWidget* _assetTabs;
+
+	QPointer<assets::Asset> _currentAsset;
 
 	std::unique_ptr<FullscreenWidget> _fullscreenWidget;
 };

@@ -42,7 +42,7 @@ public:
 	static constexpr float DefaultFOV = 65.f;
 	static constexpr float DefaultFirstPersonFieldOfView = 74.f;
 
-	Scene(soundsystem::ISoundSystem* soundSystem);
+	Scene(soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime);
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
@@ -148,7 +148,7 @@ private:
 
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 
-	std::unique_ptr<CWorldTime> _worldTime;
+	CWorldTime* const _worldTime;
 
 	std::unique_ptr<CEntityManager> _entityManager;
 

@@ -9,6 +9,8 @@
 #include <QTimer>
 #include <QUuid>
 
+class CWorldTime;
+
 namespace filesystem
 {
 class IFileSystem;
@@ -95,6 +97,8 @@ public:
 
 	soundsystem::ISoundSystem* GetSoundSystem() const { return _soundSystem.get(); }
 
+	CWorldTime* GetWorldTime() const { return _worldTime.get(); }
+
 	assets::IAssetProviderRegistry* GetAssetProviderRegistry() const { return _assetProviderRegistry.get(); }
 
 	std::vector<LoadedAsset>& GetLoadedAssets() { return _loadedAssets; }
@@ -119,10 +123,11 @@ private:
 
 	const std::unique_ptr<options::OptionsPageRegistry> _optionsPageRegistry;
 
-	std::unique_ptr<filesystem::IFileSystem> _fileSystem;
-	std::unique_ptr<soundsystem::ISoundSystem> _soundSystem;
+	const std::unique_ptr<filesystem::IFileSystem> _fileSystem;
+	const std::unique_ptr<soundsystem::ISoundSystem> _soundSystem;
+	const std::unique_ptr<CWorldTime> _worldTime;
 
-	std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
+	const std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
 
 	std::vector<LoadedAsset> _loadedAssets;
 };

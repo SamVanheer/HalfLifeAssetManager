@@ -5,6 +5,9 @@
 
 #include <QMessageBox>
 
+#include "core/shared/CWorldTime.h"
+#include "core/shared/Utility.h"
+
 #include "filesystem/CFileSystem.h"
 #include "filesystem/IFileSystem.h"
 
@@ -47,6 +50,7 @@ EditorContext::EditorContext(
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
 	, _fileSystem(std::make_unique<filesystem::CFileSystem>())
 	, _soundSystem(std::make_unique<soundsystem::CSoundSystem>())
+	, _worldTime(std::make_unique<CWorldTime>())
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
 {
 	_settings->setParent(this);
@@ -76,7 +80,26 @@ EditorContext::~EditorContext()
 
 void EditorContext::OnTimerTick()
 {
-	//TODO: update frequency should be controllable
+	const double flCurTime = GetCurrentTime();
+
+	double flFrameTime = flCurTime - _worldTime->GetPreviousRealTime();
+
+	_worldTime->SetRealTime(flCurTime);
+
+	if (flFrameTime > 1.0)
+	{
+		flFrameTime = 0.1;
+	}
+
+	//TODO: implement frame limiter setting
+	//TODO: investigate how to allow animation to work when framerate is very high
+	if (flFrameTime < (1.0 / /*max_fps.GetFloat()*/60.0f))
+	{
+		return;
+	}
+
+	_worldTime->TimeChanged(flCurTime);
+
 	emit Tick();
 }
 }

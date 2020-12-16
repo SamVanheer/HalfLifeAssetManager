@@ -171,12 +171,22 @@ void HLMVMainWindow::OnAssetTabChanged(int index)
 				return candidate.GetEditWidget() == editWidget;
 			}); it != assets.end())
 		{
+			if (_currentAsset)
+			{
+				_currentAsset->SetActive(false);
+			}
+
 			const auto asset = it->GetAsset();
 
 			_undoGroup->setActiveStack(asset->GetUndoStack());
 
 			UpdateTitle(asset->GetFileName(), !_undoGroup->isClean());
 			asset->PopulateAssetMenu(_ui.MenuAsset);
+
+			_currentAsset = asset;
+
+			asset->SetActive(true);
+
 			success = true;
 		}
 		else
@@ -189,6 +199,7 @@ void HLMVMainWindow::OnAssetTabChanged(int index)
 	{
 		_undoGroup->setActiveStack(nullptr);
 		setWindowTitle({});
+		_currentAsset = nullptr;
 	}
 
 	_ui.ActionSave->setEnabled(success);
@@ -324,7 +335,7 @@ void HLMVMainWindow::OnGoFullscreen()
 		_fullscreenWidget = std::make_unique<FullscreenWidget>();
 	}
 
-	currentAsset.GetAsset()->SetupFullscreenWidget(_editorContext, _fullscreenWidget.get());
+	currentAsset.GetAsset()->SetupFullscreenWidget(_fullscreenWidget.get());
 
 	_fullscreenWidget->raise();
 	_fullscreenWidget->showFullScreen();
