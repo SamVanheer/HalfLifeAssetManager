@@ -28,6 +28,12 @@ enum class ModelChangeId
 	ChangeAttachmentType,
 	ChangeAttachmentBone,
 	ChangeAttachmentOrigin,
+
+	ChangeBoneControllerBone,
+	ChangeBoneControllerRange,
+	ChangeBoneControllerRest,
+	ChangeBoneControllerIndex,
+	ChangeBoneControllerType,
 };
 
 /**
@@ -129,18 +135,18 @@ public:
 
 	void undo() override
 	{
-		Apply(_index, _oldValue);
+		Apply(_index, _newValue, _oldValue);
 		_asset->EmitModelChanged(ModelListChangeEvent{_id, _index});
 	}
 
 	void redo() override
 	{
-		Apply(_index, _newValue);
+		Apply(_index, _oldValue, _newValue);
 		_asset->EmitModelChanged(ModelListChangeEvent{_id, _index});
 	}
 
 protected:
-	virtual void Apply(int index, const T& value) = 0;
+	virtual void Apply(int index, const T& oldValue, const T& newValue) = 0;
 
 protected:
 	const int _index;
@@ -158,7 +164,7 @@ public:
 	}
 
 protected:
-	void Apply(int index, const QString& value) override;
+	void Apply(int index, const QString& oldValue, const QString& newValue) override;
 };
 
 class ChangeBoneParentCommand : public ModelListUndoCommand<int>
@@ -171,7 +177,7 @@ public:
 	}
 
 protected:
-	void Apply(int index, const int& value) override;
+	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
 class ChangeBoneFlagsCommand : public ModelListUndoCommand<int>
@@ -184,7 +190,7 @@ public:
 	}
 
 protected:
-	void Apply(int index, const int& value) override;
+	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
 struct ChangeBoneProperties
@@ -203,7 +209,7 @@ public:
 	}
 
 protected:
-	void Apply(int index, const ChangeBoneProperties& properties) override;
+	void Apply(int index, const ChangeBoneProperties& oldValue, const ChangeBoneProperties& newValue) override;
 };
 
 class ChangeAttachmentNameCommand : public ModelListUndoCommand<QString>
@@ -216,7 +222,7 @@ public:
 	}
 
 protected:
-	void Apply(int index, const QString& value) override;
+	void Apply(int index, const QString& oldValue, const QString& newValue) override;
 };
 
 class ChangeAttachmentTypeCommand : public ModelListUndoCommand<int>
@@ -229,7 +235,7 @@ public:
 	}
 
 protected:
-	void Apply(int index, const int& value) override;
+	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
 class ChangeAttachmentBoneCommand : public ModelListUndoCommand<int>
@@ -242,7 +248,7 @@ public:
 	}
 
 protected:
-	void Apply(int index, const int& value) override;
+	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
 class ChangeAttachmentOriginCommand : public ModelListUndoCommand<glm::vec3>
@@ -255,6 +261,78 @@ public:
 	}
 
 protected:
-	void Apply(int index, const glm::vec3& value) override;
+	void Apply(int index, const glm::vec3& oldValue, const glm::vec3& newValue) override;
+};
+
+class ChangeBoneControllerBoneCommand : public ModelListUndoCommand<int>
+{
+public:
+	ChangeBoneControllerBoneCommand(StudioModelAsset* asset, int boneControllerIndex, int oldBone, int newBone)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerBone, boneControllerIndex, oldBone, newBone)
+	{
+		setText("Change bone controller bone");
+	}
+
+protected:
+	void Apply(int index, const int& oldValue, const int& newValue) override;
+};
+
+struct ChangeBoneControllerRange
+{
+	float Start;
+	float End;
+};
+
+class ChangeBoneControllerRangeCommand : public ModelListUndoCommand<ChangeBoneControllerRange>
+{
+public:
+	ChangeBoneControllerRangeCommand(StudioModelAsset* asset, int boneControllerIndex,
+		const ChangeBoneControllerRange& oldRange, const ChangeBoneControllerRange& newRange)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerRange, boneControllerIndex, oldRange, newRange)
+	{
+		setText("Change bone controller range");
+	}
+
+protected:
+	void Apply(int index, const ChangeBoneControllerRange& oldValue, const ChangeBoneControllerRange& newValue) override;
+};
+
+class ChangeBoneControllerRestCommand : public ModelListUndoCommand<int>
+{
+public:
+	ChangeBoneControllerRestCommand(StudioModelAsset* asset, int boneControllerIndex, int oldRest, int newRest)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerRest, boneControllerIndex, oldRest, newRest)
+	{
+		setText("Change bone controller rest");
+	}
+
+protected:
+	void Apply(int index, const int& oldValue, const int& newValue) override;
+};
+
+class ChangeBoneControllerIndexCommand : public ModelListUndoCommand<int>
+{
+public:
+	ChangeBoneControllerIndexCommand(StudioModelAsset* asset, int boneControllerIndex, int oldIndex, int newIndex)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerIndex, boneControllerIndex, oldIndex, newIndex)
+	{
+		setText("Change bone controller index");
+	}
+
+protected:
+	void Apply(int index, const int& oldValue, const int& newValue) override;
+};
+
+class ChangeBoneControllerTypeCommand : public ModelListUndoCommand<int>
+{
+public:
+	ChangeBoneControllerTypeCommand(StudioModelAsset* asset, int boneControllerIndex, int oldType, int newType)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerType, boneControllerIndex, oldType, newType)
+	{
+		setText("Change bone controller type");
+	}
+
+protected:
+	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 }

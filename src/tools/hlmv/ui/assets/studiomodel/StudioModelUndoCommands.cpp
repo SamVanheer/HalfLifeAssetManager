@@ -1,82 +1,147 @@
+#include <cmath>
+
 #include "engine/shared/studiomodel/CStudioModel.h"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 
 namespace ui::assets::studiomodel
 {
-void BoneRenameCommand::Apply(int index, const QString& value)
+void BoneRenameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
 	const auto bone = header->GetBone(index);
 
-	strncpy(bone->name, value.toUtf8().constData(), sizeof(bone->name) - 1);
+	strncpy(bone->name, newValue.toUtf8().constData(), sizeof(bone->name) - 1);
 	bone->name[sizeof(bone->name) - 1] = '\0';
 }
 
-void ChangeBoneParentCommand::Apply(int index, const int& value)
+void ChangeBoneParentCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
 	const auto bone = header->GetBone(index);
 
-	bone->parent = value;
+	bone->parent = newValue;
 }
 
-void ChangeBoneFlagsCommand::Apply(int index, const int& value)
+void ChangeBoneFlagsCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
 	const auto bone = header->GetBone(index);
 
-	bone->flags = value;
+	bone->flags = newValue;
 }
 
-void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& value)
+void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& oldValue, const ChangeBoneProperties& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
 	const auto bone = header->GetBone(index);
 
-	for (std::size_t j = 0; j < value.Values.size(); ++j)
+	for (std::size_t j = 0; j < newValue.Values.size(); ++j)
 	{
-		for (int i = 0; i < value.Values[j].length(); ++i)
+		for (int i = 0; i < newValue.Values[j].length(); ++i)
 		{
-			bone->value[(j * value.Values[j].length()) + i] = value.Values[j][i];
-			bone->scale[(j * value.Scales[j].length()) + i] = value.Scales[j][i];
+			bone->value[(j * newValue.Values[j].length()) + i] = newValue.Values[j][i];
+			bone->scale[(j * newValue.Scales[j].length()) + i] = newValue.Scales[j][i];
 		}
 	}
 }
 
-void ChangeAttachmentNameCommand::Apply(int index, const QString& value)
+void ChangeAttachmentNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
 	const auto attachment = header->GetAttachment(index);
 
-	strncpy(attachment->name, value.toUtf8().constData(), sizeof(attachment->name) - 1);
+	strncpy(attachment->name, newValue.toUtf8().constData(), sizeof(attachment->name) - 1);
 	attachment->name[sizeof(attachment->name) - 1] = '\0';
 }
 
-void ChangeAttachmentTypeCommand::Apply(int index, const int& value)
+void ChangeAttachmentTypeCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
 	const auto attachment = header->GetAttachment(index);
 
-	attachment->type = value;
+	attachment->type = newValue;
 }
 
-void ChangeAttachmentBoneCommand::Apply(int index, const int& value)
+void ChangeAttachmentBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
 	const auto attachment = header->GetAttachment(index);
 
-	attachment->bone = value;
+	attachment->bone = newValue;
 }
 
-void ChangeAttachmentOriginCommand::Apply(int index, const glm::vec3& value)
+void ChangeAttachmentOriginCommand::Apply(int index, const glm::vec3& oldValue, const glm::vec3& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
 	const auto attachment = header->GetAttachment(index);
 
-	for (int i = 0; i < value.length(); ++i)
+	for (int i = 0; i < newValue.length(); ++i)
 	{
-		attachment->org[i] = value[i];
+		attachment->org[i] = newValue[i];
 	}
+}
+
+void ChangeBoneControllerBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto controller = header->GetBoneController(index);
+
+	const int type = controller->type & STUDIO_BONECONTROLLER_TYPES;
+
+	const int typeIndex = static_cast<int>(std::log2(type));
+
+	const auto oldBone = header->GetBone(oldValue);
+	const auto newBone = header->GetBone(newValue);
+
+	//Remove the reference to this controller from the old bone
+	oldBone->bonecontroller[typeIndex] = -1;
+
+	controller->bone = newValue;
+
+	//Patch up the new bone reference
+	newBone->bonecontroller[typeIndex] = index;
+}
+
+void ChangeBoneControllerRangeCommand::Apply(int index, const ChangeBoneControllerRange& oldValue, const ChangeBoneControllerRange& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto controller = header->GetBoneController(index);
+
+	controller->start = newValue.Start;
+	controller->end = newValue.End;
+}
+
+void ChangeBoneControllerRestCommand::Apply(int index, const int& oldValue, const int& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto controller = header->GetBoneController(index);
+
+	controller->rest = newValue;
+}
+
+void ChangeBoneControllerIndexCommand::Apply(int index, const int& oldValue, const int& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto controller = header->GetBoneController(index);
+
+	controller->index = newValue;
+}
+
+void ChangeBoneControllerTypeCommand::Apply(int index, const int& oldValue, const int& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto controller = header->GetBoneController(index);
+	const auto bone = header->GetBone(controller->bone);
+
+	const int oldTypeIndex = static_cast<int>(std::log2(oldValue));
+	const int newTypeIndex = static_cast<int>(std::log2(newValue));
+
+	bone->bonecontroller[oldTypeIndex] = -1;
+
+	controller->type &= ~oldValue;
+	controller->type |= newValue;
+
+	bone->bonecontroller[newTypeIndex] = index;
 }
 }
