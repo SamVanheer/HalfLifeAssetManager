@@ -832,6 +832,8 @@ void StudioModelTexturesPanel::OnImportAllTextures()
 	auto pStudioModel = entity->GetModel();
 	studiohdr_t* const pHdr = pStudioModel->GetTextureHeader();
 
+	_asset->GetUndoStack()->beginMacro("Import all textures");
+
 	//For each texture in the model, find if there is a file with the same name in the given directory
 	//If so, try to replace the texture
 	for (int i = 0; i < pHdr->numtextures; ++i)
@@ -845,6 +847,8 @@ void StudioModelTexturesPanel::OnImportAllTextures()
 			ImportTextureFrom(fileName.absoluteFilePath(), pStudioModel, pHdr, i);
 		}
 	}
+
+	_asset->GetUndoStack()->endMacro();
 
 	RemapTextures();
 }
