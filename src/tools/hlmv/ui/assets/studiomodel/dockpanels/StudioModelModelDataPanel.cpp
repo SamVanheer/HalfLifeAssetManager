@@ -29,6 +29,8 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	_ui.ScaleMeshSpinner->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	_ui.ScaleBonesSpinner->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 
+	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelModelDataPanel::OnModelChanged);
+
 	connect(_ui.OriginX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelModelDataPanel::OnOriginChanged);
 	connect(_ui.OriginY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelModelDataPanel::OnOriginChanged);
 	connect(_ui.OriginZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelModelDataPanel::OnOriginChanged);
@@ -41,12 +43,37 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 
 StudioModelModelDataPanel::~StudioModelModelDataPanel() = default;
 
+void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
+{
+	switch (event.GetId())
+	{
+	case ModelChangeId::ChangeModelOrigin:
+	{
+		const auto& originChange = static_cast<const ModelOriginChangeEvent&>(event);
+
+		_oldOffset = originChange.GetOffset();
+
+		const QSignalBlocker originX{_ui.OriginX};
+		const QSignalBlocker originY{_ui.OriginY};
+		const QSignalBlocker originZ{_ui.OriginZ};
+
+		_ui.OriginX->setValue(_oldOffset.x);
+		_ui.OriginY->setValue(_oldOffset.y);
+		_ui.OriginZ->setValue(_oldOffset.z);
+		break;
+	}
+
+	//The mesh and bone scales aren't reset here because they're not representative of the absolute model scale compared to the initial state
+	}
+}
+
 void StudioModelModelDataPanel::UpdateOrigin()
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 	const auto header = model->GetStudioHeader();
 
-	const glm::vec3 offset{_ui.OriginX->value(), _ui.OriginY->value(), _ui.OriginZ->value()};
+	const glm::vec3 absoluteOffset{_ui.OriginX->value(), _ui.OriginY->value(), _ui.OriginZ->value()};
+	const auto relativeOffset{absoluteOffset - _oldOffset};
 
 	const auto rootBoneIndices{model->GetRootBoneIndices()};
 
@@ -73,16 +100,17 @@ void StudioModelModelDataPanel::UpdateOrigin()
 			{
 				rootBoneIndex,
 				{
-					rootBone->value[0] + offset[0],
-					rootBone->value[1] + offset[1],
-					rootBone->value[2] + offset[2]
+					rootBone->value[0] + relativeOffset[0],
+					rootBone->value[1] + relativeOffset[1],
+					rootBone->value[2] + relativeOffset[2]
 				}
 			});
 	}
 
 	if (!newRootBonePositions.empty())
 	{
-		_asset->AddUndoCommand(new ChangeModelOriginCommand(_asset, std::move(oldRootBonePositions), std::move(newRootBonePositions)));
+		_asset->AddUndoCommand(
+			new ChangeModelOriginCommand(_asset, {std::move(oldRootBonePositions), _oldOffset}, {std::move(newRootBonePositions), absoluteOffset}));
 	}
 }
 
@@ -102,8 +130,6 @@ void StudioModelModelDataPanel::OnScaleMesh()
 
 	auto data{studiomdl::CalculateScaledMeshesData(*entity->GetModel(), _ui.ScaleMeshSpinner->value())};
 
-	//TODO: reset scale value to 1
-
 	_asset->AddUndoCommand(new ChangeModelMeshesScaleCommand(_asset, std::move(data.first), std::move(data.second)));
 }
 
@@ -112,8 +138,6 @@ void StudioModelModelDataPanel::OnScaleBones()
 	auto entity = _asset->GetScene()->GetEntity();
 
 	auto data{studiomdl::CalculateScaledBonesData(*entity->GetModel(), _ui.ScaleBonesSpinner->value())};
-
-	//TODO: reset scale value to 1
 
 	_asset->AddUndoCommand(new ChangeModelBonesScaleCommand(_asset, std::move(data.first), std::move(data.second)));
 }

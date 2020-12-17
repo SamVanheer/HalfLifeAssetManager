@@ -152,11 +152,11 @@ void ChangeModelFlagsCommand::Apply(const int& oldValue, const int& newValue)
 	header->flags = newValue;
 }
 
-void ChangeModelOriginCommand::Apply(const std::vector<RootBoneData>& oldValue, const std::vector<RootBoneData>& newValue)
+void ChangeModelOriginCommand::Apply(const ChangeModelOriginData& oldValue, const ChangeModelOriginData& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
 
-	for (const auto& data : newValue)
+	for (const auto& data : newValue.BoneData)
 	{
 		const auto bone = header->GetBone(data.BoneIndex);
 

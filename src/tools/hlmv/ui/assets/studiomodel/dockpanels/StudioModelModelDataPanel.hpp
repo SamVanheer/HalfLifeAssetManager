@@ -2,10 +2,13 @@
 
 #include <QWidget>
 
+#include <glm/vec3.hpp>
+
 #include "ui_StudioModelModelDataPanel.h"
 
 namespace ui::assets::studiomodel
 {
+class ModelChangeEvent;
 class StudioModelAsset;
 
 class StudioModelModelDataPanel final : public QWidget
@@ -18,6 +21,8 @@ private:
 	void UpdateOrigin();
 
 private slots:
+	void OnModelChanged(const ModelChangeEvent& event);
+
 	void OnOriginChanged();
 
 	void OnSetOrigin();
@@ -29,5 +34,7 @@ private slots:
 private:
 	Ui_StudioModelModelDataPanel _ui;
 	StudioModelAsset* const _asset;
+
+	glm::vec3 _oldOffset{0};
 };
 }

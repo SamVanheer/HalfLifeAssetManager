@@ -93,6 +93,21 @@ private:
 	const int _destinationIndex;
 };
 
+class ModelOriginChangeEvent : public ModelChangeEvent
+{
+public:
+	ModelOriginChangeEvent(ModelChangeId id, const glm::vec3& offset)
+		: ModelChangeEvent(id)
+		, _offset(offset)
+	{
+	}
+
+	const glm::vec3& GetOffset() const { return _offset; }
+
+private:
+	const glm::vec3 _offset;
+};
+
 /**
 *	@brief Base class for all undo commands related to Studiomodel editing
 */
@@ -150,17 +165,22 @@ public:
 	void undo() override
 	{
 		Apply(_newValue, _oldValue);
-		_asset->EmitModelChanged(ModelChangeEvent{_id});
+		EmitEvent(_newValue, _oldValue);
 	}
 
 	void redo() override
 	{
 		Apply(_oldValue, _newValue);
-		_asset->EmitModelChanged(ModelChangeEvent{_id});
+		EmitEvent(_oldValue, _newValue);
 	}
 
 protected:
 	virtual void Apply(const T& oldValue, const T& newValue) = 0;
+
+	virtual void EmitEvent(const T& oldValue, const T& newValue)
+	{
+		_asset->EmitModelChanged(ModelChangeEvent{_id});
+	}
 
 protected:
 	const T _oldValue;
@@ -414,17 +434,28 @@ struct RootBoneData
 	glm::vec3 BonePosition;
 };
 
-class ChangeModelOriginCommand : public ModelUndoCommand<std::vector<RootBoneData>>
+struct ChangeModelOriginData
+{
+	std::vector<RootBoneData> BoneData;
+	glm::vec3 Offset;
+};
+
+class ChangeModelOriginCommand : public ModelUndoCommand<ChangeModelOriginData>
 {
 public:
-	ChangeModelOriginCommand(StudioModelAsset* asset, std::vector<RootBoneData>&& oldPositions, std::vector<RootBoneData>&& newPositions)
+	ChangeModelOriginCommand(StudioModelAsset* asset, ChangeModelOriginData&& oldPositions, ChangeModelOriginData&& newPositions)
 		: ModelUndoCommand(asset, ModelChangeId::ChangeModelOrigin, std::move(oldPositions), std::move(newPositions))
 	{
 		setText("Change model origin");
 	}
 
 protected:
-	void Apply(const std::vector<RootBoneData>& oldValue, const std::vector<RootBoneData>& newValue) override;
+	void Apply(const ChangeModelOriginData& oldValue, const ChangeModelOriginData& newValue) override;
+
+	void EmitEvent(const ChangeModelOriginData& oldValue, const ChangeModelOriginData& newValue) override
+	{
+		_asset->EmitModelChanged(ModelOriginChangeEvent(_id, newValue.Offset));
+	}
 };
 
 class ChangeModelMeshesScaleCommand : public ModelUndoCommand<studiomdl::ScaleMeshesData>
