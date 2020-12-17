@@ -15,9 +15,6 @@ target_sources(HLMV
 		StudioModelExportUVMeshDialog.hpp
 		StudioModelExportUVMeshDialog.cpp
 		StudioModelExportUVMeshDialog.ui
-		StudioModelGlobalFlagsPanel.cpp
-		StudioModelGlobalFlagsPanel.hpp
-		StudioModelGlobalFlagsPanel.ui
 		StudioModelHitboxesPanel.cpp
 		StudioModelHitboxesPanel.hpp
 		StudioModelHitboxesPanel.ui

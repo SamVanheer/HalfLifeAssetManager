@@ -18,18 +18,18 @@ public:
 	~StudioModelModelDataPanel();
 
 private:
-	void UpdateOrigin();
+	void SetFlags(int flags);
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
 
 	void OnOriginChanged();
 
-	void OnSetOrigin();
-
 	void OnScaleMesh();
 
 	void OnScaleBones();
+
+	void OnFlagChanged(int state);
 
 private:
 	Ui_StudioModelModelDataPanel _ui;

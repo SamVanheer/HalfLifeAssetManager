@@ -11,7 +11,6 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBonesPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelGlobalFlagsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelHitboxesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDataPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDisplayPanel.hpp"
@@ -51,7 +50,6 @@ StudioModelEditWidget::StudioModelEditWidget(
 	_dockPanels->addTab(new StudioModelBodyPartsPanel(_asset), "Body Parts");
 	_dockPanels->addTab(texturesPanel, "Textures");
 	_dockPanels->addTab(new StudioModelModelDataPanel(_asset), "Model Data");
-	_dockPanels->addTab(new StudioModelGlobalFlagsPanel(_asset), "Global Flags");
 	_dockPanels->addTab(bonesPanel, "Bones");
 	_dockPanels->addTab(attachmentsPanel, "Attachments");
 	_dockPanels->addTab(hitboxesPanel, "Hitboxes");
