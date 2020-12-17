@@ -32,207 +32,21 @@
    <property name="verticalSpacing">
     <number>0</number>
    </property>
-   <item row="1" column="8">
-    <widget class="QLabel" name="label_11">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Index</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="9">
-    <widget class="QComboBox" name="BoneControllerType">
-     <item>
-      <property name="text">
-       <string>X</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Y</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Z</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>XR</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>XY</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>XZ</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="2" column="8">
-    <widget class="QLabel" name="label_12">
-     <property name="text">
-      <string>Type</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="7">
-    <widget class="QComboBox" name="BoneControllerBone">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>150</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>16777215</height>
-      </size>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="6">
-    <widget class="QLabel" name="label_7">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Bone</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="9">
-    <widget class="QComboBox" name="BoneControllerIndex">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>150</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <item>
-      <property name="text">
-       <string>Controller 0</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Controller 1</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Controller 2</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Controller 3</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Mouth 0</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Mouth 1</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Mouth 2</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Mouth 3</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QComboBox" name="BodyParts">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>200</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>16777215</height>
-      </size>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="6">
-    <widget class="QLabel" name="label_9">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>End</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="10">
-    <spacer name="horizontalSpacer">
+   <item row="3" column="1">
+    <spacer name="verticalSpacer">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Vertical</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>0</width>
-       <height>20</height>
+       <width>20</width>
+       <height>0</height>
       </size>
      </property>
     </spacer>
    </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="Submodels">
+   <item row="2" column="3" colspan="2">
+    <widget class="QLineEdit" name="BodyValue">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -250,6 +64,19 @@
        <width>200</width>
        <height>16777215</height>
       </size>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Skin</string>
      </property>
     </widget>
    </item>
@@ -281,93 +108,15 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="7">
-    <widget class="QDoubleSpinBox" name="BoneControllerStart">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>150</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="decimals">
-      <number>6</number>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="6">
-    <widget class="QLabel" name="label_8">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
      <property name="text">
-      <string>Start</string>
+      <string>Part</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="9">
-    <widget class="QSpinBox" name="BoneControllerRest">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>150</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>16777215</height>
-      </size>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="7">
-    <widget class="QDoubleSpinBox" name="BoneControllerEnd">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>150</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>150</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="decimals">
-      <number>6</number>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="3" colspan="2">
-    <widget class="QLineEdit" name="BodyValue">
+   <item row="0" column="3" colspan="2">
+    <widget class="QComboBox" name="BoneControllers">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -386,11 +135,48 @@
        <height>16777215</height>
       </size>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Controller</string>
      </property>
-     <property name="readOnly">
-      <bool>true</bool>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="BodyParts">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>200</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>16777215</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Value</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Submodel</string>
      </property>
     </widget>
    </item>
@@ -419,8 +205,8 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="3" colspan="2">
-    <widget class="QComboBox" name="BoneControllers">
+   <item row="1" column="1">
+    <widget class="QComboBox" name="Submodels">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -440,19 +226,6 @@
       </size>
      </property>
     </widget>
-   </item>
-   <item row="3" column="1">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
    </item>
    <item row="2" column="1">
     <widget class="QComboBox" name="Skins">
@@ -476,59 +249,307 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="8">
-    <widget class="QLabel" name="label_10">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Rest</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Part</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Submodel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Skin</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>Controller</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string>Value</string>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="2">
     <widget class="QLabel" name="label_6">
      <property name="text">
       <string>Body Value</string>
      </property>
+    </widget>
+   </item>
+   <item row="0" column="8">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="7" rowspan="3">
+    <widget class="QWidget" name="BoneControllerDataWidget" native="true">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Bone</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="BoneControllerBone">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_10">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Rest</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QSpinBox" name="BoneControllerRest">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Start</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QDoubleSpinBox" name="BoneControllerStart">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="decimals">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_11">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Index</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QComboBox" name="BoneControllerIndex">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>Controller 0</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Controller 1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Controller 2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Controller 3</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Mouth 0</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Mouth 1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Mouth 2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Mouth 3</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>End</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="BoneControllerEnd">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="decimals">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Type</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QComboBox" name="BoneControllerType">
+        <item>
+         <property name="text">
+          <string>X</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Y</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Z</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>XR</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>XY</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>XZ</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
