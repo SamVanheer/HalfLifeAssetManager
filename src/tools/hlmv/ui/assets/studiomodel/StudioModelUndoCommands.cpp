@@ -176,4 +176,29 @@ void ChangeModelBonesScaleCommand::Apply(const std::vector<studiomdl::ScaleBones
 {
 	ApplyScaleBonesData(*_asset->GetStudioModel(), newValue);
 }
+
+void ChangeHitboxBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto hitbox = header->GetHitBox(index);
+
+	hitbox->bone = newValue;
+}
+
+void ChangeHitboxHitgroupCommand::Apply(int index, const int& oldValue, const int& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto hitbox = header->GetHitBox(index);
+
+	hitbox->group = newValue;
+}
+
+void ChangeHitboxBoundsCommand::Apply(int index, const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto hitbox = header->GetHitBox(index);
+
+	hitbox->bbmin = newValue.first;
+	hitbox->bbmax = newValue.second;
+}
 }

@@ -42,6 +42,10 @@ enum class ModelChangeId
 	ChangeModelOrigin,
 	ChangeModelMeshesScale,
 	ChangeModelBonesScale,
+
+	ChangeHitboxBone,
+	ChangeHitboxHitgroup,
+	ChangeHitboxBounds,
 };
 
 /**
@@ -484,5 +488,45 @@ public:
 
 protected:
 	void Apply(const std::vector<studiomdl::ScaleBonesBoneData>& oldValue, const std::vector<studiomdl::ScaleBonesBoneData>& newValue) override;
+};
+
+class ChangeHitboxBoneCommand : public ModelListUndoCommand<int>
+{
+public:
+	ChangeHitboxBoneCommand(StudioModelAsset* asset, int hitboxIndex, int oldBone, int newBone)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeHitboxBone, hitboxIndex, oldBone, newBone)
+	{
+		setText("Change hitbox bone");
+	}
+
+protected:
+	void Apply(int index, const int& oldValue, const int& newValue) override;
+};
+
+class ChangeHitboxHitgroupCommand : public ModelListUndoCommand<int>
+{
+public:
+	ChangeHitboxHitgroupCommand(StudioModelAsset* asset, int hitboxIndex, int oldHitgroup, int newHitgroup)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeHitboxHitgroup, hitboxIndex, oldHitgroup, newHitgroup)
+	{
+		setText("Change hitbox hitgroup");
+	}
+
+protected:
+	void Apply(int index, const int& oldValue, const int& newValue) override;
+};
+
+class ChangeHitboxBoundsCommand : public ModelListUndoCommand<std::pair<glm::vec3, glm::vec3>>
+{
+public:
+	ChangeHitboxBoundsCommand(StudioModelAsset* asset, int hitboxIndex,
+		const std::pair<glm::vec3, glm::vec3>& oldBounds, const std::pair<glm::vec3, glm::vec3>& newBounds)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeHitboxBounds, hitboxIndex, oldBounds, newBounds)
+	{
+		setText("Change hitbox bounds");
+	}
+
+protected:
+	void Apply(int index, const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
 };
 }

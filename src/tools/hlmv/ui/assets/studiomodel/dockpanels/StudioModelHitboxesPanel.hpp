@@ -31,7 +31,7 @@ private slots:
 	void OnBoneChanged();
 	void OnHitgroupChanged();
 
-	void OnMinimumChanged();
+	void OnBoundsChanged();
 	void OnMaximumChanged();
 
 private:
