@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cassert>
+#include <vector>
 
 #include <QString>
 #include <QUndoStack>
@@ -13,6 +14,8 @@
 namespace studiomdl
 {
 class CStudioModel;
+struct ScaleBonesBoneData;
+struct ScaleMeshesData;
 }
 
 namespace ui::assets::studiomodel
@@ -36,6 +39,9 @@ enum class ModelChangeId
 	ChangeBoneControllerType,
 
 	ChangeModelFlags,
+	ChangeModelOrigin,
+	ChangeModelMeshesScale,
+	ChangeModelBonesScale,
 };
 
 /**
@@ -118,6 +124,13 @@ protected:
 		: BaseModelUndoCommand(asset, id)
 		, _oldValue(oldValue)
 		, _newValue(newValue)
+	{
+	}
+
+	ModelUndoCommand(StudioModelAsset* asset, ModelChangeId id, T&& oldValue, T&& newValue)
+		: BaseModelUndoCommand(asset, id)
+		, _oldValue(std::move(oldValue))
+		, _newValue(std::move(newValue))
 	{
 	}
 
@@ -393,5 +406,52 @@ public:
 
 protected:
 	void Apply(const int& oldValue, const int& newValue) override;
+};
+
+struct RootBoneData
+{
+	int BoneIndex;
+	glm::vec3 BonePosition;
+};
+
+class ChangeModelOriginCommand : public ModelUndoCommand<std::vector<RootBoneData>>
+{
+public:
+	ChangeModelOriginCommand(StudioModelAsset* asset, std::vector<RootBoneData>&& oldPositions, std::vector<RootBoneData>&& newPositions)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeModelOrigin, std::move(oldPositions), std::move(newPositions))
+	{
+		setText("Change model origin");
+	}
+
+protected:
+	void Apply(const std::vector<RootBoneData>& oldValue, const std::vector<RootBoneData>& newValue) override;
+};
+
+class ChangeModelMeshesScaleCommand : public ModelUndoCommand<studiomdl::ScaleMeshesData>
+{
+public:
+	ChangeModelMeshesScaleCommand(
+		StudioModelAsset* asset, studiomdl::ScaleMeshesData&& oldData, studiomdl::ScaleMeshesData&& newData)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeModelMeshesScale, std::move(oldData), std::move(newData))
+	{
+		setText("Scale model meshes");
+	}
+
+protected:
+	void Apply(const studiomdl::ScaleMeshesData& oldValue, const studiomdl::ScaleMeshesData& newValue) override;
+};
+
+class ChangeModelBonesScaleCommand : public ModelUndoCommand<std::vector<studiomdl::ScaleBonesBoneData>>
+{
+public:
+	ChangeModelBonesScaleCommand(
+		StudioModelAsset* asset, std::vector<studiomdl::ScaleBonesBoneData>&& oldData, std::vector<studiomdl::ScaleBonesBoneData>&& newData)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeModelBonesScale, std::move(oldData), std::move(newData))
+	{
+		setText("Scale model bones");
+	}
+
+protected:
+	void Apply(const std::vector<studiomdl::ScaleBonesBoneData>& oldValue, const std::vector<studiomdl::ScaleBonesBoneData>& newValue) override;
 };
 }

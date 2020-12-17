@@ -4,6 +4,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <glm/vec3.hpp>
@@ -176,9 +177,9 @@ public:
 	*/
 	void ReuploadTexture( mstudiotexture_t* ptexture );
 
-	std::vector<mstudiobone_t*> GetRootBones()
+	std::vector<int> GetRootBoneIndices()
 	{
-		std::vector<mstudiobone_t*> bones;
+		std::vector<int> bones;
 
 		for (int i = 0; i < m_pStudioHdr->numbones; ++i)
 		{
@@ -186,7 +187,7 @@ public:
 
 			if (bone->parent == -1)
 			{
-				bones.emplace_back(bone);
+				bones.emplace_back(i);
 			}
 		}
 
@@ -210,8 +211,26 @@ private:
 	CStudioModel& operator=( const CStudioModel& ) = delete;
 };
 
-void ScaleMeshes( CStudioModel* pStudioModel, const float flScale );
-void ScaleBones( CStudioModel* pStudioModel, const float flScale );
+struct ScaleMeshesData
+{
+	std::vector<std::vector<glm::vec3>> Vertices;
+	std::vector<std::pair<glm::vec3, glm::vec3>> Hitboxes;
+	std::vector<std::pair<glm::vec3, glm::vec3>> SequenceBBoxes;
+};
+
+std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const CStudioModel& studioModel, const float scale);
+
+void ApplyScaleMeshesData(CStudioModel& studioModel, const ScaleMeshesData& data);
+
+struct ScaleBonesBoneData
+{
+	glm::vec3 Position;
+	glm::vec3 Scale;
+};
+
+std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> CalculateScaledBonesData(const CStudioModel& studioModel, const float scale);
+
+void ApplyScaleBonesData(CStudioModel& studioModel, const std::vector<studiomdl::ScaleBonesBoneData>& data);
 
 /**
 *	Returns the string representation for a studio control value.

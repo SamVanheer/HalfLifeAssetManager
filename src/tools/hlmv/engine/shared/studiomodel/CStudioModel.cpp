@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <cctype>
 #include <filesystem>
@@ -639,76 +640,173 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 	}
 }
 
-void ScaleMeshes(CStudioModel* pStudioModel, const float flScale)
+std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const CStudioModel& studioModel, const float scale)
 {
-	assert(pStudioModel);
+	const auto header = studioModel.GetStudioHeader();
 
-	auto pStudioHdr = pStudioModel->GetStudioHeader();
-
-	int iBodygroup = 0;
+	std::vector<std::vector<glm::vec3>> oldVertices;
+	std::vector<std::vector<glm::vec3>> newVertices;
 
 	// scale verts
-	for (int i = 0; i < pStudioHdr->numbodyparts; i++)
+	for (int i = 0; i < header->numbodyparts; ++i)
 	{
-		mstudiobodyparts_t* pbodypart = pStudioHdr->GetBodypart(i);
-		for (int j = 0; j < pbodypart->nummodels; j++)
+		const auto bodypart = header->GetBodypart(i);
+
+		oldVertices.reserve(oldVertices.size() + bodypart->nummodels);
+		newVertices.reserve(newVertices.size() + bodypart->nummodels);
+
+		for (int j = 0; j < bodypart->nummodels; ++j)
 		{
-			pStudioModel->CalculateBodygroup(i, j, iBodygroup);
+			const auto model = reinterpret_cast<const mstudiomodel_t*>(header->GetData() + bodypart->modelindex) + j;
+			const auto verts = reinterpret_cast<const glm::vec3*>(header->GetData() + model->vertindex);
 
-			int bodypart = i;
+			std::vector<glm::vec3> oldVerticesList{verts, verts + model->numverts};
+			auto newVerticesList{oldVerticesList};
 
-			if (bodypart > pStudioHdr->numbodyparts)
+			for (auto& vertex : newVerticesList)
 			{
-				// Message( "studiomdl::ScaleMeshes: no such bodypart %d\n", bodypart );
-				bodypart = 0;
+				vertex *= scale;
 			}
 
-			mstudiomodel_t* pModel = pStudioModel->GetModelByBodyPart(iBodygroup, bodypart);
-
-			glm::vec3* pstudioverts = (glm::vec3*)((byte*) pStudioHdr + pModel->vertindex);
-
-			for (int k = 0; k < pModel->numverts; k++)
-			{
-				pstudioverts[k] *= flScale;
-			}
+			oldVertices.emplace_back(std::move(oldVerticesList));
+			newVertices.emplace_back(std::move(newVerticesList));
 		}
 	}
 
 	// scale complex hitboxes
-	mstudiobbox_t* pbboxes = pStudioHdr->GetHitBoxes();
+	std::vector<std::pair<glm::vec3, glm::vec3>> oldHitboxes;
+	std::vector<std::pair<glm::vec3, glm::vec3>> newHitboxes;
 
-	for (int i = 0; i < pStudioHdr->numhitboxes; i++)
+	oldHitboxes.reserve(header->numhitboxes);
+	newHitboxes.reserve(header->numhitboxes);
+
+	for (int i = 0; i < header->numhitboxes; ++i)
 	{
-		pbboxes[i].bbmin *= flScale;
-		pbboxes[i].bbmax *= flScale;
+		const auto hitbox = header->GetHitBox(i);
+
+		oldHitboxes.emplace_back(std::make_pair(hitbox->bbmin, hitbox->bbmax));
+		newHitboxes.emplace_back(std::make_pair(hitbox->bbmin * scale, hitbox->bbmax * scale));
 	}
 
 	// scale bounding boxes
-	mstudioseqdesc_t* pseqdesc = pStudioHdr->GetSequences();
+	std::vector<std::pair<glm::vec3, glm::vec3>> oldSequenceBBBoxes;
+	std::vector<std::pair<glm::vec3, glm::vec3>> newSequenceBBBoxes;
 
-	for (int i = 0; i < pStudioHdr->numseq; i++)
+	oldSequenceBBBoxes.reserve(header->numseq);
+	newSequenceBBBoxes.reserve(header->numseq);
+
+	for (int i = 0; i < header->numseq; ++i)
 	{
-		pseqdesc[i].bbmin *= flScale;
-		pseqdesc[i].bbmax *= flScale;
+		const auto sequence = header->GetSequence(i);
+
+		oldSequenceBBBoxes.emplace_back(std::make_pair(sequence->bbmin, sequence->bbmax));
+		newSequenceBBBoxes.emplace_back(std::make_pair(sequence->bbmin * scale, sequence->bbmax * scale));
 	}
 
-	// maybe scale exeposition, pivots, attachments
+	// TODO: maybe scale eyeposition, pivots, attachments
+
+	return std::make_pair(
+		ScaleMeshesData
+		{
+			std::move(oldVertices),
+			std::move(oldHitboxes),
+			std::move(oldSequenceBBBoxes)
+		},
+		ScaleMeshesData
+		{
+			std::move(newVertices),
+			std::move(newHitboxes),
+			std::move(newSequenceBBBoxes)
+		});
 }
 
-void ScaleBones(CStudioModel* pStudioModel, const float flScale)
+void ApplyScaleMeshesData(CStudioModel& studioModel, const ScaleMeshesData& data)
 {
-	assert(pStudioModel);
+	const auto header = studioModel.GetStudioHeader();
 
-	const auto pStudioHdr = pStudioModel->GetStudioHeader();
+	// scale verts
+	int vertexIndex = 0;
 
-	mstudiobone_t* const pbones = pStudioHdr->GetBones();
-
-	for (int i = 0; i < pStudioHdr->numbones; i++)
+	for (int i = 0; i < header->numbodyparts; ++i)
 	{
-		for (int j = 0; j < 3; j++)
+		const auto bodypart = header->GetBodypart(i);
+
+		for (int j = 0; j < bodypart->nummodels; ++j)
 		{
-			pbones[i].value[j] *= flScale;
-			pbones[i].scale[j] *= flScale;
+			const auto model = reinterpret_cast<const mstudiomodel_t*>(header->GetData() + bodypart->modelindex + j);
+			const auto verts = reinterpret_cast<glm::vec3*>(header->GetData() + model->vertindex);
+
+			std::copy_n(data.Vertices[vertexIndex].begin(), model->numverts, verts);
+
+			++vertexIndex;
+		}
+	}
+
+	// scale complex hitboxes
+	for (int i = 0; i < header->numhitboxes; ++i)
+	{
+		const auto hitbox = header->GetHitBox(i);
+
+		hitbox->bbmin = data.Hitboxes[i].first;
+		hitbox->bbmax = data.Hitboxes[i].second;
+	}
+
+	// scale bounding boxes
+	for (int i = 0; i < header->numseq; ++i)
+	{
+		const auto sequence = header->GetSequence(i);
+
+		sequence->bbmin = data.SequenceBBoxes[i].first;
+		sequence->bbmax = data.SequenceBBoxes[i].second;
+	}
+}
+
+std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> CalculateScaledBonesData(const CStudioModel& studioModel, const float scale)
+{
+	const auto header = studioModel.GetStudioHeader();
+
+	std::vector<ScaleBonesBoneData> oldData;
+	std::vector<ScaleBonesBoneData> newData;
+
+	oldData.reserve(header->numbones);
+	newData.reserve(header->numbones);
+
+	for (int i = 0; i < header->numbones; ++i)
+	{
+		const auto bone = header->GetBone(i);
+
+		oldData.emplace_back(
+			ScaleBonesBoneData
+			{
+				{bone->value[0], bone->value[1], bone->value[2]},
+				{bone->scale[0], bone->scale[1], bone->scale[2]}
+			});
+
+		newData.emplace_back(
+			ScaleBonesBoneData
+			{
+				{bone->value[0]* scale, bone->value[1] * scale, bone->value[2] * scale},
+				{bone->scale[0]* scale, bone->scale[1] * scale, bone->scale[2] * scale}
+			});
+	}
+
+	return std::make_pair(std::move(oldData), std::move(newData));
+}
+
+void ApplyScaleBonesData(CStudioModel& studioModel, const std::vector<studiomdl::ScaleBonesBoneData>& data)
+{
+	const auto header = studioModel.GetStudioHeader();
+
+	for (int i = 0; i < header->numbones; ++i)
+	{
+		const auto bone = header->GetBone(i);
+
+		const auto& boneData = data[i];
+
+		for (int j = 0; j < boneData.Position.length(); ++j)
+		{
+			bone->value[j] = boneData.Position[j];
+			bone->scale[j] = boneData.Scale[j];
 		}
 	}
 }

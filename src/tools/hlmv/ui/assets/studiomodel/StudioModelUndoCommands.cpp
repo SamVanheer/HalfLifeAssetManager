@@ -151,4 +151,29 @@ void ChangeModelFlagsCommand::Apply(const int& oldValue, const int& newValue)
 
 	header->flags = newValue;
 }
+
+void ChangeModelOriginCommand::Apply(const std::vector<RootBoneData>& oldValue, const std::vector<RootBoneData>& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+
+	for (const auto& data : newValue)
+	{
+		const auto bone = header->GetBone(data.BoneIndex);
+
+		for (int i = 0; i < data.BonePosition.length(); ++i)
+		{
+			bone->value[i] = data.BonePosition[i];
+		}
+	}
+}
+
+void ChangeModelMeshesScaleCommand::Apply(const studiomdl::ScaleMeshesData& oldValue, const studiomdl::ScaleMeshesData& newValue)
+{
+	ApplyScaleMeshesData(*_asset->GetStudioModel(), newValue);
+}
+
+void ChangeModelBonesScaleCommand::Apply(const std::vector<studiomdl::ScaleBonesBoneData>& oldValue, const std::vector<studiomdl::ScaleBonesBoneData>& newValue)
+{
+	ApplyScaleBonesData(*_asset->GetStudioModel(), newValue);
+}
 }
