@@ -2,12 +2,17 @@
 
 #include <array>
 #include <cassert>
+#include <cstring>
+#include <memory>
 #include <vector>
 
 #include <QString>
 #include <QUndoStack>
 
 #include <glm/vec3.hpp>
+
+#include "core/shared/Const.h"
+#include "graphics/Palette.h"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
@@ -46,6 +51,9 @@ enum class ModelChangeId
 	ChangeHitboxBone,
 	ChangeHitboxHitgroup,
 	ChangeHitboxBounds,
+
+	ChangeTextureFlags,
+	ImportTexture,
 };
 
 /**
@@ -200,6 +208,14 @@ protected:
 		, _index(index)
 		, _oldValue(oldValue)
 		, _newValue(newValue)
+	{
+	}
+
+	ModelListUndoCommand(StudioModelAsset* asset, ModelChangeId id, int index, T&& oldValue, T&& newValue)
+		: BaseModelUndoCommand(asset, id)
+		, _index(index)
+		, _oldValue(std::move(oldValue))
+		, _newValue(std::move(newValue))
 	{
 	}
 
@@ -528,5 +544,59 @@ public:
 
 protected:
 	void Apply(int index, const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
+};
+
+class ChangeTextureFlagsCommand : public ModelListUndoCommand<int>
+{
+public:
+	ChangeTextureFlagsCommand(StudioModelAsset* asset, int textureIndex, int oldFlags, int newFlags)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeTextureFlags, textureIndex, oldFlags, newFlags)
+	{
+		setText("Change texture flags");
+	}
+
+protected:
+	void Apply(int index, const int& oldValue, const int& newValue) override;
+};
+
+struct ImportTextureData
+{
+	int Width{};
+	int Height{};
+	std::unique_ptr<byte[]> Pixels;
+	byte Palette[PALETTE_SIZE]{};
+
+	ImportTextureData() = default;
+
+	ImportTextureData& operator=(const ImportTextureData& other)
+	{
+		if (this != &other)
+		{
+			Width = other.Width;
+			Height = other.Height;
+
+			Pixels = std::make_unique<byte[]>(Width * Height);
+
+			memcpy(Pixels.get(), other.Pixels.get(), Width * Height);
+			memcpy(Palette, other.Palette, sizeof(Palette));
+		}
+
+		return *this;
+	}
+
+	ImportTextureData(ImportTextureData&&) = default;
+};
+
+class ImportTextureCommand : public ModelListUndoCommand<ImportTextureData>
+{
+public:
+	ImportTextureCommand(StudioModelAsset* asset, int textureIndex, ImportTextureData&& oldTexture, ImportTextureData&& newTexture)
+		: ModelListUndoCommand(asset, ModelChangeId::ImportTexture, textureIndex, std::move(oldTexture), std::move(newTexture))
+	{
+		setText("Import texture");
+	}
+
+protected:
+	void Apply(int index, const ImportTextureData& oldValue, const ImportTextureData& newValue) override;
 };
 }

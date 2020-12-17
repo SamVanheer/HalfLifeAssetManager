@@ -113,12 +113,16 @@ void ConvertDolToMdl(byte* pBuffer, const mstudiotexture_t& texture)
 	//in the SL version this will not be a problem since the file isn't loaded in one chunk
 }
 
-void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, byte* pal, GLuint name, const bool bFilterTextures, const bool bPowerOf2)
+void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint name, const bool bFilterTextures, const bool bPowerOf2)
 {
 	// unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight;
 	int		i, j;
 	int		row1[MAX_TEXTURE_DIMS], row2[MAX_TEXTURE_DIMS], col1[MAX_TEXTURE_DIMS], col2[MAX_TEXTURE_DIMS];
 	const byte* pix1, * pix2, * pix3, * pix4;
+
+	byte localPalette[PALETTE_SIZE];
+
+	memcpy(localPalette, pal, sizeof(localPalette));
 
 	// convert texture to power of 2
 	int outwidth;
@@ -150,9 +154,9 @@ void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, byte* pal
 	for (j = 0; j < ptexture->width; j++)
 	{
 
-	in[k++] = pal[data[i * ptexture->width + j] * 3 + 0];
-	in[k++] = pal[data[i * ptexture->width + j] * 3 + 1];
-	in[k++] = pal[data[i * ptexture->width + j] * 3 + 2];
+	in[k++] = localPalette[data[i * ptexture->width + j] * 3 + 0];
+	in[k++] = localPalette[data[i * ptexture->width + j] * 3 + 1];
+	in[k++] = localPalette[data[i * ptexture->width + j] * 3 + 2];
 	in[k++] = 0xff;;
 	}
 	}
@@ -173,12 +177,12 @@ void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, byte* pal
 		row2[i] = (int) ((i + 0.75) * (ptexture->height / (float) outheight)) * ptexture->width;
 	}
 
-	const byte* const pAlpha = &pal[PALETTE_ALPHA_INDEX];
+	const byte* const pAlpha = &localPalette[PALETTE_ALPHA_INDEX];
 
 	//This modifies the model's data. Sets the mask color to black. This is also done by Jed's model viewer. (export texture has black)
 	if (ptexture->flags & STUDIO_NF_MASKED)
 	{
-		pal[255 * 3 + 0] = pal[255 * 3 + 1] = pal[255 * 3 + 2] = 0;
+		localPalette[255 * 3 + 0] = localPalette[255 * 3 + 1] = localPalette[255 * 3 + 2] = 0;
 	}
 
 	auto out = tex.get();
@@ -188,10 +192,10 @@ void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, byte* pal
 	{
 		for (j = 0; j < outwidth; j++, out += 4)
 		{
-			pix1 = &pal[data[row1[i] + col1[j]] * 3];
-			pix2 = &pal[data[row1[i] + col2[j]] * 3];
-			pix3 = &pal[data[row2[i] + col1[j]] * 3];
-			pix4 = &pal[data[row2[i] + col2[j]] * 3];
+			pix1 = &localPalette[data[row1[i] + col1[j]] * 3];
+			pix2 = &localPalette[data[row1[i] + col2[j]] * 3];
+			pix3 = &localPalette[data[row2[i] + col1[j]] * 3];
+			pix4 = &localPalette[data[row2[i] + col2[j]] * 3];
 
 			out[0] = (pix1[0] + pix2[0] + pix3[0] + pix4[0]) >> 2;
 			out[1] = (pix1[1] + pix2[1] + pix3[1] + pix4[1]) >> 2;
@@ -334,7 +338,7 @@ void CStudioModel::CreateTextures()
 	UploadTextures(*GetTextureHeader(), m_Textures, r_filtertextures.GetBool(), r_powerof2textures.GetBool(), m_IsDol);
 }
 
-void CStudioModel::ReplaceTexture(mstudiotexture_t* ptexture, byte* data, byte* pal, GLuint textureId)
+void CStudioModel::ReplaceTexture(mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint textureId)
 {
 	UploadTexture(ptexture, data, pal, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool());
 }

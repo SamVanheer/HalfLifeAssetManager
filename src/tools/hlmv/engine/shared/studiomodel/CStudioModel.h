@@ -169,7 +169,7 @@ public:
 
 	void CreateTextures();
 
-	void			ReplaceTexture( mstudiotexture_t* ptexture, byte *data, byte *pal, GLuint textureId );
+	void			ReplaceTexture( mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint textureId );
 
 	/**
 	*	Reuploads a texture. Useful for making changes made to the texture's pixel, palette or flag data show up in the model itself.

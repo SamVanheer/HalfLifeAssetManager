@@ -10,6 +10,8 @@
 
 #include <glm/vec2.hpp>
 
+#include "core/shared/Utility.h"
+
 #include "entity/CHLMVStudioModelEntity.h"
 
 #include "graphics/BMPFile.h"
@@ -18,6 +20,7 @@
 #include "graphics/Palette.h"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelExportUVMeshDialog.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
 
@@ -43,6 +46,8 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	, _asset(asset)
 {
 	_ui.setupUi(this);
+
+	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelTexturesPanel::OnModelChanged);
 
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::OnTextureChanged);
 	connect(_ui.ScaleTextureViewSlider, &QSlider::valueChanged, this, &StudioModelTexturesPanel::OnTextureViewScaleSliderChanged);
@@ -267,6 +272,44 @@ void StudioModelTexturesPanel::OnDockPanelChanged(QWidget* current, QWidget* pre
 	}
 }
 
+void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
+{
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
+	const auto header = model->GetTextureHeader();
+
+	switch (event.GetId())
+	{
+	case ModelChangeId::ChangeTextureFlags:
+	{
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		if (listChange.GetSourceIndex() == _ui.Textures->currentIndex())
+		{
+			const auto texture = header->GetTexture(listChange.GetSourceIndex());
+
+			const QSignalBlocker chrome{_ui.Chrome};
+			const QSignalBlocker additive{_ui.Additive};
+			const QSignalBlocker transparent{_ui.Transparent};
+			const QSignalBlocker fullbright{_ui.Fullbright};
+
+			const bool oldMasked{_ui.Transparent->isChecked()};
+
+			_ui.Chrome->setChecked((texture->flags & STUDIO_NF_CHROME) != 0);
+			_ui.Additive->setChecked((texture->flags & STUDIO_NF_ADDITIVE) != 0);
+			_ui.Transparent->setChecked((texture->flags & STUDIO_NF_MASKED) != 0);
+			_ui.Fullbright->setChecked((texture->flags & STUDIO_NF_FULLBRIGHT) != 0);
+
+			//TODO: shouldn't be done here
+			if (oldMasked != _ui.Transparent->isChecked())
+			{
+				model->ReuploadTexture(texture);
+			}
+		}
+		break;
+	}
+	}
+}
+
 void StudioModelTexturesPanel::OnTextureChanged(int index)
 {
 	auto scene = _asset->GetScene();
@@ -379,46 +422,34 @@ void StudioModelTexturesPanel::OnChromeChanged()
 {
 	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
 
+	int flags = texture->flags;
+
 	//Chrome disables alpha testing
 	if (_ui.Chrome->isChecked())
 	{
-		_ui.Transparent->setChecked(false);
+		flags = SetFlags(flags, STUDIO_NF_MASKED, false);
 	}
 
-	if (_ui.Chrome->isChecked())
-	{
-		texture->flags |= STUDIO_NF_CHROME;
-	}
-	else
-	{
-		texture->flags &= ~STUDIO_NF_CHROME;
-	}
+	flags = SetFlags(flags, STUDIO_NF_CHROME, _ui.Chrome->isChecked());
 
-	//TODO:
-	//m_pHLMV->GetState()->modelChanged = true;
+	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
 }
 
 void StudioModelTexturesPanel::OnAdditiveChanged()
 {
 	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
 
+	int flags = texture->flags;
+
 	//Additive disables alpha testing
 	if (_ui.Additive->isChecked())
 	{
-		_ui.Transparent->setChecked(false);
+		flags = SetFlags(flags, STUDIO_NF_MASKED, false);
 	}
 
-	if (_ui.Additive->isChecked())
-	{
-		texture->flags |= STUDIO_NF_ADDITIVE;
-	}
-	else
-	{
-		texture->flags &= ~STUDIO_NF_ADDITIVE;
-	}
+	flags = SetFlags(flags, STUDIO_NF_ADDITIVE, _ui.Additive->isChecked());
 
-	//TODO:
-	//m_pHLMV->GetState()->modelChanged = true;
+	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
 }
 
 void StudioModelTexturesPanel::OnTransparentChanged()
@@ -426,43 +457,28 @@ void StudioModelTexturesPanel::OnTransparentChanged()
 	auto model = _asset->GetScene()->GetEntity()->GetModel();
 	auto texture = model->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
 
+	int flags = texture->flags;
+
 	//Alpha testing disables chrome and additive
 	if (_ui.Transparent->isChecked())
 	{
-		_ui.Chrome->setChecked(false);
-		_ui.Additive->setChecked(false);
+		flags = SetFlags(flags, STUDIO_NF_CHROME | STUDIO_NF_ADDITIVE, false);
 	}
 
-	if (_ui.Transparent->isChecked())
-	{
-		texture->flags |= STUDIO_NF_MASKED;
-	}
-	else
-	{
-		texture->flags &= ~STUDIO_NF_MASKED;
-	}
+	flags = SetFlags(flags, STUDIO_NF_MASKED, _ui.Transparent->isChecked());
 
-	model->ReuploadTexture(texture);
-
-	//TODO:
-	//m_pHLMV->GetState()->modelChanged = true;
+	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
 }
 
 void StudioModelTexturesPanel::OnFullbrightChanged()
 {
 	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
 
-	if (_ui.Fullbright->isChecked())
-	{
-		texture->flags |= STUDIO_NF_FULLBRIGHT;
-	}
-	else
-	{
-		texture->flags &= ~STUDIO_NF_FULLBRIGHT;
-	}
+	int flags = texture->flags;
 
-	//TODO:
-	//m_pHLMV->GetState()->modelChanged = true;
+	flags = SetFlags(flags, STUDIO_NF_FULLBRIGHT, _ui.Fullbright->isChecked());
+
+	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
 }
 
 void StudioModelTexturesPanel::OnShowUVMapChanged()
@@ -560,14 +576,23 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 		convPal[paletteIndex * PALETTE_CHANNELS + 2] = 0;
 	}
 
-	//Copy over the new image data to the texture.
-	memcpy((byte*)pHdr + texture.index, texData.get(), image.width() * image.height());
-	memcpy((byte*)pHdr + texture.index + image.width() * image.height(), convPal, PALETTE_SIZE);
+	ImportTextureData oldTexture;
+	ImportTextureData newTexture;
 
-	pStudioModel->ReplaceTexture(&texture, texData.get(), convPal, pStudioModel->GetTextureId(textureIndex));
+	oldTexture.Width = texture.width;
+	oldTexture.Height = texture.height;
+	oldTexture.Pixels = std::make_unique<byte[]>(oldTexture.Width * oldTexture.Height);
 
-	//TODO:
-	//m_pHLMV->GetState()->modelChanged = true;
+	memcpy(oldTexture.Pixels.get(), pHdr->GetData() + texture.index, oldTexture.Width * oldTexture.Height);
+	memcpy(oldTexture.Palette, pHdr->GetData() + texture.index + (oldTexture.Width * oldTexture.Height), sizeof(oldTexture.Palette));
+
+	newTexture.Width = image.width();
+	newTexture.Height = image.height();
+	newTexture.Pixels = std::move(texData);
+
+	memcpy(newTexture.Palette, convPal, sizeof(newTexture.Palette));
+
+	_asset->AddUndoCommand(new ImportTextureCommand(_asset, textureIndex, std::move(oldTexture), std::move(newTexture)));
 }
 
 void StudioModelTexturesPanel::RemapTexture(int index)

@@ -201,4 +201,25 @@ void ChangeHitboxBoundsCommand::Apply(int index, const std::pair<glm::vec3, glm:
 	hitbox->bbmin = newValue.first;
 	hitbox->bbmax = newValue.second;
 }
+
+void ChangeTextureFlagsCommand::Apply(int index, const int& oldValue, const int& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetTextureHeader();
+	const auto texture = header->GetTexture(index);
+
+	texture->flags = newValue;
+}
+
+void ImportTextureCommand::Apply(int index, const ImportTextureData& oldValue, const ImportTextureData& newValue)
+{
+	const auto model = _asset->GetStudioModel();
+	const auto header = model->GetTextureHeader();
+	const auto texture = header->GetTexture(index);
+
+	//Copy over the new image data to the texture
+	memcpy(header->GetData() + texture->index, newValue.Pixels.get(), newValue.Width * newValue.Height);
+	memcpy(header->GetData() + texture->index + (newValue.Width * newValue.Height), newValue.Palette, PALETTE_SIZE);
+
+	model->ReplaceTexture(texture, newValue.Pixels.get(), newValue.Palette, model->GetTextureId(index));
+}
 }

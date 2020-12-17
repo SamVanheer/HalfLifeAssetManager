@@ -19,6 +19,7 @@ class CameraOperator;
 
 namespace assets::studiomodel
 {
+class ModelChangeEvent;
 class StudioModelAsset;
 
 class StudioModelTexturesPanel final : public QWidget, public IInputSink
@@ -48,6 +49,8 @@ public slots:
 	void OnDockPanelChanged(QWidget* current, QWidget* previous);
 
 private slots:
+	void OnModelChanged(const ModelChangeEvent& event);
+
 	void OnTextureChanged(int index);
 
 	void OnTextureViewScaleSliderChanged(int value);
