@@ -744,7 +744,7 @@ void StudioModelTexturesPanel::OnExportTexture()
 
 	mstudiotexture_t& texture = ((mstudiotexture_t*)((byte*)pHdr + pHdr->textureindex))[iTextureIndex];
 
-	const QString fileName = QFileDialog::getSaveFileName(this, {}, {}, "Windows Bitmap (*.bmp)");
+	const QString fileName = QFileDialog::getSaveFileName(this, {}, texture.name, "Windows Bitmap (*.bmp)");
 
 	if (fileName.isEmpty())
 	{
