@@ -12,9 +12,6 @@ target_sources(HLMV
 		StudioModelBonesPanel.cpp
 		StudioModelBonesPanel.hpp
 		StudioModelBonesPanel.ui
-		StudioModelEditEventsDialog.cpp
-		StudioModelEditEventsDialog.hpp
-		StudioModelEditEventsDialog.ui
 		StudioModelExportUVMeshDialog.hpp
 		StudioModelExportUVMeshDialog.cpp
 		StudioModelExportUVMeshDialog.ui

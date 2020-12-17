@@ -8,6 +8,7 @@
 
 namespace ui::assets::studiomodel
 {
+class ModelChangeEvent;
 class StudioModelAsset;
 
 class StudioModelSequencesPanel final : public QWidget
@@ -26,6 +27,8 @@ private:
 	void UpdateBlendValue(int blender, BlendUpdateSource source, QSlider* slider, QDoubleSpinBox* spinner);
 
 private slots:
+	void OnModelChanged(const ModelChangeEvent& event);
+
 	void OnSequenceChanged(int index);
 
 	void OnLoopingModeChanged(int index);
@@ -38,13 +41,13 @@ private slots:
 
 	void OnBlendYSpinnerChanged();
 
-	void OnEditEvents();
-
 	void OnEventChanged(int index);
 
 	void OnPlaySoundChanged();
 
 	void OnPitchFramerateAmplitudeChanged();
+
+	void OnEventEdited();
 
 private:
 	Ui_StudioModelSequencesPanel _ui;

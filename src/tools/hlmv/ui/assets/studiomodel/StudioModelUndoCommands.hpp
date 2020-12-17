@@ -12,6 +12,7 @@
 #include <glm/vec3.hpp>
 
 #include "core/shared/Const.h"
+#include "engine/shared/studiomodel/studio.h"
 #include "graphics/Palette.h"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
@@ -54,6 +55,8 @@ enum class ModelChangeId
 
 	ChangeTextureFlags,
 	ImportTexture,
+
+	ChangeEvent,
 };
 
 /**
@@ -118,6 +121,21 @@ public:
 
 private:
 	const glm::vec3 _offset;
+};
+
+class ModelEventChangeEvent : public ModelListChangeEvent
+{
+public:
+	ModelEventChangeEvent(ModelChangeId id, int sourceIndex, int eventIndex)
+		: ModelListChangeEvent(id, sourceIndex)
+		, _eventIndex(eventIndex)
+	{
+	}
+
+	int GetEventIndex() const { return _eventIndex; }
+
+private:
+	const int _eventIndex;
 };
 
 /**
@@ -235,17 +253,22 @@ public:
 	void undo() override
 	{
 		Apply(_index, _newValue, _oldValue);
-		_asset->EmitModelChanged(ModelListChangeEvent{_id, _index});
+		EmitEvent(_newValue, _oldValue);
 	}
 
 	void redo() override
 	{
 		Apply(_index, _oldValue, _newValue);
-		_asset->EmitModelChanged(ModelListChangeEvent{_id, _index});
+		EmitEvent(_oldValue, _newValue);
 	}
 
 protected:
 	virtual void Apply(int index, const T& oldValue, const T& newValue) = 0;
+
+	virtual void EmitEvent(const T& oldValue, const T& newValue)
+	{
+		_asset->EmitModelChanged(ModelListChangeEvent{_id, _index});
+	}
 
 protected:
 	const int _index;
@@ -598,5 +621,27 @@ public:
 
 protected:
 	void Apply(int index, const ImportTextureData& oldValue, const ImportTextureData& newValue) override;
+};
+
+class ChangeEventCommand : public ModelListUndoCommand<mstudioevent_t>
+{
+public:
+	ChangeEventCommand(StudioModelAsset* asset, int sequenceIndex, int eventIndex, const mstudioevent_t& oldEvent, const mstudioevent_t& newEvent)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeEvent, sequenceIndex, oldEvent, newEvent)
+		, _eventIndex(eventIndex)
+	{
+		setText("Change event");
+	}
+
+protected:
+	void Apply(int index, const mstudioevent_t& oldValue, const mstudioevent_t& newValue) override;
+
+	void EmitEvent(const mstudioevent_t& oldValue, const mstudioevent_t& newValue) override
+	{
+		_asset->EmitModelChanged(ModelEventChangeEvent(_id, _index, _eventIndex));
+	}
+
+private:
+	const int _eventIndex;
 };
 }

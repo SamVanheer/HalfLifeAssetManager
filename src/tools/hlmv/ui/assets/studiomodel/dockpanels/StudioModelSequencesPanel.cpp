@@ -1,9 +1,11 @@
+#include <limits>
+
 #include "engine/shared/activity.h"
 
 #include "entity/CHLMVStudioModelEntity.h"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelEditEventsDialog.hpp"
+#include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
 
 namespace ui::assets::studiomodel
@@ -14,6 +16,11 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 {
 	_ui.setupUi(this);
 
+	_ui.EventId->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+	_ui.EventType->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+
+	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelSequencesPanel::OnModelChanged);
+
 	connect(_ui.SequenceComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelSequencesPanel::OnSequenceChanged);
 	connect(_ui.LoopingModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelSequencesPanel::OnLoopingModeChanged);
 
@@ -22,11 +29,15 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 	connect(_ui.BlendYSlider, &QSlider::valueChanged, this, &StudioModelSequencesPanel::OnBlendYSliderChanged);
 	connect(_ui.BlendYSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelSequencesPanel::OnBlendYSpinnerChanged);
 
-	connect(_ui.EditEvents, &QPushButton::clicked, this, &StudioModelSequencesPanel::OnEditEvents);
 	connect(_ui.EventsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelSequencesPanel::OnEventChanged);
 
 	connect(_ui.PlaySound, &QCheckBox::stateChanged, this, &StudioModelSequencesPanel::OnPlaySoundChanged);
 	connect(_ui.PitchFramerateAmplitude, &QCheckBox::stateChanged, this, &StudioModelSequencesPanel::OnPitchFramerateAmplitudeChanged);
+
+	connect(_ui.EventFrameIndex, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelSequencesPanel::OnEventEdited);
+	connect(_ui.EventId, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelSequencesPanel::OnEventEdited);
+	connect(_ui.EventOptions, &QLineEdit::textChanged, this, &StudioModelSequencesPanel::OnEventEdited);
+	connect(_ui.EventType, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelSequencesPanel::OnEventEdited);
 
 	auto sizePolicy = _ui.EventInfoWidget->sizePolicy();
 
@@ -53,6 +64,26 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 }
 
 StudioModelSequencesPanel::~StudioModelSequencesPanel() = default;
+
+void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
+{
+	const auto model = _asset->GetScene()->GetEntity()->GetModel();
+	const auto header = model->GetStudioHeader();
+
+	switch (event.GetId())
+	{
+	case ModelChangeId::ChangeEvent:
+	{
+		const auto& listChange = static_cast<const ModelEventChangeEvent&>(event);
+
+		if (listChange.GetSourceIndex() == _ui.SequenceComboBox->currentIndex() && listChange.GetEventIndex() == _ui.EventsComboBox->currentIndex())
+		{
+			OnEventChanged(_ui.EventsComboBox->currentIndex());
+		}
+		break;
+	}
+	}
+}
 
 void StudioModelSequencesPanel::UpdateBlendValue(int blender, BlendUpdateSource source, QSlider* slider, QDoubleSpinBox* spinner)
 {
@@ -180,6 +211,11 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 
 	_ui.EventsComboBox->clear();
 
+	{
+		const QSignalBlocker blocker{_ui.EventFrameIndex};
+		_ui.EventFrameIndex->setRange(0, sequence->numframes - 1);
+	}
+
 	const bool hasEvents = sequence->numevents > 0;
 
 	if (hasEvents)
@@ -224,35 +260,35 @@ void StudioModelSequencesPanel::OnBlendYSpinnerChanged()
 	UpdateBlendValue(1, BlendUpdateSource::Spinner, _ui.BlendYSlider, _ui.BlendYSpinner);
 }
 
-void StudioModelSequencesPanel::OnEditEvents()
-{
-	StudioModelEditEventsDialog dialog(_asset, _ui.SequenceComboBox->currentIndex(), this);
-
-	if (QDialog::DialogCode::Accepted == dialog.exec())
-	{
-		//Refresh event info
-		OnEventChanged(_ui.EventsComboBox->currentIndex());
-	}
-}
-
 void StudioModelSequencesPanel::OnEventChanged(int index)
 {
 	const bool hasEvent = index != -1;
 
 	if (hasEvent)
 	{
-		auto entity = _asset->GetScene()->GetEntity();
+		const auto entity = _asset->GetScene()->GetEntity();
+		const auto model = entity->GetModel();
+		const auto sequence = model->GetStudioHeader()->GetSequence(entity->GetSequence());
+		const auto event = reinterpret_cast<const mstudioevent_t*>(model->GetStudioHeader()->GetData() + sequence->eventindex) + index;
 
-		auto model = entity->GetModel();
+		const QSignalBlocker eventFrameIndex{_ui.EventFrameIndex};
+		const QSignalBlocker eventId{_ui.EventId};
+		const QSignalBlocker eventOptions{_ui.EventOptions};
+		const QSignalBlocker eventType{_ui.EventType};
 
-		auto sequence = model->GetStudioHeader()->GetSequence(entity->GetSequence());
+		_ui.EventFrameIndex->setValue(event->frame);
+		_ui.EventId->setValue(event->event);
 
-		auto event = reinterpret_cast<const mstudioevent_t*>(model->GetStudioHeader()->GetData() + sequence->eventindex) + index;
+		//Only call setText if the text is different
+		//This prevents the edit state from being overwritten
+		const QString options{event->options};
 
-		_ui.EventFrameIndexLabel->setText(QString::number(event->frame));
-		_ui.EventIdLabel->setText(QString::number(event->event));
-		_ui.EventOptionsLabel->setText(event->options);
-		_ui.EventTypeLabel->setText(QString::number(event->type));
+		if (_ui.EventOptions->text() != options)
+		{
+			_ui.EventOptions->setText(options);
+		}
+
+		_ui.EventType->setValue(event->type);
 	}
 
 	_ui.EventInfoWidget->setVisible(hasEvent);
@@ -266,5 +302,24 @@ void StudioModelSequencesPanel::OnPlaySoundChanged()
 void StudioModelSequencesPanel::OnPitchFramerateAmplitudeChanged()
 {
 	_asset->GetScene()->GetEntity()->PitchFramerateAmplitude = _ui.PitchFramerateAmplitude->isChecked();
+}
+
+void StudioModelSequencesPanel::OnEventEdited()
+{
+	const auto entity = _asset->GetScene()->GetEntity();
+	const auto model = entity->GetModel();
+	const auto sequence = model->GetStudioHeader()->GetSequence(entity->GetSequence());
+	const auto event = reinterpret_cast<const mstudioevent_t*>(model->GetStudioHeader()->GetData() + sequence->eventindex) + _ui.EventsComboBox->currentIndex();
+
+	auto changedEvent{*event};
+
+	changedEvent.frame = _ui.EventFrameIndex->value();
+	changedEvent.event = _ui.EventId->value();
+	changedEvent.type = _ui.EventType->value();
+
+	strncpy(changedEvent.options, _ui.EventOptions->text().toUtf8().constData(), sizeof(changedEvent.options) - 1);
+	changedEvent.options[sizeof(changedEvent.options) - 1] = '\0';
+
+	_asset->AddUndoCommand(new ChangeEventCommand(_asset, _ui.SequenceComboBox->currentIndex(), _ui.EventsComboBox->currentIndex(), *event, changedEvent));
 }
 }

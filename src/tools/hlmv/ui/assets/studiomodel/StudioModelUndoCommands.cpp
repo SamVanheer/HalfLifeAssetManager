@@ -222,4 +222,13 @@ void ImportTextureCommand::Apply(int index, const ImportTextureData& oldValue, c
 
 	model->ReplaceTexture(texture, newValue.Pixels.get(), newValue.Palette, model->GetTextureId(index));
 }
+
+void ChangeEventCommand::Apply(int index, const mstudioevent_t& oldValue, const mstudioevent_t& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto sequence = header->GetSequence(index);
+	const auto event = reinterpret_cast<mstudioevent_t*>(header->GetData() + sequence->eventindex) + _eventIndex;
+
+	*event = newValue;
+}
 }
