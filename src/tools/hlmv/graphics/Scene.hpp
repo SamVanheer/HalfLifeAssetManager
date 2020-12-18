@@ -123,6 +123,9 @@ public:
 
 	int FloorLength = 0;
 
+	GLuint GroundTexture{0};
+	GLuint BackgroundTexture{0};
+
 	int DrawSingleBoneIndex = -1;
 	int DrawSingleAttachmentIndex = -1;
 	int DrawSingleHitboxIndex = -1;

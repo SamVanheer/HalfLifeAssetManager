@@ -42,7 +42,18 @@ Scene::Scene(soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime)
 {
 }
 
-Scene::~Scene() = default;
+Scene::~Scene()
+{
+	if (BackgroundTexture != 0)
+	{
+		glDeleteTextures(1, &BackgroundTexture);
+	}
+
+	if (GroundTexture != 0)
+	{
+		glDeleteTextures(1, &GroundTexture);
+	}
+}
 
 void Scene::SetGraphicsContext(std::unique_ptr<IGraphicsContext>&& graphicsContext)
 {
@@ -355,13 +366,10 @@ void Scene::DrawModel()
 	// draw background
 	//
 
-	//TODO: implement
-#if false
-	if (ShowBackground && m_BackgroundTexture != GL_INVALID_TEXTURE_ID && !ShowTexture)
+	if (ShowBackground && BackgroundTexture != GL_INVALID_TEXTURE_ID && !ShowTexture)
 	{
-		graphics::DrawBackground(m_BackgroundTexture);
+		graphics::DrawBackground(BackgroundTexture);
 	}
-#endif
 
 	graphics::SetProjection(*CurrentFOV, _windowWidth, _windowHeight);
 
@@ -540,7 +548,7 @@ void Scene::DrawModel()
 	if (ShowGround)
 	{
 		//TODO: implement settings
-		graphics::helpers::DrawFloor(FloorLength, /*m_GroundTexture*/0,/* m_pHLMV->GetSettings()->GetGroundColor()*/{255, 0, 0}, MirrorOnGround);
+		graphics::helpers::DrawFloor(FloorLength, GroundTexture,/* m_pHLMV->GetSettings()->GetGroundColor()*/{255, 0, 0}, MirrorOnGround);
 	}
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;

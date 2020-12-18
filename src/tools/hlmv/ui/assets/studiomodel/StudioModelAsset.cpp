@@ -5,8 +5,11 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QImage>
 #include <QMenu>
 #include <QMessageBox>
+
+#include <GL/glew.h>
 
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
 #include "entity/CHLMVStudioModelEntity.h"
@@ -75,6 +78,12 @@ StudioModelAsset::~StudioModelAsset()
 
 void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 {
+	menu->addAction("Load Ground Texture...", this, &StudioModelAsset::OnLoadGroundTexture);
+	menu->addAction("Unload Ground Texture...", this, &StudioModelAsset::OnUnloadGroundTexture);
+
+	menu->addAction("Load Background Texture...", this, &StudioModelAsset::OnLoadBackgroundTexture);
+	menu->addAction("Unload Background Texture...", this, &StudioModelAsset::OnUnloadBackgroundTexture);
+
 	menu->addAction("Dump Model Info...", this, &StudioModelAsset::OnDumpModelInfo);
 
 	menu->addAction("Edit QC File...", []
@@ -152,6 +161,94 @@ void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
 void StudioModelAsset::OnFloorLengthChanged(int length)
 {
 	_scene->FloorLength = length;
+}
+
+void StudioModelAsset::OnLoadGroundTexture()
+{
+	const QString fileName{QFileDialog::getOpenFileName(nullptr, {}, {}, qt::GetImagesFileFilter())};
+
+	if (!fileName.isEmpty())
+	{
+		QImage image{fileName};
+
+		if (image.isNull())
+		{
+			QMessageBox::critical(nullptr, "Error", QString{"An error occurred while loading the image \"%1\""}.arg(fileName));
+			return;
+		}
+
+		image.convertTo(QImage::Format::Format_RGBA8888);
+
+		_scene->GetGraphicsContext()->Begin();
+
+		if (_scene->GroundTexture == 0)
+		{
+			glGenTextures(1, &_scene->GroundTexture);
+		}
+
+		glBindTexture(GL_TEXTURE_2D, _scene->GroundTexture);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.constBits());
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		_scene->GetGraphicsContext()->End();
+	}
+}
+
+void StudioModelAsset::OnUnloadGroundTexture()
+{
+	if (_scene->GroundTexture != 0)
+	{
+		_scene->GetGraphicsContext()->Begin();
+		glDeleteTextures(1, &_scene->GroundTexture);
+		_scene->GroundTexture = 0;
+		_scene->GetGraphicsContext()->End();
+	}
+}
+
+void StudioModelAsset::OnLoadBackgroundTexture()
+{
+	const QString fileName{QFileDialog::getOpenFileName(nullptr, {}, {}, qt::GetImagesFileFilter())};
+
+	if (!fileName.isEmpty())
+	{
+		QImage image{fileName};
+
+		if (image.isNull())
+		{
+			QMessageBox::critical(nullptr, "Error", QString{"An error occurred while loading the image \"%1\""}.arg(fileName));
+			return;
+		}
+
+		image.convertTo(QImage::Format::Format_RGBA8888);
+
+		_scene->GetGraphicsContext()->Begin();
+
+		if (_scene->BackgroundTexture == 0)
+		{
+			glGenTextures(1, &_scene->BackgroundTexture);
+		}
+
+		glBindTexture(GL_TEXTURE_2D, _scene->BackgroundTexture);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.constBits());
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		_scene->GetGraphicsContext()->End();
+	}
+}
+
+void StudioModelAsset::OnUnloadBackgroundTexture()
+{
+	if (_scene->BackgroundTexture != 0)
+	{
+		_scene->GetGraphicsContext()->Begin();
+		glDeleteTextures(1, &_scene->BackgroundTexture);
+		_scene->BackgroundTexture = 0;
+		_scene->GetGraphicsContext()->End();
+	}
 }
 
 void StudioModelAsset::OnDumpModelInfo()
