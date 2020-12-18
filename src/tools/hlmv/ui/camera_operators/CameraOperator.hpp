@@ -4,21 +4,27 @@
 
 #include <glm/vec2.hpp>
 
-#include "graphics/CCamera.h"
-
-#include "ui/settings/GeneralSettings.hpp"
+#include "graphics/Camera.hpp"
 
 namespace ui::camera_operators
 {
 class CameraOperator
 {
 public:
+	CameraOperator(const graphics::Camera& camera)
+		: _camera(camera)
+	{
+	}
+
 	virtual ~CameraOperator() = 0 {}
 
-	virtual void MouseEvent(const settings::GeneralSettings& generalSettings, graphics::CCamera& camera, QMouseEvent& event) = 0;
+	graphics::Camera* GetCamera() { return &_camera; }
+
+	virtual void MouseEvent(QMouseEvent& event) = 0;
 
 protected:
 	glm::vec2 _oldCoordinates{0.f};
 	Qt::MouseButtons _trackedButtons{};
+	graphics::Camera _camera;
 };
 }

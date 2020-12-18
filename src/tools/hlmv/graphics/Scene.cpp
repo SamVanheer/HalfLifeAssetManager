@@ -40,6 +40,7 @@ Scene::Scene(soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime)
 	, _entityContext(std::make_unique<EntityContext>(_worldTime, _studioModelRenderer.get(), _entityManager->GetEntityList(), _entityManager.get(),
 		soundSystem))
 {
+	SetCurrentCamera(nullptr);
 }
 
 Scene::~Scene()
@@ -58,46 +59,6 @@ Scene::~Scene()
 void Scene::SetGraphicsContext(std::unique_ptr<IGraphicsContext>&& graphicsContext)
 {
 	_graphicsContext = std::move(graphicsContext);
-}
-
-void Scene::SetEntity(CHLMVStudioModelEntity* entity)
-{
-	_entity = entity;
-
-	glm::vec3 min, max;
-	_entity->ExtractBbox(min, max);
-
-	//Clamp the values to a reasonable range
-	for (int i = 0; i < 3; ++i)
-	{
-		//Use different limits for min and max so centering won't end up setting origin to 0 0 0
-		min[i] = clamp(min[i], -2000.f, 2000.f);
-		max[i] = clamp(max[i], -1000.f, 1000.f);
-	}
-
-	float dx = max[0] - min[0];
-	float dy = max[1] - min[1];
-	float dz = max[2] - min[2];
-
-	float d = dx;
-
-	if (dy > d)
-		d = dy;
-	if (dz > d)
-		d = dz;
-
-	glm::vec3 trans;
-	glm::vec3 rot;
-
-	trans[2] = 0;
-	trans[0] = -(min[2] + dz / 2);
-	trans[1] = d * 1.0f;
-	rot[0] = -90.0f;
-	rot[1] = 0.0f;
-	rot[2] = -90.0f;
-
-	_camera.SetOrigin(trans);
-	_camera.SetViewDirection(rot);
 }
 
 void Scene::AlignOnGround()
@@ -331,11 +292,10 @@ void Scene::Draw()
 
 void Scene::ApplyCameraToScene()
 {
-	//TODO: reimplement cameras
-	auto pCamera = &_camera;// m_pHLMV->GetState()->GetCurrentCamera();
+	auto camera = GetCurrentCamera();
 
-	const auto& vecOrigin = pCamera->GetOrigin();
-	const auto vecAngles = pCamera->GetViewDirection();
+	const auto& vecOrigin = camera->GetOrigin();
+	const auto& vecAngles = camera->GetViewDirection();
 
 	const glm::mat4x4 identity = Mat4x4ModelView();
 
@@ -408,10 +368,9 @@ void Scene::DrawModel()
 		glEnd();
 	}
 
-	//TODO: reimplement cameras
-	auto camera = &_camera;//m_pHLMV->GetState()->GetCurrentCamera()
+	auto camera = GetCurrentCamera();
 
-	const auto vecAngles = camera->GetViewDirection();
+	const auto& vecAngles = camera->GetViewDirection();
 
 	auto mat = Mat4x4ModelView();
 
@@ -423,7 +382,7 @@ void Scene::DrawModel()
 
 	mat *= glm::rotate(glm::radians(vecAngles[1]), glm::vec3{0, 0, 1});
 
-	const auto vecAbsOrigin = glm::inverse(mat)[3];
+	const auto& vecAbsOrigin = glm::inverse(mat)[3];
 
 	_studioModelRenderer->SetViewerOrigin(glm::vec3(vecAbsOrigin));
 

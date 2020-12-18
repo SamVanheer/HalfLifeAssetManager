@@ -8,7 +8,7 @@
 
 #include "engine/shared/studiomodel/studio.h"
 
-#include "graphics/CCamera.h"
+#include "graphics/Camera.hpp"
 
 #include "graphics/Constants.h"
 
@@ -53,7 +53,17 @@ public:
 
 	EntityContext* GetEntityContext() const { return _entityContext.get(); }
 
-	CCamera* GetCamera() { return &_camera; }
+	Camera* GetCurrentCamera() { return _currentCamera; }
+
+	void SetCurrentCamera(Camera* camera)
+	{
+		if (!camera)
+		{
+			camera = &_defaultCamera;
+		}
+
+		_currentCamera = camera;
+	}
 
 	void UpdateWindowSize(unsigned int width, unsigned int height)
 	{
@@ -73,7 +83,10 @@ public:
 
 	CHLMVStudioModelEntity* GetEntity() { return _entity; }
 
-	void SetEntity(CHLMVStudioModelEntity* entity);
+	void SetEntity(CHLMVStudioModelEntity* entity)
+	{
+		_entity = entity;
+	}
 
 	void AlignOnGround();
 
@@ -157,7 +170,9 @@ private:
 
 	std::unique_ptr<EntityContext> _entityContext;
 
-	CCamera _camera;
+	Camera* _currentCamera{};
+
+	Camera _defaultCamera;
 
 	unsigned int _windowWidth = 0, _windowHeight = 0;
 

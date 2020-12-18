@@ -1,6 +1,9 @@
 #pragma once
 
+#include <cassert>
+
 #include "ui/camera_operators/CameraOperator.hpp"
+#include "ui/settings/GeneralSettings.hpp"
 
 namespace ui::camera_operators
 {
@@ -10,10 +13,16 @@ namespace ui::camera_operators
 class ArcBallCameraOperator : public CameraOperator
 {
 public:
-	ArcBallCameraOperator() = default;
+	ArcBallCameraOperator(const graphics::Camera& camera, settings::GeneralSettings* generalSettings)
+		: CameraOperator(camera)
+		, _generalSettings(generalSettings)
+	{
+		assert(_generalSettings);
+	}
+
 	~ArcBallCameraOperator() = default;
 
-	void MouseEvent(const settings::GeneralSettings& generalSettings, graphics::CCamera& camera, QMouseEvent& event) override
+	void MouseEvent(QMouseEvent& event) override
 	{
 		//TODO: needs all of the original functionality to be reimplemented
 		switch (event.type())
@@ -43,17 +52,17 @@ public:
 				if (event.buttons() & Qt::MouseButton::LeftButton)
 				{
 					//TODO: this should be a vector, not an angle
-					glm::vec3 vecViewDir = camera.GetViewDirection();
+					glm::vec3 vecViewDir = _camera.GetViewDirection();
 
 					auto horizontalAdjust = static_cast<float>(event.x() - _oldCoordinates.x);
 					auto verticalAdjust = static_cast<float>(event.y() - _oldCoordinates.y);
 
-					if (generalSettings.ShouldInvertMouseX())
+					if (_generalSettings->ShouldInvertMouseX())
 					{
 						horizontalAdjust = -horizontalAdjust;
 					}
 
-					if (generalSettings.ShouldInvertMouseY())
+					if (_generalSettings->ShouldInvertMouseY())
 					{
 						verticalAdjust = -verticalAdjust;
 					}
@@ -61,7 +70,7 @@ public:
 					vecViewDir.y += horizontalAdjust;
 					vecViewDir.x += verticalAdjust;
 
-					camera.SetViewDirection(vecViewDir);
+					_camera.SetViewDirection(vecViewDir);
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
@@ -70,12 +79,12 @@ public:
 				{
 					auto adjust = static_cast<float>(event.y() - _oldCoordinates.y);
 
-					if (generalSettings.ShouldInvertMouseY())
+					if (_generalSettings->ShouldInvertMouseY())
 					{
 						adjust = -adjust;
 					}
 
-					camera.GetOrigin().y += adjust;
+					_camera.GetOrigin().y += adjust;
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
@@ -89,5 +98,8 @@ public:
 		default: break;
 		}
 	}
+
+private:
+	const settings::GeneralSettings* const _generalSettings;
 };
 }

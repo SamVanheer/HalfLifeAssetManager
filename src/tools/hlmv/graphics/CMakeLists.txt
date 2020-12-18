@@ -2,8 +2,8 @@ target_sources(${TARGET_NAME}
 	PRIVATE
 		BMPFile.cpp
 		BMPFile.h
-		CCamera.cpp
-		CCamera.h
+		Camera.cpp
+		Camera.hpp
 		Constants.cpp
 		Constants.h
 		GraphicsHelpers.cpp

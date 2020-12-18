@@ -54,6 +54,9 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	auto entity = static_cast<CHLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
 		glm::vec3(), glm::vec3(), false));
 
+	//TODO: need to be able to do this at any time
+	graphics::Camera arcBallCamera;
+
 	if (nullptr != entity)
 	{
 		entity->SetModel(GetStudioModel());
@@ -61,9 +64,46 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		entity->Spawn();
 
 		_scene->SetEntity(entity);
+
+		glm::vec3 min, max;
+		entity->ExtractBbox(min, max);
+
+		//Clamp the values to a reasonable range
+		for (int i = 0; i < 3; ++i)
+		{
+			//Use different limits for min and max so centering won't end up setting origin to 0 0 0
+			min[i] = clamp(min[i], -2000.f, 2000.f);
+			max[i] = clamp(max[i], -1000.f, 1000.f);
+		}
+
+		float dx = max[0] - min[0];
+		float dy = max[1] - min[1];
+		float dz = max[2] - min[2];
+
+		float d = dx;
+
+		if (dy > d)
+			d = dy;
+		if (dz > d)
+			d = dz;
+
+		glm::vec3 trans;
+		glm::vec3 rot;
+
+		trans[2] = 0;
+		trans[0] = -(min[2] + dz / 2);
+		trans[1] = d * 1.0f;
+		rot[0] = -90.0f;
+		rot[1] = 0.0f;
+		rot[2] = -90.0f;
+
+		arcBallCamera.SetOrigin(trans);
+		arcBallCamera.SetViewDirection(rot);
 	}
 
-	_cameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>();
+	_cameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>(arcBallCamera, _editorContext->GetGeneralSettings());
+
+	_scene->SetCurrentCamera(_cameraOperator->GetCamera());
 
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
 	connect(_provider->GetSettings(), &settings::StudioModelSettings::FloorLengthChanged, this, &StudioModelAsset::OnFloorLengthChanged);
@@ -147,7 +187,7 @@ void StudioModelAsset::OnTick()
 
 void StudioModelAsset::OnMouseEvent(QMouseEvent* event)
 {
-	_cameraOperator->MouseEvent(*_editorContext->GetGeneralSettings(), *_scene->GetCamera(), *event);
+	_cameraOperator->MouseEvent(*event);
 }
 
 void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
