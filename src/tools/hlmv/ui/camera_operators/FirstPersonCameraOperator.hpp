@@ -16,7 +16,7 @@ public:
 	FirstPersonCameraOperator()
 	{
 		_camera.SetOrigin(glm::vec3{0});
-		_camera.SetViewDirection(glm::vec3{-90, 0, 90});
+		_camera.SetViewDirection(glm::vec3{0, 0, 180});
 		_camera.SetFieldOfView(DefaultFirstPersonFieldOfView);
 	}
 

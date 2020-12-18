@@ -90,19 +90,14 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 			d = dz;
 
 		glm::vec3 trans;
-		glm::vec3 rot;
 
 		trans[2] = 0;
 		trans[0] = -(min[2] + dz / 2);
 		trans[1] = d * 1.0f;
-		rot[0] = -90.0f;
-		rot[1] = 0.0f;
-		rot[2] = -90.0f;
 
 		const auto camera = arcBallCameraOperator->GetCamera();
 
 		camera->SetOrigin(trans);
-		camera->SetViewDirection(rot);
 	}
 
 	AddCameraOperator(std::move(arcBallCameraOperator));

@@ -295,7 +295,10 @@ void Scene::ApplyCameraToScene()
 	auto camera = GetCurrentCamera();
 
 	const auto& vecOrigin = camera->GetOrigin();
-	const auto& vecAngles = camera->GetViewDirection();
+	auto vecAngles = camera->GetViewDirection();
+
+	vecAngles.x -= 90;
+	vecAngles.z -= 90;
 
 	const glm::mat4x4 identity = Mat4x4ModelView();
 
