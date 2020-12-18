@@ -73,7 +73,7 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	_ui.MenuAsset->setEnabled(false);
 	_assetTabs->setVisible(false);
 
-	_editorContext->GetTimer()->start(0);
+	_editorContext->StartTimer();
 
 	OnRecentFilesChanged();
 	OnActiveConfigurationChanged(_editorContext->GetGameConfigurations()->GetActiveConfiguration(), {});

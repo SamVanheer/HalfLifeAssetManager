@@ -38,7 +38,7 @@ QString GetImagesFileFilter()
 			formatsStrings.append(QString{"*.%1"}.arg(QString{format}));
 		}
 
-		//TODO: one filter per format instead of lumping them all together
+		//TODO: also have one filter per format
 		cachedFilter = QString{"Image Files (%1);;All Files (*.*)"}.arg(formatsStrings.join(' '));
 	}
 

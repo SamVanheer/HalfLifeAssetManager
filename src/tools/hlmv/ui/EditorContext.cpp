@@ -55,7 +55,8 @@ EditorContext::EditorContext(
 {
 	_settings->setParent(this);
 
-	//TODO: set up filesystem based on game configuration
+	_timer->setTimerType(Qt::TimerType::PreciseTimer);
+
 	if (!_fileSystem->Initialize())
 	{
 		QMessageBox::critical(nullptr, "Fatal Error", "Failed to initialize file system");
@@ -70,6 +71,7 @@ EditorContext::EditorContext(
 	}
 
 	connect(_timer, &QTimer::timeout, this, &EditorContext::OnTimerTick);
+	connect(_generalSettings.get(), &settings::GeneralSettings::MaxFPSChanged, this, &EditorContext::OnMaxFPSChanged);
 }
 
 EditorContext::~EditorContext()
@@ -78,28 +80,42 @@ EditorContext::~EditorContext()
 	_fileSystem->Shutdown();
 }
 
+void EditorContext::StartTimer()
+{
+	_timer->start(static_cast<int>(1000.0 / _generalSettings->GetMaxFPS()));
+}
+
 void EditorContext::OnTimerTick()
 {
-	const double flCurTime = GetCurrentTime();
+	const double currentTime = GetCurrentTime();
 
-	double flFrameTime = flCurTime - _worldTime->GetPreviousRealTime();
+	double flFrameTime = currentTime - _worldTime->GetPreviousRealTime();
 
-	_worldTime->SetRealTime(flCurTime);
+	_worldTime->SetRealTime(currentTime);
 
 	if (flFrameTime > 1.0)
 	{
 		flFrameTime = 0.1;
 	}
 
-	//TODO: implement frame limiter setting
 	//TODO: investigate how to allow animation to work when framerate is very high
+#if false
 	if (flFrameTime < (1.0 / /*max_fps.GetFloat()*/60.0f))
 	{
 		return;
 	}
+#endif
 
-	_worldTime->TimeChanged(flCurTime);
+	_worldTime->TimeChanged(currentTime);
 
 	emit Tick();
+}
+
+void EditorContext::OnMaxFPSChanged(float value)
+{
+	if (_timer->isActive())
+	{
+		StartTimer();
+	}
 }
 }

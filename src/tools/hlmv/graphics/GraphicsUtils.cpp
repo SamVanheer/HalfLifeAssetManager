@@ -126,7 +126,6 @@ void SetProjection( const float flFOV, const int iWidth, const int iHeight )
 {
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	//TODO: verify that this still works
 	auto matrix = glm::perspective(glm::radians(flFOV), (float)iWidth / (float)iHeight, 1.0f, static_cast<float>(1 << 24));
 	glLoadMatrixf(glm::value_ptr(matrix));
 }

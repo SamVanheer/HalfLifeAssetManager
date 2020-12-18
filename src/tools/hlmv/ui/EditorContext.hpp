@@ -103,6 +103,8 @@ public:
 
 	std::vector<LoadedAsset>& GetLoadedAssets() { return _loadedAssets; }
 
+	void StartTimer();
+
 signals:
 	/**
 	*	@brief Emitted every time a frame tick occurs
@@ -111,6 +113,8 @@ signals:
 
 private slots:
 	void OnTimerTick();
+
+	void OnMaxFPSChanged(float value);
 
 private:
 	QSettings* const _settings;

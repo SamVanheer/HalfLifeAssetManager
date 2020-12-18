@@ -17,8 +17,6 @@ FullscreenWidget::FullscreenWidget(QWidget* parent)
 
 	//Without this going fullscreen will cause black flickering
 	QWindowsWindowFunctions::setHasBorderInFullScreen(this->windowHandle(), true);
-
-	//TODO: need to handle user input so they can control the camera
 }
 
 FullscreenWidget::~FullscreenWidget() = default;
