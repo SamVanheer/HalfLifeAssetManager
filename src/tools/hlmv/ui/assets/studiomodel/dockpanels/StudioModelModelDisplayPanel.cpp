@@ -39,18 +39,8 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 	connect(_ui.MirrorOnYAxis, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnMirrorYAxisChanged);
 	connect(_ui.MirrorOnZAxis, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnMirrorZAxisChanged);
 
-	connect(_ui.FOVSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelModelDisplayPanel::OnFieldOfViewChanged);
-	connect(_ui.ResetFOV, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnResetFieldOfView);
-	connect(_ui.FirstPersonFOVSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelModelDisplayPanel::OnFirstPersonFieldOfViewChanged);
-	connect(_ui.ResetFirstPersonFieldOfView, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnResetFirstPersonFieldOfView);
-
 	connect(_ui.CenterModelOnWorldOrigin, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnCenterModelOnWorldOrigin);
 	connect(_ui.AlignOnGround, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnAlignOnGround);
-
-	auto scene = _asset->GetScene();
-
-	_ui.FOVSpinner->setValue(scene->FieldOfView);
-	_ui.FirstPersonFOVSpinner->setValue(scene->FirstPersonFieldOfView);
 }
 
 StudioModelModelDisplayPanel::~StudioModelModelDisplayPanel() = default;
@@ -174,26 +164,6 @@ void StudioModelModelDisplayPanel::OnMirrorYAxisChanged()
 void StudioModelModelDisplayPanel::OnMirrorZAxisChanged()
 {
 	_asset->GetScene()->GetEntity()->GetScale().z = _ui.MirrorOnZAxis->isChecked() ? -1 : 1;
-}
-
-void StudioModelModelDisplayPanel::OnFieldOfViewChanged(double value)
-{
-	_asset->GetScene()->FieldOfView = static_cast<float>(value);
-}
-
-void StudioModelModelDisplayPanel::OnResetFieldOfView()
-{
-	_ui.FOVSpinner->setValue(graphics::Scene::DefaultFOV);
-}
-
-void StudioModelModelDisplayPanel::OnFirstPersonFieldOfViewChanged(double value)
-{
-	_asset->GetScene()->FirstPersonFieldOfView = static_cast<float>(value);
-}
-
-void StudioModelModelDisplayPanel::OnResetFirstPersonFieldOfView()
-{
-	_ui.FirstPersonFOVSpinner->setValue(graphics::Scene::DefaultFirstPersonFieldOfView);
 }
 
 void StudioModelModelDisplayPanel::OnCenterModelOnWorldOrigin()

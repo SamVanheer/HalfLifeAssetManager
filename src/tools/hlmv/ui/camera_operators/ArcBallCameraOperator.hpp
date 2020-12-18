@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "ui/camera_operators/CameraOperator.hpp"
+#include "ui/camera_operators/dockpanels/ArcBallSettingsPanel.hpp"
 #include "ui/settings/GeneralSettings.hpp"
 
 namespace ui::camera_operators
@@ -13,14 +14,27 @@ namespace ui::camera_operators
 class ArcBallCameraOperator : public CameraOperator
 {
 public:
-	ArcBallCameraOperator(const graphics::Camera& camera, settings::GeneralSettings* generalSettings)
-		: CameraOperator(camera)
-		, _generalSettings(generalSettings)
+	static constexpr float DefaultFOV = 65.f;
+
+	ArcBallCameraOperator(settings::GeneralSettings* generalSettings)
+		: _generalSettings(generalSettings)
 	{
 		assert(_generalSettings);
+
+		_camera.SetFieldOfView(DefaultFOV);
 	}
 
 	~ArcBallCameraOperator() = default;
+
+	QString GetName() const override
+	{
+		return "Arc Ball";
+	}
+
+	QWidget* CreateEditWidget() override
+	{
+		return new ArcBallSettingsPanel(this);
+	}
 
 	void MouseEvent(QMouseEvent& event) override
 	{

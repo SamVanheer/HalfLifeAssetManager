@@ -61,8 +61,17 @@ public:
 		_vecViewDir = vecViewDir;
 	}
 
+	float GetFieldOfView() const { return _fov; }
+
+	void SetFieldOfView(float value)
+	{
+		_fov = value;
+	}
+
 private:
 	glm::vec3 _vecOrigin;
 	glm::vec3 _vecViewDir;
+
+	float _fov{90.f};
 };
 }

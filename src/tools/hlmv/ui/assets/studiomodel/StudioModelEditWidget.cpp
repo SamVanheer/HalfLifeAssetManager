@@ -19,6 +19,12 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
 
+#include "ui/camera_operators/CameraOperator.hpp"
+
+#include "ui/camera_operators/ArcBallCameraOperator.hpp"
+#include "ui/camera_operators/FirstPersonCameraOperator.hpp"
+#include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
+
 namespace ui::assets::studiomodel
 {
 StudioModelEditWidget::StudioModelEditWidget(
@@ -38,12 +44,21 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; padding-left: 9px; }");
 
+	_camerasPanel = new camera_operators::CamerasPanel();
+
+	for (int i = 0; i < _asset->GetCameraOperatorCount(); ++i)
+	{
+		const auto cameraOperator = _asset->GetCameraOperator(i);
+		_camerasPanel->AddCameraOperator(cameraOperator->GetName(), cameraOperator->CreateEditWidget());
+	}
+
 	auto modelDisplayPanel = new StudioModelModelDisplayPanel(_asset);
 	auto texturesPanel = new StudioModelTexturesPanel(_asset);
 	auto bonesPanel = new StudioModelBonesPanel(_asset);
 	auto attachmentsPanel = new StudioModelAttachmentsPanel(_asset);
 	auto hitboxesPanel = new StudioModelHitboxesPanel(_asset);
 
+	_dockPanels->addTab(_camerasPanel, "Cameras");
 	_dockPanels->addTab(new StudioModelModelInfoPanel(_asset), "Model Info");
 	_dockPanels->addTab(modelDisplayPanel, "Model Display");
 	_dockPanels->addTab(new StudioModelSequencesPanel(_asset), "Sequences");
@@ -87,6 +102,9 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	connect(_dockPanels, &QTabWidget::currentChanged, this, &StudioModelEditWidget::OnTabChanged);
 
+	connect(asset, &StudioModelAsset::CameraChanged, this, &StudioModelEditWidget::OnAssetCameraChanged);
+	connect(_camerasPanel, &camera_operators::CamerasPanel::CameraChanged, this, &StudioModelEditWidget::OnCameraChanged);
+
 	connect(editorContext, &EditorContext::Tick, infoBar, &InfoBar::OnTick);
 	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
 	connect(this, &StudioModelEditWidget::DockPanelChanged, texturesPanel, &StudioModelTexturesPanel::OnDockPanelChanged);
@@ -104,5 +122,46 @@ void StudioModelEditWidget::OnTabChanged(int index)
 	_currentTab = _dockPanels->currentWidget();
 
 	emit DockPanelChanged(_currentTab, previous);
+}
+
+void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::CameraOperator* cameraOperator)
+{
+	int index = -1;
+
+	for (int i = 0; i < _camerasPanel->GetCount(); ++i)
+	{
+		const auto widget = _camerasPanel->GetWidget(i);
+
+		if (const auto candidate = widget->property(camera_operators::CameraOperatorPropertyKey.data()).value<camera_operators::CameraOperator*>();
+			candidate == cameraOperator)
+		{
+			index = i;
+			break;
+		}
+	}
+
+	_camerasPanel->ChangeCamera(index);
+}
+
+void StudioModelEditWidget::OnCameraChanged(int index)
+{
+	auto widget = _camerasPanel->GetWidget(index);
+
+	bool success{false};
+
+	if (widget)
+	{
+		if (auto cameraOperator = widget->property(camera_operators::CameraOperatorPropertyKey.data()).value<camera_operators::CameraOperator*>();
+			cameraOperator)
+		{
+			_asset->SetCurrentCameraOperator(cameraOperator);
+			success = true;
+		}
+	}
+
+	if (!success)
+	{
+		_asset->SetCurrentCameraOperator(nullptr);
+	}
 }
 }

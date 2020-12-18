@@ -3,6 +3,7 @@
 #include <cassert>
 #include <memory>
 #include <stack>
+#include <vector>
 
 #include <QColor>
 #include <QObject>
@@ -78,6 +79,16 @@ public:
 		_inputSinks.pop();
 	}
 
+	int GetCameraOperatorCount() const { return _cameraOperators.size(); }
+
+	camera_operators::CameraOperator* GetCameraOperator(int index) const;
+
+	void AddCameraOperator(std::unique_ptr<camera_operators::CameraOperator>&& cameraOperator);
+
+	camera_operators::CameraOperator* GetCurrentCameraOperator() const { return _cameraOperator; }
+
+	void SetCurrentCameraOperator(camera_operators::CameraOperator* cameraOperator);
+
 	void AddUndoCommand(QUndoCommand* command)
 	{
 		GetUndoStack()->push(command);
@@ -88,12 +99,17 @@ public:
 		emit ModelChanged(event);
 	}
 
+private:
+	void ChangeCamera(bool next);
+
 signals:
 	void Tick();
 
 	void Draw();
 
 	void ModelChanged(const ModelChangeEvent& event);
+
+	void CameraChanged(camera_operators::CameraOperator* cameraOperator);
 
 private slots:
 	void OnTick();
@@ -106,6 +122,9 @@ private slots:
 	}
 
 	void OnFloorLengthChanged(int length);
+
+	void OnPreviousCamera();
+	void OnNextCamera();
 
 	void OnLoadGroundTexture();
 	void OnUnloadGroundTexture();
@@ -124,8 +143,10 @@ private:
 	const std::unique_ptr<graphics::Scene> _scene;
 
 	std::stack<IInputSink*> _inputSinks;
-	//TODO: temporary; will need to be set up somewhere else eventually
-	std::unique_ptr<camera_operators::CameraOperator> _cameraOperator;
+
+	std::vector<std::unique_ptr<camera_operators::CameraOperator>> _cameraOperators;
+
+	camera_operators::CameraOperator* _cameraOperator{};
 
 	StudioModelEditWidget* _editWidget{};
 };

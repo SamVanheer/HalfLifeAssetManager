@@ -17,6 +17,12 @@ namespace ui
 class EditorContext;
 class SceneWidget;
 
+namespace camera_operators
+{
+class CameraOperator;
+class CamerasPanel;
+}
+
 namespace assets::studiomodel
 {
 class StudioModelAsset;
@@ -40,6 +46,10 @@ signals:
 private slots:
 	void OnTabChanged(int index);
 
+	void OnAssetCameraChanged(camera_operators::CameraOperator* cameraOperator);
+
+	void OnCameraChanged(int index);
+
 private:
 	StudioModelAsset* const _asset;
 
@@ -50,6 +60,8 @@ private:
 	QTabWidget* _dockPanels;
 
 	QWidget* _currentTab{};
+
+	camera_operators::CamerasPanel* _camerasPanel;
 
 	Timeline* _timeline;
 };

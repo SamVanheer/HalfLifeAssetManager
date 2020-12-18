@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdio>
 #include <stdexcept>
 
@@ -30,6 +31,7 @@
 
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperator.hpp"
+#include "ui/camera_operators/FirstPersonCameraOperator.hpp"
 
 #include "ui/settings/StudioModelSettings.hpp"
 
@@ -47,15 +49,15 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 {
 	PushInputSink(this);
 
+	//TODO: need to be able to update arcball camera without having to do this directly
+	auto arcBallCameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>(_editorContext->GetGeneralSettings());
+
 	//TODO: need to initialize the background color to its default value here, as specified in the options dialog
 	SetBackgroundColor({63, 127, 127});
 	_scene->FloorLength = _provider->GetSettings()->GetFloorLength();
 
 	auto entity = static_cast<CHLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
 		glm::vec3(), glm::vec3(), false));
-
-	//TODO: need to be able to do this at any time
-	graphics::Camera arcBallCamera;
 
 	if (nullptr != entity)
 	{
@@ -97,13 +99,16 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		rot[1] = 0.0f;
 		rot[2] = -90.0f;
 
-		arcBallCamera.SetOrigin(trans);
-		arcBallCamera.SetViewDirection(rot);
+		const auto camera = arcBallCameraOperator->GetCamera();
+
+		camera->SetOrigin(trans);
+		camera->SetViewDirection(rot);
 	}
 
-	_cameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>(arcBallCamera, _editorContext->GetGeneralSettings());
+	AddCameraOperator(std::move(arcBallCameraOperator));
+	AddCameraOperator(std::make_unique<camera_operators::FirstPersonCameraOperator>());
 
-	_scene->SetCurrentCamera(_cameraOperator->GetCamera());
+	SetCurrentCameraOperator(GetCameraOperator(0));
 
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
 	connect(_provider->GetSettings(), &settings::StudioModelSettings::FloorLengthChanged, this, &StudioModelAsset::OnFloorLengthChanged);
@@ -118,11 +123,18 @@ StudioModelAsset::~StudioModelAsset()
 
 void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 {
+	menu->addAction("Previous Camera", this, &StudioModelAsset::OnPreviousCamera, QKeySequence{Qt::CTRL + Qt::Key::Key_U});
+	menu->addAction("Next Camera", this, &StudioModelAsset::OnNextCamera, QKeySequence{Qt::CTRL + Qt::Key::Key_I});
+
+	menu->addSeparator();
+
 	menu->addAction("Load Ground Texture...", this, &StudioModelAsset::OnLoadGroundTexture);
 	menu->addAction("Unload Ground Texture...", this, &StudioModelAsset::OnUnloadGroundTexture);
 
 	menu->addAction("Load Background Texture...", this, &StudioModelAsset::OnLoadBackgroundTexture);
 	menu->addAction("Unload Background Texture...", this, &StudioModelAsset::OnUnloadBackgroundTexture);
+
+	menu->addSeparator();
 
 	menu->addAction("Dump Model Info...", this, &StudioModelAsset::OnDumpModelInfo);
 
@@ -171,6 +183,72 @@ void StudioModelAsset::Save(const QString& fileName)
 	_provider->Save(fileName, *this);
 }
 
+camera_operators::CameraOperator* StudioModelAsset::GetCameraOperator(int index) const
+{
+	return _cameraOperators[index].get();
+}
+
+void StudioModelAsset::AddCameraOperator(std::unique_ptr<camera_operators::CameraOperator>&& cameraOperator)
+{
+	assert(cameraOperator);
+
+	_cameraOperators.emplace_back(std::move(cameraOperator));
+}
+
+void StudioModelAsset::SetCurrentCameraOperator(camera_operators::CameraOperator* cameraOperator)
+{
+	if (_cameraOperator != cameraOperator)
+	{
+		_cameraOperator = cameraOperator;
+		_scene->SetCurrentCamera(_cameraOperator != nullptr ? _cameraOperator->GetCamera() : nullptr);
+
+		emit CameraChanged(_cameraOperator);
+	}
+}
+
+void StudioModelAsset::ChangeCamera(bool next)
+{
+	int index;
+
+	if (_cameraOperators.empty())
+	{
+		index = -1;
+	}
+	else if (!_cameraOperator)
+	{
+		index = next ? 0 : _cameraOperators.size() - 1;
+	}
+	else
+	{
+		auto it = std::find_if(_cameraOperators.begin(), _cameraOperators.end(), [=](const auto& candidate)
+			{
+				return candidate.get() == _cameraOperator;
+			});
+
+		index = it - _cameraOperators.begin();
+
+		if (next)
+		{
+			index += 1;
+		}
+		else
+		{
+			index -= 1;
+		}
+
+		if (index < 0)
+		{
+			index = _cameraOperators.size() - 1;
+		}
+		else if (index >= _cameraOperators.size())
+		{
+			index = 0;
+		}
+	}
+
+	SetCurrentCameraOperator(index != -1 ? _cameraOperators[index].get() : nullptr);
+}
+
 void StudioModelAsset::OnTick()
 {
 	//TODO: update asset-local world time
@@ -187,7 +265,10 @@ void StudioModelAsset::OnTick()
 
 void StudioModelAsset::OnMouseEvent(QMouseEvent* event)
 {
-	_cameraOperator->MouseEvent(*event);
+	if (_cameraOperator)
+	{
+		_cameraOperator->MouseEvent(*event);
+	}
 }
 
 void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
@@ -201,6 +282,16 @@ void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
 void StudioModelAsset::OnFloorLengthChanged(int length)
 {
 	_scene->FloorLength = length;
+}
+
+void StudioModelAsset::OnPreviousCamera()
+{
+	ChangeCamera(false);
+}
+
+void StudioModelAsset::OnNextCamera()
+{
+	ChangeCamera(true);
 }
 
 void StudioModelAsset::OnLoadGroundTexture()

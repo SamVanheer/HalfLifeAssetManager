@@ -42,14 +42,6 @@ private:
 	void OnMirrorYAxisChanged();
 	void OnMirrorZAxisChanged();
 
-	void OnFieldOfViewChanged(double value);
-
-	void OnResetFieldOfView();
-
-	void OnFirstPersonFieldOfViewChanged(double value);
-
-	void OnResetFirstPersonFieldOfView();
-
 	void OnCenterModelOnWorldOrigin();
 
 	void OnAlignOnGround();

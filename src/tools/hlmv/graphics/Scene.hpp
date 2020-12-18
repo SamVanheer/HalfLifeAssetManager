@@ -38,10 +38,6 @@ class IGraphicsContext;
 class Scene
 {
 public:
-	//TOOD: these need to be defined somewhere else
-	static constexpr float DefaultFOV = 65.f;
-	static constexpr float DefaultFirstPersonFieldOfView = 74.f;
-
 	Scene(soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime);
 	~Scene();
 	Scene(const Scene&) = delete;
@@ -128,11 +124,6 @@ public:
 	bool ShowCrosshair = false;
 	bool ShowGuidelines = false;
 	bool ShowPlayerHitbox = false;
-
-	float FieldOfView = DefaultFOV;
-	float FirstPersonFieldOfView = DefaultFirstPersonFieldOfView;
-
-	float* CurrentFOV = &FieldOfView;
 
 	int FloorLength = 0;
 

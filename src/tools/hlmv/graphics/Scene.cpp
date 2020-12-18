@@ -322,6 +322,8 @@ void Scene::SetupRenderMode(RenderMode renderMode)
 
 void Scene::DrawModel()
 {
+	auto camera = GetCurrentCamera();
+
 	//
 	// draw background
 	//
@@ -331,7 +333,7 @@ void Scene::DrawModel()
 		graphics::DrawBackground(BackgroundTexture);
 	}
 
-	graphics::SetProjection(*CurrentFOV, _windowWidth, _windowHeight);
+	graphics::SetProjection(camera->GetFieldOfView(), _windowWidth, _windowHeight);
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -367,8 +369,6 @@ void Scene::DrawModel()
 
 		glEnd();
 	}
-
-	auto camera = GetCurrentCamera();
 
 	const auto& vecAngles = camera->GetViewDirection();
 

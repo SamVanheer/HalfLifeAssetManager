@@ -82,6 +82,7 @@ unsigned int CStudioModelRenderer::DrawModel( studiomdl::CModelRenderInfo* const
 
 	auto origin = m_pRenderInfo->vecOrigin;
 
+	//TODO: move this out of the renderer
 	//The game applies a 1 unit offset to make view models look nicer
 	//See https://github.com/ValveSoftware/halflife/blob/c76dd531a79a176eef7cdbca5a80811123afbbe2/cl_dll/view.cpp#L665-L668
 	if( flags & renderer::DrawFlag::IS_VIEW_MODEL )

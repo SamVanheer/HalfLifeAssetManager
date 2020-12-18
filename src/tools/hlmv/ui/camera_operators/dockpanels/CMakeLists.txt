@@ -1,0 +1,11 @@
+target_sources(HLMV
+	PRIVATE
+		ArcBallSettingsPanel.cpp
+		ArcBallSettingsPanel.hpp
+		ArcBallSettingsPanel.ui
+		CamerasPanel.cpp
+		CamerasPanel.hpp
+		CamerasPanel.ui
+		FirstPersonSettingsPanel.cpp
+		FirstPersonSettingsPanel.hpp
+		FirstPersonSettingsPanel.ui)
