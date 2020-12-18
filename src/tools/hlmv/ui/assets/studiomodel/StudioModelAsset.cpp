@@ -129,10 +129,10 @@ void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 	menu->addSeparator();
 
 	menu->addAction("Load Ground Texture...", this, &StudioModelAsset::OnLoadGroundTexture);
-	menu->addAction("Unload Ground Texture...", this, &StudioModelAsset::OnUnloadGroundTexture);
+	menu->addAction("Unload Ground Texture", this, &StudioModelAsset::OnUnloadGroundTexture);
 
 	menu->addAction("Load Background Texture...", this, &StudioModelAsset::OnLoadBackgroundTexture);
-	menu->addAction("Unload Background Texture...", this, &StudioModelAsset::OnUnloadBackgroundTexture);
+	menu->addAction("Unload Background Texture", this, &StudioModelAsset::OnUnloadBackgroundTexture);
 
 	menu->addSeparator();
 
