@@ -30,6 +30,8 @@ OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(EditorContext* editor
 {
 	_ui.setupUi(this);
 
+	_ui.AutodetectViewmodels->setChecked(_studioModelSettings->ShouldAutodetectViewmodels());
+
 	_ui.FloorLengthSlider->setRange(_studioModelSettings->MinimumFloorLength, _studioModelSettings->MaximumFloorLength);
 	_ui.FloorLengthSpinner->setRange(_studioModelSettings->MinimumFloorLength, _studioModelSettings->MaximumFloorLength);
 
@@ -45,6 +47,7 @@ OptionsPageStudioModelWidget::~OptionsPageStudioModelWidget() = default;
 
 void OptionsPageStudioModelWidget::ApplyChanges(QSettings& settings)
 {
+	_studioModelSettings->SetAutodetectViewmodels(_ui.AutodetectViewmodels->isChecked());
 	_studioModelSettings->SetFloorLength(_ui.FloorLengthSlider->value());
 
 	_studioModelSettings->SaveSettings(settings);

@@ -105,7 +105,15 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	AddCameraOperator(std::move(freeLookCameraOperator));
 	AddCameraOperator(std::make_unique<camera_operators::FirstPersonCameraOperator>());
 
-	SetCurrentCameraOperator(GetCameraOperator(0));
+	//TODO: need to use the actual camera objects instead of indices
+	if (_provider->GetSettings()->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
+	{
+		SetCurrentCameraOperator(GetCameraOperator(2));
+	}
+	else
+	{
+		SetCurrentCameraOperator(GetCameraOperator(0));
+	}
 
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
 	connect(_provider->GetSettings(), &settings::StudioModelSettings::FloorLengthChanged, this, &StudioModelAsset::OnFloorLengthChanged);
