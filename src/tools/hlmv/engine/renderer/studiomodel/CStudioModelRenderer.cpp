@@ -4,9 +4,6 @@
 
 #include "shared/Logging.hpp"
 
-#include "cvar/CCVar.h"
-#include "cvar/CVarUtils.h"
-
 #include "graphics/GraphicsUtils.hpp"
 
 #include "shared/studiomodel/CStudioModel.hpp"
@@ -16,11 +13,6 @@
 
 //Double to float conversion
 #pragma warning( disable: 4244 )
-
-//TODO: this is temporary until lighting can be moved somewhere else
-
-DEFINE_COLOR_CVAR( , r_lighting, 255, 255, 255, "Lighting", cvar::CCVarArgsBuilder().Flags( cvar::Flag::ARCHIVE ).Callback( cvar::ColorCVarChanged ) );
-DEFINE_COLOR_CVAR( , r_wireframecolor, 255, 0, 0, "Wireframe overlay color", cvar::CCVarArgsBuilder().Flags( cvar::Flag::ARCHIVE ).Callback( cvar::ColorCVarChanged ) );
 
 namespace studiomdl
 {
@@ -998,10 +990,6 @@ void CStudioModelRenderer::SetupLighting()
 	m_ambientlight = 32;
 	m_shadelight = 192;
 
-	m_lightcolor[ 0 ] = r_lighting_r.GetInt();
-	m_lightcolor[ 1 ] = r_lighting_g.GetInt();
-	m_lightcolor[ 2 ] = r_lighting_b.GetInt();
-
 	for( int i = 0; i < m_pStudioHdr->numbones; i++ )
 	{
 		VectorIRotate( m_lightvec, m_bonetransform[ i ], m_blightvec[ i ] );
@@ -1085,10 +1073,11 @@ unsigned int CStudioModelRenderer::DrawMeshes( const bool bWireframe, const Sort
 {
 	//Set here since it never changes. Much more efficient.
 	if( bWireframe )
-		glColor4f( r_wireframecolor_r.GetFloat() / 255.0f,
-				   r_wireframecolor_g.GetFloat() / 255.0f,
-				   r_wireframecolor_b.GetFloat() / 255.0f,
-				   m_pRenderInfo->flTransparency );
+		glColor4f(
+			_wireframeColor.GetRed() / 255.0f,
+			_wireframeColor.GetGreen() / 255.0f,
+			_wireframeColor.GetBlue() / 255.0f,
+			m_pRenderInfo->flTransparency );
 
 	unsigned int uiDrawnPolys = 0;
 
@@ -1214,9 +1203,10 @@ unsigned int CStudioModelRenderer::DrawShadows(const bool fixZFighting, const bo
 
 		if (wireframe)
 		{
-			glColor4f(r_wireframecolor_r.GetFloat() / 255.0f,
-				r_wireframecolor_g.GetFloat() / 255.0f,
-				r_wireframecolor_b.GetFloat() / 255.0f,
+			glColor4f(
+				_wireframeColor.GetRed()/ 255.0f,
+				_wireframeColor.GetGreen() / 255.0f,
+				_wireframeColor.GetBlue() / 255.0f,
 				m_pRenderInfo->flTransparency);
 		}
 		else
