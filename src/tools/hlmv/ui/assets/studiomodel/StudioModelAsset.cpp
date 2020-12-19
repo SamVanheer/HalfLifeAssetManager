@@ -32,6 +32,7 @@
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperator.hpp"
 #include "ui/camera_operators/FirstPersonCameraOperator.hpp"
+#include "ui/camera_operators/FreeLookCameraOperator.hpp"
 
 #include "ui/settings/StudioModelSettings.hpp"
 
@@ -51,6 +52,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	//TODO: need to be able to update arcball camera without having to do this directly
 	auto arcBallCameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>(_editorContext->GetGeneralSettings());
+	auto freeLookCameraOperator = std::make_unique<camera_operators::FreeLookCameraOperator>(_editorContext->GetGeneralSettings());
 
 	//TODO: need to initialize the background color to its default value here, as specified in the options dialog
 	SetBackgroundColor({63, 127, 127});
@@ -95,12 +97,12 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		trans[0] = -(min[2] + dz / 2);
 		trans[1] = d * 1.0f;
 
-		const auto camera = arcBallCameraOperator->GetCamera();
-
-		camera->SetOrigin(trans);
+		arcBallCameraOperator->GetCamera()->SetOrigin(trans);
+		freeLookCameraOperator->GetCamera()->SetOrigin(trans);
 	}
 
 	AddCameraOperator(std::move(arcBallCameraOperator));
+	AddCameraOperator(std::move(freeLookCameraOperator));
 	AddCameraOperator(std::make_unique<camera_operators::FirstPersonCameraOperator>());
 
 	SetCurrentCameraOperator(GetCameraOperator(0));

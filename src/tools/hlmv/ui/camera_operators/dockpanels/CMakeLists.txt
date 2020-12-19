@@ -8,4 +8,7 @@ target_sources(HLMV
 		CamerasPanel.ui
 		FirstPersonSettingsPanel.cpp
 		FirstPersonSettingsPanel.hpp
-		FirstPersonSettingsPanel.ui)
+		FirstPersonSettingsPanel.ui
+		FreeLookSettingsPanel.cpp
+		FreeLookSettingsPanel.hpp
+		FreeLookSettingsPanel.ui)
