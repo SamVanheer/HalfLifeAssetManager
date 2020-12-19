@@ -52,6 +52,9 @@ StudioModelEditWidget::StudioModelEditWidget(
 		_camerasPanel->AddCameraOperator(cameraOperator->GetName(), cameraOperator->CreateEditWidget());
 	}
 
+	//TODO: should probably be done in a better way
+	OnAssetCameraChanged(_asset->GetCurrentCameraOperator());
+
 	auto modelDisplayPanel = new StudioModelModelDisplayPanel(_asset);
 	auto texturesPanel = new StudioModelTexturesPanel(_asset);
 	auto bonesPanel = new StudioModelBonesPanel(_asset);
