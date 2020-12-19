@@ -1,12 +1,12 @@
 #include <cassert>
 #include <chrono>
 
-#include "utility/IOUtils.h"
-#include "utility/StringUtils.h"
+#include "utility/IOUtils.hpp"
+#include "utility/StringUtils.hpp"
 
 #include "cvar/CCVar.h"
 
-#include "Logging.h"
+#include "Logging.hpp"
 
 static cvar::CCVar developer( "developer", cvar::CCVarArgsBuilder().HelpInfo( "Developer level for logging" ).FloatValue( 0 ) );
 

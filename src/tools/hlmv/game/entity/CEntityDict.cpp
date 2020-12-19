@@ -1,8 +1,8 @@
-#include "shared/Logging.h"
+#include "shared/Logging.hpp"
 
-#include "CBaseEntity.h"
+#include "CBaseEntity.hpp"
 
-#include "CEntityDict.h"
+#include "CEntityDict.hpp"
 
 CEntityDict& GetEntityDict()
 {

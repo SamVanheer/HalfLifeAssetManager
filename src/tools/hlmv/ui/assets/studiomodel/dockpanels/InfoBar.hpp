@@ -4,7 +4,7 @@
 
 #include "ui_InfoBar.h"
 
-#include "core/shared/Utility.h"
+#include "core/shared/Utility.hpp"
 
 namespace ui::assets::studiomodel
 {

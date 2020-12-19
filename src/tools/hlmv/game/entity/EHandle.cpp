@@ -1,7 +1,7 @@
-#include "CBaseEntity.h"
-#include "CBaseEntityList.h"
+#include "CBaseEntity.hpp"
+#include "CBaseEntityList.hpp"
 
-#include "EHandle.h"
+#include "EHandle.hpp"
 
 EHandle::EHandle( CBaseEntity* pEntity )
 {

@@ -1,14 +1,14 @@
 #include <cassert>
 #include <memory>
 
-#include "shared/Logging.h"
+#include "shared/Logging.hpp"
 
-#include "CBaseEntity.h"
-#include "EHandle.h"
+#include "CBaseEntity.hpp"
+#include "EHandle.hpp"
 
-#include "CEntityDict.h"
+#include "CEntityDict.hpp"
 
-#include "CBaseEntityList.h"
+#include "CBaseEntityList.hpp"
 
 CBaseEntityList::CBaseEntityList()
 {

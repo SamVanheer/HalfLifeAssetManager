@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include "CBaseEntity.h"
+#include "CBaseEntity.hpp"
 
 CBaseEntity::CBaseEntity()
 {

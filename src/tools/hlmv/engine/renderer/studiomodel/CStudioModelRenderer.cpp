@@ -2,17 +2,17 @@
 
 #include <algorithm>
 
-#include "shared/Logging.h"
+#include "shared/Logging.hpp"
 
 #include "cvar/CCVar.h"
 #include "cvar/CVarUtils.h"
 
-#include "graphics/GraphicsUtils.h"
+#include "graphics/GraphicsUtils.hpp"
 
-#include "shared/studiomodel/CStudioModel.h"
-#include "shared/renderer/studiomodel/IStudioModelRendererListener.h"
+#include "shared/studiomodel/CStudioModel.hpp"
+#include "shared/renderer/studiomodel/IStudioModelRendererListener.hpp"
 
-#include "CStudioModelRenderer.h"
+#include "CStudioModelRenderer.hpp"
 
 //Double to float conversion
 #pragma warning( disable: 4244 )

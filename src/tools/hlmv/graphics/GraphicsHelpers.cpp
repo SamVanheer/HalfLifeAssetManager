@@ -2,13 +2,13 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shared/Logging.h"
+#include "shared/Logging.hpp"
 
-#include "utility/Color.h"
+#include "utility/Color.hpp"
 
-#include "shared/renderer/studiomodel/IStudioModelRenderer.h"
+#include "shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
-#include "GraphicsHelpers.h"
+#include "GraphicsHelpers.hpp"
 
 namespace graphics
 {

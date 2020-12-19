@@ -1,22 +1,22 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
-		BoundingBox.h
+		BoundingBox.hpp
 		ByteSwap.cpp
-		ByteSwap.h
+		ByteSwap.hpp
 		CCommand.cpp
-		CCommand.h
+		CCommand.hpp
 		CEscapeSequences.cpp
-		CEscapeSequences.h
-		CMemory.h
+		CEscapeSequences.hpp
+		CMemory.hpp
 		Color.cpp
-		Color.h
+		Color.hpp
 		IOUtils.cpp
-		IOUtils.h
+		IOUtils.hpp
 		mathlib.cpp
-		mathlib.h
+		mathlib.hpp
 		PlatUtils.cpp
-		PlatUtils.h
+		PlatUtils.hpp
 		StringUtils.cpp
-		StringUtils.h
+		StringUtils.hpp
 		Tokenization.cpp
-		Tokenization.h)
+		Tokenization.hpp)

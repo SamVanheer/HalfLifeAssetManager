@@ -3,17 +3,17 @@
 
 #include <glm/vec4.hpp>
 
-#include "core/shared/Logging.h"
+#include "core/shared/Logging.hpp"
 
-#include "graphics/OpenGL.h"
+#include "graphics/OpenGL.hpp"
 
-#include "shared/CWorldTime.h"
+#include "shared/CWorldTime.hpp"
 
-#include "engine/shared/renderer/sprite/CSpriteRenderInfo.h"
+#include "engine/shared/renderer/sprite/CSpriteRenderInfo.hpp"
 
-#include "engine/shared/sprite/sprite.h"
+#include "engine/shared/sprite/sprite.hpp"
 
-#include "CSpriteRenderer.h"
+#include "CSpriteRenderer.hpp"
 
 namespace sprite
 {

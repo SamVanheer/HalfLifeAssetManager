@@ -6,12 +6,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shared/Const.h"
+#include "shared/Const.hpp"
 
-#include "shared/studiomodel/studio.h"
+#include "shared/studiomodel/studio.hpp"
 
-#include "GraphicsUtils.h"
-#include "Palette.h"
+#include "GraphicsUtils.hpp"
+#include "Palette.hpp"
 
 namespace graphics
 {

@@ -2,9 +2,9 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "utility/Tokenization.h"
+#include "utility/Tokenization.hpp"
 
-#include "CCommand.h"
+#include "CCommand.hpp"
 
 namespace util
 {

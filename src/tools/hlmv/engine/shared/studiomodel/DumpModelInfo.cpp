@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include "engine/shared/studiomodel/CStudioModel.h"
+#include "engine/shared/studiomodel/CStudioModel.hpp"
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
 
 namespace studiomdl

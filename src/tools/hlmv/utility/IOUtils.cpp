@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include "IOUtils.h"
+#include "IOUtils.hpp"
 
 FILE* utf8_fopen(const char* filename, const char* mode)
 {

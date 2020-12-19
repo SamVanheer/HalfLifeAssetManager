@@ -4,7 +4,7 @@
 #include <QPixmap>
 #include <QStringList>
 
-#include "entity/CHLMVStudioModelEntity.h"
+#include "entity/CHLMVStudioModelEntity.hpp"
 
 #include "qt/QtUtilities.hpp"
 

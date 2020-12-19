@@ -1,6 +1,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "CMatrixStack.h"
+#include "CMatrixStack.hpp"
 
 namespace renderer
 {

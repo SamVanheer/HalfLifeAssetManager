@@ -1,6 +1,6 @@
-#include "shared/Utility.h"
+#include "shared/Utility.hpp"
 
-#include "FileSystemConstants.h"
+#include "FileSystemConstants.hpp"
 
 namespace filesystem
 {

@@ -1,11 +1,11 @@
 #include <glm/geometric.hpp>
 
-#include "shared/Logging.h"
-#include "shared/CWorldTime.h"
+#include "shared/Logging.hpp"
+#include "shared/CWorldTime.hpp"
 
-#include "shared/studiomodel/CStudioModel.h"
+#include "shared/studiomodel/CStudioModel.hpp"
 
-#include "CStudioModelEntity.h"
+#include "CStudioModelEntity.hpp"
 
 bool CStudioModelEntity::Spawn()
 {

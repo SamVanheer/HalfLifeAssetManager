@@ -1,4 +1,4 @@
-#include "CWorldTime.h"
+#include "CWorldTime.hpp"
 
 void CWorldTime::TimeChanged( const double flCurrentTime )
 {

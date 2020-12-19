@@ -4,19 +4,19 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "engine/renderer/studiomodel/CStudioModelRenderer.h"
-#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.h"
-#include "entity/CHLMVStudioModelEntity.h"
+#include "engine/renderer/studiomodel/CStudioModelRenderer.hpp"
+#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
+#include "entity/CHLMVStudioModelEntity.hpp"
 
-#include "game/entity/CBaseEntityList.h"
-#include "game/entity/CEntityManager.h"
+#include "game/entity/CBaseEntityList.hpp"
+#include "game/entity/CEntityManager.hpp"
 
-#include "graphics/GraphicsHelpers.h"
-#include "graphics/GraphicsUtils.h"
+#include "graphics/GraphicsHelpers.hpp"
+#include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
 
-#include "utility/Color.h"
+#include "utility/Color.hpp"
 
 namespace graphics
 {

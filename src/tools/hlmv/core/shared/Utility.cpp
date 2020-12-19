@@ -3,7 +3,7 @@
 #include <functional>
 #include <random>
 
-#include "Utility.h"
+#include "Utility.hpp"
 
 //The chrono API is just too confusing with namespaces
 using namespace std::chrono;

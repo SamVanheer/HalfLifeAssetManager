@@ -2,8 +2,8 @@
 #include <cstring>
 #include <limits>
 
-#include "shared/Platform.h"
-#include "shared/Logging.h"
+#include "shared/Platform.hpp"
+#include "shared/Logging.hpp"
 
 #include "CVar.h"
 

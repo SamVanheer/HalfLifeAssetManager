@@ -1,11 +1,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "core/shared/Logging.h"
+#include "core/shared/Logging.hpp"
 
-#include "graphics/OpenGL.h"
+#include "graphics/OpenGL.hpp"
 
-#include "CRenderContextIMode.h"
+#include "CRenderContextIMode.hpp"
 
 namespace renderer
 {

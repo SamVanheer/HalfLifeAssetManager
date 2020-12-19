@@ -17,7 +17,7 @@
 #include <glm/geometric.hpp>
 #include <glm/trigonometric.hpp>
 
-#include "mathlib.h"
+#include "mathlib.hpp"
 
 bool VectorCompare( const glm::vec3& lhs, const glm::vec3& rhs )
 {

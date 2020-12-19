@@ -1,7 +1,7 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
 		CBaseRenderContext.cpp
-		CBaseRenderContext.h)
+		CBaseRenderContext.hpp)
 
 add_subdirectory(gl)
 add_subdirectory(sprite)

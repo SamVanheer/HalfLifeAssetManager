@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <sstream>
 
-#include "Color.h"
+#include "Color.hpp"
 
 bool ParseColor( const char* pszValue, Color& color, const bool bParseAlpha )
 {

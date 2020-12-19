@@ -1,2 +1,2 @@
-#include "activity.h"
-#include "activitymap.h"
+#include "activity.hpp"
+#include "activitymap.hpp"

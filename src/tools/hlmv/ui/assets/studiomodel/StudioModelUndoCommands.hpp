@@ -11,9 +11,9 @@
 
 #include <glm/vec3.hpp>
 
-#include "core/shared/Const.h"
-#include "engine/shared/studiomodel/studio.h"
-#include "graphics/Palette.h"
+#include "core/shared/Const.hpp"
+#include "engine/shared/studiomodel/studio.hpp"
+#include "graphics/Palette.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 

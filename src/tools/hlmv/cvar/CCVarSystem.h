@@ -4,9 +4,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "utility/StringUtils.h"
+#include "utility/StringUtils.hpp"
 
-#include "utility/CCommand.h"
+#include "utility/CCommand.hpp"
 
 #include "cvar/ICVarSystem.h"
 

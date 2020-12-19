@@ -1,3 +1,3 @@
-#include "shared/Logging.h"
+#include "shared/Logging.hpp"
 
-#include "CBaseAnimating.h"
+#include "CBaseAnimating.hpp"

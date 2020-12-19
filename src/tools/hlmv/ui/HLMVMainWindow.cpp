@@ -7,7 +7,7 @@
 
 #include "Credits.hpp"
 
-#include "filesystem/IFileSystem.h"
+#include "filesystem/IFileSystem.hpp"
 
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"

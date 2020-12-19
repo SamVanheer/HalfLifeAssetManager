@@ -1,6 +1,6 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
 		CBaseGLRenderContext.cpp
-		CBaseGLRenderContext.h)
+		CBaseGLRenderContext.hpp)
 
 add_subdirectory(imode)

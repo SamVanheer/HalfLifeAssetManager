@@ -1,13 +1,13 @@
 #include <cassert>
 #include <vector>
 
-#include "core/shared/Platform.h"
+#include "core/shared/Platform.hpp"
 
 #ifndef WIN32
 #include <unistd.h>
 #endif
 
-#include "PlatUtils.h"
+#include "PlatUtils.hpp"
 
 namespace plat
 {

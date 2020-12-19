@@ -8,12 +8,12 @@
 
 #include "vorbis/vorbisfile.h"
 
-#include "shared/Logging.h"
-#include "shared/Utility.h"
+#include "shared/Logging.hpp"
+#include "shared/Utility.hpp"
 
-#include "filesystem/IFileSystem.h"
+#include "filesystem/IFileSystem.hpp"
 
-#include "CSoundSystem.h"
+#include "CSoundSystem.hpp"
 
 namespace soundsystem
 {

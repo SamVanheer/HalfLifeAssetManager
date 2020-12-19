@@ -7,18 +7,18 @@
 #include <sstream>
 #include <string>
 
-#include "shared/Platform.h"
-#include "shared/Logging.h"
+#include "shared/Platform.hpp"
+#include "shared/Logging.hpp"
 
-#include "utility/IOUtils.h"
-#include "utility/StringUtils.h"
+#include "utility/IOUtils.hpp"
+#include "utility/StringUtils.hpp"
 
 #include "cvar/CCVar.h"
 
-#include "graphics/GraphicsUtils.h"
-#include "graphics/Palette.h"
+#include "graphics/GraphicsUtils.hpp"
+#include "graphics/Palette.hpp"
 
-#include "CStudioModel.h"
+#include "CStudioModel.hpp"
 
 namespace studiomdl
 {

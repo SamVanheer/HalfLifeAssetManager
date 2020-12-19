@@ -2,9 +2,9 @@
 #include <cctype>
 #include <cstring>
 
-#include "shared/Logging.h"
+#include "shared/Logging.hpp"
 
-#include "utility/StringUtils.h"
+#include "utility/StringUtils.hpp"
 
 #include "cvar/CBaseConCommand.h"
 #include "cvar/CConCommand.h"

@@ -1,6 +1,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "CBaseRenderContext.h"
+#include "CBaseRenderContext.hpp"
 
 namespace renderer
 {

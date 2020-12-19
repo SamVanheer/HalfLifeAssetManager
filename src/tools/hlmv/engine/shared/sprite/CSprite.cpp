@@ -2,14 +2,14 @@
 #include <cstdio>
 #include <memory>
 
-#include "shared/Const.h"
+#include "shared/Const.hpp"
 
-#include "utility/ByteSwap.h"
-#include "utility/IOUtils.h"
+#include "utility/ByteSwap.hpp"
+#include "utility/IOUtils.hpp"
 
-#include "graphics/Palette.h"
+#include "graphics/Palette.hpp"
 
-#include "CSprite.h"
+#include "CSprite.hpp"
 
 namespace sprite
 {

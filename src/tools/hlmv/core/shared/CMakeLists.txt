@@ -1,13 +1,13 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
-		Class.h
+		Class.hpp
 		Const.cpp
-		Const.h
+		Const.hpp
 		CWorldTime.cpp
-		CWorldTime.h
+		CWorldTime.hpp
 		Logging.cpp
-		Logging.h
+		Logging.hpp
 		Platform.cpp
-		Platform.h
+		Platform.hpp
 		Utility.cpp
-		Utility.h)
+		Utility.hpp)

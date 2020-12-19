@@ -1,7 +1,7 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
-		DrawConstants.h
-		IRenderContext.h)
+		DrawConstants.hpp
+		IRenderContext.hpp)
 
 add_subdirectory(sprite)
 add_subdirectory(studiomodel)

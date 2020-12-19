@@ -1,6 +1,6 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
-		CAnimEvent.h
-		Events.h)
+		CAnimEvent.hpp
+		Events.hpp)
 
 add_subdirectory(entity)

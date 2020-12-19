@@ -1,6 +1,6 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
 		CSprite.cpp
-		CSprite.h
+		CSprite.hpp
 		sprite.cpp
-		sprite.h)
+		sprite.hpp)

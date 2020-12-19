@@ -1,18 +1,18 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
 		BMPFile.cpp
-		BMPFile.h
+		BMPFile.hpp
 		Camera.cpp
 		Camera.hpp
 		Constants.cpp
-		Constants.h
+		Constants.hpp
 		GraphicsHelpers.cpp
-		GraphicsHelpers.h
+		GraphicsHelpers.hpp
 		GraphicsUtils.cpp
-		GraphicsUtils.h
+		GraphicsUtils.hpp
 		IGraphicsContext.hpp
 		OpenGL.cpp
-		OpenGL.h
-		Palette.h
+		OpenGL.hpp
+		Palette.hpp
 		Scene.cpp
 		Scene.hpp)

@@ -1,7 +1,7 @@
 #include <cassert>
 #include <utility>
 
-#include "ByteSwap.h"
+#include "ByteSwap.hpp"
 
 uint8_t SwapByte( uint8_t value )
 {

@@ -1,6 +1,6 @@
-#include "core/shared/Platform.h"
+#include "core/shared/Platform.hpp"
 
-#include "sprite.h"
+#include "sprite.hpp"
 
 namespace sprite
 {

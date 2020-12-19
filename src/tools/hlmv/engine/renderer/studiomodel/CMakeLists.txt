@@ -1,6 +1,6 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
 		CStudioModelRenderer.cpp
-		CStudioModelRenderer.h
+		CStudioModelRenderer.hpp
 		StudioSorting.cpp
-		StudioSorting.h)
+		StudioSorting.hpp)

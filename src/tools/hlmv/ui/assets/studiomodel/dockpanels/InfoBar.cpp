@@ -1,4 +1,4 @@
-#include "entity/CHLMVStudioModelEntity.h"
+#include "entity/CHLMVStudioModelEntity.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/InfoBar.hpp"

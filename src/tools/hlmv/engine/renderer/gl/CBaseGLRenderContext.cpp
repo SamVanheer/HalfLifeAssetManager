@@ -1,8 +1,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "core/shared/Logging.h"
+#include "core/shared/Logging.hpp"
 
-#include "CBaseGLRenderContext.h"
+#include "CBaseGLRenderContext.hpp"
 
 static_assert( sizeof( renderer::HTexture_t ) == sizeof( GLuint ), "Unsupported handle size!" );
 

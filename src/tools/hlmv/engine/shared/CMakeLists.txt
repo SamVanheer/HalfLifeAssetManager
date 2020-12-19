@@ -1,8 +1,8 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
 		activity.cpp
-		activity.h
-		activitymap.h)
+		activity.hpp
+		activitymap.hpp)
 
 add_subdirectory(renderer)
 add_subdirectory(sprite)

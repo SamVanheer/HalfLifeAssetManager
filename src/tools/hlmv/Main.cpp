@@ -1,7 +1,7 @@
 #include "application/HLMVApplication.hpp"
 
 //TODO: temporarily declare globals here
-#include "engine/shared/renderer/sprite/ISpriteRenderer.h"
+#include "engine/shared/renderer/sprite/ISpriteRenderer.hpp"
 
 sprite::ISpriteRenderer* g_pSpriteRenderer = nullptr;
 

@@ -6,11 +6,11 @@
 
 #include <glm/vec3.hpp>
 
-#include "engine/shared/studiomodel/studio.h"
+#include "engine/shared/studiomodel/studio.hpp"
 
 #include "graphics/Camera.hpp"
 
-#include "graphics/Constants.h"
+#include "graphics/Constants.hpp"
 
 class CEntityManager;
 class CHLMVStudioModelEntity;

@@ -11,13 +11,13 @@
 
 #include <glm/vec2.hpp>
 
-#include "core/shared/Utility.h"
+#include "core/shared/Utility.hpp"
 
-#include "entity/CHLMVStudioModelEntity.h"
+#include "entity/CHLMVStudioModelEntity.hpp"
 
-#include "graphics/GraphicsUtils.h"
+#include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"
-#include "graphics/Palette.h"
+#include "graphics/Palette.hpp"
 
 #include "qt/QtUtilities.hpp"
 

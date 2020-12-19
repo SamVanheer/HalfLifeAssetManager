@@ -8,7 +8,7 @@
 #include <QColor>
 #include <QObject>
 
-#include "engine/shared/studiomodel/CStudioModel.h"
+#include "engine/shared/studiomodel/CStudioModel.hpp"
 
 #include "graphics/Scene.hpp"
 

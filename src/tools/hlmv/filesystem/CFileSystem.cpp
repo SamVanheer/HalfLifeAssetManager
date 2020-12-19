@@ -1,12 +1,12 @@
 #include <cstring>
 #include <cstdio>
 
-#include "shared/Logging.h"
-#include "shared/Utility.h"
-#include "utility/IOUtils.h"
-#include "utility/StringUtils.h"
+#include "shared/Logging.hpp"
+#include "shared/Utility.hpp"
+#include "utility/IOUtils.hpp"
+#include "utility/StringUtils.hpp"
 
-#include "CFileSystem.h"
+#include "CFileSystem.hpp"
 
 namespace filesystem
 {

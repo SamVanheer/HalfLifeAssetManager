@@ -1,8 +1,8 @@
 #include <glm/vec3.hpp>
 
-#include "shared/Const.h"
+#include "shared/Const.hpp"
 
-#include "StudioSorting.h"
+#include "StudioSorting.hpp"
 
 namespace studiomdl
 {

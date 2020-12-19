@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "shared/Utility.h"
+#include "shared/Utility.hpp"
 
 /**
 *	@defgroup CVar Command variables that can be used system wide. Includes command execution for function like operations.

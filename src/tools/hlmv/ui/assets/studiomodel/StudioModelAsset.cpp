@@ -13,10 +13,10 @@
 #include <GL/glew.h>
 
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
-#include "entity/CHLMVStudioModelEntity.h"
-#include "game/entity/CBaseEntity.h"
-#include "game/entity/CBaseEntityList.h"
-#include "game/entity/CEntityManager.h"
+#include "entity/CHLMVStudioModelEntity.hpp"
+#include "game/entity/CBaseEntity.hpp"
+#include "game/entity/CBaseEntityList.hpp"
+#include "game/entity/CEntityManager.hpp"
 
 #include "graphics/Scene.hpp"
 
@@ -36,7 +36,7 @@
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-#include "utility/IOUtils.h"
+#include "utility/IOUtils.hpp"
 
 namespace ui::assets::studiomodel
 {

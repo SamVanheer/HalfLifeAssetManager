@@ -5,14 +5,14 @@
 
 #include <QMessageBox>
 
-#include "core/shared/CWorldTime.h"
-#include "core/shared/Utility.h"
+#include "core/shared/CWorldTime.hpp"
+#include "core/shared/Utility.hpp"
 
-#include "filesystem/CFileSystem.h"
-#include "filesystem/IFileSystem.h"
+#include "filesystem/CFileSystem.hpp"
+#include "filesystem/IFileSystem.hpp"
 
-#include "soundsystem/CSoundSystem.h"
-#include "soundsystem/ISoundSystem.h"
+#include "soundsystem/CSoundSystem.hpp"
+#include "soundsystem/ISoundSystem.hpp"
 
 #include "ui/EditorContext.hpp"
 

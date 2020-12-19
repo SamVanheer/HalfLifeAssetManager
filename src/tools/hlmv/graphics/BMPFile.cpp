@@ -2,11 +2,11 @@
 #include <cstring>
 #include <memory>
 
-#include "Palette.h"
+#include "Palette.hpp"
 
-#include "BMPFile.h"
+#include "BMPFile.hpp"
 
-#include "utility/IOUtils.h"
+#include "utility/IOUtils.hpp"
 
 namespace graphics
 {

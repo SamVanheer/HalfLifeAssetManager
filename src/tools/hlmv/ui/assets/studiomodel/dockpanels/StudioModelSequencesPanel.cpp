@@ -1,8 +1,8 @@
 #include <limits>
 
-#include "engine/shared/activity.h"
+#include "engine/shared/activity.hpp"
 
-#include "entity/CHLMVStudioModelEntity.h"
+#include "entity/CHLMVStudioModelEntity.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"

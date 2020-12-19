@@ -1,19 +1,19 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
 		CBaseAnimating.cpp
-		CBaseAnimating.h
+		CBaseAnimating.hpp
 		CBaseEntity.cpp
-		CBaseEntity.h
+		CBaseEntity.hpp
 		CBaseEntityList.cpp
-		CBaseEntityList.h
+		CBaseEntityList.hpp
 		CEntityDict.cpp
-		CEntityDict.h
+		CEntityDict.hpp
 		CEntityManager.cpp
-		CEntityManager.h
+		CEntityManager.hpp
 		CSpriteEntity.cpp
-		CSpriteEntity.h
+		CSpriteEntity.hpp
 		CStudioModelEntity.cpp
-		CStudioModelEntity.h
+		CStudioModelEntity.hpp
 		EHandle.cpp
-		EHandle.h
-		EntityConstants.h)
+		EHandle.hpp
+		EntityConstants.hpp)

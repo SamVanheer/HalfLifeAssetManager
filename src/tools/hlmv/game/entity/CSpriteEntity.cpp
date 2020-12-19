@@ -1,11 +1,11 @@
-#include "shared/CWorldTime.h"
+#include "shared/CWorldTime.hpp"
 
-#include "engine/shared/sprite/sprite.h"
-#include "engine/shared/sprite/CSprite.h"
-#include "engine/shared/renderer/sprite/ISpriteRenderer.h"
-#include "engine/shared/renderer/sprite/CSpriteRenderInfo.h"
+#include "engine/shared/sprite/sprite.hpp"
+#include "engine/shared/sprite/CSprite.hpp"
+#include "engine/shared/renderer/sprite/ISpriteRenderer.hpp"
+#include "engine/shared/renderer/sprite/CSpriteRenderInfo.hpp"
 
-#include "CSpriteEntity.h"
+#include "CSpriteEntity.hpp"
 
 //TODO: remove
 extern sprite::ISpriteRenderer* g_pSpriteRenderer;

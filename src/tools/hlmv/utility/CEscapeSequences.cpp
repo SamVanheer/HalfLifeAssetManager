@@ -1,9 +1,9 @@
 #include <cassert>
 #include <cstring>
 
-#include "shared/Utility.h"
+#include "shared/Utility.hpp"
 
-#include "CEscapeSequences.h"
+#include "CEscapeSequences.hpp"
 
 CEscapeSequences::CEscapeSequences( const char cDelimiterChar, const size_t uiCount, const ConversionData_t* const pData )
 	: m_cDelimiterChar( cDelimiterChar )

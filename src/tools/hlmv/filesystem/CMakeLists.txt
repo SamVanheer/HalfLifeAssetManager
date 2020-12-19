@@ -1,7 +1,7 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
 		CFileSystem.cpp
-		CFileSystem.h
+		CFileSystem.hpp
 		FileSystemConstants.cpp
-		FileSystemConstants.h
-		IFileSystem.h)
+		FileSystemConstants.hpp
+		IFileSystem.hpp)
