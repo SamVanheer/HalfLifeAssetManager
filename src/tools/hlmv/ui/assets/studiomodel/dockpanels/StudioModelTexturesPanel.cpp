@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QImage>
 #include <QMessageBox>
+#include <QMetaEnum>
 #include <QPainter>
 #include <QSignalBlocker>
 
@@ -14,10 +15,11 @@
 
 #include "entity/CHLMVStudioModelEntity.h"
 
-#include "graphics/BMPFile.h"
 #include "graphics/GraphicsUtils.h"
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Palette.h"
+
+#include "qt/QtUtilities.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
@@ -501,32 +503,37 @@ void StudioModelTexturesPanel::OnMeshChanged(int index)
 	UpdateUVMapTexture();
 }
 
-void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::CStudioModel* pStudioModel, studiohdr_t* pHdr, int textureIndex)
+void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studiohdr_t* header, int textureIndex)
 {
-	//Must be BMP
-	QImage image{fileName, "bmp"};
+	QImage image{fileName};
 
 	if (image.isNull())
 	{
-		QMessageBox::critical(this, "Error loading image", QString{"Failed to load image \"%1\""}.arg(fileName));
+		QMessageBox::critical(this, "Error loading image", QString{"Failed to load image \"%1\"."}.arg(fileName));
 		return;
 	}
 
-	if (image.format() != QImage::Format::Format_Indexed8)
+	const QImage::Format inputFormat = image.format();
+
+	if (inputFormat != QImage::Format::Format_Indexed8)
 	{
-		QMessageBox::critical(this, "Error loading image", QString{"Image \"%1\" has unsupported format"}.arg(fileName));
-		return;
+		QMessageBox::warning(this, "Warning",
+			QString{"Image \"%1\" has the format \"%2\" and will be converted to an indexed 8 bit image. Loss of color depth may occur."}
+				.arg(fileName)
+				.arg(QMetaEnum::fromType<QImage::Format>().valueToKey(inputFormat)));
+		
+		image.convertTo(QImage::Format::Format_Indexed8);
 	}
 
 	const QVector<QRgb> palette = image.colorTable();
 
 	if (palette.isEmpty())
 	{
-		QMessageBox::critical(this, "Error loading image", QString{"Palette for image \"%1\" does not exist"}.arg(fileName));
+		QMessageBox::critical(this, "Error loading image", QString{"Palette for image \"%1\" does not exist."}.arg(fileName));
 		return;
 	}
 
-	mstudiotexture_t& texture = ((mstudiotexture_t*)((byte*)pHdr + pHdr->textureindex))[textureIndex];
+	mstudiotexture_t& texture = *header->GetTexture(textureIndex);
 
 	if (texture.width != image.width() || texture.height != image.height())
 	{
@@ -583,8 +590,8 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 	oldTexture.Height = texture.height;
 	oldTexture.Pixels = std::make_unique<byte[]>(oldTexture.Width * oldTexture.Height);
 
-	memcpy(oldTexture.Pixels.get(), pHdr->GetData() + texture.index, oldTexture.Width * oldTexture.Height);
-	memcpy(oldTexture.Palette, pHdr->GetData() + texture.index + (oldTexture.Width * oldTexture.Height), sizeof(oldTexture.Palette));
+	memcpy(oldTexture.Pixels.get(), header->GetData() + texture.index, oldTexture.Width * oldTexture.Height);
+	memcpy(oldTexture.Palette, header->GetData() + texture.index + (oldTexture.Width * oldTexture.Height), sizeof(oldTexture.Palette));
 
 	newTexture.Width = image.width();
 	newTexture.Height = image.height();
@@ -593,6 +600,41 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 	memcpy(newTexture.Palette, convPal, sizeof(newTexture.Palette));
 
 	_asset->AddUndoCommand(new ImportTextureCommand(_asset, textureIndex, std::move(oldTexture), std::move(newTexture)));
+}
+
+static QImage ConvertTextureToRGBImage(const mstudiotexture_t& texture, const byte* textureData, const byte* texturePalette, std::vector<QRgb>& dataBuffer)
+{
+	dataBuffer.resize(texture.width * texture.height);
+
+	for (int y = 0; y < texture.height; ++y)
+	{
+		for (int x = 0; x < texture.width; ++x)
+		{
+			const auto color = texturePalette + (textureData[(texture.width * y) + x] * 3);
+
+			dataBuffer[(texture.width * y) + x] = qRgb(color[0], color[1], color[2]);
+		}
+	}
+
+	return QImage{reinterpret_cast<const uchar*>(dataBuffer.data()), texture.width, texture.height, QImage::Format::Format_RGB32};
+}
+
+bool StudioModelTexturesPanel::ExportTextureTo(const QString& fileName, const studiohdr_t* header, const mstudiotexture_t& texture)
+{
+	const auto textureData = header->GetData() + texture.index;
+	const auto texturePalette = header->GetData() + texture.index + (texture.width * texture.height);
+
+	//TODO: can optimize reallocations by making the caller provide this buffer
+	std::vector<QRgb> dataBuffer;
+
+	const auto textureImage{ConvertTextureToRGBImage(texture, textureData, texturePalette, dataBuffer)};
+
+	if (!textureImage.save(fileName))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void StudioModelTexturesPanel::RemapTexture(int index)
@@ -714,45 +756,40 @@ void StudioModelTexturesPanel::OnImportTexture()
 		return;
 	}
 
-	const QString fileName = QFileDialog::getOpenFileName(this, {}, {}, "Windows Bitmap (*.bmp)");
+	const QString fileName = QFileDialog::getOpenFileName(this, {}, {}, qt::GetImagesFileFilter());
 
 	if (fileName.isEmpty())
 	{
 		return;
 	}
 
-	ImportTextureFrom(fileName, pStudioModel, pStudioModel->GetTextureHeader(), iTextureIndex);
+	ImportTextureFrom(fileName, pStudioModel->GetTextureHeader(), iTextureIndex);
 
 	RemapTexture(iTextureIndex);
 }
 
 void StudioModelTexturesPanel::OnExportTexture()
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	const int textureIndex = _ui.Textures->currentIndex();
 
-	auto pStudioModel = entity->GetModel();
-
-	const int iTextureIndex = _ui.Textures->currentIndex();
-
-	if (iTextureIndex == -1)
+	if (textureIndex == -1)
 	{
 		QMessageBox::information(this, "Message", "No texture selected");
 		return;
 	}
 
-	studiohdr_t* const pHdr = pStudioModel->GetTextureHeader();
+	studiohdr_t* const header = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader();
 
-	mstudiotexture_t& texture = ((mstudiotexture_t*)((byte*)pHdr + pHdr->textureindex))[iTextureIndex];
+	const auto texture = header->GetTexture(textureIndex);
 
-	const QString fileName = QFileDialog::getSaveFileName(this, {}, texture.name, "Windows Bitmap (*.bmp)");
+	const QString fileName = QFileDialog::getSaveFileName(this, {}, texture->name, qt::GetSeparatedImagesFileFilter());
 
 	if (fileName.isEmpty())
 	{
 		return;
 	}
 
-	if (!graphics::bmpfile::SaveBMPFile(fileName.toUtf8().constData(), texture.width, texture.height,
-		(uint8_t*)pHdr + texture.index, (uint8_t*)pHdr + texture.index + texture.width * texture.height))
+	if (!ExportTextureTo(fileName, header, *texture))
 	{
 		QMessageBox::critical(this, "Error", QString{"Failed to save image \"%1\""}.arg(fileName));
 	}
@@ -777,21 +814,9 @@ void StudioModelTexturesPanel::OnExportUVMap()
 	const auto textureData = header->GetData() + texture->index;
 	const auto texturePalette = header->GetData() + texture->index + (texture->width * texture->height);
 
-	std::vector<QRgb> imageData;
+	std::vector<QRgb> dataBuffer;
 
-	imageData.resize(texture->width * texture->height);
-
-	for (int y = 0; y < texture->height; ++y)
-	{
-		for (int x = 0; x < texture->width; ++x)
-		{
-			const auto color = texturePalette + (textureData[(texture->width * y) + x] * 3);
-
-			imageData[(texture->width * y) + x] = qRgb(color[0], color[1], color[2]);
-		}
-	}
-
-	QImage textureImage{reinterpret_cast<const uchar*>(imageData.data()), texture->width, texture->height, QImage::Format::Format_RGB32};
+	auto textureImage{ConvertTextureToRGBImage(*texture, textureData, texturePalette, dataBuffer)};
 
 	if (StudioModelExportUVMeshDialog dialog{entity, textureIndex, GetMeshIndexForDrawing(_ui.Meshes), textureImage, this};
 		QDialog::DialogCode::Accepted == dialog.exec())
@@ -844,7 +869,7 @@ void StudioModelTexturesPanel::OnImportAllTextures()
 
 		if (fileName.exists())
 		{
-			ImportTextureFrom(fileName.absoluteFilePath(), pStudioModel, pHdr, i);
+			ImportTextureFrom(fileName.absoluteFilePath(), pHdr, i);
 		}
 	}
 
@@ -877,9 +902,8 @@ void StudioModelTexturesPanel::OnExportAllTextures()
 		const QFileInfo fileName{path, texture.name};
 
 		auto fullPath = fileName.absoluteFilePath();
-
-		if (!graphics::bmpfile::SaveBMPFile(fullPath.toUtf8().constData(), texture.width, texture.height,
-			(uint8_t*)pHdr + texture.index, (uint8_t*)pHdr + texture.index + texture.width * texture.height))
+		
+		if (!ExportTextureTo(fullPath, pHdr, texture))
 		{
 			errors += QString{"\"%1\"\n"}.arg(fullPath);
 		}

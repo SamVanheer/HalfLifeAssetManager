@@ -85,7 +85,7 @@ void StudioModelExportUVMeshDialog::OnFileNameChanged()
 
 void StudioModelExportUVMeshDialog::OnBrowseFileName()
 {
-	const QString fileName = QFileDialog::getSaveFileName(this, "Select Image Filename", {}, qt::GetImagesFileFilter());
+	const QString fileName = QFileDialog::getSaveFileName(this, "Select Image Filename", {}, qt::GetSeparatedImagesFileFilter());
 
 	if (!fileName.isEmpty())
 	{
