@@ -58,6 +58,15 @@ enum
 };
 
 /**
+*	@brief Number of blends that a sequence can have
+*	X and Y axis
+*/
+constexpr int SequenceBlendCount{2};
+
+constexpr int SequenceBlendXIndex{0};
+constexpr int SequenceBlendYIndex{1};
+
+/**
 *	@brief studiohdr_t::flags values
 *	@see studiohdr_t::flags
 */
@@ -169,9 +178,9 @@ struct mstudioseqdesc_t
 	int			animindex;		// mstudioanim_t pointer relative to start of sequence group data
 								// [blend][bone][X, Y, Z, XR, YR, ZR]
 
-	int			blendtype[ 2 ];	// X, Y, Z, XR, YR, ZR
-	float		blendstart[ 2 ];	// starting value
-	float		blendend[ 2 ];	// ending value
+	int			blendtype[SequenceBlendCount];	// X, Y, Z, XR, YR, ZR
+	float		blendstart[SequenceBlendCount];	// starting value
+	float		blendend[SequenceBlendCount];	// ending value
 	int			blendparent;
 
 	int			seqgroup;		// sequence group for demand loading

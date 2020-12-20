@@ -151,7 +151,7 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 		_ui.BlendYSpinner
 	};
 
-	for (int blender = 0; blender < 2; ++blender)
+	for (int blender = 0; blender < SequenceBlendCount; ++blender)
 	{
 		const auto hasBlender = sequence->blendtype[blender] != 0;
 
@@ -242,22 +242,22 @@ void StudioModelSequencesPanel::OnLoopingModeChanged(int index)
 
 void StudioModelSequencesPanel::OnBlendXSliderChanged()
 {
-	UpdateBlendValue(0, BlendUpdateSource::Slider, _ui.BlendXSlider, _ui.BlendXSpinner);
+	UpdateBlendValue(SequenceBlendXIndex, BlendUpdateSource::Slider, _ui.BlendXSlider, _ui.BlendXSpinner);
 }
 
 void StudioModelSequencesPanel::OnBlendXSpinnerChanged()
 {
-	UpdateBlendValue(0, BlendUpdateSource::Spinner, _ui.BlendXSlider, _ui.BlendXSpinner);
+	UpdateBlendValue(SequenceBlendXIndex, BlendUpdateSource::Spinner, _ui.BlendXSlider, _ui.BlendXSpinner);
 }
 
 void StudioModelSequencesPanel::OnBlendYSliderChanged()
 {
-	UpdateBlendValue(1, BlendUpdateSource::Slider, _ui.BlendYSlider, _ui.BlendYSpinner);
+	UpdateBlendValue(SequenceBlendYIndex, BlendUpdateSource::Slider, _ui.BlendYSlider, _ui.BlendYSpinner);
 }
 
 void StudioModelSequencesPanel::OnBlendYSpinnerChanged()
 {
-	UpdateBlendValue(1, BlendUpdateSource::Spinner, _ui.BlendYSlider, _ui.BlendYSpinner);
+	UpdateBlendValue(SequenceBlendYIndex, BlendUpdateSource::Spinner, _ui.BlendYSlider, _ui.BlendYSpinner);
 }
 
 void StudioModelSequencesPanel::OnEventChanged(int index)

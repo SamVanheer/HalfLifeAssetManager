@@ -6,6 +6,8 @@
 
 #include "ui_StudioModelSequencesPanel.h"
 
+#include "engine/shared/studiomodel/studio.hpp"
+
 namespace ui::assets::studiomodel
 {
 class ModelChangeEvent;
@@ -53,7 +55,6 @@ private:
 	Ui_StudioModelSequencesPanel _ui;
 	StudioModelAsset* const _asset;
 
-	//TODO: define constant for blend count
-	double _blendsScales[2];
+	double _blendsScales[SequenceBlendCount];
 };
 }
