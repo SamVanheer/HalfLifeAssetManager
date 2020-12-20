@@ -1,8 +1,8 @@
 #include <QObject>
 
-#include "Credits.hpp"
+#include "ui/Credits.hpp"
 
-namespace tools
+namespace ui
 {
 std::string GetSharedCredits()
 {

@@ -1,5 +1,7 @@
 target_sources(HLMV
 	PRIVATE
+		Credits.cpp
+		Credits.hpp
 		EditorContext.cpp
 		EditorContext.hpp
 		FullscreenWidget.cpp

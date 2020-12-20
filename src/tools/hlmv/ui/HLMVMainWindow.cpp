@@ -5,7 +5,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include "Credits.hpp"
+#include "ui/Credits.hpp"
 
 #include "filesystem/IFileSystem.hpp"
 
@@ -379,7 +379,7 @@ void HLMVMainWindow::OnShowAbout()
 			u8"Email:    mete@swissquake.ch\n"
 			u8"Web:      http://www.milkshape3d.com/\n\n"
 			u8"%1")
-			.arg(QString::fromUtf8(tools::GetSharedCredits().c_str()))
+			.arg(QString::fromUtf8(GetSharedCredits().c_str()))
 	);
 }
 

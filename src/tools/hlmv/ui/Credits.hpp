@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace tools
+namespace ui
 {
 /**
 *	Gets a string containing credits for all third party libraries and contributors.
