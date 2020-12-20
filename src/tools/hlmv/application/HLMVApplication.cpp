@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <memory>
+#include <stdexcept>
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -119,20 +120,28 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 	assetProviderRegistry->AddProvider(std::make_unique<ui::assets::studiomodel::StudioModelAssetProvider>(studioModelSettings));
 
-	_editorContext = new ui::EditorContext(
-		settings.release(), generalSettings, recentFilesSettings, gameConfigurationsSettings, std::move(optionsPageRegistry), std::move(assetProviderRegistry), this);
-
-	_mainWindow = new ui::HLMVMainWindow(_editorContext);
-
-	if (!fileName.isEmpty())
+	try
 	{
-		_mainWindow->TryLoadAsset(fileName);
+		_editorContext = new ui::EditorContext(
+			settings.release(), generalSettings, recentFilesSettings, gameConfigurationsSettings, std::move(optionsPageRegistry), std::move(assetProviderRegistry), this);
+
+		_mainWindow = new ui::HLMVMainWindow(_editorContext);
+
+		if (!fileName.isEmpty())
+		{
+			_mainWindow->TryLoadAsset(fileName);
+		}
+
+		//Note: must come after the file is loaded or it won't actually show maximized
+		_mainWindow->showMaximized();
+
+		return app.exec();
 	}
-
-	//Note: must come after the file is loaded or it won't actually show maximized
-	_mainWindow->showMaximized();
-
-	return app.exec();
+	catch (const std::exception& e)
+	{
+		QMessageBox::critical(nullptr, "Fatal Error", QString{"Unhandled exception:\n%1"}.arg(e.what()));
+		throw;
+	}
 }
 
 void HLMVApplication::OnExit()

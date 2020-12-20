@@ -3,8 +3,6 @@
 #include <iterator>
 #include <stdexcept>
 
-#include <QMessageBox>
-
 #include "core/shared/CWorldTime.hpp"
 #include "core/shared/Utility.hpp"
 
@@ -59,14 +57,11 @@ EditorContext::EditorContext(
 
 	if (!_fileSystem->Initialize())
 	{
-		QMessageBox::critical(nullptr, "Fatal Error", "Failed to initialize file system");
-		//TODO: ensure error handling cleans up properly
 		throw std::runtime_error("Failed to initialize file system");
 	}
 
 	if (!_soundSystem->Initialize(_fileSystem.get()))
 	{
-		QMessageBox::critical(nullptr, "Fatal Error", "Failed to initialize sound system");
 		throw std::runtime_error("Failed to initialize sound system");
 	}
 
