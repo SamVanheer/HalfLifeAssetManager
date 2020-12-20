@@ -5,7 +5,7 @@
 
 #include <glm/vec3.hpp>
 
-#include "shared/Const.h"
+#include "shared/Const.hpp"
 
 /**
 *	This class represents a bounding box.
