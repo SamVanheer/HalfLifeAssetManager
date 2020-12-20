@@ -435,8 +435,9 @@ void StudioModelAsset::OnTakeScreenshot()
 
 bool StudioModelAssetProvider::CanLoad(const QString& fileName) const
 {
-	//TODO:
-	return true;
+	//TODO: race condition: the file could be modified between this call and a call to LoadStudioModel
+	//Ideally the file is opened exactly once
+	return studiomdl::IsStudioModel(fileName.toStdString());
 }
 
 std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName) const

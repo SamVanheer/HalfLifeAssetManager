@@ -53,6 +53,8 @@ using studio_ptr = std::unique_ptr<T, StudioDataDeleter>;
 
 class CStudioModel;
 
+bool IsStudioModel(const std::string& fileName);
+
 /**
 *	Loads a studio model
 *	@param pszFilename Name of the model to load. This is the entire path, including the extension

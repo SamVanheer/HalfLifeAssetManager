@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <cstdint>
 #include <filesystem>
 #include <iomanip>
 #include <memory>
@@ -304,6 +305,36 @@ studio_ptr<T> LoadStudioHeader(const char* const pszFilename, const bool bAllowS
 
 	return studio_ptr<T>(pStudioHdr);
 }
+}
+
+bool IsStudioModel(const std::string& fileName)
+{
+	bool isStudioModel = false;
+
+	if (FILE* file = utf8_fopen(fileName.c_str(), "rb"); file)
+	{
+		std::int32_t id;
+
+		if (fread(&id, sizeof(id), 1, file) == 1)
+		{
+			if (strncmp(reinterpret_cast<const char*>(&id), STUDIOMDL_HDR_ID, 4) == 0)
+			{
+				std::int32_t version;
+
+				if (fread(&version, sizeof(version), 1, file) == 1)
+				{
+					if (version == STUDIO_VERSION)
+					{
+						isStudioModel = true;
+					}
+				}
+			}
+		}
+
+		fclose(file);
+	}
+
+	return isStudioModel;
 }
 
 std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename)
