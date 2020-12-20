@@ -3,8 +3,11 @@
 #include <GL/glew.h>
 
 #include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "core/shared/CWorldTime.hpp"
 
 #include "engine/renderer/sprite/CSpriteRenderer.hpp"
 #include "engine/renderer/studiomodel/CStudioModelRenderer.hpp"
@@ -518,8 +521,24 @@ void Scene::DrawModel()
 
 	if (ShowGround)
 	{
+		glm::vec2 textureOffset{0};
+
+		//Calculate texture offset based on sequence movement and current frame
+		//TODO: this will cause skipping because it resets every loop
+		if (_entity)
+		{
+			const auto sequence = _entity->GetModel()->GetStudioHeader()->GetSequence(_entity->GetSequence());
+
+			//Scale offset to current frame
+			//Use the linearmovement length as the x value. This is what the game does for actual entity movement.
+			const float groundSpeed = glm::length(sequence->linearmovement) * _entity->GetFrame() / (sequence->numframes - 1);
+
+			textureOffset.x = groundSpeed;
+		}
+
 		//TODO: implement settings
-		graphics::helpers::DrawFloor(FloorLength, GroundTexture,/* m_pHLMV->GetSettings()->GetGroundColor()*/{255, 0, 0}, MirrorOnGround);
+		graphics::helpers::DrawFloor(
+			FloorLength, FloorTextureLength, textureOffset, GroundTexture,/* m_pHLMV->GetSettings()->GetGroundColor()*/{255, 0, 0}, MirrorOnGround);
 	}
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;

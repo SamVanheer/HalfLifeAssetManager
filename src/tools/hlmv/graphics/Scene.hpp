@@ -132,6 +132,7 @@ public:
 	bool ShowPlayerHitbox = false;
 
 	int FloorLength = 0;
+	int FloorTextureLength{16};
 
 	GLuint GroundTexture{0};
 	GLuint BackgroundTexture{0};

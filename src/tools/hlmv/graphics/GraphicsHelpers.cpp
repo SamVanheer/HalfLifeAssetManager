@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cmath>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -84,27 +85,37 @@ void SetupRenderMode( RenderMode renderMode, const bool bBackfaceCulling )
 	}
 }
 
-void DrawFloorQuad( float flSideLength )
+void DrawFloorQuad(float floorLength, float textureRepeatLength, glm::vec2 textureOffset)
 {
-	flSideLength = std::abs( flSideLength );
+	const float vertexCoord{floorLength / 2};
 
-	glBegin( GL_TRIANGLE_STRIP );
-	glTexCoord2f( 0.0f, 0.0f );
-	glVertex3f( -flSideLength, flSideLength, 0.0f );
+	//The texture should repeat so that a textureRepeatLength sized quad contains one repetition of the texture
+	//It should also, when movement distance is 0, repeat at 0, 0, 0
+	const float repetition = vertexCoord / textureRepeatLength;
 
-	glTexCoord2f( 0.0f, 1.0f );
-	glVertex3f( -flSideLength, -flSideLength, 0.0f );
+	const float textureMax = repetition;
+	const float textureMin = -repetition;
 
-	glTexCoord2f( 1.0f, 0.0f );
-	glVertex3f( flSideLength, flSideLength, 0.0f );
+	//Rescale offset to match the texture size
+	textureOffset /= textureRepeatLength;
 
-	glTexCoord2f( 1.0f, 1.0f );
-	glVertex3f( flSideLength, -flSideLength, 0.0f );
+	glBegin(GL_TRIANGLE_STRIP);
+	glTexCoord2f(textureMin + textureOffset.x, textureMin + textureOffset.y);
+	glVertex3f(-vertexCoord, vertexCoord, 0.0f);
+
+	glTexCoord2f(textureMin + textureOffset.x, textureMax + textureOffset.y);
+	glVertex3f(-vertexCoord, -vertexCoord, 0.0f);
+
+	glTexCoord2f(textureMax + textureOffset.x, textureMin + textureOffset.y);
+	glVertex3f(vertexCoord, vertexCoord, 0.0f);
+
+	glTexCoord2f(textureMax + textureOffset.x, textureMax + textureOffset.y);
+	glVertex3f(vertexCoord, -vertexCoord, 0.0f);
 
 	glEnd();
 }
 
-void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundColor, const bool bMirror )
+void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, GLuint groundTexture, const Color& groundColor, const bool bMirror)
 {
 	glCullFace( GL_FRONT );
 
@@ -133,7 +144,7 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-	graphics::helpers::DrawFloorQuad( flSideLength );
+	graphics::helpers::DrawFloorQuad(floorLength, textureRepeatLength, textureOffset);
 
 	glDisable( GL_BLEND );
 
@@ -142,7 +153,7 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 		glCullFace( GL_BACK );
 		glColor4f( 0.1f, 0.1f, 0.1f, 1.0f );
 		glBindTexture( GL_TEXTURE_2D, 0 );
-		graphics::helpers::DrawFloorQuad( flSideLength );
+		graphics::helpers::DrawFloorQuad(floorLength, textureRepeatLength, textureOffset);
 
 		glFrontFace( GL_CCW );
 	}
@@ -151,7 +162,7 @@ void DrawFloor( float flSideLength, GLuint groundTexture, const Color& groundCol
 }
 
 unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRenderer, CStudioModelEntity* pEntity,
-	const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength, const bool bBackfaceCulling)
+	const RenderMode renderMode, const bool bWireframeOverlay, const float floorLength, const bool bBackfaceCulling)
 {
 	/* Don't update color or depth. */
 	glDisable( GL_DEPTH_TEST );
@@ -163,7 +174,8 @@ unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRende
 	glStencilFunc( GL_ALWAYS, 1, 0xffffffff );
 
 	/* Now render floor; floor pixels just get their stencil set to 1. */
-	graphics::helpers::DrawFloorQuad( flSideLength );
+	//Texture length is irrelevant here
+	graphics::helpers::DrawFloorQuad(floorLength, 1, glm::vec2{0});
 
 	/* Re-enable update of color and depth. */
 	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );

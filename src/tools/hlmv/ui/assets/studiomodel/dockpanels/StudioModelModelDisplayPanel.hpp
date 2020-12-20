@@ -46,6 +46,8 @@ private:
 
 	void OnAlignOnGround();
 
+	void OnGroundTextureSizeChanged();
+
 private:
 	Ui_StudioModelModelDisplayPanel _ui;
 	StudioModelAsset* const _asset;

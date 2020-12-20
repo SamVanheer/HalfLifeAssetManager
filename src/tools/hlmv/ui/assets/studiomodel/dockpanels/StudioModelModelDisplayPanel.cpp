@@ -11,6 +11,8 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 {
 	_ui.setupUi(this);
 
+	_ui.GroundTextureSize->setValue(_asset->GetScene()->FloorTextureLength);
+
 	connect(_ui.RenderModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelModelDisplayPanel::OnRenderModeChanged);
 
 	connect(_ui.OpacitySlider, &QSlider::valueChanged, this, &StudioModelModelDisplayPanel::OnOpacityChanged);
@@ -41,6 +43,8 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 
 	connect(_ui.CenterModelOnWorldOrigin, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnCenterModelOnWorldOrigin);
 	connect(_ui.AlignOnGround, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnAlignOnGround);
+
+	connect(_ui.GroundTextureSize, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelModelDisplayPanel::OnGroundTextureSizeChanged);
 }
 
 StudioModelModelDisplayPanel::~StudioModelModelDisplayPanel() = default;
@@ -174,5 +178,10 @@ void StudioModelModelDisplayPanel::OnCenterModelOnWorldOrigin()
 void StudioModelModelDisplayPanel::OnAlignOnGround()
 {
 	_asset->GetScene()->AlignOnGround();
+}
+
+void StudioModelModelDisplayPanel::OnGroundTextureSizeChanged()
+{
+	_asset->GetScene()->FloorTextureLength = _ui.GroundTextureSize->value();
 }
 }
