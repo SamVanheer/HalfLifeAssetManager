@@ -18,6 +18,11 @@ class CStudioModelEntity;
 class CWorldTime;
 struct EntityContext;
 
+namespace sprite
+{
+class ISpriteRenderer;
+}
+
 namespace studiomdl
 {
 class IStudioModelRenderer;
@@ -156,6 +161,7 @@ private:
 
 	std::unique_ptr<IGraphicsContext> _graphicsContext;
 
+	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 
 	CWorldTime* const _worldTime;

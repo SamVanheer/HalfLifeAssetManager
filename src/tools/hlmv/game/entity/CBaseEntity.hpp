@@ -15,6 +15,11 @@
 #undef GetClassName
 #endif
 
+namespace sprite
+{
+class ISpriteRenderer;
+}
+
 namespace studiomdl
 {
 class IStudioModelRenderer;
@@ -40,13 +45,17 @@ struct EntityContext final
 	//TODO: improve this
 	CWorldTime* const WorldTime;
 	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
+	sprite::ISpriteRenderer* const SpriteRenderer;
 	CBaseEntityList* const EntityList;
 	CEntityManager* const EntityManager;
 	soundsystem::ISoundSystem* const SoundSystem;
 
-	EntityContext(CWorldTime* worldTime, studiomdl::IStudioModelRenderer* studioModelRenderer, CBaseEntityList* entityList, CEntityManager* entityManager,
+	EntityContext(CWorldTime* worldTime,
+		studiomdl::IStudioModelRenderer* studioModelRenderer, sprite::ISpriteRenderer* spriteRenderer,
+		CBaseEntityList* entityList, CEntityManager* entityManager,
 		soundsystem::ISoundSystem* soundSystem)
 		: WorldTime(worldTime)
+		, SpriteRenderer(spriteRenderer)
 		, StudioModelRenderer(studioModelRenderer)
 		, EntityList(entityList)
 		, EntityManager(entityManager)

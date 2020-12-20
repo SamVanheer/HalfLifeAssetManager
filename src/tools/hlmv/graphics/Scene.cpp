@@ -6,6 +6,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "engine/renderer/sprite/CSpriteRenderer.hpp"
 #include "engine/renderer/studiomodel/CStudioModelRenderer.hpp"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 #include "entity/CHLMVStudioModelEntity.hpp"
@@ -36,11 +37,14 @@ static const int GUIDELINES_EDGE_WIDTH = 4;
 
 Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime)
 	: _textureLoader(textureLoader)
+	, _spriteRenderer(std::make_unique<sprite::CSpriteRenderer>(worldTime))
 	, _studioModelRenderer(std::make_unique<studiomdl::CStudioModelRenderer>())
 	, _worldTime(worldTime)
 	//Use the default list class for now
 	, _entityManager(std::make_unique<CEntityManager>(std::make_unique<CBaseEntityList>(), _worldTime))
-	, _entityContext(std::make_unique<EntityContext>(_worldTime, _studioModelRenderer.get(), _entityManager->GetEntityList(), _entityManager.get(),
+	, _entityContext(std::make_unique<EntityContext>(_worldTime,
+		_studioModelRenderer.get(), _spriteRenderer.get(),
+		_entityManager->GetEntityList(), _entityManager.get(),
 		soundSystem))
 {
 	assert(_textureLoader);

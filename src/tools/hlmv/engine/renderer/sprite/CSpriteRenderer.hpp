@@ -6,6 +6,7 @@
 #include "engine/shared/renderer/DrawConstants.hpp"
 
 #include "engine/shared/renderer/sprite/ISpriteRenderer.hpp"
+#include "engine/shared/sprite/sprite.hpp"
 
 class CWorldTime;
 

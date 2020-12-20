@@ -7,9 +7,6 @@
 
 #include "CSpriteEntity.hpp"
 
-//TODO: remove
-extern sprite::ISpriteRenderer* g_pSpriteRenderer;
-
 LINK_ENTITY_TO_CLASS( sprite, CSpriteEntity );
 
 void CSpriteEntity::OnDestroy()
@@ -42,7 +39,7 @@ void CSpriteEntity::Draw( renderer::DrawFlags_t flags )
 
 	info.flFrame = GetFrame();
 
-	g_pSpriteRenderer->DrawSprite( &info, flags );
+	GetContext()->SpriteRenderer->DrawSprite( &info, flags );
 }
 
 void CSpriteEntity::AnimThink()
