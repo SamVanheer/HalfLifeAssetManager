@@ -77,6 +77,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	OnRecentFilesChanged();
 	OnActiveConfigurationChanged(_editorContext->GetGameConfigurations()->GetActiveConfiguration(), {});
+
+	setWindowTitle({});
 }
 
 MainWindow::~MainWindow()
