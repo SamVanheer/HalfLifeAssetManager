@@ -84,7 +84,6 @@ target_sources(${TARGET_NAME}
 
 add_subdirectory(application)
 add_subdirectory(core)
-add_subdirectory(cvar)
 add_subdirectory(engine)
 add_subdirectory(engine/shared)
 add_subdirectory(entity)

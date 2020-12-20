@@ -92,6 +92,13 @@ public:
 	CLogging();
 	~CLogging();
 
+	DevLevel::DevLevel GetDeveloperLevel() const { return _devLevel; }
+
+	void SetDeveloperLevel(DevLevel::DevLevel devLevel)
+	{
+		_devLevel = devLevel;
+	}
+
 	/**
 	*	Gets the current log listener.
 	*/
@@ -144,6 +151,8 @@ public:
 	void CloseLogFile();
 
 private:
+	DevLevel::DevLevel _devLevel{DevLevel::ALWAYS};
+
 	ILogListener* m_pListener = nullptr;
 
 	//Don't trigger recursive logging.
