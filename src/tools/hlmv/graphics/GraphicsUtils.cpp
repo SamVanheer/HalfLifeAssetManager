@@ -8,35 +8,11 @@
 
 #include "shared/Const.hpp"
 
-#include "shared/studiomodel/studio.hpp"
-
 #include "GraphicsUtils.hpp"
 #include "Palette.hpp"
 
 namespace graphics
 {
-bool CalculateImageDimensions( const int iWidth, const int iHeight, int& iOutWidth, int& iOutHeight )
-{
-	if( iWidth <= 0 || iHeight <= 0 )
-		return false;
-
-	for( iOutWidth = 1; iOutWidth < iWidth; iOutWidth <<= 1 )
-	{
-	}
-
-	if( iOutWidth > MAX_TEXTURE_DIMS )
-		iOutWidth = MAX_TEXTURE_DIMS;
-
-	for( iOutHeight = 1; iOutHeight < iHeight; iOutHeight <<= 1 )
-	{
-	}
-
-	if( iOutHeight > MAX_TEXTURE_DIMS )
-		iOutHeight = MAX_TEXTURE_DIMS;
-
-	return true;
-}
-
 void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData )
 {
 	assert( pData );

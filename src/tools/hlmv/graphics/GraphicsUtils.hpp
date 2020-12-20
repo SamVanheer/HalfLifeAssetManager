@@ -12,12 +12,6 @@
 namespace graphics
 {
 /**
-*	Converts image dimensions to power of 2.
-*	Returns true on success, false otherwise.
-*/
-bool CalculateImageDimensions( const int iWidth, const int iHeight, int& iOutWidth, int& iOutHeight );
-
-/**
 *	Converts an 8 bit image to a 24 bit RGB image.
 */
 void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData );

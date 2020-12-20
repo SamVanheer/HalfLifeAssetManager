@@ -509,7 +509,3 @@ enum
 *	Id for studio sequence groups
 */
 #define STUDIOMDL_SEQ_ID "IDSQ"
-
-//Mugsy - upped the maximum texture size to 4096. All changes are the replacement of '256'
-//with this define, MAX_TEXTURE_DIMS
-#define MAX_TEXTURE_DIMS 4096
