@@ -69,11 +69,10 @@ public:
 
 public:
 	/**
-	*	Sets the frame for this model.
-	*	@param iFrame Frame to use.
-	*	@return Frame that is currently used.
+	*	@brief Sets the frame for this model.
+	*	@param frame Frame index.
 	*/
-	int SetFrame( const int iFrame );
+	void SetFrame(float frame);
 
 private:
 	studiomdl::CStudioModel* m_pModel = nullptr;

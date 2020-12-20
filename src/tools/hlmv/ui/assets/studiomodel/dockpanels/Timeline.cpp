@@ -94,7 +94,6 @@ void Timeline::ModifyFrame(int amount)
 		newFrameValue -= sequence->numframes - 1;
 	}
 
-	//TODO: needs to be passed as a float
 	entity->SetFrame(newFrameValue);
 }
 
@@ -107,10 +106,26 @@ void Timeline::OnTick()
 	//TODO: need to make sure the last frame can be correctly set and played
 	const int frameRange = sequence->numframes - 1;
 
-	_ui.FrameSlider->setRange(0, frameRange * FrameSliderRangeMultiplier);
-	_ui.FrameSpinner->setRange(0, frameRange);
+	const int sliderRange = frameRange * FrameSliderRangeMultiplier;
 
-	SetFrame(entity->GetFrame(), false);
+	if (sliderRange != _ui.FrameSlider->maximum())
+	{
+		_ui.FrameSlider->setRange(0, frameRange * FrameSliderRangeMultiplier);
+	}
+
+	if (frameRange != _ui.FramerateSpinner->maximum())
+	{
+		_ui.FrameSpinner->setRange(0, frameRange);
+	}
+
+	const double frame = entity->GetFrame();
+
+	//Only update if the values differ by a meaningful amount
+	//This prevents the UI from reverting user input and stops it from updating when the value hasn't changed
+	if (std::abs( frame - _ui.FrameSpinner->value()) > 0.0001)
+	{
+		SetFrame(frame, false);
+	}
 }
 
 void Timeline::OnFrameSliderChanged()

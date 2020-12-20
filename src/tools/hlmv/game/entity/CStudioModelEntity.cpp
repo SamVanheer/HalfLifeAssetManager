@@ -224,17 +224,17 @@ void CStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 {
 }
 
-int CStudioModelEntity::SetFrame( const int iFrame )
+void CStudioModelEntity::SetFrame(float frame)
 {
-	if( iFrame == -1 )
-		return static_cast<int>( m_flFrame );
+	if(frame == -1 )
+		return;
 
 	if( !m_pModel )
-		return 0;
+		return;
 
 	mstudioseqdesc_t* pseqdesc = m_pModel->GetStudioHeader()->GetSequence( m_iSequence );
 
-	m_flFrame = static_cast<float>( iFrame );
+	m_flFrame = frame;
 
 	if( pseqdesc->numframes <= 1 )
 	{
@@ -247,8 +247,6 @@ int CStudioModelEntity::SetFrame( const int iFrame )
 	}
 
 	m_flAnimTime = GetContext()->WorldTime->GetCurrentTime();
-
-	return static_cast<int>( m_flFrame );
 }
 
 void CStudioModelEntity::SetModel( studiomdl::CStudioModel* pModel )
