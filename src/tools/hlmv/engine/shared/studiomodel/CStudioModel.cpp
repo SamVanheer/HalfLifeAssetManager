@@ -370,7 +370,7 @@ std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename)
 	{
 		const auto extension = bIsDol ? "T.dol" : "T.mdl";
 
-		auto texturename = baseFileName;
+		std::filesystem::path texturename = baseFileName;
 
 		texturename += extension;
 
@@ -423,7 +423,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 		std::filesystem::path baseFileName{pszFilename};
 
 		//Find the "models" directory to determine what the relative path is
-		auto relativeTo = baseFileName;
+		std::filesystem::path relativeTo = baseFileName;
 
 		auto foundRelative = false;
 
@@ -511,7 +511,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 	{
 		const studiohdr_t* const pTextureHdr = model.GetTextureHeader();
 
-		auto texturename = baseFileName;
+		std::filesystem::path texturename = baseFileName;
 
 		texturename += "T.mdl";
 

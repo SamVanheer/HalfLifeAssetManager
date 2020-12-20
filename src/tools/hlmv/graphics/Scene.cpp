@@ -284,11 +284,11 @@ void Scene::Draw()
 
 		glBegin(GL_LINES);
 
-		glVertex2f((_windowWidth / 2) - (flWidth / 2), 0);
-		glVertex2f((_windowWidth / 2) - (flWidth / 2), _windowHeight);
+		glVertex2f((_windowWidth / 2.) - (flWidth / 2), 0);
+		glVertex2f((_windowWidth / 2.) - (flWidth / 2), _windowHeight);
 
-		glVertex2f((_windowWidth / 2) + (flWidth / 2), 0);
-		glVertex2f((_windowWidth / 2) + (flWidth / 2), _windowHeight);
+		glVertex2f((_windowWidth / 2.) + (flWidth / 2), 0);
+		glVertex2f((_windowWidth / 2.) + (flWidth / 2), _windowHeight);
 
 		glEnd();
 
@@ -304,7 +304,7 @@ void Scene::ApplyCameraToScene()
 	auto camera = GetCurrentCamera();
 
 	const auto& vecOrigin = camera->GetOrigin();
-	auto vecAngles = camera->GetViewDirection();
+	glm::vec3 vecAngles = camera->GetViewDirection();
 
 	vecAngles.x -= 90;
 	vecAngles.z -= 90;
