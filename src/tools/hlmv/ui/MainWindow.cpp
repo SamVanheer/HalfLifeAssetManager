@@ -11,7 +11,7 @@
 #include "ui/Credits.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
-#include "ui/HLMVMainWindow.hpp"
+#include "ui/MainWindow.hpp"
 
 #include "ui/assets/Assets.hpp"
 
@@ -22,7 +22,7 @@
 
 namespace ui
 {
-HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
+MainWindow::MainWindow(EditorContext* editorContext)
 	: QMainWindow()
 	, _editorContext(editorContext)
 {
@@ -50,23 +50,23 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 
 	setCentralWidget(_assetTabs);
 
-	connect(_ui.ActionLoad, &QAction::triggered, this, &HLMVMainWindow::OnOpenLoadAssetDialog);
-	connect(_ui.ActionSave, &QAction::triggered, this, &HLMVMainWindow::OnSaveAsset);
-	connect(_ui.ActionSaveAs, &QAction::triggered, this, &HLMVMainWindow::OnSaveAssetAs);
-	connect(_ui.ActionExit, &QAction::triggered, this, &HLMVMainWindow::OnExit);
-	connect(_ui.ActionFullscreen, &QAction::triggered, this, &HLMVMainWindow::OnGoFullscreen);
-	connect(_ui.ActionOptions, &QAction::triggered, this, &HLMVMainWindow::OnOpenOptionsDialog);
-	connect(_ui.ActionAbout, &QAction::triggered, this, &HLMVMainWindow::OnShowAbout);
+	connect(_ui.ActionLoad, &QAction::triggered, this, &MainWindow::OnOpenLoadAssetDialog);
+	connect(_ui.ActionSave, &QAction::triggered, this, &MainWindow::OnSaveAsset);
+	connect(_ui.ActionSaveAs, &QAction::triggered, this, &MainWindow::OnSaveAssetAs);
+	connect(_ui.ActionExit, &QAction::triggered, this, &MainWindow::OnExit);
+	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnGoFullscreen);
+	connect(_ui.ActionOptions, &QAction::triggered, this, &MainWindow::OnOpenOptionsDialog);
+	connect(_ui.ActionAbout, &QAction::triggered, this, &MainWindow::OnShowAbout);
 
-	connect(_editorContext->GetRecentFiles(), &settings::RecentFilesSettings::RecentFilesChanged, this, &HLMVMainWindow::OnRecentFilesChanged);
+	connect(_editorContext->GetRecentFiles(), &settings::RecentFilesSettings::RecentFilesChanged, this, &MainWindow::OnRecentFilesChanged);
 
-	connect(_undoGroup, &QUndoGroup::cleanChanged, this, &HLMVMainWindow::OnAssetCleanChanged);
+	connect(_undoGroup, &QUndoGroup::cleanChanged, this, &MainWindow::OnAssetCleanChanged);
 
-	connect(_assetTabs, &QTabWidget::currentChanged, this, &HLMVMainWindow::OnAssetTabChanged);
-	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &HLMVMainWindow::OnAssetTabCloseRequested);
+	connect(_assetTabs, &QTabWidget::currentChanged, this, &MainWindow::OnAssetTabChanged);
+	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &MainWindow::OnAssetTabCloseRequested);
 
 	connect(_editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged,
-		this, &HLMVMainWindow::SetupFileSystem);
+		this, &MainWindow::SetupFileSystem);
 
 	_ui.ActionSave->setEnabled(false);
 	_ui.ActionSaveAs->setEnabled(false);
@@ -79,12 +79,12 @@ HLMVMainWindow::HLMVMainWindow(EditorContext* editorContext)
 	OnActiveConfigurationChanged(_editorContext->GetGameConfigurations()->GetActiveConfiguration(), {});
 }
 
-HLMVMainWindow::~HLMVMainWindow()
+MainWindow::~MainWindow()
 {
 	_editorContext->GetTimer()->stop();
 }
 
-bool HLMVMainWindow::TryLoadAsset(const QString& fileName)
+bool MainWindow::TryLoadAsset(const QString& fileName)
 {
 	try
 	{
@@ -92,7 +92,7 @@ bool HLMVMainWindow::TryLoadAsset(const QString& fileName)
 
 		if (nullptr != asset)
 		{
-			connect(asset.get(), &assets::Asset::FileNameChanged, this, &HLMVMainWindow::OnAssetFileNameChanged);
+			connect(asset.get(), &assets::Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
 
 			auto editWidget = asset->GetEditWidget();
 
@@ -124,7 +124,7 @@ bool HLMVMainWindow::TryLoadAsset(const QString& fileName)
 	return false;
 }
 
-void HLMVMainWindow::closeEvent(QCloseEvent* event)
+void MainWindow::closeEvent(QCloseEvent* event)
 {
 	//TODO: ask to save pending changes for each document
 	//TODO: if the user cancels any close request cancel the window close event as well
@@ -138,13 +138,13 @@ void HLMVMainWindow::closeEvent(QCloseEvent* event)
 	event->accept();
 }
 
-void HLMVMainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
+void MainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
 {
 	setWindowTitle(QString{"%1[*]"}.arg(fileName));
 	setWindowModified(hasUnsavedChanges);
 }
 
-void HLMVMainWindow::OnOpenLoadAssetDialog()
+void MainWindow::OnOpenLoadAssetDialog()
 {
 	//TODO: compute filter based on available asset providers
 	if (const auto fileName = QFileDialog::getOpenFileName(this, "Select asset", {}, "Half-Life 1 Model Files (*.mdl *.dol);;All Files (*.*)");
@@ -154,12 +154,12 @@ void HLMVMainWindow::OnOpenLoadAssetDialog()
 	}
 }
 
-void HLMVMainWindow::OnAssetCleanChanged(bool clean)
+void MainWindow::OnAssetCleanChanged(bool clean)
 {
 	setWindowModified(!clean);
 }
 
-void HLMVMainWindow::OnAssetTabChanged(int index)
+void MainWindow::OnAssetTabChanged(int index)
 {
 	_ui.MenuAsset->clear();
 
@@ -212,7 +212,7 @@ void HLMVMainWindow::OnAssetTabChanged(int index)
 	_ui.MenuAsset->setEnabled(success);
 }
 
-void HLMVMainWindow::OnAssetTabCloseRequested(int index)
+void MainWindow::OnAssetTabCloseRequested(int index)
 {
 	if (_fullscreenWidget)
 	{
@@ -249,7 +249,7 @@ void HLMVMainWindow::OnAssetTabCloseRequested(int index)
 	_ui.ActionFullscreen->setEnabled(hasOpenAssets);
 }
 
-void HLMVMainWindow::OnAssetFileNameChanged(const QString& fileName)
+void MainWindow::OnAssetFileNameChanged(const QString& fileName)
 {
 	auto asset = static_cast<assets::Asset*>(sender());
 
@@ -284,7 +284,7 @@ void HLMVMainWindow::OnAssetFileNameChanged(const QString& fileName)
 	}
 }
 
-void HLMVMainWindow::OnSaveAsset()
+void MainWindow::OnSaveAsset()
 {
 	auto& assets = _editorContext->GetLoadedAssets();
 
@@ -307,7 +307,7 @@ void HLMVMainWindow::OnSaveAsset()
 	undoStack->setClean();
 }
 
-void HLMVMainWindow::OnSaveAssetAs()
+void MainWindow::OnSaveAssetAs()
 {
 	auto& assets = _editorContext->GetLoadedAssets();
 
@@ -325,7 +325,7 @@ void HLMVMainWindow::OnSaveAssetAs()
 	}
 }
 
-void HLMVMainWindow::OnRecentFilesChanged()
+void MainWindow::OnRecentFilesChanged()
 {
 	const auto recentFiles = _editorContext->GetRecentFiles();
 
@@ -333,13 +333,13 @@ void HLMVMainWindow::OnRecentFilesChanged()
 
 	for (int i = 0; i < recentFiles->GetCount(); ++i)
 	{
-		_ui.MenuRecentFiles->addAction(recentFiles->At(i), this, &HLMVMainWindow::OnOpenRecentFile);
+		_ui.MenuRecentFiles->addAction(recentFiles->At(i), this, &MainWindow::OnOpenRecentFile);
 	}
 
 	_ui.MenuRecentFiles->setEnabled(recentFiles->GetCount() > 0);
 }
 
-void HLMVMainWindow::OnOpenRecentFile()
+void MainWindow::OnOpenRecentFile()
 {
 	const auto action = static_cast<QAction*>(sender());
 
@@ -351,12 +351,12 @@ void HLMVMainWindow::OnOpenRecentFile()
 	}
 }
 
-void HLMVMainWindow::OnExit()
+void MainWindow::OnExit()
 {
 	this->close();
 }
 
-void HLMVMainWindow::OnGoFullscreen()
+void MainWindow::OnGoFullscreen()
 {
 	auto& assets = _editorContext->GetLoadedAssets();
 
@@ -376,14 +376,14 @@ void HLMVMainWindow::OnGoFullscreen()
 	_fullscreenWidget->activateWindow();
 }
 
-void HLMVMainWindow::OnOpenOptionsDialog()
+void MainWindow::OnOpenOptionsDialog()
 {
 	options::OptionsDialog dialog{_editorContext, this};
 
 	dialog.exec();
 }
 
-void HLMVMainWindow::OnShowAbout()
+void MainWindow::OnShowAbout()
 {
 	QMessageBox::information(this, "About Half-Life Model Viewer",
 		QString::fromUtf8(
@@ -401,7 +401,7 @@ void HLMVMainWindow::OnShowAbout()
 	);
 }
 
-void HLMVMainWindow::SetupFileSystem(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration)
+void MainWindow::SetupFileSystem(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration)
 {
 	auto fileSystem = _editorContext->GetFileSystem();
 
@@ -436,17 +436,17 @@ void HLMVMainWindow::SetupFileSystem(std::pair<settings::GameEnvironment*, setti
 	}
 }
 
-void HLMVMainWindow::OnActiveConfigurationChanged(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> current,
+void MainWindow::OnActiveConfigurationChanged(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> current,
 	std::pair<settings::GameEnvironment*, settings::GameConfiguration*> previous)
 {
 	if (previous.second)
 	{
-		disconnect(previous.second, &settings::GameConfiguration::DirectoryChanged, this, &HLMVMainWindow::OnGameConfigurationDirectoryChanged);
+		disconnect(previous.second, &settings::GameConfiguration::DirectoryChanged, this, &MainWindow::OnGameConfigurationDirectoryChanged);
 	}
 
 	if (current.second)
 	{
-		connect(current.second, &settings::GameConfiguration::DirectoryChanged, this, &HLMVMainWindow::OnGameConfigurationDirectoryChanged);
+		connect(current.second, &settings::GameConfiguration::DirectoryChanged, this, &MainWindow::OnGameConfigurationDirectoryChanged);
 
 		SetupFileSystem(current);
 	}
@@ -458,7 +458,7 @@ void HLMVMainWindow::OnActiveConfigurationChanged(std::pair<settings::GameEnviro
 	}
 }
 
-void HLMVMainWindow::OnGameConfigurationDirectoryChanged()
+void MainWindow::OnGameConfigurationDirectoryChanged()
 {
 	SetupFileSystem(_editorContext->GetGameConfigurations()->GetActiveConfiguration());
 }

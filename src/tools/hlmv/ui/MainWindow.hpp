@@ -9,7 +9,7 @@
 #include <QTabWidget>
 #include <QUndoGroup>
 
-#include "ui_HLMVMainWindow.h"
+#include "ui_MainWindow.h"
 
 namespace ui
 {
@@ -27,13 +27,13 @@ class GameConfiguration;
 class GameEnvironment;
 }
 
-class HLMVMainWindow final : public QMainWindow
+class MainWindow final : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	HLMVMainWindow(EditorContext* editorContext);
-	~HLMVMainWindow();
+	MainWindow(EditorContext* editorContext);
+	~MainWindow();
 
 	bool TryLoadAsset(const QString& fileName);
 
@@ -78,7 +78,7 @@ private slots:
 	void OnGameConfigurationDirectoryChanged();
 
 private:
-	Ui_HLMVMainWindow _ui;
+	Ui_MainWindow _ui;
 
 	EditorContext* const _editorContext;
 

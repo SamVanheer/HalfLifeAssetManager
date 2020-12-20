@@ -6,10 +6,10 @@ target_sources(HLMV
 		EditorContext.hpp
 		FullscreenWidget.cpp
 		FullscreenWidget.hpp
-		HLMVMainWindow.cpp
-		HLMVMainWindow.hpp
-		HLMVMainWindow.ui
 		IInputSink.hpp
+		MainWindow.cpp
+		MainWindow.hpp
+		MainWindow.ui
 		SceneWidget.cpp
 		SceneWidget.hpp)
 

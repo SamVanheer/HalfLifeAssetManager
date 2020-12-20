@@ -13,9 +13,9 @@
 #include <QStyleFactory>
 #include <QSurfaceFormat>
 
-#include "application/HLMVApplication.hpp"
+#include "application/ToolApplication.hpp"
 #include "ui/EditorContext.hpp"
-#include "ui/HLMVMainWindow.hpp"
+#include "ui/MainWindow.hpp"
 
 #include "ui/assets/Assets.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
@@ -30,7 +30,7 @@
 #include "ui/settings/RecentFilesSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
-int HLMVApplication::Run(int argc, char* argv[])
+int ToolApplication::Run(int argc, char* argv[])
 {
 	const QString programName{"Half-Life Model Viewer"};
 
@@ -66,7 +66,7 @@ int HLMVApplication::Run(int argc, char* argv[])
 
 	QApplication app(argc, argv);
 
-	connect(&app, &QApplication::aboutToQuit, this, &HLMVApplication::OnExit);
+	connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
 	auto settings{std::make_unique<QSettings>()};
 
@@ -107,7 +107,7 @@ int HLMVApplication::Run(int argc, char* argv[])
 			return EXIT_SUCCESS;
 		}
 
-		connect(_singleInstance.get(), &SingleInstance::FileNameReceived, this, &HLMVApplication::OnFileNameReceived);
+		connect(_singleInstance.get(), &SingleInstance::FileNameReceived, this, &ToolApplication::OnFileNameReceived);
 	}
 
 	auto optionsPageRegistry{std::make_unique<ui::options::OptionsPageRegistry>()};
@@ -125,7 +125,7 @@ int HLMVApplication::Run(int argc, char* argv[])
 		_editorContext = new ui::EditorContext(
 			settings.release(), generalSettings, recentFilesSettings, gameConfigurationsSettings, std::move(optionsPageRegistry), std::move(assetProviderRegistry), this);
 
-		_mainWindow = new ui::HLMVMainWindow(_editorContext);
+		_mainWindow = new ui::MainWindow(_editorContext);
 
 		if (!fileName.isEmpty())
 		{
@@ -144,7 +144,7 @@ int HLMVApplication::Run(int argc, char* argv[])
 	}
 }
 
-void HLMVApplication::OnExit()
+void ToolApplication::OnExit()
 {
 	const auto settings = _editorContext->GetSettings();
 
@@ -160,7 +160,7 @@ void HLMVApplication::OnExit()
 	}
 }
 
-void HLMVApplication::OnFileNameReceived(const QString& fileName)
+void ToolApplication::OnFileNameReceived(const QString& fileName)
 {
 	if (_mainWindow->isMaximized())
 	{

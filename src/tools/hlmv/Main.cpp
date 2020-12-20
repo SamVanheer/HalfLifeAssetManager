@@ -1,8 +1,8 @@
-#include "application/HLMVApplication.hpp"
+#include "application/ToolApplication.hpp"
 
 int main(int argc, char* argv[])
 {
-	HLMVApplication app;
+	ToolApplication app;
 
 	return app.Run(argc, argv);
 }

@@ -10,19 +10,19 @@
 namespace ui
 {
 class EditorContext;
-class HLMVMainWindow;
+class MainWindow;
 }
 
 /**
 *	@brief Handles program startup and shutdown
 */
-class HLMVApplication final : public QObject
+class ToolApplication final : public QObject
 {
 	Q_OBJECT
 
 public:
-	HLMVApplication() = default;
-	~HLMVApplication() = default;
+	ToolApplication() = default;
+	~ToolApplication() = default;
 
 	int Run(int argc, char* argv[]);
 
@@ -33,7 +33,7 @@ private slots:
 
 private:
 	ui::EditorContext* _editorContext{};
-	ui::HLMVMainWindow* _mainWindow{};
+	ui::MainWindow* _mainWindow{};
 
 	QScopedPointer<SingleInstance> _singleInstance;
 };
