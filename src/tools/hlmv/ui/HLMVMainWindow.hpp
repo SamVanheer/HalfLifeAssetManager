@@ -46,11 +46,7 @@ private:
 	void SetupFileSystem(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration);
 
 private slots:
-	void OnRecentFilesChanged();
-
-	void OnOpenRecentFile();
-
-	void OnExit();
+	void OnOpenLoadAssetDialog();
 
 	void OnAssetCleanChanged(bool clean);
 
@@ -60,11 +56,15 @@ private slots:
 
 	void OnAssetFileNameChanged(const QString& fileName);
 
-	void OnOpenLoadAssetDialog();
-
 	void OnSaveAsset();
 
 	void OnSaveAssetAs();
+
+	void OnRecentFilesChanged();
+
+	void OnOpenRecentFile();
+
+	void OnExit();
 
 	void OnGoFullscreen();
 
