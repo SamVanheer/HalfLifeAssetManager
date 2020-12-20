@@ -61,6 +61,7 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.Chrome, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnChromeChanged);
 	connect(_ui.Additive, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnAdditiveChanged);
 	connect(_ui.Transparent, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnTransparentChanged);
+	connect(_ui.FlatShade, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnFlatShadeChanged);
 	connect(_ui.Fullbright, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnFullbrightChanged);
 
 	connect(_ui.ShowUVMap, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnShowUVMapChanged);
@@ -278,6 +279,21 @@ void StudioModelTexturesPanel::OnDockPanelChanged(QWidget* current, QWidget* pre
 	}
 }
 
+static void SetTextureFlagCheckBoxes(Ui_StudioModelTexturesPanel& ui, int flags)
+{
+	const QSignalBlocker chrome{ui.Chrome};
+	const QSignalBlocker additive{ui.Additive};
+	const QSignalBlocker transparent{ui.Transparent};
+	const QSignalBlocker flatShade{ui.FlatShade};
+	const QSignalBlocker fullbright{ui.Fullbright};
+
+	ui.Chrome->setChecked((flags & STUDIO_NF_CHROME) != 0);
+	ui.Additive->setChecked((flags & STUDIO_NF_ADDITIVE) != 0);
+	ui.Transparent->setChecked((flags & STUDIO_NF_MASKED) != 0);
+	ui.FlatShade->setChecked((flags & STUDIO_NF_FLATSHADE) != 0);
+	ui.Fullbright->setChecked((flags & STUDIO_NF_FULLBRIGHT) != 0);
+}
+
 void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
@@ -293,17 +309,9 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 		{
 			const auto texture = header->GetTexture(listChange.GetSourceIndex());
 
-			const QSignalBlocker chrome{_ui.Chrome};
-			const QSignalBlocker additive{_ui.Additive};
-			const QSignalBlocker transparent{_ui.Transparent};
-			const QSignalBlocker fullbright{_ui.Fullbright};
-
 			const bool oldMasked{_ui.Transparent->isChecked()};
 
-			_ui.Chrome->setChecked((texture->flags & STUDIO_NF_CHROME) != 0);
-			_ui.Additive->setChecked((texture->flags & STUDIO_NF_ADDITIVE) != 0);
-			_ui.Transparent->setChecked((texture->flags & STUDIO_NF_MASKED) != 0);
-			_ui.Fullbright->setChecked((texture->flags & STUDIO_NF_FULLBRIGHT) != 0);
+			SetTextureFlagCheckBoxes(_ui, texture->flags);
 
 			//TODO: shouldn't be done here
 			if (oldMasked != _ui.Transparent->isChecked())
@@ -342,17 +350,7 @@ void StudioModelTexturesPanel::OnTextureChanged(int index)
 
 	auto texture = textureHeader->GetTexture(index);
 
-	{
-		const QSignalBlocker chrome{_ui.Chrome};
-		const QSignalBlocker additive{_ui.Additive};
-		const QSignalBlocker transparent{_ui.Transparent};
-		const QSignalBlocker fullbright{_ui.Fullbright};
-
-		_ui.Chrome->setChecked((texture->flags & STUDIO_NF_CHROME) != 0);
-		_ui.Additive->setChecked((texture->flags & STUDIO_NF_ADDITIVE) != 0);
-		_ui.Transparent->setChecked((texture->flags & STUDIO_NF_MASKED) != 0);
-		_ui.Fullbright->setChecked((texture->flags & STUDIO_NF_FULLBRIGHT) != 0);
-	}
+	SetTextureFlagCheckBoxes(_ui, texture->flags);
 
 	const CStudioModelEntity::MeshList_t meshes = entity->ComputeMeshList(index);
 
@@ -476,6 +474,17 @@ void StudioModelTexturesPanel::OnTransparentChanged()
 	}
 
 	flags = SetFlags(flags, STUDIO_NF_MASKED, _ui.Transparent->isChecked());
+
+	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
+}
+
+void StudioModelTexturesPanel::OnFlatShadeChanged()
+{
+	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+
+	int flags = texture->flags;
+
+	flags = SetFlags(flags, STUDIO_NF_FLATSHADE, _ui.FlatShade->isChecked());
 
 	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
 }

@@ -65,6 +65,7 @@ private slots:
 	void OnChromeChanged();
 	void OnAdditiveChanged();
 	void OnTransparentChanged();
+	void OnFlatShadeChanged();
 	void OnFullbrightChanged();
 
 	void OnShowUVMapChanged();
