@@ -1,5 +1,4 @@
-#ifndef COMMON_CWORLDTIME_H
-#define COMMON_CWORLDTIME_H
+#pragma once
 
 /**
 *	Represents the time in the world. Multiple time values are tracked.
@@ -73,5 +72,3 @@ private:
 	double m_flRealTime		= 0.0f;
 	double m_flPrevRealTime = 0.0f;
 };
-
-#endif //COMMON_CWORLDTIME_H

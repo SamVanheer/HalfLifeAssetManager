@@ -1,5 +1,4 @@
-#ifndef UTILITY_TOKENIZATION_H
-#define UTILITY_TOKENIZATION_H
+#pragma once
 
 #include <cstring>
 
@@ -40,5 +39,3 @@ const char* Parse( const char* pszData, char* pszBuffer, const size_t uiBufferSi
 bool TokenWaiting( const char* pszLine );
 }
 /**@}*/
-
-#endif //UTILITY_TOKENIZATION_H

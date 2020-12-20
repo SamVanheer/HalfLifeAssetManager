@@ -1,5 +1,4 @@
-#ifndef COMMON_UTILITY_H
-#define COMMON_UTILITY_H
+#pragma once
 
 #include <algorithm>
 #include <cstdint>
@@ -96,5 +95,3 @@ TFlags SetFlags(TFlags flags, TFlag flag, bool set = true)
 		return flags & ~convertedValue;
 	}
 }
-
-#endif //COMMON_UTILITY_H

@@ -1,5 +1,4 @@
-#ifndef STDLIB_STRINGUTILS_H
-#define STDLIB_STRINGUTILS_H
+#pragma once
 
 #include <algorithm>
 #include <cstring>
@@ -82,5 +81,3 @@ const char* strnrstr( const char* pszString, const char* pszSubString, const siz
 *	@return Whether the token matches.
 */
 bool UTIL_TokenMatches( const char* pszString, const char* pszToken );
-
-#endif //STDLIB_STRINGUTILS_H

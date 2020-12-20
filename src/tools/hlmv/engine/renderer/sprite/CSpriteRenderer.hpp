@@ -1,5 +1,4 @@
-#ifndef ENGINE_SHARED_SPRITE_CSPRITERENDERER_H
-#define ENGINE_SHARED_SPRITE_CSPRITERENDERER_H
+#pragma once
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -45,5 +44,3 @@ private:
 	CWorldTime* _worldTime;
 };
 }
-
-#endif //ENGINE_SHARED_SPRITE_CSPRITERENDERER_H

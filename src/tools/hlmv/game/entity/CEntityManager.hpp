@@ -1,5 +1,4 @@
-#ifndef GAME_ENTITY_CENTITYMANAGER_H
-#define GAME_ENTITY_CENTITYMANAGER_H
+#pragma once
 
 #include <memory>
 
@@ -71,5 +70,3 @@ private:
 	CEntityManager( const CEntityManager& ) = delete;
 	CEntityManager& operator=( const CEntityManager& ) = delete;
 };
-
-#endif //GAME_ENTITY_CENTITYMANAGER_H

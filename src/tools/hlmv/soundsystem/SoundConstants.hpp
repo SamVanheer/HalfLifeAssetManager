@@ -1,5 +1,4 @@
-#ifndef SOUNDSYSTEM_SOUNDCONSTANTS_H
-#define SOUNDSYSTEM_SOUNDCONSTANTS_H
+#pragma once
 
 namespace soundsystem
 {
@@ -12,5 +11,3 @@ const float VOLUME_NORM = 1.0f;
 */
 const int PITCH_NORM = 100;
 }
-
-#endif //SOUNDSYSTEM_SOUNDCONSTANTS_H

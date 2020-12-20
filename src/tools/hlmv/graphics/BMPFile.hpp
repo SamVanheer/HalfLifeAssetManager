@@ -1,5 +1,4 @@
-#ifndef GRAPHICS_BMPFILE_H
-#define GRAPHICS_BMPFILE_H
+#pragma once
 
 #include <cstdint>
 
@@ -67,5 +66,3 @@ enum Compression
 bool SaveBMPFile( const char* const pszFilename, const int iWidth, const int iHeight, const uint8_t* pPixels, const uint8_t* pPalette );
 }
 }
-
-#endif //GRAPHICS_BMPFILE_H

@@ -1,5 +1,4 @@
-#ifndef GRAPHICS_PALETTE_H
-#define GRAPHICS_PALETTE_H
+#pragma once
 
 /*
 *	Definitions for 24 bit 256 color palettes.
@@ -24,5 +23,3 @@ const size_t PALETTE_SIZE = PALETTE_ENTRIES * PALETTE_CHANNELS;
 *	The index in a palette where the alpha color is stored. Used for transparent textures.
 */
 const size_t PALETTE_ALPHA_INDEX = 255 * PALETTE_CHANNELS;
-
-#endif //GRAPHICS_PALETTE_H

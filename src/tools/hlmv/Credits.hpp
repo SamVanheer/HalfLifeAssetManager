@@ -1,5 +1,4 @@
-#ifndef TOOLS_SHARED_CREDITS_H
-#define TOOLS_SHARED_CREDITS_H
+#pragma once
 
 #include <string>
 
@@ -10,5 +9,3 @@ namespace tools
 */
 std::string GetSharedCredits();
 }
-
-#endif //TOOLS_SHARED_CREDITS_H

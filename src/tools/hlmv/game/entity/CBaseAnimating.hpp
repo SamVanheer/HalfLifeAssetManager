@@ -1,5 +1,4 @@
-#ifndef GAME_CBASEANIMATING_H
-#define GAME_CBASEANIMATING_H
+#pragma once
 
 #include "shared/Const.hpp"
 
@@ -34,5 +33,3 @@ public:
 	*/
 	void SetFrameRate( const float flFrameRate ) { m_flFrameRate = flFrameRate; }
 };
-
-#endif //GAME_CBASEANIMATING_H

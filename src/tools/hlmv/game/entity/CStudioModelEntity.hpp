@@ -1,5 +1,4 @@
-#ifndef GAME_CSTUDIOMODELENTITY_H
-#define GAME_CSTUDIOMODELENTITY_H
+#pragma once
 
 #include <vector>
 
@@ -238,5 +237,3 @@ public:
 	*/
 	MeshList_t ComputeMeshList( const int iTexture ) const;
 };
-
-#endif //GAME_CSTUDIOMODELENTITY_H

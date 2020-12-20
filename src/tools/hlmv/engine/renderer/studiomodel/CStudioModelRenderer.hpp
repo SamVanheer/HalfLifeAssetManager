@@ -1,5 +1,4 @@
-#ifndef GAME_STUDIOMODEL_CSTUDIOMODELRENDERER_H
-#define GAME_STUDIOMODEL_CSTUDIOMODELRENDERER_H
+#pragma once
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -184,5 +183,3 @@ private:
 	CStudioModelRenderer& operator=( const CStudioModelRenderer& ) = delete;
 };
 }
-
-#endif //GAME_STUDIOMODEL_CSTUDIOMODELRENDERER_H

@@ -1,5 +1,4 @@
-#ifndef CMEMORY_H
-#define CMEMORY_H
+#pragma once
 
 #include <cstdlib>
 #include <algorithm>
@@ -157,5 +156,3 @@ private:
 	CMemory( const CMemory& ) = delete;
 	CMemory& operator=( const CMemory& ) = delete;
 };
-
-#endif //CMEMORY_H

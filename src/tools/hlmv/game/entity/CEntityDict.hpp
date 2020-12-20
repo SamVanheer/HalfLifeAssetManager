@@ -1,5 +1,4 @@
-#ifndef GAME_ENTITY_CENTITYDICT_H
-#define GAME_ENTITY_CENTITYDICT_H
+#pragma once
 
 #include <cassert>
 #include <unordered_map>
@@ -154,5 +153,3 @@ private:
 */
 #define LINK_ENTITY_TO_CLASS( className, internalName )									\
 static const CEntityRegistry<internalName> __g_##className( #className, #internalName )
-
-#endif //GAME_ENTITY_CENTITYDICT_H

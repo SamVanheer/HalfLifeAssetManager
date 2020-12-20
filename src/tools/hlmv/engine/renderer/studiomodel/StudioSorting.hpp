@@ -1,5 +1,4 @@
-#ifndef GAME_STUDIOMODEL_STUDIOSORTING_H
-#define GAME_STUDIOMODEL_STUDIOSORTING_H
+#pragma once
 
 #include "shared/studiomodel/studio.hpp"
 
@@ -13,5 +12,3 @@ struct SortedMesh_t
 
 bool CompareSortedMeshes( const SortedMesh_t& lhs, const SortedMesh_t& rhs );
 }
-
-#endif //GAME_STUDIOMODEL_STUDIOSORTING_H

@@ -1,5 +1,4 @@
-#ifndef UTILITY_BYTESWAP_H
-#define UTILITY_BYTESWAP_H
+#pragma once
 
 #include <cassert>
 #include <cstdint>
@@ -212,5 +211,3 @@ T BigEnumValue( T value )
 }
 
 /** @} */
-
-#endif //UTILITY_BYTESWAP_H

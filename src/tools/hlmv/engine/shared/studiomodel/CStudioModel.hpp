@@ -1,5 +1,4 @@
-#ifndef GAME_STUDIOMODEL_CSTUDIOMODEL_H
-#define GAME_STUDIOMODEL_CSTUDIOMODEL_H
+#pragma once
 
 #include <memory>
 #include <stdexcept>
@@ -263,5 +262,3 @@ const char* ControlToStringDescription( const int iControl );
 */
 int StringToControl( const char* const pszString );
 }
-
-#endif //GAME_STUDIOMODEL_CSTUDIOMODEL_H

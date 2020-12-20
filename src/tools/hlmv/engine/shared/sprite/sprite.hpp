@@ -1,5 +1,4 @@
-#ifndef ENGINE_SHARED_SPRITE_SPRITE_H
-#define ENGINE_SHARED_SPRITE_SPRITE_H
+#pragma once
 
 #include <glm/vec2.hpp>
 
@@ -467,5 +466,3 @@ struct msprite_t final
 #define SPRITE_ID (('P'<<24)+('S'<<16)+('D'<<8)+'I')
 
 /** @} */
-
-#endif //ENGINE_SHARED_SPRITE_SPRITE_H

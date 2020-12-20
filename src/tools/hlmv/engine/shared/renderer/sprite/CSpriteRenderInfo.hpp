@@ -1,5 +1,4 @@
-#ifndef ENGINE_RENDERER_SPRITE_CSPRITERENDERINFO_H
-#define ENGINE_RENDERER_SPRITE_CSPRITERENDERINFO_H
+#pragma once
 
 #include "utility/mathlib.hpp"
 
@@ -47,5 +46,3 @@ struct C2DSpriteRenderInfo final
 	bool bOverrideTexFormat = false;
 };
 }
-
-#endif //ENGINE_RENDERER_SPRITE_CSPRITERENDERINFO_H

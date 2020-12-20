@@ -1,5 +1,4 @@
-#ifndef ENGINE_RENDERER_GL_IMODE_CRENDERCONTEXTIMODE_H
-#define ENGINE_RENDERER_GL_IMODE_CRENDERCONTEXTIMODE_H
+#pragma once
 
 #include "engine/renderer/gl/CBaseGLRenderContext.hpp"
 
@@ -33,5 +32,3 @@ public:
 	void MultTransposeMatrix( const Mat4x4& mat ) override;
 };
 }
-
-#endif //ENGINE_RENDERER_GL_IMODE_CRENDERCONTEXTIMODE_H

@@ -1,5 +1,4 @@
-#ifndef GRAPHICS_OPENGL_H
-#define GRAPHICS_OPENGL_H
+#pragma once
 
 #include "shared/Platform.hpp"
 
@@ -59,5 +58,3 @@ void glDeleteTexture( GLuint& textureId );
 const char* glErrorToString( const GLenum error );
 
 const char* glFrameBufferStatusToString( const GLenum status );
-
-#endif //GRAPHICS_OPENGL_H

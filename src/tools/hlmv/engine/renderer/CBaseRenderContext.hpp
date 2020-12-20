@@ -1,5 +1,4 @@
-#ifndef ENGINE_RENDERER_CBASERENDERCONTEXT_H
-#define ENGINE_RENDERER_CBASERENDERCONTEXT_H
+#pragma once
 
 #include "engine/shared/renderer/IRenderContext.hpp"
 
@@ -57,5 +56,3 @@ private:
 	CMatrixStack m_MatrixStack;
 };
 }
-
-#endif //ENGINE_RENDERER_CBASERENDERCONTEXT_H

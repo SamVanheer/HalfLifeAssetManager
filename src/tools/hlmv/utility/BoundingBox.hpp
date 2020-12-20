@@ -1,5 +1,4 @@
-#ifndef UTILITY_BOUNDINGBOX_H
-#define UTILITY_BOUNDINGBOX_H
+#pragma once
 
 #include <algorithm>
 
@@ -245,5 +244,3 @@ private:
 	glm::vec3 m_vecMins;
 	glm::vec3 m_vecMaxs;
 };
-
-#endif //UTILITY_BOUNDINGBOX_H

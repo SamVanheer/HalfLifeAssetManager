@@ -1,5 +1,4 @@
-#ifndef GAME_ENTITY_EHANDLE_H
-#define GAME_ENTITY_EHANDLE_H
+#pragma once
 
 #include "EntityConstants.hpp"
 
@@ -85,5 +84,3 @@ protected:
 private:
 	entity::EntHandle_t m_Handle = entity::INVALID_ENTITY_HANDLE;
 };
-
-#endif //GAME_ENTITY_EHANDLE_H

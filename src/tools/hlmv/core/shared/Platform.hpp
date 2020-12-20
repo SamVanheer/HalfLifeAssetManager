@@ -1,5 +1,4 @@
-#ifndef PLATFORM_H
-#define PLATFORM_H
+#pragma once
 
 #include <cstdio>
 
@@ -44,5 +43,3 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define DLLIMPORT
 
 #endif
-
-#endif //PLATFORM_H

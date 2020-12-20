@@ -1,6 +1,4 @@
-#ifndef ENGINE_RENDERER_UTIL_CMATRIXSTACK_H
-#define ENGINE_RENDERER_UTIL_CMATRIXSTACK_H
-
+#pragma once
 #include <stack>
 
 #include "utility/mathlib.hpp"
@@ -43,5 +41,3 @@ private:
 	MatStack_t m_Stacks[ MatrixMode::COUNT ];
 };
 }
-
-#endif //ENGINE_RENDERER_UTIL_CMATRIXSTACK_H

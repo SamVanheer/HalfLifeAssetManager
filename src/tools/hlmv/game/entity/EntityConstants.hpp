@@ -1,5 +1,4 @@
-#ifndef GAME_ENTITY_ENTITYCONSTANTS_H
-#define GAME_ENTITY_ENTITYCONSTANTS_H
+#pragma once
 
 #include <cstdint>
 
@@ -88,5 +87,3 @@ enum Flag : Flags_t
 	FL_ALWAYSTHINK	= Bit( 1 )
 };
 }
-
-#endif //GAME_ENTITY_ENTITYCONSTANTS_H

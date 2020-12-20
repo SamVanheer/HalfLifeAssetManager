@@ -1,5 +1,4 @@
-#ifndef UTILITY_CCOMMAND_H
-#define UTILITY_CCOMMAND_H
+#pragma once
 
 namespace util
 {
@@ -169,5 +168,3 @@ private:
 	char* m_pArgV[ MAX_TOKENS ];
 };
 }
-
-#endif //UTILITY_CCOMMAND_H

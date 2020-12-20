@@ -1,5 +1,4 @@
-#ifndef GAME_ENTITY_CBASEENTITYLIST_H
-#define GAME_ENTITY_CBASEENTITYLIST_H
+#pragma once
 
 #include "EntityConstants.hpp"
 
@@ -114,5 +113,3 @@ private:
 	CBaseEntityList( const CBaseEntityList& ) = delete;
 	CBaseEntityList& operator=( const CBaseEntityList& ) = delete;
 };
-
-#endif //GAME_ENTITY_CBASEENTITYLIST_H

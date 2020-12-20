@@ -1,5 +1,4 @@
-#ifndef COMMON_LOGGING_H
-#define COMMON_LOGGING_H
+#pragma once
 
 #include <cstdarg>
 #include <cstdio>
@@ -212,5 +211,3 @@ void DevWarning( const int devLevel, const char* const pszFormat, ... );
 *	@param devLevel Developer level to filter with. If the developer cvar setting is less than this, the message is ignored.
 */
 void DevError( const int devLevel, const char* const pszFormat, ... );
-
-#endif //COMMON_LOGGING_H

@@ -1,5 +1,4 @@
-#ifndef GAME_ENTITY_CSPRITEENTITY_H
-#define GAME_ENTITY_CSPRITEENTITY_H
+#pragma once
 
 #include "CBaseAnimating.hpp"
 
@@ -28,5 +27,3 @@ public:
 private:
 	sprite::msprite_t* m_pSprite = nullptr;
 };
-
-#endif //GAME_ENTITY_CSPRITEENTITY_H

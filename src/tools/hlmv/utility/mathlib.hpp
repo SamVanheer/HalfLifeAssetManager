@@ -8,10 +8,7 @@
 *
 ****/
 
-#ifndef __MATHLIB__
-#define __MATHLIB__
-
-// mathlib.h
+#pragma once
 
 /**
 *	This file refers to Spherical Linear Interpolation as slerp.
@@ -166,5 +163,3 @@ glm::vec3 AnglesToVector( const glm::vec3& angles );
 *	@return The model view matrix for the GoldSource engine.
 */
 glm::mat4x4 Mat4x4ModelView();
-
-#endif

@@ -13,8 +13,7 @@
 *
 ****/
 
-#ifndef	ACTIVITY_H
-#define	ACTIVITY_H
+#pragma once
 
 
 typedef enum {
@@ -104,6 +103,3 @@ typedef struct {
 } activity_map_t;
 
 extern activity_map_t activity_map[];
-
-
-#endif	//ACTIVITY_H

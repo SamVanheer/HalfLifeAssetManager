@@ -1,5 +1,4 @@
-#ifndef FILESYSTEM_CFILESYSTEM_H
-#define FILESYSTEM_CFILESYSTEM_H
+#pragma once
 
 #include <vector>
 
@@ -68,5 +67,3 @@ private:
 }
 
 /** @} */
-
-#endif //FILESYSTEM_CFILESYSTEM_H

@@ -1,5 +1,4 @@
-#ifndef ENGINE_RENDERER_SPRITE_ISPRITERENDERER_H
-#define ENGINE_RENDERER_SPRITE_ISPRITERENDERER_H
+#pragma once
 
 #include "engine/shared/renderer/DrawConstants.hpp"
 
@@ -65,5 +64,3 @@ inline ISpriteRenderer::~ISpriteRenderer()
 }
 
 /** @} */
-
-#endif //ENGINE_RENDERER_SPRITE_ISPRITERENDERER_H

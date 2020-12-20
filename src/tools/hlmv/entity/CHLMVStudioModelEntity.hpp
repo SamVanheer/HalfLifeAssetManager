@@ -1,5 +1,4 @@
-#ifndef HLMV_ENTITY_CHLMVSTUDIOMODELENTITY_H
-#define HLMV_ENTITY_CHLMVSTUDIOMODELENTITY_H
+#pragma once
 
 #include "game/entity/CStudioModelEntity.hpp"
 
@@ -22,5 +21,3 @@ public:
 	bool PlaySound = false;
 	bool PitchFramerateAmplitude = false;
 };
-
-#endif //HLMV_ENTITY_CHLMVSTUDIOMODELENTITY_H

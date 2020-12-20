@@ -1,5 +1,4 @@
-#ifndef GRAPHICS_CONSTANTS_H
-#define GRAPHICS_CONSTANTS_H
+#pragma once
 
 /**
 *	Available render modes
@@ -21,5 +20,3 @@ enum class RenderMode
 const char* RenderModeToString( const RenderMode renderMode );
 
 RenderMode RenderModeFromString( const char* const pszString );
-
-#endif //GRAPHICS_CONSTANTS_H

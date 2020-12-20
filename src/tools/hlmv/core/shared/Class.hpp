@@ -1,5 +1,4 @@
-#ifndef COMMON_CLASS_H
-#define COMMON_CLASS_H
+#pragma once
 
 /**
 *	This macro defines ThisClass to be the current class. Used in a class declaration for a class with no base.
@@ -13,5 +12,3 @@ typedef thisClass ThisClass
 #define DECLARE_CLASS( thisClass, baseClass )	\
 DECLARE_CLASS_NOBASE( thisClass );				\
 typedef baseClass BaseClass
-
-#endif //COMMON_CLASS_H

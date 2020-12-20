@@ -1,5 +1,4 @@
-#ifndef GAME_CBASEENTITY_H
-#define GAME_CBASEENTITY_H
+#pragma once
 
 #include <glm/vec3.hpp>
 
@@ -281,5 +280,3 @@ private:
 	CBaseEntity( const CBaseEntity& ) = delete;
 	CBaseEntity& operator=( const CBaseEntity& ) = delete;
 };
-
-#endif //GAME_CBASEENTITY_H

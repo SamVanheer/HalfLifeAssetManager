@@ -1,5 +1,4 @@
-#ifndef CESCAPESEQUENCES_H
-#define CESCAPESEQUENCES_H
+#pragma once
 
 /**
 * This class represents a mapping of escape sequences to their string versions
@@ -54,5 +53,3 @@ static CEscapeSequences listName( cDelimiterChar, ARRAYSIZE( g_##listName##List 
 
 CEscapeSequences& GetEscapeSeqConversion();
 CEscapeSequences& GetNoEscapeSeqConversion();
-
-#endif //CESCAPESEQUENCES_H

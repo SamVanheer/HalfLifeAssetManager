@@ -1,5 +1,4 @@
-#ifndef GAME_EVENTS_H
-#define GAME_EVENTS_H
+#pragma once
 
 /*
 *	Events used by the game.
@@ -15,5 +14,3 @@ enum Event
 	SCRIPT_EVENT_SOUND_VOICE	= 1008,		// Play named wave file (on CHAN_VOICE)
 	SCRIPT_CLIENT_EVENT_SOUND	= 5004,		// Play named wave file (at a given location)
 };
-
-#endif //GAME_EVENTS_H

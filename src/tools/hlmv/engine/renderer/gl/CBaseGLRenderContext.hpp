@@ -1,5 +1,4 @@
-#ifndef ENGINE_RENDERER_GL_CBASEGLRENDERCONTEXT_H
-#define ENGINE_RENDERER_GL_CBASEGLRENDERCONTEXT_H
+#pragma once
 
 #include "engine/renderer/CBaseRenderContext.hpp"
 
@@ -58,5 +57,3 @@ public:
 private:
 };
 }
-
-#endif //ENGINE_RENDERER_GL_CBASEGLRENDERCONTEXT_H

@@ -1,5 +1,4 @@
-#ifndef FILESYSTEM_FILESYSTEMCONSTANTS_H
-#define FILESYSTEM_FILESYSTEMCONSTANTS_H
+#pragma once
 
 /**
 *	@ingroup FileSystem
@@ -11,5 +10,3 @@ namespace filesystem
 }
 
 /** @} */
-
-#endif //FILESYSTEM_FILESYSTEMCONSTANTS_H

@@ -1,5 +1,4 @@
-#ifndef ENGINE_RENDERER_IRENDERCONTEXT_H
-#define ENGINE_RENDERER_IRENDERCONTEXT_H
+#pragma once
 
 #include "core/shared/Const.hpp"
 #include "core/shared/Utility.hpp"
@@ -319,5 +318,3 @@ public:
 	virtual void SetMinMagFilters( const MinFilter min, const MagFilter mag ) = 0;
 };
 }
-
-#endif //ENGINE_RENDERER_IRENDERCONTEXT_H

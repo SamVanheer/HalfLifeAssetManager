@@ -1,5 +1,4 @@
-#ifndef FILESYSTEM_IFILESYSTEM_H
-#define FILESYSTEM_IFILESYSTEM_H
+#pragma once
 
 /** @file */
 
@@ -99,5 +98,3 @@ inline IFileSystem::~IFileSystem()
 }
 
 /** @} */
-
-#endif //FILESYSTEM_IFILESYSTEM_H

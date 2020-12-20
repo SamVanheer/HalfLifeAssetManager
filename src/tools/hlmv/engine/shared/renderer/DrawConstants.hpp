@@ -1,5 +1,4 @@
-#ifndef ENGINE_RENDERER_DRAWCONSTANTS_H
-#define ENGINE_RENDERER_DRAWCONSTANTS_H
+#pragma once
 
 #include <cstdint>
 
@@ -49,5 +48,3 @@ enum DrawFlag : DrawFlags_t
 };
 }
 }
-
-#endif //ENGINE_RENDERER_DRAWCONSTANTS_H

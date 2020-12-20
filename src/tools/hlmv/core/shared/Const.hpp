@@ -1,5 +1,4 @@
-#ifndef COMMON_CONST_H
-#define COMMON_CONST_H
+#pragma once
 
 #include <climits>
 
@@ -49,5 +48,3 @@ extern const glm::vec3 WORLD_INVALID_MIN;
 *	Vector that represents an invalid max boundary.
 */
 extern const glm::vec3 WORLD_INVALID_MAX;
-
-#endif //COMMON_CONST_H

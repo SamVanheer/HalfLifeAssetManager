@@ -1,5 +1,4 @@
-#ifndef GRAPHICS_GRAPHICSHELPERS_H
-#define GRAPHICS_GRAPHICSHELPERS_H
+#pragma once
 
 #include "shared/studiomodel/CStudioModel.hpp"
 #include "game/entity/CStudioModelEntity.hpp"
@@ -54,5 +53,3 @@ unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRende
 	const RenderMode renderMode, const bool bWireframeOverlay, const float flSideLength, const bool bBackfaceCulling);
 }
 }
-
-#endif //GRAPHICS_GRAPHICSHELPERS_H

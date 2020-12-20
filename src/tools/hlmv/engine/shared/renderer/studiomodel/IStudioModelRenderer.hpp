@@ -1,5 +1,4 @@
-#ifndef ENGINE_STUDIOMODEL_ISTUDIOMODELRENDERER_H
-#define ENGINE_STUDIOMODEL_ISTUDIOMODELRENDERER_H
+#pragma once
 
 #include <glm/vec3.hpp>
 
@@ -144,5 +143,3 @@ public:
 }
 
 /** @ } */
-
-#endif //ENGINE_STUDIOMODEL_ISTUDIOMODELRENDERER_H

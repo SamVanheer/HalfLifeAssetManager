@@ -1,5 +1,4 @@
-#ifndef GRAPHICS_GRAPHICSUTILS_H
-#define GRAPHICS_GRAPHICSUTILS_H
+#pragma once
 
 #include <algorithm>
 #include <string_view>
@@ -57,5 +56,3 @@ bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high)
 
 void PaletteHueReplace(byte* palette, int newHue, int start, int end);
 }
-
-#endif //GRAPHICS_GRAPHICSUTILS_H

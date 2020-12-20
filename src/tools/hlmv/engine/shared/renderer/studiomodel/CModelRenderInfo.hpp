@@ -1,5 +1,4 @@
-#ifndef RENDERER_STUDIOMODEL_CMODELRENDERINFO_H
-#define RENDERER_STUDIOMODEL_CMODELRENDERINFO_H
+#pragma once
 
 #include <glm/vec3.hpp>
 
@@ -42,5 +41,3 @@ struct CModelRenderInfo
 }
 
 /** @} */
-
-#endif //RENDERER_STUDIOMODEL_CMODELRENDERINFO_H

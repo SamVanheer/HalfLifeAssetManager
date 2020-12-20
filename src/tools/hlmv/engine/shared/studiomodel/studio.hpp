@@ -13,8 +13,7 @@
 *
 ****/
 
-#ifndef GAME_STUDIOMODEL_STUDIO_H
-#define GAME_STUDIOMODEL_STUDIO_H
+#pragma once
 
 #include "shared/Const.hpp"
 
@@ -514,5 +513,3 @@ enum
 //Mugsy - upped the maximum texture size to 4096. All changes are the replacement of '256'
 //with this define, MAX_TEXTURE_DIMS
 #define MAX_TEXTURE_DIMS 4096
-
-#endif //GAME_STUDIOMODEL_STUDIO_H

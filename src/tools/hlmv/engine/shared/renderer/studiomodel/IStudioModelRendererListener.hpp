@@ -1,5 +1,4 @@
-#ifndef RENDERER_STUDIOMODEL_ISTUDIOMODELRENDERERLISTENER_H
-#define RENDERER_STUDIOMODEL_ISTUDIOMODELRENDERERLISTENER_H
+#pragma once
 
 #include "CModelRenderInfo.hpp"
 
@@ -42,5 +41,3 @@ inline IStudioModelRendererListener::~IStudioModelRendererListener()
 }
 
 /** @} */
-
-#endif //RENDERER_STUDIOMODEL_ISTUDIOMODELRENDERERLISTENER_H

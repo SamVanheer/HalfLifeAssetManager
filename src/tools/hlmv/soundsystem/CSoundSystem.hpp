@@ -1,5 +1,4 @@
-#ifndef SOUNDSYSTEM_CSOUNDSYSTEM_H
-#define SOUNDSYSTEM_CSOUNDSYSTEM_H
+#pragma once
 
 #include <list>
 #include <memory>
@@ -88,5 +87,3 @@ private:
 }
 
 /** @} */
-
-#endif //SOUNDSYSTEM_CSOUNDSYSTEM_H

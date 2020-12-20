@@ -1,5 +1,4 @@
-#ifndef SOUNDSYSTEM_ISOUNDSYSTEM_H
-#define SOUNDSYSTEM_ISOUNDSYSTEM_H
+#pragma once
 
 /**
 *	@defgroup SoundSystem OpenAL based sound system.
@@ -59,5 +58,3 @@ public:
 }
 
 /** @} */
-
-#endif //SOUNDSYSTEM_ISOUNDSYSTEM_H

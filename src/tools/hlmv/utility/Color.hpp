@@ -1,5 +1,4 @@
-#ifndef UTILITY_COLOR_H
-#define UTILITY_COLOR_H
+#pragma once
 
 #include <cassert>
 #include <string>
@@ -148,5 +147,3 @@ private:
 
 bool ParseColor( const char* pszValue, Color& color, const bool bParseAlpha = false );
 std::string ColorToString( const Color& color, const bool bAddAlpha = false );
-
-#endif //UTILITY_COLOR_H
