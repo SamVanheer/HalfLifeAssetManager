@@ -15,9 +15,6 @@ public:
 	StudioModelBonesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelBonesPanel();
 
-private:
-	void UpdateQCString();
-
 public slots:
 	void OnDockPanelChanged(QWidget* current, QWidget* previous);
 

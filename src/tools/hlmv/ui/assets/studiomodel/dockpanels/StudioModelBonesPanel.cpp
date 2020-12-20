@@ -215,30 +215,6 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
-void StudioModelBonesPanel::UpdateQCString()
-{
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
-	const auto header = model->GetStudioHeader();
-
-	//TODO:
-	/*
-	const auto hitbox = header->GetHitBox(_ui.Hitboxes->currentIndex());
-
-	const auto bone = header->GetBone(hitbox->bone);
-
-	_ui.QCString->setText(QString{"$hbox %1 \"%2\" %3 %4 %5 %6 %7 %8"}
-		.arg(hitbox->group)
-		.arg(bone->name)
-		.arg(hitbox->bbmin[0], 0, 'f', 6)
-		.arg(hitbox->bbmin[1], 0, 'f', 6)
-		.arg(hitbox->bbmin[2], 0, 'f', 6)
-		.arg(hitbox->bbmax[0], 0, 'f', 6)
-		.arg(hitbox->bbmax[1], 0, 'f', 6)
-		.arg(hitbox->bbmax[2], 0, 'f', 6));
-		*/
-}
-
 void StudioModelBonesPanel::OnDockPanelChanged(QWidget* current, QWidget* previous)
 {
 	_isActive = current == this;
