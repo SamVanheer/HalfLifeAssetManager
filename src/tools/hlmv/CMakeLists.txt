@@ -81,6 +81,7 @@ target_sources(${TARGET_NAME}
 		Main.cpp)
 
 add_subdirectory(application)
+add_subdirectory(assets)
 add_subdirectory(core)
 add_subdirectory(engine)
 add_subdirectory(engine/shared)

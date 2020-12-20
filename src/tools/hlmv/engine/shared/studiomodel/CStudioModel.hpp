@@ -8,6 +8,8 @@
 
 #include <glm/vec3.hpp>
 
+#include "assets/AssetIO.hpp"
+
 #include "shared/Const.hpp"
 
 #include "utility/mathlib.hpp"
@@ -25,60 +27,12 @@ class TextureLoader;
 namespace studiomdl
 {
 /**
-*	@brief Base class for all studio model exceptions
-*/
-class StudioModelException : public std::runtime_error
-{
-public:
-	using std::runtime_error::runtime_error;
-};
-
-/**
-*	@brief Indicates that the studio model file does not exist
-*/
-class StudioModelNotFound : public StudioModelException
-{
-public:
-	using StudioModelException::StudioModelException;
-};
-
-/**
-*	@brief Indicates that a studio model file has the wrong format (i.e. not a studio model)
-*/
-class StudioModelInvalidFormat : public StudioModelException
-{
-public:
-	using StudioModelException::StudioModelException;
-};
-
-/**
-*	@brief Indicates that a studio model file has the wrong version (e.g. trying to load a Source model)
-*/
-class StudioModelVersionDiffers : public StudioModelException
-{
-public:
-	StudioModelVersionDiffers(const std::string& message, int version)
-		: StudioModelException(message)
-		, _version(version)
-	{
-	}
-
-	/**
-	*	@brief Gets the version that the model has
-	*/
-	int GetVersion() const { return _version; }
-
-private:
-	const int _version;
-};
-
-/**
 *	@brief Indicates that a studio model file is not a main header (e.g. trying to load texture header as a main header)
 */
-class StudioModelIsNotMainHeader : public StudioModelException
+class StudioModelIsNotMainHeader : public assets::AssetException
 {
 public:
-	using StudioModelException::StudioModelException;
+	using assets::AssetException::AssetException;
 };
 
 struct StudioDataDeleter
@@ -102,9 +56,9 @@ class CStudioModel;
 /**
 *	Loads a studio model
 *	@param pszFilename Name of the model to load. This is the entire path, including the extension
-*	@exception StudioModelNotFound If a file could not be found
-*	@exception StudioModelInvalidFormat If a file has an invalid format
-*	@exception StudioModelVersionDiffers If a file has the wrong studio version
+*	@exception assets::AssetNotFound If a file could not be found
+*	@exception assets::AssetInvalidFormat If a file has an invalid format
+*	@exception assets::AssetVersionDiffers If a file has the wrong studio version
 */
 std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename);
 

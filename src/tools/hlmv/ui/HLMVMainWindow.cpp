@@ -5,10 +5,11 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include "ui/Credits.hpp"
+#include "assets/AssetIO.hpp"
 
 #include "filesystem/IFileSystem.hpp"
 
+#include "ui/Credits.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/HLMVMainWindow.hpp"
@@ -86,29 +87,39 @@ HLMVMainWindow::~HLMVMainWindow()
 
 bool HLMVMainWindow::TryLoadAsset(const QString& fileName)
 {
-	//TODO: needs error handling
-	auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName);
-
-	if (nullptr != asset)
+	try
 	{
-		connect(asset.get(), &assets::Asset::FileNameChanged, this, &HLMVMainWindow::OnAssetFileNameChanged);
+		auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName);
 
-		auto editWidget = asset->GetEditWidget();
+		if (nullptr != asset)
+		{
+			connect(asset.get(), &assets::Asset::FileNameChanged, this, &HLMVMainWindow::OnAssetFileNameChanged);
 
-		_undoGroup->addStack(asset->GetUndoStack());
+			auto editWidget = asset->GetEditWidget();
 
-		_editorContext->GetLoadedAssets().emplace_back(std::move(asset), editWidget);
+			_undoGroup->addStack(asset->GetUndoStack());
 
-		const auto index = _assetTabs->addTab(editWidget, fileName);
+			_editorContext->GetLoadedAssets().emplace_back(std::move(asset), editWidget);
 
-		_assetTabs->setCurrentIndex(index);
+			const auto index = _assetTabs->addTab(editWidget, fileName);
 
-		_assetTabs->setVisible(true);
-		_ui.ActionFullscreen->setEnabled(true);
+			_assetTabs->setCurrentIndex(index);
 
-		_editorContext->GetRecentFiles()->Add(fileName);
+			_assetTabs->setVisible(true);
+			_ui.ActionFullscreen->setEnabled(true);
 
-		return true;
+			_editorContext->GetRecentFiles()->Add(fileName);
+
+			return true;
+		}
+		else
+		{
+			QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset:\nNull asset returned"});
+		}
+	}
+	catch (const ::assets::AssetException& e)
+	{
+		QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset:\n%1"}.arg(e.what()));
 	}
 
 	return false;
@@ -313,11 +324,19 @@ void HLMVMainWindow::OnSaveAsset()
 
 	auto asset = currentAsset.GetAsset();
 
+	try
+	{
+		asset->Save(asset->GetFileName());
+	}
+	catch (const ::assets::AssetException& e)
+	{
+		QMessageBox::critical(this, "Error saving asset", QString{"Error saving asset:\n%1"}.arg(e.what()));
+		return;
+	}
+
 	auto undoStack = asset->GetUndoStack();
 
 	undoStack->setClean();
-
-	asset->Save(asset->GetFileName());
 }
 
 void HLMVMainWindow::OnSaveAssetAs()

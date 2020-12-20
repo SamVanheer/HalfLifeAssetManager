@@ -264,7 +264,7 @@ studio_ptr<T> LoadStudioHeader(const char* const pszFilename, const bool bAllowS
 
 	if (!pFile)
 	{
-		throw StudioModelNotFound(std::string{"File \""} + pszFilename + "\" not found");
+		throw assets::AssetFileNotFound(std::string{"File \""} + pszFilename + "\" not found");
 	}
 
 	fseek(pFile, 0, SEEK_END);
@@ -280,25 +280,24 @@ studio_ptr<T> LoadStudioHeader(const char* const pszFilename, const bool bAllowS
 
 	if (uiRead != 1)
 	{
-		throw StudioModelInvalidFormat(std::string{"Error reading file\""} + pszFilename + "\"");
+		throw assets::AssetInvalidFormat(std::string{"Error reading file \""} + pszFilename + "\"");
 	}
 
 	if (strncmp(reinterpret_cast<const char*>(&pStudioHdr->id), STUDIOMDL_HDR_ID, 4) &&
 		strncmp(reinterpret_cast<const char*>(&pStudioHdr->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		throw StudioModelInvalidFormat(std::string{"The file \""} + pszFilename + "\" is neither a studio header nor a sequence header");
+		throw assets::AssetInvalidFormat(std::string{"The file \""} + pszFilename + "\" is neither a studio header nor a sequence header");
 	}
 
 	if (!bAllowSeqGroup && !strncmp(reinterpret_cast<const char*>(&pStudioHdr->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		throw StudioModelInvalidFormat(std::string{"File \""} + pszFilename + "\": Expected a main studio model file, got a sequence file");
+		throw assets::AssetInvalidFormat(std::string{"File \""} + pszFilename + "\": Expected a main studio model file, got a sequence file");
 	}
 
 	if (pStudioHdr->version != STUDIO_VERSION)
 	{
-		throw StudioModelVersionDiffers(std::string{"File \""} + pszFilename + "\": version differs: expected \"" +
-			std::to_string(STUDIO_VERSION) + "\", got \"" + std::to_string(pStudioHdr->version) + "\"",
-			pStudioHdr->version);
+		throw assets::AssetVersionDiffers(std::string{"File \""} + pszFilename + "\": version differs: expected \"" +
+			std::to_string(STUDIO_VERSION) + "\", got \"" + std::to_string(pStudioHdr->version) + "\"");
 	}
 
 	buffer.release();
@@ -378,12 +377,12 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 {
 	if (!pszFilename)
 	{
-		throw StudioModelException("Null filename provided");
+		throw assets::AssetException("Null filename provided");
 	}
 
 	if (!(*pszFilename))
 	{
-		throw StudioModelException("Empty filename provided");
+		throw assets::AssetException("Empty filename provided");
 	}
 
 	studiohdr_t* const pStudioHdr = model.GetStudioHeader();
@@ -412,7 +411,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 
 		if (!foundRelative)
 		{
-			throw StudioModelException("Could not find base directory \"models\" in model filename; needed to correct sequence group filenames");
+			throw assets::AssetException("Could not find base directory \"models\" in model filename; needed to correct sequence group filenames");
 		}
 
 		std::error_code e;
@@ -421,7 +420,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 
 		if (e)
 		{
-			throw StudioModelException("Could not determine base filename for model to correct sequence group filenames");
+			throw assets::AssetException("Could not determine base filename for model to correct sequence group filenames");
 		}
 
 		baseFileName.replace_extension();
@@ -445,7 +444,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 
 			if (groupNameString.length() >= sizeof(seqGroup->name))
 			{
-				throw StudioModelException("Sequence group filename is too long");
+				throw assets::AssetException("Sequence group filename is too long");
 			}
 
 			strncpy(seqGroup->name, groupNameString.c_str(), groupNameString.length());
@@ -458,7 +457,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 
 	if (!pFile)
 	{
-		throw StudioModelException("Could not open main file for writing");
+		throw assets::AssetException("Could not open main file for writing");
 	}
 
 	bool bSuccess = fwrite(pStudioHdr, sizeof(byte), pStudioHdr->length, pFile) == pStudioHdr->length;
@@ -467,7 +466,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 
 	if (!bSuccess)
 	{
-		throw StudioModelException("Error while writing to main file");
+		throw assets::AssetException("Error while writing to main file");
 	}
 
 	const std::filesystem::path fileName{std::filesystem::u8path(pszFilename)};
@@ -489,7 +488,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 
 		if (!pFile)
 		{
-			throw StudioModelException("Could not open texture file for writing");
+			throw assets::AssetException("Could not open texture file for writing");
 		}
 
 		bSuccess = fwrite(pTextureHdr, sizeof(byte), pTextureHdr->length, pFile) == pTextureHdr->length;
@@ -497,7 +496,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 
 		if (!bSuccess)
 		{
-			throw StudioModelException("Error while writing to texture file");
+			throw assets::AssetException("Error while writing to texture file");
 		}
 	}
 
@@ -518,7 +517,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 
 			if (!pFile)
 			{
-				throw StudioModelException("Could not open sequence file for writing");
+				throw assets::AssetException("Could not open sequence file for writing");
 			}
 
 			const auto pAnimHdr = model.GetSeqGroupHeader(i - 1);
@@ -528,7 +527,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 
 			if (!bSuccess)
 			{
-				throw StudioModelException("Error while writing to sequence file");
+				throw assets::AssetException("Error while writing to sequence file");
 			}
 		}
 	}

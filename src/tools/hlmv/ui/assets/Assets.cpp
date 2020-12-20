@@ -1,5 +1,6 @@
 #include <stdexcept>
 
+#include "assets/AssetIO.hpp"
 #include "ui/assets/Assets.hpp"
 
 namespace ui::assets
@@ -24,8 +25,6 @@ std::unique_ptr<Asset> AssetProviderRegistry::Load(EditorContext* editorContext,
 		}
 	}
 
-	//TODO: throw exception to indicate no supported provider
-
-	return {};
+	throw ::assets::AssetException("File type not supported");
 }
 }
