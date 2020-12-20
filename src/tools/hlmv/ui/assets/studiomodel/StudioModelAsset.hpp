@@ -15,6 +15,11 @@
 #include "ui/IInputSink.hpp"
 #include "ui/assets/Assets.hpp"
 
+namespace graphics
+{
+class TextureLoader;
+}
+
 namespace ui
 {
 namespace camera_operators
@@ -62,6 +67,8 @@ public:
 	EditorContext* GetEditorContext() { return _editorContext; }
 
 	studiomdl::CStudioModel* GetStudioModel() { return _studioModel.get(); }
+
+	graphics::TextureLoader* GetTextureLoader() { return _textureLoader.get(); }
 
 	graphics::Scene* GetScene() { return _scene.get(); }
 
@@ -140,6 +147,7 @@ private:
 	EditorContext* const _editorContext;
 	const StudioModelAssetProvider* const _provider;
 	const std::unique_ptr<studiomdl::CStudioModel> _studioModel;
+	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
 	const std::unique_ptr<graphics::Scene> _scene;
 
 	std::stack<IInputSink*> _inputSinks;

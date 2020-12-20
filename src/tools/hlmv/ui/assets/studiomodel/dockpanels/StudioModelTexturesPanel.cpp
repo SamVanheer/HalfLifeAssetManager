@@ -18,6 +18,7 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Palette.hpp"
+#include "graphics/TextureLoader.hpp"
 
 #include "qt/QtUtilities.hpp"
 
@@ -79,6 +80,9 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.BottomColorSlider, &QSlider::valueChanged, this, &StudioModelTexturesPanel::OnBottomColorSliderChanged);
 	connect(_ui.TopColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelTexturesPanel::OnTopColorSpinnerChanged);
 	connect(_ui.BottomColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelTexturesPanel::OnBottomColorSpinnerChanged);
+
+	connect(_ui.FilterTextures, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnFilterTexturesChanged);
+	connect(_ui.PowerOf2Textures, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnPowerOf2TexturesChanged);
 
 	_ui.ScaleTextureViewSlider->setRange(
 		static_cast<int>(_ui.ScaleTextureViewSpinner->minimum() * TextureViewScaleSliderRatio),
@@ -304,7 +308,11 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 			//TODO: shouldn't be done here
 			if (oldMasked != _ui.Transparent->isChecked())
 			{
-				model->ReuploadTexture(texture);
+				auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
+
+				graphicsContext->Begin();
+				model->ReuploadTexture(*_asset->GetTextureLoader(), texture);
+				graphicsContext->End();
 			}
 		}
 		break;
@@ -662,7 +670,11 @@ void StudioModelTexturesPanel::RemapTexture(int index)
 			graphics::PaletteHueReplace(palette, _ui.BottomColorSlider->value(), mid + 1, high);
 		}
 
-		entity->GetModel()->ReplaceTexture(texture, reinterpret_cast<byte*>(textureHeader) + texture->index, palette, textureId);
+		auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
+
+		graphicsContext->Begin();
+		entity->GetModel()->ReplaceTexture(*_asset->GetTextureLoader(), texture, reinterpret_cast<byte*>(textureHeader) + texture->index, palette, textureId);
+		graphicsContext->End();
 	}
 }
 
@@ -945,5 +957,27 @@ void StudioModelTexturesPanel::OnBottomColorSpinnerChanged()
 
 	UpdateColormapValue();
 	RemapTextures();
+}
+
+void StudioModelTexturesPanel::OnFilterTexturesChanged()
+{
+	_asset->GetTextureLoader()->SetFilterTextures(_ui.FilterTextures->isChecked());
+
+	const auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
+
+	graphicsContext->Begin();
+	_asset->GetStudioModel()->UpdateFilters(*_asset->GetTextureLoader());
+	graphicsContext->End();
+}
+
+void StudioModelTexturesPanel::OnPowerOf2TexturesChanged()
+{
+	_asset->GetTextureLoader()->SetResizeToPowerOf2(_ui.PowerOf2Textures->isChecked());
+
+	const auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
+
+	graphicsContext->Begin();
+	_asset->GetStudioModel()->ReuploadTextures(*_asset->GetTextureLoader());
+	graphicsContext->End();
 }
 }

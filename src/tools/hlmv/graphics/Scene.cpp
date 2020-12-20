@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <GL/glew.h>
 
 #include <glm/mat4x4.hpp>
@@ -32,14 +34,17 @@ static const int GUIDELINES_OFFSET = GUIDELINES_LINE_LENGTH + (GUIDELINES_POINT_
 
 static const int GUIDELINES_EDGE_WIDTH = 4;
 
-Scene::Scene(soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime)
-	: _studioModelRenderer(std::make_unique<studiomdl::CStudioModelRenderer>())
+Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime)
+	: _textureLoader(textureLoader)
+	, _studioModelRenderer(std::make_unique<studiomdl::CStudioModelRenderer>())
 	, _worldTime(worldTime)
 	//Use the default list class for now
 	, _entityManager(std::make_unique<CEntityManager>(std::make_unique<CBaseEntityList>(), _worldTime))
 	, _entityContext(std::make_unique<EntityContext>(_worldTime, _studioModelRenderer.get(), _entityManager->GetEntityList(), _entityManager.get(),
 		soundSystem))
 {
+	assert(_textureLoader);
+
 	SetCurrentCamera(nullptr);
 }
 
@@ -113,7 +118,7 @@ void Scene::Initialize()
 	if (nullptr != _entity)
 	{
 		//TODO: should be replaced with an on-demand resource uploading stage in Draw()
-		_entity->GetModel()->CreateTextures();
+		_entity->GetModel()->CreateTextures(*_textureLoader);
 	}
 
 	glGenTextures(1, &UVMeshTexture);

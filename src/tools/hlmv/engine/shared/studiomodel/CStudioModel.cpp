@@ -13,10 +13,9 @@
 #include "utility/IOUtils.hpp"
 #include "utility/StringUtils.hpp"
 
-#include "cvar/CCVar.h"
-
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/Palette.hpp"
+#include "graphics/TextureLoader.hpp"
 
 #include "CStudioModel.hpp"
 
@@ -24,27 +23,6 @@ namespace studiomdl
 {
 namespace
 {
-//Note: multiple libraries can include this file and define this cvar. The first library to register theirs wins.
-//All others will point to that one.
-static cvar::CCVar r_filtertextures("r_filtertextures", cvar::CCVarArgsBuilder().FloatValue(1).HelpInfo("Whether to filter textures or not"));
-
-static cvar::CCVar r_powerof2textures("r_powerof2textures",
-	cvar::CCVarArgsBuilder()
-	.Flags(cvar::Flag::ARCHIVE)
-	.FloatValue(1)
-	.MinValue(0)
-	.MaxValue(1)
-	.HelpInfo("Whether to resize textures to power of 2 dimensions"));
-
-void UploadRGBATexture(const int iWidth, const int iHeight, const byte* pData, GLuint textureId, const bool bFilterTextures)
-{
-	glBindTexture(GL_TEXTURE_2D, textureId);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iWidth, iHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pData);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, bFilterTextures ? GL_LINEAR : GL_NEAREST);
-}
-
 //Dol differs only in texture storage
 //Instead of pixels followed by RGB palette, it has a 32 byte texture name (name of file without extension), followed by an RGBA palette and pixels
 void ConvertDolToMdl(byte* pBuffer, const mstudiotexture_t& texture)
@@ -111,144 +89,6 @@ void ConvertDolToMdl(byte* pBuffer, const mstudiotexture_t& texture)
 
 	//Some data will be left dangling after the palette and before the next texture/end of file. Nothing will reference it though
 	//in the SL version this will not be a problem since the file isn't loaded in one chunk
-}
-
-void UploadTexture(const mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint name, const bool bFilterTextures, const bool bPowerOf2)
-{
-	// unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight;
-	int		i, j;
-	int		row1[MAX_TEXTURE_DIMS], row2[MAX_TEXTURE_DIMS], col1[MAX_TEXTURE_DIMS], col2[MAX_TEXTURE_DIMS];
-	const byte* pix1, * pix2, * pix3, * pix4;
-
-	byte localPalette[PALETTE_SIZE];
-
-	memcpy(localPalette, pal, sizeof(localPalette));
-
-	// convert texture to power of 2
-	int outwidth;
-	int outheight;
-
-	if (bPowerOf2)
-	{
-		if (!graphics::CalculateImageDimensions(ptexture->width, ptexture->height, outwidth, outheight))
-			return;
-	}
-	else
-	{
-		outwidth = ptexture->width;
-		outheight = ptexture->height;
-	}
-
-	const size_t uiSize = outwidth * outheight * 4;
-
-	//Needs at least one pixel (satisfies code analysis)
-	if (uiSize < 4)
-		return;
-
-	auto tex = std::make_unique<byte[]>(uiSize);
-
-	/*
-	int k = 0;
-	for (i = 0; i < ptexture->height; i++)
-	{
-	for (j = 0; j < ptexture->width; j++)
-	{
-
-	in[k++] = localPalette[data[i * ptexture->width + j] * 3 + 0];
-	in[k++] = localPalette[data[i * ptexture->width + j] * 3 + 1];
-	in[k++] = localPalette[data[i * ptexture->width + j] * 3 + 2];
-	in[k++] = 0xff;;
-	}
-	}
-
-	gluScaleImage (GL_RGBA, ptexture->width, ptexture->height, GL_UNSIGNED_BYTE, in, outwidth, outheight, GL_UNSIGNED_BYTE, out);
-	free (in);
-	*/
-
-	for (i = 0; i < outwidth; i++)
-	{
-		col1[i] = (int) ((i + 0.25) * (ptexture->width / (float) outwidth));
-		col2[i] = (int) ((i + 0.75) * (ptexture->width / (float) outwidth));
-	}
-
-	for (i = 0; i < outheight; i++)
-	{
-		row1[i] = (int) ((i + 0.25) * (ptexture->height / (float) outheight)) * ptexture->width;
-		row2[i] = (int) ((i + 0.75) * (ptexture->height / (float) outheight)) * ptexture->width;
-	}
-
-	const byte* const pAlpha = &localPalette[PALETTE_ALPHA_INDEX];
-
-	//This modifies the model's data. Sets the mask color to black. This is also done by Jed's model viewer. (export texture has black)
-	if (ptexture->flags & STUDIO_NF_MASKED)
-	{
-		localPalette[255 * 3 + 0] = localPalette[255 * 3 + 1] = localPalette[255 * 3 + 2] = 0;
-	}
-
-	auto out = tex.get();
-
-	// scale down and convert to 32bit RGB
-	for (i = 0; i < outheight; i++)
-	{
-		for (j = 0; j < outwidth; j++, out += 4)
-		{
-			pix1 = &localPalette[data[row1[i] + col1[j]] * 3];
-			pix2 = &localPalette[data[row1[i] + col2[j]] * 3];
-			pix3 = &localPalette[data[row2[i] + col1[j]] * 3];
-			pix4 = &localPalette[data[row2[i] + col2[j]] * 3];
-
-			out[0] = (pix1[0] + pix2[0] + pix3[0] + pix4[0]) >> 2;
-			out[1] = (pix1[1] + pix2[1] + pix3[1] + pix4[1]) >> 2;
-			out[2] = (pix1[2] + pix2[2] + pix3[2] + pix4[2]) >> 2;
-
-			if (ptexture->flags & STUDIO_NF_MASKED && pix1 == pAlpha && pix2 == pAlpha && pix3 == pAlpha && pix4 == pAlpha)
-			{
-				//Set alpha to 0 to enable transparent pixel.
-				out[3] = 0x00;
-			}
-			else
-			{
-				out[3] = 0xFF;
-			}
-		}
-	}
-
-	UploadRGBATexture(outwidth, outheight, tex.get(), name, bFilterTextures);
-}
-
-size_t UploadTextures(studiohdr_t& textureHdr, std::vector<GLuint>& textures, const bool bFilterTextures, const bool bPowerOf2, const bool bIsDol)
-{
-	size_t uiNumTextures = 0;
-
-	if (textureHdr.textureindex > 0 && textureHdr.numtextures <= CStudioModel::MAX_TEXTURES)
-	{
-		mstudiotexture_t* ptexture = textureHdr.GetTextures();
-
-		byte* pIn = reinterpret_cast<byte*>(&textureHdr);
-
-		const int n = textureHdr.numtextures;
-
-		for (int i = 0; i < n; ++i)
-		{
-			GLuint name;
-
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glGenTextures(1, &name);
-
-			if (bIsDol)
-			{
-				ConvertDolToMdl(pIn, ptexture[i]);
-			}
-
-			UploadTexture(&ptexture[i], pIn + ptexture[i].index, pIn + ptexture[i].width * ptexture[i].height + ptexture[i].index, name, bFilterTextures, bPowerOf2);
-
-			textures.emplace_back(name);
-		}
-
-		uiNumTextures = n;
-	}
-
-	return uiNumTextures;
 }
 }
 
@@ -333,17 +173,48 @@ GLuint CStudioModel::GetTextureId(const int iIndex) const
 	return m_Textures[iIndex];
 }
 
-void CStudioModel::CreateTextures()
+void CStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 {
-	UploadTextures(*GetTextureHeader(), m_Textures, r_filtertextures.GetBool(), r_powerof2textures.GetBool(), m_IsDol);
+	const auto textureHeader = GetTextureHeader();
+
+	if (textureHeader->textureindex > 0 && textureHeader->numtextures <= CStudioModel::MAX_TEXTURES)
+	{
+		mstudiotexture_t* ptexture = textureHeader->GetTextures();
+
+		byte* pIn = reinterpret_cast<byte*>(textureHeader);
+
+		for (int i = 0; i < textureHeader->numtextures; ++i)
+		{
+			GLuint name;
+
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glGenTextures(1, &name);
+
+			const auto texture = ptexture + i;
+
+			if (m_IsDol)
+			{
+				ConvertDolToMdl(pIn, *texture);
+			}
+
+			textureLoader.UploadIndexed8(
+				name,
+				texture->width, texture->height,
+				pIn + texture->index,
+				pIn + texture->index + (texture->width * texture->height),
+				(ptexture->flags & STUDIO_NF_MASKED) != 0);
+
+			m_Textures.emplace_back(name);
+		}
+	}
 }
 
-void CStudioModel::ReplaceTexture(mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint textureId)
+void CStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint textureId)
 {
-	UploadTexture(ptexture, data, pal, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool());
+	textureLoader.UploadIndexed8(textureId, ptexture->width, ptexture->height, data, pal, (ptexture->flags & STUDIO_NF_MASKED) != 0);
 }
 
-void CStudioModel::ReuploadTexture(mstudiotexture_t* ptexture)
+void CStudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture)
 {
 	assert(ptexture);
 
@@ -357,11 +228,30 @@ void CStudioModel::ReuploadTexture(mstudiotexture_t* ptexture)
 		return;
 	}
 
-	GLuint textureId = m_Textures[iIndex];
+	ReplaceTexture(textureLoader, ptexture,
+		header->GetData() + ptexture->index, header->GetData() + ptexture->index + ptexture->width * ptexture->height, m_Textures[iIndex]);
+}
 
-	UploadTexture(ptexture,
-		header->GetData() + ptexture->index,
-		header->GetData() + ptexture->index + ptexture->width * ptexture->height, textureId, r_filtertextures.GetBool(), r_powerof2textures.GetBool());
+void CStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
+{
+	for (auto texture : m_Textures)
+	{
+		glBindTexture(GL_TEXTURE_2D, texture);
+		textureLoader.SetFilters(texture);
+	}
+}
+
+void CStudioModel::ReuploadTextures(graphics::TextureLoader& textureLoader)
+{
+	auto header = GetTextureHeader();
+
+	for (int i = 0; i < header->numtextures; ++i)
+	{
+		const auto ptexture = header->GetTexture(i);
+
+		ReplaceTexture(textureLoader, ptexture,
+			header->GetData() + ptexture->index, header->GetData() + ptexture->index + ptexture->width * ptexture->height, m_Textures[i]);
+	}
 }
 
 namespace

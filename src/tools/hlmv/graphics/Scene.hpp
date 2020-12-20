@@ -31,6 +31,7 @@ class ISoundSystem;
 namespace graphics
 {
 class IGraphicsContext;
+class TextureLoader;
 
 /**
 *	@brief Contains all entities to be rendered for a particular scene
@@ -38,7 +39,7 @@ class IGraphicsContext;
 class Scene
 {
 public:
-	Scene(soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime);
+	Scene(graphics::TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime);
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
@@ -150,6 +151,8 @@ public:
 private:
 	//Keep track of how many times we've been initialized and shut down so we don't do it at the wrong time
 	int _initializeCount{0};
+
+	TextureLoader* const _textureLoader;
 
 	std::unique_ptr<IGraphicsContext> _graphicsContext;
 

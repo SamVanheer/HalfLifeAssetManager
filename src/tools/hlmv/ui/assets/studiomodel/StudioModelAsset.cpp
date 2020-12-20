@@ -19,6 +19,7 @@
 #include "game/entity/CEntityManager.hpp"
 
 #include "graphics/Scene.hpp"
+#include "graphics/TextureLoader.hpp"
 
 #include "qt/QtUtilities.hpp"
 
@@ -46,7 +47,8 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _editorContext(editorContext)
 	, _provider(provider)
 	, _studioModel(std::move(studioModel))
-	, _scene(std::make_unique<graphics::Scene>(editorContext->GetSoundSystem(), editorContext->GetWorldTime()))
+	, _textureLoader(std::make_unique<graphics::TextureLoader>())
+	, _scene(std::make_unique<graphics::Scene>(_textureLoader.get(), editorContext->GetSoundSystem(), editorContext->GetWorldTime()))
 {
 	PushInputSink(this);
 

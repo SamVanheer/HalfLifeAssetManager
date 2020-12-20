@@ -15,4 +15,6 @@ target_sources(${TARGET_NAME}
 		OpenGL.hpp
 		Palette.hpp
 		Scene.cpp
-		Scene.hpp)
+		Scene.hpp
+		TextureLoader.cpp
+		TextureLoader.hpp)

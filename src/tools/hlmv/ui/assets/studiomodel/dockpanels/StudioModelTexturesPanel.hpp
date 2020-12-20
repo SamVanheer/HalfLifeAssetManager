@@ -85,6 +85,9 @@ private slots:
 	void OnTopColorSpinnerChanged();
 	void OnBottomColorSpinnerChanged();
 
+	void OnFilterTexturesChanged();
+	void OnPowerOf2TexturesChanged();
+
 private:
 	Ui_StudioModelTexturesPanel _ui;
 	StudioModelAsset* const _asset;

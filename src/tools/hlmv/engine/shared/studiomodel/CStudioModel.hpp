@@ -18,6 +18,11 @@
 
 #include "studio.hpp"
 
+namespace graphics
+{
+class TextureLoader;
+}
+
 namespace studiomdl
 {
 /**
@@ -155,27 +160,32 @@ public:
 		return m_pStudioHdr.get();
 	}
 
-	studioseqhdr_t*	GetSeqGroupHeader( const size_t i ) const { return m_SequenceHeaders[ i ].get(); }
+	studioseqhdr_t* GetSeqGroupHeader( const size_t i ) const { return m_SequenceHeaders[ i ].get(); }
 
-	mstudioanim_t*	GetAnim( mstudioseqdesc_t* pseqdesc ) const;
+	mstudioanim_t* GetAnim( mstudioseqdesc_t* pseqdesc ) const;
 
 	mstudiomodel_t* GetModelByBodyPart( const int iBody, const int iBodyPart ) const;
 
 	int GetBodyValueForGroup(int compositeValue, int group) const;
 
-	bool			CalculateBodygroup( const int iGroup, const int iValue, int& iInOutBodygroup ) const;
+	bool CalculateBodygroup( const int iGroup, const int iValue, int& iInOutBodygroup ) const;
 
-	GLuint			GetTextureId( const int iIndex ) const;
+	GLuint GetTextureId( const int iIndex ) const;
 
-	void CreateTextures();
+	void CreateTextures(graphics::TextureLoader& textureLoader);
 
-	void			ReplaceTexture( mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint textureId );
+	void ReplaceTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint textureId);
 
 	/**
 	*	Reuploads a texture. Useful for making changes made to the texture's pixel, palette or flag data show up in the model itself.
+	* *	@param textureLoader Loader to use for texture uploading
 	*	@param ptexture Texture to reupload. Must be a texture that is part of this model.
 	*/
-	void ReuploadTexture( mstudiotexture_t* ptexture );
+	void ReuploadTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture);
+
+	void UpdateFilters(graphics::TextureLoader& textureLoader);
+
+	void ReuploadTextures(graphics::TextureLoader& textureLoader);
 
 	std::vector<int> GetRootBoneIndices()
 	{
