@@ -53,6 +53,7 @@ enum class ModelChangeId
 	ChangeHitboxHitgroup,
 	ChangeHitboxBounds,
 
+	ChangeTextureName,
 	ChangeTextureFlags,
 	ImportTexture,
 
@@ -567,6 +568,19 @@ public:
 
 protected:
 	void Apply(int index, const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
+};
+
+class ChangeTextureNameCommand : public ModelListUndoCommand<QString>
+{
+public:
+	ChangeTextureNameCommand(StudioModelAsset* asset, int textureIndex, QString&& oldName, QString&& newName)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeTextureName, textureIndex, std::move(oldName), std::move(newName))
+	{
+		setText("Change texture name");
+	}
+
+protected:
+	void Apply(int index, const QString& oldValue, const QString& newValue) override;
 };
 
 class ChangeTextureFlagsCommand : public ModelListUndoCommand<int>

@@ -202,6 +202,15 @@ void ChangeHitboxBoundsCommand::Apply(int index, const std::pair<glm::vec3, glm:
 	hitbox->bbmax = newValue.second;
 }
 
+void ChangeTextureNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetTextureHeader();
+	const auto texture = header->GetTexture(index);
+
+	strncpy(texture->name, newValue.toStdString().c_str(), sizeof(texture->name) - 1);
+	texture->name[sizeof(texture->name) - 1] = '\0';
+}
+
 void ChangeTextureFlagsCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetTextureHeader();

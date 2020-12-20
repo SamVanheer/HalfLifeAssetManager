@@ -44,6 +44,11 @@ static int GetMeshIndexForDrawing(QComboBox* comboBox)
 	return meshIndex;
 }
 
+static QString FormatTextureName(const mstudiotexture_t& texture)
+{
+	return QString{"%1 (%2 x %3)"}.arg(texture.name).arg(texture.width).arg(texture.height);
+}
+
 StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
@@ -57,6 +62,8 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.ScaleTextureViewSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelTexturesPanel::OnTextureViewScaleSpinnerChanged);
 	connect(_ui.UVLineWidthSlider, &QSlider::valueChanged, this, &StudioModelTexturesPanel::OnUVLineWidthSliderChanged);
 	connect(_ui.UVLineWidthSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelTexturesPanel::OnUVLineWidthSpinnerChanged);
+
+	connect(_ui.TextureName, &QLineEdit::textChanged, this, &StudioModelTexturesPanel::OnTextureNameChanged);
 
 	connect(_ui.Chrome, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnChromeChanged);
 	connect(_ui.Additive, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnAdditiveChanged);
@@ -107,7 +114,7 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	{
 		auto texture = textureHeader->GetTexture(i);
 
-		textures.append(QString{"%1 (%2 x %3)"}.arg(texture->name).arg(texture->width).arg(texture->height));
+		textures.append(FormatTextureName(*texture));
 	}
 
 	_ui.Textures->addItems(textures);
@@ -301,6 +308,23 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 	switch (event.GetId())
 	{
+	case ModelChangeId::ChangeTextureName:
+	{
+		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+
+		const auto texture = header->GetTexture(listChange.GetSourceIndex());
+
+		_ui.Textures->setItemText(listChange.GetSourceIndex(), FormatTextureName(*texture));
+
+		if (listChange.GetSourceIndex() == _ui.Textures->currentIndex())
+		{
+			const QSignalBlocker blocker{_ui.TextureName};
+
+			_ui.TextureName->setText(texture->name);
+		}
+		break;
+	}
+
 	case ModelChangeId::ChangeTextureFlags:
 	{
 		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
@@ -349,6 +373,12 @@ void StudioModelTexturesPanel::OnTextureChanged(int index)
 	auto textureHeader = entity->GetModel()->GetTextureHeader();
 
 	auto texture = textureHeader->GetTexture(index);
+
+	{
+		const QSignalBlocker name{_ui.TextureName};
+
+		_ui.TextureName->setText(texture->name);
+	}
 
 	SetTextureFlagCheckBoxes(_ui, texture->flags);
 
@@ -424,6 +454,13 @@ void StudioModelTexturesPanel::OnUVLineWidthSpinnerChanged(double value)
 	}
 
 	UpdateUVMapTexture();
+}
+
+void StudioModelTexturesPanel::OnTextureNameChanged()
+{
+	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+
+	_asset->AddUndoCommand(new ChangeTextureNameCommand(_asset, _ui.Textures->currentIndex(), texture->name, _ui.TextureName->text()));
 }
 
 void StudioModelTexturesPanel::OnChromeChanged()

@@ -62,6 +62,8 @@ private slots:
 	void OnUVLineWidthSliderChanged(int value);
 	void OnUVLineWidthSpinnerChanged(double value);
 
+	void OnTextureNameChanged();
+
 	void OnChromeChanged();
 	void OnAdditiveChanged();
 	void OnTransparentChanged();

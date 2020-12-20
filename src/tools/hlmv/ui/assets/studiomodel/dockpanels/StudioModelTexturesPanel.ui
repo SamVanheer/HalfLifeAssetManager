@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1142</width>
-    <height>86</height>
+    <width>1213</width>
+    <height>88</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -520,28 +520,21 @@
      <property name="verticalSpacing">
       <number>0</number>
      </property>
-     <item row="1" column="0">
-      <widget class="QCheckBox" name="Chrome">
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="Fullbright">
        <property name="text">
-        <string>Chrome</string>
+        <string>Fullbright</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QCheckBox" name="Transparent">
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="FlatShade">
        <property name="text">
-        <string>Transparent</string>
+        <string>Flat Shade</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QCheckBox" name="Additive">
-       <property name="text">
-        <string>Additive</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -554,24 +547,67 @@
        </property>
       </spacer>
      </item>
-     <item row="0" column="0">
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="Chrome">
+       <property name="text">
+        <string>Chrome</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QCheckBox" name="Additive">
+       <property name="text">
+        <string>Additive</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QCheckBox" name="Transparent">
+       <property name="text">
+        <string>Transparent</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Name:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="TextureName">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="0" colspan="2">
       <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>Texture Flags</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QCheckBox" name="FlatShade">
-       <property name="text">
-        <string>Flat Shade</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QCheckBox" name="Fullbright">
-       <property name="text">
-        <string>Fullbright</string>
+        <string>Flags:</string>
        </property>
       </widget>
      </item>
