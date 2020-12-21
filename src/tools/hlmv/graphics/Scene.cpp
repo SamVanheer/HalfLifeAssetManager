@@ -4,8 +4,9 @@
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
-#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include "core/shared/CWorldTime.hpp"
 
@@ -306,23 +307,7 @@ void Scene::ApplyCameraToScene()
 {
 	auto camera = GetCurrentCamera();
 
-	const auto& vecOrigin = camera->GetOrigin();
-	glm::vec3 vecAngles = camera->GetViewDirection();
-
-	vecAngles.x -= 90;
-	vecAngles.z -= 90;
-
-	const glm::mat4x4 identity = Mat4x4ModelView();
-
-	auto mat = Mat4x4ModelView();
-
-	mat *= glm::translate(-vecOrigin);
-
-	mat *= glm::rotate(glm::radians(vecAngles[2]), glm::vec3{1, 0, 0});
-
-	mat *= glm::rotate(glm::radians(vecAngles[0]), glm::vec3{0, 1, 0});
-
-	mat *= glm::rotate(glm::radians(vecAngles[1]), glm::vec3{0, 0, 1});
+	glm::mat4x4 mat = glm::lookAt(camera->GetOrigin(), camera->GetOrigin() + camera->GetForwardVector(), camera->GetUpVector());
 
 	glLoadMatrixf(glm::value_ptr(mat));
 }
@@ -385,38 +370,8 @@ void Scene::DrawModel()
 		glEnd();
 	}
 
-	const auto& vecAngles = camera->GetViewDirection();
-
-	auto mat = Mat4x4ModelView();
-
-	mat *= glm::translate(-camera->GetOrigin());
-
-	mat *= glm::rotate(glm::radians(vecAngles[2]), glm::vec3{1, 0, 0});
-
-	mat *= glm::rotate(glm::radians(vecAngles[0]), glm::vec3{0, 1, 0});
-
-	mat *= glm::rotate(glm::radians(vecAngles[1]), glm::vec3{0, 0, 1});
-
-	const auto& vecAbsOrigin = glm::inverse(mat)[3];
-
-	_studioModelRenderer->SetViewerOrigin(glm::vec3(vecAbsOrigin));
-
-	//Originally this was calculated as:
-	//vecViewerRight[ 0 ] = vecViewerRight[ 1 ] = vecOrigin[ 2 ];
-	//But that vector was incorrect. It mostly affects chrome because of its reflective nature.
-
-	//Grab the angles that the player would have in-game. Since model viewer rotates the world, rather than moving the camera, this has to be adjusted.
-	glm::vec3 angViewerDir = -camera->GetViewDirection();
-
-	angViewerDir = angViewerDir + 180.0f;
-
-	glm::vec3 vecViewerRight;
-
-	//We're using the up vector here since the in-game look can only be matched if chrome is rotated.
-	AngleVectors(angViewerDir, nullptr, nullptr, &vecViewerRight);
-
-	//Invert it so it points down instead of up. This allows chrome to match the in-game look.
-	_studioModelRenderer->SetViewerRight(-vecViewerRight);
+	_studioModelRenderer->SetViewerOrigin(camera->GetOrigin());
+	_studioModelRenderer->SetViewerRight(camera->GetRightVector());
 
 	const unsigned int uiOldPolys = _studioModelRenderer->GetDrawnPolygonsCount();
 

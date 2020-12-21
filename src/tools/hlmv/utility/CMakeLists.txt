@@ -10,6 +10,7 @@ target_sources(${TARGET_NAME}
 		CMemory.hpp
 		Color.cpp
 		Color.hpp
+		CoordinateSystem.hpp
 		IOUtils.cpp
 		IOUtils.hpp
 		mathlib.cpp

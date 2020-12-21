@@ -1344,7 +1344,7 @@ void CStudioModelRenderer::Chrome( glm::vec2& chrome, int bone, const glm::vec3&
 
 		VectorNormalize( tmp );
 		// g_chrome t vector in world reference frame
-		auto chromeupvec = glm::cross( tmp, -m_vecViewerRight );
+		auto chromeupvec = glm::cross( tmp, m_vecViewerRight );
 		VectorNormalize( chromeupvec );
 		// g_chrome s vector in world reference frame
 		auto chromerightvec = glm::cross( tmp, chromeupvec );

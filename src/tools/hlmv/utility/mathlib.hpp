@@ -129,7 +129,6 @@ void AngleVectors(const glm::vec3& vecAngles, glm::vec3* pForward, glm::vec3* pR
 */
 glm::vec3 AnglesToVector(const glm::vec3& angles);
 
-/**
-*	@return The model view matrix for the GoldSource engine.
-*/
-glm::mat4x4 Mat4x4ModelView();
+double FixAngle(double angle);
+
+glm::vec3 FixAngles(const glm::vec3& angles);

@@ -2,9 +2,14 @@
 
 #include <cassert>
 
+#include <glm/trigonometric.hpp>
+#include <glm/gtx/transform.hpp>
+
 #include "ui/camera_operators/CameraOperator.hpp"
 #include "ui/camera_operators/dockpanels/ArcBallSettingsPanel.hpp"
 #include "ui/settings/GeneralSettings.hpp"
+
+#include "utility/CoordinateSystem.hpp"
 
 namespace ui::camera_operators
 {
@@ -65,9 +70,6 @@ public:
 			{
 				if (event.buttons() & Qt::MouseButton::LeftButton)
 				{
-					//TODO: this should be a vector, not an angle
-					glm::vec3 vecViewDir = _camera.GetViewDirection();
-
 					auto horizontalAdjust = static_cast<float>(event.x() - _oldCoordinates.x);
 					auto verticalAdjust = static_cast<float>(event.y() - _oldCoordinates.y);
 
@@ -81,10 +83,8 @@ public:
 						verticalAdjust = -verticalAdjust;
 					}
 
-					vecViewDir.y += horizontalAdjust;
-					vecViewDir.x += verticalAdjust;
-
-					_camera.SetViewDirection(vecViewDir);
+					_yaw -= horizontalAdjust;
+					_pitch -= verticalAdjust;
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
@@ -98,11 +98,13 @@ public:
 						adjust = -adjust;
 					}
 
-					_camera.GetOrigin().y += adjust;
+					_distance += adjust;
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
 				}
+
+				UpdateArcBallCamera();
 			}
 
 			event.accept();
@@ -113,7 +115,42 @@ public:
 		}
 	}
 
+	void SetTargetPosition(const glm::vec3& targetPosition, float pitch, float yaw, float distance)
+	{
+		_targetPosition = targetPosition;
+		_pitch = pitch;
+		_yaw = yaw;
+		_distance = distance;
+
+		UpdateArcBallCamera();
+	}
+
+private:
+	void UpdateArcBallCamera()
+	{
+		//First create a vector that represents a position at distance without any rotation applied
+		auto cameraPosition = math::ForwardVector * -_distance;
+
+		//Now apply rotation
+		cameraPosition =
+			glm::rotate(glm::radians(_yaw), math::UpVector) *
+			glm::rotate(glm::radians(-_pitch), math::RightVector) *
+			glm::vec4{cameraPosition, 1};
+
+		//Make relative to target position
+		cameraPosition += _targetPosition;
+
+		//Set camera variables
+		_camera.SetProperties(cameraPosition, _pitch, _yaw);
+	}
+
 private:
 	const settings::GeneralSettings* const _generalSettings;
+
+	glm::vec3 _targetPosition{0};
+
+	float _pitch{0};
+	float _yaw{0};
+	float _distance{0};
 };
 }

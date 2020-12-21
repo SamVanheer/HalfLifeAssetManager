@@ -82,25 +82,20 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 			max[i] = clamp(max[i], -1000.f, 1000.f);
 		}
 
-		float dx = max[0] - min[0];
-		float dy = max[1] - min[1];
-		float dz = max[2] - min[2];
+		const float dx = max[0] - min[0];
+		const float dy = max[1] - min[1];
+		const float dz = max[2] - min[2];
 
-		float d = dx;
+		const float distance{std::max({dx, dy, dz})};
 
-		if (dy > d)
-			d = dy;
-		if (dz > d)
-			d = dz;
+		const float height{min[2] + (dz / 2)};
 
-		glm::vec3 trans;
+		const glm::vec3 initialCameraPosition{distance, 0, height};
 
-		trans[2] = 0;
-		trans[0] = -(min[2] + dz / 2);
-		trans[1] = d * 1.0f;
+		freeLookCameraOperator->GetCamera()->SetOrigin(initialCameraPosition);
+		freeLookCameraOperator->GetCamera()->SetYaw(180);
 
-		arcBallCameraOperator->GetCamera()->SetOrigin(trans);
-		freeLookCameraOperator->GetCamera()->SetOrigin(trans);
+		arcBallCameraOperator->SetTargetPosition({0, 0, height}, 0, 180, distance);
 	}
 
 	AddCameraOperator(std::move(arcBallCameraOperator));

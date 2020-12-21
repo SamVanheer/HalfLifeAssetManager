@@ -63,8 +63,8 @@ public:
 			{
 				if (event.buttons() & Qt::MouseButton::LeftButton)
 				{
-					//TODO: this should be a vector, not an angle
-					glm::vec3 vecViewDir = _camera.GetViewDirection();
+					float pitch = _camera.GetPitch();
+					float yaw = _camera.GetYaw();
 
 					auto horizontalAdjust = static_cast<float>(event.x() - _oldCoordinates.x);
 					auto verticalAdjust = static_cast<float>(event.y() - _oldCoordinates.y);
@@ -79,10 +79,10 @@ public:
 						verticalAdjust = -verticalAdjust;
 					}
 
-					vecViewDir.y += horizontalAdjust;
-					vecViewDir.x += verticalAdjust;
+					yaw -= horizontalAdjust;
+					pitch -= verticalAdjust;
 
-					_camera.SetViewDirection(vecViewDir);
+					_camera.SetAngles(pitch, yaw);
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
@@ -96,7 +96,7 @@ public:
 						adjust = -adjust;
 					}
 
-					_camera.GetOrigin().y += adjust;
+					_camera.SetOrigin(_camera.GetOrigin() - (_camera.GetForwardVector() * adjust));
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();

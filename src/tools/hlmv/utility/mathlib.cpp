@@ -17,6 +17,8 @@
 
 #include "mathlib.hpp"
 
+constexpr double MaxAngle = 360.0;
+
 bool VectorCompare(const glm::vec3& lhs, const glm::vec3& rhs)
 {
 	for (size_t i = 0; i < 3; ++i)
@@ -340,11 +342,20 @@ glm::vec3 AnglesToVector(const glm::vec3& angles)
 	return forward + right + up;
 }
 
-glm::mat4x4 Mat4x4ModelView()
+double FixAngle(double angle)
 {
-	return glm::mat4x4(
-		0, -1, 0, 0,
-		0, 0, 1, 0,
-		-1, 0, 0, 0,
-		0, 0, 0, 1);
+	//Use high precision when fixing angles to reduce errors
+	angle = std::fmod(angle, MaxAngle);
+
+	while (angle < 0)
+	{
+		angle += MaxAngle;
+	}
+
+	return static_cast<float>(angle);
+}
+
+glm::vec3 FixAngles(const glm::vec3& angles)
+{
+	return {FixAngle(angles.x), FixAngle(angles.y), FixAngle(angles.z)};
 }

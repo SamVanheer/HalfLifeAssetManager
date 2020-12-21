@@ -1,7 +1,10 @@
 #pragma once
 
+#include <glm/geometric.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+
+#include "utility/mathlib.hpp"
 
 namespace graphics
 {
@@ -12,21 +15,10 @@ class Camera
 {
 public:
 	/**
-	*	@brief The default view direction. Points to 0, 0, 1.
+	*	@brief Initializes the origin to 0, 0, 0 and the view direction to math::ForwardVector.
+	*	@see math::ForwardVector
 	*/
-	static inline const glm::vec3 DefaultViewDirection{0, 0, 1};
-
-public:
-	/**
-	*	@brief Initializes the origin to 0, 0, 0 and the view direction to DefaultViewDirection.
-	*	@see DefaultViewDirection
-	*/
-	Camera()
-		: _origin(0)
-		, _viewDirection(DefaultViewDirection)
-	{
-	}
-
+	Camera() = default;
 	Camera(const Camera&) = default;
 	Camera& operator=(const Camera& other) = default;
 
@@ -46,25 +38,48 @@ public:
 	void SetOrigin(const glm::vec3& origin)
 	{
 		_origin = origin;
+
+		UpdateViewMatrix();
 	}
 
-	/**
-	*	@brief Gets the view direction.
-	*/
-	const glm::vec3& GetViewDirection() const { return _viewDirection; }
+	float GetPitch() const { return _pitch; }
 
-	/**
-	*	@copydoc GetViewDirection() const
-	*/
-	glm::vec3& GetViewDirection() { return _viewDirection; }
-
-	/**
-	*	@brief Sets the view direction.
-	*/
-	void SetViewDirection(const glm::vec3& viewDirection)
+	void SetPitch(float pitch)
 	{
-		_viewDirection = viewDirection;
+		SetAngles(pitch, _yaw);
 	}
+
+	float GetYaw() const { return _yaw; }
+
+	void SetYaw(float yaw)
+	{
+		SetAngles(_pitch, yaw);
+	}
+
+	void SetAngles(float pitch, float yaw)
+	{
+		_pitch = pitch;
+		_yaw = yaw;
+
+		UpdateViewMatrix();
+	}
+
+	void SetProperties(const glm::vec3& origin, float pitch, float yaw)
+	{
+		_origin = origin;
+		_pitch = pitch;
+		_yaw = yaw;
+
+		UpdateViewMatrix();
+	}
+
+	const glm::vec3 GetForwardVector() const { return glm::normalize(glm::vec3(_viewMatrix[0])); }
+
+	const glm::vec3 GetRightVector() const { return glm::normalize(glm::vec3(_viewMatrix[1])); }
+
+	const glm::vec3 GetUpVector() const { return glm::normalize(glm::vec3(_viewMatrix[2])); }
+
+	const glm::mat4x4& GetViewMatrix() const { return _viewMatrix; }
 
 	float GetFieldOfView() const { return _fov; }
 
@@ -74,8 +89,15 @@ public:
 	}
 
 private:
-	glm::vec3 _origin;
-	glm::vec3 _viewDirection;
+	void UpdateViewMatrix();
+
+private:
+	glm::vec3 _origin{0};
+
+	float _pitch{0};
+	float _yaw{0};
+
+	glm::mat4x4 _viewMatrix;
 
 	float _fov{90.f};
 };
