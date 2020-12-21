@@ -169,6 +169,12 @@ public:
 
 	entt::id_type GetAssetType() const override { return entt::type_index<StudioModelAsset>::value(); }
 
+	QString GetProviderName() const override;
+
+	QStringList GetFileTypes() const override;
+
+	QString GetPreferredFileType() const override;
+
 	bool CanLoad(const QString& fileName) const override;
 
 	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const override;

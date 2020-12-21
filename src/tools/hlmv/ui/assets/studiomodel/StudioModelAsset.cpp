@@ -41,6 +41,9 @@
 
 namespace ui::assets::studiomodel
 {
+const QString StudioModelExtension{QStringLiteral("mdl")};
+const QString StudioModelPS2Extension{QStringLiteral("dol")};
+
 StudioModelAsset::StudioModelAsset(QString&& fileName,
 	EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel)
 	: Asset(std::move(fileName))
@@ -426,6 +429,21 @@ void StudioModelAsset::OnTakeScreenshot()
 			QMessageBox::critical(nullptr, "Error", "An error occurred while saving screenshot");
 		}
 	}
+}
+
+QString StudioModelAssetProvider::GetProviderName() const
+{
+	return "Studiomodel";
+}
+
+QStringList StudioModelAssetProvider::GetFileTypes() const
+{
+	return {StudioModelExtension, StudioModelPS2Extension};
+}
+
+QString StudioModelAssetProvider::GetPreferredFileType() const
+{
+	return StudioModelExtension;
 }
 
 bool StudioModelAssetProvider::CanLoad(const QString& fileName) const

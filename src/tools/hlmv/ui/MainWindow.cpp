@@ -83,6 +83,33 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	OnActiveConfigurationChanged(_editorContext->GetGameConfigurations()->GetActiveConfiguration(), {});
 
 	setWindowTitle({});
+
+	//Construct the file filters used for loading and saving
+	QStringList filters;
+
+	for (auto provider : _editorContext->GetAssetProviderRegistry()->GetAssetProviders())
+	{
+		auto fileTypes = provider->GetFileTypes();
+
+		for (auto& fileType : fileTypes)
+		{
+			fileType = QString{"*.%1"}.arg(fileType);
+		}
+
+		filters.append(QString{"%1 Files (%2)"}.arg(provider->GetProviderName()).arg(fileTypes.join(' ')));
+	}
+
+	if (!filters.isEmpty())
+	{
+		_fileFilter = filters.join(";;");
+	}
+
+	if (!_fileFilter.isEmpty())
+	{
+		_fileFilter += ";;";
+	}
+
+	_fileFilter += "All Files (*.*)";
 }
 
 MainWindow::~MainWindow()
@@ -255,8 +282,7 @@ void MainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
 
 void MainWindow::OnOpenLoadAssetDialog()
 {
-	//TODO: compute filter based on available asset providers
-	if (const auto fileName = QFileDialog::getOpenFileName(this, "Select asset", {}, "Half-Life 1 Model Files (*.mdl *.dol);;All Files (*.*)");
+	if (const auto fileName = QFileDialog::getOpenFileName(this, "Select asset", {}, _fileFilter);
 		!fileName.isEmpty())
 	{
 		TryLoadAsset(fileName);
@@ -344,9 +370,7 @@ void MainWindow::OnSaveAssetAs()
 {
 	const auto asset = GetCurrentAsset();
 
-	//TODO: compute filter based on available asset providers
-	QString fileName{QFileDialog::getSaveFileName(
-		this, {}, asset->GetFileName(), "Half-Life 1 Model Files (*.mdl *.dol);;All Files (*.*)")};
+	QString fileName{QFileDialog::getSaveFileName(this, {}, asset->GetFileName(), _fileFilter)};
 
 	if (!fileName.isEmpty())
 	{

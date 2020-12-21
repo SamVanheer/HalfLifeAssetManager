@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <QObject>
 #include <QString>
@@ -99,6 +100,15 @@ public:
 
 	virtual entt::id_type GetAssetType() const = 0;
 
+	/**
+	*	@brief e.g. "Studiomodel". Used for file filters.
+	*/
+	virtual QString GetProviderName() const = 0;
+
+	virtual QStringList GetFileTypes() const = 0;
+
+	virtual QString GetPreferredFileType() const = 0;
+
 	virtual bool CanLoad(const QString& fileName) const = 0;
 
 	//TODO: pass a filesystem object to resolve additional file locations with
@@ -113,6 +123,8 @@ class IAssetProviderRegistry
 public:
 	virtual ~IAssetProviderRegistry() = 0 {}
 
+	virtual std::vector<const IAssetProvider*> GetAssetProviders() const = 0;
+
 	virtual void AddProvider(std::unique_ptr<IAssetProvider>&& provider) = 0;
 
 	virtual std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const = 0;
@@ -125,6 +137,8 @@ public:
 	~AssetProviderRegistry() = default;
 	AssetProviderRegistry(const AssetProviderRegistry&) = delete;
 	AssetProviderRegistry& operator=(const AssetProviderRegistry&) = delete;
+
+	std::vector<const IAssetProvider*> GetAssetProviders() const override;
 
 	void AddProvider(std::unique_ptr<IAssetProvider>&& provider) override;
 

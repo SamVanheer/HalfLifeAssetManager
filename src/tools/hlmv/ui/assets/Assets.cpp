@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <stdexcept>
 
 #include "assets/AssetIO.hpp"
@@ -5,6 +6,20 @@
 
 namespace ui::assets
 {
+std::vector<const IAssetProvider*> AssetProviderRegistry::GetAssetProviders() const
+{
+	std::vector<const IAssetProvider*> providers;
+
+	providers.reserve(_providers.size());
+
+	std::transform(_providers.begin(), _providers.end(), std::back_inserter(providers), [](const auto& provider)
+		{
+			return provider.second.get();
+		});
+
+	return providers;
+}
+
 void AssetProviderRegistry::AddProvider(std::unique_ptr<IAssetProvider>&& provider)
 {
 	if (_providers.find(provider->GetAssetType()) != _providers.end())

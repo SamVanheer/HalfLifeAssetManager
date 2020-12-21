@@ -95,6 +95,8 @@ private:
 
 	QTabWidget* _assetTabs;
 
+	QString _fileFilter;
+
 	QPointer<assets::Asset> _currentAsset;
 
 	std::unique_ptr<FullscreenWidget> _fullscreenWidget;
