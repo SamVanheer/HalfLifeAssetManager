@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 
 #include <QCloseEvent>
 #include <QFileDialog>
@@ -128,16 +129,112 @@ bool MainWindow::TryLoadAsset(const QString& fileName)
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-	//TODO: ask to save pending changes for each document
-	//TODO: if the user cancels any close request cancel the window close event as well
+	//If the user cancels any close request cancel the window close event as well
+	for (auto& asset : _editorContext->GetLoadedAssets())
+	{
+		if (!VerifyNoUnsavedChanges(asset.GetAsset()))
+		{
+			return;
+		}
+	}
 
 	//Close each asset
 	while (_assetTabs->count() > 0)
 	{
-		OnAssetTabCloseRequested(0);
+		//Don't ask the user to save again
+		TryCloseAsset(0, false);
 	}
 
 	event->accept();
+}
+
+bool MainWindow::SaveAsset(assets::Asset* asset)
+{
+	assert(asset);
+
+	try
+	{
+		asset->Save(asset->GetFileName());
+	}
+	catch (const ::assets::AssetException& e)
+	{
+		QMessageBox::critical(this, "Error saving asset", QString{"Error saving asset:\n%1"}.arg(e.what()));
+		return false;
+	}
+
+	auto undoStack = asset->GetUndoStack();
+
+	undoStack->setClean();
+
+	return true;
+}
+
+bool MainWindow::VerifyNoUnsavedChanges(assets::Asset* asset)
+{
+	assert(asset);
+
+	if (asset->GetUndoStack()->isClean())
+	{
+		return true;
+	}
+
+	const QMessageBox::StandardButton action = QMessageBox::question(
+		this,
+		{},
+		QString{"Save changes made to \"%1\"?"}.arg(asset->GetFileName()),
+		QMessageBox::StandardButton::Save | QMessageBox::StandardButton::Discard | QMessageBox::StandardButton::Cancel,
+		QMessageBox::StandardButton::Save);
+
+	switch (action)
+	{
+	case QMessageBox::StandardButton::Save: return SaveAsset(asset);
+	case QMessageBox::StandardButton::Discard: return true;
+	default:
+	case QMessageBox::StandardButton::Cancel: return false;
+	}
+}
+
+bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges)
+{
+	if (_fullscreenWidget)
+	{
+		//Always exit the fullscreen window if we're getting a close request
+		//The user needs to be able to see the main window and interact with it,
+		//and the fullscreen window may be holding a reference to the asset being closed
+		_fullscreenWidget->ExitFullscreen();
+	}
+
+	auto editWidget = _assetTabs->widget(index);
+
+	auto& assets = _editorContext->GetLoadedAssets();
+
+	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& asset)
+		{
+			return asset.GetEditWidget() == editWidget;
+		}); it != assets.end())
+	{
+		if (verifyUnsavedChanges && !VerifyNoUnsavedChanges(it->GetAsset()))
+		{
+			//User cancelled or an error occurred
+			return false;
+		}
+
+		_assetTabs->removeTab(index);
+
+		_undoGroup->removeStack(it->GetAsset()->GetUndoStack());
+		assets.erase(it);
+	}
+	else
+	{
+		QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
+	}
+
+	const bool hasOpenAssets = _assetTabs->count() > 0;
+
+	_assetTabs->setVisible(hasOpenAssets);
+	_ui.ActionFullscreen->setEnabled(hasOpenAssets);
+
+	return true;
 }
 
 void MainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
@@ -216,39 +313,7 @@ void MainWindow::OnAssetTabChanged(int index)
 
 void MainWindow::OnAssetTabCloseRequested(int index)
 {
-	if (_fullscreenWidget)
-	{
-		//Always exit the fullscreen window if we're getting a close request
-		//The user needs to be able to see the main window and interact with it,
-		//and the fullscreen window may be holding a reference to the asset being closed
-		_fullscreenWidget->ExitFullscreen();
-	}
-
-	//TODO: ask to save, etc
-
-	auto editWidget = _assetTabs->widget(index);
-
-	_assetTabs->removeTab(index);
-
-	auto& assets = _editorContext->GetLoadedAssets();
-
-	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& asset)
-		{
-			return asset.GetEditWidget() == editWidget;
-		}); it != assets.end())
-	{
-		_undoGroup->removeStack(it->GetAsset()->GetUndoStack());
-		assets.erase(it);
-	}
-	else
-	{
-		QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
-	}
-
-	const bool hasOpenAssets = _assetTabs->count() > 0;
-
-	_assetTabs->setVisible(hasOpenAssets);
-	_ui.ActionFullscreen->setEnabled(hasOpenAssets);
+	TryCloseAsset(index, true);
 }
 
 void MainWindow::OnAssetFileNameChanged(const QString& fileName)
@@ -294,19 +359,7 @@ void MainWindow::OnSaveAsset()
 
 	auto asset = currentAsset.GetAsset();
 
-	try
-	{
-		asset->Save(asset->GetFileName());
-	}
-	catch (const ::assets::AssetException& e)
-	{
-		QMessageBox::critical(this, "Error saving asset", QString{"Error saving asset:\n%1"}.arg(e.what()));
-		return;
-	}
-
-	auto undoStack = asset->GetUndoStack();
-
-	undoStack->setClean();
+	SaveAsset(asset);
 }
 
 void MainWindow::OnSaveAssetAs()

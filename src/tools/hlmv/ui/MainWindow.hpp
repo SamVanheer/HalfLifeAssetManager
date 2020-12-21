@@ -41,6 +41,12 @@ protected:
 	void closeEvent(QCloseEvent* event) override;
 
 private:
+	bool SaveAsset(assets::Asset* asset);
+
+	bool VerifyNoUnsavedChanges(assets::Asset* asset);
+
+	bool TryCloseAsset(int index, bool verifyUnsavedChanges);
+
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
 
 	void SetupFileSystem(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration);
