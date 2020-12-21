@@ -318,9 +318,15 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.Textures->currentIndex())
 		{
-			const QSignalBlocker blocker{_ui.TextureName};
+			const QString name{texture->name};
 
-			_ui.TextureName->setText(texture->name);
+			//Avoid resetting the edit position
+			if (_ui.TextureName->text() != name)
+			{
+				const QSignalBlocker blocker{_ui.TextureName};
+
+				_ui.TextureName->setText(name);
+			}
 		}
 		break;
 	}
