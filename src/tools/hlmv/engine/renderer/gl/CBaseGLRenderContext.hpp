@@ -28,11 +28,11 @@ public:
 
 	void Viewport( int iX, int iY, int iWidth, int iHeight ) override;
 
-	void PerspectiveY( vec_t flFOVY, vec_t flAspect, vec_t flNear, vec_t flFar ) override;
+	void PerspectiveY( float flFOVY, float flAspect, float flNear, float flFar ) override;
 
-	void ClearColor( const Color32& color ) override;
+	void ClearColor( const glm::vec4& color ) override;
 
-	void ClearColor( const Color24& color, float flA = 0 ) override;
+	void ClearColor( const glm::vec3& color, float flA = 0 ) override;
 
 	void ClearColor( float flR = 0, float flG = 0, float flB = 0, float flA = 0 ) override;
 

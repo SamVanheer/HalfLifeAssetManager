@@ -12,9 +12,9 @@ namespace sprite
 */
 struct CSpriteRenderInfo final
 {
-	Vector vecOrigin;
-	Vector vecAngles;
-	Vector vecScale;
+	glm::vec3 vecOrigin;
+	glm::vec3 vecAngles;
+	glm::vec3 vecScale;
 
 	msprite_t* pSprite;
 
@@ -32,8 +32,8 @@ struct CSpriteRenderInfo final
 */
 struct C2DSpriteRenderInfo final
 {
-	Vector2D vecPos;
-	Vector2D vecScale;
+	glm::vec2 vecPos;
+	glm::vec2 vecScale;
 
 	msprite_t* pSprite;
 

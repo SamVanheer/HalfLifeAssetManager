@@ -23,12 +23,12 @@ public:
 
 	void LoadIdentity() override;
 
-	void LoadMatrix( const Mat4x4& mat ) override;
+	void LoadMatrix( const glm::mat4x4& mat ) override;
 
-	void LoadTransposeMatrix( const Mat4x4& mat ) override;
+	void LoadTransposeMatrix( const glm::mat4x4& mat ) override;
 
-	void MultMatrix( const Mat4x4& mat ) override;
+	void MultMatrix( const glm::mat4x4& mat ) override;
 
-	void MultTransposeMatrix( const Mat4x4& mat ) override;
+	void MultTransposeMatrix( const glm::mat4x4& mat ) override;
 };
 }

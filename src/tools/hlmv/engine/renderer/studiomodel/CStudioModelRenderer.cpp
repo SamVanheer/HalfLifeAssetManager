@@ -834,7 +834,7 @@ void CStudioModelRenderer::CalcBoneAdj()
 		case STUDIO_XR:
 		case STUDIO_YR:
 		case STUDIO_ZR:
-			m_Adj[ j ] = value * ( Q_PI / 180.0 );
+			m_Adj[ j ] = value * (PI<double> / 180.0 );
 			break;
 		case STUDIO_X:
 		case STUDIO_Y:

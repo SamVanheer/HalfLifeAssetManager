@@ -69,17 +69,17 @@ void CBaseGLRenderContext::Viewport( int iX, int iY, int iWidth, int iHeight )
 	glViewport( iX, iY, iWidth, iHeight );
 }
 
-void CBaseGLRenderContext::PerspectiveY( vec_t flFOVY, vec_t flAspect, vec_t flNear, vec_t flFar )
+void CBaseGLRenderContext::PerspectiveY( float flFOVY, float flAspect, float flNear, float flFar )
 {
 	MultMatrix( glm::perspective( flFOVY, flAspect, flNear, flFar ) );
 }
 
-void CBaseGLRenderContext::ClearColor( const Color32& color )
+void CBaseGLRenderContext::ClearColor( const glm::vec4& color )
 {
 	glClearColor( color.r, color.g, color.b, color.a );
 }
 
-void CBaseGLRenderContext::ClearColor( const Color24& color, float flA  )
+void CBaseGLRenderContext::ClearColor( const glm::vec3& color, float flA  )
 {
 	glClearColor( color.r, color.g, color.b, flA );
 }

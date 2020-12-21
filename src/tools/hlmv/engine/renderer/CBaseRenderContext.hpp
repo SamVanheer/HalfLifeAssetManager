@@ -18,7 +18,7 @@ public:
 
 	void MatrixMode( const MatrixMode::MatrixMode mode ) override { m_MatrixMode = mode; }
 
-	const Mat4x4& GetMatrix() const override;
+	const glm::mat4x4& GetMatrix() const override;
 
 	void PushMatrix() override;
 
@@ -26,15 +26,15 @@ public:
 
 	void LoadIdentity() override;
 
-	void LoadMatrix( const Mat4x4& mat ) override;
+	void LoadMatrix( const glm::mat4x4& mat ) override;
 
-	void LoadTransposeMatrix( const Mat4x4& mat ) override;
+	void LoadTransposeMatrix( const glm::mat4x4& mat ) override;
 
-	void MultMatrix( const Mat4x4& mat ) override;
+	void MultMatrix( const glm::mat4x4& mat ) override;
 
-	void MultTransposeMatrix( const Mat4x4& mat ) override;
+	void MultTransposeMatrix( const glm::mat4x4& mat ) override;
 
-	void Ortho( vec_t flLeft, vec_t flRight, vec_t flBottom, vec_t flTop, vec_t flNear, vec_t flFar ) override;
+	void Ortho( float flLeft, float flRight, float flBottom, float flTop, float flNear, float flFar ) override;
 
 protected:
 	/**

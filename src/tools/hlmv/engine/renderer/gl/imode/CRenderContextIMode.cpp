@@ -67,7 +67,7 @@ void CRenderContextIMode::LoadIdentity()
 	glLoadIdentity();
 }
 
-void CRenderContextIMode::LoadMatrix( const Mat4x4& mat )
+void CRenderContextIMode::LoadMatrix( const glm::mat4x4& mat )
 {
 	BaseClass::LoadMatrix( mat );
 
@@ -76,13 +76,13 @@ void CRenderContextIMode::LoadMatrix( const Mat4x4& mat )
 	//Model and View need to be combined.
 	if( mode == MatrixMode::MODEL )
 	{
-		Mat4x4 newMat = mat * GetMatrixStack().GetMatrix( MatrixMode::VIEW );
+		glm::mat4x4 newMat = mat * GetMatrixStack().GetMatrix( MatrixMode::VIEW );
 
 		glLoadMatrixf( glm::value_ptr( newMat ) );
 	}
 	else if( mode == MatrixMode::VIEW )
 	{
-		Mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * mat;
+		glm::mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * mat;
 
 		glLoadMatrixf( glm::value_ptr( newMat ) );
 	}
@@ -93,25 +93,25 @@ void CRenderContextIMode::LoadMatrix( const Mat4x4& mat )
 	}
 }
 
-void CRenderContextIMode::LoadTransposeMatrix( const Mat4x4& mat )
+void CRenderContextIMode::LoadTransposeMatrix( const glm::mat4x4& mat )
 {
 	BaseClass::LoadTransposeMatrix( mat );
 
 	const auto mode = GetMatrixMode();
 
 	//Transposing here and handling it like a regular matrix will have the same effect.
-	Mat4x4 transMat = glm::transpose( mat );
+	glm::mat4x4 transMat = glm::transpose( mat );
 
 	//Model and View need to be combined.
 	if( mode == MatrixMode::MODEL )
 	{
-		Mat4x4 newMat = transMat * GetMatrixStack().GetMatrix( MatrixMode::VIEW );
+		glm::mat4x4 newMat = transMat * GetMatrixStack().GetMatrix( MatrixMode::VIEW );
 
 		glLoadMatrixf( glm::value_ptr( newMat ) );
 	}
 	else if( mode == MatrixMode::VIEW )
 	{
-		Mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * transMat;
+		glm::mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * transMat;
 
 		glLoadMatrixf( glm::value_ptr( newMat ) );
 	}
@@ -122,7 +122,7 @@ void CRenderContextIMode::LoadTransposeMatrix( const Mat4x4& mat )
 	}
 }
 
-void CRenderContextIMode::MultMatrix( const Mat4x4& mat )
+void CRenderContextIMode::MultMatrix( const glm::mat4x4& mat )
 {
 	BaseClass::MultMatrix( mat );
 
@@ -131,13 +131,13 @@ void CRenderContextIMode::MultMatrix( const Mat4x4& mat )
 	//Model and View need to be combined.
 	if( mode == MatrixMode::MODEL )
 	{
-		Mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * mat * GetMatrixStack().GetMatrix( MatrixMode::VIEW );
+		glm::mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * mat * GetMatrixStack().GetMatrix( MatrixMode::VIEW );
 
 		glMultMatrixf( glm::value_ptr( newMat ) );
 	}
 	else if( mode == MatrixMode::VIEW )
 	{
-		Mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * GetMatrixStack().GetMatrix( MatrixMode::VIEW ) * mat;
+		glm::mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * GetMatrixStack().GetMatrix( MatrixMode::VIEW ) * mat;
 
 		glMultMatrixf( glm::value_ptr( newMat ) );
 	}
@@ -148,25 +148,25 @@ void CRenderContextIMode::MultMatrix( const Mat4x4& mat )
 	}
 }
 
-void CRenderContextIMode::MultTransposeMatrix( const Mat4x4& mat )
+void CRenderContextIMode::MultTransposeMatrix( const glm::mat4x4& mat )
 {
 	BaseClass::MultTransposeMatrix( mat );
 
 	const auto mode = GetMatrixMode();
 
 	//Transposing here and handling it like a regular matrix will have the same effect.
-	Mat4x4 transMat = glm::transpose( mat );
+	glm::mat4x4 transMat = glm::transpose( mat );
 
 	//Model and View need to be combined.
 	if( mode == MatrixMode::MODEL )
 	{
-		Mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * transMat * GetMatrixStack().GetMatrix( MatrixMode::VIEW );
+		glm::mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * transMat * GetMatrixStack().GetMatrix( MatrixMode::VIEW );
 
 		glMultMatrixf( glm::value_ptr( newMat ) );
 	}
 	else if( mode == MatrixMode::VIEW )
 	{
-		Mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * GetMatrixStack().GetMatrix( MatrixMode::VIEW ) * transMat;
+		glm::mat4x4 newMat = GetMatrixStack().GetMatrix( MatrixMode::MODEL ) * GetMatrixStack().GetMatrix( MatrixMode::VIEW ) * transMat;
 
 		glMultMatrixf( glm::value_ptr( newMat ) );
 	}

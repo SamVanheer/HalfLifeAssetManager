@@ -1,7 +1,6 @@
 target_sources(${TARGET_NAME}
 	PRIVATE
 		Class.hpp
-		Const.cpp
 		Const.hpp
 		CWorldTime.cpp
 		CWorldTime.hpp

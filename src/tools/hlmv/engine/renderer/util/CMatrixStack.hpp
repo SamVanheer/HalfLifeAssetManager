@@ -13,7 +13,7 @@ namespace renderer
 class CMatrixStack final
 {
 private:
-	typedef std::stack<Mat4x4> MatStack_t;
+	typedef std::stack<glm::mat4x4> MatStack_t;
 
 public:
 	CMatrixStack();
@@ -21,7 +21,7 @@ public:
 	CMatrixStack& operator=( const CMatrixStack& other ) = default;
 	~CMatrixStack() = default;
 
-	const Mat4x4& GetMatrix( const MatrixMode::MatrixMode mode ) const;
+	const glm::mat4x4& GetMatrix( const MatrixMode::MatrixMode mode ) const;
 
 	void PushMatrix( const MatrixMode::MatrixMode mode );
 
@@ -29,13 +29,13 @@ public:
 
 	void LoadIdentity( const MatrixMode::MatrixMode mode );
 
-	void LoadMatrix( const MatrixMode::MatrixMode mode, const Mat4x4& mat );
+	void LoadMatrix( const MatrixMode::MatrixMode mode, const glm::mat4x4& mat );
 
-	void LoadTransposeMatrix( const MatrixMode::MatrixMode mode, const Mat4x4& mat );
+	void LoadTransposeMatrix( const MatrixMode::MatrixMode mode, const glm::mat4x4& mat );
 
-	void MultMatrix( const MatrixMode::MatrixMode mode, const Mat4x4& mat );
+	void MultMatrix( const MatrixMode::MatrixMode mode, const glm::mat4x4& mat );
 
-	void MultTransposeMatrix( const MatrixMode::MatrixMode mode, const Mat4x4& mat );
+	void MultTransposeMatrix( const MatrixMode::MatrixMode mode, const glm::mat4x4& mat );
 
 private:
 	MatStack_t m_Stacks[ MatrixMode::COUNT ];

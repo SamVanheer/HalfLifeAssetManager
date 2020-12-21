@@ -158,7 +158,7 @@ private:
 
 	glm::mat3x4		m_bonetransform[ MAXSTUDIOBONES ];	// bone transformation matrix
 
-	vec_t			m_Adj[ MAXSTUDIOCONTROLLERS ];		//This used to be a vec4, but it really needs to be this.
+	float			m_Adj[ MAXSTUDIOCONTROLLERS ];		//This used to be a vec4, but it really needs to be this.
 
 	int				m_ambientlight;						// ambient world light
 	float			m_shadelight;						// direct world light

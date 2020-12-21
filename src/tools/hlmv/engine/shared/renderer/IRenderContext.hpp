@@ -158,7 +158,7 @@ public:
 	*	Gets the current matrix for the active matrix mode.
 	*	@return Current matrix.
 	*/
-	virtual const Mat4x4& GetMatrix() const = 0;
+	virtual const glm::mat4x4& GetMatrix() const = 0;
 
 	/**
 	*	Pushes the current matrix on the stack.
@@ -178,22 +178,22 @@ public:
 	/**
 	*	Loads the given matrix into the current matrix.
 	*/
-	virtual void LoadMatrix( const Mat4x4& mat ) = 0;
+	virtual void LoadMatrix( const glm::mat4x4& mat ) = 0;
 
 	/**
 	*	Loads the given row-major matrix into the current matrix.
 	*/
-	virtual void LoadTransposeMatrix( const Mat4x4& mat ) = 0;
+	virtual void LoadTransposeMatrix( const glm::mat4x4& mat ) = 0;
 
 	/**
 	*	Multiplies the current matrix with the given matrix.
 	*/
-	virtual void MultMatrix( const Mat4x4& mat ) = 0;
+	virtual void MultMatrix( const glm::mat4x4& mat ) = 0;
 
 	/**
 	*	Multiplies the current matrix with the given row-major matrix.
 	*/
-	virtual void MultTransposeMatrix( const Mat4x4& mat ) = 0;
+	virtual void MultTransposeMatrix( const glm::mat4x4& mat ) = 0;
 
 	/**
 	*	Multiplies the current matrix with an orthographic matrix defined by the given parameters.
@@ -204,7 +204,7 @@ public:
 	*	@param flNear Near Z clip plane.
 	*	@param flFar Far Z clip plane.
 	*/
-	virtual void Ortho( vec_t flLeft, vec_t flRight, vec_t flBottom, vec_t flTop, vec_t flNear, vec_t flFar ) = 0;
+	virtual void Ortho( float flLeft, float flRight, float flBottom, float flTop, float flNear, float flFar ) = 0;
 
 	/**
 	*	Sets the viewport.
@@ -222,20 +222,20 @@ public:
 	*	@param flNear Near Z clip plane.
 	*	@param flFar Far Z clip plane.
 	*/
-	virtual void PerspectiveY( vec_t flFOVY, vec_t flAspect, vec_t flNear, vec_t flFar ) = 0;
+	virtual void PerspectiveY( float flFOVY, float flAspect, float flNear, float flFar ) = 0;
 
 	/**
 	*	Sets the clear color.
 	*	@param color RGBA color.
 	*/
-	virtual void ClearColor( const Color32& color ) = 0;
+	virtual void ClearColor( const glm::vec4& color ) = 0;
 
 	/**
 	*	Sets the clear color.
 	*	@param color RGB color.
 	*	@param flA Alpha value.
 	*/
-	virtual void ClearColor( const Color24& color, float flA = 0 ) = 0;
+	virtual void ClearColor( const glm::vec3& color, float flA = 0 ) = 0;
 
 	/**
 	*	Sets the clear color.
