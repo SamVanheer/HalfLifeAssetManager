@@ -6,6 +6,8 @@
 #include "ui/camera_operators/dockpanels/FreeLookSettingsPanel.hpp"
 #include "ui/settings/GeneralSettings.hpp"
 
+#include "utility/CoordinateSystem.hpp"
+
 namespace ui::camera_operators
 {
 /**
@@ -36,7 +38,6 @@ public:
 
 	void MouseEvent(QMouseEvent& event) override
 	{
-		//TODO: once the coordinate system is fixed this needs to be updated to work properly
 		switch (event.type())
 		{
 		case QEvent::MouseButtonPress:
@@ -63,11 +64,11 @@ public:
 			{
 				if (event.buttons() & Qt::MouseButton::LeftButton)
 				{
-					float pitch = _camera.GetPitch();
-					float yaw = _camera.GetYaw();
-
 					auto horizontalAdjust = static_cast<float>(event.x() - _oldCoordinates.x);
 					auto verticalAdjust = static_cast<float>(event.y() - _oldCoordinates.y);
+
+					_oldCoordinates.x = event.x();
+					_oldCoordinates.y = event.y();
 
 					if (_generalSettings->ShouldInvertMouseX())
 					{
@@ -79,13 +80,26 @@ public:
 						verticalAdjust = -verticalAdjust;
 					}
 
-					yaw -= horizontalAdjust;
-					pitch -= verticalAdjust;
+					if (event.modifiers() & Qt::KeyboardModifier::ShiftModifier)
+					{
+						//Move the camera origin along the right and up vectors
+						glm::vec3 origin = _camera.GetOrigin();
 
-					SetAngles(pitch, yaw);
+						origin += math::RightVector * horizontalAdjust;
+						origin -= math::UpVector * verticalAdjust;
 
-					_oldCoordinates.x = event.x();
-					_oldCoordinates.y = event.y();
+						SetOrigin(origin);
+					}
+					else
+					{
+						float pitch = _camera.GetPitch();
+						float yaw = _camera.GetYaw();
+
+						yaw -= horizontalAdjust;
+						pitch -= verticalAdjust;
+
+						SetAngles(pitch, yaw);
+					}
 				}
 				else if (event.buttons() & Qt::MouseButton::RightButton)
 				{
