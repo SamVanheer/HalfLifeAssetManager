@@ -43,7 +43,6 @@ public:
 
 	void MouseEvent(QMouseEvent& event) override
 	{
-		//TODO: needs all of the original functionality to be reimplemented
 		switch (event.type())
 		{
 		case QEvent::MouseButtonPress:
@@ -83,11 +82,20 @@ public:
 						verticalAdjust = -verticalAdjust;
 					}
 
-					_yaw -= horizontalAdjust;
-					_pitch -= verticalAdjust;
-
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
+
+					if (event.modifiers() & Qt::KeyboardModifier::ShiftModifier)
+					{
+						//Apply input to YZ plane as target position movement
+						_targetPosition.y -= horizontalAdjust;
+						_targetPosition.z += verticalAdjust;
+					}
+					else
+					{
+						_yaw -= horizontalAdjust;
+						_pitch -= verticalAdjust;
+					}
 				}
 				else if (event.buttons() & Qt::MouseButton::RightButton)
 				{
