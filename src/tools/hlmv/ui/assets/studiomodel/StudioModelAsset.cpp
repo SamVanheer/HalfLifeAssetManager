@@ -92,8 +92,8 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 		const glm::vec3 initialCameraPosition{distance, 0, height};
 
-		freeLookCameraOperator->GetCamera()->SetOrigin(initialCameraPosition);
-		freeLookCameraOperator->GetCamera()->SetYaw(180);
+		freeLookCameraOperator->SetOrigin(initialCameraPosition);
+		freeLookCameraOperator->SetAngles(0, 180);
 
 		arcBallCameraOperator->SetTargetPosition({0, 0, height}, 0, 180, distance);
 	}

@@ -82,7 +82,7 @@ public:
 					yaw -= horizontalAdjust;
 					pitch -= verticalAdjust;
 
-					_camera.SetAngles(pitch, yaw);
+					SetAngles(pitch, yaw);
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
@@ -96,7 +96,7 @@ public:
 						adjust = -adjust;
 					}
 
-					_camera.SetOrigin(_camera.GetOrigin() - (_camera.GetForwardVector() * adjust));
+					SetOrigin(_camera.GetOrigin() - (_camera.GetForwardVector() * adjust));
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
@@ -109,6 +109,18 @@ public:
 
 		default: break;
 		}
+	}
+
+	void SetOrigin(const glm::vec3& origin)
+	{
+		_camera.SetOrigin(origin);
+		emit CameraPropertiesChanged();
+	}
+
+	void SetAngles(float pitch, float yaw)
+	{
+		_camera.SetAngles(pitch, yaw);
+		emit CameraPropertiesChanged();
 	}
 
 private:

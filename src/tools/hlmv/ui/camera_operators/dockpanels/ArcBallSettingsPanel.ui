@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>478</width>
+    <width>463</width>
     <height>63</height>
    </rect>
   </property>
@@ -38,7 +38,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Vertical Rotation:</string>
+      <string>Yaw:</string>
      </property>
     </widget>
    </item>
@@ -64,7 +64,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Horizontal Rotation:</string>
+      <string>Pitch</string>
      </property>
     </widget>
    </item>
@@ -95,16 +95,28 @@
     </widget>
    </item>
    <item row="1" column="3">
-    <widget class="QDoubleSpinBox" name="VerticalRotation"/>
+    <widget class="QDoubleSpinBox" name="Yaw">
+     <property name="maximum">
+      <double>360.000000000000000</double>
+     </property>
+    </widget>
    </item>
    <item row="2" column="3">
     <widget class="QDoubleSpinBox" name="Distance"/>
    </item>
    <item row="1" column="1">
-    <widget class="QDoubleSpinBox" name="CenterY"/>
+    <widget class="QDoubleSpinBox" name="CenterY">
+     <property name="decimals">
+      <number>6</number>
+     </property>
+    </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QDoubleSpinBox" name="CenterZ"/>
+    <widget class="QDoubleSpinBox" name="CenterZ">
+     <property name="decimals">
+      <number>6</number>
+     </property>
+    </widget>
    </item>
    <item row="0" column="5">
     <widget class="QDoubleSpinBox" name="FieldOfView">
@@ -166,10 +178,18 @@
     </spacer>
    </item>
    <item row="0" column="1">
-    <widget class="QDoubleSpinBox" name="CenterX"/>
+    <widget class="QDoubleSpinBox" name="CenterX">
+     <property name="decimals">
+      <number>6</number>
+     </property>
+    </widget>
    </item>
    <item row="0" column="3">
-    <widget class="QDoubleSpinBox" name="HorizontalRotation"/>
+    <widget class="QDoubleSpinBox" name="Pitch">
+     <property name="maximum">
+      <double>360.000000000000000</double>
+     </property>
+    </widget>
    </item>
    <item row="0" column="6">
     <widget class="QPushButton" name="DefaultFieldOfView">

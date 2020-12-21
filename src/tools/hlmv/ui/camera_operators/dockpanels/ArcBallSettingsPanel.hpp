@@ -15,6 +15,10 @@ public:
 	~ArcBallSettingsPanel();
 
 private slots:
+	void UpdateCameraProperties();
+
+	void OnPropertyChanged();
+
 	void OnFieldOfViewChanged(double value);
 	void OnResetFieldOfView();
 

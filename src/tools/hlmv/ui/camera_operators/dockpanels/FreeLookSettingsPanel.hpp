@@ -15,6 +15,12 @@ public:
 	~FreeLookSettingsPanel();
 
 private slots:
+	void UpdateCameraProperties();
+
+	void OnOriginChanged();
+
+	void OnAnglesChanged();
+
 	void OnFieldOfViewChanged(double value);
 	void OnResetFieldOfView();
 

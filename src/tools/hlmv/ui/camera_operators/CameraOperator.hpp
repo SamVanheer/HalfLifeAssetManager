@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMouseEvent>
+#include <QObject>
 #include <QString>
 #include <QVariant>
 
@@ -12,8 +13,10 @@ class QWidget;
 
 namespace ui::camera_operators
 {
-class CameraOperator
+class CameraOperator : public QObject
 {
+	Q_OBJECT
+
 public:
 	CameraOperator() = default;
 
@@ -26,6 +29,9 @@ public:
 	virtual QWidget* CreateEditWidget() = 0;
 
 	virtual void MouseEvent(QMouseEvent& event) = 0;
+
+signals:
+	void CameraPropertiesChanged();
 
 protected:
 	glm::vec2 _oldCoordinates{0.f};

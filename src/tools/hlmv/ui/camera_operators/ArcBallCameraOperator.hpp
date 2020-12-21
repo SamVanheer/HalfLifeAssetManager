@@ -115,6 +115,14 @@ public:
 		}
 	}
 
+	const glm::vec3& GetTargetPosition() const { return _targetPosition; }
+
+	float GetPitch() const { return _pitch; }
+
+	float GetYaw() const { return _yaw; }
+
+	float GetDistance() const { return _distance; }
+
 	void SetTargetPosition(const glm::vec3& targetPosition, float pitch, float yaw, float distance)
 	{
 		_targetPosition = targetPosition;
@@ -142,6 +150,8 @@ private:
 
 		//Set camera variables
 		_camera.SetProperties(cameraPosition, _pitch, _yaw);
+
+		emit CameraPropertiesChanged();
 	}
 
 private:
