@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cassert>
+#include <string_view>
 
 #include <QCloseEvent>
 #include <QFileDialog>
@@ -23,6 +24,8 @@
 
 namespace ui
 {
+constexpr std::string_view TabWidgetAssetProperty{"TabWidgetAssetProperty"};
+
 MainWindow::MainWindow(EditorContext* editorContext)
 	: QMainWindow()
 	, _editorContext(editorContext)
@@ -97,11 +100,15 @@ bool MainWindow::TryLoadAsset(const QString& fileName)
 		{
 			connect(asset.get(), &assets::Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
 
-			auto editWidget = asset->GetEditWidget();
+			const auto editWidget = asset->GetEditWidget();
+
+			editWidget->setProperty(TabWidgetAssetProperty.data(), QVariant::fromValue(asset.get()));
 
 			_undoGroup->addStack(asset->GetUndoStack());
 
-			_editorContext->GetLoadedAssets().emplace_back(std::move(asset), editWidget);
+			//Now owned by this window
+			asset->setParent(this);
+			asset.release();
 
 			const auto index = _assetTabs->addTab(editWidget, fileName);
 
@@ -130,9 +137,11 @@ bool MainWindow::TryLoadAsset(const QString& fileName)
 void MainWindow::closeEvent(QCloseEvent* event)
 {
 	//If the user cancels any close request cancel the window close event as well
-	for (auto& asset : _editorContext->GetLoadedAssets())
+	for (int i = 0; i < _assetTabs->count(); ++i)
 	{
-		if (!VerifyNoUnsavedChanges(asset.GetAsset()))
+		const auto asset = GetAsset(i);
+
+		if (!VerifyNoUnsavedChanges(asset))
 		{
 			return;
 		}
@@ -146,6 +155,16 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	}
 
 	event->accept();
+}
+
+assets::Asset* MainWindow::GetAsset(int index) const
+{
+	return _assetTabs->widget(index)->property(TabWidgetAssetProperty.data()).value<assets::Asset*>();
+}
+
+assets::Asset* MainWindow::GetCurrentAsset() const
+{
+	return _currentAsset;
 }
 
 bool MainWindow::SaveAsset(assets::Asset* asset)
@@ -204,16 +223,10 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges)
 		_fullscreenWidget->ExitFullscreen();
 	}
 
-	auto editWidget = _assetTabs->widget(index);
-
-	auto& assets = _editorContext->GetLoadedAssets();
-
-	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& asset)
-		{
-			return asset.GetEditWidget() == editWidget;
-		}); it != assets.end())
 	{
-		if (verifyUnsavedChanges && !VerifyNoUnsavedChanges(it->GetAsset()))
+		const auto asset = GetAsset(index);
+
+		if (verifyUnsavedChanges && !VerifyNoUnsavedChanges(asset))
 		{
 			//User cancelled or an error occurred
 			return false;
@@ -221,12 +234,9 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges)
 
 		_assetTabs->removeTab(index);
 
-		_undoGroup->removeStack(it->GetAsset()->GetUndoStack());
-		assets.erase(it);
-	}
-	else
-	{
-		QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
+		_undoGroup->removeStack(asset->GetUndoStack());
+
+		delete asset;
 	}
 
 	const bool hasOpenAssets = _assetTabs->count() > 0;
@@ -266,37 +276,23 @@ void MainWindow::OnAssetTabChanged(int index)
 
 	if (index != -1)
 	{
-		const auto editWidget = _assetTabs->widget(index);
+		const auto asset = GetAsset(index);
 
-		auto& assets = _editorContext->GetLoadedAssets();
-
-		if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& candidate)
-			{
-				return candidate.GetEditWidget() == editWidget;
-			}); it != assets.end())
+		if (_currentAsset)
 		{
-			if (_currentAsset)
-			{
-				_currentAsset->SetActive(false);
-			}
-
-			const auto asset = it->GetAsset();
-
-			_undoGroup->setActiveStack(asset->GetUndoStack());
-
-			UpdateTitle(asset->GetFileName(), !_undoGroup->isClean());
-			asset->PopulateAssetMenu(_ui.MenuAsset);
-
-			_currentAsset = asset;
-
-			asset->SetActive(true);
-
-			success = true;
+			_currentAsset->SetActive(false);
 		}
-		else
-		{
-			QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
-		}
+
+		_undoGroup->setActiveStack(asset->GetUndoStack());
+
+		UpdateTitle(asset->GetFileName(), !_undoGroup->isClean());
+		asset->PopulateAssetMenu(_ui.MenuAsset);
+
+		_currentAsset = asset;
+
+		asset->SetActive(true);
+
+		success = true;
 	}
 
 	if (!success)
@@ -320,61 +316,41 @@ void MainWindow::OnAssetFileNameChanged(const QString& fileName)
 {
 	auto asset = static_cast<assets::Asset*>(sender());
 
-	auto& assets = _editorContext->GetLoadedAssets();
+	const int index = _assetTabs->indexOf(asset->GetEditWidget());
 
-	if (auto it = std::find_if(assets.begin(), assets.end(), [&](const auto& candidate)
-		{
-			return candidate.GetAsset() == asset;
-		}); it != assets.end())
+	if (index != -1)
 	{
-		const int index = _assetTabs->indexOf(it->GetEditWidget());
+		_assetTabs->setTabText(index, fileName);
 
-		if (index != -1)
+		_editorContext->GetRecentFiles()->Add(fileName);
+
+		if (_assetTabs->currentWidget() == asset->GetEditWidget())
 		{
-			_assetTabs->setTabText(index, fileName);
-
-			_editorContext->GetRecentFiles()->Add(fileName);
-
-			if (_assetTabs->currentWidget() == it->GetEditWidget())
-			{
-				UpdateTitle(it->GetAsset()->GetFileName(), !_undoGroup->isClean());
-			}
-		}
-		else
-		{
-			QMessageBox::critical(this, "Internal Error", "Asset index not found in assets tab widget");
+			UpdateTitle(asset->GetFileName(), !_undoGroup->isClean());
 		}
 	}
 	else
 	{
-		QMessageBox::critical(this, "Internal Error", "Asset not found in loaded assets list");
+		QMessageBox::critical(this, "Internal Error", "Asset index not found in assets tab widget");
 	}
 }
 
 void MainWindow::OnSaveAsset()
 {
-	auto& assets = _editorContext->GetLoadedAssets();
-
-	auto& currentAsset = assets[_assetTabs->currentIndex()];
-
-	auto asset = currentAsset.GetAsset();
-
-	SaveAsset(asset);
+	SaveAsset(GetCurrentAsset());
 }
 
 void MainWindow::OnSaveAssetAs()
 {
-	auto& assets = _editorContext->GetLoadedAssets();
-
-	auto& currentAsset = assets[_assetTabs->currentIndex()];
+	const auto asset = GetCurrentAsset();
 
 	//TODO: compute filter based on available asset providers
 	QString fileName{QFileDialog::getSaveFileName(
-		this, {}, currentAsset.GetAsset()->GetFileName(), "Half-Life 1 Model Files (*.mdl *.dol);;All Files (*.*)")};
+		this, {}, asset->GetFileName(), "Half-Life 1 Model Files (*.mdl *.dol);;All Files (*.*)")};
 
 	if (!fileName.isEmpty())
 	{
-		currentAsset.GetAsset()->SetFileName(std::move(fileName));
+		asset->SetFileName(std::move(fileName));
 
 		OnSaveAsset();
 	}
@@ -413,10 +389,6 @@ void MainWindow::OnExit()
 
 void MainWindow::OnGoFullscreen()
 {
-	auto& assets = _editorContext->GetLoadedAssets();
-
-	auto& currentAsset = assets[_assetTabs->currentIndex()];
-
 	if (!_fullscreenWidget)
 	{
 		//Note: creating this window as a child of the main window causes problems with OpenGL rendering
@@ -424,7 +396,9 @@ void MainWindow::OnGoFullscreen()
 		_fullscreenWidget = std::make_unique<FullscreenWidget>();
 	}
 
-	currentAsset.GetAsset()->SetupFullscreenWidget(_fullscreenWidget.get());
+	const auto asset = GetCurrentAsset();
+
+	asset->SetupFullscreenWidget(_fullscreenWidget.get());
 
 	_fullscreenWidget->raise();
 	_fullscreenWidget->showFullScreen();

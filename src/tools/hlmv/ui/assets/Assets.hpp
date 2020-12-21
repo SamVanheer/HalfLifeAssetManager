@@ -135,3 +135,5 @@ private:
 };
 }
 }
+
+Q_DECLARE_METATYPE(ui::assets::Asset*)

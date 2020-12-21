@@ -25,7 +25,6 @@ namespace ui
 {
 namespace assets
 {
-class Asset;
 class IAssetProviderRegistry;
 }
 
@@ -40,27 +39,6 @@ class GameConfigurationsSettings;
 class GeneralSettings;
 class RecentFilesSettings;
 }
-
-class LoadedAsset
-{
-public:
-
-	LoadedAsset(std::unique_ptr<assets::Asset>&& asset, QWidget* editWidget);
-	~LoadedAsset();
-
-	LoadedAsset(const LoadedAsset&) = delete;
-	LoadedAsset& operator=(const LoadedAsset&) = delete;
-	LoadedAsset(LoadedAsset&&) = default;
-	LoadedAsset& operator=(LoadedAsset&&) = default;
-
-	assets::Asset* GetAsset() const { return _asset.get(); }
-
-	QWidget* GetEditWidget() const { return _editWidget; }
-
-private:
-	std::unique_ptr<assets::Asset> _asset;
-	QWidget* _editWidget;
-};
 
 /**
 *	@brief Used to communicate between the main window and edit widgets
@@ -101,8 +79,6 @@ public:
 
 	assets::IAssetProviderRegistry* GetAssetProviderRegistry() const { return _assetProviderRegistry.get(); }
 
-	std::vector<LoadedAsset>& GetLoadedAssets() { return _loadedAssets; }
-
 	void StartTimer();
 
 signals:
@@ -132,7 +108,5 @@ private:
 	const std::unique_ptr<CWorldTime> _worldTime;
 
 	const std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
-
-	std::vector<LoadedAsset> _loadedAssets;
 };
 }

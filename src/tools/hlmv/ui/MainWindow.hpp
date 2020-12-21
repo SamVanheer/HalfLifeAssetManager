@@ -41,6 +41,9 @@ protected:
 	void closeEvent(QCloseEvent* event) override;
 
 private:
+	assets::Asset* GetAsset(int index) const;
+	assets::Asset* GetCurrentAsset() const;
+
 	bool SaveAsset(assets::Asset* asset);
 
 	bool VerifyNoUnsavedChanges(assets::Asset* asset);

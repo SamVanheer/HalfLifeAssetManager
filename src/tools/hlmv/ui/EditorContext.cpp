@@ -24,14 +24,6 @@
 
 namespace ui
 {
-LoadedAsset::LoadedAsset(std::unique_ptr<assets::Asset>&& asset, QWidget* editWidget)
-	: _asset(std::move(asset))
-	, _editWidget(editWidget)
-{
-}
-
-LoadedAsset::~LoadedAsset() = default;
-
 EditorContext::EditorContext(
 	QSettings* settings,
 	const std::shared_ptr<settings::GeneralSettings>& generalSettings,
