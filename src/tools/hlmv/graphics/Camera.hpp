@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
 namespace graphics
@@ -13,14 +14,18 @@ public:
 	/**
 	*	@brief The default view direction. Points to 0, 0, 1.
 	*/
-	static const glm::vec3 DEFAULT_VIEW_DIRECTION;
+	static inline const glm::vec3 DefaultViewDirection{0, 0, 1};
 
 public:
 	/**
-	*	Initializes the origin to 0, 0, 0 and the view direction to DEFAULT_VIEW_DIRECTION.
-	*	@see DEFAULT_VIEW_DIRECTION
+	*	@brief Initializes the origin to 0, 0, 0 and the view direction to DefaultViewDirection.
+	*	@see DefaultViewDirection
 	*/
-	Camera();
+	Camera()
+		: _origin(0)
+		, _viewDirection(DefaultViewDirection)
+	{
+	}
 
 	Camera(const Camera&) = default;
 	Camera& operator=(const Camera& other) = default;
@@ -28,37 +33,37 @@ public:
 	/**
 	*	@brief Gets the camera origin.
 	*/
-	const glm::vec3& GetOrigin() const { return _vecOrigin; }
+	const glm::vec3& GetOrigin() const { return _origin; }
 
 	/**
 	*	@copydoc GetOrigin() const
 	*/
-	glm::vec3& GetOrigin() { return _vecOrigin; }
+	glm::vec3& GetOrigin() { return _origin; }
 
 	/**
 	*	@brief Sets the camera origin.
 	*/
-	void SetOrigin(const glm::vec3& vecOrigin)
+	void SetOrigin(const glm::vec3& origin)
 	{
-		_vecOrigin = vecOrigin;
+		_origin = origin;
 	}
 
 	/**
 	*	@brief Gets the view direction.
 	*/
-	const glm::vec3& GetViewDirection() const { return _vecViewDir; }
+	const glm::vec3& GetViewDirection() const { return _viewDirection; }
 
 	/**
 	*	@copydoc GetViewDirection() const
 	*/
-	glm::vec3& GetViewDirection() { return _vecViewDir; }
+	glm::vec3& GetViewDirection() { return _viewDirection; }
 
 	/**
 	*	@brief Sets the view direction.
 	*/
-	void SetViewDirection(const glm::vec3& vecViewDir)
+	void SetViewDirection(const glm::vec3& viewDirection)
 	{
-		_vecViewDir = vecViewDir;
+		_viewDirection = viewDirection;
 	}
 
 	float GetFieldOfView() const { return _fov; }
@@ -69,8 +74,8 @@ public:
 	}
 
 private:
-	glm::vec3 _vecOrigin;
-	glm::vec3 _vecViewDir;
+	glm::vec3 _origin;
+	glm::vec3 _viewDirection;
 
 	float _fov{90.f};
 };
