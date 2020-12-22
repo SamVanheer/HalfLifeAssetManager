@@ -335,11 +335,11 @@ void AngleVectors(const glm::vec3& vecAngles, glm::vec3* pForward, glm::vec3* pR
 
 glm::vec3 AnglesToVector(const glm::vec3& angles)
 {
-	glm::vec3 forward, right, up;
+	glm::vec3 forward;
 
-	AngleVectors(angles, &forward, &right, &up);
+	AngleVectors(angles, &forward, nullptr, nullptr);
 
-	return forward + right + up;
+	return forward;
 }
 
 double FixAngle(double angle)
