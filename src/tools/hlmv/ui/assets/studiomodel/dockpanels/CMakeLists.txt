@@ -3,6 +3,9 @@ target_sources(HLMV
 		InfoBar.cpp
 		InfoBar.hpp
 		InfoBar.ui
+		SkyLightPanel.cpp
+		SkyLightPanel.hpp
+		SkyLightPanel.ui
 		StudioModelAttachmentsPanel.cpp
 		StudioModelAttachmentsPanel.hpp
 		StudioModelAttachmentsPanel.ui
@@ -18,6 +21,9 @@ target_sources(HLMV
 		StudioModelHitboxesPanel.cpp
 		StudioModelHitboxesPanel.hpp
 		StudioModelHitboxesPanel.ui
+		StudioModelLightingPanel.cpp
+		StudioModelLightingPanel.hpp
+		StudioModelLightingPanel.ui
 		StudioModelModelDataPanel.cpp
 		StudioModelModelDataPanel.hpp
 		StudioModelModelDataPanel.ui

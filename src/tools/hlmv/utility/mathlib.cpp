@@ -342,6 +342,13 @@ glm::vec3 AnglesToVector(const glm::vec3& angles)
 	return forward;
 }
 
+glm::vec3 AnglesToAimVector(glm::vec3 angles)
+{
+	angles.x = -angles.x;
+
+	return AnglesToVector(angles);
+}
+
 double FixAngle(double angle)
 {
 	//Use high precision when fixing angles to reduce errors

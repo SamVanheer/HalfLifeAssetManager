@@ -12,6 +12,7 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBonesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelHitboxesPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelLightingPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDataPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDisplayPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelInfoPanel.hpp"
@@ -64,6 +65,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	_dockPanels->addTab(_camerasPanel, "Cameras");
 	_dockPanels->addTab(new StudioModelModelInfoPanel(_asset), "Model Info");
 	_dockPanels->addTab(modelDisplayPanel, "Model Display");
+	_dockPanels->addTab(new StudioModelLightingPanel(_asset), "Lighting");
 	_dockPanels->addTab(new StudioModelSequencesPanel(_asset), "Sequences");
 	_dockPanels->addTab(new StudioModelBodyPartsPanel(_asset), "Body Parts");
 	_dockPanels->addTab(texturesPanel, "Textures");

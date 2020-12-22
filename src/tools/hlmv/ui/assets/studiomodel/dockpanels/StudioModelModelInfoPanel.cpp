@@ -1,5 +1,3 @@
-#include <limits>
-
 #include <QSignalBlocker>
 
 #include "entity/CHLMVStudioModelEntity.hpp"

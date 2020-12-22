@@ -129,6 +129,8 @@ void AngleVectors(const glm::vec3& vecAngles, glm::vec3* pForward, glm::vec3* pR
 */
 glm::vec3 AnglesToVector(const glm::vec3& angles);
 
+glm::vec3 AnglesToAimVector(glm::vec3 angles);
+
 double FixAngle(double angle);
 
 glm::vec3 FixAngles(const glm::vec3& angles);
