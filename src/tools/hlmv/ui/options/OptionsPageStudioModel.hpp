@@ -44,6 +44,9 @@ public:
 private slots:
 	void OnResetFloorLength();
 
+	void OnBrowseCompiler();
+	void OnBrowseDecompiler();
+
 private:
 	Ui_OptionsPageStudioModel _ui;
 

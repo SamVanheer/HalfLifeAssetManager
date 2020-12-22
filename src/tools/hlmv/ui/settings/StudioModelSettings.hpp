@@ -4,6 +4,7 @@
 
 #include <QObject>
 #include <QSettings>
+#include <QString>
 
 namespace ui::settings
 {
@@ -30,6 +31,8 @@ public:
 		settings.beginGroup("assets/studiomodel");
 		_autodetectViewModels = settings.value("AutodetectViewmodels", DefaultAutodetectViewmodels).toBool();
 		_floorLength = std::clamp(settings.value("FloorLength", DefaultFloorLength).toInt(), MinimumFloorLength, MaximumFloorLength);
+		_studiomdlCompilerFileName = settings.value("CompilerFileName").toString();
+		_studiomdlDecompilerFileName = settings.value("DecompilerFileName").toString();
 		settings.endGroup();
 	}
 
@@ -38,17 +41,13 @@ public:
 		settings.beginGroup("assets/studiomodel");
 		settings.setValue("AutodetectViewmodels", _autodetectViewModels);
 		settings.setValue("FloorLength", _floorLength);
+		settings.setValue("CompilerFileName", _studiomdlCompilerFileName);
+		settings.setValue("DecompilerFileName", _studiomdlDecompilerFileName);
 		settings.endGroup();
 	}
 
 	bool ShouldAutodetectViewmodels() const { return _autodetectViewModels; }
 
-	int GetFloorLength() const { return _floorLength; }
-
-signals:
-	void FloorLengthChanged(int length);
-
-public slots:
 	void SetAutodetectViewmodels(bool value)
 	{
 		if (_autodetectViewModels != value)
@@ -56,6 +55,8 @@ public slots:
 			_autodetectViewModels = value;
 		}
 	}
+
+	int GetFloorLength() const { return _floorLength; }
 
 	void SetFloorLength(int value)
 	{
@@ -67,8 +68,28 @@ public slots:
 		}
 	}
 
+	QString GetStudiomdlCompilerFileName() const { return _studiomdlCompilerFileName; }
+
+	void SetStudiomdlCompilerFileName(const QString& fileName)
+	{
+		_studiomdlCompilerFileName = fileName;
+	}
+
+	QString GetStudiomdlDecompilerFileName() const { return _studiomdlDecompilerFileName; }
+
+	void SetStudiomdlDecompilerFileName(const QString& fileName)
+	{
+		_studiomdlDecompilerFileName = fileName;
+	}
+
+signals:
+	void FloorLengthChanged(int length);
+
 private:
 	bool _autodetectViewModels{DefaultAutodetectViewmodels};
 	int _floorLength = DefaultFloorLength;
+
+	QString _studiomdlCompilerFileName;
+	QString _studiomdlDecompilerFileName;
 };
 }
