@@ -34,5 +34,11 @@ public:
 		//No movement of any kind
 		event.accept();
 	}
+
+	void CenterView(float, float, float) override {}
+
+	void SaveView() override {}
+
+	void RestoreView() override {}
 };
 }

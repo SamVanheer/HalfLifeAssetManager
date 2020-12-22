@@ -47,6 +47,32 @@ namespace ui::assets::studiomodel
 const QString StudioModelExtension{QStringLiteral("mdl")};
 const QString StudioModelPS2Extension{QStringLiteral("dol")};
 
+const float InitialCameraYaw{180};
+
+static std::pair<float, float> GetCenteredValues(CHLMVStudioModelEntity* entity)
+{
+	glm::vec3 min, max;
+	entity->ExtractBbox(min, max);
+
+	//Clamp the values to a reasonable range
+	for (int i = 0; i < 3; ++i)
+	{
+		//Use different limits for min and max so centering won't end up setting origin to 0 0 0
+		min[i] = clamp(min[i], -2000.f, 2000.f);
+		max[i] = clamp(max[i], -1000.f, 1000.f);
+	}
+
+	const float dx = max[0] - min[0];
+	const float dy = max[1] - min[1];
+	const float dz = max[2] - min[2];
+
+	const float distance{std::max({dx, dy, dz})};
+
+	const float height{min[2] + (dz / 2)};
+
+	return {height, distance};
+}
+
 StudioModelAsset::StudioModelAsset(QString&& fileName,
 	EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel)
 	: Asset(std::move(fileName))
@@ -58,10 +84,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 {
 	PushInputSink(this);
 
-	//TODO: need to be able to update arcball camera without having to do this directly
-	auto arcBallCameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>(_editorContext->GetGeneralSettings());
-	auto freeLookCameraOperator = std::make_unique<camera_operators::FreeLookCameraOperator>(_editorContext->GetGeneralSettings());
-
 	UpdateColors();
 
 	_scene->FloorLength = _provider->GetStudioModelSettings()->GetFloorLength();
@@ -72,41 +94,26 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	if (nullptr != entity)
 	{
 		entity->SetModel(GetStudioModel());
-
 		entity->Spawn();
-
 		_scene->SetEntity(entity);
-
-		glm::vec3 min, max;
-		entity->ExtractBbox(min, max);
-
-		//Clamp the values to a reasonable range
-		for (int i = 0; i < 3; ++i)
-		{
-			//Use different limits for min and max so centering won't end up setting origin to 0 0 0
-			min[i] = clamp(min[i], -2000.f, 2000.f);
-			max[i] = clamp(max[i], -1000.f, 1000.f);
-		}
-
-		const float dx = max[0] - min[0];
-		const float dy = max[1] - min[1];
-		const float dz = max[2] - min[2];
-
-		const float distance{std::max({dx, dy, dz})};
-
-		const float height{min[2] + (dz / 2)};
-
-		const glm::vec3 initialCameraPosition{distance, 0, height};
-
-		freeLookCameraOperator->SetOrigin(initialCameraPosition);
-		freeLookCameraOperator->SetAngles(0, 180);
-
-		arcBallCameraOperator->SetTargetPosition({0, 0, height}, 0, 180, distance);
 	}
 
-	AddCameraOperator(std::move(arcBallCameraOperator));
-	AddCameraOperator(std::move(freeLookCameraOperator));
+	AddCameraOperator(std::make_unique<camera_operators::ArcBallCameraOperator>(_editorContext->GetGeneralSettings()));
+	AddCameraOperator(std::make_unique<camera_operators::FreeLookCameraOperator>(_editorContext->GetGeneralSettings()));
 	AddCameraOperator(std::make_unique<camera_operators::FirstPersonCameraOperator>());
+
+	if (nullptr != entity)
+	{
+		const auto [height, distance] = GetCenteredValues(entity);
+
+		for (int i = 0; i < GetCameraOperatorCount(); ++i)
+		{
+			const auto cameraOperator = GetCameraOperator(i);
+			cameraOperator->CenterView(height, distance, InitialCameraYaw);
+			//Set initial restoration point to the initial camera view
+			cameraOperator->SaveView();
+		}
+	}
 
 	//TODO: need to use the actual camera objects instead of indices
 	if (_provider->GetStudioModelSettings()->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
@@ -134,6 +141,12 @@ void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 {
 	menu->addAction("Previous Camera", this, &StudioModelAsset::OnPreviousCamera, QKeySequence{Qt::CTRL + Qt::Key::Key_U});
 	menu->addAction("Next Camera", this, &StudioModelAsset::OnNextCamera, QKeySequence{Qt::CTRL + Qt::Key::Key_I});
+
+	menu->addSeparator();
+
+	menu->addAction("Center View", this, &StudioModelAsset::OnCenterView);
+	menu->addAction("Save View", this, &StudioModelAsset::OnSaveView);
+	menu->addAction("Restore View", this, &StudioModelAsset::OnRestoreView);
 
 	menu->addSeparator();
 
@@ -317,6 +330,36 @@ void StudioModelAsset::OnPreviousCamera()
 void StudioModelAsset::OnNextCamera()
 {
 	ChangeCamera(true);
+}
+
+void StudioModelAsset::OnCenterView()
+{
+	if (auto cameraOperator = GetCurrentCameraOperator(); cameraOperator)
+	{
+		const auto [height, distance] = GetCenteredValues(_scene->GetEntity());
+
+		cameraOperator->CenterView(height, distance, InitialCameraYaw);
+	}
+}
+
+void StudioModelAsset::OnSaveView()
+{
+	if (auto cameraOperator = GetCurrentCameraOperator(); cameraOperator)
+	{
+		const auto [height, distance] = GetCenteredValues(_scene->GetEntity());
+
+		cameraOperator->SaveView();
+	}
+}
+
+void StudioModelAsset::OnRestoreView()
+{
+	if (auto cameraOperator = GetCurrentCameraOperator(); cameraOperator)
+	{
+		const auto [height, distance] = GetCenteredValues(_scene->GetEntity());
+
+		cameraOperator->RestoreView();
+	}
 }
 
 void StudioModelAsset::OnLoadGroundTexture()

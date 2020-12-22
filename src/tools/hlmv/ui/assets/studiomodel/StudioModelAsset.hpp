@@ -129,6 +129,10 @@ private slots:
 	void OnPreviousCamera();
 	void OnNextCamera();
 
+	void OnCenterView();
+	void OnSaveView();
+	void OnRestoreView();
+
 	void OnLoadGroundTexture();
 	void OnUnloadGroundTexture();
 

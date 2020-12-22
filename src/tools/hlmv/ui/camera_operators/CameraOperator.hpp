@@ -30,6 +30,12 @@ public:
 
 	virtual void MouseEvent(QMouseEvent& event) = 0;
 
+	virtual void CenterView(float height, float distance, float yaw) = 0;
+
+	virtual void SaveView() = 0;
+
+	virtual void RestoreView() = 0;
+
 signals:
 	void CameraPropertiesChanged();
 

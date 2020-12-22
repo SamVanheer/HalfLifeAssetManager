@@ -18,6 +18,16 @@ namespace ui::camera_operators
 */
 class ArcBallCameraOperator : public CameraOperator
 {
+private:
+	struct ArcBallParameters
+	{
+		glm::vec3 TargetPosition{0};
+
+		float Pitch{0};
+		float Yaw{0};
+		float Distance{0};
+	};
+
 public:
 	static constexpr float DefaultFOV = 65.f;
 
@@ -88,13 +98,13 @@ public:
 					if (event.modifiers() & Qt::KeyboardModifier::ShiftModifier)
 					{
 						//Apply input to YZ plane as target position movement
-						_targetPosition.y -= horizontalAdjust;
-						_targetPosition.z += verticalAdjust;
+						_parameters.TargetPosition.y -= horizontalAdjust;
+						_parameters.TargetPosition.z += verticalAdjust;
 					}
 					else
 					{
-						_yaw -= horizontalAdjust;
-						_pitch -= verticalAdjust;
+						_parameters.Yaw -= horizontalAdjust;
+						_parameters.Pitch -= verticalAdjust;
 					}
 				}
 				else if (event.buttons() & Qt::MouseButton::RightButton)
@@ -106,7 +116,7 @@ public:
 						adjust = -adjust;
 					}
 
-					_distance += adjust;
+					_parameters.Distance += adjust;
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
@@ -123,20 +133,36 @@ public:
 		}
 	}
 
-	const glm::vec3& GetTargetPosition() const { return _targetPosition; }
+	void CenterView(float height, float distance, float yaw) override
+	{
+		SetTargetPosition({0, 0, height}, 0, yaw, distance);
+	}
 
-	float GetPitch() const { return _pitch; }
+	void SaveView() override
+	{
+		_savedParameters = _parameters;
+	}
 
-	float GetYaw() const { return _yaw; }
+	void RestoreView() override
+	{
+		_parameters = _savedParameters;
+		UpdateArcBallCamera();
+	}
 
-	float GetDistance() const { return _distance; }
+	const glm::vec3& GetTargetPosition() const { return _parameters.TargetPosition; }
+
+	float GetPitch() const { return _parameters.Pitch; }
+
+	float GetYaw() const { return _parameters.Yaw; }
+
+	float GetDistance() const { return _parameters.Distance; }
 
 	void SetTargetPosition(const glm::vec3& targetPosition, float pitch, float yaw, float distance)
 	{
-		_targetPosition = targetPosition;
-		_pitch = pitch;
-		_yaw = yaw;
-		_distance = distance;
+		_parameters.TargetPosition = targetPosition;
+		_parameters.Pitch = pitch;
+		_parameters.Yaw = yaw;
+		_parameters.Distance = distance;
 
 		UpdateArcBallCamera();
 	}
@@ -145,19 +171,19 @@ private:
 	void UpdateArcBallCamera()
 	{
 		//First create a vector that represents a position at distance without any rotation applied
-		auto cameraPosition = math::ForwardVector * -_distance;
+		auto cameraPosition = math::ForwardVector * -_parameters.Distance;
 
 		//Now apply rotation
 		cameraPosition =
-			glm::rotate(glm::radians(_yaw), math::UpVector) *
-			glm::rotate(glm::radians(-_pitch), math::RightVector) *
+			glm::rotate(glm::radians(_parameters.Yaw), math::UpVector) *
+			glm::rotate(glm::radians(-_parameters.Pitch), math::RightVector) *
 			glm::vec4{cameraPosition, 1};
 
 		//Make relative to target position
-		cameraPosition += _targetPosition;
+		cameraPosition += _parameters.TargetPosition;
 
 		//Set camera variables
-		_camera.SetProperties(cameraPosition, _pitch, _yaw);
+		_camera.SetProperties(cameraPosition, _parameters.Pitch, _parameters.Yaw);
 
 		emit CameraPropertiesChanged();
 	}
@@ -165,10 +191,7 @@ private:
 private:
 	const settings::GeneralSettings* const _generalSettings;
 
-	glm::vec3 _targetPosition{0};
-
-	float _pitch{0};
-	float _yaw{0};
-	float _distance{0};
+	ArcBallParameters _parameters;
+	ArcBallParameters _savedParameters;
 };
 }

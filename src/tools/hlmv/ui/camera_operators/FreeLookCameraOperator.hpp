@@ -125,6 +125,27 @@ public:
 		}
 	}
 
+	void CenterView(float height, float distance, float yaw) override
+	{
+		_camera.SetOrigin({distance, 0, height});
+		_camera.SetAngles(0, yaw);
+		emit CameraPropertiesChanged();
+	}
+
+	void SaveView() override
+	{
+		_savedOrigin = _camera.GetOrigin();
+		_savedPitch = _camera.GetPitch();
+		_savedYaw = _camera.GetYaw();
+	}
+
+	void RestoreView() override
+	{
+		_camera.SetOrigin(_savedOrigin);
+		_camera.SetAngles(_savedPitch, _savedYaw);
+		emit CameraPropertiesChanged();
+	}
+
 	void SetOrigin(const glm::vec3& origin)
 	{
 		_camera.SetOrigin(origin);
@@ -139,5 +160,9 @@ public:
 
 private:
 	const settings::GeneralSettings* const _generalSettings;
+
+	glm::vec3 _savedOrigin{0};
+	float _savedPitch{0};
+	float _savedYaw{0};
 };
 }
