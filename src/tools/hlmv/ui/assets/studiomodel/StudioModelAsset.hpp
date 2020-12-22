@@ -5,7 +5,6 @@
 #include <stack>
 #include <vector>
 
-#include <QColor>
 #include <QObject>
 
 #include "engine/shared/studiomodel/CStudioModel.hpp"
@@ -123,10 +122,7 @@ private slots:
 
 	void OnSceneWidgetMouseEvent(QMouseEvent* event);
 
-	void SetBackgroundColor(QColor color)
-	{
-		_scene->SetBackgroundColor({color.redF(), color.greenF(), color.blueF()});
-	}
+	void UpdateColors();
 
 	void OnFloorLengthChanged(int length);
 
@@ -163,7 +159,7 @@ class StudioModelAssetProvider final : public IAssetProvider
 {
 public:
 	StudioModelAssetProvider(const std::shared_ptr<settings::StudioModelSettings>& studioModelSettings)
-		: _settings(studioModelSettings)
+		: _studioModelSettings(studioModelSettings)
 	{
 	}
 
@@ -181,10 +177,10 @@ public:
 
 	void Save(const QString& fileName, StudioModelAsset& asset) const;
 
-	settings::StudioModelSettings* GetSettings() const { return _settings.get(); }
+	settings::StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
 
 private:
-	const std::shared_ptr<settings::StudioModelSettings> _settings;
+	const std::shared_ptr<settings::StudioModelSettings> _studioModelSettings;
 };
 
 inline const IAssetProvider* StudioModelAsset::GetProvider() const

@@ -8,8 +8,6 @@
 
 #include "CModelRenderInfo.hpp"
 
-#include "utility/Color.hpp"
-
 /**
 *	@defgroup StudioModelRenderer StudioModel Renderer.
 *
@@ -95,13 +93,13 @@ public:
 	*/
 	virtual void SetLightVector( const glm::vec3& lightvec ) = 0;
 
-	virtual Color GetLightColor() const = 0;
+	virtual glm::vec3 GetLightColor() const = 0;
 
-	virtual void SetLightColor(const Color& color) = 0;
+	virtual void SetLightColor(const glm::vec3& color) = 0;
 
-	virtual Color GetWireframeColor() const = 0;
+	virtual glm::vec3 GetWireframeColor() const = 0;
 
-	virtual void SetWireframeColor(const Color& color) = 0;
+	virtual void SetWireframeColor(const glm::vec3& color) = 0;
 
 	/**
 	*	Draws the given model.

@@ -5,6 +5,9 @@ target_sources(HLMV
 		OptionsDialog.ui
 		OptionsPage.cpp
 		OptionsPage.hpp
+		OptionsPageColors.cpp
+		OptionsPageColors.hpp
+		OptionsPageColors.ui
 		OptionsPageGameConfigurations.cpp
 		OptionsPageGameConfigurations.hpp
 		OptionsPageGameConfigurations.ui

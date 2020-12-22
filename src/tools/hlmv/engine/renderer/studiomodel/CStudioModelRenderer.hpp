@@ -6,8 +6,6 @@
 
 #include <glm/mat3x4.hpp>
 
-#include "utility/Color.hpp"
-
 #include "shared/studiomodel/studio.hpp"
 
 #include "shared/renderer/studiomodel/IStudioModelRenderer.hpp"
@@ -61,16 +59,16 @@ public:
 		m_lightvec = lightvec;
 	}
 
-	Color GetLightColor() const override final { return m_lightcolor; }
+	glm::vec3 GetLightColor() const override final { return m_lightcolor; }
 
-	void SetLightColor(const Color& color) override final
+	void SetLightColor(const glm::vec3& color) override final
 	{
 		m_lightcolor = color;
 	}
 
-	Color GetWireframeColor() const override final { return _wireframeColor; }
+	glm::vec3 GetWireframeColor() const override final { return _wireframeColor; }
 
-	void SetWireframeColor(const Color& color) override final
+	void SetWireframeColor(const glm::vec3& color) override final
 	{
 		_wireframeColor = color;
 	}
@@ -164,7 +162,7 @@ private:
 	float			m_shadelight;						// direct world light
 
 	glm::vec3		m_lightvec = { 0, 0, -1 };			// light vector in model reference frame
-	Color			m_lightcolor{255, 255, 255};
+	glm::vec3		m_lightcolor{255, 255, 255};
 	glm::vec3		m_blightvec[ MAXSTUDIOBONES ];		// light vectors in bone reference frames
 
 	glm::vec2		m_chrome[ MAXSTUDIOVERTS ];			// texture coords for surface normals
@@ -176,7 +174,7 @@ private:
 	glm::vec3		m_vecViewerRight = { 50, 50, 0 };	// needs to be set to viewer's right in order for chrome to work
 	float			m_flLambert = 1.5f;					// modifier for pseudo-hemispherical lighting
 
-	Color _wireframeColor{255, 0, 0};
+	glm::vec3 _wireframeColor{255, 0, 0};
 
 private:
 	CStudioModelRenderer( const CStudioModelRenderer& ) = delete;

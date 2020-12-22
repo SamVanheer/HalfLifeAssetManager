@@ -35,6 +35,7 @@ class OptionsPageRegistry;
 
 namespace settings
 {
+class ColorSettings;
 class GameConfigurationsSettings;
 class GeneralSettings;
 class RecentFilesSettings;
@@ -51,6 +52,7 @@ public:
 	EditorContext(
 		QSettings* settings,
 		const std::shared_ptr<settings::GeneralSettings>& generalSettings,
+		const std::shared_ptr<settings::ColorSettings>& colorSettings,
 		const std::shared_ptr<settings::RecentFilesSettings>& recentFilesSettings,
 		const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings,
 		std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
@@ -62,6 +64,8 @@ public:
 	QSettings* GetSettings() const { return _settings; }
 
 	settings::GeneralSettings* GetGeneralSettings() const { return _generalSettings.get(); }
+
+	settings::ColorSettings* GetColorSettings() const { return _colorSettings.get(); }
 
 	settings::RecentFilesSettings* GetRecentFiles() const { return _recentFilesSettings.get(); }
 
@@ -96,6 +100,7 @@ private:
 	QSettings* const _settings;
 
 	const std::shared_ptr<settings::GeneralSettings> _generalSettings;
+	const std::shared_ptr<settings::ColorSettings> _colorSettings;
 	const std::shared_ptr<settings::RecentFilesSettings> _recentFilesSettings;
 	const std::shared_ptr<settings::GameConfigurationsSettings> _gameConfigurationsSettings;
 

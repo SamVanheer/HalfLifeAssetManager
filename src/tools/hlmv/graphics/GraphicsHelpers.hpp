@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 #include "shared/studiomodel/CStudioModel.hpp"
 #include "game/entity/CStudioModelEntity.hpp"
@@ -8,8 +9,6 @@
 #include "graphics/Constants.hpp"
 
 #include "graphics/OpenGL.hpp"
-
-class Color;
 
 namespace studiomdl
 {
@@ -44,7 +43,8 @@ void DrawFloorQuad(float floorLength, float textureRepeatLength, glm::vec2 textu
 *	@param groundColor		Color of the ground if no texture is specified
 *	@param bMirror			If true, draws a solid underside
 */
-void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, GLuint groundTexture, const Color& groundColor, const bool bMirror);
+void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, GLuint groundTexture,
+	const glm::vec3& groundColor, const bool bMirror);
 
 /**
 *	Draws a mirrored model.

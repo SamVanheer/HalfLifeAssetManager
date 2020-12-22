@@ -20,6 +20,7 @@ class RecentFilesSettings;
 
 namespace options
 {
+extern const QString OptionsPageGeneralCategory;
 extern const QString OptionsPageGeneralId;
 
 class OptionsPageGeneral : public OptionsPage

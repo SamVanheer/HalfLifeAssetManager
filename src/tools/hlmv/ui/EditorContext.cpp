@@ -18,6 +18,7 @@
 
 #include "ui/options/OptionsPageRegistry.hpp"
 
+#include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/GameConfigurationsSettings.hpp"
 #include "ui/settings/GeneralSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
@@ -27,6 +28,7 @@ namespace ui
 EditorContext::EditorContext(
 	QSettings* settings,
 	const std::shared_ptr<settings::GeneralSettings>& generalSettings,
+	const std::shared_ptr<settings::ColorSettings>& colorSettings,
 	const std::shared_ptr<settings::RecentFilesSettings>& recentFilesSettings,
 	const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings,
 	std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
@@ -34,6 +36,7 @@ EditorContext::EditorContext(
 	: QObject(parent)
 	, _settings(settings)
 	, _generalSettings(generalSettings)
+	, _colorSettings(colorSettings)
 	, _recentFilesSettings(recentFilesSettings)
 	, _gameConfigurationsSettings(gameConfigurationsSettings)
 	, _timer(new QTimer(this))

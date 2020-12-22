@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 #include <QAction>
+#include <QColor>
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -28,6 +29,7 @@
 #include "ui/SceneWidget.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelColors.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
@@ -35,6 +37,7 @@
 #include "ui/camera_operators/FirstPersonCameraOperator.hpp"
 #include "ui/camera_operators/FreeLookCameraOperator.hpp"
 
+#include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
 #include "utility/IOUtils.hpp"
@@ -59,9 +62,9 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	auto arcBallCameraOperator = std::make_unique<camera_operators::ArcBallCameraOperator>(_editorContext->GetGeneralSettings());
 	auto freeLookCameraOperator = std::make_unique<camera_operators::FreeLookCameraOperator>(_editorContext->GetGeneralSettings());
 
-	//TODO: need to initialize the background color to its default value here, as specified in the options dialog
-	SetBackgroundColor({63, 127, 127});
-	_scene->FloorLength = _provider->GetSettings()->GetFloorLength();
+	UpdateColors();
+
+	_scene->FloorLength = _provider->GetStudioModelSettings()->GetFloorLength();
 
 	auto entity = static_cast<CHLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
 		glm::vec3(), glm::vec3(), false));
@@ -106,7 +109,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	AddCameraOperator(std::make_unique<camera_operators::FirstPersonCameraOperator>());
 
 	//TODO: need to use the actual camera objects instead of indices
-	if (_provider->GetSettings()->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
+	if (_provider->GetStudioModelSettings()->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
 	{
 		SetCurrentCameraOperator(GetCameraOperator(2));
 	}
@@ -116,7 +119,8 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	}
 
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
-	connect(_provider->GetSettings(), &settings::StudioModelSettings::FloorLengthChanged, this, &StudioModelAsset::OnFloorLengthChanged);
+	connect(_editorContext->GetColorSettings(), &settings::ColorSettings::ColorsChanged, this, &StudioModelAsset::UpdateColors);
+	connect(_provider->GetStudioModelSettings(), &settings::StudioModelSettings::FloorLengthChanged, this, &StudioModelAsset::OnFloorLengthChanged);
 }
 
 StudioModelAsset::~StudioModelAsset()
@@ -282,6 +286,22 @@ void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
 	{
 		_inputSinks.top()->OnMouseEvent(event);
 	}
+}
+
+static glm::vec3 ColorToVector(const QColor& color)
+{
+	return {color.redF(), color.greenF(), color.blueF()};
+}
+
+void StudioModelAsset::UpdateColors()
+{
+	const auto colorSettings = _editorContext->GetColorSettings();
+
+	_scene->GroundColor = ColorToVector(colorSettings->GetColor(GroundColor.Name));
+	_scene->BackgroundColor = ColorToVector(colorSettings->GetColor(BackgroundColor.Name));
+	_scene->CrosshairColor = ColorToVector(colorSettings->GetColor(CrosshairColor.Name));
+	_scene->SetLightColor(ColorToVector(colorSettings->GetColor(LightColor.Name)));
+	_scene->SetWireframeColor(ColorToVector(colorSettings->GetColor(WireframeColor.Name)));
 }
 
 void StudioModelAsset::OnFloorLengthChanged(int length)

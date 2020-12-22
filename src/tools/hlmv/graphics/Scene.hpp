@@ -9,7 +9,6 @@
 #include "engine/shared/studiomodel/studio.hpp"
 
 #include "graphics/Camera.hpp"
-
 #include "graphics/Constants.hpp"
 
 class CEntityManager;
@@ -74,12 +73,13 @@ public:
 		_windowHeight = height;
 	}
 
-	glm::vec3 GetBackgroundColor() const { return _backgroundColor; }
+	glm::vec3 GetLightColor() const;
 
-	void SetBackgroundColor(const glm::vec3& value)
-	{
-		_backgroundColor = value;
-	}
+	void SetLightColor(const glm::vec3& value);
+
+	glm::vec3 GetWireframeColor() const;
+
+	void SetWireframeColor(const glm::vec3& value);
 
 	unsigned int GetDrawnPolygonsCount() const { return _drawnPolygonsCount; }
 
@@ -154,6 +154,11 @@ public:
 
 	GLuint UVMeshTexture{0};
 
+	//TODO: having some colors as variables and some as methods is inconsistent
+	glm::vec3 GroundColor{0};
+	glm::vec3 BackgroundColor{0.5};
+	glm::vec3 CrosshairColor{1};
+
 private:
 	//Keep track of how many times we've been initialized and shut down so we don't do it at the wrong time
 	int _initializeCount{0};
@@ -176,8 +181,6 @@ private:
 	Camera _defaultCamera;
 
 	unsigned int _windowWidth = 0, _windowHeight = 0;
-
-	glm::vec3 _backgroundColor{0.5f, 0.5f, 0.5f};
 
 	unsigned int _drawnPolygonsCount = 0;
 

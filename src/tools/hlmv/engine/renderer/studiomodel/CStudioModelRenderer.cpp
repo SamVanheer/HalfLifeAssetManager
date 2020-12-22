@@ -1072,12 +1072,10 @@ unsigned int CStudioModelRenderer::DrawPoints( const bool bWireframe )
 unsigned int CStudioModelRenderer::DrawMeshes( const bool bWireframe, const SortedMesh_t* pMeshes, const mstudiotexture_t* pTextures, const short* pSkinRef )
 {
 	//Set here since it never changes. Much more efficient.
-	if( bWireframe )
-		glColor4f(
-			_wireframeColor.GetRed() / 255.0f,
-			_wireframeColor.GetGreen() / 255.0f,
-			_wireframeColor.GetBlue() / 255.0f,
-			m_pRenderInfo->flTransparency );
+	if (bWireframe)
+	{
+		glColor4fv(glm::value_ptr(glm::vec4{_wireframeColor, m_pRenderInfo->flTransparency}));
+	}
 
 	unsigned int uiDrawnPolys = 0;
 
@@ -1203,11 +1201,7 @@ unsigned int CStudioModelRenderer::DrawShadows(const bool fixZFighting, const bo
 
 		if (wireframe)
 		{
-			glColor4f(
-				_wireframeColor.GetRed()/ 255.0f,
-				_wireframeColor.GetGreen() / 255.0f,
-				_wireframeColor.GetBlue() / 255.0f,
-				m_pRenderInfo->flTransparency);
+			glColor4fv(glm::value_ptr(glm::vec4{_wireframeColor, m_pRenderInfo->flTransparency}));
 		}
 		else
 		{
@@ -1324,9 +1318,7 @@ void CStudioModelRenderer::Lighting( glm::vec3& lv, int bone, int flags, const g
 		lv = illum * ( 1.0f / max );
 	else lv = illum;
 
-	const glm::vec3 lightcolor{ m_lightcolor.GetRed() / 255.0f, m_lightcolor.GetGreen() / 255.0f, m_lightcolor.GetBlue() / 255.0f };
-
-	lv *= lightcolor;
+	lv *= m_lightcolor;
 }
 
 

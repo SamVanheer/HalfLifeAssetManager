@@ -4,6 +4,7 @@
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
@@ -72,6 +73,26 @@ Scene::~Scene()
 void Scene::SetGraphicsContext(std::unique_ptr<IGraphicsContext>&& graphicsContext)
 {
 	_graphicsContext = std::move(graphicsContext);
+}
+
+glm::vec3 Scene::GetLightColor() const
+{
+	return _studioModelRenderer->GetLightColor();
+}
+
+void Scene::SetLightColor(const glm::vec3& value)
+{
+	_studioModelRenderer->SetLightColor(value);
+}
+
+glm::vec3 Scene::GetWireframeColor() const
+{
+	return _studioModelRenderer->GetWireframeColor();
+}
+
+void Scene::SetWireframeColor(const glm::vec3& value)
+{
+	_studioModelRenderer->SetWireframeColor(value);
 }
 
 void Scene::AlignOnGround()
@@ -154,7 +175,7 @@ void Scene::Tick()
 
 void Scene::Draw()
 {
-	glClearColor(_backgroundColor.r, _backgroundColor.g, _backgroundColor.b, 1.0f);
+	glClearColor(BackgroundColor.r, BackgroundColor.g, BackgroundColor.b, 1.0f);
 
 	if (MirrorOnGround)
 	{
@@ -200,10 +221,7 @@ void Scene::Draw()
 
 		glDisable(GL_TEXTURE_2D);
 
-		//TODO:
-		const Color crosshairColor = Color(255, 0, 0);//; m_pHLMV->GetSettings()->GetCrosshairColor();
-
-		glColor4f(crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0);
+		glColor4fv(glm::value_ptr(glm::vec4{CrosshairColor, 1}));
 
 		glPointSize(CROSSHAIR_LINE_WIDTH);
 		glLineWidth(CROSSHAIR_LINE_WIDTH);
@@ -253,10 +271,7 @@ void Scene::Draw()
 
 		glDisable(GL_TEXTURE_2D);
 
-		//TODO: implement
-		const Color crosshairColor = Color{255, 0, 0};// m_pHLMV->GetSettings()->GetCrosshairColor();
-
-		glColor4f(crosshairColor.GetRed() / 255.0f, crosshairColor.GetGreen() / 255.0f, crosshairColor.GetBlue() / 255.0f, 1.0);
+		glColor4fv(glm::value_ptr(glm::vec4{CrosshairColor, 1}));
 
 		glPointSize(GUIDELINES_LINE_WIDTH);
 		glLineWidth(GUIDELINES_LINE_WIDTH);
@@ -491,9 +506,7 @@ void Scene::DrawModel()
 			textureOffset.x = groundSpeed;
 		}
 
-		//TODO: implement settings
-		graphics::helpers::DrawFloor(
-			FloorLength, FloorTextureLength, textureOffset, GroundTexture,/* m_pHLMV->GetSettings()->GetGroundColor()*/{255, 0, 0}, MirrorOnGround);
+		graphics::helpers::DrawFloor(FloorLength, FloorTextureLength, textureOffset, GroundTexture, GroundColor, MirrorOnGround);
 	}
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;

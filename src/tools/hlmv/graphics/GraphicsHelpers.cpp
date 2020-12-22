@@ -1,11 +1,10 @@
 #include <cassert>
 #include <cmath>
 
+#include <glm/vec4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "shared/Logging.hpp"
-
-#include "utility/Color.hpp"
 
 #include "shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
@@ -115,7 +114,7 @@ void DrawFloorQuad(float floorLength, float textureRepeatLength, glm::vec2 textu
 	glEnd();
 }
 
-void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, GLuint groundTexture, const Color& groundColor, const bool bMirror)
+void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, GLuint groundTexture, const glm::vec3& groundColor, const bool bMirror)
 {
 	glCullFace( GL_FRONT );
 
@@ -132,7 +131,7 @@ void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& te
 	if( groundTexture == GL_INVALID_TEXTURE_ID )
 	{
 		glDisable( GL_TEXTURE_2D );
-		glColor4f( groundColor[ 0 ] / 255.0f, groundColor[ 1 ] / 255.0f, groundColor[ 2 ] / 255.0f, 0.7f );
+		glColor4fv(glm::value_ptr(glm::vec4{groundColor, 0.7}));
 		glBindTexture( GL_TEXTURE_2D, 0 );
 	}
 	else
