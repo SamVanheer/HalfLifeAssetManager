@@ -37,15 +37,57 @@ using namespace ui::assets;
 
 int ToolApplication::Run(int argc, char* argv[])
 {
-	const QString programName{"Half-Life Model Viewer"};
+	try
+	{
+		const QString programName{"Half-Life Model Viewer"};
 
+		ConfigureApplication(programName);
+		ConfigureOpenGL();
+
+		QApplication app(argc, argv);
+
+		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
+
+		_editorContext = CreateEditorContext();
+
+		QString fileName = ParseCommandLine(app);
+
+		if (CheckSingleInstance(programName, fileName))
+		{
+			return EXIT_SUCCESS;
+		}
+
+		_mainWindow = new ui::MainWindow(_editorContext);
+
+		if (!fileName.isEmpty())
+		{
+			_mainWindow->TryLoadAsset(fileName);
+		}
+
+		//Note: must come after the file is loaded or it won't actually show maximized
+		_mainWindow->showMaximized();
+
+		return app.exec();
+	}
+	catch (const std::exception& e)
+	{
+		QMessageBox::critical(nullptr, "Fatal Error", QString{"Unhandled exception:\n%1"}.arg(e.what()));
+		throw;
+	}
+}
+
+void ToolApplication::ConfigureApplication(const QString& programName)
+{
 	QApplication::setOrganizationName(programName);
 	QApplication::setOrganizationDomain("https://github.com/Solokiller/HL_Tools");
 	QApplication::setApplicationName(programName);
 	QApplication::setApplicationDisplayName(programName);
 
 	QSettings::setDefaultFormat(QSettings::Format::IniFormat);
+}
 
+void ToolApplication::ConfigureOpenGL()
+{
 	QApplication::setAttribute(Qt::ApplicationAttribute::AA_ShareOpenGLContexts, true);
 
 	//Set up the OpenGL surface settings to match the Half-Life engine's requirements
@@ -68,11 +110,30 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		QSurfaceFormat::setDefaultFormat(defaultFormat);
 	}
+}
 
-	QApplication app(argc, argv);
+QString ToolApplication::ParseCommandLine(QApplication& application)
+{
+	QCommandLineParser parser;
 
-	connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
+	parser.addPositionalArgument("fileName", "Filename of the model to load on startup", "[fileName]");
 
+	parser.process(application);
+
+	const auto positionalArguments = parser.positionalArguments();
+
+	QString fileName;
+
+	if (!positionalArguments.empty())
+	{
+		fileName = positionalArguments[0];
+	}
+
+	return fileName;
+}
+
+ui::EditorContext* ToolApplication::CreateEditorContext()
+{
 	auto settings{std::make_unique<QSettings>()};
 
 	const auto colorSettings{std::make_shared<ui::settings::ColorSettings>()};
@@ -100,35 +161,6 @@ int ToolApplication::Run(int argc, char* argv[])
 	gameConfigurationsSettings->LoadSettings(*settings);
 	studioModelSettings->LoadSettings(*settings);
 
-	QString fileName;
-
-	{
-		QCommandLineParser parser;
-
-		parser.addPositionalArgument("fileName", "Filename of the model to load on startup", "[fileName]");
-
-		parser.process(app);
-
-		const auto positionalArguments = parser.positionalArguments();
-
-		if (!positionalArguments.empty())
-		{
-			fileName = positionalArguments[0];
-		}
-	}
-
-	if (generalSettings->ShouldUseSingleInstance())
-	{
-		_singleInstance.reset(new SingleInstance());
-
-		if (!_singleInstance->Create(programName, fileName))
-		{
-			return EXIT_SUCCESS;
-		}
-
-		connect(_singleInstance.get(), &SingleInstance::FileNameReceived, this, &ToolApplication::OnFileNameReceived);
-	}
-
 	auto optionsPageRegistry{std::make_unique<ui::options::OptionsPageRegistry>()};
 
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGeneral>(generalSettings, recentFilesSettings));
@@ -140,35 +172,32 @@ int ToolApplication::Run(int argc, char* argv[])
 
 	assetProviderRegistry->AddProvider(std::make_unique<studiomodel::StudioModelAssetProvider>(studioModelSettings));
 
-	try
+	return new ui::EditorContext(
+		settings.release(),
+		generalSettings,
+		colorSettings,
+		recentFilesSettings,
+		gameConfigurationsSettings,
+		std::move(optionsPageRegistry),
+		std::move(assetProviderRegistry),
+		this);
+}
+
+bool ToolApplication::CheckSingleInstance(const QString& programName, const QString& fileName)
+{
+	if (_editorContext->GetGeneralSettings()->ShouldUseSingleInstance())
 	{
-		_editorContext = new ui::EditorContext(
-			settings.release(),
-			generalSettings,
-			colorSettings,
-			recentFilesSettings,
-			gameConfigurationsSettings,
-			std::move(optionsPageRegistry),
-			std::move(assetProviderRegistry),
-			this);
+		_singleInstance.reset(new SingleInstance());
 
-		_mainWindow = new ui::MainWindow(_editorContext);
-
-		if (!fileName.isEmpty())
+		if (!_singleInstance->Create(programName, fileName))
 		{
-			_mainWindow->TryLoadAsset(fileName);
+			return true;
 		}
 
-		//Note: must come after the file is loaded or it won't actually show maximized
-		_mainWindow->showMaximized();
+		connect(_singleInstance.get(), &SingleInstance::FileNameReceived, this, &ToolApplication::OnFileNameReceived);
+	}
 
-		return app.exec();
-	}
-	catch (const std::exception& e)
-	{
-		QMessageBox::critical(nullptr, "Fatal Error", QString{"Unhandled exception:\n%1"}.arg(e.what()));
-		throw;
-	}
+	return false;
 }
 
 void ToolApplication::OnExit()
