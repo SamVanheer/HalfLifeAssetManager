@@ -7,6 +7,7 @@
 #include <QCloseEvent>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QMimeData>
 
 #include "assets/AssetIO.hpp"
 
@@ -74,12 +75,12 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	//Eliminate the border on the sides so the scene widget takes up all horizontal space
 	_assetTabs->setDocumentMode(true);
-
 	_assetTabs->setTabsClosable(true);
-
 	_assetTabs->setElideMode(Qt::TextElideMode::ElideLeft);
 
 	setCentralWidget(_assetTabs);
+
+	setAcceptDrops(true);
 
 	connect(_ui.ActionLoad, &QAction::triggered, this, &MainWindow::OnOpenLoadAssetDialog);
 	connect(_ui.ActionSave, &QAction::triggered, this, &MainWindow::OnSaveAsset);
@@ -103,8 +104,6 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	_ui.ActionSaveAs->setEnabled(false);
 	_ui.MenuAsset->setEnabled(false);
 	_assetTabs->setVisible(false);
-
-	_editorContext->StartTimer();
 
 	OnRecentFilesChanged();
 	OnActiveConfigurationChanged(_editorContext->GetGameConfigurations()->GetActiveConfiguration(), {});
@@ -137,6 +136,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	}
 
 	_fileFilter += "All Files (*.*)";
+
+	_editorContext->StartTimer();
 }
 
 MainWindow::~MainWindow()
@@ -186,6 +187,22 @@ bool MainWindow::TryLoadAsset(const QString& fileName)
 	}
 
 	return false;
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent* event)
+{
+	if (event->mimeData()->hasUrls())
+	{
+		event->acceptProposedAction();
+	}
+}
+
+void MainWindow::dropEvent(QDropEvent* event)
+{
+	for (const auto& url : event->mimeData()->urls())
+	{
+		TryLoadAsset(url.toLocalFile());
+	}
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
