@@ -204,9 +204,10 @@ void StudioModelAsset::SetupFullscreenWidget(FullscreenWidget* fullscreenWidget)
 	sceneWidget->installEventFilter(fullscreenWidget);
 }
 
-void StudioModelAsset::Save(const QString& fileName)
+void StudioModelAsset::Save()
 {
-	_provider->Save(fileName, *this);
+	//TODO: add setting to correct groups
+	studiomdl::SaveStudioModel(GetFileName().toStdString().c_str(), *GetStudioModel(), false);
 }
 
 camera_operators::CameraOperator* StudioModelAsset::GetCameraOperator(int index) const
@@ -544,11 +545,5 @@ std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorConte
 	auto studioModel = studiomdl::LoadStudioModel(fileName.toStdString().c_str());
 
 	return std::make_unique<StudioModelAsset>(QString{fileName}, editorContext, this, std::move(studioModel));
-}
-
-void StudioModelAssetProvider::Save(const QString& fileName, StudioModelAsset& asset) const
-{
-	//TODO: add setting to correct groups
-	studiomdl::SaveStudioModel(fileName.toStdString().c_str(), *asset.GetStudioModel(), false);
 }
 }

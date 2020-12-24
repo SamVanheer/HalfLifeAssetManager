@@ -77,7 +77,7 @@ public:
 
 	virtual void SetupFullscreenWidget(FullscreenWidget* fullscreenWidget) = 0;
 
-	virtual void Save(const QString& fileName) = 0;
+	virtual void Save() = 0;
 
 signals:
 	void FileNameChanged(const QString& fileName);

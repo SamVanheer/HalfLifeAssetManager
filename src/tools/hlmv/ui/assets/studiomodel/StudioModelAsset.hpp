@@ -59,7 +59,7 @@ public:
 
 	void SetupFullscreenWidget(FullscreenWidget* fullscreenWidget) override;
 
-	void Save(const QString& fileName) override;
+	void Save() override;
 
 	void OnMouseEvent(QMouseEvent* event) override;
 
@@ -180,8 +180,6 @@ public:
 	bool CanLoad(const QString& fileName) const override;
 
 	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const override;
-
-	void Save(const QString& fileName, StudioModelAsset& asset) const;
 
 	settings::StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
 

@@ -244,7 +244,7 @@ bool MainWindow::SaveAsset(assets::Asset* asset)
 
 	try
 	{
-		asset->Save(asset->GetFileName());
+		asset->Save();
 	}
 	catch (const ::assets::AssetException& e)
 	{
@@ -419,8 +419,7 @@ void MainWindow::OnSaveAssetAs()
 	if (!fileName.isEmpty())
 	{
 		asset->SetFileName(std::move(fileName));
-
-		OnSaveAsset();
+		SaveAsset(asset);
 	}
 }
 
