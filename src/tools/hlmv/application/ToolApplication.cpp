@@ -42,13 +42,14 @@ int ToolApplication::Run(int argc, char* argv[])
 		const QString programName{"Half-Life Model Viewer"};
 
 		ConfigureApplication(programName);
+
+		_editorContext = CreateEditorContext();
+
 		ConfigureOpenGL();
 
 		QApplication app(argc, argv);
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
-
-		_editorContext = CreateEditorContext();
 
 		QString fileName = ParseCommandLine(app);
 
