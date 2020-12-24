@@ -31,6 +31,7 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
+#include "ui/assets/studiomodel/compiler/StudioModelCompilerFrontEnd.hpp"
 
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperator.hpp"
@@ -169,6 +170,8 @@ void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 				qt::LaunchDefaultProgram(fileName);
 			}
 		});
+
+	menu->addSeparator();
 
 	menu->addAction("Take Screenshot...", this, &StudioModelAsset::OnTakeScreenshot);
 }
@@ -507,6 +510,19 @@ QStringList StudioModelAssetProvider::GetFileTypes() const
 QString StudioModelAssetProvider::GetPreferredFileType() const
 {
 	return StudioModelExtension;
+}
+
+QMenu* StudioModelAssetProvider::CreateToolMenu(EditorContext* editorContext)
+{
+	auto menu = new QMenu("StudioModel");
+
+	menu->addAction("Compile Model...", [=]
+		{
+			StudioModelCompilerFrontEnd compiler{editorContext, GetStudioModelSettings()};
+			compiler.exec();
+		});
+
+	return menu;
 }
 
 bool StudioModelAssetProvider::CanLoad(const QString& fileName) const

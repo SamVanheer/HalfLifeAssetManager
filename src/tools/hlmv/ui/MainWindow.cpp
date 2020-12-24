@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <cassert>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include <QCloseEvent>
 #include <QFileDialog>
@@ -41,6 +43,31 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 		_ui.MenuEdit->addAction(undo);
 		_ui.MenuEdit->addAction(redo);
+	}
+
+	{
+		const auto before = _ui.MenuTools->insertSeparator(_ui.ActionOptions);
+
+		//Create the tool menu for each provider, sort by provider name, then add them all
+		std::vector<std::pair<QString, QMenu*>> menus;
+
+		for (auto provider : _editorContext->GetAssetProviderRegistry()->GetAssetProviders())
+		{
+			if (auto menu = provider->CreateToolMenu(_editorContext); menu)
+			{
+				menus.emplace_back(provider->GetProviderName(), menu);
+			}
+		}
+
+		std::sort(menus.begin(), menus.end(), [](const auto& lhs, const auto& rhs)
+			{
+				return lhs.first.compare(rhs.first, Qt::CaseSensitivity::CaseInsensitive) < 0;
+			});
+
+		for (const auto& menu : menus)
+		{
+			_ui.MenuTools->insertMenu(before, menu.second);
+		}
 	}
 
 	_assetTabs = new QTabWidget(this);

@@ -8,4 +8,5 @@ target_sources(HLMV
 		StudioModelUndoCommands.cpp
 		StudioModelUndoCommands.hpp)
 
+add_subdirectory(compiler)
 add_subdirectory(dockpanels)

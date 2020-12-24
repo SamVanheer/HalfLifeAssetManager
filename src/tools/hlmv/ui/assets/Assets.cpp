@@ -6,9 +6,9 @@
 
 namespace ui::assets
 {
-std::vector<const IAssetProvider*> AssetProviderRegistry::GetAssetProviders() const
+std::vector<AssetProvider*> AssetProviderRegistry::GetAssetProviders() const
 {
-	std::vector<const IAssetProvider*> providers;
+	std::vector<AssetProvider*> providers;
 
 	providers.reserve(_providers.size());
 
@@ -20,7 +20,7 @@ std::vector<const IAssetProvider*> AssetProviderRegistry::GetAssetProviders() co
 	return providers;
 }
 
-void AssetProviderRegistry::AddProvider(std::unique_ptr<IAssetProvider>&& provider)
+void AssetProviderRegistry::AddProvider(std::unique_ptr<AssetProvider>&& provider)
 {
 	if (_providers.find(provider->GetAssetType()) != _providers.end())
 	{

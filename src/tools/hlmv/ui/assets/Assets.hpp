@@ -21,7 +21,7 @@ class FullscreenWidget;
 
 namespace assets
 {
-class IAssetProvider;
+class AssetProvider;
 
 class Asset : public QObject
 {
@@ -38,7 +38,7 @@ public:
 
 	virtual entt::id_type GetAssetType() const = 0;
 
-	virtual const IAssetProvider* GetProvider() const = 0;
+	virtual const AssetProvider* GetProvider() const = 0;
 
 	QString GetFileName() const { return _fileName; }
 
@@ -93,11 +93,9 @@ private:
 /**
 *	@brief Provides a means of loading and saving assets
 */
-class IAssetProvider
+class AssetProvider : public QObject
 {
 public:
-	virtual ~IAssetProvider() = 0 {}
-
 	virtual entt::id_type GetAssetType() const = 0;
 
 	/**
@@ -108,6 +106,11 @@ public:
 	virtual QStringList GetFileTypes() const = 0;
 
 	virtual QString GetPreferredFileType() const = 0;
+
+	/**
+	*	@brief Creates the tool menu for this asset, or nullptr if no menu is available
+	*/
+	virtual QMenu* CreateToolMenu(EditorContext* editorContext) = 0;
 
 	virtual bool CanLoad(const QString& fileName) const = 0;
 
@@ -123,9 +126,9 @@ class IAssetProviderRegistry
 public:
 	virtual ~IAssetProviderRegistry() = 0 {}
 
-	virtual std::vector<const IAssetProvider*> GetAssetProviders() const = 0;
+	virtual std::vector<AssetProvider*> GetAssetProviders() const = 0;
 
-	virtual void AddProvider(std::unique_ptr<IAssetProvider>&& provider) = 0;
+	virtual void AddProvider(std::unique_ptr<AssetProvider>&& provider) = 0;
 
 	virtual std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const = 0;
 };
@@ -138,14 +141,14 @@ public:
 	AssetProviderRegistry(const AssetProviderRegistry&) = delete;
 	AssetProviderRegistry& operator=(const AssetProviderRegistry&) = delete;
 
-	std::vector<const IAssetProvider*> GetAssetProviders() const override;
+	std::vector<AssetProvider*> GetAssetProviders() const override;
 
-	void AddProvider(std::unique_ptr<IAssetProvider>&& provider) override;
+	void AddProvider(std::unique_ptr<AssetProvider>&& provider) override;
 
 	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const override;
 
 private:
-	std::unordered_map<entt::id_type, std::unique_ptr<IAssetProvider>> _providers;
+	std::unordered_map<entt::id_type, std::unique_ptr<AssetProvider>> _providers;
 };
 }
 }

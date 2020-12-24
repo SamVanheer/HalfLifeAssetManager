@@ -10,7 +10,7 @@ namespace ui::options
 {
 const QString OptionsPageStudioModelCategory{QStringLiteral("D.Assets")};
 const QString OptionsPageStudioModelId{QStringLiteral("Studiomodel")};
-const QString ExeFilter{QStringLiteral("Executable Files (*.exe *.com);;All Files (*.*)")};
+const QString StudioModelExeFilter{QStringLiteral("Executable Files (*.exe *.com);;All Files (*.*)")};
 
 OptionsPageStudioModel::OptionsPageStudioModel(const std::shared_ptr<settings::StudioModelSettings>& studioModelSettings)
 	: _studioModelSettings(studioModelSettings)
@@ -72,7 +72,7 @@ void OptionsPageStudioModelWidget::OnResetFloorLength()
 
 void OptionsPageStudioModelWidget::OnBrowseCompiler()
 {
-	const QString fileName{QFileDialog::getOpenFileName(this, "Select Studiomdl Compiler", _ui.Compiler->text(), ExeFilter)};
+	const QString fileName{QFileDialog::getOpenFileName(this, "Select Studiomdl Compiler", _ui.Compiler->text(), StudioModelExeFilter)};
 
 	if (!fileName.isEmpty())
 	{
@@ -82,7 +82,7 @@ void OptionsPageStudioModelWidget::OnBrowseCompiler()
 
 void OptionsPageStudioModelWidget::OnBrowseDecompiler()
 {
-	const QString fileName{QFileDialog::getOpenFileName(this, "Select Studiomdl Decompiler", _ui.Decompiler->text(), ExeFilter)};
+	const QString fileName{QFileDialog::getOpenFileName(this, "Select Studiomdl Decompiler", _ui.Decompiler->text(), StudioModelExeFilter)};
 
 	if (!fileName.isEmpty())
 	{

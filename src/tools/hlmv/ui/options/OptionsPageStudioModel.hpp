@@ -20,6 +20,7 @@ class StudioModelSettings;
 namespace options
 {
 extern const QString OptionsPageStudiomodelId;
+extern const QString StudioModelExeFilter;
 
 class OptionsPageStudioModel : public OptionsPage
 {
