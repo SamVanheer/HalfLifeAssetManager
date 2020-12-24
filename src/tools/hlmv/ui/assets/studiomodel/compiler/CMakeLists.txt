@@ -5,4 +5,6 @@ target_sources(HLMV
 		CommandLineFrontEnd.ui
 		StudioModelCompilerFrontEnd.cpp
 		StudioModelCompilerFrontEnd.hpp
-		StudioModelCompilerFrontEnd.ui)
+		StudioModelCompilerFrontEnd.ui
+		StudioModelDecompilerFrontEnd.cpp
+		StudioModelDecompilerFrontEnd.hpp)

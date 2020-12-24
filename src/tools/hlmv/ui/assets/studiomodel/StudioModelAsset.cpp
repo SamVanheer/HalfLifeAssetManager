@@ -32,6 +32,7 @@
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelCompilerFrontEnd.hpp"
+#include "ui/assets/studiomodel/compiler/StudioModelDecompilerFrontEnd.hpp"
 
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperator.hpp"
@@ -520,6 +521,12 @@ QMenu* StudioModelAssetProvider::CreateToolMenu(EditorContext* editorContext)
 		{
 			StudioModelCompilerFrontEnd compiler{editorContext, GetStudioModelSettings()};
 			compiler.exec();
+		});
+
+	menu->addAction("Decompile Model...", [=]
+		{
+			StudioModelDecompilerFrontEnd decompiler{editorContext, GetStudioModelSettings()};
+			decompiler.exec();
 		});
 
 	return menu;
