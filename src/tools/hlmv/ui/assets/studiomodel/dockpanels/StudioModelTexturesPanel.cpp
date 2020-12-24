@@ -684,10 +684,35 @@ bool StudioModelTexturesPanel::ExportTextureTo(const QString& fileName, const st
 	const auto textureData = header->GetData() + texture.index;
 	const auto texturePalette = header->GetData() + texture.index + (texture.width * texture.height);
 
-	//TODO: can optimize reallocations by making the caller provide this buffer
-	std::vector<QRgb> dataBuffer;
+	//Ensure data is 32 bit aligned
+	const int alignedWidth = (texture.width + 3) & (~3);
 
-	const auto textureImage{ConvertTextureToRGBImage(texture, textureData, texturePalette, dataBuffer)};
+	std::vector<uchar> alignedPixels;
+
+	alignedPixels.resize(alignedWidth * texture.height);
+
+	for (int h = 0; h < texture.height; ++h)
+	{
+		for (int w = 0; w < texture.width; ++w)
+		{
+			alignedPixels[(alignedWidth * h) + w] = textureData[(texture.width * h) + w];
+		}
+	}
+
+	QImage textureImage{alignedPixels.data(), texture.width, texture.height, QImage::Format::Format_Indexed8};
+
+	QVector<QRgb> palette;
+
+	palette.reserve(PALETTE_SIZE);
+
+	for (int i = 0; i < PALETTE_ENTRIES; ++i)
+	{
+		const auto color = texturePalette + (i * 3);
+
+		palette.append(qRgb(color[0], color[1], color[2]));
+	}
+
+	textureImage.setColorTable(palette);
 
 	if (!textureImage.save(fileName))
 	{
