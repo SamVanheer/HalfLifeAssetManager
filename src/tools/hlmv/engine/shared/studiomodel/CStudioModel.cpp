@@ -180,8 +180,6 @@ void CStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 
 	if (textureHeader->textureindex > 0 && textureHeader->numtextures <= CStudioModel::MAX_TEXTURES)
 	{
-		mstudiotexture_t* ptexture = textureHeader->GetTextures();
-
 		byte* pIn = reinterpret_cast<byte*>(textureHeader);
 
 		for (int i = 0; i < textureHeader->numtextures; ++i)
@@ -191,19 +189,19 @@ void CStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glGenTextures(1, &name);
 
-			const auto texture = ptexture + i;
+			const auto& texture = *textureHeader->GetTexture(i);
 
 			if (m_IsDol)
 			{
-				ConvertDolToMdl(pIn, *texture);
+				ConvertDolToMdl(pIn, texture);
 			}
 
 			textureLoader.UploadIndexed8(
 				name,
-				texture->width, texture->height,
-				pIn + texture->index,
-				pIn + texture->index + (texture->width * texture->height),
-				(ptexture->flags & STUDIO_NF_MASKED) != 0);
+				texture.width, texture.height,
+				pIn + texture.index,
+				pIn + texture.index + (texture.width * texture.height),
+				(texture.flags & STUDIO_NF_MASKED) != 0);
 
 			m_Textures.emplace_back(name);
 		}
