@@ -32,7 +32,7 @@ protected:
 
 	void SetSettingsWidget(QWidget* widget);
 
-	virtual void GetArgumentsCore(QStringList& arguments) = 0;
+	virtual void GetArgumentsCore(QStringList& arguments) {}
 
 private:
 	QStringList GetArguments();

@@ -242,7 +242,7 @@ void CommandLineFrontEnd::StartNextCompilation()
 
 	arguments.append(fileName);
 
-	AppendRegularText(QString{"Command line parameters: %1<br/>"}.arg(_ui.CompleteCommandLine->toPlainText()));
+	AppendRegularText(QString{"Command line parameters: %1 \"%2\"<br/>"}.arg(_ui.CompleteCommandLine->toPlainText()).arg(fileName));
 
 	_process->start(_ui.ProgramPath->text(), arguments, QIODevice::ReadOnly);
 }
