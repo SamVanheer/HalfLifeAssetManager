@@ -60,8 +60,8 @@ static std::pair<float, float> GetCenteredValues(CHLMVStudioModelEntity* entity)
 	for (int i = 0; i < 3; ++i)
 	{
 		//Use different limits for min and max so centering won't end up setting origin to 0 0 0
-		min[i] = clamp(min[i], -2000.f, 2000.f);
-		max[i] = clamp(max[i], -1000.f, 1000.f);
+		min[i] = std::clamp(min[i], -2000.f, 2000.f);
+		max[i] = std::clamp(max[i], -1000.f, 1000.f);
 	}
 
 	const float dx = max[0] - min[0];

@@ -25,15 +25,6 @@ int UTIL_RandomLong( int iLow, int iHigh );
 float UTIL_RandomFloat( float flLow, float flHigh );
 
 /**
-*	Clamps a given value to a given range.
-*/
-template<typename T>
-T clamp( const T& value, const T& min, const T& max )
-{
-	return std::max( min, std::min( max, value ) );
-}
-
-/**
 *	Returns a 1 bit at the given position.
 */
 inline constexpr int32_t Bit( const size_t shift )
