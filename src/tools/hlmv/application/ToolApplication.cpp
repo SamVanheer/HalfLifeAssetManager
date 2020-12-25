@@ -2,12 +2,16 @@
 #include <memory>
 #include <stdexcept>
 
+#include <gl/glew.h>
+
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QDebug>
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QMessageBox>
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
 #include <QScopedPointer>
 #include <QSettings>
 #include <QStyleFactory>
@@ -48,6 +52,13 @@ int ToolApplication::Run(int argc, char* argv[])
 		ConfigureOpenGL();
 
 		QApplication app(argc, argv);
+
+		if (QOpenGLContext::globalShareContext()->format().majorVersion() < 3)
+		{
+			QMessageBox::critical(nullptr, "Fatal Error", QString{"%1 requires OpenGL 3 or newer"}.arg(programName));
+
+			return EXIT_FAILURE;
+		}
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
@@ -148,7 +159,7 @@ void ToolApplication::ConfigureOpenGL()
 	{
 		QSurfaceFormat defaultFormat(QSurfaceFormat::FormatOption::DebugContext | QSurfaceFormat::FormatOption::DeprecatedFunctions);
 
-		defaultFormat.setMajorVersion(2);
+		defaultFormat.setMajorVersion(3);
 		defaultFormat.setMinorVersion(0);
 		defaultFormat.setProfile(QSurfaceFormat::OpenGLContextProfile::CompatibilityProfile);
 
