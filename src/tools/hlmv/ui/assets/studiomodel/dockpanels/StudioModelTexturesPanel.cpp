@@ -93,14 +93,24 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.TopColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelTexturesPanel::OnTopColorSpinnerChanged);
 	connect(_ui.BottomColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelTexturesPanel::OnBottomColorSpinnerChanged);
 
-	connect(_ui.FilterTextures, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnFilterTexturesChanged);
+	connect(_ui.MinFilter, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::OnTextureFiltersChanged);
+	connect(_ui.MagFilter, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::OnTextureFiltersChanged);
+	connect(_ui.MipmapFilter, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::OnTextureFiltersChanged);
+
 	connect(_ui.PowerOf2Textures, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnPowerOf2TexturesChanged);
 
 	_ui.TextureName->setValidator(new qt::ByteLengthValidator(MaxTextureNameBytes - 1, this));
 
 	const auto studioModelSettings{_asset->GetProvider()->GetStudioModelSettings()};
 
-	_ui.FilterTextures->setChecked(studioModelSettings->ShouldFilterTextures());
+	_ui.MinFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMinFilter()));
+	_ui.MagFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMagFilter()));
+	_ui.MipmapFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMipmapFilter()));
+
+	//Force an update to ensure the loader is correctly configured
+	//TODO: maybe do this somewhere else?
+	OnTextureFiltersChanged();
+
 	_ui.PowerOf2Textures->setChecked(studioModelSettings->ShouldResizeTexturesToPowerOf2());
 
 	_ui.ScaleTextureViewSlider->setRange(
@@ -1057,14 +1067,19 @@ void StudioModelTexturesPanel::OnBottomColorSpinnerChanged()
 	RemapTextures();
 }
 
-void StudioModelTexturesPanel::OnFilterTexturesChanged()
+void StudioModelTexturesPanel::OnTextureFiltersChanged()
 {
-	_asset->GetTextureLoader()->SetFilterTextures(_ui.FilterTextures->isChecked());
+	const auto textureLoader{_asset->GetTextureLoader()};
+
+	textureLoader->SetTextureFilters(
+		static_cast<graphics::TextureFilter>(_ui.MinFilter->currentIndex()),
+		static_cast<graphics::TextureFilter>(_ui.MagFilter->currentIndex()),
+		static_cast<graphics::MipmapFilter>(_ui.MipmapFilter->currentIndex()));
 
 	const auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
 	graphicsContext->Begin();
-	_asset->GetStudioModel()->UpdateFilters(*_asset->GetTextureLoader());
+	_asset->GetStudioModel()->UpdateFilters(*textureLoader);
 	graphicsContext->End();
 }
 

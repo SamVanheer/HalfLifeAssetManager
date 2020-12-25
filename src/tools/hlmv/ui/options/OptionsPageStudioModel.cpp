@@ -34,7 +34,6 @@ OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(EditorContext* editor
 	_ui.setupUi(this);
 
 	_ui.AutodetectViewmodels->setChecked(_studioModelSettings->ShouldAutodetectViewmodels());
-	_ui.FilterTextures->setChecked(_studioModelSettings->ShouldFilterTextures());
 	_ui.PowerOf2Textures->setChecked(_studioModelSettings->ShouldResizeTexturesToPowerOf2());
 
 	_ui.FloorLengthSlider->setRange(_studioModelSettings->MinimumFloorLength, _studioModelSettings->MaximumFloorLength);
@@ -45,6 +44,10 @@ OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(EditorContext* editor
 
 	_ui.Compiler->setText(_studioModelSettings->GetStudiomdlCompilerFileName());
 	_ui.Decompiler->setText(_studioModelSettings->GetStudiomdlDecompilerFileName());
+
+	_ui.MinFilter->setCurrentIndex(static_cast<int>(_studioModelSettings->GetMinFilter()));
+	_ui.MagFilter->setCurrentIndex(static_cast<int>(_studioModelSettings->GetMagFilter()));
+	_ui.MipmapFilter->setCurrentIndex(static_cast<int>(_studioModelSettings->GetMipmapFilter()));
 
 	connect(_ui.FloorLengthSlider, &QSlider::valueChanged, _ui.FloorLengthSpinner, &QSpinBox::setValue);
 	connect(_ui.FloorLengthSpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.FloorLengthSlider, &QSlider::setValue);
@@ -59,11 +62,15 @@ OptionsPageStudioModelWidget::~OptionsPageStudioModelWidget() = default;
 void OptionsPageStudioModelWidget::ApplyChanges(QSettings& settings)
 {
 	_studioModelSettings->SetAutodetectViewmodels(_ui.AutodetectViewmodels->isChecked());
-	_studioModelSettings->SetFilterTextures(_ui.FilterTextures->isChecked());
 	_studioModelSettings->SetResizeTexturesToPowerOf2(_ui.PowerOf2Textures->isChecked());
 	_studioModelSettings->SetFloorLength(_ui.FloorLengthSlider->value());
 	_studioModelSettings->SetStudiomdlCompilerFileName(_ui.Compiler->text());
 	_studioModelSettings->SetStudiomdlDecompilerFileName(_ui.Decompiler->text());
+
+	_studioModelSettings->SetTextureFilters(
+		static_cast<graphics::TextureFilter>(_ui.MinFilter->currentIndex()),
+		static_cast<graphics::TextureFilter>(_ui.MagFilter->currentIndex()),
+		static_cast<graphics::MipmapFilter>(_ui.MipmapFilter->currentIndex()));
 
 	_studioModelSettings->SaveSettings(settings);
 }

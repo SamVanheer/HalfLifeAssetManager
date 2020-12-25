@@ -240,10 +240,18 @@ void CStudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader, mstud
 
 void CStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
 {
-	for (auto texture : m_Textures)
+	if (m_Textures.empty())
 	{
-		glBindTexture(GL_TEXTURE_2D, texture);
-		textureLoader.SetFilters(texture);
+		//No textures loaded yet, do nothing
+		return;
+	}
+
+	const auto textureHeader{GetTextureHeader()};
+
+	for (int i = 0; i < textureHeader->numtextures; ++i)
+	{
+		glBindTexture(GL_TEXTURE_2D, m_Textures[i]);
+		textureLoader.SetFilters(m_Textures[i], (textureHeader->GetTexture(i)->flags & STUDIO_NF_NOMIPS) != 0);
 	}
 }
 

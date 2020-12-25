@@ -89,7 +89,7 @@ private slots:
 	void OnTopColorSpinnerChanged();
 	void OnBottomColorSpinnerChanged();
 
-	void OnFilterTexturesChanged();
+	void OnTextureFiltersChanged();
 	void OnPowerOf2TexturesChanged();
 
 private:

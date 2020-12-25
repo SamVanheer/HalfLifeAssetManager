@@ -8,18 +8,38 @@
 
 namespace graphics
 {
+enum class TextureFilter
+{
+	Point,
+	Linear,
+
+	First = Point,
+	Last = Linear
+};
+
+enum class MipmapFilter
+{
+	None,
+	Point,
+	Linear,
+
+	First = None,
+	Last = Linear
+};
+
 class TextureLoader final
 {
 public:
 	TextureLoader();
 	~TextureLoader();
 
-	bool ShouldFilterTextures() const { return _filterTextures; }
+	TextureFilter GetMinFilter() const { return _minFilter; }
 
-	void SetFilterTextures(bool value)
-	{
-		_filterTextures = value;
-	}
+	TextureFilter GetMagFilter() const { return _magFilter; }
+
+	MipmapFilter GetMipmapFilter() const { return _mipmapFilter; }
+
+	void SetTextureFilters(TextureFilter minFilter, TextureFilter magFilter, MipmapFilter mipmapFilter);
 
 	bool ShouldResizeToPowerOf2() const { return _resizeToPowerOf2; }
 
@@ -32,13 +52,19 @@ public:
 
 	void UploadIndexed8(GLuint texture, int width, int height, const byte* pixels, const byte* palette, bool generateMipmaps, bool masked);
 
-	void SetFilters(GLuint texture);
+	void SetFilters(GLuint texture, bool hasMipmaps);
 
 private:
 	std::pair<int, int> AdjustImageDimensions(int width, int height) const;
 
 private:
-	bool _filterTextures{true};
+	TextureFilter _minFilter{TextureFilter::Linear};
+	TextureFilter _magFilter{TextureFilter::Linear};
+	MipmapFilter _mipmapFilter{MipmapFilter::None};
+
+	GLint _glMinFilter;
+	GLint _glMagFilter;
+
 	bool _resizeToPowerOf2{true};
 };
 }

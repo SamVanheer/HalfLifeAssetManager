@@ -5,8 +5,73 @@
 
 namespace graphics
 {
-TextureLoader::TextureLoader() = default;
+TextureLoader::TextureLoader()
+{
+	SetTextureFilters(TextureFilter::Linear, TextureFilter::Linear, MipmapFilter::None);
+}
+
 TextureLoader::~TextureLoader() = default;
+
+void TextureLoader::SetTextureFilters(TextureFilter minFilter, TextureFilter magFilter, MipmapFilter mipmapFilter)
+{
+	_minFilter = minFilter;
+	_magFilter = magFilter;
+	_mipmapFilter = mipmapFilter;
+
+	switch (_minFilter)
+	{
+	case TextureFilter::Point:
+	{
+		switch (_mipmapFilter)
+		{
+		case MipmapFilter::None:
+			_glMinFilter = GL_NEAREST;
+			break;
+
+		case MipmapFilter::Point:
+			_glMinFilter = GL_NEAREST_MIPMAP_NEAREST;
+			break;
+
+		case MipmapFilter::Linear:
+			_glMinFilter = GL_NEAREST_MIPMAP_LINEAR;
+		}
+		break;
+	}
+
+	case TextureFilter::Linear:
+	{
+		switch (_mipmapFilter)
+		{
+		case MipmapFilter::None:
+			_glMinFilter = GL_LINEAR;
+			break;
+
+		case MipmapFilter::Point:
+			_glMinFilter = GL_LINEAR_MIPMAP_NEAREST;
+			break;
+
+		case MipmapFilter::Linear:
+			_glMinFilter = GL_LINEAR_MIPMAP_LINEAR;
+		}
+		break;
+	}
+	}
+
+	switch (_magFilter)
+	{
+	case TextureFilter::Point:
+	{
+		_glMagFilter = GL_NEAREST;
+		break;
+	}
+
+	case TextureFilter::Linear:
+	{
+		_glMagFilter = GL_LINEAR;
+		break;
+	}
+	}
+}
 
 void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const byte* rgbaPixels, bool generateMipmaps, bool masked)
 {
@@ -68,7 +133,7 @@ void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const 
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgbaPixels);
-	SetFilters(texture);
+	SetFilters(texture, generateMipmaps);
 
 	if (generateMipmaps)
 	{
@@ -115,10 +180,10 @@ void TextureLoader::UploadIndexed8(GLuint texture, int width, int height, const 
 	UploadRGBA8888(texture, width, height, rgbaPixels.data(), generateMipmaps, masked);
 }
 
-void TextureLoader::SetFilters(GLuint texture)
+void TextureLoader::SetFilters(GLuint texture, bool hasMipmaps)
 {
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ShouldFilterTextures() ? GL_LINEAR : GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ShouldFilterTextures() ? GL_LINEAR : GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, hasMipmaps ? _glMinFilter : _glMagFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _glMagFilter);
 }
 
 std::pair<int, int> TextureLoader::AdjustImageDimensions(int width, int height) const

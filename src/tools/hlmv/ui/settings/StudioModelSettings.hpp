@@ -6,6 +6,8 @@
 #include <QSettings>
 #include <QString>
 
+#include "graphics/TextureLoader.hpp"
+
 namespace ui::settings
 {
 class StudioModelSettings final : public QObject
@@ -21,6 +23,10 @@ public:
 	static constexpr int MaximumFloorLength = 2048;
 	static constexpr int DefaultFloorLength = 100;
 
+	static constexpr graphics::TextureFilter DefaultMinFilter{graphics::TextureFilter::Linear};
+	static constexpr graphics::TextureFilter DefaultMagFilter{graphics::TextureFilter::Linear};
+	static constexpr graphics::MipmapFilter DefaultMipmapFilter{graphics::MipmapFilter::None};
+
 	StudioModelSettings(QObject* parent = nullptr)
 		: QObject(parent)
 	{
@@ -32,11 +38,28 @@ public:
 	{
 		settings.beginGroup("assets/studiomodel");
 		_autodetectViewModels = settings.value("AutodetectViewmodels", DefaultAutodetectViewmodels).toBool();
-		_filterTextures = settings.value("FilterTextures", DefaultFilterTextures).toBool();
 		_powerOf2Textures = settings.value("PowerOf2Textures", DefaultPowerOf2Textures).toBool();
 		_floorLength = std::clamp(settings.value("FloorLength", DefaultFloorLength).toInt(), MinimumFloorLength, MaximumFloorLength);
 		_studiomdlCompilerFileName = settings.value("CompilerFileName").toString();
 		_studiomdlDecompilerFileName = settings.value("DecompilerFileName").toString();
+
+		settings.beginGroup("TextureFilters");
+		_minFilter = static_cast<graphics::TextureFilter>(std::clamp(
+			settings.value("Min", static_cast<int>(DefaultMinFilter)).toInt(),
+			static_cast<int>(graphics::TextureFilter::First),
+			static_cast<int>(graphics::TextureFilter::Last)));
+
+		_magFilter = static_cast<graphics::TextureFilter>(std::clamp(
+			settings.value("Mag", static_cast<int>(DefaultMagFilter)).toInt(),
+			static_cast<int>(graphics::TextureFilter::First),
+			static_cast<int>(graphics::TextureFilter::Last)));
+
+		_mipmapFilter = static_cast<graphics::MipmapFilter>(std::clamp(
+			settings.value("Mipmap", static_cast<int>(DefaultMipmapFilter)).toInt(),
+			static_cast<int>(graphics::MipmapFilter::First),
+			static_cast<int>(graphics::MipmapFilter::Last)));
+		settings.endGroup();
+
 		settings.endGroup();
 	}
 
@@ -44,11 +67,17 @@ public:
 	{
 		settings.beginGroup("assets/studiomodel");
 		settings.setValue("AutodetectViewmodels", _autodetectViewModels);
-		settings.setValue("FilterTextures", _filterTextures);
 		settings.setValue("PowerOf2Textures", _powerOf2Textures);
 		settings.setValue("FloorLength", _floorLength);
 		settings.setValue("CompilerFileName", _studiomdlCompilerFileName);
 		settings.setValue("DecompilerFileName", _studiomdlDecompilerFileName);
+
+		settings.beginGroup("TextureFilters");
+		settings.setValue("Min", static_cast<int>(_minFilter));
+		settings.setValue("Mag", static_cast<int>(_magFilter));
+		settings.setValue("Mipmap", static_cast<int>(_mipmapFilter));
+		settings.endGroup();
+
 		settings.endGroup();
 	}
 
@@ -62,11 +91,17 @@ public:
 		}
 	}
 
-	bool ShouldFilterTextures() const { return _filterTextures; }
+	graphics::TextureFilter GetMinFilter() const { return _minFilter; }
 
-	void SetFilterTextures(bool value)
+	graphics::TextureFilter GetMagFilter() const { return _magFilter; }
+
+	graphics::MipmapFilter GetMipmapFilter() const { return _mipmapFilter; }
+
+	void SetTextureFilters(graphics::TextureFilter minFilter, graphics::TextureFilter magFilter, graphics::MipmapFilter mipmapFilter)
 	{
-		_filterTextures = value;
+		_minFilter = minFilter;
+		_magFilter = magFilter;
+		_mipmapFilter = mipmapFilter;
 	}
 
 	bool ShouldResizeTexturesToPowerOf2() const { return _powerOf2Textures; }
@@ -107,12 +142,15 @@ signals:
 
 private:
 	bool _autodetectViewModels{DefaultAutodetectViewmodels};
-	bool _filterTextures{DefaultFilterTextures};
 	bool _powerOf2Textures{DefaultPowerOf2Textures};
 
 	int _floorLength = DefaultFloorLength;
 
 	QString _studiomdlCompilerFileName;
 	QString _studiomdlDecompilerFileName;
+
+	graphics::TextureFilter _minFilter{DefaultMinFilter};
+	graphics::TextureFilter _magFilter{DefaultMagFilter};
+	graphics::MipmapFilter _mipmapFilter{DefaultMipmapFilter};
 };
 }
