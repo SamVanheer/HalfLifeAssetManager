@@ -2,7 +2,7 @@
 
 #include "core/shared/Const.hpp"
 
-#include "StudioSorting.hpp"
+#include "engine/renderer/studiomodel/StudioSorting.hpp"
 
 namespace studiomdl
 {

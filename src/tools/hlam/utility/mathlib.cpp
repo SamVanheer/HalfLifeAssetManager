@@ -15,7 +15,7 @@
 #include <glm/geometric.hpp>
 #include <glm/trigonometric.hpp>
 
-#include "mathlib.hpp"
+#include "utility/mathlib.hpp"
 
 constexpr double MaxAngle = 360.0;
 

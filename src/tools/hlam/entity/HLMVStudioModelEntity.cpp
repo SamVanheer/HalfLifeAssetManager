@@ -1,7 +1,7 @@
 #include "soundsystem/SoundConstants.hpp"
 #include "soundsystem/ISoundSystem.hpp"
 
-#include "HLMVStudioModelEntity.hpp"
+#include "entity/HLMVStudioModelEntity.hpp"
 
 LINK_ENTITY_TO_CLASS( studiomodel, HLMVStudioModelEntity);
 

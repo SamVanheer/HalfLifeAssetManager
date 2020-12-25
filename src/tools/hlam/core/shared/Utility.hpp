@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cstdint>
 
-#include "Platform.hpp"
+#include "core/shared/Platform.hpp"
 
 /**
 *	Utility functionality.

@@ -9,7 +9,7 @@
 
 #include "graphics/Palette.hpp"
 
-#include "CSprite.hpp"
+#include "engine/shared/sprite/CSprite.hpp"
 
 namespace sprite
 {

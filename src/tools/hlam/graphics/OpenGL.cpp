@@ -1,6 +1,6 @@
 #include "core/shared/Logging.hpp"
 
-#include "OpenGL.hpp"
+#include "graphics/OpenGL.hpp"
 
 bool CBaseOpenGL::PostInitialize()
 {

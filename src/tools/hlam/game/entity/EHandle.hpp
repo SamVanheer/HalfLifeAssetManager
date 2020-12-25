@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EntityConstants.hpp"
+#include "game/entity/EntityConstants.hpp"
 
 class CBaseEntity;
 class BaseEntityList;

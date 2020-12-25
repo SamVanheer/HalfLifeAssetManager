@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sprite.hpp"
+#include "engine/shared/sprite/sprite.hpp"
 
 namespace sprite
 {

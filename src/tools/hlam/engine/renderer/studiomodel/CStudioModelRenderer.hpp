@@ -10,7 +10,7 @@
 
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
-#include "StudioSorting.hpp"
+#include "engine/renderer/studiomodel/StudioSorting.hpp"
 
 namespace studiomdl
 {

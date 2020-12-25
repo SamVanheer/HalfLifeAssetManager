@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include "StringUtils.hpp"
+#include "utility/StringUtils.hpp"
 
 const char* strnstr( const char* pszString, const char* pszSubString, const size_t uiLength )
 {

@@ -8,8 +8,8 @@
 
 #include "core/shared/Const.hpp"
 
-#include "GraphicsUtils.hpp"
-#include "Palette.hpp"
+#include "graphics/GraphicsUtils.hpp"
+#include "graphics/Palette.hpp"
 
 namespace graphics
 {

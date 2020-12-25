@@ -7,7 +7,7 @@
 
 #include "core/shared/Const.hpp"
 
-#include "OpenGL.hpp"
+#include "graphics/OpenGL.hpp"
 
 namespace graphics
 {

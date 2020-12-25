@@ -6,7 +6,7 @@
 
 #include "engine/shared/renderer/DrawConstants.hpp"
 
-#include "CModelRenderInfo.hpp"
+#include "engine/shared/renderer/studiomodel/CModelRenderInfo.hpp"
 
 /**
 *	@defgroup StudioModelRenderer StudioModel Renderer.

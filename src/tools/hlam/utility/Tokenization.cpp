@@ -1,7 +1,7 @@
 #include <cassert>
 #include <cctype>
 
-#include "Tokenization.hpp"
+#include "utility/Tokenization.hpp"
 
 namespace tokenization
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CModelRenderInfo.hpp"
+#include "engine/shared/renderer/studiomodel/CModelRenderInfo.hpp"
 
 /**
 *	@ingroup StudioModelRenderer

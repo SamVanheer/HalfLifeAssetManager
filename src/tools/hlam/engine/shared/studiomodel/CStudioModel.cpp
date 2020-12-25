@@ -18,7 +18,7 @@
 #include "graphics/Palette.hpp"
 #include "graphics/TextureLoader.hpp"
 
-#include "CStudioModel.hpp"
+#include "engine/shared/studiomodel/CStudioModel.hpp"
 
 namespace studiomdl
 {

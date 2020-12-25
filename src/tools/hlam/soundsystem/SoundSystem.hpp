@@ -7,9 +7,9 @@
 #include <al.h>
 #include <alc.h>
 
-#include "SoundConstants.hpp"
+#include "soundsystem/SoundConstants.hpp"
 
-#include "ISoundSystem.hpp"
+#include "soundsystem/ISoundSystem.hpp"
 
 namespace filesystem
 {

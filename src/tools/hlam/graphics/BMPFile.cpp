@@ -2,9 +2,9 @@
 #include <cstring>
 #include <memory>
 
-#include "Palette.hpp"
+#include "graphics/Palette.hpp"
 
-#include "BMPFile.hpp"
+#include "graphics/BMPFile.hpp"
 
 #include "utility/IOUtils.hpp"
 

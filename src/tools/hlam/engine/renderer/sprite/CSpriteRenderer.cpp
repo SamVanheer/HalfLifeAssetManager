@@ -12,7 +12,7 @@
 
 #include "engine/shared/sprite/sprite.hpp"
 
-#include "CSpriteRenderer.hpp"
+#include "engine/renderer/sprite/CSpriteRenderer.hpp"
 
 namespace sprite
 {

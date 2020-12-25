@@ -17,7 +17,7 @@
 
 #include "graphics/OpenGL.hpp"
 
-#include "studio.hpp"
+#include "engine/shared/studiomodel/studio.hpp"
 
 namespace graphics
 {

@@ -4,7 +4,7 @@
 #include "utility/IOUtils.hpp"
 #include "utility/StringUtils.hpp"
 
-#include "Logging.hpp"
+#include "core/shared/Logging.hpp"
 
 const char* GetLogTypePrefix( const LogType type )
 {

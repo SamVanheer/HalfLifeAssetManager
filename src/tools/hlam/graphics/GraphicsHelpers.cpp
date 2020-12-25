@@ -8,7 +8,7 @@
 
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
-#include "GraphicsHelpers.hpp"
+#include "graphics/GraphicsHelpers.hpp"
 
 namespace graphics
 {

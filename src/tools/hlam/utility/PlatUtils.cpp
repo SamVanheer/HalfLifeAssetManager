@@ -7,7 +7,7 @@
 #include <unistd.h>
 #endif
 
-#include "PlatUtils.hpp"
+#include "utility/PlatUtils.hpp"
 
 namespace plat
 {

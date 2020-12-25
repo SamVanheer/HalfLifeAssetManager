@@ -9,7 +9,7 @@
 #include "engine/shared/studiomodel/CStudioModel.hpp"
 #include "engine/shared/renderer/studiomodel/IStudioModelRendererListener.hpp"
 
-#include "CStudioModelRenderer.hpp"
+#include "engine/renderer/studiomodel/CStudioModelRenderer.hpp"
 
 //Double to float conversion
 #pragma warning( disable: 4244 )
