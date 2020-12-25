@@ -44,7 +44,7 @@ int ToolApplication::Run(int argc, char* argv[])
 {
 	try
 	{
-		const QString programName{"Half-Life Model Viewer"};
+		const QString programName{"Half-Life Asset Manager"};
 
 		ConfigureApplication(programName);
 
