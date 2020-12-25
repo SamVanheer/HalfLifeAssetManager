@@ -5,7 +5,7 @@
 
 #include <glm/vec3.hpp>
 
-#include "shared/Const.hpp"
+#include "core/shared/Const.hpp"
 
 #include "OpenGL.hpp"
 

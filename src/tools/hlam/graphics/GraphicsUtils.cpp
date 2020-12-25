@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shared/Const.hpp"
+#include "core/shared/Const.hpp"
 
 #include "GraphicsUtils.hpp"
 #include "Palette.hpp"

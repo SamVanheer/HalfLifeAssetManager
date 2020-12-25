@@ -4,9 +4,9 @@
 #include <glm/vec4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shared/Logging.hpp"
+#include "core/shared/Logging.hpp"
 
-#include "shared/renderer/studiomodel/IStudioModelRenderer.hpp"
+#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
 #include "GraphicsHelpers.hpp"
 

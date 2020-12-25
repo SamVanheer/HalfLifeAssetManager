@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "shared/Const.hpp"
+#include "core/shared/Const.hpp"
 
 /*
 ==============================================================================

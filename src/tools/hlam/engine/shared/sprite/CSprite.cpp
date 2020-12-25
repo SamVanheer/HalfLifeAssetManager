@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <memory>
 
-#include "shared/Const.hpp"
+#include "core/shared/Const.hpp"
 
 #include "utility/ByteSwap.hpp"
 #include "utility/IOUtils.hpp"

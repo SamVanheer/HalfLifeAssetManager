@@ -32,10 +32,7 @@ target_include_directories(HLAM
 		${EXTERNAL_DIR}/AudioFile/include
 		${EXTERNAL_DIR}/GLEW/include
 		${EXTERNAL_DIR}/GLM/include
-		${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/core
-		${CMAKE_CURRENT_SOURCE_DIR}/engine
-		${CMAKE_CURRENT_SOURCE_DIR}/stdlib)
+		${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_definitions(HLAM
 	PRIVATE	

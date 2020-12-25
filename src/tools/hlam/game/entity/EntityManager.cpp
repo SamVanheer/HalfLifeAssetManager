@@ -1,7 +1,7 @@
 #include <cassert>
 
-#include "shared/Logging.hpp"
-#include "shared/WorldTime.hpp"
+#include "core/shared/Logging.hpp"
+#include "core/shared/WorldTime.hpp"
 
 #include "game/entity/BaseEntity.hpp"
 #include "game/entity/BaseEntityList.hpp"

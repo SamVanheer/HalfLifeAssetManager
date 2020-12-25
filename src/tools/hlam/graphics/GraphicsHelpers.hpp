@@ -3,7 +3,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-#include "shared/studiomodel/CStudioModel.hpp"
+#include "engine/shared/studiomodel/CStudioModel.hpp"
 #include "game/entity/StudioModelEntity.hpp"
 
 #include "graphics/Constants.hpp"

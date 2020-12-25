@@ -8,8 +8,8 @@
 #include <sstream>
 #include <string>
 
-#include "shared/Platform.hpp"
-#include "shared/Logging.hpp"
+#include "core/shared/Platform.hpp"
+#include "core/shared/Logging.hpp"
 
 #include "utility/IOUtils.hpp"
 #include "utility/StringUtils.hpp"

@@ -2,12 +2,12 @@
 
 #include <algorithm>
 
-#include "shared/Logging.hpp"
+#include "core/shared/Logging.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
 
-#include "shared/studiomodel/CStudioModel.hpp"
-#include "shared/renderer/studiomodel/IStudioModelRendererListener.hpp"
+#include "engine/shared/studiomodel/CStudioModel.hpp"
+#include "engine/shared/renderer/studiomodel/IStudioModelRendererListener.hpp"
 
 #include "CStudioModelRenderer.hpp"
 

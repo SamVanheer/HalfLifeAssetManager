@@ -2,7 +2,7 @@
 
 #include <glm/vec3.hpp>
 
-#include "shared/Class.hpp"
+#include "core/shared/Class.hpp"
 
 #include "engine/shared/renderer/DrawConstants.hpp"
 

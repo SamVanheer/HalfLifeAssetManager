@@ -1,9 +1,9 @@
 #include <glm/geometric.hpp>
 
-#include "shared/Logging.hpp"
-#include "shared/WorldTime.hpp"
+#include "core/shared/Logging.hpp"
+#include "core/shared/WorldTime.hpp"
 
-#include "shared/studiomodel/CStudioModel.hpp"
+#include "engine/shared/studiomodel/CStudioModel.hpp"
 
 #include "game/entity/StudioModelEntity.hpp"
 

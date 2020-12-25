@@ -1,4 +1,4 @@
-#include "shared/WorldTime.hpp"
+#include "core/shared/WorldTime.hpp"
 
 #include "engine/shared/sprite/sprite.hpp"
 #include "engine/shared/sprite/CSprite.hpp"

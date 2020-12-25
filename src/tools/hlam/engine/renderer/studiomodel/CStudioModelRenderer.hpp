@@ -6,9 +6,9 @@
 
 #include <glm/mat3x4.hpp>
 
-#include "shared/studiomodel/studio.hpp"
+#include "engine/shared/studiomodel/studio.hpp"
 
-#include "shared/renderer/studiomodel/IStudioModelRenderer.hpp"
+#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
 #include "StudioSorting.hpp"
 

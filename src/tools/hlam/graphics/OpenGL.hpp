@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shared/Platform.hpp"
+#include "core/shared/Platform.hpp"
 
 //#include <gl/GL.h>
 //#include <gl/GLU.h>

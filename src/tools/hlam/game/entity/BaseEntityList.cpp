@@ -1,7 +1,7 @@
 #include <cassert>
 #include <memory>
 
-#include "shared/Logging.hpp"
+#include "core/shared/Logging.hpp"
 
 #include "game/entity/BaseEntity.hpp"
 #include "game/entity/BaseEntityList.hpp"

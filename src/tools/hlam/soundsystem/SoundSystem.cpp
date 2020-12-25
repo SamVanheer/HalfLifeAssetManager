@@ -11,7 +11,7 @@
 
 #include "filesystem/IFileSystem.hpp"
 
-#include "shared/Logging.hpp"
+#include "core/shared/Logging.hpp"
 
 #include "soundsystem/SoundSystem.hpp"
 

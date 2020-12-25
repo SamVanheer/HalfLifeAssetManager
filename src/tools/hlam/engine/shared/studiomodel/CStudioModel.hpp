@@ -10,7 +10,7 @@
 
 #include "assets/AssetIO.hpp"
 
-#include "shared/Const.hpp"
+#include "core/shared/Const.hpp"
 
 #include "utility/mathlib.hpp"
 #include "utility/Color.hpp"

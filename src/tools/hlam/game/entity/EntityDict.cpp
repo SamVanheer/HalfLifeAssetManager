@@ -1,4 +1,4 @@
-#include "shared/Logging.hpp"
+#include "core/shared/Logging.hpp"
 
 #include "game/entity/BaseEntity.hpp"
 #include "game/entity/EntityDict.hpp"

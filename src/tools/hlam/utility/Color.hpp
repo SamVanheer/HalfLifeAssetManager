@@ -3,7 +3,7 @@
 #include <cassert>
 #include <string>
 
-#include "shared/Const.hpp"
+#include "core/shared/Const.hpp"
 
 /**
 *	Lightweight Color class.

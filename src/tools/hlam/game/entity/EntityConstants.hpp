@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "shared/Utility.hpp"
+#include "core/shared/Utility.hpp"
 
 namespace entity
 {
