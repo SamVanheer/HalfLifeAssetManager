@@ -10,6 +10,7 @@
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QMessageBox>
+#include <QOffscreenSurface>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QScopedPointer>
@@ -68,6 +69,16 @@ int ToolApplication::Run(int argc, char* argv[])
 		{
 			return EXIT_SUCCESS;
 		}
+
+		const auto offscreen{InitializeOpenGL()};
+
+		if (!offscreen.first ||!offscreen.second)
+		{
+			return EXIT_FAILURE;
+		}
+
+		_editorContext->SetOffscreenContext(offscreen.first);
+		_editorContext->SetOffscreenSurface(offscreen.second);
 
 		_mainWindow = new ui::MainWindow(_editorContext);
 
@@ -210,6 +221,53 @@ bool ToolApplication::CheckSingleInstance(const QString& programName, const QStr
 	}
 
 	return false;
+}
+
+std::pair<QOpenGLContext*, QOffscreenSurface*> ToolApplication::InitializeOpenGL()
+{
+	auto context{std::make_unique<QOpenGLContext>()};
+
+	context->setFormat(QSurfaceFormat::defaultFormat());
+
+	const auto shareContext{QOpenGLContext::globalShareContext()};
+
+	context->setShareContext(shareContext);
+	context->setScreen(shareContext->screen());
+
+	if (!context->create())
+	{
+		QMessageBox::critical(nullptr, "Fatal Error", "Couldn't create OpenGL context");
+		return {};
+	}
+
+	auto surface{std::make_unique<QOffscreenSurface>(context->screen(), this)};
+
+	surface->setFormat(context->format());
+	surface->setScreen(context->screen());
+	surface->create();
+
+	if (!context->makeCurrent(surface.get()))
+	{
+		QMessageBox::critical(nullptr, "Fatal Error", "Couldn't make offscreen surface context current");
+		return {};
+	}
+
+	const std::unique_ptr<QOpenGLContext, void (*)(QOpenGLContext*)> cleanup{context.get(), [](QOpenGLContext* ctx)
+		{
+			return ctx->doneCurrent();
+		}};
+
+	glewExperimental = GL_TRUE;
+
+	GLenum error = glewInit();
+
+	if (GLEW_OK != error)
+	{
+		QMessageBox::critical(nullptr, "Fatal Error", QString{"Error initializing GLEW:\n%1"}.arg(reinterpret_cast<const char*>(glewGetErrorString(error))));
+		return {};
+	}
+
+	return {context.release(), surface.release()};
 }
 
 void ToolApplication::OnExit()

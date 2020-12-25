@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include <QMainWindow>
 #include <QObject>
 #include <QScopedPointer>
@@ -8,6 +10,8 @@
 #include "application/SingleInstance.hpp"
 
 class QApplication;
+class QOffscreenSurface;
+class QOpenGLContext;
 
 namespace ui
 {
@@ -36,6 +40,8 @@ private:
 	QString ParseCommandLine(QApplication& application);
 
 	bool CheckSingleInstance(const QString& programName, const QString& fileName);
+
+	std::pair<QOpenGLContext*, QOffscreenSurface*> InitializeOpenGL();
 
 private slots:
 	void OnExit();

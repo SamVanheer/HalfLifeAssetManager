@@ -3,6 +3,9 @@
 #include <iterator>
 #include <stdexcept>
 
+#include <QOffscreenSurface>
+#include <QOpenGLContext>
+
 #include "core/shared/CWorldTime.hpp"
 #include "core/shared/Utility.hpp"
 
@@ -32,7 +35,8 @@ EditorContext::EditorContext(
 	const std::shared_ptr<settings::RecentFilesSettings>& recentFilesSettings,
 	const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings,
 	std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
-	std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry, QObject* parent)
+	std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry,
+	QObject* parent)
 	: QObject(parent)
 	, _settings(settings)
 	, _generalSettings(generalSettings)
@@ -68,6 +72,36 @@ EditorContext::~EditorContext()
 {
 	_soundSystem->Shutdown();
 	_fileSystem->Shutdown();
+}
+
+void EditorContext::SetOffscreenContext(QOpenGLContext* offscreenContext)
+{
+	if (_offscreenContext)
+	{
+		delete _offscreenContext;
+	}
+
+	_offscreenContext = offscreenContext;
+
+	if (_offscreenContext)
+	{
+		_offscreenContext->setParent(this);
+	}
+}
+
+void EditorContext::SetOffscreenSurface(QOffscreenSurface* offscreenSurface)
+{
+	if (_offscreenSurface)
+	{
+		delete _offscreenSurface;
+	}
+
+	_offscreenSurface = offscreenSurface;
+
+	if (_offscreenSurface)
+	{
+		_offscreenSurface->setParent(this);
+	}
 }
 
 void EditorContext::StartTimer()
