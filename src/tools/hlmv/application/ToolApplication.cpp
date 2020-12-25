@@ -87,52 +87,6 @@ void ToolApplication::ConfigureApplication(const QString& programName)
 	QSettings::setDefaultFormat(QSettings::Format::IniFormat);
 }
 
-void ToolApplication::ConfigureOpenGL()
-{
-	QApplication::setAttribute(Qt::ApplicationAttribute::AA_ShareOpenGLContexts, true);
-
-	//Set up the OpenGL surface settings to match the Half-Life engine's requirements
-	//Vanilla Half-Life uses OpenGL 1.0 for game rendering
-	//TODO: eventually an option should be added to allow switching to 3.3 for shader based rendering
-	{
-		QSurfaceFormat defaultFormat(QSurfaceFormat::FormatOption::DebugContext | QSurfaceFormat::FormatOption::DeprecatedFunctions);
-
-		defaultFormat.setMajorVersion(2);
-		defaultFormat.setMinorVersion(0);
-		defaultFormat.setProfile(QSurfaceFormat::OpenGLContextProfile::CompatibilityProfile);
-
-		defaultFormat.setDepthBufferSize(24);
-		defaultFormat.setStencilBufferSize(8);
-		defaultFormat.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
-		defaultFormat.setRedBufferSize(4);
-		defaultFormat.setGreenBufferSize(4);
-		defaultFormat.setBlueBufferSize(4);
-		defaultFormat.setAlphaBufferSize(0);
-
-		QSurfaceFormat::setDefaultFormat(defaultFormat);
-	}
-}
-
-QString ToolApplication::ParseCommandLine(QApplication& application)
-{
-	QCommandLineParser parser;
-
-	parser.addPositionalArgument("fileName", "Filename of the model to load on startup", "[fileName]");
-
-	parser.process(application);
-
-	const auto positionalArguments = parser.positionalArguments();
-
-	QString fileName;
-
-	if (!positionalArguments.empty())
-	{
-		fileName = positionalArguments[0];
-	}
-
-	return fileName;
-}
-
 ui::EditorContext* ToolApplication::CreateEditorContext()
 {
 	auto settings{std::make_unique<QSettings>()};
@@ -182,6 +136,52 @@ ui::EditorContext* ToolApplication::CreateEditorContext()
 		std::move(optionsPageRegistry),
 		std::move(assetProviderRegistry),
 		this);
+}
+
+void ToolApplication::ConfigureOpenGL()
+{
+	QApplication::setAttribute(Qt::ApplicationAttribute::AA_ShareOpenGLContexts, true);
+
+	//Set up the OpenGL surface settings to match the Half-Life engine's requirements
+	//Vanilla Half-Life uses OpenGL 1.0 for game rendering
+	//TODO: eventually an option should be added to allow switching to 3.3 for shader based rendering
+	{
+		QSurfaceFormat defaultFormat(QSurfaceFormat::FormatOption::DebugContext | QSurfaceFormat::FormatOption::DeprecatedFunctions);
+
+		defaultFormat.setMajorVersion(2);
+		defaultFormat.setMinorVersion(0);
+		defaultFormat.setProfile(QSurfaceFormat::OpenGLContextProfile::CompatibilityProfile);
+
+		defaultFormat.setDepthBufferSize(24);
+		defaultFormat.setStencilBufferSize(8);
+		defaultFormat.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
+		defaultFormat.setRedBufferSize(4);
+		defaultFormat.setGreenBufferSize(4);
+		defaultFormat.setBlueBufferSize(4);
+		defaultFormat.setAlphaBufferSize(0);
+
+		QSurfaceFormat::setDefaultFormat(defaultFormat);
+	}
+}
+
+QString ToolApplication::ParseCommandLine(QApplication& application)
+{
+	QCommandLineParser parser;
+
+	parser.addPositionalArgument("fileName", "Filename of the model to load on startup", "[fileName]");
+
+	parser.process(application);
+
+	const auto positionalArguments = parser.positionalArguments();
+
+	QString fileName;
+
+	if (!positionalArguments.empty())
+	{
+		fileName = positionalArguments[0];
+	}
+
+	return fileName;
 }
 
 bool ToolApplication::CheckSingleInstance(const QString& programName, const QString& fileName)

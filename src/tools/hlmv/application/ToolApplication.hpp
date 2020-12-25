@@ -30,11 +30,10 @@ public:
 
 private:
 	void ConfigureApplication(const QString& programName);
+	ui::EditorContext* CreateEditorContext();
 	void ConfigureOpenGL();
 
 	QString ParseCommandLine(QApplication& application);
-
-	ui::EditorContext* CreateEditorContext();
 
 	bool CheckSingleInstance(const QString& programName, const QString& fileName);
 
