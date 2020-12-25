@@ -6,10 +6,10 @@
 
 #include "shared/studiomodel/CStudioModel.hpp"
 
-#include "game/CAnimEvent.hpp"
+#include "game/AnimEvent.hpp"
 #include "game/Events.hpp"
 
-#include "CBaseAnimating.hpp"
+#include "game/entity/BaseAnimating.hpp"
 
 enum class StudioLoopingMode
 {
@@ -21,10 +21,10 @@ enum class StudioLoopingMode
 /**
 *	Studio model entity.
 */
-class CStudioModelEntity : public CBaseAnimating
+class StudioModelEntity : public BaseAnimating
 {
 public:
-	DECLARE_CLASS( CStudioModelEntity, CBaseAnimating );
+	DECLARE_CLASS(StudioModelEntity, BaseAnimating);
 
 public:
 	typedef std::vector<const mstudiomesh_t*> MeshList_t;
@@ -54,7 +54,7 @@ public:
 	*	@param bAllowClientEvents Whether to process client events or not.
 	*	@return Next event index to use as the index parameter. If 0, no more events are left.
 	*/
-	int		GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents );
+	int		GetAnimationEvent(AnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents );
 
 	/**
 	*	Dispatches events for the current sequence and frame. This will dispatch events between the frame number during last call to DispatchAnimEvents and the current frame.
@@ -65,7 +65,7 @@ public:
 	/**
 	*	Method to handle animation events. Override to handle events.
 	*/
-	virtual void HandleAnimEvent( const CAnimEvent& event );
+	virtual void HandleAnimEvent( const AnimEvent& event );
 
 public:
 	/**

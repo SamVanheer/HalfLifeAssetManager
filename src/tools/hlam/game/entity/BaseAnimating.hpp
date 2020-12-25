@@ -2,15 +2,15 @@
 
 #include "shared/Const.hpp"
 
-#include "CBaseEntity.hpp"
+#include "game/entity/BaseEntity.hpp"
 
 /**
 *	Base class for animating entities.
 */
-class CBaseAnimating : public CBaseEntity
+class BaseAnimating : public CBaseEntity
 {
 public:
-	DECLARE_CLASS( CBaseAnimating, CBaseEntity );
+	DECLARE_CLASS(BaseAnimating, CBaseEntity );
 
 protected:
 	float	m_flFrame		= 0;	// frame

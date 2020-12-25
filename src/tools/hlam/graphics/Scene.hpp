@@ -11,9 +11,9 @@
 #include "graphics/Camera.hpp"
 #include "graphics/Constants.hpp"
 
-class CEntityManager;
-class CHLMVStudioModelEntity;
-class CStudioModelEntity;
+class EntityManager;
+class HLMVStudioModelEntity;
+class StudioModelEntity;
 class WorldTime;
 struct EntityContext;
 
@@ -83,9 +83,9 @@ public:
 
 	unsigned int GetDrawnPolygonsCount() const { return _drawnPolygonsCount; }
 
-	CHLMVStudioModelEntity* GetEntity() { return _entity; }
+	HLMVStudioModelEntity* GetEntity() { return _entity; }
 
-	void SetEntity(CHLMVStudioModelEntity* entity)
+	void SetEntity(HLMVStudioModelEntity* entity)
 	{
 		_entity = entity;
 	}
@@ -107,7 +107,7 @@ private:
 
 	void DrawModel();
 
-	void DrawTexture(const int xOffset, const int yOffset, const int width, const int height, CStudioModelEntity* entity,
+	void DrawTexture(const int xOffset, const int yOffset, const int width, const int height, StudioModelEntity* entity,
 		const int textureIndex, const float textureScale, const bool showUVMap, const bool overlayUVMap);
 
 	//TODO: these are temporary until the graphics code can be refactored into an object based design
@@ -172,7 +172,7 @@ private:
 
 	WorldTime* const _worldTime;
 
-	std::unique_ptr<CEntityManager> _entityManager;
+	std::unique_ptr<EntityManager> _entityManager;
 
 	std::unique_ptr<EntityContext> _entityContext;
 
@@ -184,6 +184,6 @@ private:
 
 	unsigned int _drawnPolygonsCount = 0;
 
-	CHLMVStudioModelEntity* _entity{};
+	HLMVStudioModelEntity* _entity{};
 };
 }

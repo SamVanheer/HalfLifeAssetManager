@@ -3,30 +3,28 @@
 
 #include "shared/Logging.hpp"
 
-#include "CBaseEntity.hpp"
-#include "EHandle.hpp"
+#include "game/entity/BaseEntity.hpp"
+#include "game/entity/BaseEntityList.hpp"
+#include "game/entity/EHandle.hpp"
+#include "game/entity/EntityDict.hpp"
 
-#include "CEntityDict.hpp"
-
-#include "CBaseEntityList.hpp"
-
-CBaseEntityList::CBaseEntityList()
+BaseEntityList::BaseEntityList()
 {
 	memset( m_Entities, 0, sizeof( m_Entities ) );
 }
 
-CBaseEntityList::~CBaseEntityList()
+BaseEntityList::~BaseEntityList()
 {
 }
 
-CBaseEntity* CBaseEntityList::GetEntityByIndex( const entity::EntIndex_t uiIndex ) const
+CBaseEntity* BaseEntityList::GetEntityByIndex( const entity::EntIndex_t uiIndex ) const
 {
 	assert( uiIndex < entity::MAX_ENTITIES );
 
 	return m_Entities[ uiIndex ].pEntity;
 }
 
-CBaseEntity* CBaseEntityList::GetEntityByHandle( const EHandle& handle ) const
+CBaseEntity* BaseEntityList::GetEntityByHandle( const EHandle& handle ) const
 {
 	//If it's explicitly invalid, we can ignore it.
 	if( handle.GetEntHandle() == entity::INVALID_ENTITY_HANDLE )
@@ -40,12 +38,12 @@ CBaseEntity* CBaseEntityList::GetEntityByHandle( const EHandle& handle ) const
 	return nullptr;
 }
 
-EHandle CBaseEntityList::GetFirstEntity() const
+EHandle BaseEntityList::GetFirstEntity() const
 {
 	return GetNextEntity( nullptr );
 }
 
-EHandle CBaseEntityList::GetNextEntity( const EHandle& previous ) const
+EHandle BaseEntityList::GetNextEntity( const EHandle& previous ) const
 {
 	for( size_t uiIndex = previous.IsValid(*this) ? previous.GetEntIndex() + 1 : 0; uiIndex < m_uiHighestEntIndex; ++uiIndex )
 	{
@@ -56,7 +54,7 @@ EHandle CBaseEntityList::GetNextEntity( const EHandle& previous ) const
 	return nullptr;
 }
 
-size_t CBaseEntityList::Add( CBaseEntity* pEntity )
+size_t BaseEntityList::Add( CBaseEntity* pEntity )
 {
 	assert( pEntity );
 
@@ -91,7 +89,7 @@ size_t CBaseEntityList::Add( CBaseEntity* pEntity )
 	return uiIndex;
 }
 
-void CBaseEntityList::Remove( CBaseEntity* pEntity )
+void BaseEntityList::Remove( CBaseEntity* pEntity )
 {
 	if( !pEntity )
 		return;
@@ -126,7 +124,7 @@ void CBaseEntityList::Remove( CBaseEntity* pEntity )
 	return;
 }
 
-void CBaseEntityList::RemoveAll()
+void BaseEntityList::RemoveAll()
 {
 	for( size_t uiIndex = 0; uiIndex < m_uiHighestEntIndex; ++uiIndex )
 	{
@@ -142,7 +140,7 @@ void CBaseEntityList::RemoveAll()
 	memset( m_Entities, 0, sizeof( m_Entities ) );
 }
 
-void CBaseEntityList::FinishAddEntity( const entity::EntIndex_t uiIndex, CBaseEntity* pEntity )
+void BaseEntityList::FinishAddEntity( const entity::EntIndex_t uiIndex, CBaseEntity* pEntity )
 {
 	m_Entities[ uiIndex ].pEntity = pEntity;
 
@@ -158,7 +156,7 @@ void CBaseEntityList::FinishAddEntity( const entity::EntIndex_t uiIndex, CBaseEn
 	OnAdded( pEntity );
 }
 
-void CBaseEntityList::FinishRemoveEntity( CBaseEntity* pEntity )
+void BaseEntityList::FinishRemoveEntity( CBaseEntity* pEntity )
 {
 	OnRemove( pEntity );
 

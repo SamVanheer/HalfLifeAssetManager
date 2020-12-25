@@ -1,6 +1,6 @@
 target_sources(HLAM
 	PRIVATE
-		CAnimEvent.hpp
+		AnimEvent.hpp
 		Events.hpp)
 
 add_subdirectory(entity)

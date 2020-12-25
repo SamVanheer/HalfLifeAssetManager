@@ -6,9 +6,9 @@
 
 #include "engine/shared/renderer/DrawConstants.hpp"
 
-#include "EntityConstants.hpp"
-#include "EHandle.hpp"
-#include "CEntityDict.hpp"
+#include "game/entity/EHandle.hpp"
+#include "game/entity/EntityConstants.hpp"
+#include "game/entity/EntityDict.hpp"
 
 //Windows defines this
 #ifdef GetClassName
@@ -26,8 +26,8 @@ class IStudioModelRenderer;
 }
 
 class CBaseEntity;
-class CBaseEntityList;
-class CEntityManager;
+class BaseEntityList;
+class EntityManager;
 class WorldTime;
 
 namespace soundsystem
@@ -46,13 +46,13 @@ struct EntityContext final
 	WorldTime* const Time;
 	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
 	sprite::ISpriteRenderer* const SpriteRenderer;
-	CBaseEntityList* const EntityList;
-	CEntityManager* const EntityManager;
+	BaseEntityList* const EntityList;
+	::EntityManager* const EntityManager;
 	soundsystem::ISoundSystem* const SoundSystem;
 
 	EntityContext(WorldTime* time,
 		studiomdl::IStudioModelRenderer* studioModelRenderer, sprite::ISpriteRenderer* spriteRenderer,
-		CBaseEntityList* entityList, CEntityManager* entityManager,
+		BaseEntityList* entityList, ::EntityManager* entityManager,
 		soundsystem::ISoundSystem* soundSystem)
 		: Time(time)
 		, SpriteRenderer(spriteRenderer)

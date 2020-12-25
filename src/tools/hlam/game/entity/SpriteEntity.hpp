@@ -1,16 +1,16 @@
 #pragma once
 
-#include "CBaseAnimating.hpp"
+#include "game/entity/BaseAnimating.hpp"
 
 namespace sprite
 {
 struct msprite_t;
 }
 
-class CSpriteEntity : public CBaseAnimating
+class SpriteEntity : public BaseAnimating
 {
 public:
-	DECLARE_CLASS( CSpriteEntity, CBaseAnimating );
+	DECLARE_CLASS(SpriteEntity, BaseAnimating);
 
 	virtual void OnDestroy() override;
 

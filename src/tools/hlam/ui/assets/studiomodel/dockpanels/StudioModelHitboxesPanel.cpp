@@ -2,7 +2,7 @@
 
 #include <QSignalBlocker>
 
-#include "entity/CHLMVStudioModelEntity.hpp"
+#include "entity/HLMVStudioModelEntity.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"

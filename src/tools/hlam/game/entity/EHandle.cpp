@@ -1,7 +1,6 @@
-#include "CBaseEntity.hpp"
-#include "CBaseEntityList.hpp"
-
-#include "EHandle.hpp"
+#include "game/entity/BaseEntity.hpp"
+#include "game/entity/BaseEntityList.hpp"
+#include "game/entity/EHandle.hpp"
 
 EHandle::EHandle( CBaseEntity* pEntity )
 {
@@ -13,7 +12,7 @@ void EHandle::Invalidate()
 	m_Handle = entity::INVALID_ENTITY_HANDLE;
 }
 
-CBaseEntity* EHandle::Get(const CBaseEntityList& entityList) const
+CBaseEntity* EHandle::Get(const BaseEntityList& entityList) const
 {
 	return entityList.GetEntityByHandle( *this );
 }

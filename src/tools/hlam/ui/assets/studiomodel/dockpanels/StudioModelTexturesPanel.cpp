@@ -13,7 +13,7 @@
 
 #include "core/shared/Utility.hpp"
 
-#include "entity/CHLMVStudioModelEntity.hpp"
+#include "entity/HLMVStudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"
@@ -187,7 +187,7 @@ void StudioModelTexturesPanel::OnMouseEvent(QMouseEvent* event)
 }
 
 QImage StudioModelTexturesPanel::CreateUVMapImage(
-	CStudioModelEntity* entity, const int textureIndex, const int meshIndex, const bool antiAliasLines, float textureScale, qreal lineWidth)
+	StudioModelEntity* entity, const int textureIndex, const int meshIndex, const bool antiAliasLines, float textureScale, qreal lineWidth)
 {
 	const auto model = entity->GetModel();
 
@@ -210,7 +210,7 @@ QImage StudioModelTexturesPanel::CreateUVMapImage(
 		return QPointF(x * textureScale, y * textureScale);
 	};
 
-	CStudioModelEntity::MeshList_t meshes = entity->ComputeMeshList(textureIndex);
+	StudioModelEntity::MeshList_t meshes = entity->ComputeMeshList(textureIndex);
 
 	if (meshIndex != -1)
 	{
@@ -408,7 +408,7 @@ void StudioModelTexturesPanel::OnTextureChanged(int index)
 
 	SetTextureFlagCheckBoxes(_ui, texture->flags);
 
-	const CStudioModelEntity::MeshList_t meshes = entity->ComputeMeshList(index);
+	const StudioModelEntity::MeshList_t meshes = entity->ComputeMeshList(index);
 
 	_ui.Meshes->setEnabled(true);
 

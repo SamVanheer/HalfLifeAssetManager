@@ -8,7 +8,7 @@
 
 #include "ui/IInputSink.hpp"
 
-class CStudioModelEntity;
+class StudioModelEntity;
 struct mstudiotexture_t;
 struct studiohdr_t;
 
@@ -33,7 +33,7 @@ public:
 	void OnMouseEvent(QMouseEvent* event) override;
 
 	static QImage CreateUVMapImage(
-		CStudioModelEntity* entity, const int textureIndex, const int meshIndex, const bool antiAliasLines, float textureScale, qreal lineWidth);
+		StudioModelEntity* entity, const int textureIndex, const int meshIndex, const bool antiAliasLines, float textureScale, qreal lineWidth);
 
 	static void DrawUVImage(const QColor& backgroundColor, bool overlayOnTexture, const QImage& texture, const QImage& uvMap, QImage& target);
 

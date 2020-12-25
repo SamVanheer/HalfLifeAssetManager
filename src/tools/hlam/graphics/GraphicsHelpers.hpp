@@ -4,7 +4,7 @@
 #include <glm/vec3.hpp>
 
 #include "shared/studiomodel/CStudioModel.hpp"
-#include "game/entity/CStudioModelEntity.hpp"
+#include "game/entity/StudioModelEntity.hpp"
 
 #include "graphics/Constants.hpp"
 
@@ -55,7 +55,7 @@ void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& te
 *	@param floorLength			Length of one side of the floor
 *	@param bBackfaceCulling		Whether to perform backface culling or not
 */
-unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRenderer, CStudioModelEntity* pEntity,
+unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
 	const RenderMode renderMode, const bool bWireframeOverlay, const float floorLength, const bool bBackfaceCulling);
 }
 }

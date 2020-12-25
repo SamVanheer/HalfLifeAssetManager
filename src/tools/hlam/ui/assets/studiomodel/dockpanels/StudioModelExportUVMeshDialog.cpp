@@ -4,7 +4,7 @@
 #include <QPixmap>
 #include <QStringList>
 
-#include "entity/CHLMVStudioModelEntity.hpp"
+#include "entity/HLMVStudioModelEntity.hpp"
 
 #include "qt/QtUtilities.hpp"
 
@@ -14,7 +14,7 @@
 namespace ui::assets::studiomodel
 {
 StudioModelExportUVMeshDialog::StudioModelExportUVMeshDialog(
-	CHLMVStudioModelEntity* entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent)
+	HLMVStudioModelEntity* entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent)
 	: QDialog(parent)
 	, _entity(entity)
 	, _textureIndex(textureIndex)

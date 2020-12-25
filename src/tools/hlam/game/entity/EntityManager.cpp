@@ -3,30 +3,29 @@
 #include "shared/Logging.hpp"
 #include "shared/WorldTime.hpp"
 
-#include "CBaseEntity.hpp"
-#include "CBaseEntityList.hpp"
+#include "game/entity/BaseEntity.hpp"
+#include "game/entity/BaseEntityList.hpp"
+#include "game/entity/EntityManager.hpp"
 
-#include "CEntityManager.hpp"
-
-CEntityManager::CEntityManager(std::unique_ptr<CBaseEntityList>&& entityList, WorldTime* worldTime)
+EntityManager::EntityManager(std::unique_ptr<BaseEntityList>&& entityList, WorldTime* worldTime)
 	: _entityList(std::move(entityList))
 	, _worldTime(worldTime)
 {
 	assert(nullptr != _entityList);
 }
 
-CEntityManager::~CEntityManager() = default;
+EntityManager::~EntityManager() = default;
 
-bool CEntityManager::Initialize()
+bool EntityManager::Initialize()
 {
 	return true;
 }
 
-void CEntityManager::Shutdown()
+void EntityManager::Shutdown()
 {
 }
 
-bool CEntityManager::OnMapBegin()
+bool EntityManager::OnMapBegin()
 {
 	assert( !m_bMapRunning );
 
@@ -35,7 +34,7 @@ bool CEntityManager::OnMapBegin()
 	return true;
 }
 
-void CEntityManager::OnMapEnd()
+void EntityManager::OnMapEnd()
 {
 	assert( m_bMapRunning );
 
@@ -44,7 +43,7 @@ void CEntityManager::OnMapEnd()
 	_entityList->RemoveAll();
 }
 
-void CEntityManager::RunFrame()
+void EntityManager::RunFrame()
 {
 	for( EHandle entity = _entityList->GetFirstEntity(); entity.IsValid(*_entityList); entity = _entityList->GetNextEntity( entity ) )
 	{
@@ -75,7 +74,7 @@ void CEntityManager::RunFrame()
 	}
 }
 
-CBaseEntity* CEntityManager::Create(const char* const pszClassName, EntityContext* context,
+CBaseEntity* EntityManager::Create(const char* const pszClassName, EntityContext* context,
 	const glm::vec3& vecOrigin, const glm::vec3& vecAngles, const bool bSpawn)
 {
 	CBaseEntity* pEntity = GetEntityDict().CreateEntity(pszClassName, context);

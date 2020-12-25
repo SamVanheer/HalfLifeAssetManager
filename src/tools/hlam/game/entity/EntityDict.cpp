@@ -1,28 +1,27 @@
 #include "shared/Logging.hpp"
 
-#include "CBaseEntity.hpp"
+#include "game/entity/BaseEntity.hpp"
+#include "game/entity/EntityDict.hpp"
 
-#include "CEntityDict.hpp"
-
-CEntityDict& GetEntityDict()
+EntityDict& GetEntityDict()
 {
-	return CEntityDict::GetInstance();
+	return EntityDict::GetInstance();
 }
 
-CEntityDict& CEntityDict::GetInstance()
+EntityDict& EntityDict::GetInstance()
 {
 	//Changed to use this approach so the instance is constructed the first time something needs the dictionary.
-	static CEntityDict instance;
+	static EntityDict instance;
 
 	return instance;
 }
 
-bool CEntityDict::HasEntity( const char* const pszClassName ) const
+bool EntityDict::HasEntity( const char* const pszClassName ) const
 {
 	return FindEntity( pszClassName ) != nullptr;
 }
 
-const CBaseEntityRegistry* CEntityDict::FindEntity( const char* const pszClassName ) const
+const CBaseEntityRegistry* EntityDict::FindEntity( const char* const pszClassName ) const
 {
 	assert( pszClassName );
 
@@ -31,7 +30,7 @@ const CBaseEntityRegistry* CEntityDict::FindEntity( const char* const pszClassNa
 	return it != m_Dict.end() ? it->second : nullptr;
 }
 
-bool CEntityDict::AddEntity( const CBaseEntityRegistry* pRegistry )
+bool EntityDict::AddEntity( const CBaseEntityRegistry* pRegistry )
 {
 	assert( pRegistry );
 
@@ -47,7 +46,7 @@ bool CEntityDict::AddEntity( const CBaseEntityRegistry* pRegistry )
 	return true;
 }
 
-CBaseEntity* CEntityDict::CreateEntity( const char* const pszClassName, EntityContext* context) const
+CBaseEntity* EntityDict::CreateEntity( const char* const pszClassName, EntityContext* context) const
 {
 	const auto pReg = FindEntity( pszClassName );
 
@@ -65,7 +64,7 @@ CBaseEntity* CEntityDict::CreateEntity( const char* const pszClassName, EntityCo
 	return nullptr;
 }
 
-void CEntityDict::DestroyEntity( CBaseEntity* pEntity ) const
+void EntityDict::DestroyEntity( CBaseEntity* pEntity ) const
 {
 	assert( pEntity );
 

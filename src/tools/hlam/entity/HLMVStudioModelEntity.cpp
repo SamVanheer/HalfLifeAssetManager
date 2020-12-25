@@ -1,11 +1,11 @@
 #include "soundsystem/SoundConstants.hpp"
 #include "soundsystem/ISoundSystem.hpp"
 
-#include "CHLMVStudioModelEntity.hpp"
+#include "HLMVStudioModelEntity.hpp"
 
-LINK_ENTITY_TO_CLASS( studiomodel, CHLMVStudioModelEntity );
+LINK_ENTITY_TO_CLASS( studiomodel, HLMVStudioModelEntity);
 
-void CHLMVStudioModelEntity::OnCreate()
+void HLMVStudioModelEntity::OnCreate()
 {
 	BaseClass::OnCreate();
 
@@ -15,7 +15,7 @@ void CHLMVStudioModelEntity::OnCreate()
 	SetFlags( entity::FL_ALWAYSTHINK );
 }
 
-bool CHLMVStudioModelEntity::Spawn()
+bool HLMVStudioModelEntity::Spawn()
 {
 	SetSequence( 0 );
 	SetController( 0, 0.0f );
@@ -34,7 +34,7 @@ bool CHLMVStudioModelEntity::Spawn()
 	return true;
 }
 
-void CHLMVStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
+void HLMVStudioModelEntity::HandleAnimEvent( const AnimEvent& event )
 {
 	//TODO: move to subclass.
 	switch( event.iEvent )
@@ -62,7 +62,7 @@ void CHLMVStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
 	}
 }
 
-void CHLMVStudioModelEntity::AnimThink()
+void HLMVStudioModelEntity::AnimThink()
 {
 	if (PlaySequence)
 	{

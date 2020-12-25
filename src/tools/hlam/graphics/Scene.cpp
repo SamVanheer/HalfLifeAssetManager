@@ -14,10 +14,10 @@
 #include "engine/renderer/sprite/CSpriteRenderer.hpp"
 #include "engine/renderer/studiomodel/CStudioModelRenderer.hpp"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
-#include "entity/CHLMVStudioModelEntity.hpp"
+#include "entity/HLMVStudioModelEntity.hpp"
 
-#include "game/entity/CBaseEntityList.hpp"
-#include "game/entity/CEntityManager.hpp"
+#include "game/entity/BaseEntityList.hpp"
+#include "game/entity/EntityManager.hpp"
 
 #include "graphics/GraphicsHelpers.hpp"
 #include "graphics/GraphicsUtils.hpp"
@@ -46,7 +46,7 @@ Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSyste
 	, _studioModelRenderer(std::make_unique<studiomdl::CStudioModelRenderer>())
 	, _worldTime(worldTime)
 	//Use the default list class for now
-	, _entityManager(std::make_unique<CEntityManager>(std::make_unique<CBaseEntityList>(), _worldTime))
+	, _entityManager(std::make_unique<EntityManager>(std::make_unique<BaseEntityList>(), _worldTime))
 	, _entityContext(std::make_unique<EntityContext>(_worldTime,
 		_studioModelRenderer.get(), _spriteRenderer.get(),
 		_entityManager->GetEntityList(), _entityManager.get(),
@@ -573,7 +573,7 @@ void Scene::DrawModel()
 	glPopMatrix();
 }
 
-void Scene::DrawTexture(const int xOffset, const int yOffset, const int width, const int height, CStudioModelEntity* entity,
+void Scene::DrawTexture(const int xOffset, const int yOffset, const int width, const int height, StudioModelEntity* entity,
 	const int textureIndex, const float textureScale, const bool showUVMap, const bool overlayUVMap)
 {
 	assert(entity);

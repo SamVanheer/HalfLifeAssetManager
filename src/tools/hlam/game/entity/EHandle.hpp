@@ -3,7 +3,7 @@
 #include "EntityConstants.hpp"
 
 class CBaseEntity;
-class CBaseEntityList;
+class BaseEntityList;
 
 /**
 *	Class that represents an entity. Can be used to safely store references to entities.
@@ -11,7 +11,7 @@ class CBaseEntityList;
 class EHandle
 {
 protected:
-	friend class CBaseEntityList;
+	friend class BaseEntityList;
 
 public:
 	/**
@@ -43,12 +43,12 @@ public:
 	/**
 	*	Gets the entity that this handle represents, or null.
 	*/
-	CBaseEntity* Get(const CBaseEntityList& entityList) const;
+	CBaseEntity* Get(const BaseEntityList& entityList) const;
 
 	/**
 	*	Returns whether this handle represents a valid entity.
 	*/
-	bool IsValid(const CBaseEntityList& entityList) const { return Get(entityList) != nullptr; }
+	bool IsValid(const BaseEntityList& entityList) const { return Get(entityList) != nullptr; }
 
 	/**
 	*	Sets the entity that this handle represents.

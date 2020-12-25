@@ -1,18 +1,18 @@
 #pragma once
 
-#include "game/entity/CStudioModelEntity.hpp"
+#include "game/entity/StudioModelEntity.hpp"
 
-class CHLMVStudioModelEntity : public CStudioModelEntity
+class HLMVStudioModelEntity : public StudioModelEntity
 {
 public:
-	DECLARE_CLASS( CHLMVStudioModelEntity, CStudioModelEntity );
+	DECLARE_CLASS( HLMVStudioModelEntity, StudioModelEntity);
 
 public:
 	virtual void OnCreate() override;
 
 	virtual bool Spawn() override;
 
-	virtual void HandleAnimEvent( const CAnimEvent& event ) override;
+	virtual void HandleAnimEvent( const AnimEvent& event ) override;
 
 	void AnimThink();
 

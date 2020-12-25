@@ -14,10 +14,10 @@
 #include <GL/glew.h>
 
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
-#include "entity/CHLMVStudioModelEntity.hpp"
-#include "game/entity/CBaseEntity.hpp"
-#include "game/entity/CBaseEntityList.hpp"
-#include "game/entity/CEntityManager.hpp"
+#include "entity/HLMVStudioModelEntity.hpp"
+#include "game/entity/BaseEntity.hpp"
+#include "game/entity/BaseEntityList.hpp"
+#include "game/entity/EntityManager.hpp"
 
 #include "graphics/Scene.hpp"
 #include "graphics/TextureLoader.hpp"
@@ -51,7 +51,7 @@ const QString StudioModelPS2Extension{QStringLiteral("dol")};
 
 const float InitialCameraYaw{180};
 
-static std::pair<float, float> GetCenteredValues(CHLMVStudioModelEntity* entity)
+static std::pair<float, float> GetCenteredValues(HLMVStudioModelEntity* entity)
 {
 	glm::vec3 min, max;
 	entity->ExtractBbox(min, max);
@@ -90,7 +90,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	_scene->FloorLength = _provider->GetStudioModelSettings()->GetFloorLength();
 
-	auto entity = static_cast<CHLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
+	auto entity = static_cast<HLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
 		glm::vec3(), glm::vec3(), false));
 
 	if (nullptr != entity)

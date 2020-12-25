@@ -8,7 +8,7 @@ class EHandle;
 /**
 *	Manages a list of entities.
 */
-class CBaseEntityList
+class BaseEntityList
 {
 private:
 	/**
@@ -22,8 +22,8 @@ private:
 	};
 
 public:
-	CBaseEntityList();
-	~CBaseEntityList();
+	BaseEntityList();
+	~BaseEntityList();
 
 	/**
 	*	Gets the total number of entities.
@@ -110,6 +110,6 @@ private:
 	size_t m_uiHighestEntIndex = 0;
 
 private:
-	CBaseEntityList( const CBaseEntityList& ) = delete;
-	CBaseEntityList& operator=( const CBaseEntityList& ) = delete;
+	BaseEntityList( const BaseEntityList& ) = delete;
+	BaseEntityList& operator=( const BaseEntityList& ) = delete;
 };

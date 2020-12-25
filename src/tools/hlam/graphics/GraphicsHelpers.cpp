@@ -160,7 +160,7 @@ void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& te
 		glEnable( GL_CULL_FACE );
 }
 
-unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRenderer, CStudioModelEntity* pEntity,
+unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
 	const RenderMode renderMode, const bool bWireframeOverlay, const float floorLength, const bool bBackfaceCulling)
 {
 	/* Don't update color or depth. */

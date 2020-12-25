@@ -2,7 +2,7 @@
 
 #include <QSignalBlocker>
 
-#include "entity/CHLMVStudioModelEntity.hpp"
+#include "entity/HLMVStudioModelEntity.hpp"
 
 #include "qt/ByteLengthValidator.hpp"
 

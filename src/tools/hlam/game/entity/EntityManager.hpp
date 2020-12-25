@@ -3,19 +3,19 @@
 #include <memory>
 
 class CBaseEntity;
-class CBaseEntityList;
+class BaseEntityList;
 class WorldTime;
 
 /**
 *	Manages entities.
 */
-class CEntityManager final
+class EntityManager final
 {
 public:
-	CEntityManager(std::unique_ptr<CBaseEntityList>&& entityList, WorldTime* worldTime);
-	~CEntityManager();
+	EntityManager(std::unique_ptr<BaseEntityList>&& entityList, WorldTime* worldTime);
+	~EntityManager();
 
-	CBaseEntityList* GetEntityList() const { return _entityList.get(); }
+	BaseEntityList* GetEntityList() const { return _entityList.get(); }
 
 	/**
 	*	Called on startup. Initializes the manager.
@@ -61,12 +61,12 @@ public:
 		const glm::vec3& vecOrigin, const glm::vec3& vecAngles, const bool bSpawn = true);
 
 private:
-	std::unique_ptr<CBaseEntityList> _entityList;
+	std::unique_ptr<BaseEntityList> _entityList;
 	WorldTime* const _worldTime;
 
 	bool m_bMapRunning = false;
 
 private:
-	CEntityManager( const CEntityManager& ) = delete;
-	CEntityManager& operator=( const CEntityManager& ) = delete;
+	EntityManager( const EntityManager& ) = delete;
+	EntityManager& operator=( const EntityManager& ) = delete;
 };

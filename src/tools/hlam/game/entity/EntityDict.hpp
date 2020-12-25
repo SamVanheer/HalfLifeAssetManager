@@ -13,19 +13,19 @@ struct EntityContext;
 /**
 *	Class used to find entity registries by name and create/destroy entities.
 */
-class CEntityDict final
+class EntityDict final
 {
 private:
 	typedef std::unordered_map<const char*, const CBaseEntityRegistry*, Hash_C_String<const char*>, EqualTo_C_String<const char*>> EntityDict_t;
 
 public:
-	CEntityDict() = default;
-	~CEntityDict() = default;
+	EntityDict() = default;
+	~EntityDict() = default;
 
 	/**
 	*	@return The singleton instance of this class.
 	*/
-	static CEntityDict& GetInstance();
+	static EntityDict& GetInstance();
 
 	/**
 	*	Returns whether the requested entity type exists.
@@ -56,14 +56,14 @@ private:
 	EntityDict_t m_Dict;
 
 private:
-	CEntityDict( const CEntityDict& ) = delete;
-	CEntityDict& operator=( const CEntityDict& ) = delete;
+	EntityDict( const EntityDict& ) = delete;
+	EntityDict& operator=( const EntityDict& ) = delete;
 };
 
 /**
 *	Global list of entity types. Creates/destroys entities.
 */
-CEntityDict& GetEntityDict();
+EntityDict& GetEntityDict();
 
 /**
 *	Base class for the entity registry.

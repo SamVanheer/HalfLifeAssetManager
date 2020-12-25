@@ -5,9 +5,9 @@
 
 #include "shared/studiomodel/CStudioModel.hpp"
 
-#include "CStudioModelEntity.hpp"
+#include "game/entity/StudioModelEntity.hpp"
 
-bool CStudioModelEntity::Spawn()
+bool StudioModelEntity::Spawn()
 {
 	SetSequence( 0 );
 	SetController( 0, 0.0f );
@@ -26,14 +26,14 @@ bool CStudioModelEntity::Spawn()
 	return true;
 }
 
-void CStudioModelEntity::Draw( renderer::DrawFlags_t flags )
+void StudioModelEntity::Draw( renderer::DrawFlags_t flags )
 {
 	studiomdl::CModelRenderInfo renderInfo = GetRenderInfo();
 
 	GetContext()->StudioModelRenderer->DrawModel( &renderInfo, flags );
 }
 
-studiomdl::CModelRenderInfo CStudioModelEntity::GetRenderInfo() const
+studiomdl::CModelRenderInfo StudioModelEntity::GetRenderInfo() const
 {
 	studiomdl::CModelRenderInfo renderInfo;
 
@@ -64,7 +64,7 @@ studiomdl::CModelRenderInfo CStudioModelEntity::GetRenderInfo() const
 	return renderInfo;
 }
 
-float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )
+float StudioModelEntity::AdvanceFrame( float dt, const float flMax )
 {
 	if( !m_pModel )
 		return 0.0;
@@ -145,7 +145,7 @@ float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )
 	return dt;
 }
 
-int CStudioModelEntity::GetAnimationEvent( CAnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents )
+int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents )
 {
 	if( !m_pModel )
 		return 0;
@@ -190,7 +190,7 @@ int CStudioModelEntity::GetAnimationEvent( CAnimEvent& event, float flStart, flo
 	return 0;
 }
 
-void CStudioModelEntity::DispatchAnimEvents( const bool bAllowClientEvents )
+void StudioModelEntity::DispatchAnimEvents( const bool bAllowClientEvents )
 {
 	if( !m_pModel )
 	{
@@ -210,7 +210,7 @@ void CStudioModelEntity::DispatchAnimEvents( const bool bAllowClientEvents )
 	float flEnd = m_flFrame;
 	m_flLastEventCheck = m_flFrame;
 
-	CAnimEvent event;
+	AnimEvent event;
 
 	int index = 0;
 
@@ -220,11 +220,11 @@ void CStudioModelEntity::DispatchAnimEvents( const bool bAllowClientEvents )
 	}
 }
 
-void CStudioModelEntity::HandleAnimEvent( const CAnimEvent& event )
+void StudioModelEntity::HandleAnimEvent( const AnimEvent& event )
 {
 }
 
-void CStudioModelEntity::SetFrame(float frame)
+void StudioModelEntity::SetFrame(float frame)
 {
 	if(frame == -1 )
 		return;
@@ -249,7 +249,7 @@ void CStudioModelEntity::SetFrame(float frame)
 	m_flAnimTime = GetContext()->Time->GetCurrentTime();
 }
 
-void CStudioModelEntity::SetModel( studiomdl::CStudioModel* pModel )
+void StudioModelEntity::SetModel( studiomdl::CStudioModel* pModel )
 {
 	//TODO: release old model.
 	m_pModel = pModel;
@@ -257,14 +257,14 @@ void CStudioModelEntity::SetModel( studiomdl::CStudioModel* pModel )
 	//TODO: reinit entity settings
 }
 
-int CStudioModelEntity::GetNumFrames() const
+int StudioModelEntity::GetNumFrames() const
 {
 	const mstudioseqdesc_t* const pseqdesc = m_pModel->GetStudioHeader()->GetSequence( m_iSequence );
 
 	return pseqdesc->numframes;
 }
 
-int CStudioModelEntity::SetSequence( const int iSequence )
+int StudioModelEntity::SetSequence( const int iSequence )
 {
 	if( iSequence > m_pModel->GetStudioHeader()->numseq )
 		return m_iSequence;
@@ -276,7 +276,7 @@ int CStudioModelEntity::SetSequence( const int iSequence )
 	return m_iSequence;
 }
 
-void CStudioModelEntity::GetSequenceInfo( float& flFrameRate, float& flGroundSpeed ) const
+void StudioModelEntity::GetSequenceInfo( float& flFrameRate, float& flGroundSpeed ) const
 {
 	const mstudioseqdesc_t* pseqdesc = m_pModel->GetStudioHeader()->GetSequence( m_iSequence );
 
@@ -293,7 +293,7 @@ void CStudioModelEntity::GetSequenceInfo( float& flFrameRate, float& flGroundSpe
 	}
 }
 
-int CStudioModelEntity::GetBodyValueForGroup(int group) const
+int StudioModelEntity::GetBodyValueForGroup(int group) const
 {
 	if (!m_pModel)
 	{
@@ -303,7 +303,7 @@ int CStudioModelEntity::GetBodyValueForGroup(int group) const
 	return m_pModel->GetBodyValueForGroup(m_iBodygroup, group);
 }
 
-int CStudioModelEntity::SetBodygroup( const int iBodygroup, const int iValue )
+int StudioModelEntity::SetBodygroup( const int iBodygroup, const int iValue )
 {
 	if( !m_pModel )
 		return 0;
@@ -317,7 +317,7 @@ int CStudioModelEntity::SetBodygroup( const int iBodygroup, const int iValue )
 	return -1;
 }
 
-int CStudioModelEntity::SetSkin( const int iSkin )
+int StudioModelEntity::SetSkin( const int iSkin )
 {
 	if( !m_pModel )
 		return 0;
@@ -330,14 +330,14 @@ int CStudioModelEntity::SetSkin( const int iSkin )
 	return m_iSkin;
 }
 
-byte CStudioModelEntity::GetControllerByIndex( const int iController ) const
+byte StudioModelEntity::GetControllerByIndex( const int iController ) const
 {
 	assert( iController >= 0 && iController < STUDIO_MAX_CONTROLLERS );
 
 	return m_uiController[ iController ];
 }
 
-float CStudioModelEntity::GetControllerValue( const int iController ) const
+float StudioModelEntity::GetControllerValue( const int iController ) const
 {
 	if( !m_pModel )
 		return 0.0f;
@@ -375,7 +375,7 @@ float CStudioModelEntity::GetControllerValue( const int iController ) const
 #endif
 }
 
-float CStudioModelEntity::SetController( const int iController, float flValue )
+float StudioModelEntity::SetController( const int iController, float flValue )
 {
 	if( !m_pModel )
 		return 0.0f;
@@ -432,7 +432,7 @@ float CStudioModelEntity::SetController( const int iController, float flValue )
 	return static_cast<float>( setting * ( 1.0 / 255.0 ) * ( pbonecontroller->end - pbonecontroller->start ) + pbonecontroller->start );
 }
 
-float CStudioModelEntity::SetMouth( float flValue )
+float StudioModelEntity::SetMouth( float flValue )
 {
 	if( !m_pModel )
 		return 0.0f;
@@ -481,14 +481,14 @@ float CStudioModelEntity::SetMouth( float flValue )
 	return static_cast<float>( setting * ( 1.0 / 64.0 ) * ( pbonecontroller->end - pbonecontroller->start ) + pbonecontroller->start );
 }
 
-byte CStudioModelEntity::GetBlendingByIndex( const int iBlender ) const
+byte StudioModelEntity::GetBlendingByIndex( const int iBlender ) const
 {
 	assert( iBlender >= 0 && iBlender < STUDIO_MAX_BLENDERS );
 
 	return m_uiBlending[ iBlender ];
 }
 
-float CStudioModelEntity::GetBlendingValue( const int iBlender ) const
+float StudioModelEntity::GetBlendingValue( const int iBlender ) const
 {
 	if( !m_pModel )
 		return 0.0f;
@@ -506,7 +506,7 @@ float CStudioModelEntity::GetBlendingValue( const int iBlender ) const
 	return static_cast<float>( m_uiBlending[ iBlender ] * ( 1.0 / 255.0 ) * ( pseqdesc->blendend[ iBlender ] - pseqdesc->blendstart[ iBlender ] ) + pseqdesc->blendstart[ iBlender ] );
 }
 
-float CStudioModelEntity::SetBlending( const int iBlender, float flValue )
+float StudioModelEntity::SetBlending( const int iBlender, float flValue )
 {
 	if( !m_pModel )
 		return 0.0f;
@@ -547,7 +547,7 @@ float CStudioModelEntity::SetBlending( const int iBlender, float flValue )
 	return static_cast<float>( setting * ( 1.0 / 255.0 ) * ( pseqdesc->blendend[ iBlender ] - pseqdesc->blendstart[ iBlender ] ) + pseqdesc->blendstart[ iBlender ] );
 }
 
-void CStudioModelEntity::ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const
+void StudioModelEntity::ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const
 {
 	const mstudioseqdesc_t* pseqdesc = m_pModel->GetStudioHeader()->GetSequence( m_iSequence );
 
@@ -555,12 +555,12 @@ void CStudioModelEntity::ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) c
 	vecMaxs = pseqdesc->bbmax;
 }
 
-mstudiomodel_t* CStudioModelEntity::GetModelByBodyPart( const int iBodyPart ) const
+mstudiomodel_t* StudioModelEntity::GetModelByBodyPart( const int iBodyPart ) const
 {
 	return m_pModel->GetModelByBodyPart( m_iBodygroup, iBodyPart );
 }
 
-CStudioModelEntity::MeshList_t CStudioModelEntity::ComputeMeshList( const int iTexture ) const
+StudioModelEntity::MeshList_t StudioModelEntity::ComputeMeshList( const int iTexture ) const
 {
 	const studiomdl::CStudioModel* pStudioModel = GetModel();
 

@@ -1,19 +1,19 @@
 target_sources(HLAM
 	PRIVATE
-		CBaseAnimating.cpp
-		CBaseAnimating.hpp
-		CBaseEntity.cpp
-		CBaseEntity.hpp
-		CBaseEntityList.cpp
-		CBaseEntityList.hpp
-		CEntityDict.cpp
-		CEntityDict.hpp
-		CEntityManager.cpp
-		CEntityManager.hpp
-		CSpriteEntity.cpp
-		CSpriteEntity.hpp
-		CStudioModelEntity.cpp
-		CStudioModelEntity.hpp
+		BaseAnimating.cpp
+		BaseAnimating.hpp
+		BaseEntity.cpp
+		BaseEntity.hpp
+		BaseEntityList.cpp
+		BaseEntityList.hpp
 		EHandle.cpp
 		EHandle.hpp
-		EntityConstants.hpp)
+		EntityConstants.hpp
+		EntityDict.cpp
+		EntityDict.hpp
+		EntityManager.cpp
+		EntityManager.hpp
+		SpriteEntity.cpp
+		SpriteEntity.hpp
+		StudioModelEntity.cpp
+		StudioModelEntity.hpp)

@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include "CBaseEntity.hpp"
+#include "game/entity/BaseEntity.hpp"
 
 CBaseEntity::CBaseEntity()
 {
