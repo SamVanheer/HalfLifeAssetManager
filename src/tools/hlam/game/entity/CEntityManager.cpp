@@ -1,14 +1,14 @@
 #include <cassert>
 
-#include "shared/CWorldTime.hpp"
 #include "shared/Logging.hpp"
+#include "shared/WorldTime.hpp"
 
 #include "CBaseEntity.hpp"
 #include "CBaseEntityList.hpp"
 
 #include "CEntityManager.hpp"
 
-CEntityManager::CEntityManager(std::unique_ptr<CBaseEntityList>&& entityList, CWorldTime* worldTime)
+CEntityManager::CEntityManager(std::unique_ptr<CBaseEntityList>&& entityList, WorldTime* worldTime)
 	: _entityList(std::move(entityList))
 	, _worldTime(worldTime)
 {

@@ -9,7 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "core/shared/CWorldTime.hpp"
+#include "core/shared/WorldTime.hpp"
 
 #include "engine/renderer/sprite/CSpriteRenderer.hpp"
 #include "engine/renderer/studiomodel/CStudioModelRenderer.hpp"
@@ -40,7 +40,7 @@ static const int GUIDELINES_OFFSET = GUIDELINES_LINE_LENGTH + (GUIDELINES_POINT_
 
 static const int GUIDELINES_EDGE_WIDTH = 4;
 
-Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime)
+Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime)
 	: _textureLoader(textureLoader)
 	, _spriteRenderer(std::make_unique<sprite::CSpriteRenderer>(worldTime))
 	, _studioModelRenderer(std::make_unique<studiomdl::CStudioModelRenderer>())

@@ -6,8 +6,8 @@
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
 
-#include "core/shared/CWorldTime.hpp"
 #include "core/shared/Utility.hpp"
+#include "core/shared/WorldTime.hpp"
 
 #include "filesystem/FileSystem.hpp"
 #include "filesystem/IFileSystem.hpp"
@@ -47,7 +47,7 @@ EditorContext::EditorContext(
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
 	, _fileSystem(std::make_unique<filesystem::FileSystem>())
 	, _soundSystem(std::make_unique<soundsystem::SoundSystem>())
-	, _worldTime(std::make_unique<CWorldTime>())
+	, _worldTime(std::make_unique<WorldTime>())
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
 {
 	_settings->setParent(this);

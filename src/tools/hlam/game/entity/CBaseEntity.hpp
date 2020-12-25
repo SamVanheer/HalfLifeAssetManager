@@ -28,7 +28,7 @@ class IStudioModelRenderer;
 class CBaseEntity;
 class CBaseEntityList;
 class CEntityManager;
-class CWorldTime;
+class WorldTime;
 
 namespace soundsystem
 {
@@ -43,18 +43,18 @@ using ThinkFunc_t = void ( CBaseEntity::* )();
 struct EntityContext final
 {
 	//TODO: improve this
-	CWorldTime* const WorldTime;
+	WorldTime* const Time;
 	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
 	sprite::ISpriteRenderer* const SpriteRenderer;
 	CBaseEntityList* const EntityList;
 	CEntityManager* const EntityManager;
 	soundsystem::ISoundSystem* const SoundSystem;
 
-	EntityContext(CWorldTime* worldTime,
+	EntityContext(WorldTime* time,
 		studiomdl::IStudioModelRenderer* studioModelRenderer, sprite::ISpriteRenderer* spriteRenderer,
 		CBaseEntityList* entityList, CEntityManager* entityManager,
 		soundsystem::ISoundSystem* soundSystem)
-		: WorldTime(worldTime)
+		: Time(time)
 		, SpriteRenderer(spriteRenderer)
 		, StudioModelRenderer(studioModelRenderer)
 		, EntityList(entityList)

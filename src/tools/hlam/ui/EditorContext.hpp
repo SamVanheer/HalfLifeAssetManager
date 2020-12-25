@@ -12,7 +12,7 @@
 class QOffscreenSurface;
 class QOpenGLContext;
 
-class CWorldTime;
+class WorldTime;
 
 namespace filesystem
 {
@@ -83,7 +83,7 @@ public:
 
 	soundsystem::ISoundSystem* GetSoundSystem() const { return _soundSystem.get(); }
 
-	CWorldTime* GetWorldTime() const { return _worldTime.get(); }
+	WorldTime* GetWorldTime() const { return _worldTime.get(); }
 
 	assets::IAssetProviderRegistry* GetAssetProviderRegistry() const { return _assetProviderRegistry.get(); }
 
@@ -122,7 +122,7 @@ private:
 
 	const std::unique_ptr<filesystem::IFileSystem> _fileSystem;
 	const std::unique_ptr<soundsystem::ISoundSystem> _soundSystem;
-	const std::unique_ptr<CWorldTime> _worldTime;
+	const std::unique_ptr<WorldTime> _worldTime;
 
 	const std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
 

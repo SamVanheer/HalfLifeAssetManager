@@ -1,7 +1,7 @@
 #include <glm/geometric.hpp>
 
 #include "shared/Logging.hpp"
-#include "shared/CWorldTime.hpp"
+#include "shared/WorldTime.hpp"
 
 #include "shared/studiomodel/CStudioModel.hpp"
 
@@ -75,10 +75,10 @@ float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )
 
 	if( dt == 0.0 )
 	{
-		dt = ( GetContext()->WorldTime->GetCurrentTime() - m_flAnimTime );
+		dt = ( GetContext()->Time->GetCurrentTime() - m_flAnimTime );
 		if( dt <= 0.001 )
 		{
-			m_flAnimTime = GetContext()->WorldTime->GetCurrentTime();
+			m_flAnimTime = GetContext()->Time->GetCurrentTime();
 			return 0.0;
 		}
 	}
@@ -140,7 +140,7 @@ float CStudioModelEntity::AdvanceFrame( float dt, const float flMax )
 		}
 	}
 
-	m_flAnimTime = GetContext()->WorldTime->GetCurrentTime();
+	m_flAnimTime = GetContext()->Time->GetCurrentTime();
 
 	return dt;
 }
@@ -246,7 +246,7 @@ void CStudioModelEntity::SetFrame(float frame)
 		m_flFrame -= ( int ) ( m_flFrame / ( pseqdesc->numframes - 1 ) ) * ( pseqdesc->numframes - 1 );
 	}
 
-	m_flAnimTime = GetContext()->WorldTime->GetCurrentTime();
+	m_flAnimTime = GetContext()->Time->GetCurrentTime();
 }
 
 void CStudioModelEntity::SetModel( studiomdl::CStudioModel* pModel )

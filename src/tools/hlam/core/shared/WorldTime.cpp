@@ -1,6 +1,6 @@
-#include "CWorldTime.hpp"
+#include "core/shared/WorldTime.hpp"
 
-void CWorldTime::TimeChanged( const double flCurrentTime )
+void WorldTime::TimeChanged( const double flCurrentTime )
 {
 	double flFrameTime = flCurrentTime - GetPreviousRealTime();
 

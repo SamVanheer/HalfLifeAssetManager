@@ -3,12 +3,12 @@
 /**
 *	Represents the time in the world. Multiple time values are tracked.
 */
-class CWorldTime final
+class WorldTime final
 {
 public:
-	CWorldTime() = default;
-	CWorldTime( const CWorldTime& ) = default;
-	CWorldTime& operator=( const CWorldTime& ) = default;
+	WorldTime() = default;
+	WorldTime( const WorldTime& ) = default;
+	WorldTime& operator=( const WorldTime& ) = default;
 
 	/**
 	*	The current time. Starts at 1.0.

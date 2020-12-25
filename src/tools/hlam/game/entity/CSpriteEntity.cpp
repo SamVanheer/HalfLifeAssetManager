@@ -1,4 +1,4 @@
-#include "shared/CWorldTime.hpp"
+#include "shared/WorldTime.hpp"
 
 #include "engine/shared/sprite/sprite.hpp"
 #include "engine/shared/sprite/CSprite.hpp"
@@ -44,7 +44,7 @@ void CSpriteEntity::Draw( renderer::DrawFlags_t flags )
 
 void CSpriteEntity::AnimThink()
 {
-	m_flFrame += GetContext()->WorldTime->GetFrameTime() * 10;
+	m_flFrame += GetContext()->Time->GetFrameTime() * 10;
 
 	if( m_flFrame >= m_pSprite->numframes )
 		m_flFrame = 0;

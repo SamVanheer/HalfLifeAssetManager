@@ -4,10 +4,9 @@
 #include <glm/vec4.hpp>
 
 #include "core/shared/Logging.hpp"
+#include "core/shared/WorldTime.hpp"
 
 #include "graphics/OpenGL.hpp"
-
-#include "shared/CWorldTime.hpp"
 
 #include "engine/shared/renderer/sprite/CSpriteRenderInfo.hpp"
 
@@ -19,7 +18,7 @@ namespace sprite
 {
 const float CSpriteRenderer::DEFAULT_FRAMERATE = 10;
 
-CSpriteRenderer::CSpriteRenderer(CWorldTime* worldTime)
+CSpriteRenderer::CSpriteRenderer(WorldTime* worldTime)
 	: _worldTime(worldTime)
 {
 }

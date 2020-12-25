@@ -14,7 +14,7 @@
 class CEntityManager;
 class CHLMVStudioModelEntity;
 class CStudioModelEntity;
-class CWorldTime;
+class WorldTime;
 struct EntityContext;
 
 namespace sprite
@@ -43,7 +43,7 @@ class TextureLoader;
 class Scene
 {
 public:
-	Scene(graphics::TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, CWorldTime* worldTime);
+	Scene(graphics::TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime);
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
@@ -170,7 +170,7 @@ private:
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 
-	CWorldTime* const _worldTime;
+	WorldTime* const _worldTime;
 
 	std::unique_ptr<CEntityManager> _entityManager;
 
