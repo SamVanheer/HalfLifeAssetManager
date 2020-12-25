@@ -1,0 +1,10 @@
+target_sources(HLAM
+	PRIVATE
+		CommandLineFrontEnd.cpp
+		CommandLineFrontEnd.hpp
+		CommandLineFrontEnd.ui
+		StudioModelCompilerFrontEnd.cpp
+		StudioModelCompilerFrontEnd.hpp
+		StudioModelCompilerFrontEnd.ui
+		StudioModelDecompilerFrontEnd.cpp
+		StudioModelDecompilerFrontEnd.hpp)

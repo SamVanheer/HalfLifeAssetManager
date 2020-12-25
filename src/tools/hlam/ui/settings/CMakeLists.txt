@@ -1,0 +1,9 @@
+target_sources(HLAM
+	PRIVATE
+		ColorSettings.hpp
+		GameConfiguration.hpp
+		GameConfigurationsSettings.hpp
+		GameEnvironment.hpp
+		GeneralSettings.hpp
+		RecentFilesSettings.hpp
+		StudioModelSettings.hpp)

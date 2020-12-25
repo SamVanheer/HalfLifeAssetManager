@@ -1,0 +1,21 @@
+target_sources(HLAM
+	PRIVATE
+		OptionsDialog.cpp
+		OptionsDialog.hpp
+		OptionsDialog.ui
+		OptionsPage.cpp
+		OptionsPage.hpp
+		OptionsPageColors.cpp
+		OptionsPageColors.hpp
+		OptionsPageColors.ui
+		OptionsPageGameConfigurations.cpp
+		OptionsPageGameConfigurations.hpp
+		OptionsPageGameConfigurations.ui
+		OptionsPageGeneral.cpp
+		OptionsPageGeneral.hpp
+		OptionsPageGeneral.ui
+		OptionsPageRegistry.cpp
+		OptionsPageRegistry.hpp
+		OptionsPageStudioModel.cpp
+		OptionsPageStudioModel.hpp
+		OptionsPageStudioModel.ui)

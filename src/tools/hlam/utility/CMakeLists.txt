@@ -1,0 +1,23 @@
+target_sources(HLAM
+	PRIVATE
+		BoundingBox.hpp
+		ByteSwap.cpp
+		ByteSwap.hpp
+		CCommand.cpp
+		CCommand.hpp
+		CEscapeSequences.cpp
+		CEscapeSequences.hpp
+		CMemory.hpp
+		Color.cpp
+		Color.hpp
+		CoordinateSystem.hpp
+		IOUtils.cpp
+		IOUtils.hpp
+		mathlib.cpp
+		mathlib.hpp
+		PlatUtils.cpp
+		PlatUtils.hpp
+		StringUtils.cpp
+		StringUtils.hpp
+		Tokenization.cpp
+		Tokenization.hpp)

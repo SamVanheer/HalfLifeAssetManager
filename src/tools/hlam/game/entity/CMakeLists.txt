@@ -1,0 +1,19 @@
+target_sources(HLAM
+	PRIVATE
+		CBaseAnimating.cpp
+		CBaseAnimating.hpp
+		CBaseEntity.cpp
+		CBaseEntity.hpp
+		CBaseEntityList.cpp
+		CBaseEntityList.hpp
+		CEntityDict.cpp
+		CEntityDict.hpp
+		CEntityManager.cpp
+		CEntityManager.hpp
+		CSpriteEntity.cpp
+		CSpriteEntity.hpp
+		CStudioModelEntity.cpp
+		CStudioModelEntity.hpp
+		EHandle.cpp
+		EHandle.hpp
+		EntityConstants.hpp)

@@ -1,9 +1,0 @@
-target_sources(HLMV
-	PRIVATE
-		ColorSettings.hpp
-		GameConfiguration.hpp
-		GameConfigurationsSettings.hpp
-		GameEnvironment.hpp
-		GeneralSettings.hpp
-		RecentFilesSettings.hpp
-		StudioModelSettings.hpp)

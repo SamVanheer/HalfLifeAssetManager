@@ -32,4 +32,4 @@ add_library(EnTT::EnTT ALIAS EnTT)
 
 target_include_directories(EnTT INTERFACE "../../external/EnTT/include")
 
-add_subdirectory(hlmv)
+add_subdirectory(hlam)
