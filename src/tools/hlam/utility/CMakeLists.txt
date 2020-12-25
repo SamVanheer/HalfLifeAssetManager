@@ -10,8 +10,6 @@ target_sources(HLAM
 		IOUtils.hpp
 		mathlib.cpp
 		mathlib.hpp
-		PlatUtils.cpp
-		PlatUtils.hpp
 		StringUtils.cpp
 		StringUtils.hpp
 		Tokenization.cpp
