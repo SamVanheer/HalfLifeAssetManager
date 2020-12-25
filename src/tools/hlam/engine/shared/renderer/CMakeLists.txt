@@ -1,7 +1,6 @@
 target_sources(HLAM
 	PRIVATE
-		DrawConstants.hpp
-		IRenderContext.hpp)
+		DrawConstants.hpp)
 
 add_subdirectory(sprite)
 add_subdirectory(studiomodel)
