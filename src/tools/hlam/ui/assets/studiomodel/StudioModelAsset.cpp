@@ -162,16 +162,6 @@ void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 
 	menu->addAction("Dump Model Info...", this, &StudioModelAsset::OnDumpModelInfo);
 
-	menu->addAction("Edit QC File...", []
-		{
-			const QString fileName{QFileDialog::getOpenFileName(nullptr, "Select QC File", {}, "QC files (*.qc);;All Files (*.*)")};
-
-			if (!fileName.isEmpty())
-			{
-				qt::LaunchDefaultProgram(fileName);
-			}
-		});
-
 	menu->addSeparator();
 
 	menu->addAction("Take Screenshot...", this, &StudioModelAsset::OnTakeScreenshot);
@@ -530,6 +520,16 @@ QMenu* StudioModelAssetProvider::CreateToolMenu(EditorContext* editorContext)
 		{
 			StudioModelDecompilerFrontEnd decompiler{editorContext, GetStudioModelSettings()};
 			decompiler.exec();
+		});
+
+	menu->addAction("Edit QC File...", []
+		{
+			const QString fileName{QFileDialog::getOpenFileName(nullptr, "Select QC File", {}, "QC files (*.qc);;All Files (*.*)")};
+
+			if (!fileName.isEmpty())
+			{
+				qt::LaunchDefaultProgram(fileName);
+			}
 		});
 
 	return menu;
