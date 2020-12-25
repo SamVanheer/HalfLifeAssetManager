@@ -14,6 +14,7 @@
 namespace ui
 {
 class EditorContext;
+class FileListPanel;
 class FullscreenWidget;
 
 namespace assets
@@ -80,6 +81,8 @@ private slots:
 
 	void OnGoFullscreen();
 
+	void OnFileSelected(const QString& fileName);
+
 	void OnOpenOptionsDialog();
 
 	void OnShowAbout();
@@ -103,5 +106,7 @@ private:
 	QPointer<assets::Asset> _currentAsset;
 
 	std::unique_ptr<FullscreenWidget> _fullscreenWidget;
+
+	QPointer<QDockWidget> _fileListDock;
 };
 }

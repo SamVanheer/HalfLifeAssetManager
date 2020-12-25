@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <QCloseEvent>
+#include <QDockWidget>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMimeData>
@@ -15,6 +16,7 @@
 
 #include "ui/Credits.hpp"
 #include "ui/EditorContext.hpp"
+#include "ui/FileListPanel.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/MainWindow.hpp"
 
@@ -72,6 +74,23 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		}
 	}
 
+	{
+		auto fileList = new FileListPanel(_editorContext, this);
+
+		connect(fileList, &FileListPanel::FileSelected, this, &MainWindow::OnFileSelected);
+
+		_fileListDock = new QDockWidget(this);
+
+		_fileListDock->setWidget(fileList);
+		_fileListDock->setWindowTitle("File List");
+
+		this->addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, _fileListDock);
+
+		_fileListDock->hide();
+
+		_ui.MenuWindows->addAction(_fileListDock->toggleViewAction());
+	}
+
 	_assetTabs = new QTabWidget(this);
 
 	//Eliminate the border on the sides so the scene widget takes up all horizontal space
@@ -87,7 +106,9 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionSave, &QAction::triggered, this, &MainWindow::OnSaveAsset);
 	connect(_ui.ActionSaveAs, &QAction::triggered, this, &MainWindow::OnSaveAssetAs);
 	connect(_ui.ActionExit, &QAction::triggered, this, &MainWindow::OnExit);
+
 	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnGoFullscreen);
+
 	connect(_ui.ActionOptions, &QAction::triggered, this, &MainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &MainWindow::OnShowAbout);
 
@@ -471,6 +492,11 @@ void MainWindow::OnGoFullscreen()
 	_fullscreenWidget->raise();
 	_fullscreenWidget->showFullScreen();
 	_fullscreenWidget->activateWindow();
+}
+
+void MainWindow::OnFileSelected(const QString& fileName)
+{
+	TryLoadAsset(fileName);
 }
 
 void MainWindow::OnOpenOptionsDialog()

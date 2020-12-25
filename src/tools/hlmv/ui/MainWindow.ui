@@ -56,7 +56,14 @@
     <property name="title">
      <string>View</string>
     </property>
+    <widget class="QMenu" name="MenuWindows">
+     <property name="title">
+      <string>Windows</string>
+     </property>
+    </widget>
     <addaction name="ActionFullscreen"/>
+    <addaction name="separator"/>
+    <addaction name="MenuWindows"/>
    </widget>
    <widget class="QMenu" name="MenuEdit">
     <property name="title">
@@ -114,6 +121,11 @@
   <action name="ActionSaveAs">
    <property name="text">
     <string>Save As...</string>
+   </property>
+  </action>
+  <action name="ActionFileList">
+   <property name="text">
+    <string>Fle List</string>
    </property>
   </action>
  </widget>

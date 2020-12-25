@@ -4,6 +4,8 @@ target_sources(HLMV
 		Credits.hpp
 		EditorContext.cpp
 		EditorContext.hpp
+		FileListPanel.cpp
+		FileListPanel.hpp
 		FullscreenWidget.cpp
 		FullscreenWidget.hpp
 		IInputSink.hpp
