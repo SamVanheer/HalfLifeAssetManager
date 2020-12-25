@@ -27,8 +27,6 @@ set_target_properties(VorbisFile PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/vo
 
 add_executable(HLAM WIN32)
 
-check_winxp_support(HLAM)
-
 target_include_directories(HLAM
 	PRIVATE
 		${EXTERNAL_DIR}/AudioFile/include

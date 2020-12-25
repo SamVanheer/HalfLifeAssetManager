@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
 
-include(cmake/WinXPSupport.cmake)
-
 macro(copy_dependencies project_name base_dir)
 	foreach(lib ${ARGN})
 		add_custom_command(TARGET ${project_name} POST_BUILD
