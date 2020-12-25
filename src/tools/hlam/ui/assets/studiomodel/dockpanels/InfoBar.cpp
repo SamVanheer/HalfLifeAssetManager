@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "entity/HLMVStudioModelEntity.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
@@ -18,9 +20,9 @@ void InfoBar::OnTick()
 {
 	++_currentFPS;
 
-	const long long currentTick = GetCurrentTick();
+	const long long currentTick = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 
-	if (currentTick - _lastFPSUpdate >= 1000)
+	if (_lastFPSUpdate == 0 || ((currentTick - _lastFPSUpdate) >= 1000))
 	{
 		_lastFPSUpdate = currentTick;
 

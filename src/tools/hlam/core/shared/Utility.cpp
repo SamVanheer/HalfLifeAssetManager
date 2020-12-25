@@ -1,12 +1,8 @@
 #include <array>
-#include <chrono>
 #include <functional>
 #include <random>
 
 #include "core/shared/Utility.hpp"
-
-//The chrono API is just too confusing with namespaces
-using namespace std::chrono;
 
 namespace
 {
@@ -44,14 +40,4 @@ float UTIL_RandomFloat( float flLow, float flHigh )
 	std::uniform_real_distribution<float> dist( flLow, flHigh );
 
 	return dist( g_Random );
-}
-
-long long GetCurrentTick()
-{
-	return duration_cast<milliseconds>( high_resolution_clock::now().time_since_epoch() ).count();
-}
-
-double GetCurrentTime()
-{
-	return GetCurrentTick() / 1000.0;
 }

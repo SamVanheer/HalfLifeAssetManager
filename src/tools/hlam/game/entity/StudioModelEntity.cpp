@@ -75,10 +75,10 @@ float StudioModelEntity::AdvanceFrame( float dt, const float flMax )
 
 	if( dt == 0.0 )
 	{
-		dt = ( GetContext()->Time->GetCurrentTime() - m_flAnimTime );
+		dt = ( GetContext()->Time->GetTime() - m_flAnimTime );
 		if( dt <= 0.001 )
 		{
-			m_flAnimTime = GetContext()->Time->GetCurrentTime();
+			m_flAnimTime = GetContext()->Time->GetTime();
 			return 0.0;
 		}
 	}
@@ -140,7 +140,7 @@ float StudioModelEntity::AdvanceFrame( float dt, const float flMax )
 		}
 	}
 
-	m_flAnimTime = GetContext()->Time->GetCurrentTime();
+	m_flAnimTime = GetContext()->Time->GetTime();
 
 	return dt;
 }
@@ -246,7 +246,7 @@ void StudioModelEntity::SetFrame(float frame)
 		m_flFrame -= ( int ) ( m_flFrame / ( pseqdesc->numframes - 1 ) ) * ( pseqdesc->numframes - 1 );
 	}
 
-	m_flAnimTime = GetContext()->Time->GetCurrentTime();
+	m_flAnimTime = GetContext()->Time->GetTime();
 }
 
 void StudioModelEntity::SetModel( studiomdl::CStudioModel* pModel )

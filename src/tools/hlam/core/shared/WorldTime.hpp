@@ -13,12 +13,12 @@ public:
 	/**
 	*	The current time. Starts at 1.0.
 	*/
-	float GetCurrentTime() const { return m_flCurrentTime; }
+	float GetTime() const { return m_flCurrentTime; }
 
 	/**
 	*	Sets the current time. Avoid using this.
 	*/
-	void SetCurrentTime( const float flCurrentTime ) { m_flCurrentTime = flCurrentTime; }
+	void SetTime( const float flCurrentTime ) { m_flCurrentTime = flCurrentTime; }
 
 	/**
 	*	Gets the previous current time before the last time increment. Equal to GetCurrentTime() - GetFrameTime().

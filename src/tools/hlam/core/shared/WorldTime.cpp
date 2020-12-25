@@ -7,8 +7,8 @@ void WorldTime::TimeChanged( const double flCurrentTime )
 	if( flFrameTime > 1.0 )
 		flFrameTime = 0.1;
 
-	SetPreviousTime( GetCurrentTime() );
-	SetCurrentTime( static_cast<float>( GetCurrentTime() + flFrameTime ) );
+	SetPreviousTime(GetTime() );
+	SetTime( static_cast<float>( GetTime() + flFrameTime ) );
 	SetFrameTime( static_cast<float>( flFrameTime ) );
 	SetPreviousRealTime( GetRealTime() );
 }

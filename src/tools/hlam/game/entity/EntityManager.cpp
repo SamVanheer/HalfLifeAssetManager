@@ -51,11 +51,11 @@ void EntityManager::RunFrame()
 
 		if( pEntity->AnyFlagsSet( entity::FL_ALWAYSTHINK ) ||
 			( pEntity->GetNextThinkTime() != 0 && 
-			pEntity->GetNextThinkTime() <= _worldTime->GetCurrentTime() && 
-			(_worldTime->GetCurrentTime() - _worldTime->GetFrameTime() ) >= pEntity->GetLastThinkTime() ) )
+			pEntity->GetNextThinkTime() <= _worldTime->GetTime() &&
+			(_worldTime->GetTime() - _worldTime->GetFrameTime() ) >= pEntity->GetLastThinkTime() ) )
 		{
 			//Set first so entities can do lastthink + delay.
-			pEntity->SetLastThinkTime(_worldTime->GetCurrentTime() );
+			pEntity->SetLastThinkTime(_worldTime->GetTime() );
 			pEntity->SetNextThinkTime( 0 );
 
 			pEntity->Think();

@@ -4,7 +4,6 @@ target_sources(HLAM
 		Const.hpp
 		Logging.cpp
 		Logging.hpp
-		Platform.cpp
 		Platform.hpp
 		Utility.cpp
 		Utility.hpp

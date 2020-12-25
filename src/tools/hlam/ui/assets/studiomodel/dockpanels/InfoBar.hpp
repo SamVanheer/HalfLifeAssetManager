@@ -25,7 +25,7 @@ private:
 
 	StudioModelAsset* const _asset;
 
-	long long _lastFPSUpdate{GetCurrentTick()};
+	long long _lastFPSUpdate{0};
 	unsigned int _currentFPS{0};
 
 	unsigned int _oldDrawnPolygonsCount{0};

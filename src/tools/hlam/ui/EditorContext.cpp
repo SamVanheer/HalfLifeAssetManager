@@ -1,12 +1,12 @@
 #include <algorithm>
 #include <cassert>
+#include <chrono>
 #include <iterator>
 #include <stdexcept>
 
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
 
-#include "core/shared/Utility.hpp"
 #include "core/shared/WorldTime.hpp"
 
 #include "filesystem/FileSystem.hpp"
@@ -105,7 +105,9 @@ void EditorContext::StartTimer()
 
 void EditorContext::OnTimerTick()
 {
-	const double currentTime = GetCurrentTime();
+	const auto timeMillis{std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()};
+
+	const double currentTime = timeMillis / 1000.0;
 
 	double flFrameTime = currentTime - _worldTime->GetPreviousRealTime();
 
