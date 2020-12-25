@@ -349,23 +349,19 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 	{
 		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
 
+		const auto texture = header->GetTexture(listChange.GetSourceIndex());
+
+		//TODO: shouldn't be done here
+		auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
+
+		graphicsContext->Begin();
+		model->ReuploadTexture(*_asset->GetTextureLoader(), texture);
+		RemapTexture(listChange.GetSourceIndex());
+		graphicsContext->End();
+
 		if (listChange.GetSourceIndex() == _ui.Textures->currentIndex())
 		{
-			const auto texture = header->GetTexture(listChange.GetSourceIndex());
-
-			const bool oldMasked{_ui.Transparent->isChecked()};
-
 			SetTextureFlagCheckBoxes(_ui, texture->flags);
-
-			//TODO: shouldn't be done here
-			if (oldMasked != _ui.Transparent->isChecked())
-			{
-				auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
-
-				graphicsContext->Begin();
-				model->ReuploadTexture(*_asset->GetTextureLoader(), texture);
-				graphicsContext->End();
-			}
 		}
 		break;
 	}
