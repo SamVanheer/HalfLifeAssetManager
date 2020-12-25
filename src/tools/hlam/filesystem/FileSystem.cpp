@@ -1,173 +1,123 @@
-#include <cstring>
+#include <algorithm>
 #include <cstdio>
+#include <sstream>
 
 #include "filesystem/FileSystem.hpp"
 
-#include "shared/Logging.hpp"
-#include "shared/Utility.hpp"
 #include "utility/IOUtils.hpp"
-#include "utility/StringUtils.hpp"
 
 namespace filesystem
 {
 FileSystem::FileSystem()
 {
-	memset( m_szBasePath, 0, sizeof( m_szBasePath ) );
+	SetBasePath(".");
 }
 
-FileSystem::~FileSystem()
+FileSystem::~FileSystem() = default;
+
+std::string FileSystem::GetBasePath() const
 {
+	return _basePath;
 }
 
-bool FileSystem::Initialize()
+void FileSystem::SetBasePath(std::string&& path)
 {
-	SetBasePath( "." );
-
-	return true;
-}
-
-void FileSystem::Shutdown()
-{
-	RemoveAllSearchPaths();
-}
-
-const char* FileSystem::GetBasePath() const
-{
-	return m_szBasePath;
-}
-
-void FileSystem::SetBasePath( const char* const pszPath )
-{
-	if( !pszPath || !( *pszPath ) )
-		return;
-
-	strncpy( m_szBasePath, pszPath, sizeof( m_szBasePath ) );
-	m_szBasePath[ sizeof( m_szBasePath ) - 1 ] = '\0';
-}
-
-bool FileSystem::HasSearchPath( const char* const pszPath ) const
-{
-	if( !pszPath || !( *pszPath ) )
-		return false;
-
-	for( const auto& path : m_SearchPaths )
+	if (path.empty())
 	{
-		if( strcmp( path.szPath, pszPath ) == 0 )
-			return true;
+		return;
 	}
 
-	return false;
+	_basePath = std::move(path);
 }
 
-void FileSystem::AddSearchPath( const char* const pszPath )
+bool FileSystem::HasSearchPath(std::string_view path) const
 {
-	if( !pszPath || !( *pszPath ) )
-		return;
-
-	if( HasSearchPath( pszPath ) )
-		return;
-
-	SearchPath_t path;
-
-	strncpy( path.szPath, pszPath, sizeof( path.szPath ) );
-
-	path.szPath[ sizeof( path.szPath ) - 1 ] = '\0';
-
-	m_SearchPaths.push_back( path );
-}
-
-void FileSystem::RemoveSearchPath( const char* const pszPath )
-{
-	if( !pszPath || !( *pszPath ) )
-		return;
-
-	for( auto it = m_SearchPaths.begin(); it != m_SearchPaths.end(); ++it )
+	if (path.empty())
 	{
-		if( strcmp( ( *it ).szPath, pszPath ) == 0 )
-		{
-			m_SearchPaths.erase( it );
-			return;
-		}
+		return false;
+	}
+
+	return std::find(_searchPaths.begin(), _searchPaths.end(), path) != _searchPaths.end();
+}
+
+void FileSystem::AddSearchPath(std::string&& path)
+{
+	if (path.empty())
+	{
+		return;
+	}
+
+	if (HasSearchPath(path))
+	{
+		return;
+	}
+
+	_searchPaths.emplace_back(std::move(path));
+}
+
+void FileSystem::RemoveSearchPath(std::string_view path)
+{
+	if (path.empty())
+	{
+		return;
+	}
+
+	if (const auto it = std::find(_searchPaths.begin(), _searchPaths.end(), path); it != _searchPaths.end())
+	{
+		_searchPaths.erase(it);
 	}
 }
 
 void FileSystem::RemoveAllSearchPaths()
 {
-	m_SearchPaths.clear();
+	_searchPaths.clear();
 }
 
-bool FileSystem::CheckFileExists( const char* const pszCompletePath, const size_t uiLength, char* pszOutPath, size_t uiBufferSize ) const
+std::string FileSystem::GetRelativePath(std::string_view fileName)
 {
-	if( FileExists( pszCompletePath ) )
+	if (fileName.empty())
 	{
-		//Buffer too small
-		if( uiLength >= uiBufferSize )
-		{
-			pszOutPath[ 0 ] = '\0';
-			return true;
-		}
-
-		strncpy( pszOutPath, pszCompletePath, uiBufferSize );
-		pszOutPath[ uiBufferSize - 1 ] = '\0';
-
-		return true;
+		return {};
 	}
 
-	return false;
-}
+	std::ostringstream stream;
 
-bool FileSystem::GetRelativePath( const char* const pszFilename, char* pszOutPath, const size_t uiBufferSize )
-{
-	if( !pszFilename || !( *pszFilename ) )
-		return false;
-
-	if( !pszOutPath || !uiBufferSize )
-		return false;
-
-	char szCompletePath[ MAX_PATH_LENGTH ];
-
-	for( const auto& path : m_SearchPaths )
+	for (const auto& path : _searchPaths)
 	{
-		const int iRet = snprintf( szCompletePath, sizeof( szCompletePath ), "%s/%s/%s", m_szBasePath, path.szPath, pszFilename );
+		stream.str({});
+		stream << _basePath << '/' << path << '/' << fileName;
 
-		if( !PrintfSuccess( iRet, sizeof( szCompletePath ) ) )
-			continue;
+		auto result = stream.str();
 
-		if( FileExists( szCompletePath ) )
+		if (FileExists(result))
 		{
-			//Buffer too small
-			if( static_cast<size_t>( iRet ) >= uiBufferSize )
-			{
-				pszOutPath[ 0 ] = '\0';
-				return true;
-			}
-
-			strncpy( pszOutPath, szCompletePath, uiBufferSize );
-			pszOutPath[ uiBufferSize - 1 ] = '\0';
-
-			return true;
+			return result;
 		}
-
-		if( CheckFileExists( szCompletePath, static_cast<size_t>( iRet ), pszOutPath, uiBufferSize ) )
-			return true;
 	}
 
-	const int iRet = snprintf( szCompletePath, sizeof( szCompletePath ), "%s/%s", m_szBasePath, pszFilename );
+	stream.str({});
+	stream << _basePath << '/' << fileName;
 
-	if( !PrintfSuccess( iRet, sizeof( szCompletePath ) ) )
-		return false;
+	auto result = stream.str();
 
-	return CheckFileExists( szCompletePath, static_cast<size_t>( iRet ), pszOutPath, uiBufferSize );
+	if (FileExists(result))
+	{
+		return result;
+	}
+
+	return {};
 }
 
-bool FileSystem::FileExists( const char* const pszFilename ) const
+bool FileSystem::FileExists(const std::string& fileName) const
 {
-	if( !pszFilename || !( *pszFilename ) )
-		return false;
-
-	if( FILE* pFile = utf8_fopen( pszFilename, "r" ) )
+	if (fileName.empty())
 	{
-		fclose( pFile );
+		return false;
+	}
+
+	if (FILE* file = utf8_fopen(fileName.c_str(), "r"); file)
+	{
+		fclose(file);
 
 		return true;
 	}

@@ -296,9 +296,9 @@ void SoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitch
 	if( iRet < 0 || static_cast<size_t>( iRet ) >= sizeof( szActualFilename ) )
 		return;
 
-	char szFullFilename[ MAX_PATH_LENGTH ];
+	const auto fullFileName{m_pFileSystem->GetRelativePath(szActualFilename)};
 
-	if( !m_pFileSystem->GetRelativePath( szActualFilename, szFullFilename, sizeof( szFullFilename ) ) )
+	if(fullFileName.empty())
 	{
 		Warning( "CSoundSystem::PlaySound: Unable to find sound file '%s'\n", pszFilename );
 		return;
@@ -312,11 +312,11 @@ void SoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitch
 	flVolume = clamp( flVolume, 0.0f, 1.0f );
 	iPitch = clamp( iPitch, 0, 255 );
 
-	std::unique_ptr<Sound> sound = TryLoadWaveFile(szFullFilename);
+	std::unique_ptr<Sound> sound = TryLoadWaveFile(fullFileName);
 
 	if (!sound)
 	{
-		sound = TryLoadOggVorbis(szFullFilename);
+		sound = TryLoadOggVorbis(fullFileName);
 	}
 
 	if (!sound)

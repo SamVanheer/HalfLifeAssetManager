@@ -54,11 +54,6 @@ EditorContext::EditorContext(
 
 	_timer->setTimerType(Qt::TimerType::PreciseTimer);
 
-	if (!_fileSystem->Initialize())
-	{
-		throw std::runtime_error("Failed to initialize file system");
-	}
-
 	if (!_soundSystem->Initialize(_fileSystem.get()))
 	{
 		throw std::runtime_error("Failed to initialize sound system");
@@ -71,7 +66,6 @@ EditorContext::EditorContext(
 EditorContext::~EditorContext()
 {
 	_soundSystem->Shutdown();
-	_fileSystem->Shutdown();
 }
 
 void EditorContext::SetOffscreenContext(QOpenGLContext* offscreenContext)
