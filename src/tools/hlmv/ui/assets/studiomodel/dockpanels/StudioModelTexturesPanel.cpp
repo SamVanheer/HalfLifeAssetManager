@@ -73,7 +73,7 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.Transparent, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnTransparentChanged);
 	connect(_ui.FlatShade, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnFlatShadeChanged);
 	connect(_ui.Fullbright, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnFullbrightChanged);
-	connect(_ui.NoMipmaps, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnNoMipmapsChanged);
+	connect(_ui.Mipmaps, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnMipmapsChanged);
 
 	connect(_ui.ShowUVMap, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnShowUVMapChanged);
 	connect(_ui.OverlayUVMap, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnOverlayUVMapChanged);
@@ -304,14 +304,16 @@ static void SetTextureFlagCheckBoxes(Ui_StudioModelTexturesPanel& ui, int flags)
 	const QSignalBlocker transparent{ui.Transparent};
 	const QSignalBlocker flatShade{ui.FlatShade};
 	const QSignalBlocker fullbright{ui.Fullbright};
-	const QSignalBlocker nomipmaps{ui.NoMipmaps};
+	const QSignalBlocker nomipmaps{ui.Mipmaps};
 
 	ui.Chrome->setChecked((flags & STUDIO_NF_CHROME) != 0);
 	ui.Additive->setChecked((flags & STUDIO_NF_ADDITIVE) != 0);
 	ui.Transparent->setChecked((flags & STUDIO_NF_MASKED) != 0);
 	ui.FlatShade->setChecked((flags & STUDIO_NF_FLATSHADE) != 0);
 	ui.Fullbright->setChecked((flags & STUDIO_NF_FULLBRIGHT) != 0);
-	ui.NoMipmaps->setChecked((flags & STUDIO_NF_NOMIPS) != 0);
+
+	//TODO: change the constant name to reflect the actual behavior (flag enables mipmaps)
+	ui.Mipmaps->setChecked((flags & STUDIO_NF_NOMIPS) != 0);
 }
 
 void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
@@ -555,13 +557,13 @@ void StudioModelTexturesPanel::OnFullbrightChanged()
 	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
 }
 
-void StudioModelTexturesPanel::OnNoMipmapsChanged()
+void StudioModelTexturesPanel::OnMipmapsChanged()
 {
 	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
 
 	int flags = texture->flags;
 
-	flags = SetFlags(flags, STUDIO_NF_NOMIPS, _ui.NoMipmaps->isChecked());
+	flags = SetFlags(flags, STUDIO_NF_NOMIPS, _ui.Mipmaps->isChecked());
 
 	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
 }

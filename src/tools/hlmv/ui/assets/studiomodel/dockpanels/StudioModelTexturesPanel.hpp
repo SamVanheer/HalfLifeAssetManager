@@ -69,7 +69,7 @@ private slots:
 	void OnTransparentChanged();
 	void OnFlatShadeChanged();
 	void OnFullbrightChanged();
-	void OnNoMipmapsChanged();
+	void OnMipmapsChanged();
 
 	void OnShowUVMapChanged();
 	void OnOverlayUVMapChanged();
