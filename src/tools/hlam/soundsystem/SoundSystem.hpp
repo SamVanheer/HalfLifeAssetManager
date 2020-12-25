@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <list>
 #include <memory>
 
@@ -51,8 +52,10 @@ public:
 public:
 	SoundSystem();
 	~SoundSystem();
+	SoundSystem(const SoundSystem&) = delete;
+	SoundSystem& operator=(const SoundSystem&) = delete;
 
-	bool IsSoundAvailable() const override final { return m_Device != nullptr; }
+	bool IsSoundAvailable() const override final { return _device != nullptr; }
 
 	bool Initialize(filesystem::IFileSystem* filesystem) override final;
 	void Shutdown() override final;
@@ -60,10 +63,7 @@ public:
 	void RunFrame() override final;
 
 public:
-
-	//Sound playback API
-
-	void PlaySound( const char* pszFilename, float flVolume, int iPitch ) override final;
+	void PlaySound(std::string_view fileName, float volume, int pitch) override final;
 
 	void StopAllSounds() override final;
 
@@ -71,18 +71,14 @@ private:
 	size_t GetSoundForPlayback();
 
 private:
-	filesystem::IFileSystem* m_pFileSystem = nullptr;
+	filesystem::IFileSystem* _fileSystem{};
 
-	ALCdevice* m_Device = nullptr;
-	ALCcontext* m_Context = nullptr;
+	ALCdevice* _device{};
+	ALCcontext* _context{};
 
-	std::unique_ptr<Sound> m_Sounds[MAX_SOUNDS];
+	std::array<std::unique_ptr<Sound>, MAX_SOUNDS> _sounds;
 
-	std::list<size_t> m_SoundsLRU;
-
-private:
-	SoundSystem( const SoundSystem& ) = delete;
-	SoundSystem& operator=( const SoundSystem& ) = delete;
+	std::list<size_t> _soundsLRU;
 };
 }
 

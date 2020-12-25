@@ -1,7 +1,8 @@
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include <algorithm>
+#include <sstream>
 #include <vector>
 
 #include "AudioFile/AudioFile.h"
@@ -11,7 +12,6 @@
 #include "filesystem/IFileSystem.hpp"
 
 #include "shared/Logging.hpp"
-#include "shared/Utility.hpp"
 
 #include "soundsystem/SoundSystem.hpp"
 
@@ -29,8 +29,7 @@ bool _CheckALErrors(const char* file, int line)
 	do
 	{
 		Error("Error 0x%X (%d) while calling OpenAL API in file %s, line %d\n", static_cast<unsigned int>(error), error, file, line);
-	}
-	while ((error = alGetError()) != AL_NONE);
+	} while ((error = alGetError()) != AL_NONE);
 
 	return true;
 }
@@ -177,7 +176,7 @@ std::unique_ptr<SoundSystem::Sound> TryLoadOggVorbis(const std::string& fileName
 	int bitStream = 0;
 
 	for (std::size_t offset = 0;
-		(size = ov_read(&vorbisData, (char*) data.data() + offset, 4096, 0, 2, 1, &bitStream)) > 0;
+		(size = ov_read(&vorbisData, (char*)data.data() + offset, 4096, 0, 2, 1, &bitStream)) > 0;
 		offset += size)
 	{
 	}
@@ -201,35 +200,30 @@ std::unique_ptr<SoundSystem::Sound> TryLoadOggVorbis(const std::string& fileName
 	return sound;
 }
 
-SoundSystem::SoundSystem()
-{
-}
-
-SoundSystem::~SoundSystem()
-{
-}
+SoundSystem::SoundSystem() = default;
+SoundSystem::~SoundSystem() = default;
 
 bool SoundSystem::Initialize(filesystem::IFileSystem* filesystem)
 {
-	m_pFileSystem = filesystem;
+	_fileSystem = filesystem;
 
-	if (!m_pFileSystem)
+	if (!_fileSystem)
 	{
 		return false;
 	}
 
-	m_Device = alcOpenDevice(nullptr);
+	_device = alcOpenDevice(nullptr);
 
-	if (nullptr != m_Device)
+	if (nullptr != _device)
 	{
-		m_Context = alcCreateContext(m_Device, nullptr);
+		_context = alcCreateContext(_device, nullptr);
 
-		if (!m_Context)
+		if (!_context)
 		{
 			return false;
 		}
 
-		alcMakeContextCurrent(m_Context);
+		alcMakeContextCurrent(_context);
 
 		CheckALErrors();
 	}
@@ -241,17 +235,17 @@ void SoundSystem::Shutdown()
 {
 	StopAllSounds();
 
-	if (m_Context)
+	if (_context)
 	{
 		alcMakeContextCurrent(nullptr);
-		alcDestroyContext(m_Context);
-		m_Context = nullptr;
+		alcDestroyContext(_context);
+		_context = nullptr;
 	}
 
-	if (m_Device)
+	if (_device)
 	{
-		alcCloseDevice(m_Device);
-		m_Device = nullptr;
+		alcCloseDevice(_device);
+		_device = nullptr;
 	}
 }
 
@@ -261,46 +255,53 @@ void SoundSystem::RunFrame()
 
 	ALint isPlaying;
 
-	for( auto& sound : m_Sounds )
+	for (auto& sound : _sounds)
 	{
 		++uiIndex;
 
-		if( !sound )
+		if (!sound)
+		{
 			continue;
+		}
 
 		alGetSourcei(sound->source, AL_SOURCE_STATE, &isPlaying);
 
-		if(isPlaying != AL_PLAYING)
+		if (isPlaying != AL_PLAYING)
 		{
 			sound.reset();
-			m_SoundsLRU.erase( std::find( m_SoundsLRU.begin(), m_SoundsLRU.end(), uiIndex - 1 ) );
+			_soundsLRU.erase(std::find(_soundsLRU.begin(), _soundsLRU.end(), uiIndex - 1));
 		}
 	}
 }
 
-void SoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitch )
+void SoundSystem::PlaySound(std::string_view fileName, float volume, int pitch)
 {
-	if( !pszFilename || !( *pszFilename ) )
-		return;
-
-	if( !m_Context )
-		return;
-
-	char szActualFilename[ MAX_PATH_LENGTH ];
-
-	if( pszFilename[ 0 ] == '*' )
-		++pszFilename;
-
-	const int iRet = snprintf( szActualFilename, sizeof( szActualFilename ), "sound/%s", pszFilename );
-
-	if( iRet < 0 || static_cast<size_t>( iRet ) >= sizeof( szActualFilename ) )
-		return;
-
-	const auto fullFileName{m_pFileSystem->GetRelativePath(szActualFilename)};
-
-	if(fullFileName.empty())
+	if (fileName.empty())
 	{
-		Warning( "CSoundSystem::PlaySound: Unable to find sound file '%s'\n", pszFilename );
+		return;
+	}
+
+	if (!_context)
+	{
+		return;
+	}
+
+	if (fileName[0] == '*')
+	{
+		fileName = fileName.substr(1);
+	}
+
+	std::ostringstream stream;
+
+	stream << "sound/" << fileName;
+
+	const auto actualFileName{stream.str()};
+
+	const auto fullFileName{_fileSystem->GetRelativePath(actualFileName)};
+
+	if (fullFileName.empty())
+	{
+		Warning("CSoundSystem::PlaySound: Unable to find sound file '%s'\n", actualFileName.c_str());
 		return;
 	}
 
@@ -309,8 +310,8 @@ void SoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitch
 		return;
 	}
 
-	flVolume = clamp( flVolume, 0.0f, 1.0f );
-	iPitch = clamp( iPitch, 0, 255 );
+	volume = std::clamp(volume, 0.0f, 1.0f);
+	pitch = std::clamp(pitch, 0, 255);
 
 	std::unique_ptr<Sound> sound = TryLoadWaveFile(fullFileName);
 
@@ -338,14 +339,14 @@ void SoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitch
 		return;
 	}
 
-	alSourcef(sound->source, AL_GAIN, flVolume);
+	alSourcef(sound->source, AL_GAIN, volume);
 
 	if (CheckALErrors())
 	{
 		return;
 	}
 
-	const auto pitchMultiplier = iPitch / (static_cast<float>(PITCH_NORM));
+	const auto pitchMultiplier = pitch / (static_cast<float>(PITCH_NORM));
 
 	if (CheckALErrors())
 	{
@@ -361,48 +362,56 @@ void SoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitch
 
 	const size_t uiIndex = GetSoundForPlayback();
 
-	m_Sounds[ uiIndex ] = std::move(sound);
+	_sounds[uiIndex] = std::move(sound);
 
-	m_SoundsLRU.push_front( uiIndex );
+	_soundsLRU.push_front(uiIndex);
 }
 
 void SoundSystem::StopAllSounds()
 {
-	if( !m_Context )
-		return;
-
-	for( auto& sound : m_Sounds )
+	if (!_context)
 	{
-		if( !sound )
+		return;
+	}
+
+	for (auto& sound : _sounds)
+	{
+		if (!sound)
+		{
 			continue;
+		}
 
 		sound.reset();
 	}
 
-	m_SoundsLRU.clear();
+	_soundsLRU.clear();
 }
 
 size_t SoundSystem::GetSoundForPlayback()
 {
-	for( size_t uiIndex = 0; uiIndex < MAX_SOUNDS; ++uiIndex )
+	for (size_t uiIndex = 0; uiIndex < MAX_SOUNDS; ++uiIndex)
 	{
-		if( !m_Sounds[ uiIndex ] )
+		if (!_sounds[uiIndex])
+		{
 			return uiIndex;
+		}
 	}
 
 	//Shouldn't happen; LRU is only empty if no sounds are playing.
-	if( m_SoundsLRU.empty() )
+	if (_soundsLRU.empty())
+	{
 		return 0;
+	}
 
 	//get from LRU.
-	const size_t uiIndex = m_SoundsLRU.back();
+	const size_t uiIndex = _soundsLRU.back();
 
-	m_SoundsLRU.pop_back();
+	_soundsLRU.pop_back();
 
-	auto& sound = m_Sounds[ uiIndex ];
+	auto& sound = _sounds[uiIndex];
 
 	//Reset the sound data. Must be done after the above actions so it doesn't try to access null pointers.
-	m_Sounds[ uiIndex ].reset();
+	_sounds[uiIndex].reset();
 
 	return uiIndex;
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+
 /**
 *	@defgroup SoundSystem OpenAL based sound system.
 *
@@ -43,12 +45,12 @@ public:
 	virtual void RunFrame() = 0;
 
 	/**
-	*	Plays a sound by name. The filename is relative to the game's sound directory, and is looked up using the filesystem.
-	*	@param pszFilename Sound filename.
-	*	@param flVolume Volume. Expressed as a range between [0, 1].
-	*	@param iPitch Pitch amount. Expressed as a range between [0, 255].
+	*	@brief Plays a sound by name. The filename is relative to the game's sound directory, and is looked up using the filesystem.
+	*	@param fileName Sound filename.
+	*	@param volume Volume. Expressed as a range between [0, 1].
+	*	@param pitch Pitch amount. Expressed as a range between [0, 255].
 	*/
-	virtual void PlaySound( const char* pszFilename, float flVolume, int iPitch ) = 0;
+	virtual void PlaySound(std::string_view fileName, float volume, int pitch) = 0;
 
 	/**
 	*	Stops all sounds that are currently playing.
