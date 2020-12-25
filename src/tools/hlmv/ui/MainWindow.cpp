@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 
+#include <QApplication>
 #include <QCloseEvent>
 #include <QDockWidget>
 #include <QFileDialog>
@@ -508,9 +509,11 @@ void MainWindow::OnOpenOptionsDialog()
 
 void MainWindow::OnShowAbout()
 {
-	QMessageBox::information(this, "About Half-Life Model Viewer",
+	const QString programName{QApplication::applicationName()};
+
+	QMessageBox::information(this, "About " + programName,
 		QString::fromUtf8(
-			u8"Half-Life Model Viewer 3.0\n"
+			u8"%1 3.0\n"
 			u8"2020 Sam Vanheer\n\n"
 			u8"Email:    sam.vanheer@outlook.com\n\n"
 			u8"Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil \'Jed\' Jedrzejewski\n"
@@ -519,7 +522,8 @@ void MainWindow::OnShowAbout()
 			u8"Also based on Half-Life Model Viewer v1.25 © 2002 Mete Ciragan\n"
 			u8"Email:    mete@swissquake.ch\n"
 			u8"Web:      http://www.milkshape3d.com/\n\n"
-			u8"%1")
+			u8"%2")
+			.arg(programName)
 			.arg(QString::fromUtf8(GetSharedCredits().c_str()))
 	);
 }
