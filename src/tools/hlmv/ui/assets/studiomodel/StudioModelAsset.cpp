@@ -499,6 +499,8 @@ void StudioModelAsset::OnTakeScreenshot()
 	}
 }
 
+StudioModelAssetProvider::~StudioModelAssetProvider() = default;
+
 QString StudioModelAssetProvider::GetProviderName() const
 {
 	return "Studiomodel";

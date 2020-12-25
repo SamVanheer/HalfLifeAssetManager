@@ -34,8 +34,38 @@ class StudioModelSettings;
 namespace assets::studiomodel
 {
 class ModelChangeEvent;
-class StudioModelAssetProvider;
+class StudioModelAsset;
 class StudioModelEditWidget;
+
+class StudioModelAssetProvider final : public AssetProvider
+{
+public:
+	StudioModelAssetProvider(const std::shared_ptr<settings::StudioModelSettings>& studioModelSettings)
+		: _studioModelSettings(studioModelSettings)
+	{
+	}
+
+	~StudioModelAssetProvider();
+
+	entt::id_type GetAssetType() const override { return entt::type_index<StudioModelAsset>::value(); }
+
+	QString GetProviderName() const override;
+
+	QStringList GetFileTypes() const override;
+
+	QString GetPreferredFileType() const override;
+
+	QMenu* CreateToolMenu(EditorContext* editorContext) override;
+
+	bool CanLoad(const QString& fileName) const override;
+
+	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const override;
+
+	settings::StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
+
+private:
+	const std::shared_ptr<settings::StudioModelSettings> _studioModelSettings;
+};
 
 class StudioModelAsset final : public Asset, public IInputSink
 {
@@ -51,7 +81,7 @@ public:
 
 	entt::id_type GetAssetType() const override { return entt::type_index<StudioModelAsset>::value(); }
 
-	const AssetProvider* GetProvider() const override;
+	const StudioModelAssetProvider* GetProvider() const override { return _provider; }
 
 	void PopulateAssetMenu(QMenu* menu) override;
 
@@ -158,38 +188,5 @@ private:
 
 	StudioModelEditWidget* _editWidget{};
 };
-
-class StudioModelAssetProvider final : public AssetProvider
-{
-public:
-	StudioModelAssetProvider(const std::shared_ptr<settings::StudioModelSettings>& studioModelSettings)
-		: _studioModelSettings(studioModelSettings)
-	{
-	}
-
-	entt::id_type GetAssetType() const override { return entt::type_index<StudioModelAsset>::value(); }
-
-	QString GetProviderName() const override;
-
-	QStringList GetFileTypes() const override;
-
-	QString GetPreferredFileType() const override;
-
-	QMenu* CreateToolMenu(EditorContext* editorContext) override;
-
-	bool CanLoad(const QString& fileName) const override;
-
-	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const override;
-
-	settings::StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
-
-private:
-	const std::shared_ptr<settings::StudioModelSettings> _studioModelSettings;
-};
-
-inline const AssetProvider* StudioModelAsset::GetProvider() const
-{
-	return _provider;
-}
 }
 }

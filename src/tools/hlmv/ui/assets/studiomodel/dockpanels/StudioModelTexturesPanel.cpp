@@ -27,6 +27,8 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelExportUVMeshDialog.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
 
+#include "ui/settings/StudioModelSettings.hpp"
+
 namespace ui::assets::studiomodel
 {
 static constexpr double TextureViewScaleSliderRatio = 10.0;
@@ -91,6 +93,11 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 
 	connect(_ui.FilterTextures, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnFilterTexturesChanged);
 	connect(_ui.PowerOf2Textures, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnPowerOf2TexturesChanged);
+
+	const auto studioModelSettings{_asset->GetProvider()->GetStudioModelSettings()};
+
+	_ui.FilterTextures->setChecked(studioModelSettings->ShouldFilterTextures());
+	_ui.PowerOf2Textures->setChecked(studioModelSettings->ShouldResizeTexturesToPowerOf2());
 
 	_ui.ScaleTextureViewSlider->setRange(
 		static_cast<int>(_ui.ScaleTextureViewSpinner->minimum() * TextureViewScaleSliderRatio),

@@ -242,6 +242,12 @@ void CStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
 
 void CStudioModel::ReuploadTextures(graphics::TextureLoader& textureLoader)
 {
+	if (m_Textures.empty())
+	{
+		//No textures loaded yet, do nothing
+		return;
+	}
+
 	auto header = GetTextureHeader();
 
 	for (int i = 0; i < header->numtextures; ++i)

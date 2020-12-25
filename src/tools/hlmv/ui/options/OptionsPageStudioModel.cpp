@@ -34,6 +34,8 @@ OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(EditorContext* editor
 	_ui.setupUi(this);
 
 	_ui.AutodetectViewmodels->setChecked(_studioModelSettings->ShouldAutodetectViewmodels());
+	_ui.FilterTextures->setChecked(_studioModelSettings->ShouldFilterTextures());
+	_ui.PowerOf2Textures->setChecked(_studioModelSettings->ShouldResizeTexturesToPowerOf2());
 
 	_ui.FloorLengthSlider->setRange(_studioModelSettings->MinimumFloorLength, _studioModelSettings->MaximumFloorLength);
 	_ui.FloorLengthSpinner->setRange(_studioModelSettings->MinimumFloorLength, _studioModelSettings->MaximumFloorLength);
@@ -57,6 +59,8 @@ OptionsPageStudioModelWidget::~OptionsPageStudioModelWidget() = default;
 void OptionsPageStudioModelWidget::ApplyChanges(QSettings& settings)
 {
 	_studioModelSettings->SetAutodetectViewmodels(_ui.AutodetectViewmodels->isChecked());
+	_studioModelSettings->SetFilterTextures(_ui.FilterTextures->isChecked());
+	_studioModelSettings->SetResizeTexturesToPowerOf2(_ui.PowerOf2Textures->isChecked());
 	_studioModelSettings->SetFloorLength(_ui.FloorLengthSlider->value());
 	_studioModelSettings->SetStudiomdlCompilerFileName(_ui.Compiler->text());
 	_studioModelSettings->SetStudiomdlDecompilerFileName(_ui.Decompiler->text());
