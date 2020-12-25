@@ -34,8 +34,6 @@ public:
 public:
 	//Filesystem API
 
-	size_t GetSteamPipeDirectoryExtensions( const char* const*& ppszDirectoryExts ) override final;
-
 	const char* GetBasePath() const override final;
 
 	void SetBasePath( const char* const pszPath ) override final;

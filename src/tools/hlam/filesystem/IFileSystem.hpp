@@ -24,13 +24,6 @@ public:
 	virtual ~IFileSystem() = 0;
 
 	/**
-	*	Gets the list of SteamPipe directory extensions.
-	*	@param ppszDirectoryExts Pointer to pointer that points to the first extension.
-	*	@return Number of extensions.
-	*/
-	virtual size_t GetSteamPipeDirectoryExtensions( const char* const*& ppszDirectoryExts ) = 0;
-
-	/**
 	*	Initializes the filesystem. This should be called once on startup.
 	*/
 	virtual bool Initialize() = 0;

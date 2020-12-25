@@ -14,6 +14,7 @@
 #include "assets/AssetIO.hpp"
 
 #include "filesystem/IFileSystem.hpp"
+#include "filesystem/FileSystemConstants.hpp"
 
 #include "ui/Credits.hpp"
 #include "ui/EditorContext.hpp"
@@ -542,10 +543,7 @@ void MainWindow::SetupFileSystem(std::pair<settings::GameEnvironment*, settings:
 
 	fileSystem->SetBasePath(environment->GetInstallationPath().toStdString().c_str());
 
-	const char* const* ppszDirectoryExts;
-
-	//TODO: rework this stuff to use std::string and separate out steampipe stuff
-	const size_t uiNumExts = fileSystem->GetSteamPipeDirectoryExtensions(ppszDirectoryExts);
+	const auto directoryExtensions{filesystem::GetSteamPipeDirectoryExtensions()};
 
 	const auto gameDir{defaultGameConfiguration->GetDirectory().toStdString()};
 	const auto modDir{configuration->GetDirectory().toStdString()};
@@ -553,15 +551,15 @@ void MainWindow::SetupFileSystem(std::pair<settings::GameEnvironment*, settings:
 	//Add mod dirs first since they override game dirs
 	if (gameDir != modDir)
 	{
-		for (size_t uiIndex = 0; uiIndex < uiNumExts; ++uiIndex)
+		for (const auto& extension : directoryExtensions)
 		{
-			fileSystem->AddSearchPath((modDir + ppszDirectoryExts[uiIndex]).c_str());
+			fileSystem->AddSearchPath((modDir + extension).c_str());
 		}
 	}
 
-	for (size_t uiIndex = 0; uiIndex < uiNumExts; ++uiIndex)
+	for (const auto& extension : directoryExtensions)
 	{
-		fileSystem->AddSearchPath((gameDir + ppszDirectoryExts[uiIndex]).c_str());
+		fileSystem->AddSearchPath((gameDir + extension).c_str());
 	}
 }
 

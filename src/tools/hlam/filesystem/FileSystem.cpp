@@ -31,24 +31,6 @@ void FileSystem::Shutdown()
 	RemoveAllSearchPaths();
 }
 
-/**
-*	List of all directory extensions used by SteamPipe.
-*/
-const char* const STEAMPIPE_DIRECTORY_EXTS[] =
-{
-	"",
-	"_downloads",
-	"_addon",
-	"_hd"
-};
-
-size_t FileSystem::GetSteamPipeDirectoryExtensions( const char* const*& ppszDirectoryExts )
-{
-	ppszDirectoryExts = STEAMPIPE_DIRECTORY_EXTS;
-
-	return ARRAYSIZE( STEAMPIPE_DIRECTORY_EXTS );
-}
-
 const char* FileSystem::GetBasePath() const
 {
 	return m_szBasePath;
