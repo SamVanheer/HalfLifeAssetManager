@@ -26,33 +26,9 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 
 	_ui.FileView->setModel(_model);
 
-	const auto gameConfigurations = editorContext->GetGameConfigurations();
+	UpdateCurrentRootPath(editorContext->GetGameConfigurations()->GetActiveConfiguration());
 
-	const auto activeConfiguration = gameConfigurations->GetActiveConfiguration();
-
-	QString directory;
-
-	if (activeConfiguration.first)
-	{
-		if (activeConfiguration.second)
-		{
-			directory = QString{"%1/%2"}.arg(activeConfiguration.first->GetInstallationPath()).arg(activeConfiguration.second->GetDirectory());
-		}
-		else
-		{
-			directory = activeConfiguration.first->GetInstallationPath();
-		}
-	}
-
-	if (directory.isEmpty())
-	{
-		directory = QDir::currentPath();
-	}
-
-	_model->setRootPath(directory);
-
-	_ui.FileView->setRootIndex(_model->index(directory));
-
+	connect(editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged, this, &FileListPanel::UpdateCurrentRootPath);
 	connect(_ui.Filters, qOverload<int>(&QComboBox::currentIndexChanged), this, &FileListPanel::OnFilterChanged);
 	connect(_ui.FileView, &QTreeView::activated, this, &FileListPanel::OnFileSelected);
 
@@ -81,6 +57,32 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 }
 
 FileListPanel::~FileListPanel() = default;
+
+void FileListPanel::UpdateCurrentRootPath(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration)
+{
+	QString directory;
+
+	if (activeConfiguration.first)
+	{
+		if (activeConfiguration.second)
+		{
+			directory = QString{"%1/%2"}.arg(activeConfiguration.first->GetInstallationPath()).arg(activeConfiguration.second->GetDirectory());
+		}
+		else
+		{
+			directory = activeConfiguration.first->GetInstallationPath();
+		}
+	}
+
+	if (directory.isEmpty())
+	{
+		directory = QDir::currentPath();
+	}
+
+	_model->setRootPath(directory);
+	_ui.FileView->setRootIndex(_model->index(directory));
+	_ui.Root->setText(directory);
+}
 
 void FileListPanel::OnFilterChanged()
 {

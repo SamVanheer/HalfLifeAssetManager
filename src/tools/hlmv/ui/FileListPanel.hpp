@@ -11,6 +11,12 @@ namespace ui
 {
 class EditorContext;
 
+namespace settings
+{
+class GameConfiguration;
+class GameEnvironment;
+}
+
 class FileListPanel final : public QWidget
 {
 	Q_OBJECT
@@ -23,6 +29,8 @@ signals:
 	void FileSelected(const QString& fileName);
 
 private slots:
+	void UpdateCurrentRootPath(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration);
+
 	void OnFilterChanged();
 
 	void OnFileSelected(const QModelIndex& index);
