@@ -16,7 +16,6 @@ class StudioModelSettings final : public QObject
 
 public:
 	static constexpr bool DefaultAutodetectViewmodels{true};
-	static constexpr bool DefaultFilterTextures{true};
 	static constexpr bool DefaultPowerOf2Textures{true};
 
 	static constexpr int MinimumFloorLength = 0;
