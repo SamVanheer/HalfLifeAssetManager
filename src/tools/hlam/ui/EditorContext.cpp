@@ -9,11 +9,11 @@
 #include "core/shared/CWorldTime.hpp"
 #include "core/shared/Utility.hpp"
 
-#include "filesystem/CFileSystem.hpp"
+#include "filesystem/FileSystem.hpp"
 #include "filesystem/IFileSystem.hpp"
 
-#include "soundsystem/CSoundSystem.hpp"
 #include "soundsystem/ISoundSystem.hpp"
+#include "soundsystem/SoundSystem.hpp"
 
 #include "ui/EditorContext.hpp"
 
@@ -45,8 +45,8 @@ EditorContext::EditorContext(
 	, _gameConfigurationsSettings(gameConfigurationsSettings)
 	, _timer(new QTimer(this))
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
-	, _fileSystem(std::make_unique<filesystem::CFileSystem>())
-	, _soundSystem(std::make_unique<soundsystem::CSoundSystem>())
+	, _fileSystem(std::make_unique<filesystem::FileSystem>())
+	, _soundSystem(std::make_unique<soundsystem::SoundSystem>())
 	, _worldTime(std::make_unique<CWorldTime>())
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
 {

@@ -1,6 +1,6 @@
 target_sources(HLAM
 	PRIVATE
-		CSoundSystem.cpp
-		CSoundSystem.hpp
 		ISoundSystem.hpp
-		SoundConstants.hpp)
+		SoundConstants.hpp
+		SoundSystem.cpp
+		SoundSystem.hpp)

@@ -8,12 +8,12 @@
 
 #include "vorbis/vorbisfile.h"
 
+#include "filesystem/IFileSystem.hpp"
+
 #include "shared/Logging.hpp"
 #include "shared/Utility.hpp"
 
-#include "filesystem/IFileSystem.hpp"
-
-#include "CSoundSystem.hpp"
+#include "soundsystem/SoundSystem.hpp"
 
 namespace soundsystem
 {
@@ -89,7 +89,7 @@ void ConvertToAL(const AudioFile<double>& file, std::vector<std::uint8_t>& data)
 	}
 }
 
-std::unique_ptr<CSoundSystem::Sound> TryLoadWaveFile(const std::string& fileName)
+std::unique_ptr<SoundSystem::Sound> TryLoadWaveFile(const std::string& fileName)
 {
 	AudioFile<double> file;
 
@@ -122,7 +122,7 @@ std::unique_ptr<CSoundSystem::Sound> TryLoadWaveFile(const std::string& fileName
 
 	const auto format = BufferFormat(file);
 
-	auto sound = std::make_unique<CSoundSystem::Sound>();
+	auto sound = std::make_unique<SoundSystem::Sound>();
 
 	alBufferData(sound->buffer, format, data.data(), data.size(), file.getSampleRate());
 
@@ -142,7 +142,7 @@ struct OggVorbisCleanup
 	}
 };
 
-std::unique_ptr<CSoundSystem::Sound> TryLoadOggVorbis(const std::string& fileName)
+std::unique_ptr<SoundSystem::Sound> TryLoadOggVorbis(const std::string& fileName)
 {
 	OggVorbis_File vorbisData{};
 
@@ -189,7 +189,7 @@ std::unique_ptr<CSoundSystem::Sound> TryLoadOggVorbis(const std::string& fileNam
 		return {};
 	}
 
-	auto sound = std::make_unique<CSoundSystem::Sound>();
+	auto sound = std::make_unique<SoundSystem::Sound>();
 
 	alBufferData(sound->buffer, format, data.data(), data.size(), info->rate);
 
@@ -201,15 +201,15 @@ std::unique_ptr<CSoundSystem::Sound> TryLoadOggVorbis(const std::string& fileNam
 	return sound;
 }
 
-CSoundSystem::CSoundSystem()
+SoundSystem::SoundSystem()
 {
 }
 
-CSoundSystem::~CSoundSystem()
+SoundSystem::~SoundSystem()
 {
 }
 
-bool CSoundSystem::Initialize(filesystem::IFileSystem* filesystem)
+bool SoundSystem::Initialize(filesystem::IFileSystem* filesystem)
 {
 	m_pFileSystem = filesystem;
 
@@ -237,7 +237,7 @@ bool CSoundSystem::Initialize(filesystem::IFileSystem* filesystem)
 	return true;
 }
 
-void CSoundSystem::Shutdown()
+void SoundSystem::Shutdown()
 {
 	StopAllSounds();
 
@@ -255,7 +255,7 @@ void CSoundSystem::Shutdown()
 	}
 }
 
-void CSoundSystem::RunFrame()
+void SoundSystem::RunFrame()
 {
 	size_t uiIndex = 0;
 
@@ -278,7 +278,7 @@ void CSoundSystem::RunFrame()
 	}
 }
 
-void CSoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitch )
+void SoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitch )
 {
 	if( !pszFilename || !( *pszFilename ) )
 		return;
@@ -366,7 +366,7 @@ void CSoundSystem::PlaySound( const char* pszFilename, float flVolume, int iPitc
 	m_SoundsLRU.push_front( uiIndex );
 }
 
-void CSoundSystem::StopAllSounds()
+void SoundSystem::StopAllSounds()
 {
 	if( !m_Context )
 		return;
@@ -382,7 +382,7 @@ void CSoundSystem::StopAllSounds()
 	m_SoundsLRU.clear();
 }
 
-size_t CSoundSystem::GetSoundForPlayback()
+size_t SoundSystem::GetSoundForPlayback()
 {
 	for( size_t uiIndex = 0; uiIndex < MAX_SOUNDS; ++uiIndex )
 	{

@@ -1,32 +1,32 @@
 #include <cstring>
 #include <cstdio>
 
+#include "filesystem/FileSystem.hpp"
+
 #include "shared/Logging.hpp"
 #include "shared/Utility.hpp"
 #include "utility/IOUtils.hpp"
 #include "utility/StringUtils.hpp"
 
-#include "CFileSystem.hpp"
-
 namespace filesystem
 {
-CFileSystem::CFileSystem()
+FileSystem::FileSystem()
 {
 	memset( m_szBasePath, 0, sizeof( m_szBasePath ) );
 }
 
-CFileSystem::~CFileSystem()
+FileSystem::~FileSystem()
 {
 }
 
-bool CFileSystem::Initialize()
+bool FileSystem::Initialize()
 {
 	SetBasePath( "." );
 
 	return true;
 }
 
-void CFileSystem::Shutdown()
+void FileSystem::Shutdown()
 {
 	RemoveAllSearchPaths();
 }
@@ -42,19 +42,19 @@ const char* const STEAMPIPE_DIRECTORY_EXTS[] =
 	"_hd"
 };
 
-size_t CFileSystem::GetSteamPipeDirectoryExtensions( const char* const*& ppszDirectoryExts )
+size_t FileSystem::GetSteamPipeDirectoryExtensions( const char* const*& ppszDirectoryExts )
 {
 	ppszDirectoryExts = STEAMPIPE_DIRECTORY_EXTS;
 
 	return ARRAYSIZE( STEAMPIPE_DIRECTORY_EXTS );
 }
 
-const char* CFileSystem::GetBasePath() const
+const char* FileSystem::GetBasePath() const
 {
 	return m_szBasePath;
 }
 
-void CFileSystem::SetBasePath( const char* const pszPath )
+void FileSystem::SetBasePath( const char* const pszPath )
 {
 	if( !pszPath || !( *pszPath ) )
 		return;
@@ -63,7 +63,7 @@ void CFileSystem::SetBasePath( const char* const pszPath )
 	m_szBasePath[ sizeof( m_szBasePath ) - 1 ] = '\0';
 }
 
-bool CFileSystem::HasSearchPath( const char* const pszPath ) const
+bool FileSystem::HasSearchPath( const char* const pszPath ) const
 {
 	if( !pszPath || !( *pszPath ) )
 		return false;
@@ -77,7 +77,7 @@ bool CFileSystem::HasSearchPath( const char* const pszPath ) const
 	return false;
 }
 
-void CFileSystem::AddSearchPath( const char* const pszPath )
+void FileSystem::AddSearchPath( const char* const pszPath )
 {
 	if( !pszPath || !( *pszPath ) )
 		return;
@@ -94,7 +94,7 @@ void CFileSystem::AddSearchPath( const char* const pszPath )
 	m_SearchPaths.push_back( path );
 }
 
-void CFileSystem::RemoveSearchPath( const char* const pszPath )
+void FileSystem::RemoveSearchPath( const char* const pszPath )
 {
 	if( !pszPath || !( *pszPath ) )
 		return;
@@ -109,12 +109,12 @@ void CFileSystem::RemoveSearchPath( const char* const pszPath )
 	}
 }
 
-void CFileSystem::RemoveAllSearchPaths()
+void FileSystem::RemoveAllSearchPaths()
 {
 	m_SearchPaths.clear();
 }
 
-bool CFileSystem::CheckFileExists( const char* const pszCompletePath, const size_t uiLength, char* pszOutPath, size_t uiBufferSize ) const
+bool FileSystem::CheckFileExists( const char* const pszCompletePath, const size_t uiLength, char* pszOutPath, size_t uiBufferSize ) const
 {
 	if( FileExists( pszCompletePath ) )
 	{
@@ -134,7 +134,7 @@ bool CFileSystem::CheckFileExists( const char* const pszCompletePath, const size
 	return false;
 }
 
-bool CFileSystem::GetRelativePath( const char* const pszFilename, char* pszOutPath, const size_t uiBufferSize )
+bool FileSystem::GetRelativePath( const char* const pszFilename, char* pszOutPath, const size_t uiBufferSize )
 {
 	if( !pszFilename || !( *pszFilename ) )
 		return false;
@@ -178,7 +178,7 @@ bool CFileSystem::GetRelativePath( const char* const pszFilename, char* pszOutPa
 	return CheckFileExists( szCompletePath, static_cast<size_t>( iRet ), pszOutPath, uiBufferSize );
 }
 
-bool CFileSystem::FileExists( const char* const pszFilename ) const
+bool FileSystem::FileExists( const char* const pszFilename ) const
 {
 	if( !pszFilename || !( *pszFilename ) )
 		return false;

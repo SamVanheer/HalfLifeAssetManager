@@ -14,7 +14,7 @@
 
 namespace filesystem
 {
-class CFileSystem final : public IFileSystem
+class FileSystem final : public IFileSystem
 {
 private:
 	struct SearchPath_t
@@ -25,8 +25,8 @@ private:
 	typedef std::vector<SearchPath_t> SearchPaths_t;
 
 public:
-	CFileSystem();
-	~CFileSystem();
+	FileSystem();
+	~FileSystem();
 
 	bool Initialize() override final;
 	void Shutdown() override final;
@@ -61,8 +61,8 @@ private:
 	SearchPaths_t m_SearchPaths;
 
 private:
-	CFileSystem( const CFileSystem& ) = delete;
-	CFileSystem& operator=( const CFileSystem& ) = delete;
+	FileSystem( const FileSystem& ) = delete;
+	FileSystem& operator=( const FileSystem& ) = delete;
 };
 }
 

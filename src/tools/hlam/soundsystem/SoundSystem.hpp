@@ -23,7 +23,7 @@ class IFileSystem;
 
 namespace soundsystem
 {
-class CSoundSystem final : public ISoundSystem
+class SoundSystem final : public ISoundSystem
 {
 public:
 	//Maximum number of sounds to play simultaneously.
@@ -49,8 +49,8 @@ public:
 	};
 
 public:
-	CSoundSystem();
-	~CSoundSystem();
+	SoundSystem();
+	~SoundSystem();
 
 	bool IsSoundAvailable() const override final { return m_Device != nullptr; }
 
@@ -81,8 +81,8 @@ private:
 	std::list<size_t> m_SoundsLRU;
 
 private:
-	CSoundSystem( const CSoundSystem& ) = delete;
-	CSoundSystem& operator=( const CSoundSystem& ) = delete;
+	SoundSystem( const SoundSystem& ) = delete;
+	SoundSystem& operator=( const SoundSystem& ) = delete;
 };
 }
 

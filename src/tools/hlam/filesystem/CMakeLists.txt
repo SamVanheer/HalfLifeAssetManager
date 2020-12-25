@@ -1,7 +1,7 @@
 target_sources(HLAM
 	PRIVATE
-		CFileSystem.cpp
-		CFileSystem.hpp
+		FileSystem.cpp
+		FileSystem.hpp
 		FileSystemConstants.cpp
 		FileSystemConstants.hpp
 		IFileSystem.hpp)
