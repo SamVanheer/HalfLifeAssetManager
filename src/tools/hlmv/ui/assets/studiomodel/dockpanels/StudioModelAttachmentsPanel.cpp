@@ -114,10 +114,15 @@ void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 		{
 			const auto attachment = header->GetAttachment(listChange.GetSourceIndex());
 
-			const QSignalBlocker name{_ui.Name};
+			const QString text{attachment->name};
 
-			_ui.Name->setText(attachment->name);
-			UpdateQCString();
+			//Avoid resetting the edit position
+			if (_ui.Name->text() != text)
+			{
+				const QSignalBlocker name{_ui.Name};
+				_ui.Name->setText(text);
+				UpdateQCString();
+			}
 		}
 		break;
 	}

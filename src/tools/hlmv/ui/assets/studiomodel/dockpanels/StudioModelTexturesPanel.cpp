@@ -334,7 +334,6 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 			if (_ui.TextureName->text() != name)
 			{
 				const QSignalBlocker blocker{_ui.TextureName};
-
 				_ui.TextureName->setText(name);
 			}
 		}

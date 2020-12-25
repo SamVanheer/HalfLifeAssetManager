@@ -153,8 +153,14 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 		
 		if (_ui.Bones->currentIndex() == listChange.GetSourceIndex())
 		{
-			const QSignalBlocker boneName{_ui.BoneName};
-			_ui.BoneName->setText(bone->name);
+			const QString text{bone->name};
+
+			//Avoid resetting the edit position
+			if (_ui.BoneName->text() != text)
+			{
+				const QSignalBlocker boneName{_ui.BoneName};
+				_ui.BoneName->setText(bone->name);
+			}
 		}
 
 		_ui.ParentBone->setItemText(listChange.GetSourceIndex() + ParentBoneOffset, newName);
