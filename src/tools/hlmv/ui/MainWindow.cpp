@@ -67,6 +67,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 		for (const auto& menu : menus)
 		{
+			menu.second->setParent(_ui.MenuTools, menu.second->windowFlags());
 			_ui.MenuTools->insertMenu(before, menu.second);
 		}
 	}
