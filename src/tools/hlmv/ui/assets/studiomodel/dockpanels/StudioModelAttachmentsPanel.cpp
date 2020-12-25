@@ -4,6 +4,8 @@
 
 #include "entity/CHLMVStudioModelEntity.hpp"
 
+#include "qt/ByteLengthValidator.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
@@ -41,6 +43,8 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset
 	connect(_ui.OriginX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
 	connect(_ui.OriginY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
 	connect(_ui.OriginZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
+
+	_ui.Name->setValidator(new qt::ByteLengthValidator(MaxAttachmentNameBytes - 1, this));
 
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 	const auto header = model->GetStudioHeader();

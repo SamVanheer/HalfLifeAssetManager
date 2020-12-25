@@ -4,6 +4,8 @@
 
 #include "entity/CHLMVStudioModelEntity.hpp"
 
+#include "qt/ByteLengthValidator.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBonesPanel.hpp"
@@ -88,6 +90,8 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 	connect(_ui.RotationScaleX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
 	connect(_ui.RotationScaleY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
 	connect(_ui.RotationScaleZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
+
+	_ui.BoneName->setValidator(new qt::ByteLengthValidator(MaxBoneNameBytes - 1, this));
 
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 

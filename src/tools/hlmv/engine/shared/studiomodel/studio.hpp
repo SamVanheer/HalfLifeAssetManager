@@ -66,6 +66,10 @@ constexpr int SequenceBlendCount{2};
 constexpr int SequenceBlendXIndex{0};
 constexpr int SequenceBlendYIndex{1};
 
+constexpr int MaxBoneNameBytes{32};
+constexpr int MaxAttachmentNameBytes{32};
+constexpr int MaxTextureNameBytes{64};
+
 /**
 *	@brief studiohdr_t::flags values
 *	@see studiohdr_t::flags
@@ -98,7 +102,7 @@ struct studioseqhdr_t
 // bones
 struct mstudiobone_t
 {
-	char	name[ 32 ];	// bone name for symbolic links
+	char	name[MaxBoneNameBytes];	// bone name for symbolic links
 	int		parent;		// parent bone
 	int		flags;		// ??
 	int		bonecontroller[ STUDIO_MAX_PER_BONE_CONTROLLERS ];	// bone controller index, -1 == none
@@ -215,7 +219,7 @@ struct mstudioattachment_t
 	/**
 	*	Name of this attachment. Unused in GoldSource.
 	*/
-	char name[ 32 ];
+	char name[MaxAttachmentNameBytes];
 
 	/**
 	*	Type of this attachment. Unused in GoldSource;
@@ -266,7 +270,7 @@ struct mstudiobodyparts_t
 // skin info
 struct mstudiotexture_t
 {
-	char	name[ 64 ];
+	char	name[MaxTextureNameBytes];
 	int		flags;
 	int		width;
 	int		height;

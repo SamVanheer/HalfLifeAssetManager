@@ -20,6 +20,7 @@
 #include "graphics/Palette.hpp"
 #include "graphics/TextureLoader.hpp"
 
+#include "qt/ByteLengthValidator.hpp"
 #include "qt/QtUtilities.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
@@ -93,6 +94,8 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 
 	connect(_ui.FilterTextures, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnFilterTexturesChanged);
 	connect(_ui.PowerOf2Textures, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnPowerOf2TexturesChanged);
+
+	_ui.TextureName->setValidator(new qt::ByteLengthValidator(MaxTextureNameBytes - 1, this));
 
 	const auto studioModelSettings{_asset->GetProvider()->GetStudioModelSettings()};
 
