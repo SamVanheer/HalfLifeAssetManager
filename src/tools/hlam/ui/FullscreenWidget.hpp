@@ -14,11 +14,15 @@ class FullscreenWidget final : public QMainWindow
 
 public:
 	static constexpr Qt::Key ExitFullscreenKey{Qt::Key::Key_Escape};
+	static constexpr Qt::Key ToggleFullscreenKey{Qt::Key::Key_F11};
 
 	FullscreenWidget(QWidget* parent = nullptr);
 	~FullscreenWidget();
 
 	void ExitFullscreen();
+
+private:
+	bool ProcessKeyEvent(QKeyEvent* event);
 
 protected:
 	bool eventFilter(QObject* object, QEvent* event) override;

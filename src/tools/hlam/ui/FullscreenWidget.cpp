@@ -30,17 +30,41 @@ void FullscreenWidget::ExitFullscreen()
 	delete oldWidget;
 }
 
+bool FullscreenWidget::ProcessKeyEvent(QKeyEvent* event)
+{
+	switch (event->key())
+	{
+	case ExitFullscreenKey:
+	{
+		ExitFullscreen();
+		return true;
+	}
+
+	case ToggleFullscreenKey:
+	{
+		if (this->isFullScreen())
+		{
+			this->showMaximized();
+		}
+		else
+		{
+			this->showFullScreen();
+		}
+
+		return true;
+	}
+
+	default: return false;
+	}
+}
+
 bool FullscreenWidget::eventFilter(QObject* object, QEvent* event)
 {
 	if (event->type() == QEvent::Type::KeyPress)
 	{
 		const auto keyEvent = static_cast<QKeyEvent*>(event);
 
-		if (keyEvent->key() == ExitFullscreenKey)
-		{
-			this->ExitFullscreen();
-			return true;
-		}
+		return ProcessKeyEvent(keyEvent);
 	}
 
 	return false;
@@ -48,9 +72,8 @@ bool FullscreenWidget::eventFilter(QObject* object, QEvent* event)
 
 void FullscreenWidget::keyPressEvent(QKeyEvent* event)
 {
-	if (event->key() == ExitFullscreenKey)
+	if (ProcessKeyEvent(event))
 	{
-		this->ExitFullscreen();
 		return;
 	}
 
