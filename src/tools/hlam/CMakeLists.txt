@@ -76,7 +76,8 @@ target_link_options(HLAM
 target_sources(HLAM
 	PRIVATE
 		$<$<CXX_COMPILER_ID:MSVC>:hlam.rc>
-		Main.cpp)
+		Main.cpp
+		resources.qrc)
 
 add_subdirectory(application)
 add_subdirectory(assets)

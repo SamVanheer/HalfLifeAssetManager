@@ -38,6 +38,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 {
 	_ui.setupUi(this);
 
+	this->setWindowIcon(QIcon{":/hlam.ico"});
+
 	{
 		auto undo = _undoGroup->createUndoAction(this);
 		auto redo = _undoGroup->createRedoAction(this);
