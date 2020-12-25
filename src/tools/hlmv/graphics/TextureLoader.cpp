@@ -8,7 +8,7 @@ namespace graphics
 TextureLoader::TextureLoader() = default;
 TextureLoader::~TextureLoader() = default;
 
-void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const byte* rgbaPixels, bool masked)
+void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const byte* rgbaPixels, bool generateMipmaps, bool masked)
 {
 	const auto [newWidth, newHeight] = AdjustImageDimensions(width, height);
 
@@ -69,9 +69,14 @@ void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const 
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgbaPixels);
 	SetFilters(texture);
+
+	if (generateMipmaps)
+	{
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 }
 
-void TextureLoader::UploadIndexed8(GLuint texture, int width, int height, const byte* pixels, const byte* palette, bool masked)
+void TextureLoader::UploadIndexed8(GLuint texture, int width, int height, const byte* pixels, const byte* palette, bool generateMipmaps, bool masked)
 {
 	//TODO: total size can be too large
 	byte localPalette[PALETTE_SIZE];
@@ -107,7 +112,7 @@ void TextureLoader::UploadIndexed8(GLuint texture, int width, int height, const 
 		}
 	}
 
-	UploadRGBA8888(texture, width, height, rgbaPixels.data(), masked);
+	UploadRGBA8888(texture, width, height, rgbaPixels.data(), generateMipmaps, masked);
 }
 
 void TextureLoader::SetFilters(GLuint texture)

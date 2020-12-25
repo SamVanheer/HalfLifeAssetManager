@@ -201,6 +201,7 @@ void CStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 				texture.width, texture.height,
 				pIn + texture.index,
 				pIn + texture.index + (texture.width * texture.height),
+				(texture.flags & STUDIO_NF_NOMIPS) != 0,
 				(texture.flags & STUDIO_NF_MASKED) != 0);
 
 			m_Textures.emplace_back(name);
@@ -210,7 +211,13 @@ void CStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 
 void CStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint textureId)
 {
-	textureLoader.UploadIndexed8(textureId, ptexture->width, ptexture->height, data, pal, (ptexture->flags & STUDIO_NF_MASKED) != 0);
+	textureLoader.UploadIndexed8(
+		textureId,
+		ptexture->width, ptexture->height,
+		data,
+		pal,
+		(ptexture->flags & STUDIO_NF_NOMIPS) != 0,
+		(ptexture->flags & STUDIO_NF_MASKED) != 0);
 }
 
 void CStudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture)
