@@ -27,7 +27,7 @@ add_library(VorbisFile STATIC IMPORTED)
 
 set_target_properties(VorbisFile PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/vorbis/lib/libvorbisfile_static.lib)
 
-add_executable(${TARGET_NAME})
+add_executable(${TARGET_NAME} WIN32)
 
 check_winxp_support(${TARGET_NAME})
 
