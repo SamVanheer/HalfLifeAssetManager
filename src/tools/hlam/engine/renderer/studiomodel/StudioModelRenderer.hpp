@@ -111,7 +111,7 @@ private:
 
 	unsigned int DrawPoints(const bool bWireframe);
 
-	unsigned int DrawMeshes(const bool bWireframe, const SortedMesh_t* pMeshes, const mstudiotexture_t* pTextures, const short* pSkinRef);
+	unsigned int DrawMeshes(const bool bWireframe, const SortedMesh* pMeshes, const mstudiotexture_t* pTextures, const short* pSkinRef);
 
 	unsigned int DrawShadows(const bool fixZFighting, const bool wireframe);
 

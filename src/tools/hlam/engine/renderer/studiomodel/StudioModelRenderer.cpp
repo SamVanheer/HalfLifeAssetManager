@@ -1015,7 +1015,7 @@ unsigned int StudioModelRenderer::DrawPoints(const bool bWireframe)
 		VectorTransform(pstudioverts[i], _bonetransform[pvertbone[i]], _xformverts[i]);
 	}
 
-	SortedMesh_t meshes[MAXSTUDIOMESHES];
+	SortedMesh meshes[MAXSTUDIOMESHES]{};
 
 	//
 	// clip and draw all triangles
@@ -1026,8 +1026,8 @@ unsigned int StudioModelRenderer::DrawPoints(const bool bWireframe)
 	{
 		int flags = ptexture[pskinref[pmesh[j].skinref]].flags;
 
-		meshes[j].pMesh = &pmesh[j];
-		meshes[j].flags = flags;
+		meshes[j].Mesh = &pmesh[j];
+		meshes[j].Flags = flags;
 
 		for (int i = 0; i < pmesh[j].numnorms; i++, ++lv, ++pstudionorms, pnormbone++)
 		{
@@ -1054,7 +1054,7 @@ unsigned int StudioModelRenderer::DrawPoints(const bool bWireframe)
 	return uiDrawnPolys;
 }
 
-unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const SortedMesh_t* pMeshes, const mstudiotexture_t* pTextures, const short* pSkinRef)
+unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const SortedMesh* pMeshes, const mstudiotexture_t* pTextures, const short* pSkinRef)
 {
 	//Set here since it never changes. Much more efficient.
 	if (bWireframe)
@@ -1069,7 +1069,7 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 
 	for (int j = 0; j < _model->nummesh; j++)
 	{
-		auto pmesh = pMeshes[j].pMesh;
+		auto pmesh = pMeshes[j].Mesh;
 		auto ptricmds = (short*)((byte*)_studioHeader + pmesh->triindex);
 
 		const mstudiotexture_t& texture = pTextures[pSkinRef[pmesh->skinref]];

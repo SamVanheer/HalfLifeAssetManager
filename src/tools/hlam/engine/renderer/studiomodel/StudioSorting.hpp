@@ -4,11 +4,11 @@
 
 namespace studiomdl
 {
-struct SortedMesh_t
+struct SortedMesh
 {
-	mstudiomesh_t* pMesh;
-	int flags;
+	mstudiomesh_t* Mesh;
+	int Flags;
 };
 
-bool CompareSortedMeshes( const SortedMesh_t& lhs, const SortedMesh_t& rhs );
+bool CompareSortedMeshes(const SortedMesh& lhs, const SortedMesh& rhs);
 }

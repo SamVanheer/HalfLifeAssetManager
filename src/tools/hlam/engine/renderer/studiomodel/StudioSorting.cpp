@@ -6,13 +6,17 @@
 
 namespace studiomdl
 {
-bool CompareSortedMeshes( const SortedMesh_t& lhs, const SortedMesh_t& rhs )
+bool CompareSortedMeshes(const SortedMesh& lhs, const SortedMesh& rhs)
 {
-	if( ( lhs.flags & ( STUDIO_NF_ADDITIVE ) ) == 0 && rhs.flags & ( STUDIO_NF_ADDITIVE ) )
+	if ((lhs.Flags & (STUDIO_NF_ADDITIVE)) == 0 && rhs.Flags & (STUDIO_NF_ADDITIVE))
+	{
 		return true;
+	}
 
-	if( lhs.flags & ( STUDIO_NF_MASKED ) && ( rhs.flags & ( STUDIO_NF_MASKED ) ) == 0 )
+	if (lhs.Flags & (STUDIO_NF_MASKED) && (rhs.Flags & (STUDIO_NF_MASKED)) == 0)
+	{
 		return true;
+	}
 
 	return false;
 }
