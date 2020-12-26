@@ -19,7 +19,6 @@
 #include "game/entity/BaseEntityList.hpp"
 #include "game/entity/EntityManager.hpp"
 
-#include "graphics/GraphicsHelpers.hpp"
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
@@ -332,7 +331,7 @@ void Scene::SetupRenderMode(RenderMode renderMode)
 	if (renderMode == RenderMode::INVALID)
 		renderMode = CurrentRenderMode;
 
-	graphics::helpers::SetupRenderMode(renderMode, EnableBackfaceCulling);
+	graphics::SetupRenderMode(renderMode, EnableBackfaceCulling);
 }
 
 void Scene::DrawModel()
@@ -395,7 +394,7 @@ void Scene::DrawModel()
 		// setup stencil buffer and draw mirror
 		if (MirrorOnGround)
 		{
-			graphics::helpers::DrawMirroredModel(*_studioModelRenderer, _entity,
+			graphics::DrawMirroredModel(*_studioModelRenderer, _entity,
 				CurrentRenderMode,
 				ShowWireframeOverlay,
 				FloorLength,
@@ -506,7 +505,7 @@ void Scene::DrawModel()
 			textureOffset.x = groundSpeed;
 		}
 
-		graphics::helpers::DrawFloor(FloorLength, FloorTextureLength, textureOffset, GroundTexture, GroundColor, MirrorOnGround);
+		graphics::DrawFloor(FloorLength, FloorTextureLength, textureOffset, GroundTexture, GroundColor, MirrorOnGround);
 	}
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;

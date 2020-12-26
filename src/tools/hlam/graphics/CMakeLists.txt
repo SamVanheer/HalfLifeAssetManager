@@ -6,8 +6,6 @@ target_sources(HLAM
 		Camera.hpp
 		Constants.cpp
 		Constants.hpp
-		GraphicsHelpers.cpp
-		GraphicsHelpers.hpp
 		GraphicsUtils.cpp
 		GraphicsUtils.hpp
 		IGraphicsContext.hpp
