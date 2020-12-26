@@ -414,7 +414,7 @@ void Scene::DrawModel()
 
 		glCullFace(flScale > 0 ? GL_FRONT : GL_BACK);
 
-		renderer::DrawFlags_t flags = renderer::DrawFlag::NONE;
+		renderer::DrawFlags flags = renderer::DrawFlag::NONE;
 
 		if (ShowWireframeOverlay)
 		{

@@ -25,7 +25,7 @@ bool SpriteEntity::Spawn()
 	return true;
 }
 
-void SpriteEntity::Draw(renderer::DrawFlags_t flags)
+void SpriteEntity::Draw(renderer::DrawFlags flags)
 {
 	sprite::SpriteRenderInfo info;
 

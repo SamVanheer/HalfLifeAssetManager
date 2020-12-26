@@ -29,7 +29,7 @@ public:
 public:
 	virtual bool Spawn() override;
 
-	virtual void Draw(renderer::DrawFlags_t flags) override;
+	virtual void Draw(renderer::DrawFlags flags) override;
 
 	studiomdl::ModelRenderInfo GetRenderInfo() const;
 

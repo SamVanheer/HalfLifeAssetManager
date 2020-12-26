@@ -72,7 +72,7 @@ public:
 		_wireframeColor = color;
 	}
 
-	unsigned int DrawModel(ModelRenderInfo* const renderInfo, const renderer::DrawFlags_t flags) override final;
+	unsigned int DrawModel(ModelRenderInfo* const renderInfo, const renderer::DrawFlags flags) override final;
 
 	void DrawSingleBone(ModelRenderInfo& renderInfo, const int iBone) override final;
 

@@ -34,7 +34,7 @@ void StudioModelRenderer::RunFrame()
 {
 }
 
-unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo* const renderInfo, const renderer::DrawFlags_t flags)
+unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo* const renderInfo, const renderer::DrawFlags flags)
 {
 	if (!renderInfo)
 	{

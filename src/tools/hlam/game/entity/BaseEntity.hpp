@@ -98,7 +98,7 @@ public:
 	/**
 	*	Draws this entity.
 	*/
-	virtual void Draw(renderer::DrawFlags_t flags) {}
+	virtual void Draw(renderer::DrawFlags flags) {}
 
 private:
 	const char* _className = nullptr;

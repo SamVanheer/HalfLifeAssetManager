@@ -30,7 +30,7 @@ bool StudioModelEntity::Spawn()
 	return true;
 }
 
-void StudioModelEntity::Draw(renderer::DrawFlags_t flags)
+void StudioModelEntity::Draw(renderer::DrawFlags flags)
 {
 	studiomdl::ModelRenderInfo renderInfo = GetRenderInfo();
 

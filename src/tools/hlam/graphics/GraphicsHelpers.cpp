@@ -215,7 +215,7 @@ unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRende
 
 	const unsigned int uiOldPolys = studioModelRenderer.GetDrawnPolygonsCount();
 
-	renderer::DrawFlags_t flags = renderer::DrawFlag::NONE;
+	renderer::DrawFlags flags = renderer::DrawFlag::NONE;
 
 	//Draw wireframe overlay
 	if( bWireframeOverlay )
