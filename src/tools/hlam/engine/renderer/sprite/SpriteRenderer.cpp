@@ -10,7 +10,7 @@
 
 #include "engine/shared/renderer/sprite/SpriteRenderInfo.hpp"
 
-#include "engine/shared/sprite/sprite.hpp"
+#include "engine/shared/sprite/SpriteFileFormat.hpp"
 
 #include "engine/renderer/sprite/SpriteRenderer.hpp"
 

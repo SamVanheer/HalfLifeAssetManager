@@ -1,7 +1,7 @@
 #include "core/shared/WorldTime.hpp"
 
-#include "engine/shared/sprite/sprite.hpp"
 #include "engine/shared/sprite/CSprite.hpp"
+#include "engine/shared/sprite/SpriteFileFormat.hpp"
 #include "engine/shared/renderer/sprite/ISpriteRenderer.hpp"
 #include "engine/shared/renderer/sprite/SpriteRenderInfo.hpp"
 
