@@ -12,7 +12,7 @@
 #include "core/shared/WorldTime.hpp"
 
 #include "engine/renderer/sprite/CSpriteRenderer.hpp"
-#include "engine/renderer/studiomodel/CStudioModelRenderer.hpp"
+#include "engine/renderer/studiomodel/StudioModelRenderer.hpp"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 #include "entity/HLMVStudioModelEntity.hpp"
 
@@ -43,7 +43,7 @@ static const int GUIDELINES_EDGE_WIDTH = 4;
 Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime)
 	: _textureLoader(textureLoader)
 	, _spriteRenderer(std::make_unique<sprite::CSpriteRenderer>(worldTime))
-	, _studioModelRenderer(std::make_unique<studiomdl::CStudioModelRenderer>())
+	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>())
 	, _worldTime(worldTime)
 	//Use the default list class for now
 	, _entityManager(std::make_unique<EntityManager>(std::make_unique<BaseEntityList>(), _worldTime))

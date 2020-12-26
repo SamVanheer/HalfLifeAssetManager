@@ -1,6 +1,6 @@
 target_sources(HLAM
 	PRIVATE
-		CStudioModelRenderer.cpp
-		CStudioModelRenderer.hpp
+		StudioModelRenderer.cpp
+		StudioModelRenderer.hpp
 		StudioSorting.cpp
 		StudioSorting.hpp)

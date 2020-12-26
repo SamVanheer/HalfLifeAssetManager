@@ -31,7 +31,7 @@ public:
 
 	virtual void Draw(renderer::DrawFlags_t flags) override;
 
-	studiomdl::CModelRenderInfo GetRenderInfo() const;
+	studiomdl::ModelRenderInfo GetRenderInfo() const;
 
 	/**
 	*	Advances the frame. If dt is 0, advances to current time, otherwise, advances by the given amount of time.

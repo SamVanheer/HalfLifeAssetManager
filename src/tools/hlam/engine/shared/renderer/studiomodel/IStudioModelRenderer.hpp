@@ -6,7 +6,7 @@
 
 #include "engine/shared/renderer/DrawConstants.hpp"
 
-#include "engine/shared/renderer/studiomodel/CModelRenderInfo.hpp"
+#include "engine/shared/renderer/studiomodel/ModelRenderInfo.hpp"
 
 /**
 *	@defgroup StudioModelRenderer StudioModel Renderer.
@@ -17,7 +17,6 @@
 namespace studiomdl
 {
 class CStudioModel;
-class IStudioModelRendererListener;
 
 /**
 *	Used to render studio models. Only one instance of this class should be used, and should be kept around, in order to achieve reasonably performant and consistent rendering.
@@ -66,9 +65,8 @@ public:
 
 	/**
 	*	Sets the viewer's origin.
-	*	@param vecViewerOrigin Viewer origin.
 	*/
-	virtual void SetViewerOrigin( const glm::vec3& vecViewerOrigin ) = 0;
+	virtual void SetViewerOrigin(const glm::vec3& viewerOrigin) = 0;
 
 	/**
 	*	@return The vector that points to the viewer's right.
@@ -78,9 +76,8 @@ public:
 
 	/**
 	*	Sets the vector that points to the viewer's right.
-	*	@param vecViewerRight Viewer right.
 	*/
-	virtual void SetViewerRight( const glm::vec3& vecViewerRight ) = 0;
+	virtual void SetViewerRight(const glm::vec3& viewerRight) = 0;
 
 	/**
 	*	@return The current light vector.
@@ -89,9 +86,8 @@ public:
 
 	/**
 	*	Sets the current light vector.
-	*	@param lightvec Light vector.
 	*/
-	virtual void SetLightVector( const glm::vec3& lightvec ) = 0;
+	virtual void SetLightVector(const glm::vec3& lightvec) = 0;
 
 	virtual glm::vec3 GetLightColor() const = 0;
 
@@ -103,40 +99,29 @@ public:
 
 	/**
 	*	Draws the given model.
-	*	@param pRenderInfo Render info that describes the model.
+	*	@param renderInfo Render info that describes the model.
 	*	@param flags Flags.
 	*	@return Number of polygons that were drawn.
 	*/
-	virtual unsigned int DrawModel( CModelRenderInfo* const pRenderInfo, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE ) = 0;
+	virtual unsigned int DrawModel(ModelRenderInfo* const renderInfo, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE) = 0;
 
 	/*
 	*	Tool only operations.
 	*/
 
 	/**
-	*	@return The current renderer listener, if any.
-	*/
-	virtual IStudioModelRendererListener* GetRendererListener() const = 0;
-
-	/**
-	*	Sets the current renderer listener.
-	*	@param pListener Listener to set. May be null.
-	*/
-	virtual void SetRendererListener( IStudioModelRendererListener* pListener ) = 0;
-
-	/**
 	*	Draws a single bone.
 	*	@param iBone Index of the bone to draw.
 	*/
-	virtual void DrawSingleBone(CModelRenderInfo& renderInfo, const int iBone) = 0;
+	virtual void DrawSingleBone(ModelRenderInfo& renderInfo, const int iBone) = 0;
 
 	/**
 	*	Draws a single attachment.
 	*	@param iAttachment Index of the attachment to draw.
 	*/
-	virtual void DrawSingleAttachment(CModelRenderInfo& renderInfo, const int iAttachment) = 0;
+	virtual void DrawSingleAttachment(ModelRenderInfo& renderInfo, const int iAttachment) = 0;
 
-	virtual void DrawSingleHitbox(CModelRenderInfo& renderInfo, const int hitboxIndex) = 0;
+	virtual void DrawSingleHitbox(ModelRenderInfo& renderInfo, const int hitboxIndex) = 0;
 };
 }
 

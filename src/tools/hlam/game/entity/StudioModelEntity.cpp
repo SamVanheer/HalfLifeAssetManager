@@ -32,38 +32,38 @@ bool StudioModelEntity::Spawn()
 
 void StudioModelEntity::Draw(renderer::DrawFlags_t flags)
 {
-	studiomdl::CModelRenderInfo renderInfo = GetRenderInfo();
+	studiomdl::ModelRenderInfo renderInfo = GetRenderInfo();
 
 	GetContext()->StudioModelRenderer->DrawModel(&renderInfo, flags);
 }
 
-studiomdl::CModelRenderInfo StudioModelEntity::GetRenderInfo() const
+studiomdl::ModelRenderInfo StudioModelEntity::GetRenderInfo() const
 {
-	studiomdl::CModelRenderInfo renderInfo{};
+	studiomdl::ModelRenderInfo renderInfo{};
 
-	renderInfo.vecOrigin = GetOrigin();
-	renderInfo.vecAngles = GetAngles();
-	renderInfo.vecScale = GetScale();
+	renderInfo.Origin = GetOrigin();
+	renderInfo.Angles = GetAngles();
+	renderInfo.Scale = GetScale();
 
-	renderInfo.pModel = GetModel();
+	renderInfo.Model = GetModel();
 
-	renderInfo.flTransparency = GetTransparency();
-	renderInfo.iSequence = GetSequence();
-	renderInfo.flFrame = GetFrame();
-	renderInfo.iBodygroup = GetBodygroup();
-	renderInfo.iSkin = GetSkin();
+	renderInfo.Transparency = GetTransparency();
+	renderInfo.Sequence = GetSequence();
+	renderInfo.Frame = GetFrame();
+	renderInfo.Bodygroup = GetBodygroup();
+	renderInfo.Skin = GetSkin();
 
 	for (int i = 0; i < STUDIO_MAX_BLENDERS; ++i)
 	{
-		renderInfo.iBlender[i] = GetBlendingByIndex(i);
+		renderInfo.Blender[i] = GetBlendingByIndex(i);
 	}
 
 	for (int i = 0; i < STUDIO_MAX_CONTROLLERS; ++i)
 	{
-		renderInfo.iController[i] = GetControllerByIndex(i);
+		renderInfo.Controller[i] = GetControllerByIndex(i);
 	}
 
-	renderInfo.iMouth = GetMouth();
+	renderInfo.Mouth = GetMouth();
 
 	return renderInfo;
 }
