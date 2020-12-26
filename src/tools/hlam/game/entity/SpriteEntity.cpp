@@ -7,25 +7,25 @@
 
 #include "game/entity/SpriteEntity.hpp"
 
-LINK_ENTITY_TO_CLASS( sprite, SpriteEntity);
+LINK_ENTITY_TO_CLASS(sprite, SpriteEntity);
 
 void SpriteEntity::OnDestroy()
 {
-	sprite::FreeSprite( m_pSprite );
+	sprite::FreeSprite(_sprite);
 
 	BaseClass::OnDestroy();
 }
 
 bool SpriteEntity::Spawn()
 {
-	SetThink( &ThisClass::AnimThink );
+	SetThink(&ThisClass::AnimThink);
 
-	SetFlags( entity::FL_ALWAYSTHINK );
+	SetFlags(entity::FL_ALWAYSTHINK);
 
 	return true;
 }
 
-void SpriteEntity::Draw( renderer::DrawFlags_t flags )
+void SpriteEntity::Draw(renderer::DrawFlags_t flags)
 {
 	sprite::CSpriteRenderInfo info;
 
@@ -39,19 +39,21 @@ void SpriteEntity::Draw( renderer::DrawFlags_t flags )
 
 	info.flFrame = GetFrame();
 
-	GetContext()->SpriteRenderer->DrawSprite( &info, flags );
+	GetContext()->SpriteRenderer->DrawSprite(&info, flags);
 }
 
 void SpriteEntity::AnimThink()
 {
-	m_flFrame += GetContext()->Time->GetFrameTime() * 10;
+	_frame += GetContext()->Time->GetFrameTime() * 10;
 
-	if( m_flFrame >= m_pSprite->numframes )
-		m_flFrame = 0;
+	if (_frame >= _sprite->numframes)
+	{
+		_frame = 0;
+	}
 }
 
-void SpriteEntity::SetSprite( sprite::msprite_t* pSprite )
+void SpriteEntity::SetSprite(sprite::msprite_t* pSprite)
 {
 	//TODO: release old sprite
-	m_pSprite = pSprite;
+	_sprite = pSprite;
 }

@@ -27,83 +27,83 @@ void EntityManager::Shutdown()
 
 bool EntityManager::OnMapBegin()
 {
-	assert( !m_bMapRunning );
+	assert(!_mapRunning);
 
-	m_bMapRunning = true;
+	_mapRunning = true;
 
 	return true;
 }
 
 void EntityManager::OnMapEnd()
 {
-	assert( m_bMapRunning );
+	assert(_mapRunning);
 
-	m_bMapRunning = false;
+	_mapRunning = false;
 
 	_entityList->RemoveAll();
 }
 
 void EntityManager::RunFrame()
 {
-	for( EHandle entity = _entityList->GetFirstEntity(); entity.IsValid(*_entityList); entity = _entityList->GetNextEntity( entity ) )
+	for (EHandle entity = _entityList->GetFirstEntity(); entity.IsValid(*_entityList); entity = _entityList->GetNextEntity(entity))
 	{
-		CBaseEntity* pEntity = entity.Get(*_entityList);
+		BaseEntity* pEntity = entity.Get(*_entityList);
 
-		if( pEntity->AnyFlagsSet( entity::FL_ALWAYSTHINK ) ||
-			( pEntity->GetNextThinkTime() != 0 && 
-			pEntity->GetNextThinkTime() <= _worldTime->GetTime() &&
-			(_worldTime->GetTime() - _worldTime->GetFrameTime() ) >= pEntity->GetLastThinkTime() ) )
+		if (pEntity->AnyFlagsSet(entity::FL_ALWAYSTHINK) ||
+			(pEntity->GetNextThinkTime() != 0 &&
+				pEntity->GetNextThinkTime() <= _worldTime->GetTime() &&
+				(_worldTime->GetTime() - _worldTime->GetFrameTime()) >= pEntity->GetLastThinkTime()))
 		{
 			//Set first so entities can do lastthink + delay.
-			pEntity->SetLastThinkTime(_worldTime->GetTime() );
-			pEntity->SetNextThinkTime( 0 );
+			pEntity->SetLastThinkTime(_worldTime->GetTime());
+			pEntity->SetNextThinkTime(0);
 
 			pEntity->Think();
 		}
 	}
 
 	//Remove all entities flagged with FL_KILLME.
-	for( EHandle entity = _entityList->GetFirstEntity(); entity.IsValid(*_entityList); entity = _entityList->GetNextEntity( entity ) )
+	for (EHandle entity = _entityList->GetFirstEntity(); entity.IsValid(*_entityList); entity = _entityList->GetNextEntity(entity))
 	{
 		auto baseEntity = entity.Get(*_entityList);
 
-		if(baseEntity->GetFlags() & entity::FL_KILLME )
+		if (baseEntity->GetFlags() & entity::FL_KILLME)
 		{
 			_entityList->Remove(baseEntity);
 		}
 	}
 }
 
-CBaseEntity* EntityManager::Create(const char* const pszClassName, EntityContext* context,
-	const glm::vec3& vecOrigin, const glm::vec3& vecAngles, const bool bSpawn)
+BaseEntity* EntityManager::Create(const char* const pszClassName, EntityContext * context,
+	const glm::vec3 & origin, const glm::vec3 & angles, const bool bSpawn)
 {
-	CBaseEntity* pEntity = GetEntityDict().CreateEntity(pszClassName, context);
+	BaseEntity* entity = GetEntityDict().CreateEntity(pszClassName, context);
 
 	//This is where you can handle custom entities.
-	if (!pEntity)
+	if (!entity)
 	{
 		Error("Couldn't create \"%s\"!\n", pszClassName);
 		return nullptr;
 	}
 
-	if (_entityList->Add(pEntity) == entity::INVALID_ENTITY_INDEX)
+	if (_entityList->Add(entity) == entity::INVALID_ENTITY_INDEX)
 	{
-		GetEntityDict().DestroyEntity(pEntity);
+		GetEntityDict().DestroyEntity(entity);
 
 		return nullptr;
 	}
 
-	pEntity->SetOrigin(vecOrigin);
-	pEntity->SetAngles(vecAngles);
+	entity->SetOrigin(origin);
+	entity->SetAngles(angles);
 
 	if (bSpawn)
 	{
-		if (!pEntity->Spawn())
+		if (!entity->Spawn())
 		{
-			_entityList->Remove(pEntity);
+			_entityList->Remove(entity);
 			return nullptr;
 		}
 	}
 
-	return pEntity;
+	return entity;
 }

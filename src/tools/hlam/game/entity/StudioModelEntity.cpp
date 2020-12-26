@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <glm/geometric.hpp>
 
 #include "core/shared/Logging.hpp"
@@ -9,33 +11,35 @@
 
 bool StudioModelEntity::Spawn()
 {
-	SetSequence( 0 );
-	SetController( 0, 0.0f );
-	SetController( 1, 0.0f );
-	SetController( 2, 0.0f );
-	SetController( 3, 0.0f );
-	SetMouth( 0.0f );
+	SetSequence(0);
+	SetController(0, 0.0f);
+	SetController(1, 0.0f);
+	SetController(2, 0.0f);
+	SetController(3, 0.0f);
+	SetMouth(0.0f);
 
-	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
+	const studiohdr_t* header = _model->GetStudioHeader();
 
-	for( int n = 0; n < pStudioHdr->numbodyparts; ++n )
-		SetBodygroup( n, 0 );
+	for (int n = 0; n < header->numbodyparts; ++n)
+	{
+		SetBodygroup(n, 0);
+	}
 
-	SetSkin( 0 );
+	SetSkin(0);
 
 	return true;
 }
 
-void StudioModelEntity::Draw( renderer::DrawFlags_t flags )
+void StudioModelEntity::Draw(renderer::DrawFlags_t flags)
 {
 	studiomdl::CModelRenderInfo renderInfo = GetRenderInfo();
 
-	GetContext()->StudioModelRenderer->DrawModel( &renderInfo, flags );
+	GetContext()->StudioModelRenderer->DrawModel(&renderInfo, flags);
 }
 
 studiomdl::CModelRenderInfo StudioModelEntity::GetRenderInfo() const
 {
-	studiomdl::CModelRenderInfo renderInfo;
+	studiomdl::CModelRenderInfo renderInfo{};
 
 	renderInfo.vecOrigin = GetOrigin();
 	renderInfo.vecAngles = GetAngles();
@@ -49,14 +53,14 @@ studiomdl::CModelRenderInfo StudioModelEntity::GetRenderInfo() const
 	renderInfo.iBodygroup = GetBodygroup();
 	renderInfo.iSkin = GetSkin();
 
-	for (int iIndex = 0; iIndex < 2; ++iIndex)
+	for (int i = 0; i < STUDIO_MAX_BLENDERS; ++i)
 	{
-		renderInfo.iBlender[iIndex] = GetBlendingByIndex(iIndex);
+		renderInfo.iBlender[i] = GetBlendingByIndex(i);
 	}
 
-	for (int iIndex = 0; iIndex < 4; ++iIndex)
+	for (int i = 0; i < STUDIO_MAX_CONTROLLERS; ++i)
 	{
-		renderInfo.iController[iIndex] = GetControllerByIndex(iIndex);
+		renderInfo.iController[i] = GetControllerByIndex(i);
 	}
 
 	renderInfo.iMouth = GetMouth();
@@ -64,40 +68,45 @@ studiomdl::CModelRenderInfo StudioModelEntity::GetRenderInfo() const
 	return renderInfo;
 }
 
-float StudioModelEntity::AdvanceFrame( float dt, const float flMax )
+float StudioModelEntity::AdvanceFrame(float deltaTime, const float maximum)
 {
-	if( !m_pModel )
-		return 0.0;
-
-	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
-
-	const mstudioseqdesc_t* pseqdesc = pStudioHdr->GetSequence( m_iSequence );
-
-	if( dt == 0.0 )
+	if (!_model)
 	{
-		dt = ( GetContext()->Time->GetTime() - m_flAnimTime );
-		if( dt <= 0.001 )
+		return 0;
+	}
+
+	const studiohdr_t* header = _model->GetStudioHeader();
+
+	const mstudioseqdesc_t* sequenceDescriptor = header->GetSequence(_sequence);
+
+	if (deltaTime == 0)
+	{
+		deltaTime = (GetContext()->Time->GetTime() - _animTime);
+
+		if (deltaTime <= 0.001)
 		{
-			m_flAnimTime = GetContext()->Time->GetTime();
-			return 0.0;
+			_animTime = GetContext()->Time->GetTime();
+			return 0;
 		}
 	}
 
-	if( !m_flAnimTime )
-		dt = 0.0;
-
-	if( flMax != -1.f )
+	if (!_animTime)
 	{
-		if( dt > flMax )
-			dt = flMax;
+		deltaTime = 0;
 	}
 
-	const float flOldFrame = m_flFrame;
+	if (maximum != -1.f)
+	{
+		deltaTime = std::min(deltaTime, maximum);
+	}
+
+	const float oldFrame = _frame;
 
 	bool shouldLoop;
 
-	switch (m_LoopingMode)
+	switch (_loopingMode)
 	{
+	default:
 	case StudioLoopingMode::AlwaysLoop:
 		shouldLoop = true;
 		break;
@@ -105,497 +114,533 @@ float StudioModelEntity::AdvanceFrame( float dt, const float flMax )
 		shouldLoop = false;
 		break;
 	case StudioLoopingMode::UseSequenceSetting:
-		shouldLoop = (pseqdesc->flags & STUDIO_LOOPING) != 0;
+		shouldLoop = (sequenceDescriptor->flags & STUDIO_LOOPING) != 0;
 		break;
 	}
 
-	const float flIncrement = dt * pseqdesc->fps * m_flFrameRate;
+	const float increment = deltaTime * sequenceDescriptor->fps * _frameRate;
 
-	if (m_flFrame < (pseqdesc->numframes - 1) || shouldLoop)
+	if (_frame < (sequenceDescriptor->numframes - 1) || shouldLoop)
 	{
-		m_flFrame += flIncrement;
+		_frame += increment;
 	}
 
-	if( pseqdesc->numframes <= 1 )
+	if (sequenceDescriptor->numframes <= 1)
 	{
-		m_flFrame = 0;
+		_frame = 0;
 	}
 	else
 	{
 		if (shouldLoop)
 		{
 			// wrap
-			m_flFrame -= (int) (m_flFrame / (pseqdesc->numframes - 1)) * (pseqdesc->numframes - 1);
+			_frame -= (int)(_frame / (sequenceDescriptor->numframes - 1)) * (sequenceDescriptor->numframes - 1);
 		}
-		else if (m_flFrame >= (pseqdesc->numframes - 1))
+		else if (_frame >= (sequenceDescriptor->numframes - 1))
 		{
 			//Clamp frame to the last valid frame index
-			m_flFrame = static_cast<float>(pseqdesc->numframes - 1);
+			_frame = static_cast<float>(sequenceDescriptor->numframes - 1);
 		}
 
 		//Wrapped
-		if( flOldFrame > m_flFrame )
+		if (oldFrame > _frame)
 		{
-			m_flLastEventCheck = m_flFrame - flIncrement;
+			_lastEventCheck = _frame - increment;
 		}
 	}
 
-	m_flAnimTime = GetContext()->Time->GetTime();
+	_animTime = GetContext()->Time->GetTime();
 
-	return dt;
+	return deltaTime;
 }
 
-int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents )
+int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float end, int index, const bool allowClientEvents)
 {
-	if( !m_pModel )
+	if (!_model)
+	{
 		return 0;
+	}
 
-	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
+	const studiohdr_t* header = _model->GetStudioHeader();
 
-	if( m_iSequence >= pStudioHdr->numseq )
+	if (_sequence >= header->numseq)
+	{
 		return 0;
+	}
 
 	int events = 0;
 
-	const mstudioseqdesc_t* pseqdesc = pStudioHdr->GetSequence( m_iSequence );
-	const mstudioevent_t* pevent = ( const mstudioevent_t * ) ( ( const byte * ) pStudioHdr + pseqdesc->eventindex );
+	const mstudioseqdesc_t* sequenceDescriptor = header->GetSequence(_sequence);
+	const mstudioevent_t* pevent = (const mstudioevent_t*)((const byte*)header + sequenceDescriptor->eventindex);
 
-	if( pseqdesc->numevents == 0 || index > pseqdesc->numevents )
-		return 0;
-
-	if( pseqdesc->numframes <= 1 )
+	if (sequenceDescriptor->numevents == 0 || index > sequenceDescriptor->numevents)
 	{
-		flStart = 0;
-		flEnd = 1.0;
+		return 0;
 	}
 
-	for( ; index < pseqdesc->numevents; index++ )
+	if (sequenceDescriptor->numframes <= 1)
+	{
+		start = 0;
+		end = 1.0;
+	}
+
+	for (; index < sequenceDescriptor->numevents; index++)
 	{
 		//TODO: maybe leave it up to the listener to filter these out?
-		if( !bAllowClientEvents )
+		if (!allowClientEvents)
 		{
 			// Don't send client-side events to the server AI
-			if( pevent[ index ].event >= EVENT_CLIENT )
+			if (pevent[index].event >= EVENT_CLIENT)
+			{
 				continue;
+			}
 		}
 
-		if( ( pevent[ index ].frame >= flStart && pevent[ index ].frame < flEnd ) ||
-			( ( pseqdesc->flags & STUDIO_LOOPING ) && flEnd >= pseqdesc->numframes - 1 && pevent[ index ].frame < flEnd - pseqdesc->numframes + 1 ) )
+		if ((pevent[index].frame >= start && pevent[index].frame < end) ||
+			((sequenceDescriptor->flags & STUDIO_LOOPING)
+				&& end >= sequenceDescriptor->numframes - 1
+				&& pevent[index].frame < end - sequenceDescriptor->numframes + 1))
 		{
-			event.iEvent = pevent[ index ].event;
-			event.pszOptions = pevent[ index ].options;
+			event.id = pevent[index].event;
+			event.options = pevent[index].options;
 			return index + 1;
 		}
 	}
+
 	return 0;
 }
 
-void StudioModelEntity::DispatchAnimEvents( const bool bAllowClientEvents )
+void StudioModelEntity::DispatchAnimEvents(const bool allowClientEvents)
 {
-	if( !m_pModel )
+	if (!_model)
 	{
-		Message( "Gibbed monster is thinking!\n" );
+		Message("Gibbed monster is thinking!\n");
 		return;
 	}
-
-	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
-
-	const mstudioseqdesc_t* pseqdesc = pStudioHdr->GetSequence( m_iSequence );
 
 	//This is based on Source's DispatchAnimEvents. It fixes the bug where events don't get triggered, and get triggered multiple times due to the workaround.
 	//Plays from previous frame to current. This differs from GoldSource in that GoldSource plays from current to predicted future frame.
 	//This is more accurate, since it's based on actual frame data, rather than predicted frames, but results in events firing later than before.
 	//The difference is ~0.1 seconds when running at 60 FPS. On dedicated servers the difference will be smaller if the tick rate is higher.
-	float flStart = m_flLastEventCheck;
-	float flEnd = m_flFrame;
-	m_flLastEventCheck = m_flFrame;
+	float start = _lastEventCheck;
+	float end = _frame;
+	_lastEventCheck = _frame;
 
 	AnimEvent event;
 
 	int index = 0;
 
-	while( ( index = GetAnimationEvent( event, flStart, flEnd, index, bAllowClientEvents ) ) != 0 )
+	while ((index = GetAnimationEvent(event, start, end, index, allowClientEvents)) != 0)
 	{
-		HandleAnimEvent( event );
+		HandleAnimEvent(event);
 	}
 }
 
-void StudioModelEntity::HandleAnimEvent( const AnimEvent& event )
+void StudioModelEntity::HandleAnimEvent(const AnimEvent& event)
 {
 }
 
 void StudioModelEntity::SetFrame(float frame)
 {
-	if(frame == -1 )
-		return;
-
-	if( !m_pModel )
-		return;
-
-	mstudioseqdesc_t* pseqdesc = m_pModel->GetStudioHeader()->GetSequence( m_iSequence );
-
-	m_flFrame = frame;
-
-	if( pseqdesc->numframes <= 1 )
+	if (frame == -1)
 	{
-		m_flFrame = 0;
+		return;
+	}
+
+	if (!_model)
+	{
+		return;
+	}
+
+	const mstudioseqdesc_t* sequenceDescriptor = _model->GetStudioHeader()->GetSequence(_sequence);
+
+	_frame = frame;
+
+	if (sequenceDescriptor->numframes <= 1)
+	{
+		_frame = 0;
 	}
 	else
 	{
 		// wrap
-		m_flFrame -= ( int ) ( m_flFrame / ( pseqdesc->numframes - 1 ) ) * ( pseqdesc->numframes - 1 );
+		_frame -= (int)(_frame / (sequenceDescriptor->numframes - 1)) * (sequenceDescriptor->numframes - 1);
 	}
 
-	m_flAnimTime = GetContext()->Time->GetTime();
+	_animTime = GetContext()->Time->GetTime();
 }
 
-void StudioModelEntity::SetModel( studiomdl::CStudioModel* pModel )
+void StudioModelEntity::SetModel(studiomdl::CStudioModel* model)
 {
 	//TODO: release old model.
-	m_pModel = pModel;
+	_model = model;
 
 	//TODO: reinit entity settings
 }
 
 int StudioModelEntity::GetNumFrames() const
 {
-	const mstudioseqdesc_t* const pseqdesc = m_pModel->GetStudioHeader()->GetSequence( m_iSequence );
+	const mstudioseqdesc_t* const sequenceDescriptor = _model->GetStudioHeader()->GetSequence(_sequence);
 
-	return pseqdesc->numframes;
+	return sequenceDescriptor->numframes;
 }
 
-int StudioModelEntity::SetSequence( const int iSequence )
+void StudioModelEntity::SetSequence(const int sequence)
 {
-	if( iSequence > m_pModel->GetStudioHeader()->numseq )
-		return m_iSequence;
-
-	m_iSequence = iSequence;
-	m_flFrame = 0;
-	m_flLastEventCheck = 0;
-
-	return m_iSequence;
-}
-
-void StudioModelEntity::GetSequenceInfo( float& flFrameRate, float& flGroundSpeed ) const
-{
-	const mstudioseqdesc_t* pseqdesc = m_pModel->GetStudioHeader()->GetSequence( m_iSequence );
-
-	if( pseqdesc->numframes > 1 )
+	if (sequence < 0 || sequence >= _model->GetStudioHeader()->numseq)
 	{
-		flFrameRate = pseqdesc->fps;
-		flGroundSpeed = static_cast<float>( glm::length( pseqdesc->linearmovement ) );
-		flGroundSpeed = flGroundSpeed * pseqdesc->fps / ( pseqdesc->numframes - 1 );
+		return;
+	}
+
+	_sequence = sequence;
+	_frame = 0;
+	_lastEventCheck = 0;
+}
+
+void StudioModelEntity::GetSequenceInfo(float& frameRate, float& groundSpeed) const
+{
+	const mstudioseqdesc_t* sequenceDescriptor = _model->GetStudioHeader()->GetSequence(_sequence);
+
+	if (sequenceDescriptor->numframes > 1)
+	{
+		frameRate = sequenceDescriptor->fps;
+		groundSpeed = static_cast<float>(glm::length(sequenceDescriptor->linearmovement));
+		groundSpeed = groundSpeed * sequenceDescriptor->fps / (sequenceDescriptor->numframes - 1);
 	}
 	else
 	{
-		flFrameRate = 256.0;
-		flGroundSpeed = 0.0;
+		frameRate = 256.0;
+		groundSpeed = 0.0;
 	}
 }
 
 int StudioModelEntity::GetBodyValueForGroup(int group) const
 {
-	if (!m_pModel)
+	if (!_model)
 	{
 		return -1;
 	}
 
-	return m_pModel->GetBodyValueForGroup(m_iBodygroup, group);
+	return _model->GetBodyValueForGroup(_bodygroup, group);
 }
 
-int StudioModelEntity::SetBodygroup( const int iBodygroup, const int iValue )
+void StudioModelEntity::SetBodygroup(const int bodygroup, const int value)
 {
-	if( !m_pModel )
-		return 0;
-
-	if( iBodygroup > m_pModel->GetStudioHeader()->numbodyparts )
-		return -1;
-
-	if( m_pModel->CalculateBodygroup( iBodygroup, iValue, m_iBodygroup ) )
-		return iValue;
-
-	return -1;
-}
-
-int StudioModelEntity::SetSkin( const int iSkin )
-{
-	if( !m_pModel )
-		return 0;
-
-	if( iSkin < m_pModel->GetTextureHeader()->numskinfamilies )
+	if (!_model)
 	{
-		m_iSkin = iSkin;
+		return;
 	}
 
-	return m_iSkin;
+	if (bodygroup < 0 || bodygroup >= _model->GetStudioHeader()->numbodyparts)
+	{
+		return;
+	}
+
+	_model->CalculateBodygroup(bodygroup, value, _bodygroup);
 }
 
-byte StudioModelEntity::GetControllerByIndex( const int iController ) const
+void StudioModelEntity::SetSkin(const int skin)
 {
-	assert( iController >= 0 && iController < STUDIO_MAX_CONTROLLERS );
+	if (!_model)
+	{
+		return;
+	}
 
-	return m_uiController[ iController ];
+	if (skin >= 0 && skin < _model->GetTextureHeader()->numskinfamilies)
+	{
+		_skin = skin;
+	}
 }
 
-float StudioModelEntity::GetControllerValue( const int iController ) const
+byte StudioModelEntity::GetControllerByIndex(const int controller) const
 {
-	if( !m_pModel )
-		return 0.0f;
+	assert(controller >= 0 && controller < STUDIO_MAX_CONTROLLERS);
 
-	if( iController < 0 || iController >= STUDIO_TOTAL_CONTROLLERS )
+	return _controller[controller];
+}
+
+float StudioModelEntity::GetControllerValue(const int controller) const
+{
+	if (!_model)
+	{
 		return 0;
+	}
 
-	return m_ControllerValues[iController];
+	if (controller < 0 || controller >= STUDIO_TOTAL_CONTROLLERS)
+	{
+		return 0;
+	}
 
-#if false
-	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
+	return _controllerValues[controller];
+}
 
-	const mstudiobonecontroller_t* pbonecontroller = pStudioHdr->GetBoneControllers();
+void StudioModelEntity::SetController(const int controller, float value)
+{
+	if (!_model)
+	{
+		return;
+	}
+
+	const studiohdr_t* header = _model->GetStudioHeader();
+
+	const mstudiobonecontroller_t* boneController = header->GetBoneControllers();
 
 	// find first controller that matches the index
 	int i;
 
-	for( i = 0; i < pStudioHdr->numbonecontrollers; ++i, ++pbonecontroller )
+	for (i = 0; i < header->numbonecontrollers; ++i, ++boneController)
 	{
-		if( pbonecontroller->index == iController )
+		if (boneController->index == controller)
+		{
 			break;
+		}
 	}
 
-	if( i >= pStudioHdr->numbonecontrollers )
-		return 0;
-
-	byte uiValue;
-
-	if( iController == STUDIO_MOUTH_CONTROLLER )
-		uiValue = m_uiMouth;
-	else
-		uiValue = m_uiController[ iController ];
-
-	return static_cast<float>( uiValue * ( 1.0 / 255.0 ) * ( pbonecontroller->end - pbonecontroller->start ) + pbonecontroller->start );
-#endif
-}
-
-float StudioModelEntity::SetController( const int iController, float flValue )
-{
-	if( !m_pModel )
-		return 0.0f;
-
-	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
-
-	const mstudiobonecontroller_t* pbonecontroller = pStudioHdr->GetBoneControllers();
-
-	// find first controller that matches the index
-	int i;
-
-	for( i = 0; i < pStudioHdr->numbonecontrollers; ++i, ++pbonecontroller )
+	if (i >= header->numbonecontrollers)
 	{
-		if( pbonecontroller->index == iController )
-			break;
+		return;
 	}
 
-	if( i >= pStudioHdr->numbonecontrollers )
-		return flValue;
-
-	m_ControllerValues[iController] = flValue;
+	_controllerValues[controller] = value;
 
 	// wrap 0..360 if it's a rotational controller
-	if( pbonecontroller->type & ( STUDIO_XR | STUDIO_YR | STUDIO_ZR ) )
+	if (boneController->type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
 	{
 		// ugly hack, invert value if end < start
-		if( pbonecontroller->end < pbonecontroller->start )
-			flValue = -flValue;
+		if (boneController->end < boneController->start)
+		{
+			value = -value;
+		}
 
 		// does the controller not wrap?
-		if( pbonecontroller->start + 359.0 >= pbonecontroller->end )
+		if (boneController->start + 359.0 >= boneController->end)
 		{
-			if( flValue >( ( pbonecontroller->start + pbonecontroller->end ) / 2.0 ) + 180 )
-				flValue = flValue - 360;
-			if( flValue < ( ( pbonecontroller->start + pbonecontroller->end ) / 2.0 ) - 180 )
-				flValue = flValue + 360;
+			if (value > ((static_cast<double>(boneController->start) + boneController->end) / 2.0) + 180)
+			{
+				value = value - 360;
+			}
+
+			if (value < ((static_cast<double>(boneController->start) + boneController->end) / 2.0) - 180)
+			{
+				value = value + 360;
+			}
 		}
 		else
 		{
-			if( flValue > 360 )
-				flValue = static_cast<float>( flValue - ( int ) ( flValue / 360.0 ) * 360.0 );
-			else if( flValue < 0 )
-				flValue = static_cast<float>( flValue + ( int ) ( ( flValue / -360.0 ) + 1 ) * 360.0 );
+			if (value > 360)
+			{
+				value = static_cast<float>(value - (int)(value / 360.0) * 360.0);
+			}
+			else if (value < 0)
+			{
+				value = static_cast<float>(value + (int)((value / -360.0) + 1) * 360.0);
+			}
 		}
 	}
 
-	int setting = ( int ) ( 255 * ( flValue - pbonecontroller->start ) /
-		( pbonecontroller->end - pbonecontroller->start ) );
+	int setting = (int)(255 * (value - boneController->start) /
+		(boneController->end - boneController->start));
 
-	if( setting < 0 ) setting = 0;
-	if( setting > 255 ) setting = 255;
-	m_uiController[ iController ] = setting;
+	setting = std::clamp(setting, 0, 255);
 
-	return static_cast<float>( setting * ( 1.0 / 255.0 ) * ( pbonecontroller->end - pbonecontroller->start ) + pbonecontroller->start );
+	_controller[controller] = setting;
 }
 
-float StudioModelEntity::SetMouth( float flValue )
+void StudioModelEntity::SetMouth(float value)
 {
-	if( !m_pModel )
-		return 0.0f;
+	if (!_model)
+	{
+		return;
+	}
 
-	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
+	const studiohdr_t* header = _model->GetStudioHeader();
 
-	const mstudiobonecontroller_t* pbonecontroller = pStudioHdr->GetBoneControllers();
+	const mstudiobonecontroller_t* boneController = header->GetBoneControllers();
 
 	// find first controller that matches the mouth
-	for( int i = 0; i < pStudioHdr->numbonecontrollers; ++i, ++pbonecontroller )
+	for (int i = 0; i < header->numbonecontrollers; ++i, ++boneController)
 	{
-		if( pbonecontroller->index == STUDIO_MOUTH_CONTROLLER )
+		if (boneController->index == STUDIO_MOUTH_CONTROLLER)
+		{
 			break;
+		}
 	}
 
 	// wrap 0..360 if it's a rotational controller
-	if( pbonecontroller->type & ( STUDIO_XR | STUDIO_YR | STUDIO_ZR ) )
+	if (boneController->type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
 	{
 		// ugly hack, invert value if end < start
-		if( pbonecontroller->end < pbonecontroller->start )
-			flValue = -flValue;
+		if (boneController->end < boneController->start)
+		{
+			value = -value;
+		}
 
 		// does the controller not wrap?
-		if( pbonecontroller->start + 359.0 >= pbonecontroller->end )
+		if (boneController->start + 359.0 >= boneController->end)
 		{
-			if( flValue >( ( pbonecontroller->start + pbonecontroller->end ) / 2.0 ) + 180 )
-				flValue = flValue - 360;
-			if( flValue < ( ( pbonecontroller->start + pbonecontroller->end ) / 2.0 ) - 180 )
-				flValue = flValue + 360;
+			if (value > ((static_cast<double>(boneController->start) + boneController->end) / 2.0) + 180)
+			{
+				value = value - 360;
+			}
+
+			if (value < ((static_cast<double>(boneController->start) + boneController->end) / 2.0) - 180)
+			{
+				value = value + 360;
+			}
 		}
 		else
 		{
-			if( flValue > 360 )
-				flValue = static_cast<float>( flValue - ( int ) ( flValue / 360.0 ) * 360.0 );
-			else if( flValue < 0 )
-				flValue = static_cast<float>( flValue + ( int ) ( ( flValue / -360.0 ) + 1 ) * 360.0 );
+			if (value > 360)
+			{
+				value = static_cast<float>(value - (int)(value / 360.0) * 360.0);
+			}
+			else if (value < 0)
+			{
+				value = static_cast<float>(value + (int)((value / -360.0) + 1) * 360.0);
+			}
 		}
 	}
 
-	int setting = ( int ) ( 64 * ( flValue - pbonecontroller->start ) / ( pbonecontroller->end - pbonecontroller->start ) );
+	int setting = (int)(64 * (value - boneController->start) / (boneController->end - boneController->start));
 
-	if( setting < 0 ) setting = 0;
-	if( setting > 64 ) setting = 64;
-	m_uiMouth = setting;
+	setting = std::clamp(setting, 0, 64);
 
-	return static_cast<float>( setting * ( 1.0 / 64.0 ) * ( pbonecontroller->end - pbonecontroller->start ) + pbonecontroller->start );
+	_mouth = setting;
 }
 
-byte StudioModelEntity::GetBlendingByIndex( const int iBlender ) const
+byte StudioModelEntity::GetBlendingByIndex(const int blender) const
 {
-	assert( iBlender >= 0 && iBlender < STUDIO_MAX_BLENDERS );
+	assert(blender >= 0 && blender < STUDIO_MAX_BLENDERS);
 
-	return m_uiBlending[ iBlender ];
+	return _blending[blender];
 }
 
-float StudioModelEntity::GetBlendingValue( const int iBlender ) const
+float StudioModelEntity::GetBlendingValue(const int blender) const
 {
-	if( !m_pModel )
-		return 0.0f;
-
-	if( iBlender < 0 || iBlender >= STUDIO_MAX_BLENDERS )
+	if (!_model)
+	{
 		return 0;
+	}
 
-	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
-
-	const mstudioseqdesc_t* pseqdesc = pStudioHdr->GetSequence( m_iSequence );
-
-	if( pseqdesc->blendtype[ iBlender ] == 0 )
+	if (blender < 0 || blender >= STUDIO_MAX_BLENDERS)
+	{
 		return 0;
+	}
 
-	return static_cast<float>( m_uiBlending[ iBlender ] * ( 1.0 / 255.0 ) * ( pseqdesc->blendend[ iBlender ] - pseqdesc->blendstart[ iBlender ] ) + pseqdesc->blendstart[ iBlender ] );
+	const studiohdr_t* header = _model->GetStudioHeader();
+
+	const mstudioseqdesc_t* sequenceDescriptor = header->GetSequence(_sequence);
+
+	if (sequenceDescriptor->blendtype[blender] == 0)
+	{
+		return 0;
+	}
+
+	return static_cast<float>(_blending[blender] * (1.0 / 255.0)
+		* (static_cast<double>(sequenceDescriptor->blendend[blender]) - sequenceDescriptor->blendstart[blender]) + sequenceDescriptor->blendstart[blender]);
 }
 
-float StudioModelEntity::SetBlending( const int iBlender, float flValue )
+void StudioModelEntity::SetBlending(const int blender, float value)
 {
-	if( !m_pModel )
-		return 0.0f;
+	if (!_model)
+	{
+		return;
+	}
 
-	if( iBlender < 0 || iBlender >= STUDIO_MAX_BLENDERS )
-		return 0;
+	if (blender < 0 || blender >= STUDIO_MAX_BLENDERS)
+	{
+		return;
+	}
 
-	const studiohdr_t* pStudioHdr = m_pModel->GetStudioHeader();
+	const studiohdr_t* header = _model->GetStudioHeader();
 
-	const mstudioseqdesc_t* pseqdesc = pStudioHdr->GetSequence( m_iSequence );
+	const mstudioseqdesc_t* sequenceDescriptor = header->GetSequence(_sequence);
 
-	if( pseqdesc->blendtype[ iBlender ] == 0 )
-		return flValue;
+	if (sequenceDescriptor->blendtype[blender] == 0)
+	{
+		return;
+	}
 
-	if( pseqdesc->blendtype[ iBlender ] & ( STUDIO_XR | STUDIO_YR | STUDIO_ZR ) )
+	if (sequenceDescriptor->blendtype[blender] & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
 	{
 		// ugly hack, invert value if end < start
-		if( pseqdesc->blendend[ iBlender ] < pseqdesc->blendstart[ iBlender ] )
-			flValue = -flValue;
+		if (sequenceDescriptor->blendend[blender] < sequenceDescriptor->blendstart[blender])
+		{
+			value = -value;
+		}
 
 		// does the controller not wrap?
-		if( pseqdesc->blendstart[ iBlender ] + 359.0 >= pseqdesc->blendend[ iBlender ] )
+		if (sequenceDescriptor->blendstart[blender] + 359.0 >= sequenceDescriptor->blendend[blender])
 		{
-			if( flValue > ( ( pseqdesc->blendstart[ iBlender ] + pseqdesc->blendend[ iBlender ] ) / 2.0 ) + 180 )
-				flValue = flValue - 360;
-			if( flValue < ( ( pseqdesc->blendstart[ iBlender ] + pseqdesc->blendend[ iBlender ] ) / 2.0 ) - 180 )
-				flValue = flValue + 360;
+			if (value > ((static_cast<double>(sequenceDescriptor->blendstart[blender]) + sequenceDescriptor->blendend[blender]) / 2.0) + 180)
+			{
+				value = value - 360;
+			}
+
+			if (value < ((static_cast<double>(sequenceDescriptor->blendstart[blender]) + sequenceDescriptor->blendend[blender]) / 2.0) - 180)
+			{
+				value = value + 360;
+			}
 		}
 	}
 
-	int setting = ( int ) ( 255 * ( flValue - pseqdesc->blendstart[ iBlender ] ) / ( pseqdesc->blendend[ iBlender ] - pseqdesc->blendstart[ iBlender ] ) );
+	int setting = (int)(255 * (value - sequenceDescriptor->blendstart[blender])
+		/ (sequenceDescriptor->blendend[blender] - sequenceDescriptor->blendstart[blender]));
 
-	if( setting < 0 ) setting = 0;
-	if( setting > 255 ) setting = 255;
+	setting = std::clamp(setting, 0, 255);
 
-	m_uiBlending[ iBlender ] = setting;
-
-	return static_cast<float>( setting * ( 1.0 / 255.0 ) * ( pseqdesc->blendend[ iBlender ] - pseqdesc->blendstart[ iBlender ] ) + pseqdesc->blendstart[ iBlender ] );
+	_blending[blender] = setting;
 }
 
-void StudioModelEntity::ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const
+void StudioModelEntity::ExtractBbox(glm::vec3& mins, glm::vec3& maxs) const
 {
-	const mstudioseqdesc_t* pseqdesc = m_pModel->GetStudioHeader()->GetSequence( m_iSequence );
+	const mstudioseqdesc_t* sequenceDescriptor = _model->GetStudioHeader()->GetSequence(_sequence);
 
-	vecMins = pseqdesc->bbmin;
-	vecMaxs = pseqdesc->bbmax;
+	mins = sequenceDescriptor->bbmin;
+	maxs = sequenceDescriptor->bbmax;
 }
 
-mstudiomodel_t* StudioModelEntity::GetModelByBodyPart( const int iBodyPart ) const
+mstudiomodel_t* StudioModelEntity::GetModelByBodyPart(const int bodyPart) const
 {
-	return m_pModel->GetModelByBodyPart( m_iBodygroup, iBodyPart );
+	return _model->GetModelByBodyPart(_bodygroup, bodyPart);
 }
 
-StudioModelEntity::MeshList_t StudioModelEntity::ComputeMeshList( const int iTexture ) const
+std::vector<const mstudiomesh_t*> StudioModelEntity::ComputeMeshList(const int texture) const
 {
-	const studiomdl::CStudioModel* pStudioModel = GetModel();
+	if (!_model)
+	{
+		return {};
+	}
 
-	assert( pStudioModel );
+	std::vector<const mstudiomesh_t*> meshes;
 
-	MeshList_t meshes;
+	const auto header = _model->GetStudioHeader();
 
-	const auto pStudioHdr = pStudioModel->GetStudioHeader();
+	const auto textureHeader = _model->GetTextureHeader();
 
-	const auto textureHeader = pStudioModel->GetTextureHeader();
-
-	const short* const pskinref = textureHeader->GetSkins();
+	const short* const skinRef = textureHeader->GetSkins();
 
 	int iBodygroup = 0;
 
-	for( int iBodyPart = 0; iBodyPart < pStudioHdr->numbodyparts; ++iBodyPart )
+	for (int iBodyPart = 0; iBodyPart < header->numbodyparts; ++iBodyPart)
 	{
-		mstudiobodyparts_t *pbodypart = pStudioHdr->GetBodypart( iBodyPart );
+		mstudiobodyparts_t* pbodypart = header->GetBodypart(iBodyPart);
 
-		for( int iModel = 0; iModel < pbodypart->nummodels; ++iModel )
+		for (int iModel = 0; iModel < pbodypart->nummodels; ++iModel)
 		{
-			pStudioModel->CalculateBodygroup( iBodyPart, iModel, iBodygroup );
+			_model->CalculateBodygroup(iBodyPart, iModel, iBodygroup);
 
-			mstudiomodel_t* pModel = pStudioModel->GetModelByBodyPart( iBodygroup, iBodyPart );
+			mstudiomodel_t* pModel = _model->GetModelByBodyPart(iBodygroup, iBodyPart);
 
-			for( int iMesh = 0; iMesh < pModel->nummesh; ++iMesh )
+			for (int iMesh = 0; iMesh < pModel->nummesh; ++iMesh)
 			{
-				const mstudiomesh_t* pMesh = ((const mstudiomesh_t*) ((const byte*) pStudioModel->GetStudioHeader() + pModel->meshindex)) + iMesh;
+				const mstudiomesh_t* mesh = ((const mstudiomesh_t*)((const byte*)_model->GetStudioHeader() + pModel->meshindex)) + iMesh;
 
 				//Check each skin family to detect textures used only by alternate skins (e.g. scientist hands)
 				for (int skinFamily = 0; skinFamily < textureHeader->numskinfamilies; ++skinFamily)
 				{
-					if (pskinref[(skinFamily * textureHeader->numskinref) + pMesh->skinref] == iTexture)
+					if (skinRef[(skinFamily * textureHeader->numskinref) + mesh->skinref] == texture)
 					{
-						meshes.push_back(pMesh);
+						meshes.push_back(mesh);
 						break;
 					}
 				}

@@ -16,67 +16,69 @@ EntityDict& EntityDict::GetInstance()
 	return instance;
 }
 
-bool EntityDict::HasEntity( const char* const pszClassName ) const
+bool EntityDict::HasEntity(const char* const className) const
 {
-	return FindEntity( pszClassName ) != nullptr;
+	return FindEntity(className) != nullptr;
 }
 
-const CBaseEntityRegistry* EntityDict::FindEntity( const char* const pszClassName ) const
+const BaseEntityRegistry* EntityDict::FindEntity(const char* const className) const
 {
-	assert( pszClassName );
+	assert(className);
 
-	auto it = m_Dict.find( pszClassName );
+	auto it = _dict.find(className);
 
-	return it != m_Dict.end() ? it->second : nullptr;
+	return it != _dict.end() ? it->second : nullptr;
 }
 
-bool EntityDict::AddEntity( const CBaseEntityRegistry* pRegistry )
+bool EntityDict::AddEntity(const BaseEntityRegistry* registry)
 {
-	assert( pRegistry );
+	assert(registry);
 
-	if( FindEntity( pRegistry->GetClassname() ) )
+	if (FindEntity(registry->GetClassname()))
 	{
 		//This shouldn't happen, since there'd be duplicate symbols in the library.
-		Error( "CEntityDict::AddEntity: Duplicate entity \"%s\" added!\n", pRegistry->GetClassname() );
+		Error("EntityDict::AddEntity: Duplicate entity \"%s\" added!\n", registry->GetClassname());
 		return false;
 	}
 
-	m_Dict.insert( std::make_pair( pRegistry->GetClassname(), pRegistry ) );
+	_dict.insert(std::make_pair(registry->GetClassname(), registry));
 
 	return true;
 }
 
-CBaseEntity* EntityDict::CreateEntity( const char* const pszClassName, EntityContext* context) const
+BaseEntity* EntityDict::CreateEntity(const char* const className, EntityContext* context) const
 {
-	const auto pReg = FindEntity( pszClassName );
+	const auto registry = FindEntity(className);
 
-	if( !pReg )
-		return nullptr;
-
-	if( CBaseEntity* pEntity = pReg->Create() )
+	if (!registry)
 	{
-		pEntity->Construct( pszClassName, context);
-		pEntity->OnCreate();
+		return nullptr;
+	}
 
-		return pEntity;
+	if (BaseEntity* entity = registry->Create(); entity)
+	{
+		entity->Construct(className, context);
+		entity->OnCreate();
+
+		return entity;
 	}
 
 	return nullptr;
 }
 
-void EntityDict::DestroyEntity( CBaseEntity* pEntity ) const
+void EntityDict::DestroyEntity(BaseEntity* entity) const
 {
-	assert( pEntity );
+	assert(entity);
 
-	const auto pReg = FindEntity( pEntity->GetClassName() );
+	const auto registry = FindEntity(entity->GetClassName());
 
-	if( !pReg )
+	if (!registry)
 	{
-		Error( "CEntityDict::DestroyEntity: Tried to destroy unknown entity \"%s\"!\n", pEntity->GetClassName() );
+		Error("EntityDict::DestroyEntity: Tried to destroy unknown entity \"%s\"!\n", entity->GetClassName());
 		return;
 	}
 
-	pEntity->OnDestroy();
+	entity->OnDestroy();
 
-	pReg->Destroy( pEntity );
+	registry->Destroy(entity);
 }

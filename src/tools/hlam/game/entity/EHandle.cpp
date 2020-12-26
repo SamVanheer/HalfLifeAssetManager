@@ -2,46 +2,46 @@
 #include "game/entity/BaseEntityList.hpp"
 #include "game/entity/EHandle.hpp"
 
-EHandle::EHandle( CBaseEntity* pEntity )
+EHandle::EHandle(BaseEntity* entity)
 {
-	*this = pEntity;
+	*this = entity;
 }
 
 void EHandle::Invalidate()
 {
-	m_Handle = entity::INVALID_ENTITY_HANDLE;
+	_handle = entity::INVALID_ENTITY_HANDLE;
 }
 
-CBaseEntity* EHandle::Get(const BaseEntityList& entityList) const
+BaseEntity* EHandle::Get(const BaseEntityList& entityList) const
 {
-	return entityList.GetEntityByHandle( *this );
+	return entityList.GetEntityByHandle(*this);
 }
 
-void EHandle::Set( CBaseEntity* pEntity )
+void EHandle::Set(BaseEntity* entity)
 {
-	if( pEntity )
+	if (entity)
 	{
-		*this = pEntity->GetEntHandle();
+		*this = entity->GetEntHandle();
 	}
 	else
 	{
-		m_Handle = entity::INVALID_ENTITY_HANDLE;
+		_handle = entity::INVALID_ENTITY_HANDLE;
 	}
 }
 
-EHandle& EHandle::operator=( CBaseEntity* pEntity )
+EHandle& EHandle::operator=(BaseEntity* entity)
 {
-	Set( pEntity );
+	Set(entity);
 
 	return *this;
 }
 
 entity::EntIndex_t EHandle::GetEntIndex() const
 {
-	return entity::GetHandleIndex( m_Handle );
+	return entity::GetHandleIndex(_handle);
 }
 
 entity::EntSerial_t EHandle::GetSerialNumber() const
 {
-	return entity::GetHandleSerial( m_Handle );
+	return entity::GetHandleSerial(_handle);
 }

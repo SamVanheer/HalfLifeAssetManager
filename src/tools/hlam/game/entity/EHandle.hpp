@@ -2,7 +2,7 @@
 
 #include "game/entity/EntityConstants.hpp"
 
-class CBaseEntity;
+class BaseEntity;
 class BaseEntityList;
 
 /**
@@ -21,19 +21,19 @@ public:
 
 	/**
 	*	Creates a handle that represents the given entity.
-	*	@param pEntity Entity that this handle should represent.
+	*	@param entity Entity that this handle should represent.
 	*/
-	EHandle( CBaseEntity* pEntity );
+	EHandle(BaseEntity* entity);
 
 	/**
 	*	Copy constructor.
 	*/
-	EHandle( const EHandle& other ) = default;
+	EHandle(const EHandle& other) = default;
 
 	/**
 	*	Assignment operator.
 	*/
-	EHandle& operator=( const EHandle& other ) = default;
+	EHandle& operator=(const EHandle& other) = default;
 
 	/**
 	*	Invalidates this handle.
@@ -43,7 +43,7 @@ public:
 	/**
 	*	Gets the entity that this handle represents, or null.
 	*/
-	CBaseEntity* Get(const BaseEntityList& entityList) const;
+	BaseEntity* Get(const BaseEntityList& entityList) const;
 
 	/**
 	*	Returns whether this handle represents a valid entity.
@@ -53,12 +53,12 @@ public:
 	/**
 	*	Sets the entity that this handle represents.
 	*/
-	void Set( CBaseEntity* pEntity );
+	void Set(BaseEntity* entity);
 
 	/**
-	*	@copydoc Set( CBaseEntity* pEntity )
+	*	@copydoc Set(BaseEntity* pEntity)
 	*/
-	EHandle& operator=( CBaseEntity* pEntity );
+	EHandle& operator=(BaseEntity* entity);
 
 	/**
 	*	Gets the entity's index. Only valid if this points to an entity.
@@ -73,14 +73,14 @@ public:
 	/**
 	*	Gets the EntHandle_t that this handle uses to represent the entity.
 	*/
-	entity::EntHandle_t GetEntHandle() const { return m_Handle; }
+	entity::EntHandle_t GetEntHandle() const { return _handle; }
 
 protected:
 	/**
 	*	Sets the handle value. Only the entity list should access this.
 	*/
-	void SetEntHandle( const entity::EntHandle_t handle ) { m_Handle = handle; }
+	void SetEntHandle(const entity::EntHandle_t handle) { _handle = handle; }
 
 private:
-	entity::EntHandle_t m_Handle = entity::INVALID_ENTITY_HANDLE;
+	entity::EntHandle_t _handle = entity::INVALID_ENTITY_HANDLE;
 };

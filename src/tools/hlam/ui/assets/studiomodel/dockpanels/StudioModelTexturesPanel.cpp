@@ -210,7 +210,7 @@ QImage StudioModelTexturesPanel::CreateUVMapImage(
 		return QPointF(x * textureScale, y * textureScale);
 	};
 
-	StudioModelEntity::MeshList_t meshes = entity->ComputeMeshList(textureIndex);
+	auto meshes = entity->ComputeMeshList(textureIndex);
 
 	if (meshIndex != -1)
 	{
@@ -408,7 +408,7 @@ void StudioModelTexturesPanel::OnTextureChanged(int index)
 
 	SetTextureFlagCheckBoxes(_ui, texture->flags);
 
-	const StudioModelEntity::MeshList_t meshes = entity->ComputeMeshList(index);
+	const auto meshes = entity->ComputeMeshList(index);
 
 	_ui.Meshes->setEnabled(true);
 

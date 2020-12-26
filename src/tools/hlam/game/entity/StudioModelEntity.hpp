@@ -27,45 +27,42 @@ public:
 	DECLARE_CLASS(StudioModelEntity, BaseAnimating);
 
 public:
-	typedef std::vector<const mstudiomesh_t*> MeshList_t;
-
-public:
 	virtual bool Spawn() override;
 
-	virtual void Draw( renderer::DrawFlags_t flags ) override;
+	virtual void Draw(renderer::DrawFlags_t flags) override;
 
 	studiomdl::CModelRenderInfo GetRenderInfo() const;
 
 	/**
 	*	Advances the frame. If dt is 0, advances to current time, otherwise, advances by the given amount of time.
 	*	TODO: clamp dt to positive?
-	*	@param dt Delta time.
-	*	@param flMax Maximum amount of time to advance by. If -1, no limit.
+	*	@param deltaTime Delta time.
+	*	@param maximum Maximum amount of time to advance by. If -1, no limit.
 	*	@return Delta time that was used to advance the frame. Can be 0.
 	*/
-	float	AdvanceFrame( float dt = 0.0f, const float flMax = -1.f );
+	float	AdvanceFrame(float deltaTime = 0.0f, const float maximum = -1.f);
 
 	/**
 	*	Gets an animation event for the current sequence for the given time range.
 	*	@param event Output. Event data.
-	*	@param flStart Start of the range of frames to check.
-	*	@param flEnd End of the range of frames to check.
+	*	@param start Start of the range of frames to check.
+	*	@param end End of the range of frames to check.
 	*	@param index Event index to start checking at.
-	*	@param bAllowClientEvents Whether to process client events or not.
+	*	@param allowClientEvents Whether to process client events or not.
 	*	@return Next event index to use as the index parameter. If 0, no more events are left.
 	*/
-	int		GetAnimationEvent(AnimEvent& event, float flStart, float flEnd, int index, const bool bAllowClientEvents );
+	int		GetAnimationEvent(AnimEvent& event, float start, float end, int index, const bool allowClientEvents);
 
 	/**
 	*	Dispatches events for the current sequence and frame. This will dispatch events between the frame number during last call to DispatchAnimEvents and the current frame.
-	*	@param bAllowClientEvents Whether to process client events or not.
+	*	@param allowClientEvents Whether to process client events or not.
 	*/
-	void	DispatchAnimEvents( const bool bAllowClientEvents );
+	void	DispatchAnimEvents(const bool allowClientEvents);
 
 	/**
 	*	Method to handle animation events. Override to handle events.
 	*/
-	virtual void HandleAnimEvent( const AnimEvent& event );
+	virtual void HandleAnimEvent(const AnimEvent& event);
 
 public:
 	/**
@@ -75,31 +72,31 @@ public:
 	void SetFrame(float frame);
 
 private:
-	studiomdl::CStudioModel* m_pModel = nullptr;
+	studiomdl::CStudioModel* _model = nullptr;
 
-	int		m_iSequence			= 0;				// sequence index
-	int		m_iBodygroup		= 0;				// bodypart selection	
-	int		m_iSkin				= 0;				// skin group selection
-	byte	m_uiController[ STUDIO_MAX_CONTROLLERS ] = { 0, 0, 0, 0 };	// bone controllers
-	float m_ControllerValues[STUDIO_MAX_CONTROLLERS] = {};
-	byte	m_uiMouth			= 0;				// mouth position
-	byte	m_uiBlending[ STUDIO_MAX_BLENDERS ]	= { 0, 0 };			// animation blending
+	int		_sequence = 0;				// sequence index
+	int		_bodygroup = 0;				// bodypart selection	
+	int		_skin = 0;				// skin group selection
+	byte	_controller[STUDIO_MAX_CONTROLLERS] = {0, 0, 0, 0};	// bone controllers
+	float _controllerValues[STUDIO_MAX_CONTROLLERS] = {};
+	byte	_mouth = 0;				// mouth position
+	byte	_blending[STUDIO_MAX_BLENDERS] = {0, 0};			// animation blending
 
-	float	m_flLastEventCheck	= 0;				//Last time we checked for animation events.
-	float	m_flAnimTime		= 0;				//Time when the frame was set.
+	float	_lastEventCheck = 0;				//Last time we checked for animation events.
+	float	_animTime = 0;				//Time when the frame was set.
 
-	StudioLoopingMode m_LoopingMode = StudioLoopingMode::AlwaysLoop;
+	StudioLoopingMode _loopingMode = StudioLoopingMode::AlwaysLoop;
 
 public:
 	/**
 	*	Gets the model.
 	*/
-	studiomdl::CStudioModel* GetModel() const { return m_pModel; }
+	studiomdl::CStudioModel* GetModel() const { return _model; }
 
 	/**
 	*	Sets the model.
 	*/
-	void SetModel( studiomdl::CStudioModel* pModel );
+	void SetModel(studiomdl::CStudioModel* model);
 
 	/**
 	*	Gets the number of frames that the current sequence has.
@@ -109,130 +106,124 @@ public:
 	/**
 	*	Gets the current sequence index.
 	*/
-	int GetSequence() const { return m_iSequence; }
+	int GetSequence() const { return _sequence; }
 
 	/**
 	*	Sets the current sequence.
-	*	@param iSequence Sequence to use.
-	*	@return Sequence that is currently used.
+	*	@param sequence Sequence to use.
 	*/
-	int SetSequence( const int iSequence );
+	void SetSequence(const int sequence);
 
 	/**
 	*	Gets info from the current sequence.
-	*	@param flFrameRate The sequence's frame rate.
-	*	@param flGroundSpeed How fast the entity should move on the ground during this sequence.
+	*	@param frameRate The sequence's frame rate.
+	*	@param groundSpeed How fast the entity should move on the ground during this sequence.
 	*/
-	void GetSequenceInfo( float& flFrameRate, float& flGroundSpeed ) const;
+	void GetSequenceInfo(float& frameRate, float& groundSpeed) const;
 
 	/**
 	*	Gets the bodygroup.
 	*/
-	int GetBodygroup() const { return m_iBodygroup; }
+	int GetBodygroup() const { return _bodygroup; }
 
 	int GetBodyValueForGroup(int group) const;
 
 	/**
 	*	Sets the value for the given bodygroup.
-	*	@param iBodygroup Bodygroup to set.
-	*	@param iValue Value to set.
-	*	@return Value that is currently used, or -1 if the bodygroup was invalid, or if the value was not changed.
+	*	@param bodygroup Bodygroup to set.
+	*	@param value Value to set.
 	*/
-	int SetBodygroup( const int iBodygroup, const int iValue );
+	void SetBodygroup(const int bodygroup, const int value);
 
 	/**
 	*	Gets the current skin.
 	*/
-	int GetSkin() const { return m_iSkin; }
+	int GetSkin() const { return _skin; }
 
 	/**
 	*	Sets the current skin.
-	*	@param iSkin Skin to use.
-	*	@return Skin that is currently used.
+	*	@param skin Skin to use.
 	*/
-	int SetSkin( const int iSkin );
+	void SetSkin(const int skin);
 
 	/**
 	*	Gets the given controller by index. This is the stored value, not the computed value.
-	*	@param iController Controller to get.
+	*	@param controller Controller to get.
 	*/
-	byte GetControllerByIndex( const int iController ) const;
+	byte GetControllerByIndex(const int controller) const;
 
 	/**
 	*	Gets the given controller value. The value is computed for the associated bone controller.
-	*	@param iController Controller value to get.
+	*	@param controller Controller value to get.
 	*/
-	float GetControllerValue( const int iController ) const;
+	float GetControllerValue(const int controller) const;
 
 	/**
 	*	Sets the controller value. The value is processed into a value that is in the range [0, 255].
-	*	@param iController Controller to set.
-	*	@param flValue Value to set.
-	*	@return The value that was set, or flValue if the controller index is out of bounds.
+	*	@param controller Controller to set.
+	*	@param value Value to set.
 	*/
-	float SetController( const int iController, float flValue );
+	void SetController(const int controller, float value);
 
 	/**
 	*	Gets the mouth controller. This is the stored value, not the computed value.
 	*/
-	byte GetMouth() const { return m_uiMouth; }
+	byte GetMouth() const { return _mouth; }
 
 	/**
 	*	Sets the mouth controller value. The value is processed into a value that is in the range [0, 255]
-	*	@param flValue Value to set.
-	*	@return The value that was set.
+	*	@param value Value to set.
 	*/
-	float SetMouth( float flValue );
+	void SetMouth(float value);
 
 	/**
 	*	Gets the given blender by index. This is the stored value, not the computed value.
-	*	@param iBlender Blender to get.
+	*	@param blender Blender to get.
 	*/
-	byte GetBlendingByIndex( const int iBlender ) const;
+	byte GetBlendingByIndex(const int blender) const;
 
 	/**
 	*	Gets the given blender value. The value is computed for the associated blender.
-	*	@param iBlender Blender value to get.
+	*	@param blender Blender value to get.
 	*/
-	float GetBlendingValue( const int iBlender ) const;
+	float GetBlendingValue(const int blender) const;
 
 	/**
 	*	Sets the given blender's value.
-	*	@param iBlender Blender to set.
-	*	@param flValue Value to set.
-	*	@return The value that was set, or 0 if the blender index is out of bounds.
+	*	@param blender Blender to set.
+	*	@param value Value to set.
 	*/
-	float SetBlending( const int iBlender, float flValue );
+	void SetBlending(const int blender, float value);
 
 	/**
 	*	Gets the last event check. This is the end of the range used to check for animation events the last time DispatchAnimEvents was called.
 	*/
-	float GetLastEventCheck() const { return m_flLastEventCheck; }
+	float GetLastEventCheck() const { return _lastEventCheck; }
 
 	/**
 	*	Gets the last time this entity advanced its frame.
 	*/
-	float GetAnimTime() const { return m_flAnimTime; }
+	float GetAnimTime() const { return _animTime; }
 
-	StudioLoopingMode GetLoopingMode() const { return m_LoopingMode; }
+	StudioLoopingMode GetLoopingMode() const { return _loopingMode; }
 
 	void SetLoopingMode(StudioLoopingMode value)
 	{
-		m_LoopingMode = value;
+		_loopingMode = value;
 	}
 
 	/**
 	*	Extracts the bounding box from the current sequence.
 	*/
-	void ExtractBbox( glm::vec3& vecMins, glm::vec3& vecMaxs ) const;
+	void ExtractBbox(glm::vec3& mins, glm::vec3& maxs) const;
 
 	/**
 	*	Gets a model by body part.
 	*/
-	mstudiomodel_t* GetModelByBodyPart( const int iBodyPart ) const;
+	mstudiomodel_t* GetModelByBodyPart(const int bodyPart) const;
 
 	/**
 	*	Computes a list of meshes that use the given texture.
 	*/
-	MeshList_t ComputeMeshList( const int iTexture ) const;
+	std::vector<const mstudiomesh_t*> ComputeMeshList(const int texture) const;
 };

@@ -5,14 +5,14 @@
 class HLMVStudioModelEntity : public StudioModelEntity
 {
 public:
-	DECLARE_CLASS( HLMVStudioModelEntity, StudioModelEntity);
+	DECLARE_CLASS(HLMVStudioModelEntity, StudioModelEntity);
 
 public:
 	virtual void OnCreate() override;
 
 	virtual bool Spawn() override;
 
-	virtual void HandleAnimEvent( const AnimEvent& event ) override;
+	virtual void HandleAnimEvent(const AnimEvent& event) override;
 
 	void AnimThink();
 

@@ -2,7 +2,7 @@
 
 #include "game/entity/EntityConstants.hpp"
 
-class CBaseEntity;
+class BaseEntity;
 class EHandle;
 
 /**
@@ -17,7 +17,7 @@ private:
 	*/
 	struct EntData_t final
 	{
-		CBaseEntity*		pEntity;
+		BaseEntity* pEntity;
 		entity::EntSerial_t serial;
 	};
 
@@ -28,22 +28,22 @@ public:
 	/**
 	*	Gets the total number of entities.
 	*/
-	size_t GetNumEntities() const { return m_uiNumEntities; }
+	size_t GetNumEntities() const { return _numEntities; }
 
 	/**
 	*	Gets the highest entity index that's currently in use, + 1.
 	*/
-	size_t GetHighestEntityIndex() const { return m_uiHighestEntIndex; }
+	size_t GetHighestEntityIndex() const { return _highestEntIndex; }
 
 	/**
 	*	Gets an entity by index.
 	*/
-	CBaseEntity* GetEntityByIndex( const entity::EntIndex_t uiIndex ) const;
+	BaseEntity* GetEntityByIndex(const entity::EntIndex_t uiIndex) const;
 
 	/**
 	*	Gets an entity by handle.
 	*/
-	CBaseEntity* GetEntityByHandle( const EHandle& handle ) const;
+	BaseEntity* GetEntityByHandle(const EHandle& handle) const;
 
 	/**
 	*	Gets the first entity in the list.
@@ -53,17 +53,17 @@ public:
 	/**
 	*	Gets the next entity in the list after previous.
 	*/
-	EHandle GetNextEntity( const EHandle& previous ) const;
+	EHandle GetNextEntity(const EHandle& previous) const;
 
 	/**
 	*	Inserts an entity into the list.
 	*/
-	size_t Add( CBaseEntity* pEntity );
+	size_t Add(BaseEntity* pEntity);
 
 	/**
 	*	Removes an entity. The entity is destroyed.
 	*/
-	void Remove( CBaseEntity* pEntity );
+	void Remove(BaseEntity* pEntity);
 
 	/**
 	*	Removes all entities. The entities are all destroyed.
@@ -74,42 +74,42 @@ protected:
 	/**
 	*	Called when an entity has just been added to the list.
 	*/
-	virtual void OnAdded( CBaseEntity* pEntity ) {}
+	virtual void OnAdded(BaseEntity* pEntity) {}
 
 	/**
 	*	Called right before the entity is removed from the list.
 	*/
-	virtual void OnRemove( CBaseEntity* pEntity ) {}
+	virtual void OnRemove(BaseEntity* pEntity) {}
 
 private:
 	/**
 	*	Finishes adding an entity.
 	*/
-	void FinishAddEntity( const entity::EntIndex_t uiIndex, CBaseEntity* pEntity );
+	void FinishAddEntity(const entity::EntIndex_t uiIndex, BaseEntity* pEntity);
 
 	/**
 	*	Finishes removing an entity.
 	*/
-	void FinishRemoveEntity( CBaseEntity* pEntity );
+	void FinishRemoveEntity(BaseEntity* pEntity);
 
 private:
 	/**
 	*	The actual list.
 	*	TODO: consider: allocate dynamically, resize as needed. Allows for a num_edicts like command line parameter.
 	*/
-	EntData_t m_Entities[ entity::MAX_ENTITIES ];
+	EntData_t _entities[entity::MAX_ENTITIES];
 
 	/**
 	*	The total number of entities.
 	*/
-	size_t m_uiNumEntities = 0;
+	size_t _numEntities = 0;
 
 	/**
 	*	The highest entity index that is currently in use, + 1.
 	*/
-	size_t m_uiHighestEntIndex = 0;
+	size_t _highestEntIndex = 0;
 
 private:
-	BaseEntityList( const BaseEntityList& ) = delete;
-	BaseEntityList& operator=( const BaseEntityList& ) = delete;
+	BaseEntityList(const BaseEntityList&) = delete;
+	BaseEntityList& operator=(const BaseEntityList&) = delete;
 };

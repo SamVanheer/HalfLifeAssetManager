@@ -70,9 +70,9 @@ inline void GetHandleData( const EntHandle_t handle, EntIndex_t& index, EntSeria
 	serial = GetHandleSerial( handle);
 }
 
-typedef unsigned int Flags_t;
+typedef unsigned int Flags;
 
-enum Flag : Flags_t
+enum Flag : Flags
 {
 	FL_NONE			= 0,
 

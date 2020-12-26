@@ -2,32 +2,27 @@
 
 #include "game/entity/BaseEntity.hpp"
 
-CBaseEntity::CBaseEntity()
-{
-}
+BaseEntity::BaseEntity() = default;
+BaseEntity::~BaseEntity() = default;
 
-CBaseEntity::~CBaseEntity()
+void BaseEntity::Construct(const char* const className, EntityContext* context)
 {
-}
-
-void CBaseEntity::Construct(const char* const pszClassName, EntityContext* context)
-{
-	assert( pszClassName && *pszClassName );
+	assert(className && *className);
 	assert(context);
 
-	m_pszClassName = pszClassName;
+	_className = className;
 	_context = context;
 }
 
-void CBaseEntity::OnCreate()
+void BaseEntity::OnCreate()
 {
 }
 
-void CBaseEntity::OnDestroy()
+void BaseEntity::OnDestroy()
 {
 }
 
-bool CBaseEntity::Spawn()
+bool BaseEntity::Spawn()
 {
 	return true;
 }

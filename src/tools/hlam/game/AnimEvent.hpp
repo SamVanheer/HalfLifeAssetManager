@@ -5,6 +5,6 @@
 */
 struct AnimEvent final
 {
-	int			iEvent;
-	const char* pszOptions;
+	int id;
+	const char* options;
 };

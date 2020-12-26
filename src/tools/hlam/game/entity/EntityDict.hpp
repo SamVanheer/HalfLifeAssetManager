@@ -5,8 +5,8 @@
 
 #include "utility/StringUtils.hpp"
 
-class CBaseEntity;
-class CBaseEntityRegistry;
+class BaseEntity;
+class BaseEntityRegistry;
 
 struct EntityContext;
 
@@ -16,7 +16,7 @@ struct EntityContext;
 class EntityDict final
 {
 private:
-	typedef std::unordered_map<const char*, const CBaseEntityRegistry*, Hash_C_String<const char*>, EqualTo_C_String<const char*>> EntityDict_t;
+	typedef std::unordered_map<const char*, const BaseEntityRegistry*, Hash_C_String<const char*>, EqualTo_C_String<const char*>> EntityDict_t;
 
 public:
 	EntityDict() = default;
@@ -30,34 +30,34 @@ public:
 	/**
 	*	Returns whether the requested entity type exists.
 	*/
-	bool HasEntity( const char* const pszClassName ) const;
+	bool HasEntity(const char* const className) const;
 
 	/**
 	*	Returns the registry for the requested entity type.
 	*/
-	const CBaseEntityRegistry* FindEntity( const char* const pszClassName ) const;
+	const BaseEntityRegistry* FindEntity(const char* const className) const;
 
 	/**
 	*	Adds a registry for an entity. Never call directly, use CEntityRegistry.
 	*/
-	bool AddEntity( const CBaseEntityRegistry* pRegistry );
+	bool AddEntity(const BaseEntityRegistry* registry);
 
 	/**
 	*	Creates an entity by entity name.
 	*/
-	CBaseEntity* CreateEntity( const char* const pszClassName, EntityContext* context ) const;
+	BaseEntity* CreateEntity(const char* const className, EntityContext* context) const;
 
 	/**
 	*	Destroys an entity.
 	*/
-	void DestroyEntity( CBaseEntity* pEntity ) const;
+	void DestroyEntity(BaseEntity* entity) const;
 
 private:
-	EntityDict_t m_Dict;
+	EntityDict_t _dict;
 
 private:
-	EntityDict( const EntityDict& ) = delete;
-	EntityDict& operator=( const EntityDict& ) = delete;
+	EntityDict(const EntityDict&) = delete;
+	EntityDict& operator=(const EntityDict&) = delete;
 };
 
 /**
@@ -69,87 +69,85 @@ EntityDict& GetEntityDict();
 *	Base class for the entity registry.
 *	Abstract.
 */
-class CBaseEntityRegistry
+class BaseEntityRegistry
 {
 public:
-	CBaseEntityRegistry( const char* const pszClassname, const char* const pszInternalname, const size_t uiSizeInBytes )
-		: m_pszClassname( pszClassname )
-		, m_pszInternalname( pszInternalname )
-		, m_uiSizeInBytes( uiSizeInBytes )
+	BaseEntityRegistry(const char* const className, const char* const internalName, const size_t sizeInBytes)
+		: _className(className)
+		, _internalName(internalName)
+		, _sizeInBytes(sizeInBytes)
 	{
-		assert( pszClassname );
-		assert( pszInternalname );
-		assert( uiSizeInBytes > 0 );
+		assert(className);
+		assert(internalName);
+		assert(sizeInBytes > 0);
 
-		GetEntityDict().AddEntity( this );
+		GetEntityDict().AddEntity(this);
 	}
+
+	BaseEntityRegistry(const BaseEntityRegistry&) = delete;
+	BaseEntityRegistry& operator=(const BaseEntityRegistry&) = delete;
 
 	/**
 	*	Returns the entity's class name.
 	*/
-	const char* GetClassname() const { return m_pszClassname; }
+	const char* GetClassname() const { return _className; }
 
 	/**
 	*	Returns the C++ class name.
 	*/
-	const char* GetInternalname() const { return m_pszInternalname; }
+	const char* GetInternalname() const { return _internalName; }
 
 	/**
 	*	Gets the size of the class, in bytes.
 	*/
-	size_t GetSize() const { return m_uiSizeInBytes; }
+	size_t GetSize() const { return _sizeInBytes; }
 
 	/**
 	*	Creates an instance of the entity represented by this registry.
 	*/
-	virtual CBaseEntity* Create() const = 0;
+	virtual BaseEntity* Create() const = 0;
 
 	/**
 	*	Destroys an instance of the entity represented by this registry.
 	*/
-	virtual void Destroy( CBaseEntity* pEntity ) const = 0;
+	virtual void Destroy(BaseEntity* entity) const = 0;
 
 private:
-	const char* const m_pszClassname;
-	const char* const m_pszInternalname;
-	const size_t m_uiSizeInBytes;
-
-private:
-	CBaseEntityRegistry( const CBaseEntityRegistry& ) = delete;
-	CBaseEntityRegistry& operator=( const CBaseEntityRegistry& ) = delete;
+	const char* const _className;
+	const char* const _internalName;
+	const size_t _sizeInBytes;
 };
 
 /**
 *	Class used to register entities.
 */
 template<typename ENTITY>
-class CEntityRegistry final : public CBaseEntityRegistry
+class EntityRegistry final : public BaseEntityRegistry
 {
 public:
-	CEntityRegistry( const char* const pszClassname, const char* const pszInternalname )
-		: CBaseEntityRegistry( pszClassname, pszInternalname, sizeof( ENTITY ) )
+	EntityRegistry(const char* const pszClassname, const char* const pszInternalname)
+		: BaseEntityRegistry(pszClassname, pszInternalname, sizeof(ENTITY))
 	{
 	}
 
-	CBaseEntity* Create() const override final
+	EntityRegistry(const EntityRegistry&) = delete;
+	EntityRegistry& operator=(const EntityRegistry&) = delete;
+
+	BaseEntity* Create() const override final
 	{
-		return static_cast<CBaseEntity*>( new ENTITY() );
+		return static_cast<BaseEntity*>(new ENTITY());
 	}
 
-	void Destroy( CBaseEntity* pEntity ) const override final
+	void Destroy(BaseEntity* entity) const override final
 	{
-		assert( pEntity );
+		assert(entity);
 
-		delete pEntity;
+		delete entity;
 	}
-
-private:
-	CEntityRegistry( const CEntityRegistry& ) = delete;
-	CEntityRegistry& operator=( const CEntityRegistry& ) = delete;
 };
 
 /**
 *	Use this macro to register entities.
 */
-#define LINK_ENTITY_TO_CLASS( className, internalName )									\
-static const CEntityRegistry<internalName> __g_##className( #className, #internalName )
+#define LINK_ENTITY_TO_CLASS(className, internalName)									\
+static const EntityRegistry<internalName> __g_##className(#className, #internalName)

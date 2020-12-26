@@ -16,14 +16,14 @@ public:
 
 	virtual bool Spawn() override;
 
-	virtual void Draw( renderer::DrawFlags_t flags ) override;
+	virtual void Draw(renderer::DrawFlags_t flags) override;
 
 	void AnimThink();
 
-	sprite::msprite_t* GetSprite() const { return m_pSprite; }
+	sprite::msprite_t* GetSprite() const { return _sprite; }
 
-	void SetSprite( sprite::msprite_t* pSprite );
+	void SetSprite(sprite::msprite_t* pSprite);
 
 private:
-	sprite::msprite_t* m_pSprite = nullptr;
+	sprite::msprite_t* _sprite = nullptr;
 };
