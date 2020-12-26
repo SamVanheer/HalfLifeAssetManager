@@ -57,75 +57,73 @@ bool IsStudioModel(const std::string& fileName);
 
 /**
 *	Loads a studio model
-*	@param pszFilename Name of the model to load. This is the entire path, including the extension
+*	@param fileName Name of the model to load. This is the entire path, including the extension
 *	@exception assets::AssetNotFound If a file could not be found
 *	@exception assets::AssetInvalidFormat If a file has an invalid format
 *	@exception assets::AssetVersionDiffers If a file has the wrong studio version
 */
-std::unique_ptr<StudioModel> LoadStudioModel(const char* const pszFilename);
+std::unique_ptr<StudioModel> LoadStudioModel(const char* const fileName);
 
 /**
 *	Saves a studio model.
-*	@param pszFilename Name of the file to save the model to. This is the entire path, including the extension.
+*	@param fileName Name of the file to save the model to. This is the entire path, including the extension.
 *	@param model Model to save.
 * *	@param correctSequenceGroupFileNames Whether the sequence group filenames embedded in the main file should be corrected
 *	@exception StudioModelException If an error occurs or if the given data is invalid
 */
-void SaveStudioModel( const char* const pszFilename, StudioModel& model, bool correctSequenceGroupFileNames );
+void SaveStudioModel(const char* const fileName, StudioModel& model, bool correctSequenceGroupFileNames);
 
 /**
 *	Container representing a studiomodel and its data.
 */
 class StudioModel final
 {
-private:
-	typedef std::vector<const mstudiomesh_t*> MeshList_t;
-	typedef std::vector<MeshList_t> TextureMeshMap_t;
-
 protected:
 	friend std::unique_ptr<StudioModel> LoadStudioModel(const char* const pszFilename);
 
 public:
 	static const size_t MAX_SEQGROUPS = 32;
-	static const size_t MAX_TEXTURES = MAXSTUDIOSKINS;
 
 public:
-	StudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& pStudioHdr, studio_ptr<studiohdr_t>&& pTextureHdr,
+	StudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& studioHeader, studio_ptr<studiohdr_t>&& textureHeader,
 		std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, bool isDol);
 	~StudioModel();
 
-	const std::string& GetFileName() const { return m_FileName; }
+	StudioModel(const StudioModel&) = delete;
+	StudioModel& operator=(const StudioModel&) = delete;
+
+	const std::string& GetFileName() const { return _fileName; }
 
 	void SetFileName(std::string&& fileName)
 	{
-		m_FileName = std::move(fileName);
+		_fileName = std::move(fileName);
 	}
 
-	studiohdr_t* GetStudioHeader() const { return m_pStudioHdr.get(); }
+	studiohdr_t* GetStudioHeader() const { return _studioHeader.get(); }
 
-	bool HasSeparateTextureHeader() const { return !!m_pTextureHdr; }
+	bool HasSeparateTextureHeader() const { return !!_textureHeader; }
 
 	studiohdr_t* GetTextureHeader() const
 	{
-		if (m_pTextureHdr)
+		if (_textureHeader)
 		{
-			return m_pTextureHdr.get();
+			return _textureHeader.get();
 		}
 
-		return m_pStudioHdr.get();
+		return _studioHeader.get();
 	}
 
-	studioseqhdr_t* GetSeqGroupHeader( const size_t i ) const { return m_SequenceHeaders[ i ].get(); }
+	studioseqhdr_t* GetSeqGroupHeader(const size_t i) const { return _sequenceHeaders[i].get(); }
 
-	mstudioanim_t* GetAnim( mstudioseqdesc_t* pseqdesc ) const;
+	mstudioanim_t* GetAnim(mstudioseqdesc_t* pseqdesc) const;
 
-	mstudiomodel_t* GetModelByBodyPart( const int iBody, const int iBodyPart ) const;
+	mstudiomodel_t* GetModelByBodyPart(const int iBody, const int iBodyPart) const;
 
 	int GetBodyValueForGroup(int compositeValue, int group) const;
 
-	bool CalculateBodygroup( const int iGroup, const int iValue, int& iInOutBodygroup ) const;
+	bool CalculateBodygroup(const int iGroup, const int iValue, int& iInOutBodygroup) const;
 
-	GLuint GetTextureId( const int iIndex ) const;
+	GLuint GetTextureId(const int iIndex) const;
 
 	void CreateTextures(graphics::TextureLoader& textureLoader);
 
@@ -146,9 +144,9 @@ public:
 	{
 		std::vector<int> bones;
 
-		for (int i = 0; i < m_pStudioHdr->numbones; ++i)
+		for (int i = 0; i < _studioHeader->numbones; ++i)
 		{
-			auto bone = m_pStudioHdr->GetBone(i);
+			auto bone = _studioHeader->GetBone(i);
 
 			if (bone->parent == -1)
 			{
@@ -160,20 +158,16 @@ public:
 	}
 
 private:
-	std::string m_FileName;
+	std::string _fileName;
 
-	studio_ptr<studiohdr_t> m_pStudioHdr;
-	studio_ptr<studiohdr_t> m_pTextureHdr;
+	studio_ptr<studiohdr_t> _studioHeader;
+	studio_ptr<studiohdr_t> _textureHeader;
 
-	std::vector<studio_ptr<studioseqhdr_t>> m_SequenceHeaders;
+	std::vector<studio_ptr<studioseqhdr_t>> _sequenceHeaders;
 
-	std::vector<GLuint> m_Textures;
+	std::vector<GLuint> _textures;
 
-	bool m_IsDol;
-
-private:
-	StudioModel( const StudioModel& ) = delete;
-	StudioModel& operator=( const StudioModel& ) = delete;
+	bool _isDol;
 };
 
 struct ScaleMeshesData
@@ -202,19 +196,19 @@ void ApplyScaleBonesData(StudioModel& studioModel, const std::vector<studiomdl::
 *	@param iControl Value containing a STUDIO_* control bit.
 *	@return String representation for the control, or nullptr.
 */
-const char* ControlToString( const int iControl );
+const char* ControlToString(const int iControl);
 
 /**
 *	Returns the description for a studio control value.
 *	@param iControl Value containing a STUDIO_* control bit.
 *	@return String description for the control, or nullptr.
 */
-const char* ControlToStringDescription( const int iControl );
+const char* ControlToStringDescription(const int iControl);
 
 /**
 *	Converts a string to a control value.
 *	@param pszString String representation of a control value.
 *	@return Control value, or -1 if the string does not represent a valid control.
 */
-int StringToControl( const char* const pszString );
+int StringToControl(const char* const pszString);
 }

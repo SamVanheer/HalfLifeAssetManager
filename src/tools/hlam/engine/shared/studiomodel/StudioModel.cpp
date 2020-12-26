@@ -93,92 +93,89 @@ void ConvertDolToMdl(byte* pBuffer, const mstudiotexture_t& texture)
 }
 }
 
-StudioModel::StudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& pStudioHdr, studio_ptr<studiohdr_t>&& pTextureHdr,
+StudioModel::StudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& studioHeader, studio_ptr<studiohdr_t>&& textureHeader,
 	std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, bool isDol)
-	: m_FileName(std::move(fileName))
-	, m_pStudioHdr(std::move(pStudioHdr))
-	, m_pTextureHdr(std::move(pTextureHdr))
-	, m_SequenceHeaders(std::move(sequenceHeaders))
-	, m_IsDol(isDol)
+	: _fileName(std::move(fileName))
+	, _studioHeader(std::move(studioHeader))
+	, _textureHeader(std::move(textureHeader))
+	, _sequenceHeaders(std::move(sequenceHeaders))
+	, _isDol(isDol)
 {
-	assert(m_pStudioHdr);
+	assert(_studioHeader);
 }
 
 StudioModel::~StudioModel()
 {
-	glDeleteTextures(GetTextureHeader()->numtextures, m_Textures.data());
-	m_Textures.clear();
+	glDeleteTextures(_textures.size(), _textures.data());
+	_textures.clear();
 }
 
 mstudioanim_t* StudioModel::GetAnim(mstudioseqdesc_t* pseqdesc) const
 {
-	mstudioseqgroup_t* pseqgroup = m_pStudioHdr->GetSequenceGroup(pseqdesc->seqgroup);
+	mstudioseqgroup_t* pseqgroup = _studioHeader->GetSequenceGroup(pseqdesc->seqgroup);
 
 	if (pseqdesc->seqgroup == 0)
 	{
-		return (mstudioanim_t*) ((byte*) m_pStudioHdr.get() + pseqgroup->unused2 + pseqdesc->animindex);
+		return (mstudioanim_t*)((byte*)_studioHeader.get() + pseqgroup->unused2 + pseqdesc->animindex);
 	}
 
-	return (mstudioanim_t*) ((byte*) m_SequenceHeaders[pseqdesc->seqgroup - 1].get() + pseqdesc->animindex);
+	return (mstudioanim_t*)((byte*)_sequenceHeaders[pseqdesc->seqgroup - 1].get() + pseqdesc->animindex);
 }
 
 mstudiomodel_t* StudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart) const
 {
-	mstudiobodyparts_t* pbodypart = m_pStudioHdr->GetBodypart(iBodyPart);
+	mstudiobodyparts_t* pbodypart = _studioHeader->GetBodypart(iBodyPart);
 
 	int index = iBody / pbodypart->base;
 	index = index % pbodypart->nummodels;
 
-	return (mstudiomodel_t*) ((byte*) m_pStudioHdr.get() + pbodypart->modelindex) + index;
+	return (mstudiomodel_t*)((byte*)_studioHeader.get() + pbodypart->modelindex) + index;
 }
 
 int StudioModel::GetBodyValueForGroup(int compositeValue, int group) const
 {
-	if (group >= m_pStudioHdr->numbodyparts)
+	if (group >= _studioHeader->numbodyparts)
 	{
 		return -1;
 	}
 
-	const mstudiobodyparts_t* const bodyPart = m_pStudioHdr->GetBodypart(group);
+	const mstudiobodyparts_t* const bodyPart = _studioHeader->GetBodypart(group);
 
 	return (compositeValue / bodyPart->base) % bodyPart->nummodels;
 }
 
 bool StudioModel::CalculateBodygroup(const int iGroup, const int iValue, int& iInOutBodygroup) const
 {
-	if (iGroup > m_pStudioHdr->numbodyparts)
+	if (iGroup > _studioHeader->numbodyparts)
 		return false;
 
-	const mstudiobodyparts_t* const pbodypart = m_pStudioHdr->GetBodypart(iGroup);
+	const mstudiobodyparts_t* const pbodypart = _studioHeader->GetBodypart(iGroup);
 
-	int iCurrent = (iInOutBodygroup / pbodypart->base) % pbodypart->nummodels;
+	int current = (iInOutBodygroup / pbodypart->base) % pbodypart->nummodels;
 
 	if (iValue >= pbodypart->nummodels)
 		return true;
 
-	iInOutBodygroup = (iInOutBodygroup - (iCurrent * pbodypart->base) + (iValue * pbodypart->base));
+	iInOutBodygroup = (iInOutBodygroup - (current * pbodypart->base) + (iValue * pbodypart->base));
 
 	return true;
 }
 
 GLuint StudioModel::GetTextureId(const int iIndex) const
 {
-	const studiohdr_t* const pHdr = GetTextureHeader();
-
-	if (!pHdr)
+	if (iIndex < 0 || iIndex >= _textures.size())
+	{
 		return GL_INVALID_TEXTURE_ID;
+	}
 
-	if (iIndex < 0 || iIndex >= pHdr->numtextures)
-		return GL_INVALID_TEXTURE_ID;
-
-	return m_Textures[iIndex];
+	return _textures[iIndex];
 }
 
 void StudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 {
 	const auto textureHeader = GetTextureHeader();
 
-	if (textureHeader->textureindex > 0 && textureHeader->numtextures <= MAX_TEXTURES)
+	if (textureHeader->textureindex > 0)
 	{
 		byte* pIn = reinterpret_cast<byte*>(textureHeader);
 
@@ -191,7 +188,7 @@ void StudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 
 			const auto& texture = *textureHeader->GetTexture(i);
 
-			if (m_IsDol)
+			if (_isDol)
 			{
 				ConvertDolToMdl(pIn, texture);
 			}
@@ -204,7 +201,7 @@ void StudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 				(texture.flags & STUDIO_NF_NOMIPS) != 0,
 				(texture.flags & STUDIO_NF_MASKED) != 0);
 
-			m_Textures.emplace_back(name);
+			_textures.emplace_back(name);
 		}
 	}
 }
@@ -226,21 +223,21 @@ void StudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader, mstudi
 
 	auto header = GetTextureHeader();
 
-	const int iIndex = ptexture - header->GetTextures();
+	const int index = ptexture - header->GetTextures();
 
-	if (iIndex < 0 || iIndex >= header->numtextures)
+	if (index < 0 || index >= header->numtextures)
 	{
-		Error("CStudioModel::ReuploadTexture: Invalid texture!");
+		Error("StudioModel::ReuploadTexture: Invalid texture!");
 		return;
 	}
 
 	ReplaceTexture(textureLoader, ptexture,
-		header->GetData() + ptexture->index, header->GetData() + ptexture->index + ptexture->width * ptexture->height, m_Textures[iIndex]);
+		header->GetData() + ptexture->index, header->GetData() + ptexture->index + ptexture->width * ptexture->height, _textures[index]);
 }
 
 void StudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
 {
-	if (m_Textures.empty())
+	if (_textures.empty())
 	{
 		//No textures loaded yet, do nothing
 		return;
@@ -250,14 +247,14 @@ void StudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
 
 	for (int i = 0; i < textureHeader->numtextures; ++i)
 	{
-		glBindTexture(GL_TEXTURE_2D, m_Textures[i]);
-		textureLoader.SetFilters(m_Textures[i], (textureHeader->GetTexture(i)->flags & STUDIO_NF_NOMIPS) != 0);
+		glBindTexture(GL_TEXTURE_2D, _textures[i]);
+		textureLoader.SetFilters(_textures[i], (textureHeader->GetTexture(i)->flags & STUDIO_NF_NOMIPS) != 0);
 	}
 }
 
 void StudioModel::ReuploadTextures(graphics::TextureLoader& textureLoader)
 {
-	if (m_Textures.empty())
+	if (_textures.empty())
 	{
 		//No textures loaded yet, do nothing
 		return;
@@ -270,59 +267,59 @@ void StudioModel::ReuploadTextures(graphics::TextureLoader& textureLoader)
 		const auto ptexture = header->GetTexture(i);
 
 		ReplaceTexture(textureLoader, ptexture,
-			header->GetData() + ptexture->index, header->GetData() + ptexture->index + ptexture->width * ptexture->height, m_Textures[i]);
+			header->GetData() + ptexture->index, header->GetData() + ptexture->index + ptexture->width * ptexture->height, _textures[i]);
 	}
 }
 
 namespace
 {
 template<typename T>
-studio_ptr<T> LoadStudioHeader(const char* const pszFilename, const bool bAllowSeqGroup)
+studio_ptr<T> LoadStudioHeader(const char* const fileName, const bool bAllowSeqGroup)
 {
 	// load the model
-	FILE* pFile = utf8_fopen(pszFilename, "rb");
+	FILE* file = utf8_fopen(fileName, "rb");
 
-	if (!pFile)
+	if (!file)
 	{
-		throw assets::AssetFileNotFound(std::string{"File \""} + pszFilename + "\" not found");
+		throw assets::AssetFileNotFound(std::string{"File \""} + fileName + "\" not found");
 	}
 
-	fseek(pFile, 0, SEEK_END);
-	const size_t size = ftell(pFile);
-	fseek(pFile, 0, SEEK_SET);
+	fseek(file, 0, SEEK_END);
+	const size_t size = ftell(file);
+	fseek(file, 0, SEEK_SET);
 
 	auto buffer = std::make_unique<byte[]>(size);
 
-	auto pStudioHdr = reinterpret_cast<T*>(buffer.get());
+	auto header = reinterpret_cast<T*>(buffer.get());
 
-	const size_t uiRead = fread(pStudioHdr, size, 1, pFile);
-	fclose(pFile);
+	const size_t readCount = fread(header, size, 1, file);
+	fclose(file);
 
-	if (uiRead != 1)
+	if (readCount != 1)
 	{
-		throw assets::AssetInvalidFormat(std::string{"Error reading file \""} + pszFilename + "\"");
+		throw assets::AssetInvalidFormat(std::string{"Error reading file \""} + fileName + "\"");
 	}
 
-	if (strncmp(reinterpret_cast<const char*>(&pStudioHdr->id), STUDIOMDL_HDR_ID, 4) &&
-		strncmp(reinterpret_cast<const char*>(&pStudioHdr->id), STUDIOMDL_SEQ_ID, 4))
+	if (strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_HDR_ID, 4) &&
+		strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		throw assets::AssetInvalidFormat(std::string{"The file \""} + pszFilename + "\" is neither a studio header nor a sequence header");
+		throw assets::AssetInvalidFormat(std::string{"The file \""} + fileName + "\" is neither a studio header nor a sequence header");
 	}
 
-	if (!bAllowSeqGroup && !strncmp(reinterpret_cast<const char*>(&pStudioHdr->id), STUDIOMDL_SEQ_ID, 4))
+	if (!bAllowSeqGroup && !strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		throw assets::AssetInvalidFormat(std::string{"File \""} + pszFilename + "\": Expected a main studio model file, got a sequence file");
+		throw assets::AssetInvalidFormat(std::string{"File \""} + fileName + "\": Expected a main studio model file, got a sequence file");
 	}
 
-	if (pStudioHdr->version != STUDIO_VERSION)
+	if (header->version != STUDIO_VERSION)
 	{
-		throw assets::AssetVersionDiffers(std::string{"File \""} + pszFilename + "\": version differs: expected \"" +
-			std::to_string(STUDIO_VERSION) + "\", got \"" + std::to_string(pStudioHdr->version) + "\"");
+		throw assets::AssetVersionDiffers(std::string{"File \""} + fileName + "\": version differs: expected \"" +
+			std::to_string(STUDIO_VERSION) + "\", got \"" + std::to_string(header->version) + "\"");
 	}
 
 	buffer.release();
 
-	return studio_ptr<T>(pStudioHdr);
+	return studio_ptr<T>(header);
 }
 }
 
@@ -356,23 +353,23 @@ bool IsStudioModel(const std::string& fileName)
 	return isStudioModel;
 }
 
-std::unique_ptr<StudioModel> LoadStudioModel(const char* const pszFilename)
+std::unique_ptr<StudioModel> LoadStudioModel(const char* const fileName)
 {
-	const std::filesystem::path fileName{std::filesystem::u8path(pszFilename)};
+	const std::filesystem::path completeFileName{std::filesystem::u8path(fileName)};
 
-	std::filesystem::path baseFileName{fileName};
+	std::filesystem::path baseFileName{completeFileName};
 
 	baseFileName.replace_extension();
 
-	const auto bIsDol = fileName.extension() == ".dol";
+	const auto isDol = completeFileName.extension() == ".dol";
 
 	//Load the model
-	auto mainHeader = LoadStudioHeader<studiohdr_t>(pszFilename, false);
+	auto mainHeader = LoadStudioHeader<studiohdr_t>(fileName, false);
 
 	if (mainHeader->name[0] == '\0')
 	{
 		//Only the main hader sets the name, so this must be something else (probably texture header, but could be anything)
-		auto message = std::string{"The file \""} + pszFilename + "\" is not a studio model main header file";
+		auto message = std::string{"The file \""} + fileName + "\" is not a studio model main header file";
 
 		if (!baseFileName.empty() && std::toupper(baseFileName.u8string().back()) == 'T')
 		{
@@ -387,7 +384,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const char* const pszFilename)
 	// preload textures
 	if (mainHeader->numtextures == 0)
 	{
-		const auto extension = bIsDol ? "T.dol" : "T.mdl";
+		const auto extension = isDol ? "T.dol" : "T.mdl";
 
 		std::filesystem::path texturename = baseFileName;
 
@@ -409,7 +406,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const char* const pszFilename)
 		{
 			seqgroupname.str({});
 
-			const auto suffix = bIsDol ? ".dol" : ".mdl";
+			const auto suffix = isDol ? ".dol" : ".mdl";
 
 			seqgroupname << baseFileName.u8string() <<
 				std::setfill('0') << std::setw(2) << i <<
@@ -419,8 +416,8 @@ std::unique_ptr<StudioModel> LoadStudioModel(const char* const pszFilename)
 		}
 	}
 
-	return std::make_unique<StudioModel>(pszFilename, std::move(mainHeader), std::move(textureHeader),
-		std::move(sequenceHeaders), bIsDol);
+	return std::make_unique<StudioModel>(fileName, std::move(mainHeader), std::move(textureHeader),
+		std::move(sequenceHeaders), isDol);
 }
 
 void SaveStudioModel(const char* const pszFilename, StudioModel& model, bool correctSequenceGroupFileNames)
@@ -503,18 +500,18 @@ void SaveStudioModel(const char* const pszFilename, StudioModel& model, bool cor
 		}
 	}
 
-	FILE* pFile = utf8_fopen(pszFilename, "wb");
+	FILE* file = utf8_fopen(pszFilename, "wb");
 
-	if (!pFile)
+	if (!file)
 	{
 		throw assets::AssetException("Could not open main file for writing");
 	}
 
-	bool bSuccess = fwrite(pStudioHdr, sizeof(byte), pStudioHdr->length, pFile) == pStudioHdr->length;
+	bool success = fwrite(pStudioHdr, sizeof(byte), pStudioHdr->length, file) == pStudioHdr->length;
 
-	fclose(pFile);
+	fclose(file);
 
-	if (!bSuccess)
+	if (!success)
 	{
 		throw assets::AssetException("Error while writing to main file");
 	}
@@ -534,17 +531,17 @@ void SaveStudioModel(const char* const pszFilename, StudioModel& model, bool cor
 
 		texturename += "T.mdl";
 
-		pFile = utf8_fopen(texturename.u8string().c_str(), "wb");
+		file = utf8_fopen(texturename.u8string().c_str(), "wb");
 
-		if (!pFile)
+		if (!file)
 		{
 			throw assets::AssetException("Could not open texture file for writing");
 		}
 
-		bSuccess = fwrite(pTextureHdr, sizeof(byte), pTextureHdr->length, pFile) == pTextureHdr->length;
-		fclose(pFile);
+		success = fwrite(pTextureHdr, sizeof(byte), pTextureHdr->length, file) == pTextureHdr->length;
+		fclose(file);
 
-		if (!bSuccess)
+		if (!success)
 		{
 			throw assets::AssetException("Error while writing to texture file");
 		}
@@ -555,7 +552,7 @@ void SaveStudioModel(const char* const pszFilename, StudioModel& model, bool cor
 	{
 		std::stringstream seqgroupname;
 
-		for (int i = 1; i < pStudioHdr->numseqgroups; i++)
+		for (int i = 1; i < pStudioHdr->numseqgroups; ++i)
 		{
 			seqgroupname.str({});
 
@@ -563,19 +560,19 @@ void SaveStudioModel(const char* const pszFilename, StudioModel& model, bool cor
 				std::setfill('0') << std::setw(2) << i <<
 				std::setw(0) << ".mdl";
 
-			pFile = utf8_fopen(seqgroupname.str().c_str(), "wb");
+			file = utf8_fopen(seqgroupname.str().c_str(), "wb");
 
-			if (!pFile)
+			if (!file)
 			{
 				throw assets::AssetException("Could not open sequence file for writing");
 			}
 
 			const auto pAnimHdr = model.GetSeqGroupHeader(i - 1);
 
-			bSuccess = fwrite(pAnimHdr, sizeof(byte), pAnimHdr->length, pFile) == pAnimHdr->length;
-			fclose(pFile);
+			success = fwrite(pAnimHdr, sizeof(byte), pAnimHdr->length, file) == pAnimHdr->length;
+			fclose(file);
 
-			if (!bSuccess)
+			if (!success)
 			{
 				throw assets::AssetException("Error while writing to sequence file");
 			}
@@ -728,8 +725,8 @@ std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> Calc
 		newData.emplace_back(
 			ScaleBonesBoneData
 			{
-				{bone->value[0]* scale, bone->value[1] * scale, bone->value[2] * scale},
-				{bone->scale[0]* scale, bone->scale[1] * scale, bone->scale[2] * scale}
+				{bone->value[0] * scale, bone->value[1] * scale, bone->value[2] * scale},
+				{bone->scale[0] * scale, bone->scale[1] * scale, bone->scale[2] * scale}
 			});
 	}
 
