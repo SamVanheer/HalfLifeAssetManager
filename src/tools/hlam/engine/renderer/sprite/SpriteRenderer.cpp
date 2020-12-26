@@ -12,18 +12,18 @@
 
 #include "engine/shared/sprite/sprite.hpp"
 
-#include "engine/renderer/sprite/CSpriteRenderer.hpp"
+#include "engine/renderer/sprite/SpriteRenderer.hpp"
 
 namespace sprite
 {
-CSpriteRenderer::CSpriteRenderer(WorldTime* worldTime)
+SpriteRenderer::SpriteRenderer(WorldTime* worldTime)
 	: _worldTime(worldTime)
 {
 }
 
-CSpriteRenderer::~CSpriteRenderer() = default;
+SpriteRenderer::~SpriteRenderer() = default;
 
-void CSpriteRenderer::DrawSprite(const SpriteRenderInfo* renderInfo, const renderer::DrawFlags_t flags)
+void SpriteRenderer::DrawSprite(const SpriteRenderInfo* renderInfo, const renderer::DrawFlags_t flags)
 {
 	assert(renderInfo);
 
@@ -52,7 +52,7 @@ void CSpriteRenderer::DrawSprite(const SpriteRenderInfo* renderInfo, const rende
 	DrawSprite(renderInfo->Origin, {frame->width, frame->height}, sprite, renderInfo->Frame, flags, typeOverride);
 }
 
-void CSpriteRenderer::DrawSprite2D(const float x, const float y, const float width, const float height,
+void SpriteRenderer::DrawSprite2D(const float x, const float y, const float width, const float height,
 	const msprite_t* sprite, const renderer::DrawFlags_t flags)
 {
 	const float frameIndex = static_cast<float>(fmod(_worldTime->GetTime() * DEFAULT_FRAMERATE, sprite->numframes));
@@ -61,7 +61,7 @@ void CSpriteRenderer::DrawSprite2D(const float x, const float y, const float wid
 	DrawSprite({x, y, 0}, {width, height}, sprite, frameIndex, flags);
 }
 
-void CSpriteRenderer::DrawSprite2D(const float x, const float y,
+void SpriteRenderer::DrawSprite2D(const float x, const float y,
 	const msprite_t* sprite, const float scale, const renderer::DrawFlags_t flags)
 {
 	assert(sprite);
@@ -88,7 +88,7 @@ void CSpriteRenderer::DrawSprite2D(const float x, const float y,
 	DrawSprite2D(x, y, static_cast<float>(frame->width * scale), static_cast<float>(frame->height * scale), sprite, flags);
 }
 
-void CSpriteRenderer::DrawSprite2D(const Sprite2DRenderInfo* renderInfo, const renderer::DrawFlags_t flags)
+void SpriteRenderer::DrawSprite2D(const Sprite2DRenderInfo* renderInfo, const renderer::DrawFlags_t flags)
 {
 	assert(renderInfo);
 
@@ -131,7 +131,7 @@ void CSpriteRenderer::DrawSprite2D(const Sprite2DRenderInfo* renderInfo, const r
 		renderInfo->Sprite, renderInfo->Frame, flags, nullptr, texFormatOverride);
 }
 
-void CSpriteRenderer::DrawSprite(const glm::vec3& origin, const glm::vec2& size,
+void SpriteRenderer::DrawSprite(const glm::vec3& origin, const glm::vec2& size,
 	const msprite_t* sprite, const float frameIndex,
 	const renderer::DrawFlags_t flags, const sprite::Type::Type* typeOverride, const sprite::TexFormat::TexFormat* texFormatOverride)
 {

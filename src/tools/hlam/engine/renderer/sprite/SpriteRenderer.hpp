@@ -14,17 +14,17 @@ namespace sprite
 {
 struct msprite_t;
 
-class CSpriteRenderer final : public ISpriteRenderer
+class SpriteRenderer final : public ISpriteRenderer
 {
 private:
 	static constexpr float DEFAULT_FRAMERATE{10};
 
 public:
-	CSpriteRenderer(WorldTime* worldTime);
-	~CSpriteRenderer();
+	SpriteRenderer(WorldTime* worldTime);
+	~SpriteRenderer();
 
-	CSpriteRenderer(const CSpriteRenderer&) = delete;
-	CSpriteRenderer& operator=(const CSpriteRenderer&) = delete;
+	SpriteRenderer(const SpriteRenderer&) = delete;
+	SpriteRenderer& operator=(const SpriteRenderer&) = delete;
 
 	void DrawSprite(const SpriteRenderInfo* renderInfo, const renderer::DrawFlags_t flags) override;
 

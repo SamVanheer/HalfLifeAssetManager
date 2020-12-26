@@ -1,4 +1,4 @@
 target_sources(HLAM
 	PRIVATE
-		CSpriteRenderer.cpp
-		CSpriteRenderer.hpp)
+		SpriteRenderer.cpp
+		SpriteRenderer.hpp)
