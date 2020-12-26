@@ -11,8 +11,8 @@
 namespace sprite
 {
 struct msprite_t;
-struct CSpriteRenderInfo;
-struct C2DSpriteRenderInfo;
+struct SpriteRenderInfo;
+struct Sprite2DRenderInfo;
 
 /**
 *	Sprite renderer interface.
@@ -20,47 +20,45 @@ struct C2DSpriteRenderInfo;
 class ISpriteRenderer
 {
 public:
-	virtual ~ISpriteRenderer() = 0;
+	virtual ~ISpriteRenderer() = 0 {}
 
 	/**
 	*	Draws a sprite.
-	*	@param pRenderInfo Render info.
+	*	@param renderInfo Render info.
 	*	@param flags Draw flags.
 	*/
-	virtual void DrawSprite( const CSpriteRenderInfo* pRenderInfo, const renderer::DrawFlags_t flags ) = 0;
+	virtual void DrawSprite(const SpriteRenderInfo* renderInfo, const renderer::DrawFlags_t flags) = 0;
 
 	/**
 	*	Draws a 2D sprite. The sprite will be rescaled to the given size.
-	*	@param flX X position on-screen.
-	*	@param flY Y position on-screen.
-	*	@param flWidth Width in pixels.
-	*	@param flHeight Height in pixels.
-	*	@param pSprite Sprite to draw.
+	*	@param x X position on-screen.
+	*	@param y Y position on-screen.
+	*	@param width Width in pixels.
+	*	@param height Height in pixels.
+	*	@param sprite Sprite to draw.
 	*	@param flags Draw flags.
 	*/
-	virtual void DrawSprite2D( const float flX, const float flY, const float flWidth, const float flHeight, const msprite_t* pSprite, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE ) = 0;
+	virtual void DrawSprite2D(const float x, const float y, const float width, const float height,
+		const msprite_t* sprite, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE) = 0;
 
 	/**
 	*	Draws a 2D sprite.
-	*	@param flX X position on-screen.
-	*	@param flY Y position on-screen.
-	*	@param pSprite Sprite to draw.
-	*	@param flScale Sprite scale.
+	*	@param x X position on-screen.
+	*	@param y Y position on-screen.
+	*	@param sprite Sprite to draw.
+	*	@param scale Sprite scale.
 	*	@param flags Draw flags.
 	*/
-	virtual void DrawSprite2D( const float flX, const float flY, const msprite_t* pSprite, const float flScale = 1, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE ) = 0;
+	virtual void DrawSprite2D(const float x, const float y,
+		const msprite_t* sprite, const float scale = 1, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE) = 0;
 
 	/**
 	*	Draws a 2D sprite.
-	*	@param pRenderInfo Render info.
+	*	@param renderInfo Render info.
 	*	@param flags Draw flags.
 	*/
-	virtual void DrawSprite2D( const C2DSpriteRenderInfo* pRenderInfo, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE ) = 0;
+	virtual void DrawSprite2D(const Sprite2DRenderInfo* renderInfo, const renderer::DrawFlags_t flags = renderer::DrawFlag::NONE) = 0;
 };
-
-inline ISpriteRenderer::~ISpriteRenderer()
-{
-}
 }
 
 /** @} */

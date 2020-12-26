@@ -3,7 +3,7 @@
 #include "engine/shared/sprite/sprite.hpp"
 #include "engine/shared/sprite/CSprite.hpp"
 #include "engine/shared/renderer/sprite/ISpriteRenderer.hpp"
-#include "engine/shared/renderer/sprite/CSpriteRenderInfo.hpp"
+#include "engine/shared/renderer/sprite/SpriteRenderInfo.hpp"
 
 #include "game/entity/SpriteEntity.hpp"
 
@@ -27,17 +27,17 @@ bool SpriteEntity::Spawn()
 
 void SpriteEntity::Draw(renderer::DrawFlags_t flags)
 {
-	sprite::CSpriteRenderInfo info;
+	sprite::SpriteRenderInfo info;
 
-	info.vecOrigin = GetOrigin();
-	info.vecAngles = GetAngles();
-	info.vecScale = GetScale();
+	info.Origin = GetOrigin();
+	info.Angles = GetAngles();
+	info.Scale = GetScale();
 
-	info.pSprite = GetSprite();
+	info.Sprite = GetSprite();
 
-	info.flTransparency = GetTransparency();
+	info.Transparency = GetTransparency();
 
-	info.flFrame = GetFrame();
+	info.Frame = GetFrame();
 
 	GetContext()->SpriteRenderer->DrawSprite(&info, flags);
 }
