@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "engine/shared/studiomodel/CStudioModel.hpp"
+#include "engine/shared/studiomodel/StudioModel.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 

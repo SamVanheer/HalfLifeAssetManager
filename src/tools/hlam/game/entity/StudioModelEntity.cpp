@@ -5,7 +5,7 @@
 #include "core/shared/Logging.hpp"
 #include "core/shared/WorldTime.hpp"
 
-#include "engine/shared/studiomodel/CStudioModel.hpp"
+#include "engine/shared/studiomodel/StudioModel.hpp"
 
 #include "game/entity/StudioModelEntity.hpp"
 

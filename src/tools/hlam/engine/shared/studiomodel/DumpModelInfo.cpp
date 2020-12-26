@@ -1,7 +1,7 @@
 #include <cassert>
 
-#include "engine/shared/studiomodel/CStudioModel.hpp"
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
+#include "engine/shared/studiomodel/StudioModel.hpp"
 
 namespace studiomdl
 {

@@ -6,7 +6,7 @@
 
 #include "graphics/GraphicsUtils.hpp"
 
-#include "engine/shared/studiomodel/CStudioModel.hpp"
+#include "engine/shared/studiomodel/StudioModel.hpp"
 
 #include "engine/renderer/studiomodel/StudioModelRenderer.hpp"
 

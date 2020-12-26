@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-#include "engine/shared/studiomodel/CStudioModel.hpp"
+#include "engine/shared/studiomodel/StudioModel.hpp"
 
 #include "graphics/Scene.hpp"
 

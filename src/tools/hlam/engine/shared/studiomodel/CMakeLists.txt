@@ -1,7 +1,7 @@
 target_sources(HLAM
 	PRIVATE
-		CStudioModel.cpp
-		CStudioModel.hpp
 		DumpModelInfo.cpp
 		DumpModelInfo.hpp
+		StudioModel.cpp
+		StudioModel.hpp
 		StudioModelFileFormat.hpp)
