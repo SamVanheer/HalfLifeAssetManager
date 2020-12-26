@@ -1,36 +1,4 @@
-#include "core/shared/Logging.hpp"
-
 #include "graphics/OpenGL.hpp"
-
-bool CBaseOpenGL::PostInitialize()
-{
-	if( IsPostInitialized() )
-	{
-		//Should only get here if it was already initalized.
-		return GLEW_OK == m_GLEWResult;
-	}
-
-	m_bPostInitialized = true;
-
-	m_GLEWResult = glewInit();
-
-	if( m_GLEWResult != GLEW_OK )
-	{
-		Error( "Error initializing GLEW:\n%s\n", reinterpret_cast<const char*>( glewGetErrorString( m_GLEWResult ) ) );
-	}
-
-	return GLEW_OK == m_GLEWResult;
-}
-
-void CBaseOpenGL::GetErrors()
-{
-	GLenum error;
-
-	while( ( error = glGetError() ) != GL_NO_ERROR )
-	{
-		Warning( "OpenGL Error: %s\n", glErrorToString( error ) );
-	}
-}
 
 void glDeleteTexture( GLuint& textureId )
 {
