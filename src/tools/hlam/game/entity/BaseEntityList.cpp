@@ -15,11 +15,11 @@ BaseEntityList::BaseEntityList()
 
 BaseEntityList::~BaseEntityList() = default;
 
-BaseEntity* BaseEntityList::GetEntityByIndex(const entity::EntIndex_t uiIndex) const
+BaseEntity* BaseEntityList::GetEntityByIndex(const entity::EntIndex index) const
 {
-	assert(uiIndex < entity::MAX_ENTITIES);
+	assert(index < entity::MAX_ENTITIES);
 
-	return _entities[uiIndex].pEntity;
+	return _entities[index].Entity;
 }
 
 BaseEntity* BaseEntityList::GetEntityByHandle(const EHandle& handle) const
@@ -32,9 +32,9 @@ BaseEntity* BaseEntityList::GetEntityByHandle(const EHandle& handle) const
 
 	assert(handle.GetEntIndex() < entity::MAX_ENTITIES);
 
-	if (_entities[handle.GetEntIndex()].serial == handle.GetSerialNumber())
+	if (_entities[handle.GetEntIndex()].Serial == handle.GetSerialNumber())
 	{
-		return _entities[handle.GetEntIndex()].pEntity;
+		return _entities[handle.GetEntIndex()].Entity;
 	}
 
 	return nullptr;
@@ -47,20 +47,20 @@ EHandle BaseEntityList::GetFirstEntity() const
 
 EHandle BaseEntityList::GetNextEntity(const EHandle& previous) const
 {
-	for (size_t uiIndex = previous.IsValid(*this) ? previous.GetEntIndex() + 1 : 0; uiIndex < _highestEntIndex; ++uiIndex)
+	for (size_t index = previous.IsValid(*this) ? previous.GetEntIndex() + 1 : 0; index < _highestEntIndex; ++index)
 	{
-		if (_entities[uiIndex].pEntity)
+		if (_entities[index].Entity)
 		{
-			return _entities[uiIndex].pEntity;
+			return _entities[index].Entity;
 		}
 	}
 
 	return nullptr;
 }
 
-size_t BaseEntityList::Add(BaseEntity* pEntity)
+size_t BaseEntityList::Add(BaseEntity* entity)
 {
-	assert(pEntity);
+	assert(entity);
 
 	if (_numEntities >= entity::MAX_ENTITIES)
 	{
@@ -68,18 +68,18 @@ size_t BaseEntityList::Add(BaseEntity* pEntity)
 		return entity::INVALID_ENTITY_INDEX;
 	}
 
-	entity::EntIndex_t uiIndex;
+	entity::EntIndex index;
 
-	for (uiIndex = 0; uiIndex < entity::MAX_ENTITIES; ++uiIndex)
+	for (index = 0; index < entity::MAX_ENTITIES; ++index)
 	{
-		if (!_entities[uiIndex].pEntity)
+		if (!_entities[index].Entity)
 		{
 			break;
 		}
 	}
 
 	//Shouldn't happen.
-	if (uiIndex >= entity::MAX_ENTITIES)
+	if (index >= entity::MAX_ENTITIES)
 	{
 		Warning("Max entities reached (%u)!\n", entity::MAX_ENTITIES);
 		return entity::INVALID_ENTITY_INDEX;
@@ -87,32 +87,34 @@ size_t BaseEntityList::Add(BaseEntity* pEntity)
 
 	++_numEntities;
 
-	if (uiIndex >= _highestEntIndex)
+	if (index >= _highestEntIndex)
 	{
-		_highestEntIndex = uiIndex + 1;
+		_highestEntIndex = index + 1;
 	}
 
-	FinishAddEntity(uiIndex, pEntity);
+	FinishAddEntity(index, entity);
 
-	return uiIndex;
+	return index;
 }
 
-void BaseEntityList::Remove(BaseEntity* pEntity)
+void BaseEntityList::Remove(BaseEntity* entity)
 {
-	if (!pEntity)
+	if (!entity)
+	{
 		return;
+	}
 
-	const EHandle handle = pEntity->GetEntHandle();
+	const EHandle handle = entity->GetEntHandle();
 
-	const entity::EntIndex_t uiIndex = handle.GetEntIndex();
+	const entity::EntIndex uiIndex = handle.GetEntIndex();
 
 	//this shouldn't ever be hit, unless the entity was corrupted/not managed by this list.
 	assert(uiIndex < _highestEntIndex);
 
 	//Sanity check.
-	assert(_entities[uiIndex].pEntity == pEntity);
+	assert(_entities[uiIndex].Entity == entity);
 
-	FinishRemoveEntity(pEntity);
+	FinishRemoveEntity(entity);
 
 	--_numEntities;
 
@@ -121,7 +123,7 @@ void BaseEntityList::Remove(BaseEntity* pEntity)
 	{
 		for (; _highestEntIndex > 0; --_highestEntIndex)
 		{
-			if (_entities[_highestEntIndex - 1].pEntity)
+			if (_entities[_highestEntIndex - 1].Entity)
 			{
 				_highestEntIndex = _highestEntIndex - 1;
 				break;
@@ -136,9 +138,9 @@ void BaseEntityList::RemoveAll()
 {
 	for (size_t uiIndex = 0; uiIndex < _highestEntIndex; ++uiIndex)
 	{
-		if (BaseEntity* pEntity = _entities[uiIndex].pEntity)
+		if (BaseEntity* entity = _entities[uiIndex].Entity; entity)
 		{
-			FinishRemoveEntity(pEntity);
+			FinishRemoveEntity(entity);
 		}
 	}
 
@@ -148,29 +150,29 @@ void BaseEntityList::RemoveAll()
 	memset(_entities, 0, sizeof(_entities));
 }
 
-void BaseEntityList::FinishAddEntity(const entity::EntIndex_t uiIndex, BaseEntity* pEntity)
+void BaseEntityList::FinishAddEntity(const entity::EntIndex index, BaseEntity* entity)
 {
-	_entities[uiIndex].pEntity = pEntity;
+	_entities[index].Entity = entity;
 
 	//Increment the serial number to indicate that a new entity is using the slot.
-	++_entities[uiIndex].serial;
+	++_entities[index].Serial;
 
 	EHandle handle;
 
-	handle.SetEntHandle(entity::MakeEntHandle(uiIndex, _entities[uiIndex].serial));
+	handle.SetEntHandle(entity::MakeEntHandle(index, _entities[index].Serial));
 
-	pEntity->SetEntHandle(handle);
+	entity->SetEntHandle(handle);
 
-	OnAdded(pEntity);
+	OnAdded(entity);
 }
 
-void BaseEntityList::FinishRemoveEntity(BaseEntity* pEntity)
+void BaseEntityList::FinishRemoveEntity(BaseEntity* entity)
 {
-	OnRemove(pEntity);
+	OnRemove(entity);
 
-	const EHandle handle = pEntity->GetEntHandle();
+	const EHandle handle = entity->GetEntHandle();
 
-	GetEntityDict().DestroyEntity(pEntity);
+	GetEntityDict().DestroyEntity(entity);
 
-	_entities[handle.GetEntIndex()].pEntity = nullptr;
+	_entities[handle.GetEntIndex()].Entity = nullptr;
 }

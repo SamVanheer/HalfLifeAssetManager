@@ -36,12 +36,12 @@ EHandle& EHandle::operator=(BaseEntity* entity)
 	return *this;
 }
 
-entity::EntIndex_t EHandle::GetEntIndex() const
+entity::EntIndex EHandle::GetEntIndex() const
 {
 	return entity::GetHandleIndex(_handle);
 }
 
-entity::EntSerial_t EHandle::GetSerialNumber() const
+entity::EntSerial EHandle::GetSerialNumber() const
 {
 	return entity::GetHandleSerial(_handle);
 }

@@ -9,81 +9,81 @@ namespace entity
 /**
 *	Type used for entity indices.
 */
-typedef uint16_t EntIndex_t;
+typedef uint16_t EntIndex;
 
 /**
 *	Invalid entity index.
 */
-const EntIndex_t INVALID_ENTITY_INDEX = 0xFFFF;
+const EntIndex INVALID_ENTITY_INDEX = 0xFFFF;
 
 /**
 *	Maximum number of entities that can exist at the same time.
 */
-const EntIndex_t MAX_ENTITIES = 8192;
+const EntIndex MAX_ENTITIES = 8192;
 
 /**
 *	Type used for entity serial numbers.
 */
-typedef uint16_t EntSerial_t;
+typedef uint16_t EntSerial;
 
 /**
 *	Basic type used for entity handles.
-*	Packs an 
+*	Packs an
 */
-typedef uint32_t EntHandle_t;
+typedef uint32_t EntHandle;
 
 /**
 *	Invalid value for entity handles.
 */
-const EntHandle_t INVALID_ENTITY_HANDLE = 0xFFFFFFFF;
+const EntHandle INVALID_ENTITY_HANDLE = 0xFFFFFFFF;
 
 /**
 *	Takes an entity index and serial number and returns them as an entity handle.
 */
-inline constexpr EntHandle_t MakeEntHandle( const EntIndex_t index, const EntSerial_t serial )
+inline constexpr EntHandle MakeEntHandle(const EntIndex index, const EntSerial serial)
 {
-	return static_cast<EntHandle_t>( index ) + ( static_cast<EntHandle_t>( serial ) << 16 );
+	return static_cast<EntHandle>(index) + (static_cast<EntHandle>(serial) << 16);
 }
 
 /**
 *	Gets the index out of a handle.
 */
-inline constexpr EntIndex_t GetHandleIndex( const EntHandle_t handle )
+inline constexpr EntIndex GetHandleIndex(const EntHandle handle)
 {
-	return static_cast<EntIndex_t>( handle & 0xFFFF );
+	return static_cast<EntIndex>(handle & 0xFFFF);
 }
 
 /**
 *	Gets the serial number out of a handle.
 */
-inline constexpr EntSerial_t GetHandleSerial( const EntHandle_t handle )
+inline constexpr EntSerial GetHandleSerial(const EntHandle handle)
 {
-	return static_cast<EntSerial_t>( ( handle >> 16 ) & 0xFFFF );
+	return static_cast<EntSerial>((handle >> 16) & 0xFFFF);
 }
 
 /**
 *	Gets the entity index and serial number out of a handle.
 */
-inline void GetHandleData( const EntHandle_t handle, EntIndex_t& index, EntSerial_t& serial )
+inline void GetHandleData(const EntHandle handle, EntIndex& index, EntSerial& serial)
 {
-	index = GetHandleIndex( handle );
-	serial = GetHandleSerial( handle);
+	index = GetHandleIndex(handle);
+	serial = GetHandleSerial(handle);
 }
 
 typedef unsigned int Flags;
 
 enum Flag : Flags
 {
-	FL_NONE			= 0,
+	FL_NONE = 0,
 
 	/**
 	*	Marks an entity as needing to be removed at the end of the frame.
 	*/
-	FL_KILLME		= Bit( 0 ),
+	FL_KILLME = Bit(0),
 
 	/**
 	*	If set, the entity's think method is called every frame.
 	*/
-	FL_ALWAYSTHINK	= Bit( 1 )
+	FL_ALWAYSTHINK = Bit(1)
 };
 }

@@ -63,24 +63,24 @@ public:
 	/**
 	*	Gets the entity's index. Only valid if this points to an entity.
 	*/
-	entity::EntIndex_t GetEntIndex() const;
+	entity::EntIndex GetEntIndex() const;
 
 	/**
 	*	Gets the entity's serial number. Only valid if this points to an entity.
 	*/
-	entity::EntSerial_t GetSerialNumber() const;
+	entity::EntSerial GetSerialNumber() const;
 
 	/**
 	*	Gets the EntHandle_t that this handle uses to represent the entity.
 	*/
-	entity::EntHandle_t GetEntHandle() const { return _handle; }
+	entity::EntHandle GetEntHandle() const { return _handle; }
 
 protected:
 	/**
 	*	Sets the handle value. Only the entity list should access this.
 	*/
-	void SetEntHandle(const entity::EntHandle_t handle) { _handle = handle; }
+	void SetEntHandle(const entity::EntHandle handle) { _handle = handle; }
 
 private:
-	entity::EntHandle_t _handle = entity::INVALID_ENTITY_HANDLE;
+	entity::EntHandle _handle = entity::INVALID_ENTITY_HANDLE;
 };
