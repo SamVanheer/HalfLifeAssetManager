@@ -73,7 +73,7 @@ class StudioModelAsset final : public Asset, public IInputSink
 
 public:
 	StudioModelAsset(QString&& fileName,
-		EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel);
+		EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::StudioModel>&& studioModel);
 
 	~StudioModelAsset();
 	StudioModelAsset(const StudioModelAsset&) = delete;
@@ -95,7 +95,7 @@ public:
 
 	EditorContext* GetEditorContext() { return _editorContext; }
 
-	studiomdl::CStudioModel* GetStudioModel() { return _studioModel.get(); }
+	studiomdl::StudioModel* GetStudioModel() { return _studioModel.get(); }
 
 	graphics::TextureLoader* GetTextureLoader() { return _textureLoader.get(); }
 
@@ -176,7 +176,7 @@ private slots:
 private:
 	EditorContext* const _editorContext;
 	const StudioModelAssetProvider* const _provider;
-	const std::unique_ptr<studiomdl::CStudioModel> _studioModel;
+	const std::unique_ptr<studiomdl::StudioModel> _studioModel;
 	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
 	const std::unique_ptr<graphics::Scene> _scene;
 

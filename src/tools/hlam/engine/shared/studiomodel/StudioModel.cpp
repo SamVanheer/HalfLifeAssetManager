@@ -93,7 +93,7 @@ void ConvertDolToMdl(byte* pBuffer, const mstudiotexture_t& texture)
 }
 }
 
-CStudioModel::CStudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& pStudioHdr, studio_ptr<studiohdr_t>&& pTextureHdr,
+StudioModel::StudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& pStudioHdr, studio_ptr<studiohdr_t>&& pTextureHdr,
 	std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, bool isDol)
 	: m_FileName(std::move(fileName))
 	, m_pStudioHdr(std::move(pStudioHdr))
@@ -104,13 +104,13 @@ CStudioModel::CStudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& pSt
 	assert(m_pStudioHdr);
 }
 
-CStudioModel::~CStudioModel()
+StudioModel::~StudioModel()
 {
 	glDeleteTextures(GetTextureHeader()->numtextures, m_Textures.data());
 	m_Textures.clear();
 }
 
-mstudioanim_t* CStudioModel::GetAnim(mstudioseqdesc_t* pseqdesc) const
+mstudioanim_t* StudioModel::GetAnim(mstudioseqdesc_t* pseqdesc) const
 {
 	mstudioseqgroup_t* pseqgroup = m_pStudioHdr->GetSequenceGroup(pseqdesc->seqgroup);
 
@@ -122,7 +122,7 @@ mstudioanim_t* CStudioModel::GetAnim(mstudioseqdesc_t* pseqdesc) const
 	return (mstudioanim_t*) ((byte*) m_SequenceHeaders[pseqdesc->seqgroup - 1].get() + pseqdesc->animindex);
 }
 
-mstudiomodel_t* CStudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart) const
+mstudiomodel_t* StudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart) const
 {
 	mstudiobodyparts_t* pbodypart = m_pStudioHdr->GetBodypart(iBodyPart);
 
@@ -132,7 +132,7 @@ mstudiomodel_t* CStudioModel::GetModelByBodyPart(const int iBody, const int iBod
 	return (mstudiomodel_t*) ((byte*) m_pStudioHdr.get() + pbodypart->modelindex) + index;
 }
 
-int CStudioModel::GetBodyValueForGroup(int compositeValue, int group) const
+int StudioModel::GetBodyValueForGroup(int compositeValue, int group) const
 {
 	if (group >= m_pStudioHdr->numbodyparts)
 	{
@@ -144,7 +144,7 @@ int CStudioModel::GetBodyValueForGroup(int compositeValue, int group) const
 	return (compositeValue / bodyPart->base) % bodyPart->nummodels;
 }
 
-bool CStudioModel::CalculateBodygroup(const int iGroup, const int iValue, int& iInOutBodygroup) const
+bool StudioModel::CalculateBodygroup(const int iGroup, const int iValue, int& iInOutBodygroup) const
 {
 	if (iGroup > m_pStudioHdr->numbodyparts)
 		return false;
@@ -161,7 +161,7 @@ bool CStudioModel::CalculateBodygroup(const int iGroup, const int iValue, int& i
 	return true;
 }
 
-GLuint CStudioModel::GetTextureId(const int iIndex) const
+GLuint StudioModel::GetTextureId(const int iIndex) const
 {
 	const studiohdr_t* const pHdr = GetTextureHeader();
 
@@ -174,11 +174,11 @@ GLuint CStudioModel::GetTextureId(const int iIndex) const
 	return m_Textures[iIndex];
 }
 
-void CStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
+void StudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 {
 	const auto textureHeader = GetTextureHeader();
 
-	if (textureHeader->textureindex > 0 && textureHeader->numtextures <= CStudioModel::MAX_TEXTURES)
+	if (textureHeader->textureindex > 0 && textureHeader->numtextures <= MAX_TEXTURES)
 	{
 		byte* pIn = reinterpret_cast<byte*>(textureHeader);
 
@@ -209,7 +209,7 @@ void CStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 	}
 }
 
-void CStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint textureId)
+void StudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint textureId)
 {
 	textureLoader.UploadIndexed8(
 		textureId,
@@ -220,7 +220,7 @@ void CStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, mstudi
 		(ptexture->flags & STUDIO_NF_MASKED) != 0);
 }
 
-void CStudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture)
+void StudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture)
 {
 	assert(ptexture);
 
@@ -238,7 +238,7 @@ void CStudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader, mstud
 		header->GetData() + ptexture->index, header->GetData() + ptexture->index + ptexture->width * ptexture->height, m_Textures[iIndex]);
 }
 
-void CStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
+void StudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
 {
 	if (m_Textures.empty())
 	{
@@ -255,7 +255,7 @@ void CStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
 	}
 }
 
-void CStudioModel::ReuploadTextures(graphics::TextureLoader& textureLoader)
+void StudioModel::ReuploadTextures(graphics::TextureLoader& textureLoader)
 {
 	if (m_Textures.empty())
 	{
@@ -356,7 +356,7 @@ bool IsStudioModel(const std::string& fileName)
 	return isStudioModel;
 }
 
-std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename)
+std::unique_ptr<StudioModel> LoadStudioModel(const char* const pszFilename)
 {
 	const std::filesystem::path fileName{std::filesystem::u8path(pszFilename)};
 
@@ -419,11 +419,11 @@ std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename)
 		}
 	}
 
-	return std::make_unique<CStudioModel>(pszFilename, std::move(mainHeader), std::move(textureHeader),
+	return std::make_unique<StudioModel>(pszFilename, std::move(mainHeader), std::move(textureHeader),
 		std::move(sequenceHeaders), bIsDol);
 }
 
-void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool correctSequenceGroupFileNames)
+void SaveStudioModel(const char* const pszFilename, StudioModel& model, bool correctSequenceGroupFileNames)
 {
 	if (!pszFilename)
 	{
@@ -583,7 +583,7 @@ void SaveStudioModel(const char* const pszFilename, CStudioModel& model, bool co
 	}
 }
 
-std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const CStudioModel& studioModel, const float scale)
+std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const StudioModel& studioModel, const float scale)
 {
 	const auto header = studioModel.GetStudioHeader();
 
@@ -663,7 +663,7 @@ std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const CStu
 		});
 }
 
-void ApplyScaleMeshesData(CStudioModel& studioModel, const ScaleMeshesData& data)
+void ApplyScaleMeshesData(StudioModel& studioModel, const ScaleMeshesData& data)
 {
 	const auto header = studioModel.GetStudioHeader();
 
@@ -704,7 +704,7 @@ void ApplyScaleMeshesData(CStudioModel& studioModel, const ScaleMeshesData& data
 	}
 }
 
-std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> CalculateScaledBonesData(const CStudioModel& studioModel, const float scale)
+std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> CalculateScaledBonesData(const StudioModel& studioModel, const float scale)
 {
 	const auto header = studioModel.GetStudioHeader();
 
@@ -736,7 +736,7 @@ std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> Calc
 	return std::make_pair(std::move(oldData), std::move(newData));
 }
 
-void ApplyScaleBonesData(CStudioModel& studioModel, const std::vector<studiomdl::ScaleBonesBoneData>& data)
+void ApplyScaleBonesData(StudioModel& studioModel, const std::vector<studiomdl::ScaleBonesBoneData>& data)
 {
 	const auto header = studioModel.GetStudioHeader();
 

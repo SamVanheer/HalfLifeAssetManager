@@ -16,8 +16,6 @@
 
 namespace studiomdl
 {
-class CStudioModel;
-
 /**
 *	Used to render studio models. Only one instance of this class should be used, and should be kept around, in order to achieve reasonably performant and consistent rendering.
 */

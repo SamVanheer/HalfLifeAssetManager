@@ -12,8 +12,6 @@
 
 namespace studiomdl
 {
-class CStudioModel;
-
 class StudioModelRenderer final : public studiomdl::IStudioModelRenderer
 {
 public:

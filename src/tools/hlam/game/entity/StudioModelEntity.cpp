@@ -269,7 +269,7 @@ void StudioModelEntity::SetFrame(float frame)
 	_animTime = GetContext()->Time->GetTime();
 }
 
-void StudioModelEntity::SetModel(studiomdl::CStudioModel* model)
+void StudioModelEntity::SetModel(studiomdl::StudioModel* model)
 {
 	//TODO: release old model.
 	_model = model;

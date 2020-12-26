@@ -19,7 +19,6 @@
 
 namespace studiomdl
 {
-class CStudioModel;
 struct ScaleBonesBoneData;
 struct ScaleMeshesData;
 }

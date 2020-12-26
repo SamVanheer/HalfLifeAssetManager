@@ -76,7 +76,7 @@ static std::pair<float, float> GetCenteredValues(HLMVStudioModelEntity* entity)
 }
 
 StudioModelAsset::StudioModelAsset(QString&& fileName,
-	EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::CStudioModel>&& studioModel)
+	EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::StudioModel>&& studioModel)
 	: Asset(std::move(fileName))
 	, _editorContext(editorContext)
 	, _provider(provider)

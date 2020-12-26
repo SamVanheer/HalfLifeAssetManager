@@ -72,7 +72,7 @@ public:
 	void SetFrame(float frame);
 
 private:
-	studiomdl::CStudioModel* _model = nullptr;
+	studiomdl::StudioModel* _model = nullptr;
 
 	int		_sequence = 0;				// sequence index
 	int		_bodygroup = 0;				// bodypart selection	
@@ -91,12 +91,12 @@ public:
 	/**
 	*	Gets the model.
 	*/
-	studiomdl::CStudioModel* GetModel() const { return _model; }
+	studiomdl::StudioModel* GetModel() const { return _model; }
 
 	/**
 	*	Sets the model.
 	*/
-	void SetModel(studiomdl::CStudioModel* model);
+	void SetModel(studiomdl::StudioModel* model);
 
 	/**
 	*	Gets the number of frames that the current sequence has.

@@ -51,7 +51,7 @@ struct StudioDataDeleter
 template<typename T>
 using studio_ptr = std::unique_ptr<T, StudioDataDeleter>;
 
-class CStudioModel;
+class StudioModel;
 
 bool IsStudioModel(const std::string& fileName);
 
@@ -62,7 +62,7 @@ bool IsStudioModel(const std::string& fileName);
 *	@exception assets::AssetInvalidFormat If a file has an invalid format
 *	@exception assets::AssetVersionDiffers If a file has the wrong studio version
 */
-std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename);
+std::unique_ptr<StudioModel> LoadStudioModel(const char* const pszFilename);
 
 /**
 *	Saves a studio model.
@@ -71,28 +71,28 @@ std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename);
 * *	@param correctSequenceGroupFileNames Whether the sequence group filenames embedded in the main file should be corrected
 *	@exception StudioModelException If an error occurs or if the given data is invalid
 */
-void SaveStudioModel( const char* const pszFilename, CStudioModel& model, bool correctSequenceGroupFileNames );
+void SaveStudioModel( const char* const pszFilename, StudioModel& model, bool correctSequenceGroupFileNames );
 
 /**
 *	Container representing a studiomodel and its data.
 */
-class CStudioModel final
+class StudioModel final
 {
 private:
 	typedef std::vector<const mstudiomesh_t*> MeshList_t;
 	typedef std::vector<MeshList_t> TextureMeshMap_t;
 
 protected:
-	friend std::unique_ptr<CStudioModel> LoadStudioModel(const char* const pszFilename);
+	friend std::unique_ptr<StudioModel> LoadStudioModel(const char* const pszFilename);
 
 public:
 	static const size_t MAX_SEQGROUPS = 32;
 	static const size_t MAX_TEXTURES = MAXSTUDIOSKINS;
 
 public:
-	CStudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& pStudioHdr, studio_ptr<studiohdr_t>&& pTextureHdr,
+	StudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& pStudioHdr, studio_ptr<studiohdr_t>&& pTextureHdr,
 		std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, bool isDol);
-	~CStudioModel();
+	~StudioModel();
 
 	const std::string& GetFileName() const { return m_FileName; }
 
@@ -172,8 +172,8 @@ private:
 	bool m_IsDol;
 
 private:
-	CStudioModel( const CStudioModel& ) = delete;
-	CStudioModel& operator=( const CStudioModel& ) = delete;
+	StudioModel( const StudioModel& ) = delete;
+	StudioModel& operator=( const StudioModel& ) = delete;
 };
 
 struct ScaleMeshesData
@@ -183,9 +183,9 @@ struct ScaleMeshesData
 	std::vector<std::pair<glm::vec3, glm::vec3>> SequenceBBoxes;
 };
 
-std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const CStudioModel& studioModel, const float scale);
+std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const StudioModel& studioModel, const float scale);
 
-void ApplyScaleMeshesData(CStudioModel& studioModel, const ScaleMeshesData& data);
+void ApplyScaleMeshesData(StudioModel& studioModel, const ScaleMeshesData& data);
 
 struct ScaleBonesBoneData
 {
@@ -193,9 +193,9 @@ struct ScaleBonesBoneData
 	glm::vec3 Scale;
 };
 
-std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> CalculateScaledBonesData(const CStudioModel& studioModel, const float scale);
+std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> CalculateScaledBonesData(const StudioModel& studioModel, const float scale);
 
-void ApplyScaleBonesData(CStudioModel& studioModel, const std::vector<studiomdl::ScaleBonesBoneData>& data);
+void ApplyScaleBonesData(StudioModel& studioModel, const std::vector<studiomdl::ScaleBonesBoneData>& data);
 
 /**
 *	Returns the string representation for a studio control value.
