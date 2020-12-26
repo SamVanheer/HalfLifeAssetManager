@@ -6,7 +6,7 @@
 
 #include "ui_StudioModelSequencesPanel.h"
 
-#include "engine/shared/studiomodel/studio.hpp"
+#include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
 namespace ui::assets::studiomodel
 {

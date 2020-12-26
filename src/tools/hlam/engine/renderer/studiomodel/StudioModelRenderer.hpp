@@ -6,11 +6,9 @@
 
 #include <glm/mat3x4.hpp>
 
-#include "engine/shared/studiomodel/studio.hpp"
-
-#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
-
 #include "engine/renderer/studiomodel/StudioSorting.hpp"
+#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
+#include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
 namespace studiomdl
 {

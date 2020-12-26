@@ -6,7 +6,7 @@
 
 #include <glm/vec3.hpp>
 
-#include "engine/shared/studiomodel/studio.hpp"
+#include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
 #include "graphics/Camera.hpp"
 #include "graphics/Constants.hpp"

@@ -12,7 +12,7 @@
 #include <glm/vec3.hpp>
 
 #include "core/shared/Const.hpp"
-#include "engine/shared/studiomodel/studio.hpp"
+#include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 #include "graphics/Palette.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"

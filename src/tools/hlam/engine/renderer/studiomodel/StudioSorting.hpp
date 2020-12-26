@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/shared/studiomodel/studio.hpp"
+#include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
 namespace studiomdl
 {
