@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 
 #include "game/entity/BaseEntity.hpp"
@@ -25,4 +26,9 @@ void BaseEntity::OnDestroy()
 bool BaseEntity::Spawn()
 {
 	return true;
+}
+
+void BaseEntity::SetTransparency(const float transparency)
+{
+	_transparency = std::clamp(transparency, 0.f, 1.f);
 }

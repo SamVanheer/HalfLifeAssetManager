@@ -184,7 +184,7 @@ public:
 	/**
 	*	Sets the entity's origin.
 	*/
-	void SetOrigin(const glm::vec3& vecOrigin) { _origin = vecOrigin; }
+	void SetOrigin(const glm::vec3& origin) { _origin = origin; }
 
 	/**
 	*	Gets the entity's angles.
@@ -200,7 +200,7 @@ public:
 	/**
 	*	Sets the entity's angles.
 	*/
-	void SetAngles(const glm::vec3& vecAngles) { _angles = vecAngles; }
+	void SetAngles(const glm::vec3& angles) { _angles = angles; }
 
 	/**
 	*	Gets the entity's scale.
@@ -216,7 +216,7 @@ public:
 	/**
 	*	Sets the entity's scale.
 	*/
-	void SetScale(const glm::vec3& vecScale) { _scale = vecScale; }
+	void SetScale(const glm::vec3& scale) { _scale = scale; }
 
 	/**
 	*	Gets the entity's transparency.
@@ -224,9 +224,9 @@ public:
 	float GetTransparency() const { return _transparency; }
 
 	/**
-	*	Sets the entity's transparency. TODO: clamp to [0, 1]
+	*	Sets the entity's transparency.
 	*/
-	void SetTransparency(const float flTransparency) { _transparency = flTransparency; }
+	void SetTransparency(const float transparency);
 
 private:
 	ThinkFunction _thinkFunc = nullptr;
