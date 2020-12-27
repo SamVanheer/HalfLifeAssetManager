@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Half-Life Asset Manager</DisplayName>
+    <Description>Install Half-Life Asset Manager.</Description>
+    <Version>1.0.0</Version>
+    <ReleaseDate>2020-12-27</ReleaseDate>
+    <!--TODO<Licenses>
+        <License name="Beer Public License Agreement" file="license.txt" />
+    </Licenses>-->
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+    <UserInterfaces>
+        <UserInterface>RegisterFileTypesForm.ui</UserInterface>
+    </UserInterfaces>
+</Package>
