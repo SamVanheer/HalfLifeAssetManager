@@ -29,10 +29,12 @@ set(HLAM_VERSION_MAJOR 1)
 set(HLAM_VERSION_MINOR 0)
 set(HLAM_VERSION_PATCH 0)
 
-configure_file(
-	${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
-	${CMAKE_CURRENT_BINARY_DIR}/version_generated.rc
-	@ONLY)
+if (MSVC)
+	configure_file(
+		${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
+		${CMAKE_CURRENT_BINARY_DIR}/version_generated.rc
+		@ONLY)
+endif()
 
 add_executable(HLAM WIN32)
 
@@ -79,8 +81,10 @@ target_link_options(HLAM
 
 target_sources(HLAM
 	PRIVATE
-		$<$<CXX_COMPILER_ID:MSVC>:hlam.rc>
-		$<$<CXX_COMPILER_ID:MSVC>:version.rc>
+		$<$<CXX_COMPILER_ID:MSVC>:
+			hlam.rc
+			version.rc
+		>
 		Main.cpp
 		resources.qrc)
 
