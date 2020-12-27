@@ -1,2 +1,3 @@
 # Don't include any files meant to be used for installer creation
 packages/SamVanheer.HalfLifeAssetManager/data/bin/*
+packages/SamVanheer.HalfLifeAssetManager/data/redist/*

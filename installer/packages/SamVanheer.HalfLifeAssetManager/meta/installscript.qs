@@ -31,5 +31,8 @@ Component.prototype.createOperations = function()
 				"Half-Life studiomodel file",
 				"application/octet-stream");
 		}
+		
+		// Exit code 1638 is returned when the redist is already installed
+		component.addOperation("Execute", "{0,1638}", "@TargetDir@/redist/VC_redist.x86.exe", "/quiet", "/norestart");
 	}
 }
