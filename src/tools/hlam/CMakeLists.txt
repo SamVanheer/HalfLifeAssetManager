@@ -25,6 +25,15 @@ add_library(VorbisFile STATIC IMPORTED)
 
 set_target_properties(VorbisFile PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/vorbis/lib/libvorbisfile_static.lib)
 
+set(HLAM_VERSION_MAJOR 1)
+set(HLAM_VERSION_MINOR 0)
+set(HLAM_VERSION_PATCH 0)
+
+configure_file(
+	${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
+	${CMAKE_CURRENT_BINARY_DIR}/version_generated.rc
+	@ONLY)
+
 add_executable(HLAM WIN32)
 
 target_include_directories(HLAM
@@ -71,6 +80,7 @@ target_link_options(HLAM
 target_sources(HLAM
 	PRIVATE
 		$<$<CXX_COMPILER_ID:MSVC>:hlam.rc>
+		$<$<CXX_COMPILER_ID:MSVC>:version.rc>
 		Main.cpp
 		resources.qrc)
 
