@@ -27,7 +27,7 @@ Component.prototype.createOperations = function()
 		{
 			component.addOperation("RegisterFileType",
 				".mdl",
-				"\"@ApplicationsDirX86@/Half-Life Asset Manager/bin/HLAM.exe\" \"%1\"",
+				"\"@TargetDir@/bin/HLAM.exe\" \"%1\"",
 				"Half-Life studiomodel file",
 				"application/octet-stream");
 		}
