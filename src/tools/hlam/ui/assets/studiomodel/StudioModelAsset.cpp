@@ -187,7 +187,7 @@ void StudioModelAsset::SetupFullscreenWidget(FullscreenWidget* fullscreenWidget)
 
 	fullscreenWidget->setCentralWidget(sceneWidget->GetContainer());
 
-	sceneWidget->connect(this, &StudioModelAsset::Draw, sceneWidget, &SceneWidget::requestUpdate);
+	//sceneWidget->connect(this, &StudioModelAsset::Draw, sceneWidget, &SceneWidget::requestUpdate);
 	sceneWidget->connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
 
 	//Filter key events on the scene widget so we can capture exit even if it has focus

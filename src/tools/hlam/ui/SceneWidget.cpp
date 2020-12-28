@@ -49,5 +49,7 @@ void SceneWidget::paintGL()
 		_scene->UpdateWindowSize(static_cast<unsigned int>(size.width()), static_cast<unsigned int>(size.height()));
 		_scene->Draw();
 	}
+
+	requestUpdate();
 }
 }

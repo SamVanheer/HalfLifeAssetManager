@@ -103,7 +103,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 		_controlAreaWidget->setLayout(controlAreaLayout);
 	}
 
-	connect(asset, &StudioModelAsset::Draw, _sceneWidget, &SceneWidget::requestUpdate);
+	//connect(asset, &StudioModelAsset::Draw, _sceneWidget, &SceneWidget::requestUpdate);
 
 	connect(_dockPanels, &QTabWidget::currentChanged, this, &StudioModelEditWidget::OnTabChanged);
 
