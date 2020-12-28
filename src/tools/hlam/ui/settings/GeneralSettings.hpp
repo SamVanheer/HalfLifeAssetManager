@@ -22,10 +22,19 @@ public:
 	{
 		settings.beginGroup("startup");
 		_useSingleInstance = settings.value("UseSingleInstance", false).toBool();
+		settings.endGroup();
+
+		settings.beginGroup("general");
 		_maxFPS = settings.value("MaxFPS", DefaultMaxFPS).toFloat();
+		settings.endGroup();
+
+		settings.beginGroup("mouse");
 		_invertMouseX = settings.value("InvertMouseX", false).toBool();
 		_invertMouseY = settings.value("InvertMouseY", false).toBool();
 		_mouseSensitivity = std::clamp(settings.value("MouseSensitivity", DefaultMouseSensitivity).toInt(), MinimumMouseSensitivity, MaximumMouseSensitivity);
+		settings.endGroup();
+
+		settings.beginGroup("audio");
 		_enableAudioPlayback = settings.value("EnableAudioPlayback", DefaultEnableAudioPlayback).toBool();
 		settings.endGroup();
 	}
@@ -34,10 +43,19 @@ public:
 	{
 		settings.beginGroup("startup");
 		settings.setValue("UseSingleInstance", _useSingleInstance);
+		settings.endGroup();
+
+		settings.beginGroup("general");
 		settings.setValue("MaxFPS", _maxFPS);
+		settings.endGroup();
+
+		settings.beginGroup("mouse");
 		settings.setValue("InvertMouseX", _invertMouseX);
 		settings.setValue("InvertMouseY", _invertMouseY);
 		settings.setValue("MouseSensitivity", _mouseSensitivity);
+		settings.endGroup();
+
+		settings.beginGroup("audio");
 		settings.setValue("EnableAudioPlayback", _enableAudioPlayback);
 		settings.endGroup();
 	}
