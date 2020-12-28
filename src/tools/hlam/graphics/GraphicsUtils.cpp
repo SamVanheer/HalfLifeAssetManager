@@ -333,8 +333,8 @@ void DrawFloorQuad(float floorLength, float textureRepeatLength, glm::vec2 textu
 	//It should also, when movement distance is 0, repeat at 0, 0, 0
 	const float repetition = vertexCoord / textureRepeatLength;
 
-	const float textureMax = repetition;
-	const float textureMin = -repetition;
+	const float textureMax = repetition + 0.5f;
+	const float textureMin = -repetition + 0.5f;
 
 	//Rescale offset to match the texture size
 	textureOffset /= textureRepeatLength;
