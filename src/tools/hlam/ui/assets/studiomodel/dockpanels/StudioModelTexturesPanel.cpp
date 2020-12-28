@@ -358,6 +358,9 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 				_ui.TextureName->setText(name);
 			}
 		}
+
+		//TODO: shouldn't be done here
+		RemapTexture(listChange.GetSourceIndex());
 		break;
 	}
 
