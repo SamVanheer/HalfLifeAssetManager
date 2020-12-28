@@ -10,6 +10,7 @@ class GeneralSettings final : public QObject
 	Q_OBJECT
 
 public:
+	static constexpr bool DefaultUseSingleInstance{true};
 	static constexpr float DefaultMaxFPS{60.f};
 	static constexpr int DefaultMouseSensitivity{5};
 	static constexpr int MinimumMouseSensitivity{1};
@@ -21,7 +22,7 @@ public:
 	void LoadSettings(QSettings& settings)
 	{
 		settings.beginGroup("startup");
-		_useSingleInstance = settings.value("UseSingleInstance", false).toBool();
+		_useSingleInstance = settings.value("UseSingleInstance", DefaultUseSingleInstance).toBool();
 		settings.endGroup();
 
 		settings.beginGroup("general");
@@ -115,7 +116,7 @@ signals:
 	void MaxFPSChanged(float value);
 
 private:
-	bool _useSingleInstance{false};
+	bool _useSingleInstance{DefaultUseSingleInstance};
 
 	float _maxFPS{DefaultMaxFPS};
 
