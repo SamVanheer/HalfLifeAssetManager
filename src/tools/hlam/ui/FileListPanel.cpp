@@ -33,6 +33,8 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 
 	_ui.FileView->setModel(_model);
 
+	_ui.FileView->setColumnWidth(0, 250);
+
 	//Initialize to current game configuration
 	UpdateCurrentRootPath(editorContext->GetGameConfigurations()->GetActiveConfiguration());
 
