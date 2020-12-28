@@ -261,6 +261,12 @@ public:
 
 		const auto otherUndo = static_cast<const ModelListUndoCommand*>(other);
 
+		//Didn't change the same list element
+		if (_index != otherUndo->_index)
+		{
+			return false;
+		}
+
 		if (!CanMerge(otherUndo))
 		{
 			return false;
