@@ -220,6 +220,9 @@ void StudioModelAsset::SetCurrentCameraOperator(camera_operators::CameraOperator
 		_scene->SetCurrentCamera(_cameraOperator != nullptr ? _cameraOperator->GetCamera() : nullptr);
 
 		emit CameraChanged(_cameraOperator);
+
+		//TODO: this doesn't belong here, camera code needs more refactoring
+		_scene->CameraIsFirstPerson = _cameraOperator == GetCameraOperator(2);
 	}
 }
 

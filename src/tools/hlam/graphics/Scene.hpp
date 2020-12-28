@@ -156,6 +156,8 @@ public:
 
 	GLuint UVMeshTexture{0};
 
+	bool CameraIsFirstPerson{false};
+
 	//TODO: having some colors as variables and some as methods is inconsistent
 	glm::vec3 GroundColor{0};
 	glm::vec3 BackgroundColor{0.5};

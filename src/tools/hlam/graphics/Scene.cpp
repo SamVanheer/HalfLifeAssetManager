@@ -421,13 +421,10 @@ void Scene::DrawModel()
 			flags |= renderer::DrawFlag::WIREFRAME_OVERLAY;
 		}
 
-		//TODO: implement
-#if false
-		if (m_pHLMV->GetState()->UsingWeaponOrigin())
+		if (CameraIsFirstPerson)
 		{
 			flags |= renderer::DrawFlag::IS_VIEW_MODEL;
 		}
-#endif
 
 		if (DrawShadows)
 		{
@@ -494,7 +491,6 @@ void Scene::DrawModel()
 		glm::vec2 textureOffset{0};
 
 		//Calculate texture offset based on sequence movement and current frame
-		//TODO: this will cause skipping because it resets every loop
 		if (_entity)
 		{
 			const auto sequence = _entity->GetModel()->GetStudioHeader()->GetSequence(_entity->GetSequence());
