@@ -6,6 +6,7 @@ target_sources(HLAM
 		EditorContext.hpp
 		FileListPanel.cpp
 		FileListPanel.hpp
+		FileListPanel.ui
 		FullscreenWidget.cpp
 		FullscreenWidget.hpp
 		IInputSink.hpp
