@@ -500,7 +500,6 @@ void Scene::DrawModel()
 			const auto sequence = _entity->GetModel()->GetStudioHeader()->GetSequence(_entity->GetSequence());
 
 			//Scale offset to current frame
-			//Use the linearmovement length as the x value. This is what the game does for actual entity movement.
 			const float currentFrame = _entity->GetFrame() / (sequence->numframes - 1);
 
 			float delta;
@@ -514,11 +513,10 @@ void Scene::DrawModel()
 				delta = (currentFrame + 1) - _previousFloorFrame;
 			}
 
-			const float groundSpeed = glm::length(sequence->linearmovement) * delta;
-
 			_previousFloorFrame = currentFrame;
 
-			textureOffset.x = groundSpeed;
+			textureOffset.x = sequence->linearmovement.x * delta;
+			textureOffset.y = -(sequence->linearmovement.y * delta);
 		}
 
 		if (_floorSequence != _entity->GetSequence())
