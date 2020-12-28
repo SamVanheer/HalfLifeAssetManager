@@ -428,11 +428,16 @@ void OptionsPageGameConfigurationsWidget::OnRemoveGameEnvironment()
 
 void OptionsPageGameConfigurationsWidget::OnGameInstallLocationChanged(const QString& text)
 {
-	auto gameEnvironment = _gameEnvironmentsModel->itemFromIndex(_ui.GameEnvironmentList->currentIndex())->data().value<GameEnvironment*>();
+	const QModelIndex index = _ui.GameEnvironmentList->currentIndex();
 
-	gameEnvironment->SetInstallationPath(QString{text});
+	if (index.isValid())
+	{
+		auto gameEnvironment = _gameEnvironmentsModel->itemFromIndex(index)->data().value<GameEnvironment*>();
 
-	_gameEnvironmentsChangeSet.MarkChanged(gameEnvironment->GetId());
+		gameEnvironment->SetInstallationPath(QString{text});
+
+		_gameEnvironmentsChangeSet.MarkChanged(gameEnvironment->GetId());
+	}
 }
 
 void OptionsPageGameConfigurationsWidget::OnBrowseGameInstallation()
