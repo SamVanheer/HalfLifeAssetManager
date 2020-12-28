@@ -14,6 +14,7 @@ public:
 	static constexpr int DefaultMouseSensitivity{5};
 	static constexpr int MinimumMouseSensitivity{1};
 	static constexpr int MaximumMouseSensitivity{20};
+	static constexpr bool DefaultEnableAudioPlayback{true};
 
 	GeneralSettings() = default;
 
@@ -25,6 +26,7 @@ public:
 		_invertMouseX = settings.value("InvertMouseX", false).toBool();
 		_invertMouseY = settings.value("InvertMouseY", false).toBool();
 		_mouseSensitivity = std::clamp(settings.value("MouseSensitivity", DefaultMouseSensitivity).toInt(), MinimumMouseSensitivity, MaximumMouseSensitivity);
+		_enableAudioPlayback = settings.value("EnableAudioPlayback", DefaultEnableAudioPlayback).toBool();
 		settings.endGroup();
 	}
 
@@ -36,6 +38,7 @@ public:
 		settings.setValue("InvertMouseX", _invertMouseX);
 		settings.setValue("InvertMouseY", _invertMouseY);
 		settings.setValue("MouseSensitivity", _mouseSensitivity);
+		settings.setValue("EnableAudioPlayback", _enableAudioPlayback);
 		settings.endGroup();
 	}
 
@@ -83,6 +86,13 @@ public:
 		return static_cast<float>(_mouseSensitivity) / DefaultMouseSensitivity;
 	}
 
+	bool ShouldEnableAudioPlayback() const { return _enableAudioPlayback; }
+
+	void SetEnableAudioPlayback(bool value)
+	{
+		_enableAudioPlayback = value;
+	}
+
 signals:
 	void MaxFPSChanged(float value);
 
@@ -95,5 +105,7 @@ private:
 	bool _invertMouseY{false};
 
 	int _mouseSensitivity{DefaultMouseSensitivity};
+
+	bool _enableAudioPlayback{DefaultEnableAudioPlayback};
 };
 }

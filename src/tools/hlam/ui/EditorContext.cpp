@@ -12,6 +12,7 @@
 #include "filesystem/FileSystem.hpp"
 #include "filesystem/IFileSystem.hpp"
 
+#include "soundsystem/DummySoundSystem.hpp"
 #include "soundsystem/ISoundSystem.hpp"
 #include "soundsystem/SoundSystem.hpp"
 
@@ -46,7 +47,9 @@ EditorContext::EditorContext(
 	, _timer(new QTimer(this))
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
 	, _fileSystem(std::make_unique<filesystem::FileSystem>())
-	, _soundSystem(std::make_unique<soundsystem::SoundSystem>())
+	, _soundSystem(_generalSettings->ShouldEnableAudioPlayback()
+		? std::unique_ptr<soundsystem::ISoundSystem>(std::make_unique<soundsystem::SoundSystem>())
+		: std::make_unique<soundsystem::DummySoundSystem>())
 	, _worldTime(std::make_unique<WorldTime>())
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
 {

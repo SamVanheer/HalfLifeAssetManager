@@ -2,6 +2,8 @@
 
 #include <string_view>
 
+#undef PlaySound
+
 /**
 *	@defgroup SoundSystem OpenAL based sound system.
 *

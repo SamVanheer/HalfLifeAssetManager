@@ -48,6 +48,7 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 	_ui.InvertMouseY->setChecked(_generalSettings->ShouldInvertMouseY());
 	_ui.MouseSensitivitySlider->setValue(_generalSettings->GetMouseSensitivity());
 	_ui.MouseSensitivitySpinner->setValue(_generalSettings->GetMouseSensitivity());
+	_ui.EnableAudioPlayback->setChecked(_generalSettings->ShouldEnableAudioPlayback());
 
 	connect(_ui.MouseSensitivitySlider, &QSlider::valueChanged, _ui.MouseSensitivitySpinner, &QSpinBox::setValue);
 	connect(_ui.MouseSensitivitySpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.MouseSensitivitySlider, &QSlider::setValue);
@@ -63,6 +64,7 @@ void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 	_generalSettings->SetInvertMouseX(_ui.InvertMouseX->isChecked());
 	_generalSettings->SetInvertMouseY(_ui.InvertMouseY->isChecked());
 	_generalSettings->SetMouseSensitivity(_ui.MouseSensitivitySlider->value());
+	_generalSettings->SetEnableAudioPlayback(_ui.EnableAudioPlayback->isChecked());
 
 	_generalSettings->SaveSettings(settings);
 	_recentFilesSettings->SaveSettings(settings);

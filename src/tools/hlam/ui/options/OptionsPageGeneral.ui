@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>454</width>
-    <height>221</height>
+    <height>253</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -151,6 +151,32 @@
       <widget class="QCheckBox" name="InvertMouseX">
        <property name="text">
         <string>Invert X Axis</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="6" column="0" colspan="2">
+    <widget class="QLabel" name="label_5">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Audio</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="EnableAudioPlayback">
+       <property name="text">
+        <string>Enable Audio Playback (Requires Restart)</string>
        </property>
       </widget>
      </item>
