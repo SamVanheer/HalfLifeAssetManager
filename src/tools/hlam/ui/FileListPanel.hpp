@@ -25,6 +25,9 @@ public:
 	FileListPanel(EditorContext* editorContext, QWidget* parent = nullptr);
 	~FileListPanel();
 
+private:
+	void SetRootDirectory(const QString& directory);
+
 signals:
 	void FileSelected(const QString& fileName);
 

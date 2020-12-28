@@ -3,7 +3,9 @@
 #include <vector>
 
 #include <QDir>
+#include <QFileDialog>
 #include <QFileSystemModel>
+#include <QSettings>
 #include <QString>
 
 #include "ui/EditorContext.hpp"
@@ -22,15 +24,42 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 
 	_model = new QFileSystemModel(this);
 
-	_model->setNameFilterDisables(false);
+	{
+		const auto settings = editorContext->GetSettings();
+		settings->beginGroup("file_list");
+		_model->setNameFilterDisables(!settings->value("HideFilesThatDontMatch", true).toBool());
+		settings->endGroup();
+	}
 
 	_ui.FileView->setModel(_model);
 
+	//Initialize to current game configuration
 	UpdateCurrentRootPath(editorContext->GetGameConfigurations()->GetActiveConfiguration());
 
-	connect(editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged, this, &FileListPanel::UpdateCurrentRootPath);
+	//connect(editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged, this, &FileListPanel::UpdateCurrentRootPath);
 	connect(_ui.Filters, qOverload<int>(&QComboBox::currentIndexChanged), this, &FileListPanel::OnFilterChanged);
+
+	connect(_ui.HideFilesThatDontMatch, &QCheckBox::stateChanged, [=]
+		{
+			_model->setNameFilterDisables(!_ui.HideFilesThatDontMatch->isChecked());
+
+			const auto settings = editorContext->GetSettings();
+			settings->beginGroup("file_list");
+			settings->setValue("HideFilesThatDontMatch", _ui.HideFilesThatDontMatch->isChecked());
+			settings->endGroup();
+		});
+
 	connect(_ui.FileView, &QTreeView::activated, this, &FileListPanel::OnFileSelected);
+
+	connect(_ui.BrowseRoot, &QPushButton::clicked, [=]
+		{
+			const QString fileName{QFileDialog::getExistingDirectory(this, {}, _ui.Root->text())};
+
+			if (!fileName.isEmpty())
+			{
+				SetRootDirectory(fileName);
+			}
+		});
 
 	//Build list of file extension filters
 	std::vector<std::pair<QString, QString>> filters;
@@ -57,6 +86,13 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 }
 
 FileListPanel::~FileListPanel() = default;
+
+void FileListPanel::SetRootDirectory(const QString& directory)
+{
+	_model->setRootPath(directory);
+	_ui.FileView->setRootIndex(_model->index(directory));
+	_ui.Root->setText(directory);
+}
 
 void FileListPanel::UpdateCurrentRootPath(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration)
 {

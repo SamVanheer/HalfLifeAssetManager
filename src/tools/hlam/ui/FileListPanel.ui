@@ -35,6 +35,16 @@
     </layout>
    </item>
    <item>
+    <widget class="QCheckBox" name="HideFilesThatDontMatch">
+     <property name="text">
+      <string>Hide files that don't match</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <property name="bottomMargin">
       <number>0</number>
@@ -56,6 +66,19 @@
       <widget class="QLineEdit" name="Root">
        <property name="readOnly">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="BrowseRoot">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Browse</string>
        </property>
       </widget>
      </item>
