@@ -43,7 +43,7 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset
 	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelAttachmentsPanel::OnAttachmentChanged);
 	connect(_ui.HighlightAttachment, &QCheckBox::stateChanged, this, &StudioModelAttachmentsPanel::OnHighlightAttachmentChanged);
 
-	connect(_ui.Name, &QLineEdit::returnPressed, this, &StudioModelAttachmentsPanel::OnNameChanged);
+	connect(_ui.Name, &QLineEdit::textChanged, this, &StudioModelAttachmentsPanel::OnNameChanged);
 	connect(_ui.Name, &QLineEdit::inputRejected, this, &StudioModelAttachmentsPanel::OnNameRejected);
 
 	connect(_ui.Type, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnTypeChanged);

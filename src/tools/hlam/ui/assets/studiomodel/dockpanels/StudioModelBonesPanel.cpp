@@ -76,7 +76,7 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 
 	connect(_ui.BonePropertyList, qOverload<int>(&QListWidget::currentRowChanged), _ui.BonePropertyStack, &QStackedWidget::setCurrentIndex);
 
-	connect(_ui.BoneName, &QLineEdit::returnPressed, this, &StudioModelBonesPanel::OnBoneNameChanged);
+	connect(_ui.BoneName, &QLineEdit::textChanged, this, &StudioModelBonesPanel::OnBoneNameChanged);
 	connect(_ui.BoneName, &QLineEdit::inputRejected, this, &StudioModelBonesPanel::OnBoneNameRejected);
 
 	connect(_ui.ParentBone, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBonesPanel::OnBoneParentChanged);

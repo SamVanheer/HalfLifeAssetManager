@@ -73,7 +73,7 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.UVLineWidthSlider, &QSlider::valueChanged, this, &StudioModelTexturesPanel::OnUVLineWidthSliderChanged);
 	connect(_ui.UVLineWidthSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelTexturesPanel::OnUVLineWidthSpinnerChanged);
 
-	connect(_ui.TextureName, &QLineEdit::returnPressed, this, &StudioModelTexturesPanel::OnTextureNameChanged);
+	connect(_ui.TextureName, &QLineEdit::textChanged, this, &StudioModelTexturesPanel::OnTextureNameChanged);
 	connect(_ui.TextureName, &QLineEdit::inputRejected, this, &StudioModelTexturesPanel::OnTextureNameRejected);
 
 	connect(_ui.Chrome, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnChromeChanged);
