@@ -236,7 +236,8 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 			const auto controller = header->GetBoneController(listChange.GetSourceIndex());
 
 			const QSignalBlocker index{_ui.BoneControllerType};
-			_ui.BoneControllerType->setCurrentIndex(controller->type & STUDIO_BONECONTROLLER_TYPES);
+			const int newTypeIndex = static_cast<int>(std::log2(controller->type & STUDIO_BONECONTROLLER_TYPES));
+			_ui.BoneControllerType->setCurrentIndex(newTypeIndex);
 		}
 
 		break;
@@ -491,6 +492,6 @@ void StudioModelBodyPartsPanel::OnBoneControllerTypeChanged(int index)
 		return;
 	}
 
-	_asset->AddUndoCommand(new ChangeBoneControllerTypeCommand(_asset, boneControllerLogicalIndex, boneController->type, _ui.BoneControllerType->currentIndex()));
+	_asset->AddUndoCommand(new ChangeBoneControllerTypeCommand(_asset, boneControllerLogicalIndex, oldType, newType));
 }
 }
