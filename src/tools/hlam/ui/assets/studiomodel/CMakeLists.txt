@@ -6,7 +6,9 @@ target_sources(HLAM
 		StudioModelEditWidget.cpp
 		StudioModelEditWidget.hpp
 		StudioModelUndoCommands.cpp
-		StudioModelUndoCommands.hpp)
+		StudioModelUndoCommands.hpp
+		StudioModelValidators.cpp
+		StudioModelValidators.hpp)
 
 add_subdirectory(compiler)
 add_subdirectory(dockpanels)

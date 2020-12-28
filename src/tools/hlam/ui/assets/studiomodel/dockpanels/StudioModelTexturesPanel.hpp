@@ -63,6 +63,7 @@ private slots:
 	void OnUVLineWidthSpinnerChanged(double value);
 
 	void OnTextureNameChanged();
+	void OnTextureNameRejected();
 
 	void OnChromeChanged();
 	void OnAdditiveChanged();

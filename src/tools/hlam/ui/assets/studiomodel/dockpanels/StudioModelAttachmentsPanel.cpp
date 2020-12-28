@@ -1,13 +1,13 @@
 #include <limits>
 
 #include <QSignalBlocker>
+#include <QToolTip>
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
-#include "qt/ByteLengthValidator.hpp"
-
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
+#include "ui/assets/studiomodel/StudioModelValidators.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
 
 namespace ui::assets::studiomodel
@@ -32,19 +32,26 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset
 		spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	}
 
+	const auto attachmentNameValidator = new UniqueAttachmentNameValidator(MaxAttachmentNameBytes - 1, _asset, this);
+
+	_ui.Name->setValidator(attachmentNameValidator);
+
+	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), attachmentNameValidator, &UniqueAttachmentNameValidator::SetCurrentIndex);
+
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelAttachmentsPanel::OnModelChanged);
 
 	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelAttachmentsPanel::OnAttachmentChanged);
 	connect(_ui.HighlightAttachment, &QCheckBox::stateChanged, this, &StudioModelAttachmentsPanel::OnHighlightAttachmentChanged);
-	connect(_ui.Name, &QLineEdit::textChanged, this, &StudioModelAttachmentsPanel::OnNameChanged);
+
+	connect(_ui.Name, &QLineEdit::returnPressed, this, &StudioModelAttachmentsPanel::OnNameChanged);
+	connect(_ui.Name, &QLineEdit::inputRejected, this, &StudioModelAttachmentsPanel::OnNameRejected);
+
 	connect(_ui.Type, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnTypeChanged);
 	connect(_ui.Bone, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelAttachmentsPanel::OnBoneChanged);
 
 	connect(_ui.OriginX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
 	connect(_ui.OriginY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
 	connect(_ui.OriginZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
-
-	_ui.Name->setValidator(new qt::ByteLengthValidator(MaxAttachmentNameBytes - 1, this));
 
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 	const auto header = model->GetStudioHeader();
@@ -241,6 +248,11 @@ void StudioModelAttachmentsPanel::OnNameChanged()
 	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
 
 	_asset->AddUndoCommand(new ChangeAttachmentNameCommand(_asset, _ui.Attachments->currentIndex(), attachment->name, _ui.Name->text()));
+}
+
+void StudioModelAttachmentsPanel::OnNameRejected()
+{
+	QToolTip::showText(_ui.Name->mapToGlobal({0, -20}), "Attachment names must be unique");
 }
 
 void StudioModelAttachmentsPanel::OnTypeChanged()

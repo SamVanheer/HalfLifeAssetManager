@@ -8,6 +8,7 @@
 #include <QMetaEnum>
 #include <QPainter>
 #include <QSignalBlocker>
+#include <QToolTip>
 
 #include <glm/vec2.hpp>
 
@@ -20,11 +21,11 @@
 #include "graphics/Palette.hpp"
 #include "graphics/TextureLoader.hpp"
 
-#include "qt/ByteLengthValidator.hpp"
 #include "qt/QtUtilities.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
+#include "ui/assets/studiomodel/StudioModelValidators.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelExportUVMeshDialog.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
 
@@ -58,6 +59,12 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 {
 	_ui.setupUi(this);
 
+	const auto textureNameValidator = new UniqueTextureNameValidator(MaxTextureNameBytes - 1, _asset, this);
+
+	_ui.TextureName->setValidator(textureNameValidator);
+
+	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), textureNameValidator, &UniqueTextureNameValidator::SetCurrentIndex);
+
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelTexturesPanel::OnModelChanged);
 
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::OnTextureChanged);
@@ -66,7 +73,8 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.UVLineWidthSlider, &QSlider::valueChanged, this, &StudioModelTexturesPanel::OnUVLineWidthSliderChanged);
 	connect(_ui.UVLineWidthSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelTexturesPanel::OnUVLineWidthSpinnerChanged);
 
-	connect(_ui.TextureName, &QLineEdit::textChanged, this, &StudioModelTexturesPanel::OnTextureNameChanged);
+	connect(_ui.TextureName, &QLineEdit::returnPressed, this, &StudioModelTexturesPanel::OnTextureNameChanged);
+	connect(_ui.TextureName, &QLineEdit::inputRejected, this, &StudioModelTexturesPanel::OnTextureNameRejected);
 
 	connect(_ui.Chrome, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnChromeChanged);
 	connect(_ui.Additive, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnAdditiveChanged);
@@ -98,8 +106,6 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.MipmapFilter, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::OnTextureFiltersChanged);
 
 	connect(_ui.PowerOf2Textures, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnPowerOf2TexturesChanged);
-
-	_ui.TextureName->setValidator(new qt::ByteLengthValidator(MaxTextureNameBytes - 1, this));
 
 	const auto studioModelSettings{_asset->GetProvider()->GetStudioModelSettings()};
 
@@ -487,6 +493,11 @@ void StudioModelTexturesPanel::OnTextureNameChanged()
 	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
 
 	_asset->AddUndoCommand(new ChangeTextureNameCommand(_asset, _ui.Textures->currentIndex(), texture->name, _ui.TextureName->text()));
+}
+
+void StudioModelTexturesPanel::OnTextureNameRejected()
+{
+	QToolTip::showText(_ui.TextureName->mapToGlobal({0, -20}), "Texture names must be unique");
 }
 
 void StudioModelTexturesPanel::OnChromeChanged()

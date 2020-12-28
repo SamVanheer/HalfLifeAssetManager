@@ -1,13 +1,13 @@
 #include <limits>
 
 #include <QSignalBlocker>
+#include <QToolTip>
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
-#include "qt/ByteLengthValidator.hpp"
-
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
+#include "ui/assets/studiomodel/StudioModelValidators.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBonesPanel.hpp"
 
 namespace ui::assets::studiomodel
@@ -63,6 +63,12 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 		spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	}
 
+	const auto boneNameValidator = new UniqueBoneNameValidator(MaxBoneNameBytes - 1, _asset, this);
+
+	_ui.BoneName->setValidator(boneNameValidator);
+
+	connect(_ui.Bones, qOverload<int>(&QComboBox::currentIndexChanged), boneNameValidator, &UniqueBoneNameValidator::SetCurrentIndex);
+
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelBonesPanel::OnModelChanged);
 
 	connect(_ui.Bones, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBonesPanel::OnBoneChanged);
@@ -70,7 +76,9 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 
 	connect(_ui.BonePropertyList, qOverload<int>(&QListWidget::currentRowChanged), _ui.BonePropertyStack, &QStackedWidget::setCurrentIndex);
 
-	connect(_ui.BoneName, &QLineEdit::textChanged, this, &StudioModelBonesPanel::OnBoneNameChanged);
+	connect(_ui.BoneName, &QLineEdit::returnPressed, this, &StudioModelBonesPanel::OnBoneNameChanged);
+	connect(_ui.BoneName, &QLineEdit::inputRejected, this, &StudioModelBonesPanel::OnBoneNameRejected);
+
 	connect(_ui.ParentBone, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBonesPanel::OnBoneParentChanged);
 	//TODO: shouldn't be a spin box
 	connect(_ui.BoneFlags, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBoneFlagsChanged);
@@ -90,8 +98,6 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 	connect(_ui.RotationScaleX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
 	connect(_ui.RotationScaleY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
 	connect(_ui.RotationScaleZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
-
-	_ui.BoneName->setValidator(new qt::ByteLengthValidator(MaxBoneNameBytes - 1, this));
 
 	const auto model = _asset->GetScene()->GetEntity()->GetModel();
 
@@ -281,6 +287,11 @@ void StudioModelBonesPanel::OnBoneNameChanged()
 	const auto bone = header->GetBone(_ui.Bones->currentIndex());
 
 	_asset->AddUndoCommand(new BoneRenameCommand(_asset, _ui.Bones->currentIndex(), bone->name, _ui.BoneName->text()));
+}
+
+void StudioModelBonesPanel::OnBoneNameRejected()
+{
+	QToolTip::showText(_ui.BoneName->mapToGlobal({0, -20}), "Bone names must be unique");
 }
 
 void StudioModelBonesPanel::OnBoneParentChanged(int index)

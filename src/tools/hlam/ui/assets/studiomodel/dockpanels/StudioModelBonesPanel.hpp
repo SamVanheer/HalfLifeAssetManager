@@ -25,6 +25,7 @@ private slots:
 	void OnHightlightBoneChanged();
 
 	void OnBoneNameChanged();
+	void OnBoneNameRejected();
 
 	void OnBoneParentChanged(int index);
 

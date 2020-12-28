@@ -28,6 +28,8 @@ private slots:
 	void OnHighlightAttachmentChanged();
 
 	void OnNameChanged();
+	void OnNameRejected();
+
 	void OnTypeChanged();
 	void OnBoneChanged();
 
