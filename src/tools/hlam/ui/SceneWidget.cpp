@@ -13,6 +13,8 @@ SceneWidget::SceneWidget(graphics::Scene* scene, QWidget* parent)
 	, _scene(scene)
 {
 	assert(nullptr != _scene);
+
+	connect(this, &SceneWidget::frameSwapped, this, qOverload<>(&SceneWidget::update));
 }
 
 SceneWidget::~SceneWidget()
@@ -49,7 +51,5 @@ void SceneWidget::paintGL()
 		_scene->UpdateWindowSize(static_cast<unsigned int>(size.width()), static_cast<unsigned int>(size.height()));
 		_scene->Draw();
 	}
-
-	requestUpdate();
 }
 }
