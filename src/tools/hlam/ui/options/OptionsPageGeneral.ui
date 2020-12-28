@@ -14,12 +14,18 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="6" column="0" colspan="2">
-    <widget class="QCheckBox" name="InvertMouseY">
-     <property name="text">
-      <string>Invert Y Axis</string>
+   <item row="8" column="0" colspan="2">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
      </property>
-    </widget>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item row="3" column="0" colspan="2">
     <widget class="Line" name="line">
@@ -34,10 +40,27 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QCheckBox" name="InvertMouseX">
+   <item row="2" column="1">
+    <widget class="QSpinBox" name="MaxFPS">
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>1000</number>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QSpinBox" name="MaxRecentFiles">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QCheckBox" name="UseSingleInstance">
      <property name="text">
-      <string>Invert X Axis</string>
+      <string>Use single instance</string>
      </property>
     </widget>
    </item>
@@ -69,33 +92,6 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0" colspan="2">
-    <widget class="QCheckBox" name="UseSingleInstance">
-     <property name="text">
-      <string>Use single instance</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QSpinBox" name="MaxRecentFiles">
-     <property name="maximum">
-      <number>100</number>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0" colspan="2">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="2" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
@@ -103,15 +99,62 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QSpinBox" name="MaxFPS">
-     <property name="minimum">
-      <number>1</number>
+   <item row="5" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <property name="bottomMargin">
+      <number>0</number>
      </property>
-     <property name="maximum">
-      <number>1000</number>
-     </property>
-    </widget>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Mouse Sensitivity:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QSlider" name="MouseSensitivitySlider">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>20</number>
+       </property>
+       <property name="value">
+        <number>3</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QSpinBox" name="MouseSensitivitySpinner">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>20</number>
+       </property>
+       <property name="value">
+        <number>3</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="3">
+      <widget class="QCheckBox" name="InvertMouseY">
+       <property name="text">
+        <string>Invert Y Axis</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="3">
+      <widget class="QCheckBox" name="InvertMouseX">
+       <property name="text">
+        <string>Invert X Axis</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

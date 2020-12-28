@@ -102,7 +102,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	AddCameraOperator(std::make_unique<camera_operators::ArcBallCameraOperator>(_editorContext->GetGeneralSettings()));
 	AddCameraOperator(std::make_unique<camera_operators::FreeLookCameraOperator>(_editorContext->GetGeneralSettings()));
-	AddCameraOperator(std::make_unique<camera_operators::FirstPersonCameraOperator>());
+	AddCameraOperator(std::make_unique<camera_operators::FirstPersonCameraOperator>(_editorContext->GetGeneralSettings()));
 
 	if (nullptr != entity)
 	{

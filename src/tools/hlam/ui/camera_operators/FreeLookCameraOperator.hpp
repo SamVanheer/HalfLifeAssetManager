@@ -1,10 +1,7 @@
 #pragma once
 
-#include <cassert>
-
 #include "ui/camera_operators/CameraOperator.hpp"
 #include "ui/camera_operators/dockpanels/FreeLookSettingsPanel.hpp"
-#include "ui/settings/GeneralSettings.hpp"
 
 #include "utility/CoordinateSystem.hpp"
 
@@ -19,10 +16,8 @@ public:
 	static constexpr float DefaultFOV = 65.f;
 
 	FreeLookCameraOperator(settings::GeneralSettings* generalSettings)
-		: _generalSettings(generalSettings)
+		: CameraOperator(generalSettings)
 	{
-		assert(_generalSettings);
-
 		_camera.SetFieldOfView(DefaultFOV);
 	}
 
@@ -64,21 +59,11 @@ public:
 			{
 				if (event.buttons() & Qt::MouseButton::LeftButton)
 				{
-					auto horizontalAdjust = static_cast<float>(event.x() - _oldCoordinates.x);
-					auto verticalAdjust = static_cast<float>(event.y() - _oldCoordinates.y);
+					const auto horizontalAdjust = GetMouseXValue(static_cast<float>(event.x() - _oldCoordinates.x));
+					const auto verticalAdjust = GetMouseXValue(static_cast<float>(event.y() - _oldCoordinates.y));
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
-
-					if (_generalSettings->ShouldInvertMouseX())
-					{
-						horizontalAdjust = -horizontalAdjust;
-					}
-
-					if (_generalSettings->ShouldInvertMouseY())
-					{
-						verticalAdjust = -verticalAdjust;
-					}
 
 					if (event.modifiers() & Qt::KeyboardModifier::ShiftModifier)
 					{
@@ -103,12 +88,7 @@ public:
 				}
 				else if (event.buttons() & Qt::MouseButton::RightButton)
 				{
-					auto adjust = static_cast<float>(event.y() - _oldCoordinates.y);
-
-					if (_generalSettings->ShouldInvertMouseY())
-					{
-						adjust = -adjust;
-					}
+					const auto adjust = GetMouseYValue(static_cast<float>(event.y() - _oldCoordinates.y));
 
 					SetOrigin(_camera.GetOrigin() - (_camera.GetForwardVector() * adjust));
 
@@ -159,8 +139,6 @@ public:
 	}
 
 private:
-	const settings::GeneralSettings* const _generalSettings;
-
 	glm::vec3 _savedOrigin{0};
 	float _savedPitch{0};
 	float _savedYaw{0};

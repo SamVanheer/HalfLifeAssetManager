@@ -11,6 +11,9 @@ class GeneralSettings final : public QObject
 
 public:
 	static constexpr float DefaultMaxFPS{60.f};
+	static constexpr int DefaultMouseSensitivity{5};
+	static constexpr int MinimumMouseSensitivity{1};
+	static constexpr int MaximumMouseSensitivity{20};
 
 	GeneralSettings() = default;
 
@@ -21,6 +24,7 @@ public:
 		_maxFPS = settings.value("MaxFPS", DefaultMaxFPS).toFloat();
 		_invertMouseX = settings.value("InvertMouseX", false).toBool();
 		_invertMouseY = settings.value("InvertMouseY", false).toBool();
+		_mouseSensitivity = std::clamp(settings.value("MouseSensitivity", DefaultMouseSensitivity).toInt(), MinimumMouseSensitivity, MaximumMouseSensitivity);
 		settings.endGroup();
 	}
 
@@ -31,6 +35,7 @@ public:
 		settings.setValue("MaxFPS", _maxFPS);
 		settings.setValue("InvertMouseX", _invertMouseX);
 		settings.setValue("InvertMouseY", _invertMouseY);
+		settings.setValue("MouseSensitivity", _mouseSensitivity);
 		settings.endGroup();
 	}
 
@@ -66,6 +71,18 @@ public:
 		_invertMouseY = value;
 	}
 
+	int GetMouseSensitivity() const { return _mouseSensitivity; }
+
+	void SetMouseSensitivity(int value)
+	{
+		_mouseSensitivity = value;
+	}
+
+	float GetNormalizedMouseSensitivity() const
+	{
+		return static_cast<float>(_mouseSensitivity) / DefaultMouseSensitivity;
+	}
+
 signals:
 	void MaxFPSChanged(float value);
 
@@ -76,5 +93,7 @@ private:
 
 	bool _invertMouseX{false};
 	bool _invertMouseY{false};
+
+	int _mouseSensitivity{DefaultMouseSensitivity};
 };
 }

@@ -1,13 +1,10 @@
 #pragma once
 
-#include <cassert>
-
 #include <glm/trigonometric.hpp>
 #include <glm/gtx/transform.hpp>
 
 #include "ui/camera_operators/CameraOperator.hpp"
 #include "ui/camera_operators/dockpanels/ArcBallSettingsPanel.hpp"
-#include "ui/settings/GeneralSettings.hpp"
 
 #include "utility/CoordinateSystem.hpp"
 
@@ -32,10 +29,8 @@ public:
 	static constexpr float DefaultFOV = 65.f;
 
 	ArcBallCameraOperator(settings::GeneralSettings* generalSettings)
-		: _generalSettings(generalSettings)
+		: CameraOperator(generalSettings)
 	{
-		assert(_generalSettings);
-
 		_camera.SetFieldOfView(DefaultFOV);
 	}
 
@@ -79,18 +74,8 @@ public:
 			{
 				if (event.buttons() & Qt::MouseButton::LeftButton)
 				{
-					auto horizontalAdjust = static_cast<float>(event.x() - _oldCoordinates.x);
-					auto verticalAdjust = static_cast<float>(event.y() - _oldCoordinates.y);
-
-					if (_generalSettings->ShouldInvertMouseX())
-					{
-						horizontalAdjust = -horizontalAdjust;
-					}
-
-					if (_generalSettings->ShouldInvertMouseY())
-					{
-						verticalAdjust = -verticalAdjust;
-					}
+					const auto horizontalAdjust = GetMouseXValue(static_cast<float>(event.x() - _oldCoordinates.x));
+					const auto verticalAdjust = GetMouseYValue(static_cast<float>(event.y() - _oldCoordinates.y));
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
@@ -109,12 +94,7 @@ public:
 				}
 				else if (event.buttons() & Qt::MouseButton::RightButton)
 				{
-					auto adjust = static_cast<float>(event.y() - _oldCoordinates.y);
-
-					if (_generalSettings->ShouldInvertMouseY())
-					{
-						adjust = -adjust;
-					}
+					const auto adjust = GetMouseYValue(static_cast<float>(event.y() - _oldCoordinates.y));
 
 					_parameters.Distance += adjust;
 
@@ -189,8 +169,6 @@ private:
 	}
 
 private:
-	const settings::GeneralSettings* const _generalSettings;
-
 	ArcBallParameters _parameters;
 	ArcBallParameters _savedParameters;
 };
