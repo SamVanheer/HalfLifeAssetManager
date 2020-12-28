@@ -4,6 +4,8 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "qt/ByteLengthValidator.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
@@ -38,6 +40,8 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 	connect(_ui.EventId, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelSequencesPanel::OnEventEdited);
 	connect(_ui.EventOptions, &QLineEdit::textChanged, this, &StudioModelSequencesPanel::OnEventEdited);
 	connect(_ui.EventType, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelSequencesPanel::OnEventEdited);
+
+	_ui.EventOptions->setValidator(new qt::ByteLengthValidator(STUDIO_MAX_EVENT_OPTIONS_LENGTH - 1, this));
 
 	auto sizePolicy = _ui.EventInfoWidget->sizePolicy();
 
