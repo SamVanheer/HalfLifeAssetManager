@@ -187,7 +187,15 @@ public:
 			return false;
 		}
 
-		_newValue = static_cast<const ModelUndoCommand*>(other)->_newValue;
+		const auto otherUndo = static_cast<const ModelUndoCommand*>(other);
+
+		//Don't merge if the old and new are the same
+		if (!CanMerge(otherUndo))
+		{
+			return false;
+		}
+
+		_newValue = otherUndo->_newValue;
 
 		return true;
 	}
@@ -204,7 +212,13 @@ public:
 		EmitEvent(_oldValue, _newValue);
 	}
 
+	const T& GetOldValue() const { return _oldValue; }
+
+	const T& GetNewValue() const { return _newValue; }
+
 protected:
+	virtual bool CanMerge(const ModelUndoCommand* other) { return false; }
+
 	virtual void Apply(const T& oldValue, const T& newValue) = 0;
 
 	virtual void EmitEvent(const T& oldValue, const T& newValue)
@@ -245,7 +259,14 @@ public:
 			return false;
 		}
 
-		_newValue = static_cast<const ModelListUndoCommand*>(other)->_newValue;
+		const auto otherUndo = static_cast<const ModelListUndoCommand*>(other);
+
+		if (!CanMerge(otherUndo))
+		{
+			return false;
+		}
+
+		_newValue = otherUndo->_newValue;
 
 		return true;
 	}
@@ -262,7 +283,15 @@ public:
 		EmitEvent(_oldValue, _newValue);
 	}
 
+	int GetIndex() const { return _index; }
+
+	const T& GetOldValue() const { return _oldValue; }
+
+	const T& GetNewValue() const { return _newValue; }
+
 protected:
+	virtual bool CanMerge(const ModelListUndoCommand* other) { return false; }
+
 	virtual void Apply(int index, const T& oldValue, const T& newValue) = 0;
 
 	virtual void EmitEvent(const T& oldValue, const T& newValue)
@@ -286,6 +315,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<QString>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const QString& oldValue, const QString& newValue) override;
 };
 
@@ -299,6 +333,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
@@ -312,6 +351,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
@@ -344,6 +388,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<QString>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const QString& oldValue, const QString& newValue) override;
 };
 
@@ -357,6 +406,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
@@ -370,6 +424,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
@@ -383,6 +442,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<glm::vec3>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const glm::vec3& oldValue, const glm::vec3& newValue) override;
 };
 
@@ -396,6 +460,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
@@ -403,6 +472,11 @@ struct ChangeBoneControllerRange
 {
 	float Start;
 	float End;
+
+	bool operator!=(const ChangeBoneControllerRange& other) const
+	{
+		return Start != other.Start || End != other.End;
+	}
 };
 
 class ChangeBoneControllerRangeCommand : public ModelListUndoCommand<ChangeBoneControllerRange>
@@ -416,6 +490,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<ChangeBoneControllerRange>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const ChangeBoneControllerRange& oldValue, const ChangeBoneControllerRange& newValue) override;
 };
 
@@ -429,6 +508,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
@@ -442,6 +526,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
@@ -455,6 +544,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
@@ -468,6 +562,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(const int& oldValue, const int& newValue) override;
 };
 
@@ -539,6 +638,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
@@ -552,6 +656,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
@@ -566,6 +675,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<std::pair<glm::vec3, glm::vec3>>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
 };
 
@@ -579,6 +693,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<QString>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const QString& oldValue, const QString& newValue) override;
 };
 
@@ -592,6 +711,11 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
