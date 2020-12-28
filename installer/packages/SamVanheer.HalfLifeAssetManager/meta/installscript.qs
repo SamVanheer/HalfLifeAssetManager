@@ -33,6 +33,8 @@ Component.prototype.createOperations = function()
 		}
 		
 		// Exit code 1638 is returned when the redist is already installed
-		component.addOperation("Execute", "{0,1638}", "@TargetDir@/redist/VC_redist.x86.exe", "/quiet", "/norestart");
+		//3010 means reboot required, but it's unlikely to actually be necessary
+		//5100 means newer version installed
+		component.addOperation("Execute", "{0,1638,3010,5100}", "@TargetDir@/redist/VC_redist.x86.exe", "/quiet", "/norestart");
 	}
 }
