@@ -4,6 +4,7 @@
 
 #include <GL/glew.h>
 
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
@@ -132,6 +133,7 @@ public:
 	bool ShowPlayerHitbox = false;
 
 	int FloorLength = 0;
+	bool EnableFloorTextureTiling{false};
 	int FloorTextureLength{16};
 
 	GLuint GroundTexture{0};
@@ -185,5 +187,10 @@ private:
 	unsigned int _drawnPolygonsCount = 0;
 
 	HLMVStudioModelEntity* _entity{};
+
+	int _floorSequence{-1};
+	float _previousFloorFrame{0};
+
+	glm::vec2 _floorTextureOffset{0};
 };
 }

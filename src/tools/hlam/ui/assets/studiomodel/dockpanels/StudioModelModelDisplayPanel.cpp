@@ -44,6 +44,7 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 	connect(_ui.CenterModelOnWorldOrigin, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnCenterModelOnWorldOrigin);
 	connect(_ui.AlignOnGround, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnAlignOnGround);
 
+	connect(_ui.EnableGroundTextureTiling, &QGroupBox::toggled, this, &StudioModelModelDisplayPanel::OnEnableGroundTextureTilingChanged);
 	connect(_ui.GroundTextureSize, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelModelDisplayPanel::OnGroundTextureSizeChanged);
 }
 
@@ -178,6 +179,11 @@ void StudioModelModelDisplayPanel::OnCenterModelOnWorldOrigin()
 void StudioModelModelDisplayPanel::OnAlignOnGround()
 {
 	_asset->GetScene()->AlignOnGround();
+}
+
+void StudioModelModelDisplayPanel::OnEnableGroundTextureTilingChanged()
+{
+	_asset->GetScene()->EnableFloorTextureTiling = _ui.EnableGroundTextureTiling->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnGroundTextureSizeChanged()

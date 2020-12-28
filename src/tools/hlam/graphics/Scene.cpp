@@ -1,9 +1,10 @@
 #include <cassert>
+#include <cmath>
+#include <utility>
 
 #include <GL/glew.h>
 
 #include <glm/mat4x4.hpp>
-#include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -500,12 +501,42 @@ void Scene::DrawModel()
 
 			//Scale offset to current frame
 			//Use the linearmovement length as the x value. This is what the game does for actual entity movement.
-			const float groundSpeed = glm::length(sequence->linearmovement) * _entity->GetFrame() / (sequence->numframes - 1);
+			const float currentFrame = _entity->GetFrame() / (sequence->numframes - 1);
+
+			float delta;
+
+			if (currentFrame >= _previousFloorFrame)
+			{
+				delta = currentFrame - _previousFloorFrame;
+			}
+			else
+			{
+				delta = (currentFrame + 1) - _previousFloorFrame;
+			}
+
+			const float groundSpeed = glm::length(sequence->linearmovement) * delta;
+
+			_previousFloorFrame = currentFrame;
 
 			textureOffset.x = groundSpeed;
 		}
 
-		graphics::DrawFloor(FloorLength, FloorTextureLength, textureOffset, GroundTexture, GroundColor, MirrorOnGround);
+		if (_floorSequence != _entity->GetSequence())
+		{
+			_floorSequence = _entity->GetSequence();
+			_previousFloorFrame = 0;
+			_floorTextureOffset.x = _floorTextureOffset.y = 0;
+		}
+
+		_floorTextureOffset += textureOffset;
+
+		const float floorTextureLength = EnableFloorTextureTiling ? FloorTextureLength : FloorLength;
+
+		//Prevent the offset from overflowing
+		_floorTextureOffset.x = std::fmod(_floorTextureOffset.x, floorTextureLength);
+		_floorTextureOffset.y = std::fmod(_floorTextureOffset.y, floorTextureLength);
+
+		graphics::DrawFloor(FloorLength, floorTextureLength, _floorTextureOffset, GroundTexture, GroundColor, MirrorOnGround);
 	}
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;

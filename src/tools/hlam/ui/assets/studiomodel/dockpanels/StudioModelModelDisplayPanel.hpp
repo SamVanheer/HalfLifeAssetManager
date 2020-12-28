@@ -46,6 +46,7 @@ private:
 
 	void OnAlignOnGround();
 
+	void OnEnableGroundTextureTilingChanged();
 	void OnGroundTextureSizeChanged();
 
 private:
