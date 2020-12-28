@@ -6,6 +6,8 @@
 
 #include "qt/ByteLengthValidator.hpp"
 
+#include "soundsystem/ISoundSystem.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
@@ -20,6 +22,9 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 
 	_ui.EventId->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 	_ui.EventType->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+
+	_ui.PlaySound->setEnabled(_asset->GetScene()->GetEntityContext()->SoundSystem->IsSoundAvailable());
+	_ui.PitchFramerateAmplitude->setEnabled(_asset->GetScene()->GetEntityContext()->SoundSystem->IsSoundAvailable());
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelSequencesPanel::OnModelChanged);
 
