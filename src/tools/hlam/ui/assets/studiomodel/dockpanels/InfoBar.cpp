@@ -16,7 +16,7 @@ InfoBar::InfoBar(StudioModelAsset* asset, QWidget* parent)
 
 InfoBar::~InfoBar() = default;
 
-void InfoBar::OnTick()
+void InfoBar::OnDraw()
 {
 	++_currentFPS;
 

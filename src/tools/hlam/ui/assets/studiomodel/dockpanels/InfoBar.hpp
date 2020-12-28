@@ -18,7 +18,7 @@ public:
 	~InfoBar();
 
 public slots:
-	void OnTick();
+	void OnDraw();
 
 private:
 	Ui_InfoBar _ui;
