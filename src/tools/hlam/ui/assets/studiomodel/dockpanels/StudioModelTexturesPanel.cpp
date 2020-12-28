@@ -824,12 +824,14 @@ void StudioModelTexturesPanel::UpdateColormapValue()
 
 void StudioModelTexturesPanel::UpdateUVMapTexture()
 {
+	auto scene = _asset->GetScene();
+
+	scene->ShowUVMap = _ui.ShowUVMap->isChecked();
+
 	if (!_ui.ShowUVMap->isChecked())
 	{
 		return;
 	}
-
-	auto scene = _asset->GetScene();
 
 	const int textureIndex = _ui.Textures->currentIndex();
 
