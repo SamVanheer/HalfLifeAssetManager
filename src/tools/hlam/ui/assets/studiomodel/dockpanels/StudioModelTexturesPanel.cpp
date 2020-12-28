@@ -162,7 +162,15 @@ void StudioModelTexturesPanel::OnMouseEvent(QMouseEvent* event)
 
 			_dragPosition.x = position.x();
 			_dragPosition.y = position.y();
+
+			_trackedMouseButtons.setFlag(event->button(), true);
 		}
+		break;
+	}
+
+	case QEvent::Type::MouseButtonRelease:
+	{
+		_trackedMouseButtons.setFlag(event->button(), false);
 		break;
 	}
 
@@ -172,14 +180,14 @@ void StudioModelTexturesPanel::OnMouseEvent(QMouseEvent* event)
 
 		const glm::ivec2 delta = position - _dragPosition;
 
-		if (event->buttons() & Qt::MouseButton::LeftButton)
+		if (_trackedMouseButtons & Qt::MouseButton::LeftButton && event->buttons() & Qt::MouseButton::LeftButton)
 		{
 			auto scene = _asset->GetScene();
 
 			scene->TextureXOffset += delta.x;
 			scene->TextureYOffset += delta.y;
 		}
-		else if (event->buttons() & Qt::MouseButton::RightButton)
+		else if (_trackedMouseButtons & Qt::MouseButton::RightButton && event->buttons() & Qt::MouseButton::RightButton)
 		{
 			const double zoomAdjust = delta.y / -20.0;
 

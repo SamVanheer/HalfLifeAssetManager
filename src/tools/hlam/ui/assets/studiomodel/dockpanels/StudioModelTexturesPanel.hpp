@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QMouseEvent>
 #include <QWidget>
 
 #include <glm/vec2.hpp>
@@ -97,6 +98,7 @@ private:
 	Ui_StudioModelTexturesPanel _ui;
 	StudioModelAsset* const _asset;
 
+	Qt::MouseButtons _trackedMouseButtons;
 	glm::ivec2 _dragPosition{0};
 
 	qreal _uvLineWidth{1};
