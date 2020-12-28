@@ -222,6 +222,9 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 			const QSignalBlocker index{_ui.BoneControllerIndex};
 			_ui.BoneControllerIndex->setCurrentIndex(controller->index);
+
+			//Ensure values are set
+			OnBoneControllerValueSpinnerChanged(_ui.BoneControllerValueSpinner->value());
 		}
 
 		break;
