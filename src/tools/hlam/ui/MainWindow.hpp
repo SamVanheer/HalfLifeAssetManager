@@ -36,7 +36,7 @@ public:
 	MainWindow(EditorContext* editorContext);
 	~MainWindow();
 
-	bool TryLoadAsset(const QString& fileName);
+	bool TryLoadAsset(QString fileName);
 
 protected:
 	void dragEnterEvent(QDragEnterEvent* event) override;

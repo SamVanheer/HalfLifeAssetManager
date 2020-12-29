@@ -6,6 +6,7 @@
 
 #include <QApplication>
 #include <QCloseEvent>
+#include <QDir>
 #include <QDockWidget>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -171,8 +172,10 @@ MainWindow::~MainWindow()
 	_editorContext->GetTimer()->stop();
 }
 
-bool MainWindow::TryLoadAsset(const QString& fileName)
+bool MainWindow::TryLoadAsset(QString fileName)
 {
+	fileName = QDir::cleanPath(fileName);
+
 	try
 	{
 		auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName);
