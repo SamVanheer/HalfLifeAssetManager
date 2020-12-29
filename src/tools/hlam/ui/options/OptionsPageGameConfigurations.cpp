@@ -526,7 +526,7 @@ void OptionsPageGameConfigurationsWidget::OnNewGameConfiguration()
 
 	if (_currentEnvironmentIsActive)
 	{
-		_ui.ActiveConfiguration->addItem(gameConfiguration->GetName(), QVariant::fromValue(gameConfiguration.get()));
+		_ui.ActiveConfiguration->addItem(gameConfiguration->GetName(), QVariant::fromValue(gameConfiguration->GetId()));
 		_ui.ActiveConfiguration->setEnabled(true);
 	}
 
