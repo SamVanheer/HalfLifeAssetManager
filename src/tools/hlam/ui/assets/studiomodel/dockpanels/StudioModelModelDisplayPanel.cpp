@@ -46,6 +46,8 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 
 	connect(_ui.EnableGroundTextureTiling, &QGroupBox::toggled, this, &StudioModelModelDisplayPanel::OnEnableGroundTextureTilingChanged);
 	connect(_ui.GroundTextureSize, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelModelDisplayPanel::OnGroundTextureSizeChanged);
+
+	_ui.RenderModeComboBox->setCurrentIndex(static_cast<int>(_asset->GetScene()->CurrentRenderMode));
 }
 
 StudioModelModelDisplayPanel::~StudioModelModelDisplayPanel() = default;
