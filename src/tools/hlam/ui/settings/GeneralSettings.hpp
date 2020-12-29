@@ -11,10 +11,15 @@ class GeneralSettings final : public QObject
 
 public:
 	static constexpr bool DefaultUseSingleInstance{true};
-	static constexpr float DefaultMaxFPS{60.f};
+
+	static constexpr int DefaultTickRate{60};
+	static constexpr int MinimumTickRate{1};
+	static constexpr int MaximumTickRate{1000};
+
 	static constexpr int DefaultMouseSensitivity{5};
 	static constexpr int MinimumMouseSensitivity{1};
 	static constexpr int MaximumMouseSensitivity{20};
+
 	static constexpr bool DefaultEnableAudioPlayback{true};
 
 	GeneralSettings() = default;
@@ -33,7 +38,7 @@ public:
 		_useSingleInstance = ShouldUseSingleInstance(settings);
 
 		settings.beginGroup("general");
-		_maxFPS = settings.value("MaxFPS", DefaultMaxFPS).toFloat();
+		_tickRate = std::clamp(settings.value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
 		settings.endGroup();
 
 		settings.beginGroup("mouse");
@@ -54,7 +59,7 @@ public:
 		settings.endGroup();
 
 		settings.beginGroup("general");
-		settings.setValue("MaxFPS", _maxFPS);
+		settings.setValue("TickRate", _tickRate);
 		settings.endGroup();
 
 		settings.beginGroup("mouse");
@@ -75,14 +80,14 @@ public:
 		_useSingleInstance = value;
 	}
 
-	float GetMaxFPS() const { return _maxFPS; }
+	int GetTickRate() const { return _tickRate; }
 
-	void SetMaxFPS(float value)
+	void SetTickRate(int value)
 	{
-		if (_maxFPS != value)
+		if (_tickRate != value)
 		{
-			_maxFPS = value;
-			emit MaxFPSChanged(_maxFPS);
+			_tickRate = value;
+			emit TickRateChanged(_tickRate);
 		}
 	}
 
@@ -120,12 +125,12 @@ public:
 	}
 
 signals:
-	void MaxFPSChanged(float value);
+	void TickRateChanged(int value);
 
 private:
 	bool _useSingleInstance{DefaultUseSingleInstance};
 
-	float _maxFPS{DefaultMaxFPS};
+	int _tickRate{DefaultTickRate};
 
 	bool _invertMouseX{false};
 	bool _invertMouseY{false};

@@ -106,7 +106,7 @@ signals:
 private slots:
 	void OnTimerTick();
 
-	void OnMaxFPSChanged(float value);
+	void OnTickRateChanged(int value);
 
 private:
 	QSettings* const _settings;

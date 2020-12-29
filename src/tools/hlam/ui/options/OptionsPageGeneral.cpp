@@ -38,12 +38,13 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 {
 	_ui.setupUi(this);
 
+	_ui.TickRate->setRange(settings::GeneralSettings::MinimumTickRate, settings::GeneralSettings::MaximumTickRate);
 	_ui.MouseSensitivitySlider->setRange(settings::GeneralSettings::MinimumMouseSensitivity, settings::GeneralSettings::MaximumMouseSensitivity);
 	_ui.MouseSensitivitySpinner->setRange(settings::GeneralSettings::MinimumMouseSensitivity, settings::GeneralSettings::MaximumMouseSensitivity);
 
 	_ui.UseSingleInstance->setChecked(_generalSettings->ShouldUseSingleInstance());
 	_ui.MaxRecentFiles->setValue(_recentFilesSettings->GetMaxRecentFiles());
-	_ui.MaxFPS->setValue(static_cast<int>(_generalSettings->GetMaxFPS()));
+	_ui.TickRate->setValue(_generalSettings->GetTickRate());
 	_ui.InvertMouseX->setChecked(_generalSettings->ShouldInvertMouseX());
 	_ui.InvertMouseY->setChecked(_generalSettings->ShouldInvertMouseY());
 	_ui.MouseSensitivitySlider->setValue(_generalSettings->GetMouseSensitivity());
@@ -60,7 +61,7 @@ void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 {
 	_generalSettings->SetUseSingleInstance(_ui.UseSingleInstance->isChecked());
 	_recentFilesSettings->SetMaxRecentFiles(_ui.MaxRecentFiles->value());
-	_generalSettings->SetMaxFPS(_ui.MaxFPS->value());
+	_generalSettings->SetTickRate(_ui.TickRate->value());
 	_generalSettings->SetInvertMouseX(_ui.InvertMouseX->isChecked());
 	_generalSettings->SetInvertMouseY(_ui.InvertMouseY->isChecked());
 	_generalSettings->SetMouseSensitivity(_ui.MouseSensitivitySlider->value());

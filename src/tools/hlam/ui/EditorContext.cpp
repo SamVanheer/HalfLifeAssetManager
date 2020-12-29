@@ -63,7 +63,7 @@ EditorContext::EditorContext(
 	}
 
 	connect(_timer, &QTimer::timeout, this, &EditorContext::OnTimerTick);
-	connect(_generalSettings.get(), &settings::GeneralSettings::MaxFPSChanged, this, &EditorContext::OnMaxFPSChanged);
+	connect(_generalSettings.get(), &settings::GeneralSettings::TickRateChanged, this, &EditorContext::OnTickRateChanged);
 }
 
 EditorContext::~EditorContext()
@@ -103,7 +103,7 @@ void EditorContext::SetOffscreenSurface(QOffscreenSurface* offscreenSurface)
 
 void EditorContext::StartTimer()
 {
-	_timer->start(static_cast<int>(1000.0 / _generalSettings->GetMaxFPS()));
+	_timer->start(1000 / _generalSettings->GetTickRate());
 }
 
 void EditorContext::OnTimerTick()
@@ -134,7 +134,7 @@ void EditorContext::OnTimerTick()
 	emit Tick();
 }
 
-void EditorContext::OnMaxFPSChanged(float value)
+void EditorContext::OnTickRateChanged(int value)
 {
 	if (_timer->isActive())
 	{
