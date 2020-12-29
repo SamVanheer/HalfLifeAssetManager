@@ -124,7 +124,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &MainWindow::OnAssetTabCloseRequested);
 
 	connect(_editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged,
-		this, &MainWindow::SetupFileSystem);
+		this, &MainWindow::OnActiveConfigurationChanged);
 
 	_ui.ActionSave->setEnabled(false);
 	_ui.ActionSaveAs->setEnabled(false);

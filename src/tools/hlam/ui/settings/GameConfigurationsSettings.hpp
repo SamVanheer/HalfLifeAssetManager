@@ -227,6 +227,11 @@ public:
 		{
 			const std::unique_ptr<settings::GameEnvironment> gameEnvironment{std::move(*it)};
 
+			if (_activeConfiguration.first == gameEnvironment.get())
+			{
+				SetActiveConfiguration({});
+			}
+
 			_gameEnvironments.erase(it);
 
 			emit GameEnvironmentRemoved(gameEnvironment.get());
