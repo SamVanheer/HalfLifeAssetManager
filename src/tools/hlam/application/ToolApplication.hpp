@@ -1,10 +1,12 @@
 #pragma once
 
+#include <memory>
 #include <utility>
 
 #include <QMainWindow>
 #include <QObject>
 #include <QScopedPointer>
+#include <QSettings>
 #include <QString>
 
 #include "application/SingleInstance.hpp"
@@ -34,12 +36,16 @@ public:
 
 private:
 	void ConfigureApplication(const QString& programName);
-	ui::EditorContext* CreateEditorContext();
+	
 	void ConfigureOpenGL();
 
 	QString ParseCommandLine(QApplication& application);
 
-	bool CheckSingleInstance(const QString& programName, const QString& fileName);
+	std::unique_ptr<QSettings> CreateSettings();
+
+	bool CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings);
+
+	ui::EditorContext* CreateEditorContext(std::unique_ptr<QSettings>&& settings);
 
 	std::pair<QOpenGLContext*, QOffscreenSurface*> InitializeOpenGL();
 

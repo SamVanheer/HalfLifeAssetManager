@@ -19,11 +19,18 @@ public:
 
 	GeneralSettings() = default;
 
-	void LoadSettings(QSettings& settings)
+	static bool ShouldUseSingleInstance(QSettings& settings)
 	{
 		settings.beginGroup("startup");
-		_useSingleInstance = settings.value("UseSingleInstance", DefaultUseSingleInstance).toBool();
+		const bool useSingleInstance = settings.value("UseSingleInstance", DefaultUseSingleInstance).toBool();
 		settings.endGroup();
+
+		return useSingleInstance;
+	}
+
+	void LoadSettings(QSettings& settings)
+	{
+		_useSingleInstance = ShouldUseSingleInstance(settings);
 
 		settings.beginGroup("general");
 		_maxFPS = settings.value("MaxFPS", DefaultMaxFPS).toFloat();
