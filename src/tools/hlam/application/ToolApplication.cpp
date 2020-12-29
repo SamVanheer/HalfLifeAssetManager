@@ -61,9 +61,9 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
-		QString fileName = ParseCommandLine(app);
+		const auto [isPortable, fileName] = ParseCommandLine(app);
 
-		auto settings{CreateSettings()};
+		auto settings{CreateSettings(programName, isPortable)};
 
 		if (CheckSingleInstance(programName, fileName, *settings))
 		{
@@ -137,13 +137,17 @@ void ToolApplication::ConfigureOpenGL()
 	}
 }
 
-QString ToolApplication::ParseCommandLine(QApplication& application)
+std::tuple<bool, QString> ToolApplication::ParseCommandLine(QApplication& application)
 {
 	QCommandLineParser parser;
+
+	parser.addOption(QCommandLineOption{"portable", "Launch in portable mode"});
 
 	parser.addPositionalArgument("fileName", "Filename of the model to load on startup", "[fileName]");
 
 	parser.process(application);
+
+	const bool isPortable = parser.isSet("portable");
 
 	const auto positionalArguments = parser.positionalArguments();
 
@@ -154,12 +158,19 @@ QString ToolApplication::ParseCommandLine(QApplication& application)
 		fileName = positionalArguments[0];
 	}
 
-	return fileName;
+	return std::make_tuple(isPortable, fileName);
 }
 
-std::unique_ptr<QSettings> ToolApplication::CreateSettings()
+std::unique_ptr<QSettings> ToolApplication::CreateSettings(const QString& programName, bool isPortable)
 {
-	return std::make_unique<QSettings>();
+	if (isPortable)
+	{
+		return std::make_unique<QSettings>(QString{"%1.ini"}.arg(programName), QSettings::Format::IniFormat);
+	}
+	else
+	{
+		return std::make_unique<QSettings>();
+	}
 }
 
 bool ToolApplication::CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings)

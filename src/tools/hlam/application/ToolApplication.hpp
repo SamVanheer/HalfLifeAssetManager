@@ -39,9 +39,9 @@ private:
 	
 	void ConfigureOpenGL();
 
-	QString ParseCommandLine(QApplication& application);
+	std::tuple<bool, QString> ParseCommandLine(QApplication& application);
 
-	std::unique_ptr<QSettings> CreateSettings();
+	std::unique_ptr<QSettings> CreateSettings(const QString& programName, bool isPortable);
 
 	bool CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings);
 
