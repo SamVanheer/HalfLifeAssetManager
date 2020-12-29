@@ -362,6 +362,8 @@ void OptionsPageGameConfigurationsWidget::OnGameEnvironmentSelectionChanged(cons
 			++row;
 		}
 
+		_ui.DefaultGame->setEnabled(_ui.DefaultGame->count() > 0);
+
 		const auto& defaultModId = gameEnvironment->GetDefaultModId();
 
 		if (!defaultModId.isNull())
@@ -520,11 +522,11 @@ void OptionsPageGameConfigurationsWidget::OnNewGameConfiguration()
 	auto gameConfiguration = std::make_unique<GameConfiguration>(QUuid::createUuid(), QString{}, std::move(configurationName));
 
 	_ui.DefaultGame->addItem(gameConfiguration->GetName(), QVariant::fromValue(gameConfiguration.get()));
+	_ui.DefaultGame->setEnabled(true);
 
 	if (_currentEnvironmentIsActive)
 	{
-		_ui.ActiveConfiguration->addItem(gameConfiguration->GetName());
-		_ui.ActiveConfiguration->setItemData(_ui.ActiveConfiguration->count() - 1, gameConfiguration->GetId());
+		_ui.ActiveConfiguration->addItem(gameConfiguration->GetName(), QVariant::fromValue(gameConfiguration.get()));
 		_ui.ActiveConfiguration->setEnabled(true);
 	}
 
@@ -566,6 +568,7 @@ void OptionsPageGameConfigurationsWidget::OnRemoveGameConfiguration()
 	}
 
 	_ui.DefaultGame->removeItem(item->row());
+	_ui.DefaultGame->setEnabled(_ui.DefaultGame->count() > 0);
 
 	gameEnvironment->RemoveGameConfiguration(gameConfiguration->GetId());
 
