@@ -276,11 +276,6 @@ void StudioModelAsset::OnTick()
 	_scene->Tick();
 
 	emit Tick();
-
-	if (IsActive())
-	{
-		emit Draw();
-	}
 }
 
 void StudioModelAsset::OnMouseEvent(QMouseEvent* event)

@@ -141,8 +141,6 @@ private:
 signals:
 	void Tick();
 
-	void Draw();
-
 	void ModelChanged(const ModelChangeEvent& event);
 
 	void CameraChanged(camera_operators::CameraOperator* cameraOperator);
