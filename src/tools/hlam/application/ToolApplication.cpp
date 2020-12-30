@@ -118,23 +118,27 @@ void ToolApplication::ConfigureOpenGL()
 	//Set up the OpenGL surface settings to match the Half-Life engine's requirements
 	//Vanilla Half-Life uses OpenGL 1.0 for game rendering
 	//TODO: eventually an option should be added to allow switching to 3.3 for shader based rendering
-	{
-		QSurfaceFormat defaultFormat(QSurfaceFormat::FormatOption::DebugContext | QSurfaceFormat::FormatOption::DeprecatedFunctions);
+	QSurfaceFormat::FormatOptions formatOptions{QSurfaceFormat::FormatOption::DeprecatedFunctions};
 
-		defaultFormat.setMajorVersion(3);
-		defaultFormat.setMinorVersion(0);
-		defaultFormat.setProfile(QSurfaceFormat::OpenGLContextProfile::CompatibilityProfile);
+#ifdef _DEBUG
+	formatOptions.setFlag(QSurfaceFormat::FormatOption::DebugContext, true);
+#endif
 
-		defaultFormat.setDepthBufferSize(24);
-		defaultFormat.setStencilBufferSize(8);
-		defaultFormat.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
-		defaultFormat.setRedBufferSize(4);
-		defaultFormat.setGreenBufferSize(4);
-		defaultFormat.setBlueBufferSize(4);
-		defaultFormat.setAlphaBufferSize(0);
+	QSurfaceFormat defaultFormat{formatOptions};
 
-		QSurfaceFormat::setDefaultFormat(defaultFormat);
-	}
+	defaultFormat.setMajorVersion(3);
+	defaultFormat.setMinorVersion(0);
+	defaultFormat.setProfile(QSurfaceFormat::OpenGLContextProfile::CompatibilityProfile);
+
+	defaultFormat.setDepthBufferSize(24);
+	defaultFormat.setStencilBufferSize(8);
+	defaultFormat.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
+	defaultFormat.setRedBufferSize(4);
+	defaultFormat.setGreenBufferSize(4);
+	defaultFormat.setBlueBufferSize(4);
+	defaultFormat.setAlphaBufferSize(0);
+
+	QSurfaceFormat::setDefaultFormat(defaultFormat);
 }
 
 std::tuple<bool, QString> ToolApplication::ParseCommandLine(QApplication& application)
