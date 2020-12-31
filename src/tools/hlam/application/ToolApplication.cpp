@@ -96,7 +96,7 @@ int ToolApplication::Run(int argc, char* argv[])
 	}
 	catch (const std::exception& e)
 	{
-		QMessageBox::critical(nullptr, "Fatal Error", QString{"Unhandled exception:\n%1"}.arg(e.what()));
+		qDebug() << "Unhandled exception:" << e.what();
 		throw;
 	}
 }
