@@ -317,6 +317,13 @@ studio_ptr<T> LoadStudioHeader(const char* const fileName, const bool bAllowSeqG
 			std::to_string(STUDIO_VERSION) + "\", got \"" + std::to_string(header->version) + "\"");
 	}
 
+	//Validate header length. This should always be valid since it's set by the compiler
+	if (header->length < 0 || (static_cast<size_t>(header->length) != size))
+	{
+		throw assets::AssetException(std::string{"File \""} + fileName + "\": length does not match file size: expected \""
+			+ std::to_string(size) + "\", got \"" + std::to_string(header->length) + "\"");
+	}
+
 	buffer.release();
 
 	return studio_ptr<T>(header);
