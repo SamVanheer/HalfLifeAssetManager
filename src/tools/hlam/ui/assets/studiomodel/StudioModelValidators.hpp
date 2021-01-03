@@ -61,4 +61,26 @@ public:
 protected:
 	bool IsUnique(const QString& text) const override;
 };
+
+class UniqueModelNameValidator : public BaseUniqueNameValidator
+{
+public:
+	using BaseUniqueNameValidator::BaseUniqueNameValidator;
+
+protected:
+	bool IsUnique(const QString& text) const override;
+
+public slots:
+	void SetCurrentBodyPartIndex(int index)
+	{
+		if (_currentBodyPartIndex != index)
+		{
+			_currentBodyPartIndex = index;
+			emit changed();
+		}
+	}
+
+protected:
+	int _currentBodyPartIndex{-1};
+};
 }

@@ -240,4 +240,14 @@ void ChangeEventCommand::Apply(int index, const mstudioevent_t& oldValue, const 
 
 	*event = newValue;
 }
+
+void ChangeModelNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto bodyPart = header->GetBodypart(index);
+	const auto model = reinterpret_cast<mstudiomodel_t*>(header->GetData() + bodyPart->modelindex) + _modelIndex;
+
+	strncpy(model->name, newValue.toStdString().c_str(), sizeof(model->name) - 1);
+	model->name[sizeof(model->name) - 1] = '\0';
+}
 }

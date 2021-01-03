@@ -79,4 +79,32 @@ bool UniqueTextureNameValidator::IsUnique(const QString& text) const
 
 	return true;
 }
+
+bool UniqueModelNameValidator::IsUnique(const QString& text) const
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+
+	for (int i = 0; i < header->numbodyparts; ++i)
+	{
+		if (i != _currentBodyPartIndex)
+		{
+			const auto bodyPart = header->GetBodypart(i);
+
+			for (int j = 0; j < bodyPart->nummodels; ++j)
+			{
+				if (j != _currentIndex)
+				{
+					const auto model = reinterpret_cast<const mstudiomodel_t*>(header->GetData() + bodyPart->modelindex) + j;
+
+					if (text == model->name)
+					{
+						return false;
+					}
+				}
+			}
+		}
+	}
+
+	return true;
+}
 }

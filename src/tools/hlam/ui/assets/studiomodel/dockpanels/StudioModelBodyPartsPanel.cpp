@@ -3,11 +3,13 @@
 
 #include <QMessageBox>
 #include <QSignalBlocker>
+#include <QToolTip>
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
+#include "ui/assets/studiomodel/StudioModelValidators.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
 
 namespace ui::assets::studiomodel
@@ -31,11 +33,22 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QW
 		spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	}
 
+	const auto modelNameValidator = new UniqueModelNameValidator(MaxModelNameBytes - 1, _asset, this);
+
+	_ui.ModelName->setValidator(modelNameValidator);
+
+	connect(_ui.BodyParts, qOverload<int>(&QComboBox::currentIndexChanged), modelNameValidator, &UniqueModelNameValidator::SetCurrentBodyPartIndex);
+	connect(_ui.Submodels, qOverload<int>(&QComboBox::currentIndexChanged), modelNameValidator, &UniqueModelNameValidator::SetCurrentIndex);
+
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelBodyPartsPanel::OnModelChanged);
 
 	connect(_ui.BodyParts, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBodyPartChanged);
 	connect(_ui.Submodels, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnSubmodelChanged);
 	connect(_ui.Skins, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnSkinChanged);
+
+	connect(_ui.ModelName, &QLineEdit::textChanged, this, &StudioModelBodyPartsPanel::OnModelNameChanged);
+	connect(_ui.ModelName, &QLineEdit::inputRejected, this, &StudioModelBodyPartsPanel::OnModelNameRejected);
+
 	connect(_ui.BoneControllers, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerChanged);
 	connect(_ui.BoneControllerValueSlider, &QSlider::valueChanged, this, &StudioModelBodyPartsPanel::OnBoneControllerValueSliderChanged);
 	connect(_ui.BoneControllerValueSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged),
@@ -245,6 +258,26 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		break;
 	}
+
+	case ModelChangeId::ChangeModelName:
+	{
+		const auto& listChange{static_cast<const ModelListSubListChangeEvent&>(event)};
+
+		if (listChange.GetSourceIndex() == _ui.BodyParts->currentIndex() && listChange.GetSourceSubIndex() == _ui.Submodels->currentIndex())
+		{
+			const auto bodyPart = header->GetBodypart(_ui.BodyParts->currentIndex());
+			const auto model = reinterpret_cast<mstudiomodel_t*>(header->GetData() + bodyPart->modelindex) + _ui.Submodels->currentIndex();
+
+			const QString name{model->name};
+
+			if (_ui.ModelName->text() != name)
+			{
+				const QSignalBlocker index{_ui.ModelName};
+				_ui.ModelName->setText(name);
+			}
+		}
+		break;
+	}
 	}
 }
 
@@ -318,23 +351,70 @@ void StudioModelBodyPartsPanel::OnBodyPartChanged(int index)
 
 			_ui.Submodels->addItems(submodels);
 		}
+
+		_ui.Submodels->setCurrentIndex(entity->GetBodyValueForGroup(index));
 	}
 
 	_ui.Submodels->setEnabled(hasSubmodels);
 
-	if (hasSubmodels)
-	{
-		_ui.Submodels->setCurrentIndex(entity->GetBodyValueForGroup(index));
-	}
+	OnSubmodelChanged(_ui.Submodels->currentIndex());
 }
 
 void StudioModelBodyPartsPanel::OnSubmodelChanged(int index)
 {
+	//Treat no submodels as having the first selected
+	if (index == -1)
+	{
+		index = 0;
+	}
+
+	const int bodyPartIndex{_ui.BodyParts->currentIndex()};
+
 	const auto entity = _asset->GetScene()->GetEntity();
 
-	entity->SetBodygroup(_ui.BodyParts->currentIndex(), index);
+	entity->SetBodygroup(bodyPartIndex, index);
 
 	_ui.BodyValue->setText(QString::number(entity->GetBodygroup()));
+
+	bool success = false;
+
+	const auto header = entity->GetModel()->GetStudioHeader();
+
+	QString modelName;
+	int meshCount{0};
+	int vertexCount{0};
+	int normalCount{0};
+
+	if (bodyPartIndex < header->numbodyparts)
+	{
+		const auto bodyPart = header->GetBodypart(bodyPartIndex);
+
+		if (index < bodyPart->nummodels)
+		{
+			const auto model = entity->GetModel()->GetModelByBodyPart(entity->GetBodygroup(), bodyPartIndex);
+
+			modelName = model->name;
+			meshCount = model->nummesh;
+			vertexCount = model->numverts;
+			normalCount = model->numnorms;
+
+			success = true;
+		}
+	}
+
+	{
+		const QSignalBlocker nameBlocker{_ui.ModelName};
+		const QSignalBlocker meshCountBlocker{_ui.MeshCountLabel};
+		const QSignalBlocker vertexCountBlocker{_ui.VertexCountLabel};
+		const QSignalBlocker normalCountBlocker{_ui.NormalCountLabel};
+
+		_ui.ModelName->setText(modelName);
+		_ui.MeshCountLabel->setText(QString::number(meshCount));
+		_ui.VertexCountLabel->setText(QString::number(vertexCount));
+		_ui.NormalCountLabel->setText(QString::number(normalCount));
+	}
+
+	_ui.ModelName->setEnabled(success);
 }
 
 void StudioModelBodyPartsPanel::OnSkinChanged(int index)
@@ -342,6 +422,20 @@ void StudioModelBodyPartsPanel::OnSkinChanged(int index)
 	const auto entity = _asset->GetScene()->GetEntity();
 
 	entity->SetSkin(index);
+}
+
+void StudioModelBodyPartsPanel::OnModelNameChanged()
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto bodyPart = header->GetBodypart(_ui.BodyParts->currentIndex());
+	const auto model = reinterpret_cast<mstudiomodel_t*>(header->GetData() + bodyPart->modelindex) + _ui.Submodels->currentIndex();
+
+	_asset->AddUndoCommand(new ChangeModelNameCommand(_asset, _ui.BodyParts->currentIndex(), _ui.Submodels->currentIndex(), model->name, _ui.ModelName->text()));
+}
+
+void StudioModelBodyPartsPanel::OnModelNameRejected()
+{
+	QToolTip::showText(_ui.ModelName->mapToGlobal({0, -20}), "Model names must be unique");
 }
 
 void StudioModelBodyPartsPanel::OnBoneControllerChanged(int index)

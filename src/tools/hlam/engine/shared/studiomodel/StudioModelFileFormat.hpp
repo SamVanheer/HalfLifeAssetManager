@@ -69,6 +69,7 @@ constexpr int SequenceBlendYIndex{1};
 constexpr int MaxBoneNameBytes{32};
 constexpr int MaxAttachmentNameBytes{32};
 constexpr int MaxTextureNameBytes{64};
+constexpr int MaxModelNameBytes{64};
 
 /**
 *	@brief studiohdr_t::flags values
@@ -284,7 +285,7 @@ struct mstudiotexture_t
 // studio models
 struct mstudiomodel_t
 {
-	char	name[ 64 ];
+	char	name[MaxModelNameBytes];
 
 	int		type;
 

@@ -27,6 +27,9 @@ private slots:
 
 	void OnSkinChanged(int index);
 
+	void OnModelNameChanged();
+	void OnModelNameRejected();
+
 	void OnBoneControllerChanged(int index);
 
 	void OnBoneControllerValueSliderChanged(int value);

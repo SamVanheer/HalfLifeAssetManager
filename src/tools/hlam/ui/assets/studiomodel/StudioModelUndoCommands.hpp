@@ -57,6 +57,8 @@ enum class ModelChangeId
 	ImportTexture,
 
 	ChangeEvent,
+
+	ChangeModelName,
 };
 
 /**
@@ -106,6 +108,34 @@ public:
 private:
 	const int _sourceIndex;
 	const int _destinationIndex;
+};
+
+/**
+*	@brief Base class for all model change events that involve a change that occurred in a list inside another list
+*/
+class ModelListSubListChangeEvent : public ModelListChangeEvent
+{
+public:
+	ModelListSubListChangeEvent(ModelChangeId id, int sourceIndex, int destinationIndex, int sourceSubIndex, int destinationSubIndex)
+		: ModelListChangeEvent(id, sourceIndex, destinationIndex)
+		, _sourceSubIndex(sourceSubIndex)
+		, _destinationSubIndex(destinationSubIndex)
+	{
+	}
+
+	/**
+	*	@brief The list entry being changed. If this change involves the moving of a list entry, this is where the entry was moved from
+	*/
+	int GetSourceSubIndex() const { return _sourceSubIndex; }
+
+	/**
+	*	@brief If this change involves the moving of a list entry, this is where the entry was moved to
+	*/
+	int GetDestinationSubIndex() const { return _destinationSubIndex; }
+
+private:
+	const int _sourceSubIndex;
+	const int _destinationSubIndex;
 };
 
 class ModelOriginChangeEvent : public ModelChangeEvent
@@ -786,5 +816,32 @@ protected:
 
 private:
 	const int _eventIndex;
+};
+
+class ChangeModelNameCommand : public ModelListUndoCommand<QString>
+{
+public:
+	ChangeModelNameCommand(StudioModelAsset* asset, int bodyPartIndex, int modelIndex, QString&& oldName, QString&& newName)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeModelName, bodyPartIndex, std::move(oldName), std::move(newName))
+		, _modelIndex(modelIndex)
+	{
+		setText("Change model name");
+	}
+
+protected:
+	bool CanMerge(const ModelListUndoCommand<QString>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
+	void Apply(int index, const QString& oldValue, const QString& newValue) override;
+
+	void EmitEvent(const QString& oldValue, const QString& newValue) override
+	{
+		_asset->EmitModelChanged(ModelListSubListChangeEvent{_id, _index, -1, _modelIndex, -1});
+	}
+
+protected:
+	const int _modelIndex;
 };
 }
