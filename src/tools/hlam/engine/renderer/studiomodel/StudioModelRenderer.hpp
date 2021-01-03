@@ -117,6 +117,9 @@ private:
 	void Chrome(glm::vec2& chrome, int bone, const glm::vec3& normal);
 
 private:
+	//TODO: need to validate model on load to ensure it does not exceed this limit
+	static constexpr int MaxVertices = 0xFFFF;
+
 	/**
 	*	Total number of models drawn by this renderer since the last time it was initialized.
 	*/
@@ -134,9 +137,9 @@ private:
 	*/
 	unsigned int _drawnPolygonsCount = 0;
 
-	glm::vec3		_xformverts[MAXSTUDIOVERTS];		// transformed vertices
-	glm::vec3		_xformnorms[MAXSTUDIOVERTS];
-	glm::vec3		_lightvalues[MAXSTUDIOVERTS];	// light surface normals
+	glm::vec3		_xformverts[MaxVertices];		// transformed vertices
+	glm::vec3		_xformnorms[MaxVertices];
+	glm::vec3		_lightvalues[MaxVertices];	// light surface normals
 
 	glm::mat3x4		_bonetransform[MAXSTUDIOBONES];	// bone transformation matrix
 
@@ -149,7 +152,7 @@ private:
 	glm::vec3		_lightcolor{255, 255, 255};
 	glm::vec3		_blightvec[MAXSTUDIOBONES];		// light vectors in bone reference frames
 
-	glm::vec2		_chrome[MAXSTUDIOVERTS];			// texture coords for surface normals
+	glm::vec2		_chrome[MaxVertices];			// texture coords for surface normals
 	unsigned int	_chromeage[MAXSTUDIOBONES];		// last time chrome vectors were updated
 	glm::vec3		_chromeup[MAXSTUDIOBONES];		// chrome vector "up" in bone reference frames
 	glm::vec3		_chromeright[MAXSTUDIOBONES];	// chrome vector "right" in bone reference frames
