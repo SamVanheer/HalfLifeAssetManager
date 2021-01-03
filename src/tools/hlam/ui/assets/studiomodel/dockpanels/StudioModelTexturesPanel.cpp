@@ -33,6 +33,10 @@
 
 namespace ui::assets::studiomodel
 {
+static constexpr double TextureViewScaleMinimum = 0.1;
+static constexpr double TextureViewScaleMaximum = 20;
+static constexpr double TextureViewScaleDefault = 1;
+static constexpr double TextureViewScaleSingleStepValue = 0.1;
 static constexpr double TextureViewScaleSliderRatio = 10.0;
 static constexpr double UVLineWidthSliderRatio = 10.0;
 
@@ -119,11 +123,16 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 
 	_ui.PowerOf2Textures->setChecked(studioModelSettings->ShouldResizeTexturesToPowerOf2());
 
-	_ui.ScaleTextureViewSlider->setRange(
-		static_cast<int>(_ui.ScaleTextureViewSpinner->minimum() * TextureViewScaleSliderRatio),
-		static_cast<int>(_ui.ScaleTextureViewSpinner->maximum() * TextureViewScaleSliderRatio));
+	_ui.ScaleTextureViewSpinner->setRange(TextureViewScaleMinimum, TextureViewScaleMaximum);
+	_ui.ScaleTextureViewSpinner->setValue(TextureViewScaleDefault);
+	_ui.ScaleTextureViewSpinner->setSingleStep(TextureViewScaleSingleStepValue);
 
-	_ui.ScaleTextureViewSlider->setValue(static_cast<int>(_ui.ScaleTextureViewSpinner->value() * TextureViewScaleSliderRatio));
+	_ui.ScaleTextureViewSlider->setRange(
+		0,
+		static_cast<int>((_ui.ScaleTextureViewSpinner->maximum() - _ui.ScaleTextureViewSpinner->minimum()) * TextureViewScaleSliderRatio));
+
+	_ui.ScaleTextureViewSlider->setValue(
+		static_cast<int>((_ui.ScaleTextureViewSpinner->value() - _ui.ScaleTextureViewSpinner->minimum()) * TextureViewScaleSliderRatio));
 
 	_ui.UVLineWidthSlider->setRange(
 		static_cast<int>(_ui.UVLineWidthSpinner->minimum() * UVLineWidthSliderRatio),
@@ -449,7 +458,7 @@ void StudioModelTexturesPanel::OnTextureChanged(int index)
 
 void StudioModelTexturesPanel::OnTextureViewScaleSliderChanged(int value)
 {
-	const double newValue = value / UVLineWidthSliderRatio;
+	const double newValue = (value / UVLineWidthSliderRatio) + _ui.ScaleTextureViewSpinner->minimum();
 
 	{
 		const QSignalBlocker blocker{_ui.ScaleTextureViewSpinner};
@@ -465,7 +474,7 @@ void StudioModelTexturesPanel::OnTextureViewScaleSpinnerChanged(double value)
 {
 	{
 		const QSignalBlocker blocker{_ui.ScaleTextureViewSlider};
-		_ui.ScaleTextureViewSlider->setValue(static_cast<int>(value * UVLineWidthSliderRatio));
+		_ui.ScaleTextureViewSlider->setValue(static_cast<int>((value - _ui.ScaleTextureViewSpinner->minimum()) * UVLineWidthSliderRatio));
 	}
 
 	_asset->GetScene()->TextureScale = value;
