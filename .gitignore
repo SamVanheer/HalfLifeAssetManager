@@ -63,7 +63,6 @@ Debug/HLMV.log
 uvmap.bmp
 external/Angelscript
 external/GLEW
-external/GLM
 external/wxWidgets
 *.ilk
 *.user
