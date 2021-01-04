@@ -77,7 +77,7 @@ void ConvertToAL(const AudioFile<double>& file, std::vector<std::uint8_t>& data)
 	{
 		for (int channel = 0; channel < file.getNumChannels(); ++channel)
 		{
-			auto& dest = *reinterpret_cast<T::Type*>(&data[byteIndex]);
+			auto& dest = *reinterpret_cast<typename T::Type*>(&data[byteIndex]);
 
 			auto value = file.samples[channel][i];
 
