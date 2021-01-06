@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QDebug>
+#include <QFile>
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QMessageBox>
@@ -17,6 +18,7 @@
 #include <QSettings>
 #include <QStyleFactory>
 #include <QSurfaceFormat>
+#include <QTextStream>
 
 #include "application/ToolApplication.hpp"
 #include "ui/EditorContext.hpp"
@@ -31,12 +33,14 @@
 #include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/options/OptionsPageRegistry.hpp"
 #include "ui/options/OptionsPageStudioModel.hpp"
+#include "ui/options/OptionsPageStyle.hpp"
 
 #include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/GameConfigurationsSettings.hpp"
 #include "ui/settings/GeneralSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
+#include "ui/settings/StyleSettings.hpp"
 
 using namespace ui::assets;
 
@@ -51,6 +55,8 @@ int ToolApplication::Run(int argc, char* argv[])
 		ConfigureOpenGL();
 
 		QApplication app(argc, argv);
+
+		_application = &app;
 
 		if (QOpenGLContext::globalShareContext()->format().majorVersion() < 3)
 		{
@@ -201,6 +207,9 @@ ui::EditorContext* ToolApplication::CreateEditorContext(std::unique_ptr<QSetting
 	const auto gameConfigurationsSettings{std::make_shared<ui::settings::GameConfigurationsSettings>()};
 	const auto recentFilesSettings{std::make_shared<ui::settings::RecentFilesSettings>()};
 	const auto studioModelSettings{std::make_shared<ui::settings::StudioModelSettings>()};
+	const auto styleSettings{std::make_shared<ui::settings::StyleSettings>()};
+
+	connect(styleSettings.get(), &ui::settings::StyleSettings::StylePathChanged, this, &ToolApplication::OnStylePathChanged);
 
 	//TODO: this needs to be simplified and moved somewhere else
 	const auto addColor = [&](const studiomodel::ColorInfo& color)
@@ -220,6 +229,7 @@ ui::EditorContext* ToolApplication::CreateEditorContext(std::unique_ptr<QSetting
 	recentFilesSettings->LoadSettings(*settings);
 	gameConfigurationsSettings->LoadSettings(*settings);
 	studioModelSettings->LoadSettings(*settings);
+	styleSettings->LoadSettings(*settings);
 
 	auto optionsPageRegistry{std::make_unique<ui::options::OptionsPageRegistry>()};
 
@@ -227,6 +237,7 @@ ui::EditorContext* ToolApplication::CreateEditorContext(std::unique_ptr<QSetting
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageColors>(colorSettings));
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGameConfigurations>(gameConfigurationsSettings));
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageStudioModel>(studioModelSettings));
+	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageStyle>(styleSettings));
 
 	auto assetProviderRegistry{std::make_unique<ui::assets::AssetProviderRegistry>()};
 
@@ -320,4 +331,21 @@ void ToolApplication::OnFileNameReceived(const QString& fileName)
 	_mainWindow->activateWindow();
 
 	_mainWindow->TryLoadAsset(fileName);
+}
+
+void ToolApplication::OnStylePathChanged(const QString& stylePath)
+{
+	auto file = std::make_unique<QFile>(stylePath);
+	file->open(QFile::ReadOnly | QFile::Text);
+
+	if (file->isOpen())
+	{
+		auto stream = std::make_unique<QTextStream>(file.get());
+
+		_application->setStyleSheet(stream->readAll());
+	}
+	else
+	{
+		_application->setStyleSheet({});
+	}
 }

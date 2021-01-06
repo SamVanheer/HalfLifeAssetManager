@@ -54,7 +54,11 @@ private slots:
 
 	void OnFileNameReceived(const QString& fileName);
 
+	void OnStylePathChanged(const QString& stylePath);
+
 private:
+	QApplication* _application{};
+
 	ui::EditorContext* _editorContext{};
 	ui::MainWindow* _mainWindow{};
 
