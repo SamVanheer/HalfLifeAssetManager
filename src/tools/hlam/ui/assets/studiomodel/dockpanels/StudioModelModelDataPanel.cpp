@@ -91,6 +91,16 @@ void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 {
 	switch (event.GetId())
 	{
+	case ModelChangeId::ChangeEyePosition:
+	{
+		const auto& change = static_cast<const ModelEyePositionChangeEvent&>(event);
+
+		const QSignalBlocker blocker{_ui.EyePosition};
+
+		_ui.EyePosition->SetValue(change.GetPosition());
+		break;
+	}
+
 	case ModelChangeId::ChangeModelOrigin:
 	{
 		const auto& originChange = static_cast<const ModelOriginChangeEvent&>(event);

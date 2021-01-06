@@ -140,6 +140,21 @@ private:
 	const int _destinationSubIndex;
 };
 
+class ModelEyePositionChangeEvent : public ModelChangeEvent
+{
+public:
+	ModelEyePositionChangeEvent(ModelChangeId id, const glm::vec3& position)
+		: ModelChangeEvent(id)
+		, _position(position)
+	{
+	}
+
+	const glm::vec3& GetPosition() const { return _position; }
+
+private:
+	const glm::vec3 _position;
+};
+
 class ModelOriginChangeEvent : public ModelChangeEvent
 {
 public:
@@ -353,7 +368,17 @@ public:
 	}
 
 protected:
+	bool CanMerge(const ModelUndoCommand<glm::vec3>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
 	void Apply(const glm::vec3& oldValue, const glm::vec3& newValue) override;
+
+	void EmitEvent(const glm::vec3& oldValue, const glm::vec3& newValue) override
+	{
+		_asset->EmitModelChanged(ModelEyePositionChangeEvent{_id, newValue});
+	}
 };
 
 class BoneRenameCommand : public ModelListUndoCommand<QString>
