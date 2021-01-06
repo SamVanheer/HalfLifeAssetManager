@@ -83,7 +83,7 @@ void ConvertToAL(const AudioFile<double>& file, std::vector<std::uint8_t>& data)
 
 			dest = T::Convert(value);
 
-			byteIndex += sizeof(T::Type);
+			byteIndex += sizeof(typename T::Type);
 		}
 	}
 }
