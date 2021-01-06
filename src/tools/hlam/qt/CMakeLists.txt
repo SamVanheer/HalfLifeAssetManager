@@ -4,3 +4,5 @@ target_sources(HLAM
 		HashFunctions.hpp
 		QtUtilities.cpp
 		QtUtilities.hpp)
+
+add_subdirectory(widgets)
