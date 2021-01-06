@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include <QApplication>
 #include <QBoxLayout>
 #include <QDesktopWidget>

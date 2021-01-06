@@ -3,7 +3,7 @@
 #include <functional>
 
 #include <QHashFunctions>
-#include <QUUid>
+#include <QUuid>
 
 namespace std
 {

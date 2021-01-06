@@ -2,7 +2,7 @@
 #include <memory>
 #include <stdexcept>
 
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 #include <QApplication>
 #include <QCommandLineParser>

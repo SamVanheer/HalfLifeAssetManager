@@ -1,3 +1,4 @@
+#include <cstring>
 #include <vector>
 
 #include "graphics/Palette.hpp"
