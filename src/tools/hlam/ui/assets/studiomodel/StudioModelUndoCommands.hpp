@@ -27,6 +27,8 @@ namespace ui::assets::studiomodel
 {
 enum class ModelChangeId
 {
+	ChangeEyePosition,
+
 	RenameBone,
 	ChangeBoneParent,
 	ChangeBoneFlags,
@@ -339,6 +341,19 @@ protected:
 	const int _index;
 	const T _oldValue;
 	T _newValue;
+};
+
+class ChangeEyePositionCommand : public ModelUndoCommand<glm::vec3>
+{
+public:
+	ChangeEyePositionCommand(StudioModelAsset* asset, const glm::vec3& oldEyePosition, const glm::vec3& newEyePosition)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeEyePosition, oldEyePosition, newEyePosition)
+	{
+		setText("Change eye position");
+	}
+
+protected:
+	void Apply(const glm::vec3& oldValue, const glm::vec3& newValue) override;
 };
 
 class BoneRenameCommand : public ModelListUndoCommand<QString>

@@ -9,6 +9,8 @@
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDataPanel.hpp"
 
+using namespace qt::widgets;
+
 namespace ui::assets::studiomodel
 {
 const std::string_view CheckBoxModelFlagProperty{"CheckBoxFlagProperty"};
@@ -33,6 +35,9 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 
 	_ui.ScaleMeshSpinner->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	_ui.ScaleBonesSpinner->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+
+	_ui.EyePosition->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
+	_ui.EyePosition->SetDecimals(6);
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelModelDataPanel::OnModelChanged);
 
@@ -59,6 +64,8 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	connect(_ui.HitboxCollision, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
 	connect(_ui.ForceSkylight, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
 
+	connect(_ui.EyePosition, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnEyePositionChanged);
+
 	_ui.RocketTrail->setProperty(CheckBoxModelFlagProperty.data(), EF_ROCKET);
 	_ui.GrenadeSmoke->setProperty(CheckBoxModelFlagProperty.data(), EF_GRENADE);
 	_ui.GibBlood->setProperty(CheckBoxModelFlagProperty.data(), EF_GIB);
@@ -74,6 +81,8 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty.data(), EF_FORCESKYLIGHT);
 
 	SetFlags(_asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->flags);
+
+	_ui.EyePosition->SetValue(_asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->eyeposition);
 }
 
 StudioModelModelDataPanel::~StudioModelModelDataPanel() = default;
@@ -222,5 +231,10 @@ void StudioModelModelDataPanel::OnFlagChanged(int state)
 	}
 
 	_asset->AddUndoCommand(new ChangeModelFlagsCommand(_asset, model->flags, newFlags));
+}
+
+void StudioModelModelDataPanel::OnEyePositionChanged(const glm::vec3& value)
+{
+	_asset->AddUndoCommand(new ChangeEyePositionCommand(_asset, _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->eyeposition, value));
 }
 }

@@ -31,6 +31,8 @@ private slots:
 
 	void OnFlagChanged(int state);
 
+	void OnEyePositionChanged(const glm::vec3& value);
+
 private:
 	Ui_StudioModelModelDataPanel _ui;
 	StudioModelAsset* const _asset;

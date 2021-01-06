@@ -6,6 +6,12 @@
 
 namespace ui::assets::studiomodel
 {
+void ChangeEyePositionCommand::Apply(const glm::vec3& oldValue, const glm::vec3& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	header->eyeposition = newValue;
+}
+
 void BoneRenameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();
