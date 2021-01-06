@@ -82,7 +82,10 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 
 	SetFlags(_asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->flags);
 
-	_ui.EyePosition->SetValue(_asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->eyeposition);
+	{
+		const QSignalBlocker blocker{_ui.EyePosition};
+		_ui.EyePosition->SetValue(_asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->eyeposition);
+	}
 }
 
 StudioModelModelDataPanel::~StudioModelModelDataPanel() = default;
