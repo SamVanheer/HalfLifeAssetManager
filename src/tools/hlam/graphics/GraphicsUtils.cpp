@@ -10,6 +10,7 @@
 
 #include "core/shared/Const.hpp"
 #include "core/shared/Logging.hpp"
+#include "core/shared/Platform.hpp"
 
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
@@ -151,7 +152,7 @@ const std::size_t ValueLength = 3;
 bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high)
 {
 	if (fileName.length() == DmBaseName.length() &&
-		!_strnicmp(fileName.data(), DmBaseName.data(), DmBaseName.length()))
+		!strncasecmp(fileName.data(), DmBaseName.data(), DmBaseName.length()))
 	{
 		low = 160;
 		mid = 191;
@@ -160,7 +161,7 @@ bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high)
 		return true;
 	}
 	else if ((fileName.length() == SimpleRemapLength || fileName.length() == FullRemapLength) &&
-		!_strnicmp(fileName.data(), RemapName.data(), RemapName.length()))
+		!strncasecmp(fileName.data(), RemapName.data(), RemapName.length()))
 	{
 		//from_chars does not set the out value unless parsing succeeds, unlike atoi which the engine uses
 		low = mid = high = 0;
