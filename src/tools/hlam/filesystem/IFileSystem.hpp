@@ -24,7 +24,7 @@ namespace filesystem
 class IFileSystem
 {
 public:
-	virtual ~IFileSystem() = 0 {}
+	virtual ~IFileSystem() {}
 
 	/**
 	*	@brief Gets the base path.

@@ -34,7 +34,7 @@ protected:
 	}
 
 public:
-	virtual ~Asset() = 0 {}
+	virtual ~Asset() {}
 
 	virtual entt::id_type GetAssetType() const = 0;
 
@@ -124,7 +124,7 @@ public:
 class IAssetProviderRegistry
 {
 public:
-	virtual ~IAssetProviderRegistry() = 0 {}
+	virtual ~IAssetProviderRegistry() {}
 
 	virtual std::vector<AssetProvider*> GetAssetProviders() const = 0;
 

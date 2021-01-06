@@ -20,7 +20,7 @@ struct Sprite2DRenderInfo;
 class ISpriteRenderer
 {
 public:
-	virtual ~ISpriteRenderer() = 0 {}
+	virtual ~ISpriteRenderer() {}
 
 	/**
 	*	Draws a sprite.

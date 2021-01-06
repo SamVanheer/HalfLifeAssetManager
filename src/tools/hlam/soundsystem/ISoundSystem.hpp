@@ -23,7 +23,7 @@ namespace soundsystem
 class ISoundSystem
 {
 public:
-	virtual ~ISoundSystem() = 0 {}
+	virtual ~ISoundSystem() {}
 
 	/**
 	*	@brief Whether sound is available (i.e. is a device available)

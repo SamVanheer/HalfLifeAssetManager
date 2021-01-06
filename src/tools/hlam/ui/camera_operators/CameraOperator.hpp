@@ -28,7 +28,7 @@ public:
 		assert(_generalSettings);
 	}
 
-	virtual ~CameraOperator() = 0 {}
+	virtual ~CameraOperator() {}
 
 	graphics::Camera* GetCamera() { return &_camera; }
 

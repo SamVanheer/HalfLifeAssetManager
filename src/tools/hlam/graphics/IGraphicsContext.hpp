@@ -5,7 +5,7 @@ namespace graphics
 class IGraphicsContext
 {
 public:
-	virtual ~IGraphicsContext() = 0 {}
+	virtual ~IGraphicsContext() {}
 
 	virtual void Begin() = 0;
 
