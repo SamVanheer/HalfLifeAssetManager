@@ -72,12 +72,12 @@ target_link_libraries(HLAM
 target_compile_options(HLAM
 	PRIVATE
 		$<$<CXX_COMPILER_ID:MSVC>:/fp:strict>
-		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-m32 -fPIC>)
+		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-fPIC>)
 
 target_link_options(HLAM
 	PRIVATE
 		$<$<CXX_COMPILER_ID:MSVC>:/LTCG /INCREMENTAL:NO>
-		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-m32 --exclude-libs,ALL>)
+		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wl,--exclude-libs,ALL>)
 
 target_sources(HLAM
 	PRIVATE
