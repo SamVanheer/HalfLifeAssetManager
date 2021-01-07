@@ -391,7 +391,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const char* const fileName)
 	// preload textures
 	if (mainHeader->numtextures == 0)
 	{
-		const auto extension = isDol ? "T.dol" : "T.mdl";
+		const auto extension = isDol ? "t.dol" : "t.mdl";
 
 		std::filesystem::path texturename = baseFileName;
 
@@ -536,7 +536,7 @@ void SaveStudioModel(const char* const pszFilename, StudioModel& model, bool cor
 
 		std::filesystem::path texturename = baseFileName;
 
-		texturename += "T.mdl";
+		texturename += "t.mdl";
 
 		file = utf8_fopen(texturename.u8string().c_str(), "wb");
 
