@@ -274,14 +274,28 @@ void StudioModel::ReuploadTextures(graphics::TextureLoader& textureLoader)
 namespace
 {
 template<typename T>
-studio_ptr<T> LoadStudioHeader(const char* const fileName, const bool bAllowSeqGroup)
+studio_ptr<T> LoadStudioHeader(const char* const fileName, const bool bAllowSeqGroup, const bool bExternalTextures)
 {
 	// load the model
 	FILE* file = utf8_fopen(fileName, "rb");
 
 	if (!file)
 	{
-		throw assets::AssetFileNotFound(std::string{"File \""} + fileName + "\" not found");
+		if (bExternalTextures)
+		{
+			const size_t textureFileNameLength = strlen(fileName);
+			char texturesFileName[textureFileNameLength] = {};
+
+			strncpy(texturesFileName, fileName, textureFileNameLength);
+			texturesFileName[textureFileNameLength - 5] = 't';
+
+			file = utf8_fopen(texturesFileName, "rb");
+		}
+
+		if (!file)
+		{
+			throw assets::AssetFileNotFound(std::string{"File \""} + fileName + "\" not found");
+		}
 	}
 
 	fseek(file, 0, SEEK_END);
@@ -371,7 +385,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const char* const fileName)
 	const auto isDol = completeFileName.extension() == ".dol";
 
 	//Load the model
-	auto mainHeader = LoadStudioHeader<studiohdr_t>(fileName, false);
+	auto mainHeader = LoadStudioHeader<studiohdr_t>(fileName, false, false);
 
 	if (mainHeader->name[0] == '\0')
 	{
@@ -391,13 +405,13 @@ std::unique_ptr<StudioModel> LoadStudioModel(const char* const fileName)
 	// preload textures
 	if (mainHeader->numtextures == 0)
 	{
-		const auto extension = isDol ? "t.dol" : "t.mdl";
+		const auto extension = isDol ? "T.dol" : "T.mdl";
 
 		std::filesystem::path texturename = baseFileName;
 
 		texturename += extension;
 
-		textureHeader = LoadStudioHeader<studiohdr_t>(texturename.u8string().c_str(), true);
+		textureHeader = LoadStudioHeader<studiohdr_t>(texturename.u8string().c_str(), true, true);
 	}
 
 	std::vector<studio_ptr<studioseqhdr_t>> sequenceHeaders;
@@ -419,7 +433,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const char* const fileName)
 				std::setfill('0') << std::setw(2) << i <<
 				std::setw(0) << suffix;
 
-			sequenceHeaders.emplace_back(LoadStudioHeader<studioseqhdr_t>(seqgroupname.str().c_str(), true));
+			sequenceHeaders.emplace_back(LoadStudioHeader<studioseqhdr_t>(seqgroupname.str().c_str(), true, false));
 		}
 	}
 
@@ -536,7 +550,7 @@ void SaveStudioModel(const char* const pszFilename, StudioModel& model, bool cor
 
 		std::filesystem::path texturename = baseFileName;
 
-		texturename += "t.mdl";
+		texturename += "T.mdl";
 
 		file = utf8_fopen(texturename.u8string().c_str(), "wb");
 
