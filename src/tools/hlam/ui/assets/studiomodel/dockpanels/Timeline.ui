@@ -109,6 +109,9 @@
       </property>
       <item>
        <widget class="QPushButton" name="Restart">
+        <property name="toolTip">
+         <string>Restart Sequence</string>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -116,6 +119,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="PreviousFrame">
+        <property name="toolTip">
+         <string>Previous Frame</string>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -123,6 +129,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="SkipFramesEarlier">
+        <property name="toolTip">
+         <string>Skip 5 Frames Earlier</string>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -130,6 +139,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="TogglePlayback">
+        <property name="toolTip">
+         <string>Play/Pause</string>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -137,6 +149,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="SkipFramesLater">
+        <property name="toolTip">
+         <string>Skip 5 Frames Later</string>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -144,6 +159,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="NextFrame">
+        <property name="toolTip">
+         <string>Next Frame</string>
+        </property>
         <property name="text">
          <string/>
         </property>
