@@ -274,14 +274,37 @@ void StudioModel::ReuploadTextures(graphics::TextureLoader& textureLoader)
 namespace
 {
 template<typename T>
-studio_ptr<T> LoadStudioHeader(const char* const fileName, const bool bAllowSeqGroup)
+studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, const bool bAllowSeqGroup, const bool externalTextures)
 {
+	const std::string utf8FileName{fileName.u8string()};
+
 	// load the model
-	FILE* file = utf8_fopen(fileName, "rb");
+	FILE* file = utf8_fopen(utf8FileName.c_str(), "rb");
 
 	if (!file)
 	{
-		throw assets::AssetFileNotFound(std::string{"File \""} + fileName + "\" not found");
+		//TODO: eventually file open calls will be routed through IFileSystem which will handle case sensitivity automatically
+		if (externalTextures)
+		{
+			auto stem{fileName.stem().u8string()};
+
+			if (!stem.empty())
+			{
+				stem.back() = 't';
+
+				std::filesystem::path loweredFileName = fileName;
+
+				loweredFileName.replace_filename(stem);
+				loweredFileName.replace_extension(fileName.extension());
+
+				file = utf8_fopen(loweredFileName.u8string().c_str(), "rb");
+			}
+		}
+
+		if (!file)
+		{
+			throw assets::AssetFileNotFound(std::string{"File \""} + utf8FileName + "\" not found");
+		}
 	}
 
 	fseek(file, 0, SEEK_END);
@@ -297,30 +320,30 @@ studio_ptr<T> LoadStudioHeader(const char* const fileName, const bool bAllowSeqG
 
 	if (readCount != 1)
 	{
-		throw assets::AssetInvalidFormat(std::string{"Error reading file \""} + fileName + "\"");
+		throw assets::AssetInvalidFormat(std::string{"Error reading file \""} + utf8FileName + "\"");
 	}
 
 	if (strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_HDR_ID, 4) &&
 		strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		throw assets::AssetInvalidFormat(std::string{"The file \""} + fileName + "\" is neither a studio header nor a sequence header");
+		throw assets::AssetInvalidFormat(std::string{"The file \""} + utf8FileName + "\" is neither a studio header nor a sequence header");
 	}
 
 	if (!bAllowSeqGroup && !strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		throw assets::AssetInvalidFormat(std::string{"File \""} + fileName + "\": Expected a main studio model file, got a sequence file");
+		throw assets::AssetInvalidFormat(std::string{"File \""} + utf8FileName + "\": Expected a main studio model file, got a sequence file");
 	}
 
 	if (header->version != STUDIO_VERSION)
 	{
-		throw assets::AssetVersionDiffers(std::string{"File \""} + fileName + "\": version differs: expected \"" +
+		throw assets::AssetVersionDiffers(std::string{"File \""} + utf8FileName + "\": version differs: expected \"" +
 			std::to_string(STUDIO_VERSION) + "\", got \"" + std::to_string(header->version) + "\"");
 	}
 
 	//Validate header length. This should always be valid since it's set by the compiler
 	if (header->length < 0 || (static_cast<size_t>(header->length) != size))
 	{
-		throw assets::AssetException(std::string{"File \""} + fileName + "\": length does not match file size: expected \""
+		throw assets::AssetException(std::string{"File \""} + utf8FileName + "\": length does not match file size: expected \""
 			+ std::to_string(size) + "\", got \"" + std::to_string(header->length) + "\"");
 	}
 
@@ -371,7 +394,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const char* const fileName)
 	const auto isDol = completeFileName.extension() == ".dol";
 
 	//Load the model
-	auto mainHeader = LoadStudioHeader<studiohdr_t>(fileName, false);
+	auto mainHeader = LoadStudioHeader<studiohdr_t>(completeFileName, false, false);
 
 	if (mainHeader->name[0] == '\0')
 	{
@@ -397,7 +420,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const char* const fileName)
 
 		texturename += extension;
 
-		textureHeader = LoadStudioHeader<studiohdr_t>(texturename.u8string().c_str(), true);
+		textureHeader = LoadStudioHeader<studiohdr_t>(texturename, true, true);
 	}
 
 	std::vector<studio_ptr<studioseqhdr_t>> sequenceHeaders;
@@ -419,7 +442,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const char* const fileName)
 				std::setfill('0') << std::setw(2) << i <<
 				std::setw(0) << suffix;
 
-			sequenceHeaders.emplace_back(LoadStudioHeader<studioseqhdr_t>(seqgroupname.str().c_str(), true));
+			sequenceHeaders.emplace_back(LoadStudioHeader<studioseqhdr_t>(seqgroupname.str(), true, false));
 		}
 	}
 
