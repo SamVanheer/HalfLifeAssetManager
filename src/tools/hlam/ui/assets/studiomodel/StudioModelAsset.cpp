@@ -177,6 +177,7 @@ QWidget* StudioModelAsset::GetEditWidget()
 	_editWidget = new StudioModelEditWidget(_editorContext, this);
 
 	_editWidget->connect(_editWidget->GetSceneWidget(), &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
+	_editWidget->connect(_editWidget->GetSceneWidget(), &SceneWidget::WheelEvent, this, &StudioModelAsset::OnSceneWidgetWheelEvent);
 
 	return _editWidget;
 }
@@ -286,11 +287,27 @@ void StudioModelAsset::OnMouseEvent(QMouseEvent* event)
 	}
 }
 
+void StudioModelAsset::OnWheelEvent(QWheelEvent* event)
+{
+	if (_cameraOperator)
+	{
+		_cameraOperator->WheelEvent(*event);
+	}
+}
+
 void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
 {
 	if (!_inputSinks.empty())
 	{
 		_inputSinks.top()->OnMouseEvent(event);
+	}
+}
+
+void StudioModelAsset::OnSceneWidgetWheelEvent(QWheelEvent* event)
+{
+	if (!_inputSinks.empty())
+	{
+		_inputSinks.top()->OnWheelEvent(event);
 	}
 }
 

@@ -11,5 +11,7 @@ public:
 	virtual ~IInputSink() {}
 
 	virtual void OnMouseEvent(QMouseEvent* event) = 0;
+
+	virtual void OnWheelEvent(QWheelEvent* event) = 0;
 };
 }

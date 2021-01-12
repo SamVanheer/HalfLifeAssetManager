@@ -33,6 +33,8 @@ public:
 
 	void OnMouseEvent(QMouseEvent* event) override;
 
+	void OnWheelEvent(QWheelEvent*) {}
+
 	static QImage CreateUVMapImage(
 		StudioModelEntity* entity, const int textureIndex, const int meshIndex, const bool antiAliasLines, float textureScale, qreal lineWidth);
 

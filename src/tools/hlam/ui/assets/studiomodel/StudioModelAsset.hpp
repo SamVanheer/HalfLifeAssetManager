@@ -93,6 +93,8 @@ public:
 
 	void OnMouseEvent(QMouseEvent* event) override;
 
+	void OnWheelEvent(QWheelEvent* event) override;
+
 	EditorContext* GetEditorContext() { return _editorContext; }
 
 	studiomdl::StudioModel* GetStudioModel() { return _studioModel.get(); }
@@ -149,6 +151,8 @@ private slots:
 	void OnTick();
 
 	void OnSceneWidgetMouseEvent(QMouseEvent* event);
+
+	void OnSceneWidgetWheelEvent(QWheelEvent* event);
 
 	void UpdateColors();
 

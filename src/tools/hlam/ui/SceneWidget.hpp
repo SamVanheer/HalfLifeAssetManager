@@ -58,6 +58,8 @@ signals:
 
 	void MouseEvent(QMouseEvent* event);
 
+	void WheelEvent(QWheelEvent* event);
+
 protected:
 	void mousePressEvent(QMouseEvent* event) override final
 	{
@@ -73,6 +75,8 @@ protected:
 	{
 		emit MouseEvent(event);
 	}
+
+	void wheelEvent(QWheelEvent* event) override final;
 
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;

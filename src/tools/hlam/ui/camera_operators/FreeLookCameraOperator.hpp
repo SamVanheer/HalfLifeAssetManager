@@ -106,6 +106,16 @@ public:
 		}
 	}
 
+	void WheelEvent(QWheelEvent& event) override
+	{
+		if (const QPoint degrees = event.angleDelta() / 8; !degrees.isNull())
+		{
+			SetOrigin(_camera.GetOrigin() + (_camera.GetForwardVector() * ((degrees.y() / 15.f) * _generalSettings->GetMouseWheelSpeed())));
+		}
+
+		event.accept();
+	}
+
 	void CenterView(float height, float distance, float yaw) override
 	{
 		_camera.SetOrigin({distance, 0, height});

@@ -20,6 +20,10 @@ public:
 	static constexpr int MinimumMouseSensitivity{1};
 	static constexpr int MaximumMouseSensitivity{20};
 
+	static constexpr int DefaultMouseWheelSpeed{5};
+	static constexpr int MinimumMouseWheelSpeed{1};
+	static constexpr int MaximumMouseWheelSpeed{2048};
+
 	static constexpr bool DefaultEnableAudioPlayback{true};
 
 	GeneralSettings() = default;
@@ -45,6 +49,7 @@ public:
 		_invertMouseX = settings.value("InvertMouseX", false).toBool();
 		_invertMouseY = settings.value("InvertMouseY", false).toBool();
 		_mouseSensitivity = std::clamp(settings.value("MouseSensitivity", DefaultMouseSensitivity).toInt(), MinimumMouseSensitivity, MaximumMouseSensitivity);
+		_mouseWheelSpeed = std::clamp(settings.value("MouseWheelSpeed", DefaultMouseWheelSpeed).toInt(), MinimumMouseWheelSpeed, MaximumMouseWheelSpeed);
 		settings.endGroup();
 
 		settings.beginGroup("audio");
@@ -66,6 +71,7 @@ public:
 		settings.setValue("InvertMouseX", _invertMouseX);
 		settings.setValue("InvertMouseY", _invertMouseY);
 		settings.setValue("MouseSensitivity", _mouseSensitivity);
+		settings.setValue("MouseWheelSpeed", _mouseWheelSpeed);
 		settings.endGroup();
 
 		settings.beginGroup("audio");
@@ -117,6 +123,13 @@ public:
 		return static_cast<float>(_mouseSensitivity) / DefaultMouseSensitivity;
 	}
 
+	int GetMouseWheelSpeed() const { return _mouseWheelSpeed; }
+
+	void SetMouseWheelSpeed(int value)
+	{
+		_mouseWheelSpeed = value;
+	}
+
 	bool ShouldEnableAudioPlayback() const { return _enableAudioPlayback; }
 
 	void SetEnableAudioPlayback(bool value)
@@ -136,6 +149,8 @@ private:
 	bool _invertMouseY{false};
 
 	int _mouseSensitivity{DefaultMouseSensitivity};
+
+	int _mouseWheelSpeed{DefaultMouseWheelSpeed};
 
 	bool _enableAudioPlayback{DefaultEnableAudioPlayback};
 };

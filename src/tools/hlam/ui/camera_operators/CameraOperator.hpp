@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariant>
+#include <QWheelEvent>
 
 #include <glm/vec2.hpp>
 
@@ -37,6 +38,11 @@ public:
 	virtual QWidget* CreateEditWidget() = 0;
 
 	virtual void MouseEvent(QMouseEvent& event) = 0;
+
+	virtual void WheelEvent(QWheelEvent& event)
+	{
+		event.ignore();
+	}
 
 	virtual void CenterView(float height, float distance, float yaw) = 0;
 

@@ -114,6 +114,17 @@ public:
 		}
 	}
 
+	void WheelEvent(QWheelEvent& event) override
+	{
+		if (const QPoint degrees = event.angleDelta() / 8; !degrees.isNull())
+		{
+			_parameters.Distance -= (degrees.y() / 15.f) * _generalSettings->GetMouseWheelSpeed();
+			UpdateArcBallCamera();
+		}
+
+		event.accept();
+	}
+
 	void CenterView(float height, float distance, float yaw) override
 	{
 		SetTargetPosition({0, 0, height}, 0, yaw, distance);
