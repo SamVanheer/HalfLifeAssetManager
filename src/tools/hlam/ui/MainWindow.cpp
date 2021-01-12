@@ -527,8 +527,8 @@ void MainWindow::OnShowAbout()
 
 	QMessageBox::information(this, "About " + programName,
 		QString::fromUtf8(
-			u8"%1 1.0\n"
-			u8"2020 Sam Vanheer\n\n"
+			u8"%1 1.0.0\n"
+			u8"2021 Sam Vanheer\n\n"
 			u8"Email:    sam.vanheer@outlook.com\n\n"
 			u8"Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil \'Jed\' Jedrzejewski\n"
 			u8"Email:    jed@wunderboy.org\n"
