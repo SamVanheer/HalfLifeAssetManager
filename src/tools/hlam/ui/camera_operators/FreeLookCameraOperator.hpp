@@ -67,11 +67,11 @@ public:
 
 					if (event.modifiers() & Qt::KeyboardModifier::ShiftModifier)
 					{
-						//Move the camera origin along the right and up vectors
+						//Drag the camera across the view plane
 						glm::vec3 origin = _camera.GetOrigin();
 
-						origin += math::RightVector * horizontalAdjust;
-						origin -= math::UpVector * verticalAdjust;
+						origin += _camera.GetRightVector() * horizontalAdjust;
+						origin += _camera.GetUpVector() * verticalAdjust;
 
 						SetOrigin(origin);
 					}

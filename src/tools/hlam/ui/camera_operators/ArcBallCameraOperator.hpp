@@ -82,9 +82,9 @@ public:
 
 					if (event.modifiers() & Qt::KeyboardModifier::ShiftModifier)
 					{
-						//Apply input to YZ plane as target position movement
-						_parameters.TargetPosition.y -= horizontalAdjust;
-						_parameters.TargetPosition.z += verticalAdjust;
+						//Drag the camera across the view plane
+						_parameters.TargetPosition += _camera.GetRightVector() * horizontalAdjust;
+						_parameters.TargetPosition += _camera.GetUpVector() * verticalAdjust;
 					}
 					else
 					{
