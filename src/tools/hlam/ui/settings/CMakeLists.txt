@@ -5,6 +5,7 @@ target_sources(HLAM
 		GameConfigurationsSettings.hpp
 		GameEnvironment.hpp
 		GeneralSettings.hpp
+		PathSettings.hpp
 		RecentFilesSettings.hpp
 		StudioModelSettings.hpp
 		StyleSettings.hpp)

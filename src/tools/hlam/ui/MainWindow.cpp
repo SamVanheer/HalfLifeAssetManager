@@ -28,11 +28,13 @@
 #include "ui/options/OptionsDialog.hpp"
 
 #include "ui/settings/GameConfigurationsSettings.hpp"
+#include "ui/settings/PathSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
 
 namespace ui
 {
 constexpr std::string_view TabWidgetAssetProperty{"TabWidgetAssetProperty"};
+const QString AssetPathName{QStringLiteral("AssetPath")};
 
 MainWindow::MainWindow(EditorContext* editorContext)
 	: QMainWindow()
@@ -355,9 +357,13 @@ void MainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
 
 void MainWindow::OnOpenLoadAssetDialog()
 {
-	if (const auto fileName = QFileDialog::getOpenFileName(this, "Select asset", {}, _fileFilter);
+	if (const auto fileName = QFileDialog::getOpenFileName(this, "Select asset",
+		settings::GetSavedPath(*_editorContext->GetSettings(), AssetPathName),
+		_fileFilter);
 		!fileName.isEmpty())
 	{
+		settings::SetSavedPath(*_editorContext->GetSettings(), AssetPathName, QFileInfo(fileName).absolutePath());
+
 		TryLoadAsset(fileName);
 	}
 }
@@ -447,6 +453,8 @@ void MainWindow::OnSaveAssetAs()
 
 	if (!fileName.isEmpty())
 	{
+		//Also update the saved path when saving files
+		settings::SetSavedPath(*_editorContext->GetSettings(), AssetPathName, QFileInfo(fileName).absolutePath());
 		asset->SetFileName(std::move(fileName));
 		SaveAsset(asset);
 	}
