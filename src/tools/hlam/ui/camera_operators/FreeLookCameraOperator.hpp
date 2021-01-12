@@ -65,7 +65,8 @@ public:
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
 
-					if (event.modifiers() & Qt::KeyboardModifier::ShiftModifier)
+					if ((event.modifiers() & Qt::KeyboardModifier::ShiftModifier)
+						|| (event.buttons() & Qt::MouseButton::ExtraButton1))
 					{
 						//Drag the camera across the view plane
 						glm::vec3 origin = _camera.GetOrigin();
