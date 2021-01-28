@@ -792,8 +792,8 @@ void CMainWindow::OnAbout( wxCommandEvent& event )
 
 	//No tab support in message boxes, so manually align it
 	wxMessageBox( wxString::Format( 
-					"Half-Life Model Viewer 2.0\n"
-					"2016 Sam \"Solokiller\" Vanheer\n\n"
+					"Half-Life Model Viewer 2.10\n"
+					"2021 Sam \"Solokiller\" Vanheer\n\n"
 					"Email:    sam.vanheer@outlook.com\n\n"
 					"Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil \'Jed\' Jedrzejewski\n"
 					"Email:    jed@wunderboy.org\n"
