@@ -401,6 +401,13 @@ studio_ptr<T> LoadStudioHeader(const char* const pszFilename, const bool bAllowS
 			pStudioHdr->version);
 	}
 
+	//Validate header length. This should always be valid since it's set by the compiler
+	if (pStudioHdr->length < 0 || (static_cast<size_t>(pStudioHdr->length) != size))
+	{
+		throw StudioModelException(std::string{"File \""} + pszFilename + "\": length does not match file size: expected \""
+			+ std::to_string(size) + "\", got \"" + std::to_string(pStudioHdr->length) + "\"");
+	}
+
 	buffer.release();
 
 	return studio_ptr<T>(pStudioHdr);
