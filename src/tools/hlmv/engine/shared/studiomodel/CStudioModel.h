@@ -160,6 +160,8 @@ public:
 
 	mstudiomodel_t* GetModelByBodyPart( const int iBody, const int iBodyPart ) const;
 
+	int GetBodyValueForGroup(int compositeValue, int group) const;
+
 	bool			CalculateBodygroup( const int iGroup, const int iValue, int& iInOutBodygroup ) const;
 
 	GLuint			GetTextureId( const int iIndex ) const;

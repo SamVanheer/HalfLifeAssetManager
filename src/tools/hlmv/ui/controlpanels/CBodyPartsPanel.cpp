@@ -326,7 +326,7 @@ void CBodyPartsPanel::UpdateSubmodels( const int iIndex )
 			m_pSubmodel->Append( szBuffer );
 		}
 
-		m_pSubmodel->Select( 0 );
+		m_pSubmodel->Select(pEntity->GetModel()->GetBodyValueForGroup(pEntity->GetBodygroup(), iIndex));
 	}
 }
 
