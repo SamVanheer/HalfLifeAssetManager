@@ -1,0 +1,22 @@
+target_sources(HLAM
+	PRIVATE
+		Credits.cpp
+		Credits.hpp
+		EditorContext.cpp
+		EditorContext.hpp
+		FileListPanel.cpp
+		FileListPanel.hpp
+		FileListPanel.ui
+		FullscreenWidget.cpp
+		FullscreenWidget.hpp
+		IInputSink.hpp
+		MainWindow.cpp
+		MainWindow.hpp
+		MainWindow.ui
+		SceneWidget.cpp
+		SceneWidget.hpp)
+
+add_subdirectory(assets)
+add_subdirectory(camera_operators)
+add_subdirectory(options)
+add_subdirectory(settings)

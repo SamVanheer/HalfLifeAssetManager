@@ -1,0 +1,11 @@
+target_sources(HLAM
+	PRIVATE
+		Class.hpp
+		Const.hpp
+		Logging.cpp
+		Logging.hpp
+		Platform.hpp
+		Utility.cpp
+		Utility.hpp
+		WorldTime.cpp
+		WorldTime.hpp)

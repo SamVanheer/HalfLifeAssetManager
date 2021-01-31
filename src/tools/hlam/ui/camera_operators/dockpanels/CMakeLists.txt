@@ -1,0 +1,14 @@
+target_sources(HLAM
+	PRIVATE
+		ArcBallSettingsPanel.cpp
+		ArcBallSettingsPanel.hpp
+		ArcBallSettingsPanel.ui
+		CamerasPanel.cpp
+		CamerasPanel.hpp
+		CamerasPanel.ui
+		FirstPersonSettingsPanel.cpp
+		FirstPersonSettingsPanel.hpp
+		FirstPersonSettingsPanel.ui
+		FreeLookSettingsPanel.cpp
+		FreeLookSettingsPanel.hpp
+		FreeLookSettingsPanel.ui)

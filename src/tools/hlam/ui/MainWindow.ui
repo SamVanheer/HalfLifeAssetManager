@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ui::MainWindow</class>
+ <widget class="QMainWindow" name="ui::MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="CentralWidget"/>
+  <widget class="QMenuBar" name="MenuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="MenuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="ActionOptions"/>
+   </widget>
+   <widget class="QMenu" name="MenuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="MenuRecentFiles">
+     <property name="title">
+      <string>Recent Files</string>
+     </property>
+    </widget>
+    <addaction name="ActionLoad"/>
+    <addaction name="ActionSave"/>
+    <addaction name="ActionSaveAs"/>
+    <addaction name="separator"/>
+    <addaction name="MenuRecentFiles"/>
+    <addaction name="separator"/>
+    <addaction name="ActionExit"/>
+   </widget>
+   <widget class="QMenu" name="MenuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="ActionAbout"/>
+   </widget>
+   <widget class="QMenu" name="MenuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="MenuWindows">
+     <property name="title">
+      <string>Windows</string>
+     </property>
+    </widget>
+    <addaction name="ActionFullscreen"/>
+    <addaction name="separator"/>
+    <addaction name="MenuWindows"/>
+   </widget>
+   <widget class="QMenu" name="MenuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="MenuAsset">
+    <property name="title">
+     <string>Asset</string>
+    </property>
+   </widget>
+   <addaction name="MenuFile"/>
+   <addaction name="MenuEdit"/>
+   <addaction name="MenuView"/>
+   <addaction name="MenuAsset"/>
+   <addaction name="MenuTools"/>
+   <addaction name="MenuHelp"/>
+  </widget>
+  <action name="ActionOptions">
+   <property name="text">
+    <string>Options</string>
+   </property>
+  </action>
+  <action name="ActionLoad">
+   <property name="text">
+    <string>Load...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="ActionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="ActionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="ActionFullscreen">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Fullscreen</string>
+   </property>
+  </action>
+  <action name="ActionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="ActionSaveAs">
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+S</string>
+   </property>
+  </action>
+  <action name="ActionFileList">
+   <property name="text">
+    <string>Fle List</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
