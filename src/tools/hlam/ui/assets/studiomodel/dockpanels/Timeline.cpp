@@ -39,10 +39,15 @@ Timeline::Timeline(StudioModelAsset* asset, QWidget* parent)
 	_ui.SkipFramesLater->setIcon(style->standardIcon(QStyle::StandardPixmap::SP_MediaSkipForward));
 	_ui.NextFrame->setIcon(style->standardIcon(QStyle::StandardPixmap::SP_MediaSeekForward));
 
-	_ui.FramerateSlider->setRange(SpeedMinimum * SpeedSliderMultiplier, SpeedMaximum * SpeedSliderMultiplier);
-	_ui.FramerateSlider->setValue(SpeedDefault * SpeedSliderMultiplier);
+	{
+		const QSignalBlocker blockSlider(_ui.FramerateSlider);
+		const QSignalBlocker blockSpinner(_ui.FramerateSpinner);
 
-	_ui.FramerateSpinner->setRange(SpeedMinimum, SpeedMaximum);
+		_ui.FramerateSlider->setRange(SpeedMinimum * SpeedSliderMultiplier, SpeedMaximum * SpeedSliderMultiplier);
+		_ui.FramerateSpinner->setRange(SpeedMinimum, SpeedMaximum);
+	}
+
+	_ui.FramerateSlider->setValue(SpeedDefault * SpeedSliderMultiplier);
 	_ui.FramerateSpinner->setValue(SpeedDefault);
 }
 
@@ -69,7 +74,7 @@ void Timeline::SetFramerate(double value)
 	const QSignalBlocker blockSlider(_ui.FramerateSlider);
 	const QSignalBlocker blockSpinner(_ui.FramerateSpinner);
 
-	_ui.FramerateSlider->setValue(static_cast<int>(std::round(value) * SpeedSliderMultiplier));
+	_ui.FramerateSlider->setValue(static_cast<int>(std::round(value * SpeedSliderMultiplier)));
 	_ui.FramerateSpinner->setValue(value);
 
 	_asset->GetScene()->GetEntity()->SetFrameRate(static_cast<float>(value));

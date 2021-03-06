@@ -14,7 +14,7 @@ public:
 	static constexpr int SpeedMinimum = 0;
 	static constexpr int SpeedMaximum = 10;
 	static constexpr int SpeedDefault = 1;
-	static constexpr int SpeedSliderMultiplier = 40;
+	static constexpr int SpeedSliderMultiplier = 100;
 
 	static constexpr int SkipFramesAmount = 5;
 
