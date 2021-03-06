@@ -543,19 +543,15 @@ void Scene::DrawModel()
 	{
 		//Draw a transparent green box to display the player hitbox
 		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
 
 		const glm::vec3 bbmin{-16, -16, 0};
 		const glm::vec3 bbmax{16, 16, 72};
 
-		glm::vec3 v[8];
+		glm::vec3 v[8]{};
 
 		v[0][0] = bbmin[0];
 		v[0][1] = bbmax[1];
@@ -589,13 +585,31 @@ void Scene::DrawModel()
 		v[7][1] = bbmin[1];
 		v[7][2] = bbmax[2];
 
+		//Cull interior faces to avoid overlap
+		glEnable(GL_CULL_FACE);
+
+		//Disable depth mask so lines can draw over the box itself
+		GLint depthMaskWasEnabled = GL_FALSE;
+
+		glGetIntegerv(GL_DEPTH_WRITEMASK, &depthMaskWasEnabled);
+
+		glDepthMask(GL_FALSE);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
+
 		graphics::DrawBox(v);
+
+		glDepthMask(GL_TRUE);
 
 		//Draw dark green edges
+		glDisable(GL_CULL_FACE);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glColor4f(0.0f, 0.5f, 0.0f, 0.5f);
+		glColor4f(0.0f, 0.5f, 0.0f, 1.f);
 
 		graphics::DrawBox(v);
+
+		glDepthMask(depthMaskWasEnabled ? GL_TRUE : GL_FALSE);
 	}
 
 	glPopMatrix();
