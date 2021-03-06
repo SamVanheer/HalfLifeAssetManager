@@ -234,6 +234,8 @@ void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 	}
 
 	UpdateQCString();
+
+	OnHighlightAttachmentChanged();
 }
 
 void StudioModelAttachmentsPanel::OnHighlightAttachmentChanged()
