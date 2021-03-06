@@ -513,13 +513,13 @@ void Scene::DrawModel()
 
 			textureOffset.x = sequence->linearmovement.x * delta;
 			textureOffset.y = -(sequence->linearmovement.y * delta);
-		}
 
-		if (_floorSequence != _entity->GetSequence())
-		{
-			_floorSequence = _entity->GetSequence();
-			_previousFloorFrame = 0;
-			_floorTextureOffset.x = _floorTextureOffset.y = 0;
+			if (_floorSequence != _entity->GetSequence())
+			{
+				_floorSequence = _entity->GetSequence();
+				_previousFloorFrame = 0;
+				_floorTextureOffset.x = _floorTextureOffset.y = 0;
+			}
 		}
 
 		_floorTextureOffset += textureOffset;
