@@ -511,8 +511,12 @@ void Scene::DrawModel()
 
 			_previousFloorFrame = currentFrame;
 
-			textureOffset.x = sequence->linearmovement.x * delta;
-			textureOffset.y = -(sequence->linearmovement.y * delta);
+			//Adjust scrolling direction based on whether the model is mirrored, but don't apply scale itself
+			const int xDirection = _entity->GetScale().x > 0 ? 1 : -1;
+			const int yDirection = _entity->GetScale().y > 0 ? 1 : -1;
+
+			textureOffset.x = sequence->linearmovement.x * delta * xDirection;
+			textureOffset.y = -(sequence->linearmovement.y * delta * yDirection);
 
 			if (_floorSequence != _entity->GetSequence())
 			{
