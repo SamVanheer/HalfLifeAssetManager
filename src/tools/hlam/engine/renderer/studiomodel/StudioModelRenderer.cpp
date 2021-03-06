@@ -1180,6 +1180,8 @@ unsigned int StudioModelRenderer::DrawShadows(const bool fixZFighting, const boo
 
 		const auto alpha = 0.5 * r_blend;
 
+		const GLboolean texture2DWasEnabled = glIsEnabled(GL_TEXTURE_2D);
+
 		glDisable(GL_TEXTURE_2D);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
@@ -1200,7 +1202,11 @@ unsigned int StudioModelRenderer::DrawShadows(const bool fixZFighting, const boo
 
 		glDepthFunc(GL_LEQUAL);
 
-		glEnable(GL_TEXTURE_2D);
+		if (texture2DWasEnabled)
+		{
+			glEnable(GL_TEXTURE_2D);
+		}
+
 		glDisable(GL_BLEND);
 		glColor4f(1.f, 1.f, 1.f, 1.f);
 		glShadeModel(GL_SMOOTH);
