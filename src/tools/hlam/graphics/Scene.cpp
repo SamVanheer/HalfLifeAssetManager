@@ -562,7 +562,7 @@ void Scene::DrawModel()
 			//Draw a transparent yellowish box to display the clipping box
 			auto header = _entity->GetModel()->GetStudioHeader();
 
-			const auto v = CreateBoxFromBounds(header->min, header->max);
+			const auto v = CreateBoxFromBounds(header->bbmin, header->bbmax);
 
 			DrawOutlinedBox(v, {1.0f, 0.5f, 0.0f, 0.5f}, {0.5f, 0.25f, 0.0f, 1.0f});
 		}
