@@ -87,6 +87,25 @@ private:
 };
 
 /**
+*	@brief Base class for model change events that have a single (compound) value
+*/
+template<typename T>
+class ModelValueChangeEvent : public ModelChangeEvent
+{
+public:
+	ModelValueChangeEvent(ModelChangeId id, const T& value)
+		: ModelChangeEvent(id)
+		, _value(value)
+	{
+	}
+
+	const T& GetValue() const { return _value; }
+
+private:
+	const T _value;
+};
+
+/**
 *	@brief Base class for all model change events that involve a change that occurred in a list
 */
 class ModelListChangeEvent : public ModelChangeEvent
@@ -156,6 +175,9 @@ public:
 private:
 	const glm::vec3 _position;
 };
+
+using ModelBBoxChangeEvent = ModelValueChangeEvent<std::pair<glm::vec3, glm::vec3>>;
+using ModelCBoxChangeEvent = ModelValueChangeEvent<std::pair<glm::vec3, glm::vec3>>;
 
 class ModelOriginChangeEvent : public ModelChangeEvent
 {
@@ -399,6 +421,11 @@ protected:
 	}
 
 	void Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
+
+	void EmitEvent(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override
+	{
+		_asset->EmitModelChanged(ModelBBoxChangeEvent{_id, newValue});
+	}
 };
 
 class ChangeCBoxCommand : public ModelUndoCommand<std::pair<glm::vec3, glm::vec3>>
@@ -417,6 +444,11 @@ protected:
 	}
 
 	void Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
+
+	void EmitEvent(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override
+	{
+		_asset->EmitModelChanged(ModelCBoxChangeEvent{_id, newValue});
+	}
 };
 
 class BoneRenameCommand : public ModelListUndoCommand<QString>

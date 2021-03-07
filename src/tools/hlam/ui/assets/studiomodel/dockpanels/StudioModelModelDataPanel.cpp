@@ -144,6 +144,30 @@ void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 		break;
 	}
 
+	case ModelChangeId::ChangeBBox:
+	{
+		const auto& change = static_cast<const ModelBBoxChangeEvent&>(event);
+
+		const QSignalBlocker min{_ui.BBoxMin};
+		const QSignalBlocker max{_ui.BBoxMax};
+
+		_ui.BBoxMin->SetValue(change.GetValue().first);
+		_ui.BBoxMax->SetValue(change.GetValue().second);
+		break;
+	}
+
+	case ModelChangeId::ChangeCBox:
+	{
+		const auto& change = static_cast<const ModelCBoxChangeEvent&>(event);
+
+		const QSignalBlocker min{_ui.CBoxMin};
+		const QSignalBlocker max{_ui.CBoxMax};
+
+		_ui.CBoxMin->SetValue(change.GetValue().first);
+		_ui.CBoxMax->SetValue(change.GetValue().second);
+		break;
+	}
+
 	case ModelChangeId::ChangeModelOrigin:
 	{
 		const auto& originChange = static_cast<const ModelOriginChangeEvent&>(event);
