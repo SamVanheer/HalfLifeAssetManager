@@ -1210,7 +1210,6 @@ unsigned int StudioModelRenderer::DrawShadows(const bool fixZFighting, const boo
 
 		glDisable(GL_BLEND);
 		glColor4f(1.f, 1.f, 1.f, 1.f);
-		glShadeModel(GL_SMOOTH);
 
 		glDepthMask(static_cast<GLboolean>(oldDepthMask));
 
