@@ -6,16 +6,16 @@
 
 namespace graphics
 {
-void Camera::UpdateViewMatrix()
+void Camera::UpdateModelMatrix()
 {
-	_viewMatrix = glm::identity<glm::mat4x4>();
+	_modelMatrix = glm::identity<glm::mat4x4>();
 
-	_viewMatrix = glm::translate(_viewMatrix, _origin);
+	_modelMatrix = glm::translate(_modelMatrix, _origin);
 
 	const glm::vec3 angles{FixAngles({_pitch, _yaw, 0})};
 
 	const glm::quat rotation{glm::vec3{glm::radians(angles.z), glm::radians(-angles.x), glm::radians(angles.y)}};
 
-	_viewMatrix *= glm::mat4_cast(rotation);
+	_modelMatrix *= glm::mat4_cast(rotation);
 }
 }

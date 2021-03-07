@@ -39,7 +39,7 @@ public:
 	{
 		_origin = origin;
 
-		UpdateViewMatrix();
+		UpdateModelMatrix();
 	}
 
 	float GetPitch() const { return _pitch; }
@@ -61,7 +61,7 @@ public:
 		_pitch = pitch;
 		_yaw = yaw;
 
-		UpdateViewMatrix();
+		UpdateModelMatrix();
 	}
 
 	void SetProperties(const glm::vec3& origin, float pitch, float yaw)
@@ -70,16 +70,16 @@ public:
 		_pitch = pitch;
 		_yaw = yaw;
 
-		UpdateViewMatrix();
+		UpdateModelMatrix();
 	}
 
-	const glm::vec3 GetForwardVector() const { return glm::normalize(glm::vec3(_viewMatrix[0])); }
+	const glm::vec3 GetForwardVector() const { return glm::normalize(glm::vec3(_modelMatrix[0])); }
 
-	const glm::vec3 GetRightVector() const { return glm::normalize(glm::vec3(_viewMatrix[1])); }
+	const glm::vec3 GetRightVector() const { return glm::normalize(glm::vec3(_modelMatrix[1])); }
 
-	const glm::vec3 GetUpVector() const { return glm::normalize(glm::vec3(_viewMatrix[2])); }
+	const glm::vec3 GetUpVector() const { return glm::normalize(glm::vec3(_modelMatrix[2])); }
 
-	const glm::mat4x4& GetViewMatrix() const { return _viewMatrix; }
+	const glm::mat4x4& GetModelMatrix() const { return _modelMatrix; }
 
 	float GetFieldOfView() const { return _fov; }
 
@@ -89,7 +89,7 @@ public:
 	}
 
 private:
-	void UpdateViewMatrix();
+	void UpdateModelMatrix();
 
 private:
 	glm::vec3 _origin{0};
@@ -97,7 +97,7 @@ private:
 	float _pitch{0};
 	float _yaw{0};
 
-	glm::mat4x4 _viewMatrix;
+	glm::mat4x4 _modelMatrix;
 
 	float _fov{90.f};
 };
