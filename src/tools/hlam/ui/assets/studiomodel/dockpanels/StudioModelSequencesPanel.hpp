@@ -20,11 +20,19 @@ public:
 	~StudioModelSequencesPanel();
 
 private:
+	enum class BlendMode
+	{
+		Standard,
+		CounterStrike
+	};
+
 	enum class BlendUpdateSource
 	{
 		Slider,
 		Spinner
 	};
+
+	void InitializeBlenders(const BlendMode mode);
 
 	void UpdateBlendValue(int blender, BlendUpdateSource source, QSlider* slider, QDoubleSpinBox* spinner);
 
@@ -34,6 +42,8 @@ private slots:
 	void OnSequenceChanged(int index);
 
 	void OnLoopingModeChanged(int index);
+
+	void OnBlendModeChanged(int index);
 
 	void OnBlendXSliderChanged();
 
@@ -55,6 +65,6 @@ private:
 	Ui_StudioModelSequencesPanel _ui;
 	StudioModelAsset* const _asset;
 
-	double _blendsScales[SequenceBlendCount];
+	double _blendsScales[SequenceBlendCount]{};
 };
 }

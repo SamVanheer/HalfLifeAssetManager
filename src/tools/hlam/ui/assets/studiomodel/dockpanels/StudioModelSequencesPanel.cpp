@@ -31,6 +31,7 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 	connect(_ui.SequenceComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelSequencesPanel::OnSequenceChanged);
 	connect(_ui.LoopingModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelSequencesPanel::OnLoopingModeChanged);
 
+	connect(_ui.BlendMode, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelSequencesPanel::OnBlendModeChanged);
 	connect(_ui.BlendXSlider, &QSlider::valueChanged, this, &StudioModelSequencesPanel::OnBlendXSliderChanged);
 	connect(_ui.BlendXSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelSequencesPanel::OnBlendXSpinnerChanged);
 	connect(_ui.BlendYSlider, &QSlider::valueChanged, this, &StudioModelSequencesPanel::OnBlendYSliderChanged);
@@ -94,59 +95,24 @@ void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
-void StudioModelSequencesPanel::UpdateBlendValue(int blender, BlendUpdateSource source, QSlider* slider, QDoubleSpinBox* spinner)
-{
-	if (source == BlendUpdateSource::Slider)
-	{
-		spinner->setValue(slider->value() / _blendsScales[blender]);
-	}
-	else
-	{
-		slider->setValue(spinner->value() * _blendsScales[blender]);
-	}
-
-	auto entity = _asset->GetScene()->GetEntity();
-
-	entity->SetBlending(blender, spinner->value());
-}
-
-void StudioModelSequencesPanel::OnSequenceChanged(int index)
+void StudioModelSequencesPanel::InitializeBlenders(const BlendMode mode)
 {
 	auto entity = _asset->GetScene()->GetEntity();
 
-	entity->SetSequence(index);
-
-	auto sequence = entity->GetModel()->GetStudioHeader()->GetSequence(index);
-
-	const auto durationInSeconds = sequence->numframes / sequence->fps;
-
-	_ui.SequenceLabel->setText(QString::number(index));
-	_ui.FrameCountLabel->setText(QString::number(sequence->numframes));
-	_ui.FPSLabel->setText(QString::number(sequence->fps, 'g', 2));
-	_ui.DurationLabel->setText(QString::number(durationInSeconds, 'g', 2));
-
-	_ui.EventCountLabel->setText(QString::number(sequence->numevents));
-	_ui.IsLoopingLabel->setText((sequence->flags & STUDIO_LOOPING) ? "Yes" : "No");
-	_ui.BlendCountLabel->setText(QString::number(sequence->numblends));
-	_ui.ActivityWeightLabel->setText(QString::number(sequence->actweight));
-
-	QString activityName{"Unknown"};
-
-	if (sequence->activity >= ACT_IDLE && sequence->activity <= ACT_FLINCH_RIGHTLEG)
-	{
-		activityName = activity_map[sequence->activity - 1].name;
-	}
-	else if (sequence->activity == ACT_RESET)
-	{
-		activityName = "None";
-	}
-
-	_ui.ActivityNameLabel->setText(QString{"%1 (%2)"}.arg(activityName).arg(sequence->activity));
+	auto sequence = entity->GetModel()->GetStudioHeader()->GetSequence(entity->GetSequence());
 
 	const float initialBlendValue = 0.f;
 
-	entity->SetBlending(0, initialBlendValue);
-	entity->SetBlending(1, initialBlendValue);
+	if (mode == BlendMode::CounterStrike)
+	{
+		entity->SetCounterStrikeBlending(0, initialBlendValue);
+		entity->SetCounterStrikeBlending(1, initialBlendValue);
+	}
+	else
+	{
+		entity->SetBlending(0, initialBlendValue);
+		entity->SetBlending(1, initialBlendValue);
+	}
 
 	QSlider* const sliders[] =
 	{
@@ -162,7 +128,7 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 
 	for (int blender = 0; blender < SequenceBlendCount; ++blender)
 	{
-		const auto hasBlender = sequence->blendtype[blender] != 0;
+		const auto hasBlender = mode == BlendMode::CounterStrike || sequence->blendtype[blender] != 0;
 
 		const auto slider = sliders[blender];
 
@@ -172,16 +138,24 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 		{
 			float start, end;
 
-			//Swap values if the range is inverted
-			if (sequence->blendend[blender] < sequence->blendstart[blender])
+			if (mode == BlendMode::CounterStrike)
 			{
-				start = sequence->blendend[blender];
-				end = sequence->blendstart[blender];
+				start = studiomdl::CounterStrikeBlendRanges[blender][0];
+				end = studiomdl::CounterStrikeBlendRanges[blender][1];
 			}
 			else
 			{
-				start = sequence->blendstart[blender];
-				end = sequence->blendend[blender];
+				//Swap values if the range is inverted
+				if (sequence->blendend[blender] < sequence->blendstart[blender])
+				{
+					start = sequence->blendend[blender];
+					end = sequence->blendstart[blender];
+				}
+				else
+				{
+					start = sequence->blendstart[blender];
+					end = sequence->blendend[blender];
+				}
 			}
 
 			//Should probably scale as needed so the range is sufficiently large
@@ -217,6 +191,65 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 		slider->setEnabled(hasBlender);
 		spinner->setEnabled(hasBlender);
 	}
+}
+
+void StudioModelSequencesPanel::UpdateBlendValue(int blender, BlendUpdateSource source, QSlider* slider, QDoubleSpinBox* spinner)
+{
+	if (source == BlendUpdateSource::Slider)
+	{
+		spinner->setValue(slider->value() / _blendsScales[blender]);
+	}
+	else
+	{
+		slider->setValue(spinner->value() * _blendsScales[blender]);
+	}
+
+	auto entity = _asset->GetScene()->GetEntity();
+
+	if (static_cast<BlendMode>(_ui.BlendMode->currentIndex()) == BlendMode::CounterStrike)
+	{
+		entity->SetCounterStrikeBlending(blender, spinner->value());
+	}
+	else
+	{
+		entity->SetBlending(blender, spinner->value());
+	}
+}
+
+void StudioModelSequencesPanel::OnSequenceChanged(int index)
+{
+	auto entity = _asset->GetScene()->GetEntity();
+
+	entity->SetSequence(index);
+
+	auto sequence = entity->GetModel()->GetStudioHeader()->GetSequence(index);
+
+	const auto durationInSeconds = sequence->numframes / sequence->fps;
+
+	_ui.SequenceLabel->setText(QString::number(index));
+	_ui.FrameCountLabel->setText(QString::number(sequence->numframes));
+	_ui.FPSLabel->setText(QString::number(sequence->fps, 'g', 2));
+	_ui.DurationLabel->setText(QString::number(durationInSeconds, 'g', 2));
+
+	_ui.EventCountLabel->setText(QString::number(sequence->numevents));
+	_ui.IsLoopingLabel->setText((sequence->flags & STUDIO_LOOPING) ? "Yes" : "No");
+	_ui.BlendCountLabel->setText(QString::number(sequence->numblends));
+	_ui.ActivityWeightLabel->setText(QString::number(sequence->actweight));
+
+	QString activityName{"Unknown"};
+
+	if (sequence->activity >= ACT_IDLE && sequence->activity <= ACT_FLINCH_RIGHTLEG)
+	{
+		activityName = activity_map[sequence->activity - 1].name;
+	}
+	else if (sequence->activity == ACT_RESET)
+	{
+		activityName = "None";
+	}
+
+	_ui.ActivityNameLabel->setText(QString{"%1 (%2)"}.arg(activityName).arg(sequence->activity));
+
+	InitializeBlenders(static_cast<BlendMode>(_ui.BlendMode->currentIndex()));
 
 	_ui.EventsComboBox->clear();
 
@@ -247,6 +280,11 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 void StudioModelSequencesPanel::OnLoopingModeChanged(int index)
 {
 	_asset->GetScene()->GetEntity()->SetLoopingMode(static_cast<StudioLoopingMode>(index));
+}
+
+void StudioModelSequencesPanel::OnBlendModeChanged(int index)
+{
+	InitializeBlenders(static_cast<BlendMode>(index));
 }
 
 void StudioModelSequencesPanel::OnBlendXSliderChanged()

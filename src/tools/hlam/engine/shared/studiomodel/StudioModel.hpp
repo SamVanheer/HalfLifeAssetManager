@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -26,6 +27,9 @@ class TextureLoader;
 
 namespace studiomdl
 {
+//TODO: refactor to use data structures defined by new editable model format
+constexpr std::array<std::array<double, 2>, SequenceBlendCount> CounterStrikeBlendRanges{{{-180, 180}, {-45, 45}}};
+
 /**
 *	@brief Indicates that a studio model file is not a main header (e.g. trying to load texture header as a main header)
 */

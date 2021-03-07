@@ -195,6 +195,8 @@ public:
 	*/
 	void SetBlending(const int blender, float value);
 
+	void SetCounterStrikeBlending(const int blender, float value);
+
 	/**
 	*	Gets the last event check. This is the end of the range used to check for animation events the last time DispatchAnimEvents was called.
 	*/

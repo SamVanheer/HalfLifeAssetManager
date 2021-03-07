@@ -591,6 +591,24 @@ void StudioModelEntity::SetBlending(const int blender, float value)
 	_blending[blender] = setting;
 }
 
+void StudioModelEntity::SetCounterStrikeBlending(const int blender, float value)
+{
+	switch (blender)
+	{
+	case SequenceBlendXIndex:
+	{
+		_blending[blender] = static_cast<byte>((180.0 + value) / 360.0 * 255.0);
+		break;
+	}
+
+	case SequenceBlendYIndex:
+	{
+		_blending[blender] = static_cast<byte>((45 + value) / 90.0 * 255.0);
+		break;
+	}
+	}
+}
+
 void StudioModelEntity::ExtractBbox(glm::vec3& mins, glm::vec3& maxs) const
 {
 	const mstudioseqdesc_t* sequenceDescriptor = _model->GetStudioHeader()->GetSequence(_sequence);
