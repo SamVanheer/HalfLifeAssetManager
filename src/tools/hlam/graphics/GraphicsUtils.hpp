@@ -1,10 +1,12 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <string_view>
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 #include "core/shared/Const.hpp"
 
@@ -39,10 +41,29 @@ void FlipImageVertically( const int iWidth, const int iHeight, byte* const pData
 */
 void DrawBackground( GLuint backgroundTexture );
 
+inline std::array<glm::vec3, 8> CreateBoxFromBounds(const glm::vec3& min, const glm::vec3& max)
+{
+	return
+	{
+		{
+			{min[0], max[1], min[2]},
+			{min[0], min[1], min[2]},
+			{max[0], max[1], min[2]},
+			{max[0], min[1], min[2]},
+			{max[0], max[1], max[2]},
+			{max[0], min[1], max[2]},
+			{min[0], max[1], max[2]},
+			{min[0], min[1], max[2]}
+		}
+	};
+}
+
 /**
 *	Draws a box using an array of 8 vectors as corner points.
 */
-void DrawBox( const glm::vec3* const v );
+void DrawBox(const std::array<glm::vec3, 8>& points);
+
+void DrawOutlinedBox(const std::array<glm::vec3, 8>& points, const glm::vec4& faceColor, const glm::vec4& borderColor);
 
 /**
 *	@brief Tests if the given filename is a remap name, and returns the remap ranges if so

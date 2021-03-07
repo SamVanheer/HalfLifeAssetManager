@@ -106,28 +106,63 @@ void DrawBackground( GLuint backgroundTexture )
 	glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
-void DrawBox( const glm::vec3* const v )
+void DrawBox(const std::array<glm::vec3, 8>& points)
 {
-	glBegin( GL_QUAD_STRIP );
-	for( int i = 0; i < 10; ++i )
+	glBegin(GL_QUAD_STRIP);
+	for (int i = 0; i < 10; ++i)
 	{
-		glVertex3fv( glm::value_ptr( v[ i & 7 ] ) );
+		glVertex3fv(glm::value_ptr(points[i & 7]));
 	}
 	glEnd();
 
-	glBegin( GL_QUAD_STRIP );
-	glVertex3fv( glm::value_ptr( v[ 6 ] ) );
-	glVertex3fv( glm::value_ptr( v[ 0 ] ) );
-	glVertex3fv( glm::value_ptr( v[ 4 ] ) );
-	glVertex3fv( glm::value_ptr( v[ 2 ] ) );
+	glBegin(GL_QUAD_STRIP);
+	glVertex3fv(glm::value_ptr(points[6]));
+	glVertex3fv(glm::value_ptr(points[0]));
+	glVertex3fv(glm::value_ptr(points[4]));
+	glVertex3fv(glm::value_ptr(points[2]));
 	glEnd();
 
-	glBegin( GL_QUAD_STRIP );
-	glVertex3fv( glm::value_ptr( v[ 1 ] ) );
-	glVertex3fv( glm::value_ptr( v[ 7 ] ) );
-	glVertex3fv( glm::value_ptr( v[ 3 ] ) );
-	glVertex3fv( glm::value_ptr( v[ 5 ] ) );
+	glBegin(GL_QUAD_STRIP);
+	glVertex3fv(glm::value_ptr(points[1]));
+	glVertex3fv(glm::value_ptr(points[7]));
+	glVertex3fv(glm::value_ptr(points[3]));
+	glVertex3fv(glm::value_ptr(points[5]));
 	glEnd();
+}
+
+void DrawOutlinedBox(const std::array<glm::vec3, 8>& points, const glm::vec4& faceColor, const glm::vec4& borderColor)
+{
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_DEPTH_TEST);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//Cull interior faces to avoid overlap
+	glEnable(GL_CULL_FACE);
+
+	//Disable depth mask so lines can draw over the box itself
+	GLint depthMaskWasEnabled = GL_FALSE;
+
+	glGetIntegerv(GL_DEPTH_WRITEMASK, &depthMaskWasEnabled);
+
+	glDepthMask(GL_FALSE);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glColor4fv(glm::value_ptr(faceColor));
+
+	DrawBox(points);
+
+	glDepthMask(GL_TRUE);
+
+	//Draw edges
+	glDisable(GL_CULL_FACE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glColor4fv(glm::value_ptr(borderColor));
+
+	DrawBox(points);
+
+	glDepthMask(depthMaskWasEnabled ? GL_TRUE : GL_FALSE);
 }
 
 const std::string_view DmBaseName{"DM_Base.bmp"};

@@ -291,42 +291,9 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	mstudiobbox_t* hitbox = _studioHeader->GetHitBox(hitboxIndex);
-	glm::vec3 v[8], v2[8];
 
-	glm::vec3 bbmin = hitbox->bbmin;
-	glm::vec3 bbmax = hitbox->bbmax;
-
-	v[0][0] = bbmin[0];
-	v[0][1] = bbmax[1];
-	v[0][2] = bbmin[2];
-
-	v[1][0] = bbmin[0];
-	v[1][1] = bbmin[1];
-	v[1][2] = bbmin[2];
-
-	v[2][0] = bbmax[0];
-	v[2][1] = bbmax[1];
-	v[2][2] = bbmin[2];
-
-	v[3][0] = bbmax[0];
-	v[3][1] = bbmin[1];
-	v[3][2] = bbmin[2];
-
-	v[4][0] = bbmax[0];
-	v[4][1] = bbmax[1];
-	v[4][2] = bbmax[2];
-
-	v[5][0] = bbmax[0];
-	v[5][1] = bbmin[1];
-	v[5][2] = bbmax[2];
-
-	v[6][0] = bbmin[0];
-	v[6][1] = bbmax[1];
-	v[6][2] = bbmax[2];
-
-	v[7][0] = bbmin[0];
-	v[7][1] = bbmin[1];
-	v[7][2] = bbmax[2];
+	const auto v = graphics::CreateBoxFromBounds(hitbox->bbmin, hitbox->bbmax);
+	std::array<glm::vec3, 8> v2{};
 
 	VectorTransform(v[0], _bonetransform[hitbox->bone], v2[0]);
 	VectorTransform(v[1], _bonetransform[hitbox->bone], v2[1]);
@@ -452,42 +419,9 @@ void StudioModelRenderer::DrawHitBoxes()
 	for (int i = 0; i < _studioHeader->numhitboxes; i++)
 	{
 		mstudiobbox_t* pbboxes = _studioHeader->GetHitBoxes();
-		glm::vec3 v[8], v2[8];
 
-		glm::vec3 bbmin = pbboxes[i].bbmin;
-		glm::vec3 bbmax = pbboxes[i].bbmax;
-
-		v[0][0] = bbmin[0];
-		v[0][1] = bbmax[1];
-		v[0][2] = bbmin[2];
-
-		v[1][0] = bbmin[0];
-		v[1][1] = bbmin[1];
-		v[1][2] = bbmin[2];
-
-		v[2][0] = bbmax[0];
-		v[2][1] = bbmax[1];
-		v[2][2] = bbmin[2];
-
-		v[3][0] = bbmax[0];
-		v[3][1] = bbmin[1];
-		v[3][2] = bbmin[2];
-
-		v[4][0] = bbmax[0];
-		v[4][1] = bbmax[1];
-		v[4][2] = bbmax[2];
-
-		v[5][0] = bbmax[0];
-		v[5][1] = bbmin[1];
-		v[5][2] = bbmax[2];
-
-		v[6][0] = bbmin[0];
-		v[6][1] = bbmax[1];
-		v[6][2] = bbmax[2];
-
-		v[7][0] = bbmin[0];
-		v[7][1] = bbmin[1];
-		v[7][2] = bbmax[2];
+		const auto v = graphics::CreateBoxFromBounds(pbboxes[i].bbmin, pbboxes[i].bbmax);
+		std::array<glm::vec3, 8> v2{};
 
 		VectorTransform(v[0], _bonetransform[pbboxes[i].bone], v2[0]);
 		VectorTransform(v[1], _bonetransform[pbboxes[i].bone], v2[1]);
