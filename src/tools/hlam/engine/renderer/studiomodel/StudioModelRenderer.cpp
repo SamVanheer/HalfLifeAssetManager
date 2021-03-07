@@ -80,8 +80,6 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo* const re
 	glRotatef(_renderInfo->Angles[0], 0, 1, 0);
 	glRotatef(_renderInfo->Angles[2], 1, 0, 0);
 
-	glScalef(_renderInfo->Scale.x, _renderInfo->Scale.y, _renderInfo->Scale.z);
-
 	SetUpBones();
 
 	SetupLighting();
@@ -748,6 +746,9 @@ void StudioModelRenderer::SetUpBones()
 
 		if (pbones[i].parent == -1)
 		{
+			//Apply scale to each root bone so only the model is scaled and mirrored, and not anything else in the scene
+			bonematrix = glm::scale(glm::mat4x4{bonematrix}, _renderInfo->Scale);
+
 			_bonetransform[i] = bonematrix;
 		}
 		else
