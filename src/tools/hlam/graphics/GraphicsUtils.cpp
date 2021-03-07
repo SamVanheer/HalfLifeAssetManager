@@ -106,14 +106,6 @@ void DrawBackground( GLuint backgroundTexture )
 	glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
-void SetProjection( const float flFOV, const int iWidth, const int iHeight )
-{
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-	auto matrix = glm::perspective(glm::radians(flFOV), (float)iWidth / (float)iHeight, 1.0f, static_cast<float>(1 << 24));
-	glLoadMatrixf(glm::value_ptr(matrix));
-}
-
 void DrawBox( const glm::vec3* const v )
 {
 	glBegin( GL_QUAD_STRIP );

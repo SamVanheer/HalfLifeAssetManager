@@ -65,13 +65,28 @@ public:
 		}
 
 		_currentCamera = camera;
+
+		//Update the camera's projection matrix
+		_currentCamera->SetWindowSize(_windowWidth, _windowHeight);
 	}
 
 	void UpdateWindowSize(unsigned int width, unsigned int height)
 	{
-		//TODO: recreate window sized resources
-		_windowWidth = width;
-		_windowHeight = height;
+		//Avoid constantly updating cameras
+		if (_windowWidth != width || _windowHeight != height)
+		{
+			//TODO: recreate window sized resources
+			_windowWidth = width;
+			_windowHeight = height;
+
+			//Always update the default camera
+			_defaultCamera.SetWindowSize(_windowWidth, _windowHeight);
+
+			if (_currentCamera != &_defaultCamera)
+			{
+				_currentCamera->SetWindowSize(_windowWidth, _windowHeight);
+			}
+		}
 	}
 
 	glm::vec3 GetLightColor() const;

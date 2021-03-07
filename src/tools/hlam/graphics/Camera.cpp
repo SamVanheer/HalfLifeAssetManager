@@ -1,5 +1,4 @@
 #include <glm/trigonometric.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
 #include "graphics/Camera.hpp"
@@ -24,5 +23,13 @@ void Camera::UpdateModelMatrix()
 void Camera::UpdateViewMatrix()
 {
 	_viewMatrix = glm::lookAt(GetOrigin(), GetOrigin() + GetForwardVector(), GetUpVector());
+}
+
+void Camera::UpdateProjectionMatrix()
+{
+	//This can be called when we haven't gotten the window size yet, or the window has size 0, 0 for whatever reason
+	const float aspectRatio = (_windowWidth != 0 && _windowHeight != 0) ? _windowWidth / _windowHeight : 1;
+
+	_projectionMatrix = glm::perspective(glm::radians(GetFieldOfView()), aspectRatio, 1.0f, static_cast<float>(1 << 24));
 }
 }

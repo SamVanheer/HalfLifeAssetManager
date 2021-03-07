@@ -3,6 +3,7 @@
 #include <glm/geometric.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "utility/mathlib.hpp"
 
@@ -73,6 +74,23 @@ public:
 		UpdateModelMatrix();
 	}
 
+	float GetFieldOfView() const { return _fov; }
+
+	void SetFieldOfView(float value)
+	{
+		_fov = value;
+
+		UpdateProjectionMatrix();
+	}
+
+	void SetWindowSize(float windowWidth, float windowHeight)
+	{
+		_windowWidth = windowWidth;
+		_windowHeight = windowHeight;
+
+		UpdateProjectionMatrix();
+	}
+
 	const glm::vec3 GetForwardVector() const { return glm::normalize(glm::vec3(_modelMatrix[0])); }
 
 	const glm::vec3 GetRightVector() const { return glm::normalize(glm::vec3(_modelMatrix[1])); }
@@ -83,16 +101,12 @@ public:
 
 	const glm::mat4x4& GetViewMatrix() const { return _viewMatrix; }
 
-	float GetFieldOfView() const { return _fov; }
-
-	void SetFieldOfView(float value)
-	{
-		_fov = value;
-	}
+	const glm::mat4x4& GetProjectionMatrix() const { return _projectionMatrix; }
 
 private:
 	void UpdateModelMatrix();
 	void UpdateViewMatrix();
+	void UpdateProjectionMatrix();
 
 private:
 	glm::vec3 _origin{0};
@@ -101,7 +115,11 @@ private:
 	float _yaw{0};
 	float _fov{90.f};
 
-	glm::mat4x4 _modelMatrix;
-	glm::mat4x4 _viewMatrix;
+	float _windowWidth{0.f};
+	float _windowHeight{0.f};
+
+	glm::mat4x4 _modelMatrix{glm::identity<glm::mat4x4>()};
+	glm::mat4x4 _viewMatrix{glm::identity<glm::mat4x4>()};
+	glm::mat4x4 _projectionMatrix{glm::identity<glm::mat4x4>()};
 };
 }

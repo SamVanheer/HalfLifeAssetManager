@@ -339,7 +339,9 @@ void Scene::DrawModel()
 		graphics::DrawBackground(BackgroundTexture);
 	}
 
-	graphics::SetProjection(camera->GetFieldOfView(), _windowWidth, _windowHeight);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glLoadMatrixf(glm::value_ptr(camera->GetProjectionMatrix()));
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();

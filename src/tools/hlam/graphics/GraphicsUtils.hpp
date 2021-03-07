@@ -40,14 +40,6 @@ void FlipImageVertically( const int iWidth, const int iHeight, byte* const pData
 void DrawBackground( GLuint backgroundTexture );
 
 /**
-*	Sets the projection matrix to the default perspective settings.
-*	@param flFOV Field Of View.
-*	@param iWidth Width of the viewport
-*	@param iHeight Height of the viewport
-*/
-void SetProjection( const float flFOV, const int iWidth, const int iHeight );
-
-/**
 *	Draws a box using an array of 8 vectors as corner points.
 */
 void DrawBox( const glm::vec3* const v );
