@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1035</width>
+    <width>1152</width>
     <height>75</height>
    </rect>
   </property>
@@ -421,17 +421,69 @@
       <property name="spacing">
        <number>0</number>
       </property>
-      <item row="2" column="1">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="ShowHitboxes">
+        <property name="text">
+         <string>Show Hitboxes</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QCheckBox" name="ShowGuidelines">
+        <property name="text">
+         <string>Show Guidelines</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QCheckBox" name="ShowAxes">
+        <property name="text">
+         <string>Show Axes</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
        <widget class="QCheckBox" name="MirrorModelOnGround">
         <property name="text">
          <string>Mirror Model On Ground</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QCheckBox" name="ShowBackground">
+      <item row="1" column="2">
+       <widget class="QCheckBox" name="ShowGround">
         <property name="text">
-         <string>Show Background</string>
+         <string>Show Ground</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QCheckBox" name="DrawShadows">
+        <property name="text">
+         <string>Draw Shadows</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="WireframeOverlay">
+        <property name="text">
+         <string>Wireframe Overlay</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QCheckBox" name="ShowPlayerHitbox">
+        <property name="text">
+         <string>Show Player Hitbox</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="BackfaceCulling">
+        <property name="text">
+         <string>Backface Culling</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -442,38 +494,17 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QCheckBox" name="WireframeOverlay">
+      <item row="1" column="4">
+       <widget class="QCheckBox" name="ShowCrosshair">
         <property name="text">
-         <string>Wireframe Overlay</string>
+         <string>Show Crosshair</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="ShowHitboxes">
+      <item row="2" column="3">
+       <widget class="QCheckBox" name="FixShadowZFighting">
         <property name="text">
-         <string>Show Hitboxes</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="ShowEyePosition">
-        <property name="text">
-         <string>Show Eye Position</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QCheckBox" name="ShowGround">
-        <property name="text">
-         <string>Show Ground</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QCheckBox" name="DrawShadows">
-        <property name="text">
-         <string>Draw Shadows</string>
+         <string>Fix Shadow Z Fighting</string>
         </property>
        </widget>
       </item>
@@ -484,59 +515,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QCheckBox" name="BackfaceCulling">
-        <property name="text">
-         <string>Backface Culling</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QCheckBox" name="ShowGuidelines">
-        <property name="text">
-         <string>Show Guidelines</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QCheckBox" name="ShowAxes">
-        <property name="text">
-         <string>Show Axes</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QCheckBox" name="ShowCrosshair">
-        <property name="text">
-         <string>Show Crosshair</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QCheckBox" name="FixShadowZFighting">
-        <property name="text">
-         <string>Fix Shadow Z Fighting</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QCheckBox" name="ShowNormals">
-        <property name="text">
-         <string>Show Normals</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
-       <widget class="QCheckBox" name="ShowPlayerHitbox">
-        <property name="text">
-         <string>Show Player Hitbox</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="4">
+      <item row="4" column="0" colspan="5">
        <spacer name="verticalSpacer_6">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -548,6 +527,41 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="3" column="2">
+       <widget class="QCheckBox" name="ShowBackground">
+        <property name="text">
+         <string>Show Background</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="ShowEyePosition">
+        <property name="text">
+         <string>Show Eye Position</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QCheckBox" name="ShowNormals">
+        <property name="text">
+         <string>Show Normals</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="ShowBBox">
+        <property name="text">
+         <string>Show Bounding Box</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="ShowCBox">
+        <property name="text">
+         <string>Show Clipping Box</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

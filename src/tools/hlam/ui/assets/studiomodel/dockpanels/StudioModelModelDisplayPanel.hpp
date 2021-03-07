@@ -23,6 +23,9 @@ private:
 	void OnShowAttachmentsChanged();
 	void OnShowEyePositionChanged();
 
+	void OnShowBBoxChanged();
+	void OnShowCBoxChanged();
+
 	void OnEnableBackfaceCullingChanged();
 	void OnShowGroundChanged();
 	void OnMirrorOnGroundChanged();

@@ -22,6 +22,9 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 	connect(_ui.ShowAttachments, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnShowAttachmentsChanged);
 	connect(_ui.ShowEyePosition, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnShowEyePositionChanged);
 
+	connect(_ui.ShowBBox, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnShowBBoxChanged);
+	connect(_ui.ShowCBox, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnShowCBoxChanged);
+
 	connect(_ui.BackfaceCulling, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnEnableBackfaceCullingChanged);
 	connect(_ui.ShowGround, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnShowGroundChanged);
 	connect(_ui.MirrorModelOnGround, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnMirrorOnGroundChanged);
@@ -82,6 +85,16 @@ void StudioModelModelDisplayPanel::OnShowAttachmentsChanged()
 void StudioModelModelDisplayPanel::OnShowEyePositionChanged()
 {
 	_asset->GetScene()->ShowEyePosition = _ui.ShowEyePosition->isChecked();
+}
+
+void StudioModelModelDisplayPanel::OnShowBBoxChanged()
+{
+	_asset->GetScene()->ShowBBox = _ui.ShowBBox->isChecked();
+}
+
+void StudioModelModelDisplayPanel::OnShowCBoxChanged()
+{
+	_asset->GetScene()->ShowCBox = _ui.ShowCBox->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnEnableBackfaceCullingChanged()

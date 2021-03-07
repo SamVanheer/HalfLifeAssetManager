@@ -540,9 +540,32 @@ void Scene::DrawModel()
 		auto v = CreateBoxFromBounds(bbmin, bbmax);
 
 		DrawOutlinedBox(v, {0.0f, 1.0f, 0.0f, 0.5f}, {0.0f, 0.5f, 0.0f, 1.f});
+	}
 
+	if (ShowBBox)
+	{
+		if (_entity)
+		{
+			//Draw a transparent brownish box to display the bounding box
+			auto header = _entity->GetModel()->GetStudioHeader();
 
+			const auto v = CreateBoxFromBounds(header->min, header->max);
 
+			DrawOutlinedBox(v, {1.0f, 1.0f, 0.0f, 0.5f}, {0.5f, 0.5f, 0.0f, 1.0f});
+		}
+	}
+
+	if (ShowCBox)
+	{
+		if (_entity)
+		{
+			//Draw a transparent yellowish box to display the clipping box
+			auto header = _entity->GetModel()->GetStudioHeader();
+
+			const auto v = CreateBoxFromBounds(header->min, header->max);
+
+			DrawOutlinedBox(v, {1.0f, 0.5f, 0.0f, 0.5f}, {0.5f, 0.25f, 0.0f, 1.0f});
+		}
 	}
 
 	glPopMatrix();

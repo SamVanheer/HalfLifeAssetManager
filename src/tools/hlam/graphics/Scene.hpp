@@ -132,6 +132,8 @@ public:
 	bool ShowBones = false;
 	bool ShowAttachments = false;
 	bool ShowEyePosition = false;
+	bool ShowBBox = false;
+	bool ShowCBox = false;
 	bool EnableBackfaceCulling = true;
 	bool ShowGround = false;
 	bool MirrorOnGround = false;
