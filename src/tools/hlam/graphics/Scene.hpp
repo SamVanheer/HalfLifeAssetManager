@@ -102,8 +102,6 @@ public:
 	void Draw();
 
 private:
-	void ApplyCameraToScene();
-
 	void SetupRenderMode(RenderMode renderMode = RenderMode::INVALID);
 
 	void DrawModel();

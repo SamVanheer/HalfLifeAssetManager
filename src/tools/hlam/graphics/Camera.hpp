@@ -81,6 +81,8 @@ public:
 
 	const glm::mat4x4& GetModelMatrix() const { return _modelMatrix; }
 
+	const glm::mat4x4& GetViewMatrix() const { return _viewMatrix; }
+
 	float GetFieldOfView() const { return _fov; }
 
 	void SetFieldOfView(float value)
@@ -90,15 +92,16 @@ public:
 
 private:
 	void UpdateModelMatrix();
+	void UpdateViewMatrix();
 
 private:
 	glm::vec3 _origin{0};
 
 	float _pitch{0};
 	float _yaw{0};
+	float _fov{90.f};
 
 	glm::mat4x4 _modelMatrix;
-
-	float _fov{90.f};
+	glm::mat4x4 _viewMatrix;
 };
 }

@@ -17,5 +17,12 @@ void Camera::UpdateModelMatrix()
 	const glm::quat rotation{glm::vec3{glm::radians(angles.z), glm::radians(-angles.x), glm::radians(angles.y)}};
 
 	_modelMatrix *= glm::mat4_cast(rotation);
+
+	UpdateViewMatrix();
+}
+
+void Camera::UpdateViewMatrix()
+{
+	_viewMatrix = glm::lookAt(GetOrigin(), GetOrigin() + GetForwardVector(), GetUpVector());
 }
 }

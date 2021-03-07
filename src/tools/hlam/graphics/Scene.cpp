@@ -318,15 +318,6 @@ void Scene::Draw()
 	}
 }
 
-void Scene::ApplyCameraToScene()
-{
-	auto camera = GetCurrentCamera();
-
-	glm::mat4x4 mat = glm::lookAt(camera->GetOrigin(), camera->GetOrigin() + camera->GetForwardVector(), camera->GetUpVector());
-
-	glLoadMatrixf(glm::value_ptr(mat));
-}
-
 void Scene::SetupRenderMode(RenderMode renderMode)
 {
 	if (renderMode == RenderMode::INVALID)
@@ -353,8 +344,7 @@ void Scene::DrawModel()
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-
-	ApplyCameraToScene();
+	glLoadMatrixf(glm::value_ptr(camera->GetViewMatrix()));
 
 	if (ShowAxes)
 	{
