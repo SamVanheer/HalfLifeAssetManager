@@ -73,6 +73,18 @@ void Vector3Edit::SetDecimals(int prec)
 	_ui.ZEdit->setDecimals(prec);
 }
 
+void Vector3Edit::SetPrefix(const QString& prefix)
+{
+	if (_prefix != prefix)
+	{
+		_prefix = prefix;
+
+		_ui.XLabel->setText(_prefix + "X:");
+		_ui.YLabel->setText(_prefix + "Y:");
+		_ui.ZLabel->setText(_prefix + "Z:");
+	}
+}
+
 QDoubleSpinBox* Vector3Edit::SpinBoxByAxis(int axis) const
 {
 	if (axis < 0 || axis >= glm::vec3::length())

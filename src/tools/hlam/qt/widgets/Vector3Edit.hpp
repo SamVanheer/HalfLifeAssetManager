@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QString>
 #include <QWidget>
 
 #include <glm/vec3.hpp>
@@ -29,6 +30,10 @@ public:
 
 	void SetDecimals(int prec);
 
+	QString GetPrefix() const { return _prefix; }
+
+	void SetPrefix(const QString& prefix);
+
 private:
 	[[nodiscard]] QDoubleSpinBox* SpinBoxByAxis(int axis) const;
 
@@ -43,5 +48,6 @@ private slots:
 
 private:
 	Ui_Vector3Edit _ui{};
+	QString _prefix;
 };
 }
