@@ -39,6 +39,22 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	_ui.EyePosition->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	_ui.EyePosition->SetDecimals(6);
 
+	_ui.BBoxMin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
+	_ui.BBoxMin->SetDecimals(6);
+	_ui.BBoxMin->SetPrefix("Min ");
+
+	_ui.BBoxMax->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
+	_ui.BBoxMax->SetDecimals(6);
+	_ui.BBoxMax->SetPrefix("Max ");
+
+	_ui.CBoxMin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
+	_ui.CBoxMin->SetDecimals(6);
+	_ui.CBoxMin->SetPrefix("Min ");
+
+	_ui.CBoxMax->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
+	_ui.CBoxMax->SetDecimals(6);
+	_ui.CBoxMax->SetPrefix("Max ");
+
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelModelDataPanel::OnModelChanged);
 
 	connect(_ui.OriginX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelModelDataPanel::OnOriginChanged);
@@ -66,6 +82,12 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 
 	connect(_ui.EyePosition, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnEyePositionChanged);
 
+	connect(_ui.BBoxMin, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnBBoxMinChanged);
+	connect(_ui.BBoxMax, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnBBoxMaxChanged);
+
+	connect(_ui.CBoxMin, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnCBoxMinChanged);
+	connect(_ui.CBoxMax, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnCBoxMaxChanged);
+
 	_ui.RocketTrail->setProperty(CheckBoxModelFlagProperty.data(), EF_ROCKET);
 	_ui.GrenadeSmoke->setProperty(CheckBoxModelFlagProperty.data(), EF_GRENADE);
 	_ui.GibBlood->setProperty(CheckBoxModelFlagProperty.data(), EF_GIB);
@@ -80,11 +102,29 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	_ui.HitboxCollision->setProperty(CheckBoxModelFlagProperty.data(), EF_HITBOXCOLLISIONS);
 	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty.data(), EF_FORCESKYLIGHT);
 
-	SetFlags(_asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->flags);
+	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+
+	SetFlags(header->flags);
 
 	{
 		const QSignalBlocker blocker{_ui.EyePosition};
-		_ui.EyePosition->SetValue(_asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->eyeposition);
+		_ui.EyePosition->SetValue(header->eyeposition);
+	}
+
+	{
+		const QSignalBlocker min{_ui.BBoxMin};
+		const QSignalBlocker max{_ui.BBoxMax};
+
+		_ui.BBoxMin->SetValue(header->min);
+		_ui.BBoxMax->SetValue(header->max);
+	}
+
+	{
+		const QSignalBlocker min{_ui.CBoxMin};
+		const QSignalBlocker max{_ui.CBoxMax};
+
+		_ui.CBoxMin->SetValue(header->bbmin);
+		_ui.CBoxMax->SetValue(header->bbmax);
 	}
 }
 
@@ -249,5 +289,29 @@ void StudioModelModelDataPanel::OnFlagChanged(int state)
 void StudioModelModelDataPanel::OnEyePositionChanged(const glm::vec3& value)
 {
 	_asset->AddUndoCommand(new ChangeEyePositionCommand(_asset, _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->eyeposition, value));
+}
+
+void StudioModelModelDataPanel::OnBBoxMinChanged(const glm::vec3& value)
+{
+	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+	_asset->AddUndoCommand(new ChangeBBoxCommand(_asset, {header->min, header->max}, {value, header->max}));
+}
+
+void StudioModelModelDataPanel::OnBBoxMaxChanged(const glm::vec3& value)
+{
+	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+	_asset->AddUndoCommand(new ChangeBBoxCommand(_asset, {header->min, header->max}, {header->min, value}));
+}
+
+void StudioModelModelDataPanel::OnCBoxMinChanged(const glm::vec3& value)
+{
+	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+	_asset->AddUndoCommand(new ChangeCBoxCommand(_asset, {header->bbmin, header->bbmax}, {value, header->bbmax}));
+}
+
+void StudioModelModelDataPanel::OnCBoxMaxChanged(const glm::vec3& value)
+{
+	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+	_asset->AddUndoCommand(new ChangeCBoxCommand(_asset, {header->bbmin, header->bbmax}, {header->bbmin, value}));
 }
 }

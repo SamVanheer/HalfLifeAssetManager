@@ -12,6 +12,20 @@ void ChangeEyePositionCommand::Apply(const glm::vec3& oldValue, const glm::vec3&
 	header->eyeposition = newValue;
 }
 
+void ChangeBBoxCommand::Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	header->min = newValue.first;
+	header->max = newValue.second;
+}
+
+void ChangeCBoxCommand::Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue)
+{
+	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	header->bbmin = newValue.first;
+	header->bbmax = newValue.second;
+}
+
 void BoneRenameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
 {
 	const auto header = _asset->GetStudioModel()->GetStudioHeader();

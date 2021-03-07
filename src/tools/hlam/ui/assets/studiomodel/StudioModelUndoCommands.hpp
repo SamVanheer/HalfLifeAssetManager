@@ -28,6 +28,8 @@ namespace ui::assets::studiomodel
 enum class ModelChangeId
 {
 	ChangeEyePosition,
+	ChangeBBox,
+	ChangeCBox,
 
 	RenameBone,
 	ChangeBoneParent,
@@ -379,6 +381,42 @@ protected:
 	{
 		_asset->EmitModelChanged(ModelEyePositionChangeEvent{_id, newValue});
 	}
+};
+
+class ChangeBBoxCommand : public ModelUndoCommand<std::pair<glm::vec3, glm::vec3>>
+{
+public:
+	ChangeBBoxCommand(StudioModelAsset* asset, const std::pair<glm::vec3, glm::vec3>& oldEyePosition, const std::pair<glm::vec3, glm::vec3>& newEyePosition)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeBBox, oldEyePosition, newEyePosition)
+	{
+		setText("Change bounding box");
+	}
+
+protected:
+	bool CanMerge(const ModelUndoCommand<std::pair<glm::vec3, glm::vec3>>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
+	void Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
+};
+
+class ChangeCBoxCommand : public ModelUndoCommand<std::pair<glm::vec3, glm::vec3>>
+{
+public:
+	ChangeCBoxCommand(StudioModelAsset* asset, const std::pair<glm::vec3, glm::vec3>& oldEyePosition, const std::pair<glm::vec3, glm::vec3>& newEyePosition)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeCBox, oldEyePosition, newEyePosition)
+	{
+		setText("Change clipping box");
+	}
+
+protected:
+	bool CanMerge(const ModelUndoCommand<std::pair<glm::vec3, glm::vec3>>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
+	void Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
 };
 
 class BoneRenameCommand : public ModelListUndoCommand<QString>

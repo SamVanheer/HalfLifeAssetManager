@@ -33,6 +33,12 @@ private slots:
 
 	void OnEyePositionChanged(const glm::vec3& value);
 
+	void OnBBoxMinChanged(const glm::vec3& value);
+	void OnBBoxMaxChanged(const glm::vec3& value);
+
+	void OnCBoxMinChanged(const glm::vec3& value);
+	void OnCBoxMaxChanged(const glm::vec3& value);
+
 private:
 	Ui_StudioModelModelDataPanel _ui;
 	StudioModelAsset* const _asset;
