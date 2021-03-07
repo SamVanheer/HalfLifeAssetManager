@@ -559,7 +559,7 @@ void Scene::DrawModel()
 	{
 		if (_entity)
 		{
-			//Draw a transparent yellowish box to display the clipping box
+			//Draw a transparent orangeish box to display the clipping box
 			auto header = _entity->GetModel()->GetStudioHeader();
 
 			const auto v = CreateBoxFromBounds(header->bbmin, header->bbmax);
