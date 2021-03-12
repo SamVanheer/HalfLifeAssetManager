@@ -4,4 +4,6 @@ target_sources(HLAM
 		DumpModelInfo.hpp
 		StudioModel.cpp
 		StudioModel.hpp
-		StudioModelFileFormat.hpp)
+		StudioModelFileFormat.hpp
+		StudioModelIO.cpp
+		StudioModelIO.hpp)

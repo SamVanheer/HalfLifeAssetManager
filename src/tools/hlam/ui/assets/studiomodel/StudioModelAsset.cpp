@@ -14,6 +14,7 @@
 #include <GL/glew.h>
 
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
+#include "engine/shared/studiomodel/StudioModelIO.hpp"
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "game/entity/BaseEntity.hpp"
 #include "game/entity/BaseEntityList.hpp"
@@ -198,7 +199,7 @@ void StudioModelAsset::SetupFullscreenWidget(FullscreenWidget* fullscreenWidget)
 void StudioModelAsset::Save()
 {
 	//TODO: add setting to correct groups
-	studiomdl::SaveStudioModel(GetFileName().toStdString().c_str(), *GetStudioModel(), false);
+	studiomdl::SaveStudioModel(std::filesystem::u8path(GetFileName().toStdString()), *GetStudioModel(), false);
 }
 
 camera_operators::CameraOperator* StudioModelAsset::GetCameraOperator(int index) const
@@ -559,7 +560,7 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName) const
 
 std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName) const
 {
-	auto studioModel = studiomdl::LoadStudioModel(fileName.toStdString().c_str());
+	auto studioModel = studiomdl::LoadStudioModel(std::filesystem::u8path(fileName.toStdString()));
 
 	return std::make_unique<StudioModelAsset>(QString{fileName}, editorContext, this, std::move(studioModel));
 }

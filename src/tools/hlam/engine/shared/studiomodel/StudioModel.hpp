@@ -9,8 +9,6 @@
 
 #include <glm/vec3.hpp>
 
-#include "assets/AssetIO.hpp"
-
 #include "core/shared/Const.hpp"
 
 #include "utility/mathlib.hpp"
@@ -30,15 +28,6 @@ namespace studiomdl
 //TODO: refactor to use data structures defined by new editable model format
 constexpr std::array<std::array<double, 2>, SequenceBlendCount> CounterStrikeBlendRanges{{{-180, 180}, {-45, 45}}};
 
-/**
-*	@brief Indicates that a studio model file is not a main header (e.g. trying to load texture header as a main header)
-*/
-class StudioModelIsNotMainHeader : public assets::AssetException
-{
-public:
-	using assets::AssetException::AssetException;
-};
-
 struct StudioDataDeleter
 {
 	void operator()(studiohdr_t* pointer) const
@@ -55,36 +44,11 @@ struct StudioDataDeleter
 template<typename T>
 using studio_ptr = std::unique_ptr<T, StudioDataDeleter>;
 
-class StudioModel;
-
-bool IsStudioModel(const std::string& fileName);
-
-/**
-*	Loads a studio model
-*	@param fileName Name of the model to load. This is the entire path, including the extension
-*	@exception assets::AssetNotFound If a file could not be found
-*	@exception assets::AssetInvalidFormat If a file has an invalid format
-*	@exception assets::AssetVersionDiffers If a file has the wrong studio version
-*/
-std::unique_ptr<StudioModel> LoadStudioModel(const char* const fileName);
-
-/**
-*	Saves a studio model.
-*	@param fileName Name of the file to save the model to. This is the entire path, including the extension.
-*	@param model Model to save.
-* *	@param correctSequenceGroupFileNames Whether the sequence group filenames embedded in the main file should be corrected
-*	@exception StudioModelException If an error occurs or if the given data is invalid
-*/
-void SaveStudioModel(const char* const fileName, StudioModel& model, bool correctSequenceGroupFileNames);
-
 /**
 *	Container representing a studiomodel and its data.
 */
 class StudioModel final
 {
-protected:
-	friend std::unique_ptr<StudioModel> LoadStudioModel(const char* const pszFilename);
-
 public:
 	static const size_t MAX_SEQGROUPS = 32;
 
