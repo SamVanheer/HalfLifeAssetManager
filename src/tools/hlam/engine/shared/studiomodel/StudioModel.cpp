@@ -110,7 +110,7 @@ StudioModel::~StudioModel()
 	_textures.clear();
 }
 
-mstudioanim_t* StudioModel::GetAnim(mstudioseqdesc_t* pseqdesc) const
+mstudioanim_t* StudioModel::GetAnim(const mstudioseqdesc_t* pseqdesc) const
 {
 	mstudioseqgroup_t* pseqgroup = _studioHeader->GetSequenceGroup(pseqdesc->seqgroup);
 

@@ -83,7 +83,7 @@ public:
 
 	studioseqhdr_t* GetSeqGroupHeader(const size_t i) const { return _sequenceHeaders[i].get(); }
 
-	mstudioanim_t* GetAnim(mstudioseqdesc_t* pseqdesc) const;
+	mstudioanim_t* GetAnim(const mstudioseqdesc_t* pseqdesc) const;
 
 	mstudiomodel_t* GetModelByBodyPart(const int iBody, const int iBodyPart) const;
 

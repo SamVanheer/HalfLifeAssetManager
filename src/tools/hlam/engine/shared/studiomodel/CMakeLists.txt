@@ -2,8 +2,12 @@ target_sources(HLAM
 	PRIVATE
 		DumpModelInfo.cpp
 		DumpModelInfo.hpp
+		EditableStudioModel.cpp
+		EditableStudioModel.hpp
 		StudioModel.cpp
 		StudioModel.hpp
 		StudioModelFileFormat.hpp
 		StudioModelIO.cpp
-		StudioModelIO.hpp)
+		StudioModelIO.hpp
+		StudioModelUtils.cpp
+		StudioModelUtils.hpp)

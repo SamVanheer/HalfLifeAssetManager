@@ -51,6 +51,7 @@ enum
 
 	/**
 	*	Maximum number of bone controllers per bone.
+	* TODO: rename to STUDIO_NUM_CONTROLLER_AXES
 	*/
 	STUDIO_MAX_PER_BONE_CONTROLLERS	= 6,
 
