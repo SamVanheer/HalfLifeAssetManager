@@ -73,6 +73,23 @@ const char* strnstr( const char* pszString, const char* pszSubString, const size
 */
 const char* strnrstr( const char* pszString, const char* pszSubString, const size_t uiLength );
 
+inline const char* UTIL_CopyString(char* dest, const char* source, std::size_t destSizeInBytes)
+{
+	if (destSizeInBytes > 0)
+	{
+		strncpy(dest, source, destSizeInBytes - 1);
+		dest[destSizeInBytes - 1] = '\0';
+	}
+
+	return dest;
+}
+
+template<std::size_t Size>
+inline const char* UTIL_CopyString(char (&dest)[Size], const char* source)
+{
+	return UTIL_CopyString(dest, source, sizeof(dest));
+}
+
 /**
 *	Checks whether a token matches a string.
 *	The token can have '*' characters to signal 0 or more characters that can span the space between given characters.
