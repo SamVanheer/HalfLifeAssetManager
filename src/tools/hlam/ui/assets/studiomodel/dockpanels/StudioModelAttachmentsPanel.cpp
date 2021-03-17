@@ -53,21 +53,20 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset
 	connect(_ui.OriginY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
 	connect(_ui.OriginZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
 
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	this->setEnabled(header->numattachments > 0);
+	this->setEnabled(!model->Attachments.empty());
 
 	{
 		const QSignalBlocker blocker{_ui.Bone};
 
 		QStringList bones;
 
-		bones.reserve(header->numbones);
+		bones.reserve(model->Bones.size());
 
-		for (int i = 0; i < header->numbones; ++i)
+		for (int i = 0; i < model->Bones.size(); ++i)
 		{
-			bones.append(QString{"%1 (%2)"}.arg(header->GetBone(i)->name).arg(i));
+			bones.append(QString{"%1 (%2)"}.arg(model->Bones[i]->Name.c_str()).arg(i));
 		}
 
 		_ui.Bone->addItems(bones);
@@ -76,13 +75,13 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset
 		_ui.Bone->setCurrentIndex(-1);
 	}
 
-	if (header->numattachments > 0)
+	if (!model->Attachments.empty())
 	{
 		QStringList attachments;
 
-		attachments.reserve(header->numattachments);
+		attachments.reserve(model->Attachments.size());
 
-		for (int i = 0; i < header->numattachments; ++i)
+		for (int i = 0; i < model->Attachments.size(); ++i)
 		{
 			attachments.append(QString{"Attachment %1"}.arg(i + 1));
 		}
@@ -95,8 +94,7 @@ StudioModelAttachmentsPanel::~StudioModelAttachmentsPanel() = default;
 
 void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -106,9 +104,9 @@ void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
 
-		const auto bone = header->GetBone(listChange.GetSourceIndex());
+		const auto& bone = *model->Bones[listChange.GetSourceIndex()];
 
-		_ui.Bone->setItemText(listChange.GetSourceIndex(), QString{"%1 (%2)"}.arg(bone->name).arg(listChange.GetSourceIndex()));
+		_ui.Bone->setItemText(listChange.GetSourceIndex(), QString{"%1 (%2)"}.arg(bone.Name.c_str()).arg(listChange.GetSourceIndex()));
 		UpdateQCString();
 		break;
 	}
@@ -119,9 +117,9 @@ void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
 		{
-			const auto attachment = header->GetAttachment(listChange.GetSourceIndex());
+			const auto& attachment = *model->Attachments[listChange.GetSourceIndex()];
 
-			const QString text{attachment->name};
+			const QString text{attachment.Name.c_str()};
 
 			//Avoid resetting the edit position
 			if (_ui.Name->text() != text)
@@ -140,11 +138,11 @@ void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
 		{
-			const auto attachment = header->GetAttachment(listChange.GetSourceIndex());
+			const auto& attachment = *model->Attachments[listChange.GetSourceIndex()];
 
 			const QSignalBlocker type{_ui.Type};
 
-			_ui.Type->setValue(attachment->type);
+			_ui.Type->setValue(attachment.Type);
 			UpdateQCString();
 		}
 		break;
@@ -156,11 +154,11 @@ void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
 		{
-			const auto attachment = header->GetAttachment(listChange.GetSourceIndex());
+			const auto& attachment = *model->Attachments[listChange.GetSourceIndex()];
 
 			const QSignalBlocker bone{_ui.Bone};
 
-			_ui.Bone->setCurrentIndex(attachment->bone);
+			_ui.Bone->setCurrentIndex(attachment.Bone->Index);
 			UpdateQCString();
 		}
 		break;
@@ -172,15 +170,15 @@ void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
 		{
-			const auto attachment = header->GetAttachment(listChange.GetSourceIndex());
+			const auto& attachment = *model->Attachments[listChange.GetSourceIndex()];
 
 			const QSignalBlocker originX{_ui.OriginX};
 			const QSignalBlocker originY{_ui.OriginY};
 			const QSignalBlocker originZ{_ui.OriginZ};
 
-			_ui.OriginX->setValue(attachment->org[0]);
-			_ui.OriginY->setValue(attachment->org[1]);
-			_ui.OriginZ->setValue(attachment->org[2]);
+			_ui.OriginX->setValue(attachment.Origin[0]);
+			_ui.OriginY->setValue(attachment.Origin[1]);
+			_ui.OriginZ->setValue(attachment.Origin[2]);
 			UpdateQCString();
 		}
 		break;
@@ -190,17 +188,16 @@ void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 void StudioModelAttachmentsPanel::UpdateQCString()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
-	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
-	const auto bone = header->GetBone(attachment->bone);
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
+	const auto& bone = *model->Bones[attachment.Bone->Index];
 
 	_ui.QCString->setText(QString{"$attachment %1 \"%2\" %3 %4 %5"}
 		.arg(_ui.Attachments->currentIndex())
-		.arg(bone->name)
-		.arg(attachment->org[0], 0, 'f', 6)
-		.arg(attachment->org[1], 0, 'f', 6)
-		.arg(attachment->org[2], 0, 'f', 6));
+		.arg(bone.Name.c_str())
+		.arg(attachment.Origin[0], 0, 'f', 6)
+		.arg(attachment.Origin[1], 0, 'f', 6)
+		.arg(attachment.Origin[2], 0, 'f', 6));
 }
 
 void StudioModelAttachmentsPanel::OnDockPanelChanged(QWidget* current, QWidget* previous)
@@ -212,9 +209,8 @@ void StudioModelAttachmentsPanel::OnDockPanelChanged(QWidget* current, QWidget* 
 
 void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
-	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
 	{
 		const QSignalBlocker name{_ui.Name};
@@ -224,13 +220,13 @@ void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 		const QSignalBlocker originY{_ui.OriginY};
 		const QSignalBlocker originZ{_ui.OriginZ};
 
-		_ui.Name->setText(attachment->name);
-		_ui.Type->setValue(attachment->type);
-		_ui.Bone->setCurrentIndex(attachment->bone);
+		_ui.Name->setText(attachment.Name.c_str());
+		_ui.Type->setValue(attachment.Type);
+		_ui.Bone->setCurrentIndex(attachment.Bone->Index);
 
-		_ui.OriginX->setValue(attachment->org[0]);
-		_ui.OriginY->setValue(attachment->org[1]);
-		_ui.OriginZ->setValue(attachment->org[2]);
+		_ui.OriginX->setValue(attachment.Origin[0]);
+		_ui.OriginY->setValue(attachment.Origin[1]);
+		_ui.OriginZ->setValue(attachment.Origin[2]);
 	}
 
 	UpdateQCString();
@@ -245,11 +241,10 @@ void StudioModelAttachmentsPanel::OnHighlightAttachmentChanged()
 
 void StudioModelAttachmentsPanel::OnNameChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
-	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeAttachmentNameCommand(_asset, _ui.Attachments->currentIndex(), attachment->name, _ui.Name->text()));
+	_asset->AddUndoCommand(new ChangeAttachmentNameCommand(_asset, _ui.Attachments->currentIndex(), attachment.Name.c_str(), _ui.Name->text()));
 }
 
 void StudioModelAttachmentsPanel::OnNameRejected()
@@ -259,30 +254,27 @@ void StudioModelAttachmentsPanel::OnNameRejected()
 
 void StudioModelAttachmentsPanel::OnTypeChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
-	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeAttachmentTypeCommand(_asset, _ui.Attachments->currentIndex(), attachment->type, _ui.Type->value()));
+	_asset->AddUndoCommand(new ChangeAttachmentTypeCommand(_asset, _ui.Attachments->currentIndex(), attachment.Type, _ui.Type->value()));
 }
 
 void StudioModelAttachmentsPanel::OnBoneChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
-	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeAttachmentBoneCommand(_asset, _ui.Attachments->currentIndex(), attachment->bone, _ui.Bone->currentIndex()));
+	_asset->AddUndoCommand(new ChangeAttachmentBoneCommand(_asset, _ui.Attachments->currentIndex(), attachment.Bone->Index, _ui.Bone->currentIndex()));
 }
 
 void StudioModelAttachmentsPanel::OnOriginChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
-	const auto attachment = header->GetAttachment(_ui.Attachments->currentIndex());
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeAttachmentOriginCommand(_asset, _ui.Attachments->currentIndex(),
-		{attachment->org[0], attachment->org[1], attachment->org[2]},
+		{attachment.Origin[0], attachment.Origin[1], attachment.Origin[2]},
 		{_ui.OriginX->value(), _ui.OriginY->value(), _ui.OriginZ->value()}));
 }
 }
