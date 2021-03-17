@@ -229,6 +229,10 @@ public:
 
 	Model* GetModelByBodyPart(const int iBody, const int iBodyPart);
 
+	int GetBodyValueForGroup(int compositeValue, int group) const;
+
+	bool CalculateBodygroup(const int iGroup, const int iValue, int& iInOutBodygroup) const;
+
 	void CreateTextures(graphics::TextureLoader& textureLoader);
 };
 }

@@ -244,7 +244,7 @@ QImage StudioModelTexturesPanel::CreateUVMapImage(
 
 	for (const auto mesh : meshes)
 	{
-		auto ptricmds = reinterpret_cast<const short*>(model->GetStudioHeader()->GetData() + mesh->triindex);
+		auto ptricmds = mesh->Triangles.data();
 
 		for (int i; i = *(ptricmds++);)
 		{

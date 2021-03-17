@@ -228,10 +228,10 @@ public:
 	/**
 	*	Gets a model by body part.
 	*/
-	mstudiomodel_t* GetModelByBodyPart(const int bodyPart) const;
+	studiomdl::Model* GetModelByBodyPart(const int bodyPart) const;
 
 	/**
 	*	Computes a list of meshes that use the given texture.
 	*/
-	std::vector<const mstudiomesh_t*> ComputeMeshList(const int texture) const;
+	std::vector<const studiomdl::Mesh*> ComputeMeshList(const int texture) const;
 };

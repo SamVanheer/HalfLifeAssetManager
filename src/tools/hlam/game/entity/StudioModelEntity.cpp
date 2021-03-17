@@ -18,9 +18,7 @@ bool StudioModelEntity::Spawn()
 	SetController(3, 0.0f);
 	SetMouth(0.0f);
 
-	const studiohdr_t* header = _model->GetStudioHeader();
-
-	for (int n = 0; n < header->numbodyparts; ++n)
+	for (int n = 0; n < _editableModel->Bodyparts.size(); ++n)
 	{
 		SetBodygroup(n, 0);
 	}
@@ -70,14 +68,12 @@ studiomdl::ModelRenderInfo StudioModelEntity::GetRenderInfo() const
 
 float StudioModelEntity::AdvanceFrame(float deltaTime, const float maximum)
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		return 0;
 	}
 
-	const studiohdr_t* header = _model->GetStudioHeader();
-
-	const mstudioseqdesc_t* sequenceDescriptor = header->GetSequence(_sequence);
+	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
 	if (deltaTime == 0)
 	{
@@ -114,18 +110,18 @@ float StudioModelEntity::AdvanceFrame(float deltaTime, const float maximum)
 		shouldLoop = false;
 		break;
 	case StudioLoopingMode::UseSequenceSetting:
-		shouldLoop = (sequenceDescriptor->flags & STUDIO_LOOPING) != 0;
+		shouldLoop = (sequenceDescriptor.Flags & STUDIO_LOOPING) != 0;
 		break;
 	}
 
-	const float increment = deltaTime * sequenceDescriptor->fps * _frameRate;
+	const float increment = deltaTime * sequenceDescriptor.FPS * _frameRate;
 
-	if (_frame < (sequenceDescriptor->numframes - 1) || shouldLoop)
+	if (_frame < (sequenceDescriptor.NumFrames - 1) || shouldLoop)
 	{
 		_frame += increment;
 	}
 
-	if (sequenceDescriptor->numframes <= 1)
+	if (sequenceDescriptor.NumFrames <= 1)
 	{
 		_frame = 0;
 	}
@@ -134,12 +130,12 @@ float StudioModelEntity::AdvanceFrame(float deltaTime, const float maximum)
 		if (shouldLoop)
 		{
 			// wrap
-			_frame -= (int)(_frame / (sequenceDescriptor->numframes - 1)) * (sequenceDescriptor->numframes - 1);
+			_frame -= (int)(_frame / (sequenceDescriptor.NumFrames - 1)) * (sequenceDescriptor.NumFrames - 1);
 		}
-		else if (_frame >= (sequenceDescriptor->numframes - 1))
+		else if (_frame >= (sequenceDescriptor.NumFrames - 1))
 		{
 			//Clamp frame to the last valid frame index
-			_frame = static_cast<float>(sequenceDescriptor->numframes - 1);
+			_frame = static_cast<float>(sequenceDescriptor.NumFrames - 1);
 		}
 
 		//Wrapped
@@ -161,48 +157,47 @@ int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float en
 		return 0;
 	}
 
-	const studiohdr_t* header = _model->GetStudioHeader();
-
-	if (_sequence >= header->numseq)
+	if (_sequence >= _editableModel->Sequences.size())
 	{
 		return 0;
 	}
 
 	int events = 0;
 
-	const mstudioseqdesc_t* sequenceDescriptor = header->GetSequence(_sequence);
-	const mstudioevent_t* pevent = (const mstudioevent_t*)((const byte*)header + sequenceDescriptor->eventindex);
+	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
-	if (sequenceDescriptor->numevents == 0 || index > sequenceDescriptor->numevents)
+	if (index >= sequenceDescriptor.Events.size())
 	{
 		return 0;
 	}
 
-	if (sequenceDescriptor->numframes <= 1)
+	if (sequenceDescriptor.NumFrames <= 1)
 	{
 		start = 0;
 		end = 1.0;
 	}
 
-	for (; index < sequenceDescriptor->numevents; index++)
+	for (; index < sequenceDescriptor.Events.size(); index++)
 	{
+		const auto& candidate = sequenceDescriptor.Events[index];
+
 		//TODO: maybe leave it up to the listener to filter these out?
 		if (!allowClientEvents)
 		{
 			// Don't send client-side events to the server AI
-			if (pevent[index].event >= EVENT_CLIENT)
+			if (candidate.EventId >= EVENT_CLIENT)
 			{
 				continue;
 			}
 		}
 
-		if ((pevent[index].frame >= start && pevent[index].frame < end) ||
-			((sequenceDescriptor->flags & STUDIO_LOOPING)
-				&& end >= sequenceDescriptor->numframes - 1
-				&& pevent[index].frame < end - sequenceDescriptor->numframes + 1))
+		if ((candidate.Frame >= start && candidate.Frame < end) ||
+			((sequenceDescriptor.Flags & STUDIO_LOOPING)
+				&& end >= sequenceDescriptor.NumFrames - 1
+				&& candidate.Frame < end - sequenceDescriptor.NumFrames + 1))
 		{
-			event.id = pevent[index].event;
-			event.options = pevent[index].options;
+			event.id = candidate.EventId;
+			event.options = candidate.Options.data();
 			return index + 1;
 		}
 	}
@@ -212,7 +207,7 @@ int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float en
 
 void StudioModelEntity::DispatchAnimEvents(const bool allowClientEvents)
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		Message("Gibbed monster is thinking!\n");
 		return;
@@ -247,23 +242,23 @@ void StudioModelEntity::SetFrame(float frame)
 		return;
 	}
 
-	if (!_model)
+	if (!_editableModel)
 	{
 		return;
 	}
 
-	const mstudioseqdesc_t* sequenceDescriptor = _model->GetStudioHeader()->GetSequence(_sequence);
+	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
 	_frame = frame;
 
-	if (sequenceDescriptor->numframes <= 1)
+	if (sequenceDescriptor.NumFrames <= 1)
 	{
 		_frame = 0;
 	}
 	else
 	{
 		// wrap
-		_frame -= (int)(_frame / (sequenceDescriptor->numframes - 1)) * (sequenceDescriptor->numframes - 1);
+		_frame -= (int)(_frame / (sequenceDescriptor.NumFrames - 1)) * (sequenceDescriptor.NumFrames - 1);
 	}
 
 	_animTime = GetContext()->Time->GetTime();
@@ -287,14 +282,14 @@ void StudioModelEntity::SetEditableModel(studiomdl::EditableStudioModel* model)
 
 int StudioModelEntity::GetNumFrames() const
 {
-	const mstudioseqdesc_t* const sequenceDescriptor = _model->GetStudioHeader()->GetSequence(_sequence);
+	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
-	return sequenceDescriptor->numframes;
+	return sequenceDescriptor.NumFrames;
 }
 
 void StudioModelEntity::SetSequence(const int sequence)
 {
-	if (sequence < 0 || sequence >= _model->GetStudioHeader()->numseq)
+	if (sequence < 0 || sequence >= _editableModel->Sequences.size())
 	{
 		return;
 	}
@@ -306,13 +301,13 @@ void StudioModelEntity::SetSequence(const int sequence)
 
 void StudioModelEntity::GetSequenceInfo(float& frameRate, float& groundSpeed) const
 {
-	const mstudioseqdesc_t* sequenceDescriptor = _model->GetStudioHeader()->GetSequence(_sequence);
+	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
-	if (sequenceDescriptor->numframes > 1)
+	if (sequenceDescriptor.NumFrames > 1)
 	{
-		frameRate = sequenceDescriptor->fps;
-		groundSpeed = static_cast<float>(glm::length(sequenceDescriptor->linearmovement));
-		groundSpeed = groundSpeed * sequenceDescriptor->fps / (sequenceDescriptor->numframes - 1);
+		frameRate = sequenceDescriptor.FPS;
+		groundSpeed = static_cast<float>(glm::length(sequenceDescriptor.LinearMovement));
+		groundSpeed = groundSpeed * sequenceDescriptor.FPS / (sequenceDescriptor.NumFrames - 1);
 	}
 	else
 	{
@@ -323,37 +318,37 @@ void StudioModelEntity::GetSequenceInfo(float& frameRate, float& groundSpeed) co
 
 int StudioModelEntity::GetBodyValueForGroup(int group) const
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		return -1;
 	}
 
-	return _model->GetBodyValueForGroup(_bodygroup, group);
+	return _editableModel->GetBodyValueForGroup(_bodygroup, group);
 }
 
 void StudioModelEntity::SetBodygroup(const int bodygroup, const int value)
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		return;
 	}
 
-	if (bodygroup < 0 || bodygroup >= _model->GetStudioHeader()->numbodyparts)
+	if (bodygroup < 0 || bodygroup >= _editableModel->Bodyparts.size())
 	{
 		return;
 	}
 
-	_model->CalculateBodygroup(bodygroup, value, _bodygroup);
+	_editableModel->CalculateBodygroup(bodygroup, value, _bodygroup);
 }
 
 void StudioModelEntity::SetSkin(const int skin)
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		return;
 	}
 
-	if (skin >= 0 && skin < _model->GetTextureHeader()->numskinfamilies)
+	if (skin >= 0 && skin < _editableModel->SkinFamilies.size())
 	{
 		_skin = skin;
 	}
@@ -383,51 +378,49 @@ float StudioModelEntity::GetControllerValue(const int controller) const
 
 void StudioModelEntity::SetController(const int controller, float value)
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		return;
 	}
 
-	const studiohdr_t* header = _model->GetStudioHeader();
-
-	const mstudiobonecontroller_t* boneController = header->GetBoneControllers();
-
 	// find first controller that matches the index
 	int i;
 
-	for (i = 0; i < header->numbonecontrollers; ++i, ++boneController)
+	for (i = 0; i < _editableModel->BoneControllers.size(); ++i)
 	{
-		if (boneController->index == controller)
+		if (_editableModel->BoneControllers[i]->Index == controller)
 		{
 			break;
 		}
 	}
 
-	if (i >= header->numbonecontrollers)
+	if (i >= _editableModel->BoneControllers.size())
 	{
 		return;
 	}
 
 	_controllerValues[controller] = value;
 
+	const auto& boneController = *_editableModel->BoneControllers[i];
+
 	// wrap 0..360 if it's a rotational controller
-	if (boneController->type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
+	if (boneController.Type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
 	{
 		// ugly hack, invert value if end < start
-		if (boneController->end < boneController->start)
+		if (boneController.End < boneController.Start)
 		{
 			value = -value;
 		}
 
 		// does the controller not wrap?
-		if (boneController->start + 359.0 >= boneController->end)
+		if (boneController.Start + 359.0 >= boneController.End)
 		{
-			if (value > ((static_cast<double>(boneController->start) + boneController->end) / 2.0) + 180)
+			if (value > ((static_cast<double>(boneController.Start) + boneController.End) / 2.0) + 180)
 			{
 				value = value - 360;
 			}
 
-			if (value < ((static_cast<double>(boneController->start) + boneController->end) / 2.0) - 180)
+			if (value < ((static_cast<double>(boneController.Start) + boneController.End) / 2.0) - 180)
 			{
 				value = value + 360;
 			}
@@ -445,8 +438,8 @@ void StudioModelEntity::SetController(const int controller, float value)
 		}
 	}
 
-	int setting = (int)(255 * (value - boneController->start) /
-		(boneController->end - boneController->start));
+	int setting = (int)(255 * (value - boneController.Start) /
+		(boneController.End - boneController.Start));
 
 	setting = std::clamp(setting, 0, 255);
 
@@ -455,42 +448,44 @@ void StudioModelEntity::SetController(const int controller, float value)
 
 void StudioModelEntity::SetMouth(float value)
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		return;
 	}
 
-	const studiohdr_t* header = _model->GetStudioHeader();
-
-	const mstudiobonecontroller_t* boneController = header->GetBoneControllers();
+	int i;
 
 	// find first controller that matches the mouth
-	for (int i = 0; i < header->numbonecontrollers; ++i, ++boneController)
+	for (i = 0; i < _editableModel->BoneControllers.size(); ++i)
 	{
-		if (boneController->index == STUDIO_MOUTH_CONTROLLER)
+		if (_editableModel->BoneControllers[i]->Index == STUDIO_MOUTH_CONTROLLER)
 		{
 			break;
 		}
 	}
 
+	//TODO: need to check if it actually finds a controller!
+
+	const auto& boneController = *_editableModel->BoneControllers[i];
+
 	// wrap 0..360 if it's a rotational controller
-	if (boneController->type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
+	if (boneController.Type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
 	{
 		// ugly hack, invert value if end < start
-		if (boneController->end < boneController->start)
+		if (boneController.End < boneController.Start)
 		{
 			value = -value;
 		}
 
 		// does the controller not wrap?
-		if (boneController->start + 359.0 >= boneController->end)
+		if (boneController.Start + 359.0 >= boneController.End)
 		{
-			if (value > ((static_cast<double>(boneController->start) + boneController->end) / 2.0) + 180)
+			if (value > ((static_cast<double>(boneController.Start) + boneController.End) / 2.0) + 180)
 			{
 				value = value - 360;
 			}
 
-			if (value < ((static_cast<double>(boneController->start) + boneController->end) / 2.0) - 180)
+			if (value < ((static_cast<double>(boneController.Start) + boneController.End) / 2.0) - 180)
 			{
 				value = value + 360;
 			}
@@ -508,7 +503,7 @@ void StudioModelEntity::SetMouth(float value)
 		}
 	}
 
-	int setting = (int)(64 * (value - boneController->start) / (boneController->end - boneController->start));
+	int setting = (int)(64 * (value - boneController.Start) / (boneController.End - boneController.Start));
 
 	setting = std::clamp(setting, 0, 64);
 
@@ -524,7 +519,7 @@ byte StudioModelEntity::GetBlendingByIndex(const int blender) const
 
 float StudioModelEntity::GetBlendingValue(const int blender) const
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		return 0;
 	}
@@ -534,22 +529,21 @@ float StudioModelEntity::GetBlendingValue(const int blender) const
 		return 0;
 	}
 
-	const studiohdr_t* header = _model->GetStudioHeader();
+	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
-	const mstudioseqdesc_t* sequenceDescriptor = header->GetSequence(_sequence);
-
-	if (sequenceDescriptor->blendtype[blender] == 0)
+	if (sequenceDescriptor.BlendData[blender].Type == 0)
 	{
 		return 0;
 	}
 
 	return static_cast<float>(_blending[blender] * (1.0 / 255.0)
-		* (static_cast<double>(sequenceDescriptor->blendend[blender]) - sequenceDescriptor->blendstart[blender]) + sequenceDescriptor->blendstart[blender]);
+		* (static_cast<double>(sequenceDescriptor.BlendData[blender].End) - sequenceDescriptor.BlendData[blender].Start)
+		+ sequenceDescriptor.BlendData[blender].Start);
 }
 
 void StudioModelEntity::SetBlending(const int blender, float value)
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		return;
 	}
@@ -559,40 +553,38 @@ void StudioModelEntity::SetBlending(const int blender, float value)
 		return;
 	}
 
-	const studiohdr_t* header = _model->GetStudioHeader();
+	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
-	const mstudioseqdesc_t* sequenceDescriptor = header->GetSequence(_sequence);
-
-	if (sequenceDescriptor->blendtype[blender] == 0)
+	if (sequenceDescriptor.BlendData[blender].Type == 0)
 	{
 		return;
 	}
 
-	if (sequenceDescriptor->blendtype[blender] & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
+	if (sequenceDescriptor.BlendData[blender].Type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
 	{
 		// ugly hack, invert value if end < start
-		if (sequenceDescriptor->blendend[blender] < sequenceDescriptor->blendstart[blender])
+		if (sequenceDescriptor.BlendData[blender].End < sequenceDescriptor.BlendData[blender].Start)
 		{
 			value = -value;
 		}
 
 		// does the controller not wrap?
-		if (sequenceDescriptor->blendstart[blender] + 359.0 >= sequenceDescriptor->blendend[blender])
+		if (sequenceDescriptor.BlendData[blender].Start + 359.0 >= sequenceDescriptor.BlendData[blender].End)
 		{
-			if (value > ((static_cast<double>(sequenceDescriptor->blendstart[blender]) + sequenceDescriptor->blendend[blender]) / 2.0) + 180)
+			if (value > ((static_cast<double>(sequenceDescriptor.BlendData[blender].Start) + sequenceDescriptor.BlendData[blender].End) / 2.0) + 180)
 			{
 				value = value - 360;
 			}
 
-			if (value < ((static_cast<double>(sequenceDescriptor->blendstart[blender]) + sequenceDescriptor->blendend[blender]) / 2.0) - 180)
+			if (value < ((static_cast<double>(sequenceDescriptor.BlendData[blender].Start) + sequenceDescriptor.BlendData[blender].End) / 2.0) - 180)
 			{
 				value = value + 360;
 			}
 		}
 	}
 
-	int setting = (int)(255 * (value - sequenceDescriptor->blendstart[blender])
-		/ (sequenceDescriptor->blendend[blender] - sequenceDescriptor->blendstart[blender]));
+	int setting = (int)(255 * (value - sequenceDescriptor.BlendData[blender].Start)
+		/ (sequenceDescriptor.BlendData[blender].End - sequenceDescriptor.BlendData[blender].Start));
 
 	setting = std::clamp(setting, 0, 255);
 
@@ -619,54 +611,49 @@ void StudioModelEntity::SetCounterStrikeBlending(const int blender, float value)
 
 void StudioModelEntity::ExtractBbox(glm::vec3& mins, glm::vec3& maxs) const
 {
-	const mstudioseqdesc_t* sequenceDescriptor = _model->GetStudioHeader()->GetSequence(_sequence);
+	//TODO: check if sequence is in range
+	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
-	mins = sequenceDescriptor->bbmin;
-	maxs = sequenceDescriptor->bbmax;
+	mins = sequenceDescriptor.BBMin;
+	maxs = sequenceDescriptor.BBMax;
 }
 
-mstudiomodel_t* StudioModelEntity::GetModelByBodyPart(const int bodyPart) const
+studiomdl::Model* StudioModelEntity::GetModelByBodyPart(const int bodyPart) const
 {
-	return _model->GetModelByBodyPart(_bodygroup, bodyPart);
+	return _editableModel->GetModelByBodyPart(_bodygroup, bodyPart);
 }
 
-std::vector<const mstudiomesh_t*> StudioModelEntity::ComputeMeshList(const int texture) const
+std::vector<const studiomdl::Mesh*> StudioModelEntity::ComputeMeshList(const int texture) const
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		return {};
 	}
 
-	std::vector<const mstudiomesh_t*> meshes;
-
-	const auto header = _model->GetStudioHeader();
-
-	const auto textureHeader = _model->GetTextureHeader();
-
-	const short* const skinRef = textureHeader->GetSkins();
+	std::vector<const studiomdl::Mesh*> meshes;
 
 	int iBodygroup = 0;
 
-	for (int iBodyPart = 0; iBodyPart < header->numbodyparts; ++iBodyPart)
+	for (int iBodyPart = 0; iBodyPart < _editableModel->Bodyparts.size(); ++iBodyPart)
 	{
-		mstudiobodyparts_t* pbodypart = header->GetBodypart(iBodyPart);
+		const auto& bodypart = *_editableModel->Bodyparts[iBodyPart];
 
-		for (int iModel = 0; iModel < pbodypart->nummodels; ++iModel)
+		for (int iModel = 0; iModel < bodypart.Models.size(); ++iModel)
 		{
-			_model->CalculateBodygroup(iBodyPart, iModel, iBodygroup);
+			_editableModel->CalculateBodygroup(iBodyPart, iModel, iBodygroup);
 
-			mstudiomodel_t* pModel = _model->GetModelByBodyPart(iBodygroup, iBodyPart);
+			const studiomdl::Model& model = *_editableModel->GetModelByBodyPart(iBodygroup, iBodyPart);
 
-			for (int iMesh = 0; iMesh < pModel->nummesh; ++iMesh)
+			for (int iMesh = 0; iMesh < model.Meshes.size(); ++iMesh)
 			{
-				const mstudiomesh_t* mesh = ((const mstudiomesh_t*)((const byte*)_model->GetStudioHeader() + pModel->meshindex)) + iMesh;
+				const auto& mesh = model.Meshes[iMesh];
 
 				//Check each skin family to detect textures used only by alternate skins (e.g. scientist hands)
-				for (int skinFamily = 0; skinFamily < textureHeader->numskinfamilies; ++skinFamily)
+				for (int skinFamily = 0; skinFamily < _editableModel->SkinFamilies.size(); ++skinFamily)
 				{
-					if (skinRef[(skinFamily * textureHeader->numskinref) + mesh->skinref] == texture)
+					if (_editableModel->SkinFamilies[skinFamily][mesh.SkinRef]->ArrayIndex == texture)
 					{
-						meshes.push_back(mesh);
+						meshes.push_back(&mesh);
 						break;
 					}
 				}
