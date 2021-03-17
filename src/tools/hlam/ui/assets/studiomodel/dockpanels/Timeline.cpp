@@ -84,19 +84,19 @@ void Timeline::ModifyFrame(int amount)
 {
 	auto entity = _asset->GetScene()->GetEntity();
 
-	const auto sequence = entity->GetModel()->GetStudioHeader()->GetSequence(entity->GetSequence());
+	const auto& sequence = *entity->GetEditableModel()->Sequences[entity->GetSequence()];
 
 	auto newFrameValue = entity->GetFrame() + amount;
 
 	//TODO: the entity already has logic for wrapping animations. This needs to be incorporated into that
 	if (newFrameValue < 0)
 	{
-		newFrameValue += (sequence->numframes - 1);
+		newFrameValue += (sequence.NumFrames - 1);
 	}
 
-	if (newFrameValue >= sequence->numframes)
+	if (newFrameValue >= sequence.NumFrames)
 	{
-		newFrameValue -= sequence->numframes - 1;
+		newFrameValue -= sequence.NumFrames - 1;
 	}
 
 	entity->SetFrame(newFrameValue);
@@ -106,10 +106,10 @@ void Timeline::OnTick()
 {
 	auto entity = _asset->GetScene()->GetEntity();
 
-	const auto sequence = entity->GetModel()->GetStudioHeader()->GetSequence(entity->GetSequence());
+	const auto& sequence = *entity->GetEditableModel()->Sequences[entity->GetSequence()];
 
 	//TODO: need to make sure the last frame can be correctly set and played
-	const int frameRange = sequence->numframes - 1;
+	const int frameRange = sequence.NumFrames - 1;
 
 	const int sliderRange = frameRange * FrameSliderRangeMultiplier;
 
