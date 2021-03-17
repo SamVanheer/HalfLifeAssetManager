@@ -240,7 +240,7 @@ public:
 	/**
 	*	Reuploads a texture. Useful for making changes made to the texture's pixel, palette or flag data show up in the model itself.
 	* *	@param textureLoader Loader to use for texture uploading
-	*	@param ptexture Texture to reupload. Must be a texture that is part of this model.
+	*	@param texture Texture to reupload. Must be a texture that is part of this model.
 	*/
 	void ReuploadTexture(graphics::TextureLoader& textureLoader, Texture* texture);
 
