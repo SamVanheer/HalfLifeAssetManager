@@ -1,3 +1,7 @@
+#include <algorithm>
+
+#include "core/shared/Logging.hpp"
+
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
 
 #include "graphics/TextureLoader.hpp"
@@ -61,6 +65,58 @@ void EditableStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 			(texture->Flags & STUDIO_NF_MASKED) != 0);
 
 		texture->TextureId = name;
+	}
+}
+
+void EditableStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const byte* data, const byte* pal)
+{
+	textureLoader.UploadIndexed8(
+		texture->TextureId,
+		texture->Width, texture->Height,
+		data,
+		pal,
+		(texture->Flags & STUDIO_NF_NOMIPS) != 0,
+		(texture->Flags & STUDIO_NF_MASKED) != 0);
+}
+
+void EditableStudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader, Texture* texture)
+{
+	assert(texture);
+
+	//TODO: could use the index to check if it's a member
+	if (std::find_if(Textures.begin(), Textures.end(), [=](const auto& candidate)
+		{
+			return candidate.get() == texture;
+		}
+	) == Textures.end())
+	{
+		Error("EditableStudioModel::ReuploadTexture: Invalid texture!");
+		return;
+	}
+
+	ReplaceTexture(textureLoader, texture, texture->Pixels.data(), texture->Palette.data());
+}
+
+void EditableStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
+{
+	for (const auto& texture : Textures)
+	{
+		if (texture->TextureId)
+		{
+			glBindTexture(GL_TEXTURE_2D, texture->TextureId);
+			textureLoader.SetFilters(texture->TextureId, (texture->Flags & STUDIO_NF_NOMIPS) != 0);
+		}
+	}
+}
+
+void EditableStudioModel::ReuploadTextures(graphics::TextureLoader& textureLoader)
+{
+	for (const auto& texture : Textures)
+	{
+		if (texture->TextureId)
+		{
+			ReplaceTexture(textureLoader, texture.get(), texture->Pixels.data(), texture->Palette.data());
+		}
 	}
 }
 }

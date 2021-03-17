@@ -13,6 +13,12 @@ class StudioModelEntity;
 struct mstudiotexture_t;
 struct studiohdr_t;
 
+namespace studiomdl
+{
+class EditableStudioModel;
+struct Texture;
+}
+
 namespace ui
 {
 namespace camera_operators
@@ -41,8 +47,8 @@ public:
 	static void DrawUVImage(const QColor& backgroundColor, bool overlayOnTexture, const QImage& texture, const QImage& uvMap, QImage& target);
 
 private:
-	void ImportTextureFrom(const QString& fileName, studiohdr_t* header, int textureIndex);
-	bool ExportTextureTo(const QString& fileName, const studiohdr_t* header, const mstudiotexture_t& texture);
+	void ImportTextureFrom(const QString& fileName, studiomdl::EditableStudioModel& model, int textureIndex);
+	bool ExportTextureTo(const QString& fileName, const studiomdl::EditableStudioModel& model, const studiomdl::Texture& texture);
 	void RemapTexture(int index);
 	void RemapTextures();
 	void UpdateColormapValue();

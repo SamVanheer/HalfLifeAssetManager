@@ -234,5 +234,18 @@ public:
 	bool CalculateBodygroup(const int iGroup, const int iValue, int& iInOutBodygroup) const;
 
 	void CreateTextures(graphics::TextureLoader& textureLoader);
+
+	void ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const byte* data, const byte* pal);
+
+	/**
+	*	Reuploads a texture. Useful for making changes made to the texture's pixel, palette or flag data show up in the model itself.
+	* *	@param textureLoader Loader to use for texture uploading
+	*	@param ptexture Texture to reupload. Must be a texture that is part of this model.
+	*/
+	void ReuploadTexture(graphics::TextureLoader& textureLoader, Texture* texture);
+
+	void UpdateFilters(graphics::TextureLoader& textureLoader);
+
+	void ReuploadTextures(graphics::TextureLoader& textureLoader);
 };
 }

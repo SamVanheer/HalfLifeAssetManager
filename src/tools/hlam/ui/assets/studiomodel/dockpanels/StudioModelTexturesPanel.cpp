@@ -52,9 +52,9 @@ static int GetMeshIndexForDrawing(QComboBox* comboBox)
 	return meshIndex;
 }
 
-static QString FormatTextureName(const mstudiotexture_t& texture)
+static QString FormatTextureName(const studiomdl::Texture& texture)
 {
-	return QString{"%1 (%2 x %3)"}.arg(texture.name).arg(texture.width).arg(texture.height);
+	return QString{"%1 (%2 x %3)"}.arg(texture.Name.c_str()).arg(texture.Width).arg(texture.Height);
 }
 
 StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWidget* parent)
@@ -140,17 +140,15 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 
 	_ui.UVLineWidthSlider->setValue(static_cast<int>(_ui.UVLineWidthSpinner->value() * UVLineWidthSliderRatio));
 
-	auto textureHeader = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader();
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	QStringList textures;
 
-	textures.reserve(textureHeader->numtextures);
+	textures.reserve(model->Textures.size());
 
-	for (int i = 0; i < textureHeader->numtextures; ++i)
+	for (std::size_t i = 0; i < model->Textures.size(); ++i)
 	{
-		auto texture = textureHeader->GetTexture(i);
-
-		textures.append(FormatTextureName(*texture));
+		textures.append(FormatTextureName(*model->Textures[i]));
 	}
 
 	_ui.Textures->addItems(textures);
@@ -212,12 +210,12 @@ void StudioModelTexturesPanel::OnMouseEvent(QMouseEvent* event)
 QImage StudioModelTexturesPanel::CreateUVMapImage(
 	StudioModelEntity* entity, const int textureIndex, const int meshIndex, const bool antiAliasLines, float textureScale, qreal lineWidth)
 {
-	const auto model = entity->GetModel();
+	const auto model = entity->GetEditableModel();
 
-	const auto texture = model->GetTextureHeader()->GetTexture(textureIndex);
+	const auto& texture = *model->Textures[textureIndex];
 
 	//RGBA format because only the UV lines need to be drawn, with no background
-	QImage image{static_cast<int>(std::ceil(texture->width * textureScale)), static_cast<int>(std::ceil(texture->height * textureScale)),
+	QImage image{static_cast<int>(std::ceil(texture.Width * textureScale)), static_cast<int>(std::ceil(texture.Height * textureScale)),
 		QImage::Format::Format_RGBA8888};
 
 	//Set as transparent
@@ -351,8 +349,7 @@ static void SetTextureFlagCheckBoxes(Ui_StudioModelTexturesPanel& ui, int flags)
 
 void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetTextureHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -360,13 +357,13 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 	{
 		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
 
-		const auto texture = header->GetTexture(listChange.GetSourceIndex());
+		const auto& texture = *model->Textures[listChange.GetSourceIndex()];
 
-		_ui.Textures->setItemText(listChange.GetSourceIndex(), FormatTextureName(*texture));
+		_ui.Textures->setItemText(listChange.GetSourceIndex(), FormatTextureName(texture));
 
 		if (listChange.GetSourceIndex() == _ui.Textures->currentIndex())
 		{
-			const QString name{texture->name};
+			const QString name{texture.Name.c_str()};
 
 			//Avoid resetting the edit position
 			if (_ui.TextureName->text() != name)
@@ -385,19 +382,19 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 	{
 		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
 
-		const auto texture = header->GetTexture(listChange.GetSourceIndex());
+		const auto& texture = model->Textures[listChange.GetSourceIndex()];
 
 		//TODO: shouldn't be done here
 		auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
 		graphicsContext->Begin();
-		model->ReuploadTexture(*_asset->GetTextureLoader(), texture);
+		model->ReuploadTexture(*_asset->GetTextureLoader(), texture.get());
 		RemapTexture(listChange.GetSourceIndex());
 		graphicsContext->End();
 
 		if (listChange.GetSourceIndex() == _ui.Textures->currentIndex())
 		{
-			SetTextureFlagCheckBoxes(_ui, texture->flags);
+			SetTextureFlagCheckBoxes(_ui, texture->Flags);
 		}
 		break;
 	}
@@ -422,17 +419,15 @@ void StudioModelTexturesPanel::OnTextureChanged(int index)
 
 	auto entity = scene->GetEntity();
 
-	auto textureHeader = entity->GetModel()->GetTextureHeader();
-
-	auto texture = textureHeader->GetTexture(index);
+	const auto& texture = *entity->GetEditableModel()->Textures[index];
 
 	{
 		const QSignalBlocker name{_ui.TextureName};
 
-		_ui.TextureName->setText(texture->name);
+		_ui.TextureName->setText(texture.Name.c_str());
 	}
 
-	SetTextureFlagCheckBoxes(_ui, texture->flags);
+	SetTextureFlagCheckBoxes(_ui, texture.Flags);
 
 	const auto meshes = entity->ComputeMeshList(index);
 
@@ -510,9 +505,9 @@ void StudioModelTexturesPanel::OnUVLineWidthSpinnerChanged(double value)
 
 void StudioModelTexturesPanel::OnTextureNameChanged()
 {
-	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeTextureNameCommand(_asset, _ui.Textures->currentIndex(), texture->name, _ui.TextureName->text()));
+	_asset->AddUndoCommand(new ChangeTextureNameCommand(_asset, _ui.Textures->currentIndex(), texture.Name.c_str(), _ui.TextureName->text()));
 }
 
 void StudioModelTexturesPanel::OnTextureNameRejected()
@@ -522,9 +517,9 @@ void StudioModelTexturesPanel::OnTextureNameRejected()
 
 void StudioModelTexturesPanel::OnChromeChanged()
 {
-	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	int flags = texture->flags;
+	int flags = texture.Flags;
 
 	//Chrome disables alpha testing
 	if (_ui.Chrome->isChecked())
@@ -534,14 +529,14 @@ void StudioModelTexturesPanel::OnChromeChanged()
 
 	flags = SetFlags(flags, STUDIO_NF_CHROME, _ui.Chrome->isChecked());
 
-	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
+	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }
 
 void StudioModelTexturesPanel::OnAdditiveChanged()
 {
-	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	int flags = texture->flags;
+	int flags = texture.Flags;
 
 	//Additive disables alpha testing
 	if (_ui.Additive->isChecked())
@@ -551,15 +546,14 @@ void StudioModelTexturesPanel::OnAdditiveChanged()
 
 	flags = SetFlags(flags, STUDIO_NF_ADDITIVE, _ui.Additive->isChecked());
 
-	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
+	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }
 
 void StudioModelTexturesPanel::OnTransparentChanged()
 {
-	auto model = _asset->GetScene()->GetEntity()->GetModel();
-	auto texture = model->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	int flags = texture->flags;
+	int flags = texture.Flags;
 
 	//Alpha testing disables chrome and additive
 	if (_ui.Transparent->isChecked())
@@ -569,40 +563,40 @@ void StudioModelTexturesPanel::OnTransparentChanged()
 
 	flags = SetFlags(flags, STUDIO_NF_MASKED, _ui.Transparent->isChecked());
 
-	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
+	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }
 
 void StudioModelTexturesPanel::OnFlatShadeChanged()
 {
-	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	int flags = texture->flags;
+	int flags = texture.Flags;
 
 	flags = SetFlags(flags, STUDIO_NF_FLATSHADE, _ui.FlatShade->isChecked());
 
-	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
+	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }
 
 void StudioModelTexturesPanel::OnFullbrightChanged()
 {
-	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	int flags = texture->flags;
+	int flags = texture.Flags;
 
 	flags = SetFlags(flags, STUDIO_NF_FULLBRIGHT, _ui.Fullbright->isChecked());
 
-	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
+	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }
 
 void StudioModelTexturesPanel::OnMipmapsChanged()
 {
-	auto texture = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader()->GetTexture(_ui.Textures->currentIndex());
+	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	int flags = texture->flags;
+	int flags = texture.Flags;
 
 	flags = SetFlags(flags, STUDIO_NF_NOMIPS, _ui.Mipmaps->isChecked());
 
-	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture->flags, flags));
+	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }
 
 void StudioModelTexturesPanel::OnShowUVMapChanged()
@@ -625,7 +619,7 @@ void StudioModelTexturesPanel::OnMeshChanged(int index)
 	UpdateUVMapTexture();
 }
 
-void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studiohdr_t* header, int textureIndex)
+void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::EditableStudioModel& model, int textureIndex)
 {
 	QImage image{fileName};
 
@@ -655,15 +649,15 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 		return;
 	}
 
-	mstudiotexture_t& texture = *header->GetTexture(textureIndex);
+	auto& texture = *model.Textures[textureIndex];
 
-	if (texture.width != image.width() || texture.height != image.height())
+	if (texture.Width != image.width() || texture.Height != image.height())
 	{
 		QMessageBox::critical(this, "Error loading image",
 			QString{"Image \"%1\" does not have matching dimensions to the current texture (src: %2 x %3, dest: %4 x %5)"}
 				.arg(fileName)
 				.arg(image.width()).arg(image.height())
-				.arg(texture.width).arg(texture.height));
+				.arg(texture.Width).arg(texture.Height));
 		return;
 	}
 
@@ -708,12 +702,12 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 	ImportTextureData oldTexture;
 	ImportTextureData newTexture;
 
-	oldTexture.Width = texture.width;
-	oldTexture.Height = texture.height;
+	oldTexture.Width = texture.Width;
+	oldTexture.Height = texture.Height;
 	oldTexture.Pixels = std::make_unique<byte[]>(oldTexture.Width * oldTexture.Height);
 
-	memcpy(oldTexture.Pixels.get(), header->GetData() + texture.index, oldTexture.Width * oldTexture.Height);
-	memcpy(oldTexture.Palette, header->GetData() + texture.index + (oldTexture.Width * oldTexture.Height), sizeof(oldTexture.Palette));
+	memcpy(oldTexture.Pixels.get(), texture.Pixels.data(), texture.Pixels.size());
+	memcpy(oldTexture.Palette, texture.Palette.data(), sizeof(oldTexture.Palette));
 
 	newTexture.Width = image.width();
 	newTexture.Height = image.height();
@@ -724,44 +718,44 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 	_asset->AddUndoCommand(new ImportTextureCommand(_asset, textureIndex, std::move(oldTexture), std::move(newTexture)));
 }
 
-static QImage ConvertTextureToRGBImage(const mstudiotexture_t& texture, const byte* textureData, const byte* texturePalette, std::vector<QRgb>& dataBuffer)
+static QImage ConvertTextureToRGBImage(const studiomdl::Texture& texture, const byte* textureData, const byte* texturePalette, std::vector<QRgb>& dataBuffer)
 {
-	dataBuffer.resize(texture.width * texture.height);
+	dataBuffer.resize(texture.Width * texture.Height);
 
-	for (int y = 0; y < texture.height; ++y)
+	for (int y = 0; y < texture.Height; ++y)
 	{
-		for (int x = 0; x < texture.width; ++x)
+		for (int x = 0; x < texture.Width; ++x)
 		{
-			const auto color = texturePalette + (textureData[(texture.width * y) + x] * 3);
+			const auto color = texturePalette + (textureData[(texture.Width * y) + x] * 3);
 
-			dataBuffer[(texture.width * y) + x] = qRgb(color[0], color[1], color[2]);
+			dataBuffer[(texture.Width * y) + x] = qRgb(color[0], color[1], color[2]);
 		}
 	}
 
-	return QImage{reinterpret_cast<const uchar*>(dataBuffer.data()), texture.width, texture.height, QImage::Format::Format_RGB32};
+	return QImage{reinterpret_cast<const uchar*>(dataBuffer.data()), texture.Width, texture.Height, QImage::Format::Format_RGB32};
 }
 
-bool StudioModelTexturesPanel::ExportTextureTo(const QString& fileName, const studiohdr_t* header, const mstudiotexture_t& texture)
+bool StudioModelTexturesPanel::ExportTextureTo(const QString& fileName, const studiomdl::EditableStudioModel& model, const studiomdl::Texture& texture)
 {
-	const auto textureData = header->GetData() + texture.index;
-	const auto texturePalette = header->GetData() + texture.index + (texture.width * texture.height);
+	const auto textureData = texture.Pixels.data();
+	const auto texturePalette = texture.Palette.data();
 
 	//Ensure data is 32 bit aligned
-	const int alignedWidth = (texture.width + 3) & (~3);
+	const int alignedWidth = (texture.Width + 3) & (~3);
 
 	std::vector<uchar> alignedPixels;
 
-	alignedPixels.resize(alignedWidth * texture.height);
+	alignedPixels.resize(alignedWidth * texture.Height);
 
-	for (int h = 0; h < texture.height; ++h)
+	for (int h = 0; h < texture.Height; ++h)
 	{
-		for (int w = 0; w < texture.width; ++w)
+		for (int w = 0; w < texture.Width; ++w)
 		{
-			alignedPixels[(alignedWidth * h) + w] = textureData[(texture.width * h) + w];
+			alignedPixels[(alignedWidth * h) + w] = textureData[(texture.Width * h) + w];
 		}
 	}
 
-	QImage textureImage{alignedPixels.data(), texture.width, texture.height, QImage::Format::Format_Indexed8};
+	QImage textureImage{alignedPixels.data(), texture.Width, texture.Height, QImage::Format::Format_Indexed8};
 
 	QVector<QRgb> palette;
 
@@ -786,21 +780,17 @@ bool StudioModelTexturesPanel::ExportTextureTo(const QString& fileName, const st
 
 void StudioModelTexturesPanel::RemapTexture(int index)
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	auto textureHeader = entity->GetModel()->GetTextureHeader();
-
-	const auto texture = textureHeader->GetTexture(index);
-
-	const auto textureId = entity->GetModel()->GetTextureId(index);
+	auto& texture = *model->Textures[index];
 
 	int low, mid, high;
 
-	if (graphics::TryGetRemapColors(texture->name, low, mid, high))
+	if (graphics::TryGetRemapColors(texture.Name.c_str(), low, mid, high))
 	{
 		byte palette[PALETTE_SIZE];
 
-		memcpy(palette, reinterpret_cast<byte*>(textureHeader) + texture->index + texture->width * texture->height, PALETTE_SIZE);
+		memcpy(palette, texture.Palette.data(), PALETTE_SIZE);
 
 		graphics::PaletteHueReplace(palette, _ui.TopColorSlider->value(), low, mid);
 
@@ -812,18 +802,16 @@ void StudioModelTexturesPanel::RemapTexture(int index)
 		auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
 		graphicsContext->Begin();
-		entity->GetModel()->ReplaceTexture(*_asset->GetTextureLoader(), texture, reinterpret_cast<byte*>(textureHeader) + texture->index, palette, textureId);
+		model->ReplaceTexture(*_asset->GetTextureLoader(), &texture, texture.Pixels.data(), palette);
 		graphicsContext->End();
 	}
 }
 
 void StudioModelTexturesPanel::RemapTextures()
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	auto textureHeader = entity->GetModel()->GetTextureHeader();
-
-	for (int i = 0; i < textureHeader->numtextures; ++i)
+	for (int i = 0; i < model->Textures.size(); ++i)
 	{
 		RemapTexture(i);
 	}
@@ -866,9 +854,9 @@ void StudioModelTexturesPanel::UpdateUVMapTexture()
 
 	auto entity = scene->GetEntity();
 
-	auto model = entity->GetModel();
+	auto model = entity->GetEditableModel();
 
-	auto texture = model->GetTextureHeader()->GetTexture(textureIndex);
+	const auto& texture = *model->Textures[textureIndex];
 
 	scene->ShowUVMap = _ui.ShowUVMap->isChecked();
 
@@ -881,7 +869,7 @@ void StudioModelTexturesPanel::UpdateUVMapTexture()
 
 	glBindTexture(GL_TEXTURE_2D, scene->UVMeshTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-		static_cast<int>(std::ceil(texture->width * scale)), static_cast<int>(std::ceil(texture->height * scale)),
+		static_cast<int>(std::ceil(texture.Width * scale)), static_cast<int>(std::ceil(texture.Height * scale)),
 		0, GL_RGBA, GL_UNSIGNED_BYTE, uvMapImage.constBits());
 
 	//Nearest filtering causes gaps in lines, linear does not
@@ -897,9 +885,7 @@ void StudioModelTexturesPanel::UpdateUVMapTexture()
 
 void StudioModelTexturesPanel::OnImportTexture()
 {
-	auto entity = _asset->GetScene()->GetEntity();
-
-	auto pStudioModel = entity->GetModel();
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	const int iTextureIndex = _ui.Textures->currentIndex();
 
@@ -916,7 +902,7 @@ void StudioModelTexturesPanel::OnImportTexture()
 		return;
 	}
 
-	ImportTextureFrom(fileName, pStudioModel->GetTextureHeader(), iTextureIndex);
+	ImportTextureFrom(fileName, *model, iTextureIndex);
 
 	RemapTexture(iTextureIndex);
 }
@@ -931,18 +917,18 @@ void StudioModelTexturesPanel::OnExportTexture()
 		return;
 	}
 
-	studiohdr_t* const header = _asset->GetScene()->GetEntity()->GetModel()->GetTextureHeader();
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	const auto texture = header->GetTexture(textureIndex);
+	const auto& texture = *model->Textures[textureIndex];
 
-	const QString fileName = QFileDialog::getSaveFileName(this, {}, texture->name, qt::GetSeparatedImagesFileFilter());
+	const QString fileName = QFileDialog::getSaveFileName(this, {}, texture.Name.c_str(), qt::GetSeparatedImagesFileFilter());
 
 	if (fileName.isEmpty())
 	{
 		return;
 	}
 
-	if (!ExportTextureTo(fileName, header, *texture))
+	if (!ExportTextureTo(fileName, *model, texture))
 	{
 		QMessageBox::critical(this, "Error", QString{"Failed to save image \"%1\""}.arg(fileName));
 	}
@@ -950,8 +936,6 @@ void StudioModelTexturesPanel::OnExportTexture()
 
 void StudioModelTexturesPanel::OnExportUVMap()
 {
-	auto entity = _asset->GetScene()->GetEntity();
-
 	const int textureIndex = _ui.Textures->currentIndex();
 
 	if (textureIndex == -1)
@@ -960,16 +944,18 @@ void StudioModelTexturesPanel::OnExportUVMap()
 		return;
 	}
 
-	const auto header = entity->GetModel()->GetTextureHeader();
+	auto entity = _asset->GetScene()->GetEntity();
 
-	const auto texture = header->GetTexture(textureIndex);
+	const auto model = entity->GetEditableModel();
 
-	const auto textureData = header->GetData() + texture->index;
-	const auto texturePalette = header->GetData() + texture->index + (texture->width * texture->height);
+	const auto& texture = *model->Textures[textureIndex];
+
+	const auto textureData = texture.Pixels.data();
+	const auto texturePalette = texture.Palette.data();
 
 	std::vector<QRgb> dataBuffer;
 
-	auto textureImage{ConvertTextureToRGBImage(*texture, textureData, texturePalette, dataBuffer)};
+	auto textureImage{ConvertTextureToRGBImage(texture, textureData, texturePalette, dataBuffer)};
 
 	if (StudioModelExportUVMeshDialog dialog{entity, textureIndex, GetMeshIndexForDrawing(_ui.Meshes), textureImage, this};
 		QDialog::DialogCode::Accepted == dialog.exec())
@@ -998,8 +984,6 @@ void StudioModelTexturesPanel::OnExportUVMap()
 
 void StudioModelTexturesPanel::OnImportAllTextures()
 {
-	auto entity = _asset->GetScene()->GetEntity();
-
 	const auto path = QFileDialog::getExistingDirectory(this, "Select the directory to import all textures from");
 
 	if (path.isEmpty())
@@ -1007,22 +991,23 @@ void StudioModelTexturesPanel::OnImportAllTextures()
 		return;
 	}
 
-	auto pStudioModel = entity->GetModel();
-	studiohdr_t* const pHdr = pStudioModel->GetTextureHeader();
+	auto entity = _asset->GetScene()->GetEntity();
+
+	auto model = entity->GetEditableModel();
 
 	_asset->GetUndoStack()->beginMacro("Import all textures");
 
 	//For each texture in the model, find if there is a file with the same name in the given directory
 	//If so, try to replace the texture
-	for (int i = 0; i < pHdr->numtextures; ++i)
+	for (int i = 0; i < model->Textures.size(); ++i)
 	{
-		mstudiotexture_t& texture = ((mstudiotexture_t*)((byte*)pHdr + pHdr->textureindex))[i];
+		auto& texture = *model->Textures[i];
 
-		const QFileInfo fileName{path, texture.name};
+		const QFileInfo fileName{path, texture.Name.c_str()};
 
 		if (fileName.exists())
 		{
-			ImportTextureFrom(fileName.absoluteFilePath(), pHdr, i);
+			ImportTextureFrom(fileName.absoluteFilePath(), *model, i);
 		}
 	}
 
@@ -1033,10 +1018,6 @@ void StudioModelTexturesPanel::OnImportAllTextures()
 
 void StudioModelTexturesPanel::OnExportAllTextures()
 {
-	auto entity = _asset->GetScene()->GetEntity();
-
-	auto pStudioModel = entity->GetModel();
-
 	const auto path = QFileDialog::getExistingDirectory(this, "Select the directory to export all textures to");
 
 	if (path.isEmpty())
@@ -1044,19 +1025,19 @@ void StudioModelTexturesPanel::OnExportAllTextures()
 		return;
 	}
 
-	studiohdr_t* const pHdr = pStudioModel->GetTextureHeader();
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	QString errors;
 
-	for (int i = 0; i < pHdr->numtextures; ++i)
+	for (int i = 0; i < model->Textures.size(); ++i)
 	{
-		const auto& texture = ((mstudiotexture_t*)((byte*)pHdr + pHdr->textureindex))[i];
+		const auto& texture = *model->Textures[i];
 
-		const QFileInfo fileName{path, texture.name};
+		const QFileInfo fileName{path, texture.Name.c_str()};
 
 		auto fullPath = fileName.absoluteFilePath();
 		
-		if (!ExportTextureTo(fullPath, pHdr, texture))
+		if (!ExportTextureTo(fullPath, *model, texture))
 		{
 			errors += QString{"\"%1\"\n"}.arg(fullPath);
 		}
@@ -1112,7 +1093,7 @@ void StudioModelTexturesPanel::OnTextureFiltersChanged()
 	const auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
 	graphicsContext->Begin();
-	_asset->GetStudioModel()->UpdateFilters(*textureLoader);
+	_asset->GetScene()->GetEntity()->GetEditableModel()->UpdateFilters(*textureLoader);
 	graphicsContext->End();
 }
 
@@ -1123,7 +1104,7 @@ void StudioModelTexturesPanel::OnPowerOf2TexturesChanged()
 	const auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
 	graphicsContext->Begin();
-	_asset->GetStudioModel()->ReuploadTextures(*_asset->GetTextureLoader());
+	_asset->GetScene()->GetEntity()->GetEditableModel()->ReuploadTextures(*_asset->GetTextureLoader());
 	graphicsContext->End();
 }
 }
