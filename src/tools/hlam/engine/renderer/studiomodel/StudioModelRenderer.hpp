@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -12,6 +14,11 @@
 
 namespace studiomdl
 {
+struct Animation;
+struct Bone;
+struct Model;
+struct Sequence;
+
 class StudioModelRenderer final : public studiomdl::IStudioModelRenderer
 {
 public:
@@ -88,11 +95,11 @@ private:
 	void DrawNormals();
 
 	void SetUpBones();
-	void CalcRotations(glm::vec3* pos, glm::vec4* q, const mstudioseqdesc_t* const pseqdesc, const mstudioanim_t* panim, const float f);
+	void CalcRotations(glm::vec3* pos, glm::vec4* q, const Sequence& sequence, const std::vector<Animation>& anims, const float f);
 
 	void CalcBoneAdj();
-	void CalcBoneQuaternion(const int frame, const float s, const mstudiobone_t* const pbone, const mstudioanim_t* const panim, glm::vec4& q);
-	void CalcBonePosition(const int frame, const float s, const mstudiobone_t* const pbone, const mstudioanim_t* const panim, glm::vec3& pos);
+	void CalcBoneQuaternion(const int frame, const float s, const Bone& bone, const Animation& anim, glm::vec4& q);
+	void CalcBonePosition(const int frame, const float s, const Bone&, const Animation& anim, glm::vec3& pos);
 	void SlerpBones(glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s);
 
 	/**
@@ -107,7 +114,7 @@ private:
 
 	unsigned int DrawPoints(const bool bWireframe);
 
-	unsigned int DrawMeshes(const bool bWireframe, const SortedMesh* pMeshes, const mstudiotexture_t* pTextures, const short* pSkinRef);
+	unsigned int DrawMeshes(const bool bWireframe, const SortedMesh* pMeshes);
 
 	unsigned int DrawShadows(const bool fixZFighting, const bool wireframe);
 
@@ -127,10 +134,9 @@ private:
 
 	studiomdl::ModelRenderInfo* _renderInfo;
 
-	studiohdr_t* _studioHeader = nullptr;
-	studiohdr_t* _textureHeader = nullptr;
+	studiomdl::EditableStudioModel* _studioModel{};
 
-	mstudiomodel_t* _model = nullptr;
+	Model* _model = nullptr;
 
 	/**
 	*	The number of polygons drawn since the last call to Initialize.

@@ -546,6 +546,8 @@ EditableStudioModel ConvertToEditable(const StudioModel& studioModel)
 {
 	auto header = studioModel.GetStudioHeader();
 
+	//TODO: dol conversion
+
 	EditableStudioModel result;
 
 	result.EyePosition = header->eyeposition;

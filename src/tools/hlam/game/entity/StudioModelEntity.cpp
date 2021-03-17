@@ -45,7 +45,7 @@ studiomdl::ModelRenderInfo StudioModelEntity::GetRenderInfo() const
 	renderInfo.Angles = GetAngles();
 	renderInfo.Scale = GetScale();
 
-	renderInfo.Model = GetModel();
+	renderInfo.Model = GetEditableModel();
 
 	renderInfo.Transparency = GetTransparency();
 	renderInfo.Sequence = GetSequence();
@@ -273,6 +273,14 @@ void StudioModelEntity::SetModel(studiomdl::StudioModel* model)
 {
 	//TODO: release old model.
 	_model = model;
+
+	//TODO: reinit entity settings
+}
+
+void StudioModelEntity::SetEditableModel(studiomdl::EditableStudioModel* model)
+{
+	//TODO: release old model.
+	_editableModel = model;
 
 	//TODO: reinit entity settings
 }

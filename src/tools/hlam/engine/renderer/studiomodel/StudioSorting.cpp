@@ -3,6 +3,7 @@
 #include "core/shared/Const.hpp"
 
 #include "engine/renderer/studiomodel/StudioSorting.hpp"
+#include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
 namespace studiomdl
 {

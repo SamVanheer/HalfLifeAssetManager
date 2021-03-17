@@ -12,7 +12,7 @@
 
 namespace studiomdl
 {
-class StudioModel;
+class EditableStudioModel;
 
 /**
 *	Data structure used to pass model render info into the engine.
@@ -24,7 +24,7 @@ struct ModelRenderInfo
 	glm::vec3 Angles;
 	glm::vec3 Scale;
 
-	StudioModel* Model;
+	EditableStudioModel* Model;
 
 	float Transparency;
 

@@ -15,6 +15,7 @@
 
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
 #include "engine/shared/studiomodel/StudioModelIO.hpp"
+#include "engine/shared/studiomodel/StudioModelUtils.hpp"
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "game/entity/BaseEntity.hpp"
 #include "game/entity/BaseEntityList.hpp"
@@ -77,11 +78,14 @@ static std::pair<float, float> GetCenteredValues(HLMVStudioModelEntity* entity)
 }
 
 StudioModelAsset::StudioModelAsset(QString&& fileName,
-	EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::StudioModel>&& studioModel)
+	EditorContext* editorContext, const StudioModelAssetProvider* provider,
+	std::unique_ptr<studiomdl::StudioModel>&& studioModel,
+	std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel)
 	: Asset(std::move(fileName))
 	, _editorContext(editorContext)
 	, _provider(provider)
 	, _studioModel(std::move(studioModel))
+	, _editableStudioModel(std::move(editableStudioModel))
 	, _textureLoader(std::make_unique<graphics::TextureLoader>())
 	, _scene(std::make_unique<graphics::Scene>(_textureLoader.get(), editorContext->GetSoundSystem(), editorContext->GetWorldTime()))
 {
@@ -97,6 +101,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	if (nullptr != entity)
 	{
 		entity->SetModel(GetStudioModel());
+		entity->SetEditableModel(GetEditableStudioModel());
 		entity->Spawn();
 		_scene->SetEntity(entity);
 	}
@@ -199,7 +204,10 @@ void StudioModelAsset::SetupFullscreenWidget(FullscreenWidget* fullscreenWidget)
 void StudioModelAsset::Save()
 {
 	//TODO: add setting to correct groups
-	studiomdl::SaveStudioModel(std::filesystem::u8path(GetFileName().toStdString()), *GetStudioModel(), false);
+	const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
+	auto result = studiomdl::ConvertFromEditable(filePath, *_editableStudioModel);
+
+	studiomdl::SaveStudioModel(filePath, result, false);
 }
 
 camera_operators::CameraOperator* StudioModelAsset::GetCameraOperator(int index) const
@@ -560,8 +568,13 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName) const
 
 std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName) const
 {
-	auto studioModel = studiomdl::LoadStudioModel(std::filesystem::u8path(fileName.toStdString()));
+	const auto filePath = std::filesystem::u8path(fileName.toStdString());
+	auto studioModel = studiomdl::LoadStudioModel(filePath);
 
-	return std::make_unique<StudioModelAsset>(QString{fileName}, editorContext, this, std::move(studioModel));
+	auto editableStudioModel = studiomdl::ConvertToEditable(*studioModel);
+
+	return std::make_unique<StudioModelAsset>(QString{fileName}, editorContext, this,
+		std::move(studioModel),
+		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
 }
 }

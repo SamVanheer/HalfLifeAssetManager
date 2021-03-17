@@ -1,12 +1,12 @@
 #pragma once
 
-#include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
-
 namespace studiomdl
 {
+struct Mesh;
+
 struct SortedMesh
 {
-	mstudiomesh_t* Mesh;
+	const Mesh* Mesh;
 	int Flags;
 };
 

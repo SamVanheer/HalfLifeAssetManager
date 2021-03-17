@@ -7,6 +7,7 @@
 
 #include <QObject>
 
+#include "engine/shared/studiomodel/EditableStudioModel.hpp"
 #include "engine/shared/studiomodel/StudioModel.hpp"
 
 #include "graphics/Scene.hpp"
@@ -73,7 +74,9 @@ class StudioModelAsset final : public Asset, public IInputSink
 
 public:
 	StudioModelAsset(QString&& fileName,
-		EditorContext* editorContext, const StudioModelAssetProvider* provider, std::unique_ptr<studiomdl::StudioModel>&& studioModel);
+		EditorContext* editorContext, const StudioModelAssetProvider* provider,
+		std::unique_ptr<studiomdl::StudioModel>&& studioModel,
+		std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel);
 
 	~StudioModelAsset();
 	StudioModelAsset(const StudioModelAsset&) = delete;
@@ -98,6 +101,8 @@ public:
 	EditorContext* GetEditorContext() { return _editorContext; }
 
 	studiomdl::StudioModel* GetStudioModel() { return _studioModel.get(); }
+
+	studiomdl::EditableStudioModel* GetEditableStudioModel() { return _editableStudioModel.get(); }
 
 	graphics::TextureLoader* GetTextureLoader() { return _textureLoader.get(); }
 
@@ -179,6 +184,7 @@ private:
 	EditorContext* const _editorContext;
 	const StudioModelAssetProvider* const _provider;
 	const std::unique_ptr<studiomdl::StudioModel> _studioModel;
+	const std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;
 	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
 	const std::unique_ptr<graphics::Scene> _scene;
 

@@ -7,9 +7,16 @@
 
 #include <glm/vec3.hpp>
 
+#include <GL/glew.h>
+
 #include "core/shared/Const.hpp"
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 #include "graphics/Palette.hpp"
+
+namespace graphics
+{
+class TextureLoader;
+}
 
 namespace studiomdl
 {
@@ -178,6 +185,8 @@ struct Texture
 
 	std::vector<byte> Pixels;
 	std::array<byte, PALETTE_SIZE> Palette;
+
+	GLuint TextureId = 0;
 };
 
 /**
@@ -217,5 +226,9 @@ public:
 	std::vector<std::vector<Texture*>> SkinFamilies;
 
 	std::vector<std::vector<byte>> Transitions;
+
+	Model* GetModelByBodyPart(const int iBody, const int iBodyPart);
+
+	void CreateTextures(graphics::TextureLoader& textureLoader);
 };
 }

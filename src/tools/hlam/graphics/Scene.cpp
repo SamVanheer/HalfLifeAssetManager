@@ -148,6 +148,7 @@ void Scene::Initialize()
 	{
 		//TODO: should be replaced with an on-demand resource uploading stage in Draw()
 		_entity->GetModel()->CreateTextures(*_textureLoader);
+		_entity->GetEditableModel()->CreateTextures(*_textureLoader);
 	}
 
 	glGenTextures(1, &UVMeshTexture);

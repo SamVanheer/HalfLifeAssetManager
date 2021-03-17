@@ -6,9 +6,11 @@
 
 #include "graphics/GraphicsUtils.hpp"
 
-#include "engine/shared/studiomodel/StudioModel.hpp"
+#include "engine/shared/studiomodel/EditableStudioModel.hpp"
 
 #include "engine/renderer/studiomodel/StudioModelRenderer.hpp"
+
+#include "utility/mathlib.hpp"
 
 //Double to float conversion
 #pragma warning( disable: 4244 )
@@ -46,8 +48,7 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo* const re
 
 	if (_renderInfo->Model)
 	{
-		_studioHeader = _renderInfo->Model->GetStudioHeader();
-		_textureHeader = _renderInfo->Model->GetTextureHeader();
+		_studioModel = _renderInfo->Model;
 	}
 	else
 	{
@@ -57,7 +58,7 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo* const re
 
 	++_modelsDrawnCount; // render data cache cookie
 
-	if (_studioHeader->numbodyparts == 0)
+	if (_studioModel->Bodyparts.empty())
 	{
 		return 0;
 	}
@@ -90,7 +91,7 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo* const re
 
 	if (!(flags & renderer::DrawFlag::NODRAW))
 	{
-		for (int i = 0; i < _studioHeader->numbodyparts; i++)
+		for (int i = 0; i < _studioModel->Bodyparts.size(); i++)
 		{
 			SetupModel(i);
 			if (_renderInfo->Transparency > 0.0f)
@@ -113,7 +114,7 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo* const re
 		glDisable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
 
-		for (int i = 0; i < _studioHeader->numbodyparts; i++)
+		for (int i = 0; i < _studioModel->Bodyparts.size(); i++)
 		{
 			SetupModel(i);
 			if (_renderInfo->Transparency > 0.0f)
@@ -164,35 +165,41 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo* const re
 void StudioModelRenderer::DrawSingleBone(ModelRenderInfo& renderInfo, const int iBone)
 {
 	//TODO: rework how stuff is passed in
-	auto header = renderInfo.Model->GetStudioHeader();
+	auto model = renderInfo.Model;
 
-	if (!header || iBone < 0 || iBone >= header->numbones)
+	if (!model || iBone < 0 || iBone >= model->Bones.size())
 		return;
 
 	_renderInfo = &renderInfo;
-	_studioHeader = header;
-	_textureHeader = renderInfo.Model->GetTextureHeader();
+	_studioModel = model;
 
 	SetUpBones();
 
-	const mstudiobone_t* const pbones = _studioHeader->GetBones();
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 
-	if (pbones[iBone].parent >= 0)
+	const auto& bone = *model->Bones[iBone];
+
+	const auto& boneTransform = _bonetransform[bone.Index];
+
+	if (bone.Parent)
 	{
+		const auto& parentBone = *bone.Parent;
+
+		const auto& parentBoneTransform = _bonetransform[parentBone.Index];
+
 		glPointSize(10.0f);
 		glColor3f(0, 0.7f, 1);
 		glBegin(GL_LINES);
-		glVertex3f(_bonetransform[pbones[iBone].parent][0][3], _bonetransform[pbones[iBone].parent][1][3], _bonetransform[pbones[iBone].parent][2][3]);
+		glVertex3f(parentBoneTransform[0][3], parentBoneTransform[1][3], parentBoneTransform[2][3]);
 		glVertex3f(_bonetransform[iBone][0][3], _bonetransform[iBone][1][3], _bonetransform[iBone][2][3]);
 		glEnd();
 
 		glColor3f(0, 0, 0.8f);
 		glBegin(GL_POINTS);
-		if (pbones[pbones[iBone].parent].parent != -1)
-			glVertex3f(_bonetransform[pbones[iBone].parent][0][3], _bonetransform[pbones[iBone].parent][1][3], _bonetransform[pbones[iBone].parent][2][3]);
-		glVertex3f(_bonetransform[iBone][0][3], _bonetransform[iBone][1][3], _bonetransform[iBone][2][3]);
+		if (parentBone.Parent)
+			glVertex3f(parentBoneTransform[0][3], parentBoneTransform[1][3], parentBoneTransform[2][3]);
+		glVertex3f(boneTransform[0][3], boneTransform[1][3], boneTransform[2][3]);
 		glEnd();
 	}
 	else
@@ -201,28 +208,26 @@ void StudioModelRenderer::DrawSingleBone(ModelRenderInfo& renderInfo, const int 
 		glPointSize(10.0f);
 		glColor3f(0.8f, 0, 0);
 		glBegin(GL_POINTS);
-		glVertex3f(_bonetransform[iBone][0][3], _bonetransform[iBone][1][3], _bonetransform[iBone][2][3]);
+		glVertex3f(boneTransform[0][3], boneTransform[1][3], boneTransform[2][3]);
 		glEnd();
 	}
 
 	glPointSize(1.0f);
 
-	_studioHeader = nullptr;
-	_textureHeader = nullptr;
+	_studioModel = nullptr;
 	_renderInfo = nullptr;
 }
 
 void StudioModelRenderer::DrawSingleAttachment(ModelRenderInfo& renderInfo, const int iAttachment)
 {
 	//TODO: rework how stuff is passed in
-	auto header = renderInfo.Model->GetStudioHeader();
+	auto model = renderInfo.Model;
 
-	if (!header || iAttachment < 0 || iAttachment >= header->numattachments)
+	if (!model || iAttachment < 0 || iAttachment >= model->Attachments.size())
 		return;
 
 	_renderInfo = &renderInfo;
-	_studioHeader = header;
-	_textureHeader = renderInfo.Model->GetTextureHeader();
+	_studioModel = model;
 
 	SetUpBones();
 
@@ -230,12 +235,15 @@ void StudioModelRenderer::DrawSingleAttachment(ModelRenderInfo& renderInfo, cons
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
 
-	mstudioattachment_t* pattachments = _studioHeader->GetAttachments();
+	const auto& attachment = *_studioModel->Attachments[iAttachment];
+
+	const auto& attachmentBoneTransform = _bonetransform[attachment.Bone->Index];
+
 	glm::vec3 v[4];
-	VectorTransform(pattachments[iAttachment].org, _bonetransform[pattachments[iAttachment].bone], v[0]);
-	VectorTransform(pattachments[iAttachment].vectors[0], _bonetransform[pattachments[iAttachment].bone], v[1]);
-	VectorTransform(pattachments[iAttachment].vectors[1], _bonetransform[pattachments[iAttachment].bone], v[2]);
-	VectorTransform(pattachments[iAttachment].vectors[2], _bonetransform[pattachments[iAttachment].bone], v[3]);
+	VectorTransform(attachment.Origin, attachmentBoneTransform, v[0]);
+	VectorTransform(attachment.Vectors[0], attachmentBoneTransform, v[1]);
+	VectorTransform(attachment.Vectors[1], attachmentBoneTransform, v[2]);
+	VectorTransform(attachment.Vectors[2], attachmentBoneTransform, v[3]);
 	glBegin(GL_LINES);
 	glColor3f(0, 1, 1);
 	glVertex3fv(glm::value_ptr(v[0]));
@@ -258,22 +266,20 @@ void StudioModelRenderer::DrawSingleAttachment(ModelRenderInfo& renderInfo, cons
 	glEnd();
 	glPointSize(1);
 
-	_studioHeader = nullptr;
-	_textureHeader = nullptr;
+	_studioModel = nullptr;
 	_renderInfo = nullptr;
 }
 
 void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const int hitboxIndex)
 {
 	//TODO: rework how stuff is passed in
-	auto header = renderInfo.Model->GetStudioHeader();
+	auto model = renderInfo.Model;
 
-	if (!header || hitboxIndex < 0 || hitboxIndex >= header->numhitboxes)
+	if (!model || hitboxIndex < 0 || hitboxIndex >= model->Hitboxes.size())
 		return;
 
 	_renderInfo = &renderInfo;
-	_studioHeader = header;
-	_textureHeader = renderInfo.Model->GetTextureHeader();
+	_studioModel = model;
 
 	SetUpBones();
 
@@ -290,49 +296,56 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	mstudiobbox_t* hitbox = _studioHeader->GetHitBox(hitboxIndex);
+	const auto& hitbox = *_studioModel->Hitboxes[hitboxIndex];
 
-	const auto v = graphics::CreateBoxFromBounds(hitbox->bbmin, hitbox->bbmax);
+	const auto v = graphics::CreateBoxFromBounds(hitbox.Min, hitbox.Max);
+
+	const auto& hitboxBoneTransform = _bonetransform[hitbox.Bone->Index];
+
 	std::array<glm::vec3, 8> v2{};
 
-	VectorTransform(v[0], _bonetransform[hitbox->bone], v2[0]);
-	VectorTransform(v[1], _bonetransform[hitbox->bone], v2[1]);
-	VectorTransform(v[2], _bonetransform[hitbox->bone], v2[2]);
-	VectorTransform(v[3], _bonetransform[hitbox->bone], v2[3]);
-	VectorTransform(v[4], _bonetransform[hitbox->bone], v2[4]);
-	VectorTransform(v[5], _bonetransform[hitbox->bone], v2[5]);
-	VectorTransform(v[6], _bonetransform[hitbox->bone], v2[6]);
-	VectorTransform(v[7], _bonetransform[hitbox->bone], v2[7]);
+	VectorTransform(v[0], hitboxBoneTransform, v2[0]);
+	VectorTransform(v[1], hitboxBoneTransform, v2[1]);
+	VectorTransform(v[2], hitboxBoneTransform, v2[2]);
+	VectorTransform(v[3], hitboxBoneTransform, v2[3]);
+	VectorTransform(v[4], hitboxBoneTransform, v2[4]);
+	VectorTransform(v[5], hitboxBoneTransform, v2[5]);
+	VectorTransform(v[6], hitboxBoneTransform, v2[6]);
+	VectorTransform(v[7], hitboxBoneTransform, v2[7]);
 
 	graphics::DrawBox(v2);
 
-	_studioHeader = nullptr;
-	_textureHeader = nullptr;
+	_studioModel = nullptr;
 	_renderInfo = nullptr;
 }
 
 void StudioModelRenderer::DrawBones()
 {
-	const mstudiobone_t* const pbones = _studioHeader->GetBones();
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 
-	for (int i = 0; i < _studioHeader->numbones; i++)
+	for (int i = 0; i < _studioModel->Bones.size(); i++)
 	{
-		if (pbones[i].parent >= 0)
+		const auto& bone = *_studioModel->Bones[i];
+
+		const auto& boneTransform = _bonetransform[i];
+
+		if (bone.Parent)
 		{
+			const auto& parentBoneTransform = _bonetransform[bone.Parent->Index];
+
 			glPointSize(3.0f);
 			glColor3f(1, 0.7f, 0);
 			glBegin(GL_LINES);
-			glVertex3f(_bonetransform[pbones[i].parent][0][3], _bonetransform[pbones[i].parent][1][3], _bonetransform[pbones[i].parent][2][3]);
+			glVertex3f(parentBoneTransform[0][3], parentBoneTransform[1][3], parentBoneTransform[2][3]);
 			glVertex3f(_bonetransform[i][0][3], _bonetransform[i][1][3], _bonetransform[i][2][3]);
 			glEnd();
 
 			glColor3f(0, 0, 0.8f);
 			glBegin(GL_POINTS);
-			if (pbones[pbones[i].parent].parent != -1)
-				glVertex3f(_bonetransform[pbones[i].parent][0][3], _bonetransform[pbones[i].parent][1][3], _bonetransform[pbones[i].parent][2][3]);
-			glVertex3f(_bonetransform[i][0][3], _bonetransform[i][1][3], _bonetransform[i][2][3]);
+			if (bone.Parent->Parent)
+				glVertex3f(parentBoneTransform[0][3], parentBoneTransform[1][3], parentBoneTransform[2][3]);
+			glVertex3f(boneTransform[0][3], boneTransform[1][3], boneTransform[2][3]);
 			glEnd();
 		}
 		else
@@ -341,7 +354,7 @@ void StudioModelRenderer::DrawBones()
 			glPointSize(5.0f);
 			glColor3f(0.8f, 0, 0);
 			glBegin(GL_POINTS);
-			glVertex3f(_bonetransform[i][0][3], _bonetransform[i][1][3], _bonetransform[i][2][3]);
+			glVertex3f(boneTransform[0][3], boneTransform[1][3], boneTransform[2][3]);
 			glEnd();
 		}
 	}
@@ -355,14 +368,17 @@ void StudioModelRenderer::DrawAttachments()
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
 
-	for (int i = 0; i < _studioHeader->numattachments; i++)
+	for (int i = 0; i < _studioModel->Attachments.size(); i++)
 	{
-		mstudioattachment_t* pattachments = _studioHeader->GetAttachments();
+		const auto& attachment = *_studioModel->Attachments[i];
+
+		const auto& attachmentBoneTransform = _bonetransform[attachment.Bone->Index];
+
 		glm::vec3 v[4];
-		VectorTransform(pattachments[i].org, _bonetransform[pattachments[i].bone], v[0]);
-		VectorTransform(pattachments[i].vectors[0], _bonetransform[pattachments[i].bone], v[1]);
-		VectorTransform(pattachments[i].vectors[1], _bonetransform[pattachments[i].bone], v[2]);
-		VectorTransform(pattachments[i].vectors[2], _bonetransform[pattachments[i].bone], v[3]);
+		VectorTransform(attachment.Origin, attachmentBoneTransform, v[0]);
+		VectorTransform(attachment.Vectors[0], attachmentBoneTransform, v[1]);
+		VectorTransform(attachment.Vectors[1], attachmentBoneTransform, v[2]);
+		VectorTransform(attachment.Vectors[2], attachmentBoneTransform, v[3]);
 		glBegin(GL_LINES);
 		glColor3f(1, 0, 0);
 		glVertex3fv(glm::value_ptr(v[0]));
@@ -396,7 +412,7 @@ void StudioModelRenderer::DrawEyePosition()
 	glPointSize(7);
 	glColor3f(1, 0, 1);
 	glBegin(GL_POINTS);
-	glVertex3fv(glm::value_ptr(_studioHeader->eyeposition));
+	glVertex3fv(glm::value_ptr(_studioModel->EyePosition));
 	glEnd();
 	glPointSize(1);
 }
@@ -416,21 +432,24 @@ void StudioModelRenderer::DrawHitBoxes()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	for (int i = 0; i < _studioHeader->numhitboxes; i++)
+	for (int i = 0; i < _studioModel->Hitboxes.size(); i++)
 	{
-		mstudiobbox_t* pbboxes = _studioHeader->GetHitBoxes();
+		const auto& hitbox = *_studioModel->Hitboxes[i];
 
-		const auto v = graphics::CreateBoxFromBounds(pbboxes[i].bbmin, pbboxes[i].bbmax);
+		const auto v = graphics::CreateBoxFromBounds(hitbox.Min, hitbox.Max);
+
+		const auto& hitboxTransform = _bonetransform[hitbox.Bone->Index];
+
 		std::array<glm::vec3, 8> v2{};
 
-		VectorTransform(v[0], _bonetransform[pbboxes[i].bone], v2[0]);
-		VectorTransform(v[1], _bonetransform[pbboxes[i].bone], v2[1]);
-		VectorTransform(v[2], _bonetransform[pbboxes[i].bone], v2[2]);
-		VectorTransform(v[3], _bonetransform[pbboxes[i].bone], v2[3]);
-		VectorTransform(v[4], _bonetransform[pbboxes[i].bone], v2[4]);
-		VectorTransform(v[5], _bonetransform[pbboxes[i].bone], v2[5]);
-		VectorTransform(v[6], _bonetransform[pbboxes[i].bone], v2[6]);
-		VectorTransform(v[7], _bonetransform[pbboxes[i].bone], v2[7]);
+		VectorTransform(v[0], hitboxTransform, v2[0]);
+		VectorTransform(v[1], hitboxTransform, v2[1]);
+		VectorTransform(v[2], hitboxTransform, v2[2]);
+		VectorTransform(v[3], hitboxTransform, v2[3]);
+		VectorTransform(v[4], hitboxTransform, v2[4]);
+		VectorTransform(v[5], hitboxTransform, v2[5]);
+		VectorTransform(v[6], hitboxTransform, v2[6]);
+		VectorTransform(v[7], hitboxTransform, v2[7]);
 
 		graphics::DrawBox(v2);
 	}
@@ -443,32 +462,24 @@ void StudioModelRenderer::DrawNormals()
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_LINES);
 
-	for (int iBodyPart = 0; iBodyPart < _studioHeader->numbodyparts; ++iBodyPart)
+	for (int iBodyPart = 0; iBodyPart < _studioModel->Bodyparts.size(); ++iBodyPart)
 	{
 		SetupModel(iBodyPart);
 
-		auto pvertbone = (const byte*)(_studioHeader->GetData() + _model->vertinfoindex);
-		auto pnormbone = (const byte*)(_studioHeader->GetData() + _model->norminfoindex);
-
-		auto pMeshes = (const mstudiomesh_t*)(_studioHeader->GetData() + _model->meshindex);
-
-		auto pstudioverts = (const glm::vec3*)(_studioHeader->GetData() + _model->vertindex);
-		auto pstudionorms = (const glm::vec3*)(_studioHeader->GetData() + _model->normindex);
-
-		for (int i = 0; i < _model->numverts; i++)
+		for (int i = 0; i < _model->Vertices.size(); i++)
 		{
-			VectorTransform(pstudioverts[i], _bonetransform[pvertbone[i]], _xformverts[i]);
+			VectorTransform(_model->Vertices[i].Vertex, _bonetransform[_model->Vertices[i].Bone->Index], _xformverts[i]);
 		}
 
-		for (int i = 0; i < _model->numnorms; i++)
+		for (int i = 0; i < _model->Normals.size(); i++)
 		{
-			VectorRotate(pstudionorms[i], _bonetransform[pnormbone[i]], _xformnorms[i]);
+			VectorRotate(_model->Normals[i].Vertex, _bonetransform[_model->Normals[i].Bone->Index], _xformnorms[i]);
 		}
 
-		for (int j = 0; j < _model->nummesh; j++)
+		for (int j = 0; j < _model->Meshes.size(); j++)
 		{
-			auto& mesh = pMeshes[j];
-			auto ptricmds = (const short*)(_studioHeader->GetData() + mesh.triindex);
+			const auto& mesh = _model->Meshes[j];
+			auto ptricmds = mesh.Triangles.data();
 
 			int i;
 
@@ -507,23 +518,19 @@ void StudioModelRenderer::SetUpBones()
 	static glm::vec3 pos4[MAXSTUDIOBONES];
 	static glm::vec4 q4[MAXSTUDIOBONES];
 
-	if (_renderInfo->Sequence >= _studioHeader->numseq)
+	if (_renderInfo->Sequence >= _studioModel->Sequences.size())
 	{
 		_renderInfo->Sequence = 0;
 	}
 
-	mstudioseqdesc_t* const pseqdesc = _studioHeader->GetSequence(_renderInfo->Sequence);
+	const auto& sequence = *_studioModel->Sequences[_renderInfo->Sequence];
 
-	const mstudioanim_t* panim = _renderInfo->Model->GetAnim(pseqdesc);
-
-	if (pseqdesc->numblends == 9)
+	if (sequence.AnimationBlends.size() == 9)
 	{
 		const auto f = _renderInfo->Frame;
 
 		const auto blendX = static_cast<double>(_renderInfo->Blender[0]);
 		const auto blendY = static_cast<double>(_renderInfo->Blender[1]);
-
-		const mstudioanim_t* lastanim;
 
 		double interpolantX;
 		double interpolantY;
@@ -536,47 +543,19 @@ void StudioModelRenderer::SetUpBones()
 			{
 				interpolantY = blendY - 127.0 + blendY - 127.0;
 
-				auto panim4 = panim;
-				if (pseqdesc->numblends > 4)
-					panim4 += 4 * _studioHeader->numbones;
-				CalcRotations(pos, q, pseqdesc, panim4, f);
-
-				auto panim5 = panim;
-				if (pseqdesc->numblends > 5)
-					panim5 += 5 * _studioHeader->numbones;
-				CalcRotations(pos2, q2, pseqdesc, panim5, f);
-
-				auto panim7 = panim;
-				if (pseqdesc->numblends > 7)
-					panim7 += 7 * _studioHeader->numbones;
-				CalcRotations(pos3, q3, pseqdesc, panim7, f);
-
-				lastanim = panim;
-				if (pseqdesc->numblends > 8)
-					lastanim += 8 * _studioHeader->numbones;
+				CalcRotations(pos, q, sequence, sequence.AnimationBlends[4], f);
+				CalcRotations(pos2, q2, sequence, sequence.AnimationBlends[5], f);
+				CalcRotations(pos3, q3, sequence, sequence.AnimationBlends[7], f);
+				CalcRotations(pos4, q4, sequence, sequence.AnimationBlends[8], f);
 			}
 			else
 			{
 				interpolantY = blendY + blendY;
 
-				auto panim1 = panim;
-				if (pseqdesc->numblends > 1)
-					panim1 += _studioHeader->numbones;
-				CalcRotations(pos, q, pseqdesc, panim1, f);
-
-				auto panim2 = panim;
-				if (pseqdesc->numblends > 2)
-					panim2 += 2 * _studioHeader->numbones;
-				CalcRotations(pos2, q2, pseqdesc, panim2, f);
-
-				auto panim4 = panim;
-				if (pseqdesc->numblends > 4)
-					panim4 += 4 * _studioHeader->numbones;
-				CalcRotations(pos3, q3, pseqdesc, panim4, f);
-
-				lastanim = panim;
-				if (pseqdesc->numblends > 5)
-					lastanim += 5 * _studioHeader->numbones;
+				CalcRotations(pos, q, sequence, sequence.AnimationBlends[1], f);
+				CalcRotations(pos2, q2, sequence, sequence.AnimationBlends[2], f);
+				CalcRotations(pos3, q3, sequence, sequence.AnimationBlends[4], f);
+				CalcRotations(pos4, q4, sequence, sequence.AnimationBlends[5], f);
 			}
 		}
 		else
@@ -587,48 +566,21 @@ void StudioModelRenderer::SetUpBones()
 			{
 				interpolantY = blendY + blendY;
 
-				CalcRotations(pos, q, pseqdesc, panim, f);
-
-				auto panim1 = panim;
-				if (pseqdesc->numblends > 1)
-					panim1 += _studioHeader->numbones;
-				CalcRotations(pos2, q2, pseqdesc, panim1, f);
-
-				auto panim3 = panim;
-				if (pseqdesc->numblends > 3)
-					panim3 += 3 * _studioHeader->numbones;
-				CalcRotations(pos3, q3, pseqdesc, panim3, f);
-
-				lastanim = panim;
-				if (pseqdesc->numblends > 4)
-					lastanim += 4 * _studioHeader->numbones;
+				CalcRotations(pos, q, sequence, sequence.AnimationBlends[0], f);
+				CalcRotations(pos2, q2, sequence, sequence.AnimationBlends[1], f);
+				CalcRotations(pos3, q3, sequence, sequence.AnimationBlends[3], f);
+				CalcRotations(pos4, q4, sequence, sequence.AnimationBlends[4], f);
 			}
 			else
 			{
 				interpolantY = blendY - 127.0 + blendY - 127.0;
 
-				auto panim3 = panim;
-				if (pseqdesc->numblends > 3)
-					panim3 += 3 * _studioHeader->numbones;
-				CalcRotations(pos, q, pseqdesc, panim3, f);
-
-				auto panim4 = panim;
-				if (pseqdesc->numblends > 4)
-					panim4 += 4 * _studioHeader->numbones;
-				CalcRotations(pos2, q2, pseqdesc, panim4, f);
-
-				auto panim6 = panim;
-				if (pseqdesc->numblends > 6)
-					panim6 += 6 * _studioHeader->numbones;
-				CalcRotations(pos3, q3, pseqdesc, panim6, f);
-
-				lastanim = panim;
-				if (pseqdesc->numblends > 7)
-					lastanim += 7 * _studioHeader->numbones;
+				CalcRotations(pos, q, sequence, sequence.AnimationBlends[3], f);
+				CalcRotations(pos2, q2, sequence, sequence.AnimationBlends[4], f);
+				CalcRotations(pos3, q3, sequence, sequence.AnimationBlends[6], f);
+				CalcRotations(pos4, q4, sequence, sequence.AnimationBlends[7], f);
 			}
 		}
-
-		CalcRotations(pos4, q4, pseqdesc, lastanim, f);
 
 		const auto normalizedInterpolantX = interpolantX / 255.0;
 		SlerpBones(q, pos, q2, pos2, normalizedInterpolantX);
@@ -639,23 +591,19 @@ void StudioModelRenderer::SetUpBones()
 	}
 	else
 	{
-		CalcRotations(pos, q, pseqdesc, panim, _renderInfo->Frame);
+		CalcRotations(pos, q, sequence, sequence.AnimationBlends[0], _renderInfo->Frame);
 
-		if (pseqdesc->numblends > 1)
+		if (sequence.AnimationBlends.size() > 1)
 		{
-			panim += _studioHeader->numbones;
-			CalcRotations(pos2, q2, pseqdesc, panim, _renderInfo->Frame);
+			CalcRotations(pos2, q2, sequence, sequence.AnimationBlends[1], _renderInfo->Frame);
 			float s = _renderInfo->Blender[0] / 255.0;
 
 			SlerpBones(q, pos, q2, pos2, s);
 
-			if (pseqdesc->numblends == 4)
+			if (sequence.AnimationBlends[0].size() == 4)
 			{
-				panim += _studioHeader->numbones;
-				CalcRotations(pos3, q3, pseqdesc, panim, _renderInfo->Frame);
-
-				panim += _studioHeader->numbones;
-				CalcRotations(pos4, q4, pseqdesc, panim, _renderInfo->Frame);
+				CalcRotations(pos3, q3, sequence, sequence.AnimationBlends[2], _renderInfo->Frame);
+				CalcRotations(pos4, q4, sequence, sequence.AnimationBlends[3], _renderInfo->Frame);
 
 				s = _renderInfo->Blender[0] / 255.0;
 				SlerpBones(q3, pos3, q4, pos4, s);
@@ -666,19 +614,19 @@ void StudioModelRenderer::SetUpBones()
 		}
 	}
 
-	const mstudiobone_t* const pbones = _studioHeader->GetBones();
-
 	glm::mat3x4 bonematrix;
 
-	for (int i = 0; i < _studioHeader->numbones; i++)
+	for (int i = 0; i < _studioModel->Bones.size(); i++)
 	{
+		const auto& bone = *_studioModel->Bones[i];
+
 		QuaternionMatrix(q[i], bonematrix);
 
 		bonematrix[0][3] = pos[i][0];
 		bonematrix[1][3] = pos[i][1];
 		bonematrix[2][3] = pos[i][2];
 
-		if (pbones[i].parent == -1)
+		if (!bone.Parent)
 		{
 			//Apply scale to each root bone so only the model is scaled and mirrored, and not anything else in the scene
 			bonematrix = glm::scale(glm::mat4x4{bonematrix}, _renderInfo->Scale);
@@ -687,12 +635,12 @@ void StudioModelRenderer::SetUpBones()
 		}
 		else
 		{
-			R_ConcatTransforms(_bonetransform[pbones[i].parent], bonematrix, _bonetransform[i]);
+			R_ConcatTransforms(_bonetransform[bone.Parent->Index], bonematrix, _bonetransform[i]);
 		}
 	}
 }
 
-void StudioModelRenderer::CalcRotations(glm::vec3* pos, glm::vec4* q, const mstudioseqdesc_t* const pseqdesc, const mstudioanim_t* panim, const float f)
+void StudioModelRenderer::CalcRotations(glm::vec3* pos, glm::vec4* q, const Sequence& sequence, const std::vector<Animation>& anims, const float f)
 {
 	const int frame = (int)f;
 	const float s = (f - frame);
@@ -700,45 +648,46 @@ void StudioModelRenderer::CalcRotations(glm::vec3* pos, glm::vec4* q, const mstu
 	// add in programatic controllers
 	CalcBoneAdj();
 
-	auto pbone = _studioHeader->GetBones();
-
-	for (int i = 0; i < _studioHeader->numbones; i++, pbone++, panim++)
+	for (int i = 0; i < _studioModel->Bones.size(); i++)
 	{
-		CalcBoneQuaternion(frame, s, pbone, panim, q[i]);
-		CalcBonePosition(frame, s, pbone, panim, pos[i]);
+		const auto& bone = *_studioModel->Bones[i];
+		const auto& anim = anims[i];
+
+		CalcBoneQuaternion(frame, s, bone, anim, q[i]);
+		CalcBonePosition(frame, s, bone, anim, pos[i]);
 	}
 
-	if (pseqdesc->motiontype & STUDIO_X)
-		pos[pseqdesc->motionbone][0] = 0.0;
-	if (pseqdesc->motiontype & STUDIO_Y)
-		pos[pseqdesc->motionbone][1] = 0.0;
-	if (pseqdesc->motiontype & STUDIO_Z)
-		pos[pseqdesc->motionbone][2] = 0.0;
+	if (sequence.MotionType & STUDIO_X)
+		pos[sequence.MotionBone][0] = 0.0;
+	if (sequence.MotionType & STUDIO_Y)
+		pos[sequence.MotionBone][1] = 0.0;
+	if (sequence.MotionType & STUDIO_Z)
+		pos[sequence.MotionBone][2] = 0.0;
 }
 
 void StudioModelRenderer::CalcBoneAdj()
 {
-	const auto* const pbonecontroller = _studioHeader->GetBoneControllers();
-
-	for (int j = 0; j < _studioHeader->numbonecontrollers; j++)
+	for (int j = 0; j < _studioModel->BoneControllers.size(); j++)
 	{
-		const auto i = pbonecontroller[j].index;
+		const auto& boneController = *_studioModel->BoneControllers[j];
+
+		const auto i = boneController.Index;
 
 		float value;
 
 		if (i <= 3)
 		{
 			// check for 360% wrapping
-			if (pbonecontroller[j].type & STUDIO_RLOOP)
+			if (boneController.Type & STUDIO_RLOOP)
 			{
-				value = _renderInfo->Controller[i] * (360.0 / 256.0) + pbonecontroller[j].start;
+				value = _renderInfo->Controller[i] * (360.0 / 256.0) + boneController.Start;
 			}
 			else
 			{
 				value = _renderInfo->Controller[i] / 255.0;
 				if (value < 0) value = 0;
 				if (value > 1.0) value = 1.0;
-				value = (1.0 - value) * pbonecontroller[j].start + value * pbonecontroller[j].end;
+				value = (1.0 - value) * boneController.Start + value * boneController.End;
 			}
 			// Con_DPrintf( "%d %d %f : %f\n", m_controller[j], m_prevcontroller[j], value, dadt );
 		}
@@ -746,10 +695,10 @@ void StudioModelRenderer::CalcBoneAdj()
 		{
 			value = _renderInfo->Mouth / 64.0;
 			if (value > 1.0) value = 1.0;
-			value = (1.0 - value) * pbonecontroller[j].start + value * pbonecontroller[j].end;
+			value = (1.0 - value) * boneController.Start + value * boneController.End;
 			// Con_DPrintf("%d %f\n", mouthopen, value );
 		}
-		switch (pbonecontroller[j].type & STUDIO_TYPES)
+		switch (boneController.Type & STUDIO_TYPES)
 		{
 		case STUDIO_XR:
 		case STUDIO_YR:
@@ -765,19 +714,21 @@ void StudioModelRenderer::CalcBoneAdj()
 	}
 }
 
-void StudioModelRenderer::CalcBoneQuaternion(const int frame, const float s, const mstudiobone_t* const pbone, const mstudioanim_t* const panim, glm::vec4& q)
+void StudioModelRenderer::CalcBoneQuaternion(const int frame, const float s, const Bone& bone, const Animation& anim, glm::vec4& q)
 {
 	glm::vec3			angle1, angle2;
 
 	for (int j = 0; j < 3; j++)
 	{
-		if (panim->offset[j + 3] == 0)
+		const auto& controller = bone.Controllers[j + 3];
+
+		if (anim.Data[j + 3].empty())
 		{
-			angle2[j] = angle1[j] = pbone->value[j + 3]; // default;
+			angle2[j] = angle1[j] = controller.Value; // default;
 		}
 		else
 		{
-			auto panimvalue = (const mstudioanimvalue_t*)((const byte*)panim + panim->offset[j + 3]);
+			auto panimvalue = anim.Data[j + 3].data();
 			auto k = frame;
 			while (panimvalue->num.total <= k)
 			{
@@ -813,14 +764,14 @@ void StudioModelRenderer::CalcBoneQuaternion(const int frame, const float s, con
 					angle2[j] = panimvalue[panimvalue->num.valid + 2].value;
 				}
 			}
-			angle1[j] = pbone->value[j + 3] + angle1[j] * pbone->scale[j + 3];
-			angle2[j] = pbone->value[j + 3] + angle2[j] * pbone->scale[j + 3];
+			angle1[j] = controller.Value + angle1[j] * controller.Scale;
+			angle2[j] = controller.Value + angle2[j] * controller.Scale;
 		}
 
-		if (pbone->bonecontroller[j + 3] != -1)
+		if (controller.Controller)
 		{
-			angle1[j] += _adj[pbone->bonecontroller[j + 3]];
-			angle2[j] += _adj[pbone->bonecontroller[j + 3]];
+			angle1[j] += _adj[controller.Controller->ArrayIndex];
+			angle2[j] += _adj[controller.Controller->ArrayIndex];
 		}
 	}
 
@@ -838,14 +789,16 @@ void StudioModelRenderer::CalcBoneQuaternion(const int frame, const float s, con
 	}
 }
 
-void StudioModelRenderer::CalcBonePosition(const int frame, const float s, const mstudiobone_t* const pbone, const mstudioanim_t* const panim, glm::vec3& pos)
+void StudioModelRenderer::CalcBonePosition(const int frame, const float s, const Bone& bone, const Animation& anim, glm::vec3& pos)
 {
 	for (int j = 0; j < 3; j++)
 	{
-		pos[j] = pbone->value[j]; // default;
-		if (panim->offset[j] != 0)
+		const auto& controller = bone.Controllers[j];
+
+		pos[j] = controller.Value; // default;
+		if (!anim.Data[j].empty())
 		{
-			auto panimvalue = (mstudioanimvalue_t*)((byte*)panim + panim->offset[j]);
+			auto panimvalue = anim.Data[j].data();
 
 			auto k = frame;
 			// find span of values that includes the frame we want
@@ -860,11 +813,11 @@ void StudioModelRenderer::CalcBonePosition(const int frame, const float s, const
 				// and there's more data in the span
 				if (panimvalue->num.valid > k + 1)
 				{
-					pos[j] += (panimvalue[k + 1].value * (1.0 - s) + s * panimvalue[k + 2].value) * pbone->scale[j];
+					pos[j] += (panimvalue[k + 1].value * (1.0 - s) + s * panimvalue[k + 2].value) * controller.Scale;
 				}
 				else
 				{
-					pos[j] += panimvalue[k + 1].value * pbone->scale[j];
+					pos[j] += panimvalue[k + 1].value * controller.Scale;
 				}
 			}
 			else
@@ -872,17 +825,17 @@ void StudioModelRenderer::CalcBonePosition(const int frame, const float s, const
 				// are we at the end of the repeating values section and there's another section with data?
 				if (panimvalue->num.total <= k + 1)
 				{
-					pos[j] += (panimvalue[panimvalue->num.valid].value * (1.0 - s) + s * panimvalue[panimvalue->num.valid + 2].value) * pbone->scale[j];
+					pos[j] += (panimvalue[panimvalue->num.valid].value * (1.0 - s) + s * panimvalue[panimvalue->num.valid + 2].value) * controller.Scale;
 				}
 				else
 				{
-					pos[j] += panimvalue[panimvalue->num.valid].value * pbone->scale[j];
+					pos[j] += panimvalue[panimvalue->num.valid].value * controller.Scale;
 				}
 			}
 		}
-		if (pbone->bonecontroller[j] != -1)
+		if (controller.Controller)
 		{
-			pos[j] += _adj[pbone->bonecontroller[j]];
+			pos[j] += _adj[controller.Controller->ArrayIndex];
 		}
 	}
 }
@@ -896,7 +849,7 @@ void StudioModelRenderer::SlerpBones(glm::vec4* q1, glm::vec3* pos1, glm::vec4* 
 
 	const float s1 = 1.0 - s;
 
-	for (int i = 0; i < _studioHeader->numbones; i++)
+	for (int i = 0; i < _studioModel->Bones.size(); i++)
 	{
 		QuaternionSlerp(q1[i], q2[i], s, q3);
 		q1[i] = q3;
@@ -910,7 +863,7 @@ void StudioModelRenderer::SetupLighting()
 	_ambientlight = 32;
 	_shadelight = 192;
 
-	for (int i = 0; i < _studioHeader->numbones; i++)
+	for (int i = 0; i < _studioModel->Bones.size(); i++)
 	{
 		VectorIRotate(_lightvec, _bonetransform[i], _blightvec[i]);
 	}
@@ -918,36 +871,25 @@ void StudioModelRenderer::SetupLighting()
 
 void StudioModelRenderer::SetupModel(int bodypart)
 {
-	if (bodypart > _studioHeader->numbodyparts)
+	if (bodypart > _studioModel->Bodyparts.size())
 	{
 		// Con_DPrintf ("StudioModelRenderer::SetupModel: no such bodypart %d\n", bodypart);
 		bodypart = 0;
 	}
 
-	_model = _renderInfo->Model->GetModelByBodyPart(_renderInfo->Bodygroup, bodypart);
+	_model = _studioModel->GetModelByBodyPart(_renderInfo->Bodygroup, bodypart);
 }
 
 unsigned int StudioModelRenderer::DrawPoints(const bool bWireframe)
 {
 	unsigned int uiDrawnPolys = 0;
 
-	auto pvertbone = ((byte*)_studioHeader + _model->vertinfoindex);
-	auto pnormbone = ((byte*)_studioHeader + _model->norminfoindex);
-	auto ptexture = _textureHeader->GetTextures();
+	//TODO: do this earlier
+	_renderInfo->Skin = std::clamp(_renderInfo->Skin, 0, static_cast<int>(_studioModel->SkinFamilies.size()));
 
-	auto pmesh = (mstudiomesh_t*)((byte*)_studioHeader + _model->meshindex);
-
-	auto pstudioverts = (const glm::vec3*)((const byte*)_studioHeader + _model->vertindex);
-	auto pstudionorms = (const glm::vec3*)((const byte*)_studioHeader + _model->normindex);
-
-	auto pskinref = _textureHeader->GetSkins();
-
-	if (_renderInfo->Skin != 0 && _renderInfo->Skin < _textureHeader->numskinfamilies)
-		pskinref += (_renderInfo->Skin * _textureHeader->numskinref);
-
-	for (int i = 0; i < _model->numverts; i++)
+	for (int i = 0; i < _model->Vertices.size(); i++)
 	{
-		VectorTransform(pstudioverts[i], _bonetransform[pvertbone[i]], _xformverts[i]);
+		VectorTransform(_model->Vertices[i].Vertex, _bonetransform[_model->Vertices[i].Bone->Index], _xformverts[i]);
 	}
 
 	SortedMesh meshes[MAXSTUDIOMESHES]{};
@@ -956,40 +898,44 @@ unsigned int StudioModelRenderer::DrawPoints(const bool bWireframe)
 	// clip and draw all triangles
 	//
 
-	glm::vec3* lv = _lightvalues;
-	for (int j = 0; j < _model->nummesh; j++)
-	{
-		int flags = ptexture[pskinref[pmesh[j].skinref]].flags;
+	auto normals = _model->Normals.data();
 
-		meshes[j].Mesh = &pmesh[j];
+	glm::vec3* lv = _lightvalues;
+	for (int j = 0; j < _model->Meshes.size(); j++)
+	{
+		const auto& mesh = _model->Meshes[j];
+
+		const int flags = _studioModel->SkinFamilies[_renderInfo->Skin][mesh.SkinRef]->Flags;
+
+		meshes[j].Mesh = &mesh;
 		meshes[j].Flags = flags;
 
-		for (int i = 0; i < pmesh[j].numnorms; i++, ++lv, ++pstudionorms, pnormbone++)
+		for (int i = 0; i < mesh.NumNorms; i++, ++lv, ++normals)
 		{
-			Lighting(*lv, *pnormbone, flags, *pstudionorms);
+			Lighting(*lv, normals->Bone->Index, flags, normals->Vertex);
 
 			// FIX: move this check out of the inner loop
 			if (flags & STUDIO_NF_CHROME)
 			{
 				auto& c = _chrome[reinterpret_cast<glm::vec3*>(lv) - _lightvalues];
 
-				Chrome(c, *pnormbone, *pstudionorms);
+				Chrome(c, normals->Bone->Index, normals->Vertex);
 			}
 		}
 	}
 
 	//Sort meshes by render modes so additive meshes are drawn after solid meshes.
 	//Masked meshes are drawn before solid meshes.
-	std::stable_sort(meshes, meshes + _model->nummesh, CompareSortedMeshes);
+	std::stable_sort(meshes, meshes + _model->Meshes.size(), CompareSortedMeshes);
 
-	uiDrawnPolys += DrawMeshes(bWireframe, meshes, ptexture, pskinref);
+	uiDrawnPolys += DrawMeshes(bWireframe, meshes);
 
 	glDepthMask(GL_TRUE);
 
 	return uiDrawnPolys;
 }
 
-unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const SortedMesh* pMeshes, const mstudiotexture_t* pTextures, const short* pSkinRef)
+unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const SortedMesh* pMeshes)
 {
 	//Set here since it never changes. Much more efficient.
 	if (bWireframe)
@@ -1002,22 +948,22 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 	//Polygons may overlap, so make sure they can blend together.
 	glDepthFunc(GL_LEQUAL);
 
-	for (int j = 0; j < _model->nummesh; j++)
+	for (int j = 0; j < _model->Meshes.size(); j++)
 	{
-		auto pmesh = pMeshes[j].Mesh;
-		auto ptricmds = (short*)((byte*)_studioHeader + pmesh->triindex);
+		const auto& mesh = *pMeshes[j].Mesh;
+		auto ptricmds = mesh.Triangles.data();
 
-		const mstudiotexture_t& texture = pTextures[pSkinRef[pmesh->skinref]];
+		const auto& texture = *_studioModel->SkinFamilies[_renderInfo->Skin][mesh.SkinRef];
 
-		const auto s = 1.0 / (float)texture.width;
-		const auto t = 1.0 / (float)texture.height;
+		const auto s = 1.0 / (float)texture.Width;
+		const auto t = 1.0 / (float)texture.Height;
 
-		if (texture.flags & STUDIO_NF_ADDITIVE)
+		if (texture.Flags & STUDIO_NF_ADDITIVE)
 			glDepthMask(GL_FALSE);
 		else
 			glDepthMask(GL_TRUE);
 
-		if (texture.flags & STUDIO_NF_ADDITIVE)
+		if (texture.Flags & STUDIO_NF_ADDITIVE)
 		{
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -1030,7 +976,7 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 		else
 			glDisable(GL_BLEND);
 
-		if (texture.flags & STUDIO_NF_MASKED)
+		if (texture.Flags & STUDIO_NF_MASKED)
 		{
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.5f);
@@ -1038,7 +984,7 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 
 		if (!bWireframe)
 		{
-			glBindTexture(GL_TEXTURE_2D, _renderInfo->Model->GetTextureId(pSkinRef[pmesh->skinref]));
+			glBindTexture(GL_TEXTURE_2D, texture.TextureId);
 		}
 
 		int i;
@@ -1061,7 +1007,7 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 			{
 				if (!bWireframe)
 				{
-					if (texture.flags & STUDIO_NF_CHROME)
+					if (texture.Flags & STUDIO_NF_CHROME)
 					{
 						const auto& c = _chrome[ptricmds[1]];
 
@@ -1072,7 +1018,7 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 						glTexCoord2f(ptricmds[2] * s, ptricmds[3] * t);
 					}
 
-					if (texture.flags & STUDIO_NF_ADDITIVE)
+					if (texture.Flags & STUDIO_NF_ADDITIVE)
 					{
 						glColor4f(1.0f, 1.0f, 1.0f, _renderInfo->Transparency);
 					}
@@ -1088,7 +1034,7 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 			glEnd();
 		}
 
-		if (texture.flags & STUDIO_NF_MASKED)
+		if (texture.Flags & STUDIO_NF_MASKED)
 			glDisable(GL_ALPHA_TEST);
 	}
 
@@ -1097,7 +1043,7 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 
 unsigned int StudioModelRenderer::DrawShadows(const bool fixZFighting, const bool wireframe)
 {
-	if (!(_studioHeader->flags & EF_NOSHADELIGHT))
+	if (!(_studioModel->Flags & EF_NOSHADELIGHT))
 	{
 		GLint oldDepthMask;
 		glGetIntegerv(GL_DEPTH_WRITEMASK, &oldDepthMask);
@@ -1163,12 +1109,12 @@ unsigned int StudioModelRenderer::InternalDrawShadows()
 	const auto lightSampleHeight = _renderInfo->Origin.z;
 	const auto shadowHeight = lightSampleHeight + 1.0;
 
-	for (int mesh = 0; mesh < _model->nummesh; ++mesh)
+	for (int i = 0; i < _model->Meshes.size(); ++i)
 	{
-		auto v4 = reinterpret_cast<mstudiomesh_t*>(_studioHeader->GetData() + _model->meshindex) + mesh;
-		drawnPolys += v4->numtris;
+		const auto& mesh = _model->Meshes[i];
+		drawnPolys += mesh.NumTriangles;
 
-		auto triCmds = reinterpret_cast<short*>(_studioHeader->GetData() + v4->triindex);
+		auto triCmds = mesh.Triangles.data();
 
 		for (int i; (i = *triCmds++) != 0;)
 		{

@@ -4,6 +4,7 @@
 
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
+#include "engine/shared/studiomodel/EditableStudioModel.hpp"
 #include "engine/shared/studiomodel/StudioModel.hpp"
 
 #include "game/AnimEvent.hpp"
@@ -73,6 +74,7 @@ public:
 
 private:
 	studiomdl::StudioModel* _model = nullptr;
+	studiomdl::EditableStudioModel* _editableModel = nullptr;
 
 	int		_sequence = 0;				// sequence index
 	int		_bodygroup = 0;				// bodypart selection	
@@ -93,10 +95,14 @@ public:
 	*/
 	studiomdl::StudioModel* GetModel() const { return _model; }
 
+	studiomdl::EditableStudioModel* GetEditableModel() const { return _editableModel; }
+
 	/**
 	*	Sets the model.
 	*/
 	void SetModel(studiomdl::StudioModel* model);
+
+	void SetEditableModel(studiomdl::EditableStudioModel* model);
 
 	/**
 	*	Gets the number of frames that the current sequence has.
