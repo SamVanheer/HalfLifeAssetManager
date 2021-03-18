@@ -630,7 +630,7 @@ void ConvertBonesFromEditable(const EditableStudioModel& studioModel, studiohdr_
 			auto& dest = bones[i];
 
 			UTIL_CopyString(dest.name, source.Name.c_str());
-			dest.parent = source.Parent ? source.Parent->Index : -1;
+			dest.parent = source.Parent ? source.Parent->ArrayIndex : -1;
 			dest.flags = source.Flags;
 
 			for (int j = 0; j < STUDIO_MAX_PER_BONE_CONTROLLERS; ++j)
@@ -688,7 +688,7 @@ void ConvertAttachmentsFromEditable(const EditableStudioModel& studioModel, stud
 		auto& dest = attachments[i];
 
 		UTIL_CopyString(dest.name, source.Name.c_str());
-		dest.bone = source.Bone->Index;
+		dest.bone = source.Bone->ArrayIndex;
 		dest.org = source.Origin;
 		dest.type = source.Type;
 
@@ -713,7 +713,7 @@ void ConvertHitboxesFromEditable(const EditableStudioModel& studioModel, studioh
 		const auto& source = *studioModel.Hitboxes[i];
 		auto& dest = hitboxes[i];
 
-		dest.bone = source.Bone->Index;
+		dest.bone = source.Bone->ArrayIndex;
 		dest.group = source.Group;
 		dest.bbmin = source.Min;
 		dest.bbmax = source.Max;
@@ -980,7 +980,7 @@ void ConvertBodypartsFromEditable(const EditableStudioModel& studioModel, studio
 
 				for (std::size_t j = 0; j < sourceModel.Vertices.size(); ++j)
 				{
-					vertexInfo[j] = sourceModel.Vertices[j].Bone->Index;
+					vertexInfo[j] = sourceModel.Vertices[j].Bone->ArrayIndex;
 				}
 
 				AlignBuffer(buffer);
@@ -994,7 +994,7 @@ void ConvertBodypartsFromEditable(const EditableStudioModel& studioModel, studio
 
 				for (std::size_t j = 0; j < sourceModel.Normals.size(); ++j)
 				{
-					normalInfo[j] = sourceModel.Normals[j].Bone->Index;
+					normalInfo[j] = sourceModel.Normals[j].Bone->ArrayIndex;
 				}
 
 				AlignBuffer(buffer);

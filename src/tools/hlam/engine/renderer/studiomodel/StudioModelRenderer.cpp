@@ -180,13 +180,13 @@ void StudioModelRenderer::DrawSingleBone(ModelRenderInfo& renderInfo, const int 
 
 	const auto& bone = *model->Bones[iBone];
 
-	const auto& boneTransform = _bonetransform[bone.Index];
+	const auto& boneTransform = _bonetransform[bone.ArrayIndex];
 
 	if (bone.Parent)
 	{
 		const auto& parentBone = *bone.Parent;
 
-		const auto& parentBoneTransform = _bonetransform[parentBone.Index];
+		const auto& parentBoneTransform = _bonetransform[parentBone.ArrayIndex];
 
 		glPointSize(10.0f);
 		glColor3f(0, 0.7f, 1);
@@ -237,7 +237,7 @@ void StudioModelRenderer::DrawSingleAttachment(ModelRenderInfo& renderInfo, cons
 
 	const auto& attachment = *_studioModel->Attachments[iAttachment];
 
-	const auto& attachmentBoneTransform = _bonetransform[attachment.Bone->Index];
+	const auto& attachmentBoneTransform = _bonetransform[attachment.Bone->ArrayIndex];
 
 	glm::vec3 v[4];
 	VectorTransform(attachment.Origin, attachmentBoneTransform, v[0]);
@@ -300,7 +300,7 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 
 	const auto v = graphics::CreateBoxFromBounds(hitbox.Min, hitbox.Max);
 
-	const auto& hitboxBoneTransform = _bonetransform[hitbox.Bone->Index];
+	const auto& hitboxBoneTransform = _bonetransform[hitbox.Bone->ArrayIndex];
 
 	std::array<glm::vec3, 8> v2{};
 
@@ -332,7 +332,7 @@ void StudioModelRenderer::DrawBones()
 
 		if (bone.Parent)
 		{
-			const auto& parentBoneTransform = _bonetransform[bone.Parent->Index];
+			const auto& parentBoneTransform = _bonetransform[bone.Parent->ArrayIndex];
 
 			glPointSize(3.0f);
 			glColor3f(1, 0.7f, 0);
@@ -372,7 +372,7 @@ void StudioModelRenderer::DrawAttachments()
 	{
 		const auto& attachment = *_studioModel->Attachments[i];
 
-		const auto& attachmentBoneTransform = _bonetransform[attachment.Bone->Index];
+		const auto& attachmentBoneTransform = _bonetransform[attachment.Bone->ArrayIndex];
 
 		glm::vec3 v[4];
 		VectorTransform(attachment.Origin, attachmentBoneTransform, v[0]);
@@ -438,7 +438,7 @@ void StudioModelRenderer::DrawHitBoxes()
 
 		const auto v = graphics::CreateBoxFromBounds(hitbox.Min, hitbox.Max);
 
-		const auto& hitboxTransform = _bonetransform[hitbox.Bone->Index];
+		const auto& hitboxTransform = _bonetransform[hitbox.Bone->ArrayIndex];
 
 		std::array<glm::vec3, 8> v2{};
 
@@ -468,12 +468,12 @@ void StudioModelRenderer::DrawNormals()
 
 		for (int i = 0; i < _model->Vertices.size(); i++)
 		{
-			VectorTransform(_model->Vertices[i].Vertex, _bonetransform[_model->Vertices[i].Bone->Index], _xformverts[i]);
+			VectorTransform(_model->Vertices[i].Vertex, _bonetransform[_model->Vertices[i].Bone->ArrayIndex], _xformverts[i]);
 		}
 
 		for (int i = 0; i < _model->Normals.size(); i++)
 		{
-			VectorRotate(_model->Normals[i].Vertex, _bonetransform[_model->Normals[i].Bone->Index], _xformnorms[i]);
+			VectorRotate(_model->Normals[i].Vertex, _bonetransform[_model->Normals[i].Bone->ArrayIndex], _xformnorms[i]);
 		}
 
 		for (int j = 0; j < _model->Meshes.size(); j++)
@@ -635,7 +635,7 @@ void StudioModelRenderer::SetUpBones()
 		}
 		else
 		{
-			R_ConcatTransforms(_bonetransform[bone.Parent->Index], bonematrix, _bonetransform[i]);
+			R_ConcatTransforms(_bonetransform[bone.Parent->ArrayIndex], bonematrix, _bonetransform[i]);
 		}
 	}
 }
@@ -889,7 +889,7 @@ unsigned int StudioModelRenderer::DrawPoints(const bool bWireframe)
 
 	for (int i = 0; i < _model->Vertices.size(); i++)
 	{
-		VectorTransform(_model->Vertices[i].Vertex, _bonetransform[_model->Vertices[i].Bone->Index], _xformverts[i]);
+		VectorTransform(_model->Vertices[i].Vertex, _bonetransform[_model->Vertices[i].Bone->ArrayIndex], _xformverts[i]);
 	}
 
 	SortedMesh meshes[MAXSTUDIOMESHES]{};
@@ -912,14 +912,14 @@ unsigned int StudioModelRenderer::DrawPoints(const bool bWireframe)
 
 		for (int i = 0; i < mesh.NumNorms; i++, ++lv, ++normals)
 		{
-			Lighting(*lv, normals->Bone->Index, flags, normals->Vertex);
+			Lighting(*lv, normals->Bone->ArrayIndex, flags, normals->Vertex);
 
 			// FIX: move this check out of the inner loop
 			if (flags & STUDIO_NF_CHROME)
 			{
 				auto& c = _chrome[reinterpret_cast<glm::vec3*>(lv) - _lightvalues];
 
-				Chrome(c, normals->Bone->Index, normals->Vertex);
+				Chrome(c, normals->Bone->ArrayIndex, normals->Vertex);
 			}
 		}
 	}

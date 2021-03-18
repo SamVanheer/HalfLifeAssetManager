@@ -116,7 +116,7 @@ void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 			const auto& hitbox = *model->Hitboxes[listChange.GetSourceIndex()];
 
 			const QSignalBlocker blocker{_ui.Bone};
-			_ui.Bone->setCurrentIndex(hitbox.Bone->Index);
+			_ui.Bone->setCurrentIndex(hitbox.Bone->ArrayIndex);
 
 			UpdateQCString();
 		}
@@ -210,7 +210,7 @@ void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 		const QSignalBlocker maximumY{_ui.MaximumY};
 		const QSignalBlocker maximumZ{_ui.MaximumZ};
 
-		_ui.Bone->setCurrentIndex(hitbox.Bone->Index);
+		_ui.Bone->setCurrentIndex(hitbox.Bone->ArrayIndex);
 
 		_ui.Hitgroup->setValue(hitbox.Group);
 
@@ -238,7 +238,7 @@ void StudioModelHitboxesPanel::OnBoneChanged()
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeHitboxBoneCommand(_asset, _ui.Hitboxes->currentIndex(), hitbox.Bone->Index, _ui.Bone->currentIndex()));
+	_asset->AddUndoCommand(new ChangeHitboxBoneCommand(_asset, _ui.Hitboxes->currentIndex(), hitbox.Bone->ArrayIndex, _ui.Bone->currentIndex()));
 }
 
 void StudioModelHitboxesPanel::OnHitgroupChanged()

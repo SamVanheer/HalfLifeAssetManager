@@ -158,7 +158,7 @@ void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 			const QSignalBlocker bone{_ui.Bone};
 
-			_ui.Bone->setCurrentIndex(attachment.Bone->Index);
+			_ui.Bone->setCurrentIndex(attachment.Bone->ArrayIndex);
 			UpdateQCString();
 		}
 		break;
@@ -221,7 +221,7 @@ void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 
 		_ui.Name->setText(attachment.Name.c_str());
 		_ui.Type->setValue(attachment.Type);
-		_ui.Bone->setCurrentIndex(attachment.Bone->Index);
+		_ui.Bone->setCurrentIndex(attachment.Bone->ArrayIndex);
 
 		_ui.OriginX->setValue(attachment.Origin[0]);
 		_ui.OriginY->setValue(attachment.Origin[1]);
@@ -264,7 +264,7 @@ void StudioModelAttachmentsPanel::OnBoneChanged()
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeAttachmentBoneCommand(_asset, _ui.Attachments->currentIndex(), attachment.Bone->Index, _ui.Bone->currentIndex()));
+	_asset->AddUndoCommand(new ChangeAttachmentBoneCommand(_asset, _ui.Attachments->currentIndex(), attachment.Bone->ArrayIndex, _ui.Bone->currentIndex()));
 }
 
 void StudioModelAttachmentsPanel::OnOriginChanged()

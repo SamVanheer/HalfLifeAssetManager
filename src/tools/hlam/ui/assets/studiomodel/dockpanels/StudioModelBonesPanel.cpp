@@ -179,7 +179,7 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 			const auto& bone = *model->Bones[listChange.GetSourceIndex()];
 
-			_ui.ParentBone->setCurrentIndex(bone.Parent ? (bone.Parent->Index + ParentBoneOffset) : 0);
+			_ui.ParentBone->setCurrentIndex(bone.Parent ? (bone.Parent->ArrayIndex + ParentBoneOffset) : 0);
 		}
 		break;
 	}
@@ -257,7 +257,7 @@ void StudioModelBonesPanel::OnBoneChanged(int index)
 		const QSignalBlocker rotationScaleZ{_ui.RotationScaleZ};
 
 		_ui.BoneName->setText(bone.Name.c_str());
-		_ui.ParentBone->setCurrentIndex(bone.Parent ? (bone.Parent->Index + ParentBoneOffset) : 0);
+		_ui.ParentBone->setCurrentIndex(bone.Parent ? (bone.Parent->ArrayIndex + ParentBoneOffset) : 0);
 		_ui.BoneFlags->setValue(bone.Flags);
 
 		SyncBonePropertiesToUI(bone, _ui);
@@ -289,7 +289,7 @@ void StudioModelBonesPanel::OnBoneParentChanged(int index)
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeBoneParentCommand(_asset, _ui.Bones->currentIndex(), bone.Parent ? bone.Parent->Index : -1, index - ParentBoneOffset));
+	_asset->AddUndoCommand(new ChangeBoneParentCommand(_asset, _ui.Bones->currentIndex(), bone.Parent ? bone.Parent->ArrayIndex : -1, index - ParentBoneOffset));
 }
 
 void StudioModelBonesPanel::OnBoneFlagsChanged()

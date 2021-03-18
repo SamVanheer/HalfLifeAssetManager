@@ -45,7 +45,7 @@ struct Bone
 	std::array<BoneControllerData, STUDIO_MAX_PER_BONE_CONTROLLERS> Controllers;
 
 	//Index of this bone. Always use this for indexed operations
-	int Index = 0;
+	int ArrayIndex = 0;
 };
 
 struct Hitbox
