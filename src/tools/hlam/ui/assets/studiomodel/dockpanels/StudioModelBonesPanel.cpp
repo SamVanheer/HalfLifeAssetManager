@@ -15,23 +15,23 @@ namespace ui::assets::studiomodel
 //Parent indices are offset by one so -1 becomes 0, 0 becomes 1, etc
 constexpr int ParentBoneOffset = 1;
 
-static void SyncBonePropertiesToUI(const mstudiobone_t& bone, Ui_StudioModelBonesPanel& ui)
+static void SyncBonePropertiesToUI(const studiomdl::Bone& bone, Ui_StudioModelBonesPanel& ui)
 {
-	ui.PositionX->setValue(bone.value[0]);
-	ui.PositionY->setValue(bone.value[1]);
-	ui.PositionZ->setValue(bone.value[2]);
+	ui.PositionX->setValue(bone.Controllers[0].Value);
+	ui.PositionY->setValue(bone.Controllers[1].Value);
+	ui.PositionZ->setValue(bone.Controllers[2].Value);
 
-	ui.PositionScaleX->setValue(bone.scale[0]);
-	ui.PositionScaleY->setValue(bone.scale[1]);
-	ui.PositionScaleZ->setValue(bone.scale[2]);
+	ui.PositionScaleX->setValue(bone.Controllers[0].Scale);
+	ui.PositionScaleY->setValue(bone.Controllers[1].Scale);
+	ui.PositionScaleZ->setValue(bone.Controllers[2].Scale);
 
-	ui.RotationX->setValue(bone.value[3]);
-	ui.RotationY->setValue(bone.value[4]);
-	ui.RotationZ->setValue(bone.value[5]);
+	ui.RotationX->setValue(bone.Controllers[3].Value);
+	ui.RotationY->setValue(bone.Controllers[4].Value);
+	ui.RotationZ->setValue(bone.Controllers[5].Value);
 
-	ui.RotationScaleX->setValue(bone.scale[3]);
-	ui.RotationScaleY->setValue(bone.scale[4]);
-	ui.RotationScaleZ->setValue(bone.scale[5]);
+	ui.RotationScaleX->setValue(bone.Controllers[3].Scale);
+	ui.RotationScaleY->setValue(bone.Controllers[4].Scale);
+	ui.RotationScaleZ->setValue(bone.Controllers[5].Scale);
 }
 
 StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* parent)
@@ -99,21 +99,19 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 	connect(_ui.RotationScaleY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
 	connect(_ui.RotationScaleZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
 
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	const auto header = model->GetStudioHeader();
-
-	this->setEnabled(header->numbones > 0);
+	this->setEnabled(!model->Bones.empty());
 
 	QStringList bones;
 
-	bones.reserve(header->numbones + 1);
+	bones.reserve(model->Bones.size() + 1);
 
 	bones.append("None (-1)");
 
-	for (int i = 0; i < header->numbones; ++i)
+	for (int i = 0; i < model->Bones.size(); ++i)
 	{
-		bones.append(QString{"%1 (%2)"}.arg(header->GetBone(i)->name).arg(i));
+		bones.append(QString{"%1 (%2)"}.arg(model->Bones[i]->Name.c_str()).arg(i));
 	}
 
 	//Set up this list first so when the first bone is selected by _ui.Bones->addItems it has everything set up properly
@@ -138,9 +136,7 @@ StudioModelBonesPanel::~StudioModelBonesPanel() = default;
 
 void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
-	const auto header = model->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -151,21 +147,21 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
 
-		const auto bone = header->GetBone(listChange.GetSourceIndex());
+		const auto& bone = *model->Bones[listChange.GetSourceIndex()];
 
-		const auto newName{QString{"%1 (%2)"}.arg(bone->name).arg(listChange.GetSourceIndex())};
+		const auto newName{QString{"%1 (%2)"}.arg(bone.Name.c_str()).arg(listChange.GetSourceIndex())};
 
 		_ui.Bones->setItemText(listChange.GetSourceIndex(), newName);
 		
 		if (_ui.Bones->currentIndex() == listChange.GetSourceIndex())
 		{
-			const QString text{bone->name};
+			const QString text{bone.Name.c_str()};
 
 			//Avoid resetting the edit position
 			if (_ui.BoneName->text() != text)
 			{
 				const QSignalBlocker boneName{_ui.BoneName};
-				_ui.BoneName->setText(bone->name);
+				_ui.BoneName->setText(bone.Name.c_str());
 			}
 		}
 
@@ -181,9 +177,9 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 		{
 			const QSignalBlocker parentBone{_ui.ParentBone};
 
-			const auto bone = header->GetBone(listChange.GetSourceIndex());
+			const auto& bone = *model->Bones[listChange.GetSourceIndex()];
 
-			_ui.ParentBone->setCurrentIndex(bone->parent + ParentBoneOffset);
+			_ui.ParentBone->setCurrentIndex(bone.Parent ? (bone.Parent->Index + ParentBoneOffset) : 0);
 		}
 		break;
 	}
@@ -196,9 +192,9 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 		{
 			const QSignalBlocker flags{_ui.BoneFlags};
 
-			const auto bone = header->GetBone(listChange.GetSourceIndex());
+			const auto& bone = *model->Bones[listChange.GetSourceIndex()];
 
-			_ui.BoneFlags->setValue(bone->flags);
+			_ui.BoneFlags->setValue(bone.Flags);
 		}
 		break;
 	}
@@ -222,9 +218,9 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 			const QSignalBlocker rotationScaleY{_ui.RotationScaleY};
 			const QSignalBlocker rotationScaleZ{_ui.RotationScaleZ};
 
-			const auto bone = header->GetBone(listChange.GetSourceIndex());
+			const auto& bone = *model->Bones[listChange.GetSourceIndex()];
 			
-			SyncBonePropertiesToUI(*bone, _ui);
+			SyncBonePropertiesToUI(bone, _ui);
 		}
 		break;
 	}
@@ -240,11 +236,8 @@ void StudioModelBonesPanel::OnDockPanelChanged(QWidget* current, QWidget* previo
 
 void StudioModelBonesPanel::OnBoneChanged(int index)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
-	const auto header = model->GetStudioHeader();
-
-	const auto bone = header->GetBone(index);
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& bone = *model->Bones[index];
 
 	{
 		const QSignalBlocker boneName{_ui.BoneName};
@@ -263,11 +256,11 @@ void StudioModelBonesPanel::OnBoneChanged(int index)
 		const QSignalBlocker rotationScaleY{_ui.RotationScaleY};
 		const QSignalBlocker rotationScaleZ{_ui.RotationScaleZ};
 
-		_ui.BoneName->setText(bone->name);
-		_ui.ParentBone->setCurrentIndex(bone->parent + ParentBoneOffset);
-		_ui.BoneFlags->setValue(bone->flags);
+		_ui.BoneName->setText(bone.Name.c_str());
+		_ui.ParentBone->setCurrentIndex(bone.Parent ? (bone.Parent->Index + ParentBoneOffset) : 0);
+		_ui.BoneFlags->setValue(bone.Flags);
 
-		SyncBonePropertiesToUI(*bone, _ui);
+		SyncBonePropertiesToUI(bone, _ui);
 	}
 
 	OnHightlightBoneChanged();
@@ -280,13 +273,10 @@ void StudioModelBonesPanel::OnHightlightBoneChanged()
 
 void StudioModelBonesPanel::OnBoneNameChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
-	const auto header = model->GetStudioHeader();
-
-	const auto bone = header->GetBone(_ui.Bones->currentIndex());
-
-	_asset->AddUndoCommand(new BoneRenameCommand(_asset, _ui.Bones->currentIndex(), bone->name, _ui.BoneName->text()));
+	_asset->AddUndoCommand(new BoneRenameCommand(_asset, _ui.Bones->currentIndex(), bone.Name.c_str(), _ui.BoneName->text()));
 }
 
 void StudioModelBonesPanel::OnBoneNameRejected()
@@ -296,43 +286,34 @@ void StudioModelBonesPanel::OnBoneNameRejected()
 
 void StudioModelBonesPanel::OnBoneParentChanged(int index)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
-	const auto header = model->GetStudioHeader();
-
-	const auto bone = header->GetBone(_ui.Bones->currentIndex());
-
-	_asset->AddUndoCommand(new ChangeBoneParentCommand(_asset, _ui.Bones->currentIndex(), bone->parent, index - ParentBoneOffset));
+	_asset->AddUndoCommand(new ChangeBoneParentCommand(_asset, _ui.Bones->currentIndex(), bone.Parent ? bone.Parent->Index : -1, index - ParentBoneOffset));
 }
 
 void StudioModelBonesPanel::OnBoneFlagsChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
-	const auto header = model->GetStudioHeader();
-
-	const auto bone = header->GetBone(_ui.Bones->currentIndex());
-
-	_asset->AddUndoCommand(new ChangeBoneFlagsCommand(_asset, _ui.Bones->currentIndex(), bone->flags, _ui.BoneFlags->value()));
+	_asset->AddUndoCommand(new ChangeBoneFlagsCommand(_asset, _ui.Bones->currentIndex(), bone.Flags, _ui.BoneFlags->value()));
 }
 
 void StudioModelBonesPanel::OnBonePropertyChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-
-	const auto header = model->GetStudioHeader();
-
-	const auto bone = header->GetBone(_ui.Bones->currentIndex());
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeBonePropertyCommand(_asset, _ui.Bones->currentIndex(),
 		{
 			{
-				glm::vec3{bone->value[0], bone->value[1], bone->value[2]},
-				glm::vec3{bone->value[3], bone->value[4], bone->value[5]}
+				glm::vec3{bone.Controllers[0].Value, bone.Controllers[1].Value, bone.Controllers[2].Value},
+				glm::vec3{bone.Controllers[3].Value, bone.Controllers[4].Value, bone.Controllers[5].Value}
 			},
 			{
-				glm::vec3{bone->scale[0], bone->scale[1], bone->scale[2]},
-				glm::vec3{bone->scale[3], bone->scale[4], bone->scale[5]}
+				glm::vec3{bone.Controllers[0].Scale, bone.Controllers[1].Scale, bone.Controllers[2].Scale},
+				glm::vec3{bone.Controllers[3].Scale, bone.Controllers[4].Scale, bone.Controllers[5].Scale}
 			}
 		},
 		{
