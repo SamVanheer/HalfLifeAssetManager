@@ -10,8 +10,6 @@
 #include "ui/IInputSink.hpp"
 
 class StudioModelEntity;
-struct mstudiotexture_t;
-struct studiohdr_t;
 
 namespace studiomdl
 {
