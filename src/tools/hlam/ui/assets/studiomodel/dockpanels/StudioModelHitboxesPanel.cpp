@@ -49,22 +49,20 @@ StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.MaximumY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelHitboxesPanel::OnBoundsChanged);
 	connect(_ui.MaximumZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelHitboxesPanel::OnBoundsChanged);
 
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	const auto header = model->GetStudioHeader();
-
-	this->setEnabled(header->numhitboxes > 0);
+	this->setEnabled(!model->Hitboxes.empty());
 
 	{
 		const QSignalBlocker blocker{_ui.Bone};
 
 		QStringList bones;
 
-		bones.reserve(header->numbones);
+		bones.reserve(model->Bones.size());
 
-		for (int i = 0; i < header->numbones; ++i)
+		for (int i = 0; i < model->Bones.size(); ++i)
 		{
-			bones.append(QString{"%1 (%2)"}.arg(header->GetBone(i)->name).arg(i));
+			bones.append(QString{"%1 (%2)"}.arg(model->Bones[i]->Name.c_str()).arg(i));
 		}
 
 		_ui.Bone->addItems(bones);
@@ -73,13 +71,13 @@ StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset, QWid
 		_ui.Bone->setCurrentIndex(-1);
 	}
 
-	if (header->numhitboxes > 0)
+	if (!model->Hitboxes.empty())
 	{
 		QStringList hitboxes;
 
-		hitboxes.reserve(header->numhitboxes);
+		hitboxes.reserve(model->Hitboxes.size());
 
-		for (int i = 0; i < header->numhitboxes; ++i)
+		for (int i = 0; i < model->Hitboxes.size(); ++i)
 		{
 			hitboxes.append(QString{"Hitbox %1"}.arg(i + 1));
 		}
@@ -92,8 +90,7 @@ StudioModelHitboxesPanel::~StudioModelHitboxesPanel() = default;
 
 void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -103,9 +100,9 @@ void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
 
-		const auto bone = header->GetBone(listChange.GetSourceIndex());
+		const auto& bone = *model->Bones[listChange.GetSourceIndex()];
 
-		_ui.Bone->setItemText(listChange.GetSourceIndex(), QString{"%1 (%2)"}.arg(bone->name).arg(listChange.GetSourceIndex()));
+		_ui.Bone->setItemText(listChange.GetSourceIndex(), QString{"%1 (%2)"}.arg(bone.Name.c_str()).arg(listChange.GetSourceIndex()));
 		UpdateQCString();
 		break;
 	}
@@ -116,10 +113,10 @@ void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.Hitboxes->currentIndex())
 		{
-			const auto hitbox = header->GetHitBox(listChange.GetSourceIndex());
+			const auto& hitbox = *model->Hitboxes[listChange.GetSourceIndex()];
 
 			const QSignalBlocker blocker{_ui.Bone};
-			_ui.Bone->setCurrentIndex(hitbox->bone);
+			_ui.Bone->setCurrentIndex(hitbox.Bone->Index);
 
 			UpdateQCString();
 		}
@@ -132,10 +129,10 @@ void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.Hitboxes->currentIndex())
 		{
-			const auto hitbox = header->GetHitBox(listChange.GetSourceIndex());
+			const auto& hitbox = *model->Hitboxes[listChange.GetSourceIndex()];
 
 			const QSignalBlocker blocker{_ui.Hitgroup};
-			_ui.Hitgroup->setValue(hitbox->group);
+			_ui.Hitgroup->setValue(hitbox.Group);
 
 			UpdateQCString();
 		}
@@ -148,7 +145,7 @@ void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.Hitboxes->currentIndex())
 		{
-			const auto hitbox = header->GetHitBox(listChange.GetSourceIndex());
+			const auto& hitbox = *model->Hitboxes[listChange.GetSourceIndex()];
 
 			const QSignalBlocker minimumX{_ui.MinimumX};
 			const QSignalBlocker minimumY{_ui.MinimumY};
@@ -158,13 +155,13 @@ void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 			const QSignalBlocker maximumY{_ui.MaximumY};
 			const QSignalBlocker maximumZ{_ui.MaximumZ};
 
-			_ui.MinimumX->setValue(hitbox->bbmin[0]);
-			_ui.MinimumY->setValue(hitbox->bbmin[1]);
-			_ui.MinimumZ->setValue(hitbox->bbmin[2]);
+			_ui.MinimumX->setValue(hitbox.Min[0]);
+			_ui.MinimumY->setValue(hitbox.Min[1]);
+			_ui.MinimumZ->setValue(hitbox.Min[2]);
 
-			_ui.MaximumX->setValue(hitbox->bbmax[0]);
-			_ui.MaximumY->setValue(hitbox->bbmax[1]);
-			_ui.MaximumZ->setValue(hitbox->bbmax[2]);
+			_ui.MaximumX->setValue(hitbox.Max[0]);
+			_ui.MaximumY->setValue(hitbox.Max[1]);
+			_ui.MaximumZ->setValue(hitbox.Max[2]);
 
 			UpdateQCString();
 		}
@@ -175,20 +172,18 @@ void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 void StudioModelHitboxesPanel::UpdateQCString()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
-	const auto hitbox = header->GetHitBox(_ui.Hitboxes->currentIndex());
-	const auto bone = header->GetBone(hitbox->bone);
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
 
 	_ui.QCString->setText(QString{"$hbox %1 \"%2\" %3 %4 %5 %6 %7 %8"}
-		.arg(hitbox->group)
-		.arg(bone->name)
-		.arg(hitbox->bbmin[0], 0, 'f', 6)
-		.arg(hitbox->bbmin[1], 0, 'f', 6)
-		.arg(hitbox->bbmin[2], 0, 'f', 6)
-		.arg(hitbox->bbmax[0], 0, 'f', 6)
-		.arg(hitbox->bbmax[1], 0, 'f', 6)
-		.arg(hitbox->bbmax[2], 0, 'f', 6));
+		.arg(hitbox.Group)
+		.arg(hitbox.Bone->Name.c_str())
+		.arg(hitbox.Min[0], 0, 'f', 6)
+		.arg(hitbox.Min[1], 0, 'f', 6)
+		.arg(hitbox.Min[2], 0, 'f', 6)
+		.arg(hitbox.Max[0], 0, 'f', 6)
+		.arg(hitbox.Max[1], 0, 'f', 6)
+		.arg(hitbox.Max[2], 0, 'f', 6));
 }
 
 void StudioModelHitboxesPanel::OnDockPanelChanged(QWidget* current, QWidget* previous)
@@ -200,9 +195,8 @@ void StudioModelHitboxesPanel::OnDockPanelChanged(QWidget* current, QWidget* pre
 
 void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
-	const auto hitbox = header->GetHitBox(index);
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& hitbox = *model->Hitboxes[index];
 
 	{
 		const QSignalBlocker bone{_ui.Bone};
@@ -216,17 +210,17 @@ void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 		const QSignalBlocker maximumY{_ui.MaximumY};
 		const QSignalBlocker maximumZ{_ui.MaximumZ};
 
-		_ui.Bone->setCurrentIndex(hitbox->bone);
+		_ui.Bone->setCurrentIndex(hitbox.Bone->Index);
 
-		_ui.Hitgroup->setValue(hitbox->group);
+		_ui.Hitgroup->setValue(hitbox.Group);
 
-		_ui.MinimumX->setValue(hitbox->bbmin[0]);
-		_ui.MinimumY->setValue(hitbox->bbmin[1]);
-		_ui.MinimumZ->setValue(hitbox->bbmin[2]);
+		_ui.MinimumX->setValue(hitbox.Min[0]);
+		_ui.MinimumY->setValue(hitbox.Min[1]);
+		_ui.MinimumZ->setValue(hitbox.Min[2]);
 
-		_ui.MaximumX->setValue(hitbox->bbmax[0]);
-		_ui.MaximumY->setValue(hitbox->bbmax[1]);
-		_ui.MaximumZ->setValue(hitbox->bbmax[2]);
+		_ui.MaximumX->setValue(hitbox.Max[0]);
+		_ui.MaximumY->setValue(hitbox.Max[1]);
+		_ui.MaximumZ->setValue(hitbox.Max[2]);
 	}
 
 	UpdateQCString();
@@ -241,32 +235,29 @@ void StudioModelHitboxesPanel::OnHighlightHitboxChanged()
 
 void StudioModelHitboxesPanel::OnBoneChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
-	const auto hitbox = header->GetHitBox(_ui.Hitboxes->currentIndex());
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeHitboxBoneCommand(_asset, _ui.Hitboxes->currentIndex(), hitbox->bone, _ui.Bone->currentIndex()));
+	_asset->AddUndoCommand(new ChangeHitboxBoneCommand(_asset, _ui.Hitboxes->currentIndex(), hitbox.Bone->Index, _ui.Bone->currentIndex()));
 }
 
 void StudioModelHitboxesPanel::OnHitgroupChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
-	const auto hitbox = header->GetHitBox(_ui.Hitboxes->currentIndex());
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeHitboxHitgroupCommand(_asset, _ui.Hitboxes->currentIndex(), hitbox->group, _ui.Hitgroup->value()));
+	_asset->AddUndoCommand(new ChangeHitboxHitgroupCommand(_asset, _ui.Hitboxes->currentIndex(), hitbox.Group, _ui.Hitgroup->value()));
 }
 
 void StudioModelHitboxesPanel::OnBoundsChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
-	const auto hitbox = header->GetHitBox(_ui.Hitboxes->currentIndex());
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeHitboxBoundsCommand(_asset, _ui.Hitboxes->currentIndex(),
 		std::make_pair(
-			glm::vec3{hitbox->bbmin[0], hitbox->bbmin[1], hitbox->bbmin[2]},
-			glm::vec3{hitbox->bbmax[0], hitbox->bbmax[1], hitbox->bbmax[2]}),
+			glm::vec3{hitbox.Min[0], hitbox.Min[1], hitbox.Min[2]},
+			glm::vec3{hitbox.Max[0], hitbox.Max[1], hitbox.Max[2]}),
 		std::make_pair(
 			glm::vec3{_ui.MinimumX->value(), _ui.MinimumY->value(), _ui.MinimumZ->value()},
 			glm::vec3{_ui.MaximumX->value(), _ui.MaximumY->value(), _ui.MaximumZ->value()})));
