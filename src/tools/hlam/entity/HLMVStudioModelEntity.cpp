@@ -24,9 +24,9 @@ bool HLMVStudioModelEntity::Spawn()
 	SetController(3, 0.0f);
 	SetMouth(0.0f);
 
-	const studiohdr_t* header = GetModel()->GetStudioHeader();
+	auto model = GetEditableModel();
 
-	for (int n = 0; n < header->numbodyparts; ++n)
+	for (int n = 0; n < model->Bodyparts.size(); ++n)
 	{
 		SetBodygroup(n, 0);
 	}

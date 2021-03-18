@@ -23,7 +23,7 @@ StudioModelExportUVMeshDialog::StudioModelExportUVMeshDialog(
 {
 	_ui.setupUi(this);
 
-	const auto studioTexture = entity->GetModel()->GetTextureHeader()->GetTexture(_textureIndex);
+	const auto& studioTexture = *entity->GetEditableModel()->Textures[_textureIndex];
 
 	connect(_ui.FileName, &QLineEdit::textChanged, this, &StudioModelExportUVMeshDialog::OnFileNameChanged);
 	connect(_ui.BrowseFileName, &QPushButton::clicked, this, &StudioModelExportUVMeshDialog::OnBrowseFileName);
@@ -34,7 +34,7 @@ StudioModelExportUVMeshDialog::StudioModelExportUVMeshDialog(
 	connect(_ui.AntiAliasLines, &QCheckBox::stateChanged, this, &StudioModelExportUVMeshDialog::UpdatePreview);
 	connect(_ui.AddAlphaChannel, &QCheckBox::stateChanged, this, &StudioModelExportUVMeshDialog::UpdatePreview);
 
-	_ui.TextureNameLabel->setText(studioTexture->name);
+	_ui.TextureNameLabel->setText(studioTexture.Name.c_str());
 
 	_ui.OkButton->setEnabled(false);
 }

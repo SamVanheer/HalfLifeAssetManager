@@ -14,20 +14,19 @@ StudioModelModelInfoPanel::StudioModelModelInfoPanel(StudioModelAsset* asset, QW
 	_ui.setupUi(this);
 
 	auto entity = _asset->GetScene()->GetEntity();
-	auto model = entity->GetModel()->GetStudioHeader();
-	auto textureHeader = entity->GetModel()->GetTextureHeader();
+	auto model = entity->GetEditableModel();
 
-	_ui.BonesValue->setText(QString::number(model->numbones));
-	_ui.BoneControllersValue->setText(QString::number(model->numbonecontrollers));
-	_ui.HitBoxesValue->setText(QString::number(model->numhitboxes));
-	_ui.SequencesValue->setText(QString::number(model->numseq));
-	_ui.SequenceGroupsValue->setText(QString::number(model->numseqgroups));
+	_ui.BonesValue->setText(QString::number(model->Bones.size()));
+	_ui.BoneControllersValue->setText(QString::number(model->BoneControllers.size()));
+	_ui.HitBoxesValue->setText(QString::number(model->Hitboxes.size()));
+	_ui.SequencesValue->setText(QString::number(model->Sequences.size()));
+	_ui.SequenceGroupsValue->setText(QString::number(model->SequenceGroups.size()));
 
-	_ui.TexturesValue->setText(QString::number(textureHeader->numtextures));
-	_ui.SkinFamiliesValue->setText(QString::number(textureHeader->numskinfamilies));
-	_ui.BodyPartsValue->setText(QString::number(model->numbodyparts));
-	_ui.AttachmentsValue->setText(QString::number(model->numattachments));
-	_ui.TransitionsValue->setText(QString::number(model->numtransitions));
+	_ui.TexturesValue->setText(QString::number(model->Textures.size()));
+	_ui.SkinFamiliesValue->setText(QString::number(model->SkinFamilies.size()));
+	_ui.BodyPartsValue->setText(QString::number(model->Bodyparts.size()));
+	_ui.AttachmentsValue->setText(QString::number(model->Attachments.size()));
+	_ui.TransitionsValue->setText(QString::number(model->Transitions.size()));
 
 	//TODO: listen to changes made to the model to update values
 }
