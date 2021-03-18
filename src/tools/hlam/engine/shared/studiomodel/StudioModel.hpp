@@ -108,23 +108,6 @@ public:
 
 	void ReuploadTextures(graphics::TextureLoader& textureLoader);
 
-	std::vector<int> GetRootBoneIndices()
-	{
-		std::vector<int> bones;
-
-		for (int i = 0; i < _studioHeader->numbones; ++i)
-		{
-			auto bone = _studioHeader->GetBone(i);
-
-			if (bone->parent == -1)
-			{
-				bones.emplace_back(i);
-			}
-		}
-
-		return bones;
-	}
-
 private:
 	std::string _fileName;
 
@@ -137,27 +120,6 @@ private:
 
 	bool _isDol;
 };
-
-struct ScaleMeshesData
-{
-	std::vector<std::vector<glm::vec3>> Vertices;
-	std::vector<std::pair<glm::vec3, glm::vec3>> Hitboxes;
-	std::vector<std::pair<glm::vec3, glm::vec3>> SequenceBBoxes;
-};
-
-std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const StudioModel& studioModel, const float scale);
-
-void ApplyScaleMeshesData(StudioModel& studioModel, const ScaleMeshesData& data);
-
-struct ScaleBonesBoneData
-{
-	glm::vec3 Position;
-	glm::vec3 Scale;
-};
-
-std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> CalculateScaledBonesData(const StudioModel& studioModel, const float scale);
-
-void ApplyScaleBonesData(StudioModel& studioModel, const std::vector<studiomdl::ScaleBonesBoneData>& data);
 
 /**
 *	Returns the string representation for a studio control value.

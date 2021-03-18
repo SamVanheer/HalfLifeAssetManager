@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "engine/shared/studiomodel/StudioModel.hpp"
+#include "entity/HLMVStudioModelEntity.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 
@@ -189,12 +190,12 @@ void ChangeModelOriginCommand::Apply(const ChangeModelOriginData& oldValue, cons
 
 void ChangeModelMeshesScaleCommand::Apply(const studiomdl::ScaleMeshesData& oldValue, const studiomdl::ScaleMeshesData& newValue)
 {
-	ApplyScaleMeshesData(*_asset->GetStudioModel(), newValue);
+	ApplyScaleMeshesData(*_asset->GetScene()->GetEntity()->GetEditableModel(), newValue);
 }
 
 void ChangeModelBonesScaleCommand::Apply(const std::vector<studiomdl::ScaleBonesBoneData>& oldValue, const std::vector<studiomdl::ScaleBonesBoneData>& newValue)
 {
-	ApplyScaleBonesData(*_asset->GetStudioModel(), newValue);
+	ApplyScaleBonesData(*_asset->GetScene()->GetEntity()->GetEditableModel(), newValue);
 }
 
 void ChangeHitboxBoneCommand::Apply(int index, const int& oldValue, const int& newValue)

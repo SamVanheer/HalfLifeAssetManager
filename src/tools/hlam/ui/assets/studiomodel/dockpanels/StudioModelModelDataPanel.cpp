@@ -102,29 +102,29 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	_ui.HitboxCollision->setProperty(CheckBoxModelFlagProperty.data(), EF_HITBOXCOLLISIONS);
 	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty.data(), EF_FORCESKYLIGHT);
 
-	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	SetFlags(header->flags);
+	SetFlags(model->Flags);
 
 	{
 		const QSignalBlocker blocker{_ui.EyePosition};
-		_ui.EyePosition->SetValue(header->eyeposition);
+		_ui.EyePosition->SetValue(model->EyePosition);
 	}
 
 	{
 		const QSignalBlocker min{_ui.BBoxMin};
 		const QSignalBlocker max{_ui.BBoxMax};
 
-		_ui.BBoxMin->SetValue(header->min);
-		_ui.BBoxMax->SetValue(header->max);
+		_ui.BBoxMin->SetValue(model->BoundingMin);
+		_ui.BBoxMax->SetValue(model->BoundingMax);
 	}
 
 	{
 		const QSignalBlocker min{_ui.CBoxMin};
 		const QSignalBlocker max{_ui.CBoxMax};
 
-		_ui.CBoxMin->SetValue(header->bbmin);
-		_ui.CBoxMax->SetValue(header->bbmax);
+		_ui.CBoxMin->SetValue(model->ClippingMin);
+		_ui.CBoxMax->SetValue(model->ClippingMax);
 	}
 }
 
@@ -188,7 +188,7 @@ void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 
 	case ModelChangeId::ChangeModelFlags:
 	{
-		SetFlags(_asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->flags);
+		SetFlags(_asset->GetScene()->GetEntity()->GetEditableModel()->Flags);
 		break;
 	}
 	}
@@ -225,8 +225,7 @@ void StudioModelModelDataPanel::SetFlags(int flags)
 
 void StudioModelModelDataPanel::OnOriginChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	const glm::vec3 absoluteOffset{_ui.OriginX->value(), _ui.OriginY->value(), _ui.OriginZ->value()};
 	const auto relativeOffset{absoluteOffset - _oldOffset};
@@ -241,13 +240,13 @@ void StudioModelModelDataPanel::OnOriginChanged()
 
 	for (auto rootBoneIndex : rootBoneIndices)
 	{
-		const auto rootBone = header->GetBone(rootBoneIndex);
+		const auto& rootBone = *model->Bones[rootBoneIndex];
 
 		oldRootBonePositions.emplace_back(
 			RootBoneData
 			{
 				rootBoneIndex,
-				{rootBone->value[0], rootBone->value[1], rootBone->value[2]}
+				{rootBone.Controllers[0].Value, rootBone.Controllers[1].Value, rootBone.Controllers[2].Value}
 			}
 		);
 
@@ -256,9 +255,9 @@ void StudioModelModelDataPanel::OnOriginChanged()
 			{
 				rootBoneIndex,
 				{
-					rootBone->value[0] + relativeOffset[0],
-					rootBone->value[1] + relativeOffset[1],
-					rootBone->value[2] + relativeOffset[2]
+					rootBone.Controllers[0].Value + relativeOffset[0],
+					rootBone.Controllers[1].Value + relativeOffset[1],
+					rootBone.Controllers[2].Value + relativeOffset[2]
 				}
 			});
 	}
@@ -274,7 +273,7 @@ void StudioModelModelDataPanel::OnScaleMesh()
 {
 	auto entity = _asset->GetScene()->GetEntity();
 
-	auto data{studiomdl::CalculateScaledMeshesData(*entity->GetModel(), _ui.ScaleMeshSpinner->value())};
+	auto data{studiomdl::CalculateScaledMeshesData(*entity->GetEditableModel(), _ui.ScaleMeshSpinner->value())};
 
 	_asset->AddUndoCommand(new ChangeModelMeshesScaleCommand(_asset, std::move(data.first), std::move(data.second)));
 }
@@ -283,7 +282,7 @@ void StudioModelModelDataPanel::OnScaleBones()
 {
 	auto entity = _asset->GetScene()->GetEntity();
 
-	auto data{studiomdl::CalculateScaledBonesData(*entity->GetModel(), _ui.ScaleBonesSpinner->value())};
+	auto data{studiomdl::CalculateScaledBonesData(*entity->GetEditableModel(), _ui.ScaleBonesSpinner->value())};
 
 	_asset->AddUndoCommand(new ChangeModelBonesScaleCommand(_asset, std::move(data.first), std::move(data.second)));
 }
@@ -294,9 +293,9 @@ void StudioModelModelDataPanel::OnFlagChanged(int state)
 
 	const auto flagValue = checkBox->property(CheckBoxModelFlagProperty.data()).toInt();
 
-	const auto model = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	int newFlags = model->flags;
+	int newFlags = model->Flags;
 
 	if (state == Qt::CheckState::Checked)
 	{
@@ -307,35 +306,35 @@ void StudioModelModelDataPanel::OnFlagChanged(int state)
 		newFlags &= ~flagValue;
 	}
 
-	_asset->AddUndoCommand(new ChangeModelFlagsCommand(_asset, model->flags, newFlags));
+	_asset->AddUndoCommand(new ChangeModelFlagsCommand(_asset, model->Flags, newFlags));
 }
 
 void StudioModelModelDataPanel::OnEyePositionChanged(const glm::vec3& value)
 {
-	_asset->AddUndoCommand(new ChangeEyePositionCommand(_asset, _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader()->eyeposition, value));
+	_asset->AddUndoCommand(new ChangeEyePositionCommand(_asset, _asset->GetScene()->GetEntity()->GetEditableModel()->EyePosition, value));
 }
 
 void StudioModelModelDataPanel::OnBBoxMinChanged(const glm::vec3& value)
 {
-	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
-	_asset->AddUndoCommand(new ChangeBBoxCommand(_asset, {header->min, header->max}, {value, header->max}));
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	_asset->AddUndoCommand(new ChangeBBoxCommand(_asset, {model->BoundingMin, model->BoundingMax}, {value, model->BoundingMax}));
 }
 
 void StudioModelModelDataPanel::OnBBoxMaxChanged(const glm::vec3& value)
 {
-	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
-	_asset->AddUndoCommand(new ChangeBBoxCommand(_asset, {header->min, header->max}, {header->min, value}));
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	_asset->AddUndoCommand(new ChangeBBoxCommand(_asset, {model->BoundingMin, model->BoundingMax}, {model->BoundingMin, value}));
 }
 
 void StudioModelModelDataPanel::OnCBoxMinChanged(const glm::vec3& value)
 {
-	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
-	_asset->AddUndoCommand(new ChangeCBoxCommand(_asset, {header->bbmin, header->bbmax}, {value, header->bbmax}));
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	_asset->AddUndoCommand(new ChangeCBoxCommand(_asset, {model->ClippingMin, model->ClippingMax}, {value, model->ClippingMax}));
 }
 
 void StudioModelModelDataPanel::OnCBoxMaxChanged(const glm::vec3& value)
 {
-	auto header = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
-	_asset->AddUndoCommand(new ChangeCBoxCommand(_asset, {header->bbmin, header->bbmax}, {header->bbmin, value}));
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	_asset->AddUndoCommand(new ChangeCBoxCommand(_asset, {model->ClippingMin, model->ClippingMax}, {model->ClippingMin, value}));
 }
 }

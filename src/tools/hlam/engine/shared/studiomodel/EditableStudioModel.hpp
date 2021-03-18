@@ -247,5 +247,43 @@ public:
 	void UpdateFilters(graphics::TextureLoader& textureLoader);
 
 	void ReuploadTextures(graphics::TextureLoader& textureLoader);
+
+	std::vector<int> GetRootBoneIndices()
+	{
+		std::vector<int> bones;
+
+		for (int i = 0; i < Bones.size(); ++i)
+		{
+			const auto& bone = *Bones[i];
+
+			if (!bone.Parent)
+			{
+				bones.emplace_back(i);
+			}
+		}
+
+		return bones;
+	}
 };
+
+struct ScaleMeshesData
+{
+	std::vector<std::vector<glm::vec3>> Vertices;
+	std::vector<std::pair<glm::vec3, glm::vec3>> Hitboxes;
+	std::vector<std::pair<glm::vec3, glm::vec3>> SequenceBBoxes;
+};
+
+std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const EditableStudioModel& studioModel, const float scale);
+
+void ApplyScaleMeshesData(EditableStudioModel& studioModel, const ScaleMeshesData& data);
+
+struct ScaleBonesBoneData
+{
+	glm::vec3 Position;
+	glm::vec3 Scale;
+};
+
+std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> CalculateScaledBonesData(const EditableStudioModel& studioModel, const float scale);
+
+void ApplyScaleBonesData(EditableStudioModel& studioModel, const std::vector<studiomdl::ScaleBonesBoneData>& data);
 }
