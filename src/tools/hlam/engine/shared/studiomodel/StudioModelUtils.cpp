@@ -52,11 +52,11 @@ std::vector<std::unique_ptr<Bone>> ConvertBonesToEditable(const StudioModel& stu
 	{
 		auto source = header->GetBone(i);
 
-		std::array<BoneControllerData, STUDIO_MAX_PER_BONE_CONTROLLERS> controllerData{};
+		std::array<BoneAxisData, STUDIO_MAX_PER_BONE_CONTROLLERS> axisData{};
 
-		for (int j = 0; j < controllerData.size(); ++j)
+		for (int j = 0; j < axisData.size(); ++j)
 		{
-			auto& data = controllerData[j];
+			auto& data = axisData[j];
 
 			if (source->bonecontroller[j] != -1)
 			{
@@ -72,7 +72,7 @@ std::vector<std::unique_ptr<Bone>> ConvertBonesToEditable(const StudioModel& stu
 			source->name,
 			nullptr,
 			source->flags,
-			controllerData,
+			axisData,
 			i
 		};
 
@@ -635,20 +635,20 @@ void ConvertBonesFromEditable(const EditableStudioModel& studioModel, studiohdr_
 
 			for (int j = 0; j < STUDIO_MAX_PER_BONE_CONTROLLERS; ++j)
 			{
-				const auto& controller = source.Controllers[j];
+				const auto& axis = source.Axes[j];
 
-				if (controller.Controller)
+				if (axis.Controller)
 				{
-					dest.bonecontroller[j] = controller.Controller->ArrayIndex;
-					boneControllerToBoneMap[controller.Controller->ArrayIndex] = i;
+					dest.bonecontroller[j] = axis.Controller->ArrayIndex;
+					boneControllerToBoneMap[axis.Controller->ArrayIndex] = i;
 				}
 				else
 				{
 					dest.bonecontroller[j] = -1;
 				}
 
-				dest.value[j] = controller.Value;
-				dest.scale[j] = controller.Scale;
+				dest.value[j] = axis.Value;
+				dest.scale[j] = axis.Scale;
 			}
 		}
 	}

@@ -60,8 +60,8 @@ void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& old
 	{
 		for (int i = 0; i < newValue.Values[j].length(); ++i)
 		{
-			bone.Controllers[(j * newValue.Values[j].length()) + i].Value = newValue.Values[j][i];
-			bone.Controllers[(j * newValue.Scales[j].length()) + i].Scale = newValue.Scales[j][i];
+			bone.Axes[(j * newValue.Values[j].length()) + i].Value = newValue.Values[j][i];
+			bone.Axes[(j * newValue.Scales[j].length()) + i].Scale = newValue.Scales[j][i];
 		}
 	}
 }
@@ -114,13 +114,13 @@ void ChangeBoneControllerBoneCommand::Apply(int index, const int& oldValue, cons
 	auto& newBone = *model->Bones[newValue];
 
 	//Remove the reference to this controller from the old bone
-	oldBone.Controllers[typeIndex].Controller = nullptr;
+	oldBone.Axes[typeIndex].Controller = nullptr;
 
 	//TODO
 	//controller.Bone = newValue;
 
 	//Patch up the new bone reference
-	newBone.Controllers[typeIndex].Controller = &controller;
+	newBone.Axes[typeIndex].Controller = &controller;
 }
 
 void ChangeBoneControllerRangeCommand::Apply(int index, const ChangeBoneControllerRange& oldValue, const ChangeBoneControllerRange& newValue)
@@ -185,7 +185,7 @@ void ChangeModelOriginCommand::Apply(const ChangeModelOriginData& oldValue, cons
 
 		for (int i = 0; i < data.BonePosition.length(); ++i)
 		{
-			bone.Controllers[i].Value = data.BonePosition[i];
+			bone.Axes[i].Value = data.BonePosition[i];
 		}
 	}
 }

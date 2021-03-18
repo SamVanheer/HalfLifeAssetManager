@@ -30,7 +30,7 @@ struct BoneController
 	int ArrayIndex = 0;
 };
 
-struct BoneControllerData
+struct BoneAxisData
 {
 	BoneController* Controller = nullptr;
 	float Value = 0;
@@ -42,7 +42,7 @@ struct Bone
 	std::string Name;
 	Bone* Parent = nullptr;
 	int Flags = 0;
-	std::array<BoneControllerData, STUDIO_MAX_PER_BONE_CONTROLLERS> Controllers;
+	std::array<BoneAxisData, STUDIO_MAX_PER_BONE_CONTROLLERS> Axes;
 
 	//Index of this bone. Always use this for indexed operations
 	int ArrayIndex = 0;

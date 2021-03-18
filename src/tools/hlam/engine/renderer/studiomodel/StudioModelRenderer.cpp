@@ -720,11 +720,11 @@ void StudioModelRenderer::CalcBoneQuaternion(const int frame, const float s, con
 
 	for (int j = 0; j < 3; j++)
 	{
-		const auto& controller = bone.Controllers[j + 3];
+		const auto& axis = bone.Axes[j + 3];
 
 		if (anim.Data[j + 3].empty())
 		{
-			angle2[j] = angle1[j] = controller.Value; // default;
+			angle2[j] = angle1[j] = axis.Value; // default;
 		}
 		else
 		{
@@ -764,14 +764,14 @@ void StudioModelRenderer::CalcBoneQuaternion(const int frame, const float s, con
 					angle2[j] = panimvalue[panimvalue->num.valid + 2].value;
 				}
 			}
-			angle1[j] = controller.Value + angle1[j] * controller.Scale;
-			angle2[j] = controller.Value + angle2[j] * controller.Scale;
+			angle1[j] = axis.Value + angle1[j] * axis.Scale;
+			angle2[j] = axis.Value + angle2[j] * axis.Scale;
 		}
 
-		if (controller.Controller)
+		if (axis.Controller)
 		{
-			angle1[j] += _adj[controller.Controller->ArrayIndex];
-			angle2[j] += _adj[controller.Controller->ArrayIndex];
+			angle1[j] += _adj[axis.Controller->ArrayIndex];
+			angle2[j] += _adj[axis.Controller->ArrayIndex];
 		}
 	}
 
@@ -793,9 +793,9 @@ void StudioModelRenderer::CalcBonePosition(const int frame, const float s, const
 {
 	for (int j = 0; j < 3; j++)
 	{
-		const auto& controller = bone.Controllers[j];
+		const auto& axis = bone.Axes[j];
 
-		pos[j] = controller.Value; // default;
+		pos[j] = axis.Value; // default;
 		if (!anim.Data[j].empty())
 		{
 			auto panimvalue = anim.Data[j].data();
@@ -813,11 +813,11 @@ void StudioModelRenderer::CalcBonePosition(const int frame, const float s, const
 				// and there's more data in the span
 				if (panimvalue->num.valid > k + 1)
 				{
-					pos[j] += (panimvalue[k + 1].value * (1.0 - s) + s * panimvalue[k + 2].value) * controller.Scale;
+					pos[j] += (panimvalue[k + 1].value * (1.0 - s) + s * panimvalue[k + 2].value) * axis.Scale;
 				}
 				else
 				{
-					pos[j] += panimvalue[k + 1].value * controller.Scale;
+					pos[j] += panimvalue[k + 1].value * axis.Scale;
 				}
 			}
 			else
@@ -825,17 +825,17 @@ void StudioModelRenderer::CalcBonePosition(const int frame, const float s, const
 				// are we at the end of the repeating values section and there's another section with data?
 				if (panimvalue->num.total <= k + 1)
 				{
-					pos[j] += (panimvalue[panimvalue->num.valid].value * (1.0 - s) + s * panimvalue[panimvalue->num.valid + 2].value) * controller.Scale;
+					pos[j] += (panimvalue[panimvalue->num.valid].value * (1.0 - s) + s * panimvalue[panimvalue->num.valid + 2].value) * axis.Scale;
 				}
 				else
 				{
-					pos[j] += panimvalue[panimvalue->num.valid].value * controller.Scale;
+					pos[j] += panimvalue[panimvalue->num.valid].value * axis.Scale;
 				}
 			}
 		}
-		if (controller.Controller)
+		if (axis.Controller)
 		{
-			pos[j] += _adj[controller.Controller->ArrayIndex];
+			pos[j] += _adj[axis.Controller->ArrayIndex];
 		}
 	}
 }

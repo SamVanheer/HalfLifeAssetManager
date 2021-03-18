@@ -246,7 +246,7 @@ void StudioModelModelDataPanel::OnOriginChanged()
 			RootBoneData
 			{
 				rootBoneIndex,
-				{rootBone.Controllers[0].Value, rootBone.Controllers[1].Value, rootBone.Controllers[2].Value}
+				{rootBone.Axes[0].Value, rootBone.Axes[1].Value, rootBone.Axes[2].Value}
 			}
 		);
 
@@ -255,9 +255,9 @@ void StudioModelModelDataPanel::OnOriginChanged()
 			{
 				rootBoneIndex,
 				{
-					rootBone.Controllers[0].Value + relativeOffset[0],
-					rootBone.Controllers[1].Value + relativeOffset[1],
-					rootBone.Controllers[2].Value + relativeOffset[2]
+					rootBone.Axes[0].Value + relativeOffset[0],
+					rootBone.Axes[1].Value + relativeOffset[1],
+					rootBone.Axes[2].Value + relativeOffset[2]
 				}
 			});
 	}

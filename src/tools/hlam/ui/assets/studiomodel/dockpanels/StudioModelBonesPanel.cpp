@@ -17,21 +17,21 @@ constexpr int ParentBoneOffset = 1;
 
 static void SyncBonePropertiesToUI(const studiomdl::Bone& bone, Ui_StudioModelBonesPanel& ui)
 {
-	ui.PositionX->setValue(bone.Controllers[0].Value);
-	ui.PositionY->setValue(bone.Controllers[1].Value);
-	ui.PositionZ->setValue(bone.Controllers[2].Value);
+	ui.PositionX->setValue(bone.Axes[0].Value);
+	ui.PositionY->setValue(bone.Axes[1].Value);
+	ui.PositionZ->setValue(bone.Axes[2].Value);
 
-	ui.PositionScaleX->setValue(bone.Controllers[0].Scale);
-	ui.PositionScaleY->setValue(bone.Controllers[1].Scale);
-	ui.PositionScaleZ->setValue(bone.Controllers[2].Scale);
+	ui.PositionScaleX->setValue(bone.Axes[0].Scale);
+	ui.PositionScaleY->setValue(bone.Axes[1].Scale);
+	ui.PositionScaleZ->setValue(bone.Axes[2].Scale);
 
-	ui.RotationX->setValue(bone.Controllers[3].Value);
-	ui.RotationY->setValue(bone.Controllers[4].Value);
-	ui.RotationZ->setValue(bone.Controllers[5].Value);
+	ui.RotationX->setValue(bone.Axes[3].Value);
+	ui.RotationY->setValue(bone.Axes[4].Value);
+	ui.RotationZ->setValue(bone.Axes[5].Value);
 
-	ui.RotationScaleX->setValue(bone.Controllers[3].Scale);
-	ui.RotationScaleY->setValue(bone.Controllers[4].Scale);
-	ui.RotationScaleZ->setValue(bone.Controllers[5].Scale);
+	ui.RotationScaleX->setValue(bone.Axes[3].Scale);
+	ui.RotationScaleY->setValue(bone.Axes[4].Scale);
+	ui.RotationScaleZ->setValue(bone.Axes[5].Scale);
 }
 
 StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* parent)
@@ -308,12 +308,12 @@ void StudioModelBonesPanel::OnBonePropertyChanged()
 	_asset->AddUndoCommand(new ChangeBonePropertyCommand(_asset, _ui.Bones->currentIndex(),
 		{
 			{
-				glm::vec3{bone.Controllers[0].Value, bone.Controllers[1].Value, bone.Controllers[2].Value},
-				glm::vec3{bone.Controllers[3].Value, bone.Controllers[4].Value, bone.Controllers[5].Value}
+				glm::vec3{bone.Axes[0].Value, bone.Axes[1].Value, bone.Axes[2].Value},
+				glm::vec3{bone.Axes[3].Value, bone.Axes[4].Value, bone.Axes[5].Value}
 			},
 			{
-				glm::vec3{bone.Controllers[0].Scale, bone.Controllers[1].Scale, bone.Controllers[2].Scale},
-				glm::vec3{bone.Controllers[3].Scale, bone.Controllers[4].Scale, bone.Controllers[5].Scale}
+				glm::vec3{bone.Axes[0].Scale, bone.Axes[1].Scale, bone.Axes[2].Scale},
+				glm::vec3{bone.Axes[3].Scale, bone.Axes[4].Scale, bone.Axes[5].Scale}
 			}
 		},
 		{

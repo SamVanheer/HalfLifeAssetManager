@@ -257,15 +257,15 @@ std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> Calc
 		oldData.emplace_back(
 			ScaleBonesBoneData
 			{
-				{bone.Controllers[0].Value, bone.Controllers[1].Value, bone.Controllers[2].Value},
-				{bone.Controllers[0].Scale, bone.Controllers[1].Scale, bone.Controllers[2].Scale}
+				{bone.Axes[0].Value, bone.Axes[1].Value, bone.Axes[2].Value},
+				{bone.Axes[0].Scale, bone.Axes[1].Scale, bone.Axes[2].Scale}
 			});
 
 		newData.emplace_back(
 			ScaleBonesBoneData
 			{
-				{bone.Controllers[0].Value * scale, bone.Controllers[1].Value * scale, bone.Controllers[2].Value * scale},
-				{bone.Controllers[0].Scale * scale, bone.Controllers[1].Scale * scale, bone.Controllers[2].Scale * scale}
+				{bone.Axes[0].Value * scale, bone.Axes[1].Value * scale, bone.Axes[2].Value * scale},
+				{bone.Axes[0].Scale * scale, bone.Axes[1].Scale * scale, bone.Axes[2].Scale * scale}
 			});
 	}
 
@@ -282,8 +282,8 @@ void ApplyScaleBonesData(EditableStudioModel& studioModel, const std::vector<stu
 
 		for (int j = 0; j < boneData.Position.length(); ++j)
 		{
-			bone.Controllers[j].Value = boneData.Position[j];
-			bone.Controllers[j].Scale = boneData.Scale[j];
+			bone.Axes[j].Value = boneData.Position[j];
+			bone.Axes[j].Scale = boneData.Scale[j];
 		}
 	}
 }

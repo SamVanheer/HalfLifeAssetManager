@@ -515,7 +515,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerBoneChanged(int index)
 
 	const auto& newBone = *model->Bones[_ui.BoneControllerBone->currentIndex()];
 
-	if (newBone.Controllers[typeIndex].Controller)
+	if (newBone.Axes[typeIndex].Controller)
 	{
 		const QSignalBlocker blocker{_ui.BoneControllerBone};
 		//TODO
