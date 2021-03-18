@@ -481,7 +481,7 @@ void StudioModelAsset::OnDumpModelInfo()
 	{
 		if (FILE* file = utf8_fopen(fileName.toStdString().c_str(), "w"); file)
 		{
-			studiomdl::DumpModelInfo(file, *_studioModel);
+			studiomdl::DumpModelInfo(file, *_editableStudioModel);
 
 			fclose(file);
 

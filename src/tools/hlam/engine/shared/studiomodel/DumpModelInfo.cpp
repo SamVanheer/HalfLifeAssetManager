@@ -1,16 +1,22 @@
 #include <cassert>
 
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
+#include "engine/shared/studiomodel/EditableStudioModel.hpp"
 #include "engine/shared/studiomodel/StudioModel.hpp"
+
+#include "engine/shared/studiomodel/StudioModelUtils.hpp"
 
 namespace studiomdl
 {
-void DumpModelInfo(FILE* file, const StudioModel& model)
+void DumpModelInfo(FILE* file, const EditableStudioModel& model)
 {
 	assert(file);
 
-	const studiohdr_t* const pHdr = model.GetStudioHeader();
-	const auto pTextureHdr = model.GetTextureHeader();
+	//Pack it up first so everything's accurate
+	const auto packedData = ConvertFromEditable({}, model);
+
+	const studiohdr_t* const pHdr = packedData.GetStudioHeader();
+	const auto pTextureHdr = packedData.GetTextureHeader();
 
 	const byte* const pByte = reinterpret_cast<const byte* const>(pHdr);
 

@@ -4,7 +4,7 @@
 
 namespace studiomdl
 {
-class StudioModel;
+class EditableStudioModel;
 
-void DumpModelInfo(FILE* file, const StudioModel& model);
+void DumpModelInfo(FILE* file, const EditableStudioModel& model);
 }
