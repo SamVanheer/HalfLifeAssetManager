@@ -99,35 +99,26 @@ void Scene::AlignOnGround()
 {
 	auto entity = GetEntity();
 
-	auto model = entity->GetModel();
-
-	auto header = model->GetStudioHeader();
+	auto model = entity->GetEditableModel();
 
 	//First try finding the idle sequence, since that typically represents a model "at rest"
 	//Failing that, use the first sequence
-	auto idleFinder = [&]() -> const mstudioseqdesc_t*
+	auto idleFinder = [&]() -> const studiomdl::Sequence*
 	{
-		for (int i = 0; i < header->numseq; ++i)
+		for (const auto& sequence : model->Sequences)
 		{
-			const auto sequence = header->GetSequence(i);
-
-			if (!strcmp(sequence->label, "idle"))
+			if (sequence->Label == "idle")
 			{
-				return sequence;
+				return sequence.get();
 			}
 		}
 
-		return nullptr;
+		return model->Sequences[0].get();
 	};
 
 	auto sequence = idleFinder();
 
-	if (!sequence)
-	{
-		sequence = header->GetSequence(0);
-	}
-
-	entity->SetOrigin({0, 0, -sequence->bbmin.z});
+	entity->SetOrigin({0, 0, -sequence->BBMin.z});
 }
 
 void Scene::Initialize()
@@ -486,10 +477,10 @@ void Scene::DrawModel()
 		//Calculate texture offset based on sequence movement and current frame
 		if (_entity)
 		{
-			const auto sequence = _entity->GetModel()->GetStudioHeader()->GetSequence(_entity->GetSequence());
+			const auto& sequence = *_entity->GetEditableModel()->Sequences[_entity->GetSequence()];
 
 			//Scale offset to current frame
-			const float currentFrame = _entity->GetFrame() / (sequence->numframes - 1);
+			const float currentFrame = _entity->GetFrame() / (sequence.NumFrames - 1);
 
 			float delta;
 
@@ -508,8 +499,8 @@ void Scene::DrawModel()
 			const int xDirection = _entity->GetScale().x > 0 ? 1 : -1;
 			const int yDirection = _entity->GetScale().y > 0 ? 1 : -1;
 
-			textureOffset.x = sequence->linearmovement.x * delta * xDirection;
-			textureOffset.y = -(sequence->linearmovement.y * delta * yDirection);
+			textureOffset.x = sequence.LinearMovement.x * delta * xDirection;
+			textureOffset.y = -(sequence.LinearMovement.y * delta * yDirection);
 
 			if (_floorSequence != _entity->GetSequence())
 			{
@@ -548,9 +539,9 @@ void Scene::DrawModel()
 		if (_entity)
 		{
 			//Draw a transparent brownish box to display the bounding box
-			auto header = _entity->GetModel()->GetStudioHeader();
+			auto model = _entity->GetEditableModel();
 
-			const auto v = CreateBoxFromBounds(header->min, header->max);
+			const auto v = CreateBoxFromBounds(model->BoundingMin, model->BoundingMax);
 
 			DrawOutlinedBox(v, {1.0f, 1.0f, 0.0f, 0.5f}, {0.5f, 0.5f, 0.0f, 1.0f});
 		}
@@ -561,9 +552,9 @@ void Scene::DrawModel()
 		if (_entity)
 		{
 			//Draw a transparent orangeish box to display the clipping box
-			auto header = _entity->GetModel()->GetStudioHeader();
+			auto model = _entity->GetEditableModel();
 
-			const auto v = CreateBoxFromBounds(header->bbmin, header->bbmax);
+			const auto v = CreateBoxFromBounds(model->ClippingMin, model->ClippingMax);
 
 			DrawOutlinedBox(v, {1.0f, 0.5f, 0.0f, 0.5f}, {0.5f, 0.25f, 0.0f, 1.0f});
 		}
@@ -577,7 +568,7 @@ void Scene::DrawTexture(const int xOffset, const int yOffset, const int width, c
 {
 	assert(entity);
 
-	const auto model = entity->GetModel();
+	const auto model = entity->GetEditableModel();
 
 	assert(model);
 
@@ -586,14 +577,10 @@ void Scene::DrawTexture(const int xOffset, const int yOffset, const int width, c
 
 	glOrtho(0.0f, (float)width, (float)height, 0.0f, 1.0f, -1.0f);
 
-	const studiohdr_t* const header = model->GetTextureHeader();
+	const auto& texture = *model->Textures[textureIndex];
 
-	assert(header);
-
-	const mstudiotexture_t& texture = *header->GetTexture(textureIndex);
-
-	const float w = texture.width * textureScale;
-	const float h = texture.height * textureScale;
+	const float w = texture.Width * textureScale;
+	const float h = texture.Height * textureScale;
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -617,7 +604,7 @@ void Scene::DrawTexture(const int xOffset, const int yOffset, const int width, c
 
 	if (!showUVMap || overlayUVMap)
 	{
-		if (texture.flags & STUDIO_NF_MASKED)
+		if (texture.Flags & STUDIO_NF_MASKED)
 		{
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.5f);
@@ -625,7 +612,7 @@ void Scene::DrawTexture(const int xOffset, const int yOffset, const int width, c
 
 		glEnable(GL_TEXTURE_2D);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBindTexture(GL_TEXTURE_2D, model->GetTextureId(textureIndex));
+		glBindTexture(GL_TEXTURE_2D, texture.TextureId);
 
 		glBegin(GL_TRIANGLE_STRIP);
 
@@ -645,7 +632,7 @@ void Scene::DrawTexture(const int xOffset, const int yOffset, const int width, c
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		if (texture.flags & STUDIO_NF_MASKED)
+		if (texture.Flags & STUDIO_NF_MASKED)
 		{
 			glDisable(GL_ALPHA_TEST);
 		}
