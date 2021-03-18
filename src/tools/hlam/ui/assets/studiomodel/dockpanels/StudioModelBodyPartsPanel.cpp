@@ -62,19 +62,18 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QW
 	connect(_ui.BoneControllerType, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerTypeChanged);
 
 	auto entity = _asset->GetScene()->GetEntity();
-	auto model = entity->GetModel()->GetStudioHeader();
-	auto textureHeader = entity->GetModel()->GetTextureHeader();
+	auto model = entity->GetEditableModel();
 
 	{
 		const QSignalBlocker blocker{_ui.BoneControllerBone};
 
 		QStringList bones;
 
-		bones.reserve(model->numbones);
+		bones.reserve(model->Bones.size());
 
-		for (int i = 0; i < model->numbones; ++i)
+		for (int i = 0; i < model->Bones.size(); ++i)
 		{
-			bones.append(QString{"%1 (%2)"}.arg(model->GetBone(i)->name).arg(i));
+			bones.append(QString{"%1 (%2)"}.arg(model->Bones[i]->Name.c_str()).arg(i));
 		}
 
 		_ui.BoneControllerBone->addItems(bones);
@@ -83,15 +82,15 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QW
 		_ui.BoneControllerBone->setCurrentIndex(-1);
 	}
 
-	if (model->numbodyparts > 0)
+	if (!model->Bodyparts.empty())
 	{
 		QStringList bodyParts;
 
-		bodyParts.reserve(model->numbodyparts);
+		bodyParts.reserve(model->Bodyparts.size());
 
-		for (int i = 0; i < model->numbodyparts; ++i)
+		for (int i = 0; i < model->Bodyparts.size(); ++i)
 		{
-			bodyParts.append(model->GetBodypart(i)->name);
+			bodyParts.append(model->Bodyparts[i]->Name.c_str());
 		}
 
 		_ui.BodyParts->addItems(bodyParts);
@@ -104,30 +103,30 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QW
 
 	QStringList skins;
 
-	for (int i = 0; i < textureHeader->numskinfamilies; ++i)
+	for (int i = 0; i < model->SkinFamilies.size(); ++i)
 	{
 		skins.append(QString{"Skin %1"}.arg(i + 1));
 	}
 
 	_ui.Skins->addItems(skins);
 
-	_ui.Skins->setEnabled(textureHeader->numskinfamilies > 0);
+	_ui.Skins->setEnabled(!model->SkinFamilies.empty());
 
-	if (model->numbonecontrollers > 0)
+	if (!model->BoneControllers.empty())
 	{
 		QStringList boneControllers;
 
-		for (int i = 0; i < model->numbonecontrollers; ++i)
+		for (int i = 0; i < model->BoneControllers.size(); ++i)
 		{
-			const auto boneController = model->GetBoneController(i);
+			const auto& boneController = *model->BoneControllers[i];
 
-			if (boneController->index == STUDIO_MOUTH_CONTROLLER)
+			if (boneController.Index == STUDIO_MOUTH_CONTROLLER)
 			{
 				boneControllers.append("Mouth");
 			}
 			else
 			{
-				boneControllers.append(QString{"Controller %1"}.arg(boneController->index));
+				boneControllers.append(QString{"Controller %1"}.arg(boneController.Index));
 			}
 		}
 
@@ -145,8 +144,8 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QW
 		_ui.BoneControllerValueSpinner->setValue(0);
 	}
 
-	_ui.BoneControllers->setEnabled(model->numbonecontrollers > 0);
-	_ui.BoneControllerDataWidget->setVisible(model->numbonecontrollers > 0);
+	_ui.BoneControllers->setEnabled(!model->BoneControllers.empty());
+	_ui.BoneControllerDataWidget->setVisible(!model->BoneControllers.empty());
 
 	//Should already be set but if there are no body parts and/or submodels it won't have been
 	_ui.BodyValue->setText(QString::number(entity->GetBodygroup()));
@@ -156,8 +155,7 @@ StudioModelBodyPartsPanel::~StudioModelBodyPartsPanel() = default;
 
 void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -165,10 +163,10 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 	{
 		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
 
-		const auto bone = header->GetBone(listChange.GetSourceIndex());
+		const auto& bone = *model->Bones[listChange.GetSourceIndex()];
 
 		const QSignalBlocker boneControllerBone{_ui.BoneControllerBone};
-		_ui.BoneControllerBone->setItemText(listChange.GetSourceIndex(), QString{"%1 (%2)"}.arg(bone->name).arg(listChange.GetSourceIndex()));
+		_ui.BoneControllerBone->setItemText(listChange.GetSourceIndex(), QString{"%1 (%2)"}.arg(bone.Name.c_str()).arg(listChange.GetSourceIndex()));
 		break;
 	}
 
@@ -178,10 +176,11 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.BoneControllers->currentIndex())
 		{
-			const auto controller = header->GetBoneController(listChange.GetSourceIndex());
+			const auto& controller = *model->BoneControllers[listChange.GetSourceIndex()];
 
 			const QSignalBlocker bone{_ui.BoneControllerBone};
-			_ui.BoneControllerBone->setCurrentIndex(controller->bone);
+			//TODO:
+			//_ui.BoneControllerBone->setCurrentIndex(controller.B);
 		}
 
 		break;
@@ -193,13 +192,13 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.BoneControllers->currentIndex())
 		{
-			const auto controller = header->GetBoneController(listChange.GetSourceIndex());
+			const auto& controller = *model->BoneControllers[listChange.GetSourceIndex()];
 
 			const QSignalBlocker start{_ui.BoneControllerStart};
 			const QSignalBlocker end{_ui.BoneControllerEnd};
 
-			_ui.BoneControllerStart->setValue(controller->start);
-			_ui.BoneControllerEnd->setValue(controller->end);
+			_ui.BoneControllerStart->setValue(controller.Start);
+			_ui.BoneControllerEnd->setValue(controller.End);
 
 			UpdateControllerRange();
 
@@ -216,10 +215,10 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.BoneControllers->currentIndex())
 		{
-			const auto controller = header->GetBoneController(listChange.GetSourceIndex());
+			const auto& controller = *model->BoneControllers[listChange.GetSourceIndex()];
 
 			const QSignalBlocker rest{_ui.BoneControllerRest};
-			_ui.BoneControllerRest->setValue(controller->rest);
+			_ui.BoneControllerRest->setValue(controller.Rest);
 		}
 
 		break;
@@ -231,10 +230,10 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.BoneControllers->currentIndex())
 		{
-			const auto controller = header->GetBoneController(listChange.GetSourceIndex());
+			const auto& controller = *model->BoneControllers[listChange.GetSourceIndex()];
 
 			const QSignalBlocker index{_ui.BoneControllerIndex};
-			_ui.BoneControllerIndex->setCurrentIndex(controller->index);
+			_ui.BoneControllerIndex->setCurrentIndex(controller.Index);
 
 			//Ensure values are set
 			OnBoneControllerValueSpinnerChanged(_ui.BoneControllerValueSpinner->value());
@@ -249,10 +248,10 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.BoneControllers->currentIndex())
 		{
-			const auto controller = header->GetBoneController(listChange.GetSourceIndex());
+			const auto& controller = *model->BoneControllers[listChange.GetSourceIndex()];
 
 			const QSignalBlocker index{_ui.BoneControllerType};
-			const int newTypeIndex = static_cast<int>(std::log2(controller->type & STUDIO_BONECONTROLLER_TYPES));
+			const int newTypeIndex = static_cast<int>(std::log2(controller.Type & STUDIO_BONECONTROLLER_TYPES));
 			_ui.BoneControllerType->setCurrentIndex(newTypeIndex);
 		}
 
@@ -265,10 +264,10 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (listChange.GetSourceIndex() == _ui.BodyParts->currentIndex() && listChange.GetSourceSubIndex() == _ui.Submodels->currentIndex())
 		{
-			const auto bodyPart = header->GetBodypart(_ui.BodyParts->currentIndex());
-			const auto model = reinterpret_cast<mstudiomodel_t*>(header->GetData() + bodyPart->modelindex) + _ui.Submodels->currentIndex();
+			const auto& bodyPart = *model->Bodyparts[_ui.BodyParts->currentIndex()];
+			const auto& subModel = bodyPart.Models[_ui.Submodels->currentIndex()];
 
-			const QString name{model->name};
+			const QString name{subModel.Name.c_str()};
 
 			if (_ui.ModelName->text() != name)
 			{
@@ -284,21 +283,21 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 void StudioModelBodyPartsPanel::UpdateControllerRange()
 {
 	const auto entity = _asset->GetScene()->GetEntity();
-	const auto model = entity->GetModel()->GetStudioHeader();
-	const auto boneController = model->GetBoneController(_ui.BoneControllers->currentIndex());
+	const auto model = entity->GetEditableModel();
+	const auto& boneController = *model->BoneControllers[_ui.BoneControllers->currentIndex()];
 
 	float start, end;
 
 	//Swap values if the range is inverted
-	if (boneController->end < boneController->start)
+	if (boneController.End < boneController.Start)
 	{
-		start = boneController->end;
-		end = boneController->start;
+		start = boneController.End;
+		end = boneController.Start;
 	}
 	else
 	{
-		start = boneController->start;
-		end = boneController->end;
+		start = boneController.Start;
+		end = boneController.End;
 	}
 
 	//Should probably scale as needed so the range is sufficiently large
@@ -330,10 +329,10 @@ void StudioModelBodyPartsPanel::UpdateControllerRange()
 void StudioModelBodyPartsPanel::OnBodyPartChanged(int index)
 {
 	const auto entity = _asset->GetScene()->GetEntity();
-	const auto model = entity->GetModel()->GetStudioHeader();
-	const auto bodyPart = model->GetBodypart(index);
+	const auto model = entity->GetEditableModel();
+	const auto& bodyPart = *model->Bodyparts[index];
 
-	const bool hasSubmodels = bodyPart->nummodels > 0;
+	const bool hasSubmodels = !bodyPart.Models.empty();
 
 	{
 		const QSignalBlocker blocker{_ui.Submodels};
@@ -344,7 +343,7 @@ void StudioModelBodyPartsPanel::OnBodyPartChanged(int index)
 		{
 			QStringList submodels;
 
-			for (int i = 0; i < bodyPart->nummodels; ++i)
+			for (int i = 0; i < bodyPart.Models.size(); ++i)
 			{
 				submodels.append(QString{"Submodel %1"}.arg(i + 1));
 			}
@@ -378,25 +377,25 @@ void StudioModelBodyPartsPanel::OnSubmodelChanged(int index)
 
 	bool success = false;
 
-	const auto header = entity->GetModel()->GetStudioHeader();
+	const auto model = entity->GetEditableModel();
 
 	QString modelName;
 	int meshCount{0};
 	int vertexCount{0};
 	int normalCount{0};
 
-	if (bodyPartIndex < header->numbodyparts)
+	if (bodyPartIndex < model->Bodyparts.size())
 	{
-		const auto bodyPart = header->GetBodypart(bodyPartIndex);
+		const auto& bodyPart = *model->Bodyparts[bodyPartIndex];
 
-		if (index < bodyPart->nummodels)
+		if (index < bodyPart.Models.size())
 		{
-			const auto model = entity->GetModel()->GetModelByBodyPart(entity->GetBodygroup(), bodyPartIndex);
+			const auto subModel = model->GetModelByBodyPart(entity->GetBodygroup(), bodyPartIndex);
 
-			modelName = model->name;
-			meshCount = model->nummesh;
-			vertexCount = model->numverts;
-			normalCount = model->numnorms;
+			modelName = subModel->Name.c_str();
+			meshCount = subModel->Meshes.size();
+			vertexCount = subModel->Vertices.size();
+			normalCount = subModel->Normals.size();
 
 			success = true;
 		}
@@ -426,11 +425,12 @@ void StudioModelBodyPartsPanel::OnSkinChanged(int index)
 
 void StudioModelBodyPartsPanel::OnModelNameChanged()
 {
-	const auto header = _asset->GetStudioModel()->GetStudioHeader();
-	const auto bodyPart = header->GetBodypart(_ui.BodyParts->currentIndex());
-	const auto model = reinterpret_cast<mstudiomodel_t*>(header->GetData() + bodyPart->modelindex) + _ui.Submodels->currentIndex();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& bodyPart = *model->Bodyparts[_ui.BodyParts->currentIndex()];
+	const auto& subModel = bodyPart.Models[_ui.Submodels->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeModelNameCommand(_asset, _ui.BodyParts->currentIndex(), _ui.Submodels->currentIndex(), model->name, _ui.ModelName->text()));
+	_asset->AddUndoCommand(new ChangeModelNameCommand(_asset, _ui.BodyParts->currentIndex(), _ui.Submodels->currentIndex(),
+		subModel.Name.c_str(), _ui.ModelName->text()));
 }
 
 void StudioModelBodyPartsPanel::OnModelNameRejected()
@@ -440,9 +440,8 @@ void StudioModelBodyPartsPanel::OnModelNameRejected()
 
 void StudioModelBodyPartsPanel::OnBoneControllerChanged(int index)
 {
-	const auto entity = _asset->GetScene()->GetEntity();
-	const auto model = entity->GetModel()->GetStudioHeader();
-	const auto boneController = model->GetBoneController(index);
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& boneController = *model->BoneControllers[index];
 
 	UpdateControllerRange();
 
@@ -455,13 +454,14 @@ void StudioModelBodyPartsPanel::OnBoneControllerChanged(int index)
 
 		const QSignalBlocker controllerType{_ui.BoneControllerType};
 
-		_ui.BoneControllerBone->setCurrentIndex(boneController->bone);
-		_ui.BoneControllerStart->setValue(boneController->start);
-		_ui.BoneControllerEnd->setValue(boneController->end);
-		_ui.BoneControllerRest->setValue(boneController->rest);
-		_ui.BoneControllerIndex->setCurrentIndex(boneController->index);
+		//TODO
+		//_ui.BoneControllerBone->setCurrentIndex(boneController->bone);
+		_ui.BoneControllerStart->setValue(boneController.Start);
+		_ui.BoneControllerEnd->setValue(boneController.End);
+		_ui.BoneControllerRest->setValue(boneController.Rest);
+		_ui.BoneControllerIndex->setCurrentIndex(boneController.Index);
 
-		const int type = boneController->type & STUDIO_BONECONTROLLER_TYPES;
+		const int type = boneController.Type & STUDIO_BONECONTROLLER_TYPES;
 
 		const int typeIndex = static_cast<int>(std::log2(type));
 
@@ -481,17 +481,17 @@ void StudioModelBodyPartsPanel::OnBoneControllerValueSpinnerChanged(double value
 	if (boneControllerLogicalIndex != -1)
 	{
 		const auto entity = _asset->GetScene()->GetEntity();
-		const auto model = entity->GetModel()->GetStudioHeader();
-		const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
+		const auto model = entity->GetEditableModel();
+		const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
 		//TODO: support multiple mouth controllers somehow.
-		if (boneController->index == STUDIO_MOUTH_CONTROLLER)
+		if (boneController.Index == STUDIO_MOUTH_CONTROLLER)
 		{
 			entity->SetMouth(value);
 		}
 		else
 		{
-			entity->SetController(boneController->index, value);
+			entity->SetController(boneController.Index, value);
 		}
 	}
 
@@ -508,36 +508,39 @@ void StudioModelBodyPartsPanel::OnBoneControllerBoneChanged(int index)
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	const auto model = _asset->GetScene()->GetEntity()->GetModel()->GetStudioHeader();
-	const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
-	const int typeIndex = static_cast<int>(std::log2(boneController->type & STUDIO_BONECONTROLLER_TYPES));
+	const int typeIndex = static_cast<int>(std::log2(boneController.Type & STUDIO_BONECONTROLLER_TYPES));
 
-	const auto newBone = model->GetBone(_ui.BoneControllerBone->currentIndex());
+	const auto& newBone = *model->Bones[_ui.BoneControllerBone->currentIndex()];
 
-	if (newBone->bonecontroller[typeIndex] != -1)
+	if (newBone.Controllers[typeIndex].Controller)
 	{
 		const QSignalBlocker blocker{_ui.BoneControllerBone};
-		_ui.BoneControllerBone->setCurrentIndex(boneController->bone);
+		//TODO
+		//_ui.BoneControllerBone->setCurrentIndex(boneController.Bone);
 
 		QMessageBox::critical(this, "Error",
-			QString{"Bone \"%1\" already has a bone controller attached on type \"%2\""}.arg(newBone->name).arg(_ui.BoneControllerType->itemText(typeIndex)));
+			QString{"Bone \"%1\" already has a bone controller attached on type \"%2\""}
+				.arg(newBone.Name.c_str()).arg(_ui.BoneControllerType->itemText(typeIndex)));
 		return;
 	}
 
-	_asset->AddUndoCommand(new ChangeBoneControllerBoneCommand(_asset, boneControllerLogicalIndex, boneController->bone, _ui.BoneControllerBone->currentIndex()));
+	//TODO
+	//_asset->AddUndoCommand(new ChangeBoneControllerBoneCommand(_asset, boneControllerLogicalIndex,
+		//boneController.Bone, _ui.BoneControllerBone->currentIndex()));
 }
 
 void StudioModelBodyPartsPanel::OnBoneControllerRangeChanged()
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	const auto entity = _asset->GetScene()->GetEntity();
-	const auto model = entity->GetModel()->GetStudioHeader();
-	const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
 	_asset->AddUndoCommand(new ChangeBoneControllerRangeCommand(_asset, boneControllerLogicalIndex,
-		{boneController->start, boneController->end},
+		{boneController.Start, boneController.End},
 		{static_cast<float>(_ui.BoneControllerStart->value()), static_cast<float>(_ui.BoneControllerEnd->value())}));
 }
 
@@ -545,32 +548,32 @@ void StudioModelBodyPartsPanel::OnBoneControllerRestChanged()
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	const auto entity = _asset->GetScene()->GetEntity();
-	const auto model = entity->GetModel()->GetStudioHeader();
-	const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
-	_asset->AddUndoCommand(new ChangeBoneControllerRestCommand(_asset, boneControllerLogicalIndex, boneController->rest, _ui.BoneControllerRest->value()));
+	_asset->AddUndoCommand(new ChangeBoneControllerRestCommand(_asset, boneControllerLogicalIndex,
+		boneController.Rest, _ui.BoneControllerRest->value()));
 }
 
 void StudioModelBodyPartsPanel::OnBoneControllerIndexChanged()
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	const auto entity = _asset->GetScene()->GetEntity();
-	const auto model = entity->GetModel()->GetStudioHeader();
-	const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
 	_asset->AddUndoCommand(new ChangeBoneControllerIndexCommand(_asset, boneControllerLogicalIndex,
-		boneController->index, _ui.BoneControllerIndex->currentIndex()));
+		boneController.Index, _ui.BoneControllerIndex->currentIndex()));
 }
 
 void StudioModelBodyPartsPanel::OnBoneControllerTypeChanged(int index)
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	const auto entity = _asset->GetScene()->GetEntity();
-	const auto model = entity->GetModel()->GetStudioHeader();
-	const auto boneController = model->GetBoneController(boneControllerLogicalIndex);
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
+	//TODO
+	/*
 	const auto bone = model->GetBone(boneController->bone);
 
 	const int oldType = boneController->type & STUDIO_BONECONTROLLER_TYPES;
@@ -590,5 +593,6 @@ void StudioModelBodyPartsPanel::OnBoneControllerTypeChanged(int index)
 	}
 
 	_asset->AddUndoCommand(new ChangeBoneControllerTypeCommand(_asset, boneControllerLogicalIndex, oldType, newType));
+	*/
 }
 }
