@@ -35,17 +35,17 @@ enum class ModelChangeId
 	ChangeBoneParent,
 	ChangeBoneFlags,
 	ChangeBoneProperty,
+	ChangeBoneControllerFromBone,
 
 	ChangeAttachmentName,
 	ChangeAttachmentType,
 	ChangeAttachmentBone,
 	ChangeAttachmentOrigin,
 
-	ChangeBoneControllerBone,
 	ChangeBoneControllerRange,
 	ChangeBoneControllerRest,
 	ChangeBoneControllerIndex,
-	ChangeBoneControllerType,
+	ChangeBoneControllerFromController,
 
 	ChangeModelFlags,
 	ChangeModelOrigin,
@@ -134,6 +134,25 @@ private:
 };
 
 /**
+*	@brief Base class for model change events that have a single (compound) value
+*/
+template<typename T>
+class ModelListValueChangeEvent : public ModelListChangeEvent
+{
+public:
+	ModelListValueChangeEvent(ModelChangeId id, int sourceIndex, int destinationIndex, const T& value)
+		: ModelListChangeEvent(id, sourceIndex, destinationIndex)
+		, _value(value)
+	{
+	}
+
+	const T& GetValue() const { return _value; }
+
+private:
+	const T _value;
+};
+
+/**
 *	@brief Base class for all model change events that involve a change that occurred in a list inside another list
 */
 class ModelListSubListChangeEvent : public ModelListChangeEvent
@@ -178,6 +197,16 @@ private:
 
 using ModelBBoxChangeEvent = ModelValueChangeEvent<std::pair<glm::vec3, glm::vec3>>;
 using ModelCBoxChangeEvent = ModelValueChangeEvent<std::pair<glm::vec3, glm::vec3>>;
+
+/**
+* @brief axis, controller index
+*/
+using ModelBoneControllerFromBoneChangeEvent = ModelListValueChangeEvent<std::pair<int, int>>;
+
+/**
+*	@brief bone, axis
+*/
+using ModelBoneControllerFromControllerChangeEvent = ModelListValueChangeEvent<std::pair<int, int>>;
 
 class ModelOriginChangeEvent : public ModelChangeEvent
 {
@@ -524,6 +553,33 @@ protected:
 	void Apply(int index, const ChangeBoneProperties& oldValue, const ChangeBoneProperties& newValue) override;
 };
 
+class ChangeBoneControllerFromBoneCommand : public ModelListUndoCommand<int>
+{
+public:
+	ChangeBoneControllerFromBoneCommand(StudioModelAsset* asset, int boneIndex, int boneControllerAxis, int oldBoneControllerIndex, int newBoneControllerIndex)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerFromBone, boneIndex, oldBoneControllerIndex, newBoneControllerIndex)
+		, _boneControllerAxis(boneControllerAxis)
+	{
+		setText("Change bone controller");
+	}
+
+protected:
+	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
+	void Apply(int index, const int& oldValue, const int& newValue) override;
+
+	void EmitEvent(const int& oldValue, const int& newValue) override
+	{
+		_asset->EmitModelChanged(ModelBoneControllerFromBoneChangeEvent{_id, _index, -1, {_boneControllerAxis, newValue}});
+	}
+
+private:
+	const int _boneControllerAxis;
+};
+
 class ChangeAttachmentNameCommand : public ModelListUndoCommand<QString>
 {
 public:
@@ -596,24 +652,6 @@ protected:
 	void Apply(int index, const glm::vec3& oldValue, const glm::vec3& newValue) override;
 };
 
-class ChangeBoneControllerBoneCommand : public ModelListUndoCommand<int>
-{
-public:
-	ChangeBoneControllerBoneCommand(StudioModelAsset* asset, int boneControllerIndex, int oldBone, int newBone)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerBone, boneControllerIndex, oldBone, newBone)
-	{
-		setText("Change bone controller bone");
-	}
-
-protected:
-	bool CanMerge(const ModelListUndoCommand<int>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const int& oldValue, const int& newValue) override;
-};
-
 struct ChangeBoneControllerRange
 {
 	float Start;
@@ -680,22 +718,33 @@ protected:
 	void Apply(int index, const int& oldValue, const int& newValue) override;
 };
 
-class ChangeBoneControllerTypeCommand : public ModelListUndoCommand<int>
+/**
+*	@brief bone, axis
+*/
+using ChangeBoneControllerData = std::pair<int, int>;
+
+class ChangeBoneControllerFromControllerCommand : public ModelListUndoCommand<ChangeBoneControllerData>
 {
 public:
-	ChangeBoneControllerTypeCommand(StudioModelAsset* asset, int boneControllerIndex, int oldType, int newType)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerType, boneControllerIndex, oldType, newType)
+	ChangeBoneControllerFromControllerCommand(StudioModelAsset* asset, int boneControllerIndex,
+		const ChangeBoneControllerData& oldValue, const ChangeBoneControllerData& newValue)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerFromController, boneControllerIndex, oldValue, newValue)
 	{
-		setText("Change bone controller type");
+		setText("Change bone controller");
 	}
 
 protected:
-	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	bool CanMerge(const ModelListUndoCommand<ChangeBoneControllerData>* other) override
 	{
 		return _oldValue != other->GetNewValue();
 	}
 
-	void Apply(int index, const int& oldValue, const int& newValue) override;
+	void Apply(int index, const ChangeBoneControllerData& oldValue, const ChangeBoneControllerData& newValue) override;
+
+	void EmitEvent(const ChangeBoneControllerData& oldValue, const ChangeBoneControllerData& newValue) override
+	{
+		_asset->EmitModelChanged(ModelBoneControllerFromControllerChangeEvent{_id, _index, -1, {newValue.first, newValue.second}});
+	}
 };
 
 class ChangeModelFlagsCommand : public ModelUndoCommand<int>

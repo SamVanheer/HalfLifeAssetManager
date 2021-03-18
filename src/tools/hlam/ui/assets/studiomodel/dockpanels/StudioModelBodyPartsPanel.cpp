@@ -14,6 +14,9 @@
 
 namespace ui::assets::studiomodel
 {
+//Parent indices are offset by one so -1 becomes 0, 0 becomes 1, etc
+constexpr int BoneOffset = 1;
+
 StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
@@ -54,12 +57,13 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QW
 	connect(_ui.BoneControllerValueSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged),
 		this, &StudioModelBodyPartsPanel::OnBoneControllerValueSpinnerChanged);
 
-	connect(_ui.BoneControllerBone, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerBoneChanged);
 	connect(_ui.BoneControllerStart, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerRangeChanged);
 	connect(_ui.BoneControllerEnd, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerRangeChanged);
 	connect(_ui.BoneControllerRest, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerRestChanged);
 	connect(_ui.BoneControllerIndex, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerIndexChanged);
-	connect(_ui.BoneControllerType, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerTypeChanged);
+
+	connect(_ui.BoneControllerBone, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerBoneChanged);
+	connect(_ui.BoneControllerBoneAxis, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBodyPartsPanel::OnBoneControllerAxisChanged);
 
 	auto entity = _asset->GetScene()->GetEntity();
 	auto model = entity->GetEditableModel();
@@ -69,7 +73,9 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QW
 
 		QStringList bones;
 
-		bones.reserve(model->Bones.size());
+		bones.reserve(model->Bones.size() + 1);
+
+		bones.append("None (-1)");
 
 		for (int i = 0; i < model->Bones.size(); ++i)
 		{
@@ -166,23 +172,7 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 		const auto& bone = *model->Bones[listChange.GetSourceIndex()];
 
 		const QSignalBlocker boneControllerBone{_ui.BoneControllerBone};
-		_ui.BoneControllerBone->setItemText(listChange.GetSourceIndex(), QString{"%1 (%2)"}.arg(bone.Name.c_str()).arg(listChange.GetSourceIndex()));
-		break;
-	}
-
-	case ModelChangeId::ChangeBoneControllerBone:
-	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		if (listChange.GetSourceIndex() == _ui.BoneControllers->currentIndex())
-		{
-			const auto& controller = *model->BoneControllers[listChange.GetSourceIndex()];
-
-			const QSignalBlocker bone{_ui.BoneControllerBone};
-			//TODO:
-			//_ui.BoneControllerBone->setCurrentIndex(controller.B);
-		}
-
+		_ui.BoneControllerBone->setItemText(listChange.GetSourceIndex() + BoneOffset, QString{"%1 (%2)"}.arg(bone.Name.c_str()).arg(listChange.GetSourceIndex()));
 		break;
 	}
 
@@ -242,19 +232,33 @@ void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 		break;
 	}
 
-	case ModelChangeId::ChangeBoneControllerType:
+	case ModelChangeId::ChangeBoneControllerFromBone:
 	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
+		const auto& listChange{static_cast<const ModelBoneControllerFromBoneChangeEvent&>(event)};
+
+		if (listChange.GetValue().second == _ui.BoneControllers->currentIndex())
+		{
+			const QSignalBlocker bone{_ui.BoneControllerBone};
+			const QSignalBlocker axis{_ui.BoneControllerBoneAxis};
+
+			_ui.BoneControllerBone->setCurrentIndex(listChange.GetSourceIndex() + BoneOffset);
+			_ui.BoneControllerBoneAxis->setCurrentIndex(listChange.GetValue().first);
+		}
+		break;
+	}
+
+	case ModelChangeId::ChangeBoneControllerFromController:
+	{
+		const auto& listChange{static_cast<const ModelBoneControllerFromControllerChangeEvent&>(event)};
 
 		if (listChange.GetSourceIndex() == _ui.BoneControllers->currentIndex())
 		{
-			const auto& controller = *model->BoneControllers[listChange.GetSourceIndex()];
+			const QSignalBlocker bone{_ui.BoneControllerBone};
+			const QSignalBlocker axis{_ui.BoneControllerBoneAxis};
 
-			const QSignalBlocker index{_ui.BoneControllerType};
-			const int newTypeIndex = static_cast<int>(std::log2(controller.Type & STUDIO_BONECONTROLLER_TYPES));
-			_ui.BoneControllerType->setCurrentIndex(newTypeIndex);
+			_ui.BoneControllerBone->setCurrentIndex(listChange.GetValue().first + BoneOffset);
+			_ui.BoneControllerBoneAxis->setCurrentIndex(listChange.GetValue().second);
 		}
-
 		break;
 	}
 
@@ -447,25 +451,20 @@ void StudioModelBodyPartsPanel::OnBoneControllerChanged(int index)
 
 	{
 		const QSignalBlocker boneName{_ui.BoneControllerBone};
+		const QSignalBlocker axis{_ui.BoneControllerBoneAxis};
 		const QSignalBlocker start{_ui.BoneControllerStart};
 		const QSignalBlocker end{_ui.BoneControllerEnd};
 		const QSignalBlocker rest{_ui.BoneControllerRest};
 		const QSignalBlocker index{_ui.BoneControllerIndex};
 
-		const QSignalBlocker controllerType{_ui.BoneControllerType};
+		const auto connection = model->FindBoneControllerIsAttachedTo(boneController.ArrayIndex).value_or(std::pair<int, int>(-1, -1));
 
-		//TODO
-		//_ui.BoneControllerBone->setCurrentIndex(boneController->bone);
+		_ui.BoneControllerBone->setCurrentIndex(connection.first + BoneOffset);
+		_ui.BoneControllerBoneAxis->setCurrentIndex(connection.second);
 		_ui.BoneControllerStart->setValue(boneController.Start);
 		_ui.BoneControllerEnd->setValue(boneController.End);
 		_ui.BoneControllerRest->setValue(boneController.Rest);
 		_ui.BoneControllerIndex->setCurrentIndex(boneController.Index);
-
-		const int type = boneController.Type & STUDIO_BONECONTROLLER_TYPES;
-
-		const int typeIndex = static_cast<int>(std::log2(type));
-
-		_ui.BoneControllerType->setCurrentIndex(typeIndex);
 	}
 }
 
@@ -504,34 +503,6 @@ void StudioModelBodyPartsPanel::OnBoneControllerValueSpinnerChanged(double value
 	}
 }
 
-void StudioModelBodyPartsPanel::OnBoneControllerBoneChanged(int index)
-{
-	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
-
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
-
-	const int typeIndex = static_cast<int>(std::log2(boneController.Type & STUDIO_BONECONTROLLER_TYPES));
-
-	const auto& newBone = *model->Bones[_ui.BoneControllerBone->currentIndex()];
-
-	if (newBone.Axes[typeIndex].Controller)
-	{
-		const QSignalBlocker blocker{_ui.BoneControllerBone};
-		//TODO
-		//_ui.BoneControllerBone->setCurrentIndex(boneController.Bone);
-
-		QMessageBox::critical(this, "Error",
-			QString{"Bone \"%1\" already has a bone controller attached on type \"%2\""}
-				.arg(newBone.Name.c_str()).arg(_ui.BoneControllerType->itemText(typeIndex)));
-		return;
-	}
-
-	//TODO
-	//_asset->AddUndoCommand(new ChangeBoneControllerBoneCommand(_asset, boneControllerLogicalIndex,
-		//boneController.Bone, _ui.BoneControllerBone->currentIndex()));
-}
-
 void StudioModelBodyPartsPanel::OnBoneControllerRangeChanged()
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
@@ -566,33 +537,33 @@ void StudioModelBodyPartsPanel::OnBoneControllerIndexChanged()
 		boneController.Index, _ui.BoneControllerIndex->currentIndex()));
 }
 
-void StudioModelBodyPartsPanel::OnBoneControllerTypeChanged(int index)
+void StudioModelBodyPartsPanel::OnBoneControllerBoneChanged(int index)
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
-	//TODO
-	/*
-	const auto bone = model->GetBone(boneController->bone);
 
-	const int oldType = boneController->type & STUDIO_BONECONTROLLER_TYPES;
-	const int newType = 1 << index;
+	const auto oldConnection = model->FindBoneControllerIsAttachedTo(boneControllerLogicalIndex);
 
-	const int oldTypeIndex = static_cast<int>(std::log2(oldType));
-	const int newTypeIndex = static_cast<int>(std::log2(newType));
+	//Will default to 0 if not currently attached to anything
+	const int axis = static_cast<int>(std::log2(boneController.Type & STUDIO_BONECONTROLLER_TYPES));
 
-	if (bone->bonecontroller[newTypeIndex] != -1)
-	{
-		const QSignalBlocker blocker{_ui.BoneControllerType};
-		_ui.BoneControllerType->setCurrentIndex(oldTypeIndex);
+	_asset->AddUndoCommand(new ChangeBoneControllerFromControllerCommand(_asset, boneControllerLogicalIndex,
+		oldConnection.value_or(std::pair<int, int>{-1, -1}), {index - BoneOffset, axis}));
+}
 
-		QMessageBox::critical(this, "Error",
-			QString{"Bone \"%1\" already has a controller attached on type \"%2\""}.arg(bone->name).arg(_ui.BoneControllerType->itemText(newTypeIndex)));
-		return;
-	}
+void StudioModelBodyPartsPanel::OnBoneControllerAxisChanged(int index)
+{
+	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	_asset->AddUndoCommand(new ChangeBoneControllerTypeCommand(_asset, boneControllerLogicalIndex, oldType, newType));
-	*/
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
+
+	//Will default to 0 if not currently attached to anything
+	const int axis = static_cast<int>(std::log2(boneController.Type & STUDIO_BONECONTROLLER_TYPES));
+
+	_asset->AddUndoCommand(new ChangeBoneControllerFromControllerCommand(_asset, boneControllerLogicalIndex,
+		{_ui.BoneControllerBone->currentIndex() - BoneOffset, axis}, {_ui.BoneControllerBone->currentIndex() - BoneOffset, index}));
 }
 }

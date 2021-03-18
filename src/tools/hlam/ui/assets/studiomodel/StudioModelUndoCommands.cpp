@@ -66,6 +66,44 @@ void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& old
 	}
 }
 
+void ChangeBoneControllerFromBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
+{
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	
+	auto oldController = oldValue != -1 ? model->BoneControllers[oldValue].get() : nullptr;
+	auto newController = newValue != -1 ? model->BoneControllers[newValue].get() : nullptr;
+
+	//Detach old controller, if any
+	if (oldController)
+	{
+		oldController->Type = 0;
+	}
+
+	//Set up new controller to attach to bone
+	if (newController)
+	{
+		//Find any other bones (including target bone) that have the new controller tied to it
+		//and remove it (moves controller from bone axis to bone axis)
+		for ( auto& bone : model->Bones)
+		{
+			for (auto& axis : bone->Axes)
+			{
+				if (axis.Controller == newController)
+				{
+					axis.Controller = nullptr;
+				}
+			}
+		}
+
+		newController->Type = 1 << _boneControllerAxis;
+	}
+
+	{
+		auto& bone = *model->Bones[index];
+		bone.Axes[_boneControllerAxis].Controller = newController;
+	}
+}
+
 void ChangeAttachmentNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
 {
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
@@ -101,28 +139,6 @@ void ChangeAttachmentOriginCommand::Apply(int index, const glm::vec3& oldValue, 
 	}
 }
 
-void ChangeBoneControllerBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
-{
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-	auto& controller = *model->BoneControllers[index];
-
-	const int type = controller.Type & STUDIO_BONECONTROLLER_TYPES;
-
-	const int typeIndex = static_cast<int>(std::log2(type));
-
-	auto& oldBone = *model->Bones[oldValue];
-	auto& newBone = *model->Bones[newValue];
-
-	//Remove the reference to this controller from the old bone
-	oldBone.Axes[typeIndex].Controller = nullptr;
-
-	//TODO
-	//controller.Bone = newValue;
-
-	//Patch up the new bone reference
-	newBone.Axes[typeIndex].Controller = &controller;
-}
-
 void ChangeBoneControllerRangeCommand::Apply(int index, const ChangeBoneControllerRange& oldValue, const ChangeBoneControllerRange& newValue)
 {
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
@@ -148,24 +164,31 @@ void ChangeBoneControllerIndexCommand::Apply(int index, const int& oldValue, con
 	controller.Index = newValue;
 }
 
-void ChangeBoneControllerTypeCommand::Apply(int index, const int& oldValue, const int& newValue)
+void ChangeBoneControllerFromControllerCommand::Apply(int index, const ChangeBoneControllerData& oldValue, const ChangeBoneControllerData& newValue)
 {
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
 	auto& controller = *model->BoneControllers[index];
-	//TODO
-	//auto& bone = *model->Bones[controller.Bone];
 
-	/*
-	const int oldTypeIndex = static_cast<int>(std::log2(oldValue));
-	const int newTypeIndex = static_cast<int>(std::log2(newValue));
+	auto oldBone = oldValue.first != -1 ? model->Bones[oldValue.first].get() : nullptr;
+	auto newBone = newValue.first != -1 ? model->Bones[newValue.first].get() : nullptr;
 
-	bone->bonecontroller[oldTypeIndex] = -1;
+	//Detach from old bone, if any
+	if (oldBone)
+	{
+		oldBone->Axes[oldValue.second].Controller = nullptr;
+	}
 
-	controller->type &= ~oldValue;
-	controller->type |= newValue;
-
-	bone->bonecontroller[newTypeIndex] = index;
-	*/
+	//Attach to new bone
+	if (newBone)
+	{
+		newBone->Axes[newValue.second].Controller = &controller;
+		controller.Type = 1 << newValue.second;
+	}
+	else
+	{
+		controller.Type = 0;
+	}
 }
 
 void ChangeModelFlagsCommand::Apply(const int& oldValue, const int& newValue)

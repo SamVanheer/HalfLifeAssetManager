@@ -14,6 +14,7 @@ namespace ui::assets::studiomodel
 {
 //Parent indices are offset by one so -1 becomes 0, 0 becomes 1, etc
 constexpr int ParentBoneOffset = 1;
+constexpr int BoneControllerOffset = 1;
 
 static void SyncBonePropertiesToUI(const studiomdl::Bone& bone, Ui_StudioModelBonesPanel& ui)
 {
@@ -99,6 +100,9 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 	connect(_ui.RotationScaleY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
 	connect(_ui.RotationScaleZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
 
+	connect(_ui.BoneControllerAxis, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBonesPanel::OnBoneControllerAxisChanged);
+	connect(_ui.BoneController, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBonesPanel::OnBoneControllerChanged);
+
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	this->setEnabled(!model->Bones.empty());
@@ -130,6 +134,24 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 
 	//Select the first property to make it clear it's the active page
 	_ui.BonePropertyList->setCurrentRow(0);
+
+	QStringList boneControllers;
+
+	boneControllers.append("None (-1)");
+
+	boneControllers.reserve(model->BoneControllers.size() + 1);
+
+	for (int i = 0; i < model->BoneControllers.size(); ++i)
+	{
+		boneControllers.append(QString{"Controller %1"}.arg(i + 1));
+	}
+
+	{
+		const QSignalBlocker blocker{_ui.BoneController};
+
+		_ui.BoneController->addItems(boneControllers);
+		_ui.BoneController->setCurrentIndex(0);
+	}
 }
 
 StudioModelBonesPanel::~StudioModelBonesPanel() = default;
@@ -224,6 +246,25 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 		}
 		break;
 	}
+
+	case ModelChangeId::ChangeBoneControllerFromBone:
+	{
+		const auto& listChange{static_cast<const ModelBoneControllerFromBoneChangeEvent&>(event)};
+
+		if (_ui.Bones->currentIndex() == listChange.GetSourceIndex() && listChange.GetValue().first == _ui.BoneControllerAxis->currentIndex())
+		{
+			const QSignalBlocker controller{_ui.BoneController};
+			_ui.BoneController->setCurrentIndex(listChange.GetValue().second + BoneControllerOffset);
+		}
+		break;
+	}
+
+	case ModelChangeId::ChangeBoneControllerFromController:
+	{
+		//Resync any changes
+		OnBoneControllerAxisChanged(_ui.BoneControllerAxis->currentIndex());
+		break;
+	}
 	}
 }
 
@@ -255,12 +296,17 @@ void StudioModelBonesPanel::OnBoneChanged(int index)
 		const QSignalBlocker rotationScaleX{_ui.RotationScaleX};
 		const QSignalBlocker rotationScaleY{_ui.RotationScaleY};
 		const QSignalBlocker rotationScaleZ{_ui.RotationScaleZ};
+		const QSignalBlocker controllerAxis{_ui.BoneControllerAxis};
 
 		_ui.BoneName->setText(bone.Name.c_str());
 		_ui.ParentBone->setCurrentIndex(bone.Parent ? (bone.Parent->ArrayIndex + ParentBoneOffset) : 0);
 		_ui.BoneFlags->setValue(bone.Flags);
 
 		SyncBonePropertiesToUI(bone, _ui);
+
+		//Ensure axis initializes to index 0
+		_ui.BoneControllerAxis->setCurrentIndex(0);
+		OnBoneControllerAxisChanged(_ui.BoneControllerAxis->currentIndex());
 	}
 
 	OnHightlightBoneChanged();
@@ -326,5 +372,33 @@ void StudioModelBonesPanel::OnBonePropertyChanged()
 				glm::vec3{_ui.RotationScaleX->value(), _ui.RotationScaleY->value(), _ui.RotationScaleZ->value()}
 			}
 		}));
+}
+
+void StudioModelBonesPanel::OnBoneControllerAxisChanged(int index)
+{
+	const QSignalBlocker controller{_ui.BoneController};
+
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
+
+	if (index != -1 && bone.Axes[index].Controller)
+	{
+		_ui.BoneController->setCurrentIndex(bone.Axes[index].Controller->ArrayIndex + BoneControllerOffset);
+	}
+	else
+	{
+		_ui.BoneController->setCurrentIndex(0);
+	}
+}
+
+void StudioModelBonesPanel::OnBoneControllerChanged(int index)
+{
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
+
+	const int axis = _ui.BoneControllerAxis->currentIndex();
+
+	_asset->AddUndoCommand(new ChangeBoneControllerFromBoneCommand(_asset, _ui.Bones->currentIndex(), axis,
+		bone.Axes[axis].Controller ? bone.Axes[axis].Controller->ArrayIndex : -1, index - BoneControllerOffset));
 }
 }

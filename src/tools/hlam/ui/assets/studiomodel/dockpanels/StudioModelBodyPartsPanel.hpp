@@ -35,13 +35,13 @@ private slots:
 	void OnBoneControllerValueSliderChanged(int value);
 	void OnBoneControllerValueSpinnerChanged(double value);
 
-	void OnBoneControllerBoneChanged(int index);
 	void OnBoneControllerRangeChanged();
 
 	void OnBoneControllerRestChanged();
 	void OnBoneControllerIndexChanged();
 
-	void OnBoneControllerTypeChanged(int index);
+	void OnBoneControllerBoneChanged(int index);
+	void OnBoneControllerAxisChanged(int index);
 
 private:
 	Ui_StudioModelBodyPartsPanel _ui;

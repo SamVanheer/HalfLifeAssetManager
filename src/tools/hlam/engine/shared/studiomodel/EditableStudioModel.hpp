@@ -2,7 +2,9 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <glm/vec3.hpp>
@@ -263,6 +265,27 @@ public:
 		}
 
 		return bones;
+	}
+
+	std::optional<std::pair<int, int>> FindBoneControllerIsAttachedTo(int boneControllerIndex)
+	{
+		if (boneControllerIndex >= 0 && boneControllerIndex < BoneControllers.size())
+		{
+			auto controller = BoneControllers[boneControllerIndex].get();
+
+			for (auto& bone : Bones)
+			{
+				for (int i = 0; i < bone->Axes.size(); ++i)
+				{
+					if (bone->Axes[i].Controller == controller)
+					{
+						return {{bone->ArrayIndex, i}};
+					}
+				}
+			}
+		}
+
+		return {};
 	}
 };
 
