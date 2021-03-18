@@ -138,7 +138,6 @@ void Scene::Initialize()
 	if (nullptr != _entity)
 	{
 		//TODO: should be replaced with an on-demand resource uploading stage in Draw()
-		_entity->GetModel()->CreateTextures(*_textureLoader);
 		_entity->GetEditableModel()->CreateTextures(*_textureLoader);
 	}
 

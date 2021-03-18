@@ -73,7 +73,6 @@ public:
 	void SetFrame(float frame);
 
 private:
-	studiomdl::StudioModel* _model = nullptr;
 	studiomdl::EditableStudioModel* _editableModel = nullptr;
 
 	int		_sequence = 0;				// sequence index
@@ -93,15 +92,11 @@ public:
 	/**
 	*	Gets the model.
 	*/
-	studiomdl::StudioModel* GetModel() const { return _model; }
-
 	studiomdl::EditableStudioModel* GetEditableModel() const { return _editableModel; }
 
 	/**
 	*	Sets the model.
 	*/
-	void SetModel(studiomdl::StudioModel* model);
-
 	void SetEditableModel(studiomdl::EditableStudioModel* model);
 
 	/**

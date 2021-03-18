@@ -152,7 +152,7 @@ float StudioModelEntity::AdvanceFrame(float deltaTime, const float maximum)
 
 int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float end, int index, const bool allowClientEvents)
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		return 0;
 	}
@@ -264,14 +264,6 @@ void StudioModelEntity::SetFrame(float frame)
 	_animTime = GetContext()->Time->GetTime();
 }
 
-void StudioModelEntity::SetModel(studiomdl::StudioModel* model)
-{
-	//TODO: release old model.
-	_model = model;
-
-	//TODO: reinit entity settings
-}
-
 void StudioModelEntity::SetEditableModel(studiomdl::EditableStudioModel* model)
 {
 	//TODO: release old model.
@@ -363,7 +355,7 @@ byte StudioModelEntity::GetControllerByIndex(const int controller) const
 
 float StudioModelEntity::GetControllerValue(const int controller) const
 {
-	if (!_model)
+	if (!_editableModel)
 	{
 		return 0;
 	}
