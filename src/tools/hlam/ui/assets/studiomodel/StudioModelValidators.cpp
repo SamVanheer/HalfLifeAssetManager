@@ -1,5 +1,7 @@
 #include <QString>
 
+#include "entity/HLMVStudioModelEntity.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelValidators.hpp"
 
@@ -28,13 +30,13 @@ bool UniqueAttachmentNameValidator::IsUnique(const QString& text) const
 		return true;
 	}
 
-	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	for (int i = 0; i < header->numattachments; ++i)
+	for (int i = 0; i < model->Attachments.size(); ++i)
 	{
 		if (i != _currentIndex)
 		{
-			if (text == header->GetAttachment(i)->name)
+			if (text == model->Attachments[i]->Name.c_str())
 			{
 				return false;
 			}
@@ -46,13 +48,13 @@ bool UniqueAttachmentNameValidator::IsUnique(const QString& text) const
 
 bool UniqueBoneNameValidator::IsUnique(const QString& text) const
 {
-	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	for (int i = 0; i < header->numbones; ++i)
+	for (int i = 0; i < model->Bones.size(); ++i)
 	{
 		if (i != _currentIndex)
 		{
-			if (text == header->GetBone(i)->name)
+			if (text == model->Bones[i]->Name.c_str())
 			{
 				return false;
 			}
@@ -64,13 +66,13 @@ bool UniqueBoneNameValidator::IsUnique(const QString& text) const
 
 bool UniqueTextureNameValidator::IsUnique(const QString& text) const
 {
-	const auto header = _asset->GetStudioModel()->GetTextureHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	for (int i = 0; i < header->numtextures; ++i)
+	for (int i = 0; i < model->Textures.size(); ++i)
 	{
 		if (i != _currentIndex)
 		{
-			if (text == header->GetTexture(i)->name)
+			if (text == model->Textures[i]->Name.c_str())
 			{
 				return false;
 			}
@@ -82,21 +84,21 @@ bool UniqueTextureNameValidator::IsUnique(const QString& text) const
 
 bool UniqueModelNameValidator::IsUnique(const QString& text) const
 {
-	const auto header = _asset->GetStudioModel()->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	for (int i = 0; i < header->numbodyparts; ++i)
+	for (int i = 0; i < model->Bodyparts.size(); ++i)
 	{
 		if (i != _currentBodyPartIndex)
 		{
-			const auto bodyPart = header->GetBodypart(i);
+			const auto& bodyPart = *model->Bodyparts[i];
 
-			for (int j = 0; j < bodyPart->nummodels; ++j)
+			for (int j = 0; j < bodyPart.Models.size(); ++j)
 			{
 				if (j != _currentIndex)
 				{
-					const auto model = reinterpret_cast<const mstudiomodel_t*>(header->GetData() + bodyPart->modelindex) + j;
+					const auto& model = bodyPart.Models[j];
 
-					if (text == model->name)
+					if (text == model.Name.c_str())
 					{
 						return false;
 					}
