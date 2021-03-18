@@ -57,17 +57,15 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 
 	_ui.EventInfoWidget->setVisible(false);
 
-	auto model = _asset->GetScene()->GetEntity()->GetModel();
-
-	auto header = model->GetStudioHeader();
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	QStringList sequences;
 
-	sequences.reserve(header->numseq);
+	sequences.reserve(model->Sequences.size());
 
-	for (int i = 0; i < header->numseq; ++i)
+	for (const auto& sequence : model->Sequences)
 	{
-		sequences.append(header->GetSequence(i)->label);
+		sequences.append(sequence->Label.c_str());
 	}
 
 	_ui.SequenceComboBox->addItems(sequences);
@@ -77,8 +75,7 @@ StudioModelSequencesPanel::~StudioModelSequencesPanel() = default;
 
 void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetModel();
-	const auto header = model->GetStudioHeader();
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -99,7 +96,7 @@ void StudioModelSequencesPanel::InitializeBlenders(const BlendMode mode)
 {
 	auto entity = _asset->GetScene()->GetEntity();
 
-	auto sequence = entity->GetModel()->GetStudioHeader()->GetSequence(entity->GetSequence());
+	const auto& sequence = *entity->GetEditableModel()->Sequences[entity->GetSequence()];
 
 	const float initialBlendValue = 0.f;
 
@@ -128,7 +125,7 @@ void StudioModelSequencesPanel::InitializeBlenders(const BlendMode mode)
 
 	for (int blender = 0; blender < SequenceBlendCount; ++blender)
 	{
-		const auto hasBlender = mode == BlendMode::CounterStrike || sequence->blendtype[blender] != 0;
+		const auto hasBlender = mode == BlendMode::CounterStrike || sequence.BlendData[blender].Type != 0;
 
 		const auto slider = sliders[blender];
 
@@ -146,15 +143,15 @@ void StudioModelSequencesPanel::InitializeBlenders(const BlendMode mode)
 			else
 			{
 				//Swap values if the range is inverted
-				if (sequence->blendend[blender] < sequence->blendstart[blender])
+				if (sequence.BlendData[blender].End < sequence.BlendData[blender].Start)
 				{
-					start = sequence->blendend[blender];
-					end = sequence->blendstart[blender];
+					start = sequence.BlendData[blender].End;
+					end = sequence.BlendData[blender].Start;
 				}
 				else
 				{
-					start = sequence->blendstart[blender];
-					end = sequence->blendend[blender];
+					start = sequence.BlendData[blender].Start;
+					end = sequence.BlendData[blender].End;
 				}
 			}
 
@@ -222,32 +219,32 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 
 	entity->SetSequence(index);
 
-	auto sequence = entity->GetModel()->GetStudioHeader()->GetSequence(index);
+	const auto& sequence = *entity->GetEditableModel()->Sequences[index];
 
-	const auto durationInSeconds = sequence->numframes / sequence->fps;
+	const auto durationInSeconds = sequence.NumFrames / sequence.FPS;
 
 	_ui.SequenceLabel->setText(QString::number(index));
-	_ui.FrameCountLabel->setText(QString::number(sequence->numframes));
-	_ui.FPSLabel->setText(QString::number(sequence->fps, 'g', 2));
+	_ui.FrameCountLabel->setText(QString::number(sequence.NumFrames));
+	_ui.FPSLabel->setText(QString::number(sequence.FPS, 'g', 2));
 	_ui.DurationLabel->setText(QString::number(durationInSeconds, 'g', 2));
 
-	_ui.EventCountLabel->setText(QString::number(sequence->numevents));
-	_ui.IsLoopingLabel->setText((sequence->flags & STUDIO_LOOPING) ? "Yes" : "No");
-	_ui.BlendCountLabel->setText(QString::number(sequence->numblends));
-	_ui.ActivityWeightLabel->setText(QString::number(sequence->actweight));
+	_ui.EventCountLabel->setText(QString::number(sequence.Events.size()));
+	_ui.IsLoopingLabel->setText((sequence.Flags & STUDIO_LOOPING) ? "Yes" : "No");
+	_ui.BlendCountLabel->setText(QString::number(sequence.AnimationBlends.size()));
+	_ui.ActivityWeightLabel->setText(QString::number(sequence.ActivityWeight));
 
 	QString activityName{"Unknown"};
 
-	if (sequence->activity >= ACT_IDLE && sequence->activity <= ACT_FLINCH_RIGHTLEG)
+	if (sequence.Activity >= ACT_IDLE && sequence.Activity <= ACT_FLINCH_RIGHTLEG)
 	{
-		activityName = activity_map[sequence->activity - 1].name;
+		activityName = activity_map[sequence.Activity - 1].name;
 	}
-	else if (sequence->activity == ACT_RESET)
+	else if (sequence.Activity == ACT_RESET)
 	{
 		activityName = "None";
 	}
 
-	_ui.ActivityNameLabel->setText(QString{"%1 (%2)"}.arg(activityName).arg(sequence->activity));
+	_ui.ActivityNameLabel->setText(QString{"%1 (%2)"}.arg(activityName).arg(sequence.Activity));
 
 	InitializeBlenders(static_cast<BlendMode>(_ui.BlendMode->currentIndex()));
 
@@ -255,18 +252,18 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 
 	{
 		const QSignalBlocker blocker{_ui.EventFrameIndex};
-		_ui.EventFrameIndex->setRange(0, sequence->numframes - 1);
+		_ui.EventFrameIndex->setRange(0, sequence.NumFrames - 1);
 	}
 
-	const bool hasEvents = sequence->numevents > 0;
+	const bool hasEvents = !sequence.Events.empty();
 
 	if (hasEvents)
 	{
 		QStringList events;
 
-		events.reserve(sequence->numevents);
+		events.reserve(sequence.Events.size());
 
-		for (int i = 0; i < sequence->numevents; ++i)
+		for (int i = 0; i < sequence.Events.size(); ++i)
 		{
 			events.append(QString("Event %1").arg(i + 1));
 		}
@@ -314,28 +311,28 @@ void StudioModelSequencesPanel::OnEventChanged(int index)
 	if (hasEvent)
 	{
 		const auto entity = _asset->GetScene()->GetEntity();
-		const auto model = entity->GetModel();
-		const auto sequence = model->GetStudioHeader()->GetSequence(entity->GetSequence());
-		const auto event = reinterpret_cast<const mstudioevent_t*>(model->GetStudioHeader()->GetData() + sequence->eventindex) + index;
+		const auto model = entity->GetEditableModel();
+		const auto& sequence = *model->Sequences[entity->GetSequence()];
+		const auto& event = sequence.Events[index];
 
 		const QSignalBlocker eventFrameIndex{_ui.EventFrameIndex};
 		const QSignalBlocker eventId{_ui.EventId};
 		const QSignalBlocker eventOptions{_ui.EventOptions};
 		const QSignalBlocker eventType{_ui.EventType};
 
-		_ui.EventFrameIndex->setValue(event->frame);
-		_ui.EventId->setValue(event->event);
+		_ui.EventFrameIndex->setValue(event.Frame);
+		_ui.EventId->setValue(event.EventId);
 
 		//Only call setText if the text is different
 		//This prevents the edit state from being overwritten
-		const QString options{event->options};
+		const QString options{event.Options.c_str()};
 
 		if (_ui.EventOptions->text() != options)
 		{
 			_ui.EventOptions->setText(options);
 		}
 
-		_ui.EventType->setValue(event->type);
+		_ui.EventType->setValue(event.Type);
 	}
 
 	_ui.EventInfoWidget->setVisible(hasEvent);
@@ -354,19 +351,18 @@ void StudioModelSequencesPanel::OnPitchFramerateAmplitudeChanged()
 void StudioModelSequencesPanel::OnEventEdited()
 {
 	const auto entity = _asset->GetScene()->GetEntity();
-	const auto model = entity->GetModel();
-	const auto sequence = model->GetStudioHeader()->GetSequence(entity->GetSequence());
-	const auto event = reinterpret_cast<const mstudioevent_t*>(model->GetStudioHeader()->GetData() + sequence->eventindex) + _ui.EventsComboBox->currentIndex();
+	const auto model = entity->GetEditableModel();
+	const auto& sequence = *model->Sequences[entity->GetSequence()];
+	const auto& event = sequence.Events[_ui.EventsComboBox->currentIndex()];
 
-	auto changedEvent{*event};
+	auto changedEvent{event};
 
-	changedEvent.frame = _ui.EventFrameIndex->value();
-	changedEvent.event = _ui.EventId->value();
-	changedEvent.type = _ui.EventType->value();
+	changedEvent.Frame = _ui.EventFrameIndex->value();
+	changedEvent.EventId = _ui.EventId->value();
+	changedEvent.Type = _ui.EventType->value();
 
-	strncpy(changedEvent.options, _ui.EventOptions->text().toUtf8().constData(), sizeof(changedEvent.options) - 1);
-	changedEvent.options[sizeof(changedEvent.options) - 1] = '\0';
+	changedEvent.Options = _ui.EventOptions->text().toStdString();
 
-	_asset->AddUndoCommand(new ChangeEventCommand(_asset, _ui.SequenceComboBox->currentIndex(), _ui.EventsComboBox->currentIndex(), *event, changedEvent));
+	_asset->AddUndoCommand(new ChangeEventCommand(_asset, _ui.SequenceComboBox->currentIndex(), _ui.EventsComboBox->currentIndex(), event, changedEvent));
 }
 }

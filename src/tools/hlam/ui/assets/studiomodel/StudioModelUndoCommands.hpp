@@ -906,10 +906,11 @@ protected:
 	void Apply(int index, const ImportTextureData& oldValue, const ImportTextureData& newValue) override;
 };
 
-class ChangeEventCommand : public ModelListUndoCommand<mstudioevent_t>
+class ChangeEventCommand : public ModelListUndoCommand<studiomdl::SequenceEvent>
 {
 public:
-	ChangeEventCommand(StudioModelAsset* asset, int sequenceIndex, int eventIndex, const mstudioevent_t& oldEvent, const mstudioevent_t& newEvent)
+	ChangeEventCommand(StudioModelAsset* asset, int sequenceIndex, int eventIndex,
+		const studiomdl::SequenceEvent& oldEvent, const studiomdl::SequenceEvent& newEvent)
 		: ModelListUndoCommand(asset, ModelChangeId::ChangeEvent, sequenceIndex, oldEvent, newEvent)
 		, _eventIndex(eventIndex)
 	{
@@ -917,9 +918,9 @@ public:
 	}
 
 protected:
-	void Apply(int index, const mstudioevent_t& oldValue, const mstudioevent_t& newValue) override;
+	void Apply(int index, const studiomdl::SequenceEvent& oldValue, const studiomdl::SequenceEvent& newValue) override;
 
-	void EmitEvent(const mstudioevent_t& oldValue, const mstudioevent_t& newValue) override
+	void EmitEvent(const studiomdl::SequenceEvent& oldValue, const studiomdl::SequenceEvent& newValue) override
 	{
 		_asset->EmitModelChanged(ModelEventChangeEvent(_id, _index, _eventIndex));
 	}
