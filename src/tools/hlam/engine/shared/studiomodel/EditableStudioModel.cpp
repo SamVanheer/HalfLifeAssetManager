@@ -8,6 +8,15 @@
 
 namespace studiomdl
 {
+EditableStudioModel::~EditableStudioModel()
+{
+	for (auto& texture : Textures)
+	{
+		glDeleteTextures(1, &texture->TextureId);
+		texture->TextureId = 0;
+	}
+}
+
 Model* EditableStudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart)
 {
 	auto& bodypart = *Bodyparts[iBodyPart];

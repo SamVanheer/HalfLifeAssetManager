@@ -198,7 +198,7 @@ class EditableStudioModel
 {
 public:
 	EditableStudioModel() = default;
-	~EditableStudioModel() = default;
+	~EditableStudioModel();
 
 	EditableStudioModel(const EditableStudioModel&) = delete;
 	EditableStudioModel& operator=(const EditableStudioModel&) = delete;
