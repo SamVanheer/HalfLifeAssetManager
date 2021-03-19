@@ -581,7 +581,7 @@ std::vector<std::unique_ptr<Texture>> ConvertTexturesToEditable(const StudioMode
 	}
 	else
 	{
-		ConvertMdlTexturesToEditable(studioModel);
+		return ConvertMdlTexturesToEditable(studioModel);
 	}
 }
 
