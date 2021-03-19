@@ -26,9 +26,6 @@ class TextureLoader;
 
 namespace studiomdl
 {
-//TODO: refactor to use data structures defined by new editable model format
-constexpr std::array<std::array<double, 2>, SequenceBlendCount> CounterStrikeBlendRanges{{{-180, 180}, {-45, 45}}};
-
 struct StudioDataDeleter
 {
 	void operator()(studiohdr_t* pointer) const

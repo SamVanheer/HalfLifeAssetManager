@@ -191,6 +191,8 @@ struct Texture
 	GLuint TextureId = 0;
 };
 
+constexpr std::array<SequenceBlendData, SequenceBlendCount> CounterStrikeBlendRanges{{{0, -180, 180}, {0, -45, 45}}};
+
 /**
 *	@brief Contains studiomodel data in a format that can be easily edited
 */

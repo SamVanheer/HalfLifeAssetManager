@@ -137,8 +137,8 @@ void StudioModelSequencesPanel::InitializeBlenders(const BlendMode mode)
 
 			if (mode == BlendMode::CounterStrike)
 			{
-				start = studiomdl::CounterStrikeBlendRanges[blender][0];
-				end = studiomdl::CounterStrikeBlendRanges[blender][1];
+				start = studiomdl::CounterStrikeBlendRanges[blender].Start;
+				end = studiomdl::CounterStrikeBlendRanges[blender].End;
 			}
 			else
 			{
