@@ -173,17 +173,25 @@ void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 void StudioModelHitboxesPanel::UpdateQCString()
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
 
-	_ui.QCString->setText(QString{"$hbox %1 \"%2\" %3 %4 %5 %6 %7 %8"}
-		.arg(hitbox.Group)
-		.arg(hitbox.Bone->Name.c_str())
-		.arg(hitbox.Min[0], 0, 'f', 6)
-		.arg(hitbox.Min[1], 0, 'f', 6)
-		.arg(hitbox.Min[2], 0, 'f', 6)
-		.arg(hitbox.Max[0], 0, 'f', 6)
-		.arg(hitbox.Max[1], 0, 'f', 6)
-		.arg(hitbox.Max[2], 0, 'f', 6));
+	if (!model->Hitboxes.empty())
+	{
+		const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
+
+		_ui.QCString->setText(QString{"$hbox %1 \"%2\" %3 %4 %5 %6 %7 %8"}
+			.arg(hitbox.Group)
+			.arg(hitbox.Bone->Name.c_str())
+			.arg(hitbox.Min[0], 0, 'f', 6)
+			.arg(hitbox.Min[1], 0, 'f', 6)
+			.arg(hitbox.Min[2], 0, 'f', 6)
+			.arg(hitbox.Max[0], 0, 'f', 6)
+			.arg(hitbox.Max[1], 0, 'f', 6)
+			.arg(hitbox.Max[2], 0, 'f', 6));
+	}
+	else
+	{
+		_ui.QCString->setText({});
+	}
 }
 
 void StudioModelHitboxesPanel::OnDockPanelChanged(QWidget* current, QWidget* previous)
