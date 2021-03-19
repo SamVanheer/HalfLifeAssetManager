@@ -5,7 +5,6 @@
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
-#include "engine/shared/studiomodel/StudioModel.hpp"
 
 #include "game/AnimEvent.hpp"
 #include "game/Events.hpp"
