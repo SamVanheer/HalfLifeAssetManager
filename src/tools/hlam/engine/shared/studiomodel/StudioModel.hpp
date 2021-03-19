@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -51,8 +52,17 @@ class StudioModel final
 {
 public:
 	StudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& studioHeader, studio_ptr<studiohdr_t>&& textureHeader,
-		std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, bool isDol);
-	~StudioModel();
+		std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, bool isDol)
+		: _fileName(std::move(fileName))
+		, _studioHeader(std::move(studioHeader))
+		, _textureHeader(std::move(textureHeader))
+		, _sequenceHeaders(std::move(sequenceHeaders))
+		, _isDol(isDol)
+	{
+		assert(_studioHeader);
+	}
+
+	~StudioModel() = default;
 
 	StudioModel(const StudioModel&) = delete;
 	StudioModel& operator=(const StudioModel&) = delete;
@@ -80,7 +90,17 @@ public:
 
 	studioseqhdr_t* GetSeqGroupHeader(const size_t i) const { return _sequenceHeaders[i].get(); }
 
-	mstudioanim_t* GetAnim(const mstudioseqdesc_t* pseqdesc) const;
+	mstudioanim_t* GetAnim(const mstudioseqdesc_t* pseqdesc) const
+	{
+		mstudioseqgroup_t* pseqgroup = _studioHeader->GetSequenceGroup(pseqdesc->seqgroup);
+
+		if (pseqdesc->seqgroup == 0)
+		{
+			return (mstudioanim_t*)((byte*)_studioHeader.get() + pseqgroup->unused2 + pseqdesc->animindex);
+		}
+
+		return (mstudioanim_t*)((byte*)_sequenceHeaders[pseqdesc->seqgroup - 1].get() + pseqdesc->animindex);
+	}
 
 	bool IsDol() const { return _isDol; }
 
