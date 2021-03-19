@@ -456,7 +456,10 @@ void StudioModelEntity::SetMouth(float value)
 		}
 	}
 
-	//TODO: need to check if it actually finds a controller!
+	if (i >= _editableModel->BoneControllers.size())
+	{
+		return;
+	}
 
 	const auto& boneController = *_editableModel->BoneControllers[i];
 
