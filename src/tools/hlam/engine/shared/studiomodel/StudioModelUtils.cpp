@@ -457,7 +457,88 @@ std::vector<std::unique_ptr<Bodypart>> ConvertBodypartsToEditable(const StudioMo
 	return result;
 }
 
-std::vector<std::unique_ptr<Texture>> ConvertTexturesToEditable(const StudioModel& studioModel)
+//Dol differs only in texture storage
+//Instead of pixels followed by RGB palette, it has a 32 byte texture name (name of file without extension), followed by an RGBA palette and pixels
+std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioModel& studioModel)
+{
+	const int RGBA_PALETTE_CHANNELS = 4;
+
+	auto header = studioModel.GetTextureHeader();
+
+	std::vector<std::unique_ptr<Texture>> result;
+
+	result.reserve(header->numtextures);
+
+	for (int i = 0; i < header->numtextures; ++i)
+	{
+		auto source = header->GetTexture(i);
+
+		//Starts off with 32 byte texture name
+		auto sourcePalette = header->GetData() + source->index + 32;
+
+		std::array<byte, PALETTE_SIZE> palette{};
+
+		//Discard alpha value
+		//TODO: convert alpha value somehow? is it even used?
+		for (int e = 0; e < PALETTE_ENTRIES; ++e)
+		{
+			for (int j = 0; j < PALETTE_CHANNELS; ++j)
+			{
+				palette[(e * PALETTE_CHANNELS) + j] = sourcePalette[(e * RGBA_PALETTE_CHANNELS) + j];
+			}
+		}
+
+		const auto size = source->width * source->height;
+
+		std::vector<byte> pixels;
+
+		pixels.resize(size);
+
+		auto pSourcePixels = sourcePalette + (PALETTE_ENTRIES * RGBA_PALETTE_CHANNELS);
+
+		for (int i = 0; i < size; ++i)
+		{
+			auto pixel = pSourcePixels[i];
+
+			auto masked = pixel & 0x1F;
+
+			//Adjust the index to map to the correct palette entry
+			if (masked >= 8)
+			{
+				if (masked >= 16)
+				{
+					if (masked < 24)
+					{
+						pixel -= 8;
+					}
+				}
+				else
+				{
+					pixel += 8;
+				}
+			}
+
+			pixels[i] = pixel;
+		}
+
+		Texture texture
+		{
+			source->name,
+			source->flags,
+			source->width,
+			source->height,
+			i,
+			std::move(pixels),
+			palette
+		};
+
+		result.push_back(std::make_unique<Texture>(texture));
+	}
+
+	return result;
+}
+
+std::vector<std::unique_ptr<Texture>> ConvertMdlTexturesToEditable(const StudioModel& studioModel)
 {
 	auto header = studioModel.GetTextureHeader();
 
@@ -488,6 +569,18 @@ std::vector<std::unique_ptr<Texture>> ConvertTexturesToEditable(const StudioMode
 	}
 
 	return result;
+}
+
+std::vector<std::unique_ptr<Texture>> ConvertTexturesToEditable(const StudioModel& studioModel)
+{
+	if (studioModel.IsDol())
+	{
+		return ConvertDolTexturesToEditable(studioModel);
+	}
+	else
+	{
+		ConvertMdlTexturesToEditable(studioModel);
+	}
 }
 
 std::vector<std::vector<Texture*>> ConvertSkinFamiliesToEditable(const StudioModel& studioModel, std::vector<std::unique_ptr<Texture>>& textures)

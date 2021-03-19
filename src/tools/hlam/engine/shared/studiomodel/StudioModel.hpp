@@ -82,6 +82,8 @@ public:
 
 	mstudioanim_t* GetAnim(const mstudioseqdesc_t* pseqdesc) const;
 
+	bool IsDol() const { return _isDol; }
+
 private:
 	std::string _fileName;
 
