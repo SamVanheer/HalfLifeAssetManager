@@ -50,9 +50,6 @@ using studio_ptr = std::unique_ptr<T, StudioDataDeleter>;
 class StudioModel final
 {
 public:
-	static const size_t MAX_SEQGROUPS = 32;
-
-public:
 	StudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& studioHeader, studio_ptr<studiohdr_t>&& textureHeader,
 		std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, bool isDol);
 	~StudioModel();
@@ -85,29 +82,6 @@ public:
 
 	mstudioanim_t* GetAnim(const mstudioseqdesc_t* pseqdesc) const;
 
-	mstudiomodel_t* GetModelByBodyPart(const int iBody, const int iBodyPart) const;
-
-	int GetBodyValueForGroup(int compositeValue, int group) const;
-
-	bool CalculateBodygroup(const int iGroup, const int iValue, int& iInOutBodygroup) const;
-
-	GLuint GetTextureId(const int iIndex) const;
-
-	void CreateTextures(graphics::TextureLoader& textureLoader);
-
-	void ReplaceTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture, const byte* data, const byte* pal, GLuint textureId);
-
-	/**
-	*	Reuploads a texture. Useful for making changes made to the texture's pixel, palette or flag data show up in the model itself.
-	* *	@param textureLoader Loader to use for texture uploading
-	*	@param ptexture Texture to reupload. Must be a texture that is part of this model.
-	*/
-	void ReuploadTexture(graphics::TextureLoader& textureLoader, mstudiotexture_t* ptexture);
-
-	void UpdateFilters(graphics::TextureLoader& textureLoader);
-
-	void ReuploadTextures(graphics::TextureLoader& textureLoader);
-
 private:
 	std::string _fileName;
 
@@ -115,8 +89,6 @@ private:
 	studio_ptr<studiohdr_t> _textureHeader;
 
 	std::vector<studio_ptr<studioseqhdr_t>> _sequenceHeaders;
-
-	std::vector<GLuint> _textures;
 
 	bool _isDol;
 };
