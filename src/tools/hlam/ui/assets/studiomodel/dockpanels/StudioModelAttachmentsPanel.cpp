@@ -189,14 +189,22 @@ void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 void StudioModelAttachmentsPanel::UpdateQCString()
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
-	_ui.QCString->setText(QString{"$attachment %1 \"%2\" %3 %4 %5"}
-		.arg(_ui.Attachments->currentIndex())
-		.arg(attachment.Bone->Name.c_str())
-		.arg(attachment.Origin[0], 0, 'f', 6)
-		.arg(attachment.Origin[1], 0, 'f', 6)
-		.arg(attachment.Origin[2], 0, 'f', 6));
+	if (!model->Attachments.empty())
+	{
+		const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
+
+		_ui.QCString->setText(QString{"$attachment %1 \"%2\" %3 %4 %5"}
+			.arg(_ui.Attachments->currentIndex())
+			.arg(attachment.Bone->Name.c_str())
+			.arg(attachment.Origin[0], 0, 'f', 6)
+			.arg(attachment.Origin[1], 0, 'f', 6)
+			.arg(attachment.Origin[2], 0, 'f', 6));
+	}
+	else
+	{
+		_ui.QCString->setText({});
+	}
 }
 
 void StudioModelAttachmentsPanel::OnDockPanelChanged(QWidget* current, QWidget* previous)
