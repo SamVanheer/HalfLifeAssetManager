@@ -1,28 +1,12 @@
 #pragma once
 
-#include <array>
 #include <cassert>
 #include <memory>
-#include <stdexcept>
-#include <string>
-#include <utility>
 #include <vector>
-
-#include <glm/vec3.hpp>
 
 #include "core/shared/Const.hpp"
 
-#include "utility/mathlib.hpp"
-#include "utility/Color.hpp"
-
-#include "graphics/OpenGL.hpp"
-
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
-
-namespace graphics
-{
-class TextureLoader;
-}
 
 namespace studiomdl
 {
@@ -48,10 +32,9 @@ using studio_ptr = std::unique_ptr<T, StudioDataDeleter>;
 class StudioModel final
 {
 public:
-	StudioModel(std::string&& fileName, studio_ptr<studiohdr_t>&& studioHeader, studio_ptr<studiohdr_t>&& textureHeader,
+	StudioModel(studio_ptr<studiohdr_t>&& studioHeader, studio_ptr<studiohdr_t>&& textureHeader,
 		std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, bool isDol)
-		: _fileName(std::move(fileName))
-		, _studioHeader(std::move(studioHeader))
+		: _studioHeader(std::move(studioHeader))
 		, _textureHeader(std::move(textureHeader))
 		, _sequenceHeaders(std::move(sequenceHeaders))
 		, _isDol(isDol)
@@ -63,13 +46,6 @@ public:
 
 	StudioModel(const StudioModel&) = delete;
 	StudioModel& operator=(const StudioModel&) = delete;
-
-	const std::string& GetFileName() const { return _fileName; }
-
-	void SetFileName(std::string&& fileName)
-	{
-		_fileName = std::move(fileName);
-	}
 
 	studiohdr_t* GetStudioHeader() const { return _studioHeader.get(); }
 
@@ -102,8 +78,6 @@ public:
 	bool IsDol() const { return _isDol; }
 
 private:
-	std::string _fileName;
-
 	studio_ptr<studiohdr_t> _studioHeader;
 	studio_ptr<studiohdr_t> _textureHeader;
 

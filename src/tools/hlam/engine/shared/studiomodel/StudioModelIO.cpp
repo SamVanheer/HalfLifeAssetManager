@@ -179,7 +179,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 		}
 	}
 
-	return std::make_unique<StudioModel>(fileName.u8string(), std::move(mainHeader), std::move(textureHeader),
+	return std::make_unique<StudioModel>(std::move(mainHeader), std::move(textureHeader),
 		std::move(sequenceHeaders), isDol);
 }
 

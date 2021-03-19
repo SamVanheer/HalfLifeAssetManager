@@ -1279,7 +1279,7 @@ StudioModel ConvertFromEditable(const std::filesystem::path& fileName, const Edi
 
 	std::memcpy(studioHeader.get(), buffer.data(), buffer.size());
 
-	return StudioModel{fileName.u8string(), studio_ptr<studiohdr_t>{reinterpret_cast<studiohdr_t*>(studioHeader.release())}, {}, {}, false};
+	return StudioModel{studio_ptr<studiohdr_t>{reinterpret_cast<studiohdr_t*>(studioHeader.release())}, {}, {}, false};
 }
 
 const char* ControlToString(const int iControl)
