@@ -120,8 +120,6 @@ struct Sequence
 
 	std::array<SequenceBlendData, SequenceBlendCount> BlendData;
 
-	int SequenceGroup = 0; //TODO: change to pointer to SequenceGroup
-
 	int EntryNode = 0;
 	int ExitNode = 0;
 	int NodeFlags = 0;

@@ -305,7 +305,6 @@ std::vector<std::unique_ptr<Sequence>> ConvertSequencesToEditable(const StudioMo
 					}
 				}
 			},
-			0, //source->seqgroup, //Merge all sequences into the main header
 			source->entrynode,
 			source->exitnode,
 			source->nodeflags,
@@ -912,7 +911,8 @@ void ConvertSequencesFromEditable(const EditableStudioModel& studioModel, const 
 		dest.motionbone = source.MotionBone;
 		dest.linearmovement = source.LinearMovement;
 
-		dest.seqgroup = source.SequenceGroup;
+		//Always in the main file
+		dest.seqgroup = 0;
 
 		dest.animindex = sequenceAnimationIndices[i];
 
