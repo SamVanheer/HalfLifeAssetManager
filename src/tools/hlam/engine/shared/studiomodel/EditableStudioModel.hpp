@@ -44,7 +44,7 @@ struct Bone
 	std::string Name;
 	Bone* Parent = nullptr;
 	int Flags = 0;
-	std::array<BoneAxisData, STUDIO_MAX_PER_BONE_CONTROLLERS> Axes;
+	std::array<BoneAxisData, STUDIO_NUM_COORDINATE_AXES> Axes;
 
 	//Index of this bone. Always use this for indexed operations
 	int ArrayIndex = 0;
@@ -75,7 +75,7 @@ struct SequenceEvent
 struct Animation
 {
 	//std::array<std::vector<short>, STUDIO_MAX_PER_BONE_CONTROLLERS> Data;
-	std::array<std::vector<mstudioanimvalue_t>, STUDIO_MAX_PER_BONE_CONTROLLERS> Data;
+	std::array<std::vector<mstudioanimvalue_t>, STUDIO_NUM_COORDINATE_AXES> Data;
 };
 
 struct SequenceBlendData

@@ -50,10 +50,11 @@ enum
 	STUDIO_MAX_EVENT_OPTIONS_LENGTH = 64,
 
 	/**
-	*	Maximum number of bone controllers per bone.
-	* TODO: rename to STUDIO_NUM_CONTROLLER_AXES
+	*	@brief Number of axes that coordinate data operates on
+	* 
+	*	3 linear axes and 3 rotation axes
 	*/
-	STUDIO_MAX_PER_BONE_CONTROLLERS	= 6,
+	STUDIO_NUM_COORDINATE_AXES		= 6,
 
 	STUDIO_ATTACH_NUM_VECTORS		= 3
 };
@@ -107,9 +108,9 @@ struct mstudiobone_t
 	char	name[MaxBoneNameBytes];	// bone name for symbolic links
 	int		parent;		// parent bone
 	int		flags;		// ??
-	int		bonecontroller[ STUDIO_MAX_PER_BONE_CONTROLLERS ];	// bone controller index, -1 == none
-	float	value[ STUDIO_MAX_PER_BONE_CONTROLLERS ];	// default DoF values
-	float	scale[ STUDIO_MAX_PER_BONE_CONTROLLERS ];   // scale for delta DoF values
+	int		bonecontroller[STUDIO_NUM_COORDINATE_AXES];	// bone controller index, -1 == none
+	float	value[STUDIO_NUM_COORDINATE_AXES];	// default DoF values
+	float	scale[STUDIO_NUM_COORDINATE_AXES];   // scale for delta DoF values
 };
 
 
@@ -246,7 +247,7 @@ struct mstudioattachment_t
 
 struct mstudioanim_t
 {
-	unsigned short	offset[ 6 ];
+	unsigned short	offset[STUDIO_NUM_COORDINATE_AXES];
 };
 
 // animation frames

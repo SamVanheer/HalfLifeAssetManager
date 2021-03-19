@@ -54,7 +54,7 @@ std::vector<std::unique_ptr<Bone>> ConvertBonesToEditable(const StudioModel& stu
 	{
 		auto source = header->GetBone(i);
 
-		std::array<BoneAxisData, STUDIO_MAX_PER_BONE_CONTROLLERS> axisData{};
+		std::array<BoneAxisData, STUDIO_NUM_COORDINATE_AXES> axisData{};
 
 		for (int j = 0; j < axisData.size(); ++j)
 		{
@@ -218,7 +218,7 @@ std::vector<std::vector<Animation>> ConvertAnimationBlendsToEditable(const Studi
 		{
 			Animation animation;
 
-			for (int j = 0; j < STUDIO_MAX_PER_BONE_CONTROLLERS; ++j)
+			for (int j = 0; j < STUDIO_NUM_COORDINATE_AXES; ++j)
 			{
 				if (source->offset[j] != 0)
 				{
@@ -725,7 +725,7 @@ void ConvertBonesFromEditable(const EditableStudioModel& studioModel, studiohdr_
 			dest.parent = source.Parent ? source.Parent->ArrayIndex : -1;
 			dest.flags = source.Flags;
 
-			for (int j = 0; j < STUDIO_MAX_PER_BONE_CONTROLLERS; ++j)
+			for (int j = 0; j < STUDIO_NUM_COORDINATE_AXES; ++j)
 			{
 				const auto& axis = source.Axes[j];
 
@@ -841,7 +841,7 @@ std::vector<std::size_t> ConvertAnimationsFromEditable(const EditableStudioModel
 			{
 				auto& destOffsets = animations[(blend * studioModel.Bones.size()) + bone];
 
-				for (int axis = 0; axis < STUDIO_MAX_PER_BONE_CONTROLLERS; ++axis)
+				for (int axis = 0; axis < STUDIO_NUM_COORDINATE_AXES; ++axis)
 				{
 					const auto& sourceOffsets = source.AnimationBlends[blend][bone].Data[axis];
 
