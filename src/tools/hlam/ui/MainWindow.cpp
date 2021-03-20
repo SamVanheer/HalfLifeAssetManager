@@ -178,6 +178,12 @@ bool MainWindow::TryLoadAsset(QString fileName)
 {
 	fileName = QDir::cleanPath(fileName);
 
+	if (!QFile::exists(fileName))
+	{
+		QMessageBox::critical(this, "Error loading asset", QString{"Asset does not exist"});
+		return false;
+	}
+
 	try
 	{
 		auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName);
