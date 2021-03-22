@@ -72,7 +72,7 @@ public:
 
 	void SetDefaultModId(const QUuid& value)
 	{
-		_defaultMod = std::move(value);
+		_defaultMod = value;
 	}
 
 	std::vector<GameConfiguration*> GetGameConfigurations() const
