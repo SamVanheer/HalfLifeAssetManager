@@ -383,8 +383,15 @@ void DrawFloorQuad(float floorLength, float textureRepeatLength, glm::vec2 textu
 	glEnd();
 }
 
-void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, GLuint groundTexture, const glm::vec3& groundColor, const bool bMirror)
+void DrawFloor(float floorLength, float textureRepeatLength,
+	const glm::vec2& textureOffset, GLuint groundTexture, const glm::vec3& groundColor,
+	const bool bMirror)
 {
+	const auto cullFaceWasEnabled = glIsEnabled(GL_CULL_FACE);
+	GLint oldCullFace;
+
+	glGetIntegerv(GL_CULL_FACE_MODE, &oldCullFace);
+
 	glCullFace(GL_FRONT);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -392,11 +399,16 @@ void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& te
 	glEnable(GL_CULL_FACE);
 
 	if (bMirror)
+	{
 		glFrontFace(GL_CW);
+	}
 	else
+	{
 		glDisable(GL_CULL_FACE);
+	}
 
 	glEnable(GL_BLEND);
+
 	if (groundTexture == GL_INVALID_TEXTURE_ID)
 	{
 		glDisable(GL_TEXTURE_2D);
@@ -425,13 +437,26 @@ void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& te
 
 		glFrontFace(GL_CCW);
 	}
-	else
+
+	if (cullFaceWasEnabled)
+	{
 		glEnable(GL_CULL_FACE);
+	}
+	else
+	{
+		glDisable(GL_CULL_FACE);
+	}
+
+	glCullFace(static_cast<GLenum>(oldCullFace));
 }
 
 unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
 	const RenderMode renderMode, const bool bWireframeOverlay, const float floorLength, const bool bBackfaceCulling)
 {
+	GLint oldCullFace;
+
+	glGetIntegerv(GL_CULL_FACE_MODE, &oldCullFace);
+
 	/* Don't update color or depth. */
 	glDisable(GL_DEPTH_TEST);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -443,6 +468,7 @@ unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRende
 
 	//Cull backside of the floor so the model can't draw underneath the floor
 	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	/* Now render floor; floor pixels just get their stencil set to 1. */
 	//Texture length is irrelevant here
@@ -502,6 +528,8 @@ unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRende
 	glPopMatrix();
 
 	glDisable(GL_STENCIL_TEST);
+
+	glCullFace(static_cast<GLenum>(oldCullFace));
 
 	return studioModelRenderer.GetDrawnPolygonsCount() - uiOldPolys;
 }
