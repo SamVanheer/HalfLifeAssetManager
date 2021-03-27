@@ -38,7 +38,7 @@ bool SaveBMPFile( const char* const pszFilename, const int iWidth, const int iHe
 
 	const int32_t iPixelsBytes = iDiskWidth * iHeight;
 
-	const int32_t iPaletteBytes = PALETTE_ENTRIES * sizeof( RGBQuad );
+	const int32_t iPaletteBytes = graphics::RGBPalette::EntriesCount * sizeof( RGBQuad );
 
 	//This might not be correct. TODO: verify
 	header.bfType		= BMP_TYPE_ID;
@@ -64,7 +64,7 @@ bool SaveBMPFile( const char* const pszFilename, const int iWidth, const int iHe
 	infoHeader.biSizeImage		= 0;
 	infoHeader.biXPelsPerMeter	= 0;
 	infoHeader.biYPelsPerMeter	= 0;
-	infoHeader.biClrUsed		= PALETTE_ENTRIES;			//Store all colors.
+	infoHeader.biClrUsed		= graphics::RGBPalette::EntriesCount;			//Store all colors.
 	infoHeader.biClrImportant	= 0;
 
 	//Write the info header.
@@ -74,9 +74,9 @@ bool SaveBMPFile( const char* const pszFilename, const int iWidth, const int iHe
 		return false;
 	}
 
-	RGBQuad palette[ PALETTE_ENTRIES ];
+	RGBQuad palette[graphics::RGBPalette::EntriesCount];
 
-	for( size_t uiIndex = 0; uiIndex < PALETTE_ENTRIES; ++uiIndex, pPalette += 3 )
+	for( size_t uiIndex = 0; uiIndex < graphics::RGBPalette::EntriesCount; ++uiIndex, pPalette += 3 )
 	{
 		palette[ uiIndex ].rgbRed		= pPalette[ 0 ];
 		palette[ uiIndex ].rgbGreen		= pPalette[ 1 ];

@@ -184,7 +184,7 @@ struct Texture
 	int ArrayIndex = 0;
 
 	std::vector<byte> Pixels;
-	std::array<byte, graphics::PALETTE_SIZE> Palette;
+	graphics::RGBPalette Palette;
 
 	GLuint TextureId = 0;
 };
@@ -237,7 +237,7 @@ public:
 
 	void CreateTextures(graphics::TextureLoader& textureLoader);
 
-	void ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const byte* data, const byte* pal);
+	void ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const byte* data, const graphics::RGBPalette& pal);
 
 	/**
 	*	Reuploads a texture. Useful for making changes made to the texture's pixel, palette or flag data show up in the model itself.

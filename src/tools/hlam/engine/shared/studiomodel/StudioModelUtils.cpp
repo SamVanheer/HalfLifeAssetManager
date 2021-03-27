@@ -462,8 +462,6 @@ std::vector<std::unique_ptr<Bodypart>> ConvertBodypartsToEditable(const StudioMo
 //Instead of pixels followed by RGB palette, it has a 32 byte texture name (name of file without extension), followed by an RGBA palette and pixels
 std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioModel& studioModel)
 {
-	const int RGBA_PALETTE_CHANNELS = 4;
-
 	auto header = studioModel.GetTextureHeader();
 
 	std::vector<std::unique_ptr<Texture>> result;
@@ -475,18 +473,15 @@ std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioM
 		auto source = header->GetTexture(i);
 
 		//Starts off with 32 byte texture name
-		auto sourcePalette = header->GetData() + source->index + 32;
+		const auto& sourcePalette = *reinterpret_cast<graphics::RGBAPalette*>(header->GetData() + source->index + 32);
 
-		std::array<byte, graphics::PALETTE_SIZE> palette{};
+		graphics::RGBPalette palette;
 
 		//Discard alpha value
 		//TODO: convert alpha value somehow? is it even used?
-		for (int e = 0; e < graphics::PALETTE_ENTRIES; ++e)
+		for (int e = 0; e < palette.size(); ++e)
 		{
-			for (int j = 0; j < graphics::PALETTE_CHANNELS; ++j)
-			{
-				palette[(e * graphics::PALETTE_CHANNELS) + j] = sourcePalette[(e * RGBA_PALETTE_CHANNELS) + j];
-			}
+			palette[e] = sourcePalette[e];
 		}
 
 		const auto size = source->width * source->height;
@@ -495,7 +490,7 @@ std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioM
 
 		pixels.resize(size);
 
-		auto pSourcePixels = sourcePalette + (graphics::PALETTE_ENTRIES * RGBA_PALETTE_CHANNELS);
+		auto pSourcePixels = header->GetData() + source->index + 32 + sourcePalette.GetSizeInBytes();
 
 		for (int i = 0; i < size; ++i)
 		{
@@ -551,9 +546,9 @@ std::vector<std::unique_ptr<Texture>> ConvertMdlTexturesToEditable(const StudioM
 	{
 		auto source = header->GetTexture(i);
 
-		std::array<byte, graphics::PALETTE_SIZE> palette{};
+		graphics::RGBPalette palette;
 
-		std::memcpy(palette.data(), header->GetData() + source->index + (source->width * source->height), graphics::PALETTE_SIZE);
+		std::memcpy(palette.AsByteArray(), header->GetData() + source->index + (source->width * source->height), sizeof(palette));
 
 		Texture texture
 		{
@@ -1214,7 +1209,7 @@ void ConvertTexturesFromEditable(const EditableStudioModel& studioModel, studioh
 		auto textureData = AllocateBufferArray<byte>(buffer, source.Pixels.size() + sizeof(source.Palette));
 
 		std::memcpy(textureData, source.Pixels.data(), source.Pixels.size());
-		std::memcpy(textureData + source.Pixels.size(), source.Palette.data(), sizeof(source.Palette));
+		std::memcpy(textureData + source.Pixels.size(), source.Palette.AsByteArray(), sizeof(source.Palette));
 	}
 
 	AlignBuffer(buffer);

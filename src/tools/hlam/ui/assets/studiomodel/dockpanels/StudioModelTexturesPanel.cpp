@@ -676,9 +676,7 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 		}
 	}
 
-	byte convPal[graphics::PALETTE_SIZE];
-
-	memset(convPal, 0, sizeof(convPal));
+	graphics::RGBPalette convPal;
 
 	int paletteIndex;
 
@@ -686,17 +684,18 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 	{
 		const auto rgb = palette[paletteIndex];
 
-		convPal[paletteIndex * graphics::PALETTE_CHANNELS] = qRed(rgb);
-		convPal[paletteIndex * graphics::PALETTE_CHANNELS + 1] = qGreen(rgb);
-		convPal[paletteIndex * graphics::PALETTE_CHANNELS + 2] = qBlue(rgb);
+		convPal[paletteIndex] =
+		{
+			static_cast<byte>(qRed(rgb)),
+			static_cast<byte>(qGreen(rgb)),
+			static_cast<byte>(qBlue(rgb))
+		};
 	}
 
 	//Fill remaining entries with black
-	for (; paletteIndex < graphics::PALETTE_ENTRIES; ++paletteIndex)
+	for (; paletteIndex < convPal.EntriesCount; ++paletteIndex)
 	{
-		convPal[paletteIndex * graphics::PALETTE_CHANNELS] = 0;
-		convPal[paletteIndex * graphics::PALETTE_CHANNELS + 1] = 0;
-		convPal[paletteIndex * graphics::PALETTE_CHANNELS + 2] = 0;
+		convPal[paletteIndex] = {0, 0, 0};
 	}
 
 	ImportTextureData oldTexture;
@@ -707,18 +706,18 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 	oldTexture.Pixels = std::make_unique<byte[]>(oldTexture.Width * oldTexture.Height);
 
 	memcpy(oldTexture.Pixels.get(), texture.Pixels.data(), texture.Pixels.size());
-	memcpy(oldTexture.Palette, texture.Palette.data(), sizeof(oldTexture.Palette));
+	oldTexture.Palette = texture.Palette;
 
 	newTexture.Width = image.width();
 	newTexture.Height = image.height();
 	newTexture.Pixels = std::move(texData);
-
-	memcpy(newTexture.Palette, convPal, sizeof(newTexture.Palette));
+	newTexture.Palette = convPal;
 
 	_asset->AddUndoCommand(new ImportTextureCommand(_asset, textureIndex, std::move(oldTexture), std::move(newTexture)));
 }
 
-static QImage ConvertTextureToRGBImage(const studiomdl::Texture& texture, const byte* textureData, const byte* texturePalette, std::vector<QRgb>& dataBuffer)
+static QImage ConvertTextureToRGBImage(
+	const studiomdl::Texture& texture, const byte* textureData, const graphics::RGBPalette& texturePalette, std::vector<QRgb>& dataBuffer)
 {
 	dataBuffer.resize(texture.Width * texture.Height);
 
@@ -726,9 +725,9 @@ static QImage ConvertTextureToRGBImage(const studiomdl::Texture& texture, const 
 	{
 		for (int x = 0; x < texture.Width; ++x)
 		{
-			const auto color = texturePalette + (textureData[(texture.Width * y) + x] * 3);
+			const auto& color = texturePalette[textureData[(texture.Width * y) + x]];
 
-			dataBuffer[(texture.Width * y) + x] = qRgb(color[0], color[1], color[2]);
+			dataBuffer[(texture.Width * y) + x] = qRgb(color.R, color.G, color.B);
 		}
 	}
 
@@ -737,9 +736,6 @@ static QImage ConvertTextureToRGBImage(const studiomdl::Texture& texture, const 
 
 bool StudioModelTexturesPanel::ExportTextureTo(const QString& fileName, const studiomdl::EditableStudioModel& model, const studiomdl::Texture& texture)
 {
-	const auto textureData = texture.Pixels.data();
-	const auto texturePalette = texture.Palette.data();
-
 	//Ensure data is 32 bit aligned
 	const int alignedWidth = (texture.Width + 3) & (~3);
 
@@ -751,7 +747,7 @@ bool StudioModelTexturesPanel::ExportTextureTo(const QString& fileName, const st
 	{
 		for (int w = 0; w < texture.Width; ++w)
 		{
-			alignedPixels[(alignedWidth * h) + w] = textureData[(texture.Width * h) + w];
+			alignedPixels[(alignedWidth * h) + w] = texture.Pixels[(texture.Width * h) + w];
 		}
 	}
 
@@ -759,13 +755,11 @@ bool StudioModelTexturesPanel::ExportTextureTo(const QString& fileName, const st
 
 	QVector<QRgb> palette;
 
-	palette.reserve(graphics::PALETTE_SIZE);
+	palette.reserve(texture.Palette.GetSizeInBytes());
 
-	for (int i = 0; i < graphics::PALETTE_ENTRIES; ++i)
+	for (const auto& rgb : texture.Palette)
 	{
-		const auto color = texturePalette + (i * 3);
-
-		palette.append(qRgb(color[0], color[1], color[2]));
+		palette.append(qRgb(rgb.R, rgb.G, rgb.B));
 	}
 
 	textureImage.setColorTable(palette);
@@ -788,9 +782,7 @@ void StudioModelTexturesPanel::RemapTexture(int index)
 
 	if (graphics::TryGetRemapColors(texture.Name.c_str(), low, mid, high))
 	{
-		byte palette[graphics::PALETTE_SIZE];
-
-		memcpy(palette, texture.Palette.data(), graphics::PALETTE_SIZE);
+		graphics::RGBPalette palette{texture.Palette};
 
 		graphics::PaletteHueReplace(palette, _ui.TopColorSlider->value(), low, mid);
 
@@ -951,11 +943,10 @@ void StudioModelTexturesPanel::OnExportUVMap()
 	const auto& texture = *model->Textures[textureIndex];
 
 	const auto textureData = texture.Pixels.data();
-	const auto texturePalette = texture.Palette.data();
 
 	std::vector<QRgb> dataBuffer;
 
-	auto textureImage{ConvertTextureToRGBImage(texture, textureData, texturePalette, dataBuffer)};
+	auto textureImage{ConvertTextureToRGBImage(texture, textureData, texture.Palette, dataBuffer)};
 
 	if (StudioModelExportUVMeshDialog dialog{entity, textureIndex, GetMeshIndexForDrawing(_ui.Meshes), textureImage, this};
 		QDialog::DialogCode::Accepted == dialog.exec())

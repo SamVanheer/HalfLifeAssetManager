@@ -21,10 +21,9 @@
 
 namespace graphics
 {
-void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData )
+void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const const RGBPalette& palette, byte* const pOutData )
 {
 	assert( pData );
-	assert( pPalette );
 	assert( pOutData );
 
 	byte* pOut = pOutData;
@@ -33,9 +32,9 @@ void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pDa
 	{
 		for( int x = 0; x < iWidth; ++x, pOut += 3 )
 		{
-			pOut[ 0 ] = pPalette[ pData[ x + y * iWidth ] * 3 ];
-			pOut[ 1 ] = pPalette[ pData[ x + y * iWidth ] * 3 + 1 ];
-			pOut[ 2 ] = pPalette[ pData[ x + y * iWidth ] * 3 + 2 ];
+			pOut[0] = palette[pData[x + y * iWidth]].R;
+			pOut[1] = palette[pData[x + y * iWidth]].G;
+			pOut[2] = palette[pData[x + y * iWidth]].B;
 		}
 	}
 }
@@ -216,15 +215,15 @@ bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high)
 	return false;
 }
 
-void PaletteHueReplace(byte* palette, int newHue, int start, int end)
+void PaletteHueReplace(RGBPalette& palette, int newHue, int start, int end)
 {
 	const auto hue = (float) (newHue * (360.0 / 255));
 
 	for (int i = start; i <= end; ++i)
 	{
-		float r = palette[i * PALETTE_CHANNELS];
-		float g = palette[i * PALETTE_CHANNELS + 1];
-		float b = palette[i * PALETTE_CHANNELS + 2];
+		float r = palette[i].R;
+		float g = palette[i].G;
+		float b = palette[i].B;
 
 		const auto maxcol = std::max({r, g, b}) / 255.0f;
 		auto mincol = std::min({r, g, b}) / 255.0f;
@@ -277,9 +276,9 @@ void PaletteHueReplace(byte* palette, int newHue, int start, int end)
 			}
 		}
 
-		palette[i * PALETTE_CHANNELS] = (byte) (r * 255);
-		palette[i * PALETTE_CHANNELS + 1] = (byte) (g * 255);
-		palette[i * PALETTE_CHANNELS + 2] = (byte) (b * 255);
+		palette[i].R = (byte) (r * 255);
+		palette[i].G = (byte) (g * 255);
+		palette[i].B = (byte) (b * 255);
 	}
 }
 

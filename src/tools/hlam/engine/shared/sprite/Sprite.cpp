@@ -17,66 +17,52 @@ namespace
 {
 /**
 *	Converts an 8 bit indexed palette into a 32 bit palette using the given format.
-*	@param pInPalette 8 bit indexed palette.
-*	@param pRGBAPalette 32 bit RGBA palette.
+*	@param inPalette 8 bit indexed palette.
+*	@param rgbaPalette 32 bit RGBA palette.
 *	@param format Texture format to convert to.
 */
-void Convert8To32Bit( const byte* pInPalette, byte* pRGBAPalette, const TexFormat::TexFormat format )
+void Convert8To32Bit( const graphics::RGBPalette& inPalette, graphics::RGBAPalette& rgbaPalette, const TexFormat::TexFormat format )
 {
-	assert( pInPalette );
-	assert( pRGBAPalette );
-
-	byte* pRGBA = pRGBAPalette;
-
 	switch( format )
 	{
 	default: //TODO: warn
 	case TexFormat::SPR_NORMAL:
 	case TexFormat::SPR_ADDITIVE:
 		{
-			for( size_t uiIndex = 0; uiIndex < graphics::PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
+			for (std::size_t i = 0; i < inPalette.size(); ++i)
 			{
-				pRGBA[ 0 ] = pInPalette[ uiIndex * 3 ];
-				pRGBA[ 1 ] = pInPalette[ uiIndex * 3 + 1 ];
-				pRGBA[ 2 ] = pInPalette[ uiIndex * 3 + 2 ];
-				pRGBA[ 3 ] = 0xFF;
+				rgbaPalette[i] = inPalette[i];
+				rgbaPalette[i].A = 0xFF;
 			}
-
 			break;
 		}
 
 	case TexFormat::SPR_INDEXALPHA:
 		{
-			for( size_t uiIndex = 0; uiIndex < graphics::PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
+			for (std::size_t i = 0; i < inPalette.size(); ++i)
 			{
-				pRGBA[ 0 ] = pInPalette[ uiIndex * 3 ];
-				pRGBA[ 1 ] = pInPalette[ uiIndex * 3 + 1 ];
-				pRGBA[ 2 ] = pInPalette[ uiIndex * 3 + 2 ];
-				pRGBA[ 3 ] = static_cast<byte>( uiIndex );
+				rgbaPalette[i] = inPalette[i];
+				rgbaPalette[i].A = static_cast<byte>(i);
 			}
-
 			break;
 		}
 
 	case TexFormat::SPR_ALPHTEST:
 		{
-			for( size_t uiIndex = 0; uiIndex < graphics::PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
+			for (std::size_t i = 0; i < inPalette.size(); ++i)
 			{
-				pRGBA[ 0 ] = pInPalette[ uiIndex * 3 ];
-				pRGBA[ 1 ] = pInPalette[ uiIndex * 3 + 1 ];
-				pRGBA[ 2 ] = pInPalette[ uiIndex * 3 + 2 ];
-				pRGBA[ 3 ] = pInPalette[ uiIndex ] == 255 ? pInPalette[ uiIndex ] : 0xFF;
+				rgbaPalette[i] = inPalette[i];
+				rgbaPalette[i].A = 0xFF;
 			}
 
 			//Zero out the transparent color.
-			memset( pRGBAPalette + 255 * 4, 0, sizeof( byte ) * 4 );
-
+			rgbaPalette.GetAlpha() = {0, 0, 0, 0};
 			break;
 		}
 	}
 }
 
-byte* LoadSpriteFrame( byte* pIn, mspriteframe_t** ppFrame, const int iFrame, const byte* pRGBAPalette )
+byte* LoadSpriteFrame( byte* pIn, mspriteframe_t** ppFrame, const int iFrame, const graphics::RGBAPalette& rgbaPalette )
 {
 	assert( pIn );
 	assert( ppFrame );
@@ -114,10 +100,10 @@ byte* LoadSpriteFrame( byte* pIn, mspriteframe_t** ppFrame, const int iFrame, co
 	{
 		for( int j = 0; j<iHeight; j++, out += 4 )
 		{
-			out[ 0 ] = pRGBAPalette[ pPixelData[ i * pSpriteFrame->width + j ] * 4 ];
-			out[ 1 ] = pRGBAPalette[ pPixelData[ i * pSpriteFrame->width + j ] * 4 + 1 ];
-			out[ 2 ] = pRGBAPalette[ pPixelData[ i * pSpriteFrame->width + j ] * 4 + 2 ];
-			out[ 3 ] = pRGBAPalette[ pPixelData[ i * pSpriteFrame->width + j ] * 4 + 3 ];
+			out[0] = rgbaPalette[pPixelData[i * pSpriteFrame->width + j]].R;
+			out[1] = rgbaPalette[pPixelData[i * pSpriteFrame->width + j]].G;
+			out[2] = rgbaPalette[pPixelData[i * pSpriteFrame->width + j]].B;
+			out[3] = rgbaPalette[pPixelData[i * pSpriteFrame->width + j]].A;
 		}
 	}
 
@@ -132,7 +118,7 @@ byte* LoadSpriteFrame( byte* pIn, mspriteframe_t** ppFrame, const int iFrame, co
 	return pPixelData + ( iWidth * iHeight );
 }
 
-byte* LoadSpriteGroup( byte* pIn, mspriteframe_t** ppFrame, const int iFrame, const byte* pRGBAPalette )
+byte* LoadSpriteGroup( byte* pIn, mspriteframe_t** ppFrame, const int iFrame, const graphics::RGBAPalette& rgbaPalette )
 {
 	dspritegroup_t* pGroup = reinterpret_cast<dspritegroup_t*>( pIn );
 
@@ -163,7 +149,7 @@ byte* LoadSpriteGroup( byte* pIn, mspriteframe_t** ppFrame, const int iFrame, co
 
 	for( int iIndex = 0; iIndex < iNumFrames; ++iIndex )
 	{
-		pInput = LoadSpriteFrame( pInput, &pSpriteGroup->frames[ iIndex ], iFrame * 100 + iIndex, pRGBAPalette );
+		pInput = LoadSpriteFrame( pInput, &pSpriteGroup->frames[ iIndex ], iFrame * 100 + iIndex, rgbaPalette);
 	}
 
 	return pInput;
@@ -181,27 +167,21 @@ bool LoadSpriteInternal( byte* pIn, msprite_t*& pSprite )
 	if( LittleValue( pHeader->ident ) != SPRITE_ID )
 		return false;
 
-	//Offset in the buffer where the frames are located
-	size_t uiFrameOffset = 0;
-
-	byte* pPalette = nullptr;
-
-	if( *reinterpret_cast<short*>( pHeader + 1 ) == graphics::PALETTE_ENTRIES )
-	{
-		pPalette = reinterpret_cast<byte*>( reinterpret_cast<short*>( pHeader + 1 ) + 1 );
-
-		uiFrameOffset = ( pPalette + graphics::PALETTE_SIZE ) - pIn;
-	}
-	else
+	if (*reinterpret_cast<short*>(pHeader + 1) != graphics::RGBPalette::EntriesCount)
 	{
 		return false;
 	}
 
+	const auto& palette = *reinterpret_cast<const graphics::RGBPalette*>(reinterpret_cast<short*>(pHeader + 1) + 1);
+
+	//Offset in the buffer where the frames are located
+	const size_t uiFrameOffset = reinterpret_cast<const byte*>(&palette) + palette.GetSizeInBytes() - pIn;
+
 	const TexFormat::TexFormat texFormat = LittleEnumValue( pHeader->texFormat );
 
-	byte convertedPalette[graphics::PALETTE_ENTRIES * 4 ];
+	graphics::RGBAPalette convertedPalette;
 
-	Convert8To32Bit( pPalette, convertedPalette, texFormat );
+	Convert8To32Bit(palette, convertedPalette, texFormat );
 
 	const int iNumFrames = LittleValue( pHeader->numframes );
 

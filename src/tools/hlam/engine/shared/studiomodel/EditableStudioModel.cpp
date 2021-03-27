@@ -69,7 +69,7 @@ void EditableStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 			name,
 			texture->Width, texture->Height,
 			texture->Pixels.data(),
-			texture->Palette.data(),
+			texture->Palette,
 			(texture->Flags & STUDIO_NF_NOMIPS) != 0,
 			(texture->Flags & STUDIO_NF_MASKED) != 0);
 
@@ -77,7 +77,7 @@ void EditableStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 	}
 }
 
-void EditableStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const byte* data, const byte* pal)
+void EditableStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const byte* data, const graphics::RGBPalette& pal)
 {
 	textureLoader.UploadIndexed8(
 		texture->TextureId,
@@ -103,7 +103,7 @@ void EditableStudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader
 		return;
 	}
 
-	ReplaceTexture(textureLoader, texture, texture->Pixels.data(), texture->Palette.data());
+	ReplaceTexture(textureLoader, texture, texture->Pixels.data(), texture->Palette);
 }
 
 void EditableStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
@@ -124,7 +124,7 @@ void EditableStudioModel::ReuploadTextures(graphics::TextureLoader& textureLoade
 	{
 		if (texture->TextureId)
 		{
-			ReplaceTexture(textureLoader, texture.get(), texture->Pixels.data(), texture->Palette.data());
+			ReplaceTexture(textureLoader, texture.get(), texture->Pixels.data(), texture->Palette);
 		}
 	}
 }

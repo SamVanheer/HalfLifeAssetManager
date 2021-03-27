@@ -919,7 +919,7 @@ struct ImportTextureData
 	int Width{};
 	int Height{};
 	std::unique_ptr<byte[]> Pixels;
-	byte Palette[graphics::PALETTE_SIZE]{};
+	graphics::RGBPalette Palette;
 
 	ImportTextureData() = default;
 
@@ -933,7 +933,7 @@ struct ImportTextureData
 			Pixels = std::make_unique<byte[]>(Width * Height);
 
 			memcpy(Pixels.get(), other.Pixels.get(), Width * Height);
-			memcpy(Palette, other.Palette, sizeof(Palette));
+			Palette = other.Palette;
 		}
 
 		return *this;

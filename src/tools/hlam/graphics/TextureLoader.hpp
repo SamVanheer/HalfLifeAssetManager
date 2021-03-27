@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 
 #include "core/shared/Const.hpp"
+#include "graphics/Palette.hpp"
 
 namespace graphics
 {
@@ -50,7 +51,7 @@ public:
 
 	void UploadRGBA8888(GLuint texture, int width, int height, const byte* rgbaPixels, bool generateMipmaps, bool masked);
 
-	void UploadIndexed8(GLuint texture, int width, int height, const byte* pixels, const byte* palette, bool generateMipmaps, bool masked);
+	void UploadIndexed8(GLuint texture, int width, int height, const byte* pixels, const RGBPalette& palette, bool generateMipmaps, bool masked);
 
 	void SetFilters(GLuint texture, bool hasMipmaps);
 

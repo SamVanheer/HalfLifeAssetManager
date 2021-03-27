@@ -12,6 +12,7 @@
 
 #include "graphics/Constants.hpp"
 #include "graphics/OpenGL.hpp"
+#include "graphics/Palette.hpp"
 
 class StudioModelEntity;
 
@@ -25,7 +26,7 @@ namespace graphics
 /**
 *	Converts an 8 bit image to a 24 bit RGB image.
 */
-void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const byte* const pPalette, byte* const pOutData );
+void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const RGBPalette& palette, byte* const pOutData );
 
 /**
 *	Flips an image vertically. This allows conversion between OpenGL and image formats. The image is flipped in place.
@@ -70,7 +71,7 @@ void DrawOutlinedBox(const std::array<glm::vec3, 8>& points, const glm::vec4& fa
 */
 bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high);
 
-void PaletteHueReplace(byte* palette, int newHue, int start, int end);
+void PaletteHueReplace(RGBPalette& palette, int newHue, int start, int end);
 
 /*
 *	Sets up OpenGL for the specified render mode.

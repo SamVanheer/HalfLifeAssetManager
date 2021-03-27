@@ -142,17 +142,15 @@ void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const 
 	}
 }
 
-void TextureLoader::UploadIndexed8(GLuint texture, int width, int height, const byte* pixels, const byte* palette, bool generateMipmaps, bool masked)
+void TextureLoader::UploadIndexed8(GLuint texture, int width, int height, const byte* pixels, const RGBPalette& palette, bool generateMipmaps, bool masked)
 {
 	//TODO: total size can be too large
-	byte localPalette[PALETTE_SIZE];
-
-	memcpy(localPalette, palette, sizeof(localPalette));
+	RGBPalette localPalette{palette};
 
 	//Sets the mask color to black. This helps limit the bleedover effect caused by resizing and filtering
 	if (masked)
 	{
-		localPalette[255 * 3 + 0] = localPalette[255 * 3 + 1] = localPalette[255 * 3 + 2] = 0;
+		localPalette.GetAlpha() = {0, 0, 0};
 	}
 
 	std::vector<byte> rgbaPixels;
@@ -161,14 +159,13 @@ void TextureLoader::UploadIndexed8(GLuint texture, int width, int height, const 
 
 	for (int i = 0; i < (width * height); ++i)
 	{
-		for (int c = 0; c < 3; ++c)
-		{
-			rgbaPixels[(i * 4) + c] = localPalette[(pixels[i] * 3) + c];
-		}
+		rgbaPixels[(i * 4) + 0] = localPalette[pixels[i]].R;
+		rgbaPixels[(i * 4) + 1] = localPalette[pixels[i]].G;
+		rgbaPixels[(i * 4) + 2] = localPalette[pixels[i]].B;
 
 		//For masked textures the last color in the table is the transparent color
 		//Pixels with that color have their alpha value set to 0 to appear transparent
-		if (masked && pixels[i] == 255)
+		if (masked && pixels[i] == RGBPalette::AlphaIndex)
 		{
 			rgbaPixels[(i * 4) + 3] = 0x00;
 		}
