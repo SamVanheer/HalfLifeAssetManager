@@ -441,6 +441,9 @@ unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRende
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glStencilFunc(GL_ALWAYS, 1, 0xffffffff);
 
+	//Cull backside of the floor so the model can't draw underneath the floor
+	glEnable(GL_CULL_FACE);
+
 	/* Now render floor; floor pixels just get their stencil set to 1. */
 	//Texture length is irrelevant here
 	DrawFloorQuad(floorLength, 1, glm::vec2{0});
