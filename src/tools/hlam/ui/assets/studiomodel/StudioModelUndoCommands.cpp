@@ -270,7 +270,7 @@ void ImportTextureCommand::Apply(int index, const ImportTextureData& oldValue, c
 
 	//Copy over the new image data to the texture
 	memcpy(texture.Pixels.data(), newValue.Pixels.get(), newValue.Width * newValue.Height);
-	memcpy(texture.Palette.data(), newValue.Palette, PALETTE_SIZE);
+	memcpy(texture.Palette.data(), newValue.Palette, graphics::PALETTE_SIZE);
 
 	model->ReplaceTexture(*_asset->GetTextureLoader(), &texture, newValue.Pixels.get(), newValue.Palette);
 }

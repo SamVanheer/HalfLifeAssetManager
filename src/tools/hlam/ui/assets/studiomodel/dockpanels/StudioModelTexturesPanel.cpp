@@ -676,7 +676,7 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 		}
 	}
 
-	byte convPal[PALETTE_SIZE];
+	byte convPal[graphics::PALETTE_SIZE];
 
 	memset(convPal, 0, sizeof(convPal));
 
@@ -686,17 +686,17 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 	{
 		const auto rgb = palette[paletteIndex];
 
-		convPal[paletteIndex * PALETTE_CHANNELS] = qRed(rgb);
-		convPal[paletteIndex * PALETTE_CHANNELS + 1] = qGreen(rgb);
-		convPal[paletteIndex * PALETTE_CHANNELS + 2] = qBlue(rgb);
+		convPal[paletteIndex * graphics::PALETTE_CHANNELS] = qRed(rgb);
+		convPal[paletteIndex * graphics::PALETTE_CHANNELS + 1] = qGreen(rgb);
+		convPal[paletteIndex * graphics::PALETTE_CHANNELS + 2] = qBlue(rgb);
 	}
 
 	//Fill remaining entries with black
-	for (; paletteIndex < PALETTE_ENTRIES; ++paletteIndex)
+	for (; paletteIndex < graphics::PALETTE_ENTRIES; ++paletteIndex)
 	{
-		convPal[paletteIndex * PALETTE_CHANNELS] = 0;
-		convPal[paletteIndex * PALETTE_CHANNELS + 1] = 0;
-		convPal[paletteIndex * PALETTE_CHANNELS + 2] = 0;
+		convPal[paletteIndex * graphics::PALETTE_CHANNELS] = 0;
+		convPal[paletteIndex * graphics::PALETTE_CHANNELS + 1] = 0;
+		convPal[paletteIndex * graphics::PALETTE_CHANNELS + 2] = 0;
 	}
 
 	ImportTextureData oldTexture;
@@ -759,9 +759,9 @@ bool StudioModelTexturesPanel::ExportTextureTo(const QString& fileName, const st
 
 	QVector<QRgb> palette;
 
-	palette.reserve(PALETTE_SIZE);
+	palette.reserve(graphics::PALETTE_SIZE);
 
-	for (int i = 0; i < PALETTE_ENTRIES; ++i)
+	for (int i = 0; i < graphics::PALETTE_ENTRIES; ++i)
 	{
 		const auto color = texturePalette + (i * 3);
 
@@ -788,9 +788,9 @@ void StudioModelTexturesPanel::RemapTexture(int index)
 
 	if (graphics::TryGetRemapColors(texture.Name.c_str(), low, mid, high))
 	{
-		byte palette[PALETTE_SIZE];
+		byte palette[graphics::PALETTE_SIZE];
 
-		memcpy(palette, texture.Palette.data(), PALETTE_SIZE);
+		memcpy(palette, texture.Palette.data(), graphics::PALETTE_SIZE);
 
 		graphics::PaletteHueReplace(palette, _ui.TopColorSlider->value(), low, mid);
 

@@ -34,7 +34,7 @@ void Convert8To32Bit( const byte* pInPalette, byte* pRGBAPalette, const TexForma
 	case TexFormat::SPR_NORMAL:
 	case TexFormat::SPR_ADDITIVE:
 		{
-			for( size_t uiIndex = 0; uiIndex < PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
+			for( size_t uiIndex = 0; uiIndex < graphics::PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
 			{
 				pRGBA[ 0 ] = pInPalette[ uiIndex * 3 ];
 				pRGBA[ 1 ] = pInPalette[ uiIndex * 3 + 1 ];
@@ -47,7 +47,7 @@ void Convert8To32Bit( const byte* pInPalette, byte* pRGBAPalette, const TexForma
 
 	case TexFormat::SPR_INDEXALPHA:
 		{
-			for( size_t uiIndex = 0; uiIndex < PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
+			for( size_t uiIndex = 0; uiIndex < graphics::PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
 			{
 				pRGBA[ 0 ] = pInPalette[ uiIndex * 3 ];
 				pRGBA[ 1 ] = pInPalette[ uiIndex * 3 + 1 ];
@@ -60,7 +60,7 @@ void Convert8To32Bit( const byte* pInPalette, byte* pRGBAPalette, const TexForma
 
 	case TexFormat::SPR_ALPHTEST:
 		{
-			for( size_t uiIndex = 0; uiIndex < PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
+			for( size_t uiIndex = 0; uiIndex < graphics::PALETTE_ENTRIES; ++uiIndex, pRGBA += 4 )
 			{
 				pRGBA[ 0 ] = pInPalette[ uiIndex * 3 ];
 				pRGBA[ 1 ] = pInPalette[ uiIndex * 3 + 1 ];
@@ -186,11 +186,11 @@ bool LoadSpriteInternal( byte* pIn, msprite_t*& pSprite )
 
 	byte* pPalette = nullptr;
 
-	if( *reinterpret_cast<short*>( pHeader + 1 ) == PALETTE_ENTRIES )
+	if( *reinterpret_cast<short*>( pHeader + 1 ) == graphics::PALETTE_ENTRIES )
 	{
 		pPalette = reinterpret_cast<byte*>( reinterpret_cast<short*>( pHeader + 1 ) + 1 );
 
-		uiFrameOffset = ( pPalette + PALETTE_SIZE ) - pIn;
+		uiFrameOffset = ( pPalette + graphics::PALETTE_SIZE ) - pIn;
 	}
 	else
 	{
@@ -199,7 +199,7 @@ bool LoadSpriteInternal( byte* pIn, msprite_t*& pSprite )
 
 	const TexFormat::TexFormat texFormat = LittleEnumValue( pHeader->texFormat );
 
-	byte convertedPalette[ PALETTE_ENTRIES * 4 ];
+	byte convertedPalette[graphics::PALETTE_ENTRIES * 4 ];
 
 	Convert8To32Bit( pPalette, convertedPalette, texFormat );
 

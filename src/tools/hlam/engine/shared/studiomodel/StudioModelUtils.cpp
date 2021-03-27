@@ -477,15 +477,15 @@ std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioM
 		//Starts off with 32 byte texture name
 		auto sourcePalette = header->GetData() + source->index + 32;
 
-		std::array<byte, PALETTE_SIZE> palette{};
+		std::array<byte, graphics::PALETTE_SIZE> palette{};
 
 		//Discard alpha value
 		//TODO: convert alpha value somehow? is it even used?
-		for (int e = 0; e < PALETTE_ENTRIES; ++e)
+		for (int e = 0; e < graphics::PALETTE_ENTRIES; ++e)
 		{
-			for (int j = 0; j < PALETTE_CHANNELS; ++j)
+			for (int j = 0; j < graphics::PALETTE_CHANNELS; ++j)
 			{
-				palette[(e * PALETTE_CHANNELS) + j] = sourcePalette[(e * RGBA_PALETTE_CHANNELS) + j];
+				palette[(e * graphics::PALETTE_CHANNELS) + j] = sourcePalette[(e * RGBA_PALETTE_CHANNELS) + j];
 			}
 		}
 
@@ -495,7 +495,7 @@ std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioM
 
 		pixels.resize(size);
 
-		auto pSourcePixels = sourcePalette + (PALETTE_ENTRIES * RGBA_PALETTE_CHANNELS);
+		auto pSourcePixels = sourcePalette + (graphics::PALETTE_ENTRIES * RGBA_PALETTE_CHANNELS);
 
 		for (int i = 0; i < size; ++i)
 		{
@@ -551,9 +551,9 @@ std::vector<std::unique_ptr<Texture>> ConvertMdlTexturesToEditable(const StudioM
 	{
 		auto source = header->GetTexture(i);
 
-		std::array<byte, PALETTE_SIZE> palette{};
+		std::array<byte, graphics::PALETTE_SIZE> palette{};
 
-		std::memcpy(palette.data(), header->GetData() + source->index + (source->width * source->height), PALETTE_SIZE);
+		std::memcpy(palette.data(), header->GetData() + source->index + (source->width * source->height), graphics::PALETTE_SIZE);
 
 		Texture texture
 		{

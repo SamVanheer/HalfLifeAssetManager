@@ -184,7 +184,7 @@ struct Texture
 	int ArrayIndex = 0;
 
 	std::vector<byte> Pixels;
-	std::array<byte, PALETTE_SIZE> Palette;
+	std::array<byte, graphics::PALETTE_SIZE> Palette;
 
 	GLuint TextureId = 0;
 };

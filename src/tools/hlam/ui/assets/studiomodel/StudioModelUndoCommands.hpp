@@ -919,7 +919,7 @@ struct ImportTextureData
 	int Width{};
 	int Height{};
 	std::unique_ptr<byte[]> Pixels;
-	byte Palette[PALETTE_SIZE]{};
+	byte Palette[graphics::PALETTE_SIZE]{};
 
 	ImportTextureData() = default;
 
