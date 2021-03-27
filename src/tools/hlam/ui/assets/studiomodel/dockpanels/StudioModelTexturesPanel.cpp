@@ -353,6 +353,10 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 	switch (event.GetId())
 	{
+	case ModelChangeId::ImportTexture:
+		//Use the same code for texture name changes
+		[[fallthrough]];
+
 	case ModelChangeId::ChangeTextureName:
 	{
 		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
@@ -373,8 +377,11 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 			}
 		}
 
-		//TODO: shouldn't be done here
-		RemapTexture(listChange.GetSourceIndex());
+		if (event.GetId() == ModelChangeId::ChangeTextureName)
+		{
+			//TODO: shouldn't be done here
+			RemapTexture(listChange.GetSourceIndex());
+		}
 		break;
 	}
 
@@ -651,16 +658,6 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 
 	auto& texture = *model.Textures[textureIndex];
 
-	if (texture.Width != image.width() || texture.Height != image.height())
-	{
-		QMessageBox::critical(this, "Error loading image",
-			QString{"Image \"%1\" does not have matching dimensions to the current texture (src: %2 x %3, dest: %4 x %5)"}
-				.arg(fileName)
-				.arg(image.width()).arg(image.height())
-				.arg(texture.Width).arg(texture.Height));
-		return;
-	}
-
 	//Convert to 8 bit palette based image
 	std::unique_ptr<byte[]> texData = std::make_unique<byte[]>(image.width() * image.height());
 
@@ -698,6 +695,9 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 		convPal[paletteIndex] = {0, 0, 0};
 	}
 
+	const auto scaledSTCoordinates = studiomdl::CalculateScaledSTCoordinatesData(
+		model, textureIndex, texture.Width, texture.Height, image.width(), image.height());
+
 	ImportTextureData oldTexture;
 	ImportTextureData newTexture;
 
@@ -707,11 +707,13 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 
 	memcpy(oldTexture.Pixels.get(), texture.Pixels.data(), texture.Pixels.size());
 	oldTexture.Palette = texture.Palette;
+	oldTexture.STCoordinatesScale = scaledSTCoordinates.first;
 
 	newTexture.Width = image.width();
 	newTexture.Height = image.height();
 	newTexture.Pixels = std::move(texData);
 	newTexture.Palette = convPal;
+	newTexture.STCoordinatesScale = scaledSTCoordinates.second;
 
 	_asset->AddUndoCommand(new ImportTextureCommand(_asset, textureIndex, std::move(oldTexture), std::move(newTexture)));
 }

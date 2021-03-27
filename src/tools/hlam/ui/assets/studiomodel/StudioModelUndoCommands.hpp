@@ -921,6 +921,8 @@ struct ImportTextureData
 	std::unique_ptr<byte[]> Pixels;
 	graphics::RGBPalette Palette;
 
+	studiomdl::ScaleSTCoordinatesData STCoordinatesScale;
+
 	ImportTextureData() = default;
 
 	ImportTextureData& operator=(const ImportTextureData& other)
@@ -934,6 +936,7 @@ struct ImportTextureData
 
 			memcpy(Pixels.get(), other.Pixels.get(), Width * Height);
 			Palette = other.Palette;
+			STCoordinatesScale = other.STCoordinatesScale;
 		}
 
 		return *this;

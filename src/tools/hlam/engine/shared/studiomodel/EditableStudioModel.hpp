@@ -309,4 +309,15 @@ struct ScaleBonesBoneData
 std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> CalculateScaledBonesData(const EditableStudioModel& studioModel, const float scale);
 
 void ApplyScaleBonesData(EditableStudioModel& studioModel, const std::vector<studiomdl::ScaleBonesBoneData>& data);
+
+struct ScaleSTCoordinatesData
+{
+	std::optional<float> WidthFactor;
+	std::optional<float> HeightFactor;
+};
+
+std::pair<ScaleSTCoordinatesData, ScaleSTCoordinatesData> CalculateScaledSTCoordinatesData(const EditableStudioModel& studioModel,
+	const int textureIndex, const int oldWidth, const int oldHeight, const int newWidth, const int newHeight);
+
+void ApplyScaledSTCoordinatesData(const EditableStudioModel& studioModel, const int textureIndex, const ScaleSTCoordinatesData& data);
 }

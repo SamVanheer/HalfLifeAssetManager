@@ -296,4 +296,83 @@ void ApplyScaleBonesData(EditableStudioModel& studioModel, const std::vector<stu
 		}
 	}
 }
+
+std::pair<ScaleSTCoordinatesData, ScaleSTCoordinatesData> CalculateScaledSTCoordinatesData(const EditableStudioModel& studioModel,
+	const int textureIndex, const int oldWidth, const int oldHeight, const int newWidth, const int newHeight)
+{
+	std::optional<double> oldWidthFactor;
+	std::optional<double> oldHeightFactor;
+	std::optional<double> newWidthFactor;
+	std::optional<double> newHeightFactor;
+
+	if (oldWidth != newWidth && oldWidth > 0 && newWidth > 0)
+	{
+		oldWidthFactor = static_cast<double>(oldWidth) / newWidth;
+		newWidthFactor = static_cast<double>(newWidth) / oldWidth;
+	}
+
+	if (oldHeight != newHeight && oldHeight > 0 && newHeight > 0)
+	{
+		oldHeightFactor = static_cast<double>(oldHeight) / newHeight;
+		newHeightFactor = static_cast<double>(newHeight) / oldHeight;
+	}
+
+	return {{oldWidthFactor, oldHeightFactor}, {newWidthFactor, newHeightFactor}};
+}
+
+void ApplyScaledSTCoordinatesData(const EditableStudioModel& studioModel, const int textureIndex, const ScaleSTCoordinatesData& data)
+{
+	//Nothing to do if the sizes match
+	if (!data.WidthFactor.has_value() && !data.HeightFactor.has_value())
+	{
+		return;
+	}
+
+	std::size_t dataIndex = 0;
+
+	for (std::size_t b = 0; b < studioModel.Bodyparts.size(); ++b)
+	{
+		auto& bodypart = *studioModel.Bodyparts[b];
+
+		for (std::size_t m = 0; m < bodypart.Models.size(); ++m)
+		{
+			auto& model = bodypart.Models[m];
+
+			for (std::size_t n = 0; n < model.Meshes.size(); ++n)
+			{
+				auto& mesh = model.Meshes[n];
+
+				if (mesh.SkinRef == textureIndex)
+				{
+					auto cmds = mesh.Triangles.data();
+
+					for (int cmd = std::abs(*cmds++); cmd > 0; cmd = std::abs(*cmds++))
+					{
+						while (cmd-- > 0)
+						{
+							short s = cmds[2];
+							short t = cmds[3];
+
+							//Rescale coordinates only if necessary to avoid loss of data
+							if (data.WidthFactor.has_value())
+							{
+								s = static_cast<short>(s * data.WidthFactor.value());
+							}
+
+							if (data.HeightFactor.has_value())
+							{
+								t = static_cast<short>(t * data.HeightFactor.value());
+							}
+
+							cmds[2] = s;
+							cmds[3] = t;
+
+							cmds += 4;
+						}
+					}
+				}
+			}
+		}
+	}
+}
 }
