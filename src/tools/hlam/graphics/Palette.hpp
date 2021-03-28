@@ -89,68 +89,68 @@ struct Palette final
 	*/
 	static constexpr std::size_t AlphaIndex = 255;
 
-	Palette() = default;
-	Palette(const Palette&) = default;
-	Palette& operator=(const Palette&) = default;
+	Palette() noexcept = default;
+	Palette(const Palette&) noexcept = default;
+	Palette& operator=(const Palette&) noexcept = default;
 
-	Palette(const std::array<TColor, EntriesCount>& palette)
+	Palette(const std::array<TColor, EntriesCount>& palette) noexcept
 		: Data(palette)
 	{
 	}
 
-	const TColor& operator[](std::size_t index) const
+	const TColor& operator[](std::size_t index) const noexcept
 	{
 		return Data[index];
 	}
 
-	TColor& operator[](std::size_t index)
+	TColor& operator[](std::size_t index) noexcept
 	{
 		return Data[index];
 	}
 
-	std::size_t size() const { return Data.size(); }
+	std::size_t size() const noexcept { return Data.size(); }
 
-	auto begin() const
+	auto begin() const noexcept
 	{
 		return Data.begin();
 	}
 
-	auto begin()
+	auto begin() noexcept
 	{
 		return Data.begin();
 	}
 
-	auto end() const
+	auto end() const noexcept
 	{
 		return Data.end();
 	}
 
-	auto end()
+	auto end() noexcept
 	{
 		return Data.end();
 	}
 
-	const TColor& GetAlpha() const
+	const TColor& GetAlpha() const noexcept
 	{
 		return Data[AlphaIndex];
 	}
 
-	TColor& GetAlpha()
+	TColor& GetAlpha() noexcept
 	{
 		return Data[AlphaIndex];
 	}
 
-	const byte* AsByteArray() const
+	const byte* AsByteArray() const noexcept
 	{
 		return reinterpret_cast<const byte*>(Data.data());
 	}
 
-	byte* AsByteArray()
+	byte* AsByteArray() noexcept
 	{
 		return reinterpret_cast<byte*>(Data.data());
 	}
 
-	std::size_t GetSizeInBytes() const
+	std::size_t GetSizeInBytes() const noexcept
 	{
 		return sizeof(*this);
 	}
