@@ -695,7 +695,7 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 		convPal[paletteIndex] = {0, 0, 0};
 	}
 
-	const auto scaledSTCoordinates = studiomdl::CalculateScaledSTCoordinatesData(
+	auto scaledSTCoordinates = studiomdl::CalculateScaledSTCoordinatesData(
 		model, textureIndex, texture.Width, texture.Height, image.width(), image.height());
 
 	ImportTextureData oldTexture;
@@ -707,13 +707,13 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 
 	memcpy(oldTexture.Pixels.get(), texture.Pixels.data(), texture.Pixels.size());
 	oldTexture.Palette = texture.Palette;
-	oldTexture.STCoordinatesScale = scaledSTCoordinates.first;
+	oldTexture.ScaledSTCoordinates = std::move(scaledSTCoordinates.first);
 
 	newTexture.Width = image.width();
 	newTexture.Height = image.height();
 	newTexture.Pixels = std::move(texData);
 	newTexture.Palette = convPal;
-	newTexture.STCoordinatesScale = scaledSTCoordinates.second;
+	newTexture.ScaledSTCoordinates = std::move(scaledSTCoordinates.second);
 
 	_asset->AddUndoCommand(new ImportTextureCommand(_asset, textureIndex, std::move(oldTexture), std::move(newTexture)));
 }

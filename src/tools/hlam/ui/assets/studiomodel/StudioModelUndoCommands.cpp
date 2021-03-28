@@ -279,7 +279,7 @@ void ImportTextureCommand::Apply(int index, const ImportTextureData& oldValue, c
 
 	model->ReplaceTexture(*_asset->GetTextureLoader(), &texture, newValue.Pixels.get(), newValue.Palette);
 
-	studiomdl::ApplyScaledSTCoordinatesData(*model, index, newValue.STCoordinatesScale);
+	studiomdl::ApplyScaledSTCoordinatesData(*model, index, newValue.ScaledSTCoordinates);
 }
 
 void ChangeEventCommand::Apply(int index, const studiomdl::SequenceEvent& oldValue, const studiomdl::SequenceEvent& newValue)

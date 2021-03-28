@@ -921,22 +921,19 @@ struct ImportTextureData
 	std::unique_ptr<byte[]> Pixels;
 	graphics::RGBPalette Palette;
 
-	studiomdl::ScaleSTCoordinatesData STCoordinatesScale;
+	studiomdl::ScaleSTCoordinatesData ScaledSTCoordinates;
 
 	ImportTextureData() = default;
 
-	ImportTextureData& operator=(const ImportTextureData& other)
+	ImportTextureData& operator=(ImportTextureData&& other) noexcept
 	{
 		if (this != &other)
 		{
 			Width = other.Width;
 			Height = other.Height;
-
-			Pixels = std::make_unique<byte[]>(Width * Height);
-
-			memcpy(Pixels.get(), other.Pixels.get(), Width * Height);
+			Pixels = std::move(other.Pixels);
 			Palette = other.Palette;
-			STCoordinatesScale = other.STCoordinatesScale;
+			ScaledSTCoordinates = std::move(other.ScaledSTCoordinates);
 		}
 
 		return *this;

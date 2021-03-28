@@ -312,8 +312,26 @@ void ApplyScaleBonesData(EditableStudioModel& studioModel, const std::vector<stu
 
 struct ScaleSTCoordinatesData
 {
-	std::optional<float> WidthFactor;
-	std::optional<float> HeightFactor;
+	struct STCoordinate
+	{
+		short S;
+		short T;
+	};
+
+	std::vector<STCoordinate> Coordinates;
+
+	ScaleSTCoordinatesData() = default;
+
+	ScaleSTCoordinatesData(std::vector<STCoordinate>&& coordinates)
+		: Coordinates(std::move(coordinates))
+	{
+	}
+
+	ScaleSTCoordinatesData(ScaleSTCoordinatesData&&) = default;
+	ScaleSTCoordinatesData& operator=(ScaleSTCoordinatesData&&) = default;
+
+	ScaleSTCoordinatesData(const ScaleSTCoordinatesData&) = delete;
+	ScaleSTCoordinatesData& operator=(const ScaleSTCoordinatesData&) = delete;
 };
 
 std::pair<ScaleSTCoordinatesData, ScaleSTCoordinatesData> CalculateScaledSTCoordinatesData(const EditableStudioModel& studioModel,
