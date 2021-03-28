@@ -21,7 +21,7 @@
 
 namespace graphics
 {
-void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const const RGBPalette& palette, byte* const pOutData )
+void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const RGBPalette& palette, byte* const pOutData )
 {
 	assert( pData );
 	assert( pOutData );
