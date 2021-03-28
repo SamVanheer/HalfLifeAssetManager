@@ -287,7 +287,7 @@ void ChangeEventCommand::Apply(int index, const studiomdl::SequenceEvent& oldVal
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 	auto& sequence = *model->Sequences[index];
 
-	sequence.Events[_eventIndex] = newValue;
+	*sequence.Events[_eventIndex] = newValue;
 }
 
 void ChangeModelNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)

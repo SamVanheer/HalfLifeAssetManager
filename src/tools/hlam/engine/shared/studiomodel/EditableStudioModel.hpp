@@ -102,7 +102,7 @@ struct Sequence
 	int Activity = 0;
 	int ActivityWeight = 0;
 
-	std::vector<SequenceEvent> Events;
+	std::vector<std::unique_ptr<SequenceEvent>> Events;
 
 	int NumFrames = 0;
 

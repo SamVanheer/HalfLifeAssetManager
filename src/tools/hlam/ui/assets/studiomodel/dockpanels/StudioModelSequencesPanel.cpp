@@ -315,7 +315,7 @@ void StudioModelSequencesPanel::OnEventChanged(int index)
 		const auto model = entity->GetEditableModel();
 		const auto& sequence = *model->Sequences[entity->GetSequence()];
 
-		event = &sequence.Events[index];
+		event = sequence.Events[index].get();
 	}
 
 	const QSignalBlocker eventFrameIndex{_ui.EventFrameIndex};
@@ -355,7 +355,7 @@ void StudioModelSequencesPanel::OnEventEdited()
 	const auto entity = _asset->GetScene()->GetEntity();
 	const auto model = entity->GetEditableModel();
 	const auto& sequence = *model->Sequences[entity->GetSequence()];
-	const auto& event = sequence.Events[_ui.EventsComboBox->currentIndex()];
+	const auto& event = *sequence.Events[_ui.EventsComboBox->currentIndex()];
 
 	auto changedEvent{event};
 

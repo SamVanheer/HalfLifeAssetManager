@@ -147,11 +147,11 @@ std::vector<std::unique_ptr<SequenceGroup>> ConvertSequenceGroupsToEditable(cons
 	return result;
 }
 
-std::vector<SequenceEvent> ConvertEventsToEditable(const StudioModel& studioModel, const mstudioseqdesc_t& sequence)
+std::vector<std::unique_ptr<SequenceEvent>> ConvertEventsToEditable(const StudioModel& studioModel, const mstudioseqdesc_t& sequence)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<SequenceEvent> result;
+	std::vector<std::unique_ptr<SequenceEvent>> result;
 
 	result.reserve(sequence.numevents);
 
@@ -167,7 +167,7 @@ std::vector<SequenceEvent> ConvertEventsToEditable(const StudioModel& studioMode
 			source->options
 		};
 
-		result.push_back(event);
+		result.push_back(std::make_unique<SequenceEvent>(std::move(event)));
 	}
 
 	return result;
@@ -931,7 +931,7 @@ void ConvertSequencesFromEditable(const EditableStudioModel& studioModel, const 
 
 			for (std::size_t e = 0; e < source.Events.size(); ++e)
 			{
-				const auto& sourceEvent = source.Events[e];
+				const auto& sourceEvent = *source.Events[e];
 				auto& destEvent = events[e];
 
 				destEvent.frame = sourceEvent.Frame;

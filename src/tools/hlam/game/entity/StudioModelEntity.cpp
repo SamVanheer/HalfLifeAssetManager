@@ -177,7 +177,7 @@ int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float en
 
 	for (; index < sequenceDescriptor.Events.size(); index++)
 	{
-		const auto& candidate = sequenceDescriptor.Events[index];
+		const auto& candidate = *sequenceDescriptor.Events[index];
 
 		//TODO: maybe leave it up to the listener to filter these out?
 		if (!allowClientEvents)
