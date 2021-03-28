@@ -49,13 +49,10 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 
 	_ui.EventOptions->setValidator(new qt::ByteLengthValidator(STUDIO_MAX_EVENT_OPTIONS_LENGTH - 1, this));
 
-	auto sizePolicy = _ui.EventInfoWidget->sizePolicy();
+	_ui.EventDataWidget->setEnabled(false);
 
-	sizePolicy.setRetainSizeWhenHidden(true);
-
-	_ui.EventInfoWidget->setSizePolicy(sizePolicy);
-
-	_ui.EventInfoWidget->setVisible(false);
+	//Select the first page to make it clear it's the active page
+	_ui.PageSelectorList->setCurrentRow(0);
 
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
@@ -306,6 +303,10 @@ void StudioModelSequencesPanel::OnBlendYSpinnerChanged()
 
 void StudioModelSequencesPanel::OnEventChanged(int index)
 {
+	const studiomdl::SequenceEvent emptyEvent{};
+
+	const studiomdl::SequenceEvent* event = &emptyEvent;
+
 	const bool hasEvent = index != -1;
 
 	if (hasEvent)
@@ -313,29 +314,30 @@ void StudioModelSequencesPanel::OnEventChanged(int index)
 		const auto entity = _asset->GetScene()->GetEntity();
 		const auto model = entity->GetEditableModel();
 		const auto& sequence = *model->Sequences[entity->GetSequence()];
-		const auto& event = sequence.Events[index];
 
-		const QSignalBlocker eventFrameIndex{_ui.EventFrameIndex};
-		const QSignalBlocker eventId{_ui.EventId};
-		const QSignalBlocker eventOptions{_ui.EventOptions};
-		const QSignalBlocker eventType{_ui.EventType};
-
-		_ui.EventFrameIndex->setValue(event.Frame);
-		_ui.EventId->setValue(event.EventId);
-
-		//Only call setText if the text is different
-		//This prevents the edit state from being overwritten
-		const QString options{event.Options.c_str()};
-
-		if (_ui.EventOptions->text() != options)
-		{
-			_ui.EventOptions->setText(options);
-		}
-
-		_ui.EventType->setValue(event.Type);
+		event = &sequence.Events[index];
 	}
 
-	_ui.EventInfoWidget->setVisible(hasEvent);
+	const QSignalBlocker eventFrameIndex{_ui.EventFrameIndex};
+	const QSignalBlocker eventId{_ui.EventId};
+	const QSignalBlocker eventOptions{_ui.EventOptions};
+	const QSignalBlocker eventType{_ui.EventType};
+
+	_ui.EventFrameIndex->setValue(event->Frame);
+	_ui.EventId->setValue(event->EventId);
+
+	//Only call setText if the text is different
+	//This prevents the edit state from being overwritten
+	const QString options{event->Options.c_str()};
+
+	if (_ui.EventOptions->text() != options)
+	{
+		_ui.EventOptions->setText(options);
+	}
+
+	_ui.EventType->setValue(event->Type);
+
+	_ui.EventDataWidget->setEnabled(hasEvent);
 }
 
 void StudioModelSequencesPanel::OnPlaySoundChanged()
