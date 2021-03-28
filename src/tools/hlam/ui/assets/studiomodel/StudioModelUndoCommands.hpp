@@ -924,22 +924,8 @@ struct ImportTextureData
 	studiomdl::ScaleSTCoordinatesData ScaledSTCoordinates;
 
 	ImportTextureData() = default;
-
-	ImportTextureData& operator=(ImportTextureData&& other) noexcept
-	{
-		if (this != &other)
-		{
-			Width = other.Width;
-			Height = other.Height;
-			Pixels = std::move(other.Pixels);
-			Palette = other.Palette;
-			ScaledSTCoordinates = std::move(other.ScaledSTCoordinates);
-		}
-
-		return *this;
-	}
-
 	ImportTextureData(ImportTextureData&&) = default;
+	ImportTextureData& operator=(ImportTextureData&& other) = default;
 };
 
 class ImportTextureCommand : public ModelListUndoCommand<ImportTextureData>
