@@ -359,7 +359,7 @@ public:
 			return false;
 		}
 
-		const auto otherUndo = static_cast<const ModelListUndoCommand*>(other);
+		auto otherUndo = const_cast<ModelListUndoCommand*>(static_cast<const ModelListUndoCommand*>(other));
 
 		//Didn't change the same list element
 		if (_index != otherUndo->_index)
@@ -372,7 +372,7 @@ public:
 			return false;
 		}
 
-		_newValue = otherUndo->_newValue;
+		_newValue = std::move(otherUndo->_newValue);
 
 		return true;
 	}
