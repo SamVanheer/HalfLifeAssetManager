@@ -50,8 +50,6 @@ execute_process(
     OUTPUT_VARIABLE HLAM_GIT_COMMIT_HASH
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-message("${GIT_BRANCH} ${GIT_TAG} ${GIT_COMMIT_HASH}")
-
 configure_file(
 	${CMAKE_CURRENT_SOURCE_DIR}/version.hpp.in
 		${CMAKE_CURRENT_BINARY_DIR}/version.hpp
