@@ -102,7 +102,11 @@ struct Sequence
 	int Activity = 0;
 	int ActivityWeight = 0;
 
+	//List of events used for modifying data in UI
 	std::vector<std::unique_ptr<SequenceEvent>> Events;
+
+	//List of events used for saving to disk & event playback
+	std::vector<SequenceEvent*> SortedEvents;
 
 	int NumFrames = 0;
 
@@ -338,4 +342,6 @@ std::pair<ScaleSTCoordinatesData, ScaleSTCoordinatesData> CalculateScaledSTCoord
 	const int textureIndex, const int oldWidth, const int oldHeight, const int newWidth, const int newHeight);
 
 void ApplyScaledSTCoordinatesData(const EditableStudioModel& studioModel, const int textureIndex, const ScaleSTCoordinatesData& data);
+
+void SortEventsList(std::vector<SequenceEvent*>& events);
 }

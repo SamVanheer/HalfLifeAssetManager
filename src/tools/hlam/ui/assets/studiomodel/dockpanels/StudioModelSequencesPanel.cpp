@@ -42,6 +42,9 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 	connect(_ui.PlaySound, &QCheckBox::stateChanged, this, &StudioModelSequencesPanel::OnPlaySoundChanged);
 	connect(_ui.PitchFramerateAmplitude, &QCheckBox::stateChanged, this, &StudioModelSequencesPanel::OnPitchFramerateAmplitudeChanged);
 
+	connect(_ui.AddEvent, &QPushButton::clicked, this, &StudioModelSequencesPanel::OnAddEvent);
+	connect(_ui.RemoveEvent, &QPushButton::clicked, this, &StudioModelSequencesPanel::OnRemoveEvent);
+
 	connect(_ui.EventFrameIndex, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelSequencesPanel::OnEventEdited);
 	connect(_ui.EventId, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelSequencesPanel::OnEventEdited);
 	connect(_ui.EventOptions, &QLineEdit::textChanged, this, &StudioModelSequencesPanel::OnEventEdited);
@@ -83,6 +86,62 @@ void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 		if (listChange.GetSourceIndex() == _ui.SequenceComboBox->currentIndex() && listChange.GetEventIndex() == _ui.EventsComboBox->currentIndex())
 		{
 			OnEventChanged(_ui.EventsComboBox->currentIndex());
+		}
+		break;
+	}
+
+	case ModelChangeId::AddRemoveEvent:
+	{
+		const auto& listChange = static_cast<const ModelEventAddRemoveEvent&>(event);
+
+		if (listChange.GetSourceIndex() == _ui.SequenceComboBox->currentIndex())
+		{
+			const int index = listChange.GetEventIndex();
+
+			if (listChange.GetType() == AddRemoveType::Addition)
+			{
+				auto entity = _asset->GetScene()->GetEntity();
+				auto model = entity->GetEditableModel();
+				auto& sequence = *model->Sequences[entity->GetSequence()];
+
+				//Update UI to show new event
+				{
+					//Don't rely on the slot for this because the old index could match sometimes
+					const QSignalBlocker blocker{_ui.EventsComboBox};
+
+					//Add new entry to the combo box
+					_ui.EventsComboBox->addItem(QString{"Event %1"}.arg(sequence.Events.size()));
+					_ui.EventsComboBox->setCurrentIndex(static_cast<int>(index));
+					_ui.EventsComboBox->setEnabled(true);
+				}
+
+				OnEventChanged(static_cast<int>(index));
+
+				_ui.RemoveEvent->setEnabled(true);
+			}
+			else
+			{
+				//Always remove the last entry since they're numbered independently of their associated event
+				_ui.EventsComboBox->removeItem(_ui.EventsComboBox->count() - 1);
+
+				const bool hasEvents = _ui.EventsComboBox->count() > 0;
+
+				//Sync up combo box and event data to the next event
+				if (hasEvents)
+				{
+					const int newIndex = index > 0 ? index - 1 : 0;
+
+					{
+						const QSignalBlocker blocker{_ui.EventsComboBox};
+						_ui.EventsComboBox->setCurrentIndex(newIndex);
+					}
+
+					OnEventChanged(newIndex);
+				}
+
+				_ui.EventsComboBox->setEnabled(hasEvents);
+				_ui.RemoveEvent->setEnabled(hasEvents);
+			}
 		}
 		break;
 	}
@@ -269,6 +328,7 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 	}
 
 	_ui.EventsComboBox->setEnabled(hasEvents);
+	_ui.RemoveEvent->setEnabled(hasEvents);
 }
 
 void StudioModelSequencesPanel::OnLoopingModeChanged(int index)
@@ -348,6 +408,22 @@ void StudioModelSequencesPanel::OnPlaySoundChanged()
 void StudioModelSequencesPanel::OnPitchFramerateAmplitudeChanged()
 {
 	_asset->GetScene()->GetEntity()->PitchFramerateAmplitude = _ui.PitchFramerateAmplitude->isChecked();
+}
+
+void StudioModelSequencesPanel::OnAddEvent()
+{
+	_asset->AddUndoCommand(new AddRemoveEventCommand(_asset, AddRemoveType::Addition, _ui.SequenceComboBox->currentIndex(), _ui.EventsComboBox->count(), {}));
+}
+
+void StudioModelSequencesPanel::OnRemoveEvent()
+{
+	const int index = _ui.EventsComboBox->currentIndex();
+
+	auto entity = _asset->GetScene()->GetEntity();
+	auto model = entity->GetEditableModel();
+	auto& sequence = *model->Sequences[entity->GetSequence()];
+
+	_asset->AddUndoCommand(new AddRemoveEventCommand(_asset, AddRemoveType::Removal, _ui.SequenceComboBox->currentIndex(), index, *sequence.Events[index]));
 }
 
 void StudioModelSequencesPanel::OnEventEdited()

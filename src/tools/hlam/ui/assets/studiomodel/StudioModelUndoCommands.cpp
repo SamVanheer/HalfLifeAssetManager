@@ -288,6 +288,33 @@ void ChangeEventCommand::Apply(int index, const studiomdl::SequenceEvent& oldVal
 	auto& sequence = *model->Sequences[index];
 
 	*sequence.Events[_eventIndex] = newValue;
+
+	//Sort again if needed
+	if (oldValue.Frame != newValue.Frame)
+	{
+		studiomdl::SortEventsList(sequence.SortedEvents);
+	}
+}
+
+void AddRemoveEventCommand::Add(int index, const studiomdl::SequenceEvent& value)
+{
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto& sequence = *model->Sequences[index];
+
+	auto event = sequence.Events.insert(sequence.Events.begin() + _eventIndex, std::make_unique<studiomdl::SequenceEvent>(value))->get();
+	sequence.SortedEvents.push_back(event);
+
+	studiomdl::SortEventsList(sequence.SortedEvents);
+}
+
+void AddRemoveEventCommand::Remove(int index, const studiomdl::SequenceEvent& value)
+{
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto& sequence = *model->Sequences[index];
+
+	sequence.SortedEvents.erase(
+		std::remove(sequence.SortedEvents.begin(), sequence.SortedEvents.end(), sequence.Events[_eventIndex].get()), sequence.SortedEvents.end());
+	sequence.Events.erase(sequence.Events.begin() + _eventIndex);
 }
 
 void ChangeModelNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)

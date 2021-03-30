@@ -423,4 +423,13 @@ void ApplyScaledSTCoordinatesData(const EditableStudioModel& studioModel, const 
 		}
 	}
 }
+
+void SortEventsList(std::vector<SequenceEvent*>& events)
+{
+	//Retain relative order of events
+	std::stable_sort(events.begin(), events.end(), [](const auto& lhs, const auto& rhs)
+		{
+			return lhs->Frame < rhs->Frame;
+		});
+}
 }

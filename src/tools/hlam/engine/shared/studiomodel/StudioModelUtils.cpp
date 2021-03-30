@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstring>
@@ -275,6 +276,20 @@ std::vector<std::unique_ptr<Sequence>> ConvertSequencesToEditable(const StudioMo
 	{
 		auto source = header->GetSequence(i);
 
+		auto events = ConvertEventsToEditable(studioModel, *source);
+
+		std::vector<SequenceEvent*> sortedEvents;
+
+		sortedEvents.reserve(events.size());
+
+		std::transform(events.begin(), events.end(), std::back_inserter(sortedEvents), [](const auto& event)
+			{
+				return event.get();
+			}
+		);
+
+		SortEventsList(sortedEvents);
+
 		Sequence sequence
 		{
 			source->label,
@@ -282,7 +297,8 @@ std::vector<std::unique_ptr<Sequence>> ConvertSequencesToEditable(const StudioMo
 			source->flags,
 			source->activity,
 			source->actweight,
-			ConvertEventsToEditable(studioModel, *source),
+			std::move(events),
+			std::move(sortedEvents),
 			source->numframes,
 			ConvertPivotsToEditable(studioModel, *source),
 			source->motiontype,
@@ -925,13 +941,13 @@ void ConvertSequencesFromEditable(const EditableStudioModel& studioModel, const 
 
 		{
 			dest.eventindex = buffer.size();
-			dest.numevents = source.Events.size();
+			dest.numevents = source.SortedEvents.size();
 
-			auto events = AllocateBufferArray<mstudioevent_t>(buffer, source.Events.size());
+			auto events = AllocateBufferArray<mstudioevent_t>(buffer, source.SortedEvents.size());
 
-			for (std::size_t e = 0; e < source.Events.size(); ++e)
+			for (std::size_t e = 0; e < source.SortedEvents.size(); ++e)
 			{
-				const auto& sourceEvent = *source.Events[e];
+				const auto& sourceEvent = *source.SortedEvents[e];
 				auto& destEvent = events[e];
 
 				destEvent.frame = sourceEvent.Frame;

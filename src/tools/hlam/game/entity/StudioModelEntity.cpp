@@ -164,7 +164,7 @@ int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float en
 
 	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
-	if (index >= sequenceDescriptor.Events.size())
+	if (index >= sequenceDescriptor.SortedEvents.size())
 	{
 		return 0;
 	}
@@ -175,9 +175,9 @@ int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float en
 		end = 1.0;
 	}
 
-	for (; index < sequenceDescriptor.Events.size(); index++)
+	for (; index < sequenceDescriptor.SortedEvents.size(); index++)
 	{
-		const auto& candidate = *sequenceDescriptor.Events[index];
+		const auto& candidate = *sequenceDescriptor.SortedEvents[index];
 
 		//TODO: maybe leave it up to the listener to filter these out?
 		if (!allowClientEvents)

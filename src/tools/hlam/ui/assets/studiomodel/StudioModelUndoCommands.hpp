@@ -61,8 +61,15 @@ enum class ModelChangeId
 	ImportTexture,
 
 	ChangeEvent,
+	AddRemoveEvent,
 
 	ChangeModelName,
+};
+
+enum class AddRemoveType
+{
+	Addition = 0,
+	Removal
 };
 
 /**
@@ -131,6 +138,31 @@ public:
 private:
 	const int _sourceIndex;
 	const int _destinationIndex;
+};
+
+/**
+*	@brief Base class for all model add and remove events that involve an addition or removal that occurred in a list
+*/
+class ModelListAddRemoveEvent : public ModelChangeEvent
+{
+public:
+	ModelListAddRemoveEvent(ModelChangeId id, AddRemoveType type, int index)
+		: ModelChangeEvent(id)
+		, _type(type)
+		, _index(index)
+	{
+	}
+
+	AddRemoveType GetType() const { return _type; }
+
+	/**
+	*	@brief The list entry being removed
+	*/
+	int GetSourceIndex() const { return _index; }
+
+private:
+	const AddRemoveType _type;
+	const int _index;
 };
 
 /**
@@ -228,6 +260,21 @@ class ModelEventChangeEvent : public ModelListChangeEvent
 public:
 	ModelEventChangeEvent(ModelChangeId id, int sourceIndex, int eventIndex)
 		: ModelListChangeEvent(id, sourceIndex)
+		, _eventIndex(eventIndex)
+	{
+	}
+
+	int GetEventIndex() const { return _eventIndex; }
+
+private:
+	const int _eventIndex;
+};
+
+class ModelEventAddRemoveEvent : public ModelListAddRemoveEvent
+{
+public:
+	ModelEventAddRemoveEvent(ModelChangeId id, AddRemoveType type, int sourceIndex, int eventIndex)
+		: ModelListAddRemoveEvent(id, type, sourceIndex)
 		, _eventIndex(eventIndex)
 	{
 	}
@@ -409,6 +456,85 @@ protected:
 	const int _index;
 	const T _oldValue;
 	T _newValue;
+};
+
+/**
+*	@brief Base class for addition and removal of entries in lists
+*/
+template<typename T>
+class ModelListAddRemoveUndoCommand : public BaseModelUndoCommand
+{
+protected:
+	ModelListAddRemoveUndoCommand(StudioModelAsset* asset, ModelChangeId id, AddRemoveType type, int index, const T& value)
+		: BaseModelUndoCommand(asset, id)
+		, _type(type)
+		, _index(index)
+		, _value(value)
+	{
+	}
+
+public:
+	void undo() override
+	{
+		Apply(false);
+	}
+
+	void redo() override
+	{
+		Apply(true);
+	}
+
+	AddRemoveType GetType() const { return _type; }
+
+	int GetIndex() const { return _index; }
+
+	const T& GetOldValue() const { return _newValue; }
+
+protected:
+	virtual void Add(int index, const T& value) = 0;
+	virtual void Remove(int index, const T& value) = 0;
+
+	virtual void EmitEvent(AddRemoveType type)
+	{
+		_asset->EmitModelChanged(ModelListAddRemoveEvent{_id, type, _index});
+	}
+
+private:
+	void Apply(bool redo)
+	{
+		AddRemoveType type = _type;
+
+		//Swap type when undoing
+		if (!redo)
+		{
+			switch (type)
+			{
+			case AddRemoveType::Addition:
+				type = AddRemoveType::Removal;
+				break;
+
+			case AddRemoveType::Removal:
+				type = AddRemoveType::Addition;
+				break;
+			}
+		}
+
+		if (type == AddRemoveType::Addition)
+		{
+			Add(_index, _value);
+		}
+		else
+		{
+			Remove(_index, _value);
+		}
+
+		EmitEvent(type);
+	}
+
+protected:
+	const AddRemoveType _type;
+	const int _index;
+	const T _value;
 };
 
 class ChangeEyePositionCommand : public ModelUndoCommand<glm::vec3>
@@ -958,6 +1084,36 @@ protected:
 	void EmitEvent(const studiomdl::SequenceEvent& oldValue, const studiomdl::SequenceEvent& newValue) override
 	{
 		_asset->EmitModelChanged(ModelEventChangeEvent(_id, _index, _eventIndex));
+	}
+
+private:
+	const int _eventIndex;
+};
+
+class AddRemoveEventCommand : public ModelListAddRemoveUndoCommand<studiomdl::SequenceEvent>
+{
+public:
+	AddRemoveEventCommand(StudioModelAsset* asset, AddRemoveType type, int index, int eventIndex, const studiomdl::SequenceEvent& value)
+		: ModelListAddRemoveUndoCommand(asset, ModelChangeId::AddRemoveEvent, type, index, value)
+		, _eventIndex(eventIndex)
+	{
+		if (type == AddRemoveType::Addition)
+		{
+			setText("Add event");
+		}
+		else
+		{
+			setText("Remove event");
+		}
+	}
+
+protected:
+	void Add(int index, const studiomdl::SequenceEvent& value) override;
+	void Remove(int index, const studiomdl::SequenceEvent& value) override;
+
+	void EmitEvent(AddRemoveType type) override
+	{
+		_asset->EmitModelChanged(ModelEventAddRemoveEvent{_id, type, _index, _eventIndex});
 	}
 
 private:

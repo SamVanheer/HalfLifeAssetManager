@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>743</width>
+    <width>783</width>
     <height>80</height>
    </rect>
   </property>
@@ -198,7 +198,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="InfoPage">
       <layout class="QGridLayout" name="gridLayout_3">
@@ -622,50 +622,7 @@
        <property name="verticalSpacing">
         <number>0</number>
        </property>
-       <item row="3" column="0">
-        <widget class="QCheckBox" name="PitchFramerateAmplitude">
-         <property name="text">
-          <string>Pitch *= Framerate</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="PlaySound">
-         <property name="text">
-          <string>Play Sound</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0" colspan="3">
-        <spacer name="verticalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="0">
-        <widget class="QComboBox" name="EventsComboBox"/>
-       </item>
-       <item row="4" column="0">
-        <spacer name="verticalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="1" rowspan="5">
+       <item row="0" column="2" rowspan="6">
         <widget class="QWidget" name="EventDataWidget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -695,6 +652,13 @@
           <property name="verticalSpacing">
            <number>0</number>
           </property>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>Type:</string>
+            </property>
+           </widget>
+          </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_19">
             <property name="text">
@@ -740,6 +704,9 @@
             </property>
            </widget>
           </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="EventType"/>
+          </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label_15">
             <property name="text">
@@ -750,17 +717,51 @@
           <item row="0" column="1">
            <widget class="QSpinBox" name="EventFrameIndex"/>
           </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_20">
-            <property name="text">
-             <string>Type:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QSpinBox" name="EventType"/>
-          </item>
          </layout>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QComboBox" name="EventsComboBox"/>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QCheckBox" name="PlaySound">
+         <property name="text">
+          <string>Play Sound</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="RemoveEvent">
+         <property name="text">
+          <string>Remove</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="AddEvent">
+         <property name="text">
+          <string>Add</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0" colspan="4">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QCheckBox" name="PitchFramerateAmplitude">
+         <property name="text">
+          <string>Pitch *= Framerate</string>
+         </property>
         </widget>
        </item>
       </layout>

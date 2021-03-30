@@ -59,6 +59,10 @@ private slots:
 
 	void OnPitchFramerateAmplitudeChanged();
 
+	void OnAddEvent();
+
+	void OnRemoveEvent();
+
 	void OnEventEdited();
 
 private:
