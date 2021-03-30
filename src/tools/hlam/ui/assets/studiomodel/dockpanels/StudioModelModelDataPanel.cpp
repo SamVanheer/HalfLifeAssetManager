@@ -126,6 +126,8 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 		_ui.CBoxMin->SetValue(model->ClippingMin);
 		_ui.CBoxMax->SetValue(model->ClippingMax);
 	}
+
+	_ui.PagesList->setCurrentRow(0);
 }
 
 StudioModelModelDataPanel::~StudioModelModelDataPanel() = default;
