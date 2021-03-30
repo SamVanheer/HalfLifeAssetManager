@@ -21,17 +21,8 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 {
 	_ui.setupUi(this);
 
-	QDoubleSpinBox* const origin[] =
-	{
-		_ui.OriginX,
-		_ui.OriginY,
-		_ui.OriginZ
-	};
-
-	for (auto originSpinner : origin)
-	{
-		originSpinner->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-	}
+	_ui.Origin->SetRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+	_ui.Origin->SetDecimals(6);
 
 	_ui.ScaleMeshSpinner->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	_ui.ScaleBonesSpinner->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
@@ -57,10 +48,7 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelModelDataPanel::OnModelChanged);
 
-	connect(_ui.OriginX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelModelDataPanel::OnOriginChanged);
-	connect(_ui.OriginY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelModelDataPanel::OnOriginChanged);
-	connect(_ui.OriginZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelModelDataPanel::OnOriginChanged);
-
+	connect(_ui.Origin, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnOriginChanged);
 	connect(_ui.SetOrigin, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnOriginChanged);
 
 	connect(_ui.ScaleMesh, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnScaleMesh);
@@ -176,13 +164,9 @@ void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		_oldOffset = originChange.GetValue();
 
-		const QSignalBlocker originX{_ui.OriginX};
-		const QSignalBlocker originY{_ui.OriginY};
-		const QSignalBlocker originZ{_ui.OriginZ};
+		const QSignalBlocker origin{_ui.Origin};
 
-		_ui.OriginX->setValue(_oldOffset.x);
-		_ui.OriginY->setValue(_oldOffset.y);
-		_ui.OriginZ->setValue(_oldOffset.z);
+		_ui.Origin->SetValue(_oldOffset);
 		break;
 	}
 
@@ -229,7 +213,7 @@ void StudioModelModelDataPanel::OnOriginChanged()
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	const glm::vec3 absoluteOffset{_ui.OriginX->value(), _ui.OriginY->value(), _ui.OriginZ->value()};
+	const glm::vec3 absoluteOffset{_ui.Origin->GetValue()};
 	const auto relativeOffset{absoluteOffset - _oldOffset};
 
 	const auto rootBoneIndices{model->GetRootBoneIndices()};
