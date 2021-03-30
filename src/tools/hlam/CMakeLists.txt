@@ -29,6 +29,34 @@ set(HLAM_VERSION_MAJOR 1)
 set(HLAM_VERSION_MINOR 0)
 set(HLAM_VERSION_PATCH 0)
 
+# Get the current working branch
+execute_process(
+    COMMAND git rev-parse --abbrev-ref HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE HLAM_GIT_BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+# Get the latest tag name
+execute_process(
+    COMMAND git describe --abbrev=0 --tags
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE HLAM_GIT_TAG
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+# Get the latest commit hash
+execute_process(
+    COMMAND git rev-parse HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE HLAM_GIT_COMMIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+message("${GIT_BRANCH} ${GIT_TAG} ${GIT_COMMIT_HASH}")
+
+configure_file(
+	${CMAKE_CURRENT_SOURCE_DIR}/version.hpp.in
+		${CMAKE_CURRENT_BINARY_DIR}/version.hpp
+		@ONLY)
+
 if (MSVC)
 	configure_file(
 		${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
@@ -105,6 +133,11 @@ add_subdirectory(utility)
 #Create filters
 get_target_property(SOURCE_FILES HLAM SOURCES)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_FILES})
+
+# Add this after source_group to avoid errors with root paths
+target_sources(HLAM
+	PRIVATE
+		${CMAKE_CURRENT_BINARY_DIR}/version.hpp)
 
 if(WIN32)
 	copy_dependencies(HLAM external/GLEW/lib glew32.dll)

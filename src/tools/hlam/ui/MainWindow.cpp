@@ -12,6 +12,8 @@
 #include <QMessageBox>
 #include <QMimeData>
 
+#include "version.hpp"
+
 #include "assets/AssetIO.hpp"
 
 #include "filesystem/IFileSystem.hpp"
@@ -533,18 +535,27 @@ void MainWindow::OnShowAbout()
 
 	QMessageBox::information(this, "About " + programName,
 		QString::fromUtf8(
-			u8"%1 1.0.0\n"
+			u8"%1 %2.%3.%4\n\n"
 			u8"2021 Sam Vanheer\n\n"
 			u8"Email:    sam.vanheer@outlook.com\n\n"
+			u8"Git Info:\n"
+			u8"\tBranch: %5\n"
+			u8"\tTag: %6\n"
+			u8"\tCommit Hash: %7\n\n"
 			u8"Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil \'Jed\' Jedrzejewski\n"
 			u8"Email:    jed@wunderboy.org\n"
 			u8"Web:      http://www.wunderboy.org/\n\n"
 			u8"Also based on Half-Life Model Viewer v1.25 © 2002 Mete Ciragan\n"
 			u8"Email:    mete@swissquake.ch\n"
-			u8"Web:      http://www.milkshape3d.com/\n\n"
-			u8"%2")
+			u8"Web:      http://www.milkshape3d.com/\n\n")
 			.arg(programName)
-			.arg(QString::fromUtf8(GetSharedCredits().c_str()))
+			.arg(HLAMVersionMajor)
+			.arg(HLAMVersionMinor)
+			.arg(HLAMVersionPatch)
+			.arg(QString::fromUtf8(HLAMGitBranchName.data()))
+			.arg(QString::fromUtf8(HLAMGitTagName.data()))
+			.arg(QString::fromUtf8(HLAMGitCommitHash.data()))
+		+ QString::fromUtf8(GetSharedCredits().c_str())
 	);
 }
 
