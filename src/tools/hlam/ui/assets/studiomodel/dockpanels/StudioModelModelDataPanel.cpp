@@ -21,11 +21,11 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 {
 	_ui.setupUi(this);
 
-	_ui.Origin->SetRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+	_ui.Origin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	_ui.Origin->SetDecimals(6);
 
-	_ui.ScaleMeshSpinner->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-	_ui.ScaleBonesSpinner->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+	_ui.ScaleMeshSpinner->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
+	_ui.ScaleBonesSpinner->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 
 	_ui.EyePosition->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	_ui.EyePosition->SetDecimals(6);

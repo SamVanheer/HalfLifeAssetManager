@@ -61,7 +61,7 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 
 	for (auto spinBox : spinBoxes)
 	{
-		spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+		spinBox->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	}
 
 	const auto boneNameValidator = new UniqueBoneNameValidator(MaxBoneNameBytes - 1, _asset, this);

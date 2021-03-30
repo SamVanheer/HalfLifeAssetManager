@@ -33,7 +33,7 @@ StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QW
 
 	for (auto spinBox : spinBoxes)
 	{
-		spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+		spinBox->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	}
 
 	const auto modelNameValidator = new UniqueModelNameValidator(MaxModelNameBytes - 1, _asset, this);

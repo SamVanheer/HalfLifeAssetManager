@@ -29,7 +29,7 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset
 
 	for (auto spinBox : spinBoxes)
 	{
-		spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+		spinBox->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	}
 
 	const auto attachmentNameValidator = new UniqueAttachmentNameValidator(MaxAttachmentNameBytes - 1, _asset, this);
