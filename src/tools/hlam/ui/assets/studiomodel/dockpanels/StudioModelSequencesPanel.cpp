@@ -81,9 +81,9 @@ void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 	{
 	case ModelChangeId::ChangeEvent:
 	{
-		const auto& listChange = static_cast<const ModelEventChangeEvent&>(event);
+		const auto& listChange = static_cast<const ModelListSubListChangeEvent&>(event);
 
-		if (listChange.GetSourceIndex() == _ui.SequenceComboBox->currentIndex() && listChange.GetEventIndex() == _ui.EventsComboBox->currentIndex())
+		if (listChange.GetSourceIndex() == _ui.SequenceComboBox->currentIndex() && listChange.GetSourceSubIndex() == _ui.EventsComboBox->currentIndex())
 		{
 			OnEventChanged(_ui.EventsComboBox->currentIndex());
 		}
@@ -92,11 +92,11 @@ void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 	case ModelChangeId::AddRemoveEvent:
 	{
-		const auto& listChange = static_cast<const ModelEventAddRemoveEvent&>(event);
+		const auto& listChange = static_cast<const ModelListSubListAddRemoveEvent&>(event);
 
 		if (listChange.GetSourceIndex() == _ui.SequenceComboBox->currentIndex())
 		{
-			const int index = listChange.GetEventIndex();
+			const int index = listChange.GetSourceSubIndex();
 
 			if (listChange.GetType() == AddRemoveType::Addition)
 			{

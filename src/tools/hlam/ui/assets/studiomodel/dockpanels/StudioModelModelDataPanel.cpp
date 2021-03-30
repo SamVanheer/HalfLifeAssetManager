@@ -140,7 +140,7 @@ void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		const QSignalBlocker blocker{_ui.EyePosition};
 
-		_ui.EyePosition->SetValue(change.GetPosition());
+		_ui.EyePosition->SetValue(change.GetValue());
 		break;
 	}
 
@@ -172,7 +172,7 @@ void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 	{
 		const auto& originChange = static_cast<const ModelOriginChangeEvent&>(event);
 
-		_oldOffset = originChange.GetOffset();
+		_oldOffset = originChange.GetValue();
 
 		const QSignalBlocker originX{_ui.OriginX};
 		const QSignalBlocker originY{_ui.OriginY};

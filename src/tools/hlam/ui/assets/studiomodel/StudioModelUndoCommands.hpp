@@ -141,31 +141,6 @@ private:
 };
 
 /**
-*	@brief Base class for all model add and remove events that involve an addition or removal that occurred in a list
-*/
-class ModelListAddRemoveEvent : public ModelChangeEvent
-{
-public:
-	ModelListAddRemoveEvent(ModelChangeId id, AddRemoveType type, int index)
-		: ModelChangeEvent(id)
-		, _type(type)
-		, _index(index)
-	{
-	}
-
-	AddRemoveType GetType() const { return _type; }
-
-	/**
-	*	@brief The list entry being removed
-	*/
-	int GetSourceIndex() const { return _index; }
-
-private:
-	const AddRemoveType _type;
-	const int _index;
-};
-
-/**
 *	@brief Base class for model change events that have a single (compound) value
 */
 template<typename T>
@@ -212,20 +187,53 @@ private:
 	const int _destinationSubIndex;
 };
 
-class ModelEyePositionChangeEvent : public ModelChangeEvent
+/**
+*	@brief Base class for all model add and remove events that involve an addition or removal that occurred in a list
+*/
+class ModelListAddRemoveEvent : public ModelChangeEvent
 {
 public:
-	ModelEyePositionChangeEvent(ModelChangeId id, const glm::vec3& position)
+	ModelListAddRemoveEvent(ModelChangeId id, AddRemoveType type, int index)
 		: ModelChangeEvent(id)
-		, _position(position)
+		, _type(type)
+		, _index(index)
 	{
 	}
 
-	const glm::vec3& GetPosition() const { return _position; }
+	AddRemoveType GetType() const { return _type; }
+
+	/**
+	*	@brief The list entry being removed
+	*/
+	int GetSourceIndex() const { return _index; }
 
 private:
-	const glm::vec3 _position;
+	const AddRemoveType _type;
+	const int _index;
 };
+
+/**
+*	@brief Base class for all model add and remove events that involve a change that occurred in a list inside another list
+*/
+class ModelListSubListAddRemoveEvent : public ModelListAddRemoveEvent
+{
+public:
+	ModelListSubListAddRemoveEvent(ModelChangeId id, AddRemoveType type, int index, int subIndex)
+		: ModelListAddRemoveEvent(id, type, index)
+		, _subIndex(subIndex)
+	{
+	}
+
+	/**
+	*	@brief The list entry being added or removed
+	*/
+	int GetSourceSubIndex() const { return _subIndex; }
+
+private:
+	const int _subIndex;
+};
+
+using ModelEyePositionChangeEvent = ModelValueChangeEvent<glm::vec3>;
 
 using ModelBBoxChangeEvent = ModelValueChangeEvent<std::pair<glm::vec3, glm::vec3>>;
 using ModelCBoxChangeEvent = ModelValueChangeEvent<std::pair<glm::vec3, glm::vec3>>;
@@ -240,50 +248,7 @@ using ModelBoneControllerFromBoneChangeEvent = ModelListValueChangeEvent<std::pa
 */
 using ModelBoneControllerFromControllerChangeEvent = ModelListValueChangeEvent<std::pair<int, int>>;
 
-class ModelOriginChangeEvent : public ModelChangeEvent
-{
-public:
-	ModelOriginChangeEvent(ModelChangeId id, const glm::vec3& offset)
-		: ModelChangeEvent(id)
-		, _offset(offset)
-	{
-	}
-
-	const glm::vec3& GetOffset() const { return _offset; }
-
-private:
-	const glm::vec3 _offset;
-};
-
-class ModelEventChangeEvent : public ModelListChangeEvent
-{
-public:
-	ModelEventChangeEvent(ModelChangeId id, int sourceIndex, int eventIndex)
-		: ModelListChangeEvent(id, sourceIndex)
-		, _eventIndex(eventIndex)
-	{
-	}
-
-	int GetEventIndex() const { return _eventIndex; }
-
-private:
-	const int _eventIndex;
-};
-
-class ModelEventAddRemoveEvent : public ModelListAddRemoveEvent
-{
-public:
-	ModelEventAddRemoveEvent(ModelChangeId id, AddRemoveType type, int sourceIndex, int eventIndex)
-		: ModelListAddRemoveEvent(id, type, sourceIndex)
-		, _eventIndex(eventIndex)
-	{
-	}
-
-	int GetEventIndex() const { return _eventIndex; }
-
-private:
-	const int _eventIndex;
-};
+using ModelOriginChangeEvent = ModelValueChangeEvent<glm::vec3>;
 
 /**
 *	@brief Base class for all undo commands related to Studiomodel editing
@@ -1083,7 +1048,7 @@ protected:
 
 	void EmitEvent(const studiomdl::SequenceEvent& oldValue, const studiomdl::SequenceEvent& newValue) override
 	{
-		_asset->EmitModelChanged(ModelEventChangeEvent(_id, _index, _eventIndex));
+		_asset->EmitModelChanged(ModelListSubListChangeEvent(_id, _index, -1, _eventIndex, -1));
 	}
 
 private:
@@ -1113,7 +1078,7 @@ protected:
 
 	void EmitEvent(AddRemoveType type) override
 	{
-		_asset->EmitModelChanged(ModelEventAddRemoveEvent{_id, type, _index, _eventIndex});
+		_asset->EmitModelChanged(ModelListSubListAddRemoveEvent{_id, type, _index, _eventIndex});
 	}
 
 private:
