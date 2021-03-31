@@ -1034,6 +1034,11 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 			glEnd();
 		}
 
+		if (texture.Flags & STUDIO_NF_ADDITIVE)
+		{
+			glDisable(GL_BLEND);
+		}
+
 		if (texture.Flags & STUDIO_NF_MASKED)
 			glDisable(GL_ALPHA_TEST);
 	}
