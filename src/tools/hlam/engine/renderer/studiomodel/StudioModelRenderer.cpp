@@ -958,32 +958,34 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 		const auto s = 1.0 / (float)texture.Width;
 		const auto t = 1.0 / (float)texture.Height;
 
-		if (texture.Flags & STUDIO_NF_ADDITIVE)
-			glDepthMask(GL_FALSE);
-		else
-			glDepthMask(GL_TRUE);
-
-		if (texture.Flags & STUDIO_NF_ADDITIVE)
-		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		}
-		else if (_renderInfo->Transparency < 1.0f)
-		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		}
-		else
-			glDisable(GL_BLEND);
-
-		if (texture.Flags & STUDIO_NF_MASKED)
-		{
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.5f);
-		}
-
 		if (!bWireframe)
 		{
+			if (texture.Flags & STUDIO_NF_ADDITIVE)
+				glDepthMask(GL_FALSE);
+			else
+				glDepthMask(GL_TRUE);
+
+			if (texture.Flags & STUDIO_NF_ADDITIVE)
+			{
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			}
+			else if (_renderInfo->Transparency < 1.0f)
+			{
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			}
+			else
+			{
+				glDisable(GL_BLEND);
+			}
+
+			if (texture.Flags & STUDIO_NF_MASKED)
+			{
+				glEnable(GL_ALPHA_TEST);
+				glAlphaFunc(GL_GREATER, 0.5f);
+			}
+
 			glBindTexture(GL_TEXTURE_2D, texture.TextureId);
 		}
 
@@ -1034,13 +1036,18 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 			glEnd();
 		}
 
-		if (texture.Flags & STUDIO_NF_ADDITIVE)
+		if (!bWireframe)
 		{
-			glDisable(GL_BLEND);
-		}
+			if (texture.Flags & STUDIO_NF_ADDITIVE)
+			{
+				glDisable(GL_BLEND);
+			}
 
-		if (texture.Flags & STUDIO_NF_MASKED)
-			glDisable(GL_ALPHA_TEST);
+			if (texture.Flags & STUDIO_NF_MASKED)
+			{
+				glDisable(GL_ALPHA_TEST);
+			}
+		}
 	}
 
 	return uiDrawnPolys;
