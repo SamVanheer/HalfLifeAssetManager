@@ -1,8 +1,12 @@
 #pragma once
 
+#include <array>
+
 #include <glm/vec3.hpp>
 
 #include "core/shared/Const.hpp"
+
+#include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
 /**
 *	@ingroup StudioModelRenderer
@@ -33,9 +37,9 @@ struct ModelRenderInfo
 	int Bodygroup;
 	int Skin;
 
-	byte Blender[ 2 ];
+	std::array<byte, SequenceBlendCount> Blender;
 
-	byte Controller[ 4 ];
+	std::array<byte, ControllerCount> Controller;
 	byte Mouth;
 };
 }
