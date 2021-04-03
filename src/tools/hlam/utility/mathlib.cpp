@@ -200,27 +200,29 @@ void QuaternionMatrix(const glm::vec4& quaternion, glm::mat3x4& matrix)
 	matrix[2][2] = 1.0 - 2.0 * quaternion[0] * quaternion[0] - 2.0 * quaternion[1] * quaternion[1];
 }
 
-void QuaternionSlerp(const glm::vec4& p, glm::vec4& q, float t, glm::vec4& qt)
+void QuaternionSlerp(const glm::vec4& p, const glm::vec4& q, float t, glm::vec4& qt)
 {
 	// decide if one of the quaternions is backwards
 	float a = 0;
 	float b = 0;
 
+	glm::vec4 correctedQ = q;
+
 	for (int i = 0; i < 4; ++i)
 	{
-		a += (p[i] - q[i]) * (p[i] - q[i]);
-		b += (p[i] + q[i]) * (p[i] + q[i]);
+		a += (p[i] - correctedQ[i]) * (p[i] - correctedQ[i]);
+		b += (p[i] + correctedQ[i]) * (p[i] + correctedQ[i]);
 	}
 
 	if (a > b)
 	{
 		for (int i = 0; i < 4; ++i)
 		{
-			q[i] = -q[i];
+			correctedQ[i] = -correctedQ[i];
 		}
 	}
 
-	const float cosom = p[0] * q[0] + p[1] * q[1] + p[2] * q[2] + p[3] * q[3];
+	const float cosom = p[0] * correctedQ[0] + p[1] * correctedQ[1] + p[2] * correctedQ[2] + p[3] * correctedQ[3];
 
 	if ((1.0 + cosom) > 0.00000001)
 	{
@@ -241,7 +243,7 @@ void QuaternionSlerp(const glm::vec4& p, glm::vec4& q, float t, glm::vec4& qt)
 
 		for (int i = 0; i < 4; ++i)
 		{
-			qt[i] = sclp * p[i] + sclq * q[i];
+			qt[i] = sclp * p[i] + sclq * correctedQ[i];
 		}
 	}
 	else

@@ -111,7 +111,7 @@ void QuaternionMatrix(const glm::vec4& quaternion, glm::mat3x4& matrix);
 /**
 * performs slerp using the quaternion p.
 */
-void QuaternionSlerp(const glm::vec4& p, glm::vec4& q, float t, glm::vec4& qt);
+void QuaternionSlerp(const glm::vec4& p, const glm::vec4& q, float t, glm::vec4& qt);
 
 /**
 *	Converts a vector to angles.
