@@ -54,16 +54,16 @@ public:
 	const std::array<glm::mat3x4, MAXSTUDIOBONES>& SetUpBones(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo);
 
 private:
-	void CalculateRotations(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
+	static void CalculateRotations(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
 		const Sequence& sequence, const std::vector<Animation>& anims, TransformState& transformState);
 
-	void CalculateBoneAdjust(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
+	static void CalculateBoneAdjust(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
 		std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust);
-	void CalculateBoneQuaternion(const int frame, const float s, const Bone& bone, const Animation& anim,
+	static void CalculateBoneQuaternion(const int frame, const float s, const Bone& bone, const Animation& anim,
 		const std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust, glm::vec4& q);
-	void CalculateBonePosition(const int frame, const float s, const Bone&, const Animation& anim,
+	static void CalculateBonePosition(const int frame, const float s, const Bone&, const Animation& anim,
 		const std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust, glm::vec3& pos);
-	void SlerpBones(const EditableStudioModel& studioModel, float s, const TransformState& fromState, TransformState& toState);
+	static void SlerpBones(const EditableStudioModel& studioModel, float s, const TransformState& fromState, TransformState& toState);
 
 private:
 	//Used to store temporary calculations before calculating final values stored in _boneTransform
