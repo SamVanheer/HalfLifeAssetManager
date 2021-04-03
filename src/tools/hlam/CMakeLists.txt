@@ -25,10 +25,6 @@ add_library(VorbisFile STATIC IMPORTED)
 
 set_target_properties(VorbisFile PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/vorbis/lib/libvorbisfile_static.lib)
 
-set(HLAM_VERSION_MAJOR 1)
-set(HLAM_VERSION_MINOR 1)
-set(HLAM_VERSION_PATCH 0)
-
 # Get the current working branch
 execute_process(
     COMMAND git rev-parse --abbrev-ref HEAD
