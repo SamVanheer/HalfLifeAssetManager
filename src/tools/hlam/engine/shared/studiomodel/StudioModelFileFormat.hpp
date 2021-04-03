@@ -64,6 +64,7 @@ enum
 *	X and Y axis
 */
 constexpr int SequenceBlendCount{2};
+constexpr int ControllerCount{4};
 
 constexpr int SequenceBlendXIndex{0};
 constexpr int SequenceBlendYIndex{1};

@@ -10,6 +10,7 @@
 
 #include "engine/renderer/studiomodel/StudioSorting.hpp"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
+#include "engine/shared/studiomodel/BoneTransformer.hpp"
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
 namespace studiomdl
@@ -95,12 +96,6 @@ private:
 	void DrawNormals();
 
 	void SetUpBones();
-	void CalcRotations(glm::vec3* pos, glm::vec4* q, const Sequence& sequence, const std::vector<Animation>& anims, const float f);
-
-	void CalcBoneAdj();
-	void CalcBoneQuaternion(const int frame, const float s, const Bone& bone, const Animation& anim, glm::vec4& q);
-	void CalcBonePosition(const int frame, const float s, const Bone&, const Animation& anim, glm::vec3& pos);
-	void SlerpBones(glm::vec4* q1, glm::vec3* pos1, glm::vec4* q2, glm::vec3* pos2, float s);
 
 	/**
 	*	@brief set some global variables based on entity position
@@ -147,9 +142,9 @@ private:
 	glm::vec3		_xformnorms[MaxVertices];
 	glm::vec3		_lightvalues[MaxVertices];	// light surface normals
 
-	glm::mat3x4		_bonetransform[MAXSTUDIOBONES];	// bone transformation matrix
+	BoneTransformer _boneTransformer;
 
-	float			_adj[MAXSTUDIOCONTROLLERS];		//This used to be a vec4, but it really needs to be this.
+	const glm::mat3x4* _bonetransform{};	// bone transformation matrix
 
 	int				_ambientlight;						// ambient world light
 	float			_shadelight;						// direct world light

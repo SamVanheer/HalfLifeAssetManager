@@ -1,5 +1,7 @@
 target_sources(HLAM
 	PRIVATE
+		BoneTransformer.cpp
+		BoneTransformer.hpp
 		DumpModelInfo.cpp
 		DumpModelInfo.hpp
 		EditableStudioModel.cpp
