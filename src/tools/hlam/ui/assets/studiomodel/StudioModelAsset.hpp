@@ -47,8 +47,6 @@ public:
 
 	~StudioModelAssetProvider();
 
-	entt::id_type GetAssetType() const override { return entt::type_index<StudioModelAsset>::value(); }
-
 	QString GetProviderName() const override;
 
 	QStringList GetFileTypes() const override;
@@ -79,8 +77,6 @@ public:
 	~StudioModelAsset();
 	StudioModelAsset(const StudioModelAsset&) = delete;
 	StudioModelAsset& operator=(const StudioModelAsset&) = delete;
-
-	entt::id_type GetAssetType() const override { return entt::type_index<StudioModelAsset>::value(); }
 
 	const StudioModelAssetProvider* GetProvider() const override { return _provider; }
 

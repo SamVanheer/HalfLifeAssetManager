@@ -14,7 +14,7 @@ std::vector<AssetProvider*> AssetProviderRegistry::GetAssetProviders() const
 
 	std::transform(_providers.begin(), _providers.end(), std::back_inserter(providers), [](const auto& provider)
 		{
-			return provider.second.get();
+			return provider.get();
 		});
 
 	return providers;
@@ -22,21 +22,24 @@ std::vector<AssetProvider*> AssetProviderRegistry::GetAssetProviders() const
 
 void AssetProviderRegistry::AddProvider(std::unique_ptr<AssetProvider>&& provider)
 {
-	if (_providers.find(provider->GetAssetType()) != _providers.end())
+	if (std::find_if(_providers.begin(), _providers.end(), [&](const auto& other)
+		{
+			return other->GetProviderName() == provider->GetProviderName();
+		}) != _providers.end())
 	{
 		throw std::invalid_argument("Only one provider can be registered for a particular asset type");
 	}
 
-	_providers.emplace(provider->GetAssetType(), std::move(provider));
+	_providers.push_back(std::move(provider));
 }
 
 std::unique_ptr<Asset> AssetProviderRegistry::Load(EditorContext* editorContext, const QString& fileName) const
 {
 	for (const auto& provider : _providers)
 	{
-		if (provider.second->CanLoad(fileName))
+		if (provider->CanLoad(fileName))
 		{
-			return provider.second->Load(editorContext, fileName);
+			return provider->Load(editorContext, fileName);
 		}
 	}
 

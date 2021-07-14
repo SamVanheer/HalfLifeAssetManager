@@ -88,8 +88,7 @@ target_link_libraries(HLAM
 		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:dl>
 		Ogg
 		Vorbis
-		VorbisFile
-		EnTT::EnTT)
+		VorbisFile)
 
 target_compile_options(HLAM
 	PRIVATE

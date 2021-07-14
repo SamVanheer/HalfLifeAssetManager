@@ -2,15 +2,12 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include <QObject>
 #include <QString>
 #include <QUndoStack>
 #include <QWidget>
-
-#include <entt/core/type_info.hpp>
 
 class QMenu;
 
@@ -35,8 +32,6 @@ protected:
 
 public:
 	virtual ~Asset() {}
-
-	virtual entt::id_type GetAssetType() const = 0;
 
 	virtual const AssetProvider* GetProvider() const = 0;
 
@@ -96,8 +91,6 @@ private:
 class AssetProvider : public QObject
 {
 public:
-	virtual entt::id_type GetAssetType() const = 0;
-
 	/**
 	*	@brief e.g. "Studiomodel". Used for file filters.
 	*/
@@ -148,7 +141,7 @@ public:
 	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const override;
 
 private:
-	std::unordered_map<entt::id_type, std::unique_ptr<AssetProvider>> _providers;
+	std::vector<std::unique_ptr<AssetProvider>> _providers;
 };
 }
 }
