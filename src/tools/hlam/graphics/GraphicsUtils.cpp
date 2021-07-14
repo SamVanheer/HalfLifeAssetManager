@@ -209,6 +209,11 @@ bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high)
 		std::from_chars(fileName.data() + LowOffset, fileName.data() + LowOffset + ValueLength, low);
 		std::from_chars(fileName.data() + MidOffset, fileName.data() + MidOffset + ValueLength, mid);
 
+		//Clamp to valid range
+		low = std::clamp(low, 0, 255);
+		mid = std::clamp(mid, 0, 255);
+		high = std::clamp(high, 0, 255);
+
 		return true;
 	}
 
