@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "engine/shared/studiomodel/StudioModel.hpp"
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 #include "engine/shared/studiomodel/StudioModelIO.hpp"
