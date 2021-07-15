@@ -41,6 +41,7 @@
     <addaction name="ActionLoad"/>
     <addaction name="ActionSave"/>
     <addaction name="ActionSaveAs"/>
+    <addaction name="ActionClose"/>
     <addaction name="separator"/>
     <addaction name="MenuRecentFiles"/>
     <addaction name="separator"/>
@@ -135,6 +136,14 @@
   <action name="ActionFileList">
    <property name="text">
     <string>Fle List</string>
+   </property>
+  </action>
+  <action name="ActionClose">
+   <property name="text">
+    <string>Close</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
  </widget>

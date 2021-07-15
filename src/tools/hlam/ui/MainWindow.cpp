@@ -114,6 +114,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionLoad, &QAction::triggered, this, &MainWindow::OnOpenLoadAssetDialog);
 	connect(_ui.ActionSave, &QAction::triggered, this, &MainWindow::OnSaveAsset);
 	connect(_ui.ActionSaveAs, &QAction::triggered, this, &MainWindow::OnSaveAssetAs);
+	connect(_ui.ActionClose, &QAction::triggered, this, &MainWindow::OnCloseAsset);
 	connect(_ui.ActionExit, &QAction::triggered, this, &MainWindow::OnExit);
 
 	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnGoFullscreen);
@@ -133,6 +134,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	_ui.ActionSave->setEnabled(false);
 	_ui.ActionSaveAs->setEnabled(false);
+	_ui.ActionClose->setEnabled(false);
 	_ui.MenuAsset->setEnabled(false);
 	_assetTabs->setVisible(false);
 
@@ -417,6 +419,7 @@ void MainWindow::OnAssetTabChanged(int index)
 
 	_ui.ActionSave->setEnabled(success);
 	_ui.ActionSaveAs->setEnabled(success);
+	_ui.ActionClose->setEnabled(success);
 	_ui.MenuAsset->setEnabled(success);
 }
 
@@ -465,6 +468,14 @@ void MainWindow::OnSaveAssetAs()
 		settings::SetSavedPath(*_editorContext->GetSettings(), AssetPathName, QFileInfo(fileName).absolutePath());
 		asset->SetFileName(std::move(fileName));
 		SaveAsset(asset);
+	}
+}
+
+void MainWindow::OnCloseAsset()
+{
+	if (auto index = this->_assetTabs->currentIndex(); index != -1)
+	{
+		TryCloseAsset(index, true);
 	}
 }
 
