@@ -64,6 +64,8 @@ enum class ModelChangeId
 	AddRemoveEvent,
 
 	ChangeModelName,
+
+	FlipNormals,
 };
 
 enum class AddRemoveType
@@ -1110,5 +1112,28 @@ protected:
 
 protected:
 	const int _modelIndex;
+};
+
+class FlipNormalsCommand : public ModelListUndoCommand<std::vector<glm::vec3>>
+{
+public:
+	FlipNormalsCommand(StudioModelAsset* asset, std::vector<glm::vec3>&& oldNormals, std::vector<glm::vec3>&& newNormals)
+		: ModelListUndoCommand(asset, ModelChangeId::FlipNormals, -1, std::move(oldNormals), std::move(newNormals))
+	{
+		setText("Flip normals");
+	}
+
+protected:
+	bool CanMerge(const ModelListUndoCommand<std::vector<glm::vec3>>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
+	void Apply(int index, const std::vector<glm::vec3>& oldValue, const std::vector<glm::vec3>& newValue) override;
+
+	void EmitEvent(const std::vector<glm::vec3>& oldValue, const std::vector<glm::vec3>& newValue) override
+	{
+		_asset->EmitModelChanged(ModelValueChangeEvent{_id, newValue});
+	}
 };
 }

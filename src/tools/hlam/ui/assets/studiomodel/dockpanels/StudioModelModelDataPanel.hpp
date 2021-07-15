@@ -39,6 +39,8 @@ private slots:
 	void OnCBoxMinChanged(const glm::vec3& value);
 	void OnCBoxMaxChanged(const glm::vec3& value);
 
+	void OnFlipNormals();
+
 private:
 	Ui_StudioModelModelDataPanel _ui;
 	StudioModelAsset* const _asset;

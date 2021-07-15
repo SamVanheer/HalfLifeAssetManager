@@ -325,4 +325,22 @@ void ChangeModelNameCommand::Apply(int index, const QString& oldValue, const QSt
 
 	subModel.Name = newValue.toStdString();
 }
+
+void FlipNormalsCommand::Apply(int index, const std::vector<glm::vec3>& oldValue, const std::vector<glm::vec3>& newValue)
+{
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
+	std::size_t normalIndex = 0;
+	
+	for (auto& bodypart : model->Bodyparts)
+	{
+		for (auto& model : bodypart->Models)
+		{
+			for (auto& normal : model.Normals)
+			{
+				normal.Vertex = newValue[normalIndex++];
+			}
+		}
+	}
+}
 }
