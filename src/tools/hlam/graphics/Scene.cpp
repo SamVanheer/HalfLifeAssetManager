@@ -449,6 +449,13 @@ void Scene::DrawModel()
 
 		auto renderInfo = _entity->GetRenderInfo();
 
+		//TODO: this is a temporary hack. The graphics scene architecture needs a complete overhaul first,
+		//then this can be done by rendering the model in a separate viewmodel layer
+		if (CameraIsFirstPerson)
+		{
+			renderInfo.Origin.z -= 1;
+		}
+
 		if (DrawSingleBoneIndex != -1)
 		{
 			_entityContext->StudioModelRenderer->DrawSingleBone(renderInfo, DrawSingleBoneIndex);

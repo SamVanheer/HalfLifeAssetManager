@@ -75,11 +75,7 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo* const re
 		origin.z -= 1;
 	}
 
-	glTranslatef(origin[0], origin[1], origin[2]);
-
-	glRotatef(_renderInfo->Angles[1], 0, 0, 1);
-	glRotatef(_renderInfo->Angles[0], 0, 1, 0);
-	glRotatef(_renderInfo->Angles[2], 1, 0, 0);
+	SetupPosition(origin, _renderInfo->Angles);
 
 	SetUpBones();
 
@@ -173,6 +169,8 @@ void StudioModelRenderer::DrawSingleBone(ModelRenderInfo& renderInfo, const int 
 	_renderInfo = &renderInfo;
 	_studioModel = model;
 
+	SetupPosition(_renderInfo->Origin, _renderInfo->Angles);
+
 	SetUpBones();
 
 	glDisable(GL_TEXTURE_2D);
@@ -229,6 +227,8 @@ void StudioModelRenderer::DrawSingleAttachment(ModelRenderInfo& renderInfo, cons
 	_renderInfo = &renderInfo;
 	_studioModel = model;
 
+	SetupPosition(_renderInfo->Origin, _renderInfo->Angles);
+
 	SetUpBones();
 
 	glDisable(GL_TEXTURE_2D);
@@ -281,6 +281,8 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 	_renderInfo = &renderInfo;
 	_studioModel = model;
 
+	SetupPosition(_renderInfo->Origin, _renderInfo->Angles);
+
 	SetUpBones();
 
 	glDisable(GL_TEXTURE_2D);
@@ -317,6 +319,15 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 
 	_studioModel = nullptr;
 	_renderInfo = nullptr;
+}
+
+void StudioModelRenderer::SetupPosition(const glm::vec3& origin, const glm::vec3& angles)
+{
+	glTranslatef(origin[0], origin[1], origin[2]);
+
+	glRotatef(angles[1], 0, 0, 1);
+	glRotatef(angles[0], 0, 1, 0);
+	glRotatef(angles[2], 1, 0, 0);
 }
 
 void StudioModelRenderer::DrawBones()

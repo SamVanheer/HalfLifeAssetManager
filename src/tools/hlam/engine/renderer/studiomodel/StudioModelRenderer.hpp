@@ -85,6 +85,8 @@ public:
 	void DrawSingleHitbox(ModelRenderInfo& renderInfo, const int hitboxIndex) override final;
 
 private:
+	void SetupPosition(const glm::vec3& origin, const glm::vec3& angles);
+
 	void DrawBones();
 
 	void DrawAttachments();
