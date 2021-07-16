@@ -24,6 +24,7 @@ namespace ui
 namespace camera_operators
 {
 class CameraOperator;
+class CameraOperators;
 }
 
 namespace settings
@@ -114,15 +115,7 @@ public:
 		_inputSinks.pop();
 	}
 
-	int GetCameraOperatorCount() const { return _cameraOperators.size(); }
-
-	camera_operators::CameraOperator* GetCameraOperator(int index) const;
-
-	void AddCameraOperator(std::unique_ptr<camera_operators::CameraOperator>&& cameraOperator);
-
-	camera_operators::CameraOperator* GetCurrentCameraOperator() const { return _cameraOperator; }
-
-	void SetCurrentCameraOperator(camera_operators::CameraOperator* cameraOperator);
+	camera_operators::CameraOperators* GetCameraOperators() const { return _cameraOperators; }
 
 	void AddUndoCommand(QUndoCommand* command)
 	{
@@ -134,15 +127,10 @@ public:
 		emit ModelChanged(event);
 	}
 
-private:
-	void ChangeCamera(bool next);
-
 signals:
 	void Tick();
 
 	void ModelChanged(const ModelChangeEvent& event);
-
-	void CameraChanged(camera_operators::CameraOperator* cameraOperator);
 
 private slots:
 	void OnTick();
@@ -150,6 +138,8 @@ private slots:
 	void OnSceneWidgetMouseEvent(QMouseEvent* event);
 
 	void OnSceneWidgetWheelEvent(QWheelEvent* event);
+
+	void OnCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current);
 
 	void UpdateColors();
 
@@ -181,9 +171,9 @@ private:
 
 	std::stack<IInputSink*> _inputSinks;
 
-	std::vector<std::unique_ptr<camera_operators::CameraOperator>> _cameraOperators;
+	camera_operators::CameraOperators* _cameraOperators;
 
-	camera_operators::CameraOperator* _cameraOperator{};
+	camera_operators::CameraOperator* _firstPersonCamera;
 
 	StudioModelEditWidget* _editWidget{};
 };

@@ -38,6 +38,7 @@
 
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperator.hpp"
+#include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/FirstPersonCameraOperator.hpp"
 #include "ui/camera_operators/FreeLookCameraOperator.hpp"
 
@@ -86,8 +87,11 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _editableStudioModel(std::move(editableStudioModel))
 	, _textureLoader(std::make_unique<graphics::TextureLoader>())
 	, _scene(std::make_unique<graphics::Scene>(_textureLoader.get(), editorContext->GetSoundSystem(), editorContext->GetWorldTime()))
+	, _cameraOperators(new camera_operators::CameraOperators(this))
 {
 	PushInputSink(this);
+
+	connect(_cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
 
 	UpdateColors();
 
@@ -103,31 +107,33 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_scene->SetEntity(entity);
 	}
 
-	AddCameraOperator(std::make_unique<camera_operators::ArcBallCameraOperator>(_editorContext->GetGeneralSettings()));
-	AddCameraOperator(std::make_unique<camera_operators::FreeLookCameraOperator>(_editorContext->GetGeneralSettings()));
-	AddCameraOperator(std::make_unique<camera_operators::FirstPersonCameraOperator>(_editorContext->GetGeneralSettings()));
+	auto arcBallCamera = new camera_operators::ArcBallCameraOperator(_editorContext->GetGeneralSettings());
+	_firstPersonCamera = new camera_operators::FirstPersonCameraOperator(_editorContext->GetGeneralSettings());
+
+	_cameraOperators->Add(arcBallCamera);
+	_cameraOperators->Add(new camera_operators::FreeLookCameraOperator(_editorContext->GetGeneralSettings()));
+	_cameraOperators->Add(_firstPersonCamera);
 
 	if (nullptr != entity)
 	{
 		const auto [height, distance] = GetCenteredValues(entity);
 
-		for (int i = 0; i < GetCameraOperatorCount(); ++i)
+		for (int i = 0; i < _cameraOperators->Count(); ++i)
 		{
-			const auto cameraOperator = GetCameraOperator(i);
+			const auto cameraOperator = _cameraOperators->Get(i);
 			cameraOperator->CenterView(height, distance, InitialCameraYaw);
 			//Set initial restoration point to the initial camera view
 			cameraOperator->SaveView();
 		}
 	}
 
-	//TODO: need to use the actual camera objects instead of indices
 	if (_provider->GetStudioModelSettings()->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
 	{
-		SetCurrentCameraOperator(GetCameraOperator(2));
+		_cameraOperators->SetCurrent(_firstPersonCamera);
 	}
 	else
 	{
-		SetCurrentCameraOperator(GetCameraOperator(0));
+		_cameraOperators->SetCurrent(arcBallCamera);
 	}
 
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
@@ -207,75 +213,6 @@ void StudioModelAsset::Save()
 	studiomdl::SaveStudioModel(filePath, result, false);
 }
 
-camera_operators::CameraOperator* StudioModelAsset::GetCameraOperator(int index) const
-{
-	return _cameraOperators[index].get();
-}
-
-void StudioModelAsset::AddCameraOperator(std::unique_ptr<camera_operators::CameraOperator>&& cameraOperator)
-{
-	assert(cameraOperator);
-
-	_cameraOperators.emplace_back(std::move(cameraOperator));
-}
-
-void StudioModelAsset::SetCurrentCameraOperator(camera_operators::CameraOperator* cameraOperator)
-{
-	if (_cameraOperator != cameraOperator)
-	{
-		_cameraOperator = cameraOperator;
-		_scene->SetCurrentCamera(_cameraOperator != nullptr ? _cameraOperator->GetCamera() : nullptr);
-
-		emit CameraChanged(_cameraOperator);
-
-		//TODO: this doesn't belong here, camera code needs more refactoring
-		_scene->CameraIsFirstPerson = _cameraOperator == GetCameraOperator(2);
-	}
-}
-
-void StudioModelAsset::ChangeCamera(bool next)
-{
-	int index;
-
-	if (_cameraOperators.empty())
-	{
-		index = -1;
-	}
-	else if (!_cameraOperator)
-	{
-		index = next ? 0 : _cameraOperators.size() - 1;
-	}
-	else
-	{
-		auto it = std::find_if(_cameraOperators.begin(), _cameraOperators.end(), [=](const auto& candidate)
-			{
-				return candidate.get() == _cameraOperator;
-			});
-
-		index = it - _cameraOperators.begin();
-
-		if (next)
-		{
-			index += 1;
-		}
-		else
-		{
-			index -= 1;
-		}
-
-		if (index < 0)
-		{
-			index = _cameraOperators.size() - 1;
-		}
-		else if (index >= _cameraOperators.size())
-		{
-			index = 0;
-		}
-	}
-
-	SetCurrentCameraOperator(index != -1 ? _cameraOperators[index].get() : nullptr);
-}
-
 void StudioModelAsset::OnTick()
 {
 	//TODO: update asset-local world time
@@ -287,17 +224,17 @@ void StudioModelAsset::OnTick()
 
 void StudioModelAsset::OnMouseEvent(QMouseEvent* event)
 {
-	if (_cameraOperator)
+	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
 	{
-		_cameraOperator->MouseEvent(*event);
+		cameraOperator->MouseEvent(*event);
 	}
 }
 
 void StudioModelAsset::OnWheelEvent(QWheelEvent* event)
 {
-	if (_cameraOperator)
+	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
 	{
-		_cameraOperator->WheelEvent(*event);
+		cameraOperator->WheelEvent(*event);
 	}
 }
 
@@ -315,6 +252,12 @@ void StudioModelAsset::OnSceneWidgetWheelEvent(QWheelEvent* event)
 	{
 		_inputSinks.top()->OnWheelEvent(event);
 	}
+}
+
+void StudioModelAsset::OnCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current)
+{
+	_scene->SetCurrentCamera(current != nullptr ? current->GetCamera() : nullptr);
+	_scene->CameraIsFirstPerson = current == _firstPersonCamera;
 }
 
 static glm::vec3 ColorToVector(const QColor& color)
@@ -340,17 +283,17 @@ void StudioModelAsset::OnFloorLengthChanged(int length)
 
 void StudioModelAsset::OnPreviousCamera()
 {
-	ChangeCamera(false);
+	_cameraOperators->PreviousCamera();
 }
 
 void StudioModelAsset::OnNextCamera()
 {
-	ChangeCamera(true);
+	_cameraOperators->NextCamera();
 }
 
 void StudioModelAsset::OnCenterView()
 {
-	if (auto cameraOperator = GetCurrentCameraOperator(); cameraOperator)
+	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
 	{
 		const auto [height, distance] = GetCenteredValues(_scene->GetEntity());
 
@@ -360,7 +303,7 @@ void StudioModelAsset::OnCenterView()
 
 void StudioModelAsset::OnSaveView()
 {
-	if (auto cameraOperator = GetCurrentCameraOperator(); cameraOperator)
+	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
 	{
 		const auto [height, distance] = GetCenteredValues(_scene->GetEntity());
 
@@ -370,7 +313,7 @@ void StudioModelAsset::OnSaveView()
 
 void StudioModelAsset::OnRestoreView()
 {
-	if (auto cameraOperator = GetCurrentCameraOperator(); cameraOperator)
+	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
 	{
 		const auto [height, distance] = GetCenteredValues(_scene->GetEntity());
 

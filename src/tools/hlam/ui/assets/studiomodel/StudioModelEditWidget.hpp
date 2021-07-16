@@ -46,7 +46,7 @@ signals:
 private slots:
 	void OnTabChanged(int index);
 
-	void OnAssetCameraChanged(camera_operators::CameraOperator* cameraOperator);
+	void OnAssetCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current);
 
 	void OnCameraChanged(int index);
 

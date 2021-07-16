@@ -21,6 +21,7 @@
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
 
 #include "ui/camera_operators/CameraOperator.hpp"
+#include "ui/camera_operators/CameraOperators.hpp"
 
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/FirstPersonCameraOperator.hpp"
@@ -47,14 +48,15 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	_camerasPanel = new camera_operators::CamerasPanel();
 
-	for (int i = 0; i < _asset->GetCameraOperatorCount(); ++i)
+	auto cameraOperators = _asset->GetCameraOperators();
+
+	for (int i = 0; i < cameraOperators->Count(); ++i)
 	{
-		const auto cameraOperator = _asset->GetCameraOperator(i);
+		const auto cameraOperator = cameraOperators->Get(i);
 		_camerasPanel->AddCameraOperator(cameraOperator->GetName(), cameraOperator->CreateEditWidget());
 	}
 
-	//TODO: should probably be done in a better way
-	OnAssetCameraChanged(_asset->GetCurrentCameraOperator());
+	OnAssetCameraChanged(nullptr, cameraOperators->GetCurrent());
 
 	auto modelDisplayPanel = new StudioModelModelDisplayPanel(_asset);
 	auto texturesPanel = new StudioModelTexturesPanel(_asset);
@@ -107,7 +109,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	connect(_dockPanels, &QTabWidget::currentChanged, this, &StudioModelEditWidget::OnTabChanged);
 
-	connect(asset, &StudioModelAsset::CameraChanged, this, &StudioModelEditWidget::OnAssetCameraChanged);
+	connect(cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelEditWidget::OnAssetCameraChanged);
 	connect(_camerasPanel, &camera_operators::CamerasPanel::CameraChanged, this, &StudioModelEditWidget::OnCameraChanged);
 
 	connect(_sceneWidget, &SceneWidget::frameSwapped, infoBar, &InfoBar::OnDraw);
@@ -129,7 +131,7 @@ void StudioModelEditWidget::OnTabChanged(int index)
 	emit DockPanelChanged(_currentTab, previous);
 }
 
-void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::CameraOperator* cameraOperator)
+void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current)
 {
 	int index = -1;
 
@@ -138,7 +140,7 @@ void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::CameraOperato
 		const auto widget = _camerasPanel->GetWidget(i);
 
 		if (const auto candidate = widget->property(camera_operators::CameraOperatorPropertyKey.data()).value<camera_operators::CameraOperator*>();
-			candidate == cameraOperator)
+			candidate == current)
 		{
 			index = i;
 			break;
@@ -150,23 +152,17 @@ void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::CameraOperato
 
 void StudioModelEditWidget::OnCameraChanged(int index)
 {
+	auto cameraOperators = _asset->GetCameraOperators();
+
 	auto widget = _camerasPanel->GetWidget(index);
 
-	bool success{false};
+	camera_operators::CameraOperator* cameraOperator = nullptr;
 
 	if (widget)
 	{
-		if (auto cameraOperator = widget->property(camera_operators::CameraOperatorPropertyKey.data()).value<camera_operators::CameraOperator*>();
-			cameraOperator)
-		{
-			_asset->SetCurrentCameraOperator(cameraOperator);
-			success = true;
-		}
+		cameraOperator = widget->property(camera_operators::CameraOperatorPropertyKey.data()).value<camera_operators::CameraOperator*>();
 	}
-
-	if (!success)
-	{
-		_asset->SetCurrentCameraOperator(nullptr);
-	}
+	
+	cameraOperators->SetCurrent(cameraOperator);
 }
 }
