@@ -84,7 +84,6 @@ float StudioModelEntity::AdvanceFrame(float deltaTime, const float maximum)
 
 		if (deltaTime <= 0.001)
 		{
-			_animTime = GetContext()->Time->GetTime();
 			return 0;
 		}
 	}

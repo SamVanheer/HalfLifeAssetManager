@@ -121,7 +121,6 @@ void EditorContext::OnTimerTick()
 		flFrameTime = 0.1;
 	}
 
-	//TODO: investigate how to allow animation to work when framerate is very high
 #if false
 	if (flFrameTime < (1.0 / /*max_fps.GetFloat()*/60.0f))
 	{
