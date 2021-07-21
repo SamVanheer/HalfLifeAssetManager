@@ -21,6 +21,8 @@ class TextureLoader;
 
 namespace ui
 {
+class StateSnapshot;
+
 namespace camera_operators
 {
 class CameraOperator;
@@ -89,6 +91,8 @@ public:
 
 	void Save() override;
 
+	void TryRefresh() override;
+
 	void OnMouseEvent(QMouseEvent* event) override;
 
 	void OnWheelEvent(QWheelEvent* event) override;
@@ -127,10 +131,18 @@ public:
 		emit ModelChanged(event);
 	}
 
+private:
+	void SaveEntityToSnapshot(StateSnapshot* snapshot);
+	void LoadEntityFromSnapshot(StateSnapshot* snapshot);
+
 signals:
 	void Tick();
 
 	void ModelChanged(const ModelChangeEvent& event);
+
+	void SaveSnapshot(StateSnapshot* snapshot);
+
+	void LoadSnapshot(StateSnapshot* snapshot);
 
 private slots:
 	void OnTick();
@@ -165,7 +177,7 @@ private slots:
 private:
 	EditorContext* const _editorContext;
 	const StudioModelAssetProvider* const _provider;
-	const std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;
+	std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;
 	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
 	const std::unique_ptr<graphics::Scene> _scene;
 

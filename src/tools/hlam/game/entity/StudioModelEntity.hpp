@@ -80,6 +80,7 @@ private:
 	byte	_controller[STUDIO_MAX_CONTROLLERS] = {0, 0, 0, 0};	// bone controllers
 	float _controllerValues[STUDIO_MAX_CONTROLLERS] = {};
 	byte	_mouth = 0;				// mouth position
+	float _mouthValue = 0;
 	byte	_blending[STUDIO_MAX_BLENDERS] = {0, 0};			// animation blending
 
 	float	_lastEventCheck = 0;				//Last time we checked for animation events.
@@ -112,7 +113,7 @@ public:
 	*	Sets the current sequence.
 	*	@param sequence Sequence to use.
 	*/
-	void SetSequence(const int sequence);
+	void SetSequence(int sequence);
 
 	/**
 	*	Gets info from the current sequence.
@@ -134,6 +135,12 @@ public:
 	*	@param value Value to set.
 	*/
 	void SetBodygroup(const int bodygroup, const int value);
+
+	void SetCompoundBodyValue(int value)
+	{
+		//TODO: verify that this is a correct value
+		_bodygroup = value;
+	}
 
 	/**
 	*	Gets the current skin.
@@ -169,6 +176,8 @@ public:
 	*	Gets the mouth controller. This is the stored value, not the computed value.
 	*/
 	byte GetMouth() const { return _mouth; }
+
+	float GetMouthValue() const { return _mouthValue; }
 
 	/**
 	*	Sets the mouth controller value. The value is processed into a value that is in the range [0, 255]

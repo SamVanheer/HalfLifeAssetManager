@@ -28,8 +28,8 @@ struct BoneController
 	float Start = 0;
 	float End = 0;
 	int Rest = 0;
-	int Index = 0;
-	int ArrayIndex = 0;
+	int Index = -1;
+	int ArrayIndex = -1;
 };
 
 struct BoneAxisData
@@ -47,7 +47,7 @@ struct Bone
 	std::array<BoneAxisData, STUDIO_NUM_COORDINATE_AXES> Axes;
 
 	//Index of this bone. Always use this for indexed operations
-	int ArrayIndex = 0;
+	int ArrayIndex = -1;
 };
 
 struct Hitbox
@@ -99,7 +99,7 @@ struct Sequence
 	float FPS = 0;
 	int Flags = 0;
 
-	int Activity = 0;
+	int Activity = -1;
 	int ActivityWeight = 0;
 
 	//List of events used for modifying data in UI
@@ -185,7 +185,7 @@ struct Texture
 	int Width = 0;
 	int Height = 0;
 
-	int ArrayIndex = 0;
+	int ArrayIndex = -1;
 
 	std::vector<byte> Pixels;
 	graphics::RGBPalette Palette;
@@ -230,6 +230,9 @@ public:
 
 	std::vector<std::unique_ptr<Texture>> Textures;
 	std::vector<std::vector<Texture*>> SkinFamilies;
+
+	//TODO: temporary until a better system can be put into place
+	bool TexturesNeedCreating = true;
 
 	std::vector<std::vector<byte>> Transitions;
 

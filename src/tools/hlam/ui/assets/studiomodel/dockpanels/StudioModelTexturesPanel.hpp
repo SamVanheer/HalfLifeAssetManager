@@ -19,6 +19,8 @@ struct Texture;
 
 namespace ui
 {
+class StateSnapshot;
+
 namespace camera_operators
 {
 class CameraOperator;
@@ -45,6 +47,8 @@ public:
 	static void DrawUVImage(const QColor& backgroundColor, bool overlayOnTexture, const QImage& texture, const QImage& uvMap, QImage& target);
 
 private:
+	void InitializeUI();
+
 	void ImportTextureFrom(const QString& fileName, studiomdl::EditableStudioModel& model, int textureIndex);
 	bool ExportTextureTo(const QString& fileName, const studiomdl::EditableStudioModel& model, const studiomdl::Texture& texture);
 	void RemapTexture(int index);
@@ -60,6 +64,9 @@ public slots:
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnSaveSnapshot(StateSnapshot* snapshot);
+	void OnLoadSnapshot(StateSnapshot* snapshot);
 
 	void OnTextureChanged(int index);
 

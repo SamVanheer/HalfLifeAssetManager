@@ -6,7 +6,11 @@
 
 #include "ui_StudioModelModelDataPanel.h"
 
-namespace ui::assets::studiomodel
+namespace ui
+{
+class StateSnapshot;
+
+namespace assets::studiomodel
 {
 class ModelChangeEvent;
 class StudioModelAsset;
@@ -18,10 +22,14 @@ public:
 	~StudioModelModelDataPanel();
 
 private:
+	void InitializeUI();
+
 	void SetFlags(int flags);
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnLoadSnapshot(StateSnapshot* snapshot);
 
 	void OnOriginChanged();
 
@@ -47,4 +55,5 @@ private:
 
 	glm::vec3 _oldOffset{0};
 };
+}
 }

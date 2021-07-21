@@ -13,6 +13,8 @@
 
 #include <GL/glew.h>
 
+#include "assets/AssetIO.hpp"
+
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
 #include "engine/shared/studiomodel/StudioModelIO.hpp"
 #include "engine/shared/studiomodel/StudioModelUtils.hpp"
@@ -29,6 +31,7 @@
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/SceneWidget.hpp"
+#include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
@@ -211,6 +214,119 @@ void StudioModelAsset::Save()
 	auto result = studiomdl::ConvertFromEditable(filePath, *_editableStudioModel);
 
 	studiomdl::SaveStudioModel(filePath, result, false);
+}
+
+void StudioModelAsset::TryRefresh()
+{
+	auto snapshot = std::make_unique<StateSnapshot>();
+
+	SaveEntityToSnapshot(snapshot.get());
+
+	emit SaveSnapshot(snapshot.get());
+
+	try
+	{
+		const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
+		auto studioModel = studiomdl::LoadStudioModel(filePath);
+
+		_editableStudioModel = std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
+
+		GetUndoStack()->clear();
+
+		auto entity = _scene->GetEntity();
+		entity->SetEditableModel(GetEditableStudioModel());
+		entity->Spawn();
+	}
+	catch (const ::assets::AssetException& e)
+	{
+		QMessageBox::critical(nullptr, "Error", QString{"An error occurred while reloading the model \"%1\":\n%2"}.arg(GetFileName()).arg(e.what()));
+		return;
+	}
+
+	LoadEntityFromSnapshot(snapshot.get());
+
+	emit LoadSnapshot(snapshot.get());
+}
+
+void StudioModelAsset::SaveEntityToSnapshot(StateSnapshot* snapshot)
+{
+	auto entity = _scene->GetEntity();
+	auto model = entity->GetEditableModel();
+
+	const int sequenceIndex = entity->GetSequence();
+
+	if (sequenceIndex >= 0 && sequenceIndex < model->Sequences.size())
+	{
+		snapshot->SetValue("entity.sequence", QVariant::fromValue(QString::fromStdString(model->Sequences[sequenceIndex]->Label)));
+		snapshot->SetValue("entity.frame", QVariant::fromValue(entity->GetFrame()));
+	}
+
+	snapshot->SetValue("entity.skin", QVariant::fromValue(entity->GetSkin()));
+	snapshot->SetValue("entity.body", QVariant::fromValue(entity->GetBodygroup()));
+
+	//TODO: controllers and stuff
+
+	for (int i = 0; i < STUDIO_MAX_CONTROLLERS; ++i)
+	{
+		snapshot->SetValue(QString{"entity.bonecontroller%1"}.arg(i), QVariant::fromValue(entity->GetControllerValue(i)));
+	}
+
+	snapshot->SetValue("entity.mouth", QVariant::fromValue(entity->GetMouth()));
+
+	for (int i = 0; i < STUDIO_MAX_BLENDERS; ++i)
+	{
+		snapshot->SetValue(QString{"entity.blender%1"}.arg(i), QVariant::fromValue(entity->GetBlendingValue(i)));
+	}
+}
+
+void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
+{
+	auto entity = _scene->GetEntity();
+	auto model = entity->GetEditableModel();
+
+	bool foundSequence = false;
+
+	if (auto sequence = snapshot->Value("entity.sequence"); sequence.isValid())
+	{
+		auto sequenceName = sequence.toString().toStdString();
+
+		if (auto it = std::find_if(model->Sequences.begin(), model->Sequences.end(), [&](const auto& sequence)
+			{
+				return sequence->Label == sequenceName;
+			}); it != model->Sequences.end())
+		{
+			const auto index = it - model->Sequences.begin();
+
+			entity->SetSequence(static_cast<int>(index));
+
+			//Only set these if we were able to find the sequence
+			entity->SetFrame(snapshot->Value("entity.frame").toFloat());
+
+			foundSequence = true;
+		}
+	}
+
+	if (!foundSequence)
+	{
+		//Reset to default
+		entity->SetSequence(0);
+	}
+
+	entity->SetSkin(snapshot->Value("entity.skin").toInt());
+	entity->SetCompoundBodyValue(snapshot->Value("entity.body").toInt());
+
+	for (int i = 0; i < STUDIO_MAX_CONTROLLERS; ++i)
+	{
+		entity->SetController(i, snapshot->Value(QString{"entity.bonecontroller%1"}.arg(i)).toFloat());
+	}
+
+	entity->SetMouth(snapshot->Value("entity.mouth").toFloat());
+
+	//TODO: need to handle CS blending
+	for (int i = 0; i < STUDIO_MAX_BLENDERS; ++i)
+	{
+		entity->SetBlending(i, snapshot->Value(QString{"entity.blender%1"}.arg(i)).toFloat());
+	}
 }
 
 void StudioModelAsset::OnTick()

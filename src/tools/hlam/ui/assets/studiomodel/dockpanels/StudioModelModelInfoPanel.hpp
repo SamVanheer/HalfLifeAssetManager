@@ -4,7 +4,11 @@
 
 #include "ui_StudioModelModelInfoPanel.h"
 
-namespace ui::assets::studiomodel
+namespace ui
+{
+class StateSnapshot;
+
+namespace assets::studiomodel
 {
 class StudioModelAsset;
 
@@ -15,7 +19,14 @@ public:
 	~StudioModelModelInfoPanel();
 
 private:
+	void InitializeUI();
+
+private slots:
+	void OnLoadSnapshot(StateSnapshot* snapshot);
+
+private:
 	Ui_StudioModelModelInfoPanel _ui;
 	StudioModelAsset* const _asset;
 };
+}
 }

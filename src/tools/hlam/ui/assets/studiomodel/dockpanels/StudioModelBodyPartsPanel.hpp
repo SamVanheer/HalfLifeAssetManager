@@ -4,7 +4,16 @@
 
 #include "ui_StudioModelBodyPartsPanel.h"
 
-namespace ui::assets::studiomodel
+namespace studiomdl
+{
+struct BoneController;
+}
+
+namespace ui
+{
+class StateSnapshot;
+
+namespace assets::studiomodel
 {
 class ModelChangeEvent;
 class StudioModelAsset;
@@ -16,10 +25,15 @@ public:
 	~StudioModelBodyPartsPanel();
 
 private:
-	void UpdateControllerRange();
+	void InitializeUI();
+
+	void UpdateControllerRange(const studiomdl::BoneController& boneController);
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnSaveSnapshot(StateSnapshot* snapshot);
+	void OnLoadSnapshot(StateSnapshot* snapshot);
 
 	void OnBodyPartChanged(int index);
 
@@ -49,4 +63,5 @@ private:
 
 	float _controllerSliderScale{1.f};
 };
+}
 }

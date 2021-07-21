@@ -105,6 +105,11 @@ void Scene::AlignOnGround()
 	//Failing that, use the first sequence
 	auto idleFinder = [&]() -> const studiomdl::Sequence*
 	{
+		if (model->Sequences.empty())
+		{
+			return nullptr;
+		}
+
 		for (const auto& sequence : model->Sequences)
 		{
 			if (sequence->Label == "idle")
@@ -118,7 +123,7 @@ void Scene::AlignOnGround()
 
 	auto sequence = idleFinder();
 
-	entity->SetOrigin({0, 0, -sequence->BBMin.z});
+	entity->SetOrigin({0, 0, sequence ? -sequence->BBMin.z : 0});
 }
 
 void Scene::Initialize()
@@ -133,12 +138,6 @@ void Scene::Initialize()
 	if (!_studioModelRenderer->Initialize())
 	{
 		//TODO: handle error
-	}
-
-	if (nullptr != _entity)
-	{
-		//TODO: should be replaced with an on-demand resource uploading stage in Draw()
-		_entity->GetEditableModel()->CreateTextures(*_textureLoader);
 	}
 
 	glGenTextures(1, &UVMeshTexture);
@@ -166,6 +165,18 @@ void Scene::Tick()
 
 void Scene::Draw()
 {
+	//TODO: really ugly, needs reworking
+	if (nullptr != _entity)
+	{
+		auto model = _entity->GetEditableModel();
+		
+		if (model->TexturesNeedCreating)
+		{
+			model->TexturesNeedCreating = false;
+			model->CreateTextures(*_textureLoader);
+		}
+	}
+
 	glClearColor(BackgroundColor.r, BackgroundColor.g, BackgroundColor.b, 1.0f);
 
 	if (MirrorOnGround)
@@ -483,36 +494,43 @@ void Scene::DrawModel()
 		//Calculate texture offset based on sequence movement and current frame
 		if (_entity)
 		{
-			const auto& sequence = *_entity->GetEditableModel()->Sequences[_entity->GetSequence()];
+			auto model = _entity->GetEditableModel();
 
-			//Scale offset to current frame
-			const float currentFrame = _entity->GetFrame() / (sequence.NumFrames - 1);
+			const int sequenceIndex = _entity->GetSequence();
 
-			float delta;
-
-			if (currentFrame >= _previousFloorFrame)
+			if (sequenceIndex >= 0 && sequenceIndex < model->Sequences.size())
 			{
-				delta = currentFrame - _previousFloorFrame;
-			}
-			else
-			{
-				delta = (currentFrame + 1) - _previousFloorFrame;
-			}
+				const auto& sequence = *model->Sequences[_entity->GetSequence()];
 
-			_previousFloorFrame = currentFrame;
+				//Scale offset to current frame
+				const float currentFrame = _entity->GetFrame() / (sequence.NumFrames - 1);
 
-			//Adjust scrolling direction based on whether the model is mirrored, but don't apply scale itself
-			const int xDirection = _entity->GetScale().x > 0 ? 1 : -1;
-			const int yDirection = _entity->GetScale().y > 0 ? 1 : -1;
+				float delta;
 
-			textureOffset.x = sequence.LinearMovement.x * delta * xDirection;
-			textureOffset.y = -(sequence.LinearMovement.y * delta * yDirection);
+				if (currentFrame >= _previousFloorFrame)
+				{
+					delta = currentFrame - _previousFloorFrame;
+				}
+				else
+				{
+					delta = (currentFrame + 1) - _previousFloorFrame;
+				}
 
-			if (_floorSequence != _entity->GetSequence())
-			{
-				_floorSequence = _entity->GetSequence();
-				_previousFloorFrame = 0;
-				_floorTextureOffset.x = _floorTextureOffset.y = 0;
+				_previousFloorFrame = currentFrame;
+
+				//Adjust scrolling direction based on whether the model is mirrored, but don't apply scale itself
+				const int xDirection = _entity->GetScale().x > 0 ? 1 : -1;
+				const int yDirection = _entity->GetScale().y > 0 ? 1 : -1;
+
+				textureOffset.x = sequence.LinearMovement.x * delta * xDirection;
+				textureOffset.y = -(sequence.LinearMovement.y * delta * yDirection);
+
+				if (_floorSequence != _entity->GetSequence())
+				{
+					_floorSequence = _entity->GetSequence();
+					_previousFloorFrame = 0;
+					_floorTextureOffset.x = _floorTextureOffset.y = 0;
+				}
 			}
 		}
 
@@ -577,6 +595,11 @@ void Scene::DrawTexture(const int xOffset, const int yOffset, const int width, c
 	const auto model = entity->GetEditableModel();
 
 	assert(model);
+
+	if (textureIndex < 0 || textureIndex >= model->Textures.size())
+	{
+		return;
+	}
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();

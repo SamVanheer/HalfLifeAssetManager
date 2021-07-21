@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -22,6 +23,8 @@
 #include "graphics/TextureLoader.hpp"
 
 #include "qt/QtUtilities.hpp"
+
+#include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
@@ -70,6 +73,8 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), textureNameValidator, &UniqueTextureNameValidator::SetCurrentIndex);
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelTexturesPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &StudioModelTexturesPanel::OnSaveSnapshot);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelTexturesPanel::OnLoadSnapshot);
 
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::OnTextureChanged);
 	connect(_ui.ScaleTextureViewSlider, &QSlider::valueChanged, this, &StudioModelTexturesPanel::OnTextureViewScaleSliderChanged);
@@ -140,18 +145,7 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 
 	_ui.UVLineWidthSlider->setValue(static_cast<int>(_ui.UVLineWidthSpinner->value() * UVLineWidthSliderRatio));
 
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-
-	QStringList textures;
-
-	textures.reserve(model->Textures.size());
-
-	for (std::size_t i = 0; i < model->Textures.size(); ++i)
-	{
-		textures.append(FormatTextureName(*model->Textures[i]));
-	}
-
-	_ui.Textures->addItems(textures);
+	InitializeUI();
 }
 
 StudioModelTexturesPanel::~StudioModelTexturesPanel() = default;
@@ -306,6 +300,26 @@ void StudioModelTexturesPanel::DrawUVImage(const QColor& backgroundColor, bool o
 	painter.drawImage(drawRect, uvMap);
 }
 
+void StudioModelTexturesPanel::InitializeUI()
+{
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
+	this->setEnabled(!model->Textures.empty());
+
+	_ui.Textures->clear();
+
+	QStringList textures;
+
+	textures.reserve(model->Textures.size());
+
+	for (std::size_t i = 0; i < model->Textures.size(); ++i)
+	{
+		textures.append(FormatTextureName(*model->Textures[i]));
+	}
+
+	_ui.Textures->addItems(textures);
+}
+
 void StudioModelTexturesPanel::OnCreateDeviceResources()
 {
 	//TODO: this shouldn't be done here
@@ -408,25 +422,56 @@ void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
+void StudioModelTexturesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
+{
+	if (auto index = _ui.Textures->currentIndex(); index != -1)
+	{
+		auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
+		const auto& texture = *model->Textures[index];
+
+		snapshot->SetValue("textures.texture", QString::fromStdString(texture.Name));
+	}
+}
+
+void StudioModelTexturesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
+{
+	InitializeUI();
+
+	if (auto texture = snapshot->Value("textures.texture"); texture.isValid())
+	{
+		auto textureName = texture.toString().toStdString();
+
+		auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
+		if (auto it = std::find_if(model->Textures.begin(), model->Textures.end(), [&](const auto& texture)
+			{
+				return texture->Name == textureName;
+			}); it != model->Textures.end())
+		{
+			const auto index = it - model->Textures.begin();
+
+			_ui.Textures->setCurrentIndex(index);
+		}
+	}
+}
+
 void StudioModelTexturesPanel::OnTextureChanged(int index)
 {
 	auto scene = _asset->GetScene();
 
 	//Reset texture position to be centered
 	scene->TextureXOffset = scene->TextureYOffset = 0;
+	scene->TextureIndex = index;
 
 	_ui.Meshes->clear();
+	_ui.Meshes->setEnabled(index != -1);
 
-	if (index == -1)
-	{
-		_ui.Meshes->setEnabled(false);
-		UpdateUVMapTexture();
-		return;
-	}
+	const studiomdl::Texture emptyTexture{};
 
 	auto entity = scene->GetEntity();
 
-	const auto& texture = *entity->GetEditableModel()->Textures[index];
+	const auto& texture = index != -1 ? *entity->GetEditableModel()->Textures[index] : emptyTexture;
 
 	{
 		const QSignalBlocker name{_ui.TextureName};
@@ -438,22 +483,15 @@ void StudioModelTexturesPanel::OnTextureChanged(int index)
 
 	const auto meshes = entity->ComputeMeshList(index);
 
-	_ui.Meshes->setEnabled(true);
-
 	for (decltype(meshes.size()) i = 0; i < meshes.size(); ++i)
 	{
 		_ui.Meshes->addItem(QString{"Mesh %1"}.arg(i + 1));
 	}
 
-	if (_ui.Meshes->count() > 0)
+	if (_ui.Meshes->count() > 1)
 	{
-		if (_ui.Meshes->count() > 1)
-		{
-			_ui.Meshes->addItem("All");
-		}
+		_ui.Meshes->addItem("All");
 	}
-
-	scene->TextureIndex = index;
 
 	UpdateUVMapTexture();
 }

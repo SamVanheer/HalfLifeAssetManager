@@ -71,6 +71,11 @@ float StudioModelEntity::AdvanceFrame(float deltaTime, const float maximum)
 		return 0;
 	}
 
+	if (_sequence < 0 || _sequence >= _editableModel->Sequences.size())
+	{
+		return 0;
+	}
+
 	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
 	if (deltaTime == 0)
@@ -277,11 +282,19 @@ int StudioModelEntity::GetNumFrames() const
 	return sequenceDescriptor.NumFrames;
 }
 
-void StudioModelEntity::SetSequence(const int sequence)
+void StudioModelEntity::SetSequence(int sequence)
 {
-	if (sequence < 0 || sequence >= _editableModel->Sequences.size())
+	//index of -1 means no sequence
+	if (_editableModel->Sequences.empty())
 	{
-		return;
+		sequence = -1;
+	}
+	else
+	{
+		if (sequence < 0 || sequence >= _editableModel->Sequences.size())
+		{
+			return;
+		}
 	}
 
 	_sequence = sequence;
@@ -459,6 +472,8 @@ void StudioModelEntity::SetMouth(float value)
 		return;
 	}
 
+	_mouthValue = value;
+
 	const auto& boneController = *_editableModel->BoneControllers[i];
 
 	// wrap 0..360 if it's a rotational controller
@@ -522,6 +537,11 @@ float StudioModelEntity::GetBlendingValue(const int blender) const
 		return 0;
 	}
 
+	if (_sequence < 0 || _sequence >= _editableModel->Sequences.size())
+	{
+		return 0;
+	}
+
 	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
 	if (sequenceDescriptor.BlendData[blender].Type == 0)
@@ -542,6 +562,11 @@ void StudioModelEntity::SetBlending(const int blender, float value)
 	}
 
 	if (blender < 0 || blender >= STUDIO_MAX_BLENDERS)
+	{
+		return;
+	}
+
+	if (_sequence < 0 || _sequence >= _editableModel->Sequences.size())
 	{
 		return;
 	}
@@ -604,11 +629,18 @@ void StudioModelEntity::SetCounterStrikeBlending(const int blender, float value)
 
 void StudioModelEntity::ExtractBbox(glm::vec3& mins, glm::vec3& maxs) const
 {
-	//TODO: check if sequence is in range
-	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
+	if (_sequence >= 0 && _sequence < _editableModel->Sequences.size())
+	{
+		const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
-	mins = sequenceDescriptor.BBMin;
-	maxs = sequenceDescriptor.BBMax;
+		mins = sequenceDescriptor.BBMin;
+		maxs = sequenceDescriptor.BBMax;
+	}
+	else
+	{
+		mins = glm::vec3{0};
+		maxs = glm::vec3{0};
+	}
 }
 
 studiomdl::Model* StudioModelEntity::GetModelByBodyPart(const int bodyPart) const
@@ -618,7 +650,7 @@ studiomdl::Model* StudioModelEntity::GetModelByBodyPart(const int bodyPart) cons
 
 std::vector<const studiomdl::Mesh*> StudioModelEntity::ComputeMeshList(const int texture) const
 {
-	if (!_editableModel)
+	if (!_editableModel || texture == -1)
 	{
 		return {};
 	}

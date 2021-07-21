@@ -14,7 +14,8 @@ target_sources(HLAM
 		MainWindow.hpp
 		MainWindow.ui
 		SceneWidget.cpp
-		SceneWidget.hpp)
+		SceneWidget.hpp
+		StateSnapshot.hpp)
 
 add_subdirectory(assets)
 add_subdirectory(camera_operators)

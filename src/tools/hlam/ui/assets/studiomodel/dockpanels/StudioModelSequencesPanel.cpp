@@ -8,6 +8,8 @@
 
 #include "soundsystem/ISoundSystem.hpp"
 
+#include "ui/StateSnapshot.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
@@ -27,6 +29,7 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 	_ui.PitchFramerateAmplitude->setEnabled(_asset->GetScene()->GetEntityContext()->SoundSystem->IsSoundAvailable());
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelSequencesPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelSequencesPanel::OnLoadSnapshot);
 
 	connect(_ui.SequenceComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelSequencesPanel::OnSequenceChanged);
 	connect(_ui.LoopingModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelSequencesPanel::OnLoopingModeChanged);
@@ -57,7 +60,22 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 	//Select the first page to make it clear it's the active page
 	_ui.PageSelectorList->setCurrentRow(0);
 
+	InitializeUI();
+}
+
+StudioModelSequencesPanel::~StudioModelSequencesPanel() = default;
+
+void StudioModelSequencesPanel::InitializeUI()
+{
+	auto entity = _asset->GetScene()->GetEntity();
+
+	const int sequenceIndex = entity->GetSequence();
+
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
+	this->setEnabled(!model->Sequences.empty());
+
+	_ui.SequenceComboBox->clear();
 
 	QStringList sequences;
 
@@ -69,9 +87,9 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 	}
 
 	_ui.SequenceComboBox->addItems(sequences);
-}
 
-StudioModelSequencesPanel::~StudioModelSequencesPanel() = default;
+	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex);
+}
 
 void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
@@ -148,11 +166,22 @@ void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
+void StudioModelSequencesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
+{
+	InitializeUI();
+
+	//Sequence index is restored by the asset, no need to do this here
+}
+
 void StudioModelSequencesPanel::InitializeBlenders(const BlendMode mode)
 {
 	auto entity = _asset->GetScene()->GetEntity();
 
-	const auto& sequence = *entity->GetEditableModel()->Sequences[entity->GetSequence()];
+	const int sequenceIndex = entity->GetSequence();
+
+	const studiomdl::Sequence emptySequence{};
+
+	const auto& sequence = sequenceIndex != -1 ? *entity->GetEditableModel()->Sequences[sequenceIndex] : emptySequence;
 
 	const float initialBlendValue = 0.f;
 
@@ -273,11 +302,17 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 {
 	auto entity = _asset->GetScene()->GetEntity();
 
-	entity->SetSequence(index);
+	//Don't reset the frame unless the sequence has actually changed
+	if (entity->GetSequence() != index)
+	{
+		entity->SetSequence(index);
+	}
 
-	const auto& sequence = *entity->GetEditableModel()->Sequences[index];
+	const studiomdl::Sequence emptySequence{};
 
-	const auto durationInSeconds = sequence.NumFrames / sequence.FPS;
+	const auto& sequence = index != -1 ? *entity->GetEditableModel()->Sequences[index] : emptySequence;
+
+	const auto durationInSeconds = sequence.FPS != 0 ? sequence.NumFrames / sequence.FPS : 0;
 
 	_ui.SequenceLabel->setText(QString::number(index));
 	_ui.FrameCountLabel->setText(QString::number(sequence.NumFrames));

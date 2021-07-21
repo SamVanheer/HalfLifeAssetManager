@@ -4,8 +4,11 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "ui/StateSnapshot.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelDockHelpers.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelHitboxesPanel.hpp"
 
 namespace ui::assets::studiomodel
@@ -34,6 +37,8 @@ StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset, QWid
 	}
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelHitboxesPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &StudioModelHitboxesPanel::OnSaveSnapshot);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelHitboxesPanel::OnLoadSnapshot);
 
 	connect(_ui.Hitboxes, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelHitboxesPanel::OnHitboxChanged);
 	connect(_ui.HighlightHitbox, &QCheckBox::stateChanged, this, &StudioModelHitboxesPanel::OnHighlightHitboxChanged);
@@ -49,6 +54,13 @@ StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.MaximumY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelHitboxesPanel::OnBoundsChanged);
 	connect(_ui.MaximumZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelHitboxesPanel::OnBoundsChanged);
 
+	InitializeUI();
+}
+
+StudioModelHitboxesPanel::~StudioModelHitboxesPanel() = default;
+
+void StudioModelHitboxesPanel::InitializeUI()
+{
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	this->setEnabled(!model->Hitboxes.empty());
@@ -65,11 +77,14 @@ StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset, QWid
 			bones.append(QString{"%1 (%2)"}.arg(model->Bones[i]->Name.c_str()).arg(i));
 		}
 
+		_ui.Bone->clear();
 		_ui.Bone->addItems(bones);
 
 		//Start off with nothing selected
 		_ui.Bone->setCurrentIndex(-1);
 	}
+
+	_ui.Hitboxes->clear();
 
 	if (!model->Hitboxes.empty())
 	{
@@ -85,8 +100,6 @@ StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset, QWid
 		_ui.Hitboxes->addItems(hitboxes);
 	}
 }
-
-StudioModelHitboxesPanel::~StudioModelHitboxesPanel() = default;
 
 void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
@@ -170,13 +183,27 @@ void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
+void StudioModelHitboxesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
+{
+	snapshot->SetValue("hitboxes.hitbox", _ui.Hitboxes->currentIndex());
+}
+
+void StudioModelHitboxesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
+{
+	InitializeUI();
+
+	SetRestoredModelIndex(snapshot->Value("hitboxes.hitbox").toInt(), _asset->GetScene()->GetEntity()->GetEditableModel()->Hitboxes.size(), *_ui.Hitboxes);
+}
+
 void StudioModelHitboxesPanel::UpdateQCString()
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	if (!model->Hitboxes.empty())
+	const int index = _ui.Hitboxes->currentIndex();
+
+	if (index != -1)
 	{
-		const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
+		const auto& hitbox = *model->Hitboxes[index];
 
 		_ui.QCString->setText(QString{"$hbox %1 \"%2\" %3 %4 %5 %6 %7 %8"}
 			.arg(hitbox.Group)
@@ -204,7 +231,10 @@ void StudioModelHitboxesPanel::OnDockPanelChanged(QWidget* current, QWidget* pre
 void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-	const auto& hitbox = *model->Hitboxes[index];
+
+	constexpr studiomdl::Hitbox emptyHitbox{};
+
+	const auto& hitbox = index != -1 ? *model->Hitboxes[index] : emptyHitbox;
 
 	{
 		const QSignalBlocker bone{_ui.Bone};
@@ -218,7 +248,7 @@ void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 		const QSignalBlocker maximumY{_ui.MaximumY};
 		const QSignalBlocker maximumZ{_ui.MaximumZ};
 
-		_ui.Bone->setCurrentIndex(hitbox.Bone->ArrayIndex);
+		_ui.Bone->setCurrentIndex(hitbox.Bone ? hitbox.Bone->ArrayIndex : -1);
 
 		_ui.Hitgroup->setValue(hitbox.Group);
 

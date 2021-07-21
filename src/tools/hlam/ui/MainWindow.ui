@@ -27,6 +27,8 @@
     <property name="title">
      <string>Tools</string>
     </property>
+    <addaction name="ActionRefresh"/>
+    <addaction name="separator"/>
     <addaction name="ActionOptions"/>
    </widget>
    <widget class="QMenu" name="MenuFile">
@@ -144,6 +146,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="ActionRefresh">
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
    </property>
   </action>
  </widget>

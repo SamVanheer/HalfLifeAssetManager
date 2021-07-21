@@ -10,6 +10,7 @@ namespace studiomdl
 {
 EditableStudioModel::~EditableStudioModel()
 {
+	//TODO: need to be sure the context is valid when this is done
 	for (auto& texture : Textures)
 	{
 		glDeleteTextures(1, &texture->TextureId);

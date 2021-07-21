@@ -5,6 +5,8 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "ui/StateSnapshot.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/StudioModelValidators.hpp"
@@ -71,6 +73,8 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 	connect(_ui.Bones, qOverload<int>(&QComboBox::currentIndexChanged), boneNameValidator, &UniqueBoneNameValidator::SetCurrentIndex);
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelBonesPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &StudioModelBonesPanel::OnSaveSnapshot);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelBonesPanel::OnLoadSnapshot);
 
 	connect(_ui.Bones, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBonesPanel::OnBoneChanged);
 	connect(_ui.HighlightBone, &QCheckBox::stateChanged, this, &StudioModelBonesPanel::OnHightlightBoneChanged);
@@ -103,6 +107,13 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 	connect(_ui.BoneControllerAxis, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBonesPanel::OnBoneControllerAxisChanged);
 	connect(_ui.BoneController, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBonesPanel::OnBoneControllerChanged);
 
+	InitializeUI();
+}
+
+StudioModelBonesPanel::~StudioModelBonesPanel() = default;
+
+void StudioModelBonesPanel::InitializeUI()
+{
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
 	this->setEnabled(!model->Bones.empty());
@@ -122,6 +133,7 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 	{
 		const QSignalBlocker blocker{_ui.ParentBone};
 
+		_ui.ParentBone->clear();
 		_ui.ParentBone->addItems(bones);
 
 		//Start off with nothing selected
@@ -130,6 +142,7 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 
 	bones.removeAt(0);
 
+	_ui.Bones->clear();
 	_ui.Bones->addItems(bones);
 
 	//Select the first property to make it clear it's the active page
@@ -149,12 +162,11 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 	{
 		const QSignalBlocker blocker{_ui.BoneController};
 
+		_ui.BoneController->clear();
 		_ui.BoneController->addItems(boneControllers);
 		_ui.BoneController->setCurrentIndex(0);
 	}
 }
-
-StudioModelBonesPanel::~StudioModelBonesPanel() = default;
 
 void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
@@ -268,6 +280,38 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
+void StudioModelBonesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
+{
+	if (const int index = _ui.Bones->currentIndex(); index != -1)
+	{
+		const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
+		snapshot->SetValue("bones.bone", QString::fromStdString(model->Bones[index]->Name));
+	}
+}
+
+void StudioModelBonesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
+{
+	InitializeUI();
+
+	if (auto bone = snapshot->Value("bones.bone"); bone.isValid())
+	{
+		const auto boneName = bone.toString().toStdString();
+
+		const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
+		if (auto it = std::find_if(model->Bones.begin(), model->Bones.end(), [&](const auto& bone)
+			{
+				return bone->Name == boneName;
+			}); it != model->Bones.end())
+		{
+			const auto index = it - model->Bones.begin();
+
+			_ui.Bones->setCurrentIndex(index);
+		}
+	}
+}
+
 void StudioModelBonesPanel::OnDockPanelChanged(QWidget* current, QWidget* previous)
 {
 	_isActive = current == this;
@@ -278,7 +322,12 @@ void StudioModelBonesPanel::OnDockPanelChanged(QWidget* current, QWidget* previo
 void StudioModelBonesPanel::OnBoneChanged(int index)
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-	const auto& bone = *model->Bones[index];
+
+	const bool isValidBone = index != -1;
+
+	const studiomdl::Bone emptyBone{};
+
+	const auto& bone = isValidBone ? *model->Bones[index] : emptyBone;
 
 	{
 		const QSignalBlocker boneName{_ui.BoneName};
@@ -378,10 +427,17 @@ void StudioModelBonesPanel::OnBoneControllerAxisChanged(int index)
 {
 	const QSignalBlocker controller{_ui.BoneController};
 
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
+	const int boneIndex = _ui.Bones->currentIndex();
 
-	if (index != -1 && bone.Axes[index].Controller)
+	const bool isValidBone = boneIndex != -1;
+
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
+	const studiomdl::Bone emptyBone{};
+
+	const auto& bone = isValidBone  ? *model->Bones[boneIndex] : emptyBone;
+
+	if (isValidBone && index != -1 && bone.Axes[index].Controller)
 	{
 		_ui.BoneController->setCurrentIndex(bone.Axes[index].Controller->ArrayIndex + BoneControllerOffset);
 	}

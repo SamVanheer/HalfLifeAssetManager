@@ -4,6 +4,8 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "ui/StateSnapshot.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
 
@@ -16,6 +18,7 @@ Timeline::Timeline(StudioModelAsset* asset, QWidget* parent)
 	_ui.setupUi(this);
 
 	connect(_asset, &StudioModelAsset::Tick, this, &Timeline::OnTick);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &Timeline::OnLoadSnapshot);
 
 	connect(_ui.FrameSlider, &QSlider::valueChanged, this, &Timeline::OnFrameSliderChanged);
 	connect(_ui.FrameSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Timeline::OnFrameSpinnerChanged);
@@ -49,9 +52,28 @@ Timeline::Timeline(StudioModelAsset* asset, QWidget* parent)
 
 	_ui.FramerateSlider->setValue(SpeedDefault * SpeedSliderMultiplier);
 	_ui.FramerateSpinner->setValue(SpeedDefault);
+
+	InitializeUI();
 }
 
 Timeline::~Timeline() = default;
+
+void Timeline::InitializeUI()
+{
+	auto entity = _asset->GetScene()->GetEntity();
+	auto model = entity->GetEditableModel();
+
+	const int sequenceIndex = entity->GetSequence();
+
+	const bool hasValidSequence = sequenceIndex >= 0 && sequenceIndex < model->Sequences.size();
+
+	this->setEnabled(hasValidSequence);
+
+	if (!hasValidSequence)
+	{
+		SetFrame(0, false);
+	}
+}
 
 void Timeline::SetFrame(double value, bool updateEntity)
 {
@@ -105,11 +127,22 @@ void Timeline::ModifyFrame(int amount)
 void Timeline::OnTick()
 {
 	auto entity = _asset->GetScene()->GetEntity();
+	auto model = entity->GetEditableModel();
 
-	const auto& sequence = *entity->GetEditableModel()->Sequences[entity->GetSequence()];
+	const int sequenceIndex = entity->GetSequence();
 
 	//TODO: need to make sure the last frame can be correctly set and played
-	const int frameRange = sequence.NumFrames - 1;
+	int frameRange;
+
+	if (sequenceIndex != -1)
+	{
+		const auto& sequence = *model->Sequences[sequenceIndex];
+		frameRange = sequence.NumFrames - 1;
+	}
+	else
+	{
+		frameRange = 1;
+	}
 
 	const int sliderRange = frameRange * FrameSliderRangeMultiplier;
 
@@ -118,7 +151,7 @@ void Timeline::OnTick()
 		_ui.FrameSlider->setRange(0, frameRange * FrameSliderRangeMultiplier);
 	}
 
-	if (frameRange != _ui.FramerateSpinner->maximum())
+	if (frameRange != _ui.FrameSpinner->maximum())
 	{
 		_ui.FrameSpinner->setRange(0, frameRange);
 	}
@@ -131,6 +164,11 @@ void Timeline::OnTick()
 	{
 		SetFrame(frame, false);
 	}
+}
+
+void Timeline::OnLoadSnapshot(StateSnapshot* snapshot)
+{
+	InitializeUI();
 }
 
 void Timeline::OnFrameSliderChanged()

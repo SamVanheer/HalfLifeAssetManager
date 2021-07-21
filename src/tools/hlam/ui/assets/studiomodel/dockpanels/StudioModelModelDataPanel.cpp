@@ -5,6 +5,8 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "ui/StateSnapshot.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDataPanel.hpp"
@@ -47,6 +49,7 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	_ui.CBoxMax->SetPrefix("Max ");
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelModelDataPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelModelDataPanel::OnLoadSnapshot);
 
 	connect(_ui.Origin, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnOriginChanged);
 	connect(_ui.SetOrigin, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnOriginChanged);
@@ -92,30 +95,7 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	_ui.HitboxCollision->setProperty(CheckBoxModelFlagProperty.data(), EF_HITBOXCOLLISIONS);
 	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty.data(), EF_FORCESKYLIGHT);
 
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-
-	SetFlags(model->Flags);
-
-	{
-		const QSignalBlocker blocker{_ui.EyePosition};
-		_ui.EyePosition->SetValue(model->EyePosition);
-	}
-
-	{
-		const QSignalBlocker min{_ui.BBoxMin};
-		const QSignalBlocker max{_ui.BBoxMax};
-
-		_ui.BBoxMin->SetValue(model->BoundingMin);
-		_ui.BBoxMax->SetValue(model->BoundingMax);
-	}
-
-	{
-		const QSignalBlocker min{_ui.CBoxMin};
-		const QSignalBlocker max{_ui.CBoxMax};
-
-		_ui.CBoxMin->SetValue(model->ClippingMin);
-		_ui.CBoxMax->SetValue(model->ClippingMax);
-	}
+	InitializeUI();
 
 	_ui.PagesList->setCurrentRow(0);
 }
@@ -179,6 +159,39 @@ void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 		SetFlags(_asset->GetScene()->GetEntity()->GetEditableModel()->Flags);
 		break;
 	}
+	}
+}
+
+void StudioModelModelDataPanel::OnLoadSnapshot(StateSnapshot* snapshot)
+{
+	InitializeUI();
+}
+
+void StudioModelModelDataPanel::InitializeUI()
+{
+	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
+	SetFlags(model->Flags);
+
+	{
+		const QSignalBlocker blocker{_ui.EyePosition};
+		_ui.EyePosition->SetValue(model->EyePosition);
+	}
+
+	{
+		const QSignalBlocker min{_ui.BBoxMin};
+		const QSignalBlocker max{_ui.BBoxMax};
+
+		_ui.BBoxMin->SetValue(model->BoundingMin);
+		_ui.BBoxMax->SetValue(model->BoundingMax);
+	}
+
+	{
+		const QSignalBlocker min{_ui.CBoxMin};
+		const QSignalBlocker max{_ui.CBoxMax};
+
+		_ui.CBoxMin->SetValue(model->ClippingMin);
+		_ui.CBoxMax->SetValue(model->ClippingMax);
 	}
 }
 

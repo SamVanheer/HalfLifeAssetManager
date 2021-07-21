@@ -119,6 +119,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnGoFullscreen);
 
+	connect(_ui.ActionRefresh, &QAction::triggered, this, &MainWindow::OnRefreshAsset);
+
 	connect(_ui.ActionOptions, &QAction::triggered, this, &MainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &MainWindow::OnShowAbout);
 
@@ -210,8 +212,10 @@ bool MainWindow::TryLoadAsset(QString fileName)
 
 			_assetTabs->setCurrentIndex(index);
 
+			//TODO: this is duplicated between this and TryCloseAsset
 			_assetTabs->setVisible(true);
 			_ui.ActionFullscreen->setEnabled(true);
+			_ui.ActionRefresh->setEnabled(true);
 
 			_editorContext->GetRecentFiles()->Add(fileName);
 
@@ -355,6 +359,7 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges)
 
 	_assetTabs->setVisible(hasOpenAssets);
 	_ui.ActionFullscreen->setEnabled(hasOpenAssets);
+	_ui.ActionRefresh->setEnabled(hasOpenAssets);
 
 	return true;
 }
@@ -531,6 +536,20 @@ void MainWindow::OnGoFullscreen()
 void MainWindow::OnFileSelected(const QString& fileName)
 {
 	TryLoadAsset(fileName);
+}
+
+void MainWindow::OnRefreshAsset()
+{
+	if (auto asset = GetCurrentAsset(); asset)
+	{
+		if (!VerifyNoUnsavedChanges(asset))
+		{
+			//User canceled, abort refresh
+			return;
+		}
+
+		asset->TryRefresh();
+	}
 }
 
 void MainWindow::OnOpenOptionsDialog()

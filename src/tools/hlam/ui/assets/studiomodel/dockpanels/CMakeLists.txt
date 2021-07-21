@@ -15,6 +15,7 @@ target_sources(HLAM
 		StudioModelBonesPanel.cpp
 		StudioModelBonesPanel.hpp
 		StudioModelBonesPanel.ui
+		StudioModelDockHelpers.hpp
 		StudioModelExportUVMeshDialog.hpp
 		StudioModelExportUVMeshDialog.cpp
 		StudioModelExportUVMeshDialog.ui

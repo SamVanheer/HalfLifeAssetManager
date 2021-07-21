@@ -4,7 +4,11 @@
 
 #include "ui_StudioModelHitboxesPanel.h"
 
-namespace ui::assets::studiomodel
+namespace ui
+{
+class StateSnapshot;
+
+namespace assets::studiomodel
 {
 class ModelChangeEvent;
 class StudioModelAsset;
@@ -16,6 +20,8 @@ public:
 	~StudioModelHitboxesPanel();
 
 private:
+	void InitializeUI();
+
 	void UpdateQCString();
 
 public slots:
@@ -23,6 +29,9 @@ public slots:
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnSaveSnapshot(StateSnapshot* snapshot);
+	void OnLoadSnapshot(StateSnapshot* snapshot);
 
 	void OnHitboxChanged(int index);
 
@@ -40,4 +49,5 @@ private:
 
 	bool _isActive{false};
 };
+}
 }

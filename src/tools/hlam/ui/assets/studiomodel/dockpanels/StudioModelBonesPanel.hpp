@@ -4,7 +4,10 @@
 
 #include "ui_StudioModelBonesPanel.h"
 
-namespace ui::assets::studiomodel
+namespace ui
+{
+class StateSnapshot;
+namespace assets::studiomodel
 {
 class ModelChangeEvent;
 class StudioModelAsset;
@@ -15,11 +18,17 @@ public:
 	StudioModelBonesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelBonesPanel();
 
+private:
+	void InitializeUI();
+
 public slots:
 	void OnDockPanelChanged(QWidget* current, QWidget* previous);
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnSaveSnapshot(StateSnapshot* snapshot);
+	void OnLoadSnapshot(StateSnapshot* snapshot);
 
 	void OnBoneChanged(int index);
 	void OnHightlightBoneChanged();
@@ -43,4 +52,5 @@ private:
 
 	bool _isActive{false};
 };
+}
 }

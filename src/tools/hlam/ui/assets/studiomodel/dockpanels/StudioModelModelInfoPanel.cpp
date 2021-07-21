@@ -2,6 +2,8 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "ui/StateSnapshot.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelInfoPanel.hpp"
 
@@ -13,6 +15,17 @@ StudioModelModelInfoPanel::StudioModelModelInfoPanel(StudioModelAsset* asset, QW
 {
 	_ui.setupUi(this);
 
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelModelInfoPanel::OnLoadSnapshot);
+
+	InitializeUI();
+
+	//TODO: listen to changes made to the model to update values
+}
+
+StudioModelModelInfoPanel::~StudioModelModelInfoPanel() = default;
+
+void StudioModelModelInfoPanel::InitializeUI()
+{
 	auto entity = _asset->GetScene()->GetEntity();
 	auto model = entity->GetEditableModel();
 
@@ -27,9 +40,10 @@ StudioModelModelInfoPanel::StudioModelModelInfoPanel(StudioModelAsset* asset, QW
 	_ui.BodyPartsValue->setText(QString::number(model->Bodyparts.size()));
 	_ui.AttachmentsValue->setText(QString::number(model->Attachments.size()));
 	_ui.TransitionsValue->setText(QString::number(model->Transitions.size()));
-
-	//TODO: listen to changes made to the model to update values
 }
 
-StudioModelModelInfoPanel::~StudioModelModelInfoPanel() = default;
+void StudioModelModelInfoPanel::OnLoadSnapshot(StateSnapshot* snapshot)
+{
+	InitializeUI();
+}
 }

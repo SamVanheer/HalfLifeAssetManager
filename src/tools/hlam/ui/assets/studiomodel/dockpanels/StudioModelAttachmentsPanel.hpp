@@ -4,7 +4,11 @@
 
 #include "ui_StudioModelAttachmentsPanel.h"
 
-namespace ui::assets::studiomodel
+namespace ui
+{
+class StateSnapshot;
+
+namespace assets::studiomodel
 {
 class ModelChangeEvent;
 class StudioModelAsset;
@@ -16,6 +20,8 @@ public:
 	~StudioModelAttachmentsPanel();
 
 private:
+	void InitializeUI();
+
 	void UpdateQCString();
 
 public slots:
@@ -23,6 +29,9 @@ public slots:
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnSaveSnapshot(StateSnapshot* snapshot);
+	void OnLoadSnapshot(StateSnapshot* snapshot);
 
 	void OnAttachmentChanged(int index);
 	void OnHighlightAttachmentChanged();
@@ -41,4 +50,5 @@ private:
 
 	bool _isActive{false};
 };
+}
 }

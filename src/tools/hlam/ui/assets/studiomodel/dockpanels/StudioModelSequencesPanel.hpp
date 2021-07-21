@@ -8,7 +8,11 @@
 
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
-namespace ui::assets::studiomodel
+namespace ui
+{
+class StateSnapshot;
+
+namespace assets::studiomodel
 {
 class ModelChangeEvent;
 class StudioModelAsset;
@@ -32,12 +36,16 @@ private:
 		Spinner
 	};
 
+	void InitializeUI();
+
 	void InitializeBlenders(const BlendMode mode);
 
 	void UpdateBlendValue(int blender, BlendUpdateSource source, QSlider* slider, QDoubleSpinBox* spinner);
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnLoadSnapshot(StateSnapshot* snapshot);
 
 	void OnSequenceChanged(int index);
 
@@ -71,4 +79,5 @@ private:
 
 	double _blendsScales[SequenceBlendCount]{};
 };
+}
 }

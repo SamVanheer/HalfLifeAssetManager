@@ -85,6 +85,8 @@ private slots:
 
 	void OnFileSelected(const QString& fileName);
 
+	void OnRefreshAsset();
+
 	void OnOpenOptionsDialog();
 
 	void OnShowAbout();

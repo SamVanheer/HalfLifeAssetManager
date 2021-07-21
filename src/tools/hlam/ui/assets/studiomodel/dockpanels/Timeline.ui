@@ -27,7 +27,7 @@
     <number>1</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="FrameBox">
      <property name="title">
       <string/>
      </property>
@@ -90,7 +90,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="FrameControlsBox">
      <property name="title">
       <string/>
      </property>
@@ -171,7 +171,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="FramerateBox">
      <property name="title">
       <string/>
      </property>

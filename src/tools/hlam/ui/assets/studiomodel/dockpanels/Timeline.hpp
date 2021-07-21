@@ -4,7 +4,11 @@
 
 #include "ui_Timeline.h"
 
-namespace ui::assets::studiomodel
+namespace ui
+{
+class StateSnapshot;
+
+namespace assets::studiomodel
 {
 class StudioModelAsset;
 
@@ -25,6 +29,8 @@ public:
 	~Timeline();
 
 private:
+	void InitializeUI();
+
 	void SetFrame(double value, bool updateEntity);
 	void SetFramerate(double value);
 
@@ -32,6 +38,8 @@ private:
 
 private slots:
 	void OnTick();
+
+	void OnLoadSnapshot(StateSnapshot* snapshot);
 
 	void OnFrameSliderChanged();
 	void OnFrameSpinnerChanged();
@@ -54,4 +62,5 @@ private:
 
 	StudioModelAsset* const _asset;
 };
+}
 }

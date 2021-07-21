@@ -5,10 +5,13 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "ui/StateSnapshot.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/StudioModelValidators.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelDockHelpers.hpp"
 
 namespace ui::assets::studiomodel
 {
@@ -39,6 +42,8 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset
 	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), attachmentNameValidator, &UniqueAttachmentNameValidator::SetCurrentIndex);
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelAttachmentsPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &StudioModelAttachmentsPanel::OnSaveSnapshot);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelAttachmentsPanel::OnLoadSnapshot);
 
 	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelAttachmentsPanel::OnAttachmentChanged);
 	connect(_ui.HighlightAttachment, &QCheckBox::stateChanged, this, &StudioModelAttachmentsPanel::OnHighlightAttachmentChanged);
@@ -53,41 +58,7 @@ StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset
 	connect(_ui.OriginY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
 	connect(_ui.OriginZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelAttachmentsPanel::OnOriginChanged);
 
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-
-	this->setEnabled(!model->Attachments.empty());
-
-	{
-		const QSignalBlocker blocker{_ui.Bone};
-
-		QStringList bones;
-
-		bones.reserve(model->Bones.size());
-
-		for (int i = 0; i < model->Bones.size(); ++i)
-		{
-			bones.append(QString{"%1 (%2)"}.arg(model->Bones[i]->Name.c_str()).arg(i));
-		}
-
-		_ui.Bone->addItems(bones);
-
-		//Start off with nothing selected
-		_ui.Bone->setCurrentIndex(-1);
-	}
-
-	if (!model->Attachments.empty())
-	{
-		QStringList attachments;
-
-		attachments.reserve(model->Attachments.size());
-
-		for (int i = 0; i < model->Attachments.size(); ++i)
-		{
-			attachments.append(QString{"Attachment %1"}.arg(i + 1));
-		}
-
-		_ui.Attachments->addItems(attachments);
-	}
+	InitializeUI();
 }
 
 StudioModelAttachmentsPanel::~StudioModelAttachmentsPanel() = default;
@@ -186,13 +157,71 @@ void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
+void StudioModelAttachmentsPanel::OnSaveSnapshot(StateSnapshot* snapshot)
+{
+	snapshot->SetValue("attachments.attachment", _ui.Attachments->currentIndex());
+}
+
+void StudioModelAttachmentsPanel::OnLoadSnapshot(StateSnapshot* snapshot)
+{
+	InitializeUI();
+
+	SetRestoredModelIndex(
+		snapshot->Value("attachments.attachment").toInt(), _asset->GetScene()->GetEntity()->GetEditableModel()->Attachments.size(), *_ui.Attachments);
+}
+
+void StudioModelAttachmentsPanel::InitializeUI()
+{
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
+	this->setEnabled(!model->Attachments.empty());
+
+	{
+		const QSignalBlocker blocker{_ui.Bone};
+
+		_ui.Bone->clear();
+
+		QStringList bones;
+
+		bones.reserve(model->Bones.size());
+
+		for (int i = 0; i < model->Bones.size(); ++i)
+		{
+			bones.append(QString{"%1 (%2)"}.arg(model->Bones[i]->Name.c_str()).arg(i));
+		}
+
+		_ui.Bone->addItems(bones);
+
+		//Start off with nothing selected
+		_ui.Bone->setCurrentIndex(-1);
+	}
+
+	_ui.Attachments->clear();
+
+	if (!model->Attachments.empty())
+	{
+		QStringList attachments;
+
+		attachments.reserve(model->Attachments.size());
+
+		for (int i = 0; i < model->Attachments.size(); ++i)
+		{
+			attachments.append(QString{"Attachment %1"}.arg(i + 1));
+		}
+
+		_ui.Attachments->addItems(attachments);
+	}
+}
+
 void StudioModelAttachmentsPanel::UpdateQCString()
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	if (!model->Attachments.empty())
+	const int index = _ui.Attachments->currentIndex();
+
+	if (index != -1)
 	{
-		const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
+		const auto& attachment = *model->Attachments[index];
 
 		_ui.QCString->setText(QString{"$attachment %1 \"%2\" %3 %4 %5"}
 			.arg(_ui.Attachments->currentIndex())
@@ -217,7 +246,10 @@ void StudioModelAttachmentsPanel::OnDockPanelChanged(QWidget* current, QWidget* 
 void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
+
+	const studiomdl::Attachment emptyAttachment{};
+
+	const auto& attachment = index != -1 ? *model->Attachments[index] : emptyAttachment;
 
 	{
 		const QSignalBlocker name{_ui.Name};
@@ -229,7 +261,7 @@ void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 
 		_ui.Name->setText(attachment.Name.c_str());
 		_ui.Type->setValue(attachment.Type);
-		_ui.Bone->setCurrentIndex(attachment.Bone->ArrayIndex);
+		_ui.Bone->setCurrentIndex(attachment.Bone ? attachment.Bone->ArrayIndex : -1);
 
 		_ui.OriginX->setValue(attachment.Origin[0]);
 		_ui.OriginY->setValue(attachment.Origin[1]);
