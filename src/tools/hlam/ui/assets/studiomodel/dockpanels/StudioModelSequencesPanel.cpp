@@ -168,13 +168,22 @@ void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 void StudioModelSequencesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 {
+	auto entity = _asset->GetScene()->GetEntity();
+	const float xValue = entity->GetBlendingValue(0);
+	const float yValue = entity->GetBlendingValue(1);
+
 	InitializeUI();
 
 	//Sequence index is restored by the asset, no need to do this here
+
+	//Reset blend values
+	InitializeBlenders(xValue, yValue);
 }
 
-void StudioModelSequencesPanel::InitializeBlenders(const BlendMode mode)
+void StudioModelSequencesPanel::InitializeBlenders(float initialXValue, float initialYValue)
 {
+	const StudioBlendMode mode = static_cast<StudioBlendMode>(_ui.BlendMode->currentIndex());
+
 	auto entity = _asset->GetScene()->GetEntity();
 
 	const int sequenceIndex = entity->GetSequence();
@@ -183,18 +192,10 @@ void StudioModelSequencesPanel::InitializeBlenders(const BlendMode mode)
 
 	const auto& sequence = sequenceIndex != -1 ? *entity->GetEditableModel()->Sequences[sequenceIndex] : emptySequence;
 
-	const float initialBlendValue = 0.f;
+	entity->SetBlendMode(mode);
 
-	if (mode == BlendMode::CounterStrike)
-	{
-		entity->SetCounterStrikeBlending(0, initialBlendValue);
-		entity->SetCounterStrikeBlending(1, initialBlendValue);
-	}
-	else
-	{
-		entity->SetBlending(0, initialBlendValue);
-		entity->SetBlending(1, initialBlendValue);
-	}
+	entity->SetBlending(0, initialXValue);
+	entity->SetBlending(1, initialYValue);
 
 	QSlider* const sliders[] =
 	{
@@ -208,9 +209,15 @@ void StudioModelSequencesPanel::InitializeBlenders(const BlendMode mode)
 		_ui.BlendYSpinner
 	};
 
+	const float initialValues[] =
+	{
+		initialXValue,
+		initialYValue
+	};
+
 	for (int blender = 0; blender < SequenceBlendCount; ++blender)
 	{
-		const auto hasBlender = mode == BlendMode::CounterStrike || sequence.BlendData[blender].Type != 0;
+		const auto hasBlender = mode == StudioBlendMode::CounterStrike || sequence.BlendData[blender].Type != 0;
 
 		const auto slider = sliders[blender];
 
@@ -220,7 +227,7 @@ void StudioModelSequencesPanel::InitializeBlenders(const BlendMode mode)
 		{
 			float start, end;
 
-			if (mode == BlendMode::CounterStrike)
+			if (mode == StudioBlendMode::CounterStrike)
 			{
 				start = studiomdl::CounterStrikeBlendRanges[blender].Start;
 				end = studiomdl::CounterStrikeBlendRanges[blender].End;
@@ -252,7 +259,7 @@ void StudioModelSequencesPanel::InitializeBlenders(const BlendMode mode)
 			}
 
 			//Using this avoids the lossy round trip, which makes the value more accurate
-			const auto value = initialBlendValue;
+			const auto value = initialValues[blender];
 
 			slider->setRange(static_cast<int>(start * _blendsScales[blender]), static_cast<int>(end * _blendsScales[blender]));
 			slider->setValue(value * _blendsScales[blender]);
@@ -288,14 +295,7 @@ void StudioModelSequencesPanel::UpdateBlendValue(int blender, BlendUpdateSource 
 
 	auto entity = _asset->GetScene()->GetEntity();
 
-	if (static_cast<BlendMode>(_ui.BlendMode->currentIndex()) == BlendMode::CounterStrike)
-	{
-		entity->SetCounterStrikeBlending(blender, spinner->value());
-	}
-	else
-	{
-		entity->SetBlending(blender, spinner->value());
-	}
+	entity->SetBlending(blender, spinner->value());
 }
 
 void StudioModelSequencesPanel::OnSequenceChanged(int index)
@@ -303,7 +303,9 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 	auto entity = _asset->GetScene()->GetEntity();
 
 	//Don't reset the frame unless the sequence has actually changed
-	if (entity->GetSequence() != index)
+	const bool sequenceHasChanged = entity->GetSequence() != index;
+
+	if (sequenceHasChanged)
 	{
 		entity->SetSequence(index);
 	}
@@ -337,7 +339,10 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 
 	_ui.ActivityNameLabel->setText(QString{"%1 (%2)"}.arg(activityName).arg(sequence.Activity));
 
-	InitializeBlenders(static_cast<BlendMode>(_ui.BlendMode->currentIndex()));
+	if (sequenceHasChanged)
+	{
+		InitializeBlenders();
+	}
 
 	_ui.EventsComboBox->clear();
 
@@ -373,7 +378,7 @@ void StudioModelSequencesPanel::OnLoopingModeChanged(int index)
 
 void StudioModelSequencesPanel::OnBlendModeChanged(int index)
 {
-	InitializeBlenders(static_cast<BlendMode>(index));
+	InitializeBlenders();
 }
 
 void StudioModelSequencesPanel::OnBlendXSliderChanged()

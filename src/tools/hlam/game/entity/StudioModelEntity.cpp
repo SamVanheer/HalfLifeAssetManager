@@ -544,38 +544,19 @@ float StudioModelEntity::GetBlendingValue(const int blender) const
 
 	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
-	if (sequenceDescriptor.BlendData[blender].Type == 0)
+	if (!_blender->AlwaysHasBlender() && sequenceDescriptor.BlendData[blender].Type == 0)
 	{
 		return 0;
 	}
 
-	return static_cast<float>(_blending[blender] * (1.0 / 255.0)
-		* (static_cast<double>(sequenceDescriptor.BlendData[blender].End) - sequenceDescriptor.BlendData[blender].Start)
-		+ sequenceDescriptor.BlendData[blender].Start);
+	return _blendingValues[blender];
 }
 
-void StudioModelEntity::SetBlending(const int blender, float value)
+std::optional<byte> StudioModelEntity::StandardBlender::CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const
 {
-	if (!_editableModel)
-	{
-		return;
-	}
-
-	if (blender < 0 || blender >= STUDIO_MAX_BLENDERS)
-	{
-		return;
-	}
-
-	if (_sequence < 0 || _sequence >= _editableModel->Sequences.size())
-	{
-		return;
-	}
-
-	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
-
 	if (sequenceDescriptor.BlendData[blender].Type == 0)
 	{
-		return;
+		return {};
 	}
 
 	if (sequenceDescriptor.BlendData[blender].Type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
@@ -606,24 +587,54 @@ void StudioModelEntity::SetBlending(const int blender, float value)
 
 	setting = std::clamp(setting, 0, 255);
 
-	_blending[blender] = setting;
+	return setting;
 }
 
-void StudioModelEntity::SetCounterStrikeBlending(const int blender, float value)
+std::optional<byte> StudioModelEntity::CounterStrikeBlender::CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const
 {
 	switch (blender)
 	{
 	case SequenceBlendXIndex:
 	{
-		_blending[blender] = static_cast<byte>((180.0 + value) / 360.0 * 255.0);
-		break;
+		return static_cast<byte>((180.0 + value) / 360.0 * 255.0);
 	}
 
 	case SequenceBlendYIndex:
 	{
-		_blending[blender] = static_cast<byte>((45 + value) / 90.0 * 255.0);
-		break;
+		return static_cast<byte>((45 + value) / 90.0 * 255.0);
 	}
+	}
+
+	//Should never be reached
+	assert(!"Invalid blend index");
+	return {};
+}
+
+void StudioModelEntity::SetBlending(const int blender, float value)
+{
+	if (!_editableModel)
+	{
+		return;
+	}
+
+	if (blender < 0 || blender >= STUDIO_MAX_BLENDERS)
+	{
+		return;
+	}
+
+	if (_sequence < 0 || _sequence >= _editableModel->Sequences.size())
+	{
+		return;
+	}
+
+	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
+
+	const auto setting = _blender->CalculateBlend(sequenceDescriptor, blender, value);
+
+	if (setting.has_value())
+	{
+		_blending[blender] = setting.value();
+		_blendingValues[blender] = value;
 	}
 }
 

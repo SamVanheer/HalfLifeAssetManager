@@ -7,6 +7,7 @@
 #include "ui_StudioModelSequencesPanel.h"
 
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
+#include "game/entity/StudioModelEntity.hpp"
 
 namespace ui
 {
@@ -24,12 +25,6 @@ public:
 	~StudioModelSequencesPanel();
 
 private:
-	enum class BlendMode
-	{
-		Standard,
-		CounterStrike
-	};
-
 	enum class BlendUpdateSource
 	{
 		Slider,
@@ -38,7 +33,7 @@ private:
 
 	void InitializeUI();
 
-	void InitializeBlenders(const BlendMode mode);
+	void InitializeBlenders(float initialXValue = 0.f, float initialYValue = 0.f);
 
 	void UpdateBlendValue(int blender, BlendUpdateSource source, QSlider* slider, QDoubleSpinBox* spinner);
 

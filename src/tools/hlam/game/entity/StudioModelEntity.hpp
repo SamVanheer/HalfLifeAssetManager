@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+#include <optional>
 #include <vector>
 
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
@@ -16,6 +18,12 @@ enum class StudioLoopingMode
 	AlwaysLoop = 0,
 	NeverLoop,
 	UseSequenceSetting
+};
+
+enum class StudioBlendMode
+{
+	Standard,
+	CounterStrike
 };
 
 /**
@@ -82,11 +90,44 @@ private:
 	byte	_mouth = 0;				// mouth position
 	float _mouthValue = 0;
 	byte	_blending[STUDIO_MAX_BLENDERS] = {0, 0};			// animation blending
+	float _blendingValues[STUDIO_MAX_BLENDERS] = {};
 
 	float	_lastEventCheck = 0;				//Last time we checked for animation events.
 	float	_animTime = 0;				//Time when the frame was set.
 
 	StudioLoopingMode _loopingMode = StudioLoopingMode::AlwaysLoop;
+
+	struct IBlender
+	{
+		virtual StudioBlendMode GetBlendMode() const = 0;
+
+		virtual bool AlwaysHasBlender() const = 0;
+
+		virtual std::optional<byte> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const = 0;
+	};
+
+	struct StandardBlender final : public IBlender
+	{
+		StudioBlendMode GetBlendMode() const override final { return StudioBlendMode::Standard; }
+
+		bool AlwaysHasBlender() const override final { return false; }
+
+		std::optional<byte> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const override final;
+	};
+
+	struct CounterStrikeBlender final : public IBlender
+	{
+		StudioBlendMode GetBlendMode() const override final { return StudioBlendMode::CounterStrike; }
+
+		bool AlwaysHasBlender() const override final { return true; }
+
+		std::optional<byte> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const override final;
+	};
+
+	static constexpr StandardBlender StandardBlender{};
+	static constexpr CounterStrikeBlender CounterStrikeBlender{};
+
+	const IBlender* _blender = &StandardBlender;
 
 public:
 	/**
@@ -185,6 +226,28 @@ public:
 	*/
 	void SetMouth(float value);
 
+	void SetBlendMode(StudioBlendMode blendMode)
+	{
+		switch (blendMode)
+		{
+		case StudioBlendMode::Standard:
+		{
+			_blender = &StandardBlender;
+			break;
+		}
+
+		case StudioBlendMode::CounterStrike:
+		{
+			_blender = &CounterStrikeBlender;
+			break;
+		}
+
+		default:
+			assert(!"Invalid blend mode");
+			break;
+		}
+	}
+
 	/**
 	*	Gets the given blender by index. This is the stored value, not the computed value.
 	*	@param blender Blender to get.
@@ -203,8 +266,6 @@ public:
 	*	@param value Value to set.
 	*/
 	void SetBlending(const int blender, float value);
-
-	void SetCounterStrikeBlending(const int blender, float value);
 
 	/**
 	*	Gets the last event check. This is the end of the range used to check for animation events the last time DispatchAnimEvents was called.
