@@ -58,9 +58,9 @@ public:
 
 	QMenu* CreateToolMenu(EditorContext* editorContext) override;
 
-	bool CanLoad(const QString& fileName) const override;
+	bool CanLoad(const QString& fileName, FILE* file) const override;
 
-	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const override;
+	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) const override;
 
 	settings::StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
 

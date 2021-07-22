@@ -186,7 +186,7 @@ bool MainWindow::TryLoadAsset(QString fileName)
 
 	if (!QFile::exists(fileName))
 	{
-		QMessageBox::critical(this, "Error loading asset", QString{"Asset does not exist"});
+		QMessageBox::critical(this, "Error loading asset", QString{"Asset \"%1\" does not exist"}.arg(fileName));
 		return false;
 	}
 
@@ -223,12 +223,12 @@ bool MainWindow::TryLoadAsset(QString fileName)
 		}
 		else
 		{
-			QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset:\nNull asset returned"});
+			QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\nNull asset returned"}.arg(fileName));
 		}
 	}
 	catch (const ::assets::AssetException& e)
 	{
-		QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset:\n%1"}.arg(e.what()));
+		QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\n%2"}.arg(fileName).arg(e.what()));
 	}
 
 	return false;

@@ -227,7 +227,7 @@ void StudioModelAsset::TryRefresh()
 	try
 	{
 		const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
-		auto studioModel = studiomdl::LoadStudioModel(filePath);
+		auto studioModel = studiomdl::LoadStudioModel(filePath, nullptr);
 
 		_editableStudioModel = std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
 
@@ -615,17 +615,15 @@ QMenu* StudioModelAssetProvider::CreateToolMenu(EditorContext* editorContext)
 	return menu;
 }
 
-bool StudioModelAssetProvider::CanLoad(const QString& fileName) const
+bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) const
 {
-	//TODO: race condition: the file could be modified between this call and a call to LoadStudioModel
-	//Ideally the file is opened exactly once
-	return studiomdl::IsStudioModel(fileName.toStdString());
+	return studiomdl::IsStudioModel(file);
 }
 
-std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName) const
+std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName, FILE* file) const
 {
 	const auto filePath = std::filesystem::u8path(fileName.toStdString());
-	auto studioModel = studiomdl::LoadStudioModel(filePath);
+	auto studioModel = studiomdl::LoadStudioModel(filePath, file);
 
 	auto editableStudioModel = studiomdl::ConvertToEditable(*studioModel);
 

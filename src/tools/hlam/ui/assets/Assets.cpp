@@ -3,6 +3,7 @@
 
 #include "assets/AssetIO.hpp"
 #include "ui/assets/Assets.hpp"
+#include "utility/IOUtils.hpp"
 
 namespace ui::assets
 {
@@ -35,12 +36,22 @@ void AssetProviderRegistry::AddProvider(std::unique_ptr<AssetProvider>&& provide
 
 std::unique_ptr<Asset> AssetProviderRegistry::Load(EditorContext* editorContext, const QString& fileName) const
 {
+	std::unique_ptr<FILE, decltype(::fclose)*> file{utf8_exclusive_read_fopen(fileName.toStdString().c_str(), true), &::fclose};
+
+	if (!file)
+	{
+		throw ::assets::AssetException("Could not open asset: file does not exist or is currently opened by another program");
+	}
+
 	for (const auto& provider : _providers)
 	{
-		if (provider->CanLoad(fileName))
+		if (provider->CanLoad(fileName, file.get()))
 		{
-			return provider->Load(editorContext, fileName);
+			rewind(file.get());
+			return provider->Load(editorContext, fileName, file.get());
 		}
+
+		rewind(file.get());
 	}
 
 	throw ::assets::AssetException("File type not supported");

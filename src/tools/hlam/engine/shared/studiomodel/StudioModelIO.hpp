@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdio>
 #include <filesystem>
 #include <memory>
 
@@ -18,17 +19,18 @@ public:
 	using assets::AssetException::AssetException;
 };
 
-bool IsStudioModel(const std::string& fileName);
+bool IsStudioModel(FILE* file);
 
 /**
 *	@brief Loads a studio model
 *	@param fileName Name of the model to load. This is the entire path, including the extension
+*	@param mainFile Handle to the main file
 *	@exception assets::AssetNotFound If a file could not be found
 *	@exception assets::AssetInvalidFormat If a file has an invalid format
 *	@exception assets::AssetVersionDiffers If a file has the wrong studio version
 *	@exception StudioModelIsNotMainHeader If the filename specifies a studio model file that is not the main file
 */
-std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileName);
+std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileName, FILE* mainFile);
 
 /**
 *	Saves a studio model.

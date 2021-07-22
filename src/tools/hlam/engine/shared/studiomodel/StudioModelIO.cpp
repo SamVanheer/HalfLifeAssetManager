@@ -8,45 +8,49 @@
 
 namespace studiomdl
 {
-bool IsStudioModel(const std::string& fileName)
+bool IsStudioModel(FILE* file)
 {
-	bool isStudioModel = false;
-
-	if (FILE* file = utf8_fopen(fileName.c_str(), "rb"); file)
+	if (!file)
 	{
-		std::int32_t id;
-
-		if (fread(&id, sizeof(id), 1, file) == 1)
-		{
-			if (strncmp(reinterpret_cast<const char*>(&id), STUDIOMDL_HDR_ID, 4) == 0)
-			{
-				std::int32_t version;
-
-				if (fread(&version, sizeof(version), 1, file) == 1)
-				{
-					if (version == STUDIO_VERSION)
-					{
-						isStudioModel = true;
-					}
-				}
-			}
-		}
-
-		fclose(file);
+		return false;
 	}
 
-	return isStudioModel;
+	std::int32_t id;
+
+	if (fread(&id, sizeof(id), 1, file) != 1)
+	{
+		return false;
+	}
+
+	if (strncmp(reinterpret_cast<const char*>(&id), STUDIOMDL_HDR_ID, 4) != 0)
+	{
+		return false;
+	}
+
+	std::int32_t version;
+
+	if (fread(&version, sizeof(version), 1, file) != 1)
+	{
+		return false;
+	}
+
+	if (version != STUDIO_VERSION)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 namespace
 {
 template<typename T>
-studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, const bool bAllowSeqGroup, const bool externalTextures)
+studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* existingFile, const bool bAllowSeqGroup, const bool externalTextures)
 {
 	const std::string utf8FileName{fileName.u8string()};
 
 	// load the model
-	FILE* file = utf8_fopen(utf8FileName.c_str(), "rb");
+	FILE* file = existingFile ? existingFile : utf8_exclusive_read_fopen(utf8FileName.c_str(), true);
 
 	if (!file)
 	{
@@ -64,13 +68,13 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, const bool
 				loweredFileName.replace_filename(stem);
 				loweredFileName.replace_extension(fileName.extension());
 
-				file = utf8_fopen(loweredFileName.u8string().c_str(), "rb");
+				file = utf8_exclusive_read_fopen(loweredFileName.u8string().c_str(), true);
 			}
 		}
 
 		if (!file)
 		{
-			throw assets::AssetFileNotFound(std::string{"File \""} + utf8FileName + "\" not found");
+			throw assets::AssetFileNotFound(std::string{"File \""} + utf8FileName + "\" does not exist or is currently opened by another program");
 		}
 	}
 
@@ -83,7 +87,11 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, const bool
 	auto header = reinterpret_cast<T*>(buffer.get());
 
 	const size_t readCount = fread(header, size, 1, file);
-	fclose(file);
+
+	if (!existingFile)
+	{
+		fclose(file);
+	}
 
 	if (readCount != 1)
 	{
@@ -120,7 +128,7 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, const bool
 }
 }
 
-std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileName)
+std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileName, FILE* mainFile)
 {
 	std::filesystem::path baseFileName{fileName};
 
@@ -129,7 +137,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 	const auto isDol = fileName.extension() == ".dol";
 
 	//Load the model
-	auto mainHeader = LoadStudioHeader<studiohdr_t>(fileName, false, false);
+	auto mainHeader = LoadStudioHeader<studiohdr_t>(fileName, mainFile, false, false);
 
 	if (mainHeader->name[0] == '\0')
 	{
@@ -155,7 +163,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 
 		texturename += extension;
 
-		textureHeader = LoadStudioHeader<studiohdr_t>(texturename, true, true);
+		textureHeader = LoadStudioHeader<studiohdr_t>(texturename, nullptr, true, true);
 	}
 
 	std::vector<studio_ptr<studioseqhdr_t>> sequenceHeaders;
@@ -177,7 +185,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 				std::setfill('0') << std::setw(2) << i <<
 				std::setw(0) << suffix;
 
-			sequenceHeaders.emplace_back(LoadStudioHeader<studioseqhdr_t>(seqgroupname.str(), true, false));
+			sequenceHeaders.emplace_back(LoadStudioHeader<studioseqhdr_t>(seqgroupname.str(), nullptr, true, false));
 		}
 	}
 

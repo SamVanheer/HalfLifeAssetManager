@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdio>
 #include <memory>
 #include <string>
 #include <vector>
@@ -107,10 +108,10 @@ public:
 	*/
 	virtual QMenu* CreateToolMenu(EditorContext* editorContext) = 0;
 
-	virtual bool CanLoad(const QString& fileName) const = 0;
+	virtual bool CanLoad(const QString& fileName, FILE* file) const = 0;
 
 	//TODO: pass a filesystem object to resolve additional file locations with
-	virtual std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const = 0;
+	virtual std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) const = 0;
 };
 
 /**
