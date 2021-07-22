@@ -65,6 +65,6 @@ FILE* utf8_exclusive_read_fopen(const char* filename, bool asBinary)
 
 	return file;
 #else
-	return utf8_fopen(filename, "r");
+	return utf8_fopen(filename, asBinary ? "r" : "rb");
 #endif
 }
