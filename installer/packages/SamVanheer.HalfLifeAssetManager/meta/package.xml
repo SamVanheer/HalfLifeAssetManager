@@ -4,7 +4,7 @@
     <Description>Install Half-Life Asset Manager.</Description>
 	<ForcedInstallation>true</ForcedInstallation>
     <Version>1.2.0</Version>
-    <ReleaseDate>2021-04-03</ReleaseDate>
+    <ReleaseDate>2021-07-22</ReleaseDate>
     <Default>true</Default>
     <Script>installscript.qs</Script>
     <UserInterfaces>
