@@ -6,14 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>831</width>
-    <height>267</height>
+    <width>529</width>
+    <height>73</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -26,23 +29,73 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="verticalSpacing">
-    <number>0</number>
-   </property>
-   <item row="0" column="7">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+   <item>
+    <widget class="QListWidget" name="PagesList">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <property name="sizeHint" stdset="0">
+     <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>20</height>
+       <height>0</height>
       </size>
      </property>
-    </spacer>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+     </property>
+     <item>
+      <property name="text">
+       <string>Origin</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Scale</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Eye Position</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Bounding Box</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Clipping Box</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Model Flags</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Normals</string>
+      </property>
+     </item>
+    </widget>
    </item>
-   <item row="0" column="1" rowspan="2">
+   <item>
     <widget class="QStackedWidget" name="Pages">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -57,10 +110,13 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>6</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="OriginPage">
       <layout class="QGridLayout" name="gridLayout_3">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -101,6 +157,9 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="1">
+        <widget class="qt::widgets::Vector3Edit" name="Origin" native="true"/>
+       </item>
        <item row="0" column="2" rowspan="2">
         <spacer name="horizontalSpacer_6">
          <property name="orientation">
@@ -127,9 +186,6 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="1">
-        <widget class="qt::widgets::Vector3Edit" name="Origin" native="true"/>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="ScalePage">
@@ -149,6 +205,51 @@
        <property name="verticalSpacing">
         <number>0</number>
        </property>
+       <item row="1" column="0">
+        <widget class="QDoubleSpinBox" name="ScaleBonesSpinner">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="value">
+          <double>1.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="ScaleMesh">
+         <property name="text">
+          <string>Scale Mesh</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QDoubleSpinBox" name="ScaleMeshSpinner">
          <property name="sizePolicy">
@@ -174,55 +275,10 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="ScaleMesh">
-         <property name="text">
-          <string>Scale Mesh</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="1">
         <widget class="QPushButton" name="ScaleBones">
          <property name="text">
           <string>Scale Bones</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="0">
-        <widget class="QDoubleSpinBox" name="ScaleBonesSpinner">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="value">
-          <double>1.000000000000000</double>
          </property>
         </widget>
        </item>
@@ -654,85 +710,6 @@
       </layout>
      </widget>
     </widget>
-   </item>
-   <item row="0" column="0" rowspan="2">
-    <widget class="QListWidget" name="PagesList">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="verticalScrollBarPolicy">
-      <enum>Qt::ScrollBarAsNeeded</enum>
-     </property>
-     <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarAlwaysOff</enum>
-     </property>
-     <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
-     </property>
-     <item>
-      <property name="text">
-       <string>Origin</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Scale</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Eye Position</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Bounding Box</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Clipping Box</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Model Flags</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Normals</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

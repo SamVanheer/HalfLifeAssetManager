@@ -229,6 +229,8 @@ void StudioModelAttachmentsPanel::UpdateQCString()
 			.arg(attachment.Origin[0], 0, 'f', 6)
 			.arg(attachment.Origin[1], 0, 'f', 6)
 			.arg(attachment.Origin[2], 0, 'f', 6));
+
+		_ui.QCString->setCursorPosition(0);
 	}
 	else
 	{

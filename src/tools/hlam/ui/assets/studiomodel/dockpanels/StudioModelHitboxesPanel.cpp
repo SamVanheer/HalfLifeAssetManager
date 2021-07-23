@@ -214,6 +214,8 @@ void StudioModelHitboxesPanel::UpdateQCString()
 			.arg(hitbox.Max[0], 0, 'f', 6)
 			.arg(hitbox.Max[1], 0, 'f', 6)
 			.arg(hitbox.Max[2], 0, 'f', 6));
+
+		_ui.QCString->setCursorPosition(0);
 	}
 	else
 	{
