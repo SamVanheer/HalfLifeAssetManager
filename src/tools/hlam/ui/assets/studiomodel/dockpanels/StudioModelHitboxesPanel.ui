@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>941</width>
-    <height>80</height>
+    <height>62</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,6 +83,9 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
+     <property name="verticalSpacing">
+      <number>0</number>
+     </property>
      <item row="2" column="2">
       <widget class="QLabel" name="label_6">
        <property name="sizePolicy">
