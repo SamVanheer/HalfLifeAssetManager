@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>188</width>
+    <width>180</width>
     <height>75</height>
    </rect>
   </property>
@@ -38,7 +38,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>X:</string>
+      <string>X</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -88,7 +88,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Y:</string>
+      <string>Y</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

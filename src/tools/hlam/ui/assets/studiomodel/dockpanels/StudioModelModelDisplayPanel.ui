@@ -68,7 +68,7 @@
       <item row="2" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Opacity:</string>
+         <string>Opacity</string>
         </property>
        </widget>
       </item>
@@ -89,6 +89,9 @@
        <widget class="QLabel" name="OpacityValueLabel">
         <property name="text">
          <string>100%</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -517,7 +520,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Ground Texture Size:</string>
+         <string>Ground Texture Size</string>
         </property>
        </widget>
       </item>

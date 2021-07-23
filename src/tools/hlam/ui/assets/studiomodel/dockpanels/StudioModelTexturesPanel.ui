@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1334</width>
+    <width>1326</width>
     <height>88</height>
    </rect>
   </property>
@@ -239,7 +239,7 @@
        <item>
         <widget class="QLabel" name="label_9">
          <property name="text">
-          <string>Name:</string>
+          <string>Name</string>
          </property>
         </widget>
        </item>
@@ -270,7 +270,7 @@
      <item row="1" column="0" colspan="2">
       <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>Flags:</string>
+        <string>Flags</string>
        </property>
       </widget>
      </item>
@@ -617,7 +617,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Min:</string>
+         <string>Min</string>
         </property>
        </widget>
       </item>
@@ -630,7 +630,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Mipmap:</string>
+         <string>Mipmap</string>
         </property>
        </widget>
       </item>
@@ -643,7 +643,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Mag:</string>
+         <string>Mag</string>
         </property>
        </widget>
       </item>

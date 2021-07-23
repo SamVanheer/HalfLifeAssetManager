@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>864</width>
+    <width>860</width>
     <height>73</height>
    </rect>
   </property>
@@ -893,7 +893,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Axis:</string>
+         <string>Axis</string>
         </property>
        </widget>
       </item>
@@ -906,7 +906,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Controller:</string>
+         <string>Controller</string>
         </property>
        </widget>
       </item>

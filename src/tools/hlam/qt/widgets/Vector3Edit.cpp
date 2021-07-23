@@ -79,9 +79,9 @@ void Vector3Edit::SetPrefix(const QString& prefix)
 	{
 		_prefix = prefix;
 
-		_ui.XLabel->setText(_prefix + "X:");
-		_ui.YLabel->setText(_prefix + "Y:");
-		_ui.ZLabel->setText(_prefix + "Z:");
+		_ui.XLabel->setText(_prefix + "X");
+		_ui.YLabel->setText(_prefix + "Y");
+		_ui.ZLabel->setText(_prefix + "Z");
 	}
 }
 

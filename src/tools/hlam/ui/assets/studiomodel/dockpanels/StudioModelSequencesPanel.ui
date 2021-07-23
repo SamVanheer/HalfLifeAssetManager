@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>777</width>
+    <width>773</width>
     <height>80</height>
    </rect>
   </property>
@@ -214,7 +214,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>Frames:</string>
+          <string>Frames</string>
          </property>
         </widget>
        </item>
@@ -231,7 +231,7 @@
        <item row="4" column="0">
         <widget class="QLabel" name="label_12">
          <property name="text">
-          <string>Activity:</string>
+          <string>Activity</string>
          </property>
         </widget>
        </item>
@@ -258,7 +258,7 @@
        <item row="0" column="2">
         <widget class="QLabel" name="label_10">
          <property name="text">
-          <string># of Events:</string>
+          <string># of Events</string>
          </property>
         </widget>
        </item>
@@ -275,21 +275,21 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>FPS:</string>
+          <string>FPS</string>
          </property>
         </widget>
        </item>
        <item row="2" column="2">
         <widget class="QLabel" name="label_9">
          <property name="text">
-          <string>Blends:</string>
+          <string>Blends</string>
          </property>
         </widget>
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="label_8">
          <property name="text">
-          <string>Duration:</string>
+          <string>Duration</string>
          </property>
         </widget>
        </item>
@@ -341,21 +341,21 @@
        <item row="3" column="2">
         <widget class="QLabel" name="label_13">
          <property name="text">
-          <string>Activity Weight:</string>
+          <string>Activity Weight</string>
          </property>
         </widget>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Sequence #:</string>
+          <string>Sequence #</string>
          </property>
         </widget>
        </item>
        <item row="1" column="2">
         <widget class="QLabel" name="label_11">
          <property name="text">
-          <string>Is Looping:</string>
+          <string>Is Looping</string>
          </property>
         </widget>
        </item>
@@ -423,7 +423,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Blend Mode:</string>
+          <string>Blend Mode</string>
          </property>
         </widget>
        </item>
@@ -639,14 +639,14 @@
           <item row="3" column="0">
            <widget class="QLabel" name="label_20">
             <property name="text">
-             <string>Type:</string>
+             <string>Type</string>
             </property>
            </widget>
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_19">
             <property name="text">
-             <string>Options:</string>
+             <string>Options</string>
             </property>
            </widget>
           </item>
@@ -684,7 +684,7 @@
           <item row="1" column="0">
            <widget class="QLabel" name="label_18">
             <property name="text">
-             <string>Event:</string>
+             <string>Event</string>
             </property>
            </widget>
           </item>
@@ -694,7 +694,7 @@
           <item row="0" column="0">
            <widget class="QLabel" name="label_15">
             <property name="text">
-             <string>Frame:</string>
+             <string>Frame</string>
             </property>
            </widget>
           </item>
