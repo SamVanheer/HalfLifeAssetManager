@@ -2,10 +2,11 @@
 
 #include <memory>
 
-#include <QTabWidget>
 #include <QWidget>
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+
+class QMainWindow;
 
 namespace graphics
 {
@@ -40,11 +41,8 @@ public:
 
 	SceneWidget* GetSceneWidget() const { return _sceneWidget; }
 
-signals:
-	void DockPanelChanged(QWidget* current, QWidget* previous);
-
 private slots:
-	void OnTabChanged(int index);
+	void OnDockLocationChanged(Qt::DockWidgetArea area);
 
 	void OnAssetCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current);
 
@@ -53,13 +51,11 @@ private slots:
 private:
 	StudioModelAsset* const _asset;
 
+	QMainWindow* _window;
+
+	QWidget* _centralWidget;
+
 	SceneWidget* _sceneWidget;
-
-	QWidget* _controlAreaWidget;
-
-	QTabWidget* _dockPanels;
-
-	QWidget* _currentTab{};
 
 	camera_operators::CamerasPanel* _camerasPanel;
 

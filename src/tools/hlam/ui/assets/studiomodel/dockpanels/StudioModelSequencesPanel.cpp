@@ -57,9 +57,6 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 
 	_ui.EventDataWidget->setEnabled(false);
 
-	//Select the first page to make it clear it's the active page
-	_ui.PageSelectorList->setCurrentRow(0);
-
 	InitializeUI();
 }
 
@@ -337,7 +334,8 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 		activityName = "None";
 	}
 
-	_ui.ActivityNameLabel->setText(QString{"%1 (%2)"}.arg(activityName).arg(sequence.Activity));
+	_ui.ActivityName->setText(QString{"%1 (%2)"}.arg(activityName).arg(sequence.Activity));
+	_ui.ActivityName->setCursorPosition(0);
 
 	if (sequenceHasChanged)
 	{

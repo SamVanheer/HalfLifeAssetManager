@@ -223,13 +223,6 @@ void StudioModelHitboxesPanel::UpdateQCString()
 	}
 }
 
-void StudioModelHitboxesPanel::OnDockPanelChanged(QWidget* current, QWidget* previous)
-{
-	_isActive = current == this;
-
-	OnHighlightHitboxChanged();
-}
-
 void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
@@ -270,7 +263,7 @@ void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 
 void StudioModelHitboxesPanel::OnHighlightHitboxChanged()
 {
-	_asset->GetScene()->DrawSingleHitboxIndex = (_isActive && _ui.HighlightHitbox->isChecked()) ? _ui.Hitboxes->currentIndex() : -1;
+	_asset->GetScene()->DrawSingleHitboxIndex = _ui.HighlightHitbox->isChecked() ? _ui.Hitboxes->currentIndex() : -1;
 }
 
 void StudioModelHitboxesPanel::OnBoneChanged()

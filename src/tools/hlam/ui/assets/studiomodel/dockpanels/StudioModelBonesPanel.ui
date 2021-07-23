@@ -40,7 +40,7 @@
      <item>
       <widget class="QComboBox" name="Bones">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -53,7 +53,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>150</width>
+         <width>16777215</width>
          <height>16777215</height>
         </size>
        </property>
@@ -65,7 +65,7 @@
         <string>Highlight Bone</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -212,7 +212,7 @@
    <item>
     <widget class="QListWidget" name="BonePropertyList">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -225,7 +225,7 @@
      </property>
      <property name="maximumSize">
       <size>
-       <width>150</width>
+       <width>16777215</width>
        <height>16777215</height>
       </size>
      </property>
@@ -263,13 +263,13 @@
    <item>
     <widget class="QStackedWidget" name="BonePropertyStack">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="page">
       <property name="sizePolicy">
@@ -297,7 +297,7 @@
        <item row="1" column="1">
         <widget class="QDoubleSpinBox" name="PositionY">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -310,7 +310,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -322,7 +322,7 @@
        <item row="2" column="1">
         <widget class="QDoubleSpinBox" name="PositionZ">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -335,7 +335,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -373,7 +373,7 @@
        <item row="0" column="1">
         <widget class="QDoubleSpinBox" name="PositionX">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -386,7 +386,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -443,7 +443,7 @@
        <item row="1" column="1">
         <widget class="QDoubleSpinBox" name="PositionScaleY">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -456,7 +456,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -481,7 +481,7 @@
        <item row="0" column="1">
         <widget class="QDoubleSpinBox" name="PositionScaleX">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -494,7 +494,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -532,7 +532,7 @@
        <item row="2" column="1">
         <widget class="QDoubleSpinBox" name="PositionScaleZ">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -545,7 +545,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -589,7 +589,7 @@
        <item row="1" column="1">
         <widget class="QDoubleSpinBox" name="RotationY">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -602,7 +602,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -614,7 +614,7 @@
        <item row="2" column="1">
         <widget class="QDoubleSpinBox" name="RotationZ">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -627,7 +627,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -665,7 +665,7 @@
        <item row="0" column="1">
         <widget class="QDoubleSpinBox" name="RotationX">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -678,7 +678,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -735,7 +735,7 @@
        <item row="0" column="1">
         <widget class="QDoubleSpinBox" name="RotationScaleX">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -748,7 +748,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -773,7 +773,7 @@
        <item row="1" column="1">
         <widget class="QDoubleSpinBox" name="RotationScaleY">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -786,7 +786,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -824,7 +824,7 @@
        <item row="2" column="1">
         <widget class="QDoubleSpinBox" name="RotationScaleZ">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -837,7 +837,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>

@@ -24,9 +24,6 @@ private:
 
 	void UpdateQCString();
 
-public slots:
-	void OnDockPanelChanged(QWidget* current, QWidget* previous);
-
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
 
@@ -47,8 +44,6 @@ private slots:
 private:
 	Ui_StudioModelAttachmentsPanel _ui;
 	StudioModelAsset* const _asset;
-
-	bool _isActive{false};
 };
 }
 }

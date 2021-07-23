@@ -238,13 +238,6 @@ void StudioModelAttachmentsPanel::UpdateQCString()
 	}
 }
 
-void StudioModelAttachmentsPanel::OnDockPanelChanged(QWidget* current, QWidget* previous)
-{
-	_isActive = current == this;
-
-	OnHighlightAttachmentChanged();
-}
-
 void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
@@ -277,7 +270,7 @@ void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 
 void StudioModelAttachmentsPanel::OnHighlightAttachmentChanged()
 {
-	_asset->GetScene()->DrawSingleAttachmentIndex = (_isActive && _ui.HighlightAttachment->isChecked()) ? _ui.Attachments->currentIndex() : -1;
+	_asset->GetScene()->DrawSingleAttachmentIndex = _ui.HighlightAttachment->isChecked() ? _ui.Attachments->currentIndex() : -1;
 }
 
 void StudioModelAttachmentsPanel::OnNameChanged()

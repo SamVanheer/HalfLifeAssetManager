@@ -1,4 +1,7 @@
 #include <QBoxLayout>
+#include <QDockWidget>
+#include <QMainWindow>
+#include <QMap>
 
 #include "graphics/Scene.hpp"
 
@@ -36,15 +39,24 @@ StudioModelEditWidget::StudioModelEditWidget(
 {
 	const auto scene = _asset->GetScene();
 
-	_sceneWidget = new SceneWidget(scene, this);
+	_window = new QMainWindow(this);
+
+	_centralWidget = new QWidget(_window);
+
+	_sceneWidget = new SceneWidget(scene, _centralWidget);
 
 	scene->SetGraphicsContext(std::make_unique<OpenGLGraphicsContext>(_sceneWidget));
 
-	_controlAreaWidget = new QWidget(this);
+	_window->setCentralWidget(_centralWidget);
 
-	_dockPanels = new QTabWidget(_controlAreaWidget);
+	_window->setWindowFlags(Qt::WindowType::Widget);
 
-	_dockPanels->setStyleSheet("QTabWidget::pane { padding: 0px; padding-left: 9px; }");
+	//Don't enable nested docks for now. The docks are so large they break the window's size and cause rendering problems
+	_window->setDockOptions(QMainWindow::DockOption::AnimatedDocks | QMainWindow::DockOption::AllowTabbedDocks /* | QMainWindow::DockOption::AllowNestedDocks*/);
+
+	_window->setTabPosition(Qt::DockWidgetArea::BottomDockWidgetArea, QTabWidget::TabPosition::North);
+
+	_window->setDocumentMode(true);
 
 	_camerasPanel = new camera_operators::CamerasPanel();
 
@@ -58,77 +70,112 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	OnAssetCameraChanged(nullptr, cameraOperators->GetCurrent());
 
-	auto modelDisplayPanel = new StudioModelModelDisplayPanel(_asset);
 	auto texturesPanel = new StudioModelTexturesPanel(_asset);
-	auto bonesPanel = new StudioModelBonesPanel(_asset);
-	auto attachmentsPanel = new StudioModelAttachmentsPanel(_asset);
-	auto hitboxesPanel = new StudioModelHitboxesPanel(_asset);
 
-	_dockPanels->addTab(_camerasPanel, "Cameras");
-	_dockPanels->addTab(new StudioModelModelInfoPanel(_asset), "Model Info");
-	_dockPanels->addTab(modelDisplayPanel, "Model Display");
-	_dockPanels->addTab(new StudioModelLightingPanel(_asset), "Lighting");
-	_dockPanels->addTab(new StudioModelSequencesPanel(_asset), "Sequences");
-	_dockPanels->addTab(new StudioModelBodyPartsPanel(_asset), "Body Parts");
-	_dockPanels->addTab(texturesPanel, "Textures");
-	_dockPanels->addTab(new StudioModelModelDataPanel(_asset), "Model Data");
-	_dockPanels->addTab(bonesPanel, "Bones");
-	_dockPanels->addTab(attachmentsPanel, "Attachments");
-	_dockPanels->addTab(hitboxesPanel, "Hitboxes");
+	auto addDockPanel = [&](QWidget* widget, const QString& label)
+	{
+		auto dock = new QDockWidget(label, _window);
 
-	_dockPanels->setCurrentWidget(modelDisplayPanel);
+		dock->setWidget(widget);
+		dock->setObjectName(label);
 
-	const auto infoBar = new InfoBar(_asset, _controlAreaWidget);
-	_timeline = new Timeline(_asset, _controlAreaWidget);
+		connect(dock, &QDockWidget::dockLocationChanged, this, &StudioModelEditWidget::OnDockLocationChanged);
+
+		_window->addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, dock);
+
+		return dock;
+	};
+
+	addDockPanel(_camerasPanel, "Cameras");
+	addDockPanel(new StudioModelModelInfoPanel(_asset), "Model Info");
+	auto modelDisplayDock = addDockPanel(new StudioModelModelDisplayPanel(_asset), "Model Display");
+	addDockPanel(new StudioModelLightingPanel(_asset), "Lighting");
+	addDockPanel(new StudioModelSequencesPanel(_asset), "Sequences");
+	addDockPanel(new StudioModelBodyPartsPanel(_asset), "Body Parts");
+	addDockPanel(texturesPanel, "Textures");
+	addDockPanel(new StudioModelModelDataPanel(_asset), "Model Data");
+	addDockPanel(new StudioModelBonesPanel(_asset), "Bones");
+	addDockPanel(new StudioModelAttachmentsPanel(_asset), "Attachments");
+	addDockPanel(new StudioModelHitboxesPanel(_asset), "Hitboxes");
+
+	//Tabify all dock widgets
+	{
+		QMap<Qt::DockWidgetArea, QDockWidget*> firstDockWidgets;
+
+		for (auto dock : _window->findChildren<QDockWidget*>())
+		{
+			const auto area = _window->dockWidgetArea(dock);
+
+			if (auto it = firstDockWidgets.find(area); it != firstDockWidgets.end())
+			{
+				_window->tabifyDockWidget(it.value(), dock);
+			}
+			else
+			{
+				firstDockWidgets.insert(area, dock);
+			}
+		}
+	}
+
+	modelDisplayDock->raise();
+
+	const auto infoBar = new InfoBar(_asset, _centralWidget);
+	_timeline = new Timeline(_asset, this);
 
 	auto layout = new QVBoxLayout(this);
 
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->setSpacing(0);
 
-	layout->addWidget(_sceneWidget->GetContainer(), 1);
+	layout->addWidget(_window, 1);
 
-	layout->addWidget(_controlAreaWidget);
+	layout->addWidget(_timeline);
 
 	setLayout(layout);
 
 	{
-		auto controlAreaLayout = new QVBoxLayout(_controlAreaWidget);
+		auto centralLayout = new QVBoxLayout(_centralWidget);
 
-		controlAreaLayout->setContentsMargins(0, 0, 0, 0);
-		controlAreaLayout->setSpacing(0);
+		centralLayout->setContentsMargins(0, 0, 0, 0);
+		centralLayout->setSpacing(0);
 
-		controlAreaLayout->addWidget(infoBar);
-		controlAreaLayout->addWidget(_dockPanels);
-		controlAreaLayout->addWidget(_timeline);
+		centralLayout->addWidget(_sceneWidget->GetContainer(), 1);
+		centralLayout->addWidget(infoBar);
 
-		_controlAreaWidget->setLayout(controlAreaLayout);
+		_centralWidget->setLayout(centralLayout);
 	}
-
-	//connect(asset, &StudioModelAsset::Draw, _sceneWidget, &SceneWidget::requestUpdate);
-
-	connect(_dockPanels, &QTabWidget::currentChanged, this, &StudioModelEditWidget::OnTabChanged);
 
 	connect(cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelEditWidget::OnAssetCameraChanged);
 	connect(_camerasPanel, &camera_operators::CamerasPanel::CameraChanged, this, &StudioModelEditWidget::OnCameraChanged);
 
 	connect(_sceneWidget, &SceneWidget::frameSwapped, infoBar, &InfoBar::OnDraw);
 	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
-	connect(this, &StudioModelEditWidget::DockPanelChanged, texturesPanel, &StudioModelTexturesPanel::OnDockPanelChanged);
-
-	connect(this, &StudioModelEditWidget::DockPanelChanged, bonesPanel, &StudioModelBonesPanel::OnDockPanelChanged);
-	connect(this, &StudioModelEditWidget::DockPanelChanged, attachmentsPanel, &StudioModelAttachmentsPanel::OnDockPanelChanged);
-	connect(this, &StudioModelEditWidget::DockPanelChanged, hitboxesPanel, &StudioModelHitboxesPanel::OnDockPanelChanged);
+	//connect(this, &StudioModelEditWidget::DockPanelChanged, texturesPanel, &StudioModelTexturesPanel::OnDockPanelChanged);
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
 
-void StudioModelEditWidget::OnTabChanged(int index)
+void StudioModelEditWidget::OnDockLocationChanged(Qt::DockWidgetArea area)
 {
-	auto previous = _currentTab;
-	_currentTab = _dockPanels->currentWidget();
+	auto dock = static_cast<QDockWidget*>(sender());
 
-	emit DockPanelChanged(_currentTab, previous);
+	auto widget = dock->widget();
+
+	//Automatically change the layout for panels using a box layout
+	if (auto layout = qobject_cast<QBoxLayout*>(widget->layout()); layout)
+	{
+		switch (area)
+		{
+		case Qt::DockWidgetArea::TopDockWidgetArea:
+		case Qt::DockWidgetArea::BottomDockWidgetArea:
+			layout->setDirection(QBoxLayout::Direction::LeftToRight);
+			break;
+
+		default:
+			layout->setDirection(QBoxLayout::Direction::TopToBottom);
+			break;
+		}
+	}
 }
 
 void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current)

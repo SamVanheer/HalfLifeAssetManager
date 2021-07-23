@@ -312,13 +312,6 @@ void StudioModelBonesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 	}
 }
 
-void StudioModelBonesPanel::OnDockPanelChanged(QWidget* current, QWidget* previous)
-{
-	_isActive = current == this;
-
-	OnHightlightBoneChanged();
-}
-
 void StudioModelBonesPanel::OnBoneChanged(int index)
 {
 	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
@@ -363,7 +356,7 @@ void StudioModelBonesPanel::OnBoneChanged(int index)
 
 void StudioModelBonesPanel::OnHightlightBoneChanged()
 {
-	_asset->GetScene()->DrawSingleBoneIndex = (_isActive && _ui.HighlightBone->isChecked()) ? _ui.Bones->currentIndex() : -1;
+	_asset->GetScene()->DrawSingleBoneIndex = _ui.HighlightBone->isChecked() ? _ui.Bones->currentIndex() : -1;
 }
 
 void StudioModelBonesPanel::OnBoneNameChanged()

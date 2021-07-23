@@ -24,9 +24,6 @@ private:
 
 	void UpdateQCString();
 
-public slots:
-	void OnDockPanelChanged(QWidget* current, QWidget* previous);
-
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
 
@@ -41,13 +38,10 @@ private slots:
 	void OnHitgroupChanged();
 
 	void OnBoundsChanged();
-	void OnMaximumChanged();
 
 private:
 	Ui_StudioModelHitboxesPanel _ui;
 	StudioModelAsset* const _asset;
-
-	bool _isActive{false};
 };
 }
 }
