@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>475</width>
+    <width>463</width>
     <height>62</height>
    </rect>
   </property>
@@ -50,7 +50,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Center Y:</string>
+        <string>Center Y</string>
        </property>
       </widget>
      </item>
@@ -70,7 +70,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Center Z:</string>
+        <string>Center Z</string>
        </property>
       </widget>
      </item>
@@ -83,7 +83,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Center X:</string>
+        <string>Center X</string>
        </property>
       </widget>
      </item>
@@ -123,7 +123,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Distance:</string>
+        <string>Distance</string>
        </property>
       </widget>
      </item>
@@ -143,7 +143,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Yaw:</string>
+        <string>Yaw</string>
        </property>
       </widget>
      </item>
@@ -213,7 +213,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Field Of View:</string>
+        <string>Field Of View</string>
        </property>
       </widget>
      </item>

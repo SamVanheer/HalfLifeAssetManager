@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>452</width>
+    <width>440</width>
     <height>62</height>
    </rect>
   </property>
@@ -43,7 +43,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Origin Y:</string>
+        <string>Origin Y</string>
        </property>
       </widget>
      </item>
@@ -63,7 +63,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Origin X:</string>
+        <string>Origin X</string>
        </property>
       </widget>
      </item>
@@ -76,7 +76,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Origin Z:</string>
+        <string>Origin Z</string>
        </property>
       </widget>
      </item>
@@ -123,7 +123,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Pitch:</string>
+        <string>Pitch</string>
        </property>
       </widget>
      </item>
@@ -136,7 +136,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Yaw:</string>
+        <string>Yaw</string>
        </property>
       </widget>
      </item>
@@ -190,7 +190,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Field Of View:</string>
+        <string>Field Of View</string>
        </property>
       </widget>
      </item>
