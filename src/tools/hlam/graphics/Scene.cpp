@@ -139,8 +139,6 @@ void Scene::Initialize()
 	{
 		//TODO: handle error
 	}
-
-	glGenTextures(1, &UVMeshTexture);
 }
 
 void Scene::Shutdown()
@@ -151,9 +149,6 @@ void Scene::Shutdown()
 	{
 		return;
 	}
-
-	glDeleteTexture(UVMeshTexture);
-	UVMeshTexture = 0;
 
 	_studioModelRenderer->Shutdown();
 }
@@ -194,14 +189,7 @@ void Scene::Draw()
 
 	_drawnPolygonsCount = 0;
 
-	if (ShowTexture)
-	{
-		DrawTexture(TextureXOffset, TextureYOffset, _windowWidth, _windowHeight, _entity, TextureIndex, TextureScale, ShowUVMap, OverlayUVMap);
-	}
-	else
-	{
-		DrawModel();
-	}
+	DrawModel();
 
 	const int centerX = _windowWidth / 2;
 	const int centerY = _windowHeight / 2;
@@ -336,7 +324,7 @@ void Scene::DrawModel()
 	// draw background
 	//
 
-	if (ShowBackground && BackgroundTexture != GL_INVALID_TEXTURE_ID && !ShowTexture)
+	if (ShowBackground && BackgroundTexture != GL_INVALID_TEXTURE_ID)
 	{
 		graphics::DrawBackground(BackgroundTexture);
 	}
@@ -585,120 +573,5 @@ void Scene::DrawModel()
 	}
 
 	glPopMatrix();
-}
-
-void Scene::DrawTexture(const int xOffset, const int yOffset, const int width, const int height, StudioModelEntity* entity,
-	const int textureIndex, const float textureScale, const bool showUVMap, const bool overlayUVMap)
-{
-	assert(entity);
-
-	const auto model = entity->GetEditableModel();
-
-	assert(model);
-
-	if (textureIndex < 0 || textureIndex >= model->Textures.size())
-	{
-		return;
-	}
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	glOrtho(0.0f, (float)width, (float)height, 0.0f, 1.0f, -1.0f);
-
-	const auto& texture = *model->Textures[textureIndex];
-
-	const float w = texture.Width * textureScale;
-	const float h = texture.Height * textureScale;
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_BLEND);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	const float x = ((static_cast<float>(width) - w) / 2) + xOffset;
-	const float y = ((static_cast<float>(height) - h) / 2) + yOffset;
-
-	glDisable(GL_DEPTH_TEST);
-
-	if (showUVMap && !overlayUVMap)
-	{
-		glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-		glDisable(GL_TEXTURE_2D);
-		glRectf(x, y, x + w, y + h);
-	}
-
-	if (!showUVMap || overlayUVMap)
-	{
-		if (texture.Flags & STUDIO_NF_MASKED)
-		{
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.5f);
-		}
-
-		glEnable(GL_TEXTURE_2D);
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBindTexture(GL_TEXTURE_2D, texture.TextureId);
-
-		glBegin(GL_TRIANGLE_STRIP);
-
-		glTexCoord2f(0, 0);
-		glVertex2f(x, y);
-
-		glTexCoord2f(1, 0);
-		glVertex2f(x + w, y);
-
-		glTexCoord2f(0, 1);
-		glVertex2f(x, y + h);
-
-		glTexCoord2f(1, 1);
-		glVertex2f(x + w, y + h);
-
-		glEnd();
-
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		if (texture.Flags & STUDIO_NF_MASKED)
-		{
-			glDisable(GL_ALPHA_TEST);
-		}
-	}
-
-	if (showUVMap)
-	{
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.1f);
-
-		glEnable(GL_TEXTURE_2D);
-			
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBindTexture(GL_TEXTURE_2D, UVMeshTexture);
-
-		glBegin(GL_TRIANGLE_STRIP);
-
-		glTexCoord2f(0, 0);
-		glVertex2f(x, y);
-
-		glTexCoord2f(1, 0);
-		glVertex2f(x + w, y);
-
-		glTexCoord2f(0, 1);
-		glVertex2f(x, y + h);
-
-		glTexCoord2f(1, 1);
-		glVertex2f(x + w, y + h);
-
-		glEnd();
-
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glDisable(GL_ALPHA_TEST);
-	}
-
-	glPopMatrix();
-
-	glClear(GL_DEPTH_BUFFER_BIT);
 }
 }

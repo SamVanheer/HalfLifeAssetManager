@@ -121,9 +121,6 @@ private:
 
 	void DrawModel();
 
-	void DrawTexture(const int xOffset, const int yOffset, const int width, const int height, StudioModelEntity* entity,
-		const int textureIndex, const float textureScale, const bool showUVMap, const bool overlayUVMap);
-
 	//TODO: these are temporary until the graphics code can be refactored into an object based design
 public:
 	RenderMode CurrentRenderMode = RenderMode::TEXTURE_SHADED;
@@ -157,19 +154,6 @@ public:
 	int DrawSingleBoneIndex = -1;
 	int DrawSingleAttachmentIndex = -1;
 	int DrawSingleHitboxIndex = -1;
-
-	bool ShowTexture = false;
-
-	int TextureIndex{};
-
-	int TextureXOffset{}, TextureYOffset{};
-
-	float TextureScale{1.f};
-
-	bool ShowUVMap{};
-	bool OverlayUVMap{};
-
-	GLuint UVMeshTexture{0};
 
 	bool CameraIsFirstPerson{false};
 

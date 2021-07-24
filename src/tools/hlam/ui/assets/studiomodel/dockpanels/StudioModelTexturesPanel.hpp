@@ -3,11 +3,7 @@
 #include <QMouseEvent>
 #include <QWidget>
 
-#include <glm/vec2.hpp>
-
 #include "ui_StudioModelTexturesPanel.h"
-
-#include "ui/IInputSink.hpp"
 
 class StudioModelEntity;
 
@@ -31,20 +27,20 @@ namespace assets::studiomodel
 class ModelChangeEvent;
 class StudioModelAsset;
 
-class StudioModelTexturesPanel final : public QWidget, public IInputSink
+class StudioModelTexturesPanel final : public QWidget
 {
+	Q_OBJECT
+
 public:
 	StudioModelTexturesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelTexturesPanel();
 
-	void OnMouseEvent(QMouseEvent* event) override;
-
-	void OnWheelEvent(QWheelEvent*) {}
-
 	static QImage CreateUVMapImage(
 		StudioModelEntity* entity, const int textureIndex, const int meshIndex, const bool antiAliasLines, float textureScale, qreal lineWidth);
 
-	static void DrawUVImage(const QColor& backgroundColor, bool overlayOnTexture, const QImage& texture, const QImage& uvMap, QImage& target);
+	static void DrawUVImage(const QColor& backgroundColor, bool showUVMap, bool overlayOnTexture, const QImage& texture, const QImage& uvMap, QImage& target);
+
+	QImage GenerateTextureForDisplay();
 
 private:
 	void InitializeUI();
@@ -55,12 +51,14 @@ private:
 	void RemapTextures();
 	void UpdateColormapValue();
 
-	void UpdateUVMapTexture();
+signals:
+	void CurrentTextureChanged();
+	void TextureViewChanged();
 
 public slots:
 	void OnCreateDeviceResources();
 
-	void OnDockPanelChanged(QWidget* current, QWidget* previous);
+	void AdjustScale(double amount);
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
@@ -86,12 +84,6 @@ private slots:
 	void OnFullbrightChanged();
 	void OnMipmapsChanged();
 
-	void OnShowUVMapChanged();
-	void OnOverlayUVMapChanged();
-	void OnAntiAliasLinesChanged();
-
-	void OnMeshChanged(int index);
-
 	void OnImportTexture();
 	void OnExportTexture();
 	void OnExportUVMap();
@@ -110,9 +102,6 @@ private slots:
 private:
 	Ui_StudioModelTexturesPanel _ui;
 	StudioModelAsset* const _asset;
-
-	Qt::MouseButtons _trackedMouseButtons;
-	glm::ivec2 _dragPosition{0};
 
 	qreal _uvLineWidth{1};
 };

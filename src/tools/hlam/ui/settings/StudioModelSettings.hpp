@@ -17,6 +17,7 @@ class StudioModelSettings final : public QObject
 public:
 	static constexpr bool DefaultAutodetectViewmodels{true};
 	static constexpr bool DefaultPowerOf2Textures{true};
+	static constexpr bool DefaultActivateTextureViewWhenTexturesPanelOpened{true};
 
 	static constexpr int MinimumFloorLength = 0;
 	static constexpr int MaximumFloorLength = 2048;
@@ -38,6 +39,8 @@ public:
 		settings.beginGroup("assets/studiomodel");
 		_autodetectViewModels = settings.value("AutodetectViewmodels", DefaultAutodetectViewmodels).toBool();
 		_powerOf2Textures = settings.value("PowerOf2Textures", DefaultPowerOf2Textures).toBool();
+		_activateTextureViewWhenTexturesPanelOpened = settings.value(
+			"ActivateTextureViewWhenTexturesPanelOpened", DefaultActivateTextureViewWhenTexturesPanelOpened).toBool();
 		_floorLength = std::clamp(settings.value("FloorLength", DefaultFloorLength).toInt(), MinimumFloorLength, MaximumFloorLength);
 		_studiomdlCompilerFileName = settings.value("CompilerFileName").toString();
 		_studiomdlDecompilerFileName = settings.value("DecompilerFileName").toString();
@@ -67,6 +70,7 @@ public:
 		settings.beginGroup("assets/studiomodel");
 		settings.setValue("AutodetectViewmodels", _autodetectViewModels);
 		settings.setValue("PowerOf2Textures", _powerOf2Textures);
+		settings.setValue("ActivateTextureViewWhenTexturesPanelOpened", _activateTextureViewWhenTexturesPanelOpened);
 		settings.setValue("FloorLength", _floorLength);
 		settings.setValue("CompilerFileName", _studiomdlCompilerFileName);
 		settings.setValue("DecompilerFileName", _studiomdlDecompilerFileName);
@@ -110,6 +114,13 @@ public:
 		_powerOf2Textures = value;
 	}
 
+	bool ShouldActivateTextureViewWhenTexturesPanelOpened() const { return _activateTextureViewWhenTexturesPanelOpened; }
+
+	void SetActivateTextureViewWhenTexturesPanelOpened(bool value)
+	{
+		_activateTextureViewWhenTexturesPanelOpened = value;
+	}
+
 	int GetFloorLength() const { return _floorLength; }
 
 	void SetFloorLength(int value)
@@ -142,6 +153,7 @@ signals:
 private:
 	bool _autodetectViewModels{DefaultAutodetectViewmodels};
 	bool _powerOf2Textures{DefaultPowerOf2Textures};
+	bool _activateTextureViewWhenTexturesPanelOpened{DefaultActivateTextureViewWhenTexturesPanelOpened};
 
 	int _floorLength = DefaultFloorLength;
 

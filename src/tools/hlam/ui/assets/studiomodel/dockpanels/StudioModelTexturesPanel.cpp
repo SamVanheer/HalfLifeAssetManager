@@ -60,6 +60,24 @@ static QString FormatTextureName(const studiomdl::Texture& texture)
 	return QString{"%1 (%2 x %3)"}.arg(texture.Name.c_str()).arg(texture.Width).arg(texture.Height);
 }
 
+static QImage ConvertTextureToRGBImage(
+	const studiomdl::Texture& texture, const byte* textureData, const graphics::RGBPalette& texturePalette, std::vector<QRgb>& dataBuffer)
+{
+	dataBuffer.resize(texture.Width * texture.Height);
+
+	for (int y = 0; y < texture.Height; ++y)
+	{
+		for (int x = 0; x < texture.Width; ++x)
+		{
+			const auto& color = texturePalette[textureData[(texture.Width * y) + x]];
+
+			dataBuffer[(texture.Width * y) + x] = qRgb(color.R, color.G, color.B);
+		}
+	}
+
+	return QImage{reinterpret_cast<const uchar*>(dataBuffer.data()), texture.Width, texture.Height, QImage::Format::Format_RGB32};
+}
+
 StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
@@ -92,11 +110,11 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.Fullbright, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnFullbrightChanged);
 	connect(_ui.Mipmaps, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnMipmapsChanged);
 
-	connect(_ui.ShowUVMap, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnShowUVMapChanged);
-	connect(_ui.OverlayUVMap, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnOverlayUVMapChanged);
-	connect(_ui.AntiAliasLines, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnAntiAliasLinesChanged);
+	connect(_ui.ShowUVMap, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::TextureViewChanged);
+	connect(_ui.OverlayUVMap, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::TextureViewChanged);
+	connect(_ui.AntiAliasLines, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::TextureViewChanged);
 
-	connect(_ui.Meshes, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::OnMeshChanged);
+	connect(_ui.Meshes, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::TextureViewChanged);
 
 	connect(_ui.ImportTexture, &QPushButton::clicked, this, &StudioModelTexturesPanel::OnImportTexture);
 	connect(_ui.ExportTexture, &QPushButton::clicked, this, &StudioModelTexturesPanel::OnExportTexture);
@@ -149,57 +167,6 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 }
 
 StudioModelTexturesPanel::~StudioModelTexturesPanel() = default;
-
-void StudioModelTexturesPanel::OnMouseEvent(QMouseEvent* event)
-{
-	switch (event->type())
-	{
-	case QEvent::Type::MouseButtonPress:
-	{
-		//Only reset the position if a single button is down
-		if (event->buttons() & (Qt::MouseButton::LeftButton | Qt::MouseButton::RightButton) && !(event->buttons() & (event->buttons() << 1)))
-		{
-			const auto position = event->pos();
-
-			_dragPosition.x = position.x();
-			_dragPosition.y = position.y();
-
-			_trackedMouseButtons.setFlag(event->button(), true);
-		}
-		break;
-	}
-
-	case QEvent::Type::MouseButtonRelease:
-	{
-		_trackedMouseButtons.setFlag(event->button(), false);
-		break;
-	}
-
-	case QEvent::Type::MouseMove:
-	{
-		const glm::ivec2 position{event->pos().x(), event->pos().y()};
-
-		const glm::ivec2 delta = position - _dragPosition;
-
-		if (_trackedMouseButtons & Qt::MouseButton::LeftButton && event->buttons() & Qt::MouseButton::LeftButton)
-		{
-			auto scene = _asset->GetScene();
-
-			scene->TextureXOffset += delta.x;
-			scene->TextureYOffset += delta.y;
-		}
-		else if (_trackedMouseButtons & Qt::MouseButton::RightButton && event->buttons() & Qt::MouseButton::RightButton)
-		{
-			const double zoomAdjust = delta.y / -20.0;
-
-			_ui.ScaleTextureViewSpinner->setValue(_ui.ScaleTextureViewSpinner->value() + zoomAdjust);
-		}
-
-		_dragPosition = position;
-		break;
-	}
-	}
-}
 
 QImage StudioModelTexturesPanel::CreateUVMapImage(
 	StudioModelEntity* entity, const int textureIndex, const int meshIndex, const bool antiAliasLines, float textureScale, qreal lineWidth)
@@ -284,7 +251,8 @@ QImage StudioModelTexturesPanel::CreateUVMapImage(
 	return image;
 }
 
-void StudioModelTexturesPanel::DrawUVImage(const QColor& backgroundColor, bool overlayOnTexture, const QImage& texture, const QImage& uvMap, QImage& target)
+void StudioModelTexturesPanel::DrawUVImage(
+	const QColor& backgroundColor, bool showUVMap, bool overlayOnTexture, const QImage& texture, const QImage& uvMap, QImage& target)
 {
 	target.fill(backgroundColor);
 
@@ -292,12 +260,53 @@ void StudioModelTexturesPanel::DrawUVImage(const QColor& backgroundColor, bool o
 
 	const QRect drawRect{0, 0, target.width(), target.height()};
 
-	if (overlayOnTexture)
+	if (!showUVMap || overlayOnTexture)
 	{
 		painter.drawImage(drawRect, texture);
 	}
 
-	painter.drawImage(drawRect, uvMap);
+	if (showUVMap)
+	{
+		painter.drawImage(drawRect, uvMap);
+	}
+}
+
+QImage StudioModelTexturesPanel::GenerateTextureForDisplay()
+{
+	const int textureIndex = _ui.Textures->currentIndex();
+
+	if (textureIndex == -1)
+	{
+		return {};
+	}
+
+	auto entity = _asset->GetScene()->GetEntity();
+
+	const auto model = entity->GetEditableModel();
+
+	const auto& texture = *model->Textures[textureIndex];
+
+	const auto textureData = texture.Pixels.data();
+
+	std::vector<QRgb> dataBuffer;
+
+	const auto textureImage{ConvertTextureToRGBImage(texture, textureData, texture.Palette, dataBuffer)};
+
+	const auto uvMapImage = CreateUVMapImage(
+		entity,
+		textureIndex, GetMeshIndexForDrawing(_ui.Meshes),
+		_ui.AntiAliasLines->isChecked(),
+		_ui.ScaleTextureViewSpinner->value(), _uvLineWidth);
+
+	QImage resultImage{uvMapImage.width(), uvMapImage.height(), QImage::Format::Format_RGBA8888};
+
+	const bool blackBackground = _ui.ShowUVMap->isChecked() && !_ui.OverlayUVMap->isChecked();
+
+	DrawUVImage(
+		blackBackground ? Qt::GlobalColor::black : Qt::GlobalColor::transparent,
+		_ui.ShowUVMap->isChecked(), _ui.OverlayUVMap->isChecked(), textureImage, uvMapImage, resultImage);
+
+	return resultImage;
 }
 
 void StudioModelTexturesPanel::InitializeUI()
@@ -326,20 +335,9 @@ void StudioModelTexturesPanel::OnCreateDeviceResources()
 	RemapTextures();
 }
 
-void StudioModelTexturesPanel::OnDockPanelChanged(QWidget* current, QWidget* previous)
+void StudioModelTexturesPanel::AdjustScale(double amount)
 {
-	const bool wasActive = _asset->GetScene()->ShowTexture;
-
-	_asset->GetScene()->ShowTexture = this == current;
-
-	if (_asset->GetScene()->ShowTexture && !wasActive)
-	{
-		_asset->PushInputSink(this);
-	}
-	else if (!_asset->GetScene()->ShowTexture && wasActive)
-	{
-		_asset->PopInputSink();
-	}
+	_ui.ScaleTextureViewSpinner->setValue(_ui.ScaleTextureViewSpinner->value() + amount);
 }
 
 static void SetTextureFlagCheckBoxes(Ui_StudioModelTexturesPanel& ui, int flags)
@@ -460,10 +458,6 @@ void StudioModelTexturesPanel::OnTextureChanged(int index)
 {
 	auto scene = _asset->GetScene();
 
-	//Reset texture position to be centered
-	scene->TextureXOffset = scene->TextureYOffset = 0;
-	scene->TextureIndex = index;
-
 	_ui.Meshes->clear();
 	_ui.Meshes->setEnabled(index != -1);
 
@@ -493,7 +487,8 @@ void StudioModelTexturesPanel::OnTextureChanged(int index)
 		_ui.Meshes->addItem("All");
 	}
 
-	UpdateUVMapTexture();
+	emit CurrentTextureChanged();
+	emit TextureViewChanged();
 }
 
 void StudioModelTexturesPanel::OnTextureViewScaleSliderChanged(int value)
@@ -505,9 +500,7 @@ void StudioModelTexturesPanel::OnTextureViewScaleSliderChanged(int value)
 		_ui.ScaleTextureViewSpinner->setValue(newValue);
 	}
 
-	_asset->GetScene()->TextureScale = newValue;
-
-	UpdateUVMapTexture();
+	emit TextureViewChanged();
 }
 
 void StudioModelTexturesPanel::OnTextureViewScaleSpinnerChanged(double value)
@@ -517,9 +510,7 @@ void StudioModelTexturesPanel::OnTextureViewScaleSpinnerChanged(double value)
 		_ui.ScaleTextureViewSlider->setValue(static_cast<int>((value - _ui.ScaleTextureViewSpinner->minimum()) * UVLineWidthSliderRatio));
 	}
 
-	_asset->GetScene()->TextureScale = value;
-
-	UpdateUVMapTexture();
+	emit TextureViewChanged();
 }
 
 void StudioModelTexturesPanel::OnUVLineWidthSliderChanged(int value)
@@ -533,7 +524,7 @@ void StudioModelTexturesPanel::OnUVLineWidthSliderChanged(int value)
 		_ui.UVLineWidthSpinner->setValue(newValue);
 	}
 
-	UpdateUVMapTexture();
+	emit TextureViewChanged();
 }
 
 void StudioModelTexturesPanel::OnUVLineWidthSpinnerChanged(double value)
@@ -545,7 +536,7 @@ void StudioModelTexturesPanel::OnUVLineWidthSpinnerChanged(double value)
 		_ui.UVLineWidthSlider->setValue(static_cast<int>(value * UVLineWidthSliderRatio));
 	}
 
-	UpdateUVMapTexture();
+	emit TextureViewChanged();
 }
 
 void StudioModelTexturesPanel::OnTextureNameChanged()
@@ -644,26 +635,6 @@ void StudioModelTexturesPanel::OnMipmapsChanged()
 	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }
 
-void StudioModelTexturesPanel::OnShowUVMapChanged()
-{
-	UpdateUVMapTexture();
-}
-
-void StudioModelTexturesPanel::OnOverlayUVMapChanged()
-{
-	_asset->GetScene()->OverlayUVMap = _ui.OverlayUVMap->isChecked();
-}
-
-void StudioModelTexturesPanel::OnAntiAliasLinesChanged()
-{
-	UpdateUVMapTexture();
-}
-
-void StudioModelTexturesPanel::OnMeshChanged(int index)
-{
-	UpdateUVMapTexture();
-}
-
 void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::EditableStudioModel& model, int textureIndex)
 {
 	QImage image{fileName};
@@ -756,24 +727,6 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 	_asset->AddUndoCommand(new ImportTextureCommand(_asset, textureIndex, std::move(oldTexture), std::move(newTexture)));
 }
 
-static QImage ConvertTextureToRGBImage(
-	const studiomdl::Texture& texture, const byte* textureData, const graphics::RGBPalette& texturePalette, std::vector<QRgb>& dataBuffer)
-{
-	dataBuffer.resize(texture.Width * texture.Height);
-
-	for (int y = 0; y < texture.Height; ++y)
-	{
-		for (int x = 0; x < texture.Width; ++x)
-		{
-			const auto& color = texturePalette[textureData[(texture.Width * y) + x]];
-
-			dataBuffer[(texture.Width * y) + x] = qRgb(color.R, color.G, color.B);
-		}
-	}
-
-	return QImage{reinterpret_cast<const uchar*>(dataBuffer.data()), texture.Width, texture.Height, QImage::Format::Format_RGB32};
-}
-
 bool StudioModelTexturesPanel::ExportTextureTo(const QString& fileName, const studiomdl::EditableStudioModel& model, const studiomdl::Texture& texture)
 {
 	//Ensure data is 32 bit aligned
@@ -859,62 +812,6 @@ void StudioModelTexturesPanel::UpdateColormapValue()
 	_ui.ColormapValue->setText(QString::number(colormapValue));
 }
 
-void StudioModelTexturesPanel::UpdateUVMapTexture()
-{
-	auto scene = _asset->GetScene();
-
-	scene->ShowUVMap = _ui.ShowUVMap->isChecked();
-
-	if (!_ui.ShowUVMap->isChecked())
-	{
-		return;
-	}
-
-	const int textureIndex = _ui.Textures->currentIndex();
-
-	if (textureIndex == -1)
-	{
-		//Make sure nothing is drawn when no texture is selected
-		const byte transparentImage[4] = {0, 0, 0, 0};
-
-		glBindTexture(GL_TEXTURE_2D, scene->UVMeshTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-			1, 1,
-			0, GL_RGBA, GL_UNSIGNED_BYTE, transparentImage);
-		return;
-	}
-
-	auto entity = scene->GetEntity();
-
-	auto model = entity->GetEditableModel();
-
-	const auto& texture = *model->Textures[textureIndex];
-
-	scene->ShowUVMap = _ui.ShowUVMap->isChecked();
-
-	const float scale = scene->TextureScale;
-
-	//Create an updated image of the UV map with current settings
-	const auto uvMapImage = CreateUVMapImage(entity, textureIndex, GetMeshIndexForDrawing(_ui.Meshes), _ui.AntiAliasLines->isChecked(), scale, _uvLineWidth);
-
-	scene->GetGraphicsContext()->Begin();
-
-	glBindTexture(GL_TEXTURE_2D, scene->UVMeshTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-		static_cast<int>(std::ceil(texture.Width * scale)), static_cast<int>(std::ceil(texture.Height * scale)),
-		0, GL_RGBA, GL_UNSIGNED_BYTE, uvMapImage.constBits());
-
-	//Nearest filtering causes gaps in lines, linear does not
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	//Prevent the texture from wrapping and spilling over on the other side
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	scene->GetGraphicsContext()->End();
-}
-
 void StudioModelTexturesPanel::OnImportTexture()
 {
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
@@ -997,7 +894,7 @@ void StudioModelTexturesPanel::OnExportUVMap()
 		QImage resultImage{uvMapImage.width(), uvMapImage.height(), QImage::Format::Format_RGBA8888};
 
 		//Set as transparent
-		StudioModelTexturesPanel::DrawUVImage(Qt::transparent, dialog.ShouldOverlayOnTexture(), textureImage, dialog.GetUVImage(), resultImage);
+		StudioModelTexturesPanel::DrawUVImage(Qt::transparent, true, dialog.ShouldOverlayOnTexture(), textureImage, dialog.GetUVImage(), resultImage);
 
 		if (!dialog.ShouldAddAlphaChannel())
 		{

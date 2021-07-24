@@ -102,7 +102,7 @@ void StudioModelExportUVMeshDialog::UpdatePreview()
 
 	_preview = QImage{_uv.width(), _uv.height(), QImage::Format::Format_RGBA8888};
 
-	StudioModelTexturesPanel::DrawUVImage(Qt::black, ShouldOverlayOnTexture(), _texture, _uv, _preview);
+	StudioModelTexturesPanel::DrawUVImage(Qt::black, true, ShouldOverlayOnTexture(), _texture, _uv, _preview);
 
 	auto pixmap = QPixmap::fromImage(_preview);
 
