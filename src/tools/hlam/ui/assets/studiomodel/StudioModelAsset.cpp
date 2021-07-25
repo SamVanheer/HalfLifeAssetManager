@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <stdexcept>
+#include <vector>
 
 #include <QAction>
 #include <QColor>
@@ -37,6 +38,7 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
+#include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelCompilerFrontEnd.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelDecompilerFrontEnd.hpp"
 
@@ -171,6 +173,10 @@ void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 	menu->addAction("Center View", this, &StudioModelAsset::OnCenterView);
 	menu->addAction("Save View", this, &StudioModelAsset::OnSaveView);
 	menu->addAction("Restore View", this, &StudioModelAsset::OnRestoreView);
+
+	menu->addSeparator();
+
+	menu->addAction("Flip Normals", this, &StudioModelAsset::OnFlipNormals);
 
 	menu->addSeparator();
 
@@ -445,6 +451,31 @@ void StudioModelAsset::OnRestoreView()
 
 		cameraOperator->RestoreView();
 	}
+}
+
+void StudioModelAsset::OnFlipNormals()
+{
+	std::vector<glm::vec3> oldNormals;
+	std::vector<glm::vec3> newNormals;
+
+	auto model = GetScene()->GetEntity()->GetEditableModel();
+
+	for (auto& bodypart : model->Bodyparts)
+	{
+		for (auto& model : bodypart->Models)
+		{
+			oldNormals.reserve(oldNormals.size() + model.Normals.size());
+			newNormals.reserve(newNormals.size() + model.Normals.size());
+
+			for (auto& normal : model.Normals)
+			{
+				oldNormals.push_back(normal.Vertex);
+				newNormals.push_back(-normal.Vertex);
+			}
+		}
+	}
+
+	AddUndoCommand(new FlipNormalsCommand(this, std::move(oldNormals), std::move(newNormals)));
 }
 
 void StudioModelAsset::OnLoadGroundTexture()

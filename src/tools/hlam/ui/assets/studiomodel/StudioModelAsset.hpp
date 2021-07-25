@@ -164,6 +164,8 @@ private slots:
 	void OnSaveView();
 	void OnRestoreView();
 
+	void OnFlipNormals();
+
 	void OnLoadGroundTexture();
 	void OnUnloadGroundTexture();
 

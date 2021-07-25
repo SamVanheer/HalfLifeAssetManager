@@ -62,8 +62,6 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	connect(_ui.CBoxMin, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnCBoxMinChanged);
 	connect(_ui.CBoxMax, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnCBoxMaxChanged);
 
-	connect(_ui.FlipNormals, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnFlipNormals);
-
 	InitializeUI();
 
 	_ui.PagesList->setCurrentRow(0);
@@ -247,30 +245,5 @@ void StudioModelModelDataPanel::OnCBoxMaxChanged(const glm::vec3& value)
 {
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 	_asset->AddUndoCommand(new ChangeCBoxCommand(_asset, {model->ClippingMin, model->ClippingMax}, {model->ClippingMin, value}));
-}
-
-void StudioModelModelDataPanel::OnFlipNormals()
-{
-	std::vector<glm::vec3> oldNormals;
-	std::vector<glm::vec3> newNormals;
-
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-
-	for (auto& bodypart : model->Bodyparts)
-	{
-		for (auto& model : bodypart->Models)
-		{
-			oldNormals.reserve(oldNormals.size() + model.Normals.size());
-			newNormals.reserve(newNormals.size() + model.Normals.size());
-
-			for (auto& normal : model.Normals)
-			{
-				oldNormals.push_back(normal.Vertex);
-				newNormals.push_back(-normal.Vertex);
-			}
-		}
-	}
-
-	_asset->AddUndoCommand(new FlipNormalsCommand(_asset, std::move(oldNormals), std::move(newNormals)));
 }
 }
