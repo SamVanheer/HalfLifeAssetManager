@@ -13,9 +13,11 @@ class StudioModelAsset;
 class InfoBar final : public QWidget
 {
 public:
-	InfoBar(StudioModelAsset* asset, QWidget* parent = nullptr);
+	InfoBar(QWidget* parent = nullptr);
 
 	~InfoBar();
+
+	void SetAsset(StudioModelAsset* asset);
 
 public slots:
 	void OnDraw();
@@ -23,7 +25,7 @@ public slots:
 private:
 	Ui_InfoBar _ui;
 
-	StudioModelAsset* const _asset;
+	StudioModelAsset* _asset = nullptr;
 
 	long long _lastFPSUpdate{0};
 	unsigned int _currentFPS{0};

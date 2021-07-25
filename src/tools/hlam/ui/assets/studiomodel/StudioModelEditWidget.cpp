@@ -149,8 +149,13 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	modelDisplayDock->raise();
 
-	const auto infoBar = new InfoBar(_asset, _centralWidget);
-	_timeline = new Timeline(_asset, this);
+	const auto infoBar = new InfoBar(_centralWidget);
+
+	infoBar->SetAsset(_asset);
+
+	_timeline = new Timeline(this);
+
+	_timeline->SetAsset(_asset);
 
 	auto layout = new QVBoxLayout(this);
 

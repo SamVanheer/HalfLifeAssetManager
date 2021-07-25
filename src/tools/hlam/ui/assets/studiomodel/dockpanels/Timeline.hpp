@@ -24,15 +24,17 @@ public:
 
 	static constexpr int FrameSliderRangeMultiplier = 10;
 
-	Timeline(StudioModelAsset* asset, QWidget* parent = nullptr);
+	Timeline(QWidget* parent = nullptr);
 
 	~Timeline();
+
+	void SetAsset(StudioModelAsset* asset);
 
 private:
 	void InitializeUI();
 
 	void SetFrame(double value, bool updateEntity);
-	void SetFramerate(double value);
+	void SetFramerate(double value, bool updateEntity);
 
 	void ModifyFrame(int amount);
 
@@ -60,7 +62,7 @@ private slots:
 private:
 	Ui_Timeline _ui;
 
-	StudioModelAsset* const _asset;
+	StudioModelAsset* _asset = nullptr;
 };
 }
 }

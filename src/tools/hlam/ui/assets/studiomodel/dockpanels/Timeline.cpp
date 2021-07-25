@@ -11,14 +11,10 @@
 
 namespace ui::assets::studiomodel
 {
-Timeline::Timeline(StudioModelAsset* asset, QWidget* parent)
+Timeline::Timeline(QWidget* parent)
 	: QWidget(parent)
-	, _asset(asset)
 {
 	_ui.setupUi(this);
-
-	connect(_asset, &StudioModelAsset::Tick, this, &Timeline::OnTick);
-	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &Timeline::OnLoadSnapshot);
 
 	connect(_ui.FrameSlider, &QSlider::valueChanged, this, &Timeline::OnFrameSliderChanged);
 	connect(_ui.FrameSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Timeline::OnFrameSpinnerChanged);
@@ -58,20 +54,59 @@ Timeline::Timeline(StudioModelAsset* asset, QWidget* parent)
 
 Timeline::~Timeline() = default;
 
+void Timeline::SetAsset(StudioModelAsset* asset)
+{
+	if (_asset == asset)
+	{
+		return;
+	}
+
+	if (_asset)
+	{
+		disconnect(_asset, &StudioModelAsset::Tick, this, &Timeline::OnTick);
+		disconnect(_asset, &StudioModelAsset::LoadSnapshot, this, &Timeline::OnLoadSnapshot);
+	}
+
+	_asset = asset;
+
+	if (_asset)
+	{
+		connect(_asset, &StudioModelAsset::Tick, this, &Timeline::OnTick);
+		connect(_asset, &StudioModelAsset::LoadSnapshot, this, &Timeline::OnLoadSnapshot);
+	}
+
+	InitializeUI();
+}
+
 void Timeline::InitializeUI()
 {
-	auto entity = _asset->GetScene()->GetEntity();
-	auto model = entity->GetEditableModel();
+	if (_asset)
+	{
+		auto entity = _asset->GetScene()->GetEntity();
+		auto model = entity->GetEditableModel();
 
-	const int sequenceIndex = entity->GetSequence();
+		const int sequenceIndex = entity->GetSequence();
 
-	const bool hasValidSequence = sequenceIndex >= 0 && sequenceIndex < model->Sequences.size();
+		const bool hasValidSequence = sequenceIndex >= 0 && sequenceIndex < model->Sequences.size();
 
-	this->setEnabled(hasValidSequence);
+		this->setEnabled(hasValidSequence);
 
-	if (!hasValidSequence)
+		if (hasValidSequence)
+		{
+			SetFrame(entity->GetFrame(), false);
+		}
+		else
+		{
+			SetFrame(0, false);
+		}
+
+		SetFramerate(entity->GetFrameRate(), false);
+	}
+	else
 	{
 		SetFrame(0, false);
+		SetFramerate(1, false);
+		this->setEnabled(false);
 	}
 }
 
@@ -90,7 +125,7 @@ void Timeline::SetFrame(double value, bool updateEntity)
 	}
 }
 
-void Timeline::SetFramerate(double value)
+void Timeline::SetFramerate(double value, bool updateEntity)
 {
 	//Block change signals so we don't get stuck in recursive calls
 	const QSignalBlocker blockSlider(_ui.FramerateSlider);
@@ -99,7 +134,10 @@ void Timeline::SetFramerate(double value)
 	_ui.FramerateSlider->setValue(static_cast<int>(std::round(value * SpeedSliderMultiplier)));
 	_ui.FramerateSpinner->setValue(value);
 
-	_asset->GetScene()->GetEntity()->SetFrameRate(static_cast<float>(value));
+	if (updateEntity && _asset)
+	{
+		_asset->GetScene()->GetEntity()->SetFrameRate(static_cast<float>(value));
+	}
 }
 
 void Timeline::ModifyFrame(int amount)
@@ -183,12 +221,12 @@ void Timeline::OnFrameSpinnerChanged()
 
 void Timeline::OnFramerateSliderChanged()
 {
-	SetFramerate(static_cast<double>(_ui.FramerateSlider->value()) / SpeedSliderMultiplier);
+	SetFramerate(static_cast<double>(_ui.FramerateSlider->value()) / SpeedSliderMultiplier, true);
 }
 
 void Timeline::OnFramerateSpinnerChanged()
 {
-	SetFramerate(_ui.FramerateSpinner->value());
+	SetFramerate(_ui.FramerateSpinner->value(), true);
 }
 
 void Timeline::OnRestart()

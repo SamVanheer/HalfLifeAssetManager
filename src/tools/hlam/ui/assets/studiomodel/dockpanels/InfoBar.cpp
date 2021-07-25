@@ -7,14 +7,26 @@
 
 namespace ui::assets::studiomodel
 {
-InfoBar::InfoBar(StudioModelAsset* asset, QWidget* parent)
+InfoBar::InfoBar(QWidget* parent)
 	: QWidget(parent)
-	, _asset(asset)
 {
 	_ui.setupUi(this);
 }
 
 InfoBar::~InfoBar() = default;
+
+void InfoBar::SetAsset(StudioModelAsset* asset)
+{
+	if (_asset == asset)
+	{
+		return;
+	}
+
+	_asset = asset;
+	_currentFPS = 0;
+	_lastFPSUpdate = 0;
+	_oldDrawnPolygonsCount = 0;
+}
 
 void InfoBar::OnDraw()
 {
@@ -31,7 +43,7 @@ void InfoBar::OnDraw()
 		_currentFPS = 0;
 	}
 
-	const unsigned int drawnPolygonsCount = _asset->GetScene()->GetDrawnPolygonsCount();
+	const unsigned int drawnPolygonsCount = _asset ? _asset->GetScene()->GetDrawnPolygonsCount() : 0;
 
 	//Don't update if it's identical. Prevents flickering
 	if (_oldDrawnPolygonsCount != drawnPolygonsCount)
