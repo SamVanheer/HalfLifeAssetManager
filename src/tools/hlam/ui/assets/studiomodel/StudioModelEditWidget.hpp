@@ -1,11 +1,13 @@
 #pragma once
 
-#include <memory>
 
+#include <QList>
 #include <QWidget>
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui_StudioModelEditWidget.h"
+
+class QDockWidget;
 
 namespace graphics
 {
@@ -42,6 +44,8 @@ public:
 
 	SceneWidget* GetSceneWidget() const { return _sceneWidget; }
 
+	QList<QDockWidget*> GetDockWidgets() const { return _dockWidgets; }
+
 private slots:
 	void OnDockLocationChanged(Qt::DockWidgetArea area);
 
@@ -66,6 +70,9 @@ private:
 	SceneWidget* _sceneWidget;
 
 	TextureWidget* _textureWidget;
+
+	//Stored separately to maintain list order
+	QList<QDockWidget*> _dockWidgets;
 
 	camera_operators::CamerasPanel* _camerasPanel;
 	StudioModelTexturesPanel* _texturesPanel;

@@ -100,6 +100,8 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 		_ui.Window->addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, dock);
 
+		_dockWidgets.append(dock);
+
 		return dock;
 	};
 
@@ -119,7 +121,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	{
 		QMap<Qt::DockWidgetArea, QDockWidget*> firstDockWidgets;
 
-		for (auto dock : _ui.Window->findChildren<QDockWidget*>())
+		for (auto dock : _dockWidgets)
 		{
 			const auto area = _ui.Window->dockWidgetArea(dock);
 

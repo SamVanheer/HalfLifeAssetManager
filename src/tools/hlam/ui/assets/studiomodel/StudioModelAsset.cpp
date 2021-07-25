@@ -5,6 +5,7 @@
 #include <QAction>
 #include <QColor>
 #include <QDir>
+#include <QDockWidget>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QImage>
@@ -153,6 +154,15 @@ StudioModelAsset::~StudioModelAsset()
 
 void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 {
+	{
+		auto panelsMenu = menu->addMenu("Panels");
+
+		for (auto dock : _editWidget->GetDockWidgets())
+		{
+			panelsMenu->addAction(dock->toggleViewAction());
+		}
+	}
+
 	menu->addAction("Previous Camera", this, &StudioModelAsset::OnPreviousCamera, QKeySequence{Qt::CTRL + Qt::Key::Key_U});
 	menu->addAction("Next Camera", this, &StudioModelAsset::OnNextCamera, QKeySequence{Qt::CTRL + Qt::Key::Key_I});
 
