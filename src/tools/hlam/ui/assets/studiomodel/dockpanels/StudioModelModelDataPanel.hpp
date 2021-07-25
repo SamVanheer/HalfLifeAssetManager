@@ -2,8 +2,6 @@
 
 #include <QWidget>
 
-#include <glm/vec3.hpp>
-
 #include "ui_StudioModelModelDataPanel.h"
 
 namespace ui
@@ -29,12 +27,6 @@ private slots:
 
 	void OnLoadSnapshot(StateSnapshot* snapshot);
 
-	void OnOriginChanged();
-
-	void OnScaleMesh();
-
-	void OnScaleBones();
-
 	void OnEyePositionChanged(const glm::vec3& value);
 
 	void OnBBoxMinChanged(const glm::vec3& value);
@@ -46,8 +38,6 @@ private slots:
 private:
 	Ui_StudioModelModelDataPanel _ui;
 	StudioModelAsset* const _asset;
-
-	glm::vec3 _oldOffset{0};
 };
 }
 }

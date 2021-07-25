@@ -20,12 +20,6 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 {
 	_ui.setupUi(this);
 
-	_ui.Origin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	_ui.Origin->SetDecimals(6);
-
-	_ui.ScaleMeshSpinner->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	_ui.ScaleBonesSpinner->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-
 	_ui.EyePosition->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	_ui.EyePosition->SetDecimals(6);
 
@@ -47,12 +41,6 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelModelDataPanel::OnModelChanged);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelModelDataPanel::OnLoadSnapshot);
-
-	connect(_ui.Origin, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnOriginChanged);
-	connect(_ui.SetOrigin, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnOriginChanged);
-
-	connect(_ui.ScaleMesh, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnScaleMesh);
-	connect(_ui.ScaleBones, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnScaleBones);
 
 	connect(_ui.EyePosition, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnEyePositionChanged);
 
@@ -106,20 +94,6 @@ void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 		_ui.CBoxMax->SetValue(change.GetValue().second);
 		break;
 	}
-
-	case ModelChangeId::ChangeModelOrigin:
-	{
-		const auto& originChange = static_cast<const ModelOriginChangeEvent&>(event);
-
-		_oldOffset = originChange.GetValue();
-
-		const QSignalBlocker origin{_ui.Origin};
-
-		_ui.Origin->SetValue(_oldOffset);
-		break;
-	}
-
-	//The mesh and bone scales aren't reset here because they're not representative of the absolute model scale compared to the initial state
 	}
 }
 
@@ -152,70 +126,6 @@ void StudioModelModelDataPanel::InitializeUI()
 		_ui.CBoxMin->SetValue(model->ClippingMin);
 		_ui.CBoxMax->SetValue(model->ClippingMax);
 	}
-}
-
-void StudioModelModelDataPanel::OnOriginChanged()
-{
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-
-	const glm::vec3 absoluteOffset{_ui.Origin->GetValue()};
-	const auto relativeOffset{absoluteOffset - _oldOffset};
-
-	const auto rootBoneIndices{model->GetRootBoneIndices()};
-
-	std::vector<RootBoneData> oldRootBonePositions;
-	std::vector<RootBoneData> newRootBonePositions;
-
-	oldRootBonePositions.reserve(rootBoneIndices.size());
-	newRootBonePositions.reserve(rootBoneIndices.size());
-
-	for (auto rootBoneIndex : rootBoneIndices)
-	{
-		const auto& rootBone = *model->Bones[rootBoneIndex];
-
-		oldRootBonePositions.emplace_back(
-			RootBoneData
-			{
-				rootBoneIndex,
-				{rootBone.Axes[0].Value, rootBone.Axes[1].Value, rootBone.Axes[2].Value}
-			}
-		);
-
-		newRootBonePositions.emplace_back(
-			RootBoneData
-			{
-				rootBoneIndex,
-				{
-					rootBone.Axes[0].Value + relativeOffset[0],
-					rootBone.Axes[1].Value + relativeOffset[1],
-					rootBone.Axes[2].Value + relativeOffset[2]
-				}
-			});
-	}
-
-	if (!newRootBonePositions.empty())
-	{
-		_asset->AddUndoCommand(
-			new ChangeModelOriginCommand(_asset, {std::move(oldRootBonePositions), _oldOffset}, {std::move(newRootBonePositions), absoluteOffset}));
-	}
-}
-
-void StudioModelModelDataPanel::OnScaleMesh()
-{
-	auto entity = _asset->GetScene()->GetEntity();
-
-	auto data{studiomdl::CalculateScaledMeshesData(*entity->GetEditableModel(), _ui.ScaleMeshSpinner->value())};
-
-	_asset->AddUndoCommand(new ChangeModelMeshesScaleCommand(_asset, std::move(data.first), std::move(data.second)));
-}
-
-void StudioModelModelDataPanel::OnScaleBones()
-{
-	auto entity = _asset->GetScene()->GetEntity();
-
-	auto data{studiomdl::CalculateScaledBonesData(*entity->GetEditableModel(), _ui.ScaleBonesSpinner->value())};
-
-	_asset->AddUndoCommand(new ChangeModelBonesScaleCommand(_asset, std::move(data.first), std::move(data.second)));
 }
 
 void StudioModelModelDataPanel::OnEyePositionChanged(const glm::vec3& value)

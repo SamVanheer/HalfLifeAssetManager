@@ -49,8 +49,7 @@ enum class ModelChangeId
 
 	ChangeModelFlags,
 	ChangeModelOrigin,
-	ChangeModelMeshesScale,
-	ChangeModelBonesScale,
+	ChangeModelScale,
 
 	ChangeHitboxBone,
 	ChangeHitboxHitgroup,
@@ -249,8 +248,6 @@ using ModelBoneControllerFromBoneChangeEvent = ModelListValueChangeEvent<std::pa
 *	@brief bone, axis
 */
 using ModelBoneControllerFromControllerChangeEvent = ModelListValueChangeEvent<std::pair<int, int>>;
-
-using ModelOriginChangeEvent = ModelValueChangeEvent<glm::vec3>;
 
 /**
 *	@brief Base class for all undo commands related to Studiomodel editing
@@ -867,7 +864,6 @@ struct RootBoneData
 struct ChangeModelOriginData
 {
 	std::vector<RootBoneData> BoneData;
-	glm::vec3 Offset;
 };
 
 class ChangeModelOriginCommand : public ModelUndoCommand<ChangeModelOriginData>
@@ -884,36 +880,22 @@ protected:
 
 	void EmitEvent(const ChangeModelOriginData& oldValue, const ChangeModelOriginData& newValue) override
 	{
-		_asset->EmitModelChanged(ModelOriginChangeEvent(_id, newValue.Offset));
+		_asset->EmitModelChanged(ModelChangeEvent(_id));
 	}
 };
 
-class ChangeModelMeshesScaleCommand : public ModelUndoCommand<studiomdl::ScaleMeshesData>
+class ChangeModelScaleCommand : public ModelUndoCommand<studiomdl::ScaleData>
 {
 public:
-	ChangeModelMeshesScaleCommand(
-		StudioModelAsset* asset, studiomdl::ScaleMeshesData&& oldData, studiomdl::ScaleMeshesData&& newData)
-		: ModelUndoCommand(asset, ModelChangeId::ChangeModelMeshesScale, std::move(oldData), std::move(newData))
+	ChangeModelScaleCommand(
+		StudioModelAsset* asset, studiomdl::ScaleData&& oldData, studiomdl::ScaleData&& newData)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeModelScale, std::move(oldData), std::move(newData))
 	{
-		setText("Scale model meshes");
+		setText("Scale model");
 	}
 
 protected:
-	void Apply(const studiomdl::ScaleMeshesData& oldValue, const studiomdl::ScaleMeshesData& newValue) override;
-};
-
-class ChangeModelBonesScaleCommand : public ModelUndoCommand<std::vector<studiomdl::ScaleBonesBoneData>>
-{
-public:
-	ChangeModelBonesScaleCommand(
-		StudioModelAsset* asset, std::vector<studiomdl::ScaleBonesBoneData>&& oldData, std::vector<studiomdl::ScaleBonesBoneData>&& newData)
-		: ModelUndoCommand(asset, ModelChangeId::ChangeModelBonesScale, std::move(oldData), std::move(newData))
-	{
-		setText("Scale model bones");
-	}
-
-protected:
-	void Apply(const std::vector<studiomdl::ScaleBonesBoneData>& oldValue, const std::vector<studiomdl::ScaleBonesBoneData>& newValue) override;
+	void Apply(const studiomdl::ScaleData& oldValue, const studiomdl::ScaleData& newValue) override;
 };
 
 class ChangeHitboxBoneCommand : public ModelListUndoCommand<int>

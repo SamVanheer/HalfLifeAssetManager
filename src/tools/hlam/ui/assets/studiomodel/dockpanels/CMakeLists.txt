@@ -43,6 +43,9 @@ target_sources(HLAM
 		StudioModelTexturesPanel.cpp
 		StudioModelTexturesPanel.hpp
 		StudioModelTexturesPanel.ui
+		StudioModelTransformPanel.cpp
+		StudioModelTransformPanel.hpp
+		StudioModelTransformPanel.ui
 		Timeline.cpp
 		Timeline.hpp
 		Timeline.ui)

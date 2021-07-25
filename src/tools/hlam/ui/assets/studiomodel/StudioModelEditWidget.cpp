@@ -1,3 +1,4 @@
+#include <QAction>
 #include <QBoxLayout>
 #include <QDockWidget>
 #include <QMainWindow>
@@ -27,6 +28,7 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelInfoPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelTransformPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
 
 #include "ui/camera_operators/CameraOperator.hpp"
@@ -89,8 +91,9 @@ StudioModelEditWidget::StudioModelEditWidget(
 	OnAssetCameraChanged(nullptr, cameraOperators->GetCurrent());
 
 	_texturesPanel = new StudioModelTexturesPanel(_asset);
+	auto transformPanel = new StudioModelTransformPanel(_asset);
 
-	auto addDockPanel = [&](QWidget* widget, const QString& label)
+	auto addDockPanel = [&](QWidget* widget, const QString& label, Qt::DockWidgetArea area = Qt::DockWidgetArea::BottomDockWidgetArea)
 	{
 		auto dock = new QDockWidget(label, _ui.Window);
 
@@ -99,7 +102,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 		connect(dock, &QDockWidget::dockLocationChanged, this, &StudioModelEditWidget::OnDockLocationChanged);
 
-		_ui.Window->addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, dock);
+		_ui.Window->addDockWidget(area, dock);
 
 		_dockWidgets.append(dock);
 
@@ -118,8 +121,9 @@ StudioModelEditWidget::StudioModelEditWidget(
 	addDockPanel(new StudioModelBonesPanel(_asset), "Bones");
 	addDockPanel(new StudioModelAttachmentsPanel(_asset), "Attachments");
 	addDockPanel(new StudioModelHitboxesPanel(_asset), "Hitboxes");
+	auto transformDock = addDockPanel(transformPanel, "Transformation", Qt::DockWidgetArea::LeftDockWidgetArea);
 
-	//Tabify all dock widgets
+	//Tabify all dock widgets except floating ones
 	{
 		QMap<Qt::DockWidgetArea, QDockWidget*> firstDockWidgets;
 
@@ -127,13 +131,16 @@ StudioModelEditWidget::StudioModelEditWidget(
 		{
 			const auto area = _ui.Window->dockWidgetArea(dock);
 
-			if (auto it = firstDockWidgets.find(area); it != firstDockWidgets.end())
+			if (area != Qt::DockWidgetArea::NoDockWidgetArea)
 			{
-				_ui.Window->tabifyDockWidget(it.value(), dock);
-			}
-			else
-			{
-				firstDockWidgets.insert(area, dock);
+				if (auto it = firstDockWidgets.find(area); it != firstDockWidgets.end())
+				{
+					_ui.Window->tabifyDockWidget(it.value(), dock);
+				}
+				else
+				{
+					firstDockWidgets.insert(area, dock);
+				}
 			}
 		}
 	}
@@ -142,6 +149,9 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	//Hidden by default
 	flagsDock->setVisible(false);
+	transformDock->setVisible(false);
+
+	transformDock->toggleViewAction()->setShortcut(QKeySequence{Qt::CTRL + Qt::Key::Key_M});
 
 	_view->GetInfoBar()->SetAsset(_asset);
 
@@ -154,6 +164,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, _texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
 
 	connect(texturesDock, &QDockWidget::visibilityChanged, this, &StudioModelEditWidget::OnTexturesDockVisibilityChanged);
+	connect(transformDock, &QDockWidget::visibilityChanged, transformPanel, &StudioModelTransformPanel::ResetValues);
 
 	connect(_editorContext->GetColorSettings(), &settings::ColorSettings::ColorsChanged, this, &StudioModelEditWidget::SetTextureBackgroundColor);
 	connect(_texturesPanel, &StudioModelTexturesPanel::CurrentTextureChanged, _textureWidget, &TextureWidget::ResetImagePosition);

@@ -212,14 +212,9 @@ void ChangeModelOriginCommand::Apply(const ChangeModelOriginData& oldValue, cons
 	}
 }
 
-void ChangeModelMeshesScaleCommand::Apply(const studiomdl::ScaleMeshesData& oldValue, const studiomdl::ScaleMeshesData& newValue)
+void ChangeModelScaleCommand::Apply(const studiomdl::ScaleData& oldValue, const studiomdl::ScaleData& newValue)
 {
-	ApplyScaleMeshesData(*_asset->GetScene()->GetEntity()->GetEditableModel(), newValue);
-}
-
-void ChangeModelBonesScaleCommand::Apply(const std::vector<studiomdl::ScaleBonesBoneData>& oldValue, const std::vector<studiomdl::ScaleBonesBoneData>& newValue)
-{
-	ApplyScaleBonesData(*_asset->GetScene()->GetEntity()->GetEditableModel(), newValue);
+	ApplyScaleData(*_asset->GetScene()->GetEntity()->GetEditableModel(), newValue);
 }
 
 void ChangeHitboxBoneCommand::Apply(int index, const int& oldValue, const int& newValue)

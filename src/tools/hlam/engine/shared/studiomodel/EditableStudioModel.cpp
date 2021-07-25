@@ -252,7 +252,7 @@ void ApplyScaleMeshesData(EditableStudioModel& studioModel, const ScaleMeshesDat
 	}
 }
 
-std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> CalculateScaledBonesData(const EditableStudioModel& studioModel, const float scale)
+std::pair<ScaleBonesData, ScaleBonesData> CalculateScaledBonesData(const EditableStudioModel& studioModel, const float scale)
 {
 	std::vector<ScaleBonesBoneData> oldData;
 	std::vector<ScaleBonesBoneData> newData;
@@ -279,22 +279,59 @@ std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> Calc
 			});
 	}
 
-	return std::make_pair(std::move(oldData), std::move(newData));
+	return std::make_pair(ScaleBonesData{std::move(oldData)}, ScaleBonesData{std::move(newData)});
 }
 
-void ApplyScaleBonesData(EditableStudioModel& studioModel, const std::vector<studiomdl::ScaleBonesBoneData>& data)
+void ApplyScaleBonesData(EditableStudioModel& studioModel, const ScaleBonesData& data)
 {
 	for (int i = 0; i < studioModel.Bones.size(); ++i)
 	{
 		auto& bone = *studioModel.Bones[i];
 
-		const auto& boneData = data[i];
+		const auto& boneData = data.Bones[i];
 
 		for (int j = 0; j < boneData.Position.length(); ++j)
 		{
 			bone.Axes[j].Value = boneData.Position[j];
 			bone.Axes[j].Scale = boneData.Scale[j];
 		}
+	}
+}
+
+std::pair<ScaleData, ScaleData> CalculateScaleData(const EditableStudioModel& studioModel, const float scale, const int flags)
+{
+	ScaleData oldData;
+	ScaleData newData;
+
+	if (flags & ScaleFlags::ScaleMeshes)
+	{
+		auto meshData = CalculateScaledMeshesData(studioModel, scale);
+
+		oldData.Meshes = std::move(meshData.first);
+		newData.Meshes = std::move(meshData.second);
+	}
+
+	if (flags & ScaleFlags::ScaleBones)
+	{
+		auto bonesData = CalculateScaledBonesData(studioModel, scale);
+
+		oldData.Bones = std::move(bonesData.first);
+		newData.Bones = std::move(bonesData.second);
+	}
+
+	return {std::move(oldData), std::move(newData)};
+}
+
+void ApplyScaleData(EditableStudioModel& studioModel, const ScaleData& data)
+{
+	if (data.Meshes.has_value())
+	{
+		ApplyScaleMeshesData(studioModel, data.Meshes.value());
+	}
+
+	if (data.Bones.has_value())
+	{
+		ApplyScaleBonesData(studioModel, data.Bones.value());
 	}
 }
 

@@ -313,9 +313,34 @@ struct ScaleBonesBoneData
 	glm::vec3 Scale;
 };
 
-std::pair<std::vector<ScaleBonesBoneData>, std::vector<ScaleBonesBoneData>> CalculateScaledBonesData(const EditableStudioModel& studioModel, const float scale);
+struct ScaleBonesData
+{
+	std::vector<ScaleBonesBoneData> Bones;
+};
 
-void ApplyScaleBonesData(EditableStudioModel& studioModel, const std::vector<studiomdl::ScaleBonesBoneData>& data);
+std::pair<ScaleBonesData, ScaleBonesData> CalculateScaledBonesData(const EditableStudioModel& studioModel, const float scale);
+
+void ApplyScaleBonesData(EditableStudioModel& studioModel, const ScaleBonesData& data);
+
+struct ScaleData
+{
+	std::optional<ScaleMeshesData> Meshes;
+	std::optional<ScaleBonesData> Bones;
+};
+
+namespace ScaleFlags
+{
+enum ScaleFlags
+{
+	None = 0,
+	ScaleMeshes = 1 << 0,
+	ScaleBones = 1 << 1
+};
+}
+
+std::pair<ScaleData, ScaleData> CalculateScaleData(const EditableStudioModel& studioModel, const float scale, const int flags);
+
+void ApplyScaleData(EditableStudioModel& studioModel, const ScaleData& data);
 
 struct ScaleSTCoordinatesData
 {
