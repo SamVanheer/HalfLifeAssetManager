@@ -51,11 +51,17 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	connect(_ui.CBoxMax, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnCBoxMaxChanged);
 
 	InitializeUI();
-
-	_ui.PagesList->setCurrentRow(0);
 }
 
 StudioModelModelDataPanel::~StudioModelModelDataPanel() = default;
+
+void StudioModelModelDataPanel::OnLayoutDirectionChanged()
+{
+	const auto direction = _ui.MainLayout->direction();
+
+	_ui.BoundingBoxLayout->setDirection(direction);
+	_ui.ClippingBoxLayout->setDirection(direction);
+}
 
 void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 {

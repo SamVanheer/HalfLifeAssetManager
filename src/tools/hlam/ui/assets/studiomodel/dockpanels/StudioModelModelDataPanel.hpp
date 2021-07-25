@@ -22,6 +22,9 @@ public:
 private:
 	void InitializeUI();
 
+public slots:
+	void OnLayoutDirectionChanged();
+
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
 

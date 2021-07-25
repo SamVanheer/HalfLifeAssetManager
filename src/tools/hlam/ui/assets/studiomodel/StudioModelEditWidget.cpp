@@ -91,6 +91,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	OnAssetCameraChanged(nullptr, cameraOperators->GetCurrent());
 
 	_texturesPanel = new StudioModelTexturesPanel(_asset);
+	auto modelDataPanel = new StudioModelModelDataPanel(_asset);
 	auto transformPanel = new StudioModelTransformPanel(_asset);
 
 	auto addDockPanel = [&](QWidget* widget, const QString& label, Qt::DockWidgetArea area = Qt::DockWidgetArea::BottomDockWidgetArea)
@@ -116,7 +117,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	addDockPanel(new StudioModelSequencesPanel(_asset), "Sequences");
 	addDockPanel(new StudioModelBodyPartsPanel(_asset), "Body Parts");
 	auto texturesDock = addDockPanel(_texturesPanel, "Textures");
-	addDockPanel(new StudioModelModelDataPanel(_asset), "Model Data");
+	auto modelDataDock = addDockPanel(modelDataPanel, "Model Data");
 	auto flagsDock = addDockPanel(new StudioModelFlagsPanel(_asset), "Model Flags");
 	addDockPanel(new StudioModelBonesPanel(_asset), "Bones");
 	addDockPanel(new StudioModelAttachmentsPanel(_asset), "Attachments");
@@ -164,6 +165,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, _texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
 
 	connect(texturesDock, &QDockWidget::visibilityChanged, this, &StudioModelEditWidget::OnTexturesDockVisibilityChanged);
+	connect(modelDataDock, &QDockWidget::dockLocationChanged, modelDataPanel, &StudioModelModelDataPanel::OnLayoutDirectionChanged);
 	connect(transformDock, &QDockWidget::visibilityChanged, transformPanel, &StudioModelTransformPanel::ResetValues);
 
 	connect(_editorContext->GetColorSettings(), &settings::ColorSettings::ColorsChanged, this, &StudioModelEditWidget::SetTextureBackgroundColor);
