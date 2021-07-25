@@ -469,6 +469,7 @@ void StudioModelRenderer::DrawHitBoxes()
 void StudioModelRenderer::DrawNormals()
 {
 	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_DEPTH_TEST);
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_LINES);
