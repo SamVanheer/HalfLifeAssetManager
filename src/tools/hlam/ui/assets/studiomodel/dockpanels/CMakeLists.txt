@@ -19,6 +19,9 @@ target_sources(HLAM
 		StudioModelExportUVMeshDialog.hpp
 		StudioModelExportUVMeshDialog.cpp
 		StudioModelExportUVMeshDialog.ui
+		StudioModelFlagsPanel.cpp
+		StudioModelFlagsPanel.hpp
+		StudioModelFlagsPanel.ui
 		StudioModelHitboxesPanel.cpp
 		StudioModelHitboxesPanel.hpp
 		StudioModelHitboxesPanel.ui

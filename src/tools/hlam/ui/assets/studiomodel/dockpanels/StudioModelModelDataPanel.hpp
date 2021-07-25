@@ -24,8 +24,6 @@ public:
 private:
 	void InitializeUI();
 
-	void SetFlags(int flags);
-
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
 
@@ -36,8 +34,6 @@ private slots:
 	void OnScaleMesh();
 
 	void OnScaleBones();
-
-	void OnFlagChanged(int state);
 
 	void OnEyePositionChanged(const glm::vec3& value);
 

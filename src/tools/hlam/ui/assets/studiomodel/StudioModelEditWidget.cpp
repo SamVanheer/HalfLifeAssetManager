@@ -19,6 +19,7 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelBonesPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelFlagsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelHitboxesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelLightingPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDataPanel.hpp"
@@ -113,6 +114,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	addDockPanel(new StudioModelBodyPartsPanel(_asset), "Body Parts");
 	auto texturesDock = addDockPanel(_texturesPanel, "Textures");
 	addDockPanel(new StudioModelModelDataPanel(_asset), "Model Data");
+	auto flagsDock = addDockPanel(new StudioModelFlagsPanel(_asset), "Model Flags");
 	addDockPanel(new StudioModelBonesPanel(_asset), "Bones");
 	addDockPanel(new StudioModelAttachmentsPanel(_asset), "Attachments");
 	addDockPanel(new StudioModelHitboxesPanel(_asset), "Hitboxes");
@@ -137,6 +139,9 @@ StudioModelEditWidget::StudioModelEditWidget(
 	}
 
 	modelDisplayDock->raise();
+
+	//Hidden by default
+	flagsDock->setVisible(false);
 
 	_view->GetInfoBar()->SetAsset(_asset);
 

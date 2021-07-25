@@ -1,5 +1,4 @@
 #include <limits>
-#include <string_view>
 
 #include <QSignalBlocker>
 
@@ -15,8 +14,6 @@ using namespace qt::widgets;
 
 namespace ui::assets::studiomodel
 {
-const std::string_view CheckBoxModelFlagProperty{"CheckBoxFlagProperty"};
-
 StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
@@ -57,20 +54,6 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	connect(_ui.ScaleMesh, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnScaleMesh);
 	connect(_ui.ScaleBones, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnScaleBones);
 
-	connect(_ui.RocketTrail, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
-	connect(_ui.GrenadeSmoke, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
-	connect(_ui.GibBlood, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
-	connect(_ui.ModelRotate, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
-
-	connect(_ui.GreenTrail, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
-	connect(_ui.ZombieBlood, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
-	connect(_ui.OrangeTrail, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
-	connect(_ui.PurpleTrail, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
-
-	connect(_ui.NoShadeLight, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
-	connect(_ui.HitboxCollision, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
-	connect(_ui.ForceSkylight, &QCheckBox::stateChanged, this, &StudioModelModelDataPanel::OnFlagChanged);
-
 	connect(_ui.EyePosition, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnEyePositionChanged);
 
 	connect(_ui.BBoxMin, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnBBoxMinChanged);
@@ -80,20 +63,6 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	connect(_ui.CBoxMax, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnCBoxMaxChanged);
 
 	connect(_ui.FlipNormals, &QPushButton::clicked, this, &StudioModelModelDataPanel::OnFlipNormals);
-
-	_ui.RocketTrail->setProperty(CheckBoxModelFlagProperty.data(), EF_ROCKET);
-	_ui.GrenadeSmoke->setProperty(CheckBoxModelFlagProperty.data(), EF_GRENADE);
-	_ui.GibBlood->setProperty(CheckBoxModelFlagProperty.data(), EF_GIB);
-	_ui.ModelRotate->setProperty(CheckBoxModelFlagProperty.data(), EF_ROTATE);
-
-	_ui.GreenTrail->setProperty(CheckBoxModelFlagProperty.data(), EF_TRACER);
-	_ui.ZombieBlood->setProperty(CheckBoxModelFlagProperty.data(), EF_ZOMGIB);
-	_ui.OrangeTrail->setProperty(CheckBoxModelFlagProperty.data(), EF_TRACER2);
-	_ui.PurpleTrail->setProperty(CheckBoxModelFlagProperty.data(), EF_TRACER3);
-
-	_ui.NoShadeLight->setProperty(CheckBoxModelFlagProperty.data(), EF_NOSHADELIGHT);
-	_ui.HitboxCollision->setProperty(CheckBoxModelFlagProperty.data(), EF_HITBOXCOLLISIONS);
-	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty.data(), EF_FORCESKYLIGHT);
 
 	InitializeUI();
 
@@ -153,12 +122,6 @@ void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 
 	//The mesh and bone scales aren't reset here because they're not representative of the absolute model scale compared to the initial state
-
-	case ModelChangeId::ChangeModelFlags:
-	{
-		SetFlags(_asset->GetScene()->GetEntity()->GetEditableModel()->Flags);
-		break;
-	}
 	}
 }
 
@@ -170,8 +133,6 @@ void StudioModelModelDataPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 void StudioModelModelDataPanel::InitializeUI()
 {
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-
-	SetFlags(model->Flags);
 
 	{
 		const QSignalBlocker blocker{_ui.EyePosition};
@@ -192,35 +153,6 @@ void StudioModelModelDataPanel::InitializeUI()
 
 		_ui.CBoxMin->SetValue(model->ClippingMin);
 		_ui.CBoxMax->SetValue(model->ClippingMax);
-	}
-}
-
-void StudioModelModelDataPanel::SetFlags(int flags)
-{
-	QCheckBox* const checkBoxes[] =
-	{
-		_ui.RocketTrail,
-		_ui.GrenadeSmoke,
-		_ui.GibBlood,
-		_ui.ModelRotate,
-		_ui.GreenTrail,
-		_ui.ZombieBlood,
-		_ui.OrangeTrail,
-		_ui.PurpleTrail,
-		_ui.NoShadeLight,
-		_ui.HitboxCollision,
-		_ui.ForceSkylight
-	};
-
-	for (auto checkBox : checkBoxes)
-	{
-		const auto flagValue = checkBox->property(CheckBoxModelFlagProperty.data()).toInt();
-
-		{
-			const QSignalBlocker blocker{checkBox};
-
-			checkBox->setChecked((flags & flagValue) != 0);
-		}
 	}
 }
 
@@ -286,28 +218,6 @@ void StudioModelModelDataPanel::OnScaleBones()
 	auto data{studiomdl::CalculateScaledBonesData(*entity->GetEditableModel(), _ui.ScaleBonesSpinner->value())};
 
 	_asset->AddUndoCommand(new ChangeModelBonesScaleCommand(_asset, std::move(data.first), std::move(data.second)));
-}
-
-void StudioModelModelDataPanel::OnFlagChanged(int state)
-{
-	const auto checkBox = sender();
-
-	const auto flagValue = checkBox->property(CheckBoxModelFlagProperty.data()).toInt();
-
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-
-	int newFlags = model->Flags;
-
-	if (state == Qt::CheckState::Checked)
-	{
-		newFlags |= flagValue;
-	}
-	else
-	{
-		newFlags &= ~flagValue;
-	}
-
-	_asset->AddUndoCommand(new ChangeModelFlagsCommand(_asset, model->Flags, newFlags));
 }
 
 void StudioModelModelDataPanel::OnEyePositionChanged(const glm::vec3& value)
