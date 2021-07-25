@@ -55,7 +55,7 @@ public:
 
 private:
 	static void CalculateRotations(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
-		const Sequence& sequence, const std::vector<Animation>& anims, TransformState& transformState);
+		const Sequence& sequence, const Animation* anims, TransformState& transformState);
 
 	static void CalculateBoneAdjust(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
 		std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust);

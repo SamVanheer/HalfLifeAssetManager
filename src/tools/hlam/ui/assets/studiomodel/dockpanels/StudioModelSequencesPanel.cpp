@@ -16,6 +16,8 @@
 
 namespace ui::assets::studiomodel
 {
+constexpr int SequenceIndexOffset = 1;
+
 StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
@@ -76,7 +78,9 @@ void StudioModelSequencesPanel::InitializeUI()
 
 	QStringList sequences;
 
-	sequences.reserve(model->Sequences.size());
+	sequences.reserve(model->Sequences.size() + 1);
+
+	sequences.append("reference_mesh");
 
 	for (const auto& sequence : model->Sequences)
 	{
@@ -85,7 +89,7 @@ void StudioModelSequencesPanel::InitializeUI()
 
 	_ui.SequenceComboBox->addItems(sequences);
 
-	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex);
+	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex + 1);
 }
 
 void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
@@ -300,11 +304,16 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 	auto entity = _asset->GetScene()->GetEntity();
 
 	//Don't reset the frame unless the sequence has actually changed
-	const bool sequenceHasChanged = entity->GetSequence() != index;
+	const bool sequenceHasChanged = (entity->GetSequence() + SequenceIndexOffset) != index;
 
 	if (sequenceHasChanged)
 	{
-		entity->SetSequence(index);
+		entity->SetSequence(index - SequenceIndexOffset);
+	}
+
+	if (index != -1)
+	{
+		index -= SequenceIndexOffset;
 	}
 
 	const studiomdl::Sequence emptySequence{};
@@ -367,6 +376,8 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 
 	_ui.EventsComboBox->setEnabled(hasEvents);
 	_ui.RemoveEvent->setEnabled(hasEvents);
+
+	_ui.EventsWidget->setEnabled(index != -1);
 }
 
 void StudioModelSequencesPanel::OnLoopingModeChanged(int index)

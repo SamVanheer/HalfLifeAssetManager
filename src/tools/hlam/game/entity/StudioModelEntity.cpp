@@ -159,7 +159,7 @@ int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float en
 		return 0;
 	}
 
-	if (_sequence >= _editableModel->Sequences.size())
+	if (_sequence < 0 || _sequence >= _editableModel->Sequences.size())
 	{
 		return 0;
 	}
@@ -249,6 +249,11 @@ void StudioModelEntity::SetFrame(float frame)
 		return;
 	}
 
+	if (_sequence < 0 || _sequence >= _editableModel->Sequences.size())
+	{
+		return;
+	}
+
 	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
 	_frame = frame;
@@ -276,6 +281,11 @@ void StudioModelEntity::SetEditableModel(studiomdl::EditableStudioModel* model)
 
 int StudioModelEntity::GetNumFrames() const
 {
+	if (_sequence < 0 || _sequence >= _editableModel->Sequences.size())
+	{
+		return 0;
+	}
+
 	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
 	return sequenceDescriptor.NumFrames;
@@ -290,7 +300,7 @@ void StudioModelEntity::SetSequence(int sequence)
 	}
 	else
 	{
-		if (sequence < 0 || sequence >= _editableModel->Sequences.size())
+		if (sequence != -1 && (sequence < -1 || sequence >= _editableModel->Sequences.size()))
 		{
 			return;
 		}
@@ -303,15 +313,23 @@ void StudioModelEntity::SetSequence(int sequence)
 
 void StudioModelEntity::GetSequenceInfo(float& frameRate, float& groundSpeed) const
 {
-	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
+	bool hasSequenceInfo = false;
 
-	if (sequenceDescriptor.NumFrames > 1)
+	if (_sequence != -1)
 	{
-		frameRate = sequenceDescriptor.FPS;
-		groundSpeed = static_cast<float>(glm::length(sequenceDescriptor.LinearMovement));
-		groundSpeed = groundSpeed * sequenceDescriptor.FPS / (sequenceDescriptor.NumFrames - 1);
+		const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
+
+		if (sequenceDescriptor.NumFrames > 1)
+		{
+			frameRate = sequenceDescriptor.FPS;
+			groundSpeed = static_cast<float>(glm::length(sequenceDescriptor.LinearMovement));
+			groundSpeed = groundSpeed * sequenceDescriptor.FPS / (sequenceDescriptor.NumFrames - 1);
+
+			hasSequenceInfo = true;
+		}
 	}
-	else
+
+	if (!hasSequenceInfo)
 	{
 		frameRate = 256.0;
 		groundSpeed = 0.0;

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -13,12 +14,14 @@ const std::array<glm::mat3x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const
 {
 	int sequenceIndex = transformInfo.SequenceIndex;
 
-	if (sequenceIndex >= studioModel.Sequences.size())
+	if (sequenceIndex != -1 && (sequenceIndex < -1 || sequenceIndex >= studioModel.Sequences.size()))
 	{
 		sequenceIndex = 0;
 	}
 
-	const auto& sequence = *studioModel.Sequences[sequenceIndex];
+	const Sequence emptySequence;
+
+	const auto& sequence = sequenceIndex  != -1 ? *studioModel.Sequences[sequenceIndex] : emptySequence;
 
 	if (sequence.AnimationBlends.size() == 9)
 	{
@@ -36,19 +39,19 @@ const std::array<glm::mat3x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const
 			{
 				interpolantY = (blendY - 127.0) * 2;
 
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[4], _transformStates[0]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[5], _transformStates[1]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[7], _transformStates[2]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[8], _transformStates[3]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[4].data(), _transformStates[0]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[5].data(), _transformStates[1]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[7].data(), _transformStates[2]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[8].data(), _transformStates[3]);
 			}
 			else
 			{
 				interpolantY = blendY * 2;
 
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[1], _transformStates[0]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[2], _transformStates[1]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[4], _transformStates[2]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[5], _transformStates[3]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[1].data(), _transformStates[0]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[2].data(), _transformStates[1]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[4].data(), _transformStates[2]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[5].data(), _transformStates[3]);
 			}
 		}
 		else
@@ -59,19 +62,19 @@ const std::array<glm::mat3x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const
 			{
 				interpolantY = blendY * 2;
 
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[0], _transformStates[0]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[1], _transformStates[1]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[3], _transformStates[2]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[4], _transformStates[3]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[0].data(), _transformStates[0]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[1].data(), _transformStates[1]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[3].data(), _transformStates[2]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[4].data(), _transformStates[3]);
 			}
 			else
 			{
 				interpolantY = (blendY - 127.0) * 2;
 
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[3], _transformStates[0]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[4], _transformStates[1]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[6], _transformStates[2]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[7], _transformStates[3]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[3].data(), _transformStates[0]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[4].data(), _transformStates[1]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[6].data(), _transformStates[2]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[7].data(), _transformStates[3]);
 			}
 		}
 
@@ -82,21 +85,21 @@ const std::array<glm::mat3x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const
 		const auto normalizedInterpolantY = interpolantY / 255.0;
 		SlerpBones(studioModel, normalizedInterpolantY, _transformStates[2], _transformStates[0]);
 	}
-	else
+	else if (sequence.AnimationBlends.size() > 0)
 	{
-		CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[0], _transformStates[0]);
+		CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[0].data(), _transformStates[0]);
 
 		if (sequence.AnimationBlends.size() > 1)
 		{
-			CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[1], _transformStates[1]);
+			CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[1].data(), _transformStates[1]);
 			float s = transformInfo.Blenders[0] / 255.0;
 
 			SlerpBones(studioModel, s, _transformStates[1], _transformStates[0]);
 
 			if (sequence.AnimationBlends[0].size() == 4)
 			{
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[2], _transformStates[2]);
-				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[3], _transformStates[3]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[2].data(), _transformStates[2]);
+				CalculateRotations(studioModel, transformInfo, sequence, sequence.AnimationBlends[3].data(), _transformStates[3]);
 
 				s = transformInfo.Blenders[0] / 255.0;
 				SlerpBones(studioModel, s, _transformStates[3], _transformStates[2]);
@@ -105,6 +108,12 @@ const std::array<glm::mat3x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const
 				SlerpBones(studioModel, s, _transformStates[2], _transformStates[0]);
 			}
 		}
+	}
+	else
+	{
+		std::array<Animation, MAXSTUDIOBONES> dummyAnims;
+
+		CalculateRotations(studioModel, transformInfo, sequence, dummyAnims.data(), _transformStates[0]);
 	}
 
 	glm::mat3x4 bonematrix{};
@@ -134,7 +143,7 @@ const std::array<glm::mat3x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const
 }
 
 void BoneTransformer::CalculateRotations(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
-	const Sequence& sequence, const std::vector<Animation>& anims, TransformState& transformState)
+	const Sequence& sequence, const Animation* anims, TransformState& transformState)
 {
 	const int frame = (int)transformInfo.Frame;
 	const float s = (transformInfo.Frame - frame);
