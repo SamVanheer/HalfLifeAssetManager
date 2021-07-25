@@ -36,8 +36,11 @@ void StudioModelView::SetCurrentWidget(QWidget* widget)
 			}
 		}
 
-		//Not contained in this view
-		return;
+		if (index == -1)
+		{
+			//Not contained in this view
+			return;
+		}
 	}
 
 	_ui.ViewSelection->setCurrentIndex(index);
