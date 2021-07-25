@@ -1,10 +1,7 @@
 #include <QBoxLayout>
 #include <QDockWidget>
-#include <QGridLayout>
 #include <QMainWindow>
 #include <QMap>
-#include <QStackedWidget>
-#include <QTabBar>
 
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "graphics/Scene.hpp"
@@ -16,6 +13,7 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
+#include "ui/assets/studiomodel/StudioModelView.hpp"
 
 #include "ui/assets/studiomodel/dockpanels/InfoBar.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
@@ -48,13 +46,11 @@ StudioModelEditWidget::StudioModelEditWidget(
 	, _editorContext(editorContext)
 	, _asset(asset)
 {
+	_ui.setupUi(this);
+
 	const auto scene = _asset->GetScene();
 
-	_window = new QMainWindow(this);
-
-	_centralWidget = new QWidget(_window);
-
-	_viewWidget = new QStackedWidget(_centralWidget);
+	_view = new StudioModelView(_ui.Window);
 
 	_sceneWidget = new SceneWidget(scene, this);
 
@@ -64,29 +60,20 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	SetTextureBackgroundColor();
 
-	_viewSelectionWidget = new QTabBar(this);
+	_view->AddWidget(_sceneWidget->GetContainer(), "Scene");
+	_view->AddWidget(_textureWidget, "Texture");
 
-	_viewSelectionWidget->setShape(QTabBar::Shape::RoundedSouth);
-
-	_viewSelectionWidget->addTab("Scene");
-	_viewSelectionWidget->addTab("Texture");
-
-	_viewSelectionWidget->setToolTip("The current view");
-
-	_viewWidget->addWidget(_sceneWidget->GetContainer());
-	_viewWidget->addWidget(_textureWidget);
-
-	_window->setCentralWidget(_centralWidget);
+	_ui.Window->setCentralWidget(_view);
 
 	//Needed so the window will actually show up
-	_window->setWindowFlags(Qt::WindowType::Widget);
+	_ui.Window->setWindowFlags(Qt::WindowType::Widget);
 
 	//Don't enable nested docks for now. The docks are so large they break the window's size and cause rendering problems
-	_window->setDockOptions(QMainWindow::DockOption::AnimatedDocks | QMainWindow::DockOption::AllowTabbedDocks /* | QMainWindow::DockOption::AllowNestedDocks*/);
+	_ui.Window->setDockOptions(QMainWindow::DockOption::AnimatedDocks | QMainWindow::DockOption::AllowTabbedDocks /* | QMainWindow::DockOption::AllowNestedDocks*/);
 
-	_window->setTabPosition(Qt::DockWidgetArea::BottomDockWidgetArea, QTabWidget::TabPosition::North);
+	_ui.Window->setTabPosition(Qt::DockWidgetArea::BottomDockWidgetArea, QTabWidget::TabPosition::North);
 
-	_window->setDocumentMode(true);
+	_ui.Window->setDocumentMode(true);
 
 	_camerasPanel = new camera_operators::CamerasPanel();
 
@@ -104,14 +91,14 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	auto addDockPanel = [&](QWidget* widget, const QString& label)
 	{
-		auto dock = new QDockWidget(label, _window);
+		auto dock = new QDockWidget(label, _ui.Window);
 
 		dock->setWidget(widget);
 		dock->setObjectName(label);
 
 		connect(dock, &QDockWidget::dockLocationChanged, this, &StudioModelEditWidget::OnDockLocationChanged);
 
-		_window->addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, dock);
+		_ui.Window->addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, dock);
 
 		return dock;
 	};
@@ -132,13 +119,13 @@ StudioModelEditWidget::StudioModelEditWidget(
 	{
 		QMap<Qt::DockWidgetArea, QDockWidget*> firstDockWidgets;
 
-		for (auto dock : _window->findChildren<QDockWidget*>())
+		for (auto dock : _ui.Window->findChildren<QDockWidget*>())
 		{
-			const auto area = _window->dockWidgetArea(dock);
+			const auto area = _ui.Window->dockWidgetArea(dock);
 
 			if (auto it = firstDockWidgets.find(area); it != firstDockWidgets.end())
 			{
-				_window->tabifyDockWidget(it.value(), dock);
+				_ui.Window->tabifyDockWidget(it.value(), dock);
 			}
 			else
 			{
@@ -149,45 +136,14 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	modelDisplayDock->raise();
 
-	const auto infoBar = new InfoBar(_centralWidget);
+	_view->GetInfoBar()->SetAsset(_asset);
 
-	infoBar->SetAsset(_asset);
-
-	_timeline = new Timeline(this);
-
-	_timeline->SetAsset(_asset);
-
-	auto layout = new QVBoxLayout(this);
-
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->setSpacing(0);
-
-	layout->addWidget(_window, 1);
-
-	layout->addWidget(_timeline);
-
-	setLayout(layout);
-
-	{
-		auto centralLayout = new QGridLayout(_centralWidget);
-
-		centralLayout->setContentsMargins(0, 0, 0, 0);
-		centralLayout->setHorizontalSpacing(6);
-		centralLayout->setVerticalSpacing(0);
-
-		centralLayout->addWidget(_viewWidget, 0, 0, 1, 2);
-		centralLayout->addWidget(infoBar, 1, 0);
-		centralLayout->addWidget(_viewSelectionWidget, 1, 1, Qt::AlignmentFlag::AlignLeft);
-
-		_centralWidget->setLayout(centralLayout);
-	}
+	_ui.Timeline->SetAsset(_asset);
 
 	connect(cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelEditWidget::OnAssetCameraChanged);
 	connect(_camerasPanel, &camera_operators::CamerasPanel::CameraChanged, this, &StudioModelEditWidget::OnCameraChanged);
 
-	connect(_viewSelectionWidget, &QTabBar::currentChanged, _viewWidget, &QStackedWidget::setCurrentIndex);
-
-	connect(_sceneWidget, &SceneWidget::frameSwapped, infoBar, &InfoBar::OnDraw);
+	connect(_sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw);
 	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, _texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
 
 	connect(texturesDock, &QDockWidget::visibilityChanged, this, &StudioModelEditWidget::OnTexturesDockVisibilityChanged);
@@ -266,7 +222,7 @@ void StudioModelEditWidget::OnTexturesDockVisibilityChanged(bool visible)
 {
 	if (_asset->GetProvider()->GetStudioModelSettings()->ShouldActivateTextureViewWhenTexturesPanelOpened() && visible)
 	{
-		_viewSelectionWidget->setCurrentIndex(1);
+		_view->SetCurrentWidget(_textureWidget);
 	}
 }
 

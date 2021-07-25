@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ui::assets::studiomodel::StudioModelEditWidget</class>
+ <widget class="QWidget" name="ui::assets::studiomodel::StudioModelEditWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>705</width>
+    <height>330</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QMainWindow" name="Window"/>
+   </item>
+   <item>
+    <widget class="ui::assets::studiomodel::Timeline" name="Timeline" native="true"/>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ui::assets::studiomodel::Timeline</class>
+   <extends>QWidget</extends>
+   <header>ui/assets/studiomodel/dockpanels/Timeline.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

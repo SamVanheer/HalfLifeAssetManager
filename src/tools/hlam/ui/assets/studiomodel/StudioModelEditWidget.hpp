@@ -5,10 +5,7 @@
 #include <QWidget>
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
-
-class QMainWindow;
-class QStackedWidget;
-class QTabBar;
+#include "ui_StudioModelEditWidget.h"
 
 namespace graphics
 {
@@ -31,7 +28,7 @@ namespace assets::studiomodel
 {
 class StudioModelAsset;
 class StudioModelTexturesPanel;
-class Timeline;
+class StudioModelView;
 
 class StudioModelEditWidget final : public QWidget
 {
@@ -62,22 +59,16 @@ private:
 	EditorContext* const _editorContext;
 	StudioModelAsset* const _asset;
 
-	QMainWindow* _window;
+	Ui_StudioModelEditWidget _ui;
 
-	QWidget* _centralWidget;
-
-	QStackedWidget* _viewWidget;
+	StudioModelView* _view;
 
 	SceneWidget* _sceneWidget;
 
 	TextureWidget* _textureWidget;
 
-	QTabBar* _viewSelectionWidget;
-
 	camera_operators::CamerasPanel* _camerasPanel;
 	StudioModelTexturesPanel* _texturesPanel;
-
-	Timeline* _timeline;
 };
 }
 }
