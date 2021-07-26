@@ -489,6 +489,56 @@ void ApplyScaleData(EditableStudioModel& studioModel, const ScaleData& data)
 	}
 }
 
+std::pair<MoveData, MoveData> CalculateMoveData(const EditableStudioModel& studioModel, const glm::vec3 offset)
+{
+	const auto rootBoneIndices{studioModel.GetRootBoneIndices()};
+
+	std::vector<MoveBoneData> oldRootBonePositions;
+	std::vector<MoveBoneData> newRootBonePositions;
+
+	oldRootBonePositions.reserve(rootBoneIndices.size());
+	newRootBonePositions.reserve(rootBoneIndices.size());
+
+	for (auto rootBoneIndex : rootBoneIndices)
+	{
+		const auto& rootBone = *studioModel.Bones[rootBoneIndex];
+
+		oldRootBonePositions.emplace_back(
+			MoveBoneData
+			{
+				rootBoneIndex,
+				{rootBone.Axes[0].Value, rootBone.Axes[1].Value, rootBone.Axes[2].Value}
+			}
+		);
+
+		newRootBonePositions.emplace_back(
+			MoveBoneData
+			{
+				rootBoneIndex,
+				{
+					rootBone.Axes[0].Value + offset[0],
+					rootBone.Axes[1].Value + offset[1],
+					rootBone.Axes[2].Value + offset[2]
+				}
+			});
+	}
+
+	return {{std::move(oldRootBonePositions)}, {std::move(newRootBonePositions)}};
+}
+
+void ApplyMoveData(EditableStudioModel& studioModel, const MoveData& data)
+{
+	for (const auto& data : data.BoneData)
+	{
+		auto& bone = *studioModel.Bones[data.Index];
+
+		for (int i = 0; i < data.Position.length(); ++i)
+		{
+			bone.Axes[i].Value = data.Position[i];
+		}
+	}
+}
+
 std::pair<ScaleSTCoordinatesData, ScaleSTCoordinatesData> CalculateScaledSTCoordinatesData(const EditableStudioModel& studioModel,
 	const int textureIndex, const int oldWidth, const int oldHeight, const int newWidth, const int newHeight)
 {

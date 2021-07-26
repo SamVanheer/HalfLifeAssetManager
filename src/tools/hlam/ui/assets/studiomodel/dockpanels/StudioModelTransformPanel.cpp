@@ -86,45 +86,11 @@ void StudioModelTransformPanel::OnApply()
 
 	case MoveId:
 	{
-		const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+		auto moveData = studiomdl::CalculateMoveData(*_asset->GetScene()->GetEntity()->GetEditableModel(), _ui.MoveValues->GetValue());
 
-		const glm::vec3 offset{_ui.MoveValues->GetValue()};
-
-		const auto rootBoneIndices{model->GetRootBoneIndices()};
-
-		std::vector<RootBoneData> oldRootBonePositions;
-		std::vector<RootBoneData> newRootBonePositions;
-
-		oldRootBonePositions.reserve(rootBoneIndices.size());
-		newRootBonePositions.reserve(rootBoneIndices.size());
-
-		for (auto rootBoneIndex : rootBoneIndices)
+		if (!moveData.first.BoneData.empty())
 		{
-			const auto& rootBone = *model->Bones[rootBoneIndex];
-
-			oldRootBonePositions.emplace_back(
-				RootBoneData
-				{
-					rootBoneIndex,
-					{rootBone.Axes[0].Value, rootBone.Axes[1].Value, rootBone.Axes[2].Value}
-				}
-			);
-
-			newRootBonePositions.emplace_back(
-				RootBoneData
-				{
-					rootBoneIndex,
-					{
-						rootBone.Axes[0].Value + offset[0],
-						rootBone.Axes[1].Value + offset[1],
-						rootBone.Axes[2].Value + offset[2]
-					}
-				});
-		}
-
-		if (!newRootBonePositions.empty())
-		{
-			_asset->AddUndoCommand(new ChangeModelOriginCommand(_asset, {std::move(oldRootBonePositions)}, {std::move(newRootBonePositions)}));
+			_asset->AddUndoCommand(new ChangeModelOriginCommand(_asset, std::move(moveData.first), std::move(moveData.second)));
 		}
 		break;
 	}

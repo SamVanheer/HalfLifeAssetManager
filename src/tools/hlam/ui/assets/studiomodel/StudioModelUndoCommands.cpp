@@ -197,19 +197,9 @@ void ChangeModelFlagsCommand::Apply(const int& oldValue, const int& newValue)
 	model->Flags = newValue;
 }
 
-void ChangeModelOriginCommand::Apply(const ChangeModelOriginData& oldValue, const ChangeModelOriginData& newValue)
+void ChangeModelOriginCommand::Apply(const studiomdl::MoveData& oldValue, const studiomdl::MoveData& newValue)
 {
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
-
-	for (const auto& data : newValue.BoneData)
-	{
-		auto& bone = *model->Bones[data.BoneIndex];
-
-		for (int i = 0; i < data.BonePosition.length(); ++i)
-		{
-			bone.Axes[i].Value = data.BonePosition[i];
-		}
-	}
+	ApplyMoveData(*_asset->GetScene()->GetEntity()->GetEditableModel(), newValue);
 }
 
 void ChangeModelScaleCommand::Apply(const studiomdl::ScaleData& oldValue, const studiomdl::ScaleData& newValue)

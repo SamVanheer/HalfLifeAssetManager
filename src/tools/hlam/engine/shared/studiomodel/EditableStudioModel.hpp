@@ -257,7 +257,7 @@ public:
 
 	void ReuploadTextures(graphics::TextureLoader& textureLoader);
 
-	std::vector<int> GetRootBoneIndices()
+	std::vector<int> GetRootBoneIndices() const
 	{
 		std::vector<int> bones;
 
@@ -356,6 +356,21 @@ enum ScaleFlags
 std::pair<ScaleData, ScaleData> CalculateScaleData(const EditableStudioModel& studioModel, const float scale, const int flags);
 
 void ApplyScaleData(EditableStudioModel& studioModel, const ScaleData& data);
+
+struct MoveBoneData
+{
+	int Index;
+	glm::vec3 Position;
+};
+
+struct MoveData
+{
+	std::vector<MoveBoneData> BoneData;
+};
+
+std::pair<MoveData, MoveData> CalculateMoveData(const EditableStudioModel& studioModel, const glm::vec3 offset);
+
+void ApplyMoveData(EditableStudioModel& studioModel, const MoveData& data);
 
 struct ScaleSTCoordinatesData
 {

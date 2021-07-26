@@ -856,33 +856,17 @@ protected:
 	void Apply(const int& oldValue, const int& newValue) override;
 };
 
-struct RootBoneData
-{
-	int BoneIndex;
-	glm::vec3 BonePosition;
-};
-
-struct ChangeModelOriginData
-{
-	std::vector<RootBoneData> BoneData;
-};
-
-class ChangeModelOriginCommand : public ModelUndoCommand<ChangeModelOriginData>
+class ChangeModelOriginCommand : public ModelUndoCommand<studiomdl::MoveData>
 {
 public:
-	ChangeModelOriginCommand(StudioModelAsset* asset, ChangeModelOriginData&& oldPositions, ChangeModelOriginData&& newPositions)
+	ChangeModelOriginCommand(StudioModelAsset* asset, studiomdl::MoveData&& oldPositions, studiomdl::MoveData&& newPositions)
 		: ModelUndoCommand(asset, ModelChangeId::ChangeModelOrigin, std::move(oldPositions), std::move(newPositions))
 	{
 		setText("Change model origin");
 	}
 
 protected:
-	void Apply(const ChangeModelOriginData& oldValue, const ChangeModelOriginData& newValue) override;
-
-	void EmitEvent(const ChangeModelOriginData& oldValue, const ChangeModelOriginData& newValue) override
-	{
-		_asset->EmitModelChanged(ModelChangeEvent(_id));
-	}
+	void Apply(const studiomdl::MoveData& oldValue, const studiomdl::MoveData& newValue) override;
 };
 
 class ChangeModelScaleCommand : public ModelUndoCommand<studiomdl::ScaleData>
