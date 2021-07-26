@@ -21,6 +21,8 @@ public:
 private:
 	void InitializeUI();
 
+	void UpdateRootBonesCount();
+
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
 

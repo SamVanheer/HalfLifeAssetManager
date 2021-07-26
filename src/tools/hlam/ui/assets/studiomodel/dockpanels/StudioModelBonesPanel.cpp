@@ -166,6 +166,25 @@ void StudioModelBonesPanel::InitializeUI()
 		_ui.BoneController->addItems(boneControllers);
 		_ui.BoneController->setCurrentIndex(0);
 	}
+
+	UpdateRootBonesCount();
+}
+
+void StudioModelBonesPanel::UpdateRootBonesCount()
+{
+	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+
+	int count = 0;
+
+	for (const auto& bone : model->Bones)
+	{
+		if (!bone->Parent)
+		{
+			++count;
+		}
+	}
+
+	_ui.RootBonesCount->setText(QString::number(count));
 }
 
 void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
@@ -215,6 +234,8 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 			_ui.ParentBone->setCurrentIndex(bone.Parent ? (bone.Parent->ArrayIndex + ParentBoneOffset) : 0);
 		}
+
+		UpdateRootBonesCount();
 		break;
 	}
 
