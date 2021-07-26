@@ -298,6 +298,19 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 		OnBoneControllerAxisChanged(_ui.BoneControllerAxis->currentIndex());
 		break;
 	}
+
+	//Refresh bone data
+	case ModelChangeId::ChangeModelOrigin:
+		[[fallthrough]];
+
+	case ModelChangeId::ChangeModelScale:
+		[[fallthrough]];
+
+	case ModelChangeId::ChangeModelRotation:
+	{
+		OnBoneChanged(_ui.Bones->currentIndex());
+		break;
+	}
 	}
 }
 

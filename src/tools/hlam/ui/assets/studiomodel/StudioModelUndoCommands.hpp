@@ -50,6 +50,7 @@ enum class ModelChangeId
 	ChangeModelFlags,
 	ChangeModelOrigin,
 	ChangeModelScale,
+	ChangeModelRotation,
 
 	ChangeHitboxBone,
 	ChangeHitboxHitgroup,
@@ -896,6 +897,20 @@ public:
 
 protected:
 	void Apply(const studiomdl::ScaleData& oldValue, const studiomdl::ScaleData& newValue) override;
+};
+
+class ChangeModelRotationCommand : public ModelUndoCommand<studiomdl::RotateData>
+{
+public:
+	ChangeModelRotationCommand(
+		StudioModelAsset* asset, studiomdl::RotateData&& oldData, studiomdl::RotateData&& newData)
+		: ModelUndoCommand(asset, ModelChangeId::ChangeModelRotation, std::move(oldData), std::move(newData))
+	{
+		setText("Rotate model");
+	}
+
+protected:
+	void Apply(const studiomdl::RotateData& oldValue, const studiomdl::RotateData& newValue) override;
 };
 
 class ChangeHitboxBoneCommand : public ModelListUndoCommand<int>

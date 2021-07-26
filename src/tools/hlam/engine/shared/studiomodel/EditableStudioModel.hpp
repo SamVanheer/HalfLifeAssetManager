@@ -296,6 +296,21 @@ public:
 	}
 };
 
+struct RotateBoneData
+{
+	glm::vec3 Position;
+	glm::vec3 Rotation;
+};
+
+struct RotateData
+{
+	std::vector<RotateBoneData> Bones;
+};
+
+std::pair<RotateData, RotateData> CalculateRotatedData(const EditableStudioModel& studioModel, glm::vec3 angles);
+
+void ApplyRotateData(EditableStudioModel& studioModel, const RotateData& data);
+
 struct ScaleMeshesData
 {
 	std::vector<std::vector<glm::vec3>> Vertices;

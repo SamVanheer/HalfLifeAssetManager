@@ -217,6 +217,11 @@ void ChangeModelScaleCommand::Apply(const studiomdl::ScaleData& oldValue, const 
 	ApplyScaleData(*_asset->GetScene()->GetEntity()->GetEditableModel(), newValue);
 }
 
+void ChangeModelRotationCommand::Apply(const studiomdl::RotateData& oldValue, const studiomdl::RotateData& newValue)
+{
+	ApplyRotateData(*_asset->GetScene()->GetEntity()->GetEditableModel(), newValue);
+}
+
 void ChangeHitboxBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();

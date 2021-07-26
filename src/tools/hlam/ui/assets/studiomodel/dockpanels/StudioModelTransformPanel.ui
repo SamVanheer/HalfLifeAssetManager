@@ -82,13 +82,13 @@
       </property>
       <item>
        <widget class="QStackedWidget" name="ValuesStack">
-        <widget class="QWidget" name="MovePage">
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+        <widget class="QWidget" name="RotatePage">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="qt::widgets::Vector3Edit" name="MoveValues" native="true"/>
+           <widget class="qt::widgets::Vector3Edit" name="RotateValues" native="true"/>
           </item>
           <item>
-           <spacer name="verticalSpacer_2">
+           <spacer name="verticalSpacer_4">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
@@ -146,6 +146,26 @@
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="MovePage">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="qt::widgets::Vector3Edit" name="MoveValues" native="true"/>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>0</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </item>
      </layout>
@@ -158,9 +178,9 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QRadioButton" name="Move">
+       <widget class="QRadioButton" name="Rotate">
         <property name="text">
-         <string>Move</string>
+         <string>Rotate</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -174,6 +194,19 @@
        <widget class="QRadioButton" name="Scale">
         <property name="text">
          <string>Scale</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">ModeGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="Move">
+        <property name="text">
+         <string>Move</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">ModeGroup</string>

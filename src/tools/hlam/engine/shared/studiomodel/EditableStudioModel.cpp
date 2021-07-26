@@ -1,10 +1,16 @@
 #include <algorithm>
+#include <limits>
+
+#include <glm/gtx/rotate_vector.hpp>
 
 #include "core/shared/Logging.hpp"
 
+#include "engine/shared/studiomodel/BoneTransformer.hpp"
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
 
 #include "graphics/TextureLoader.hpp"
+
+#include "utility/mathlib.hpp"
 
 namespace studiomdl
 {
@@ -126,6 +132,154 @@ void EditableStudioModel::ReuploadTextures(graphics::TextureLoader& textureLoade
 		if (texture->TextureId)
 		{
 			ReplaceTexture(textureLoader, texture.get(), texture->Pixels.data(), texture->Palette);
+		}
+	}
+}
+
+glm::vec3 FindAverageOfRootBones(const EditableStudioModel& studioModel)
+{
+	glm::vec3 center{0};
+
+	int count = 0;
+
+	for (const auto& bone : studioModel.Bones)
+	{
+		if (bone->Parent)
+		{
+			continue;
+		}
+
+		glm::vec3 position{bone->Axes[0].Value, bone->Axes[1].Value, bone->Axes[2].Value};
+
+		center += position;
+
+		++count;
+	}
+
+	if (count)
+	{
+		center /= count;
+	}
+
+	return center;
+}
+
+const Bone* FindNearestRootBone(const EditableStudioModel& studioModel, const glm::vec3& position)
+{
+	const Bone* nearest = nullptr;
+
+	float dist = std::numeric_limits<float>::max();
+
+	for (const auto& bone : studioModel.Bones)
+	{
+		if (bone->Parent)
+		{
+			continue;
+		}
+
+		glm::vec3 bonePosition{bone->Axes[0].Value, bone->Axes[1].Value, bone->Axes[2].Value};
+
+		const float dist2 = glm::length(bonePosition - position);
+
+		if (dist2 < dist)
+		{
+			dist = dist2;
+			nearest = bone.get();
+		}
+	}
+
+	return nearest;
+}
+
+std::pair<RotateData, RotateData> CalculateRotatedData(const EditableStudioModel& studioModel, glm::vec3 angles)
+{
+	//Determine center of model from root bone nearest to average of all root bones
+	glm::vec3 center{FindAverageOfRootBones(studioModel)};
+
+	if (const Bone* nearest = FindNearestRootBone(studioModel, center); nearest)
+	{
+		center = {nearest->Axes[0].Value, nearest->Axes[1].Value, nearest->Axes[2].Value};
+	}
+
+	angles.x = glm::radians(angles.x);
+	angles.y = glm::radians(angles.y);
+	angles.z = glm::radians(angles.z);
+
+	auto rotater = [&](glm::vec3 vertex)
+	{
+		vertex = glm::rotateX(vertex, angles.x);
+		vertex = glm::rotateY(vertex, angles.y);
+		vertex = glm::rotateZ(vertex, angles.z);
+
+		return vertex;
+	};
+
+	std::vector<RotateBoneData> oldBoneData;
+	std::vector<RotateBoneData> newBoneData;
+
+	oldBoneData.reserve(studioModel.Bones.size());
+	newBoneData.reserve(studioModel.Bones.size());
+
+	for (const auto& bone : studioModel.Bones)
+	{
+		if (bone->Parent)
+		{
+			continue;
+		}
+
+		glm::vec3 position{bone->Axes[0].Value, bone->Axes[1].Value, bone->Axes[2].Value};
+		glm::vec3 rotation{bone->Axes[3].Value, bone->Axes[4].Value, bone->Axes[5].Value};
+
+		oldBoneData.emplace_back(
+			RotateBoneData
+			{
+				position, rotation
+			});
+
+		//Rotate around center
+		position -= center;
+
+		position = rotater(position);
+
+		position += center;
+
+		rotation += angles;
+
+		const float fullRotation = 2 * PI<float>;
+
+		rotation.x = std::fmod(rotation.x, fullRotation);
+		rotation.y = std::fmod(rotation.y, fullRotation);
+		rotation.z = std::fmod(rotation.z, fullRotation);
+
+		newBoneData.emplace_back(
+			RotateBoneData
+			{
+				position, rotation
+			});
+	}
+
+	return {{std::move(oldBoneData)}, {std::move(newBoneData)}};
+}
+
+void ApplyRotateData(EditableStudioModel& studioModel, const RotateData& data)
+{
+	std::size_t boneIndex = 0;
+
+	for (int i = 0; i < studioModel.Bones.size(); ++i)
+	{
+		auto& bone = *studioModel.Bones[i];
+
+		if (bone.Parent)
+		{
+			continue;
+		}
+
+		const auto& boneData = data.Bones[boneIndex++];
+
+		for (int j = 0; j < boneData.Position.length(); ++j)
+		{
+			bone.Axes[j].Value = boneData.Position[j];
+			bone.Axes[j + 3].Value = boneData.Rotation[j];
 		}
 	}
 }
