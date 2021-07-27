@@ -45,10 +45,6 @@ private:
 	void OnMirrorYAxisChanged();
 	void OnMirrorZAxisChanged();
 
-	void OnCenterModelOnWorldOrigin();
-
-	void OnAlignOnGround();
-
 	void OnEnableGroundTextureTilingChanged();
 	void OnGroundTextureSizeChanged();
 

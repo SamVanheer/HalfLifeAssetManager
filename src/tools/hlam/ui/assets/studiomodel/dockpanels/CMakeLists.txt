@@ -37,6 +37,9 @@ target_sources(HLAM
 		StudioModelModelInfoPanel.cpp
 		StudioModelModelInfoPanel.hpp
 		StudioModelModelInfoPanel.ui
+		StudioModelScenePanel.cpp
+		StudioModelScenePanel.hpp
+		StudioModelScenePanel.ui
 		StudioModelSequencesPanel.cpp
 		StudioModelSequencesPanel.hpp
 		StudioModelSequencesPanel.ui
@@ -49,3 +52,5 @@ target_sources(HLAM
 		Timeline.cpp
 		Timeline.hpp
 		Timeline.ui)
+
+add_subdirectory(objects)

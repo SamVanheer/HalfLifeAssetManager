@@ -26,6 +26,7 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDataPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDisplayPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelInfoPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/StudioModelScenePanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelTransformPanel.hpp"
@@ -111,6 +112,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	};
 
 	addDockPanel(_camerasPanel, "Cameras");
+	addDockPanel(new StudioModelScenePanel(_asset), "Scene");
 	addDockPanel(new StudioModelModelInfoPanel(_asset), "Model Info");
 	auto modelDisplayDock = addDockPanel(new StudioModelModelDisplayPanel(_asset), "Model Display");
 	addDockPanel(new StudioModelLightingPanel(_asset), "Lighting");

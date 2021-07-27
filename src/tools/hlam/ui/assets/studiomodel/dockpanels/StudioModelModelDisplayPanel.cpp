@@ -44,9 +44,6 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 	connect(_ui.MirrorOnYAxis, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnMirrorYAxisChanged);
 	connect(_ui.MirrorOnZAxis, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnMirrorZAxisChanged);
 
-	connect(_ui.CenterModelOnWorldOrigin, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnCenterModelOnWorldOrigin);
-	connect(_ui.AlignOnGround, &QPushButton::clicked, this, &StudioModelModelDisplayPanel::OnAlignOnGround);
-
 	connect(_ui.EnableGroundTextureTiling, &QGroupBox::toggled, this, &StudioModelModelDisplayPanel::OnEnableGroundTextureTilingChanged);
 	connect(_ui.GroundTextureSize, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelModelDisplayPanel::OnGroundTextureSizeChanged);
 
@@ -184,16 +181,6 @@ void StudioModelModelDisplayPanel::OnMirrorYAxisChanged()
 void StudioModelModelDisplayPanel::OnMirrorZAxisChanged()
 {
 	_asset->GetScene()->GetEntity()->GetScale().z = _ui.MirrorOnZAxis->isChecked() ? -1 : 1;
-}
-
-void StudioModelModelDisplayPanel::OnCenterModelOnWorldOrigin()
-{
-	_asset->GetScene()->GetEntity()->SetOrigin({0, 0, 0});
-}
-
-void StudioModelModelDisplayPanel::OnAlignOnGround()
-{
-	_asset->GetScene()->AlignOnGround();
 }
 
 void StudioModelModelDisplayPanel::OnEnableGroundTextureTilingChanged()
