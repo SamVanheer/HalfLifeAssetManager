@@ -11,6 +11,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QScreen>
+#include <QWindow>
 
 #include "version.hpp"
 
@@ -43,6 +45,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	, _editorContext(editorContext)
 {
 	_ui.setupUi(this);
+
+	this->setAttribute(Qt::WidgetAttribute::WA_DeleteOnClose);
 
 	this->setWindowIcon(QIcon{":/hlam.ico"});
 
@@ -172,6 +176,38 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	_fileFilter += "All Files (*.*)";
 
+	auto settings = _editorContext->GetSettings();
+
+	{
+		settings->beginGroup("main_window");
+		const auto screenName = settings->value("screen_name");
+		const auto geometry = settings->value("screen_geometry");
+		settings->endGroup();
+
+		//Calling this forces the creation of a QWindow handle now, instead of later
+		winId();
+
+		//Try to open the window on the screen it was last on
+		if (screenName.isValid())
+		{
+			auto name = screenName.toString();
+
+			for (auto screen : QApplication::screens())
+			{
+				if (screen->name() == name)
+				{
+					windowHandle()->setScreen(screen);
+					break;
+				}
+			}
+		}
+
+		if (geometry.isValid())
+		{
+			restoreGeometry(geometry.toByteArray());
+		}
+	}
+
 	_editorContext->StartTimer();
 }
 
@@ -271,6 +307,17 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	}
 
 	event->accept();
+
+	auto screen = this->windowHandle()->screen();
+
+	auto name = screen->name();
+
+	auto settings = _editorContext->GetSettings();
+
+	settings->beginGroup("main_window");
+	settings->setValue("screen_name", name);
+	settings->setValue("screen_geometry", saveGeometry());
+	settings->endGroup();
 }
 
 assets::Asset* MainWindow::GetAsset(int index) const
