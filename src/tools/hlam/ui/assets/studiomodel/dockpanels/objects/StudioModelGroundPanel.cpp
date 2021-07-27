@@ -1,3 +1,5 @@
+#include <limits>
+
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -18,6 +20,9 @@ StudioModelGroundPanel::StudioModelGroundPanel(StudioModelAsset* asset, QWidget*
 
 	_ui.GroundTextureSize->setValue(_asset->GetScene()->FloorTextureLength);
 
+	_ui.GroundOrigin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
+	_ui.GroundOrigin->SetDecimals(6);
+
 	connect(_ui.ShowGround, &QCheckBox::stateChanged, this, &StudioModelGroundPanel::OnShowGroundChanged);
 	connect(_ui.MirrorModelOnGround, &QCheckBox::stateChanged, this, &StudioModelGroundPanel::OnMirrorOnGroundChanged);
 	connect(_ui.EnableGroundTextureTiling, &QGroupBox::toggled, this, &StudioModelGroundPanel::OnEnableGroundTextureTilingChanged);
@@ -25,6 +30,8 @@ StudioModelGroundPanel::StudioModelGroundPanel(StudioModelAsset* asset, QWidget*
 
 	connect(_ui.GroundTexture, &QLineEdit::textChanged, this, &StudioModelGroundPanel::OnTextureChanged);
 	connect(_ui.BrowseGroundTexture, &QPushButton::clicked, this, &StudioModelGroundPanel::OnBrowseTexture);
+
+	connect(_ui.GroundOrigin, &qt::widgets::Vector3Edit::ValueChanged, this, &StudioModelGroundPanel::OnOriginChanged);
 }
 
 void StudioModelGroundPanel::OnShowGroundChanged()
@@ -118,5 +125,10 @@ void StudioModelGroundPanel::OnBrowseTexture()
 	{
 		_ui.GroundTexture->setText(fileName);
 	}
+}
+
+void StudioModelGroundPanel::OnOriginChanged()
+{
+	_asset->GetScene()->FloorOrigin = _ui.GroundOrigin->GetValue();
 }
 }

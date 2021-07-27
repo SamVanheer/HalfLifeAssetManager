@@ -29,6 +29,8 @@ private slots:
 	void OnTextureChanged();
 	void OnBrowseTexture();
 
+	void OnOriginChanged();
+
 private:
 	Ui_StudioModelGroundPanel _ui;
 	StudioModelAsset* const _asset;

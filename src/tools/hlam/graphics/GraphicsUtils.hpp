@@ -82,14 +82,16 @@ void SetupRenderMode(RenderMode renderMode, const bool bBackfaceCulling);
 
 /**
 *	Draws a floor quad.
+*	@param origin Floor origin
 *	@param floorLength Length of one side of the floor
 *	@param textureRepeatLength Size of a texture repetition
 *	@param textureOffset Offset in units to shift the texture
 */
-void DrawFloorQuad(float floorLength, float textureRepeatLength, glm::vec2 textureOffset);
+void DrawFloorQuad(const glm::vec3& origin, float floorLength, float textureRepeatLength, glm::vec2 textureOffset);
 
 /**
 *	Draws a floor, optionally with a texture.
+*	@param origin Floor origin
 *	@param floorLength		Length of one side of the floor
 *	@param textureRepeatLength Size of a texture repetition
 *	@param textureOffset Offset in units to shift the texture
@@ -97,7 +99,7 @@ void DrawFloorQuad(float floorLength, float textureRepeatLength, glm::vec2 textu
 *	@param groundColor		Color of the ground if no texture is specified
 *	@param bMirror			If true, draws a solid underside
 */
-void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, GLuint groundTexture,
+void DrawFloor(const glm::vec3& origin, float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, GLuint groundTexture,
 	const glm::vec3& groundColor, const bool bMirror);
 
 /**
@@ -110,5 +112,5 @@ void DrawFloor(float floorLength, float textureRepeatLength, const glm::vec2& te
 *	@param bBackfaceCulling		Whether to perform backface culling or not
 */
 unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
-	const RenderMode renderMode, const bool bWireframeOverlay, const float floorLength, const bool bBackfaceCulling);
+	const RenderMode renderMode, const bool bWireframeOverlay, const glm::vec3& origin, const float floorLength, const bool bBackfaceCulling);
 }

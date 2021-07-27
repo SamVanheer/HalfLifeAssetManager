@@ -380,6 +380,7 @@ void Scene::DrawModel()
 			graphics::DrawMirroredModel(*_studioModelRenderer, _entity,
 				CurrentRenderMode,
 				ShowWireframeOverlay,
+				FloorOrigin,
 				FloorLength,
 				EnableBackfaceCulling);
 		}
@@ -530,7 +531,7 @@ void Scene::DrawModel()
 		_floorTextureOffset.x = std::fmod(_floorTextureOffset.x, floorTextureLength);
 		_floorTextureOffset.y = std::fmod(_floorTextureOffset.y, floorTextureLength);
 
-		graphics::DrawFloor(FloorLength, floorTextureLength, _floorTextureOffset, GroundTexture, GroundColor, MirrorOnGround);
+		graphics::DrawFloor(FloorOrigin, FloorLength, floorTextureLength, _floorTextureOffset, GroundTexture, GroundColor, MirrorOnGround);
 	}
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;

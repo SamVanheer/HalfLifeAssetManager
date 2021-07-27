@@ -147,6 +147,7 @@ public:
 	int FloorLength = 0;
 	bool EnableFloorTextureTiling{false};
 	int FloorTextureLength{16};
+	glm::vec3 FloorOrigin{0};
 
 	GLuint GroundTexture{0};
 	GLuint BackgroundTexture{0};
