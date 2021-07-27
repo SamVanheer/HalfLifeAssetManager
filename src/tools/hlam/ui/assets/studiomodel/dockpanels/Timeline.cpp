@@ -4,10 +4,13 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "ui/EditorContext.hpp"
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
+
+#include "ui/settings/GeneralSettings.hpp"
 
 namespace ui::assets::studiomodel
 {
@@ -212,6 +215,14 @@ void Timeline::OnLoadSnapshot(StateSnapshot* snapshot)
 void Timeline::OnFrameSliderChanged()
 {
 	SetFrame(static_cast<double>(_ui.FrameSlider->value()) / FrameSliderRangeMultiplier, true);
+
+	if (_asset && _asset->GetEditorContext()->GetGeneralSettings()->PauseAnimationsOnTimelineClick)
+	{
+		if (auto entity = _asset->GetScene()->GetEntity(); entity->PlaySequence)
+		{
+			OnTogglePlayback();
+		}
+	}
 }
 
 void Timeline::OnFrameSpinnerChanged()

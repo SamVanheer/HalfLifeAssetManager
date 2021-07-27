@@ -11,6 +11,7 @@ class GeneralSettings final : public QObject
 
 public:
 	static constexpr bool DefaultUseSingleInstance{true};
+	static constexpr bool DefaultPauseAnimationsOnTimelineClick{true};
 
 	static constexpr int DefaultTickRate{60};
 	static constexpr int MinimumTickRate{1};
@@ -42,6 +43,7 @@ public:
 		_useSingleInstance = ShouldUseSingleInstance(settings);
 
 		settings.beginGroup("general");
+		PauseAnimationsOnTimelineClick = settings.value("PauseAnimationsOnTimelineClick", DefaultPauseAnimationsOnTimelineClick).toBool();
 		_tickRate = std::clamp(settings.value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
 		settings.endGroup();
 
@@ -64,6 +66,7 @@ public:
 		settings.endGroup();
 
 		settings.beginGroup("general");
+		settings.setValue("PauseAnimationsOnTimelineClick", PauseAnimationsOnTimelineClick);
 		settings.setValue("TickRate", _tickRate);
 		settings.endGroup();
 
@@ -139,6 +142,9 @@ public:
 
 signals:
 	void TickRateChanged(int value);
+
+public:
+	bool PauseAnimationsOnTimelineClick{DefaultPauseAnimationsOnTimelineClick};
 
 private:
 	bool _useSingleInstance{DefaultUseSingleInstance};

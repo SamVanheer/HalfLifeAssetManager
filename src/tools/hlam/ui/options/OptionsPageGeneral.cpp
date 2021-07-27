@@ -47,6 +47,7 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 	_ui.MouseWheelSpeedSpinner->setRange(settings::GeneralSettings::MinimumMouseWheelSpeed, settings::GeneralSettings::MaximumMouseWheelSpeed);
 
 	_ui.UseSingleInstance->setChecked(_generalSettings->ShouldUseSingleInstance());
+	_ui.PauseAnimationsOnTimelineClick->setChecked(_generalSettings->PauseAnimationsOnTimelineClick);
 	_ui.MaxRecentFiles->setValue(_recentFilesSettings->GetMaxRecentFiles());
 	_ui.TickRate->setValue(_generalSettings->GetTickRate());
 	_ui.InvertMouseX->setChecked(_generalSettings->ShouldInvertMouseX());
@@ -69,6 +70,7 @@ OptionsPageGeneralWidget::~OptionsPageGeneralWidget() = default;
 void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 {
 	_generalSettings->SetUseSingleInstance(_ui.UseSingleInstance->isChecked());
+	_generalSettings->PauseAnimationsOnTimelineClick = _ui.PauseAnimationsOnTimelineClick->isChecked();
 	_recentFilesSettings->SetMaxRecentFiles(_ui.MaxRecentFiles->value());
 	_generalSettings->SetTickRate(_ui.TickRate->value());
 	_generalSettings->SetInvertMouseX(_ui.InvertMouseX->isChecked());
