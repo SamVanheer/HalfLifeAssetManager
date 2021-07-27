@@ -94,7 +94,11 @@ void StudioModelGroundPanel::OnTextureChanged()
 		}
 	}
 
-	if (!setTexture)
+	if (setTexture)
+	{
+		_ui.ShowGround->setChecked(true);
+	}
+	else
 	{
 		if (scene->GroundTexture != 0)
 		{

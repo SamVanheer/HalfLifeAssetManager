@@ -60,7 +60,11 @@ void StudioModelBackgroundPanel::OnTextureChanged()
 		}
 	}
 
-	if (!setTexture)
+	if (setTexture)
+	{
+		_ui.ShowBackground->setChecked(true);
+	}
+	else
 	{
 		if (scene->BackgroundTexture != 0)
 		{
