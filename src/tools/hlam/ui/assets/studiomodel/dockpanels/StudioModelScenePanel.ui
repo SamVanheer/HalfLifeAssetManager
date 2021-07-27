@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>580</width>
+    <width>511</width>
     <height>81</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
    <property name="sizeConstraint">
     <enum>QLayout::SetFixedSize</enum>
    </property>
@@ -39,7 +39,7 @@
      </property>
      <property name="maximumSize">
       <size>
-       <width>100</width>
+       <width>16777215</width>
        <height>16777215</height>
       </size>
      </property>
