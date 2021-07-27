@@ -1,5 +1,11 @@
 target_sources(HLAM
 	PRIVATE
+		StudioModelBackgroundPanel.cpp
+		StudioModelBackgroundPanel.hpp
+		StudioModelBackgroundPanel.ui
+		StudioModelGroundPanel.cpp
+		StudioModelGroundPanel.hpp
+		StudioModelGroundPanel.ui
 		StudioModelModelPanel.cpp
 		StudioModelModelPanel.hpp
 		StudioModelModelPanel.ui)

@@ -166,12 +166,6 @@ private slots:
 
 	void OnFlipNormals();
 
-	void OnLoadGroundTexture();
-	void OnUnloadGroundTexture();
-
-	void OnLoadBackgroundTexture();
-	void OnUnloadBackgroundTexture();
-
 	void OnDumpModelInfo();
 
 	void OnTakeScreenshot();

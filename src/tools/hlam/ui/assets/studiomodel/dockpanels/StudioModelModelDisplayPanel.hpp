@@ -27,9 +27,6 @@ private:
 	void OnShowCBoxChanged();
 
 	void OnEnableBackfaceCullingChanged();
-	void OnShowGroundChanged();
-	void OnMirrorOnGroundChanged();
-	void OnShowBackgroundChanged();
 
 	void OnWireframeOverlayChanged();
 	void OnDrawShadowsChanged();
@@ -44,9 +41,6 @@ private:
 	void OnMirrorXAxisChanged();
 	void OnMirrorYAxisChanged();
 	void OnMirrorZAxisChanged();
-
-	void OnEnableGroundTextureTilingChanged();
-	void OnGroundTextureSizeChanged();
 
 private:
 	Ui_StudioModelModelDisplayPanel _ui;

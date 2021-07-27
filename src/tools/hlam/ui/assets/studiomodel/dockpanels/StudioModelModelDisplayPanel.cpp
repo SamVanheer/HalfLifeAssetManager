@@ -11,8 +11,6 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 {
 	_ui.setupUi(this);
 
-	_ui.GroundTextureSize->setValue(_asset->GetScene()->FloorTextureLength);
-
 	connect(_ui.RenderModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelModelDisplayPanel::OnRenderModeChanged);
 
 	connect(_ui.OpacitySlider, &QSlider::valueChanged, this, &StudioModelModelDisplayPanel::OnOpacityChanged);
@@ -26,9 +24,6 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 	connect(_ui.ShowCBox, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnShowCBoxChanged);
 
 	connect(_ui.BackfaceCulling, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnEnableBackfaceCullingChanged);
-	connect(_ui.ShowGround, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnShowGroundChanged);
-	connect(_ui.MirrorModelOnGround, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnMirrorOnGroundChanged);
-	connect(_ui.ShowBackground, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnShowBackgroundChanged);
 
 	connect(_ui.WireframeOverlay, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnWireframeOverlayChanged);
 	connect(_ui.DrawShadows, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnDrawShadowsChanged);
@@ -43,9 +38,6 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 	connect(_ui.MirrorOnXAxis, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnMirrorXAxisChanged);
 	connect(_ui.MirrorOnYAxis, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnMirrorYAxisChanged);
 	connect(_ui.MirrorOnZAxis, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnMirrorZAxisChanged);
-
-	connect(_ui.EnableGroundTextureTiling, &QGroupBox::toggled, this, &StudioModelModelDisplayPanel::OnEnableGroundTextureTilingChanged);
-	connect(_ui.GroundTextureSize, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelModelDisplayPanel::OnGroundTextureSizeChanged);
 
 	_ui.RenderModeComboBox->setCurrentIndex(static_cast<int>(_asset->GetScene()->CurrentRenderMode));
 }
@@ -97,35 +89,6 @@ void StudioModelModelDisplayPanel::OnShowCBoxChanged()
 void StudioModelModelDisplayPanel::OnEnableBackfaceCullingChanged()
 {
 	_asset->GetScene()->EnableBackfaceCulling = _ui.BackfaceCulling->isChecked();
-}
-
-void StudioModelModelDisplayPanel::OnShowGroundChanged()
-{
-	auto scene = _asset->GetScene();
-
-	scene->ShowGround = _ui.ShowGround->isChecked();
-
-	if (!scene->ShowGround)
-	{
-		_ui.MirrorModelOnGround->setChecked(false);
-	}
-}
-
-void StudioModelModelDisplayPanel::OnMirrorOnGroundChanged()
-{
-	auto scene = _asset->GetScene();
-
-	scene->MirrorOnGround = _ui.MirrorModelOnGround->isChecked();
-
-	if (scene->MirrorOnGround)
-	{
-		_ui.ShowGround->setChecked(true);
-	}
-}
-
-void StudioModelModelDisplayPanel::OnShowBackgroundChanged()
-{
-	_asset->GetScene()->ShowBackground = _ui.ShowBackground->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnWireframeOverlayChanged()
@@ -181,15 +144,5 @@ void StudioModelModelDisplayPanel::OnMirrorYAxisChanged()
 void StudioModelModelDisplayPanel::OnMirrorZAxisChanged()
 {
 	_asset->GetScene()->GetEntity()->GetScale().z = _ui.MirrorOnZAxis->isChecked() ? -1 : 1;
-}
-
-void StudioModelModelDisplayPanel::OnEnableGroundTextureTilingChanged()
-{
-	_asset->GetScene()->EnableFloorTextureTiling = _ui.EnableGroundTextureTiling->isChecked();
-}
-
-void StudioModelModelDisplayPanel::OnGroundTextureSizeChanged()
-{
-	_asset->GetScene()->FloorTextureLength = _ui.GroundTextureSize->value();
 }
 }
