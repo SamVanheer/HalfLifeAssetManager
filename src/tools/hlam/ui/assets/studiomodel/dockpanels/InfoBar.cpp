@@ -32,6 +32,18 @@ void InfoBar::OnDraw()
 {
 	++_currentFPS;
 
+	const unsigned int drawnPolygonsCount = _asset ? _asset->GetScene()->GetDrawnPolygonsCount() : 0;
+
+	//Don't update if it's identical. Prevents flickering
+	if (_oldDrawnPolygonsCount != drawnPolygonsCount)
+	{
+		_oldDrawnPolygonsCount = drawnPolygonsCount;
+		_ui.DrawnPolygonsCountLabel->setText(QString::number(drawnPolygonsCount));
+	}
+}
+
+void InfoBar::OnTick()
+{
 	const long long currentTick = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 
 	if (_lastFPSUpdate == 0 || ((currentTick - _lastFPSUpdate) >= 1000))
@@ -41,15 +53,6 @@ void InfoBar::OnDraw()
 		_ui.FPSLabel->setText(QString::number(_currentFPS));
 
 		_currentFPS = 0;
-	}
-
-	const unsigned int drawnPolygonsCount = _asset ? _asset->GetScene()->GetDrawnPolygonsCount() : 0;
-
-	//Don't update if it's identical. Prevents flickering
-	if (_oldDrawnPolygonsCount != drawnPolygonsCount)
-	{
-		_oldDrawnPolygonsCount = drawnPolygonsCount;
-		_ui.DrawnPolygonsCountLabel->setText(QString::number(drawnPolygonsCount));
 	}
 }
 }

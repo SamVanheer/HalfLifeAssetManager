@@ -21,6 +21,7 @@ public:
 
 public slots:
 	void OnDraw();
+	void OnTick();
 
 private:
 	Ui_InfoBar _ui;
