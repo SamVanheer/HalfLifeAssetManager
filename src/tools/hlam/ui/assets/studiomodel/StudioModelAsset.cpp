@@ -217,7 +217,6 @@ void StudioModelAsset::SetupFullscreenWidget(FullscreenWidget* fullscreenWidget)
 
 void StudioModelAsset::Save()
 {
-	//TODO: add setting to correct groups
 	const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
 	auto result = studiomdl::ConvertFromEditable(filePath, *_editableStudioModel);
 
@@ -271,8 +270,6 @@ void StudioModelAsset::SaveEntityToSnapshot(StateSnapshot* snapshot)
 
 	snapshot->SetValue("entity.skin", QVariant::fromValue(entity->GetSkin()));
 	snapshot->SetValue("entity.body", QVariant::fromValue(entity->GetBodygroup()));
-
-	//TODO: controllers and stuff
 
 	for (int i = 0; i < STUDIO_MAX_CONTROLLERS; ++i)
 	{
@@ -330,7 +327,6 @@ void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
 
 	entity->SetMouth(snapshot->Value("entity.mouth").toFloat());
 
-	//TODO: need to handle CS blending
 	for (int i = 0; i < STUDIO_MAX_BLENDERS; ++i)
 	{
 		entity->SetBlending(i, snapshot->Value(QString{"entity.blender%1"}.arg(i)).toFloat());
@@ -340,7 +336,6 @@ void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
 void StudioModelAsset::OnTick()
 {
 	//TODO: update asset-local world time
-	//TODO: pause all updates while not active
 	_scene->Tick();
 
 	emit Tick();

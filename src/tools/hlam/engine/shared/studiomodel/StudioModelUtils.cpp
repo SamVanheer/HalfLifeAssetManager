@@ -494,7 +494,6 @@ std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioM
 		graphics::RGBPalette palette;
 
 		//Discard alpha value
-		//TODO: convert alpha value somehow? is it even used?
 		for (int e = 0; e < palette.size(); ++e)
 		{
 			palette[e] = sourcePalette[e];

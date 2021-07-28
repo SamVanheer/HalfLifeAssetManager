@@ -98,7 +98,6 @@ StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* p
 	connect(_ui.BoneName, &QLineEdit::inputRejected, this, &StudioModelBonesPanel::OnBoneNameRejected);
 
 	connect(_ui.ParentBone, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelBonesPanel::OnBoneParentChanged);
-	//TODO: shouldn't be a spin box
 	connect(_ui.BoneFlags, qOverload<int>(&QSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBoneFlagsChanged);
 
 	connect(_ui.PositionX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelBonesPanel::OnBonePropertyChanged);
