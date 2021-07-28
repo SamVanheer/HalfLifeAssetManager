@@ -606,9 +606,7 @@ void StudioModelTexturesPanel::OnFlatShadeChanged()
 {
 	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	int flags = texture.Flags;
-
-	flags = SetFlags(flags, STUDIO_NF_FLATSHADE, _ui.FlatShade->isChecked());
+	const int flags = SetFlags(texture.Flags, STUDIO_NF_FLATSHADE, _ui.FlatShade->isChecked());
 
 	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }
@@ -617,9 +615,7 @@ void StudioModelTexturesPanel::OnFullbrightChanged()
 {
 	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	int flags = texture.Flags;
-
-	flags = SetFlags(flags, STUDIO_NF_FULLBRIGHT, _ui.Fullbright->isChecked());
+	const int flags = SetFlags(texture.Flags, STUDIO_NF_FULLBRIGHT, _ui.Fullbright->isChecked());
 
 	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }
@@ -628,9 +624,7 @@ void StudioModelTexturesPanel::OnMipmapsChanged()
 {
 	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	int flags = texture.Flags;
-
-	flags = SetFlags(flags, STUDIO_NF_NOMIPS, _ui.Mipmaps->isChecked());
+	const int flags = SetFlags(texture.Flags, STUDIO_NF_NOMIPS, _ui.Mipmaps->isChecked());
 
 	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }

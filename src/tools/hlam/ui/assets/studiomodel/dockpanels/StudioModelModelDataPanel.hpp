@@ -19,16 +19,13 @@ public:
 	StudioModelModelDataPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelModelDataPanel();
 
-private:
-	void InitializeUI();
-
 public slots:
 	void OnLayoutDirectionChanged();
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
 
-	void OnLoadSnapshot(StateSnapshot* snapshot);
+	void InitializeUI();
 
 	void OnEyePositionChanged(const glm::vec3& value);
 

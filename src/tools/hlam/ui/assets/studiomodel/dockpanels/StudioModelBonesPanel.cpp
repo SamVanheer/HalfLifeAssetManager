@@ -20,6 +20,19 @@ constexpr int BoneControllerOffset = 1;
 
 static void SyncBonePropertiesToUI(const studiomdl::Bone& bone, Ui_StudioModelBonesPanel& ui)
 {
+	const QSignalBlocker positionX{ui.PositionX};
+	const QSignalBlocker positionY{ui.PositionY};
+	const QSignalBlocker positionZ{ui.PositionZ};
+	const QSignalBlocker positionScaleX{ui.PositionScaleX};
+	const QSignalBlocker positionScaleY{ui.PositionScaleY};
+	const QSignalBlocker positionScaleZ{ui.PositionScaleZ};
+	const QSignalBlocker rotationX{ui.RotationX};
+	const QSignalBlocker rotationY{ui.RotationY};
+	const QSignalBlocker rotationZ{ui.RotationZ};
+	const QSignalBlocker rotationScaleX{ui.RotationScaleX};
+	const QSignalBlocker rotationScaleY{ui.RotationScaleY};
+	const QSignalBlocker rotationScaleZ{ui.RotationScaleZ};
+
 	ui.PositionX->setValue(bone.Axes[0].Value);
 	ui.PositionY->setValue(bone.Axes[1].Value);
 	ui.PositionZ->setValue(bone.Axes[2].Value);
@@ -260,19 +273,6 @@ void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 		if (_ui.Bones->currentIndex() == listChange.GetSourceIndex())
 		{
-			const QSignalBlocker positionX{_ui.PositionX};
-			const QSignalBlocker positionY{_ui.PositionY};
-			const QSignalBlocker positionZ{_ui.PositionZ};
-			const QSignalBlocker positionScaleX{_ui.PositionScaleX};
-			const QSignalBlocker positionScaleY{_ui.PositionScaleY};
-			const QSignalBlocker positionScaleZ{_ui.PositionScaleZ};
-			const QSignalBlocker rotationX{_ui.RotationX};
-			const QSignalBlocker rotationY{_ui.RotationY};
-			const QSignalBlocker rotationZ{_ui.RotationZ};
-			const QSignalBlocker rotationScaleX{_ui.RotationScaleX};
-			const QSignalBlocker rotationScaleY{_ui.RotationScaleY};
-			const QSignalBlocker rotationScaleZ{_ui.RotationScaleZ};
-
 			const auto& bone = *model->Bones[listChange.GetSourceIndex()];
 			
 			SyncBonePropertiesToUI(bone, _ui);
@@ -360,18 +360,6 @@ void StudioModelBonesPanel::OnBoneChanged(int index)
 		const QSignalBlocker boneName{_ui.BoneName};
 		const QSignalBlocker parentBone{_ui.ParentBone};
 		const QSignalBlocker boneFlags{_ui.BoneFlags};
-		const QSignalBlocker positionX{_ui.PositionX};
-		const QSignalBlocker positionY{_ui.PositionY};
-		const QSignalBlocker positionZ{_ui.PositionZ};
-		const QSignalBlocker positionScaleX{_ui.PositionScaleX};
-		const QSignalBlocker positionScaleY{_ui.PositionScaleY};
-		const QSignalBlocker positionScaleZ{_ui.PositionScaleZ};
-		const QSignalBlocker rotationX{_ui.RotationX};
-		const QSignalBlocker rotationY{_ui.RotationY};
-		const QSignalBlocker rotationZ{_ui.RotationZ};
-		const QSignalBlocker rotationScaleX{_ui.RotationScaleX};
-		const QSignalBlocker rotationScaleY{_ui.RotationScaleY};
-		const QSignalBlocker rotationScaleZ{_ui.RotationScaleZ};
 		const QSignalBlocker controllerAxis{_ui.BoneControllerAxis};
 
 		_ui.BoneName->setText(bone.Name.c_str());

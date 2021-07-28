@@ -40,7 +40,7 @@ StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QW
 	_ui.CBoxMax->SetPrefix("Max ");
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelModelDataPanel::OnModelChanged);
-	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelModelDataPanel::OnLoadSnapshot);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelModelDataPanel::InitializeUI);
 
 	connect(_ui.EyePosition, &Vector3Edit::ValueChanged, this, &StudioModelModelDataPanel::OnEyePositionChanged);
 
@@ -103,35 +103,21 @@ void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
-void StudioModelModelDataPanel::OnLoadSnapshot(StateSnapshot* snapshot)
-{
-	InitializeUI();
-}
-
 void StudioModelModelDataPanel::InitializeUI()
 {
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 
-	{
-		const QSignalBlocker blocker{_ui.EyePosition};
-		_ui.EyePosition->SetValue(model->EyePosition);
-	}
+	const QSignalBlocker blocker{_ui.EyePosition};
+	const QSignalBlocker bmin{_ui.BBoxMin};
+	const QSignalBlocker bmax{_ui.BBoxMax};
+	const QSignalBlocker cmin{_ui.CBoxMin};
+	const QSignalBlocker cmax{_ui.CBoxMax};
 
-	{
-		const QSignalBlocker min{_ui.BBoxMin};
-		const QSignalBlocker max{_ui.BBoxMax};
-
-		_ui.BBoxMin->SetValue(model->BoundingMin);
-		_ui.BBoxMax->SetValue(model->BoundingMax);
-	}
-
-	{
-		const QSignalBlocker min{_ui.CBoxMin};
-		const QSignalBlocker max{_ui.CBoxMax};
-
-		_ui.CBoxMin->SetValue(model->ClippingMin);
-		_ui.CBoxMax->SetValue(model->ClippingMax);
-	}
+	_ui.EyePosition->SetValue(model->EyePosition);
+	_ui.BBoxMin->SetValue(model->BoundingMin);
+	_ui.BBoxMax->SetValue(model->BoundingMax);
+	_ui.CBoxMin->SetValue(model->ClippingMin);
+	_ui.CBoxMax->SetValue(model->ClippingMax);
 }
 
 void StudioModelModelDataPanel::OnEyePositionChanged(const glm::vec3& value)

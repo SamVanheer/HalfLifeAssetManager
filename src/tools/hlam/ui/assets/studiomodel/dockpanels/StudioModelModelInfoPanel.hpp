@@ -18,11 +18,8 @@ public:
 	StudioModelModelInfoPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelModelInfoPanel();
 
-private:
-	void InitializeUI();
-
 private slots:
-	void OnLoadSnapshot(StateSnapshot* snapshot);
+	void InitializeUI();
 
 private:
 	Ui_StudioModelModelInfoPanel _ui;

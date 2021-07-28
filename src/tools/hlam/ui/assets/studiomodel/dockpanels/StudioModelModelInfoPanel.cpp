@@ -15,7 +15,7 @@ StudioModelModelInfoPanel::StudioModelModelInfoPanel(StudioModelAsset* asset, QW
 {
 	_ui.setupUi(this);
 
-	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelModelInfoPanel::OnLoadSnapshot);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelModelInfoPanel::InitializeUI);
 
 	InitializeUI();
 
@@ -40,10 +40,5 @@ void StudioModelModelInfoPanel::InitializeUI()
 	_ui.BodyPartsValue->setText(QString::number(model->Bodyparts.size()));
 	_ui.AttachmentsValue->setText(QString::number(model->Attachments.size()));
 	_ui.TransitionsValue->setText(QString::number(model->Transitions.size()));
-}
-
-void StudioModelModelInfoPanel::OnLoadSnapshot(StateSnapshot* snapshot)
-{
-	InitializeUI();
 }
 }
