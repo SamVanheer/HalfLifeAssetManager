@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QBoxLayout>
 #include <QWidget>
 
 #include "ui_StudioModelModelPanel.h"
@@ -17,6 +18,9 @@ class StudioModelModelPanel final : public QWidget
 public:
 	StudioModelModelPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelModelPanel() = default;
+
+public slots:
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction);
 
 private slots:
 	void OnOriginChanged();

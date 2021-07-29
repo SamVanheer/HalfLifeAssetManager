@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QBoxLayout>
 #include <QString>
 #include <QWidget>
 
@@ -16,6 +17,8 @@ class StudioModelAsset;
 
 class StudioModelScenePanel final : public QWidget
 {
+	Q_OBJECT
+
 public:
 	StudioModelScenePanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelScenePanel() = default;
@@ -24,6 +27,12 @@ private:
 	void InitializeUI();
 
 	void AddObject(QWidget* widget, const QString& label);
+
+signals:
+	void LayoutDirectionChanged(QBoxLayout::Direction direction);
+
+public slots:
+	void OnLayoutDirectionChanged();
 
 private:
 	Ui_StudioModelScenePanel _ui;

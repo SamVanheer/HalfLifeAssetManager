@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QBoxLayout>
 #include <QWidget>
 
 #include "ui_StudioModelGroundPanel.h"
@@ -13,6 +14,9 @@ class StudioModelGroundPanel final : public QWidget
 public:
 	StudioModelGroundPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelGroundPanel() = default;
+
+public slots:
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction);
 
 private slots:
 	void OnShowGroundChanged();

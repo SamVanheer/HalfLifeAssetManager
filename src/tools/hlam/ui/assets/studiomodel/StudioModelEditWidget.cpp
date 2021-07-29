@@ -91,6 +91,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	OnAssetCameraChanged(nullptr, cameraOperators->GetCurrent());
 
+	auto scenePanel = new StudioModelScenePanel(_asset);
 	_texturesPanel = new StudioModelTexturesPanel(_asset);
 	auto modelDataPanel = new StudioModelModelDataPanel(_asset);
 	auto transformPanel = new StudioModelTransformPanel(_asset);
@@ -112,7 +113,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	};
 
 	addDockPanel(_camerasPanel, "Cameras");
-	addDockPanel(new StudioModelScenePanel(_asset), "Scene");
+	auto sceneDock = addDockPanel(scenePanel, "Scene");
 	addDockPanel(new StudioModelModelInfoPanel(_asset), "Model Info");
 	auto modelDisplayDock = addDockPanel(new StudioModelModelDisplayPanel(_asset), "Model Display");
 	addDockPanel(new StudioModelLightingPanel(_asset), "Lighting");
@@ -167,6 +168,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	connect(_editorContext, &EditorContext::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
 	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, _texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
 
+	connect(sceneDock, &QDockWidget::dockLocationChanged, scenePanel, &StudioModelScenePanel::OnLayoutDirectionChanged);
 	connect(texturesDock, &QDockWidget::visibilityChanged, this, &StudioModelEditWidget::OnTexturesDockVisibilityChanged);
 	connect(modelDataDock, &QDockWidget::dockLocationChanged, modelDataPanel, &StudioModelModelDataPanel::OnLayoutDirectionChanged);
 	connect(transformDock, &QDockWidget::visibilityChanged, transformPanel, &StudioModelTransformPanel::ResetValues);

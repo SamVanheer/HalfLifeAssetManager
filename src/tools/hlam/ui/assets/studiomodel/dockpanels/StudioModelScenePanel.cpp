@@ -18,17 +18,28 @@ StudioModelScenePanel::StudioModelScenePanel(StudioModelAsset* asset, QWidget* p
 
 void StudioModelScenePanel::InitializeUI()
 {
-	AddObject(new StudioModelModelPanel(_asset), "Model");
-	AddObject(new StudioModelGroundPanel(_asset), "Ground");
+	auto modelPanel = new StudioModelModelPanel(_asset);
+	auto groundPanel = new StudioModelGroundPanel(_asset);
+
+	AddObject(modelPanel, "Model");
+	AddObject(groundPanel, "Ground");
 	AddObject(new StudioModelBackgroundPanel(_asset), "Background");
 
 	//Ensure first row is selected
 	_ui.ObjectList->setCurrentRow(0);
+
+	connect(this, &StudioModelScenePanel::LayoutDirectionChanged, modelPanel, &StudioModelModelPanel::OnLayoutDirectionChanged);
+	connect(this, &StudioModelScenePanel::LayoutDirectionChanged, groundPanel, &StudioModelGroundPanel::OnLayoutDirectionChanged);
 }
 
 void StudioModelScenePanel::AddObject(QWidget* widget, const QString& label)
 {
 	_ui.ObjectList->addItem(label);
 	_ui.ObjectStack->addWidget(widget);
+}
+
+void StudioModelScenePanel::OnLayoutDirectionChanged()
+{
+	emit LayoutDirectionChanged(_ui.MainLayout->direction());
 }
 }

@@ -21,6 +21,11 @@ StudioModelModelPanel::StudioModelModelPanel(StudioModelAsset* asset, QWidget* p
 	connect(_ui.AlignOnGround, &QPushButton::clicked, this, &StudioModelModelPanel::OnAlignOnGround);
 }
 
+void StudioModelModelPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
+{
+	_ui.MainLayout->setDirection(direction);
+}
+
 void StudioModelModelPanel::OnOriginChanged()
 {
 	_asset->GetScene()->GetEntity()->SetOrigin(_ui.Origin->GetValue());

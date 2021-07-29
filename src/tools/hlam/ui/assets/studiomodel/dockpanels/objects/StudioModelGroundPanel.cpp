@@ -34,6 +34,11 @@ StudioModelGroundPanel::StudioModelGroundPanel(StudioModelAsset* asset, QWidget*
 	connect(_ui.GroundOrigin, &qt::widgets::Vector3Edit::ValueChanged, this, &StudioModelGroundPanel::OnOriginChanged);
 }
 
+void StudioModelGroundPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
+{
+	_ui.MainLayout->setDirection(direction);
+}
+
 void StudioModelGroundPanel::OnShowGroundChanged()
 {
 	auto scene = _asset->GetScene();
