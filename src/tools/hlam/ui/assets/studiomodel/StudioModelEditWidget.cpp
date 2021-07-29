@@ -7,6 +7,8 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "graphics/Scene.hpp"
 
+#include "qt/QtUtilities.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/SceneWidget.hpp"
 #include "ui/TextureWidget.hpp"
@@ -112,7 +114,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 		return dock;
 	};
 
-	addDockPanel(_camerasPanel, "Cameras");
+	auto camerasDock = addDockPanel(_camerasPanel, "Cameras");
 	auto sceneDock = addDockPanel(scenePanel, "Scene");
 	addDockPanel(new StudioModelModelInfoPanel(_asset), "Model Info");
 	auto modelDisplayDock = addDockPanel(new StudioModelModelDisplayPanel(_asset), "Model Display");
@@ -168,6 +170,11 @@ StudioModelEditWidget::StudioModelEditWidget(
 	connect(_editorContext, &EditorContext::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
 	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, _texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
 
+	connect(camerasDock, &QDockWidget::dockLocationChanged, [this](Qt::DockWidgetArea area)
+		{
+			_camerasPanel->OnLayoutDirectionChanged(qt::GetDirectionForDockArea(area));
+		});
+
 	connect(sceneDock, &QDockWidget::dockLocationChanged, scenePanel, &StudioModelScenePanel::OnLayoutDirectionChanged);
 	connect(texturesDock, &QDockWidget::visibilityChanged, this, &StudioModelEditWidget::OnTexturesDockVisibilityChanged);
 	connect(modelDataDock, &QDockWidget::dockLocationChanged, modelDataPanel, &StudioModelModelDataPanel::OnLayoutDirectionChanged);
@@ -192,20 +199,7 @@ void StudioModelEditWidget::OnDockLocationChanged(Qt::DockWidgetArea area)
 	auto widget = dock->widget();
 
 	//Automatically change the layout for panels using a box layout
-	if (auto layout = qobject_cast<QBoxLayout*>(widget->layout()); layout)
-	{
-		switch (area)
-		{
-		case Qt::DockWidgetArea::TopDockWidgetArea:
-		case Qt::DockWidgetArea::BottomDockWidgetArea:
-			layout->setDirection(QBoxLayout::Direction::LeftToRight);
-			break;
-
-		default:
-			layout->setDirection(QBoxLayout::Direction::TopToBottom);
-			break;
-		}
-	}
+	qt::TrySetBoxLayoutDirection(widget, qt::GetDirectionForDockArea(area));
 }
 
 void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current)

@@ -3,6 +3,7 @@
 #include <string_view>
 #include <vector>
 
+#include <QBoxLayout>
 #include <QString>
 #include <QWidget>
 
@@ -31,6 +32,7 @@ signals:
 
 public slots:
 	void ChangeCamera(int index);
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction);
 
 private slots:
 	void OnChangeCamera(int index);

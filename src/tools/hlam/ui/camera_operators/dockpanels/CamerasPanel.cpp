@@ -3,6 +3,8 @@
 
 #include <QDebug>
 
+#include "qt/QtUtilities.hpp"
+
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
 
 namespace ui::camera_operators
@@ -58,6 +60,21 @@ void CamerasPanel::OnChangeCamera(int index)
 	_ui.CamerasStack->setCurrentIndex(index);
 
 	emit CameraChanged(index);
+}
+
+void CamerasPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
+{
+	_ui.NavigationLayout->setDirection(direction);
+
+	for (int i = 0; i < _ui.CamerasStack->count(); ++i)
+	{
+		auto widget = _ui.CamerasStack->widget(i);
+
+		qt::TrySetBoxLayoutDirection(widget, direction);
+	}
+
+	_ui.CamerasStack->adjustSize();
+	adjustSize();
 }
 
 void CamerasPanel::ChangeToPreviousCamera()
