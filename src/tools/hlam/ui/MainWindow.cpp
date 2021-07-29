@@ -149,32 +149,47 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	setWindowTitle({});
 
-	//Construct the file filters used for loading and saving
-	QStringList filters;
-
-	for (auto provider : _editorContext->GetAssetProviderRegistry()->GetAssetProviders())
 	{
-		auto fileTypes = provider->GetFileTypes();
-
-		for (auto& fileType : fileTypes)
+		//Construct the file filters used for loading and saving
+		auto setupFileFilters = [this](assets::ProviderFeature feature)
 		{
-			fileType = QString{"*.%1"}.arg(fileType);
-		}
+			QStringList filters;
 
-		filters.append(QString{"%1 Files (%2)"}.arg(provider->GetProviderName()).arg(fileTypes.join(' ')));
+			for (auto provider : _editorContext->GetAssetProviderRegistry()->GetAssetProviders())
+			{
+				if (provider->GetFeatures() & feature)
+				{
+					auto fileTypes = provider->GetFileTypes();
+
+					for (auto& fileType : fileTypes)
+					{
+						fileType = QString{"*.%1"}.arg(fileType);
+					}
+
+					filters.append(QString{"%1 Files (%2)"}.arg(provider->GetProviderName()).arg(fileTypes.join(' ')));
+				}
+			}
+
+			QString fileFilters;
+
+			if (!filters.isEmpty())
+			{
+				fileFilters = filters.join(";;");
+			}
+
+			if (!fileFilters.isEmpty())
+			{
+				fileFilters += ";;";
+			}
+
+			fileFilters += "All Files (*.*)";
+
+			return fileFilters;
+		};
+
+		_loadFileFilter = setupFileFilters(assets::ProviderFeature::AssetLoading);
+		_saveFileFilter = setupFileFilters(assets::ProviderFeature::AssetSaving);
 	}
-
-	if (!filters.isEmpty())
-	{
-		_fileFilter = filters.join(";;");
-	}
-
-	if (!_fileFilter.isEmpty())
-	{
-		_fileFilter += ";;";
-	}
-
-	_fileFilter += "All Files (*.*)";
 
 	auto settings = _editorContext->GetSettings();
 
@@ -232,6 +247,8 @@ bool MainWindow::TryLoadAsset(QString fileName)
 
 		if (nullptr != asset)
 		{
+			auto currentFileName = asset->GetFileName();
+
 			connect(asset.get(), &assets::Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
 
 			const auto editWidget = asset->GetEditWidget();
@@ -244,7 +261,8 @@ bool MainWindow::TryLoadAsset(QString fileName)
 			asset->setParent(this);
 			asset.release();
 
-			const auto index = _assetTabs->addTab(editWidget, fileName);
+			//Use the current filename for this
+			const auto index = _assetTabs->addTab(editWidget, currentFileName);
 
 			_assetTabs->setCurrentIndex(index);
 
@@ -421,7 +439,7 @@ void MainWindow::OnOpenLoadAssetDialog()
 {
 	if (const auto fileName = QFileDialog::getOpenFileName(this, "Select asset",
 		settings::GetSavedPath(*_editorContext->GetSettings(), AssetPathName),
-		_fileFilter);
+		_loadFileFilter);
 		!fileName.isEmpty())
 	{
 		settings::SetSavedPath(*_editorContext->GetSettings(), AssetPathName, QFileInfo(fileName).absolutePath());
@@ -512,7 +530,7 @@ void MainWindow::OnSaveAssetAs()
 {
 	const auto asset = GetCurrentAsset();
 
-	QString fileName{QFileDialog::getSaveFileName(this, {}, asset->GetFileName(), _fileFilter)};
+	QString fileName{QFileDialog::getSaveFileName(this, {}, asset->GetFileName(), _saveFileFilter)};
 
 	if (!fileName.isEmpty())
 	{

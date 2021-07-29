@@ -55,9 +55,6 @@
 
 namespace ui::assets::studiomodel
 {
-const QString StudioModelExtension{QStringLiteral("mdl")};
-const QString StudioModelPS2Extension{QStringLiteral("dol")};
-
 const float InitialCameraYaw{180};
 
 static std::pair<float, float> GetCenteredValues(HLMVStudioModelEntity* entity)
@@ -511,21 +508,6 @@ void StudioModelAsset::OnTakeScreenshot()
 
 StudioModelAssetProvider::~StudioModelAssetProvider() = default;
 
-QString StudioModelAssetProvider::GetProviderName() const
-{
-	return "Studiomodel";
-}
-
-QStringList StudioModelAssetProvider::GetFileTypes() const
-{
-	return {StudioModelExtension, StudioModelPS2Extension};
-}
-
-QString StudioModelAssetProvider::GetPreferredFileType() const
-{
-	return StudioModelExtension;
-}
-
 QMenu* StudioModelAssetProvider::CreateToolMenu(EditorContext* editorContext)
 {
 	auto menu = new QMenu("StudioModel");
@@ -567,7 +549,17 @@ std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorConte
 
 	auto editableStudioModel = studiomdl::ConvertToEditable(*studioModel);
 
-	return std::make_unique<StudioModelAsset>(QString{fileName}, editorContext, this,
+	QString updatedFileName = fileName;
+
+	QFileInfo fileInfo{fileName};
+
+	//Automatically change the name of dol files to mdl to reflect the conversion
+	if (fileInfo.suffix() == StudioModelPS2Extension)
+	{
+		updatedFileName = fileInfo.path() + '/' + fileInfo.completeBaseName() + '.' + StudioModelExtension;
+	}
+
+	return std::make_unique<StudioModelAsset>(std::move(updatedFileName), editorContext, this,
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
 }
 }

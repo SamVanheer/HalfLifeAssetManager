@@ -241,7 +241,11 @@ ui::EditorContext* ToolApplication::CreateEditorContext(std::unique_ptr<QSetting
 
 	auto assetProviderRegistry{std::make_unique<ui::assets::AssetProviderRegistry>()};
 
-	assetProviderRegistry->AddProvider(std::make_unique<studiomodel::StudioModelAssetProvider>(studioModelSettings));
+	auto studioModelAssetProvider = std::make_unique<studiomodel::StudioModelAssetProvider>(studioModelSettings);
+	auto studioModelImportProvider = std::make_unique<studiomodel::StudioModelDolImportProvider>(studioModelAssetProvider.get());
+
+	assetProviderRegistry->AddProvider(std::move(studioModelAssetProvider));
+	assetProviderRegistry->AddProvider(std::move(studioModelImportProvider));
 
 	return new ui::EditorContext(
 		settings.release(),

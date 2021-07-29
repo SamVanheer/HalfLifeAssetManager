@@ -105,7 +105,8 @@ private:
 
 	QTabWidget* _assetTabs;
 
-	QString _fileFilter;
+	QString _loadFileFilter;
+	QString _saveFileFilter;
 
 	QPointer<assets::Asset> _currentAsset;
 

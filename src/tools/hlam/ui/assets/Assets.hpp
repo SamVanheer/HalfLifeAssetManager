@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include <QFlags>
 #include <QObject>
 #include <QString>
 #include <QUndoStack>
@@ -20,6 +21,16 @@ class FullscreenWidget;
 namespace assets
 {
 class AssetProvider;
+
+enum class ProviderFeature
+{
+	None = 0,
+	AssetLoading = 1 << 0,
+	AssetSaving = 1 << 1
+};
+
+Q_DECLARE_FLAGS(ProviderFeatures, ProviderFeature)
+Q_DECLARE_OPERATORS_FOR_FLAGS(ProviderFeatures)
 
 class Asset : public QObject
 {
@@ -102,6 +113,8 @@ public:
 	virtual QStringList GetFileTypes() const = 0;
 
 	virtual QString GetPreferredFileType() const = 0;
+
+	virtual ProviderFeatures GetFeatures() const = 0;
 
 	/**
 	*	@brief Creates the tool menu for this asset, or nullptr if no menu is available
