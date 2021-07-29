@@ -58,18 +58,24 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		_application = &app;
 
-		if (QOpenGLContext::globalShareContext()->format().majorVersion() < 3)
-		{
-			QMessageBox::critical(nullptr, "Fatal Error", QString{"%1 requires OpenGL 3 or newer"}.arg(programName));
-
-			return EXIT_FAILURE;
-		}
-
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
 		const auto [isPortable, fileName] = ParseCommandLine(app);
 
 		auto settings{CreateSettings(programName, isPortable)};
+
+		{
+			const auto openGLFormat = QOpenGLContext::globalShareContext()->format();
+
+			//Only check this once
+			if (!settings->value("graphics/checked_opengl_version", false).toBool() && openGLFormat.majorVersion() < 3)
+			{
+				QMessageBox::warning(nullptr, "Warning", QString{"%1 may not work correctly with your version of OpenGL (%2.%3)"}
+					.arg(programName).arg(openGLFormat.majorVersion()).arg(openGLFormat.minorVersion()));
+
+				settings->setValue("graphics/checked_opengl_version", true);
+			}
+		}
 
 		if (CheckSingleInstance(programName, fileName, *settings))
 		{
