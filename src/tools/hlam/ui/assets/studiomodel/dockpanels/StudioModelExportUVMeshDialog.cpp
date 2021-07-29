@@ -8,8 +8,8 @@
 
 #include "qt/QtUtilities.hpp"
 
+#include "ui/assets/studiomodel/StudioModelTextureUtilities.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelExportUVMeshDialog.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
 
 namespace ui::assets::studiomodel
 {
@@ -95,14 +95,14 @@ void StudioModelExportUVMeshDialog::OnBrowseFileName()
 
 void StudioModelExportUVMeshDialog::UpdatePreview()
 {
-	_uv = StudioModelTexturesPanel::CreateUVMapImage(_entity, _textureIndex, _meshIndex,
+	_uv = CreateUVMapImage(*_entity->GetEditableModel(), _textureIndex, _meshIndex,
 		ShouldAntiAliasLines(),
 		static_cast<float>(GetImageScale()),
 		static_cast<qreal>(GetUVLineWidth()));
 
 	_preview = QImage{_uv.width(), _uv.height(), QImage::Format::Format_RGBA8888};
 
-	StudioModelTexturesPanel::DrawUVImage(Qt::black, true, ShouldOverlayOnTexture(), _texture, _uv, _preview);
+	DrawUVImage(Qt::black, true, ShouldOverlayOnTexture(), _texture, _uv, _preview);
 
 	auto pixmap = QPixmap::fromImage(_preview);
 

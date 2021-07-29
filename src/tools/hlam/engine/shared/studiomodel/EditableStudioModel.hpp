@@ -178,17 +178,21 @@ struct Bodypart
 	std::vector<Model> Models;
 };
 
+struct TextureData
+{
+	int Width = 0;
+	int Height = 0;
+	std::vector<byte> Pixels;
+	graphics::RGBPalette Palette;
+};
+
 struct Texture
 {
 	std::string Name;
 	int Flags = 0;
-	int Width = 0;
-	int Height = 0;
+	TextureData Data;
 
 	int ArrayIndex = -1;
-
-	std::vector<byte> Pixels;
-	graphics::RGBPalette Palette;
 
 	GLuint TextureId = 0;
 };
@@ -236,11 +240,13 @@ public:
 
 	std::vector<std::vector<byte>> Transitions;
 
-	Model* GetModelByBodyPart(const int iBody, const int iBodyPart);
+	const Model* GetModelByBodyPart(const int iBody, const int iBodyPart) const;
 
 	int GetBodyValueForGroup(int compositeValue, int group) const;
 
 	bool CalculateBodygroup(const int iGroup, const int iValue, int& iInOutBodygroup) const;
+
+	std::vector<const studiomdl::Mesh*> ComputeMeshList(const int texture) const;
 
 	void CreateTextures(graphics::TextureLoader& textureLoader);
 

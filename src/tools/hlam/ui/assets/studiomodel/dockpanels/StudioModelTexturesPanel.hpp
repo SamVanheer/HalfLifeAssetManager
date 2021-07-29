@@ -35,18 +35,12 @@ public:
 	StudioModelTexturesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
 	~StudioModelTexturesPanel();
 
-	static QImage CreateUVMapImage(
-		StudioModelEntity* entity, const int textureIndex, const int meshIndex, const bool antiAliasLines, float textureScale, qreal lineWidth);
-
-	static void DrawUVImage(const QColor& backgroundColor, bool showUVMap, bool overlayOnTexture, const QImage& texture, const QImage& uvMap, QImage& target);
-
 	QImage GenerateTextureForDisplay();
 
 private:
 	void InitializeUI();
 
 	void ImportTextureFrom(const QString& fileName, studiomdl::EditableStudioModel& model, int textureIndex);
-	bool ExportTextureTo(const QString& fileName, const studiomdl::EditableStudioModel& model, const studiomdl::Texture& texture);
 	void RemapTexture(int index);
 	void RemapTextures();
 	void UpdateColormapValue();

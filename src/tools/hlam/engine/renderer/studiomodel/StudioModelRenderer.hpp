@@ -133,7 +133,7 @@ private:
 
 	studiomdl::EditableStudioModel* _studioModel{};
 
-	Model* _model = nullptr;
+	const Model* _model = nullptr;
 
 	/**
 	*	The number of polygons drawn since the last call to Initialize.

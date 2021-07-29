@@ -24,7 +24,7 @@ EditableStudioModel::~EditableStudioModel()
 	}
 }
 
-Model* EditableStudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart)
+const Model* EditableStudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart) const
 {
 	auto& bodypart = *Bodyparts[iBodyPart];
 
@@ -63,6 +63,47 @@ bool EditableStudioModel::CalculateBodygroup(const int iGroup, const int iValue,
 	return true;
 }
 
+std::vector<const studiomdl::Mesh*> EditableStudioModel::ComputeMeshList(const int texture) const
+{
+	if (texture == -1)
+	{
+		return {};
+	}
+
+	std::vector<const studiomdl::Mesh*> meshes;
+
+	int iBodygroup = 0;
+
+	for (int iBodyPart = 0; iBodyPart < Bodyparts.size(); ++iBodyPart)
+	{
+		const auto& bodypart = *Bodyparts[iBodyPart];
+
+		for (int iModel = 0; iModel < bodypart.Models.size(); ++iModel)
+		{
+			CalculateBodygroup(iBodyPart, iModel, iBodygroup);
+
+			const studiomdl::Model& model = *GetModelByBodyPart(iBodygroup, iBodyPart);
+
+			for (int iMesh = 0; iMesh < model.Meshes.size(); ++iMesh)
+			{
+				const auto& mesh = model.Meshes[iMesh];
+
+				//Check each skin family to detect textures used only by alternate skins (e.g. scientist hands)
+				for (int skinFamily = 0; skinFamily < SkinFamilies.size(); ++skinFamily)
+				{
+					if (SkinFamilies[skinFamily][mesh.SkinRef]->ArrayIndex == texture)
+					{
+						meshes.push_back(&mesh);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	return meshes;
+}
+
 void EditableStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 {
 	for (auto& texture : Textures)
@@ -72,11 +113,13 @@ void EditableStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glGenTextures(1, &name);
 
+		auto& data = texture->Data;
+
 		textureLoader.UploadIndexed8(
 			name,
-			texture->Width, texture->Height,
-			texture->Pixels.data(),
-			texture->Palette,
+			data.Width, data.Height,
+			data.Pixels.data(),
+			data.Palette,
 			(texture->Flags & STUDIO_NF_NOMIPS) != 0,
 			(texture->Flags & STUDIO_NF_MASKED) != 0);
 
@@ -88,7 +131,7 @@ void EditableStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader,
 {
 	textureLoader.UploadIndexed8(
 		texture->TextureId,
-		texture->Width, texture->Height,
+		texture->Data.Width, texture->Data.Height,
 		data,
 		pal,
 		(texture->Flags & STUDIO_NF_NOMIPS) != 0,
@@ -110,7 +153,7 @@ void EditableStudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader
 		return;
 	}
 
-	ReplaceTexture(textureLoader, texture, texture->Pixels.data(), texture->Palette);
+	ReplaceTexture(textureLoader, texture, texture->Data.Pixels.data(), texture->Data.Palette);
 }
 
 void EditableStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
@@ -131,7 +174,7 @@ void EditableStudioModel::ReuploadTextures(graphics::TextureLoader& textureLoade
 	{
 		if (texture->TextureId)
 		{
-			ReplaceTexture(textureLoader, texture.get(), texture->Pixels.data(), texture->Palette);
+			ReplaceTexture(textureLoader, texture.get(), texture->Data.Pixels.data(), texture->Data.Palette);
 		}
 	}
 }

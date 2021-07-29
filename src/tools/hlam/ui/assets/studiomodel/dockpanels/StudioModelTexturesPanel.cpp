@@ -27,6 +27,7 @@
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelTextureUtilities.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/StudioModelValidators.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelExportUVMeshDialog.hpp"
@@ -57,25 +58,7 @@ static int GetMeshIndexForDrawing(QComboBox* comboBox)
 
 static QString FormatTextureName(const studiomdl::Texture& texture)
 {
-	return QString{"%1 (%2 x %3)"}.arg(texture.Name.c_str()).arg(texture.Width).arg(texture.Height);
-}
-
-static QImage ConvertTextureToRGBImage(
-	const studiomdl::Texture& texture, const byte* textureData, const graphics::RGBPalette& texturePalette, std::vector<QRgb>& dataBuffer)
-{
-	dataBuffer.resize(texture.Width * texture.Height);
-
-	for (int y = 0; y < texture.Height; ++y)
-	{
-		for (int x = 0; x < texture.Width; ++x)
-		{
-			const auto& color = texturePalette[textureData[(texture.Width * y) + x]];
-
-			dataBuffer[(texture.Width * y) + x] = qRgb(color.R, color.G, color.B);
-		}
-	}
-
-	return QImage{reinterpret_cast<const uchar*>(dataBuffer.data()), texture.Width, texture.Height, QImage::Format::Format_RGB32};
+	return QString{"%1 (%2 x %3)"}.arg(texture.Name.c_str()).arg(texture.Data.Width).arg(texture.Data.Height);
 }
 
 StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWidget* parent)
@@ -168,109 +151,6 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 
 StudioModelTexturesPanel::~StudioModelTexturesPanel() = default;
 
-QImage StudioModelTexturesPanel::CreateUVMapImage(
-	StudioModelEntity* entity, const int textureIndex, const int meshIndex, const bool antiAliasLines, float textureScale, qreal lineWidth)
-{
-	const auto model = entity->GetEditableModel();
-
-	const auto& texture = *model->Textures[textureIndex];
-
-	//RGBA format because only the UV lines need to be drawn, with no background
-	QImage image{static_cast<int>(std::ceil(texture.Width * textureScale)), static_cast<int>(std::ceil(texture.Height * textureScale)),
-		QImage::Format::Format_RGBA8888};
-
-	//Set as transparent
-	image.fill(Qt::transparent);
-
-	QPainter painter{&image};
-
-	painter.setPen(QPen{Qt::white, lineWidth});
-	painter.setRenderHint(QPainter::RenderHint::Antialiasing, antiAliasLines);
-
-	auto fixCoords = [=](int x, int y)
-	{
-		return QPointF(x * textureScale, y * textureScale);
-	};
-
-	auto meshes = entity->ComputeMeshList(textureIndex);
-
-	if (meshIndex != -1)
-	{
-		auto singleMesh = meshes[meshIndex];
-		meshes.clear();
-		meshes.emplace_back(singleMesh);
-	}
-
-	for (const auto mesh : meshes)
-	{
-		auto ptricmds = mesh->Triangles.data();
-
-		for (int i; i = *(ptricmds++);)
-		{
-			if (i < 0)
-			{
-				i = -i;
-
-				const auto firstVertex{fixCoords(ptricmds[2], ptricmds[3])};
-
-				ptricmds += 4;
-				--i;
-
-				for (; i > 0; --i, ptricmds += 4)
-				{
-					painter.drawLine(firstVertex, fixCoords(ptricmds[2], ptricmds[3]));
-
-					if (i > 1)
-					{
-						painter.drawLine(fixCoords(ptricmds[2], ptricmds[3]), fixCoords(ptricmds[6], ptricmds[7]));
-					}
-				}
-			}
-			else
-			{
-				auto firstVertex{fixCoords(ptricmds[2], ptricmds[3])};
-				auto secondVertex{fixCoords(ptricmds[6], ptricmds[7])};
-
-				painter.drawLine(firstVertex, secondVertex);
-
-				ptricmds += 8;
-				i -= 2;
-
-				for (; i > 0; --i, ptricmds += 4)
-				{
-					painter.drawLine(secondVertex, fixCoords(ptricmds[2], ptricmds[3]));
-					painter.drawLine(fixCoords(ptricmds[2], ptricmds[3]), firstVertex);
-
-					firstVertex = secondVertex;
-					secondVertex = fixCoords(ptricmds[2], ptricmds[3]);
-				}
-			}
-		}
-	}
-
-	return image;
-}
-
-void StudioModelTexturesPanel::DrawUVImage(
-	const QColor& backgroundColor, bool showUVMap, bool overlayOnTexture, const QImage& texture, const QImage& uvMap, QImage& target)
-{
-	target.fill(backgroundColor);
-
-	QPainter painter{&target};
-
-	const QRect drawRect{0, 0, target.width(), target.height()};
-
-	if (!showUVMap || overlayOnTexture)
-	{
-		painter.drawImage(drawRect, texture);
-	}
-
-	if (showUVMap)
-	{
-		painter.drawImage(drawRect, uvMap);
-	}
-}
-
 QImage StudioModelTexturesPanel::GenerateTextureForDisplay()
 {
 	const int textureIndex = _ui.Textures->currentIndex();
@@ -286,14 +166,14 @@ QImage StudioModelTexturesPanel::GenerateTextureForDisplay()
 
 	const auto& texture = *model->Textures[textureIndex];
 
-	const auto textureData = texture.Pixels.data();
+	const auto textureData = texture.Data.Pixels.data();
 
 	std::vector<QRgb> dataBuffer;
 
-	const auto textureImage{ConvertTextureToRGBImage(texture, textureData, texture.Palette, dataBuffer)};
+	const auto textureImage{ConvertTextureToRGBImage(texture.Data, textureData, texture.Data.Palette, dataBuffer)};
 
 	const auto uvMapImage = CreateUVMapImage(
-		entity,
+		*model,
 		textureIndex, GetMeshIndexForDrawing(_ui.Meshes),
 		_ui.AntiAliasLines->isChecked(),
 		_ui.ScaleTextureViewSpinner->value(), _uvLineWidth);
@@ -475,7 +355,7 @@ void StudioModelTexturesPanel::OnTextureChanged(int index)
 
 	SetTextureFlagCheckBoxes(_ui, texture.Flags);
 
-	const auto meshes = entity->ComputeMeshList(index);
+	const auto meshes = entity->GetEditableModel()->ComputeMeshList(index);
 
 	for (decltype(meshes.size()) i = 0; i < meshes.size(); ++i)
 	{
@@ -639,124 +519,39 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 		return;
 	}
 
-	const QImage::Format inputFormat = image.format();
+	auto convertedTexture = ConvertImageToTexture(image);
 
-	if (inputFormat != QImage::Format::Format_Indexed8)
-	{
-		QMessageBox::warning(this, "Warning",
-			QString{"Image \"%1\" has the format \"%2\" and will be converted to an indexed 8 bit image. Loss of color depth may occur."}
-				.arg(fileName)
-				.arg(QMetaEnum::fromType<QImage::Format>().valueToKey(inputFormat)));
-		
-		image.convertTo(QImage::Format::Format_Indexed8);
-	}
-
-	const QVector<QRgb> palette = image.colorTable();
-
-	if (palette.isEmpty())
+	if (!convertedTexture)
 	{
 		QMessageBox::critical(this, "Error loading image", QString{"Palette for image \"%1\" does not exist."}.arg(fileName));
 		return;
 	}
 
+	if (std::get<1>(convertedTexture.value()))
+	{
+		QMessageBox::warning(this, "Warning",
+			QString{"Image \"%1\" has the format \"%2\" and will be converted to an indexed 8 bit image. Loss of color depth may occur."}
+			.arg(fileName)
+			.arg(QMetaEnum::fromType<QImage::Format>().valueToKey(image.format())));
+	}
+
+	auto& textureData = std::get<0>(convertedTexture.value());
+
 	auto& texture = *model.Textures[textureIndex];
 
-	//Convert to 8 bit palette based image
-	std::unique_ptr<byte[]> texData = std::make_unique<byte[]>(image.width() * image.height());
-
-	{
-		byte* pDest = texData.get();
-
-		for (int y = 0; y < image.height(); ++y)
-		{
-			for (int x = 0; x < image.width(); ++x, ++pDest)
-			{
-				*pDest = image.pixelIndex(x, y);
-			}
-		}
-	}
-
-	graphics::RGBPalette convPal;
-
-	int paletteIndex;
-
-	for (paletteIndex = 0; paletteIndex < palette.size(); ++paletteIndex)
-	{
-		const auto rgb = palette[paletteIndex];
-
-		convPal[paletteIndex] =
-		{
-			static_cast<byte>(qRed(rgb)),
-			static_cast<byte>(qGreen(rgb)),
-			static_cast<byte>(qBlue(rgb))
-		};
-	}
-
-	//Fill remaining entries with black
-	for (; paletteIndex < convPal.EntriesCount; ++paletteIndex)
-	{
-		convPal[paletteIndex] = {0, 0, 0};
-	}
-
 	auto scaledSTCoordinates = studiomdl::CalculateScaledSTCoordinatesData(
-		model, textureIndex, texture.Width, texture.Height, image.width(), image.height());
+		model, textureIndex, texture.Data.Width, texture.Data.Height, image.width(), image.height());
 
 	ImportTextureData oldTexture;
 	ImportTextureData newTexture;
 
-	oldTexture.Width = texture.Width;
-	oldTexture.Height = texture.Height;
-	oldTexture.Pixels = std::make_unique<byte[]>(oldTexture.Width * oldTexture.Height);
-
-	memcpy(oldTexture.Pixels.get(), texture.Pixels.data(), texture.Pixels.size());
-	oldTexture.Palette = texture.Palette;
+	oldTexture.Data = texture.Data;
 	oldTexture.ScaledSTCoordinates = std::move(scaledSTCoordinates.first);
 
-	newTexture.Width = image.width();
-	newTexture.Height = image.height();
-	newTexture.Pixels = std::move(texData);
-	newTexture.Palette = convPal;
+	newTexture.Data = textureData;
 	newTexture.ScaledSTCoordinates = std::move(scaledSTCoordinates.second);
 
 	_asset->AddUndoCommand(new ImportTextureCommand(_asset, textureIndex, std::move(oldTexture), std::move(newTexture)));
-}
-
-bool StudioModelTexturesPanel::ExportTextureTo(const QString& fileName, const studiomdl::EditableStudioModel& model, const studiomdl::Texture& texture)
-{
-	//Ensure data is 32 bit aligned
-	const int alignedWidth = (texture.Width + 3) & (~3);
-
-	std::vector<uchar> alignedPixels;
-
-	alignedPixels.resize(alignedWidth * texture.Height);
-
-	for (int h = 0; h < texture.Height; ++h)
-	{
-		for (int w = 0; w < texture.Width; ++w)
-		{
-			alignedPixels[(alignedWidth * h) + w] = texture.Pixels[(texture.Width * h) + w];
-		}
-	}
-
-	QImage textureImage{alignedPixels.data(), texture.Width, texture.Height, QImage::Format::Format_Indexed8};
-
-	QVector<QRgb> palette;
-
-	palette.reserve(texture.Palette.GetSizeInBytes());
-
-	for (const auto& rgb : texture.Palette)
-	{
-		palette.append(qRgb(rgb.R, rgb.G, rgb.B));
-	}
-
-	textureImage.setColorTable(palette);
-
-	if (!textureImage.save(fileName))
-	{
-		return false;
-	}
-
-	return true;
 }
 
 void StudioModelTexturesPanel::RemapTexture(int index)
@@ -769,7 +564,7 @@ void StudioModelTexturesPanel::RemapTexture(int index)
 
 	if (graphics::TryGetRemapColors(texture.Name.c_str(), low, mid, high))
 	{
-		graphics::RGBPalette palette{texture.Palette};
+		graphics::RGBPalette palette{texture.Data.Palette};
 
 		graphics::PaletteHueReplace(palette, _ui.TopColorSlider->value(), low, mid);
 
@@ -781,7 +576,7 @@ void StudioModelTexturesPanel::RemapTexture(int index)
 		auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
 		graphicsContext->Begin();
-		model->ReplaceTexture(*_asset->GetTextureLoader(), &texture, texture.Pixels.data(), palette);
+		model->ReplaceTexture(*_asset->GetTextureLoader(), &texture, texture.Data.Pixels.data(), palette);
 		graphicsContext->End();
 	}
 }
@@ -851,7 +646,9 @@ void StudioModelTexturesPanel::OnExportTexture()
 		return;
 	}
 
-	if (!ExportTextureTo(fileName, *model, texture))
+	auto textureImage = ConvertTextureToIndexed8Image(texture.Data);
+
+	if (!textureImage.save(fileName))
 	{
 		QMessageBox::critical(this, "Error", QString{"Failed to save image \"%1\""}.arg(fileName));
 	}
@@ -873,11 +670,11 @@ void StudioModelTexturesPanel::OnExportUVMap()
 
 	const auto& texture = *model->Textures[textureIndex];
 
-	const auto textureData = texture.Pixels.data();
+	const auto textureData = texture.Data.Pixels.data();
 
 	std::vector<QRgb> dataBuffer;
 
-	auto textureImage{ConvertTextureToRGBImage(texture, textureData, texture.Palette, dataBuffer)};
+	auto textureImage{ConvertTextureToRGBImage(texture.Data, textureData, texture.Data.Palette, dataBuffer)};
 
 	if (StudioModelExportUVMeshDialog dialog{entity, textureIndex, GetMeshIndexForDrawing(_ui.Meshes), textureImage, this};
 		QDialog::DialogCode::Accepted == dialog.exec())
@@ -888,7 +685,7 @@ void StudioModelTexturesPanel::OnExportUVMap()
 		QImage resultImage{uvMapImage.width(), uvMapImage.height(), QImage::Format::Format_RGBA8888};
 
 		//Set as transparent
-		StudioModelTexturesPanel::DrawUVImage(Qt::transparent, true, dialog.ShouldOverlayOnTexture(), textureImage, dialog.GetUVImage(), resultImage);
+		DrawUVImage(Qt::transparent, true, dialog.ShouldOverlayOnTexture(), textureImage, uvMapImage, resultImage);
 
 		if (!dialog.ShouldAddAlphaChannel())
 		{
@@ -958,8 +755,10 @@ void StudioModelTexturesPanel::OnExportAllTextures()
 		const QFileInfo fileName{path, texture.Name.c_str()};
 
 		auto fullPath = fileName.absoluteFilePath();
-		
-		if (!ExportTextureTo(fullPath, *model, texture))
+
+		auto textureImage = ConvertTextureToIndexed8Image(texture.Data);
+
+		if (!textureImage.save(fullPath))
 		{
 			errors += QString{"\"%1\"\n"}.arg(fullPath);
 		}

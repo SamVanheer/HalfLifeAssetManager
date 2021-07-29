@@ -990,10 +990,7 @@ protected:
 
 struct ImportTextureData
 {
-	int Width{};
-	int Height{};
-	std::unique_ptr<byte[]> Pixels;
-	graphics::RGBPalette Palette;
+	studiomdl::TextureData Data;
 
 	studiomdl::ScaleSTCoordinatesData ScaledSTCoordinates;
 

@@ -628,8 +628,8 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 
 		const auto& texture = *_studioModel->SkinFamilies[_renderInfo->Skin][mesh.SkinRef];
 
-		const auto s = 1.0 / (float)texture.Width;
-		const auto t = 1.0 / (float)texture.Height;
+		const auto s = 1.0 / (float)texture.Data.Width;
+		const auto t = 1.0 / (float)texture.Data.Height;
 
 		if (!bWireframe)
 		{

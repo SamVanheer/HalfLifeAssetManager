@@ -536,11 +536,13 @@ std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioM
 		{
 			source->name,
 			source->flags,
-			source->width,
-			source->height,
-			i,
-			std::move(pixels),
-			palette
+			{
+				source->width,
+				source->height,
+				std::move(pixels),
+				palette
+			},
+			i
 		};
 
 		result.push_back(std::make_unique<Texture>(texture));
@@ -569,11 +571,13 @@ std::vector<std::unique_ptr<Texture>> ConvertMdlTexturesToEditable(const StudioM
 		{
 			source->name,
 			source->flags,
-			source->width,
-			source->height,
-			i,
-			{header->GetData() + source->index, header->GetData() + source->index + (source->width * source->height)},
-			palette
+			{
+				source->width,
+				source->height,
+				{header->GetData() + source->index, header->GetData() + source->index + (source->width * source->height)},
+				palette
+			},
+			i
 		};
 
 		result.push_back(std::make_unique<Texture>(texture));
@@ -1216,15 +1220,15 @@ void ConvertTexturesFromEditable(const EditableStudioModel& studioModel, studioh
 
 			UTIL_CopyString(dest.name, source.Name.c_str());
 			dest.flags = source.Flags;
-			dest.width = source.Width;
-			dest.height = source.Height;
+			dest.width = source.Data.Width;
+			dest.height = source.Data.Height;
 			dest.index = buffer.size();
 		}
 
-		auto textureData = AllocateBufferArray<byte>(buffer, source.Pixels.size() + sizeof(source.Palette));
+		auto textureData = AllocateBufferArray<byte>(buffer, source.Data.Pixels.size() + sizeof(source.Data.Palette));
 
-		std::memcpy(textureData, source.Pixels.data(), source.Pixels.size());
-		std::memcpy(textureData + source.Pixels.size(), source.Palette.AsByteArray(), sizeof(source.Palette));
+		std::memcpy(textureData, source.Data.Pixels.data(), source.Data.Pixels.size());
+		std::memcpy(textureData + source.Data.Pixels.size(), source.Data.Palette.AsByteArray(), sizeof(source.Data.Palette));
 	}
 
 	AlignBuffer(buffer);

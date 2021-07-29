@@ -288,14 +288,4 @@ public:
 	*	Extracts the bounding box from the current sequence.
 	*/
 	void ExtractBbox(glm::vec3& mins, glm::vec3& maxs) const;
-
-	/**
-	*	Gets a model by body part.
-	*/
-	studiomdl::Model* GetModelByBodyPart(const int bodyPart) const;
-
-	/**
-	*	Computes a list of meshes that use the given texture.
-	*/
-	std::vector<const studiomdl::Mesh*> ComputeMeshList(const int texture) const;
 };

@@ -258,16 +258,9 @@ void ImportTextureCommand::Apply(int index, const ImportTextureData& oldValue, c
 	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
 	auto& texture = *model->Textures[index];
 
-	texture.Width = newValue.Width;
-	texture.Height = newValue.Height;
+	texture.Data = newValue.Data;
 
-	texture.Pixels.resize(newValue.Width * newValue.Height);
-
-	//Copy over the new image data to the texture
-	memcpy(texture.Pixels.data(), newValue.Pixels.get(), newValue.Width * newValue.Height);
-	texture.Palette = newValue.Palette;
-
-	model->ReplaceTexture(*_asset->GetTextureLoader(), &texture, newValue.Pixels.get(), newValue.Palette);
+	model->ReplaceTexture(*_asset->GetTextureLoader(), &texture, newValue.Data.Pixels.data(), newValue.Data.Palette);
 
 	studiomdl::ApplyScaledSTCoordinatesData(*model, index, newValue.ScaledSTCoordinates);
 }

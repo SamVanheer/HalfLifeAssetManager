@@ -6,6 +6,8 @@ target_sources(HLAM
 		StudioModelEditWidget.cpp
 		StudioModelEditWidget.hpp
 		StudioModelEditWidget.ui
+		StudioModelTextureUtilities.cpp
+		StudioModelTextureUtilities.hpp
 		StudioModelUndoCommands.cpp
 		StudioModelUndoCommands.hpp
 		StudioModelValidators.cpp
