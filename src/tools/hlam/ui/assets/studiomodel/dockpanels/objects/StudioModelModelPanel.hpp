@@ -10,7 +10,6 @@ class StateSnapshot;
 
 namespace assets::studiomodel
 {
-class ModelChangeEvent;
 class StudioModelAsset;
 
 class StudioModelModelPanel final : public QWidget
@@ -20,9 +19,7 @@ public:
 	~StudioModelModelPanel() = default;
 
 private slots:
-	void InitializeUI();
-
-	void OnModelChanged(const ModelChangeEvent& event);
+	void OnOriginChanged();
 
 	void OnCenterOnWorldOrigin();
 	void OnAlignOnGround();

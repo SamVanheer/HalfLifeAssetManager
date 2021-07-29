@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>122</width>
-    <height>48</height>
+    <width>245</width>
+    <height>60</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,25 +30,22 @@
     <number>0</number>
    </property>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QPushButton" name="CenterOnWorldOrigin">
-       <property name="text">
-        <string>Center On World Origin</string>
-       </property>
-      </widget>
-     </item>
-     <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="1">
       <widget class="QPushButton" name="AlignOnGround">
        <property name="text">
         <string>Align On Ground</string>
        </property>
       </widget>
      </item>
-     <item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="CenterOnWorldOrigin">
+       <property name="text">
+        <string>Center On World Origin</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -61,10 +58,21 @@
        </property>
       </spacer>
      </item>
+     <item row="0" column="0" rowspan="3">
+      <widget class="qt::widgets::Vector3Edit" name="Origin" native="true"/>
+     </item>
     </layout>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>qt::widgets::Vector3Edit</class>
+   <extends>QWidget</extends>
+   <header>qt/widgets/Vector3Edit.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

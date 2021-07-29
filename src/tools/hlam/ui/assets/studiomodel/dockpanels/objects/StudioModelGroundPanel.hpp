@@ -4,13 +4,8 @@
 
 #include "ui_StudioModelGroundPanel.h"
 
-namespace ui
+namespace ui::assets::studiomodel
 {
-class StateSnapshot;
-
-namespace assets::studiomodel
-{
-class ModelChangeEvent;
 class StudioModelAsset;
 
 class StudioModelGroundPanel final : public QWidget
@@ -35,5 +30,4 @@ private:
 	Ui_StudioModelGroundPanel _ui;
 	StudioModelAsset* const _asset;
 };
-}
 }
