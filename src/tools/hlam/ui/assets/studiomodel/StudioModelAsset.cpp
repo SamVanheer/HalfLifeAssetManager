@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <stdexcept>
+#include <tuple>
 #include <vector>
 
 #include <QAction>
@@ -52,15 +53,14 @@
 #include "ui/settings/StudioModelSettings.hpp"
 
 #include "utility/IOUtils.hpp"
+#include "utility/mathlib.hpp"
 
 namespace ui::assets::studiomodel
 {
-const float InitialCameraYaw{180};
-
-static std::pair<float, float> GetCenteredValues(HLMVStudioModelEntity* entity)
+static std::tuple<glm::vec3, glm::vec3, float, float> GetCenteredValues(const HLMVStudioModelEntity& entity, Axis axis, bool positive)
 {
 	glm::vec3 min, max;
-	entity->ExtractBbox(min, max);
+	entity.ExtractBbox(min, max);
 
 	//Clamp the values to a reasonable range
 	for (int i = 0; i < 3; ++i)
@@ -70,15 +70,43 @@ static std::pair<float, float> GetCenteredValues(HLMVStudioModelEntity* entity)
 		max[i] = std::clamp(max[i], -1000.f, 1000.f);
 	}
 
-	const float dx = max[0] - min[0];
-	const float dy = max[1] - min[1];
-	const float dz = max[2] - min[2];
+	const glm::vec3 size = max - min;
 
-	const float distance{std::max({dx, dy, dz})};
+	const float distance{std::max({size.x, size.y, size.z})};
 
-	const float height{min[2] + (dz / 2)};
+	const int axisIndex = static_cast<int>(axis);
 
-	return {height, distance};
+	const int positiveValue = positive ? 1 : -1;
+
+	const glm::vec3 targetOrigin{0, 0, min.z + (size.z / 2)};
+
+	//Set origin to distance on axis, negate if needed
+	//Offset camera origin to be relative to target
+	glm::vec3 cameraOrigin{targetOrigin};
+
+	cameraOrigin[axisIndex] += distance * positiveValue;
+
+	//Look back down the axis
+	float pitch = 0;
+	float yaw = 0;
+
+	switch (axis)
+	{
+	case Axis::X:
+		yaw = positive ? 180 : 0;
+		break;
+
+	case Axis::Y:
+		yaw = positive ? 90 : 270;
+		break;
+
+	case Axis::Z:
+		pitch = positive ? -90 : 90;
+		yaw = 180;
+		break;
+	}
+
+	return {targetOrigin, cameraOrigin, pitch, yaw};
 }
 
 StudioModelAsset::StudioModelAsset(QString&& fileName,
@@ -119,12 +147,12 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	if (nullptr != entity)
 	{
-		const auto [height, distance] = GetCenteredValues(entity);
+		const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*entity, Axis::X, true);
 
 		for (int i = 0; i < _cameraOperators->Count(); ++i)
 		{
 			const auto cameraOperator = _cameraOperators->Get(i);
-			cameraOperator->CenterView(height, distance, InitialCameraYaw);
+			cameraOperator->CenterView(targetOrigin, cameraOrigin, pitch, yaw);
 			//Set initial restoration point to the initial camera view
 			cameraOperator->SaveView();
 		}
@@ -167,7 +195,20 @@ void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 
 	menu->addSeparator();
 
-	menu->addAction("Center View", this, &StudioModelAsset::OnCenterView);
+	{
+		auto centerMenu = menu->addMenu("Center View");
+
+		centerMenu->addAction("Center On Positive X", [this]() { OnCenterView(Axis::X, true); });
+		centerMenu->addAction("Center On Negative X", [this]() { OnCenterView(Axis::X, false); });
+
+		//TODO: camera position doesn't match what's shown by "Draw Axes" on the Y axis
+		centerMenu->addAction("Center On Positive Y", [this]() { OnCenterView(Axis::Y, false); });
+		centerMenu->addAction("Center On Negative Y", [this]() { OnCenterView(Axis::Y, true); });
+
+		centerMenu->addAction("Center On Positive Z", [this]() { OnCenterView(Axis::Z, true); });
+		centerMenu->addAction("Center On Negative Z", [this]() { OnCenterView(Axis::Z, false); });
+	}
+
 	menu->addAction("Save View", this, &StudioModelAsset::OnSaveView);
 	menu->addAction("Restore View", this, &StudioModelAsset::OnRestoreView);
 
@@ -407,13 +448,13 @@ void StudioModelAsset::OnNextCamera()
 	_cameraOperators->NextCamera();
 }
 
-void StudioModelAsset::OnCenterView()
+void StudioModelAsset::OnCenterView(Axis axis, bool positive)
 {
 	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
 	{
-		const auto [height, distance] = GetCenteredValues(_scene->GetEntity());
+		const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*_scene->GetEntity(), axis, positive);
 
-		cameraOperator->CenterView(height, distance, InitialCameraYaw);
+		cameraOperator->CenterView(targetOrigin, cameraOrigin, pitch, yaw);
 	}
 }
 
@@ -421,8 +462,6 @@ void StudioModelAsset::OnSaveView()
 {
 	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
 	{
-		const auto [height, distance] = GetCenteredValues(_scene->GetEntity());
-
 		cameraOperator->SaveView();
 	}
 }
@@ -431,8 +470,6 @@ void StudioModelAsset::OnRestoreView()
 {
 	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
 	{
-		const auto [height, distance] = GetCenteredValues(_scene->GetEntity());
-
 		cameraOperator->RestoreView();
 	}
 }

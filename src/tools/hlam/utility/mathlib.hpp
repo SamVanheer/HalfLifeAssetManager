@@ -28,6 +28,13 @@ constexpr T ON_EPSILON{0.01};
 template<typename T>
 constexpr T EQUAL_EPSILON{0.001};
 
+enum class Axis
+{
+	X,
+	Y,
+	Z
+};
+
 /**
 *	Compares the given vectors.
 *	@param lhs

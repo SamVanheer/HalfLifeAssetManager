@@ -36,7 +36,7 @@ public:
 		event.accept();
 	}
 
-	void CenterView(float, float, float) override {}
+	void CenterView(const glm::vec3&, const glm::vec3&, float, float) override {}
 
 	void SaveView() override {}
 

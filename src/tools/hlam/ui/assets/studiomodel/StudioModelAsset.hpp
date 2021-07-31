@@ -14,6 +14,8 @@
 #include "ui/IInputSink.hpp"
 #include "ui/assets/Assets.hpp"
 
+#include "utility/mathlib.hpp"
+
 namespace graphics
 {
 class TextureLoader;
@@ -202,7 +204,7 @@ private slots:
 	void OnPreviousCamera();
 	void OnNextCamera();
 
-	void OnCenterView();
+	void OnCenterView(Axis axis, bool positive);
 	void OnSaveView();
 	void OnRestoreView();
 

@@ -116,10 +116,10 @@ public:
 		event.accept();
 	}
 
-	void CenterView(float height, float distance, float yaw) override
+	void CenterView(const glm::vec3&, const glm::vec3& cameraOrigin, float pitch, float yaw) override
 	{
-		_camera.SetOrigin({distance, 0, height});
-		_camera.SetAngles(0, yaw);
+		_camera.SetOrigin(cameraOrigin);
+		_camera.SetAngles(pitch, yaw);
 		emit CameraPropertiesChanged();
 	}
 

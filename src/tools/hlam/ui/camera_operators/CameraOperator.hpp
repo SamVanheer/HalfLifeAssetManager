@@ -9,6 +9,7 @@
 #include <QWheelEvent>
 
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 #include "graphics/Camera.hpp"
 
@@ -44,7 +45,7 @@ public:
 		event.ignore();
 	}
 
-	virtual void CenterView(float height, float distance, float yaw) = 0;
+	virtual void CenterView(const glm::vec3& targetOrigin, const glm::vec3& cameraOrigin, float pitch, float yaw) = 0;
 
 	virtual void SaveView() = 0;
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glm/geometric.hpp>
 #include <glm/trigonometric.hpp>
 #include <glm/gtx/transform.hpp>
 
@@ -125,9 +126,9 @@ public:
 		event.accept();
 	}
 
-	void CenterView(float height, float distance, float yaw) override
+	void CenterView(const glm::vec3& targetOrigin, const glm::vec3& cameraOrigin, float pitch, float yaw) override
 	{
-		SetTargetPosition({0, 0, height}, 0, yaw, distance);
+		SetTargetPosition(targetOrigin, pitch, yaw, glm::length(targetOrigin - cameraOrigin));
 	}
 
 	void SaveView() override
