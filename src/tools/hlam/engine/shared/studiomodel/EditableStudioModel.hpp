@@ -320,13 +320,29 @@ void ApplyRotateData(EditableStudioModel& studioModel, const RotateData& data);
 struct ScaleMeshesData
 {
 	std::vector<std::vector<glm::vec3>> Vertices;
-	std::vector<std::pair<glm::vec3, glm::vec3>> Hitboxes;
-	std::vector<std::pair<glm::vec3, glm::vec3>> SequenceBBoxes;
 };
 
 std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const EditableStudioModel& studioModel, const float scale);
 
 void ApplyScaleMeshesData(EditableStudioModel& studioModel, const ScaleMeshesData& data);
+
+struct ScaleHitboxesData
+{
+	std::vector<std::pair<glm::vec3, glm::vec3>> Hitboxes;
+};
+
+std::pair<ScaleHitboxesData, ScaleHitboxesData> CalculateScaledHitboxesData(const EditableStudioModel& studioModel, const float scale);
+
+void ApplyScaleHitboxesData(EditableStudioModel& studioModel, const ScaleHitboxesData& data);
+
+struct ScaleSequenceBBoxesData
+{
+	std::vector<std::pair<glm::vec3, glm::vec3>> SequenceBBoxes;
+};
+
+std::pair<ScaleSequenceBBoxesData, ScaleSequenceBBoxesData> CalculateScaledSequenceBBoxesData(const EditableStudioModel& studioModel, const float scale);
+
+void ApplyScaleSequenceBBoxesData(EditableStudioModel& studioModel, const ScaleSequenceBBoxesData& data);
 
 struct ScaleBonesBoneData
 {
@@ -346,6 +362,8 @@ void ApplyScaleBonesData(EditableStudioModel& studioModel, const ScaleBonesData&
 struct ScaleData
 {
 	std::optional<ScaleMeshesData> Meshes;
+	std::optional<ScaleHitboxesData> Hitboxes;
+	std::optional<ScaleSequenceBBoxesData> SequenceBBoxes;
 	std::optional<ScaleBonesData> Bones;
 };
 
@@ -355,7 +373,9 @@ enum ScaleFlags
 {
 	None = 0,
 	ScaleMeshes = 1 << 0,
-	ScaleBones = 1 << 1
+	ScaleHitboxes = 1 << 1,
+	ScaleSequenceBBoxes = 1 << 2,
+	ScaleBones = 1 << 3
 };
 }
 

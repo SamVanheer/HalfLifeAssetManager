@@ -332,7 +332,6 @@ std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const Edit
 	std::vector<std::vector<glm::vec3>> oldVertices;
 	std::vector<std::vector<glm::vec3>> newVertices;
 
-	// scale verts
 	for (int i = 0; i < studioModel.Bodyparts.size(); ++i)
 	{
 		const auto& bodypart = *studioModel.Bodyparts[i];
@@ -361,56 +360,13 @@ std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const Edit
 		}
 	}
 
-	// scale complex hitboxes
-	std::vector<std::pair<glm::vec3, glm::vec3>> oldHitboxes;
-	std::vector<std::pair<glm::vec3, glm::vec3>> newHitboxes;
-
-	oldHitboxes.reserve(studioModel.Hitboxes.size());
-	newHitboxes.reserve(studioModel.Hitboxes.size());
-
-	for (int i = 0; i < studioModel.Hitboxes.size(); ++i)
-	{
-		const auto& hitbox = *studioModel.Hitboxes[i];
-
-		oldHitboxes.emplace_back(std::make_pair(hitbox.Min, hitbox.Max));
-		newHitboxes.emplace_back(std::make_pair(hitbox.Min * scale, hitbox.Max * scale));
-	}
-
-	// scale bounding boxes
-	std::vector<std::pair<glm::vec3, glm::vec3>> oldSequenceBBBoxes;
-	std::vector<std::pair<glm::vec3, glm::vec3>> newSequenceBBBoxes;
-
-	oldSequenceBBBoxes.reserve(studioModel.Sequences.size());
-	newSequenceBBBoxes.reserve(studioModel.Sequences.size());
-
-	for (int i = 0; i < studioModel.Sequences.size(); ++i)
-	{
-		const auto& sequence = *studioModel.Sequences[i];
-
-		oldSequenceBBBoxes.emplace_back(std::make_pair(sequence.BBMin, sequence.BBMax));
-		newSequenceBBBoxes.emplace_back(std::make_pair(sequence.BBMin * scale, sequence.BBMax * scale));
-	}
-
 	// TODO: maybe scale eyeposition, pivots, attachments
 
-	return std::make_pair(
-		ScaleMeshesData
-		{
-			std::move(oldVertices),
-			std::move(oldHitboxes),
-			std::move(oldSequenceBBBoxes)
-		},
-		ScaleMeshesData
-		{
-			std::move(newVertices),
-			std::move(newHitboxes),
-			std::move(newSequenceBBBoxes)
-		});
+	return {{std::move(oldVertices)}, {std::move(newVertices)}};
 }
 
 void ApplyScaleMeshesData(EditableStudioModel& studioModel, const ScaleMeshesData& data)
 {
-	// scale verts
 	int vertexIndex = 0;
 
 	for (int i = 0; i < studioModel.Bodyparts.size(); ++i)
@@ -429,8 +385,29 @@ void ApplyScaleMeshesData(EditableStudioModel& studioModel, const ScaleMeshesDat
 			++vertexIndex;
 		}
 	}
+}
 
-	// scale complex hitboxes
+std::pair<ScaleHitboxesData, ScaleHitboxesData> CalculateScaledHitboxesData(const EditableStudioModel& studioModel, const float scale)
+{
+	std::vector<std::pair<glm::vec3, glm::vec3>> oldHitboxes;
+	std::vector<std::pair<glm::vec3, glm::vec3>> newHitboxes;
+
+	oldHitboxes.reserve(studioModel.Hitboxes.size());
+	newHitboxes.reserve(studioModel.Hitboxes.size());
+
+	for (int i = 0; i < studioModel.Hitboxes.size(); ++i)
+	{
+		const auto& hitbox = *studioModel.Hitboxes[i];
+
+		oldHitboxes.emplace_back(std::make_pair(hitbox.Min, hitbox.Max));
+		newHitboxes.emplace_back(std::make_pair(hitbox.Min * scale, hitbox.Max * scale));
+	}
+
+	return {{std::move(oldHitboxes)}, {std::move(newHitboxes)}};
+}
+
+void ApplyScaleHitboxesData(EditableStudioModel& studioModel, const ScaleHitboxesData& data)
+{
 	for (int i = 0; i < studioModel.Hitboxes.size(); ++i)
 	{
 		auto& hitbox = *studioModel.Hitboxes[i];
@@ -438,8 +415,29 @@ void ApplyScaleMeshesData(EditableStudioModel& studioModel, const ScaleMeshesDat
 		hitbox.Min = data.Hitboxes[i].first;
 		hitbox.Max = data.Hitboxes[i].second;
 	}
+}
 
-	// scale bounding boxes
+std::pair<ScaleSequenceBBoxesData, ScaleSequenceBBoxesData> CalculateScaledSequenceBBoxesData(const EditableStudioModel& studioModel, const float scale)
+{
+	std::vector<std::pair<glm::vec3, glm::vec3>> oldSequenceBBBoxes;
+	std::vector<std::pair<glm::vec3, glm::vec3>> newSequenceBBBoxes;
+
+	oldSequenceBBBoxes.reserve(studioModel.Sequences.size());
+	newSequenceBBBoxes.reserve(studioModel.Sequences.size());
+
+	for (int i = 0; i < studioModel.Sequences.size(); ++i)
+	{
+		const auto& sequence = *studioModel.Sequences[i];
+
+		oldSequenceBBBoxes.emplace_back(std::make_pair(sequence.BBMin, sequence.BBMax));
+		newSequenceBBBoxes.emplace_back(std::make_pair(sequence.BBMin * scale, sequence.BBMax * scale));
+	}
+
+	return {{std::move(oldSequenceBBBoxes)}, {std::move(newSequenceBBBoxes)}};
+}
+
+void ApplyScaleSequenceBBoxesData(EditableStudioModel& studioModel, const ScaleSequenceBBoxesData& data)
+{
 	for (int i = 0; i < studioModel.Sequences.size(); ++i)
 	{
 		auto& sequence = *studioModel.Sequences[i];
@@ -476,7 +474,7 @@ std::pair<ScaleBonesData, ScaleBonesData> CalculateScaledBonesData(const Editabl
 			});
 	}
 
-	return std::make_pair(ScaleBonesData{std::move(oldData)}, ScaleBonesData{std::move(newData)});
+	return {{std::move(oldData)}, {std::move(newData)}};
 }
 
 void ApplyScaleBonesData(EditableStudioModel& studioModel, const ScaleBonesData& data)
@@ -508,6 +506,22 @@ std::pair<ScaleData, ScaleData> CalculateScaleData(const EditableStudioModel& st
 		newData.Meshes = std::move(meshData.second);
 	}
 
+	if (flags & ScaleFlags::ScaleHitboxes)
+	{
+		auto hitboxData = CalculateScaledHitboxesData(studioModel, scale);
+
+		oldData.Hitboxes = std::move(hitboxData.first);
+		newData.Hitboxes = std::move(hitboxData.second);
+	}
+
+	if (flags & ScaleFlags::ScaleSequenceBBoxes)
+	{
+		auto sequenceData = CalculateScaledSequenceBBoxesData(studioModel, scale);
+
+		oldData.SequenceBBoxes = std::move(sequenceData.first);
+		newData.SequenceBBoxes = std::move(sequenceData.second);
+	}
+
 	if (flags & ScaleFlags::ScaleBones)
 	{
 		auto bonesData = CalculateScaledBonesData(studioModel, scale);
@@ -524,6 +538,16 @@ void ApplyScaleData(EditableStudioModel& studioModel, const ScaleData& data)
 	if (data.Meshes.has_value())
 	{
 		ApplyScaleMeshesData(studioModel, data.Meshes.value());
+	}
+
+	if (data.Hitboxes.has_value())
+	{
+		ApplyScaleHitboxesData(studioModel, data.Hitboxes.value());
+	}
+
+	if (data.SequenceBBoxes.has_value())
+	{
+		ApplyScaleSequenceBBoxesData(studioModel, data.SequenceBBoxes.value());
 	}
 
 	if (data.Bones.has_value())

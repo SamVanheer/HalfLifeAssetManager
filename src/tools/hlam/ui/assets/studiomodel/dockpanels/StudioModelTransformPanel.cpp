@@ -65,9 +65,19 @@ void StudioModelTransformPanel::OnApply()
 
 		int flags = studiomdl::ScaleFlags::None;
 
-		if (_ui.ScaleMesh->isChecked())
+		if (_ui.ScaleMeshes->isChecked())
 		{
 			flags |= studiomdl::ScaleFlags::ScaleMeshes;
+		}
+
+		if (_ui.ScaleHitboxes->isChecked())
+		{
+			flags |= studiomdl::ScaleFlags::ScaleHitboxes;
+		}
+
+		if (_ui.ScaleSequenceBBoxes->isChecked())
+		{
+			flags |= studiomdl::ScaleFlags::ScaleSequenceBBoxes;
 		}
 
 		if (_ui.ScaleBones->isChecked())

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>250</width>
-    <height>155</height>
+    <height>201</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -97,6 +97,9 @@
       </property>
       <item>
        <widget class="QStackedWidget" name="ValuesStack">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
         <widget class="QWidget" name="RotatePage">
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
@@ -127,9 +130,29 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="ScaleMesh">
+           <widget class="QCheckBox" name="ScaleMeshes">
             <property name="text">
-             <string>Scale Mesh</string>
+             <string>Scale Meshes</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="ScaleHitboxes">
+            <property name="text">
+             <string>Scale Hitboxes</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="ScaleSequenceBBoxes">
+            <property name="text">
+             <string>Scale Sequence BBoxes</string>
             </property>
             <property name="checked">
              <bool>true</bool>
