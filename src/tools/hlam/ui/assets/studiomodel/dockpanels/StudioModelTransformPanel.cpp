@@ -85,6 +85,16 @@ void StudioModelTransformPanel::OnApply()
 			flags |= studiomdl::ScaleFlags::ScaleBones;
 		}
 
+		if (_ui.ScaleEyePosition->isChecked())
+		{
+			flags |= studiomdl::ScaleFlags::ScaleEyePosition;
+		}
+
+		if (_ui.ScaleAttachments->isChecked())
+		{
+			flags |= studiomdl::ScaleFlags::ScaleAttachments;
+		}
+
 		auto entity = _asset->GetScene()->GetEntity();
 
 		auto data{studiomdl::CalculateScaleData(*entity->GetEditableModel(), scale, flags)};

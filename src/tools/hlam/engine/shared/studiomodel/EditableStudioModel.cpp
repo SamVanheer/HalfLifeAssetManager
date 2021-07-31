@@ -360,7 +360,7 @@ std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const Edit
 		}
 	}
 
-	// TODO: maybe scale eyeposition, pivots, attachments
+	// TODO: maybe scale pivots
 
 	return {{std::move(oldVertices)}, {std::move(newVertices)}};
 }
@@ -493,6 +493,41 @@ void ApplyScaleBonesData(EditableStudioModel& studioModel, const ScaleBonesData&
 	}
 }
 
+std::pair<glm::vec3, glm::vec3> CalculateScaledEyePosition(const EditableStudioModel& studioModel, const float scale)
+{
+	return {studioModel.EyePosition, studioModel.EyePosition * scale};
+}
+
+void ApplyScaleEyePosition(EditableStudioModel& studioModel, const glm::vec3& position)
+{
+	studioModel.EyePosition = position;
+}
+
+std::pair<ScaleAttachmentsData, ScaleAttachmentsData> CalculateScaledAttachments(const EditableStudioModel& studioModel, const float scale)
+{
+	std::vector<glm::vec3> oldAttachments;
+	std::vector<glm::vec3> newAttachments;
+
+	oldAttachments.reserve(studioModel.Attachments.size());
+	newAttachments.reserve(studioModel.Attachments.size());
+
+	for (const auto& attachment : studioModel.Attachments)
+	{
+		oldAttachments.push_back(attachment->Origin);
+		newAttachments.push_back(attachment->Origin * scale);
+	}
+
+	return {{std::move(oldAttachments)}, {std::move(newAttachments)}};
+}
+
+void ApplyScaleAttachments(EditableStudioModel& studioModel, const ScaleAttachmentsData& data)
+{
+	for (int i = 0; i < studioModel.Attachments.size(); ++i)
+	{
+		studioModel.Attachments[i]->Origin = data.Attachments[i];
+	}
+}
+
 std::pair<ScaleData, ScaleData> CalculateScaleData(const EditableStudioModel& studioModel, const float scale, const int flags)
 {
 	ScaleData oldData;
@@ -530,6 +565,22 @@ std::pair<ScaleData, ScaleData> CalculateScaleData(const EditableStudioModel& st
 		newData.Bones = std::move(bonesData.second);
 	}
 
+	if (flags & ScaleFlags::ScaleEyePosition)
+	{
+		auto data = CalculateScaledEyePosition(studioModel, scale);
+
+		oldData.EyePosition = std::move(data.first);
+		newData.EyePosition = std::move(data.second);
+	}
+
+	if (flags & ScaleFlags::ScaleAttachments)
+	{
+		auto data = CalculateScaledAttachments(studioModel, scale);
+
+		oldData.Attachments = std::move(data.first);
+		newData.Attachments = std::move(data.second);
+	}
+
 	return {std::move(oldData), std::move(newData)};
 }
 
@@ -553,6 +604,16 @@ void ApplyScaleData(EditableStudioModel& studioModel, const ScaleData& data)
 	if (data.Bones.has_value())
 	{
 		ApplyScaleBonesData(studioModel, data.Bones.value());
+	}
+
+	if (data.EyePosition.has_value())
+	{
+		ApplyScaleEyePosition(studioModel, data.EyePosition.value());
+	}
+
+	if (data.Attachments.has_value())
+	{
+		ApplyScaleAttachments(studioModel, data.Attachments.value());
 	}
 }
 

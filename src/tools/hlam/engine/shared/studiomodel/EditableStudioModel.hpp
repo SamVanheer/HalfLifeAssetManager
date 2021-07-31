@@ -359,12 +359,27 @@ std::pair<ScaleBonesData, ScaleBonesData> CalculateScaledBonesData(const Editabl
 
 void ApplyScaleBonesData(EditableStudioModel& studioModel, const ScaleBonesData& data);
 
+std::pair<glm::vec3, glm::vec3> CalculateScaledEyePosition(const EditableStudioModel& studioModel, const float scale);
+
+void ApplyScaleEyePosition(EditableStudioModel& studioModel, const glm::vec3& position);
+
+struct ScaleAttachmentsData
+{
+	std::vector<glm::vec3> Attachments;
+};
+
+std::pair<ScaleAttachmentsData, ScaleAttachmentsData> CalculateScaledAttachments(const EditableStudioModel& studioModel, const float scale);
+
+void ApplyScaleAttachments(EditableStudioModel& studioModel, const ScaleAttachmentsData& data);
+
 struct ScaleData
 {
 	std::optional<ScaleMeshesData> Meshes;
 	std::optional<ScaleHitboxesData> Hitboxes;
 	std::optional<ScaleSequenceBBoxesData> SequenceBBoxes;
 	std::optional<ScaleBonesData> Bones;
+	std::optional<glm::vec3> EyePosition;
+	std::optional<ScaleAttachmentsData> Attachments;
 };
 
 namespace ScaleFlags
@@ -375,7 +390,9 @@ enum ScaleFlags
 	ScaleMeshes = 1 << 0,
 	ScaleHitboxes = 1 << 1,
 	ScaleSequenceBBoxes = 1 << 2,
-	ScaleBones = 1 << 3
+	ScaleBones = 1 << 3,
+	ScaleEyePosition = 1 << 4,
+	ScaleAttachments = 1 << 5,
 };
 }
 
