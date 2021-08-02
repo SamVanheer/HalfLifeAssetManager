@@ -337,7 +337,7 @@ void StudioModelBodyPartsPanel::InitializeUI()
 	}
 
 	_ui.BoneControllers->setEnabled(!model->BoneControllers.empty());
-	_ui.BoneControllerDataWidget->setVisible(!model->BoneControllers.empty());
+	_ui.BoneControllerDataWidget->setVisible(!model->Bodyparts.empty());
 
 	//Should already be set but if there are no body parts and/or submodels it won't have been
 	_ui.BodyValue->setText(QString::number(entity->GetBodygroup()));
