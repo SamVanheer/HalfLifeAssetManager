@@ -127,7 +127,8 @@ const std::array<glm::mat4x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const
 		if (!bone.Parent)
 		{
 			//Apply scale to each root bone so only the model is scaled and mirrored, and not anything else in the scene
-			_boneTransform[i] = glm::scale(bonematrix, transformInfo.Scale);
+			//Apply the scale *after* the root bone's position and rotation is set so the mirror effect occurs in the correct coordinate space
+			_boneTransform[i] = glm::scale(transformInfo.Scale) * bonematrix;
 		}
 		else
 		{
