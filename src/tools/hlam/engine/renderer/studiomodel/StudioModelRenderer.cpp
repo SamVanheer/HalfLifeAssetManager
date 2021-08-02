@@ -1,6 +1,7 @@
-#include <glm/gtc/type_ptr.hpp>
-
 #include <algorithm>
+
+#include <glm/gtc/matrix_inverse.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "core/shared/Logging.hpp"
 
@@ -189,15 +190,15 @@ void StudioModelRenderer::DrawSingleBone(ModelRenderInfo& renderInfo, const int 
 		glPointSize(10.0f);
 		glColor3f(0, 0.7f, 1);
 		glBegin(GL_LINES);
-		glVertex3f(parentBoneTransform[0][3], parentBoneTransform[1][3], parentBoneTransform[2][3]);
-		glVertex3f(_bonetransform[iBone][0][3], _bonetransform[iBone][1][3], _bonetransform[iBone][2][3]);
+		glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
+		glVertex3fv(glm::value_ptr(boneTransform[3]));
 		glEnd();
 
 		glColor3f(0, 0, 0.8f);
 		glBegin(GL_POINTS);
 		if (parentBone.Parent)
-			glVertex3f(parentBoneTransform[0][3], parentBoneTransform[1][3], parentBoneTransform[2][3]);
-		glVertex3f(boneTransform[0][3], boneTransform[1][3], boneTransform[2][3]);
+			glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
+		glVertex3fv(glm::value_ptr(boneTransform[3]));
 		glEnd();
 	}
 	else
@@ -206,7 +207,7 @@ void StudioModelRenderer::DrawSingleBone(ModelRenderInfo& renderInfo, const int 
 		glPointSize(10.0f);
 		glColor3f(0.8f, 0, 0);
 		glBegin(GL_POINTS);
-		glVertex3f(boneTransform[0][3], boneTransform[1][3], boneTransform[2][3]);
+		glVertex3fv(glm::value_ptr(boneTransform[3]));
 		glEnd();
 	}
 
@@ -240,10 +241,12 @@ void StudioModelRenderer::DrawSingleAttachment(ModelRenderInfo& renderInfo, cons
 	const auto& attachmentBoneTransform = _bonetransform[attachment.Bone->ArrayIndex];
 
 	glm::vec3 v[4];
-	VectorTransform(attachment.Origin, attachmentBoneTransform, v[0]);
-	VectorTransform(attachment.Vectors[0], attachmentBoneTransform, v[1]);
-	VectorTransform(attachment.Vectors[1], attachmentBoneTransform, v[2]);
-	VectorTransform(attachment.Vectors[2], attachmentBoneTransform, v[3]);
+
+	v[0] = attachmentBoneTransform * glm::vec4{attachment.Origin, 1};
+	v[1] = attachmentBoneTransform * glm::vec4{attachment.Vectors[0], 1};
+	v[2] = attachmentBoneTransform * glm::vec4{attachment.Vectors[1], 1};
+	v[3] = attachmentBoneTransform * glm::vec4{attachment.Vectors[2], 1};
+
 	glBegin(GL_LINES);
 	glColor3f(0, 1, 1);
 	glVertex3fv(glm::value_ptr(v[0]));
@@ -306,14 +309,10 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 
 	std::array<glm::vec3, 8> v2{};
 
-	VectorTransform(v[0], hitboxBoneTransform, v2[0]);
-	VectorTransform(v[1], hitboxBoneTransform, v2[1]);
-	VectorTransform(v[2], hitboxBoneTransform, v2[2]);
-	VectorTransform(v[3], hitboxBoneTransform, v2[3]);
-	VectorTransform(v[4], hitboxBoneTransform, v2[4]);
-	VectorTransform(v[5], hitboxBoneTransform, v2[5]);
-	VectorTransform(v[6], hitboxBoneTransform, v2[6]);
-	VectorTransform(v[7], hitboxBoneTransform, v2[7]);
+	for (std::size_t i = 0; i < v2.size(); ++i)
+	{
+		v2[i] = hitboxBoneTransform * glm::vec4{v[i], 1};
+	}
 
 	graphics::DrawBox(v2);
 
@@ -348,15 +347,15 @@ void StudioModelRenderer::DrawBones()
 			glPointSize(3.0f);
 			glColor3f(1, 0.7f, 0);
 			glBegin(GL_LINES);
-			glVertex3f(parentBoneTransform[0][3], parentBoneTransform[1][3], parentBoneTransform[2][3]);
-			glVertex3f(_bonetransform[i][0][3], _bonetransform[i][1][3], _bonetransform[i][2][3]);
+			glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
+			glVertex3fv(glm::value_ptr(boneTransform[3]));
 			glEnd();
 
 			glColor3f(0, 0, 0.8f);
 			glBegin(GL_POINTS);
 			if (bone.Parent->Parent)
-				glVertex3f(parentBoneTransform[0][3], parentBoneTransform[1][3], parentBoneTransform[2][3]);
-			glVertex3f(boneTransform[0][3], boneTransform[1][3], boneTransform[2][3]);
+				glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
+			glVertex3fv(glm::value_ptr(boneTransform[3]));
 			glEnd();
 		}
 		else
@@ -365,7 +364,7 @@ void StudioModelRenderer::DrawBones()
 			glPointSize(5.0f);
 			glColor3f(0.8f, 0, 0);
 			glBegin(GL_POINTS);
-			glVertex3f(boneTransform[0][3], boneTransform[1][3], boneTransform[2][3]);
+			glVertex3fv(glm::value_ptr(boneTransform[3]));
 			glEnd();
 		}
 	}
@@ -386,10 +385,12 @@ void StudioModelRenderer::DrawAttachments()
 		const auto& attachmentBoneTransform = _bonetransform[attachment.Bone->ArrayIndex];
 
 		glm::vec3 v[4];
-		VectorTransform(attachment.Origin, attachmentBoneTransform, v[0]);
-		VectorTransform(attachment.Vectors[0], attachmentBoneTransform, v[1]);
-		VectorTransform(attachment.Vectors[1], attachmentBoneTransform, v[2]);
-		VectorTransform(attachment.Vectors[2], attachmentBoneTransform, v[3]);
+
+		v[0] = attachmentBoneTransform * glm::vec4{attachment.Origin, 1};
+		v[1] = attachmentBoneTransform * glm::vec4{attachment.Vectors[0], 1};
+		v[2] = attachmentBoneTransform * glm::vec4{attachment.Vectors[1], 1};
+		v[3] = attachmentBoneTransform * glm::vec4{attachment.Vectors[2], 1};
+
 		glBegin(GL_LINES);
 		glColor3f(1, 0, 0);
 		glVertex3fv(glm::value_ptr(v[0]));
@@ -453,14 +454,10 @@ void StudioModelRenderer::DrawHitBoxes()
 
 		std::array<glm::vec3, 8> v2{};
 
-		VectorTransform(v[0], hitboxTransform, v2[0]);
-		VectorTransform(v[1], hitboxTransform, v2[1]);
-		VectorTransform(v[2], hitboxTransform, v2[2]);
-		VectorTransform(v[3], hitboxTransform, v2[3]);
-		VectorTransform(v[4], hitboxTransform, v2[4]);
-		VectorTransform(v[5], hitboxTransform, v2[5]);
-		VectorTransform(v[6], hitboxTransform, v2[6]);
-		VectorTransform(v[7], hitboxTransform, v2[7]);
+		for (std::size_t i = 0; i < v2.size(); ++i)
+		{
+			v2[i] = hitboxTransform * glm::vec4{v[i], 1};
+		}
 
 		graphics::DrawBox(v2);
 	}
@@ -480,12 +477,14 @@ void StudioModelRenderer::DrawNormals()
 
 		for (int i = 0; i < _model->Vertices.size(); i++)
 		{
-			VectorTransform(_model->Vertices[i].Vertex, _bonetransform[_model->Vertices[i].Bone->ArrayIndex], _xformverts[i]);
+			_xformverts[i] = _bonetransform[_model->Vertices[i].Bone->ArrayIndex] * glm::vec4{_model->Vertices[i].Vertex, 1};
 		}
 
 		for (int i = 0; i < _model->Normals.size(); i++)
 		{
-			VectorRotate(_model->Normals[i].Vertex, _bonetransform[_model->Normals[i].Bone->ArrayIndex], _xformnorms[i]);
+			auto matrix = _bonetransform[_model->Normals[i].Bone->ArrayIndex];
+			matrix[3] = glm::vec4{0, 0, 0, 1};
+			_xformnorms[i] = matrix * glm::vec4{_model->Normals[i].Vertex, 1};
 		}
 
 		for (int j = 0; j < _model->Meshes.size(); j++)
@@ -538,7 +537,10 @@ void StudioModelRenderer::SetupLighting()
 
 	for (int i = 0; i < _studioModel->Bones.size(); i++)
 	{
-		VectorIRotate(_lightvec, _bonetransform[i], _blightvec[i]);
+		auto matrix = _bonetransform[i];
+		matrix[3] = glm::vec4{0, 0, 0, 1};
+		matrix = glm::inverse(matrix);
+		_blightvec[i] = matrix * glm::vec4{_lightvec, 1};
 	}
 }
 
@@ -562,7 +564,7 @@ unsigned int StudioModelRenderer::DrawPoints(const bool bWireframe)
 
 	for (int i = 0; i < _model->Vertices.size(); i++)
 	{
-		VectorTransform(_model->Vertices[i].Vertex, _bonetransform[_model->Vertices[i].Bone->ArrayIndex], _xformverts[i]);
+		_xformverts[i] = _bonetransform[_model->Vertices[i].Bone->ArrayIndex] * glm::vec4{_model->Vertices[i].Vertex, 1};
 	}
 
 	SortedMesh meshes[MAXSTUDIOMESHES]{};
@@ -848,7 +850,7 @@ void StudioModelRenderer::Lighting(glm::vec3& lv, int bone, int flags, const glm
 	}
 	else if (flags & STUDIO_NF_FLATSHADE)
 	{
-		VectorMA(illum, 0.8f, glm::vec3{shade}, illum);
+		illum += 0.8f * shade;
 	}
 	else
 	{
@@ -861,14 +863,18 @@ void StudioModelRenderer::Lighting(glm::vec3& lv, int bone, int flags, const glm
 		auto r = _lambert;
 		if (r < 1.0f) r = 1.0f;
 		lightcos = (lightcos + (r - 1.0f)) / r; // do modified hemispherical lighting
-		if (lightcos > 0.0f) VectorMA(illum, -lightcos, glm::vec3{shade}, illum);
+
+		if (lightcos > 0.0f)
+		{
+			illum -= lightcos * shade;
+		}
 
 		if (illum[0] <= 0) illum[0] = 0;
 		if (illum[1] <= 0) illum[1] = 0;
 		if (illum[2] <= 0) illum[2] = 0;
 	}
 
-	float max = VectorMax(illum);
+	float max = std::max({illum.x, illum.y, illum.z});
 
 	if (max > 1.0f)
 		lv = illum * (1.0f / max);
@@ -886,20 +892,22 @@ void StudioModelRenderer::Chrome(glm::vec2& chrome, int bone, const glm::vec3& n
 		// vector pointing at bone in world reference frame
 		auto tmp = _viewerOrigin * -1.0f;
 
-		tmp[0] += _bonetransform[bone][0][3];
-		tmp[1] += _bonetransform[bone][1][3];
-		tmp[2] += _bonetransform[bone][2][3];
+		tmp += glm::vec3{_bonetransform[bone][3]};
 
-		VectorNormalize(tmp);
+		tmp = glm::normalize(tmp);
 		// g_chrome t vector in world reference frame
 		auto chromeupvec = glm::cross(tmp, _viewerRight);
-		VectorNormalize(chromeupvec);
+		chromeupvec = glm::normalize(chromeupvec);
 		// g_chrome s vector in world reference frame
 		auto chromerightvec = glm::cross(tmp, chromeupvec);
-		VectorNormalize(chromerightvec);
+		chromerightvec = glm::normalize(chromerightvec);
 
-		VectorIRotate(-chromeupvec, _bonetransform[bone], _chromeup[bone]);
-		VectorIRotate(chromerightvec, _bonetransform[bone], _chromeright[bone]);
+		auto matrix = _bonetransform[bone];
+		matrix[3] = glm::vec4{0, 0, 0, 1};
+		matrix = glm::inverse(matrix);
+
+		_chromeup[bone] = matrix * glm::vec4{-chromeupvec, 1};
+		_chromeright[bone] = matrix * glm::vec4{chromerightvec, 1};
 
 		_chromeage[bone] = _modelsDrawnCount;
 	}

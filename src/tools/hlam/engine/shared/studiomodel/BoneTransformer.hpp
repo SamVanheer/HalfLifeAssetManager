@@ -4,9 +4,10 @@
 #include <cstddef>
 #include <vector>
 
-#include <glm/mat3x4.hpp>
+#include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "core/shared/Const.hpp"
 
@@ -40,7 +41,7 @@ private:
 	struct TransformState
 	{
 		std::array<glm::vec3, MAXSTUDIOBONES> Positions;
-		std::array<glm::vec4, MAXSTUDIOBONES> Quaternions;
+		std::array<glm::quat, MAXSTUDIOBONES> Quaternions;
 	};
 
 public:
@@ -51,7 +52,7 @@ public:
 	*	@brief Sets up a bone array based on the given model and transform information
 	*	@return Reference to the bone array, valid only when used immediately after this call
 	*/
-	const std::array<glm::mat3x4, MAXSTUDIOBONES>& SetUpBones(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo);
+	const std::array<glm::mat4x4, MAXSTUDIOBONES>& SetUpBones(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo);
 
 private:
 	static void CalculateRotations(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
@@ -60,7 +61,7 @@ private:
 	static void CalculateBoneAdjust(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
 		std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust);
 	static void CalculateBoneQuaternion(const int frame, const float s, const Bone& bone, const Animation& anim,
-		const std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust, glm::vec4& q);
+		const std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust, glm::quat& q);
 	static void CalculateBonePosition(const int frame, const float s, const Bone&, const Animation& anim,
 		const std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust, glm::vec3& pos);
 	static void SlerpBones(const EditableStudioModel& studioModel, float s, const TransformState& fromState, TransformState& toState);
@@ -69,6 +70,6 @@ private:
 	//Used to store temporary calculations before calculating final values stored in _boneTransform
 	std::array<TransformState, TransformStatesCount> _transformStates;
 
-	std::array<glm::mat3x4, MAXSTUDIOBONES> _boneTransform{};
+	std::array<glm::mat4x4, MAXSTUDIOBONES> _boneTransform{};
 };
 }

@@ -2,6 +2,8 @@
 #include <array>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include "engine/shared/studiomodel/BoneTransformer.hpp"
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
@@ -10,7 +12,7 @@
 
 namespace studiomdl
 {
-const std::array<glm::mat3x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo)
+const std::array<glm::mat4x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo)
 {
 	int sequenceIndex = transformInfo.SequenceIndex;
 
@@ -116,26 +118,20 @@ const std::array<glm::mat3x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const
 		CalculateRotations(studioModel, transformInfo, sequence, dummyAnims.data(), _transformStates[0]);
 	}
 
-	glm::mat3x4 bonematrix{};
-
 	for (std::size_t i = 0; i < studioModel.Bones.size(); ++i)
 	{
 		const auto& bone = *studioModel.Bones[i];
 
-		QuaternionMatrix(_transformStates[0].Quaternions[i], bonematrix);
-
-		bonematrix[0][3] = _transformStates[0].Positions[i][0];
-		bonematrix[1][3] = _transformStates[0].Positions[i][1];
-		bonematrix[2][3] = _transformStates[0].Positions[i][2];
+		const auto bonematrix = glm::translate(_transformStates[0].Positions[i]) * glm::toMat4(_transformStates[0].Quaternions[i]);
 
 		if (!bone.Parent)
 		{
 			//Apply scale to each root bone so only the model is scaled and mirrored, and not anything else in the scene
-			_boneTransform[i] = glm::scale(glm::mat4x4{bonematrix}, transformInfo.Scale);
+			_boneTransform[i] = glm::scale(bonematrix, transformInfo.Scale);
 		}
 		else
 		{
-			R_ConcatTransforms(_boneTransform[bone.Parent->ArrayIndex], bonematrix, _boneTransform[i]);
+			_boneTransform[i] = _boneTransform[bone.Parent->ArrayIndex] * bonematrix;
 		}
 	}
 
@@ -225,7 +221,7 @@ void BoneTransformer::CalculateBoneAdjust(const EditableStudioModel& studioModel
 }
 
 void BoneTransformer::CalculateBoneQuaternion(const int frame, const float s, const Bone& bone, const Animation& anim,
-	const std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust, glm::vec4& q)
+	const std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust, glm::quat& q)
 {
 	glm::vec3 angle1{}, angle2{};
 
@@ -296,15 +292,14 @@ void BoneTransformer::CalculateBoneQuaternion(const int frame, const float s, co
 
 	if (!VectorCompare(angle1, angle2))
 	{
-		glm::vec4 q1, q2;
+		const glm::quat q1{angle1};
+		const glm::quat q2{angle2};
 
-		AngleQuaternion(angle1, q1);
-		AngleQuaternion(angle2, q2);
-		QuaternionSlerp(q1, q2, s, q);
+		q = glm::slerp(q1, q2, s);
 	}
 	else
 	{
-		AngleQuaternion(angle1, q);
+		q = glm::quat{angle1};
 	}
 }
 
@@ -366,16 +361,13 @@ void BoneTransformer::CalculateBonePosition(const int frame, const float s, cons
 
 void BoneTransformer::SlerpBones(const EditableStudioModel& studioModel, float s, const TransformState& fromState, TransformState& toState)
 {
-	glm::vec4 q3;
-
 	s = std::clamp(s, 0.0f, 1.0f);
 
 	const float s1 = 1.0 - s;
 
 	for (std::size_t i = 0; i < studioModel.Bones.size(); ++i)
 	{
-		QuaternionSlerp(toState.Quaternions[i], fromState.Quaternions[i], s, q3);
-		toState.Quaternions[i] = q3;
+		toState.Quaternions[i] = glm::slerp(toState.Quaternions[i], fromState.Quaternions[i], s);
 
 		toState.Positions[i] = toState.Positions[i] * s1 + fromState.Positions[i] * s;
 	}

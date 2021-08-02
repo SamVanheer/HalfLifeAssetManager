@@ -6,7 +6,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-#include <glm/mat3x4.hpp>
+#include <glm/mat4x4.hpp>
 
 #include "engine/renderer/studiomodel/StudioSorting.hpp"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
@@ -146,7 +146,7 @@ private:
 
 	BoneTransformer _boneTransformer;
 
-	const glm::mat3x4* _bonetransform{};	// bone transformation matrix
+	const glm::mat4x4* _bonetransform{};	// bone transformation matrix
 
 	int				_ambientlight;						// ambient world light
 	float			_shadelight;						// direct world light
