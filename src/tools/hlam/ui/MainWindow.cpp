@@ -313,6 +313,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 		if (!VerifyNoUnsavedChanges(asset))
 		{
+			event->ignore();
 			return;
 		}
 	}
