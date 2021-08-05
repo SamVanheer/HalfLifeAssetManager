@@ -138,7 +138,7 @@ void ToolApplication::ConfigureOpenGL()
 
 	QSurfaceFormat defaultFormat{formatOptions};
 
-	defaultFormat.setMajorVersion(3);
+	defaultFormat.setMajorVersion(1);
 	defaultFormat.setMinorVersion(0);
 	defaultFormat.setProfile(QSurfaceFormat::OpenGLContextProfile::CompatibilityProfile);
 
