@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include <QMainWindow>
@@ -47,7 +48,7 @@ private:
 
 	ui::EditorContext* CreateEditorContext(std::unique_ptr<QSettings>&& settings);
 
-	std::pair<QOpenGLContext*, QOffscreenSurface*> InitializeOpenGL();
+	QOffscreenSurface* InitializeOpenGL();
 
 private slots:
 	void OnExit();

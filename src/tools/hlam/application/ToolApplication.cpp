@@ -86,13 +86,12 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		const auto offscreen{InitializeOpenGL()};
 
-		if (!offscreen.first ||!offscreen.second)
+		if (!offscreen)
 		{
 			return EXIT_FAILURE;
 		}
 
-		_editorContext->SetOffscreenContext(offscreen.first);
-		_editorContext->SetOffscreenSurface(offscreen.second);
+		_editorContext->SetOffscreenSurface(offscreen);
 
 		_mainWindow = new ui::MainWindow(_editorContext);
 
@@ -264,36 +263,23 @@ ui::EditorContext* ToolApplication::CreateEditorContext(std::unique_ptr<QSetting
 		this);
 }
 
-std::pair<QOpenGLContext*, QOffscreenSurface*> ToolApplication::InitializeOpenGL()
+QOffscreenSurface* ToolApplication::InitializeOpenGL()
 {
-	auto context{std::make_unique<QOpenGLContext>()};
-
-	context->setFormat(QSurfaceFormat::defaultFormat());
-
 	const auto shareContext{QOpenGLContext::globalShareContext()};
 
-	context->setShareContext(shareContext);
-	context->setScreen(shareContext->screen());
+	auto surface{std::make_unique<QOffscreenSurface>(shareContext->screen(), this)};
 
-	if (!context->create())
-	{
-		QMessageBox::critical(nullptr, "Fatal Error", "Couldn't create OpenGL context");
-		return {};
-	}
-
-	auto surface{std::make_unique<QOffscreenSurface>(context->screen(), this)};
-
-	surface->setFormat(context->format());
-	surface->setScreen(context->screen());
+	surface->setFormat(shareContext->format());
+	surface->setScreen(shareContext->screen());
 	surface->create();
 
-	if (!context->makeCurrent(surface.get()))
+	if (!shareContext->makeCurrent(surface.get()))
 	{
 		QMessageBox::critical(nullptr, "Fatal Error", "Couldn't make offscreen surface context current");
 		return {};
 	}
 
-	const std::unique_ptr<QOpenGLContext, void (*)(QOpenGLContext*)> cleanup{context.get(), [](QOpenGLContext* ctx)
+	const std::unique_ptr<QOpenGLContext, void (*)(QOpenGLContext*)> cleanup{shareContext, [](QOpenGLContext* ctx)
 		{
 			return ctx->doneCurrent();
 		}};
@@ -308,7 +294,7 @@ std::pair<QOpenGLContext*, QOffscreenSurface*> ToolApplication::InitializeOpenGL
 		return {};
 	}
 
-	return {context.release(), surface.release()};
+	return surface.release();
 }
 
 void ToolApplication::OnExit()
