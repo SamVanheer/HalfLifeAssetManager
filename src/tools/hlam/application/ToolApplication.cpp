@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QDebug>
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QLocalServer>
@@ -45,7 +46,9 @@
 
 using namespace ui::assets;
 
-const QString LogFileName{QStringLiteral("HLAM-Log.txt")};
+const QString LogBaseFileName{QStringLiteral("HLAM-Log.txt")};
+
+QString LogFileName = LogBaseFileName;
 
 void FileMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
@@ -112,6 +115,8 @@ int ToolApplication::Run(int argc, char* argv[])
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
 		const auto [isPortable, logDebugMsgsToFile, fileName] = ParseCommandLine(app);
+
+		LogFileName = QApplication::applicationDirPath() + QDir::separator() + LogBaseFileName;
 
 		QFile::remove(LogFileName);
 
