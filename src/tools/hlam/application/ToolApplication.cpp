@@ -125,8 +125,17 @@ int ToolApplication::Run(int argc, char* argv[])
 		{
 			const auto openGLFormat = QOpenGLContext::globalShareContext()->format();
 
+			auto makeVersionCode = [](int major, int minor)
+			{
+				return (major << 8) + minor;
+			};
+
+			const int versionCode = makeVersionCode(openGLFormat.majorVersion(), openGLFormat.minorVersion());
+
+			const int minimumSupportedVersionCode = makeVersionCode(2, 1);
+
 			//Only check this once
-			if (!settings->value("graphics/checked_opengl_version", false).toBool() && openGLFormat.majorVersion() < 3)
+			if (!settings->value("graphics/checked_opengl_version", false).toBool() && versionCode < minimumSupportedVersionCode)
 			{
 				QMessageBox::warning(nullptr, "Warning", QString{"%1 may not work correctly with your version of OpenGL (%2.%3)"}
 					.arg(programName).arg(openGLFormat.majorVersion()).arg(openGLFormat.minorVersion()));
