@@ -144,12 +144,13 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		const auto offscreen{InitializeOpenGL()};
 
-		if (!offscreen)
+		if (!offscreen.first ||!offscreen.second)
 		{
 			return EXIT_FAILURE;
 		}
 
-		_editorContext->SetOffscreenSurface(offscreen);
+		_editorContext->SetOffscreenContext(offscreen.first);
+		_editorContext->SetOffscreenSurface(offscreen.second);
 
 		_mainWindow = new ui::MainWindow(_editorContext);
 
@@ -325,23 +326,36 @@ ui::EditorContext* ToolApplication::CreateEditorContext(std::unique_ptr<QSetting
 		this);
 }
 
-QOffscreenSurface* ToolApplication::InitializeOpenGL()
+std::pair<QOpenGLContext*, QOffscreenSurface*> ToolApplication::InitializeOpenGL()
 {
+	auto context{std::make_unique<QOpenGLContext>()};
+
+	context->setFormat(QSurfaceFormat::defaultFormat());
+
 	const auto shareContext{QOpenGLContext::globalShareContext()};
 
-	auto surface{std::make_unique<QOffscreenSurface>(shareContext->screen(), this)};
+	context->setShareContext(shareContext);
+	context->setScreen(shareContext->screen());
 
-	surface->setFormat(shareContext->format());
-	surface->setScreen(shareContext->screen());
+	if (!context->create())
+	{
+		QMessageBox::critical(nullptr, "Fatal Error", "Couldn't create OpenGL context");
+		return {};
+	}
+
+	auto surface{std::make_unique<QOffscreenSurface>(context->screen(), this)};
+
+	surface->setFormat(context->format());
+	surface->setScreen(context->screen());
 	surface->create();
 
-	if (!shareContext->makeCurrent(surface.get()))
+	if (!context->makeCurrent(surface.get()))
 	{
 		QMessageBox::critical(nullptr, "Fatal Error", "Couldn't make offscreen surface context current");
 		return {};
 	}
 
-	const std::unique_ptr<QOpenGLContext, void (*)(QOpenGLContext*)> cleanup{shareContext, [](QOpenGLContext* ctx)
+	const std::unique_ptr<QOpenGLContext, void (*)(QOpenGLContext*)> cleanup{context.get(), [](QOpenGLContext* ctx)
 		{
 			return ctx->doneCurrent();
 		}};
@@ -356,7 +370,7 @@ QOffscreenSurface* ToolApplication::InitializeOpenGL()
 		return {};
 	}
 
-	return surface.release();
+	return {context.release(), surface.release()};
 }
 
 void ToolApplication::OnExit()

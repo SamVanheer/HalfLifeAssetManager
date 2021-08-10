@@ -71,6 +71,21 @@ EditorContext::~EditorContext()
 	_soundSystem->Shutdown();
 }
 
+void EditorContext::SetOffscreenContext(QOpenGLContext* offscreenContext)
+{
+	if (_offscreenContext)
+	{
+		delete _offscreenContext;
+	}
+
+	_offscreenContext = offscreenContext;
+
+	if (_offscreenContext)
+	{
+		_offscreenContext->setParent(this);
+	}
+}
+
 void EditorContext::SetOffscreenSurface(QOffscreenSurface* offscreenSurface)
 {
 	if (_offscreenSurface)

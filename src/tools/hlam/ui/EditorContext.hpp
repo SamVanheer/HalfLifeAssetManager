@@ -10,6 +10,7 @@
 #include <QUuid>
 
 class QOffscreenSurface;
+class QOpenGLContext;
 
 class WorldTime;
 
@@ -86,6 +87,10 @@ public:
 
 	assets::IAssetProviderRegistry* GetAssetProviderRegistry() const { return _assetProviderRegistry.get(); }
 
+	QOpenGLContext* GetOffscreenContext() const { return _offscreenContext; }
+
+	void SetOffscreenContext(QOpenGLContext* offscreenContext);
+
 	QOffscreenSurface* GetOffscreenSurface() const { return _offscreenSurface; }
 
 	void SetOffscreenSurface(QOffscreenSurface* offscreenSurface);
@@ -121,6 +126,7 @@ private:
 
 	const std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
 
+	QOpenGLContext* _offscreenContext{};
 	QOffscreenSurface* _offscreenSurface{};
 };
 }
