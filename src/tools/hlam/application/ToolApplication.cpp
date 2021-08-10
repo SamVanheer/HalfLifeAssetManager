@@ -53,7 +53,7 @@ void FileMessageOutput(QtMsgType type, const QMessageLogContext& context, const 
 
 	QFile logFile{LogFileName};
 
-	if (!logFile.open(QFile::WriteOnly))
+	if (!logFile.open(QFile::WriteOnly | QFile::Append))
 	{
 		QMessageBox::critical(nullptr, "Error", QString{"Couldn't open file \"%1\" for writing log messages"}
 			.arg(QFileInfo{logFile}.absoluteFilePath()));
