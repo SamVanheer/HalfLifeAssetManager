@@ -40,7 +40,7 @@ private:
 	
 	void ConfigureOpenGL();
 
-	std::tuple<bool, QString> ParseCommandLine(QApplication& application);
+	std::tuple<bool, bool, QString> ParseCommandLine(QApplication& application);
 
 	std::unique_ptr<QSettings> CreateSettings(const QString& programName, bool isPortable);
 

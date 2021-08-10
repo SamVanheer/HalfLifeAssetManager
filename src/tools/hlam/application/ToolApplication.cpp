@@ -8,6 +8,7 @@
 #include <QCommandLineParser>
 #include <QDebug>
 #include <QFile>
+#include <QFileInfo>
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QMessageBox>
@@ -44,6 +45,56 @@
 
 using namespace ui::assets;
 
+const QString LogFileName{QStringLiteral("HLAM-Log.txt")};
+
+void FileMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+{
+	QByteArray localMsg = msg.toLocal8Bit();
+
+	QFile logFile{LogFileName};
+
+	if (!logFile.open(QFile::WriteOnly))
+	{
+		QMessageBox::critical(nullptr, "Error", QString{"Couldn't open file \"%1\" for writing log messages"}
+			.arg(QFileInfo{logFile}.absoluteFilePath()));
+		return;
+	}
+
+	QTextStream stream{&logFile};
+
+	const char* messageType = "Unknown";
+
+	switch (type)
+	{
+	case QtDebugMsg:
+		messageType = "Debug";
+		break;
+
+	case QtInfoMsg:
+		messageType = "Info";
+		break;
+
+	case QtWarningMsg:
+		messageType = "Warning";
+		break;
+
+	case QtCriticalMsg:
+		messageType = "Critical";
+		break;
+
+	case QtFatalMsg:
+		messageType = "Fatal";
+		break;
+	}
+
+	stream << messageType << ": " << msg << " (" << context.file << ":" << context.line << ", " << context.function << ")\n";
+
+	if (type == QtFatalMsg)
+	{
+		abort();
+	}
+}
+
 int ToolApplication::Run(int argc, char* argv[])
 {
 	try
@@ -60,7 +111,14 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
-		const auto [isPortable, fileName] = ParseCommandLine(app);
+		const auto [isPortable, logDebugMsgsToFile, fileName] = ParseCommandLine(app);
+
+		QFile::remove(LogFileName);
+
+		if (logDebugMsgsToFile)
+		{
+			qInstallMessageHandler(&FileMessageOutput);
+		}
 
 		auto settings{CreateSettings(programName, isPortable)};
 
@@ -152,17 +210,21 @@ void ToolApplication::ConfigureOpenGL()
 	QSurfaceFormat::setDefaultFormat(defaultFormat);
 }
 
-std::tuple<bool, QString> ToolApplication::ParseCommandLine(QApplication& application)
+std::tuple<bool, bool, QString> ToolApplication::ParseCommandLine(QApplication& application)
 {
 	QCommandLineParser parser;
 
 	parser.addOption(QCommandLineOption{"portable", "Launch in portable mode"});
+
+	parser.addOption(QCommandLineOption{"log_to_file", "Log debug messages to a file"});
 
 	parser.addPositionalArgument("fileName", "Filename of the model to load on startup", "[fileName]");
 
 	parser.process(application);
 
 	const bool isPortable = parser.isSet("portable");
+
+	const bool logDebugMsgsToFile = parser.isSet("log_to_file");
 
 	const auto positionalArguments = parser.positionalArguments();
 
@@ -173,7 +235,7 @@ std::tuple<bool, QString> ToolApplication::ParseCommandLine(QApplication& applic
 		fileName = positionalArguments[0];
 	}
 
-	return std::make_tuple(isPortable, fileName);
+	return std::make_tuple(isPortable, logDebugMsgsToFile, fileName);
 }
 
 std::unique_ptr<QSettings> ToolApplication::CreateSettings(const QString& programName, bool isPortable)
