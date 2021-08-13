@@ -16,6 +16,7 @@
 #include "soundsystem/ISoundSystem.hpp"
 #include "soundsystem/SoundSystem.hpp"
 
+#include "ui/DragNDropEventFilter.hpp"
 #include "ui/EditorContext.hpp"
 
 #include "ui/assets/Assets.hpp"
@@ -40,6 +41,7 @@ EditorContext::EditorContext(
 	QObject* parent)
 	: QObject(parent)
 	, _settings(settings)
+	, _dragNDropEventFilter(new DragNDropEventFilter(this, this))
 	, _generalSettings(generalSettings)
 	, _colorSettings(colorSettings)
 	, _recentFilesSettings(recentFilesSettings)

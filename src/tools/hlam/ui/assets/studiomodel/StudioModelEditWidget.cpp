@@ -9,6 +9,7 @@
 
 #include "qt/QtUtilities.hpp"
 
+#include "ui/DragNDropEventFilter.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/SceneWidget.hpp"
 #include "ui/TextureWidget.hpp"
@@ -63,6 +64,13 @@ StudioModelEditWidget::StudioModelEditWidget(
 	scene->SetGraphicsContext(std::make_unique<OpenGLGraphicsContext>(_sceneWidget));
 
 	_textureWidget = new TextureWidget(this);
+
+	auto eventFilter = _editorContext->GetDragNDropEventFilter();
+
+	//The filter needs to be installed on the main window (handles dropping on any child widget),
+	//as well as the scene widget (has special behavior due to being OpenGL)
+	_ui.Window->installEventFilter(eventFilter);
+	_sceneWidget->installEventFilter(eventFilter);
 
 	SetTextureBackgroundColor();
 

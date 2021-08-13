@@ -26,6 +26,8 @@ class ISoundSystem;
 
 namespace ui
 {
+class DragNDropEventFilter;
+
 namespace assets
 {
 class IAssetProviderRegistry;
@@ -67,6 +69,8 @@ public:
 
 	QSettings* GetSettings() const { return _settings; }
 
+	DragNDropEventFilter* GetDragNDropEventFilter() const { return _dragNDropEventFilter; }
+
 	settings::GeneralSettings* GetGeneralSettings() const { return _generalSettings.get(); }
 
 	settings::ColorSettings* GetColorSettings() const { return _colorSettings.get(); }
@@ -103,6 +107,14 @@ signals:
 	*/
 	void Tick();
 
+	void TryingToLoadAsset(const QString& fileName);
+
+public slots:
+	void TryLoadAsset(const QString& fileName)
+	{
+		emit TryingToLoadAsset(fileName);
+	}
+
 private slots:
 	void OnTimerTick();
 
@@ -110,6 +122,7 @@ private slots:
 
 private:
 	QSettings* const _settings;
+	DragNDropEventFilter* const _dragNDropEventFilter;
 
 	const std::shared_ptr<settings::GeneralSettings> _generalSettings;
 	const std::shared_ptr<settings::ColorSettings> _colorSettings;

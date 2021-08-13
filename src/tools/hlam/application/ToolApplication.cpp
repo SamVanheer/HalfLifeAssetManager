@@ -170,7 +170,7 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		if (!fileName.isEmpty())
 		{
-			_mainWindow->TryLoadAsset(fileName);
+			_editorContext->TryLoadAsset(fileName);
 		}
 
 		//Note: must come after the file is loaded or it won't actually show maximized
@@ -418,7 +418,7 @@ void ToolApplication::OnFileNameReceived(const QString& fileName)
 
 	_mainWindow->activateWindow();
 
-	_mainWindow->TryLoadAsset(fileName);
+	_editorContext->TryLoadAsset(fileName);
 }
 
 void ToolApplication::OnStylePathChanged(const QString& stylePath)

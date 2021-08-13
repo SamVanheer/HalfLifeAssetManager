@@ -22,6 +22,7 @@
 #include "filesystem/FileSystemConstants.hpp"
 
 #include "ui/Credits.hpp"
+#include "ui/DragNDropEventFilter.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/FileListPanel.hpp"
 #include "ui/FullscreenWidget.hpp"
@@ -49,6 +50,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	this->setAttribute(Qt::WidgetAttribute::WA_DeleteOnClose);
 
 	this->setWindowIcon(QIcon{":/hlam.ico"});
+
+	this->installEventFilter(_editorContext->GetDragNDropEventFilter());
 
 	{
 		auto undo = _undoGroup->createUndoAction(this);
@@ -135,6 +138,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_assetTabs, &QTabWidget::currentChanged, this, &MainWindow::OnAssetTabChanged);
 	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &MainWindow::OnAssetTabCloseRequested);
 
+	connect(_editorContext, &EditorContext::TryingToLoadAsset, this, &MainWindow::TryLoadAsset);
 	connect(_editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged,
 		this, &MainWindow::OnActiveConfigurationChanged);
 
@@ -229,79 +233,6 @@ MainWindow::MainWindow(EditorContext* editorContext)
 MainWindow::~MainWindow()
 {
 	_editorContext->GetTimer()->stop();
-}
-
-bool MainWindow::TryLoadAsset(QString fileName)
-{
-	fileName = QDir::cleanPath(fileName);
-
-	if (!QFile::exists(fileName))
-	{
-		QMessageBox::critical(this, "Error loading asset", QString{"Asset \"%1\" does not exist"}.arg(fileName));
-		return false;
-	}
-
-	try
-	{
-		auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName);
-
-		if (nullptr != asset)
-		{
-			auto currentFileName = asset->GetFileName();
-
-			connect(asset.get(), &assets::Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
-
-			const auto editWidget = asset->GetEditWidget();
-
-			editWidget->setProperty(TabWidgetAssetProperty.data(), QVariant::fromValue(asset.get()));
-
-			_undoGroup->addStack(asset->GetUndoStack());
-
-			//Now owned by this window
-			asset->setParent(this);
-			asset.release();
-
-			//Use the current filename for this
-			const auto index = _assetTabs->addTab(editWidget, currentFileName);
-
-			_assetTabs->setCurrentIndex(index);
-
-			//TODO: this is duplicated between this and TryCloseAsset
-			_assetTabs->setVisible(true);
-			_ui.ActionFullscreen->setEnabled(true);
-			_ui.ActionRefresh->setEnabled(true);
-
-			_editorContext->GetRecentFiles()->Add(fileName);
-
-			return true;
-		}
-		else
-		{
-			QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\nNull asset returned"}.arg(fileName));
-		}
-	}
-	catch (const ::assets::AssetException& e)
-	{
-		QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\n%2"}.arg(fileName).arg(e.what()));
-	}
-
-	return false;
-}
-
-void MainWindow::dragEnterEvent(QDragEnterEvent* event)
-{
-	if (event->mimeData()->hasUrls())
-	{
-		event->acceptProposedAction();
-	}
-}
-
-void MainWindow::dropEvent(QDropEvent* event)
-{
-	for (const auto& url : event->mimeData()->urls())
-	{
-		TryLoadAsset(url.toLocalFile());
-	}
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -434,6 +365,63 @@ void MainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
 {
 	setWindowTitle(QString{"%1[*]"}.arg(fileName));
 	setWindowModified(hasUnsavedChanges);
+}
+
+bool MainWindow::TryLoadAsset(QString fileName)
+{
+	fileName = QDir::cleanPath(fileName);
+
+	if (!QFile::exists(fileName))
+	{
+		QMessageBox::critical(this, "Error loading asset", QString{"Asset \"%1\" does not exist"}.arg(fileName));
+		return false;
+	}
+
+	try
+	{
+		auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName);
+
+		if (nullptr != asset)
+		{
+			auto currentFileName = asset->GetFileName();
+
+			connect(asset.get(), &assets::Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
+
+			const auto editWidget = asset->GetEditWidget();
+
+			editWidget->setProperty(TabWidgetAssetProperty.data(), QVariant::fromValue(asset.get()));
+
+			_undoGroup->addStack(asset->GetUndoStack());
+
+			//Now owned by this window
+			asset->setParent(this);
+			asset.release();
+
+			//Use the current filename for this
+			const auto index = _assetTabs->addTab(editWidget, currentFileName);
+
+			_assetTabs->setCurrentIndex(index);
+
+			//TODO: this is duplicated between this and TryCloseAsset
+			_assetTabs->setVisible(true);
+			_ui.ActionFullscreen->setEnabled(true);
+			_ui.ActionRefresh->setEnabled(true);
+
+			_editorContext->GetRecentFiles()->Add(fileName);
+
+			return true;
+		}
+		else
+		{
+			QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\nNull asset returned"}.arg(fileName));
+		}
+	}
+	catch (const ::assets::AssetException& e)
+	{
+		QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\n%2"}.arg(fileName).arg(e.what()));
+	}
+
+	return false;
 }
 
 void MainWindow::OnOpenLoadAssetDialog()

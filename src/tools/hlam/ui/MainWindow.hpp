@@ -36,12 +36,7 @@ public:
 	MainWindow(EditorContext* editorContext);
 	~MainWindow();
 
-	bool TryLoadAsset(QString fileName);
-
 protected:
-	void dragEnterEvent(QDragEnterEvent* event) override;
-	void dropEvent(QDropEvent* event) override;
-
 	void closeEvent(QCloseEvent* event) override;
 
 private:
@@ -59,6 +54,8 @@ private:
 	void SetupFileSystem(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration);
 
 private slots:
+	bool TryLoadAsset(QString fileName);
+
 	void OnOpenLoadAssetDialog();
 
 	void OnAssetCleanChanged(bool clean);
