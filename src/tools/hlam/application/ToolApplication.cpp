@@ -197,6 +197,8 @@ void ToolApplication::ConfigureApplication(const QString& programName)
 
 void ToolApplication::ConfigureOpenGL()
 {
+	//Neither OpenGL ES nor Software OpenGL will work here
+	QApplication::setAttribute(Qt::ApplicationAttribute::AA_UseDesktopOpenGL, true);
 	QApplication::setAttribute(Qt::ApplicationAttribute::AA_ShareOpenGLContexts, true);
 
 	//Set up the OpenGL surface settings to match the Half-Life engine's requirements
