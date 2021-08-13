@@ -189,6 +189,7 @@ void Timeline::OnTick()
 
 	if (sliderRange != _ui.FrameSlider->maximum())
 	{
+		const QSignalBlocker blocker{_ui.FrameSlider};
 		_ui.FrameSlider->setRange(0, frameRange * FrameSliderRangeMultiplier);
 	}
 
