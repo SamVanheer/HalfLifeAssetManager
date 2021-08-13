@@ -247,9 +247,16 @@ void StudioModelEditWidget::OnCameraChanged(int index)
 
 void StudioModelEditWidget::OnTexturesDockVisibilityChanged(bool visible)
 {
-	if (_asset->GetProvider()->GetStudioModelSettings()->ShouldActivateTextureViewWhenTexturesPanelOpened() && visible)
+	if (_asset->GetProvider()->GetStudioModelSettings()->ShouldActivateTextureViewWhenTexturesPanelOpened())
 	{
-		_view->SetCurrentWidget(_textureWidget);
+		if (visible)
+		{
+			_view->SetCurrentWidget(_textureWidget);
+		}
+		else
+		{
+			_view->SetCurrentWidget(_sceneWidget->GetContainer());
+		}
 	}
 }
 
