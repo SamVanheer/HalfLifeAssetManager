@@ -39,7 +39,7 @@ void SpriteEntity::Draw(renderer::DrawFlags flags)
 
 	info.Frame = GetFrame();
 
-	GetContext()->SpriteRenderer->DrawSprite(&info, flags);
+	GetContext()->SpriteRenderer->DrawSprite(info, flags);
 }
 
 void SpriteEntity::AnimThink()

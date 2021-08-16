@@ -30,7 +30,7 @@ void StudioModelEntity::Draw(renderer::DrawFlags flags)
 {
 	studiomdl::ModelRenderInfo renderInfo = GetRenderInfo();
 
-	GetContext()->StudioModelRenderer->DrawModel(&renderInfo, flags);
+	GetContext()->StudioModelRenderer->DrawModel(renderInfo, flags);
 }
 
 studiomdl::ModelRenderInfo StudioModelEntity::GetRenderInfo() const

@@ -37,15 +37,9 @@ void StudioModelRenderer::RunFrame()
 {
 }
 
-unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo* const renderInfo, const renderer::DrawFlags flags)
+unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderInfo, const renderer::DrawFlags flags)
 {
-	if (!renderInfo)
-	{
-		Error("StudioModelRenderer::DrawModel: Called with null render info!\n");
-		return 0;
-	}
-
-	_renderInfo = renderInfo;
+	_renderInfo = &renderInfo;
 
 	if (_renderInfo->Model)
 	{

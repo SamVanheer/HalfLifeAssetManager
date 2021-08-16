@@ -101,7 +101,7 @@ public:
 	*	@param flags Flags.
 	*	@return Number of polygons that were drawn.
 	*/
-	virtual unsigned int DrawModel(ModelRenderInfo* const renderInfo, const renderer::DrawFlags flags = renderer::DrawFlag::NONE) = 0;
+	virtual unsigned int DrawModel(ModelRenderInfo& renderInfo, const renderer::DrawFlags flags = renderer::DrawFlag::NONE) = 0;
 
 	/*
 	*	Tool only operations.

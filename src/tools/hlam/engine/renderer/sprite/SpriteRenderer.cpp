@@ -23,17 +23,9 @@ SpriteRenderer::SpriteRenderer(WorldTime* worldTime)
 
 SpriteRenderer::~SpriteRenderer() = default;
 
-void SpriteRenderer::DrawSprite(const SpriteRenderInfo* renderInfo, const renderer::DrawFlags flags)
+void SpriteRenderer::DrawSprite(const SpriteRenderInfo& renderInfo, const renderer::DrawFlags flags)
 {
-	assert(renderInfo);
-
-	if (!renderInfo)
-	{
-		Error("CSpriteRenderer::DrawSprite: Null render info!\n");
-		return;
-	}
-
-	const auto sprite = renderInfo->Sprite;
+	const auto sprite = renderInfo.Sprite;
 
 	assert(sprite);
 
@@ -43,13 +35,13 @@ void SpriteRenderer::DrawSprite(const SpriteRenderInfo* renderInfo, const render
 		return;
 	}
 
-	const auto& framedesc = sprite->frames[static_cast<int>(renderInfo->Frame)];
+	const auto& framedesc = sprite->frames[static_cast<int>(renderInfo.Frame)];
 	//TODO: get correct frame when it's a group.
 	const auto& frame = framedesc.frameptr;
 
-	const sprite::Type::Type* typeOverride = renderInfo->OverrideType ? &renderInfo->Type : nullptr;
+	const sprite::Type::Type* typeOverride = renderInfo.OverrideType ? &renderInfo.Type : nullptr;
 
-	DrawSprite(renderInfo->Origin, {frame->width, frame->height}, sprite, renderInfo->Frame, flags, typeOverride);
+	DrawSprite(renderInfo.Origin, {frame->width, frame->height}, sprite, renderInfo.Frame, flags, typeOverride);
 }
 
 void SpriteRenderer::DrawSprite2D(const float x, const float y, const float width, const float height,
@@ -88,17 +80,9 @@ void SpriteRenderer::DrawSprite2D(const float x, const float y,
 	DrawSprite2D(x, y, static_cast<float>(frame->width * scale), static_cast<float>(frame->height * scale), sprite, flags);
 }
 
-void SpriteRenderer::DrawSprite2D(const Sprite2DRenderInfo* renderInfo, const renderer::DrawFlags flags)
+void SpriteRenderer::DrawSprite2D(const Sprite2DRenderInfo& renderInfo, const renderer::DrawFlags flags)
 {
-	assert(renderInfo);
-
-	if (!renderInfo)
-	{
-		Error("CSpriteRenderer::DrawSprite2D: Null render info!\n");
-		return;
-	}
-
-	const auto sprite = renderInfo->Sprite;
+	const auto sprite = renderInfo.Sprite;
 
 	assert(sprite);
 
@@ -108,7 +92,7 @@ void SpriteRenderer::DrawSprite2D(const Sprite2DRenderInfo* renderInfo, const re
 		return;
 	}
 
-	const auto& framedesc = sprite->frames[static_cast<int>(renderInfo->Frame)];
+	const auto& framedesc = sprite->frames[static_cast<int>(renderInfo.Frame)];
 
 	mspriteframe_t* frame;
 
@@ -124,11 +108,11 @@ void SpriteRenderer::DrawSprite2D(const Sprite2DRenderInfo* renderInfo, const re
 		frame = pGroup->frames[0];
 	}
 
-	const sprite::TexFormat::TexFormat* texFormatOverride = renderInfo->OverrideTexFormat ? &renderInfo->TexFormat : nullptr;
+	const sprite::TexFormat::TexFormat* texFormatOverride = renderInfo.OverrideTexFormat ? &renderInfo.TexFormat : nullptr;
 
-	DrawSprite(glm::vec3(renderInfo->Pos, 0),
-		glm::vec2(renderInfo->Scale.x * frame->width, renderInfo->Scale.y * frame->height),
-		renderInfo->Sprite, renderInfo->Frame, flags, nullptr, texFormatOverride);
+	DrawSprite(glm::vec3(renderInfo.Pos, 0),
+		glm::vec2(renderInfo.Scale.x * frame->width, renderInfo.Scale.y * frame->height),
+		renderInfo.Sprite, renderInfo.Frame, flags, nullptr, texFormatOverride);
 }
 
 void SpriteRenderer::DrawSprite(const glm::vec3& origin, const glm::vec2& size,

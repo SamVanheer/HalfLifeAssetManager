@@ -26,7 +26,7 @@ public:
 	SpriteRenderer(const SpriteRenderer&) = delete;
 	SpriteRenderer& operator=(const SpriteRenderer&) = delete;
 
-	void DrawSprite(const SpriteRenderInfo* renderInfo, const renderer::DrawFlags flags) override;
+	void DrawSprite(const SpriteRenderInfo& renderInfo, const renderer::DrawFlags flags) override;
 
 	void DrawSprite2D(const float x, const float y, const float width, const float height,
 		const msprite_t* sprite, const renderer::DrawFlags flags = renderer::DrawFlag::NONE) override;
@@ -34,7 +34,7 @@ public:
 	void DrawSprite2D(const float x, const float y, const msprite_t* sprite, const float scale = 1,
 		const renderer::DrawFlags flags = renderer::DrawFlag::NONE) override;
 
-	void DrawSprite2D(const Sprite2DRenderInfo* renderInfo, const renderer::DrawFlags flags = renderer::DrawFlag::NONE) override;
+	void DrawSprite2D(const Sprite2DRenderInfo& renderInfo, const renderer::DrawFlags flags = renderer::DrawFlag::NONE) override;
 
 private:
 

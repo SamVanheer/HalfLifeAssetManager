@@ -22,12 +22,7 @@ class ISpriteRenderer
 public:
 	virtual ~ISpriteRenderer() {}
 
-	/**
-	*	Draws a sprite.
-	*	@param renderInfo Render info.
-	*	@param flags Draw flags.
-	*/
-	virtual void DrawSprite(const SpriteRenderInfo* renderInfo, const renderer::DrawFlags flags) = 0;
+	virtual void DrawSprite(const SpriteRenderInfo& renderInfo, const renderer::DrawFlags flags) = 0;
 
 	/**
 	*	Draws a 2D sprite. The sprite will be rescaled to the given size.
@@ -52,12 +47,7 @@ public:
 	virtual void DrawSprite2D(const float x, const float y,
 		const msprite_t* sprite, const float scale = 1, const renderer::DrawFlags flags = renderer::DrawFlag::NONE) = 0;
 
-	/**
-	*	Draws a 2D sprite.
-	*	@param renderInfo Render info.
-	*	@param flags Draw flags.
-	*/
-	virtual void DrawSprite2D(const Sprite2DRenderInfo* renderInfo, const renderer::DrawFlags flags = renderer::DrawFlag::NONE) = 0;
+	virtual void DrawSprite2D(const Sprite2DRenderInfo& renderInfo, const renderer::DrawFlags flags = renderer::DrawFlag::NONE) = 0;
 };
 }
 
