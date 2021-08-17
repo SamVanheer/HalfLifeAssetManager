@@ -1,8 +1,6 @@
 #include <cassert>
 #include <memory>
 
-#include "core/shared/Logging.hpp"
-
 #include "game/entity/BaseEntity.hpp"
 #include "game/entity/BaseEntityList.hpp"
 #include "game/entity/EHandle.hpp"
@@ -64,7 +62,7 @@ size_t BaseEntityList::Add(BaseEntity* entity)
 
 	if (_numEntities >= entity::MAX_ENTITIES)
 	{
-		Warning("Max entities reached (%u)!\n", entity::MAX_ENTITIES);
+		//Warning("Max entities reached (%u)!\n", entity::MAX_ENTITIES);
 		return entity::INVALID_ENTITY_INDEX;
 	}
 
@@ -81,7 +79,7 @@ size_t BaseEntityList::Add(BaseEntity* entity)
 	//Shouldn't happen.
 	if (index >= entity::MAX_ENTITIES)
 	{
-		Warning("Max entities reached (%u)!\n", entity::MAX_ENTITIES);
+		//Warning("Max entities reached (%u)!\n", entity::MAX_ENTITIES);
 		return entity::INVALID_ENTITY_INDEX;
 	}
 

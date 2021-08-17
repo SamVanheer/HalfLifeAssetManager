@@ -1,6 +1,9 @@
 #pragma once
 
+#include <memory>
 #include <vector>
+
+#include <spdlog/logger.h>
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -23,7 +26,7 @@ struct Sequence;
 class StudioModelRenderer final : public studiomdl::IStudioModelRenderer
 {
 public:
-	StudioModelRenderer();
+	StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger);
 	~StudioModelRenderer();
 
 	StudioModelRenderer(const StudioModelRenderer&) = delete;
@@ -123,6 +126,8 @@ private:
 private:
 	//TODO: need to validate model on load to ensure it does not exceed this limit
 	static constexpr int MaxVertices = 0xFFFF;
+
+	std::shared_ptr<spdlog::logger> _logger;
 
 	/**
 	*	Total number of models drawn by this renderer since the last time it was initialized.

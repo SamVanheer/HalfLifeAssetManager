@@ -3,8 +3,6 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "core/shared/Logging.hpp"
-
 #include "graphics/GraphicsUtils.hpp"
 
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
@@ -18,7 +16,11 @@
 
 namespace studiomdl
 {
-StudioModelRenderer::StudioModelRenderer() = default;
+StudioModelRenderer::StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger)
+	: _logger(logger)
+{
+}
+
 StudioModelRenderer::~StudioModelRenderer() = default;
 
 bool StudioModelRenderer::Initialize()
@@ -47,7 +49,7 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderIn
 	}
 	else
 	{
-		Error("StudioModelRenderer::DrawModel: Called with null model!\n");
+		_logger->error("DrawModel: Called with null model!");
 		return 0;
 	}
 

@@ -3,8 +3,6 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 
-#include "core/shared/Logging.hpp"
-
 #include "engine/shared/studiomodel/BoneTransformer.hpp"
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
 
@@ -149,7 +147,6 @@ void EditableStudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader
 		}
 	) == Textures.end())
 	{
-		Error("EditableStudioModel::ReuploadTexture: Invalid texture!");
 		return;
 	}
 

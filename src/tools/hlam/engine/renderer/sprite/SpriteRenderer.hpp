@@ -1,5 +1,9 @@
 #pragma once
 
+#include <memory>
+
+#include <spdlog/logger.h>
+
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
@@ -20,7 +24,7 @@ private:
 	static constexpr float DEFAULT_FRAMERATE{10};
 
 public:
-	SpriteRenderer(WorldTime* worldTime);
+	SpriteRenderer(const std::shared_ptr<spdlog::logger>& logger, WorldTime* worldTime);
 	~SpriteRenderer();
 
 	SpriteRenderer(const SpriteRenderer&) = delete;
@@ -43,6 +47,7 @@ private:
 		const renderer::DrawFlags flags, const sprite::Type::Type* typeOverride = nullptr, const sprite::TexFormat::TexFormat* texFormatOverride = nullptr);
 
 private:
+	std::shared_ptr<spdlog::logger> _logger;
 	WorldTime* _worldTime;
 };
 }

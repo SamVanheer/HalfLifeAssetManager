@@ -1,3 +1,5 @@
+find_package(spdlog REQUIRED NO_DEFAULT_PATH  PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../../../external/spdlog/lib/cmake/spdlog)
+
 find_package(OpenGL REQUIRED)
 
 # Disable module based lookup (OpenAL Soft uses CONFIG mode and MODULE mode only works with the Creative Labs version)
@@ -82,6 +84,7 @@ target_link_libraries(HLAM
 	PRIVATE
 		Qt5::Widgets
 		Qt5::Network
+		spdlog::spdlog_header_only 
 		${GLEW}
 		OpenGL::GL
 		OpenAL::OpenAL

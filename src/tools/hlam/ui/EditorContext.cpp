@@ -7,10 +7,14 @@
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
 
+#include <spdlog/logger.h>
+
 #include "core/shared/WorldTime.hpp"
 
 #include "filesystem/FileSystem.hpp"
 #include "filesystem/IFileSystem.hpp"
+
+#include "qt/QtLogSink.hpp"
 
 #include "soundsystem/DummySoundSystem.hpp"
 #include "soundsystem/ISoundSystem.hpp"
@@ -50,7 +54,7 @@ EditorContext::EditorContext(
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
 	, _fileSystem(std::make_unique<filesystem::FileSystem>())
 	, _soundSystem(_generalSettings->ShouldEnableAudioPlayback()
-		? std::unique_ptr<soundsystem::ISoundSystem>(std::make_unique<soundsystem::SoundSystem>())
+		? std::unique_ptr<soundsystem::ISoundSystem>(std::make_unique<soundsystem::SoundSystem>(CreateQtLoggerSt(logging::HLAMSoundSystem())))
 		: std::make_unique<soundsystem::DummySoundSystem>())
 	, _worldTime(std::make_unique<WorldTime>())
 	, _assetProviderRegistry(std::move(assetProviderRegistry))

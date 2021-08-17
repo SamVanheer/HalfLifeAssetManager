@@ -4,6 +4,8 @@
 #include <list>
 #include <memory>
 
+#include <spdlog/logger.h>
+
 #include <al.h>
 #include <alc.h>
 
@@ -50,7 +52,7 @@ public:
 	};
 
 public:
-	SoundSystem();
+	SoundSystem(const std::shared_ptr<spdlog::logger>& logger);
 	~SoundSystem();
 	SoundSystem(const SoundSystem&) = delete;
 	SoundSystem& operator=(const SoundSystem&) = delete;
@@ -70,7 +72,13 @@ public:
 private:
 	size_t GetSoundForPlayback();
 
+	bool CheckALErrorsCore(const char* file, int line);
+	std::unique_ptr<SoundSystem::Sound> TryLoadWaveFile(const std::string& fileName);
+	std::unique_ptr<SoundSystem::Sound> TryLoadOggVorbis(const std::string& fileName);
+
 private:
+	std::shared_ptr<spdlog::logger> _logger;
+
 	filesystem::IFileSystem* _fileSystem{};
 
 	ALCdevice* _device{};

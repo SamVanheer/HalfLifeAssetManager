@@ -2,7 +2,6 @@
 
 #include <glm/geometric.hpp>
 
-#include "core/shared/Logging.hpp"
 #include "core/shared/WorldTime.hpp"
 
 #include "game/entity/StudioModelEntity.hpp"
@@ -211,7 +210,6 @@ void StudioModelEntity::DispatchAnimEvents(const bool allowClientEvents)
 {
 	if (!_editableModel)
 	{
-		Message("Gibbed monster is thinking!\n");
 		return;
 	}
 

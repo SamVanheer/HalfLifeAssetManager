@@ -1,6 +1,5 @@
 #include <cassert>
 
-#include "core/shared/Logging.hpp"
 #include "core/shared/WorldTime.hpp"
 
 #include "game/entity/BaseEntity.hpp"
@@ -82,7 +81,7 @@ BaseEntity* EntityManager::Create(const char* const pszClassName, EntityContext 
 	//This is where you can handle custom entities.
 	if (!entity)
 	{
-		Error("Couldn't create \"%s\"!\n", pszClassName);
+		//Error("Couldn't create \"%s\"!\n", pszClassName);
 		return nullptr;
 	}
 

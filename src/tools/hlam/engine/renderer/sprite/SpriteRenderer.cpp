@@ -3,7 +3,6 @@
 
 #include <glm/vec4.hpp>
 
-#include "core/shared/Logging.hpp"
 #include "core/shared/WorldTime.hpp"
 
 #include "graphics/OpenGL.hpp"
@@ -16,8 +15,9 @@
 
 namespace sprite
 {
-SpriteRenderer::SpriteRenderer(WorldTime* worldTime)
-	: _worldTime(worldTime)
+SpriteRenderer::SpriteRenderer(const std::shared_ptr<spdlog::logger>& logger, WorldTime* worldTime)
+	: _logger(logger)
+	, _worldTime(worldTime)
 {
 }
 
@@ -31,7 +31,7 @@ void SpriteRenderer::DrawSprite(const SpriteRenderInfo& renderInfo, const render
 
 	if (!sprite)
 	{
-		Error("CSpriteRenderer::DrawSprite2D: Null sprite!\n");
+		_logger->error("DrawSprite2D: Null sprite!");
 		return;
 	}
 
@@ -88,7 +88,7 @@ void SpriteRenderer::DrawSprite2D(const Sprite2DRenderInfo& renderInfo, const re
 
 	if (!sprite)
 	{
-		Error("CSpriteRenderer::DrawSprite2D: Null sprite!\n");
+		_logger->error("DrawSprite2D: Null sprite!");
 		return;
 	}
 

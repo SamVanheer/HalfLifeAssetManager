@@ -1,5 +1,3 @@
-#include "core/shared/Logging.hpp"
-
 #include "game/entity/BaseEntity.hpp"
 #include "game/entity/EntityDict.hpp"
 
@@ -37,7 +35,7 @@ bool EntityDict::AddEntity(const BaseEntityRegistry* registry)
 	if (FindEntity(registry->GetClassname()))
 	{
 		//This shouldn't happen, since there'd be duplicate symbols in the library.
-		Error("EntityDict::AddEntity: Duplicate entity \"%s\" added!\n", registry->GetClassname());
+		//Error("EntityDict::AddEntity: Duplicate entity \"%s\" added!\n", registry->GetClassname());
 		return false;
 	}
 
@@ -74,7 +72,7 @@ void EntityDict::DestroyEntity(BaseEntity* entity) const
 
 	if (!registry)
 	{
-		Error("EntityDict::DestroyEntity: Tried to destroy unknown entity \"%s\"!\n", entity->GetClassName());
+		//Error("EntityDict::DestroyEntity: Tried to destroy unknown entity \"%s\"!\n", entity->GetClassName());
 		return;
 	}
 

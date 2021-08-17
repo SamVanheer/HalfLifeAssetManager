@@ -9,7 +9,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "core/shared/Const.hpp"
-#include "core/shared/Logging.hpp"
 #include "core/shared/Platform.hpp"
 
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
@@ -346,12 +345,6 @@ void SetupRenderMode(RenderMode renderMode, const bool bBackfaceCulling)
 		glEnable(GL_DEPTH_TEST);
 		glShadeModel(GL_SMOOTH);
 
-		break;
-	}
-
-	default:
-	{
-		Warning("graphics::SetupRenderMode: Invalid render mode %d\n", static_cast<int>(renderMode));
 		break;
 	}
 	}

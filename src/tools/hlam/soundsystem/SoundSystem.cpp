@@ -11,13 +11,11 @@
 
 #include "filesystem/IFileSystem.hpp"
 
-#include "core/shared/Logging.hpp"
-
 #include "soundsystem/SoundSystem.hpp"
 
 namespace soundsystem
 {
-bool _CheckALErrors(const char* file, int line)
+bool SoundSystem::CheckALErrorsCore(const char* file, int line)
 {
 	auto error = alGetError();
 
@@ -28,13 +26,13 @@ bool _CheckALErrors(const char* file, int line)
 
 	do
 	{
-		Error("Error 0x%X (%d) while calling OpenAL API in file %s, line %d\n", static_cast<unsigned int>(error), error, file, line);
+		_logger->error("Error {:x} ({}) while calling OpenAL API in file {}, line {}", static_cast<unsigned int>(error), error, file, line);
 	} while ((error = alGetError()) != AL_NONE);
 
 	return true;
 }
 
-#define CheckALErrors() _CheckALErrors(__FILE__, __LINE__)
+#define CheckALErrors() CheckALErrorsCore(__FILE__, __LINE__)
 
 static ALenum BufferFormat(const AudioFile<double>& file)
 {
@@ -88,7 +86,7 @@ void ConvertToAL(const AudioFile<double>& file, std::vector<std::uint8_t>& data)
 	}
 }
 
-std::unique_ptr<SoundSystem::Sound> TryLoadWaveFile(const std::string& fileName)
+std::unique_ptr<SoundSystem::Sound> SoundSystem::TryLoadWaveFile(const std::string& fileName)
 {
 	AudioFile<double> file;
 
@@ -141,7 +139,7 @@ struct OggVorbisCleanup
 	}
 };
 
-std::unique_ptr<SoundSystem::Sound> TryLoadOggVorbis(const std::string& fileName)
+std::unique_ptr<SoundSystem::Sound> SoundSystem::TryLoadOggVorbis(const std::string& fileName)
 {
 	OggVorbis_File vorbisData{};
 
@@ -166,7 +164,7 @@ std::unique_ptr<SoundSystem::Sound> TryLoadOggVorbis(const std::string& fileName
 
 	if (sizeInBytes > data.max_size())
 	{
-		Error("CSoundSystem::TryLoadOggVorbis: File \"%s\" is too large to read (%dll > %u)\n", fileName.c_str(), sizeInBytes, data.max_size());
+		_logger->error("TryLoadOggVorbis: File \"{}\" is too large to read ({} > {})", fileName, sizeInBytes, data.max_size());
 		return {};
 	}
 
@@ -184,7 +182,7 @@ std::unique_ptr<SoundSystem::Sound> TryLoadOggVorbis(const std::string& fileName
 	//An error occurred while reading
 	if (size < 0)
 	{
-		Error("CSoundSystem::TryLoadOggVorbis: Error while reading file \"%s\" (%dl)\n", fileName.c_str(), size);
+		_logger->error("TryLoadOggVorbis: Error while reading file \"{}\" ({})\n", fileName, size);
 		return {};
 	}
 
@@ -200,7 +198,11 @@ std::unique_ptr<SoundSystem::Sound> TryLoadOggVorbis(const std::string& fileName
 	return sound;
 }
 
-SoundSystem::SoundSystem() = default;
+SoundSystem::SoundSystem(const std::shared_ptr<spdlog::logger>& logger)
+	: _logger(logger)
+{
+}
+
 SoundSystem::~SoundSystem() = default;
 
 bool SoundSystem::Initialize(filesystem::IFileSystem* filesystem)
@@ -301,7 +303,7 @@ void SoundSystem::PlaySound(std::string_view fileName, float volume, int pitch)
 
 	if (fullFileName.empty())
 	{
-		Warning("CSoundSystem::PlaySound: Unable to find sound file '%s'\n", actualFileName.c_str());
+		_logger->warn("PlaySound: Unable to find sound file '{}'", actualFileName);
 		return;
 	}
 
