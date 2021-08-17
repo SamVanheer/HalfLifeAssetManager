@@ -1,26 +1,12 @@
 #pragma once
 
-#include <algorithm>
 #include <cstdint>
 
 /**
-*	Utility functionality.
+*	@file
+*
+*	Utility functionality
 */
-
-/**
-*	Initializes the random number generator.
-*/
-void UTIL_InitRandom();
-
-/**
-*	Gets a random 32 bit integer number in the range [iLow, iHigh]
-*/
-int UTIL_RandomLong(int iLow, int iHigh);
-
-/**
-*	Gets a random 32 bit floating point number in the range [flLow, flHigh]
-*/
-float UTIL_RandomFloat(float flLow, float flHigh);
 
 /**
 *	Returns a 1 bit at the given position.

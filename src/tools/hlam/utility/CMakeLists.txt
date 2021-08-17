@@ -11,8 +11,9 @@ target_sources(HLAM
 		mathlib.cpp
 		mathlib.hpp
 		Platform.hpp
+		Random.cpp
+		Random.hpp
 		StringUtils.hpp
-		Utility.cpp
 		Utility.hpp
 		WorldTime.cpp
 		WorldTime.hpp)
