@@ -25,8 +25,6 @@
 
 #include "qt/QtLogSink.hpp"
 
-#include "utility/Color.hpp"
-
 namespace graphics
 {
 static const int CROSSHAIR_LINE_WIDTH = 3;

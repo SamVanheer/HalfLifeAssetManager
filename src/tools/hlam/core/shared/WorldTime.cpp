@@ -1,14 +1,14 @@
 #include "core/shared/WorldTime.hpp"
 
-void WorldTime::TimeChanged( const double flCurrentTime )
+void WorldTime::TimeChanged(double currentTime)
 {
-	double flFrameTime = flCurrentTime - GetPreviousRealTime();
+	double frameTime = currentTime - GetPreviousRealTime();
 
-	if( flFrameTime > 1.0 )
-		flFrameTime = 0.1;
+	if (frameTime > 1.0)
+		frameTime = 0.1;
 
-	SetPreviousTime(GetTime() );
-	SetTime( static_cast<float>( GetTime() + flFrameTime ) );
-	SetFrameTime( static_cast<float>( flFrameTime ) );
-	SetPreviousRealTime( GetRealTime() );
+	SetPreviousTime(GetTime());
+	SetTime(static_cast<float>(GetTime() + frameTime));
+	SetFrameTime(static_cast<float>(frameTime));
+	SetPreviousRealTime(GetRealTime());
 }

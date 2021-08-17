@@ -1,74 +1,74 @@
 #pragma once
 
 /**
-*	Represents the time in the world. Multiple time values are tracked.
+*	@brief Represents the time in the world. Multiple time values are tracked.
 */
 class WorldTime final
 {
 public:
 	WorldTime() = default;
-	WorldTime( const WorldTime& ) = default;
-	WorldTime& operator=( const WorldTime& ) = default;
+	WorldTime(const WorldTime&) = default;
+	WorldTime& operator=(const WorldTime&) = default;
 
 	/**
-	*	The current time. Starts at 1.0.
+	*	@brief The current time. Starts at 1.0.
 	*/
-	float GetTime() const { return m_flCurrentTime; }
+	float GetTime() const { return _currentTime; }
 
 	/**
-	*	Sets the current time. Avoid using this.
+	*	@brief Sets the current time. Avoid using this.
 	*/
-	void SetTime( const float flCurrentTime ) { m_flCurrentTime = flCurrentTime; }
+	void SetTime(float currentTime) { _currentTime = currentTime; }
 
 	/**
-	*	Gets the previous current time before the last time increment. Equal to GetCurrentTime() - GetFrameTime().
+	*	@brief Gets the previous current time before the last time increment. Equal to GetCurrentTime() - GetFrameTime().
 	*/
-	float GetPreviousTime() const { return m_flPrevTime; }
+	float GetPreviousTime() const { return _prevTime; }
 
 	/**
-	*	Sets the previous time. Avoid using this.
+	*	@brief Sets the previous time. Avoid using this.
 	*/
-	void SetPreviousTime( const float flPrevTime ) { m_flPrevTime = flPrevTime; }
+	void SetPreviousTime(float prevTime) { _prevTime = prevTime; }
 
 	/**
-	*	Gets the time between frames.
+	*	@brief Gets the time between frames.
 	*/
-	float GetFrameTime() const { return m_flFrameTime; }
+	float GetFrameTime() const { return _frameTime; }
 
 	/**
-	*	Sets the time between frames. Avoid using this.
+	*	@brief Sets the time between frames. Avoid using this.
 	*/
-	void SetFrameTime( const float flFrameTime ) { m_flFrameTime = flFrameTime; }
+	void SetFrameTime(float frameTime) { _frameTime = frameTime; }
 
 	/**
-	*	Gets the current real time. This is the system time at the time when the frame began.
+	*	@brief Gets the current real time. This is the system time at the time when the frame began.
 	*/
-	double GetRealTime() const { return m_flRealTime; }
+	double GetRealTime() const { return _realTime; }
 
 	/**
-	*	Sets the real time. Avoid using this.
+	*	@brief Sets the real time. Avoid using this.
 	*/
-	void SetRealTime( const double flRealTime ) { m_flRealTime = flRealTime; }
+	void SetRealTime(double realTime) { _realTime = realTime; }
 
 	/**
-	*	Gets the previous real time. Equal to GetRealTime() - GetFrameTime().
+	*	@brief Gets the previous real time. Equal to GetRealTime() - GetFrameTime().
 	*/
-	double GetPreviousRealTime() const { return m_flPrevRealTime; }
+	double GetPreviousRealTime() const { return _prevRealTime; }
 
 	/**
-	*	Sets the previous real time. Avoid using this.
+	*	@brief Sets the previous real time. Avoid using this.
 	*/
-	void SetPreviousRealTime( const double flRealTime ) { m_flPrevRealTime = flRealTime; }
+	void SetPreviousRealTime(double realTime) { _prevRealTime = realTime; }
 
 	/**
-	*	Call with the new current time to update world time.
+	*	@brief Call with the new current time to update world time.
 	*/
-	void TimeChanged( const double flCurrentTime );
+	void TimeChanged(double currentTime);
 
 private:
-	float m_flCurrentTime	= 1.0f;
-	float m_flPrevTime		= 1.0f;
-	float m_flFrameTime		= 0.0f;
-	double m_flRealTime		= 0.0f;
-	double m_flPrevRealTime = 0.0f;
+	float _currentTime = 1.0f;
+	float _prevTime = 1.0f;
+	float _frameTime = 0.0f;
+	double _realTime = 0.0f;
+	double _prevRealTime = 0.0f;
 };

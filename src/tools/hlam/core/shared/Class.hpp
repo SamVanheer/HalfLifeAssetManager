@@ -1,14 +1,14 @@
 #pragma once
 
 /**
-*	This macro defines ThisClass to be the current class. Used in a class declaration for a class with no base.
+*	@brief This macro defines ThisClass to be the current class. Used in a class declaration for a class with no base.
 */
 #define DECLARE_CLASS_NOBASE( thisClass )	\
-typedef thisClass ThisClass
+using ThisClass = thisClass
 
 /**
-*	This macro defines ThisClass to be the current class, and BaseClass to be the base class. Used in a class declaration.
+*	@brief This macro defines ThisClass to be the current class, and BaseClass to be the base class. Used in a class declaration.
 */
 #define DECLARE_CLASS( thisClass, baseClass )	\
 DECLARE_CLASS_NOBASE( thisClass );				\
-typedef baseClass BaseClass
+using BaseClass = baseClass

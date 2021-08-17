@@ -3,14 +3,9 @@ target_sources(HLAM
 		BoundingBox.hpp
 		ByteSwap.cpp
 		ByteSwap.hpp
-		Color.cpp
-		Color.hpp
 		CoordinateSystem.hpp
 		IOUtils.cpp
 		IOUtils.hpp
 		mathlib.cpp
 		mathlib.hpp
-		StringUtils.cpp
-		StringUtils.hpp
-		Tokenization.cpp
-		Tokenization.hpp)
+		StringUtils.hpp)

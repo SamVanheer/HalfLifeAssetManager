@@ -13,7 +13,7 @@ class BoundingBox final
 {
 public:
 	/**
-	*	Default constructor. Constructs an invalid bounding box.
+	*	@brief Constructs an invalid bounding box.
 	*/
 	explicit BoundingBox()
 	{
@@ -21,226 +21,190 @@ public:
 	}
 
 	/**
-	*	Constructor. Constructs a bounding box with no size, centered around the given point.
+	*	@brief Constructs a bounding box with no size, centered around the given point.
 	*/
-	BoundingBox( const glm::vec3& vecPoint )
+	BoundingBox(const glm::vec3& point)
 	{
-		m_vecMins = m_vecMaxs = vecPoint;
+		_mins = _maxs = point;
 	}
 
 	/**
-	*	Constructor. Constructs a bounding box with the given mins and maxs.
+	*	@brief Constructs a bounding box with the given mins and maxs.
 	*/
-	BoundingBox( const glm::vec3& vecMins, const glm::vec3& vecMaxs )
+	BoundingBox(const glm::vec3& mins, const glm::vec3& maxs)
 	{
-		Set( vecMins, vecMaxs );
+		Set(mins, maxs);
 	}
 
-	/**
-	*	Copy constructor.
-	*/
-	BoundingBox( const BoundingBox& other ) = default;
+	BoundingBox(const BoundingBox&) = default;
+	BoundingBox& operator=(const BoundingBox&) = default;
 
 	/**
-	*	Assignment operator.
-	*/
-	BoundingBox& operator=( const BoundingBox& other ) = default;
-
-	/**
-	*	Returns true if the box is empty (mins == maxs)
+	*	@brief Returns true if the box is empty (mins == maxs)
 	*/
 	bool IsEmpty() const
 	{
-		return m_vecMins == m_vecMaxs;
+		return _mins == _maxs;
 	}
 
 	/**
-	*	Returns whether this box is valid (has valid mins and maxs).
+	*	@brief Returns whether this box is valid (has valid mins and maxs).
 	*/
 	bool IsValid() const
 	{
-		return	m_vecMins != WORLD_INVALID_MIN && 
-				m_vecMaxs != WORLD_INVALID_MAX;
+		return	_mins != WORLD_INVALID_MIN &&
+			_maxs != WORLD_INVALID_MAX;
 	}
 
 	/**
-	*	Returns whether the given point is inside this box.
+	*	@brief Returns whether the given point is inside this box.
 	*/
-	bool Inside( const glm::vec3& vecPoint ) const
+	bool Inside(const glm::vec3& point) const
 	{
-		return	m_vecMins.x <= vecPoint.x &&
-			m_vecMins.y <= vecPoint.y &&
-			m_vecMins.z <= vecPoint.z &&
-			vecPoint.x <= m_vecMaxs.x &&
-			vecPoint.y <= m_vecMaxs.y &&
-			vecPoint.z <= m_vecMaxs.z;
+		return	_mins.x <= point.x &&
+			_mins.y <= point.y &&
+			_mins.z <= point.z &&
+			point.x <= _maxs.x &&
+			point.y <= _maxs.y &&
+			point.z <= _maxs.z;
 	}
 
 	/**
-	*	Returns whether this box and the given box overlap.
+	*	@brief Returns whether this box and the given box overlap.
 	*/
-	bool Overlaps( const BoundingBox& other ) const
+	bool Overlaps(const BoundingBox& other) const
 	{
-		return	other.Inside( m_vecMins ) ||
-			other.Inside( m_vecMaxs ) ||
-			Inside( other.m_vecMins ) ||
-			Inside( other.m_vecMaxs );
+		return	other.Inside(_mins) ||
+			other.Inside(_maxs) ||
+			Inside(other._mins) ||
+			Inside(other._maxs);
 	}
 
-	/**
-	*	Gets the bounds.
-	*/
-	void Get( glm::vec3& vecMins, glm::vec3& vecMaxs ) const
+	void Get(glm::vec3& mins, glm::vec3& maxs) const
 	{
-		vecMins = m_vecMins;
-		vecMaxs = m_vecMaxs;
+		mins = _mins;
+		maxs = _maxs;
 	}
 
-	/**
-	*	Gets the minimum bounds.
-	*/
 	const glm::vec3& GetMins() const
 	{
-		return m_vecMins;
+		return _mins;
 	}
 
-	/**
-	*	Gets the maximum bounds.
-	*/
 	const glm::vec3& GetMaxs() const
 	{
-		return m_vecMaxs;
+		return _maxs;
 	}
 
-	/**
-	*	Returns the center of the box.
-	*/
 	glm::vec3 Center() const
 	{
-		return m_vecMaxs - m_vecMins;
+		return (_maxs + _mins) / 2.f;
 	}
 
-	/**
-	*	Returns the size of the box.
-	*/
 	glm::vec3 Size() const
 	{
-		return m_vecMaxs - m_vecMins;
+		return _maxs - _mins;
 	}
 
 	/**
-	*	Resets the box to have no size, and be centered around the world origin.
+	*	@brief Resets the box to have no size, and be centered around the world origin.
 	*/
 	void Reset()
 	{
-		m_vecMins = m_vecMaxs = glm::vec3();
+		_mins = _maxs = glm::vec3();
 	}
 
 	/**
-	*	Invalidates the contents of this box.
+	*	@brief Invalidates the contents of this box.
 	*/
 	void Invalidate()
 	{
-		m_vecMins = WORLD_INVALID_MIN;
-		m_vecMaxs = WORLD_INVALID_MAX;
+		_mins = WORLD_INVALID_MIN;
+		_maxs = WORLD_INVALID_MAX;
 	}
 
 	/**
-	*	Resets the box's size to 0.
+	*	@brief Resets the box's size to 0.
 	*/
 	void ResetSize()
 	{
-		m_vecMins = m_vecMaxs = Center();
+		const auto center = Center();
+		_mins = _maxs = center;
 	}
 
 	/**
-	*	Centers the box around a given point.
+	*	@brief Centers the box around a given point.
 	*/
-	void Center( const glm::vec3& vecPoint )
+	void CenterOnPoint(const glm::vec3& point)
 	{
-		const glm::vec3 vecHalfSize = Size() / 2.0f;
+		const glm::vec3 halfSize = Size() / 2.0f;
 
-		m_vecMins = vecPoint - vecHalfSize;
-		m_vecMaxs = vecPoint + vecHalfSize;
+		_mins = point - halfSize;
+		_maxs = point + halfSize;
 	}
 
 	/**
-	*	Validates that the mins and maxs are correct.
+	*	@brief Validates that the mins and maxs are correct.
 	*/
 	void Validate()
 	{
-		for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
+		for (std::size_t index = 0; index < glm::vec3::length(); ++index)
 		{
-			if( m_vecMaxs[ uiIndex ] < m_vecMins[ uiIndex ] )
-				std::swap( m_vecMaxs[ uiIndex ], m_vecMins[ uiIndex ] );
+			if (_maxs[index] < _mins[index])
+				std::swap(_maxs[index], _mins[index]);
 		}
 	}
 
-	/**
-	*	Sets the bounding box to the given mins and maxs.
-	*/
-	void Set( const glm::vec3& vecMins, const glm::vec3& vecMaxs )
+	void Set(const glm::vec3& mins, const glm::vec3& maxs)
 	{
-		m_vecMins = vecMins;
-		m_vecMaxs = vecMaxs;
+		_mins = mins;
+		_maxs = maxs;
 
 		//Make sure they're correct.
 		Validate();
 	}
 
-	/**
-	*	Sets the minimum bounds.
-	*/
-	void SetMins( const glm::vec3& vecMins )
+	void SetMins(const glm::vec3& mins)
 	{
-		m_vecMins = vecMins;
+		_mins = mins;
+
+		Validate();
+	}
+
+	void SetMaxs(const glm::vec3& maxs)
+	{
+		_maxs = maxs;
 
 		Validate();
 	}
 
 	/**
-	*	Sets the maximum bounds.
+	*	@brief Adds a point to the box. This will expand the box if the point is outside of it.
 	*/
-	void SetMaxs( const glm::vec3& vecMaxs )
+	void AddPoint(const glm::vec3& point)
 	{
-		m_vecMaxs = vecMaxs;
-
-		Validate();
-	}
-
-	/**
-	*	Adds a point to the box. This will expand the box if the point is outside of it.
-	*/
-	void AddPoint( const glm::vec3& vecPoint )
-	{
-		for( size_t uiIndex = 0; uiIndex < 3; ++uiIndex )
+		for (std::size_t index = 0; index < glm::vec3::length(); ++index)
 		{
-			if( m_vecMins[ uiIndex ] > vecPoint[ uiIndex ] )
-				m_vecMins[ uiIndex ] = vecPoint[ uiIndex ];
+			if (_mins[index] > point[index])
+				_mins[index] = point[index];
 
-			if( m_vecMaxs[ uiIndex ] < vecPoint[ uiIndex ] )
-				m_vecMaxs[ uiIndex ] = vecPoint[ uiIndex ];
+			if (_mins[index] < point[index])
+				_maxs[index] = point[index];
 		}
 	}
 
-	/**
-	*	Equality operator.
-	*/
-	bool operator==( const BoundingBox& other ) const
+	bool operator==(const BoundingBox& other) const
 	{
-		return	m_vecMins == other.m_vecMins &&
-				m_vecMaxs == other.m_vecMaxs;
+		return	_mins == other._mins &&
+			_maxs == other._maxs;
 	}
 
-	/**
-	*	Inequality operator.
-	*/
-	bool operator!=( const BoundingBox& other ) const
+	bool operator!=(const BoundingBox& other) const
 	{
-		return !( *this == other );
+		return !(*this == other);
 	}
 
 private:
-	glm::vec3 m_vecMins;
-	glm::vec3 m_vecMaxs;
+	glm::vec3 _mins;
+	glm::vec3 _maxs;
 };
