@@ -111,7 +111,7 @@ public:
 	*/
 	void Reset()
 	{
-		_mins = _maxs = glm::vec3();
+		_mins = _maxs = glm::vec3(0);
 	}
 
 	/**
