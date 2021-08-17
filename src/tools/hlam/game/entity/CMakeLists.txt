@@ -1,18 +1,13 @@
 target_sources(HLAM
 	PRIVATE
-		BaseAnimating.cpp
 		BaseAnimating.hpp
 		BaseEntity.cpp
 		BaseEntity.hpp
-		BaseEntityList.cpp
-		BaseEntityList.hpp
 		EHandle.cpp
 		EHandle.hpp
 		EntityConstants.hpp
-		EntityDict.cpp
-		EntityDict.hpp
-		EntityManager.cpp
-		EntityManager.hpp
+		EntityList.cpp
+		EntityList.hpp
 		SpriteEntity.cpp
 		SpriteEntity.hpp
 		StudioModelEntity.cpp

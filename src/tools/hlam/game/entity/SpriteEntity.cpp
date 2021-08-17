@@ -7,22 +7,16 @@
 
 #include "game/entity/SpriteEntity.hpp"
 
-LINK_ENTITY_TO_CLASS(sprite, SpriteEntity);
-
-void SpriteEntity::OnDestroy()
+SpriteEntity::~SpriteEntity()
 {
 	sprite::FreeSprite(_sprite);
-
-	BaseClass::OnDestroy();
 }
 
-bool SpriteEntity::Spawn()
+void SpriteEntity::Spawn()
 {
 	SetThink(&ThisClass::AnimThink);
 
 	SetFlags(entity::FL_ALWAYSTHINK);
-
-	return true;
 }
 
 void SpriteEntity::Draw(renderer::DrawFlags flags)

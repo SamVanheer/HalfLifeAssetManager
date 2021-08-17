@@ -12,7 +12,7 @@
 #include "graphics/Camera.hpp"
 #include "graphics/Constants.hpp"
 
-class EntityManager;
+class EntityList;
 class HLMVStudioModelEntity;
 class StudioModelEntity;
 class WorldTime;
@@ -176,7 +176,7 @@ private:
 
 	WorldTime* const _worldTime;
 
-	std::unique_ptr<EntityManager> _entityManager;
+	std::unique_ptr<EntityList> _entityList;
 
 	std::unique_ptr<EntityContext> _entityContext;
 

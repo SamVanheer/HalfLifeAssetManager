@@ -8,9 +8,7 @@ public:
 	DECLARE_CLASS(HLMVStudioModelEntity, StudioModelEntity);
 
 public:
-	virtual void OnCreate() override;
-
-	virtual bool Spawn() override;
+	virtual void Spawn() override;
 
 	virtual void HandleAnimEvent(const AnimEvent& event) override;
 

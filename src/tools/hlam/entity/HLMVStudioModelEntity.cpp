@@ -3,20 +3,14 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
-LINK_ENTITY_TO_CLASS(studiomodel, HLMVStudioModelEntity);
-
-void HLMVStudioModelEntity::OnCreate()
+void HLMVStudioModelEntity::Spawn()
 {
-	BaseClass::OnCreate();
-
 	SetThink(&ThisClass::AnimThink);
 
 	//Always think for smooth animations
 	SetFlags(entity::FL_ALWAYSTHINK);
-}
 
-bool HLMVStudioModelEntity::Spawn()
-{
+	//TODO: same as base class?
 	SetSequence(0);
 	SetController(0, 0.0f);
 	SetController(1, 0.0f);
@@ -32,8 +26,6 @@ bool HLMVStudioModelEntity::Spawn()
 	}
 
 	SetSkin(0);
-
-	return true;
 }
 
 void HLMVStudioModelEntity::HandleAnimEvent(const AnimEvent& event)

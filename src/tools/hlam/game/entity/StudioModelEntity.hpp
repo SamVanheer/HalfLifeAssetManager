@@ -35,7 +35,7 @@ public:
 	DECLARE_CLASS(StudioModelEntity, BaseAnimating);
 
 public:
-	virtual bool Spawn() override;
+	virtual void Spawn() override;
 
 	virtual void Draw(renderer::DrawFlags flags) override;
 

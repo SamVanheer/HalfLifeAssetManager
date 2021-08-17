@@ -12,9 +12,9 @@ class SpriteEntity : public BaseAnimating
 public:
 	DECLARE_CLASS(SpriteEntity, BaseAnimating);
 
-	virtual void OnDestroy() override;
+	~SpriteEntity();
 
-	virtual bool Spawn() override;
+	virtual void Spawn() override;
 
 	virtual void Draw(renderer::DrawFlags flags) override;
 

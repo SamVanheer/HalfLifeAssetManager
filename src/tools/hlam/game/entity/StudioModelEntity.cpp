@@ -6,7 +6,7 @@
 
 #include "game/entity/StudioModelEntity.hpp"
 
-bool StudioModelEntity::Spawn()
+void StudioModelEntity::Spawn()
 {
 	SetSequence(0);
 	SetController(0, 0.0f);
@@ -21,8 +21,6 @@ bool StudioModelEntity::Spawn()
 	}
 
 	SetSkin(0);
-
-	return true;
 }
 
 void StudioModelEntity::Draw(renderer::DrawFlags flags)

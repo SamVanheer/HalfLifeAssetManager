@@ -5,7 +5,7 @@
 #include "game/entity/EntityConstants.hpp"
 
 class BaseEntity;
-class BaseEntityList;
+class EntityList;
 
 /**
 *	@brief Class that represents an entity. Can be used to safely store references to entities.
@@ -35,9 +35,9 @@ public:
 
 	constexpr EHandle& operator=(const EHandle& other) = default;
 
-	BaseEntity* Get(const BaseEntityList& entityList) const;
+	BaseEntity* Get(const EntityList& entityList) const;
 
-	bool IsValid(const BaseEntityList& entityList) const { return Get(entityList) != nullptr; }
+	bool IsValid(const EntityList& entityList) const { return Get(entityList) != nullptr; }
 
 	void Set(BaseEntity* entity);
 

@@ -17,8 +17,7 @@
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 #include "entity/HLMVStudioModelEntity.hpp"
 
-#include "game/entity/BaseEntityList.hpp"
-#include "game/entity/EntityManager.hpp"
+#include "game/entity/EntityList.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"
@@ -47,11 +46,10 @@ Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSyste
 	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(CreateQtLoggerSt(logging::HLAMSpriteRenderer()), worldTime))
 	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(CreateQtLoggerSt(logging::HLAMStudioModelRenderer())))
 	, _worldTime(worldTime)
-	//Use the default list class for now
-	, _entityManager(std::make_unique<EntityManager>(std::make_unique<BaseEntityList>(), _worldTime))
+	, _entityList(std::make_unique<EntityList>(_worldTime))
 	, _entityContext(std::make_unique<EntityContext>(_worldTime,
 		_studioModelRenderer.get(), _spriteRenderer.get(),
-		_entityManager->GetEntityList(), _entityManager.get(),
+		_entityList.get(),
 		soundSystem))
 {
 	assert(_textureLoader);
@@ -61,6 +59,8 @@ Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSyste
 
 Scene::~Scene()
 {
+	_entityList->DestroyAll();
+
 	if (BackgroundTexture != 0)
 	{
 		glDeleteTextures(1, &BackgroundTexture);
@@ -157,7 +157,7 @@ void Scene::Shutdown()
 
 void Scene::Tick()
 {
-	_entityManager->RunFrame();
+	_entityList->RunFrame();
 }
 
 void Scene::Draw()

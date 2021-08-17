@@ -23,8 +23,7 @@
 #include "engine/shared/studiomodel/StudioModelUtils.hpp"
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "game/entity/BaseEntity.hpp"
-#include "game/entity/BaseEntityList.hpp"
-#include "game/entity/EntityManager.hpp"
+#include "game/entity/EntityList.hpp"
 
 #include "graphics/Scene.hpp"
 #include "graphics/TextureLoader.hpp"
@@ -128,13 +127,14 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	_scene->FloorLength = _provider->GetStudioModelSettings()->GetFloorLength();
 
-	auto entity = static_cast<HLMVStudioModelEntity*>(_scene->GetEntityContext()->EntityManager->Create("studiomodel", _scene->GetEntityContext(),
-		glm::vec3(), glm::vec3(), false));
+	auto entity = _scene->GetEntityContext()->EntityList->Create<HLMVStudioModelEntity>()([this](auto entity)
+		{
+			entity->SetEntityContext(_scene->GetEntityContext());
+			entity->SetEditableModel(GetEditableStudioModel());
+		}).SpawnAndGetEntity();
 
 	if (nullptr != entity)
 	{
-		entity->SetEditableModel(GetEditableStudioModel());
-		entity->Spawn();
 		_scene->SetEntity(entity);
 	}
 
