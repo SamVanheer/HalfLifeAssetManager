@@ -1,5 +1,7 @@
 #include <algorithm>
 
+#include <spdlog/spdlog.h>
+
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -49,7 +51,7 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderIn
 	}
 	else
 	{
-		_logger->error("DrawModel: Called with null model!");
+		SPDLOG_LOGGER_CALL(_logger, spdlog::level::err, "Called with null model!");
 		return 0;
 	}
 

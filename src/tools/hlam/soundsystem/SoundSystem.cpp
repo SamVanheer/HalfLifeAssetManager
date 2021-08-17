@@ -5,6 +5,8 @@
 #include <sstream>
 #include <vector>
 
+#include <spdlog/spdlog.h>
+
 #include "AudioFile/AudioFile.h"
 
 #include "vorbis/vorbisfile.h"
@@ -26,7 +28,7 @@ bool SoundSystem::CheckALErrorsCore(const char* file, int line)
 
 	do
 	{
-		_logger->error("Error {:x} ({}) while calling OpenAL API in file {}, line {}", static_cast<unsigned int>(error), error, file, line);
+		SPDLOG_LOGGER_CALL(_logger, spdlog::level::err, "Error {:x} ({}) while calling OpenAL API in file {}, line {}", static_cast<unsigned int>(error), error, file, line);
 	} while ((error = alGetError()) != AL_NONE);
 
 	return true;
@@ -164,7 +166,7 @@ std::unique_ptr<SoundSystem::Sound> SoundSystem::TryLoadOggVorbis(const std::str
 
 	if (sizeInBytes > data.max_size())
 	{
-		_logger->error("TryLoadOggVorbis: File \"{}\" is too large to read ({} > {})", fileName, sizeInBytes, data.max_size());
+		SPDLOG_LOGGER_CALL(_logger, spdlog::level::err, "File \"{}\" is too large to read ({} > {})", fileName, sizeInBytes, data.max_size());
 		return {};
 	}
 
@@ -182,7 +184,7 @@ std::unique_ptr<SoundSystem::Sound> SoundSystem::TryLoadOggVorbis(const std::str
 	//An error occurred while reading
 	if (size < 0)
 	{
-		_logger->error("TryLoadOggVorbis: Error while reading file \"{}\" ({})\n", fileName, size);
+		SPDLOG_LOGGER_CALL(_logger, spdlog::level::err, "Error while reading file \"{}\" ({})\n", fileName, size);
 		return {};
 	}
 
@@ -303,7 +305,7 @@ void SoundSystem::PlaySound(std::string_view fileName, float volume, int pitch)
 
 	if (fullFileName.empty())
 	{
-		_logger->warn("PlaySound: Unable to find sound file '{}'", actualFileName);
+		SPDLOG_LOGGER_CALL(_logger, spdlog::level::warn, "Unable to find sound file '{}'", actualFileName);
 		return;
 	}
 

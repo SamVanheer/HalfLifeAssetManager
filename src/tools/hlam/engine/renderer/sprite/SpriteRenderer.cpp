@@ -1,6 +1,8 @@
 #include <cassert>
 #include <cmath>
 
+#include <spdlog/spdlog.h>
+
 #include <glm/vec4.hpp>
 
 #include "graphics/OpenGL.hpp"
@@ -31,7 +33,7 @@ void SpriteRenderer::DrawSprite(const SpriteRenderInfo& renderInfo, const render
 
 	if (!sprite)
 	{
-		_logger->error("DrawSprite2D: Null sprite!");
+		SPDLOG_LOGGER_CALL(_logger, spdlog::level::err, "Null sprite!");
 		return;
 	}
 
@@ -88,7 +90,7 @@ void SpriteRenderer::DrawSprite2D(const Sprite2DRenderInfo& renderInfo, const re
 
 	if (!sprite)
 	{
-		_logger->error("DrawSprite2D: Null sprite!");
+		SPDLOG_LOGGER_CALL(_logger, spdlog::level::err, "Null sprite!");
 		return;
 	}
 
