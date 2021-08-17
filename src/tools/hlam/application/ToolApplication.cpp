@@ -50,6 +50,8 @@ const QString LogBaseFileName{QStringLiteral("HLAM-Log.txt")};
 
 QString LogFileName = LogBaseFileName;
 
+const QtMessageHandler DefaultMessageHandler = qInstallMessageHandler(nullptr);
+
 void FileMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
 	QByteArray localMsg = msg.toLocal8Bit();
@@ -92,10 +94,15 @@ void FileMessageOutput(QtMsgType type, const QMessageLogContext& context, const 
 
 	stream << messageType << ": " << msg << " (" << context.file << ":" << context.line << ", " << context.function << ")\n";
 
+	//Let the default handler handle abort
+	/*
 	if (type == QtFatalMsg)
 	{
 		abort();
 	}
+	*/
+
+	DefaultMessageHandler(type, context, msg);
 }
 
 int ToolApplication::Run(int argc, char* argv[])
