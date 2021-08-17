@@ -13,7 +13,7 @@
 
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
-#include "game/entity/StudioModelEntity.hpp"
+#include "entity/StudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/Palette.hpp"

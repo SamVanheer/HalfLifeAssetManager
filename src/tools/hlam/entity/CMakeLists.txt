@@ -1,4 +1,18 @@
 target_sources(HLAM
 	PRIVATE
+		AnimEvent.hpp
+		BaseAnimating.hpp
+		BaseEntity.cpp
+		BaseEntity.hpp
+		EHandle.cpp
+		EHandle.hpp
+		EntityConstants.hpp
+		EntityList.cpp
+		EntityList.hpp
+		Events.hpp
 		HLMVStudioModelEntity.cpp
-		HLMVStudioModelEntity.hpp)
+		HLMVStudioModelEntity.hpp
+		SpriteEntity.cpp
+		SpriteEntity.hpp
+		StudioModelEntity.cpp
+		StudioModelEntity.hpp)

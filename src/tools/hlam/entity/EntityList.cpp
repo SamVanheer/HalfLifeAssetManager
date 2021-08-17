@@ -1,7 +1,7 @@
 #include "core/shared/WorldTime.hpp"
-#include "game/entity/BaseEntity.hpp"
-#include "game/entity/EHandle.hpp"
-#include "game/entity/EntityList.hpp"
+#include "entity/BaseEntity.hpp"
+#include "entity/EHandle.hpp"
+#include "entity/EntityList.hpp"
 
 BaseEntity* EntityList::GetEntityByIndex(std::size_t index) const
 {

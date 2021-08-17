@@ -6,8 +6,8 @@
 
 #include "engine/shared/renderer/DrawConstants.hpp"
 
-#include "game/entity/EHandle.hpp"
-#include "game/entity/EntityConstants.hpp"
+#include "entity/EHandle.hpp"
+#include "entity/EntityConstants.hpp"
 
 class BaseEntity;
 class EntityList;

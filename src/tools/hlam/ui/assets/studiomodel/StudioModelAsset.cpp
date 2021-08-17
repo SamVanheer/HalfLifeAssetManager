@@ -21,9 +21,10 @@
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
 #include "engine/shared/studiomodel/StudioModelIO.hpp"
 #include "engine/shared/studiomodel/StudioModelUtils.hpp"
+
+#include "entity/BaseEntity.hpp"
+#include "entity/EntityList.hpp"
 #include "entity/HLMVStudioModelEntity.hpp"
-#include "game/entity/BaseEntity.hpp"
-#include "game/entity/EntityList.hpp"
 
 #include "graphics/Scene.hpp"
 #include "graphics/TextureLoader.hpp"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "game/entity/BaseAnimating.hpp"
+#include "entity/BaseAnimating.hpp"
 
 namespace sprite
 {

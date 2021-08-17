@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <vector>
 
-#include "game/entity/EntityConstants.hpp"
+#include "entity/EntityConstants.hpp"
 
 class BaseEntity;
 class EntityList;

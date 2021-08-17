@@ -7,7 +7,7 @@
 #include "ui_StudioModelSequencesPanel.h"
 
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
-#include "game/entity/StudioModelEntity.hpp"
+#include "entity/StudioModelEntity.hpp"
 
 namespace ui
 {

@@ -5,7 +5,7 @@
 #include "engine/shared/renderer/sprite/ISpriteRenderer.hpp"
 #include "engine/shared/renderer/sprite/SpriteRenderInfo.hpp"
 
-#include "game/entity/SpriteEntity.hpp"
+#include "entity/SpriteEntity.hpp"
 
 SpriteEntity::~SpriteEntity()
 {

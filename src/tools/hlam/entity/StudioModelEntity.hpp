@@ -8,10 +8,9 @@
 
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
 
-#include "game/AnimEvent.hpp"
-#include "game/Events.hpp"
-
-#include "game/entity/BaseAnimating.hpp"
+#include "entity/AnimEvent.hpp"
+#include "entity/BaseAnimating.hpp"
+#include "entity/Events.hpp"
 
 enum class StudioLoopingMode
 {

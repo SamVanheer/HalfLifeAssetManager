@@ -1,6 +1,6 @@
 #pragma once
 
-#include "game/entity/StudioModelEntity.hpp"
+#include "entity/StudioModelEntity.hpp"
 
 class HLMVStudioModelEntity : public StudioModelEntity
 {

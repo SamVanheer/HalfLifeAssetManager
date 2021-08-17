@@ -15,9 +15,9 @@
 #include "engine/renderer/sprite/SpriteRenderer.hpp"
 #include "engine/renderer/studiomodel/StudioModelRenderer.hpp"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
-#include "entity/HLMVStudioModelEntity.hpp"
 
-#include "game/entity/EntityList.hpp"
+#include "entity/EntityList.hpp"
+#include "entity/HLMVStudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"

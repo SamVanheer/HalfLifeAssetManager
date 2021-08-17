@@ -4,7 +4,7 @@
 
 #include "core/shared/WorldTime.hpp"
 
-#include "game/entity/StudioModelEntity.hpp"
+#include "entity/StudioModelEntity.hpp"
 
 void StudioModelEntity::Spawn()
 {

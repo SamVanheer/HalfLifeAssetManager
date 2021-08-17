@@ -2,7 +2,7 @@
 
 #include "core/shared/Const.hpp"
 
-#include "game/entity/BaseEntity.hpp"
+#include "entity/BaseEntity.hpp"
 
 /**
 *	Base class for animating entities.

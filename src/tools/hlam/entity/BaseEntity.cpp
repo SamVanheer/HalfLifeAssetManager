@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <cassert>
 
-#include "game/entity/BaseEntity.hpp"
+#include "entity/BaseEntity.hpp"
 
 void BaseEntity::SetEntityContext(EntityContext* context)
 {

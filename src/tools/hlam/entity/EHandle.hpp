@@ -2,7 +2,7 @@
 
 #include <limits>
 
-#include "game/entity/EntityConstants.hpp"
+#include "entity/EntityConstants.hpp"
 
 class BaseEntity;
 class EntityList;
