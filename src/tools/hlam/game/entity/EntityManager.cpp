@@ -85,12 +85,7 @@ BaseEntity* EntityManager::Create(const char* const pszClassName, EntityContext 
 		return nullptr;
 	}
 
-	if (_entityList->Add(entity) == entity::INVALID_ENTITY_INDEX)
-	{
-		GetEntityDict().DestroyEntity(entity);
-
-		return nullptr;
-	}
+	_entityList->Add(entity);
 
 	entity->SetOrigin(origin);
 	entity->SetAngles(angles);

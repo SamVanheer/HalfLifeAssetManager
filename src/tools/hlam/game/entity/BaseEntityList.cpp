@@ -1,38 +1,26 @@
 #include <cassert>
-#include <memory>
 
 #include "game/entity/BaseEntity.hpp"
 #include "game/entity/BaseEntityList.hpp"
 #include "game/entity/EHandle.hpp"
 #include "game/entity/EntityDict.hpp"
 
-BaseEntityList::BaseEntityList()
+BaseEntity* BaseEntityList::GetEntityByIndex(std::size_t index) const
 {
-	memset(_entities, 0, sizeof(_entities));
-}
-
-BaseEntityList::~BaseEntityList() = default;
-
-BaseEntity* BaseEntityList::GetEntityByIndex(const entity::EntIndex index) const
-{
-	assert(index < entity::MAX_ENTITIES);
+	if (index >= _entities.size())
+	{
+		return nullptr;
+	}
 
 	return _entities[index].Entity;
 }
 
 BaseEntity* BaseEntityList::GetEntityByHandle(const EHandle& handle) const
 {
-	//If it's explicitly invalid, we can ignore it.
-	if (handle.GetEntHandle() == entity::INVALID_ENTITY_HANDLE)
+	if (handle.GetIndex() < _entities.size()
+		&& _entities[handle.GetIndex()].Serial == handle.GetSerialNumber())
 	{
-		return nullptr;
-	}
-
-	assert(handle.GetEntIndex() < entity::MAX_ENTITIES);
-
-	if (_entities[handle.GetEntIndex()].Serial == handle.GetSerialNumber())
-	{
-		return _entities[handle.GetEntIndex()].Entity;
+		return _entities[handle.GetIndex()].Entity;
 	}
 
 	return nullptr;
@@ -45,7 +33,7 @@ EHandle BaseEntityList::GetFirstEntity() const
 
 EHandle BaseEntityList::GetNextEntity(const EHandle& previous) const
 {
-	for (size_t index = previous.IsValid(*this) ? previous.GetEntIndex() + 1 : 0; index < _highestEntIndex; ++index)
+	for (std::size_t index = previous.IsValid(*this) ? previous.GetIndex() + 1 : 0; index < _entities.size(); ++index)
 	{
 		if (_entities[index].Entity)
 		{
@@ -56,19 +44,13 @@ EHandle BaseEntityList::GetNextEntity(const EHandle& previous) const
 	return nullptr;
 }
 
-size_t BaseEntityList::Add(BaseEntity* entity)
+void BaseEntityList::Add(BaseEntity* entity)
 {
 	assert(entity);
 
-	if (_numEntities >= entity::MAX_ENTITIES)
-	{
-		//Warning("Max entities reached (%u)!\n", entity::MAX_ENTITIES);
-		return entity::INVALID_ENTITY_INDEX;
-	}
+	std::size_t index;
 
-	entity::EntIndex index;
-
-	for (index = 0; index < entity::MAX_ENTITIES; ++index)
+	for (index = 0; index < _entities.size(); ++index)
 	{
 		if (!_entities[index].Entity)
 		{
@@ -76,23 +58,14 @@ size_t BaseEntityList::Add(BaseEntity* entity)
 		}
 	}
 
-	//Shouldn't happen.
-	if (index >= entity::MAX_ENTITIES)
+	if (index == _entities.size())
 	{
-		//Warning("Max entities reached (%u)!\n", entity::MAX_ENTITIES);
-		return entity::INVALID_ENTITY_INDEX;
+		_entities.push_back({});
 	}
 
 	++_numEntities;
 
-	if (index >= _highestEntIndex)
-	{
-		_highestEntIndex = index + 1;
-	}
-
 	FinishAddEntity(index, entity);
-
-	return index;
 }
 
 void BaseEntityList::Remove(BaseEntity* entity)
@@ -104,64 +77,52 @@ void BaseEntityList::Remove(BaseEntity* entity)
 
 	const EHandle handle = entity->GetEntHandle();
 
-	const entity::EntIndex uiIndex = handle.GetEntIndex();
+	const std::size_t index = handle.GetIndex();
 
-	//this shouldn't ever be hit, unless the entity was corrupted/not managed by this list.
-	assert(uiIndex < _highestEntIndex);
+	if (index >= _entities.size())
+	{
+		//This shouldn't ever be hit, unless the entity was corrupted/not managed by this list
+		assert(!"Invalid entity index");
+		return;
+	}
 
-	//Sanity check.
-	assert(_entities[uiIndex].Entity == entity);
+	//Sanity check
+	assert(_entities[index].Entity == entity);
 
 	FinishRemoveEntity(entity);
 
 	--_numEntities;
-
-	//Adjust highest entity index.
-	if (uiIndex == _highestEntIndex - 1)
-	{
-		for (; _highestEntIndex > 0; --_highestEntIndex)
-		{
-			if (_entities[_highestEntIndex - 1].Entity)
-			{
-				_highestEntIndex = _highestEntIndex - 1;
-				break;
-			}
-		}
-	}
-
-	return;
 }
 
 void BaseEntityList::RemoveAll()
 {
-	for (size_t uiIndex = 0; uiIndex < _highestEntIndex; ++uiIndex)
+	for (std::size_t index = 0; index < _entities.size(); ++index)
 	{
-		if (BaseEntity* entity = _entities[uiIndex].Entity; entity)
+		if (BaseEntity* entity = _entities[index].Entity; entity)
 		{
 			FinishRemoveEntity(entity);
 		}
 	}
 
-	_highestEntIndex = 0;
 	_numEntities = 0;
 
-	memset(_entities, 0, sizeof(_entities));
+	_entities.clear();
 }
 
-void BaseEntityList::FinishAddEntity(const entity::EntIndex index, BaseEntity* entity)
+void BaseEntityList::FinishAddEntity(std::size_t index, BaseEntity* entity)
 {
-	_entities[index].Entity = entity;
+	auto& slot = _entities[index];
+
+	slot.Entity = entity;
 
 	//Increment the serial number to indicate that a new entity is using the slot.
-	++_entities[index].Serial;
+	++slot.Serial;
 
-	EHandle handle;
-
-	handle.SetEntHandle(entity::MakeEntHandle(index, _entities[index].Serial));
+	EHandle handle{index,slot.Serial};
 
 	entity->SetEntHandle(handle);
 
-	OnAdded(entity);
+	OnAdd(entity);
 }
 
 void BaseEntityList::FinishRemoveEntity(BaseEntity* entity)
@@ -170,7 +131,8 @@ void BaseEntityList::FinishRemoveEntity(BaseEntity* entity)
 
 	const EHandle handle = entity->GetEntHandle();
 
+	//TODO: shouldn't be done here, since the list doesn't create entities
 	GetEntityDict().DestroyEntity(entity);
 
-	_entities[handle.GetEntIndex()].Entity = nullptr;
+	_entities[handle.GetIndex()].Entity = nullptr;
 }

@@ -122,7 +122,7 @@ public:
 	/**
 	*	Gets the handle that represents this entity.
 	*/
-	const EHandle& GetEntHandle() const { return _entHandle; }
+	constexpr const EHandle& GetEntHandle() const { return _entHandle; }
 
 	/**
 	*	Sets the handle that represents this entity. Should only be used by the entity list.
