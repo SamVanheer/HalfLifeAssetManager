@@ -12,6 +12,7 @@
 #include <QFileInfo>
 #include <QLocalServer>
 #include <QLocalSocket>
+#include <QLoggingCategory>
 #include <QMessageBox>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
@@ -23,6 +24,9 @@
 #include <QTextStream>
 
 #include "application/ToolApplication.hpp"
+
+#include "qt/QtLogging.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/MainWindow.hpp"
 
@@ -230,6 +234,8 @@ void ToolApplication::ConfigureOpenGL()
 	defaultFormat.setGreenBufferSize(4);
 	defaultFormat.setBlueBufferSize(4);
 	defaultFormat.setAlphaBufferSize(0);
+
+	qCDebug(logging::HLAM) << "Configuring OpenGL for" << defaultFormat;
 
 	QSurfaceFormat::setDefaultFormat(defaultFormat);
 }

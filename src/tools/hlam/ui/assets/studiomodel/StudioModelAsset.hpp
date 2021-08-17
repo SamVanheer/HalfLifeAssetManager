@@ -5,6 +5,7 @@
 #include <stack>
 #include <vector>
 
+#include <QLoggingCategory>
 #include <QObject>
 
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
@@ -44,6 +45,8 @@ class StudioModelEditWidget;
 
 inline const QString StudioModelExtension{QStringLiteral("mdl")};
 inline const QString StudioModelPS2Extension{QStringLiteral("dol")};
+
+Q_DECLARE_LOGGING_CATEGORY(HLAMStudioModel)
 
 class StudioModelAssetProvider final : public AssetProvider
 {

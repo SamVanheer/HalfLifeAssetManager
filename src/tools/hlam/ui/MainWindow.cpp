@@ -21,6 +21,8 @@
 #include "filesystem/IFileSystem.hpp"
 #include "filesystem/FileSystemConstants.hpp"
 
+#include "qt/QtLogging.hpp"
+
 #include "ui/Credits.hpp"
 #include "ui/DragNDropEventFilter.hpp"
 #include "ui/EditorContext.hpp"
@@ -284,6 +286,8 @@ bool MainWindow::SaveAsset(assets::Asset* asset)
 {
 	assert(asset);
 
+	qCDebug(logging::HLAM) << "Trying to save asset" << asset->GetFileName();
+
 	try
 	{
 		asset->Save();
@@ -371,8 +375,11 @@ bool MainWindow::TryLoadAsset(QString fileName)
 {
 	fileName = QDir::cleanPath(fileName);
 
+	qCDebug(logging::HLAM) << "Trying to load asset" << fileName;
+
 	if (!QFile::exists(fileName))
 	{
+		qCDebug(logging::HLAM) << "Asset" << fileName << "does not exist";
 		QMessageBox::critical(this, "Error loading asset", QString{"Asset \"%1\" does not exist"}.arg(fileName));
 		return false;
 	}
@@ -384,6 +391,8 @@ bool MainWindow::TryLoadAsset(QString fileName)
 		if (nullptr != asset)
 		{
 			auto currentFileName = asset->GetFileName();
+
+			qCDebug(logging::HLAM) << "Asset" << fileName << "loaded as" << currentFileName;
 
 			connect(asset.get(), &assets::Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
 
@@ -409,10 +418,13 @@ bool MainWindow::TryLoadAsset(QString fileName)
 
 			_editorContext->GetRecentFiles()->Add(fileName);
 
+			qCDebug(logging::HLAM) << "Loaded asset" << fileName;
+
 			return true;
 		}
 		else
 		{
+			qCDebug(logging::HLAM) << "Asset" << fileName << "couldn't be loaded";
 			QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\nNull asset returned"}.arg(fileName));
 		}
 	}

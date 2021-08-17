@@ -57,6 +57,8 @@
 
 namespace ui::assets::studiomodel
 {
+Q_LOGGING_CATEGORY(HLAMStudioModel, "hlam.studiomodel")
+
 static std::tuple<glm::vec3, glm::vec3, float, float> GetCenteredValues(const HLMVStudioModelEntity& entity, Axis axis, bool positive)
 {
 	glm::vec3 min, max;
@@ -582,6 +584,8 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) cons
 
 std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName, FILE* file) const
 {
+	qCDebug(HLAMStudioModel) << "Trying to load model" << fileName;
+
 	const auto filePath = std::filesystem::u8path(fileName.toStdString());
 	auto studioModel = studiomdl::LoadStudioModel(filePath, file);
 
@@ -596,6 +600,8 @@ std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorConte
 	{
 		updatedFileName = fileInfo.path() + '/' + fileInfo.completeBaseName() + '.' + StudioModelExtension;
 	}
+
+	qCDebug(HLAMStudioModel) << "Loaded model" << fileName << "as" << updatedFileName;
 
 	return std::make_unique<StudioModelAsset>(std::move(updatedFileName), editorContext, this,
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));

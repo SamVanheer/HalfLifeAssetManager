@@ -5,6 +5,7 @@
 #include <QWidget>
 
 #include "graphics/Scene.hpp"
+#include "qt/QtLogging.hpp"
 #include "ui/SceneWidget.hpp"
 
 namespace ui
@@ -55,10 +56,14 @@ void SceneWidget::wheelEvent(QWheelEvent* event)
 
 void SceneWidget::initializeGL()
 {
+	qCDebug(logging::HLAM) << "Initializing OpenGL";
+
 	//TODO: since we're sharing contexts this can probably be done elsewhere to avoid multiple calls
 	_scene->Initialize();
 
 	emit CreateDeviceResources();
+
+	qCDebug(logging::HLAM) << "Initialized OpenGL";
 }
 
 void SceneWidget::resizeGL(int w, int h)
