@@ -2,14 +2,13 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/gtc/quaternion.hpp>
-
-#include "core/shared/Const.hpp"
 
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
@@ -25,9 +24,9 @@ struct BoneTransformInfo
 	const int SequenceIndex;
 	const float Frame;
 	glm::vec3 Scale;
-	std::array<byte, SequenceBlendCount> Blenders;
-	std::array<byte, ControllerCount> Controllers;
-	byte Mouth;
+	std::array<std::uint8_t, SequenceBlendCount> Blenders;
+	std::array<std::uint8_t, ControllerCount> Controllers;
+	std::uint8_t Mouth;
 };
 
 /**

@@ -8,7 +8,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "core/shared/Const.hpp"
 #include "core/shared/Platform.hpp"
 
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
@@ -20,88 +19,88 @@
 
 namespace graphics
 {
-void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const RGBPalette& palette, byte* const pOutData )
+void Convert8to24Bit(const int iWidth, const int iHeight, const std::byte* const pData, const RGBPalette& palette, std::byte* const pOutData)
 {
-	assert( pData );
-	assert( pOutData );
+	assert(pData);
+	assert(pOutData);
 
-	byte* pOut = pOutData;
+	std::byte* pOut = pOutData;
 
-	for( int y = 0; y < iHeight; ++y )
+	for (int y = 0; y < iHeight; ++y)
 	{
-		for( int x = 0; x < iWidth; ++x, pOut += 3 )
+		for (int x = 0; x < iWidth; ++x, pOut += 3)
 		{
-			pOut[0] = palette[pData[x + y * iWidth]].R;
-			pOut[1] = palette[pData[x + y * iWidth]].G;
-			pOut[2] = palette[pData[x + y * iWidth]].B;
+			pOut[0] = std::byte{palette[std::to_integer<int>(pData[x + y * iWidth])].R};
+			pOut[1] = std::byte{palette[std::to_integer<int>(pData[x + y * iWidth])].G};
+			pOut[2] = std::byte{palette[std::to_integer<int>(pData[x + y * iWidth])].B};
 		}
 	}
 }
 
-void FlipImageVertically( const int iWidth, const int iHeight, byte* const pData )
+void FlipImageVertically(const int iWidth, const int iHeight, std::byte* const pData)
 {
-	assert( iWidth > 0 );
-	assert( iHeight > 0 );
-	assert( pData );
+	assert(iWidth > 0);
+	assert(iHeight > 0);
+	assert(pData);
 
 	const int iHalfHeight = iHeight / 2;
 
-	for( int y = iHalfHeight; y < iHeight; ++y )
+	for (int y = iHalfHeight; y < iHeight; ++y)
 	{
-		for( int x = 0; x < iWidth; ++x )
+		for (int x = 0; x < iWidth; ++x)
 		{
-			for( int i = 0; i < 3; ++i )
+			for (int i = 0; i < 3; ++i)
 			{
-				std::swap( pData[ ( x + y * iWidth ) * 3 + i ], pData[ ( x + ( iHeight - y - 1 ) * iWidth ) * 3 + i ] );
+				std::swap(pData[(x + y * iWidth) * 3 + i], pData[(x + (iHeight - y - 1) * iWidth) * 3 + i]);
 			}
 		}
 	}
 }
 
-void DrawBackground( GLuint backgroundTexture )
+void DrawBackground(GLuint backgroundTexture)
 {
-	if( backgroundTexture == GL_INVALID_TEXTURE_ID )
+	if (backgroundTexture == GL_INVALID_TEXTURE_ID)
 		return;
 
 	glDisable(GL_BLEND);
 
-	glMatrixMode( GL_PROJECTION );
+	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glOrtho( 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, -1.0f );
+	glOrtho(0.0f, 1.0f, 1.0f, 0.0f, 1.0f, -1.0f);
 
-	glMatrixMode( GL_MODELVIEW );
+	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
 
-	glDisable( GL_CULL_FACE );
-	glEnable( GL_TEXTURE_2D );
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_TEXTURE_2D);
 
-	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	glBindTexture( GL_TEXTURE_2D, backgroundTexture );
+	glBindTexture(GL_TEXTURE_2D, backgroundTexture);
 
-	glBegin( GL_TRIANGLE_STRIP );
+	glBegin(GL_TRIANGLE_STRIP);
 
-	glTexCoord2f( 0, 0 );
-	glVertex2f( 0, 0 );
+	glTexCoord2f(0, 0);
+	glVertex2f(0, 0);
 
-	glTexCoord2f( 1, 0 );
-	glVertex2f( 1, 0 );
+	glTexCoord2f(1, 0);
+	glVertex2f(1, 0);
 
-	glTexCoord2f( 0, 1 );
-	glVertex2f( 0, 1 );
+	glTexCoord2f(0, 1);
+	glVertex2f(0, 1);
 
-	glTexCoord2f( 1, 1 );
-	glVertex2f( 1, 1 );
+	glTexCoord2f(1, 1);
+	glVertex2f(1, 1);
 
 	glEnd();
 
 	glPopMatrix();
 
-	glClear( GL_DEPTH_BUFFER_BIT );
-	glBindTexture( GL_TEXTURE_2D, 0 );
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void DrawBox(const std::array<glm::vec3, 8>& points)
@@ -221,7 +220,7 @@ bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high)
 
 void PaletteHueReplace(RGBPalette& palette, int newHue, int start, int end)
 {
-	const auto hue = (float) (newHue * (360.0 / 255));
+	const auto hue = (float)(newHue * (360.0 / 255));
 
 	for (int i = start; i <= end; ++i)
 	{
@@ -280,9 +279,9 @@ void PaletteHueReplace(RGBPalette& palette, int newHue, int start, int end)
 			}
 		}
 
-		palette[i].R = (byte) (r * 255);
-		palette[i].G = (byte) (g * 255);
-		palette[i].B = (byte) (b * 255);
+		palette[i].R = static_cast<std::uint8_t>(r * 255);
+		palette[i].G = static_cast<std::uint8_t>(g * 255);
+		palette[i].B = static_cast<std::uint8_t>(b * 255);
 	}
 }
 

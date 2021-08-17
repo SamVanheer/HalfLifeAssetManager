@@ -1,10 +1,9 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 
 #include <glm/vec3.hpp>
-
-#include "core/shared/Const.hpp"
 
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
@@ -37,10 +36,10 @@ struct ModelRenderInfo
 	int Bodygroup;
 	int Skin;
 
-	std::array<byte, SequenceBlendCount> Blender;
+	std::array<std::uint8_t, SequenceBlendCount> Blender;
 
-	std::array<byte, ControllerCount> Controller;
-	byte Mouth;
+	std::array<std::uint8_t, ControllerCount> Controller;
+	std::uint8_t Mouth;
 };
 }
 

@@ -74,11 +74,11 @@ void TextureLoader::SetTextureFilters(TextureFilter minFilter, TextureFilter mag
 	}
 }
 
-void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const byte* rgbaPixels, bool generateMipmaps, bool masked)
+void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const std::byte* rgbaPixels, bool generateMipmaps, bool masked)
 {
 	const auto [newWidth, newHeight] = AdjustImageDimensions(width, height);
 
-	std::vector<byte> pixels;
+	std::vector<std::byte> pixels;
 
 	if (newWidth != width || newHeight != height)
 	{
@@ -114,17 +114,20 @@ void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const 
 				const auto pix3 = &rgbaPixels[(row2[i] + col1[j]) * 4];
 				const auto pix4 = &rgbaPixels[(row2[i] + col2[j]) * 4];
 
-				byte* const pixel = &pixels[((newWidth * i) + j) * 4];
+				std::byte* const pixel = &pixels[((newWidth * i) + j) * 4];
 
 				for (int p = 0; p < 4; ++p)
 				{
-					pixel[p] = (pix1[p] + pix2[p] + pix3[p] + pix4[p]) / 4;
+					pixel[p] = std::byte((std::to_integer<int>(pix1[p])
+						+ std::to_integer<int>(pix2[p])
+						+ std::to_integer<int>(pix3[p])
+						+ std::to_integer<int>(pix4[p])) / 4);
 				}
 
 				//If any of the sampled pixels are transparent the destination pixel is also transparent
-				if (masked && pixel[3] != 0xFF)
+				if (masked && pixel[3] != std::byte{0xFF})
 				{
-					pixel[3] = 0x00;
+					pixel[3] = std::byte{0x00};
 				}
 			}
 		}
@@ -142,7 +145,7 @@ void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const 
 	}
 }
 
-void TextureLoader::UploadIndexed8(GLuint texture, int width, int height, const byte* pixels, const RGBPalette& palette, bool generateMipmaps, bool masked)
+void TextureLoader::UploadIndexed8(GLuint texture, int width, int height, const std::byte* pixels, const RGBPalette& palette, bool generateMipmaps, bool masked)
 {
 	//TODO: total size can be too large
 	RGBPalette localPalette{palette};
@@ -153,25 +156,25 @@ void TextureLoader::UploadIndexed8(GLuint texture, int width, int height, const 
 		localPalette.GetAlpha() = {0, 0, 0};
 	}
 
-	std::vector<byte> rgbaPixels;
+	std::vector<std::byte> rgbaPixels;
 
 	rgbaPixels.resize(width * height * 4);
 
 	for (int i = 0; i < (width * height); ++i)
 	{
-		rgbaPixels[(i * 4) + 0] = localPalette[pixels[i]].R;
-		rgbaPixels[(i * 4) + 1] = localPalette[pixels[i]].G;
-		rgbaPixels[(i * 4) + 2] = localPalette[pixels[i]].B;
+		rgbaPixels[(i * 4) + 0] = std::byte{localPalette[std::to_integer<int>(pixels[i])].R};
+		rgbaPixels[(i * 4) + 1] = std::byte{localPalette[std::to_integer<int>(pixels[i])].G};
+		rgbaPixels[(i * 4) + 2] = std::byte{localPalette[std::to_integer<int>(pixels[i])].B};
 
 		//For masked textures the last color in the table is the transparent color
 		//Pixels with that color have their alpha value set to 0 to appear transparent
-		if (masked && pixels[i] == RGBPalette::AlphaIndex)
+		if (masked && pixels[i] == std::byte{RGBPalette::AlphaIndex})
 		{
-			rgbaPixels[(i * 4) + 3] = 0x00;
+			rgbaPixels[(i * 4) + 3] = std::byte{0x00};
 		}
 		else
 		{
-			rgbaPixels[(i * 4) + 3] = 0xFF;
+			rgbaPixels[(i * 4) + 3] = std::byte{0xFF};
 		}
 	}
 

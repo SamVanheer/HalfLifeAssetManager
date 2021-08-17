@@ -125,7 +125,7 @@ void EditableStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 	}
 }
 
-void EditableStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const byte* data, const graphics::RGBPalette& pal)
+void EditableStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const std::byte* data, const graphics::RGBPalette& pal)
 {
 	textureLoader.UploadIndexed8(
 		texture->TextureId,

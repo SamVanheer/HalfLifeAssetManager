@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <memory>
 #include <vector>
@@ -225,7 +227,7 @@ std::vector<std::vector<Animation>> ConvertAnimationBlendsToEditable(const Studi
 				{
 					std::vector<mstudioanimvalue_t> values;
 
-					auto valuesStart = reinterpret_cast<const mstudioanimvalue_t*>((reinterpret_cast<byte*>(source) + source->offset[j]));
+					auto valuesStart = reinterpret_cast<const mstudioanimvalue_t*>((reinterpret_cast<std::byte*>(source) + source->offset[j]));
 					auto valuesEnd = valuesStart;
 
 					//Determine number of values
@@ -412,7 +414,7 @@ std::vector<ModelVertexInfo> ConvertModelVertexInfoToEditable(const StudioModel&
 		ModelVertexInfo info
 		{
 			reinterpret_cast<const glm::vec3*>(header->GetData() + vertexIndex)[i],
-			bones[reinterpret_cast<byte*>(header->GetData() + vertexInfoIndex)[i]].get()
+			bones[reinterpret_cast<std::uint8_t*>(header->GetData() + vertexInfoIndex)[i]].get()
 		};
 
 		result.push_back(info);
@@ -501,7 +503,7 @@ std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioM
 
 		const auto size = source->width * source->height;
 
-		std::vector<byte> pixels;
+		std::vector<std::byte> pixels;
 
 		pixels.resize(size);
 
@@ -509,7 +511,7 @@ std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioM
 
 		for (int i = 0; i < size; ++i)
 		{
-			auto pixel = pSourcePixels[i];
+			auto pixel = std::to_integer<int>(pSourcePixels[i]);
 
 			auto masked = pixel & 0x1F;
 
@@ -529,7 +531,7 @@ std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioM
 				}
 			}
 
-			pixels[i] = pixel;
+			pixels[i] = std::byte(pixel);
 		}
 
 		Texture texture
@@ -625,11 +627,11 @@ std::vector<std::vector<Texture*>> ConvertSkinFamiliesToEditable(const StudioMod
 	return result;
 }
 
-std::vector<std::vector<byte>> ConvertTransitionsToEditable(const StudioModel& studioModel)
+std::vector<std::vector<std::uint8_t>> ConvertTransitionsToEditable(const StudioModel& studioModel)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<std::vector<byte>> result;
+	std::vector<std::vector<std::uint8_t>> result;
 
 	result.reserve(header->numtransitions);
 
@@ -637,7 +639,7 @@ std::vector<std::vector<byte>> ConvertTransitionsToEditable(const StudioModel& s
 	{
 		auto source = header->GetTransitions() + (header->numtransitions * i);
 
-		std::vector<byte> transitions;
+		std::vector<std::uint8_t> transitions;
 
 		transitions.resize(header->numtransitions);
 
@@ -682,7 +684,7 @@ EditableStudioModel ConvertToEditable(const StudioModel& studioModel)
 namespace
 {
 template<typename T>
-T* AllocateBufferArray(std::vector<byte>& buffer, std::size_t count)
+T* AllocateBufferArray(std::vector<std::byte>& buffer, std::size_t count)
 {
 	const auto position = buffer.size();
 	buffer.resize(position + sizeof(T) * count);
@@ -690,7 +692,7 @@ T* AllocateBufferArray(std::vector<byte>& buffer, std::size_t count)
 	return reinterpret_cast<T*>(buffer.data() + position);
 }
 
-static void WriteRawBytes(std::vector<byte>& buffer, const byte* data, std::size_t sizeInBytes)
+static void WriteRawBytes(std::vector<std::byte>& buffer, const std::byte* data, std::size_t sizeInBytes)
 {
 	const auto position = buffer.size();
 	buffer.resize(position + sizeInBytes);
@@ -698,12 +700,12 @@ static void WriteRawBytes(std::vector<byte>& buffer, const byte* data, std::size
 }
 
 template<typename T>
-static void WriteBytes(std::vector<byte>& buffer, const T& data)
+static void WriteBytes(std::vector<std::byte>& buffer, const T& data)
 {
-	WriteRawBytes(buffer, reinterpret_cast<const byte*>(&data), sizeof(data));
+	WriteRawBytes(buffer, reinterpret_cast<const std::byte*>(&data), sizeof(data));
 }
 
-static void AlignBuffer(std::vector<byte>& buffer)
+static void AlignBuffer(std::vector<std::byte>& buffer)
 {
 	const std::size_t remainder = buffer.size() % 4;
 
@@ -712,13 +714,13 @@ static void AlignBuffer(std::vector<byte>& buffer)
 		//Align start of next data to a 4 byte boundary
 		const std::size_t bytesToAdd = 4 - remainder;
 
-		const byte pad[3]{};
+		const std::byte pad[3]{};
 
 		WriteRawBytes(buffer, pad, bytesToAdd);
 	}
 }
 
-void ConvertBonesFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<byte>& buffer)
+void ConvertBonesFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<std::byte>& buffer)
 {
 	assert(MAXSTUDIOCONTROLLERS >= studioModel.BoneControllers.size());
 
@@ -781,7 +783,7 @@ void ConvertBonesFromEditable(const EditableStudioModel& studioModel, studiohdr_
 	}
 }
 
-void ConvertAttachmentsFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<byte>& buffer)
+void ConvertAttachmentsFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<std::byte>& buffer)
 {
 	header.numattachments = studioModel.Attachments.size();
 	header.attachmentindex = buffer.size();
@@ -807,7 +809,7 @@ void ConvertAttachmentsFromEditable(const EditableStudioModel& studioModel, stud
 	AlignBuffer(buffer);
 }
 
-void ConvertHitboxesFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<byte>& buffer)
+void ConvertHitboxesFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<std::byte>& buffer)
 {
 	header.numhitboxes = studioModel.Hitboxes.size();
 	header.hitboxindex = buffer.size();
@@ -828,7 +830,7 @@ void ConvertHitboxesFromEditable(const EditableStudioModel& studioModel, studioh
 	AlignBuffer(buffer);
 }
 
-std::vector<std::size_t> ConvertAnimationsFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<byte>& buffer)
+std::vector<std::size_t> ConvertAnimationsFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<std::byte>& buffer)
 {
 	std::vector<std::size_t> sequenceAnimationIndices;
 
@@ -869,7 +871,7 @@ std::vector<std::size_t> ConvertAnimationsFromEditable(const EditableStudioModel
 						destOffsets.offset[axis] = (buffer.size() - sequenceAnimationIndices.back())
 							- (((blend * studioModel.Bones.size()) + bone) * sizeof(mstudioanim_t));
 
-						WriteRawBytes(buffer, reinterpret_cast<const byte*>(sourceOffsets.data()), sourceOffsets.size() * sizeof(mstudioanimvalue_t));
+						WriteRawBytes(buffer, reinterpret_cast<const std::byte*>(sourceOffsets.data()), sourceOffsets.size() * sizeof(mstudioanimvalue_t));
 					}
 				}
 			}
@@ -885,7 +887,7 @@ std::vector<std::size_t> ConvertAnimationsFromEditable(const EditableStudioModel
 }
 
 void ConvertSequencesFromEditable(const EditableStudioModel& studioModel, const std::vector<std::size_t>& sequenceAnimationIndices,
-	studiohdr_t& header, std::vector<byte>& buffer)
+	studiohdr_t& header, std::vector<std::byte>& buffer)
 {
 	header.numseq = studioModel.Sequences.size();
 	header.seqindex = buffer.size();
@@ -988,7 +990,7 @@ void ConvertSequencesFromEditable(const EditableStudioModel& studioModel, const 
 	std::memcpy(buffer.data() + header.seqindex, sequences.data(), sequences.size() * sizeof(mstudioseqdesc_t));
 }
 
-void ConvertSequenceGroupsFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<byte>& buffer)
+void ConvertSequenceGroupsFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<std::byte>& buffer)
 {
 	header.numseqgroups = studioModel.SequenceGroups.size();
 	header.seqgroupindex = buffer.size();
@@ -1010,12 +1012,12 @@ void ConvertSequenceGroupsFromEditable(const EditableStudioModel& studioModel, s
 	AlignBuffer(buffer);
 }
 
-void ConvertTransitionsFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<byte>& buffer)
+void ConvertTransitionsFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<std::byte>& buffer)
 {
 	header.numtransitions = studioModel.Transitions.size();
 	header.transitionindex = buffer.size();
 
-	auto transitions = AllocateBufferArray<byte>(buffer, studioModel.Transitions.size() * studioModel.Transitions.size());
+	auto transitions = AllocateBufferArray<std::byte>(buffer, studioModel.Transitions.size() * studioModel.Transitions.size());
 
 	for (int i = 0; i < header.numtransitions; ++i)
 	{
@@ -1027,7 +1029,7 @@ void ConvertTransitionsFromEditable(const EditableStudioModel& studioModel, stud
 	AlignBuffer(buffer);
 }
 
-void ConvertBodypartsFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<byte>& buffer)
+void ConvertBodypartsFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<std::byte>& buffer)
 {
 	header.numbodyparts = studioModel.Bodyparts.size();
 	header.bodypartindex = buffer.size();
@@ -1083,7 +1085,7 @@ void ConvertBodypartsFromEditable(const EditableStudioModel& studioModel, studio
 				destModel.numverts = sourceModel.Vertices.size();
 				destModel.vertinfoindex = buffer.size();
 
-				auto vertexInfo = AllocateBufferArray<byte>(buffer, destModel.numverts);
+				auto vertexInfo = AllocateBufferArray<std::uint8_t>(buffer, destModel.numverts);
 
 				for (std::size_t j = 0; j < sourceModel.Vertices.size(); ++j)
 				{
@@ -1097,7 +1099,7 @@ void ConvertBodypartsFromEditable(const EditableStudioModel& studioModel, studio
 				destModel.numnorms = sourceModel.Normals.size();
 				destModel.norminfoindex = buffer.size();
 
-				auto normalInfo = AllocateBufferArray<byte>(buffer, destModel.numnorms);
+				auto normalInfo = AllocateBufferArray<std::uint8_t>(buffer, destModel.numnorms);
 
 				for (std::size_t j = 0; j < sourceModel.Normals.size(); ++j)
 				{
@@ -1182,7 +1184,7 @@ void ConvertBodypartsFromEditable(const EditableStudioModel& studioModel, studio
 	std::memcpy(buffer.data() + header.bodypartindex, bodyparts.data(), bodyparts.size() * sizeof(mstudiobodyparts_t));
 }
 
-void ConvertTexturesFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<byte>& buffer)
+void ConvertTexturesFromEditable(const EditableStudioModel& studioModel, studiohdr_t& header, std::vector<std::byte>& buffer)
 {
 	header.numtextures = studioModel.Textures.size();
 	header.textureindex = buffer.size();
@@ -1225,7 +1227,7 @@ void ConvertTexturesFromEditable(const EditableStudioModel& studioModel, studioh
 			dest.index = buffer.size();
 		}
 
-		auto textureData = AllocateBufferArray<byte>(buffer, source.Data.Pixels.size() + sizeof(source.Data.Palette));
+		auto textureData = AllocateBufferArray<std::byte>(buffer, source.Data.Pixels.size() + sizeof(source.Data.Palette));
 
 		std::memcpy(textureData, source.Data.Pixels.data(), source.Data.Pixels.size());
 		std::memcpy(textureData + source.Data.Pixels.size(), source.Data.Palette.AsByteArray(), sizeof(source.Data.Palette));
@@ -1248,7 +1250,7 @@ StudioModel ConvertFromEditable(const std::filesystem::path& fileName, const Edi
 
 	std::memset(&header, 0, sizeof(header));
 
-	std::vector<byte> buffer;
+	std::vector<std::byte> buffer;
 
 	buffer.reserve(StudioModelBufferSize);
 
@@ -1289,7 +1291,7 @@ StudioModel ConvertFromEditable(const std::filesystem::path& fileName, const Edi
 	std::memcpy(buffer.data(), &header, sizeof(header));
 
 	//Create standalone copy for transfer
-	auto studioHeader = std::make_unique<byte[]>(buffer.size());
+	auto studioHeader = std::make_unique<std::byte[]>(buffer.size());
 
 	std::memcpy(studioHeader.get(), buffer.data(), buffer.size());
 

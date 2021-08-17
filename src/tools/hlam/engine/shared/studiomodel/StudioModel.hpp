@@ -4,8 +4,6 @@
 #include <memory>
 #include <vector>
 
-#include "core/shared/Const.hpp"
-
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
 namespace studiomdl
@@ -69,10 +67,10 @@ public:
 
 		if (pseqdesc->seqgroup == 0)
 		{
-			return (mstudioanim_t*)((byte*)_studioHeader.get() + pseqgroup->unused2 + pseqdesc->animindex);
+			return (mstudioanim_t*)((std::byte*)_studioHeader.get() + pseqgroup->unused2 + pseqdesc->animindex);
 		}
 
-		return (mstudioanim_t*)((byte*)_sequenceHeaders[pseqdesc->seqgroup - 1].get() + pseqdesc->animindex);
+		return (mstudioanim_t*)((std::byte*)_sequenceHeaders[pseqdesc->seqgroup - 1].get() + pseqdesc->animindex);
 	}
 
 	bool IsDol() const { return _isDol; }

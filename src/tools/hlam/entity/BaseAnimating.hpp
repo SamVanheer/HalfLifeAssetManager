@@ -1,7 +1,5 @@
 #pragma once
 
-#include "core/shared/Const.hpp"
-
 #include "entity/BaseEntity.hpp"
 
 /**

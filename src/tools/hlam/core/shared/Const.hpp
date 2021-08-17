@@ -4,8 +4,6 @@
 
 #include <glm/vec3.hpp>
 
-typedef unsigned char byte;
-
 /**
 *	The world boundary. The furthest away from the world origin you can go in any axis.
 *	TODO: this is Sven Co-op's setting. Half-Life defines it to be 4096.

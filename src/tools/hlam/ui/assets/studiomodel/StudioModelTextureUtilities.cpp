@@ -24,18 +24,18 @@ std::optional<std::tuple<studiomdl::TextureData, bool>> ConvertImageToTexture(QI
 	}
 
 	//Convert to 8 bit palette based image
-	std::vector<byte> pixels;
+	std::vector<std::byte> pixels;
 
 	pixels.resize(image.width() * image.height());
 
 	{
-		byte* dest = pixels.data();
+		std::byte* dest = pixels.data();
 
 		for (int y = 0; y < image.height(); ++y)
 		{
 			for (int x = 0; x < image.width(); ++x, ++dest)
 			{
-				*dest = image.pixelIndex(x, y);
+				*dest = std::byte(image.pixelIndex(x, y));
 			}
 		}
 	}
@@ -50,9 +50,9 @@ std::optional<std::tuple<studiomdl::TextureData, bool>> ConvertImageToTexture(QI
 
 		convertedPalette[paletteIndex] =
 		{
-			static_cast<byte>(qRed(rgb)),
-			static_cast<byte>(qGreen(rgb)),
-			static_cast<byte>(qBlue(rgb))
+			static_cast<std::uint8_t>(qRed(rgb)),
+			static_cast<std::uint8_t>(qGreen(rgb)),
+			static_cast<std::uint8_t>(qBlue(rgb))
 		};
 	}
 
@@ -66,7 +66,7 @@ std::optional<std::tuple<studiomdl::TextureData, bool>> ConvertImageToTexture(QI
 }
 
 QImage ConvertTextureToRGBImage(
-	const studiomdl::TextureData& texture, const byte* textureData, const graphics::RGBPalette& texturePalette, std::vector<QRgb>& dataBuffer)
+	const studiomdl::TextureData& texture, const std::byte* textureData, const graphics::RGBPalette& texturePalette, std::vector<QRgb>& dataBuffer)
 {
 	dataBuffer.resize(texture.Width * texture.Height);
 
@@ -74,7 +74,7 @@ QImage ConvertTextureToRGBImage(
 	{
 		for (int x = 0; x < texture.Width; ++x)
 		{
-			const auto& color = texturePalette[textureData[(texture.Width * y) + x]];
+			const auto& color = texturePalette[std::to_integer<int>(textureData[(texture.Width * y) + x])];
 
 			dataBuffer[(texture.Width * y) + x] = qRgb(color.R, color.G, color.B);
 		}
@@ -96,7 +96,7 @@ QImage ConvertTextureToIndexed8Image(const studiomdl::TextureData& texture)
 	{
 		for (int w = 0; w < texture.Width; ++w)
 		{
-			alignedPixels[(alignedWidth * h) + w] = texture.Pixels[(texture.Width * h) + w];
+			alignedPixels[(alignedWidth * h) + w] = std::to_integer<uchar>(texture.Pixels[(texture.Width * h) + w]);
 		}
 	}
 

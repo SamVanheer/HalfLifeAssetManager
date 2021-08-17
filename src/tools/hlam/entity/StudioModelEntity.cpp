@@ -370,7 +370,7 @@ void StudioModelEntity::SetSkin(const int skin)
 	}
 }
 
-byte StudioModelEntity::GetControllerByIndex(const int controller) const
+std::uint8_t StudioModelEntity::GetControllerByIndex(const int controller) const
 {
 	assert(controller >= 0 && controller < STUDIO_MAX_CONTROLLERS);
 
@@ -531,7 +531,7 @@ void StudioModelEntity::SetMouth(float value)
 	_mouth = setting;
 }
 
-byte StudioModelEntity::GetBlendingByIndex(const int blender) const
+std::uint8_t StudioModelEntity::GetBlendingByIndex(const int blender) const
 {
 	assert(blender >= 0 && blender < STUDIO_MAX_BLENDERS);
 
@@ -565,7 +565,7 @@ float StudioModelEntity::GetBlendingValue(const int blender) const
 	return _blendingValues[blender];
 }
 
-std::optional<byte> StudioModelEntity::StandardBlender::CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const
+std::optional<std::uint8_t> StudioModelEntity::StandardBlender::CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const
 {
 	if (sequenceDescriptor.BlendData[blender].Type == 0)
 	{
@@ -603,18 +603,18 @@ std::optional<byte> StudioModelEntity::StandardBlender::CalculateBlend(const stu
 	return setting;
 }
 
-std::optional<byte> StudioModelEntity::CounterStrikeBlender::CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const
+std::optional<std::uint8_t> StudioModelEntity::CounterStrikeBlender::CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const
 {
 	switch (blender)
 	{
 	case SequenceBlendXIndex:
 	{
-		return static_cast<byte>((180.0 + value) / 360.0 * 255.0);
+		return static_cast<std::uint8_t>((180.0 + value) / 360.0 * 255.0);
 	}
 
 	case SequenceBlendYIndex:
 	{
-		return static_cast<byte>((45 + value) / 90.0 * 255.0);
+		return static_cast<std::uint8_t>((45 + value) / 90.0 * 255.0);
 	}
 	}
 

@@ -11,7 +11,6 @@
 
 #include <glm/vec3.hpp>
 
-#include "core/shared/Const.hpp"
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 #include "graphics/Palette.hpp"
 

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -11,7 +13,6 @@
 
 #include <GL/glew.h>
 
-#include "core/shared/Const.hpp"
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 #include "graphics/Palette.hpp"
 
@@ -182,7 +183,7 @@ struct TextureData
 {
 	int Width = 0;
 	int Height = 0;
-	std::vector<byte> Pixels;
+	std::vector<std::byte> Pixels;
 	graphics::RGBPalette Palette;
 };
 
@@ -238,7 +239,7 @@ public:
 	//TODO: temporary until a better system can be put into place
 	bool TexturesNeedCreating = true;
 
-	std::vector<std::vector<byte>> Transitions;
+	std::vector<std::vector<std::uint8_t>> Transitions;
 
 	const Model* GetModelByBodyPart(const int iBody, const int iBodyPart) const;
 
@@ -250,7 +251,7 @@ public:
 
 	void CreateTextures(graphics::TextureLoader& textureLoader);
 
-	void ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const byte* data, const graphics::RGBPalette& pal);
+	void ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const std::byte* data, const graphics::RGBPalette& pal);
 
 	/**
 	*	Reuploads a texture. Useful for making changes made to the texture's pixel, palette or flag data show up in the model itself.

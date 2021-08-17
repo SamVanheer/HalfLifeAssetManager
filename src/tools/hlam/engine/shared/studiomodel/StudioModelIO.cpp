@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <sstream>
 
 #include "engine/shared/studiomodel/StudioModel.hpp"
@@ -82,7 +83,7 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* exis
 	const size_t size = ftell(file);
 	fseek(file, 0, SEEK_SET);
 
-	auto buffer = std::make_unique<byte[]>(size);
+	auto buffer = std::make_unique<std::byte[]>(size);
 
 	auto header = reinterpret_cast<T*>(buffer.get());
 
@@ -275,7 +276,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 		throw assets::AssetException("Could not open main file for writing");
 	}
 
-	bool success = fwrite(pStudioHdr, sizeof(byte), pStudioHdr->length, file) == pStudioHdr->length;
+	bool success = fwrite(pStudioHdr, sizeof(std::byte), pStudioHdr->length, file) == pStudioHdr->length;
 
 	fclose(file);
 
@@ -304,7 +305,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 			throw assets::AssetException("Could not open texture file for writing");
 		}
 
-		success = fwrite(pTextureHdr, sizeof(byte), pTextureHdr->length, file) == pTextureHdr->length;
+		success = fwrite(pTextureHdr, sizeof(std::byte), pTextureHdr->length, file) == pTextureHdr->length;
 		fclose(file);
 
 		if (!success)
@@ -335,7 +336,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 			const auto pAnimHdr = model.GetSeqGroupHeader(i - 1);
 
-			success = fwrite(pAnimHdr, sizeof(byte), pAnimHdr->length, file) == pAnimHdr->length;
+			success = fwrite(pAnimHdr, sizeof(std::byte), pAnimHdr->length, file) == pAnimHdr->length;
 			fclose(file);
 
 			if (!success)

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <tuple>
@@ -8,7 +9,6 @@
 #include <QImage>
 #include <QRgb>
 
-#include "core/shared/Const.hpp"
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
 #include "graphics/Palette.hpp"
 
@@ -21,7 +21,7 @@ namespace ui
 std::optional<std::tuple<studiomdl::TextureData, bool>> ConvertImageToTexture(QImage image);
 
 QImage ConvertTextureToRGBImage(
-	const studiomdl::TextureData& texture, const byte* textureData, const graphics::RGBPalette& texturePalette, std::vector<QRgb>& dataBuffer);
+	const studiomdl::TextureData& texture, const std::byte* textureData, const graphics::RGBPalette& texturePalette, std::vector<QRgb>& dataBuffer);
 
 QImage ConvertTextureToIndexed8Image(const studiomdl::TextureData& texture);
 

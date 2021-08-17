@@ -2,13 +2,12 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <string_view>
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
-
-#include "core/shared/Const.hpp"
 
 #include "graphics/Constants.hpp"
 #include "graphics/OpenGL.hpp"
@@ -26,7 +25,7 @@ namespace graphics
 /**
 *	Converts an 8 bit image to a 24 bit RGB image.
 */
-void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pData, const RGBPalette& palette, byte* const pOutData );
+void Convert8to24Bit(const int iWidth, const int iHeight, const std::byte* const pData, const RGBPalette& palette, std::byte* const pOutData);
 
 /**
 *	Flips an image vertically. This allows conversion between OpenGL and image formats. The image is flipped in place.
@@ -34,13 +33,13 @@ void Convert8to24Bit( const int iWidth, const int iHeight, const byte* const pDa
 *	@param iHeight Image height, in pixels.
 *	@param pData Pixel data, in RGB 24 bit.
 */
-void FlipImageVertically( const int iWidth, const int iHeight, byte* const pData );
+void FlipImageVertically(const int iWidth, const int iHeight, std::byte* const pData);
 
 /**
 *	Draws a background texture, fitted to the viewport.
 *	@param backgroundTexture OpenGL texture id that represents the background texture
 */
-void DrawBackground( GLuint backgroundTexture );
+void DrawBackground(GLuint backgroundTexture);
 
 inline std::array<glm::vec3, 8> CreateBoxFromBounds(const glm::vec3& min, const glm::vec3& max)
 {

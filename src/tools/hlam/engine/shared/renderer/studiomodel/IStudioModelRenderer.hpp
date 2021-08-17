@@ -2,8 +2,6 @@
 
 #include <glm/vec3.hpp>
 
-#include "core/shared/Const.hpp"
-
 #include "engine/shared/renderer/DrawConstants.hpp"
 
 #include "engine/shared/renderer/studiomodel/ModelRenderInfo.hpp"

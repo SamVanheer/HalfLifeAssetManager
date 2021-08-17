@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstddef>
 
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
@@ -18,7 +19,7 @@ void DumpModelInfo(FILE* file, const EditableStudioModel& model)
 	const studiohdr_t* const pHdr = packedData.GetStudioHeader();
 	const auto pTextureHdr = packedData.GetTextureHeader();
 
-	const byte* const pByte = reinterpret_cast<const byte* const>(pHdr);
+	const std::byte* const pByte = reinterpret_cast<const std::byte* const>(pHdr);
 
 	const char* const pId = reinterpret_cast<const char* const>(&pHdr->id);
 
@@ -196,7 +197,7 @@ void DumpModelInfo(FILE* file, const EditableStudioModel& model)
 	);
 
 	{
-		const mstudiotexture_t* pTex = reinterpret_cast<const mstudiotexture_t*>(reinterpret_cast<const byte*>(pTextureHdr) + pTextureHdr->textureindex);
+		const mstudiotexture_t* pTex = reinterpret_cast<const mstudiotexture_t*>(reinterpret_cast<const std::byte*>(pTextureHdr) + pTextureHdr->textureindex);
 
 		for (int iIndex = 0; iIndex < pTextureHdr->numtextures; ++iIndex, ++pTex)
 		{

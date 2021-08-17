@@ -1,10 +1,10 @@
 #pragma once
 
+#include <cstddef>
 #include <utility>
 
 #include <GL/glew.h>
 
-#include "core/shared/Const.hpp"
 #include "graphics/Palette.hpp"
 
 namespace graphics
@@ -49,9 +49,9 @@ public:
 		_resizeToPowerOf2 = value;
 	}
 
-	void UploadRGBA8888(GLuint texture, int width, int height, const byte* rgbaPixels, bool generateMipmaps, bool masked);
+	void UploadRGBA8888(GLuint texture, int width, int height, const std::byte* rgbaPixels, bool generateMipmaps, bool masked);
 
-	void UploadIndexed8(GLuint texture, int width, int height, const byte* pixels, const RGBPalette& palette, bool generateMipmaps, bool masked);
+	void UploadIndexed8(GLuint texture, int width, int height, const std::byte* pixels, const RGBPalette& palette, bool generateMipmaps, bool masked);
 
 	void SetFilters(GLuint texture, bool hasMipmaps);
 

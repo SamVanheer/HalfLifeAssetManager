@@ -2,8 +2,7 @@
 
 #include <array>
 #include <cstddef>
-
-#include "core/shared/Const.hpp"
+#include <cstdint>
 
 /*
 *	@file
@@ -15,13 +14,13 @@ namespace graphics
 {
 struct RGB24
 {
-	byte R = 0;
-	byte G = 0;
-	byte B = 0;
+	std::uint8_t R = 0;
+	std::uint8_t G = 0;
+	std::uint8_t B = 0;
 
 	RGB24() = default;
 
-	RGB24(byte r, byte g, byte b)
+	RGB24(std::uint8_t r, std::uint8_t g, std::uint8_t b)
 		: R(r)
 		, G(g)
 		, B(b)
@@ -34,11 +33,11 @@ struct RGB24
 
 struct RGBA32 : public RGB24
 {
-	byte A = 0;
+	std::uint8_t A = 0;
 
 	RGBA32() = default;
 
-	RGBA32(byte r, byte g, byte b, byte a)
+	RGBA32(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a)
 		: RGB24(r, g, b)
 		, A(a)
 	{
@@ -82,7 +81,7 @@ struct Palette final
 	/**
 	*	@brief Number of channels
 	*/
-	static constexpr std::size_t ChannelsCount = sizeof(TColor) / sizeof(byte);
+	static constexpr std::size_t ChannelsCount = sizeof(TColor) / sizeof(std::byte);
 
 	/**
 	*	@brief The index in a palette where the alpha color is stored. Used for transparent textures.
@@ -140,14 +139,14 @@ struct Palette final
 		return Data[AlphaIndex];
 	}
 
-	const byte* AsByteArray() const noexcept
+	const std::byte* AsByteArray() const noexcept
 	{
-		return reinterpret_cast<const byte*>(Data.data());
+		return reinterpret_cast<const std::byte*>(Data.data());
 	}
 
-	byte* AsByteArray() noexcept
+	std::byte* AsByteArray() noexcept
 	{
-		return reinterpret_cast<byte*>(Data.data());
+		return reinterpret_cast<std::byte*>(Data.data());
 	}
 
 	std::size_t GetSizeInBytes() const noexcept

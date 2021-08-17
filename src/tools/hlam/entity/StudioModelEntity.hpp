@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstdint>
 #include <optional>
 #include <vector>
 
@@ -81,18 +82,18 @@ public:
 private:
 	studiomdl::EditableStudioModel* _editableModel = nullptr;
 
-	int		_sequence = 0;				// sequence index
-	int		_bodygroup = 0;				// bodypart selection	
-	int		_skin = 0;				// skin group selection
-	byte	_controller[STUDIO_MAX_CONTROLLERS] = {0, 0, 0, 0};	// bone controllers
+	int _sequence = 0;				// sequence index
+	int _bodygroup = 0;				// bodypart selection	
+	int _skin = 0;				// skin group selection
+	std::uint8_t _controller[STUDIO_MAX_CONTROLLERS] = {0, 0, 0, 0};	// bone controllers
 	float _controllerValues[STUDIO_MAX_CONTROLLERS] = {};
-	byte	_mouth = 0;				// mouth position
+	std::uint8_t _mouth = 0;				// mouth position
 	float _mouthValue = 0;
-	byte	_blending[STUDIO_MAX_BLENDERS] = {0, 0};			// animation blending
+	std::uint8_t _blending[STUDIO_MAX_BLENDERS] = {0, 0};			// animation blending
 	float _blendingValues[STUDIO_MAX_BLENDERS] = {};
 
-	float	_lastEventCheck = 0;				//Last time we checked for animation events.
-	float	_animTime = 0;				//Time when the frame was set.
+	float _lastEventCheck = 0;				//Last time we checked for animation events.
+	float _animTime = 0;				//Time when the frame was set.
 
 	StudioLoopingMode _loopingMode = StudioLoopingMode::AlwaysLoop;
 
@@ -102,7 +103,7 @@ private:
 
 		virtual bool AlwaysHasBlender() const = 0;
 
-		virtual std::optional<byte> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const = 0;
+		virtual std::optional<std::uint8_t> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const = 0;
 	};
 
 	struct StandardBlender final : public IBlender
@@ -111,7 +112,7 @@ private:
 
 		bool AlwaysHasBlender() const override final { return false; }
 
-		std::optional<byte> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const override final;
+		std::optional<std::uint8_t> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const override final;
 	};
 
 	struct CounterStrikeBlender final : public IBlender
@@ -120,7 +121,7 @@ private:
 
 		bool AlwaysHasBlender() const override final { return true; }
 
-		std::optional<byte> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const override final;
+		std::optional<std::uint8_t> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const override final;
 	};
 
 	static constexpr StandardBlender StandardBlender{};
@@ -197,7 +198,7 @@ public:
 	*	Gets the given controller by index. This is the stored value, not the computed value.
 	*	@param controller Controller to get.
 	*/
-	byte GetControllerByIndex(const int controller) const;
+	std::uint8_t GetControllerByIndex(const int controller) const;
 
 	/**
 	*	Gets the given controller value. The value is computed for the associated bone controller.
@@ -215,7 +216,7 @@ public:
 	/**
 	*	Gets the mouth controller. This is the stored value, not the computed value.
 	*/
-	byte GetMouth() const { return _mouth; }
+	std::uint8_t GetMouth() const { return _mouth; }
 
 	float GetMouthValue() const { return _mouthValue; }
 
@@ -251,7 +252,7 @@ public:
 	*	Gets the given blender by index. This is the stored value, not the computed value.
 	*	@param blender Blender to get.
 	*/
-	byte GetBlendingByIndex(const int blender) const;
+	std::uint8_t GetBlendingByIndex(const int blender) const;
 
 	/**
 	*	Gets the given blender value. The value is computed for the associated blender.
