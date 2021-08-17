@@ -9,8 +9,6 @@
 
 #include <spdlog/logger.h>
 
-#include "core/shared/WorldTime.hpp"
-
 #include "filesystem/FileSystem.hpp"
 #include "filesystem/IFileSystem.hpp"
 
@@ -31,6 +29,8 @@
 #include "ui/settings/GameConfigurationsSettings.hpp"
 #include "ui/settings/GeneralSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
+
+#include "utility/WorldTime.hpp"
 
 namespace ui
 {

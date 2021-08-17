@@ -3,8 +3,6 @@
 
 #include <glm/vec4.hpp>
 
-#include "core/shared/WorldTime.hpp"
-
 #include "graphics/OpenGL.hpp"
 
 #include "engine/shared/renderer/sprite/SpriteRenderInfo.hpp"
@@ -12,6 +10,8 @@
 #include "engine/shared/sprite/SpriteFileFormat.hpp"
 
 #include "engine/renderer/sprite/SpriteRenderer.hpp"
+
+#include "utility/WorldTime.hpp"
 
 namespace sprite
 {

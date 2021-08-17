@@ -2,7 +2,7 @@
 #include <functional>
 #include <random>
 
-#include "core/shared/Utility.hpp"
+#include "utility/Utility.hpp"
 
 namespace
 {

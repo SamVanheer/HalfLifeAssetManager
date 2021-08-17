@@ -1,7 +1,8 @@
-#include "core/shared/WorldTime.hpp"
 #include "entity/BaseEntity.hpp"
 #include "entity/EHandle.hpp"
 #include "entity/EntityList.hpp"
+
+#include "utility/WorldTime.hpp"
 
 BaseEntity* EntityList::GetEntityByIndex(std::size_t index) const
 {

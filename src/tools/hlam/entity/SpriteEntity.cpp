@@ -1,11 +1,11 @@
-#include "core/shared/WorldTime.hpp"
-
 #include "engine/shared/sprite/Sprite.hpp"
 #include "engine/shared/sprite/SpriteFileFormat.hpp"
 #include "engine/shared/renderer/sprite/ISpriteRenderer.hpp"
 #include "engine/shared/renderer/sprite/SpriteRenderInfo.hpp"
 
 #include "entity/SpriteEntity.hpp"
+
+#include "utility/WorldTime.hpp"
 
 SpriteEntity::~SpriteEntity()
 {

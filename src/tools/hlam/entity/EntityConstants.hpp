@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/shared/Utility.hpp"
+#include "utility/Utility.hpp"
 
 namespace entity
 {

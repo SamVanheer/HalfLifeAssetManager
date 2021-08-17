@@ -13,8 +13,6 @@
 
 #include <glm/vec2.hpp>
 
-#include "core/shared/Utility.hpp"
-
 #include "entity/HLMVStudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"

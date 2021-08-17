@@ -2,9 +2,9 @@
 
 #include <glm/geometric.hpp>
 
-#include "core/shared/WorldTime.hpp"
-
 #include "entity/StudioModelEntity.hpp"
+
+#include "utility/WorldTime.hpp"
 
 void StudioModelEntity::Spawn()
 {

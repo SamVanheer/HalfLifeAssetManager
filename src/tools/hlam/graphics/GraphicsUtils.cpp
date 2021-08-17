@@ -8,14 +8,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "core/shared/Platform.hpp"
-
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
 #include "entity/StudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/Palette.hpp"
+
+#include "utility/Platform.hpp"
 
 namespace graphics
 {

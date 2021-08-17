@@ -2,12 +2,12 @@
 
 #include <glm/vec3.hpp>
 
-#include "core/shared/Class.hpp"
-
 #include "engine/shared/renderer/DrawConstants.hpp"
 
 #include "entity/EHandle.hpp"
 #include "entity/EntityConstants.hpp"
+
+#include "utility/Class.hpp"
 
 class BaseEntity;
 class EntityList;

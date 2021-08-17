@@ -114,7 +114,6 @@ target_sources(HLAM
 
 add_subdirectory(application)
 add_subdirectory(assets)
-add_subdirectory(core)
 add_subdirectory(engine)
 add_subdirectory(engine/shared)
 add_subdirectory(entity)

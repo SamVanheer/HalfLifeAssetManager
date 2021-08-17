@@ -7,10 +7,9 @@
 #include <memory>
 #include <vector>
 
-#include "core/shared/Platform.hpp"
-
 #include "engine/shared/studiomodel/StudioModelUtils.hpp"
 
+#include "utility/Platform.hpp"
 #include "utility/StringUtils.hpp"
 
 namespace studiomdl

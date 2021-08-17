@@ -10,8 +10,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "core/shared/WorldTime.hpp"
-
 #include "engine/renderer/sprite/SpriteRenderer.hpp"
 #include "engine/renderer/studiomodel/StudioModelRenderer.hpp"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
@@ -24,6 +22,8 @@
 #include "graphics/Scene.hpp"
 
 #include "qt/QtLogSink.hpp"
+
+#include "utility/WorldTime.hpp"
 
 namespace graphics
 {

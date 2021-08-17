@@ -3,9 +3,16 @@ target_sources(HLAM
 		BoundingBox.hpp
 		ByteSwap.cpp
 		ByteSwap.hpp
+		Class.hpp
+		Const.hpp
 		CoordinateSystem.hpp
 		IOUtils.cpp
 		IOUtils.hpp
 		mathlib.cpp
 		mathlib.hpp
-		StringUtils.hpp)
+		Platform.hpp
+		StringUtils.hpp
+		Utility.cpp
+		Utility.hpp
+		WorldTime.cpp
+		WorldTime.hpp)

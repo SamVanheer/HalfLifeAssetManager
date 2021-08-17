@@ -1,5 +1,3 @@
-#include "core/shared/Utility.hpp"
-
 #include "filesystem/FileSystemConstants.hpp"
 
 namespace filesystem

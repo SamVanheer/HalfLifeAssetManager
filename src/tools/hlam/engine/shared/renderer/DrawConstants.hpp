@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "core/shared/Utility.hpp"
+#include "utility/Utility.hpp"
 
 namespace renderer
 {
