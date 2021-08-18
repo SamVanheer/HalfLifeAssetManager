@@ -70,7 +70,8 @@ target_include_directories(HLAM
 		${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_definitions(HLAM
-	PRIVATE	
+	PRIVATE
+		QT_MESSAGELOGCONTEXT
 		$<$<CXX_COMPILER_ID:MSVC>:
 			UNICODE
 			_UNICODE
