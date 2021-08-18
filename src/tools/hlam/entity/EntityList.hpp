@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <memory>
 #include <vector>
 
 #include "entity/EntityConstants.hpp"
@@ -72,20 +73,15 @@ private:
 	*/
 	struct EntData final
 	{
-		~EntData()
-		{
-			//If the entity is still non-null now then the entire list is being destroyed, so we should just go ahead and destroy the entity
-			//OnDestroy will not be called here, that's up to the user of the list to do before we get here
-			delete Entity;
-		}
-
 		EntData(const EntData&) = delete;
 		EntData& operator=(const EntData&) = delete;
 
 		EntData(EntData&&) = default;
 		EntData& operator=(EntData&&) = default;
 
-		BaseEntity* Entity = nullptr;
+		//If the entity is still non-null on destruct then the entire list is being destroyed, so we should just go ahead and destroy the entity
+		//OnDestroy will not be called here, that's up to the user of the list to do before we get here
+		std::unique_ptr<BaseEntity> Entity;
 		std::size_t Serial = 0;
 	};
 
@@ -125,30 +121,21 @@ public:
 	template<typename TEntity, typename... Args, typename = std::enable_if_t<std::is_base_of_v<BaseEntity, TEntity>>>
 	EntityConstructor<TEntity> Create(Args&&... args)
 	{
-		auto entity = new TEntity(std::forward(args)...);
+		auto entity = std::make_unique<TEntity>(std::forward(args)...);
 
-		Add(entity);
+		auto entityPointer = entity.get();
 
-		return {*this, entity};
+		Add(std::move(entity));
+
+		return {*this, entityPointer};
 	}
 
-	void Destroy(BaseEntity* entity)
-	{
-		if (!entity)
-		{
-			return;
-		}
-
-		Remove(entity);
-
-		delete entity;
-	}
+	void Destroy(BaseEntity* entity);
 
 	void DestroyAll();
 
 private:
-	void Add(BaseEntity* entity);
-	void Remove(BaseEntity* entity);
+	void Add(std::unique_ptr<BaseEntity>&& entity);
 
 private:
 	std::vector<EntData> _entities;

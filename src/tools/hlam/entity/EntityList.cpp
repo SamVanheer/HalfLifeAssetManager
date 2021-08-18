@@ -11,7 +11,7 @@ BaseEntity* EntityList::GetEntityByIndex(std::size_t index) const
 		return nullptr;
 	}
 
-	return _entities[index].Entity;
+	return _entities[index].Entity.get();
 }
 
 BaseEntity* EntityList::GetEntityByHandle(const EHandle& handle) const
@@ -19,7 +19,7 @@ BaseEntity* EntityList::GetEntityByHandle(const EHandle& handle) const
 	if (handle.GetIndex() < _entities.size()
 		&& _entities[handle.GetIndex()].Serial == handle.GetSerialNumber())
 	{
-		return _entities[handle.GetIndex()].Entity;
+		return _entities[handle.GetIndex()].Entity.get();
 	}
 
 	return nullptr;
@@ -36,7 +36,7 @@ EHandle EntityList::GetNextEntity(const EHandle& previous) const
 	{
 		if (_entities[index].Entity)
 		{
-			return _entities[index].Entity;
+			return _entities[index].Entity.get();
 		}
 	}
 
@@ -74,7 +74,7 @@ void EntityList::RunFrame()
 	}
 }
 
-void EntityList::Add(BaseEntity* entity)
+void EntityList::Add(std::unique_ptr<BaseEntity>&& entity)
 {
 	assert(entity);
 
@@ -97,17 +97,17 @@ void EntityList::Add(BaseEntity* entity)
 
 	auto& slot = _entities[index];
 
-	slot.Entity = entity;
+	slot.Entity = std::move(entity);
 
 	//Increment the serial number to indicate that a new entity is using the slot
 	++slot.Serial;
 
 	EHandle handle{index, slot.Serial};
 
-	entity->SetEntHandle(handle);
+	slot.Entity->SetEntHandle(handle);
 }
 
-void EntityList::Remove(BaseEntity* entity)
+void EntityList::Destroy(BaseEntity* entity)
 {
 	if (!entity)
 	{
@@ -126,9 +126,9 @@ void EntityList::Remove(BaseEntity* entity)
 	}
 
 	//Sanity check
-	assert(_entities[index].Entity == entity);
+	assert(_entities[index].Entity.get() == entity);
 
-	_entities[index].Entity = nullptr;
+	_entities[index].Entity.reset();
 
 	--_numEntities;
 }
@@ -137,7 +137,7 @@ void EntityList::DestroyAll()
 {
 	for (std::size_t index = 0; index < _entities.size(); ++index)
 	{
-		if (BaseEntity* entity = _entities[index].Entity; entity)
+		if (BaseEntity* entity = _entities[index].Entity.get(); entity)
 		{
 			Destroy(entity);
 		}
