@@ -30,8 +30,8 @@ class ToolApplication final : public QObject
 	Q_OBJECT
 
 public:
-	ToolApplication() = default;
-	~ToolApplication() = default;
+	ToolApplication();
+	~ToolApplication();
 
 	int Run(int argc, char* argv[]);
 
@@ -46,7 +46,7 @@ private:
 
 	bool CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings);
 
-	ui::EditorContext* CreateEditorContext(std::unique_ptr<QSettings>&& settings);
+	std::unique_ptr<ui::EditorContext> CreateEditorContext(std::unique_ptr<QSettings>&& settings);
 
 	std::pair<QOpenGLContext*, QOffscreenSurface*> InitializeOpenGL();
 
@@ -60,7 +60,7 @@ private slots:
 private:
 	QApplication* _application{};
 
-	ui::EditorContext* _editorContext{};
+	std::unique_ptr<ui::EditorContext> _editorContext;
 	QPointer<ui::MainWindow> _mainWindow;
 
 	QScopedPointer<SingleInstance> _singleInstance;

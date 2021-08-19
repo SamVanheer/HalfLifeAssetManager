@@ -109,6 +109,9 @@ void FileMessageOutput(QtMsgType type, const QMessageLogContext& context, const 
 	DefaultMessageHandler(type, context, msg);
 }
 
+ToolApplication::ToolApplication() = default;
+ToolApplication::~ToolApplication() = default;
+
 int ToolApplication::Run(int argc, char* argv[])
 {
 	try
@@ -177,7 +180,7 @@ int ToolApplication::Run(int argc, char* argv[])
 		_editorContext->SetOffscreenContext(offscreen.first);
 		_editorContext->SetOffscreenSurface(offscreen.second);
 
-		_mainWindow = new ui::MainWindow(_editorContext);
+		_mainWindow = new ui::MainWindow(_editorContext.get());
 
 		if (!fileName.isEmpty())
 		{
@@ -297,7 +300,7 @@ bool ToolApplication::CheckSingleInstance(const QString& programName, const QStr
 	return false;
 }
 
-ui::EditorContext* ToolApplication::CreateEditorContext(std::unique_ptr<QSettings>&& settings)
+std::unique_ptr<ui::EditorContext> ToolApplication::CreateEditorContext(std::unique_ptr<QSettings>&& settings)
 {
 	const auto colorSettings{std::make_shared<ui::settings::ColorSettings>()};
 	const auto generalSettings{std::make_shared<ui::settings::GeneralSettings>()};
@@ -344,15 +347,14 @@ ui::EditorContext* ToolApplication::CreateEditorContext(std::unique_ptr<QSetting
 	assetProviderRegistry->AddProvider(std::move(studioModelAssetProvider));
 	assetProviderRegistry->AddProvider(std::move(studioModelImportProvider));
 
-	return new ui::EditorContext(
+	return std::make_unique<ui::EditorContext>(
 		settings.release(),
 		generalSettings,
 		colorSettings,
 		recentFilesSettings,
 		gameConfigurationsSettings,
 		std::move(optionsPageRegistry),
-		std::move(assetProviderRegistry),
-		this);
+		std::move(assetProviderRegistry));
 }
 
 std::pair<QOpenGLContext*, QOffscreenSurface*> ToolApplication::InitializeOpenGL()
@@ -415,8 +417,7 @@ void ToolApplication::OnExit()
 		_singleInstance.reset();
 	}
 
-	delete _editorContext;
-	_editorContext = nullptr;
+	_editorContext.reset();
 }
 
 void ToolApplication::OnFileNameReceived(const QString& fileName)
