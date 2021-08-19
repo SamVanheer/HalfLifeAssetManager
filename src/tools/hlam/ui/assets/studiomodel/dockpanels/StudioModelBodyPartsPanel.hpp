@@ -29,6 +29,9 @@ private:
 
 	void UpdateControllerRange(const studiomdl::BoneController& boneController);
 
+public slots:
+	void OnLayoutDirectionChanged();
+
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
 

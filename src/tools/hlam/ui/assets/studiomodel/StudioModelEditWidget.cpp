@@ -102,6 +102,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	OnAssetCameraChanged(nullptr, cameraOperators->GetCurrent());
 
 	auto scenePanel = new StudioModelScenePanel(_asset);
+	auto bodyPartsPanel = new StudioModelBodyPartsPanel(_asset);
 	_texturesPanel = new StudioModelTexturesPanel(_asset);
 	auto modelDataPanel = new StudioModelModelDataPanel(_asset);
 	auto transformPanel = new StudioModelTransformPanel(_asset);
@@ -128,7 +129,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 	auto modelDisplayDock = addDockPanel(new StudioModelModelDisplayPanel(_asset), "Model Display");
 	addDockPanel(new StudioModelLightingPanel(_asset), "Lighting");
 	addDockPanel(new StudioModelSequencesPanel(_asset), "Sequences");
-	addDockPanel(new StudioModelBodyPartsPanel(_asset), "Body Parts");
+	auto bodyPartsDock = addDockPanel(bodyPartsPanel, "Body Parts");
 	auto texturesDock = addDockPanel(_texturesPanel, "Textures");
 	auto modelDataDock = addDockPanel(modelDataPanel, "Model Data");
 	auto flagsDock = addDockPanel(new StudioModelFlagsPanel(_asset), "Model Flags");
@@ -188,6 +189,7 @@ StudioModelEditWidget::StudioModelEditWidget(
 		});
 
 	connect(sceneDock, &QDockWidget::dockLocationChanged, scenePanel, &StudioModelScenePanel::OnLayoutDirectionChanged);
+	connect(bodyPartsDock, &QDockWidget::dockLocationChanged, bodyPartsPanel, &StudioModelBodyPartsPanel::OnLayoutDirectionChanged);
 	connect(texturesDock, &QDockWidget::visibilityChanged, this, &StudioModelEditWidget::OnTexturesDockVisibilityChanged);
 	connect(modelDataDock, &QDockWidget::dockLocationChanged, modelDataPanel, &StudioModelModelDataPanel::OnLayoutDirectionChanged);
 	connect(transformDock, &QDockWidget::visibilityChanged, transformPanel, &StudioModelTransformPanel::ResetValues);

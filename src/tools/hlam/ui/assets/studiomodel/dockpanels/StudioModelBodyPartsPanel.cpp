@@ -337,7 +337,8 @@ void StudioModelBodyPartsPanel::InitializeUI()
 	}
 
 	_ui.BoneControllers->setEnabled(!model->BoneControllers.empty());
-	_ui.BoneControllerDataWidget->setVisible(!model->Bodyparts.empty());
+	_ui.ControllerDataWidget->setVisible(!model->BoneControllers.empty());
+	_ui.BodypartsDataWidget->setVisible(!model->Bodyparts.empty());
 
 	//Should already be set but if there are no body parts and/or submodels it won't have been
 	_ui.BodyValue->setText(QString::number(entity->GetBodygroup()));
@@ -385,6 +386,13 @@ void StudioModelBodyPartsPanel::UpdateControllerRange(const studiomdl::BoneContr
 		_ui.BoneControllerValueSpinner->setRange(start, end);
 		_ui.BoneControllerValueSpinner->setValue(value);
 	}
+}
+
+void StudioModelBodyPartsPanel::OnLayoutDirectionChanged()
+{
+	const auto direction = _ui.MainLayout->direction();
+
+	_ui.ControllerDataLayout->setDirection(direction);
 }
 
 void StudioModelBodyPartsPanel::OnBodyPartChanged(int index)
