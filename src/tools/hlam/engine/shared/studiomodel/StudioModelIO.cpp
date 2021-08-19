@@ -75,7 +75,7 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* exis
 
 		if (!file)
 		{
-			throw assets::AssetFileNotFound(std::string{"File \""} + utf8FileName + "\" does not exist or is currently opened by another program");
+			throw assets::AssetException(std::string{"File \""} + utf8FileName + "\" does not exist or is currently opened by another program");
 		}
 	}
 
@@ -96,23 +96,23 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* exis
 
 	if (readCount != 1)
 	{
-		throw assets::AssetInvalidFormat(std::string{"Error reading file \""} + utf8FileName + "\"");
+		throw assets::AssetException(std::string{"Error reading file \""} + utf8FileName + "\"");
 	}
 
 	if (strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_HDR_ID, 4) &&
 		strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		throw assets::AssetInvalidFormat(std::string{"The file \""} + utf8FileName + "\" is neither a studio header nor a sequence header");
+		throw assets::AssetException(std::string{"The file \""} + utf8FileName + "\" is neither a studio header nor a sequence header");
 	}
 
 	if (!bAllowSeqGroup && !strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		throw assets::AssetInvalidFormat(std::string{"File \""} + utf8FileName + "\": Expected a main studio model file, got a sequence file");
+		throw assets::AssetException(std::string{"File \""} + utf8FileName + "\": Expected a main studio model file, got a sequence file");
 	}
 
 	if (header->version != STUDIO_VERSION)
 	{
-		throw assets::AssetVersionDiffers(std::string{"File \""} + utf8FileName + "\": version differs: expected \"" +
+		throw assets::AssetException(std::string{"File \""} + utf8FileName + "\": version differs: expected \"" +
 			std::to_string(STUDIO_VERSION) + "\", got \"" + std::to_string(header->version) + "\"");
 	}
 
@@ -150,7 +150,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 			message += " (it is probably a texture file)";
 		}
 
-		throw StudioModelIsNotMainHeader(message);
+		throw assets::AssetException(message);
 	}
 
 	studio_ptr<studiohdr_t> textureHeader;
