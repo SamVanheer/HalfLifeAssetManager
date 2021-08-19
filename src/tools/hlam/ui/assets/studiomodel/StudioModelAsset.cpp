@@ -277,7 +277,16 @@ void StudioModelAsset::TryRefresh()
 		const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
 		auto studioModel = studiomdl::LoadStudioModel(filePath, nullptr);
 
-		_editableStudioModel = std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
+		auto newModel = std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
+
+		//Clean up old model resources
+		//TODO: needs to be handled better
+		for (auto& texture : _editableStudioModel->Textures)
+		{
+			glDeleteTextures(1, &texture->TextureId);
+		}
+
+		_editableStudioModel = std::move(newModel);
 
 		GetUndoStack()->clear();
 
