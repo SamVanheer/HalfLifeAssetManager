@@ -25,6 +25,19 @@ inline QBoxLayout::Direction GetDirectionForDockArea(Qt::DockWidgetArea area)
 	}
 }
 
+inline Qt::Orientation GetOrientationForDockArea(Qt::DockWidgetArea area)
+{
+	switch (area)
+	{
+	case Qt::DockWidgetArea::TopDockWidgetArea:
+	case Qt::DockWidgetArea::BottomDockWidgetArea:
+		return Qt::Orientation::Horizontal;
+
+	default:
+		return Qt::Orientation::Vertical;
+	}
+}
+
 inline void TrySetBoxLayoutDirection(QWidget* widget, QBoxLayout::Direction direction)
 {
 	if (!widget)

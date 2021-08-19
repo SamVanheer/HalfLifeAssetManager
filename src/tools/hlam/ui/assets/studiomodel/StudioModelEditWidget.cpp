@@ -212,6 +212,12 @@ void StudioModelEditWidget::OnDockLocationChanged(Qt::DockWidgetArea area)
 
 	//Automatically change the layout for panels using a box layout
 	qt::TrySetBoxLayoutDirection(widget, qt::GetDirectionForDockArea(area));
+
+	if (area != Qt::DockWidgetArea::NoDockWidgetArea)
+	{
+		//Force the window to resize the dock area to fit to the new set of dock widgets
+		_ui.Window->resizeDocks({dock}, {0}, qt::GetOrientationForDockArea(area));
+	}
 }
 
 void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current)
