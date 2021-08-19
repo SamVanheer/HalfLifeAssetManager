@@ -16,8 +16,6 @@
 
 namespace ui::assets::studiomodel
 {
-constexpr int SequenceIndexOffset = 1;
-
 StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QWidget* parent)
 	: QWidget(parent)
 	, _asset(asset)
@@ -32,6 +30,7 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QW
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelSequencesPanel::OnModelChanged);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelSequencesPanel::OnLoadSnapshot);
+	connect(_asset, &StudioModelAsset::PoseChanged, this, &StudioModelSequencesPanel::OnPoseChanged);
 
 	connect(_ui.SequenceComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelSequencesPanel::OnSequenceChanged);
 	connect(_ui.LoopingModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelSequencesPanel::OnLoopingModeChanged);
@@ -78,9 +77,7 @@ void StudioModelSequencesPanel::InitializeUI()
 
 	QStringList sequences;
 
-	sequences.reserve(model->Sequences.size() + 1);
-
-	sequences.append("reference_mesh");
+	sequences.reserve(model->Sequences.size());
 
 	for (const auto& sequence : model->Sequences)
 	{
@@ -89,7 +86,7 @@ void StudioModelSequencesPanel::InitializeUI()
 
 	_ui.SequenceComboBox->addItems(sequences);
 
-	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex + 1);
+	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex);
 }
 
 void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
@@ -179,6 +176,24 @@ void StudioModelSequencesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 
 	//Reset blend values
 	InitializeBlenders(xValue, yValue);
+}
+
+void StudioModelSequencesPanel::OnPoseChanged(Pose pose)
+{
+	auto entity = _asset->GetScene()->GetEntity();
+
+	switch (pose)
+	{
+	case Pose::Sequences:
+		entity->SetSequence(_ui.SequenceComboBox->currentIndex());
+		this->setEnabled(true);
+		break;
+
+	case Pose::Skeleton:
+		entity->SetSequence(-1);
+		this->setEnabled(false);
+		break;
+	}
 }
 
 void StudioModelSequencesPanel::InitializeBlenders(float initialXValue, float initialYValue)
@@ -304,16 +319,11 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 	auto entity = _asset->GetScene()->GetEntity();
 
 	//Don't reset the frame unless the sequence has actually changed
-	const bool sequenceHasChanged = (entity->GetSequence() + SequenceIndexOffset) != index;
+	const bool sequenceHasChanged = (entity->GetSequence()) != index;
 
 	if (sequenceHasChanged)
 	{
-		entity->SetSequence(index - SequenceIndexOffset);
-	}
-
-	if (index != -1)
-	{
-		index -= SequenceIndexOffset;
+		entity->SetSequence(index);
 	}
 
 	const studiomdl::Sequence emptySequence{};

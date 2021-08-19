@@ -9,6 +9,8 @@
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 #include "entity/StudioModelEntity.hpp"
 
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
+
 namespace ui
 {
 class StateSnapshot;
@@ -41,6 +43,8 @@ private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
 
 	void OnLoadSnapshot(StateSnapshot* snapshot);
+
+	void OnPoseChanged(Pose pose);
 
 	void OnSequenceChanged(int index);
 

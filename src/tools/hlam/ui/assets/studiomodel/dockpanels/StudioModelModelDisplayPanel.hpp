@@ -18,6 +18,8 @@ private:
 	void OnRenderModeChanged(int index);
 	void OnOpacityChanged(int value);
 
+	void OnPoseChanged(int id);
+
 	void OnShowHitboxesChanged();
 	void OnShowBonesChanged();
 	void OnShowAttachmentsChanged();

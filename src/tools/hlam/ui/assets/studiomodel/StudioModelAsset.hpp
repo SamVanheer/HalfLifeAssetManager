@@ -115,6 +115,12 @@ private:
 	StudioModelAssetProvider* const _assetProvider;
 };
 
+enum class Pose
+{
+	Sequences = 0,
+	Skeleton
+};
+
 class StudioModelAsset final : public Asset, public IInputSink
 {
 	Q_OBJECT
@@ -178,6 +184,8 @@ public:
 		emit ModelChanged(event);
 	}
 
+	Pose GetPose() const { return _pose; }
+
 private:
 	void SaveEntityToSnapshot(StateSnapshot* snapshot);
 	void LoadEntityFromSnapshot(StateSnapshot* snapshot);
@@ -190,6 +198,15 @@ signals:
 	void SaveSnapshot(StateSnapshot* snapshot);
 
 	void LoadSnapshot(StateSnapshot* snapshot);
+
+	void PoseChanged(Pose pose);
+
+public slots:
+	void SetPose(Pose pose)
+	{
+		_pose = pose;
+		emit PoseChanged(pose);
+	}
 
 private slots:
 	void OnTick();
@@ -231,6 +248,9 @@ private:
 	camera_operators::CameraOperator* _firstPersonCamera;
 
 	StudioModelEditWidget* _editWidget{};
+
+	//TODO: this is temporarily put here, but needs to be put somewhere else eventually
+	Pose _pose = Pose::Sequences;
 };
 }
 }
