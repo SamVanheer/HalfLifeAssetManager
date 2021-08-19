@@ -12,6 +12,8 @@ namespace ui::assets::studiomodel
 */
 class StudioModelView final : public QWidget
 {
+	Q_OBJECT
+
 public:
 	StudioModelView(QWidget* parent = nullptr);
 	~StudioModelView();
@@ -21,6 +23,12 @@ public:
 	void AddWidget(QWidget* widget, const QString& label);
 
 	void SetCurrentWidget(QWidget* widget);
+
+signals:
+	void PoseChanged(int index);
+
+private slots:
+	void OnPoseChanged(int index);
 
 private:
 	Ui_StudioModelView _ui;

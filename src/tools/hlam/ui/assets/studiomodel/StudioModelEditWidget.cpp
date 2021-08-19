@@ -174,6 +174,10 @@ StudioModelEditWidget::StudioModelEditWidget(
 	connect(cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelEditWidget::OnAssetCameraChanged);
 	connect(_camerasPanel, &camera_operators::CamerasPanel::CameraChanged, this, &StudioModelEditWidget::OnCameraChanged);
 
+	connect(_view, &StudioModelView::PoseChanged, [this](int index)
+		{
+			_asset->SetPose(static_cast<Pose>(index));
+		});
 	connect(_sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw);
 	connect(_editorContext, &EditorContext::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
 	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, _texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);

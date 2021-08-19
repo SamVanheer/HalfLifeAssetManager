@@ -11,6 +11,7 @@ StudioModelView::StudioModelView(QWidget* parent)
 	_ui.ViewSelection->setToolTip("The current view");
 
 	connect(_ui.ViewSelection, &QTabBar::currentChanged, _ui.View, &QStackedWidget::setCurrentIndex);
+	connect(_ui.Pose, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelView::OnPoseChanged);
 }
 
 StudioModelView::~StudioModelView() = default;
@@ -44,5 +45,10 @@ void StudioModelView::SetCurrentWidget(QWidget* widget)
 	}
 
 	_ui.ViewSelection->setCurrentIndex(index);
+}
+
+void StudioModelView::OnPoseChanged(int index)
+{
+	emit PoseChanged(index);
 }
 }

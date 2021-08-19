@@ -11,14 +11,9 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 {
 	_ui.setupUi(this);
 
-	_ui.PoseGroup->setId(_ui.SequencesPose, static_cast<int>(Pose::Sequences));
-	_ui.PoseGroup->setId(_ui.SkeletonPose, static_cast<int>(Pose::Skeleton));
-
 	connect(_ui.RenderModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelModelDisplayPanel::OnRenderModeChanged);
 
 	connect(_ui.OpacitySlider, &QSlider::valueChanged, this, &StudioModelModelDisplayPanel::OnOpacityChanged);
-
-	connect(_ui.PoseGroup, &QButtonGroup::idClicked, this, &StudioModelModelDisplayPanel::OnPoseChanged);
 
 	connect(_ui.ShowHitboxes, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnShowHitboxesChanged);
 	connect(_ui.ShowBones, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnShowBonesChanged);
@@ -59,11 +54,6 @@ void StudioModelModelDisplayPanel::OnOpacityChanged(int value)
 	_asset->GetScene()->GetEntity()->SetTransparency(value / 100.0f);
 
 	_ui.OpacityValueLabel->setText(QString("%1%").arg(value));
-}
-
-void StudioModelModelDisplayPanel::OnPoseChanged(int id)
-{
-	_asset->SetPose(static_cast<Pose>(id));
 }
 
 void StudioModelModelDisplayPanel::OnShowHitboxesChanged()
