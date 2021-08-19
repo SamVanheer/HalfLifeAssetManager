@@ -410,12 +410,13 @@ void ToolApplication::OnExit()
 
 	settings->sync();
 
-	_mainWindow = nullptr;
-
 	if (_singleInstance)
 	{
 		_singleInstance.reset();
 	}
+
+	delete _editorContext;
+	_editorContext = nullptr;
 }
 
 void ToolApplication::OnFileNameReceived(const QString& fileName)

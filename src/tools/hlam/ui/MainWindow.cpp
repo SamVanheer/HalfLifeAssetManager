@@ -232,10 +232,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	_editorContext->StartTimer();
 }
 
-MainWindow::~MainWindow()
-{
-	_editorContext->GetTimer()->stop();
-}
+MainWindow::~MainWindow() = default;
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
@@ -270,6 +267,16 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	settings->setValue("screen_name", name);
 	settings->setValue("screen_geometry", saveGeometry());
 	settings->endGroup();
+
+	//Main window cleanup has to be done here because Qt won't call the destructor
+	{
+		_editorContext->GetTimer()->stop();
+
+		delete _fileListDock;
+		_fullscreenWidget.reset();
+		_currentAsset.clear();
+		delete _assetTabs;
+	}
 }
 
 assets::Asset* MainWindow::GetAsset(int index) const

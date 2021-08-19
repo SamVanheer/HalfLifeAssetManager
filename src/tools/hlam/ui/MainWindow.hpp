@@ -100,7 +100,7 @@ private:
 
 	QUndoGroup* const _undoGroup = new QUndoGroup(this);
 
-	QTabWidget* _assetTabs;
+	QPointer<QTabWidget> _assetTabs;
 
 	QString _loadFileFilter;
 	QString _saveFileFilter;

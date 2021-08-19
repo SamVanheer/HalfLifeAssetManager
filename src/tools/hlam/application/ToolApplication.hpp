@@ -5,6 +5,7 @@
 
 #include <QMainWindow>
 #include <QObject>
+#include <QPointer>
 #include <QScopedPointer>
 #include <QSettings>
 #include <QString>
@@ -60,7 +61,7 @@ private:
 	QApplication* _application{};
 
 	ui::EditorContext* _editorContext{};
-	ui::MainWindow* _mainWindow{};
+	QPointer<ui::MainWindow> _mainWindow;
 
 	QScopedPointer<SingleInstance> _singleInstance;
 };
