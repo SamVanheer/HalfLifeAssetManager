@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <limits>
 
+#include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
 #include "engine/shared/studiomodel/BoneTransformer.hpp"
@@ -245,6 +246,8 @@ std::pair<RotateData, RotateData> CalculateRotatedData(const EditableStudioModel
 	angles.y = glm::radians(angles.y);
 	angles.z = glm::radians(angles.z);
 
+	const glm::quat anglesRotation{angles};
+
 	auto rotater = [&](glm::vec3 vertex)
 	{
 		vertex = glm::rotateX(vertex, angles.x);
@@ -283,13 +286,14 @@ std::pair<RotateData, RotateData> CalculateRotatedData(const EditableStudioModel
 
 		position += center;
 
-		rotation += angles;
+		//Convert euler angles to quaternion
+		glm::quat boneRotationQuat{rotation};
 
-		const float fullRotation = 2 * PI<float>;
+		//Apply desired rotation
+		boneRotationQuat = anglesRotation * boneRotationQuat;
 
-		rotation.x = std::fmod(rotation.x, fullRotation);
-		rotation.y = std::fmod(rotation.y, fullRotation);
-		rotation.z = std::fmod(rotation.z, fullRotation);
+		//Convert back to euler angles
+		rotation = glm::eulerAngles(boneRotationQuat);
 
 		newBoneData.emplace_back(
 			RotateBoneData
