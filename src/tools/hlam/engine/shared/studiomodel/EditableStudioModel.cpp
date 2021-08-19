@@ -248,15 +248,6 @@ std::pair<RotateData, RotateData> CalculateRotatedData(const EditableStudioModel
 
 	const glm::quat anglesRotation{angles};
 
-	auto rotater = [&](glm::vec3 vertex)
-	{
-		vertex = glm::rotateX(vertex, angles.x);
-		vertex = glm::rotateY(vertex, angles.y);
-		vertex = glm::rotateZ(vertex, angles.z);
-
-		return vertex;
-	};
-
 	std::vector<RotateBoneData> oldBoneData;
 	std::vector<RotateBoneData> newBoneData;
 
@@ -282,7 +273,7 @@ std::pair<RotateData, RotateData> CalculateRotatedData(const EditableStudioModel
 		//Rotate around center
 		position -= center;
 
-		position = rotater(position);
+		position = anglesRotation * position;
 
 		position += center;
 
