@@ -644,7 +644,7 @@ void MainWindow::OnShowAbout()
 	buildConfiguration = "Debug";
 #endif
 
-	QMessageBox::information(this, "About " + programName,
+	QMessageBox::about(this, "About " + programName,
 		QString::fromUtf8(
 			u8"%1 %2.%3.%4\n\n"
 			u8"2021 Sam Vanheer\n\n"
