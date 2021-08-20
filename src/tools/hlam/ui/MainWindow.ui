@@ -54,6 +54,7 @@
      <string>Help</string>
     </property>
     <addaction name="ActionAbout"/>
+    <addaction name="ActionAboutQt"/>
    </widget>
    <widget class="QMenu" name="MenuView">
     <property name="title">
@@ -154,6 +155,11 @@
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+  </action>
+  <action name="ActionAboutQt">
+   <property name="text">
+    <string>About Qt</string>
    </property>
   </action>
  </widget>

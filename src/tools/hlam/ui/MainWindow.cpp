@@ -132,6 +132,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	connect(_ui.ActionOptions, &QAction::triggered, this, &MainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &MainWindow::OnShowAbout);
+	connect(_ui.ActionAboutQt, &QAction::triggered, QApplication::instance(), &QApplication::aboutQt);
 
 	connect(_editorContext->GetRecentFiles(), &settings::RecentFilesSettings::RecentFilesChanged, this, &MainWindow::OnRecentFilesChanged);
 
