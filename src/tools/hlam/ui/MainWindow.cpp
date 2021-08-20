@@ -636,15 +636,24 @@ void MainWindow::OnShowAbout()
 {
 	const QString programName{QApplication::applicationName()};
 
+	QString buildConfiguration;
+
+#ifdef NDEBUG
+	buildConfiguration = "Release";
+#else
+	buildConfiguration = "Debug";
+#endif
+
 	QMessageBox::information(this, "About " + programName,
 		QString::fromUtf8(
 			u8"%1 %2.%3.%4\n\n"
 			u8"2021 Sam Vanheer\n\n"
 			u8"Email:    sam.vanheer@outlook.com\n\n"
+			u8"Build Configuration: %5\n"
 			u8"Git Info:\n"
-			u8"\tBranch: %5\n"
-			u8"\tTag: %6\n"
-			u8"\tCommit Hash: %7\n\n"
+			u8"\tBranch: %6\n"
+			u8"\tTag: %7\n"
+			u8"\tCommit Hash: %8\n\n"
 			u8"Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil \'Jed\' Jedrzejewski\n"
 			u8"Email:    jed@wunderboy.org\n"
 			u8"Web:      http://www.wunderboy.org/\n\n"
@@ -655,6 +664,7 @@ void MainWindow::OnShowAbout()
 			.arg(HLAMVersionMajor)
 			.arg(HLAMVersionMinor)
 			.arg(HLAMVersionPatch)
+			.arg(buildConfiguration)
 			.arg(QString::fromUtf8(HLAMGitBranchName.data()))
 			.arg(QString::fromUtf8(HLAMGitTagName.data()))
 			.arg(QString::fromUtf8(HLAMGitCommitHash.data()))
