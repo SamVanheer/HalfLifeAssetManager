@@ -57,11 +57,6 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderIn
 
 	++_modelsDrawnCount; // render data cache cookie
 
-	if (_studioModel->Bodyparts.empty())
-	{
-		return 0;
-	}
-
 	glPushMatrix();
 
 	auto origin = _renderInfo->Origin;
