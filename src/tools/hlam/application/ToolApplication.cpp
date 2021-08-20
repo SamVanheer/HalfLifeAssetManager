@@ -249,7 +249,7 @@ std::tuple<bool, bool, QString> ToolApplication::ParseCommandLine(QApplication& 
 
 	parser.addOption(QCommandLineOption{"portable", "Launch in portable mode"});
 
-	parser.addOption(QCommandLineOption{"log_to_file", "Log debug messages to a file"});
+	parser.addOption(QCommandLineOption{"log-to-file", "Log debug messages to a file"});
 
 	parser.addPositionalArgument("fileName", "Filename of the model to load on startup", "[fileName]");
 
@@ -257,7 +257,7 @@ std::tuple<bool, bool, QString> ToolApplication::ParseCommandLine(QApplication& 
 
 	const bool isPortable = parser.isSet("portable");
 
-	const bool logDebugMsgsToFile = parser.isSet("log_to_file");
+	const bool logDebugMsgsToFile = parser.isSet("log-to-file");
 
 	const auto positionalArguments = parser.positionalArguments();
 
