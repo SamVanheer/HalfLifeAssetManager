@@ -149,19 +149,7 @@ bool CModelViewerApp::Startup()
 
 		std::filesystem::path exePath(szExePath);
 
-		std::error_code canonicalError;
-
 		auto exeDir = exePath.parent_path();
-
-		exeDir = std::filesystem::canonical(exeDir, canonicalError);
-
-		if (canonicalError)
-		{
-			Error(
-				"CAppSystem::Startup: Failed to canonicalize  \"%s\" with error \"%s\"!\n",
-				exeDir.string().c_str(), canonicalError.message().c_str());
-			return false;
-		}
 
 		std::error_code cwdError;
 
@@ -170,8 +158,8 @@ bool CModelViewerApp::Startup()
 		if (cwdError)
 		{
 			Error(
-				"CAppSystem::Startup: Failed to set current working directory \"%s\" with error \"%s\"!\n",
-				exeDir.string().c_str(), cwdError.message().c_str());
+				"CAppSystem::Startup: Failed to set current working directory \"%s\" with error \"%s\" (%d)!\n",
+				exeDir.string().c_str(), cwdError.message().c_str(), cwdError.value());
 			return false;
 		}
 	}
