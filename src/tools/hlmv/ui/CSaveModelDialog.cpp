@@ -3,6 +3,7 @@
 #include <wx/filedlg.h>
 #include <wx/filename.h>
 #include <wx/gbsizer.h>
+#include <wx/platinfo.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 
@@ -20,6 +21,12 @@ CSaveModelDialog::CSaveModelDialog(wxWindow* parent, const wxString& fileName)
 	browseFileNameButton->Bind(wxEVT_BUTTON, &CSaveModelDialog::OnBrowseFileName, this);
 
 	m_CorrectSequenceGroupFileNames = new wxCheckBox(this, wxID_ANY, "Correct Sequence Group Filenames");
+
+	//Disable this feature on Windows XP (will not work)
+	if ((wxPlatformInfo::Get().GetOperatingSystemId() & wxOperatingSystemId::wxOS_WINDOWS) && !wxPlatformInfo::Get().CheckOSVersion(6, 0))
+	{
+		m_CorrectSequenceGroupFileNames->Disable();
+	}
 
 	auto buttonsPanel = new wxPanel(this);
 
@@ -76,7 +83,10 @@ bool CSaveModelDialog::ShouldCorrectSequenceGroupFileNames() const
 
 void CSaveModelDialog::SetShouldCorrectSequenceGroupFileNames(bool value)
 {
-	m_CorrectSequenceGroupFileNames->SetValue(value);
+	if (m_CorrectSequenceGroupFileNames->IsEnabled())
+	{
+		m_CorrectSequenceGroupFileNames->SetValue(value);
+	}
 }
 
 void CSaveModelDialog::OnBrowseFileName(wxCommandEvent& event)
