@@ -515,6 +515,8 @@ void C3DView::DrawTexture( const int iXOffset, const int iYOffset, const int iWi
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 
+	glDepthMask(GL_FALSE);
+
 	glOrtho( 0.0f, ( float ) iWidth, ( float ) iHeight, 0.0f, 1.0f, -1.0f );
 
 	const studiohdr_t* const hdr = pModel->GetTextureHeader();
@@ -640,11 +642,11 @@ void C3DView::DrawTexture( const int iXOffset, const int iYOffset, const int iWi
 
 		glPopMatrix();
 
-		glClear( GL_DEPTH_BUFFER_BIT );
-
 		if( texture.flags & STUDIO_NF_MASKED )
 			glDisable( GL_ALPHA_TEST );
 	}
+
+	glDepthMask(GL_TRUE);
 }
 
 void C3DView::DrawModel()
