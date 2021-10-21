@@ -1,5 +1,25 @@
 function Component()
 {
+	var validOs = false;
+
+    if (systemInfo.kernelType === "winnt")
+	{
+		var windowsMajorVersion = MajorVersion(systemInfo.kernelVersion);
+		var windowsMinorVersion = MinorVersion(systemInfo.kernelVersion);
+		
+		// Windows 7 and newer is supported (6.1 and newer)
+        if (windowsMajorVersion > 6 || (windowsMajorVersion == 6 && windowsMinorVersion >= 1))
+		{
+            validOs = true;
+		}
+	}
+	
+	if (!validOs)
+	{
+        cancelInstaller("Installation on " + systemInfo.prettyProductName + " is not supported");
+        return;
+    }
+	
 	component.loaded.connect(this, AddRegisterFileTypes);
 }
 
@@ -10,6 +30,30 @@ AddRegisterFileTypes = function()
 	{
 		installer.addWizardPageItem(component, "RegisterFileTypesForm", QInstaller.TargetDirectory);
     }
+}
+
+function CancelInstaller(message)
+{
+    installer.setDefaultPageVisible(QInstaller.Introduction, false);
+    installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
+    installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
+    installer.setDefaultPageVisible(QInstaller.ReadyForInstallation, false);
+    installer.setDefaultPageVisible(QInstaller.StartMenuSelection, false);
+    installer.setDefaultPageVisible(QInstaller.PerformInstallation, false);
+    installer.setDefaultPageVisible(QInstaller.LicenseCheck, false);
+
+    var abortText = "<font color='red'>" + message +"</font>";
+    installer.setValue("FinishedText", abortText);
+}
+
+function MajorVersion(str)
+{
+    return parseInt(str.split(".", 1));
+}
+
+function MinorVersion(str)
+{
+    return parseInt(str.split(".", 2).slice(1));
 }
 
 Component.prototype.createOperations = function()
