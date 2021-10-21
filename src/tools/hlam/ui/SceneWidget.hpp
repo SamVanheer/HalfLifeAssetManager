@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 
 #include <QOpenGLWindow>
+#include <QPointer>
 
 #include "graphics/IGraphicsContext.hpp"
 
@@ -60,23 +61,17 @@ signals:
 
 	void WheelEvent(QWheelEvent* event);
 
+private slots:
+	void OnFocusObjectChanged(QObject* object)
+	{
+		if (object != this)
+		{
+			_previousFocusObject = object;
+		}
+	}
+
 protected:
-	void mousePressEvent(QMouseEvent* event) override final
-	{
-		emit MouseEvent(event);
-	}
-
-	void mouseReleaseEvent(QMouseEvent* event) override final
-	{
-		emit MouseEvent(event);
-	}
-
-	void mouseMoveEvent(QMouseEvent* event) override final
-	{
-		emit MouseEvent(event);
-	}
-
-	void wheelEvent(QWheelEvent* event) override final;
+	bool event(QEvent* event) override final;
 
 	void initializeGL() override;
 	void resizeGL(int w, int h) override;
@@ -85,5 +80,6 @@ protected:
 private:
 	QWidget* const _container;
 	graphics::Scene* const _scene;
+	QPointer<QObject> _previousFocusObject;
 };
 }

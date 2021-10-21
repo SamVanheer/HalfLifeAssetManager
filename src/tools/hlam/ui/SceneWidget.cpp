@@ -20,6 +20,10 @@ SceneWidget::SceneWidget(graphics::Scene* scene, QWidget* parent)
 	_container->setFocusPolicy(Qt::FocusPolicy::WheelFocus);
 
 	connect(this, &SceneWidget::frameSwapped, this, qOverload<>(&SceneWidget::update));
+
+	connect(qGuiApp, &QGuiApplication::focusObjectChanged, this, &SceneWidget::OnFocusObjectChanged);
+
+	_previousFocusObject = qGuiApp->focusObject();
 }
 
 SceneWidget::~SceneWidget()
@@ -31,27 +35,68 @@ SceneWidget::~SceneWidget()
 	doneCurrent();
 }
 
-void SceneWidget::wheelEvent(QWheelEvent* event)
+bool SceneWidget::event(QEvent* event)
 {
-	//Ugly hack: when this window has focus it eats all wheel events even when the mouse is not over it.
-	//To prevent this from breaking other widgets (e.g. combo box), we manually check if the mouse is inside the widget area,
-	//and only handle it here if so.
-	//Otherwise, try to forward it to the widget under the mouse cursor to get the original behavior.
-	if (_container->rect().contains(event->position().toPoint()))
+	switch (event->type())
 	{
-		emit WheelEvent(event);
+	case QEvent::Type::MouseButtonPress:
+		[[fallthrough]];
+
+	case QEvent::Type::MouseButtonRelease:
+		[[fallthrough]];
+
+	case QEvent::Type::MouseMove:
+	{
+		emit MouseEvent(static_cast<QMouseEvent*>(event));
+		break;
 	}
-	else
+
+	case QEvent::Type::KeyPress:
+		[[fallthrough]];
+
+	case QEvent::Type::KeyRelease:
 	{
-		if (auto widget = qApp->widgetAt(event->globalPosition().toPoint()); widget)
+		//Forward key input to the previous focus object, if any
+		if (_previousFocusObject)
 		{
-			QApplication::sendEvent(widget, event);
+			QApplication::sendEvent(_previousFocusObject, event);
 		}
+
 		else
 		{
 			event->ignore();
 		}
+		break;
 	}
+
+	case QEvent::Type::Wheel:
+	{
+		auto wheelEvent = static_cast<QWheelEvent*>(event);
+		//Ugly hack: when this window has focus it eats all wheel events even when the mouse is not over it.
+		//To prevent this from breaking other widgets (e.g. combo box), we manually check if the mouse is inside the widget area,
+		//and only handle it here if so.
+		//Otherwise, try to forward it to the widget under the mouse cursor to get the original behavior.
+		if (_container->rect().contains(wheelEvent->position().toPoint()))
+		{
+			emit WheelEvent(wheelEvent);
+		}
+		else
+		{
+			if (auto widget = qApp->widgetAt(wheelEvent->globalPosition().toPoint()); widget)
+			{
+				QApplication::sendEvent(widget, wheelEvent);
+			}
+			else
+			{
+				wheelEvent->ignore();
+			}
+		}
+	}
+
+	default: return QOpenGLWindow::event(event);
+	}
+
+	return true;
 }
 
 void SceneWidget::initializeGL()
