@@ -109,6 +109,8 @@ signals:
 
 	void TryingToLoadAsset(const QString& fileName);
 
+	void SettingsChanged();
+
 public slots:
 	void TryLoadAsset(const QString& fileName)
 	{

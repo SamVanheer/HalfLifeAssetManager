@@ -39,6 +39,8 @@ public:
 protected:
 	void closeEvent(QCloseEvent* event) override;
 
+	bool eventFilter(QObject* watched, QEvent* event) override;
+
 private:
 	assets::Asset* GetAsset(int index) const;
 	assets::Asset* GetCurrentAsset() const;
@@ -55,6 +57,8 @@ private:
 
 private slots:
 	bool TryLoadAsset(QString fileName);
+
+	void SyncSettings();
 
 	void OnOpenLoadAssetDialog();
 

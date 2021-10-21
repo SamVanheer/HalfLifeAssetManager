@@ -12,6 +12,7 @@ class GeneralSettings final : public QObject
 public:
 	static constexpr bool DefaultUseSingleInstance{true};
 	static constexpr bool DefaultPauseAnimationsOnTimelineClick{true};
+	static constexpr bool DefaultAllowTabCloseWithMiddleClick{false};
 
 	static constexpr int DefaultTickRate{60};
 	static constexpr int MinimumTickRate{1};

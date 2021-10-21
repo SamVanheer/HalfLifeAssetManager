@@ -38,6 +38,8 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 {
 	_ui.setupUi(this);
 
+	auto settings = _editorContext->GetSettings();
+
 	_ui.TickRate->setRange(settings::GeneralSettings::MinimumTickRate, settings::GeneralSettings::MaximumTickRate);
 
 	_ui.MouseSensitivitySlider->setRange(settings::GeneralSettings::MinimumMouseSensitivity, settings::GeneralSettings::MaximumMouseSensitivity);
@@ -48,6 +50,8 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 
 	_ui.UseSingleInstance->setChecked(_generalSettings->ShouldUseSingleInstance());
 	_ui.PauseAnimationsOnTimelineClick->setChecked(_generalSettings->PauseAnimationsOnTimelineClick);
+	_ui.AllowTabCloseWithMiddleClick->setChecked(
+		settings->value("General/AllowTabCloseWithMiddleClick", settings::GeneralSettings::DefaultAllowTabCloseWithMiddleClick).toBool());
 	_ui.MaxRecentFiles->setValue(_recentFilesSettings->GetMaxRecentFiles());
 	_ui.TickRate->setValue(_generalSettings->GetTickRate());
 	_ui.InvertMouseX->setChecked(_generalSettings->ShouldInvertMouseX());
@@ -71,6 +75,7 @@ void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 {
 	_generalSettings->SetUseSingleInstance(_ui.UseSingleInstance->isChecked());
 	_generalSettings->PauseAnimationsOnTimelineClick = _ui.PauseAnimationsOnTimelineClick->isChecked();
+	settings.setValue("General/AllowTabCloseWithMiddleClick", _ui.AllowTabCloseWithMiddleClick->isChecked());
 	_recentFilesSettings->SetMaxRecentFiles(_ui.MaxRecentFiles->value());
 	_generalSettings->SetTickRate(_ui.TickRate->value());
 	_generalSettings->SetInvertMouseX(_ui.InvertMouseX->isChecked());

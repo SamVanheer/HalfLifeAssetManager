@@ -101,6 +101,8 @@ void OptionsDialog::OnButtonClicked(QAbstractButton* button)
 		}
 
 		settings->sync();
+
+		emit _editorContext->SettingsChanged();
 	}
 }
 }

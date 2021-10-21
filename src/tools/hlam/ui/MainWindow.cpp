@@ -35,6 +35,7 @@
 #include "ui/options/OptionsDialog.hpp"
 
 #include "ui/settings/GameConfigurationsSettings.hpp"
+#include "ui/settings/GeneralSettings.hpp"
 #include "ui/settings/PathSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
 
@@ -142,6 +143,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &MainWindow::OnAssetTabCloseRequested);
 
 	connect(_editorContext, &EditorContext::TryingToLoadAsset, this, &MainWindow::TryLoadAsset);
+	connect(_editorContext, &EditorContext::SettingsChanged, this, &MainWindow::SyncSettings);
 	connect(_editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged,
 		this, &MainWindow::OnActiveConfigurationChanged);
 
@@ -230,6 +232,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		}
 	}
 
+	SyncSettings();
+
 	_editorContext->StartTimer();
 }
 
@@ -278,6 +282,30 @@ void MainWindow::closeEvent(QCloseEvent* event)
 		_currentAsset.clear();
 		delete _assetTabs;
 	}
+}
+
+bool MainWindow::eventFilter(QObject* watched, QEvent* event)
+{
+	if (watched == _assetTabs->tabBar())
+	{
+		if (event->type() == QEvent::Type::MouseButtonPress)
+		{
+			auto mouseEvent = static_cast<QMouseEvent*>(event);
+
+			if (mouseEvent->button() == Qt::MouseButton::MiddleButton)
+			{
+				auto tab = _assetTabs->tabBar()->tabAt(mouseEvent->pos());
+
+				if (tab != -1)
+				{
+					TryCloseAsset(tab, true);
+					return true;
+				}
+			}
+		}
+	}
+
+	return QMainWindow::eventFilter(watched, event);
 }
 
 assets::Asset* MainWindow::GetAsset(int index) const
@@ -442,6 +470,20 @@ bool MainWindow::TryLoadAsset(QString fileName)
 	}
 
 	return false;
+}
+
+void MainWindow::SyncSettings()
+{
+	auto settings = _editorContext->GetSettings();
+
+	if (settings->value("General/AllowTabCloseWithMiddleClick", settings::GeneralSettings::DefaultAllowTabCloseWithMiddleClick).toBool())
+	{
+		_assetTabs->tabBar()->installEventFilter(this);
+	}
+	else
+	{
+		_assetTabs->tabBar()->removeEventFilter(this);
+	}
 }
 
 void MainWindow::OnOpenLoadAssetDialog()
