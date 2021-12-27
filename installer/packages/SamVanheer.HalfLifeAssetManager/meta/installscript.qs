@@ -16,7 +16,7 @@ function Component()
 	
 	if (!validOs)
 	{
-        cancelInstaller("Installation on " + systemInfo.prettyProductName + " is not supported");
+        CancelInstaller("Installation on " + systemInfo.prettyProductName + " is not supported");
         return;
     }
 	
