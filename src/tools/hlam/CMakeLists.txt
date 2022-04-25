@@ -1,9 +1,11 @@
-find_package(spdlog REQUIRED NO_DEFAULT_PATH  PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../../../external/spdlog/lib/cmake/spdlog)
-
 find_package(OpenGL REQUIRED)
 
 # Dependencies included as submodules.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+add_subdirectory(${EXTERNAL_DIR}/spdlog
+	spdlog-binary-dir
+	EXCLUDE_FROM_ALL)
 
 add_subdirectory(${EXTERNAL_DIR}/glm
 	glm-binary-dir
@@ -31,6 +33,7 @@ add_subdirectory(${EXTERNAL_DIR}/vorbis
 unset(CMAKE_POLICY_DEFAULT_CMP0048)
 
 set_target_properties(
+	spdlog
 	build_version
 	common
 	OpenAL
