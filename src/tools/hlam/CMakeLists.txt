@@ -14,10 +14,18 @@ add_subdirectory(${EXTERNAL_DIR}/OpenAL
 
 unset(CMAKE_POLICY_DEFAULT_CMP0071)
 
+set(CMAKE_POLICY_DEFAULT_CMP0048 NEW)
+add_subdirectory(${EXTERNAL_DIR}/ogg
+	ogg-binary-dir
+	EXCLUDE_FROM_ALL)
+
+unset(CMAKE_POLICY_DEFAULT_CMP0048)
+
 set_target_properties(
 	build_version
 	common
 	OpenAL
+	ogg
 	PROPERTIES
 		FOLDER "Dependencies")
 
@@ -26,12 +34,6 @@ if(WIN32)
 else()
 	find_library(GLEW libGLEW.so.2.0.0 PATHS ${EXTERNAL_DIR}/GLEW/lib)
 endif()
-
-add_library(Ogg STATIC IMPORTED)
-
-set_target_properties(Ogg PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/ogg/lib/libogg_static.lib)
-
-target_include_directories(Ogg INTERFACE ${EXTERNAL_DIR}/ogg/include)
 
 add_library(Vorbis STATIC IMPORTED)
 
@@ -106,7 +108,7 @@ target_link_libraries(HLAM
 		OpenGL::GL
 		OpenAL::OpenAL
 		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:dl>
-		Ogg
+		Ogg::ogg
 		Vorbis
 		VorbisFile)
 
