@@ -6,7 +6,6 @@
 #include "utility/IOUtils.hpp"
 
 #ifdef WIN32
-#define WIN32_MEAN_AND_LEAN
 #include <Windows.h>
 #include <fcntl.h>
 #include <io.h>
