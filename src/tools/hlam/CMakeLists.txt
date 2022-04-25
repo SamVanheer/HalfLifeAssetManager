@@ -7,6 +7,11 @@ add_subdirectory(${EXTERNAL_DIR}/spdlog
 	spdlog-binary-dir
 	EXCLUDE_FROM_ALL)
 
+option(BUILD_UTILS "" OFF)
+add_subdirectory(${EXTERNAL_DIR}/glew
+	glew-binary-dir
+	EXCLUDE_FROM_ALL)
+
 add_subdirectory(${EXTERNAL_DIR}/glm
 	glm-binary-dir
 	EXCLUDE_FROM_ALL)
@@ -33,6 +38,7 @@ add_subdirectory(${EXTERNAL_DIR}/vorbis
 unset(CMAKE_POLICY_DEFAULT_CMP0048)
 
 set_target_properties(
+	libglew_shared
 	build_version
 	common
 	OpenAL
@@ -41,12 +47,6 @@ set_target_properties(
 	vorbisfile
 	PROPERTIES
 		FOLDER "Dependencies")
-
-if(WIN32)
-	find_library(GLEW glew32 PATHS ${EXTERNAL_DIR}/GLEW/lib)
-else()
-	find_library(GLEW libGLEW.so.2.0.0 PATHS ${EXTERNAL_DIR}/GLEW/lib)
-endif()
 
 # Get the current working branch
 execute_process(
@@ -106,7 +106,7 @@ target_link_libraries(HLAM
 		Qt5::Widgets
 		Qt5::Network
 		spdlog::spdlog_header_only 
-		${GLEW}
+		libglew_shared
 		OpenGL::GL
 		OpenAL::OpenAL
 		glm::glm
@@ -155,11 +155,10 @@ target_sources(HLAM
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}/version.hpp)
 
-if(WIN32)
-	copy_dependencies(HLAM external/GLEW/lib glew32.dll)
-else()
-	copy_dependencies(HLAM external/GLEW/lib libGLEW.so.2.0.0)
-endif()
+add_custom_command(TARGET HLAM POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:libglew_shared>
+        $<TARGET_FILE_DIR:HLAM>)
 
 add_custom_command(TARGET HLAM POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
