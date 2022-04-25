@@ -16,3 +16,6 @@
 [submodule "external/glew"]
 	path = external/glew
 	url = https://github.com/Perlmint/glew-cmake.git
+[submodule "external/AudioFile"]
+	path = external/AudioFile
+	url = https://github.com/adamstark/AudioFile.git
