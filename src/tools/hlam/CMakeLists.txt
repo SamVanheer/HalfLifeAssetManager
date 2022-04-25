@@ -87,10 +87,6 @@ endif()
 
 add_executable(HLAM WIN32)
 
-target_include_directories(HLAM
-	PRIVATE
-		${CMAKE_CURRENT_SOURCE_DIR})
-
 target_compile_definitions(HLAM
 	PRIVATE
 		QT_MESSAGELOGCONTEXT
