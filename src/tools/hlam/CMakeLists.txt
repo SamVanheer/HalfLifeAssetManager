@@ -15,8 +15,13 @@ add_subdirectory(${EXTERNAL_DIR}/OpenAL
 unset(CMAKE_POLICY_DEFAULT_CMP0071)
 
 set(CMAKE_POLICY_DEFAULT_CMP0048 NEW)
+
 add_subdirectory(${EXTERNAL_DIR}/ogg
 	ogg-binary-dir
+	EXCLUDE_FROM_ALL)
+
+add_subdirectory(${EXTERNAL_DIR}/vorbis
+	vorbis-binary-dir
 	EXCLUDE_FROM_ALL)
 
 unset(CMAKE_POLICY_DEFAULT_CMP0048)
@@ -26,6 +31,8 @@ set_target_properties(
 	common
 	OpenAL
 	ogg
+	vorbis
+	vorbisfile
 	PROPERTIES
 		FOLDER "Dependencies")
 
@@ -34,16 +41,6 @@ if(WIN32)
 else()
 	find_library(GLEW libGLEW.so.2.0.0 PATHS ${EXTERNAL_DIR}/GLEW/lib)
 endif()
-
-add_library(Vorbis STATIC IMPORTED)
-
-set_target_properties(Vorbis PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/vorbis/lib/libvorbis_static.lib)
-
-target_include_directories(Vorbis INTERFACE ${EXTERNAL_DIR}/vorbis/include)
-
-add_library(VorbisFile STATIC IMPORTED)
-
-set_target_properties(VorbisFile PROPERTIES IMPORTED_LOCATION ${EXTERNAL_DIR}/vorbis/lib/libvorbisfile_static.lib)
 
 # Get the current working branch
 execute_process(
@@ -109,8 +106,8 @@ target_link_libraries(HLAM
 		OpenAL::OpenAL
 		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:dl>
 		Ogg::ogg
-		Vorbis
-		VorbisFile)
+		Vorbis::vorbis
+		Vorbis::vorbisfile)
 
 target_compile_options(HLAM
 	PRIVATE
