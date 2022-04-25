@@ -39,4 +39,4 @@ else()
 	set(IS_LITTLE_ENDIAN_VALUE "1")
 endif()
 
-add_subdirectory(src)
+add_subdirectory(src/tools)
