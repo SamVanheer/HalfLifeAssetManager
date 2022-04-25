@@ -108,7 +108,7 @@ target_link_libraries(HLAM
 		OpenGL::GL
 		OpenAL::OpenAL
 		glm::glm
-		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:dl>
+		${CMAKE_DL_LIBS}
 		Ogg::ogg
 		Vorbis::vorbis
 		Vorbis::vorbisfile
