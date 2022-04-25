@@ -2,8 +2,24 @@ find_package(spdlog REQUIRED NO_DEFAULT_PATH  PATHS ${CMAKE_CURRENT_SOURCE_DIR}/
 
 find_package(OpenGL REQUIRED)
 
-# Disable module based lookup (OpenAL Soft uses CONFIG mode and MODULE mode only works with the Creative Labs version)
-find_package(OpenAL REQUIRED NO_MODULE)
+# Dependencies included as submodules.
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+set(CMAKE_POLICY_DEFAULT_CMP0071 NEW)
+option(ALSOFT_EXAMPLES "" OFF)
+option(ALSOFT_UTILS "" OFF)
+add_subdirectory(${EXTERNAL_DIR}/OpenAL
+	OpenAL-binary-dir
+	EXCLUDE_FROM_ALL)
+
+unset(CMAKE_POLICY_DEFAULT_CMP0071)
+
+set_target_properties(
+	build_version
+	common
+	OpenAL
+	PROPERTIES
+		FOLDER "Dependencies")
 
 if(WIN32)
 	find_library(GLEW glew32 PATHS ${EXTERNAL_DIR}/GLEW/lib)
