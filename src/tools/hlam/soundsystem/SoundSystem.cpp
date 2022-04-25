@@ -7,7 +7,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include "AudioFile/AudioFile.h"
+#include "AudioFile.h"
 
 #include "vorbis/vorbisfile.h"
 

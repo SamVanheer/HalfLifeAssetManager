@@ -37,6 +37,10 @@ add_subdirectory(${EXTERNAL_DIR}/vorbis
 
 unset(CMAKE_POLICY_DEFAULT_CMP0048)
 
+add_subdirectory(${EXTERNAL_DIR}/AudioFile
+	AudioFile-binary-dir
+	EXCLUDE_FROM_ALL)
+	
 set_target_properties(
 	libglew_shared
 	build_version
@@ -85,7 +89,6 @@ add_executable(HLAM WIN32)
 
 target_include_directories(HLAM
 	PRIVATE
-		${EXTERNAL_DIR}/AudioFile/include
 		${EXTERNAL_DIR}/GLEW/include
 		${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -113,7 +116,8 @@ target_link_libraries(HLAM
 		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:dl>
 		Ogg::ogg
 		Vorbis::vorbis
-		Vorbis::vorbisfile)
+		Vorbis::vorbisfile
+		AudioFile)
 
 target_compile_options(HLAM
 	PRIVATE
