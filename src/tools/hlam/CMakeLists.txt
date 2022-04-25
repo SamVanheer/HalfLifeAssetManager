@@ -112,7 +112,7 @@ target_link_libraries(HLAM
 
 target_compile_options(HLAM
 	PRIVATE
-		$<$<CXX_COMPILER_ID:MSVC>:/fp:strict>
+		$<$<CXX_COMPILER_ID:MSVC>:/MP /fp:strict>
 		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-fPIC>)
 
 target_link_options(HLAM
