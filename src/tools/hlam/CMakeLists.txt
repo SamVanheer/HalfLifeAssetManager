@@ -33,7 +33,6 @@ add_subdirectory(${EXTERNAL_DIR}/vorbis
 unset(CMAKE_POLICY_DEFAULT_CMP0048)
 
 set_target_properties(
-	spdlog
 	build_version
 	common
 	OpenAL
