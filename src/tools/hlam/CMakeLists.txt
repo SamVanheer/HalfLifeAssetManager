@@ -122,7 +122,6 @@ target_compile_options(HLAM
 
 target_link_options(HLAM
 	PRIVATE
-		$<$<CXX_COMPILER_ID:MSVC>:/LTCG /INCREMENTAL:NO>
 		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wl,--exclude-libs,ALL>)
 
 target_sources(HLAM
