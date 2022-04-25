@@ -89,7 +89,6 @@ add_executable(HLAM WIN32)
 
 target_include_directories(HLAM
 	PRIVATE
-		${EXTERNAL_DIR}/GLEW/include
 		${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_definitions(HLAM
