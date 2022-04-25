@@ -153,36 +153,15 @@ target_sources(HLAM
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}/version.hpp)
 
+# Copy runtime dependencies automatically for dev builds.
 add_custom_command(TARGET HLAM POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:libglew_shared>
-        $<TARGET_FILE_DIR:HLAM>)
-
-add_custom_command(TARGET HLAM POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:OpenAL::OpenAL>
-        $<TARGET_FILE_DIR:HLAM>)
-
-# Copy the Qt libraries over automatically
-add_custom_command(TARGET HLAM POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:Qt5::Core>
-        $<TARGET_FILE_DIR:HLAM>)
-
-add_custom_command(TARGET HLAM POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:Qt5::Gui>
-        $<TARGET_FILE_DIR:HLAM>)
-
-add_custom_command(TARGET HLAM POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:Qt5::Widgets>
-        $<TARGET_FILE_DIR:HLAM>)
-
-add_custom_command(TARGET HLAM POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:Qt5::Network>
-        $<TARGET_FILE_DIR:HLAM>)
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:libglew_shared> $<TARGET_FILE_DIR:HLAM>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:OpenAL::OpenAL> $<TARGET_FILE_DIR:HLAM>
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core> $<TARGET_FILE_DIR:HLAM>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui> $<TARGET_FILE_DIR:HLAM>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets> $<TARGET_FILE_DIR:HLAM>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Network> $<TARGET_FILE_DIR:HLAM>
+)
 
 # Copy plugins so the program can run
 copy_qt_dependencies(HLAM Qt5Core_PLUGINS)
