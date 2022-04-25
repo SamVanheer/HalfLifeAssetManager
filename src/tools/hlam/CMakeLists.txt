@@ -5,6 +5,10 @@ find_package(OpenGL REQUIRED)
 # Dependencies included as submodules.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+add_subdirectory(${EXTERNAL_DIR}/glm
+	glm-binary-dir
+	EXCLUDE_FROM_ALL)
+
 set(CMAKE_POLICY_DEFAULT_CMP0071 NEW)
 option(ALSOFT_EXAMPLES "" OFF)
 option(ALSOFT_UTILS "" OFF)
@@ -81,7 +85,6 @@ target_include_directories(HLAM
 	PRIVATE
 		${EXTERNAL_DIR}/AudioFile/include
 		${EXTERNAL_DIR}/GLEW/include
-		${EXTERNAL_DIR}/GLM/include
 		${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_definitions(HLAM
@@ -104,6 +107,7 @@ target_link_libraries(HLAM
 		${GLEW}
 		OpenGL::GL
 		OpenAL::OpenAL
+		glm::glm
 		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:dl>
 		Ogg::ogg
 		Vorbis::vorbis
