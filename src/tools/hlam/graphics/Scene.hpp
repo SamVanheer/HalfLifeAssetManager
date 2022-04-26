@@ -117,7 +117,6 @@ public:
 	void Draw();
 
 private:
-	void SetupRenderMode(RenderMode renderMode = RenderMode::INVALID);
 
 	void DrawModel();
 

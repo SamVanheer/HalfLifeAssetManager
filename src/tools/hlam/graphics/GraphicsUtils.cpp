@@ -287,9 +287,6 @@ void PaletteHueReplace(RGBPalette& palette, int newHue, int start, int end)
 
 void SetupRenderMode(RenderMode renderMode, const bool bBackfaceCulling)
 {
-	if (renderMode == RenderMode::INVALID)
-		return;
-
 	switch (renderMode)
 	{
 	case RenderMode::WIREFRAME:

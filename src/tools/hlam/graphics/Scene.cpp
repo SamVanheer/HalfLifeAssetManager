@@ -308,14 +308,6 @@ void Scene::Draw()
 	}
 }
 
-void Scene::SetupRenderMode(RenderMode renderMode)
-{
-	if (renderMode == RenderMode::INVALID)
-		renderMode = CurrentRenderMode;
-
-	graphics::SetupRenderMode(renderMode, EnableBackfaceCulling);
-}
-
 void Scene::DrawModel()
 {
 	auto camera = GetCurrentCamera();
@@ -386,7 +378,7 @@ void Scene::DrawModel()
 		}
 	}
 
-	SetupRenderMode();
+	graphics::SetupRenderMode(CurrentRenderMode, EnableBackfaceCulling);
 
 	if (nullptr != _entity)
 	{

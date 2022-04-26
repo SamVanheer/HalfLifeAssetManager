@@ -5,7 +5,6 @@
 */
 enum class RenderMode
 {
-	INVALID = -1,
 	FIRST = 0,
 
 	WIREFRAME = FIRST,
@@ -18,5 +17,3 @@ enum class RenderMode
 };
 
 const char* RenderModeToString( const RenderMode renderMode );
-
-RenderMode RenderModeFromString( const char* const pszString );
