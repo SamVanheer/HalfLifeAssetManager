@@ -14,8 +14,16 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '5.15.2'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win32_msvc2015'
+          dir: '${{github.workspace}}/qt/'
       - name: Configure
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -AWin32
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -AWin32 -DQt5_DIR=${{Qt5_DIR}}
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
       - name: Prepare artifacts
