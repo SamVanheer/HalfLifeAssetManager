@@ -1,0 +1,30 @@
+name: CI/CD
+
+on: [push, pull_request]
+
+env:
+  BUILD_TYPE: RelWithDebInfo
+
+jobs:
+  win32:
+    name: Win32
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Configure
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -AWin32
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
+      - name: Prepare artifacts
+        run: |
+          mkdir bin
+          mv build/bin/HLAM.exe bin
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Win32
+          path: |
+            bin
