@@ -30,6 +30,15 @@ jobs:
         run: |
           mkdir bin
           mv build/bin/HLAM.exe bin
+          mv build/bin/glew-shared.dll bin
+          mv build/bin/OpenAL32.dll bin
+          mv build/bin/Qt5Core.dll bin
+          mv build/bin/Qt5Gui.dll bin
+          mv build/bin/Qt5Network.dll bin
+          mv build/bin/Qt5Widgets.dll bin
+          mv build/bin/imageformats bin/imageformats
+          mv build/bin/platforms bin/platforms
+          mv build/bin/styles bin/styles
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
