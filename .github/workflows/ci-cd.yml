@@ -23,7 +23,7 @@ jobs:
           arch: 'win32_msvc2015'
           dir: '${{github.workspace}}/qt/'
       - name: Configure
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -AWin32 -DQt5_DIR=${{Qt5_DIR}}
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -AWin32 -DQt5_DIR=${{env.Qt5_DIR}}
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
       - name: Prepare artifacts
