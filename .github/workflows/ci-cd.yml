@@ -20,7 +20,7 @@ jobs:
           version: '5.15.2'
           host: 'windows'
           target: 'desktop'
-          arch: 'win32_msvc2015'
+          arch: 'win32_msvc2019'
           dir: '${{github.workspace}}/qt/'
       - name: Configure
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -AWin32 -DQt5_DIR=${{env.Qt5_DIR}}
