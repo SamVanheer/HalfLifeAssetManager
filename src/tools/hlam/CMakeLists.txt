@@ -12,7 +12,7 @@ add_subdirectory(${EXTERNAL_DIR}/spdlog
 	EXCLUDE_FROM_ALL)
 
 option(BUILD_UTILS "" OFF)
-options(ONLY_LIBS "" ON)
+option(ONLY_LIBS "" ON)
 add_subdirectory(${EXTERNAL_DIR}/glew
 	glew-binary-dir
 	EXCLUDE_FROM_ALL)
