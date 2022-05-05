@@ -3,11 +3,16 @@ find_package(OpenGL REQUIRED)
 # Dependencies included as submodules.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# CTest options
+option(BUILD_TESTING "" OFF)
+option(BUILD_TESTS "" OFF)
+
 add_subdirectory(${EXTERNAL_DIR}/spdlog
 	spdlog-binary-dir
 	EXCLUDE_FROM_ALL)
 
 option(BUILD_UTILS "" OFF)
+options(ONLY_LIBS "" ON)
 add_subdirectory(${EXTERNAL_DIR}/glew
 	glew-binary-dir
 	EXCLUDE_FROM_ALL)
@@ -37,6 +42,7 @@ add_subdirectory(${EXTERNAL_DIR}/vorbis
 
 unset(CMAKE_POLICY_DEFAULT_CMP0048)
 
+option(BUILD_EXAMPLES "" OFF)
 add_subdirectory(${EXTERNAL_DIR}/AudioFile
 	AudioFile-binary-dir
 	EXCLUDE_FROM_ALL)
