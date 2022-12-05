@@ -123,7 +123,6 @@ target_sources(HLAM
 
 # Copy runtime dependencies automatically for dev builds.
 add_custom_command(TARGET HLAM POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:GLEW::GLEW> $<TARGET_FILE_DIR:HLAM>
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:OpenAL::OpenAL> $<TARGET_FILE_DIR:HLAM>
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core> $<TARGET_FILE_DIR:HLAM>
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui> $<TARGET_FILE_DIR:HLAM>
