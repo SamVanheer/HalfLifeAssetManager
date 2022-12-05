@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
@@ -28,15 +29,30 @@ jobs:
           target: 'desktop'
           arch: 'win32_msvc2019'
           dir: '${{github.workspace}}/qt/'
+      
+      - uses: lukka/get-cmake@latest
+      
+      - name: Restore artifacts, setup vcpkg
+        uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgDirectory: '${{env.VCPKG_ROOT}}'
+          runVcpkgInstall: false
+          vcpkgJsonIgnores: "['**/vcpkg/**', '**/vcpkg_config/**']"
+      
       - name: Configure
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -AWin32 -DQt5_DIR=${{env.Qt5_DIR}}
+        run: >
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/cmake/WindowsToolchain.cmake
+          -DQt5_DIR=${{env.Qt5_DIR}}
+          -A Win32
+      
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
+      
       - name: Prepare artifacts
         run: |
           mkdir bin
           mv build/bin/HLAM.exe bin
-          mv build/bin/glew-shared.dll bin
           mv build/bin/OpenAL32.dll bin
           mv build/bin/Qt5Core.dll bin
           mv build/bin/Qt5Gui.dll bin
@@ -45,6 +61,7 @@ jobs:
           mv build/bin/imageformats bin/imageformats
           mv build/bin/platforms bin/platforms
           mv build/bin/styles bin/styles
+      
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
