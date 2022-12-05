@@ -1,21 +1,6 @@
-[submodule "external/OpenAL"]
-	path = external/OpenAL
-	url = https://github.com/kcat/openal-soft.git
-[submodule "external/ogg"]
-	path = external/ogg
-	url = https://github.com/xiph/ogg.git
-[submodule "external/vorbis"]
-	path = external/vorbis
-	url = https://github.com/xiph/vorbis.git
-[submodule "external/glm"]
-	path = external/glm
-	url = https://github.com/g-truc/glm.git
-[submodule "external/spdlog"]
-	path = external/spdlog
-	url = https://github.com/gabime/spdlog.git
-[submodule "external/glew"]
-	path = external/glew
-	url = https://github.com/Perlmint/glew-cmake.git
 [submodule "external/AudioFile"]
 	path = external/AudioFile
 	url = https://github.com/adamstark/AudioFile.git
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/microsoft/vcpkg.git

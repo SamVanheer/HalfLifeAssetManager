@@ -1,0 +1,38 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+	"name": "halflife-asset-manager",
+	"version-semver": "2.0.0",
+	"builtin-baseline": "2daebf5b33ec896d0ce52ff4385526e4bff43adf",
+	"dependencies": [
+		{
+			"name": "glew",
+			"version>=": "2.2.0",
+			"default-features": false
+		},
+		{
+			"name": "glm",
+			"version>=": "0.9.9.8#1",
+			"default-features": false
+		},
+		{
+			"name": "spdlog",
+			"version>=": "1.10.0#1",
+			"default-features": false
+		},
+		{
+			"name": "openal-soft",
+			"version>=": "1.22.2#2",
+			"default-features": false
+		},
+		{
+			"name": "libogg",
+			"version>=": "1.3.5",
+			"default-features": false
+		},
+		{
+			"name": "libvorbis",
+			"version>=": "1.3.7#2",
+			"default-features": false
+		}
+  ]
+}

@@ -6,57 +6,19 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # CTest options
 option(BUILD_TESTING "" OFF)
 option(BUILD_TESTS "" OFF)
-
-add_subdirectory(${EXTERNAL_DIR}/spdlog
-	spdlog-binary-dir
-	EXCLUDE_FROM_ALL)
-
 option(BUILD_UTILS "" OFF)
-option(ONLY_LIBS "" ON)
-add_subdirectory(${EXTERNAL_DIR}/glew
-	glew-binary-dir
-	EXCLUDE_FROM_ALL)
-
-add_subdirectory(${EXTERNAL_DIR}/glm
-	glm-binary-dir
-	EXCLUDE_FROM_ALL)
-
-set(CMAKE_POLICY_DEFAULT_CMP0071 NEW)
-option(ALSOFT_EXAMPLES "" OFF)
-option(ALSOFT_UTILS "" OFF)
-add_subdirectory(${EXTERNAL_DIR}/OpenAL
-	OpenAL-binary-dir
-	EXCLUDE_FROM_ALL)
-
-unset(CMAKE_POLICY_DEFAULT_CMP0071)
-
-set(CMAKE_POLICY_DEFAULT_CMP0048 NEW)
-
-add_subdirectory(${EXTERNAL_DIR}/ogg
-	ogg-binary-dir
-	EXCLUDE_FROM_ALL)
-
-add_subdirectory(${EXTERNAL_DIR}/vorbis
-	vorbis-binary-dir
-	EXCLUDE_FROM_ALL)
-
-unset(CMAKE_POLICY_DEFAULT_CMP0048)
-
 option(BUILD_EXAMPLES "" OFF)
+
+find_package(glew REQUIRED)
+find_package(glm REQUIRED)
+find_package(spdlog REQUIRED)
+find_package(OpenAL REQUIRED)
+find_package(Ogg REQUIRED)
+find_package(Vorbis REQUIRED)
+
 add_subdirectory(${EXTERNAL_DIR}/AudioFile
 	AudioFile-binary-dir
 	EXCLUDE_FROM_ALL)
-	
-set_target_properties(
-	libglew_shared
-	build_version
-	common
-	OpenAL
-	ogg
-	vorbis
-	vorbisfile
-	PROPERTIES
-		FOLDER "Dependencies")
 
 # Get the current working branch
 execute_process(
@@ -110,7 +72,7 @@ target_link_libraries(HLAM
 		Qt5::Widgets
 		Qt5::Network
 		spdlog::spdlog_header_only 
-		libglew_shared
+		GLEW::GLEW
 		OpenGL::GL
 		OpenAL::OpenAL
 		glm::glm
@@ -161,7 +123,7 @@ target_sources(HLAM
 
 # Copy runtime dependencies automatically for dev builds.
 add_custom_command(TARGET HLAM POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:libglew_shared> $<TARGET_FILE_DIR:HLAM>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:GLEW::GLEW> $<TARGET_FILE_DIR:HLAM>
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:OpenAL::OpenAL> $<TARGET_FILE_DIR:HLAM>
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core> $<TARGET_FILE_DIR:HLAM>
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui> $<TARGET_FILE_DIR:HLAM>

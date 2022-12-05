@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
+set(VCPKG_OVERLAY_TRIPLETS ${CMAKE_SOURCE_DIR}/vcpkg_config/triplets)
+
 macro(copy_dependencies project_name base_dir)
 	foreach(lib ${ARGN})
 		add_custom_command(TARGET ${project_name} POST_BUILD
