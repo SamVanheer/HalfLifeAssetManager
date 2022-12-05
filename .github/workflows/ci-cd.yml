@@ -10,6 +10,7 @@ on:
 
 env:
   BUILD_TYPE: RelWithDebInfo
+  VCPKG_ROOT: ${{github.workspace}}/vcpkg
 
 jobs:
   win32:
