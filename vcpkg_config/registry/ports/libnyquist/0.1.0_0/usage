@@ -1,0 +1,4 @@
+The package json-schema-validator provides CMake integration:
+
+    find_package(libnyquist REQUIRED)
+    target_link_libraries(main PRIVATE libnyquist)

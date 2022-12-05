@@ -3,22 +3,11 @@ find_package(OpenGL REQUIRED)
 # Dependencies included as submodules.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# CTest options
-option(BUILD_TESTING "" OFF)
-option(BUILD_TESTS "" OFF)
-option(BUILD_UTILS "" OFF)
-option(BUILD_EXAMPLES "" OFF)
-
 find_package(glew REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(OpenAL REQUIRED)
-find_package(Ogg REQUIRED)
-find_package(Vorbis REQUIRED)
-
-add_subdirectory(${EXTERNAL_DIR}/AudioFile
-	AudioFile-binary-dir
-	EXCLUDE_FROM_ALL)
+find_package(libnyquist REQUIRED)
 
 # Get the current working branch
 execute_process(
@@ -77,10 +66,7 @@ target_link_libraries(HLAM
 		OpenAL::OpenAL
 		glm::glm
 		${CMAKE_DL_LIBS}
-		Ogg::ogg
-		Vorbis::vorbis
-		Vorbis::vorbisfile
-		AudioFile)
+		libnyquist)
 
 target_compile_options(HLAM
 	PRIVATE

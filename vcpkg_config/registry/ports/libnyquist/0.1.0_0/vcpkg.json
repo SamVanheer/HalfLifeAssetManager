@@ -1,0 +1,8 @@
+{
+  "name": "libnyquist",
+  "version-string": "0.1.0",
+  "port-version": 0,
+  "description": "Cross platform C++11 library for decoding audio (mp3, wav, ogg, opus, flac, etc)",
+  "homepage": "https://github.com/ddiakopoulos/libnyquist",
+  "dependencies": []
+}

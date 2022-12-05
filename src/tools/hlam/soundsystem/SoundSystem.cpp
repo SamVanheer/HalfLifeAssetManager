@@ -1,15 +1,16 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <sstream>
 #include <vector>
 
 #include <spdlog/spdlog.h>
 
-#include "AudioFile.h"
+#include <AL/alext.h>
 
-#include "vorbis/vorbisfile.h"
+#include <libnyquist/Decoders.h>
 
 #include "filesystem/IFileSystem.hpp"
 
@@ -36,172 +37,9 @@ bool SoundSystem::CheckALErrorsCore(const char* file, int line)
 
 #define CheckALErrors() CheckALErrorsCore(__FILE__, __LINE__)
 
-static ALenum BufferFormat(const AudioFile<double>& file)
-{
-	switch (file.getBitDepth())
-	{
-	case 8: return file.isStereo() ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
-	case 16: return file.isStereo() ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
-	default: return AL_INVALID;
-	}
-}
-
-struct DataConverter8Bit
-{
-	using Type = std::int8_t;
-
-	static Type Convert(double value)
-	{
-		value = (value + 1.) / 2.;
-		return static_cast<uint8_t> (value * 255.);
-	}
-};
-
-struct DataConverter16Bit
-{
-	using Type = std::int16_t;
-
-	static Type Convert(double value)
-	{
-		value = std::clamp(value, -1., 1.);
-		return static_cast<int16_t> (value * 32767.);
-	}
-};
-
-template<typename T>
-void ConvertToAL(const AudioFile<double>& file, std::vector<std::uint8_t>& data)
-{
-	std::size_t byteIndex = 0;
-
-	for (int i = 0; i < file.getNumSamplesPerChannel(); ++i)
-	{
-		for (int channel = 0; channel < file.getNumChannels(); ++channel)
-		{
-			auto& dest = *reinterpret_cast<typename T::Type*>(&data[byteIndex]);
-
-			auto value = file.samples[channel][i];
-
-			dest = T::Convert(value);
-
-			byteIndex += sizeof(typename T::Type);
-		}
-	}
-}
-
-std::unique_ptr<SoundSystem::Sound> SoundSystem::TryLoadWaveFile(const std::string& fileName)
-{
-	AudioFile<double> file;
-
-	if (!file.load(fileName))
-	{
-		return {};
-	}
-
-	if (file.getBitDepth() != 8 && file.getBitDepth() != 16)
-	{
-		return {};
-	}
-
-	std::vector<std::uint8_t> data;
-
-	data.resize(file.getNumChannels() * file.getNumSamplesPerChannel() * (file.getBitDepth() / 8));
-
-	switch (file.getBitDepth())
-	{
-	case 8:
-		ConvertToAL<DataConverter8Bit>(file, data);
-		break;
-
-	case 16:
-		ConvertToAL<DataConverter16Bit>(file, data);
-		break;
-
-	default: return {};
-	}
-
-	const auto format = BufferFormat(file);
-
-	auto sound = std::make_unique<SoundSystem::Sound>();
-
-	alBufferData(sound->buffer, format, data.data(), data.size(), file.getSampleRate());
-
-	if (CheckALErrors())
-	{
-		return {};
-	}
-
-	return sound;
-}
-
-struct OggVorbisCleanup
-{
-	void operator()(OggVorbis_File* pointer) const
-	{
-		ov_clear(pointer);
-	}
-};
-
-std::unique_ptr<SoundSystem::Sound> SoundSystem::TryLoadOggVorbis(const std::string& fileName)
-{
-	OggVorbis_File vorbisData{};
-
-	auto result = ov_fopen(fileName.c_str(), &vorbisData);
-
-	if (result)
-	{
-		return {};
-	}
-
-	const std::unique_ptr<OggVorbis_File, OggVorbisCleanup> cleanup(&vorbisData);
-
-	const auto info = ov_info(&vorbisData, -1);
-
-	const ALenum format = info->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-
-	const auto pcmTotal = ov_pcm_total(&vorbisData, -1);
-
-	const ogg_int64_t sizeInBytes = pcmTotal * info->channels * 2;
-
-	std::vector<std::uint8_t> data;
-
-	if (sizeInBytes > data.max_size())
-	{
-		SPDLOG_LOGGER_CALL(_logger, spdlog::level::err, "File \"{}\" is too large to read ({} > {})", fileName, sizeInBytes, data.max_size());
-		return {};
-	}
-
-	data.resize(static_cast<std::size_t>(sizeInBytes));
-
-	long size = 0;
-	int bitStream = 0;
-
-	for (std::size_t offset = 0;
-		(size = ov_read(&vorbisData, (char*)data.data() + offset, 4096, 0, 2, 1, &bitStream)) > 0;
-		offset += size)
-	{
-	}
-
-	//An error occurred while reading
-	if (size < 0)
-	{
-		SPDLOG_LOGGER_CALL(_logger, spdlog::level::err, "Error while reading file \"{}\" ({})\n", fileName, size);
-		return {};
-	}
-
-	auto sound = std::make_unique<SoundSystem::Sound>();
-
-	alBufferData(sound->buffer, format, data.data(), data.size(), info->rate);
-
-	if (CheckALErrors())
-	{
-		return {};
-	}
-
-	return sound;
-}
-
 SoundSystem::SoundSystem(const std::shared_ptr<spdlog::logger>& logger)
 	: _logger(logger)
+	, m_Loader(std::make_unique<nqr::NyquistIO>())
 {
 }
 
@@ -317,12 +155,7 @@ void SoundSystem::PlaySound(std::string_view fileName, float volume, int pitch)
 	volume = std::clamp(volume, 0.0f, 1.0f);
 	pitch = std::clamp(pitch, 0, 255);
 
-	std::unique_ptr<Sound> sound = TryLoadWaveFile(fullFileName);
-
-	if (!sound)
-	{
-		sound = TryLoadOggVorbis(fullFileName);
-	}
+	std::unique_ptr<Sound> sound = TryLoadFile(fullFileName);
 
 	if (!sound)
 	{
@@ -418,5 +251,61 @@ size_t SoundSystem::GetSoundForPlayback()
 	_sounds[uiIndex].reset();
 
 	return uiIndex;
+}
+
+std::unique_ptr<SoundSystem::Sound> SoundSystem::TryLoadFile(const std::string& fileName)
+{
+	std::unique_ptr<FILE, decltype(std::fclose)*> file{std::fopen(fileName.c_str(), "rb"), &std::fclose};
+
+	if (!file)
+	{
+		return {};
+	}
+
+	std::fseek(file.get(), 0, SEEK_END);
+
+	const auto size = std::ftell(file.get());
+
+	std::fseek(file.get(), 0, SEEK_SET);
+
+	std::vector<std::uint8_t> buffer;
+
+	buffer.resize(size);
+
+	if (std::fread(buffer.data(), 1, size, file.get()) != size)
+	{
+		SPDLOG_LOGGER_CALL(_logger, spdlog::level::err, "Error while reading file \"{}\" ({})\n", fileName, size);
+		return {};
+	}
+
+	nqr::AudioData audioData;
+
+	m_Loader->Load(&audioData, buffer);
+
+	if (audioData.channelCount != 1 && audioData.channelCount != 2)
+	{
+		return {};
+	}
+
+	const auto format = [&]()
+	{
+		switch (audioData.channelCount)
+		{
+		case 1: return AL_FORMAT_MONO_FLOAT32;
+		case 2: return AL_FORMAT_STEREO_FLOAT32;
+		default: return AL_INVALID;
+		}
+	}();
+
+	auto sound = std::make_unique<SoundSystem::Sound>();
+
+	alBufferData(sound->buffer, format, audioData.samples.data(), audioData.samples.size() * sizeof(float), audioData.sampleRate);
+
+	if (CheckALErrors())
+	{
+		return {};
+	}
+
+	return sound;
 }
 }

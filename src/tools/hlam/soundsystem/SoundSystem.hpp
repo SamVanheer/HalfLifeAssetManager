@@ -18,6 +18,11 @@ namespace filesystem
 class IFileSystem;
 }
 
+namespace nqr
+{
+class NyquistIO;
+}
+
 /**
 *	@ingroup SoundSystem
 *
@@ -73,8 +78,7 @@ private:
 	size_t GetSoundForPlayback();
 
 	bool CheckALErrorsCore(const char* file, int line);
-	std::unique_ptr<SoundSystem::Sound> TryLoadWaveFile(const std::string& fileName);
-	std::unique_ptr<SoundSystem::Sound> TryLoadOggVorbis(const std::string& fileName);
+	std::unique_ptr<SoundSystem::Sound> TryLoadFile(const std::string& fileName);
 
 private:
 	std::shared_ptr<spdlog::logger> _logger;
@@ -87,6 +91,8 @@ private:
 	std::array<std::unique_ptr<Sound>, MAX_SOUNDS> _sounds;
 
 	std::list<size_t> _soundsLRU;
+
+	std::unique_ptr<nqr::NyquistIO> m_Loader;
 };
 }
 

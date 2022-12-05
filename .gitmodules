@@ -1,6 +1,3 @@
-[submodule "external/AudioFile"]
-	path = external/AudioFile
-	url = https://github.com/adamstark/AudioFile.git
 [submodule "vcpkg"]
 	path = vcpkg
 	url = https://github.com/microsoft/vcpkg.git

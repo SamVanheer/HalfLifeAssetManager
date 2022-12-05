@@ -1,0 +1,12 @@
+{
+	"registries": [
+		{
+			"kind": "filesystem",
+			"path": "vcpkg_config/registry",
+			"baseline": "2022-12-05",
+			"packages": [
+				"libnyquist"
+			]
+		}
+  ]
+}

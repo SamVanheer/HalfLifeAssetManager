@@ -25,13 +25,8 @@
 			"default-features": false
 		},
 		{
-			"name": "libogg",
-			"version>=": "1.3.5",
-			"default-features": false
-		},
-		{
-			"name": "libvorbis",
-			"version>=": "1.3.7#2",
+			"name": "libnyquist",
+			"version>=": "0.1.0",
 			"default-features": false
 		}
   ]
