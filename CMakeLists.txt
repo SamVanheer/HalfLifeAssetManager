@@ -2,15 +2,6 @@ cmake_minimum_required(VERSION 3.18)
 
 set(VCPKG_OVERLAY_TRIPLETS ${CMAKE_SOURCE_DIR}/vcpkg_config/triplets)
 
-macro(copy_dependencies project_name base_dir)
-	foreach(lib ${ARGN})
-		add_custom_command(TARGET ${project_name} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"${CMAKE_SOURCE_DIR}/${base_dir}/${lib}"
-			"$<TARGET_FILE_DIR:${project_name}>")
-	endforeach()
-endmacro()
-
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
