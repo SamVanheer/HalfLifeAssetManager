@@ -1,6 +1,6 @@
 #include <cstring>
 
-#include "graphics/Constants.hpp"
+#include "graphics/GraphicsConstants.hpp"
 
 const char* RenderModeToString( const RenderMode renderMode )
 {

@@ -9,7 +9,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-#include "graphics/Constants.hpp"
+#include "graphics/GraphicsConstants.hpp"
 #include "graphics/OpenGL.hpp"
 #include "graphics/Palette.hpp"
 

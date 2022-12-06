@@ -10,7 +10,7 @@
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
 #include "graphics/Camera.hpp"
-#include "graphics/Constants.hpp"
+#include "graphics/GraphicsConstants.hpp"
 
 class EntityList;
 class HLMVStudioModelEntity;

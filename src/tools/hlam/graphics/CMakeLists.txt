@@ -4,8 +4,8 @@ target_sources(HLAM
 		BMPFile.hpp
 		Camera.cpp
 		Camera.hpp
-		Constants.cpp
-		Constants.hpp
+		GraphicsConstants.cpp
+		GraphicsConstants.hpp
 		GraphicsUtils.cpp
 		GraphicsUtils.hpp
 		IGraphicsContext.hpp
