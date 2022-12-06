@@ -1,17 +1,33 @@
 target_sources(HLAM
 	PRIVATE
 		AnimEvent.hpp
+		AxesEntity.cpp
+		AxesEntity.hpp
+		BackgroundEntity.cpp
+		BackgroundEntity.hpp
 		BaseAnimating.hpp
 		BaseEntity.cpp
 		BaseEntity.hpp
+		BoundingBoxEntity.cpp
+		BoundingBoxEntity.hpp
+		ClippingBoxEntity.cpp
+		ClippingBoxEntity.hpp
+		CrosshairEntity.cpp
+		CrosshairEntity.hpp
 		EHandle.cpp
 		EHandle.hpp
 		EntityConstants.hpp
 		EntityList.cpp
 		EntityList.hpp
 		Events.hpp
+		GroundEntity.cpp
+		GroundEntity.hpp
+		GuidelinesEntity.cpp
+		GuidelinesEntity.hpp
 		HLMVStudioModelEntity.cpp
 		HLMVStudioModelEntity.hpp
+		PlayerHitboxEntity.cpp
+		PlayerHitboxEntity.hpp
 		SpriteEntity.cpp
 		SpriteEntity.hpp
 		StudioModelEntity.cpp

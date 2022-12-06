@@ -20,9 +20,17 @@
 #include "engine/shared/studiomodel/StudioModelIO.hpp"
 #include "engine/shared/studiomodel/StudioModelUtils.hpp"
 
+#include "entity/AxesEntity.hpp"
+#include "entity/BackgroundEntity.hpp"
 #include "entity/BaseEntity.hpp"
+#include "entity/BoundingBoxEntity.hpp"
+#include "entity/ClippingBoxEntity.hpp"
+#include "entity/CrosshairEntity.hpp"
 #include "entity/EntityList.hpp"
+#include "entity/GroundEntity.hpp"
+#include "entity/GuidelinesEntity.hpp"
 #include "entity/HLMVStudioModelEntity.hpp"
+#include "entity/PlayerHitboxEntity.hpp"
 
 #include "graphics/Scene.hpp"
 #include "graphics/TextureLoader.hpp"
@@ -126,6 +134,17 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	UpdateColors();
 
+	// The order that entities are added matters for now since there's no sorting done.
+	_scene->GetEntityContext()->EntityList->Create<BackgroundEntity>()([this](auto entity)
+		{
+			entity->SetEntityContext(_scene->GetEntityContext());
+		}).Spawn();
+
+	_scene->GetEntityContext()->EntityList->Create<AxesEntity>()([this](auto entity)
+		{
+			entity->SetEntityContext(_scene->GetEntityContext());
+		}).Spawn();
+
 	auto entity = _scene->GetEntityContext()->EntityList->Create<HLMVStudioModelEntity>()([this](auto entity)
 		{
 			entity->SetEntityContext(_scene->GetEntityContext());
@@ -136,6 +155,36 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	{
 		_scene->SetEntity(entity);
 	}
+
+	_scene->GetEntityContext()->EntityList->Create<GroundEntity>()([this](auto entity)
+		{
+			entity->SetEntityContext(_scene->GetEntityContext());
+		}).Spawn();
+
+	_scene->GetEntityContext()->EntityList->Create<PlayerHitboxEntity>()([this](auto entity)
+		{
+			entity->SetEntityContext(_scene->GetEntityContext());
+		}).Spawn();
+
+	_scene->GetEntityContext()->EntityList->Create<BoundingBoxEntity>()([this](auto entity)
+		{
+			entity->SetEntityContext(_scene->GetEntityContext());
+		}).Spawn();
+
+	_scene->GetEntityContext()->EntityList->Create<ClippingBoxEntity>()([this](auto entity)
+		{
+			entity->SetEntityContext(_scene->GetEntityContext());
+		}).Spawn();
+
+	_scene->GetEntityContext()->EntityList->Create<CrosshairEntity>()([this](auto entity)
+		{
+			entity->SetEntityContext(_scene->GetEntityContext());
+		}).Spawn();
+
+	_scene->GetEntityContext()->EntityList->Create<GuidelinesEntity>()([this](auto entity)
+		{
+			entity->SetEntityContext(_scene->GetEntityContext());
+		}).Spawn();
 
 	auto arcBallCamera = new camera_operators::ArcBallCameraOperator(_editorContext->GetGeneralSettings());
 	_firstPersonCamera = new camera_operators::FirstPersonCameraOperator(_editorContext->GetGeneralSettings());

@@ -27,6 +27,11 @@ enum RenderPass : RenderPasses
 	*	@brief For 3D objects that need to render on top of or around the scene.
 	*/
 	Overlay3D = 1 << 2,
+
+	/**
+	*	@brief For 2D objects that need to render on top of the scene.
+	*/
+	Overlay2D = 1 << 3,
 };
 }
 

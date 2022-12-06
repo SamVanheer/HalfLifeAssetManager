@@ -87,6 +87,10 @@ public:
 		_currentCamera->SetWindowSize(_windowWidth, _windowHeight);
 	}
 
+	unsigned int GetWindowWidth() const { return _windowWidth; }
+
+	unsigned int GetWindowHeight() const { return _windowHeight; }
+
 	void UpdateWindowSize(unsigned int width, unsigned int height)
 	{
 		//Avoid constantly updating cameras
@@ -134,9 +138,9 @@ public:
 	void Draw();
 
 private:
-	void DrawModel();
-
 	void CollectRenderables(RenderPass::RenderPass renderPass, std::vector<BaseEntity*>& renderablesToRender);
+
+	void DrawRenderables(RenderPass::RenderPass renderPass);
 
 	//TODO: these are temporary until the graphics code can be refactored into an object based design
 public:
@@ -176,11 +180,6 @@ private:
 	unsigned int _drawnPolygonsCount = 0;
 
 	HLMVStudioModelEntity* _entity{};
-
-	int _floorSequence{-1};
-	float _previousFloorFrame{0};
-
-	glm::vec2 _floorTextureOffset{0};
 
 	std::vector<BaseEntity*> _renderablesToRender;
 };

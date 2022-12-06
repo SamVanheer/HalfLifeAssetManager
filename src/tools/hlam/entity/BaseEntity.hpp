@@ -14,6 +14,11 @@ class EntityList;
 class QOpenGLFunctions_1_1;
 class WorldTime;
 
+namespace graphics
+{
+class Scene;
+}
+
 namespace soundsystem
 {
 class ISoundSystem;
@@ -48,18 +53,21 @@ struct EntityContext final
 	::EntityList* const EntityList;
 	soundsystem::ISoundSystem* const SoundSystem;
 	ui::settings::StudioModelSettings* const Settings;
+	graphics::Scene* const Scene;
 
 	EntityContext(WorldTime* time,
 		studiomdl::IStudioModelRenderer* studioModelRenderer, sprite::ISpriteRenderer* spriteRenderer,
 		::EntityList* entityList,
 		soundsystem::ISoundSystem* soundSystem,
-		ui::settings::StudioModelSettings* settings)
+		ui::settings::StudioModelSettings* settings,
+		graphics::Scene* scene)
 		: Time(time)
 		, SpriteRenderer(spriteRenderer)
 		, StudioModelRenderer(studioModelRenderer)
 		, EntityList(entityList)
 		, SoundSystem(soundSystem)
 		, Settings(settings)
+		, Scene(scene)
 	{
 	}
 };
