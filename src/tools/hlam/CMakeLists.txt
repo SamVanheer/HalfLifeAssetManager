@@ -37,8 +37,7 @@ target_compile_definitions(HLAM
 			_CRT_SECURE_NO_WARNINGS
 			_SCL_SECURE_NO_WARNINGS>
 		$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:
-			FILE_OFFSET_BITS=64>
-		IS_LITTLE_ENDIAN=${IS_LITTLE_ENDIAN_VALUE})
+			FILE_OFFSET_BITS=64>)
 
 target_link_libraries(HLAM
 	PRIVATE

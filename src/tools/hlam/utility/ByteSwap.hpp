@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bit>
 #include <cassert>
 #include <cstdint>
 #include <cstring>
@@ -70,7 +71,7 @@ inline double SwapValue<double>(double value)
 /**
 *	@brief Calls the correct byte swapping functions for the current platform.
 */
-template<const bool LITTLE = IS_LITTLE_ENDIAN>
+template<const bool LITTLE = std::endian::native == std::endian::little>
 class ByteSwap final
 {
 public:

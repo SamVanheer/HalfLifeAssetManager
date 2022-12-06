@@ -18,15 +18,6 @@ project(HL_Tools
 	DESCRIPTION "Half-Life Modding Tools"
 	LANGUAGES CXX)
 
-include(TestBigEndian)
-TEST_BIG_ENDIAN(IS_BIG_ENDIAN_TARGET)
-
-if(IS_BIG_ENDIAN_TARGET)
-	set(IS_LITTLE_ENDIAN_VALUE "0")
-else()
-	set(IS_LITTLE_ENDIAN_VALUE "1")
-endif()
-
 find_package(Git REQUIRED)
 
 add_custom_target(ProjectInfo
