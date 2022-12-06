@@ -73,6 +73,7 @@ private:
 	*/
 	struct EntData final
 	{
+		EntData() = default;
 		EntData(const EntData&) = delete;
 		EntData& operator=(const EntData&) = delete;
 

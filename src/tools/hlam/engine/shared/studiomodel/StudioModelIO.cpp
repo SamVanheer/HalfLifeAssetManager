@@ -48,7 +48,7 @@ namespace
 template<typename T>
 studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* existingFile, const bool bAllowSeqGroup, const bool externalTextures)
 {
-	const std::string utf8FileName{fileName.u8string()};
+	const std::string utf8FileName{fileName.string()};
 
 	// load the model
 	FILE* file = existingFile ? existingFile : utf8_exclusive_read_fopen(utf8FileName.c_str(), true);
@@ -58,7 +58,7 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* exis
 		//TODO: eventually file open calls will be routed through IFileSystem which will handle case sensitivity automatically
 		if (externalTextures)
 		{
-			auto stem{fileName.stem().u8string()};
+			auto stem{fileName.stem().string()};
 
 			if (!stem.empty())
 			{
@@ -69,7 +69,7 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* exis
 				loweredFileName.replace_filename(stem);
 				loweredFileName.replace_extension(fileName.extension());
 
-				file = utf8_exclusive_read_fopen(loweredFileName.u8string().c_str(), true);
+				file = utf8_exclusive_read_fopen(loweredFileName.string().c_str(), true);
 			}
 		}
 
@@ -143,7 +143,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 	if (mainHeader->name[0] == '\0')
 	{
 		//Only the main hader sets the name, so this must be something else (probably texture header, but could be anything)
-		auto message = std::string{"The file \""} + fileName.u8string() + "\" is not a studio model main header file";
+		auto message = std::string{"The file \""} + fileName.string() + "\" is not a studio model main header file";
 
 		if (!baseFileName.empty() && std::toupper(baseFileName.u8string().back()) == 'T')
 		{
@@ -182,7 +182,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 
 			const auto suffix = isDol ? ".dol" : ".mdl";
 
-			seqgroupname << baseFileName.u8string() <<
+			seqgroupname << baseFileName.string() <<
 				std::setfill('0') << std::setw(2) << i <<
 				std::setw(0) << suffix;
 
@@ -241,7 +241,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 		baseFileName.replace_extension();
 
-		const auto baseFileNameString = baseFileName.u8string();
+		const auto baseFileNameString = baseFileName.string();
 
 		std::stringstream seqgroupname;
 
@@ -269,7 +269,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 		}
 	}
 
-	FILE* file = utf8_fopen(fileName.u8string().c_str(), "wb");
+	FILE* file = utf8_fopen(fileName.string().c_str(), "wb");
 
 	if (!file)
 	{
@@ -298,7 +298,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 		texturename += "T.mdl";
 
-		file = utf8_fopen(texturename.u8string().c_str(), "wb");
+		file = utf8_fopen(texturename.string().c_str(), "wb");
 
 		if (!file)
 		{
@@ -323,7 +323,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 		{
 			seqgroupname.str({});
 
-			seqgroupname << baseFileName.u8string() <<
+			seqgroupname << baseFileName.string() <<
 				std::setfill('0') << std::setw(2) << i <<
 				std::setw(0) << ".mdl";
 

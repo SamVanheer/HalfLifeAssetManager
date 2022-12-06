@@ -1261,7 +1261,7 @@ StudioModel ConvertFromEditable(const std::filesystem::path& fileName, const Edi
 
 
 	//Store only the filename itself. It's never used for file loading so it's not terribly important
-	UTIL_CopyString(header.name, fileName.filename().u8string().c_str());
+	UTIL_CopyString(header.name, fileName.filename().string().c_str());
 
 	header.eyeposition = studioModel.EyePosition;
 	header.min = studioModel.BoundingMin;

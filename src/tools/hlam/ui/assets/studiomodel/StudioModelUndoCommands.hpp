@@ -452,7 +452,7 @@ public:
 
 	int GetIndex() const { return _index; }
 
-	const T& GetOldValue() const { return _newValue; }
+	const T& GetValue() const { return _value; }
 
 protected:
 	virtual void Add(int index, const T& value) = 0;

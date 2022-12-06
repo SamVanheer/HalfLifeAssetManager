@@ -689,20 +689,20 @@ void MainWindow::OnShowAbout()
 
 	QMessageBox::about(this, "About " + programName,
 		QString::fromUtf8(
-			u8"%1 %2.%3.%4\n\n"
-			u8"2022 Sam Vanheer\n\n"
-			u8"Email:    sam.vanheer@outlook.com\n\n"
-			u8"Build Configuration: %5\n"
-			u8"Git Info:\n"
-			u8"\tBranch: %6\n"
-			u8"\tTag: %7\n"
-			u8"\tCommit Hash: %8\n\n"
-			u8"Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil \'Jed\' Jedrzejewski\n"
-			u8"Email:    jed@wunderboy.org\n"
-			u8"Web:      http://www.wunderboy.org/\n\n"
-			u8"Also based on Half-Life Model Viewer v1.25 © 2002 Mete Ciragan\n"
-			u8"Email:    mete@swissquake.ch\n"
-			u8"Web:      http://www.milkshape3d.com/\n\n")
+			"%1 %2.%3.%4\n\n"
+			"2022 Sam Vanheer\n\n"
+			"Email:    sam.vanheer@outlook.com\n\n"
+			"Build Configuration: %5\n"
+			"Git Info:\n"
+			"\tBranch: %6\n"
+			"\tTag: %7\n"
+			"\tCommit Hash: %8\n\n"
+			"Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil \'Jed\' Jedrzejewski\n"
+			"Email:    jed@wunderboy.org\n"
+			"Web:      http://www.wunderboy.org/\n\n"
+			"Also based on Half-Life Model Viewer v1.25 © 2002 Mete Ciragan\n"
+			"Email:    mete@swissquake.ch\n"
+			"Web:      http://www.milkshape3d.com/\n\n")
 			.arg(programName)
 			.arg(HLAMVersionMajor)
 			.arg(HLAMVersionMinor)

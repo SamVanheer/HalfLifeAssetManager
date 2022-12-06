@@ -22,7 +22,7 @@ add_dependencies(HLAM ProjectInfo)
 
 target_compile_features(HLAM
 	PRIVATE
-		cxx_std_17)
+		cxx_std_20)
 
 target_include_directories(HLAM
 	PRIVATE
