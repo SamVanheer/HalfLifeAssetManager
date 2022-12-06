@@ -30,4 +30,15 @@ else()
 	set(IS_LITTLE_ENDIAN_VALUE "1")
 endif()
 
+find_package(Git REQUIRED)
+
+add_custom_target(ProjectInfo
+	COMMAND ${CMAKE_COMMAND}
+		-D HLAM_VERSION_MAJOR=${HLAM_VERSION_MAJOR}
+		-D HLAM_VERSION_MINOR=${HLAM_VERSION_MINOR}
+		-D HLAM_VERSION_PATCH=${HLAM_VERSION_PATCH}
+		-D GIT_EXECUTABLE=${GIT_EXECUTABLE}
+		-P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/UpdateProjectInfo.cmake
+	BYPRODUCTS ${CMAKE_BINARY_DIR}/ProjectInfo.hpp)
+
 add_subdirectory(src/tools)

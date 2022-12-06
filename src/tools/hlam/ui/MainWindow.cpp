@@ -14,7 +14,7 @@
 #include <QScreen>
 #include <QWindow>
 
-#include "version.hpp"
+#include "ProjectInfo.hpp"
 
 #include "assets/AssetIO.hpp"
 

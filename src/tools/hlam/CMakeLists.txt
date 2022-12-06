@@ -9,32 +9,6 @@ find_package(spdlog REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(libnyquist REQUIRED)
 
-# Get the current working branch
-execute_process(
-    COMMAND git rev-parse --abbrev-ref HEAD
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE HLAM_GIT_BRANCH
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-# Get the latest tag name
-execute_process(
-    COMMAND git describe --abbrev=0 --tags
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE HLAM_GIT_TAG
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-# Get the latest commit hash
-execute_process(
-    COMMAND git rev-parse HEAD
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE HLAM_GIT_COMMIT_HASH
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-configure_file(
-	${CMAKE_CURRENT_SOURCE_DIR}/version.hpp.in
-		${CMAKE_CURRENT_BINARY_DIR}/version.hpp
-		@ONLY)
-
 if (MSVC)
 	configure_file(
 		${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
@@ -43,6 +17,12 @@ if (MSVC)
 endif()
 
 add_executable(HLAM WIN32)
+
+add_dependencies(HLAM ProjectInfo)
+
+target_include_directories(HLAM
+	PRIVATE
+		${CMAKE_BINARY_DIR})
 
 target_compile_definitions(HLAM
 	PRIVATE
@@ -105,7 +85,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_FILES})
 # Add this after source_group to avoid errors with root paths
 target_sources(HLAM
 	PRIVATE
-		${CMAKE_CURRENT_BINARY_DIR}/version.hpp)
+		${CMAKE_BINARY_DIR}/ProjectInfo.hpp)
 
 # Copy runtime dependencies automatically for dev builds.
 add_custom_command(TARGET HLAM POST_BUILD
