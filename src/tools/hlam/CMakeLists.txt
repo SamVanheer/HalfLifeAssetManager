@@ -1,6 +1,5 @@
 find_package(OpenGL REQUIRED)
 
-# Dependencies included as submodules.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 find_package(glew REQUIRED)
