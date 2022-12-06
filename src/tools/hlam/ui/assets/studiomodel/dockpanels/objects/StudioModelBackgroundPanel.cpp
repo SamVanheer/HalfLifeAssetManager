@@ -31,6 +31,8 @@ void StudioModelBackgroundPanel::OnTextureChanged()
 {
 	auto scene = _asset->GetScene();
 
+	auto openglFunctions = scene->GetOpenGLFunctions();
+
 	const QString fileName = _ui.BackgroundTexture->text();
 
 	bool setTexture = false;
@@ -47,14 +49,14 @@ void StudioModelBackgroundPanel::OnTextureChanged()
 
 			if (scene->BackgroundTexture == 0)
 			{
-				glGenTextures(1, &scene->BackgroundTexture);
+				openglFunctions->glGenTextures(1, &scene->BackgroundTexture);
 			}
 
-			glBindTexture(GL_TEXTURE_2D, scene->BackgroundTexture);
+			openglFunctions->glBindTexture(GL_TEXTURE_2D, scene->BackgroundTexture);
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.constBits());
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			openglFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.constBits());
+			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 			setTexture = true;
 		}
@@ -68,7 +70,7 @@ void StudioModelBackgroundPanel::OnTextureChanged()
 	{
 		if (scene->BackgroundTexture != 0)
 		{
-			glDeleteTextures(1, &scene->BackgroundTexture);
+			openglFunctions->glDeleteTextures(1, &scene->BackgroundTexture);
 			scene->BackgroundTexture = 0;
 		}
 	}

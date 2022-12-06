@@ -77,6 +77,8 @@ void StudioModelGroundPanel::OnTextureChanged()
 {
 	auto scene = _asset->GetScene();
 
+	auto openglFunctions = scene->GetOpenGLFunctions();
+
 	const QString fileName = _ui.GroundTexture->text();
 
 	bool setTexture = false;
@@ -93,14 +95,14 @@ void StudioModelGroundPanel::OnTextureChanged()
 
 			if (scene->GroundTexture == 0)
 			{
-				glGenTextures(1, &scene->GroundTexture);
+				openglFunctions->glGenTextures(1, &scene->GroundTexture);
 			}
 
-			glBindTexture(GL_TEXTURE_2D, scene->GroundTexture);
+			openglFunctions->glBindTexture(GL_TEXTURE_2D, scene->GroundTexture);
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.constBits());
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			openglFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.constBits());
+			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 			setTexture = true;
 		}
@@ -114,7 +116,7 @@ void StudioModelGroundPanel::OnTextureChanged()
 	{
 		if (scene->GroundTexture != 0)
 		{
-			glDeleteTextures(1, &scene->GroundTexture);
+			openglFunctions->glDeleteTextures(1, &scene->GroundTexture);
 			scene->GroundTexture = 0;
 		}
 	}

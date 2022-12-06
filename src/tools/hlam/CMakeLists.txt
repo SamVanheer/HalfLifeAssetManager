@@ -1,8 +1,5 @@
-find_package(OpenGL REQUIRED)
-
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-find_package(glew REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(OpenAL REQUIRED)
@@ -43,8 +40,6 @@ target_link_libraries(HLAM
 		Qt5::Widgets
 		Qt5::Network
 		spdlog::spdlog_header_only 
-		GLEW::GLEW
-		OpenGL::GL
 		OpenAL::OpenAL
 		glm::glm
 		${CMAKE_DL_LIBS}

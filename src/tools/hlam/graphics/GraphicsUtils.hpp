@@ -39,7 +39,7 @@ void FlipImageVertically(const int iWidth, const int iHeight, std::byte* const p
 *	Draws a background texture, fitted to the viewport.
 *	@param backgroundTexture OpenGL texture id that represents the background texture
 */
-void DrawBackground(GLuint backgroundTexture);
+void DrawBackground(QOpenGLFunctions_1_1* openglFunctions, GLuint backgroundTexture);
 
 inline std::array<glm::vec3, 8> CreateBoxFromBounds(const glm::vec3& min, const glm::vec3& max)
 {
@@ -61,9 +61,10 @@ inline std::array<glm::vec3, 8> CreateBoxFromBounds(const glm::vec3& min, const 
 /**
 *	Draws a box using an array of 8 vectors as corner points.
 */
-void DrawBox(const std::array<glm::vec3, 8>& points);
+void DrawBox(QOpenGLFunctions_1_1* openglFunctions, const std::array<glm::vec3, 8>& points);
 
-void DrawOutlinedBox(const std::array<glm::vec3, 8>& points, const glm::vec4& faceColor, const glm::vec4& borderColor);
+void DrawOutlinedBox(QOpenGLFunctions_1_1* openglFunctions,
+	const std::array<glm::vec3, 8>& points, const glm::vec4& faceColor, const glm::vec4& borderColor);
 
 /**
 *	@brief Tests if the given filename is a remap name, and returns the remap ranges if so
@@ -77,7 +78,7 @@ void PaletteHueReplace(RGBPalette& palette, int newHue, int start, int end);
 *	@param renderMode Render mode to set up. Must be valid.
 *	@param bBackfaceCulling Whether backface culling should be enabled or not.
 */
-void SetupRenderMode(RenderMode renderMode, const bool bBackfaceCulling);
+void SetupRenderMode(QOpenGLFunctions_1_1* openglFunctions, RenderMode renderMode, const bool bBackfaceCulling);
 
 /**
 *	Draws a floor quad.
@@ -86,7 +87,7 @@ void SetupRenderMode(RenderMode renderMode, const bool bBackfaceCulling);
 *	@param textureRepeatLength Size of a texture repetition
 *	@param textureOffset Offset in units to shift the texture
 */
-void DrawFloorQuad(const glm::vec3& origin, float floorLength, float textureRepeatLength, glm::vec2 textureOffset);
+void DrawFloorQuad(QOpenGLFunctions_1_1* openglFunctions, const glm::vec3& origin, float floorLength, float textureRepeatLength, glm::vec2 textureOffset);
 
 /**
 *	Draws a floor, optionally with a texture.
@@ -98,7 +99,8 @@ void DrawFloorQuad(const glm::vec3& origin, float floorLength, float textureRepe
 *	@param groundColor		Color of the ground if no texture is specified
 *	@param bMirror			If true, draws a solid underside
 */
-void DrawFloor(const glm::vec3& origin, float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, GLuint groundTexture,
+void DrawFloor(QOpenGLFunctions_1_1* openglFunctions, 
+	const glm::vec3& origin, float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, GLuint groundTexture,
 	const glm::vec3& groundColor, const bool bMirror);
 
 /**
@@ -110,6 +112,7 @@ void DrawFloor(const glm::vec3& origin, float floorLength, float textureRepeatLe
 *	@param floorLength			Length of one side of the floor
 *	@param bBackfaceCulling		Whether to perform backface culling or not
 */
-unsigned int DrawMirroredModel(studiomdl::IStudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
+unsigned int DrawMirroredModel(QOpenGLFunctions_1_1* openglFunctions, 
+	studiomdl::IStudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
 	const RenderMode renderMode, const bool bWireframeOverlay, const glm::vec3& origin, const float floorLength, const bool bBackfaceCulling);
 }

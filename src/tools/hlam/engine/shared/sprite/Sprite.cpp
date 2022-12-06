@@ -61,7 +61,7 @@ void Convert8To32Bit(const graphics::RGBPalette& inPalette, graphics::RGBAPalett
 	}
 }
 
-std::byte* LoadSpriteFrame(std::byte* pIn, mspriteframe_t** ppFrame, const int iFrame, const graphics::RGBAPalette& rgbaPalette)
+std::byte* LoadSpriteFrame(QOpenGLFunctions_1_1* openglFunctions, std::byte* pIn, mspriteframe_t** ppFrame, const int iFrame, const graphics::RGBAPalette& rgbaPalette)
 {
 	assert(pIn);
 	assert(ppFrame);
@@ -89,7 +89,7 @@ std::byte* LoadSpriteFrame(std::byte* pIn, mspriteframe_t** ppFrame, const int i
 
 	auto pPixelData = reinterpret_cast<std::byte*>(pFrame + 1);
 
-	glGenTextures(1, &pSpriteFrame->gl_texturenum);
+	openglFunctions->glGenTextures(1, &pSpriteFrame->gl_texturenum);
 
 	auto rgba = std::make_unique<std::byte[]>(iWidth * iHeight * 4);
 
@@ -108,16 +108,16 @@ std::byte* LoadSpriteFrame(std::byte* pIn, mspriteframe_t** ppFrame, const int i
 
 	//TODO: this is the same code as used by studiomodel. Refactor.
 	//TODO: it might be better to upload sprites as a single large texture containing all frames.
-	glBindTexture(GL_TEXTURE_2D, pSpriteFrame->gl_texturenum);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iWidth, iHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba.get());
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	openglFunctions->glBindTexture(GL_TEXTURE_2D, pSpriteFrame->gl_texturenum);
+	openglFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iWidth, iHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba.get());
+	openglFunctions->glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	return pPixelData + (iWidth * iHeight);
 }
 
-std::byte* LoadSpriteGroup(std::byte* pIn, mspriteframe_t** ppFrame, const int iFrame, const graphics::RGBAPalette& rgbaPalette)
+std::byte* LoadSpriteGroup(QOpenGLFunctions_1_1* openglFunctions, std::byte* pIn, mspriteframe_t** ppFrame, const int iFrame, const graphics::RGBAPalette& rgbaPalette)
 {
 	dspritegroup_t* pGroup = reinterpret_cast<dspritegroup_t*>(pIn);
 
@@ -148,13 +148,13 @@ std::byte* LoadSpriteGroup(std::byte* pIn, mspriteframe_t** ppFrame, const int i
 
 	for (int iIndex = 0; iIndex < iNumFrames; ++iIndex)
 	{
-		pInput = LoadSpriteFrame(pInput, &pSpriteGroup->frames[iIndex], iFrame * 100 + iIndex, rgbaPalette);
+		pInput = LoadSpriteFrame(openglFunctions, pInput, &pSpriteGroup->frames[iIndex], iFrame * 100 + iIndex, rgbaPalette);
 	}
 
 	return pInput;
 }
 
-bool LoadSpriteInternal(std::byte* pIn, msprite_t*& pSprite)
+bool LoadSpriteInternal(QOpenGLFunctions_1_1* openglFunctions, std::byte* pIn, msprite_t*& pSprite)
 {
 	assert(pIn);
 
@@ -210,11 +210,11 @@ bool LoadSpriteInternal(std::byte* pIn, msprite_t*& pSprite)
 
 		if (type == spriteframetype_t::SINGLE)
 		{
-			pType = reinterpret_cast<spriteframetype_t*>(LoadSpriteFrame(reinterpret_cast<std::byte*>(pType + 1), &pSprite->frames[iFrame].frameptr, iFrame, convertedPalette));
+			pType = reinterpret_cast<spriteframetype_t*>(LoadSpriteFrame(openglFunctions, reinterpret_cast<std::byte*>(pType + 1), &pSprite->frames[iFrame].frameptr, iFrame, convertedPalette));
 		}
 		else
 		{
-			pType = reinterpret_cast<spriteframetype_t*>(LoadSpriteGroup(reinterpret_cast<std::byte*>(pType + 1), &pSprite->frames[iFrame].frameptr, iFrame, convertedPalette));
+			pType = reinterpret_cast<spriteframetype_t*>(LoadSpriteGroup(openglFunctions, reinterpret_cast<std::byte*>(pType + 1), &pSprite->frames[iFrame].frameptr, iFrame, convertedPalette));
 		}
 	}
 
@@ -222,7 +222,7 @@ bool LoadSpriteInternal(std::byte* pIn, msprite_t*& pSprite)
 }
 }
 
-bool LoadSprite(const char* const pszFilename, msprite_t*& pSprite)
+bool LoadSprite(QOpenGLFunctions_1_1* openglFunctions, const char* const pszFilename, msprite_t*& pSprite)
 {
 	assert(pszFilename);
 
@@ -246,22 +246,24 @@ bool LoadSprite(const char* const pszFilename, msprite_t*& pSprite)
 
 	if (bSuccess)
 	{
-		bSuccess = LoadSpriteInternal(pBuffer.get(), pSprite);
+		bSuccess = LoadSpriteInternal(openglFunctions, pBuffer.get(), pSprite);
 	}
 
 	if (!bSuccess)
 	{
-		FreeSprite(pSprite);
+		FreeSprite(openglFunctions, pSprite);
 		pSprite = nullptr;
 	}
 
 	return bSuccess;
 }
 
-void FreeSprite(msprite_t* pSprite)
+void FreeSprite(QOpenGLFunctions_1_1* openglFunctions, msprite_t* pSprite)
 {
 	if (!pSprite)
 		return;
+
+	// TODO: free opengl resources
 
 	for (int iFrame = 0; iFrame < pSprite->numframes; ++iFrame)
 	{

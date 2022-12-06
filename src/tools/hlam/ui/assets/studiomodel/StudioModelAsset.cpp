@@ -14,8 +14,6 @@
 #include <QMenu>
 #include <QMessageBox>
 
-#include <GL/glew.h>
-
 #include "assets/AssetIO.hpp"
 
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
@@ -177,6 +175,12 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 StudioModelAsset::~StudioModelAsset()
 {
+	auto context = _scene->GetGraphicsContext();
+	
+	context->Begin();
+	_editableStudioModel->DeleteTextures(*_textureLoader);
+	context->End();
+
 	PopInputSink();
 
 	delete _editWidget;
@@ -281,10 +285,7 @@ void StudioModelAsset::TryRefresh()
 
 		//Clean up old model resources
 		//TODO: needs to be handled better
-		for (auto& texture : _editableStudioModel->Textures)
-		{
-			glDeleteTextures(1, &texture->TextureId);
-		}
+		_editableStudioModel->DeleteTextures(*_textureLoader);
 
 		_editableStudioModel = std::move(newModel);
 

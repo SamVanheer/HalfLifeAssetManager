@@ -154,9 +154,9 @@ void SpriteRenderer::DrawSprite(const glm::vec3& origin, const glm::vec2& size,
 		frame = pGroup->frames[iIndex];
 	}
 
-	glEnable(GL_TEXTURE_2D);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBindTexture(GL_TEXTURE_2D, frame->gl_texturenum);
+	_openglFunctions->glEnable(GL_TEXTURE_2D);
+	_openglFunctions->glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	_openglFunctions->glBindTexture(GL_TEXTURE_2D, frame->gl_texturenum);
 
 	//TODO: set up the sprite's orientation in the world according to its type.
 	//TODO: the size of the sprite should change based on its distance from the viewer.
@@ -168,84 +168,84 @@ void SpriteRenderer::DrawSprite(const glm::vec3& origin, const glm::vec2& size,
 	default:
 	case TexFormat::SPR_NORMAL:
 	{
-		glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glDisable(GL_BLEND);
+		_openglFunctions->glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		_openglFunctions->glDisable(GL_BLEND);
 		break;
 	}
 
 	case TexFormat::SPR_ADDITIVE:
 	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		_openglFunctions->glEnable(GL_BLEND);
+		_openglFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		break;
 	}
 
 	case TexFormat::SPR_INDEXALPHA:
 	case TexFormat::SPR_ALPHTEST:
 	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		_openglFunctions->glEnable(GL_BLEND);
+		_openglFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		break;
 	}
 	}
 
 	if (texFormat == TexFormat::SPR_ALPHTEST)
 	{
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.0f);
+		_openglFunctions->glEnable(GL_ALPHA_TEST);
+		_openglFunctions->glAlphaFunc(GL_GREATER, 0.0f);
 	}
 	else
 	{
-		glDisable(GL_ALPHA_TEST);
+		_openglFunctions->glDisable(GL_ALPHA_TEST);
 	}
 
 	const glm::vec4 vecRect{origin.x - size.x / 2, origin.y - size.y / 2, origin.x + size.x / 2, origin.y + size.y / 2};
 
 	if (!(flags & renderer::DrawFlag::NODRAW))
 	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-		glShadeModel(GL_SMOOTH);
-		glColor4f(1, 1, 1, 1);
+		_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		_openglFunctions->glEnable(GL_TEXTURE_2D);
+		_openglFunctions->glEnable(GL_CULL_FACE);
+		_openglFunctions->glEnable(GL_DEPTH_TEST);
+		_openglFunctions->glShadeModel(GL_SMOOTH);
+		_openglFunctions->glColor4f(1, 1, 1, 1);
 
-		glBegin(GL_TRIANGLE_STRIP);
+		_openglFunctions->glBegin(GL_TRIANGLE_STRIP);
 
-		glTexCoord2f(0, 0);
-		glVertex3f(vecRect.x, vecRect.y, origin.z);
+		_openglFunctions->glTexCoord2f(0, 0);
+		_openglFunctions->glVertex3f(vecRect.x, vecRect.y, origin.z);
 
-		glTexCoord2f(1, 0);
-		glVertex3f(vecRect.z, vecRect.y, origin.z);
+		_openglFunctions->glTexCoord2f(1, 0);
+		_openglFunctions->glVertex3f(vecRect.z, vecRect.y, origin.z);
 
-		glTexCoord2f(0, 1);
-		glVertex3f(vecRect.x, vecRect.w, origin.z);
+		_openglFunctions->glTexCoord2f(0, 1);
+		_openglFunctions->glVertex3f(vecRect.x, vecRect.w, origin.z);
 
-		glTexCoord2f(1, 1);
-		glVertex3f(vecRect.z, vecRect.w, origin.z);
+		_openglFunctions->glTexCoord2f(1, 1);
+		_openglFunctions->glVertex3f(vecRect.z, vecRect.w, origin.z);
 
-		glEnd();
+		_openglFunctions->glEnd();
 	}
 
 	if (flags & renderer::DrawFlag::WIREFRAME_OVERLAY)
 	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
-		glColor4f(1, 1, 1, 1);
+		_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		_openglFunctions->glDisable(GL_TEXTURE_2D);
+		_openglFunctions->glDisable(GL_CULL_FACE);
+		_openglFunctions->glDisable(GL_DEPTH_TEST);
+		_openglFunctions->glColor4f(1, 1, 1, 1);
 
-		glBegin(GL_TRIANGLE_STRIP);
+		_openglFunctions->glBegin(GL_TRIANGLE_STRIP);
 
-		glVertex3f(vecRect.x, vecRect.y, origin.z);
+		_openglFunctions->glVertex3f(vecRect.x, vecRect.y, origin.z);
 
-		glVertex3f(vecRect.z, vecRect.y, origin.z);
+		_openglFunctions->glVertex3f(vecRect.z, vecRect.y, origin.z);
 
-		glVertex3f(vecRect.x, vecRect.w, origin.z);
+		_openglFunctions->glVertex3f(vecRect.x, vecRect.w, origin.z);
 
-		glVertex3f(vecRect.z, vecRect.w, origin.z);
+		_openglFunctions->glVertex3f(vecRect.z, vecRect.w, origin.z);
 
-		glEnd();
+		_openglFunctions->glEnd();
 	}
 }
 }

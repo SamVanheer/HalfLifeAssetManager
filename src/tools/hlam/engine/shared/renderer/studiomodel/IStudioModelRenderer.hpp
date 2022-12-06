@@ -6,6 +6,8 @@
 
 #include "engine/shared/renderer/studiomodel/ModelRenderInfo.hpp"
 
+class QOpenGLFunctions_1_1;
+
 /**
 *	@defgroup StudioModelRenderer StudioModel Renderer.
 *
@@ -37,6 +39,11 @@ public:
 	*	Should be called once per game frame.
 	*/
 	virtual void RunFrame() = 0;
+
+	/**
+	*	@brief Sets the OpenGL functions to use for subsequent calls.
+	*/
+	virtual void SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions) = 0;
 
 	/**
 	*	@return The number of models that have been drawn during this map.

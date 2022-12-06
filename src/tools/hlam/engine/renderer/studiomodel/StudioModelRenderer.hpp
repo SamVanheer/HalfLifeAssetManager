@@ -38,6 +38,11 @@ public:
 
 	void RunFrame() override final;
 
+	void SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions) override final
+	{
+		_openglFunctions = openglFunctions;
+	}
+
 	unsigned int GetModelsDrawnCount() const override final { return _modelsDrawnCount; }
 
 	unsigned int GetDrawnPolygonsCount() const override final { return _drawnPolygonsCount; }
@@ -128,6 +133,8 @@ private:
 	static constexpr int MaxVertices = 0xFFFF;
 
 	std::shared_ptr<spdlog::logger> _logger;
+
+	QOpenGLFunctions_1_1* _openglFunctions = nullptr;
 
 	/**
 	*	Total number of models drawn by this renderer since the last time it was initialized.

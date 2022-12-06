@@ -2,6 +2,9 @@
 
 #include "entity/StudioModelEntity.hpp"
 
+// TODO: Qt's OpenGL headers are apparently pulling in Windows.h from somewhere. Need to get rid of that.
+#undef PlaySound
+
 class HLMVStudioModelEntity : public StudioModelEntity
 {
 public:

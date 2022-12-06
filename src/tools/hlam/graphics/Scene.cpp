@@ -2,7 +2,7 @@
 #include <cmath>
 #include <utility>
 
-#include <GL/glew.h>
+#include <qopenglfunctions_1_1.h>
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
@@ -20,6 +20,7 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
+#include "graphics/TextureLoader.hpp"
 
 #include "qt/QtLogSink.hpp"
 
@@ -58,21 +59,17 @@ Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSyste
 Scene::~Scene()
 {
 	_entityList->DestroyAll();
-
-	if (BackgroundTexture != 0)
-	{
-		glDeleteTextures(1, &BackgroundTexture);
-	}
-
-	if (GroundTexture != 0)
-	{
-		glDeleteTextures(1, &GroundTexture);
-	}
 }
 
 void Scene::SetGraphicsContext(std::unique_ptr<IGraphicsContext>&& graphicsContext)
 {
 	_graphicsContext = std::move(graphicsContext);
+}
+
+void Scene::SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions)
+{
+	_openglFunctions = openglFunctions;
+	_textureLoader->SetOpenGLFunctions(openglFunctions);
 }
 
 glm::vec3 Scene::GetLightColor() const
@@ -151,6 +148,18 @@ void Scene::Shutdown()
 	}
 
 	_studioModelRenderer->Shutdown();
+
+	if (BackgroundTexture != 0)
+	{
+		_openglFunctions->glDeleteTextures(1, &BackgroundTexture);
+		BackgroundTexture = 0;
+	}
+
+	if (GroundTexture != 0)
+	{
+		_openglFunctions->glDeleteTextures(1, &GroundTexture);
+		GroundTexture = 0;
+	}
 }
 
 void Scene::Tick()
@@ -172,20 +181,20 @@ void Scene::Draw()
 		}
 	}
 
-	glClearColor(BackgroundColor.r, BackgroundColor.g, BackgroundColor.b, 1.0f);
+	_openglFunctions->glClearColor(BackgroundColor.r, BackgroundColor.g, BackgroundColor.b, 1.0f);
 
 	if (MirrorOnGround)
 	{
-		glClearStencil(0);
+		_openglFunctions->glClearStencil(0);
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		_openglFunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 	else
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		_openglFunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glViewport(0, 0, _windowWidth, _windowHeight);
+	_openglFunctions->glViewport(0, 0, _windowWidth, _windowHeight);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	_drawnPolygonsCount = 0;
 
@@ -196,115 +205,115 @@ void Scene::Draw()
 
 	if (ShowCrosshair)
 	{
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
+		_openglFunctions->glMatrixMode(GL_PROJECTION);
+		_openglFunctions->glLoadIdentity();
 
-		glOrtho(0.0f, (float)_windowWidth, (float)_windowHeight, 0.0f, 1.0f, -1.0f);
+		_openglFunctions->glOrtho(0.0f, (float)_windowWidth, (float)_windowHeight, 0.0f, 1.0f, -1.0f);
 
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
+		_openglFunctions->glMatrixMode(GL_MODELVIEW);
+		_openglFunctions->glPushMatrix();
+		_openglFunctions->glLoadIdentity();
 
-		glDisable(GL_CULL_FACE);
+		_openglFunctions->glDisable(GL_CULL_FACE);
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		glDisable(GL_TEXTURE_2D);
+		_openglFunctions->glDisable(GL_TEXTURE_2D);
 
-		glColor4fv(glm::value_ptr(glm::vec4{CrosshairColor, 1}));
+		_openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{CrosshairColor, 1}));
 
-		glPointSize(CROSSHAIR_LINE_WIDTH);
-		glLineWidth(CROSSHAIR_LINE_WIDTH);
+		_openglFunctions->glPointSize(CROSSHAIR_LINE_WIDTH);
+		_openglFunctions->glLineWidth(CROSSHAIR_LINE_WIDTH);
 
-		glBegin(GL_POINTS);
+		_openglFunctions->glBegin(GL_POINTS);
 
-		glVertex2f(centerX - CROSSHAIR_LINE_WIDTH / 2, centerY + 1);
+		_openglFunctions->glVertex2f(centerX - CROSSHAIR_LINE_WIDTH / 2, centerY + 1);
 
-		glEnd();
+		_openglFunctions->glEnd();
 
-		glBegin(GL_LINES);
+		_openglFunctions->glBegin(GL_LINES);
 
-		glVertex2f(centerX - CROSSHAIR_LINE_START, centerY);
-		glVertex2f(centerX - CROSSHAIR_LINE_END, centerY);
+		_openglFunctions->glVertex2f(centerX - CROSSHAIR_LINE_START, centerY);
+		_openglFunctions->glVertex2f(centerX - CROSSHAIR_LINE_END, centerY);
 
-		glVertex2f(centerX + CROSSHAIR_LINE_START, centerY);
-		glVertex2f(centerX + CROSSHAIR_LINE_END, centerY);
+		_openglFunctions->glVertex2f(centerX + CROSSHAIR_LINE_START, centerY);
+		_openglFunctions->glVertex2f(centerX + CROSSHAIR_LINE_END, centerY);
 
-		glVertex2f(centerX, centerY - CROSSHAIR_LINE_START);
-		glVertex2f(centerX, centerY - CROSSHAIR_LINE_END);
+		_openglFunctions->glVertex2f(centerX, centerY - CROSSHAIR_LINE_START);
+		_openglFunctions->glVertex2f(centerX, centerY - CROSSHAIR_LINE_END);
 
-		glVertex2f(centerX, centerY + CROSSHAIR_LINE_START);
-		glVertex2f(centerX, centerY + CROSSHAIR_LINE_END);
+		_openglFunctions->glVertex2f(centerX, centerY + CROSSHAIR_LINE_START);
+		_openglFunctions->glVertex2f(centerX, centerY + CROSSHAIR_LINE_END);
 
-		glEnd();
+		_openglFunctions->glEnd();
 
-		glPointSize(1);
-		glLineWidth(1);
+		_openglFunctions->glPointSize(1);
+		_openglFunctions->glLineWidth(1);
 
-		glPopMatrix();
+		_openglFunctions->glPopMatrix();
 	}
 
 	if (ShowGuidelines)
 	{
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
+		_openglFunctions->glMatrixMode(GL_PROJECTION);
+		_openglFunctions->glLoadIdentity();
 
-		glOrtho(0.0f, (float)_windowWidth, (float)_windowHeight, 0.0f, 1.0f, -1.0f);
+		_openglFunctions->glOrtho(0.0f, (float)_windowWidth, (float)_windowHeight, 0.0f, 1.0f, -1.0f);
 
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
+		_openglFunctions->glMatrixMode(GL_MODELVIEW);
+		_openglFunctions->glPushMatrix();
+		_openglFunctions->glLoadIdentity();
 
-		glDisable(GL_CULL_FACE);
+		_openglFunctions->glDisable(GL_CULL_FACE);
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		glDisable(GL_TEXTURE_2D);
+		_openglFunctions->glDisable(GL_TEXTURE_2D);
 
-		glColor4fv(glm::value_ptr(glm::vec4{CrosshairColor, 1}));
+		_openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{CrosshairColor, 1}));
 
-		glPointSize(GUIDELINES_LINE_WIDTH);
-		glLineWidth(GUIDELINES_LINE_WIDTH);
+		_openglFunctions->glPointSize(GUIDELINES_LINE_WIDTH);
+		_openglFunctions->glLineWidth(GUIDELINES_LINE_WIDTH);
 
-		glBegin(GL_POINTS);
+		_openglFunctions->glBegin(GL_POINTS);
 
 		for (int yPos = _windowHeight - GUIDELINES_LINE_LENGTH; yPos >= centerY + CROSSHAIR_LINE_END; yPos -= GUIDELINES_OFFSET)
 		{
-			glVertex2f(centerX - GUIDELINES_LINE_WIDTH, yPos);
+			_openglFunctions->glVertex2f(centerX - GUIDELINES_LINE_WIDTH, yPos);
 		}
 
-		glEnd();
+		_openglFunctions->glEnd();
 
-		glBegin(GL_LINES);
+		_openglFunctions->glBegin(GL_LINES);
 
 		for (int yPos = _windowHeight - GUIDELINES_LINE_LENGTH - GUIDELINES_POINT_LINE_OFFSET - GUIDELINES_LINE_WIDTH;
 			yPos >= centerY + CROSSHAIR_LINE_END + GUIDELINES_LINE_LENGTH;
 			yPos -= GUIDELINES_OFFSET)
 		{
-			glVertex2f(centerX, yPos);
-			glVertex2f(centerX, yPos - GUIDELINES_LINE_LENGTH);
+			_openglFunctions->glVertex2f(centerX, yPos);
+			_openglFunctions->glVertex2f(centerX, yPos - GUIDELINES_LINE_LENGTH);
 		}
 
-		glEnd();
+		_openglFunctions->glEnd();
 
 		const float flWidth = _windowHeight * (16 / 9.0);
 
-		glLineWidth(GUIDELINES_EDGE_WIDTH);
+		_openglFunctions->glLineWidth(GUIDELINES_EDGE_WIDTH);
 
-		glBegin(GL_LINES);
+		_openglFunctions->glBegin(GL_LINES);
 
-		glVertex2f((_windowWidth / 2.) - (flWidth / 2), 0);
-		glVertex2f((_windowWidth / 2.) - (flWidth / 2), _windowHeight);
+		_openglFunctions->glVertex2f((_windowWidth / 2.) - (flWidth / 2), 0);
+		_openglFunctions->glVertex2f((_windowWidth / 2.) - (flWidth / 2), _windowHeight);
 
-		glVertex2f((_windowWidth / 2.) + (flWidth / 2), 0);
-		glVertex2f((_windowWidth / 2.) + (flWidth / 2), _windowHeight);
+		_openglFunctions->glVertex2f((_windowWidth / 2.) + (flWidth / 2), 0);
+		_openglFunctions->glVertex2f((_windowWidth / 2.) + (flWidth / 2), _windowHeight);
 
-		glEnd();
+		_openglFunctions->glEnd();
 
-		glPointSize(1);
-		glLineWidth(1);
+		_openglFunctions->glPointSize(1);
+		_openglFunctions->glLineWidth(1);
 
-		glPopMatrix();
+		_openglFunctions->glPopMatrix();
 	}
 }
 
@@ -318,46 +327,48 @@ void Scene::DrawModel()
 
 	if (ShowBackground && BackgroundTexture != GL_INVALID_TEXTURE_ID)
 	{
-		graphics::DrawBackground(BackgroundTexture);
+		graphics::DrawBackground(_openglFunctions, BackgroundTexture);
 	}
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glLoadMatrixf(glm::value_ptr(camera->GetProjectionMatrix()));
+	_openglFunctions->glMatrixMode(GL_PROJECTION);
+	_openglFunctions->glLoadIdentity();
+	_openglFunctions->glLoadMatrixf(glm::value_ptr(camera->GetProjectionMatrix()));
 
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glLoadMatrixf(glm::value_ptr(camera->GetViewMatrix()));
+	_openglFunctions->glMatrixMode(GL_MODELVIEW);
+	_openglFunctions->glPushMatrix();
+	_openglFunctions->glLoadIdentity();
+	_openglFunctions->glLoadMatrixf(glm::value_ptr(camera->GetViewMatrix()));
 
 	if (ShowAxes)
 	{
-		glDisable(GL_TEXTURE_2D);
-		glEnable(GL_DEPTH_TEST);
+		_openglFunctions->glDisable(GL_TEXTURE_2D);
+		_openglFunctions->glEnable(GL_DEPTH_TEST);
 
 		const float flLength = 50.0f;
 
-		glLineWidth(1.0f);
+		_openglFunctions->glLineWidth(1.0f);
 
-		glBegin(GL_LINES);
+		_openglFunctions->glBegin(GL_LINES);
 
-		glColor3f(1.0f, 0, 0);
+		_openglFunctions->glColor3f(1.0f, 0, 0);
 
-		glVertex3f(0, 0, 0);
-		glVertex3f(flLength, 0, 0);
+		_openglFunctions->glVertex3f(0, 0, 0);
+		_openglFunctions->glVertex3f(flLength, 0, 0);
 
-		glColor3f(0, 1, 0);
+		_openglFunctions->glColor3f(0, 1, 0);
 
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, flLength, 0);
+		_openglFunctions->glVertex3f(0, 0, 0);
+		_openglFunctions->glVertex3f(0, flLength, 0);
 
-		glColor3f(0, 0, 1.0f);
+		_openglFunctions->glColor3f(0, 0, 1.0f);
 
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 0, flLength);
+		_openglFunctions->glVertex3f(0, 0, 0);
+		_openglFunctions->glVertex3f(0, 0, flLength);
 
-		glEnd();
+		_openglFunctions->glEnd();
 	}
+
+	_studioModelRenderer->SetOpenGLFunctions(_openglFunctions);
 
 	_studioModelRenderer->SetViewerOrigin(camera->GetOrigin());
 	_studioModelRenderer->SetViewerRight(camera->GetRightVector());
@@ -369,7 +380,8 @@ void Scene::DrawModel()
 		// setup stencil buffer and draw mirror
 		if (MirrorOnGround)
 		{
-			graphics::DrawMirroredModel(*_studioModelRenderer, _entity,
+			graphics::DrawMirroredModel(_openglFunctions, 
+				*_studioModelRenderer, _entity,
 				CurrentRenderMode,
 				ShowWireframeOverlay,
 				FloorOrigin,
@@ -378,7 +390,7 @@ void Scene::DrawModel()
 		}
 	}
 
-	graphics::SetupRenderMode(CurrentRenderMode, EnableBackfaceCulling);
+	graphics::SetupRenderMode(_openglFunctions, CurrentRenderMode, EnableBackfaceCulling);
 
 	if (nullptr != _entity)
 	{
@@ -387,7 +399,7 @@ void Scene::DrawModel()
 		//Determine if an odd number of scale values are negative. The cull face has to be changed if so.
 		const float flScale = vecScale.x * vecScale.y * vecScale.z;
 
-		glCullFace(flScale > 0 ? GL_FRONT : GL_BACK);
+		_openglFunctions->glCullFace(flScale > 0 ? GL_FRONT : GL_BACK);
 
 		renderer::DrawFlags flags = renderer::DrawFlag::NONE;
 
@@ -523,7 +535,7 @@ void Scene::DrawModel()
 		_floorTextureOffset.x = std::fmod(_floorTextureOffset.x, floorTextureLength);
 		_floorTextureOffset.y = std::fmod(_floorTextureOffset.y, floorTextureLength);
 
-		graphics::DrawFloor(FloorOrigin, FloorLength, floorTextureLength, _floorTextureOffset, GroundTexture, GroundColor, MirrorOnGround);
+		graphics::DrawFloor(_openglFunctions, FloorOrigin, FloorLength, floorTextureLength, _floorTextureOffset, GroundTexture, GroundColor, MirrorOnGround);
 	}
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;
@@ -536,7 +548,7 @@ void Scene::DrawModel()
 
 		auto v = CreateBoxFromBounds(bbmin, bbmax);
 
-		DrawOutlinedBox(v, {0.0f, 1.0f, 0.0f, 0.5f}, {0.0f, 0.5f, 0.0f, 1.f});
+		DrawOutlinedBox(_openglFunctions, v, {0.0f, 1.0f, 0.0f, 0.5f}, {0.0f, 0.5f, 0.0f, 1.f});
 	}
 
 	if (ShowBBox)
@@ -548,7 +560,7 @@ void Scene::DrawModel()
 
 			const auto v = CreateBoxFromBounds(model->BoundingMin, model->BoundingMax);
 
-			DrawOutlinedBox(v, {1.0f, 1.0f, 0.0f, 0.5f}, {0.5f, 0.5f, 0.0f, 1.0f});
+			DrawOutlinedBox(_openglFunctions, v, {1.0f, 1.0f, 0.0f, 0.5f}, {0.5f, 0.5f, 0.0f, 1.0f});
 		}
 	}
 
@@ -561,10 +573,10 @@ void Scene::DrawModel()
 
 			const auto v = CreateBoxFromBounds(model->ClippingMin, model->ClippingMax);
 
-			DrawOutlinedBox(v, {1.0f, 0.5f, 0.0f, 0.5f}, {0.5f, 0.25f, 0.0f, 1.0f});
+			DrawOutlinedBox(_openglFunctions, v, {1.0f, 0.5f, 0.0f, 0.5f}, {0.5f, 0.25f, 0.0f, 1.0f});
 		}
 	}
 
-	glPopMatrix();
+	_openglFunctions->glPopMatrix();
 }
 }

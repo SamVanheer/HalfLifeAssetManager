@@ -11,7 +11,7 @@
 
 #include <glm/vec3.hpp>
 
-#include <GL/glew.h>
+#include <qopenglfunctions_1_1.h>
 
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 #include "graphics/Palette.hpp"
@@ -263,6 +263,8 @@ public:
 	void UpdateFilters(graphics::TextureLoader& textureLoader);
 
 	void ReuploadTextures(graphics::TextureLoader& textureLoader);
+
+	void DeleteTextures(graphics::TextureLoader& textureLoader);
 
 	std::vector<int> GetRootBoneIndices() const
 	{

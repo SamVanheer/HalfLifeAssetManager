@@ -74,6 +74,18 @@ void TextureLoader::SetTextureFilters(TextureFilter minFilter, TextureFilter mag
 	}
 }
 
+GLuint TextureLoader::CreateTexture()
+{
+	GLuint texture = 0;
+	_openglFunctions->glGenTextures(1, &texture);
+	return texture;
+}
+
+void TextureLoader::DeleteTexture(GLuint texture)
+{
+	_openglFunctions->glDeleteTextures(1, &texture);
+}
+
 void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const std::byte* rgbaPixels, bool generateMipmaps, bool masked)
 {
 	const auto [newWidth, newHeight] = AdjustImageDimensions(width, height);
@@ -135,13 +147,14 @@ void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const 
 		rgbaPixels = pixels.data();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgbaPixels);
+	_openglFunctions->glBindTexture(GL_TEXTURE_2D, texture);
+	_openglFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgbaPixels);
 	SetFilters(texture, generateMipmaps);
 
 	if (generateMipmaps)
 	{
-		glGenerateMipmap(GL_TEXTURE_2D);
+		// TODO: reimplement
+		//glGenerateMipmap(GL_TEXTURE_2D);
 	}
 }
 
@@ -183,8 +196,9 @@ void TextureLoader::UploadIndexed8(GLuint texture, int width, int height, const 
 
 void TextureLoader::SetFilters(GLuint texture, bool hasMipmaps)
 {
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, hasMipmaps ? _glMinFilter : _glMagFilter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _glMagFilter);
+	_openglFunctions->glBindTexture(GL_TEXTURE_2D, texture);
+	_openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, hasMipmaps ? _glMinFilter : _glMagFilter);
+	_openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _glMagFilter);
 }
 
 std::pair<int, int> TextureLoader::AdjustImageDimensions(int width, int height) const

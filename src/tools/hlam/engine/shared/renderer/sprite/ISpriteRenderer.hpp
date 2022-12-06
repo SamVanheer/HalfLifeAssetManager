@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qopenglfunctions_1_1.h>
+
 #include "engine/shared/renderer/DrawConstants.hpp"
 
 /**
@@ -21,6 +23,8 @@ class ISpriteRenderer
 {
 public:
 	virtual ~ISpriteRenderer() {}
+
+	virtual void SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions) = 0;
 
 	virtual void DrawSprite(const SpriteRenderInfo& renderInfo, const renderer::DrawFlags flags) = 0;
 

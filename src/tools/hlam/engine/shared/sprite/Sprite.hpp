@@ -1,10 +1,12 @@
 #pragma once
 
+#include <qopenglfunctions_1_1.h>
+
 #include "engine/shared/sprite/SpriteFileFormat.hpp"
 
 namespace sprite
 {
-bool LoadSprite( const char* const pszFilename, msprite_t*& pSprite );
+bool LoadSprite(QOpenGLFunctions_1_1* openglFunctions, const char* const pszFilename, msprite_t*& pSprite );
 
-void FreeSprite( msprite_t* pSprite );
+void FreeSprite(QOpenGLFunctions_1_1* openglFunctions, msprite_t* pSprite );
 }

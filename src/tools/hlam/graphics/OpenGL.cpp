@@ -1,14 +1,5 @@
 #include "graphics/OpenGL.hpp"
 
-void glDeleteTexture( GLuint& textureId )
-{
-	if( textureId != GL_INVALID_TEXTURE_ID )
-	{
-		glDeleteTextures( 1, &textureId );
-		textureId = GL_INVALID_TEXTURE_ID;
-	}
-}
-
 const char* glErrorToString( const GLenum error )
 {
 	switch( error )

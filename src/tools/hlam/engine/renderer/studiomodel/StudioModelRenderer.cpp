@@ -2,6 +2,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <qopenglfunctions_1_1.h>
+
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -57,7 +59,7 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderIn
 
 	++_modelsDrawnCount; // render data cache cookie
 
-	glPushMatrix();
+	_openglFunctions->glPushMatrix();
 
 	auto origin = _renderInfo->Origin;
 
@@ -99,10 +101,10 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderIn
 	if (flags & renderer::DrawFlag::WIREFRAME_OVERLAY)
 	{
 		//TODO: restore render mode after this?
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
+		_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		_openglFunctions->glDisable(GL_TEXTURE_2D);
+		_openglFunctions->glDisable(GL_CULL_FACE);
+		_openglFunctions->glEnable(GL_DEPTH_TEST);
 
 		for (int i = 0; i < _studioModel->Bodyparts.size(); i++)
 		{
@@ -145,7 +147,7 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderIn
 		DrawNormals();
 	}
 
-	glPopMatrix();
+	_openglFunctions->glPopMatrix();
 
 	_drawnPolygonsCount += uiDrawnPolys;
 
@@ -167,8 +169,8 @@ void StudioModelRenderer::DrawSingleBone(ModelRenderInfo& renderInfo, const int 
 
 	SetUpBones();
 
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_DEPTH_TEST);
+	_openglFunctions->glDisable(GL_TEXTURE_2D);
+	_openglFunctions->glDisable(GL_DEPTH_TEST);
 
 	const auto& bone = *model->Bones[iBone];
 
@@ -180,31 +182,31 @@ void StudioModelRenderer::DrawSingleBone(ModelRenderInfo& renderInfo, const int 
 
 		const auto& parentBoneTransform = _bonetransform[parentBone.ArrayIndex];
 
-		glPointSize(10.0f);
-		glColor3f(0, 0.7f, 1);
-		glBegin(GL_LINES);
-		glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
-		glVertex3fv(glm::value_ptr(boneTransform[3]));
-		glEnd();
+		_openglFunctions->glPointSize(10.0f);
+		_openglFunctions->glColor3f(0, 0.7f, 1);
+		_openglFunctions->glBegin(GL_LINES);
+		_openglFunctions->glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
+		_openglFunctions->glVertex3fv(glm::value_ptr(boneTransform[3]));
+		_openglFunctions->glEnd();
 
-		glColor3f(0, 0, 0.8f);
-		glBegin(GL_POINTS);
+		_openglFunctions->glColor3f(0, 0, 0.8f);
+		_openglFunctions->glBegin(GL_POINTS);
 		if (parentBone.Parent)
-			glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
-		glVertex3fv(glm::value_ptr(boneTransform[3]));
-		glEnd();
+			_openglFunctions->glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
+		_openglFunctions->glVertex3fv(glm::value_ptr(boneTransform[3]));
+		_openglFunctions->glEnd();
 	}
 	else
 	{
 		// draw parent bone node
-		glPointSize(10.0f);
-		glColor3f(0.8f, 0, 0);
-		glBegin(GL_POINTS);
-		glVertex3fv(glm::value_ptr(boneTransform[3]));
-		glEnd();
+		_openglFunctions->glPointSize(10.0f);
+		_openglFunctions->glColor3f(0.8f, 0, 0);
+		_openglFunctions->glBegin(GL_POINTS);
+		_openglFunctions->glVertex3fv(glm::value_ptr(boneTransform[3]));
+		_openglFunctions->glEnd();
 	}
 
-	glPointSize(1.0f);
+	_openglFunctions->glPointSize(1.0f);
 
 	_studioModel = nullptr;
 	_renderInfo = nullptr;
@@ -225,9 +227,9 @@ void StudioModelRenderer::DrawSingleAttachment(ModelRenderInfo& renderInfo, cons
 
 	SetUpBones();
 
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_DEPTH_TEST);
+	_openglFunctions->glDisable(GL_TEXTURE_2D);
+	_openglFunctions->glDisable(GL_CULL_FACE);
+	_openglFunctions->glDisable(GL_DEPTH_TEST);
 
 	const auto& attachment = *_studioModel->Attachments[iAttachment];
 
@@ -240,27 +242,27 @@ void StudioModelRenderer::DrawSingleAttachment(ModelRenderInfo& renderInfo, cons
 	v[2] = attachmentBoneTransform * glm::vec4{attachment.Vectors[1], 1};
 	v[3] = attachmentBoneTransform * glm::vec4{attachment.Vectors[2], 1};
 
-	glBegin(GL_LINES);
-	glColor3f(0, 1, 1);
-	glVertex3fv(glm::value_ptr(v[0]));
-	glColor3f(1, 1, 1);
-	glVertex3fv(glm::value_ptr(v[1]));
-	glColor3f(0, 1, 1);
-	glVertex3fv(glm::value_ptr(v[0]));
-	glColor3f(1, 1, 1);
-	glVertex3fv(glm::value_ptr(v[2]));
-	glColor3f(0, 1, 1);
-	glVertex3fv(glm::value_ptr(v[0]));
-	glColor3f(1, 1, 1);
-	glVertex3fv(glm::value_ptr(v[3]));
-	glEnd();
+	_openglFunctions->glBegin(GL_LINES);
+	_openglFunctions->glColor3f(0, 1, 1);
+	_openglFunctions->glVertex3fv(glm::value_ptr(v[0]));
+	_openglFunctions->glColor3f(1, 1, 1);
+	_openglFunctions->glVertex3fv(glm::value_ptr(v[1]));
+	_openglFunctions->glColor3f(0, 1, 1);
+	_openglFunctions->glVertex3fv(glm::value_ptr(v[0]));
+	_openglFunctions->glColor3f(1, 1, 1);
+	_openglFunctions->glVertex3fv(glm::value_ptr(v[2]));
+	_openglFunctions->glColor3f(0, 1, 1);
+	_openglFunctions->glVertex3fv(glm::value_ptr(v[0]));
+	_openglFunctions->glColor3f(1, 1, 1);
+	_openglFunctions->glVertex3fv(glm::value_ptr(v[3]));
+	_openglFunctions->glEnd();
 
-	glPointSize(10);
-	glColor3f(0, 1, 0);
-	glBegin(GL_POINTS);
-	glVertex3fv(glm::value_ptr(v[0]));
-	glEnd();
-	glPointSize(1);
+	_openglFunctions->glPointSize(10);
+	_openglFunctions->glColor3f(0, 1, 0);
+	_openglFunctions->glBegin(GL_POINTS);
+	_openglFunctions->glVertex3fv(glm::value_ptr(v[0]));
+	_openglFunctions->glEnd();
+	_openglFunctions->glPointSize(1);
 
 	_studioModel = nullptr;
 	_renderInfo = nullptr;
@@ -281,18 +283,18 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 
 	SetUpBones();
 
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_CULL_FACE);
+	_openglFunctions->glDisable(GL_TEXTURE_2D);
+	_openglFunctions->glDisable(GL_CULL_FACE);
 	if (_renderInfo->Transparency < 1.0f)
-		glDisable(GL_DEPTH_TEST);
+		_openglFunctions->glDisable(GL_DEPTH_TEST);
 	else
-		glEnable(GL_DEPTH_TEST);
+		_openglFunctions->glEnable(GL_DEPTH_TEST);
 
-	glColor4f(1, 0, 0, 0.5f);
+	_openglFunctions->glColor4f(1, 0, 0, 0.5f);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	_openglFunctions->glEnable(GL_BLEND);
+	_openglFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	const auto& hitbox = *_studioModel->Hitboxes[hitboxIndex];
 
@@ -307,7 +309,7 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 		v2[i] = hitboxBoneTransform * glm::vec4{v[i], 1};
 	}
 
-	graphics::DrawBox(v2);
+	graphics::DrawBox(_openglFunctions, v2);
 
 	_studioModel = nullptr;
 	_renderInfo = nullptr;
@@ -315,17 +317,17 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 
 void StudioModelRenderer::SetupPosition(const glm::vec3& origin, const glm::vec3& angles)
 {
-	glTranslatef(origin[0], origin[1], origin[2]);
+	_openglFunctions->glTranslatef(origin[0], origin[1], origin[2]);
 
-	glRotatef(angles[1], 0, 0, 1);
-	glRotatef(angles[0], 0, 1, 0);
-	glRotatef(angles[2], 1, 0, 0);
+	_openglFunctions->glRotatef(angles[1], 0, 0, 1);
+	_openglFunctions->glRotatef(angles[0], 0, 1, 0);
+	_openglFunctions->glRotatef(angles[2], 1, 0, 0);
 }
 
 void StudioModelRenderer::DrawBones()
 {
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_DEPTH_TEST);
+	_openglFunctions->glDisable(GL_TEXTURE_2D);
+	_openglFunctions->glDisable(GL_DEPTH_TEST);
 
 	for (int i = 0; i < _studioModel->Bones.size(); i++)
 	{
@@ -337,39 +339,39 @@ void StudioModelRenderer::DrawBones()
 		{
 			const auto& parentBoneTransform = _bonetransform[bone.Parent->ArrayIndex];
 
-			glPointSize(3.0f);
-			glColor3f(1, 0.7f, 0);
-			glBegin(GL_LINES);
-			glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
-			glVertex3fv(glm::value_ptr(boneTransform[3]));
-			glEnd();
+			_openglFunctions->glPointSize(3.0f);
+			_openglFunctions->glColor3f(1, 0.7f, 0);
+			_openglFunctions->glBegin(GL_LINES);
+			_openglFunctions->glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
+			_openglFunctions->glVertex3fv(glm::value_ptr(boneTransform[3]));
+			_openglFunctions->glEnd();
 
-			glColor3f(0, 0, 0.8f);
-			glBegin(GL_POINTS);
+			_openglFunctions->glColor3f(0, 0, 0.8f);
+			_openglFunctions->glBegin(GL_POINTS);
 			if (bone.Parent->Parent)
-				glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
-			glVertex3fv(glm::value_ptr(boneTransform[3]));
-			glEnd();
+				_openglFunctions->glVertex3fv(glm::value_ptr(parentBoneTransform[3]));
+			_openglFunctions->glVertex3fv(glm::value_ptr(boneTransform[3]));
+			_openglFunctions->glEnd();
 		}
 		else
 		{
 			// draw parent bone node
-			glPointSize(5.0f);
-			glColor3f(0.8f, 0, 0);
-			glBegin(GL_POINTS);
-			glVertex3fv(glm::value_ptr(boneTransform[3]));
-			glEnd();
+			_openglFunctions->glPointSize(5.0f);
+			_openglFunctions->glColor3f(0.8f, 0, 0);
+			_openglFunctions->glBegin(GL_POINTS);
+			_openglFunctions->glVertex3fv(glm::value_ptr(boneTransform[3]));
+			_openglFunctions->glEnd();
 		}
 	}
 
-	glPointSize(1.0f);
+	_openglFunctions->glPointSize(1.0f);
 }
 
 void StudioModelRenderer::DrawAttachments()
 {
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_DEPTH_TEST);
+	_openglFunctions->glDisable(GL_TEXTURE_2D);
+	_openglFunctions->glDisable(GL_CULL_FACE);
+	_openglFunctions->glDisable(GL_DEPTH_TEST);
 
 	for (int i = 0; i < _studioModel->Attachments.size(); i++)
 	{
@@ -384,58 +386,58 @@ void StudioModelRenderer::DrawAttachments()
 		v[2] = attachmentBoneTransform * glm::vec4{attachment.Vectors[1], 1};
 		v[3] = attachmentBoneTransform * glm::vec4{attachment.Vectors[2], 1};
 
-		glBegin(GL_LINES);
-		glColor3f(1, 0, 0);
-		glVertex3fv(glm::value_ptr(v[0]));
-		glColor3f(1, 1, 1);
-		glVertex3fv(glm::value_ptr(v[1]));
-		glColor3f(1, 0, 0);
-		glVertex3fv(glm::value_ptr(v[0]));
-		glColor3f(1, 1, 1);
-		glVertex3fv(glm::value_ptr(v[2]));
-		glColor3f(1, 0, 0);
-		glVertex3fv(glm::value_ptr(v[0]));
-		glColor3f(1, 1, 1);
-		glVertex3fv(glm::value_ptr(v[3]));
-		glEnd();
+		_openglFunctions->glBegin(GL_LINES);
+		_openglFunctions->glColor3f(1, 0, 0);
+		_openglFunctions->glVertex3fv(glm::value_ptr(v[0]));
+		_openglFunctions->glColor3f(1, 1, 1);
+		_openglFunctions->glVertex3fv(glm::value_ptr(v[1]));
+		_openglFunctions->glColor3f(1, 0, 0);
+		_openglFunctions->glVertex3fv(glm::value_ptr(v[0]));
+		_openglFunctions->glColor3f(1, 1, 1);
+		_openglFunctions->glVertex3fv(glm::value_ptr(v[2]));
+		_openglFunctions->glColor3f(1, 0, 0);
+		_openglFunctions->glVertex3fv(glm::value_ptr(v[0]));
+		_openglFunctions->glColor3f(1, 1, 1);
+		_openglFunctions->glVertex3fv(glm::value_ptr(v[3]));
+		_openglFunctions->glEnd();
 
-		glPointSize(5);
-		glColor3f(0, 1, 0);
-		glBegin(GL_POINTS);
-		glVertex3fv(glm::value_ptr(v[0]));
-		glEnd();
-		glPointSize(1);
+		_openglFunctions->glPointSize(5);
+		_openglFunctions->glColor3f(0, 1, 0);
+		_openglFunctions->glBegin(GL_POINTS);
+		_openglFunctions->glVertex3fv(glm::value_ptr(v[0]));
+		_openglFunctions->glEnd();
+		_openglFunctions->glPointSize(1);
 	}
 }
 
 void StudioModelRenderer::DrawEyePosition()
 {
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_DEPTH_TEST);
+	_openglFunctions->glDisable(GL_TEXTURE_2D);
+	_openglFunctions->glDisable(GL_CULL_FACE);
+	_openglFunctions->glDisable(GL_DEPTH_TEST);
 
-	glPointSize(7);
-	glColor3f(1, 0, 1);
-	glBegin(GL_POINTS);
-	glVertex3fv(glm::value_ptr(_studioModel->EyePosition));
-	glEnd();
-	glPointSize(1);
+	_openglFunctions->glPointSize(7);
+	_openglFunctions->glColor3f(1, 0, 1);
+	_openglFunctions->glBegin(GL_POINTS);
+	_openglFunctions->glVertex3fv(glm::value_ptr(_studioModel->EyePosition));
+	_openglFunctions->glEnd();
+	_openglFunctions->glPointSize(1);
 }
 
 void StudioModelRenderer::DrawHitBoxes()
 {
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_CULL_FACE);
+	_openglFunctions->glDisable(GL_TEXTURE_2D);
+	_openglFunctions->glDisable(GL_CULL_FACE);
 	if (_renderInfo->Transparency < 1.0f)
-		glDisable(GL_DEPTH_TEST);
+		_openglFunctions->glDisable(GL_DEPTH_TEST);
 	else
-		glEnable(GL_DEPTH_TEST);
+		_openglFunctions->glEnable(GL_DEPTH_TEST);
 
-	glColor4f(1, 0, 0, 0.5f);
+	_openglFunctions->glColor4f(1, 0, 0, 0.5f);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	_openglFunctions->glEnable(GL_BLEND);
+	_openglFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	for (int i = 0; i < _studioModel->Hitboxes.size(); i++)
 	{
@@ -452,17 +454,17 @@ void StudioModelRenderer::DrawHitBoxes()
 			v2[i] = hitboxTransform * glm::vec4{v[i], 1};
 		}
 
-		graphics::DrawBox(v2);
+		graphics::DrawBox(_openglFunctions, v2);
 	}
 }
 
 void StudioModelRenderer::DrawNormals()
 {
-	glDisable(GL_TEXTURE_2D);
-	glEnable(GL_DEPTH_TEST);
+	_openglFunctions->glDisable(GL_TEXTURE_2D);
+	_openglFunctions->glEnable(GL_DEPTH_TEST);
 
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBegin(GL_LINES);
+	_openglFunctions->glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	_openglFunctions->glBegin(GL_LINES);
 
 	for (int iBodyPart = 0; iBodyPart < _studioModel->Bodyparts.size(); ++iBodyPart)
 	{
@@ -500,14 +502,14 @@ void StudioModelRenderer::DrawNormals()
 
 					const auto absoluteNormalEnd = vertex + _xformnorms[ptricmds[1]];
 
-					glVertex3fv(glm::value_ptr(vertex));
-					glVertex3fv(glm::value_ptr(absoluteNormalEnd));
+					_openglFunctions->glVertex3fv(glm::value_ptr(vertex));
+					_openglFunctions->glVertex3fv(glm::value_ptr(absoluteNormalEnd));
 				}
 			}
 		}
 	}
 
-	glEnd();
+	_openglFunctions->glEnd();
 }
 
 void StudioModelRenderer::SetUpBones()
@@ -598,7 +600,7 @@ unsigned int StudioModelRenderer::DrawPoints(const bool bWireframe)
 
 	uiDrawnPolys += DrawMeshes(bWireframe, meshes);
 
-	glDepthMask(GL_TRUE);
+	_openglFunctions->glDepthMask(GL_TRUE);
 
 	return uiDrawnPolys;
 }
@@ -608,13 +610,13 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 	//Set here since it never changes. Much more efficient.
 	if (bWireframe)
 	{
-		glColor4fv(glm::value_ptr(glm::vec4{_wireframeColor, _renderInfo->Transparency}));
+		_openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{_wireframeColor, _renderInfo->Transparency}));
 	}
 
 	unsigned int uiDrawnPolys = 0;
 
 	//Polygons may overlap, so make sure they can blend together.
-	glDepthFunc(GL_LEQUAL);
+	_openglFunctions->glDepthFunc(GL_LEQUAL);
 
 	for (int j = 0; j < _model->Meshes.size(); j++)
 	{
@@ -629,32 +631,32 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 		if (!bWireframe)
 		{
 			if (texture.Flags & STUDIO_NF_ADDITIVE)
-				glDepthMask(GL_FALSE);
+				_openglFunctions->glDepthMask(GL_FALSE);
 			else
-				glDepthMask(GL_TRUE);
+				_openglFunctions->glDepthMask(GL_TRUE);
 
 			if (texture.Flags & STUDIO_NF_ADDITIVE)
 			{
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+				_openglFunctions->glEnable(GL_BLEND);
+				_openglFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 			}
 			else if (_renderInfo->Transparency < 1.0f)
 			{
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				_openglFunctions->glEnable(GL_BLEND);
+				_openglFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			}
 			else
 			{
-				glDisable(GL_BLEND);
+				_openglFunctions->glDisable(GL_BLEND);
 			}
 
 			if (texture.Flags & STUDIO_NF_MASKED)
 			{
-				glEnable(GL_ALPHA_TEST);
-				glAlphaFunc(GL_GREATER, 0.5f);
+				_openglFunctions->glEnable(GL_ALPHA_TEST);
+				_openglFunctions->glAlphaFunc(GL_GREATER, 0.5f);
 			}
 
-			glBindTexture(GL_TEXTURE_2D, texture.TextureId);
+			_openglFunctions->glBindTexture(GL_TEXTURE_2D, texture.TextureId);
 		}
 
 		int i;
@@ -663,12 +665,12 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 		{
 			if (i < 0)
 			{
-				glBegin(GL_TRIANGLE_FAN);
+				_openglFunctions->glBegin(GL_TRIANGLE_FAN);
 				i = -i;
 			}
 			else
 			{
-				glBegin(GL_TRIANGLE_STRIP);
+				_openglFunctions->glBegin(GL_TRIANGLE_STRIP);
 			}
 
 			uiDrawnPolys += i - 2;
@@ -681,39 +683,39 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 					{
 						const auto& c = _chrome[ptricmds[1]];
 
-						glTexCoord2f(c[0], c[1]);
+						_openglFunctions->glTexCoord2f(c[0], c[1]);
 					}
 					else
 					{
-						glTexCoord2f(ptricmds[2] * s, ptricmds[3] * t);
+						_openglFunctions->glTexCoord2f(ptricmds[2] * s, ptricmds[3] * t);
 					}
 
 					if (texture.Flags & STUDIO_NF_ADDITIVE)
 					{
-						glColor4f(1.0f, 1.0f, 1.0f, _renderInfo->Transparency);
+						_openglFunctions->glColor4f(1.0f, 1.0f, 1.0f, _renderInfo->Transparency);
 					}
 					else
 					{
 						const glm::vec3& lightVec = _lightvalues[ptricmds[1]];
-						glColor4f(lightVec[0], lightVec[1], lightVec[2], _renderInfo->Transparency);
+						_openglFunctions->glColor4f(lightVec[0], lightVec[1], lightVec[2], _renderInfo->Transparency);
 					}
 				}
 
-				glVertex3fv(glm::value_ptr(_xformverts[ptricmds[0]]));
+				_openglFunctions->glVertex3fv(glm::value_ptr(_xformverts[ptricmds[0]]));
 			}
-			glEnd();
+			_openglFunctions->glEnd();
 		}
 
 		if (!bWireframe)
 		{
 			if (texture.Flags & STUDIO_NF_ADDITIVE)
 			{
-				glDisable(GL_BLEND);
+				_openglFunctions->glDisable(GL_BLEND);
 			}
 
 			if (texture.Flags & STUDIO_NF_MASKED)
 			{
-				glDisable(GL_ALPHA_TEST);
+				_openglFunctions->glDisable(GL_ALPHA_TEST);
 			}
 		}
 	}
@@ -726,52 +728,52 @@ unsigned int StudioModelRenderer::DrawShadows(const bool fixZFighting, const boo
 	if (!(_studioModel->Flags & EF_NOSHADELIGHT))
 	{
 		GLint oldDepthMask;
-		glGetIntegerv(GL_DEPTH_WRITEMASK, &oldDepthMask);
+		_openglFunctions->glGetIntegerv(GL_DEPTH_WRITEMASK, &oldDepthMask);
 
 		if (fixZFighting)
 		{
-			glDepthMask(GL_FALSE);
+			_openglFunctions->glDepthMask(GL_FALSE);
 		}
 		else
 		{
-			glDepthMask(GL_TRUE);
+			_openglFunctions->glDepthMask(GL_TRUE);
 		}
 
 		const float r_blend = _renderInfo->Transparency;
 
 		const auto alpha = 0.5 * r_blend;
 
-		const GLboolean texture2DWasEnabled = glIsEnabled(GL_TEXTURE_2D);
+		const GLboolean texture2DWasEnabled = _openglFunctions->glIsEnabled(GL_TEXTURE_2D);
 
-		glDisable(GL_TEXTURE_2D);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
+		_openglFunctions->glDisable(GL_TEXTURE_2D);
+		_openglFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		_openglFunctions->glEnable(GL_BLEND);
 
 		if (wireframe)
 		{
-			glColor4fv(glm::value_ptr(glm::vec4{_wireframeColor, _renderInfo->Transparency}));
+			_openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{_wireframeColor, _renderInfo->Transparency}));
 		}
 		else
 		{
 			//Render shadows as black
-			glColor4f(0.f, 0.f, 0.f, alpha);
+			_openglFunctions->glColor4f(0.f, 0.f, 0.f, alpha);
 		}
 
-		glDepthFunc(GL_LESS);
+		_openglFunctions->glDepthFunc(GL_LESS);
 
 		const auto drawnPolys = InternalDrawShadows();
 
-		glDepthFunc(GL_LEQUAL);
+		_openglFunctions->glDepthFunc(GL_LEQUAL);
 
 		if (texture2DWasEnabled)
 		{
-			glEnable(GL_TEXTURE_2D);
+			_openglFunctions->glEnable(GL_TEXTURE_2D);
 		}
 
-		glDisable(GL_BLEND);
-		glColor4f(1.f, 1.f, 1.f, 1.f);
+		_openglFunctions->glDisable(GL_BLEND);
+		_openglFunctions->glColor4f(1.f, 1.f, 1.f, 1.f);
 
-		glDepthMask(static_cast<GLboolean>(oldDepthMask));
+		_openglFunctions->glDepthMask(static_cast<GLboolean>(oldDepthMask));
 
 		return drawnPolys;
 	}
@@ -801,11 +803,11 @@ unsigned int StudioModelRenderer::InternalDrawShadows()
 			if (i < 0)
 			{
 				i = -i;
-				glBegin(GL_TRIANGLE_FAN);
+				_openglFunctions->glBegin(GL_TRIANGLE_FAN);
 			}
 			else
 			{
-				glBegin(GL_TRIANGLE_STRIP);
+				_openglFunctions->glBegin(GL_TRIANGLE_STRIP);
 			}
 
 			for (; i > 0; --i, triCmds += 4)
@@ -820,10 +822,10 @@ unsigned int StudioModelRenderer::InternalDrawShadows()
 				point.y = vertex.y - _lightvec.y * lightDistance;
 				point.z = shadowHeight;
 
-				glVertex3fv(glm::value_ptr(point));
+				_openglFunctions->glVertex3fv(glm::value_ptr(point));
 			}
 
-			glEnd();
+			_openglFunctions->glEnd();
 		}
 	}
 

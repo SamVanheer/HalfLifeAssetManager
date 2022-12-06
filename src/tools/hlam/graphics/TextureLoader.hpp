@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <utility>
 
-#include <GL/glew.h>
+#include <qopenglfunctions_1_1.h>
 
 #include "graphics/Palette.hpp"
 
@@ -34,6 +34,11 @@ public:
 	TextureLoader();
 	~TextureLoader();
 
+	void SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions)
+	{
+		_openglFunctions = openglFunctions;
+	}
+
 	TextureFilter GetMinFilter() const { return _minFilter; }
 
 	TextureFilter GetMagFilter() const { return _magFilter; }
@@ -49,6 +54,10 @@ public:
 		_resizeToPowerOf2 = value;
 	}
 
+	GLuint CreateTexture();
+
+	void DeleteTexture(GLuint texture);
+
 	void UploadRGBA8888(GLuint texture, int width, int height, const std::byte* rgbaPixels, bool generateMipmaps, bool masked);
 
 	void UploadIndexed8(GLuint texture, int width, int height, const std::byte* pixels, const RGBPalette& palette, bool generateMipmaps, bool masked);
@@ -59,6 +68,8 @@ private:
 	std::pair<int, int> AdjustImageDimensions(int width, int height) const;
 
 private:
+	QOpenGLFunctions_1_1* _openglFunctions = nullptr;
+
 	TextureFilter _minFilter{TextureFilter::Linear};
 	TextureFilter _magFilter{TextureFilter::Linear};
 	MipmapFilter _mipmapFilter{MipmapFilter::None};

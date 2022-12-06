@@ -30,6 +30,11 @@ public:
 	SpriteRenderer(const SpriteRenderer&) = delete;
 	SpriteRenderer& operator=(const SpriteRenderer&) = delete;
 
+	void SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions) override
+	{
+		_openglFunctions = openglFunctions;
+	}
+
 	void DrawSprite(const SpriteRenderInfo& renderInfo, const renderer::DrawFlags flags) override;
 
 	void DrawSprite2D(const float x, const float y, const float width, const float height,
@@ -48,6 +53,7 @@ private:
 
 private:
 	std::shared_ptr<spdlog::logger> _logger;
+	QOpenGLFunctions_1_1* _openglFunctions = nullptr;
 	WorldTime* _worldTime;
 };
 }

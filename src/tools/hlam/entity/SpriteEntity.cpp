@@ -9,7 +9,8 @@
 
 SpriteEntity::~SpriteEntity()
 {
-	sprite::FreeSprite(_sprite);
+	// TODO: reimplement at some point (sprites aren't actually used right now)
+	//sprite::FreeSprite(_sprite);
 }
 
 void SpriteEntity::Spawn()

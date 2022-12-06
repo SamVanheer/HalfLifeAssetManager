@@ -24,6 +24,8 @@ SceneWidget::SceneWidget(graphics::Scene* scene, QWidget* parent)
 	connect(qGuiApp, &QGuiApplication::focusObjectChanged, this, &SceneWidget::OnFocusObjectChanged);
 
 	_previousFocusObject = qGuiApp->focusObject();
+
+	_scene->SetOpenGLFunctions(this);
 }
 
 SceneWidget::~SceneWidget()
@@ -102,6 +104,8 @@ bool SceneWidget::event(QEvent* event)
 void SceneWidget::initializeGL()
 {
 	qCDebug(logging::HLAM) << "Initializing OpenGL";
+
+	assert(initializeOpenGLFunctions());
 
 	//TODO: since we're sharing contexts this can probably be done elsewhere to avoid multiple calls
 	_scene->Initialize();

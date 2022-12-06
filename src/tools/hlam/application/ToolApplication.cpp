@@ -2,8 +2,6 @@
 #include <memory>
 #include <stdexcept>
 
-#include <GL/glew.h>
-
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QDebug>
@@ -383,21 +381,6 @@ std::pair<QOpenGLContext*, QOffscreenSurface*> ToolApplication::InitializeOpenGL
 	if (!context->makeCurrent(surface.get()))
 	{
 		QMessageBox::critical(nullptr, "Fatal Error", "Couldn't make offscreen surface context current");
-		return {};
-	}
-
-	const std::unique_ptr<QOpenGLContext, void (*)(QOpenGLContext*)> cleanup{context.get(), [](QOpenGLContext* ctx)
-		{
-			return ctx->doneCurrent();
-		}};
-
-	glewExperimental = GL_TRUE;
-
-	GLenum error = glewInit();
-
-	if (GLEW_OK != error)
-	{
-		QMessageBox::critical(nullptr, "Fatal Error", QString{"Error initializing GLEW:\n%1"}.arg(reinterpret_cast<const char*>(glewGetErrorString(error))));
 		return {};
 	}
 

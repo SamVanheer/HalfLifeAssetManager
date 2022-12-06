@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <GL/glew.h>
+#include <qopenglfunctions_1_1.h>
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -14,6 +14,7 @@
 
 class EntityList;
 class HLMVStudioModelEntity;
+class QOpenGLFunctions_1_1;
 class StudioModelEntity;
 class WorldTime;
 struct EntityContext;
@@ -52,6 +53,13 @@ public:
 	IGraphicsContext* GetGraphicsContext() const { return _graphicsContext.get(); }
 
 	void SetGraphicsContext(std::unique_ptr<IGraphicsContext>&& graphicsContext);
+
+	QOpenGLFunctions_1_1* GetOpenGLFunctions()
+	{
+		return _openglFunctions;
+	}
+
+	void SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions);
 
 	EntityContext* GetEntityContext() const { return _entityContext.get(); }
 
@@ -165,6 +173,8 @@ public:
 private:
 	//Keep track of how many times we've been initialized and shut down so we don't do it at the wrong time
 	int _initializeCount{0};
+
+	QOpenGLFunctions_1_1* _openglFunctions = nullptr;
 
 	TextureLoader* const _textureLoader;
 

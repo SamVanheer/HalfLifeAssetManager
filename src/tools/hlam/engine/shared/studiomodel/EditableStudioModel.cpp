@@ -15,12 +15,15 @@ namespace studiomdl
 {
 EditableStudioModel::~EditableStudioModel()
 {
+	// TODO: rework resource management.
+	/*
 	//TODO: need to be sure the context is valid when this is done
 	for (auto& texture : Textures)
 	{
 		glDeleteTextures(1, &texture->TextureId);
 		texture->TextureId = 0;
 	}
+	*/
 }
 
 const Model* EditableStudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart) const
@@ -107,22 +110,17 @@ void EditableStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 {
 	for (auto& texture : Textures)
 	{
-		GLuint name;
-
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glGenTextures(1, &name);
+		texture->TextureId = textureLoader.CreateTexture();;
 
 		auto& data = texture->Data;
 
 		textureLoader.UploadIndexed8(
-			name,
+			texture->TextureId,
 			data.Width, data.Height,
 			data.Pixels.data(),
 			data.Palette,
 			(texture->Flags & STUDIO_NF_NOMIPS) != 0,
-			(texture->Flags & STUDIO_NF_MASKED) != 0);
-
-		texture->TextureId = name;
+			(texture->Flags & STUDIO_NF_MASKED) != 0);;
 	}
 }
 
@@ -160,7 +158,6 @@ void EditableStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
 	{
 		if (texture->TextureId)
 		{
-			glBindTexture(GL_TEXTURE_2D, texture->TextureId);
 			textureLoader.SetFilters(texture->TextureId, (texture->Flags & STUDIO_NF_NOMIPS) != 0);
 		}
 	}
@@ -174,6 +171,15 @@ void EditableStudioModel::ReuploadTextures(graphics::TextureLoader& textureLoade
 		{
 			ReplaceTexture(textureLoader, texture.get(), texture->Data.Pixels.data(), texture->Data.Palette);
 		}
+	}
+}
+
+void EditableStudioModel::DeleteTextures(graphics::TextureLoader& textureLoader)
+{
+	for (auto& texture : Textures)
+	{
+		textureLoader.DeleteTexture(texture->TextureId);
+		texture->TextureId = 0;
 	}
 }
 

@@ -2,8 +2,7 @@
 
 #include <memory>
 
-#include <GL/glew.h>
-
+#include <qopenglfunctions_1_1.h>
 #include <QOpenGLWindow>
 #include <QPointer>
 
@@ -42,7 +41,7 @@ private:
 *	@brief Renders a scene to an OpenGL window
 *	TODO: rework this so it isn't tied directly to OpenGL (allow D3D or Vulkan backends)
 */
-class SceneWidget final : public QOpenGLWindow
+class SceneWidget final : public QOpenGLWindow, protected QOpenGLFunctions_1_1
 {
 	Q_OBJECT
 
