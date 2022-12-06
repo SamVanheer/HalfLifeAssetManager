@@ -6,7 +6,12 @@
 #include <QSettings>
 #include <QString>
 
+#include <glm/vec3.hpp>
+
+#include "graphics/GraphicsConstants.hpp"
 #include "graphics/TextureLoader.hpp"
+
+#undef PlaySound
 
 namespace ui::settings
 {
@@ -125,12 +130,7 @@ public:
 
 	void SetFloorLength(int value)
 	{
-		if (_floorLength != value)
-		{
-			_floorLength = value;
-
-			emit FloorLengthChanged(_floorLength);
-		}
+		_floorLength = value;
 	}
 
 	QString GetStudiomdlCompilerFileName() const { return _studiomdlCompilerFileName; }
@@ -148,12 +148,40 @@ public:
 	}
 
 	// TODO: not persisted right now.
+	RenderMode CurrentRenderMode = RenderMode::TEXTURE_SHADED;
+
+	bool ShowHitboxes = false;
+	bool ShowBones = false;
+	bool ShowAttachments = false;
+	bool ShowEyePosition = false;
+	bool ShowBBox = false;
+	bool ShowCBox = false;
+	bool EnableBackfaceCulling = true;
+	bool ShowGround = false;
+	bool MirrorOnGround = false;
+	bool ShowBackground = false;
+	bool ShowWireframeOverlay = false;
+	bool DrawShadows = false;
+	bool FixShadowZFighting = false;
+	bool ShowAxes = false;
+	bool ShowNormals = false;
+	bool ShowCrosshair = false;
+	bool ShowGuidelines = false;
+	bool ShowPlayerHitbox = false;
+
+	bool EnableFloorTextureTiling{false};
+	int FloorTextureLength{16};
+	glm::vec3 FloorOrigin{0};
+
+	bool CameraIsFirstPerson{false};
+
+	int DrawSingleBoneIndex = -1;
+	int DrawSingleAttachmentIndex = -1;
+	int DrawSingleHitboxIndex = -1;
+
 	bool PlaySequence = true;
 	bool PlaySound = false;
 	bool PitchFramerateAmplitude = false;
-
-signals:
-	void FloorLengthChanged(int length);
 
 private:
 	bool _autodetectViewModels{DefaultAutodetectViewmodels};

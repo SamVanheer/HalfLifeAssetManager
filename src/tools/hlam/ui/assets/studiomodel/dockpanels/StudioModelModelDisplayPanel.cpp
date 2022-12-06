@@ -3,6 +3,8 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelModelDisplayPanel.hpp"
 
+#include "ui/settings/StudioModelSettings.hpp"
+
 namespace ui::assets::studiomodel
 {
 StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* asset, QWidget* parent)
@@ -39,14 +41,14 @@ StudioModelModelDisplayPanel::StudioModelModelDisplayPanel(StudioModelAsset* ass
 	connect(_ui.MirrorOnYAxis, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnMirrorYAxisChanged);
 	connect(_ui.MirrorOnZAxis, &QCheckBox::stateChanged, this, &StudioModelModelDisplayPanel::OnMirrorZAxisChanged);
 
-	_ui.RenderModeComboBox->setCurrentIndex(static_cast<int>(_asset->GetScene()->CurrentRenderMode));
+	_ui.RenderModeComboBox->setCurrentIndex(static_cast<int>(_asset->GetProvider()->GetStudioModelSettings()->CurrentRenderMode));
 }
 
 StudioModelModelDisplayPanel::~StudioModelModelDisplayPanel() = default;
 
 void StudioModelModelDisplayPanel::OnRenderModeChanged(int index)
 {
-	_asset->GetScene()->CurrentRenderMode = static_cast<RenderMode>(index);
+	_asset->GetProvider()->GetStudioModelSettings()->CurrentRenderMode = static_cast<RenderMode>(index);
 }
 
 void StudioModelModelDisplayPanel::OnOpacityChanged(int value)
@@ -58,77 +60,77 @@ void StudioModelModelDisplayPanel::OnOpacityChanged(int value)
 
 void StudioModelModelDisplayPanel::OnShowHitboxesChanged()
 {
-	_asset->GetScene()->ShowHitboxes = _ui.ShowHitboxes->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowHitboxes = _ui.ShowHitboxes->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowBonesChanged()
 {
-	_asset->GetScene()->ShowBones = _ui.ShowBones->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowBones = _ui.ShowBones->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowAttachmentsChanged()
 {
-	_asset->GetScene()->ShowAttachments = _ui.ShowAttachments->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowAttachments = _ui.ShowAttachments->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowEyePositionChanged()
 {
-	_asset->GetScene()->ShowEyePosition = _ui.ShowEyePosition->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowEyePosition = _ui.ShowEyePosition->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowBBoxChanged()
 {
-	_asset->GetScene()->ShowBBox = _ui.ShowBBox->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowBBox = _ui.ShowBBox->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowCBoxChanged()
 {
-	_asset->GetScene()->ShowCBox = _ui.ShowCBox->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowCBox = _ui.ShowCBox->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnEnableBackfaceCullingChanged()
 {
-	_asset->GetScene()->EnableBackfaceCulling = _ui.BackfaceCulling->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->EnableBackfaceCulling = _ui.BackfaceCulling->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnWireframeOverlayChanged()
 {
-	_asset->GetScene()->ShowWireframeOverlay = _ui.WireframeOverlay->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowWireframeOverlay = _ui.WireframeOverlay->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnDrawShadowsChanged()
 {
-	_asset->GetScene()->DrawShadows = _ui.DrawShadows->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->DrawShadows = _ui.DrawShadows->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnFixShadowZFightingChanged()
 {
-	_asset->GetScene()->FixShadowZFighting = _ui.FixShadowZFighting->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->FixShadowZFighting = _ui.FixShadowZFighting->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowAxesChanged()
 {
-	_asset->GetScene()->ShowAxes = _ui.ShowAxes->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowAxes = _ui.ShowAxes->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowNormalsChanged()
 {
-	_asset->GetScene()->ShowNormals = _ui.ShowNormals->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowNormals = _ui.ShowNormals->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowCrosshairChanged()
 {
-	_asset->GetScene()->ShowCrosshair = _ui.ShowCrosshair->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowCrosshair = _ui.ShowCrosshair->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowGuidelinesChanged()
 {
-	_asset->GetScene()->ShowGuidelines = _ui.ShowGuidelines->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowGuidelines = _ui.ShowGuidelines->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnShowPlayerHitboxChanged()
 {
-	_asset->GetScene()->ShowPlayerHitbox = _ui.ShowPlayerHitbox->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowPlayerHitbox = _ui.ShowPlayerHitbox->isChecked();
 }
 
 void StudioModelModelDisplayPanel::OnMirrorXAxisChanged()

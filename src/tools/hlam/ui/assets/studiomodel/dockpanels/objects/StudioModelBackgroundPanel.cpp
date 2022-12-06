@@ -8,6 +8,8 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/objects/StudioModelBackgroundPanel.hpp"
 
+#include "ui/settings/StudioModelSettings.hpp"
+
 namespace ui::assets::studiomodel
 {
 StudioModelBackgroundPanel::StudioModelBackgroundPanel(StudioModelAsset* asset, QWidget* parent)
@@ -24,7 +26,7 @@ StudioModelBackgroundPanel::StudioModelBackgroundPanel(StudioModelAsset* asset, 
 
 void StudioModelBackgroundPanel::OnShowBackgroundChanged()
 {
-	_asset->GetScene()->ShowBackground = _ui.ShowBackground->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowBackground = _ui.ShowBackground->isChecked();
 }
 
 void StudioModelBackgroundPanel::OnTextureChanged()

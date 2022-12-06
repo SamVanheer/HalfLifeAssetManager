@@ -517,7 +517,9 @@ unsigned int DrawMirroredModel(QOpenGLFunctions_1_1* openglFunctions,
 		flags |= renderer::DrawFlag::WIREFRAME_OVERLAY;
 	}
 
-	pEntity->Draw(flags);
+	studiomdl::ModelRenderInfo renderInfo = pEntity->GetRenderInfo();
+
+	studioModelRenderer.DrawModel(renderInfo, flags);
 
 	openglFunctions->glDisable(GL_CLIP_PLANE0);
 

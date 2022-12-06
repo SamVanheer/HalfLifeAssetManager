@@ -16,7 +16,9 @@ public:
 
 	virtual void Spawn() override;
 
-	virtual void Draw(renderer::DrawFlags flags) override;
+	RenderPasses GetRenderPasses() const override { return RenderPass::Standard; }
+
+	virtual void Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass) override;
 
 	void AnimThink();
 

@@ -1,6 +1,8 @@
 #pragma once
 
+#include <algorithm>
 #include <memory>
+#include <vector>
 
 #include <qopenglfunctions_1_1.h>
 
@@ -12,6 +14,7 @@
 #include "graphics/Camera.hpp"
 #include "graphics/GraphicsConstants.hpp"
 
+class BaseEntity;
 class EntityList;
 class HLMVStudioModelEntity;
 class QOpenGLFunctions_1_1;
@@ -131,45 +134,14 @@ public:
 	void Draw();
 
 private:
-
 	void DrawModel();
+
+	void CollectRenderables(RenderPass::RenderPass renderPass, std::vector<BaseEntity*>& renderablesToRender);
 
 	//TODO: these are temporary until the graphics code can be refactored into an object based design
 public:
-	RenderMode CurrentRenderMode = RenderMode::TEXTURE_SHADED;
-
-	bool ShowHitboxes = false;
-	bool ShowBones = false;
-	bool ShowAttachments = false;
-	bool ShowEyePosition = false;
-	bool ShowBBox = false;
-	bool ShowCBox = false;
-	bool EnableBackfaceCulling = true;
-	bool ShowGround = false;
-	bool MirrorOnGround = false;
-	bool ShowBackground = false;
-	bool ShowWireframeOverlay = false;
-	bool DrawShadows = false;
-	bool FixShadowZFighting = false;
-	bool ShowAxes = false;
-	bool ShowNormals = false;
-	bool ShowCrosshair = false;
-	bool ShowGuidelines = false;
-	bool ShowPlayerHitbox = false;
-
-	int FloorLength = 0;
-	bool EnableFloorTextureTiling{false};
-	int FloorTextureLength{16};
-	glm::vec3 FloorOrigin{0};
-
 	GLuint GroundTexture{0};
 	GLuint BackgroundTexture{0};
-
-	int DrawSingleBoneIndex = -1;
-	int DrawSingleAttachmentIndex = -1;
-	int DrawSingleHitboxIndex = -1;
-
-	bool CameraIsFirstPerson{false};
 
 	//TODO: having some colors as variables and some as methods is inconsistent
 	glm::vec3 GroundColor{0};
@@ -209,5 +181,7 @@ private:
 	float _previousFloorFrame{0};
 
 	glm::vec2 _floorTextureOffset{0};
+
+	std::vector<BaseEntity*> _renderablesToRender;
 };
 }

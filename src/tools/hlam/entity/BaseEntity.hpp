@@ -2,15 +2,16 @@
 
 #include <glm/vec3.hpp>
 
-#include "engine/shared/renderer/DrawConstants.hpp"
-
 #include "entity/EHandle.hpp"
 #include "entity/EntityConstants.hpp"
+
+#include "graphics/GraphicsConstants.hpp"
 
 #include "utility/Class.hpp"
 
 class BaseEntity;
 class EntityList;
+class QOpenGLFunctions_1_1;
 class WorldTime;
 
 namespace soundsystem
@@ -73,7 +74,7 @@ public:
 
 public:
 	BaseEntity() = default;
-	~BaseEntity() = default;
+	virtual ~BaseEntity() = default;
 
 	BaseEntity(const BaseEntity&) = delete;
 	BaseEntity& operator=(const BaseEntity&) = delete;
@@ -84,7 +85,9 @@ public:
 	*/
 	virtual void Spawn() {}
 
-	virtual void Draw(renderer::DrawFlags flags) {}
+	virtual RenderPasses GetRenderPasses() const { return RenderPass::None; }
+
+	virtual void Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass) {}
 
 private:
 	EHandle _entHandle;

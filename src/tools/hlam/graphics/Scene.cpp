@@ -24,6 +24,8 @@
 
 #include "qt/QtLogSink.hpp"
 
+#include "ui/settings/StudioModelSettings.hpp"
+
 #include "utility/WorldTime.hpp"
 
 namespace graphics
@@ -184,7 +186,7 @@ void Scene::Draw()
 
 	_openglFunctions->glClearColor(BackgroundColor.r, BackgroundColor.g, BackgroundColor.b, 1.0f);
 
-	if (MirrorOnGround)
+	if (_entityContext->Settings->MirrorOnGround)
 	{
 		_openglFunctions->glClearStencil(0);
 
@@ -204,7 +206,7 @@ void Scene::Draw()
 	const int centerX = _windowWidth / 2;
 	const int centerY = _windowHeight / 2;
 
-	if (ShowCrosshair)
+	if (_entityContext->Settings->ShowCrosshair)
 	{
 		_openglFunctions->glMatrixMode(GL_PROJECTION);
 		_openglFunctions->glLoadIdentity();
@@ -254,7 +256,7 @@ void Scene::Draw()
 		_openglFunctions->glPopMatrix();
 	}
 
-	if (ShowGuidelines)
+	if (_entityContext->Settings->ShowGuidelines)
 	{
 		_openglFunctions->glMatrixMode(GL_PROJECTION);
 		_openglFunctions->glLoadIdentity();
@@ -326,9 +328,16 @@ void Scene::DrawModel()
 	// draw background
 	//
 
-	if (ShowBackground && BackgroundTexture != GL_INVALID_TEXTURE_ID)
+	if (_entityContext->Settings->ShowBackground && BackgroundTexture != GL_INVALID_TEXTURE_ID)
 	{
 		graphics::DrawBackground(_openglFunctions, BackgroundTexture);
+	}
+
+	CollectRenderables(RenderPass::Background, _renderablesToRender);
+
+	for (const auto& renderable : _renderablesToRender)
+	{
+		renderable->Draw(_openglFunctions, RenderPass::Background);
 	}
 
 	_openglFunctions->glMatrixMode(GL_PROJECTION);
@@ -340,7 +349,7 @@ void Scene::DrawModel()
 	_openglFunctions->glLoadIdentity();
 	_openglFunctions->glLoadMatrixf(glm::value_ptr(camera->GetViewMatrix()));
 
-	if (ShowAxes)
+	if (_entityContext->Settings->ShowAxes)
 	{
 		_openglFunctions->glDisable(GL_TEXTURE_2D);
 		_openglFunctions->glEnable(GL_DEPTH_TEST);
@@ -376,112 +385,26 @@ void Scene::DrawModel()
 
 	const unsigned int uiOldPolys = _studioModelRenderer->GetDrawnPolygonsCount();
 
-	if (nullptr != _entity)
+	//TODO: this is currently here so model rendering works. Eventually when everything is moved into renderables this needs to move.
+	CollectRenderables(RenderPass::Standard, _renderablesToRender);
+
+	for (const auto& renderable : _renderablesToRender)
 	{
-		// setup stencil buffer and draw mirror
-		if (MirrorOnGround)
-		{
-			graphics::DrawMirroredModel(_openglFunctions, 
-				*_studioModelRenderer, _entity,
-				CurrentRenderMode,
-				ShowWireframeOverlay,
-				FloorOrigin,
-				FloorLength,
-				EnableBackfaceCulling);
-		}
+		renderable->Draw(_openglFunctions, RenderPass::Standard);
 	}
 
-	graphics::SetupRenderMode(_openglFunctions, CurrentRenderMode, EnableBackfaceCulling);
+	CollectRenderables(RenderPass::Overlay3D, _renderablesToRender);
 
-	if (nullptr != _entity)
+	for (const auto& renderable : _renderablesToRender)
 	{
-		const glm::vec3& vecScale = _entity->GetScale();
-
-		//Determine if an odd number of scale values are negative. The cull face has to be changed if so.
-		const float flScale = vecScale.x * vecScale.y * vecScale.z;
-
-		_openglFunctions->glCullFace(flScale > 0 ? GL_FRONT : GL_BACK);
-
-		renderer::DrawFlags flags = renderer::DrawFlag::NONE;
-
-		if (ShowWireframeOverlay)
-		{
-			flags |= renderer::DrawFlag::WIREFRAME_OVERLAY;
-		}
-
-		if (CameraIsFirstPerson)
-		{
-			flags |= renderer::DrawFlag::IS_VIEW_MODEL;
-		}
-
-		if (DrawShadows)
-		{
-			flags |= renderer::DrawFlag::DRAW_SHADOWS;
-		}
-
-		if (FixShadowZFighting)
-		{
-			flags |= renderer::DrawFlag::FIX_SHADOW_Z_FIGHTING;
-		}
-
-		//TODO: these should probably be made separate somehow
-		if (ShowHitboxes)
-		{
-			flags |= renderer::DrawFlag::DRAW_HITBOXES;
-		}
-
-		if (ShowBones)
-		{
-			flags |= renderer::DrawFlag::DRAW_BONES;
-		}
-
-		if (ShowAttachments)
-		{
-			flags |= renderer::DrawFlag::DRAW_ATTACHMENTS;
-		}
-
-		if (ShowEyePosition)
-		{
-			flags |= renderer::DrawFlag::DRAW_EYE_POSITION;
-		}
-
-		if (ShowNormals)
-		{
-			flags |= renderer::DrawFlag::DRAW_NORMALS;
-		}
-
-		_entity->Draw(flags);
-
-		auto renderInfo = _entity->GetRenderInfo();
-
-		//TODO: this is a temporary hack. The graphics scene architecture needs a complete overhaul first,
-		//then this can be done by rendering the model in a separate viewmodel layer
-		if (CameraIsFirstPerson)
-		{
-			renderInfo.Origin.z -= 1;
-		}
-
-		if (DrawSingleBoneIndex != -1)
-		{
-			_entityContext->StudioModelRenderer->DrawSingleBone(renderInfo, DrawSingleBoneIndex);
-		}
-
-		if (DrawSingleAttachmentIndex != -1)
-		{
-			_entityContext->StudioModelRenderer->DrawSingleAttachment(renderInfo, DrawSingleAttachmentIndex);
-		}
-
-		if (DrawSingleHitboxIndex != -1)
-		{
-			_entityContext->StudioModelRenderer->DrawSingleHitbox(renderInfo, DrawSingleHitboxIndex);
-		}
+		renderable->Draw(_openglFunctions, RenderPass::Overlay3D);
 	}
 
 	//
 	// draw ground
 	//
 
-	if (ShowGround)
+	if (_entityContext->Settings->ShowGround)
 	{
 		glm::vec2 textureOffset{0};
 
@@ -530,18 +453,18 @@ void Scene::DrawModel()
 
 		_floorTextureOffset += textureOffset;
 
-		const float floorTextureLength = EnableFloorTextureTiling ? FloorTextureLength : FloorLength;
+		const float floorTextureLength = _entityContext->Settings->EnableFloorTextureTiling ? _entityContext->Settings->FloorTextureLength : _entityContext->Settings->GetFloorLength();
 
 		//Prevent the offset from overflowing
 		_floorTextureOffset.x = std::fmod(_floorTextureOffset.x, floorTextureLength);
 		_floorTextureOffset.y = std::fmod(_floorTextureOffset.y, floorTextureLength);
 
-		graphics::DrawFloor(_openglFunctions, FloorOrigin, FloorLength, floorTextureLength, _floorTextureOffset, GroundTexture, GroundColor, MirrorOnGround);
+		graphics::DrawFloor(_openglFunctions, _entityContext->Settings->FloorOrigin, _entityContext->Settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, GroundTexture, GroundColor, _entityContext->Settings->MirrorOnGround);
 	}
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;
 
-	if (ShowPlayerHitbox)
+	if (_entityContext->Settings->ShowPlayerHitbox)
 	{
 		//Draw a transparent green box to display the player hitbox
 		const glm::vec3 bbmin{-16, -16, 0};
@@ -552,7 +475,7 @@ void Scene::DrawModel()
 		DrawOutlinedBox(_openglFunctions, v, {0.0f, 1.0f, 0.0f, 0.5f}, {0.0f, 0.5f, 0.0f, 1.f});
 	}
 
-	if (ShowBBox)
+	if (_entityContext->Settings->ShowBBox)
 	{
 		if (_entity)
 		{
@@ -565,7 +488,7 @@ void Scene::DrawModel()
 		}
 	}
 
-	if (ShowCBox)
+	if (_entityContext->Settings->ShowCBox)
 	{
 		if (_entity)
 		{
@@ -579,5 +502,20 @@ void Scene::DrawModel()
 	}
 
 	_openglFunctions->glPopMatrix();
+}
+
+void Scene::CollectRenderables(RenderPass::RenderPass renderPass, std::vector<BaseEntity*>& renderablesToRender)
+{
+	renderablesToRender.clear();
+
+	for (auto entity = _entityList->GetFirstEntity(); entity.IsValid(*_entityList); entity = _entityList->GetNextEntity(entity))
+	{
+		auto ent = entity.Get(*_entityList);
+
+		if (ent->GetRenderPasses() & renderPass)
+		{
+			renderablesToRender.emplace_back(ent);
+		}
+	}
 }
 }

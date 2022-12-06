@@ -10,6 +10,8 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/objects/StudioModelGroundPanel.hpp"
 
+#include "ui/settings/StudioModelSettings.hpp"
+
 namespace ui::assets::studiomodel
 {
 StudioModelGroundPanel::StudioModelGroundPanel(StudioModelAsset* asset, QWidget* parent)
@@ -18,7 +20,7 @@ StudioModelGroundPanel::StudioModelGroundPanel(StudioModelAsset* asset, QWidget*
 {
 	_ui.setupUi(this);
 
-	_ui.GroundTextureSize->setValue(_asset->GetScene()->FloorTextureLength);
+	_ui.GroundTextureSize->setValue(_asset->GetProvider()->GetStudioModelSettings()->FloorTextureLength);
 
 	_ui.GroundOrigin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	_ui.GroundOrigin->SetDecimals(6);
@@ -41,11 +43,9 @@ void StudioModelGroundPanel::OnLayoutDirectionChanged(QBoxLayout::Direction dire
 
 void StudioModelGroundPanel::OnShowGroundChanged()
 {
-	auto scene = _asset->GetScene();
+	_asset->GetProvider()->GetStudioModelSettings()->ShowGround = _ui.ShowGround->isChecked();
 
-	scene->ShowGround = _ui.ShowGround->isChecked();
-
-	if (!scene->ShowGround)
+	if (!_asset->GetProvider()->GetStudioModelSettings()->ShowGround)
 	{
 		_ui.MirrorModelOnGround->setChecked(false);
 	}
@@ -55,9 +55,9 @@ void StudioModelGroundPanel::OnMirrorOnGroundChanged()
 {
 	auto scene = _asset->GetScene();
 
-	scene->MirrorOnGround = _ui.MirrorModelOnGround->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->MirrorOnGround = _ui.MirrorModelOnGround->isChecked();
 
-	if (scene->MirrorOnGround)
+	if (_asset->GetProvider()->GetStudioModelSettings()->MirrorOnGround)
 	{
 		_ui.ShowGround->setChecked(true);
 	}
@@ -65,12 +65,12 @@ void StudioModelGroundPanel::OnMirrorOnGroundChanged()
 
 void StudioModelGroundPanel::OnEnableGroundTextureTilingChanged()
 {
-	_asset->GetScene()->EnableFloorTextureTiling = _ui.EnableGroundTextureTiling->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->EnableFloorTextureTiling = _ui.EnableGroundTextureTiling->isChecked();
 }
 
 void StudioModelGroundPanel::OnGroundTextureSizeChanged()
 {
-	_asset->GetScene()->FloorTextureLength = _ui.GroundTextureSize->value();
+	_asset->GetProvider()->GetStudioModelSettings()->FloorTextureLength = _ui.GroundTextureSize->value();
 }
 
 void StudioModelGroundPanel::OnTextureChanged()
@@ -136,6 +136,6 @@ void StudioModelGroundPanel::OnBrowseTexture()
 
 void StudioModelGroundPanel::OnOriginChanged()
 {
-	_asset->GetScene()->FloorOrigin = _ui.GroundOrigin->GetValue();
+	_asset->GetProvider()->GetStudioModelSettings()->FloorOrigin = _ui.GroundOrigin->GetValue();
 }
 }

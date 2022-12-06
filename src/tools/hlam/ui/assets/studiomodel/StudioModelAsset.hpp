@@ -219,8 +219,6 @@ private slots:
 
 	void UpdateColors();
 
-	void OnFloorLengthChanged(int length);
-
 	void OnPreviousCamera();
 	void OnNextCamera();
 

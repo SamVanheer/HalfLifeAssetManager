@@ -20,7 +20,7 @@ void SpriteEntity::Spawn()
 	SetFlags(entity::FL_ALWAYSTHINK);
 }
 
-void SpriteEntity::Draw(renderer::DrawFlags flags)
+void SpriteEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
 {
 	sprite::SpriteRenderInfo info;
 
@@ -34,7 +34,7 @@ void SpriteEntity::Draw(renderer::DrawFlags flags)
 
 	info.Frame = GetFrame();
 
-	GetContext()->SpriteRenderer->DrawSprite(info, flags);
+	GetContext()->SpriteRenderer->DrawSprite(info, renderer::DrawFlag::NONE);
 }
 
 void SpriteEntity::AnimThink()

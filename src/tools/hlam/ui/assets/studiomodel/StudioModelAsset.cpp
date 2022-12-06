@@ -126,8 +126,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	UpdateColors();
 
-	_scene->FloorLength = _provider->GetStudioModelSettings()->GetFloorLength();
-
 	auto entity = _scene->GetEntityContext()->EntityList->Create<HLMVStudioModelEntity>()([this](auto entity)
 		{
 			entity->SetEntityContext(_scene->GetEntityContext());
@@ -170,7 +168,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
 	connect(_editorContext->GetColorSettings(), &settings::ColorSettings::ColorsChanged, this, &StudioModelAsset::UpdateColors);
-	connect(_provider->GetStudioModelSettings(), &settings::StudioModelSettings::FloorLengthChanged, this, &StudioModelAsset::OnFloorLengthChanged);
 }
 
 StudioModelAsset::~StudioModelAsset()
@@ -427,7 +424,7 @@ void StudioModelAsset::OnSceneWidgetWheelEvent(QWheelEvent* event)
 void StudioModelAsset::OnCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current)
 {
 	_scene->SetCurrentCamera(current != nullptr ? current->GetCamera() : nullptr);
-	_scene->CameraIsFirstPerson = current == _firstPersonCamera;
+	GetProvider()->GetStudioModelSettings()->CameraIsFirstPerson = current == _firstPersonCamera;
 }
 
 static glm::vec3 ColorToVector(const QColor& color)
@@ -444,11 +441,6 @@ void StudioModelAsset::UpdateColors()
 	_scene->CrosshairColor = ColorToVector(colorSettings->GetColor(CrosshairColor.Name));
 	_scene->SetLightColor(ColorToVector(colorSettings->GetColor(LightColor.Name)));
 	_scene->SetWireframeColor(ColorToVector(colorSettings->GetColor(WireframeColor.Name)));
-}
-
-void StudioModelAsset::OnFloorLengthChanged(int length)
-{
-	_scene->FloorLength = length;
 }
 
 void StudioModelAsset::OnPreviousCamera()

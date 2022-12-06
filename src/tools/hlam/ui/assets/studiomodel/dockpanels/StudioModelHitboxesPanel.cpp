@@ -11,6 +11,8 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelDockHelpers.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelHitboxesPanel.hpp"
 
+#include "ui/settings/StudioModelSettings.hpp"
+
 namespace ui::assets::studiomodel
 {
 StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset, QWidget* parent)
@@ -263,7 +265,7 @@ void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 
 void StudioModelHitboxesPanel::OnHighlightHitboxChanged()
 {
-	_asset->GetScene()->DrawSingleHitboxIndex = _ui.HighlightHitbox->isChecked() ? _ui.Hitboxes->currentIndex() : -1;
+	_asset->GetProvider()->GetStudioModelSettings()->DrawSingleHitboxIndex = _ui.HighlightHitbox->isChecked() ? _ui.Hitboxes->currentIndex() : -1;
 }
 
 void StudioModelHitboxesPanel::OnBoneChanged()

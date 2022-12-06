@@ -4,6 +4,10 @@
 
 #include "entity/StudioModelEntity.hpp"
 
+#include "graphics/GraphicsUtils.hpp"
+
+#include "ui/settings/StudioModelSettings.hpp"
+
 #include "utility/WorldTime.hpp"
 
 void StudioModelEntity::Spawn()
@@ -23,11 +27,104 @@ void StudioModelEntity::Spawn()
 	SetSkin(0);
 }
 
-void StudioModelEntity::Draw(renderer::DrawFlags flags)
+void StudioModelEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
 {
+	auto settings = GetContext()->Settings;
+
+	// setup stencil buffer and draw mirror
+	if (settings->MirrorOnGround)
+	{
+		graphics::DrawMirroredModel(openglFunctions,
+			*GetContext()->StudioModelRenderer, this,
+			settings->CurrentRenderMode,
+			settings->ShowWireframeOverlay,
+			settings->FloorOrigin,
+			settings->GetFloorLength(),
+			settings->EnableBackfaceCulling);
+	}
+
+	graphics::SetupRenderMode(openglFunctions, settings->CurrentRenderMode, settings->EnableBackfaceCulling);
+
+	const glm::vec3& vecScale = GetScale();
+
+	//Determine if an odd number of scale values are negative. The cull face has to be changed if so.
+	const float flScale = vecScale.x * vecScale.y * vecScale.z;
+
+	openglFunctions->glCullFace(flScale > 0 ? GL_FRONT : GL_BACK);
+
+	renderer::DrawFlags flags = renderer::DrawFlag::NONE;
+
+	if (settings->ShowWireframeOverlay)
+	{
+		flags |= renderer::DrawFlag::WIREFRAME_OVERLAY;
+	}
+
+	if (settings->CameraIsFirstPerson)
+	{
+		flags |= renderer::DrawFlag::IS_VIEW_MODEL;
+	}
+
+	if (settings->DrawShadows)
+	{
+		flags |= renderer::DrawFlag::DRAW_SHADOWS;
+	}
+
+	if (settings->FixShadowZFighting)
+	{
+		flags |= renderer::DrawFlag::FIX_SHADOW_Z_FIGHTING;
+	}
+
+	//TODO: these should probably be made separate somehow
+	if (settings->ShowHitboxes)
+	{
+		flags |= renderer::DrawFlag::DRAW_HITBOXES;
+	}
+
+	if (settings->ShowBones)
+	{
+		flags |= renderer::DrawFlag::DRAW_BONES;
+	}
+
+	if (settings->ShowAttachments)
+	{
+		flags |= renderer::DrawFlag::DRAW_ATTACHMENTS;
+	}
+
+	if (settings->ShowEyePosition)
+	{
+		flags |= renderer::DrawFlag::DRAW_EYE_POSITION;
+	}
+
+	if (settings->ShowNormals)
+	{
+		flags |= renderer::DrawFlag::DRAW_NORMALS;
+	}
+
 	studiomdl::ModelRenderInfo renderInfo = GetRenderInfo();
 
 	GetContext()->StudioModelRenderer->DrawModel(renderInfo, flags);
+
+	//TODO: this is a temporary hack. The graphics scene architecture needs a complete overhaul first,
+		//then this can be done by rendering the model in a separate viewmodel layer
+	if (settings->CameraIsFirstPerson)
+	{
+		renderInfo.Origin.z -= 1;
+	}
+
+	if (settings->DrawSingleBoneIndex != -1)
+	{
+		GetContext()->StudioModelRenderer->DrawSingleBone(renderInfo, settings->DrawSingleBoneIndex);
+	}
+
+	if (settings->DrawSingleAttachmentIndex != -1)
+	{
+		GetContext()->StudioModelRenderer->DrawSingleAttachment(renderInfo, settings->DrawSingleAttachmentIndex);
+	}
+
+	if (settings->DrawSingleHitboxIndex != -1)
+	{
+		GetContext()->StudioModelRenderer->DrawSingleHitbox(renderInfo, settings->DrawSingleHitboxIndex);
+	}
 }
 
 studiomdl::ModelRenderInfo StudioModelEntity::GetRenderInfo() const

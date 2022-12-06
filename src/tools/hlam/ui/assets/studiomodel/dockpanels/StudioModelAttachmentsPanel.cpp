@@ -13,6 +13,8 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelDockHelpers.hpp"
 
+#include "ui/settings/StudioModelSettings.hpp"
+
 namespace ui::assets::studiomodel
 {
 StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset, QWidget* parent)
@@ -270,7 +272,7 @@ void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 
 void StudioModelAttachmentsPanel::OnHighlightAttachmentChanged()
 {
-	_asset->GetScene()->DrawSingleAttachmentIndex = _ui.HighlightAttachment->isChecked() ? _ui.Attachments->currentIndex() : -1;
+	_asset->GetProvider()->GetStudioModelSettings()->DrawSingleAttachmentIndex = _ui.HighlightAttachment->isChecked() ? _ui.Attachments->currentIndex() : -1;
 }
 
 void StudioModelAttachmentsPanel::OnNameChanged()
