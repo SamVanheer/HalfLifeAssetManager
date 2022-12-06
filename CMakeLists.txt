@@ -18,9 +18,6 @@ project(HL_Tools
 	DESCRIPTION "Half-Life Modding Tools"
 	LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 include(TestBigEndian)
 TEST_BIG_ENDIAN(IS_BIG_ENDIAN_TARGET)
 

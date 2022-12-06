@@ -20,6 +20,10 @@ add_executable(HLAM WIN32)
 
 add_dependencies(HLAM ProjectInfo)
 
+target_compile_features(HLAM
+	PRIVATE
+		cxx_std_17)
+
 target_include_directories(HLAM
 	PRIVATE
 		${CMAKE_BINARY_DIR})
