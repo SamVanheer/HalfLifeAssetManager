@@ -11,6 +11,7 @@
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
 
 #include "ui/settings/GeneralSettings.hpp"
+#include "ui/settings/StudioModelSettings.hpp"
 
 namespace ui::assets::studiomodel
 {
@@ -219,7 +220,7 @@ void Timeline::OnFrameSliderChanged()
 
 	if (_asset && _asset->GetEditorContext()->GetGeneralSettings()->PauseAnimationsOnTimelineClick)
 	{
-		if (auto entity = _asset->GetScene()->GetEntity(); entity->PlaySequence)
+		if (_asset->GetProvider()->GetStudioModelSettings()->PlaySequence)
 		{
 			OnTogglePlayback();
 		}
@@ -248,13 +249,13 @@ void Timeline::OnRestart()
 
 void Timeline::OnTogglePlayback()
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto settings = _asset->GetProvider()->GetStudioModelSettings();
 
-	entity->PlaySequence = !entity->PlaySequence;
+	settings->PlaySequence = !settings->PlaySequence;
 
 	auto style = this->style();
 
-	if (entity->PlaySequence)
+	if (settings->PlaySequence)
 	{
 		_ui.TogglePlayback->setIcon(style->standardIcon(QStyle::StandardPixmap::SP_MediaPause));
 	}

@@ -28,6 +28,11 @@ namespace studiomdl
 class IStudioModelRenderer;
 }
 
+namespace ui::settings
+{
+class StudioModelSettings;
+}
+
 /**
 *	Pointer to member function used for think methods.
 */
@@ -41,16 +46,19 @@ struct EntityContext final
 	sprite::ISpriteRenderer* const SpriteRenderer;
 	::EntityList* const EntityList;
 	soundsystem::ISoundSystem* const SoundSystem;
+	ui::settings::StudioModelSettings* const Settings;
 
 	EntityContext(WorldTime* time,
 		studiomdl::IStudioModelRenderer* studioModelRenderer, sprite::ISpriteRenderer* spriteRenderer,
 		::EntityList* entityList,
-		soundsystem::ISoundSystem* soundSystem)
+		soundsystem::ISoundSystem* soundSystem,
+		ui::settings::StudioModelSettings* settings)
 		: Time(time)
 		, SpriteRenderer(spriteRenderer)
 		, StudioModelRenderer(studioModelRenderer)
 		, EntityList(entityList)
 		, SoundSystem(soundSystem)
+		, Settings(settings)
 	{
 	}
 };

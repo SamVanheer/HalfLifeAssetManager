@@ -147,6 +147,11 @@ public:
 		_studiomdlDecompilerFileName = fileName;
 	}
 
+	// TODO: not persisted right now.
+	bool PlaySequence = true;
+	bool PlaySound = false;
+	bool PitchFramerateAmplitude = false;
+
 signals:
 	void FloorLengthChanged(int length);
 

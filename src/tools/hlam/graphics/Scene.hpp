@@ -34,6 +34,12 @@ namespace soundsystem
 class ISoundSystem;
 }
 
+// TODO: shouldn't depend on ui code here
+namespace ui::settings
+{
+class StudioModelSettings;
+}
+
 namespace graphics
 {
 class IGraphicsContext;
@@ -45,7 +51,7 @@ class TextureLoader;
 class Scene
 {
 public:
-	Scene(graphics::TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime);
+	Scene(graphics::TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime, ui::settings::StudioModelSettings* settings);
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;

@@ -40,7 +40,7 @@ static const int GUIDELINES_OFFSET = GUIDELINES_LINE_LENGTH + (GUIDELINES_POINT_
 
 static const int GUIDELINES_EDGE_WIDTH = 4;
 
-Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime)
+Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime, ui::settings::StudioModelSettings* settings)
 	: _textureLoader(textureLoader)
 	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(CreateQtLoggerSt(logging::HLAMSpriteRenderer()), worldTime))
 	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(CreateQtLoggerSt(logging::HLAMStudioModelRenderer())))
@@ -49,7 +49,8 @@ Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSyste
 	, _entityContext(std::make_unique<EntityContext>(_worldTime,
 		_studioModelRenderer.get(), _spriteRenderer.get(),
 		_entityList.get(),
-		soundSystem))
+		soundSystem,
+		settings))
 {
 	assert(_textureLoader);
 

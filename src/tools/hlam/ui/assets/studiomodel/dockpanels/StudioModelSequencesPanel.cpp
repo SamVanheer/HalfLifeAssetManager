@@ -14,6 +14,8 @@
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
 
+#include "ui/settings/StudioModelSettings.hpp"
+
 namespace ui::assets::studiomodel
 {
 StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset, QWidget* parent)
@@ -461,12 +463,12 @@ void StudioModelSequencesPanel::OnEventChanged(int index)
 
 void StudioModelSequencesPanel::OnPlaySoundChanged()
 {
-	_asset->GetScene()->GetEntity()->PlaySound = _ui.PlaySound->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->PlaySound = _ui.PlaySound->isChecked();
 }
 
 void StudioModelSequencesPanel::OnPitchFramerateAmplitudeChanged()
 {
-	_asset->GetScene()->GetEntity()->PitchFramerateAmplitude = _ui.PitchFramerateAmplitude->isChecked();
+	_asset->GetProvider()->GetStudioModelSettings()->PitchFramerateAmplitude = _ui.PitchFramerateAmplitude->isChecked();
 }
 
 void StudioModelSequencesPanel::OnAddEvent()
