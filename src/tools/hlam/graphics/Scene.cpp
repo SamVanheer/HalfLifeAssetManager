@@ -154,12 +154,9 @@ void Scene::Draw()
 	DrawRenderables(RenderPass::Background);
 
 	_openglFunctions->glMatrixMode(GL_PROJECTION);
-	_openglFunctions->glLoadIdentity();
 	_openglFunctions->glLoadMatrixf(glm::value_ptr(camera->GetProjectionMatrix()));
 
 	_openglFunctions->glMatrixMode(GL_MODELVIEW);
-	_openglFunctions->glPushMatrix();
-	_openglFunctions->glLoadIdentity();
 	_openglFunctions->glLoadMatrixf(glm::value_ptr(camera->GetViewMatrix()));
 
 	DrawRenderables(RenderPass::Standard);
@@ -167,8 +164,6 @@ void Scene::Draw()
 	DrawRenderables(RenderPass::Overlay2D);
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;
-
-	_openglFunctions->glPopMatrix();
 }
 
 void Scene::CollectRenderables(RenderPass::RenderPass renderPass, std::vector<BaseEntity*>& renderablesToRender)
