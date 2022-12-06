@@ -690,7 +690,7 @@ void MainWindow::OnShowAbout()
 	QMessageBox::about(this, "About " + programName,
 		QString::fromUtf8(
 			u8"%1 %2.%3.%4\n\n"
-			u8"2021 Sam Vanheer\n\n"
+			u8"2022 Sam Vanheer\n\n"
 			u8"Email:    sam.vanheer@outlook.com\n\n"
 			u8"Build Configuration: %5\n"
 			u8"Git Info:\n"
