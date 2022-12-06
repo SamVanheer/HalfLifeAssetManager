@@ -290,4 +290,6 @@ public:
 	*	Extracts the bounding box from the current sequence.
 	*/
 	void ExtractBbox(glm::vec3& mins, glm::vec3& maxs) const;
+
+	void AlignOnGround();
 };

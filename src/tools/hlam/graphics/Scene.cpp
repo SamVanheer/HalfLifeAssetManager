@@ -1,14 +1,10 @@
 #include <cassert>
-#include <cmath>
 #include <utility>
 
 #include <qopenglfunctions_1_1.h>
 
 #include <glm/mat4x4.hpp>
-#include <glm/vec4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/transform.hpp>
 
 #include "engine/renderer/sprite/SpriteRenderer.hpp"
 #include "engine/renderer/studiomodel/StudioModelRenderer.hpp"
@@ -17,7 +13,6 @@
 #include "entity/EntityList.hpp"
 #include "entity/HLMVStudioModelEntity.hpp"
 
-#include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
 #include "graphics/TextureLoader.hpp"
@@ -78,37 +73,6 @@ glm::vec3 Scene::GetWireframeColor() const
 void Scene::SetWireframeColor(const glm::vec3& value)
 {
 	_studioModelRenderer->SetWireframeColor(value);
-}
-
-void Scene::AlignOnGround()
-{
-	auto entity = GetEntity();
-
-	auto model = entity->GetEditableModel();
-
-	//First try finding the idle sequence, since that typically represents a model "at rest"
-	//Failing that, use the first sequence
-	auto idleFinder = [&]() -> const studiomdl::Sequence*
-	{
-		if (model->Sequences.empty())
-		{
-			return nullptr;
-		}
-
-		for (const auto& sequence : model->Sequences)
-		{
-			if (sequence->Label == "idle")
-			{
-				return sequence.get();
-			}
-		}
-
-		return model->Sequences[0].get();
-	};
-
-	auto sequence = idleFinder();
-
-	entity->SetOrigin({0, 0, sequence ? -sequence->BBMin.z : 0});
 }
 
 void Scene::Initialize()

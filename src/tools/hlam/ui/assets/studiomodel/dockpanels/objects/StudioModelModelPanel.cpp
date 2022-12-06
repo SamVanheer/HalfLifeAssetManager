@@ -46,7 +46,7 @@ void StudioModelModelPanel::OnAlignOnGround()
 {
 	auto entity = _asset->GetScene()->GetEntity();
 
-	_asset->GetScene()->AlignOnGround();
+	entity->AlignOnGround();
 
 	const QSignalBlocker blocker{_ui.Origin};
 	_ui.Origin->SetValue(entity->GetOrigin());

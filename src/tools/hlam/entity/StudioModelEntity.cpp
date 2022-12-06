@@ -763,3 +763,32 @@ void StudioModelEntity::ExtractBbox(glm::vec3& mins, glm::vec3& maxs) const
 		maxs = glm::vec3{0};
 	}
 }
+
+void StudioModelEntity::AlignOnGround()
+{
+	auto model = GetEditableModel();
+
+	//First try finding the idle sequence, since that typically represents a model "at rest"
+	//Failing that, use the first sequence
+	auto idleFinder = [&]() -> const studiomdl::Sequence*
+	{
+		if (model->Sequences.empty())
+		{
+			return nullptr;
+		}
+
+		for (const auto& sequence : model->Sequences)
+		{
+			if (sequence->Label == "idle")
+			{
+				return sequence.get();
+			}
+		}
+
+		return model->Sequences[0].get();
+	};
+
+	auto sequence = idleFinder();
+
+	SetOrigin({0, 0, sequence ? -sequence->BBMin.z : 0});
+}

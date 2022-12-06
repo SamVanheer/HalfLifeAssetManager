@@ -127,8 +127,6 @@ public:
 		_entity = entity;
 	}
 
-	void AlignOnGround();
-
 	void Initialize();
 
 	void Shutdown();
