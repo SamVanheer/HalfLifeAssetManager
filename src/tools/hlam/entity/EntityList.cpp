@@ -1,149 +1,64 @@
+#include <algorithm>
+
 #include "entity/BaseEntity.hpp"
-#include "entity/EHandle.hpp"
 #include "entity/EntityList.hpp"
 
 #include "utility/WorldTime.hpp"
 
-BaseEntity* EntityList::GetEntityByIndex(std::size_t index) const
+std::shared_ptr<BaseEntity> EntityList::GetEntityByIndex(std::size_t index) const
 {
 	if (index >= _entities.size())
 	{
-		return nullptr;
+		return {};
 	}
 
-	return _entities[index].Entity.get();
-}
-
-BaseEntity* EntityList::GetEntityByHandle(const EHandle& handle) const
-{
-	if (handle.GetIndex() < _entities.size()
-		&& _entities[handle.GetIndex()].Serial == handle.GetSerialNumber())
-	{
-		return _entities[handle.GetIndex()].Entity.get();
-	}
-
-	return nullptr;
-}
-
-EHandle EntityList::GetFirstEntity() const
-{
-	return GetNextEntity(nullptr);
-}
-
-EHandle EntityList::GetNextEntity(const EHandle& previous) const
-{
-	for (std::size_t index = previous.IsValid(*this) ? previous.GetIndex() + 1 : 0; index < _entities.size(); ++index)
-	{
-		if (_entities[index].Entity)
-		{
-			return _entities[index].Entity.get();
-		}
-	}
-
-	return nullptr;
+	return _entities[index];
 }
 
 void EntityList::RunFrame()
 {
-	for (EHandle entity = GetFirstEntity(); entity.IsValid(*this); entity = GetNextEntity(entity))
+	for (auto& entity : _entities)
 	{
-		BaseEntity* pEntity = entity.Get(*this);
-
-		if (pEntity->AnyFlagsSet(entity::FL_ALWAYSTHINK) ||
-			(pEntity->GetNextThinkTime() != 0 &&
-				pEntity->GetNextThinkTime() <= _worldTime->GetTime() &&
-				(_worldTime->GetTime() - _worldTime->GetFrameTime()) >= pEntity->GetLastThinkTime()))
+		if (entity->AnyFlagsSet(entity::FL_ALWAYSTHINK) ||
+			(entity->GetNextThinkTime() != 0 &&
+				entity->GetNextThinkTime() <= _worldTime->GetTime() &&
+				(_worldTime->GetTime() - _worldTime->GetFrameTime()) >= entity->GetLastThinkTime()))
 		{
 			//Set first so entities can do lastthink + delay.
-			pEntity->SetLastThinkTime(_worldTime->GetTime());
-			pEntity->SetNextThinkTime(0);
+			entity->SetLastThinkTime(_worldTime->GetTime());
+			entity->SetNextThinkTime(0);
 
-			pEntity->Think();
-		}
-	}
-
-	//Remove all entities flagged with FL_KILLME.
-	for (EHandle entity = GetFirstEntity(); entity.IsValid(*this); entity = GetNextEntity(entity))
-	{
-		auto baseEntity = entity.Get(*this);
-
-		if (baseEntity->GetFlags() & entity::FL_KILLME)
-		{
-			Destroy(baseEntity);
+			entity->Think();
 		}
 	}
 }
 
-void EntityList::Add(std::unique_ptr<BaseEntity>&& entity)
+void EntityList::Add(const std::shared_ptr<BaseEntity>& entity)
 {
-	assert(entity);
-
-	std::size_t index;
-
-	for (index = 0; index < _entities.size(); ++index)
-	{
-		if (!_entities[index].Entity)
-		{
-			break;
-		}
-	}
-
-	if (index == _entities.size())
-	{
-		_entities.push_back({});
-	}
-
-	++_numEntities;
-
-	auto& slot = _entities[index];
-
-	slot.Entity = std::move(entity);
-
-	//Increment the serial number to indicate that a new entity is using the slot
-	++slot.Serial;
-
-	EHandle handle{index, slot.Serial};
-
-	slot.Entity->SetEntHandle(handle);
+	_entities.push_back(entity);
 }
 
-void EntityList::Destroy(BaseEntity* entity)
+void EntityList::Destroy(const std::shared_ptr<BaseEntity>& entity)
 {
 	if (!entity)
 	{
 		return;
 	}
 
-	const EHandle handle = entity->GetEntHandle();
+	auto it = std::find(_entities.begin(), _entities.end(), entity);
 
-	const std::size_t index = handle.GetIndex();
-
-	if (index >= _entities.size())
+	if (it == _entities.end())
 	{
 		//This shouldn't ever be hit, unless the entity was corrupted/not managed by this list
 		assert(!"Invalid entity index");
 		return;
 	}
 
-	//Sanity check
-	assert(_entities[index].Entity.get() == entity);
-
-	_entities[index].Entity.reset();
-
-	--_numEntities;
+	// Entity will still exist until last strong reference has been cleared.
+	_entities.erase(it);
 }
 
 void EntityList::DestroyAll()
 {
-	for (std::size_t index = 0; index < _entities.size(); ++index)
-	{
-		if (BaseEntity* entity = _entities[index].Entity.get(); entity)
-		{
-			Destroy(entity);
-		}
-	}
-
-	_numEntities = 0;
-
 	_entities.clear();
 }

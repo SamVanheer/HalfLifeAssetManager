@@ -2,7 +2,6 @@
 
 #include <glm/vec3.hpp>
 
-#include "entity/EHandle.hpp"
 #include "entity/EntityConstants.hpp"
 
 #include "graphics/GraphicsConstants.hpp"
@@ -98,8 +97,6 @@ public:
 	virtual void Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass) {}
 
 private:
-	EHandle _entHandle;
-
 	EntityContext* _context{};
 
 public:
@@ -107,16 +104,6 @@ public:
 	*	@brief Sets the entity context
 	*/
 	void SetEntityContext(EntityContext* context);
-
-	/**
-	*	@brief Gets the handle that represents this entity.
-	*/
-	constexpr const EHandle& GetEntHandle() const { return _entHandle; }
-
-	/**
-	*	@brief Sets the handle that represents this entity. Should only be used by the entity list.
-	*/
-	void SetEntHandle(const EHandle& handle) { _entHandle = handle; }
 
 	EntityContext* GetContext() const { return _context; }
 

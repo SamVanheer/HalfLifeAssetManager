@@ -120,9 +120,9 @@ public:
 
 	unsigned int GetDrawnPolygonsCount() const { return _drawnPolygonsCount; }
 
-	HLMVStudioModelEntity* GetEntity() { return _entity; }
+	const std::shared_ptr<HLMVStudioModelEntity>& GetEntity() { return _entity; }
 
-	void SetEntity(HLMVStudioModelEntity* entity)
+	void SetEntity(std::shared_ptr<HLMVStudioModelEntity> entity)
 	{
 		_entity = entity;
 	}
@@ -177,7 +177,7 @@ private:
 
 	unsigned int _drawnPolygonsCount = 0;
 
-	HLMVStudioModelEntity* _entity{};
+	std::shared_ptr<HLMVStudioModelEntity> _entity{};
 
 	std::vector<BaseEntity*> _renderablesToRender;
 };

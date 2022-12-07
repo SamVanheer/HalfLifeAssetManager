@@ -674,7 +674,7 @@ void StudioModelTexturesPanel::OnExportUVMap()
 
 	auto textureImage{ConvertTextureToRGBImage(texture.Data, textureData, texture.Data.Palette, dataBuffer)};
 
-	if (StudioModelExportUVMeshDialog dialog{entity, textureIndex, GetMeshIndexForDrawing(_ui.Meshes), textureImage, this};
+	if (StudioModelExportUVMeshDialog dialog{*entity, textureIndex, GetMeshIndexForDrawing(_ui.Meshes), textureImage, this};
 		QDialog::DialogCode::Accepted == dialog.exec())
 	{
 		//Redraw the final image with a transparent background

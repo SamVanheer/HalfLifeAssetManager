@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QDialog>
 #include <QImage>
 #include <QString>
@@ -13,7 +15,7 @@ namespace ui::assets::studiomodel
 class StudioModelExportUVMeshDialog final : public QDialog
 {
 public:
-	StudioModelExportUVMeshDialog(HLMVStudioModelEntity* entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent = nullptr);
+	StudioModelExportUVMeshDialog(HLMVStudioModelEntity& entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent = nullptr);
 	~StudioModelExportUVMeshDialog();
 
 	QString GetFileName() const;
@@ -44,7 +46,7 @@ private slots:
 private:
 	Ui_StudioModelExportUVMeshDialog _ui;
 
-	HLMVStudioModelEntity* const _entity;
+	HLMVStudioModelEntity& _entity;
 	const int _textureIndex;
 	const int _meshIndex;
 

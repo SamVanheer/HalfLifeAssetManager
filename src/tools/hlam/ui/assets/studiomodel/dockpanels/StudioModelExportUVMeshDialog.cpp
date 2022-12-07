@@ -14,7 +14,7 @@
 namespace ui::assets::studiomodel
 {
 StudioModelExportUVMeshDialog::StudioModelExportUVMeshDialog(
-	HLMVStudioModelEntity* entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent)
+	HLMVStudioModelEntity& entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent)
 	: QDialog(parent)
 	, _entity(entity)
 	, _textureIndex(textureIndex)
@@ -23,7 +23,7 @@ StudioModelExportUVMeshDialog::StudioModelExportUVMeshDialog(
 {
 	_ui.setupUi(this);
 
-	const auto& studioTexture = *entity->GetEditableModel()->Textures[_textureIndex];
+	const auto& studioTexture = *entity.GetEditableModel()->Textures[_textureIndex];
 
 	connect(_ui.FileName, &QLineEdit::textChanged, this, &StudioModelExportUVMeshDialog::OnFileNameChanged);
 	connect(_ui.BrowseFileName, &QPushButton::clicked, this, &StudioModelExportUVMeshDialog::OnBrowseFileName);
@@ -95,7 +95,7 @@ void StudioModelExportUVMeshDialog::OnBrowseFileName()
 
 void StudioModelExportUVMeshDialog::UpdatePreview()
 {
-	_uv = CreateUVMapImage(*_entity->GetEditableModel(), _textureIndex, _meshIndex,
+	_uv = CreateUVMapImage(*_entity.GetEditableModel(), _textureIndex, _meshIndex,
 		ShouldAntiAliasLines(),
 		static_cast<float>(GetImageScale()),
 		static_cast<qreal>(GetUVLineWidth()));

@@ -170,13 +170,11 @@ void Scene::CollectRenderables(RenderPass::RenderPass renderPass, std::vector<Ba
 {
 	renderablesToRender.clear();
 
-	for (auto entity = _entityList->GetFirstEntity(); entity.IsValid(*_entityList); entity = _entityList->GetNextEntity(entity))
+	for (auto& entity : *_entityList)
 	{
-		auto ent = entity.Get(*_entityList);
-
-		if (ent->GetRenderPasses() & renderPass)
+		if (entity->GetRenderPasses() & renderPass)
 		{
-			renderablesToRender.emplace_back(ent);
+			renderablesToRender.emplace_back(entity.get());
 		}
 	}
 }
