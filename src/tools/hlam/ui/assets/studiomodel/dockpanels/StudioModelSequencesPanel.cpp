@@ -336,8 +336,8 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 
 	_ui.SequenceLabel->setText(QString::number(index));
 	_ui.FrameCountLabel->setText(QString::number(sequence.NumFrames));
-	_ui.FPSLabel->setText(QString::number(sequence.FPS, 'g', 2));
-	_ui.DurationLabel->setText(QString::number(durationInSeconds, 'g', 2));
+	_ui.FPSLabel->setText(QString::number(sequence.FPS, 'f', 2));
+	_ui.DurationLabel->setText(QString::number(durationInSeconds, 'f', 2));
 
 	_ui.EventCountLabel->setText(QString::number(sequence.Events.size()));
 	_ui.IsLoopingLabel->setText((sequence.Flags & STUDIO_LOOPING) ? "Yes" : "No");

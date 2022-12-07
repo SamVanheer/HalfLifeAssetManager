@@ -70,7 +70,7 @@ void StudioModelCompilerFrontEnd::GetArgumentsCore(QStringList& arguments)
 	if (_settingsUi.AddVertexBlendAngle->isChecked())
 	{
 		arguments.append("-a");
-		arguments.append(QString::number(_settingsUi.VertexBlendAngle->value()));
+		arguments.append(QString::number(_settingsUi.VertexBlendAngle->value(), 'f'));
 	}
 
 	if (_settingsUi.AddMaximumSequenceGroupSize->isChecked())
