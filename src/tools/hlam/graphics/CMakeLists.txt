@@ -1,7 +1,5 @@
 target_sources(HLAM
 	PRIVATE
-		BMPFile.cpp
-		BMPFile.hpp
 		Camera.cpp
 		Camera.hpp
 		GraphicsConstants.cpp
