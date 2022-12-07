@@ -264,6 +264,19 @@ std::tuple<bool, bool, QString> ToolApplication::ParseCommandLine(QApplication& 
 	if (!positionalArguments.empty())
 	{
 		fileName = positionalArguments[0];
+
+		// Check if this filename is valid.
+		// If not, try to combine all positional arguments into a single filename.
+		// If that's valid, use it. Otherwise use only the first argument and let error handling deal with it.
+		if (!QFile{fileName}.exists())
+		{
+			fileName = positionalArguments.join(" ");
+
+			if (!QFile{fileName}.exists())
+			{
+				fileName = positionalArguments[0];
+			}
+		}
 	}
 
 	return std::make_tuple(isPortable, logDebugMsgsToFile, fileName);
