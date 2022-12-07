@@ -1,7 +1,5 @@
 target_sources(HLAM
 	PRIVATE
-		Credits.cpp
-		Credits.hpp
 		DragNDropEventFilter.hpp
 		EditorContext.cpp
 		EditorContext.hpp

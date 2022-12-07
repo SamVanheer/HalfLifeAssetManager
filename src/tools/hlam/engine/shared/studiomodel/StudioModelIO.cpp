@@ -48,7 +48,7 @@ namespace
 template<typename T>
 studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* existingFile, const bool bAllowSeqGroup, const bool externalTextures)
 {
-	const std::string utf8FileName{fileName.string()};
+	const std::string utf8FileName{reinterpret_cast<const char*>(fileName.u8string().c_str())};
 
 	// load the model
 	FILE* file = existingFile ? existingFile : utf8_exclusive_read_fopen(utf8FileName.c_str(), true);
@@ -58,7 +58,7 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* exis
 		//TODO: eventually file open calls will be routed through IFileSystem which will handle case sensitivity automatically
 		if (externalTextures)
 		{
-			auto stem{fileName.stem().string()};
+			auto stem{fileName.stem().u8string()};
 
 			if (!stem.empty())
 			{
@@ -69,7 +69,7 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* exis
 				loweredFileName.replace_filename(stem);
 				loweredFileName.replace_extension(fileName.extension());
 
-				file = utf8_exclusive_read_fopen(loweredFileName.string().c_str(), true);
+				file = utf8_exclusive_read_fopen(loweredFileName.u8string().c_str(), true);
 			}
 		}
 
@@ -143,11 +143,11 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 	if (mainHeader->name[0] == '\0')
 	{
 		//Only the main hader sets the name, so this must be something else (probably texture header, but could be anything)
-		auto message = std::string{"The file \""} + fileName.string() + "\" is not a studio model main header file";
+		auto message = std::u8string{u8"The file \""} + fileName.u8string() + u8"\" is not a studio model main header file";
 
 		if (!baseFileName.empty() && std::toupper(baseFileName.u8string().back()) == 'T')
 		{
-			message += " (it is probably a texture file)";
+			message += u8" (it is probably a texture file)";
 		}
 
 		throw assets::AssetException(message);
@@ -174,7 +174,9 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 	{
 		sequenceHeaders.reserve(mainHeader->numseqgroups - 1);
 
-		std::stringstream seqgroupname;
+		const std::string baseFileNameString = reinterpret_cast<const char*>(baseFileName.u8string().c_str());
+
+		std::ostringstream seqgroupname;
 
 		for (int i = 1; i < mainHeader->numseqgroups; ++i)
 		{
@@ -182,7 +184,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 
 			const auto suffix = isDol ? ".dol" : ".mdl";
 
-			seqgroupname << baseFileName.string() <<
+			seqgroupname << baseFileNameString <<
 				std::setfill('0') << std::setw(2) << i <<
 				std::setw(0) << suffix;
 
@@ -241,9 +243,9 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 		baseFileName.replace_extension();
 
-		const auto baseFileNameString = baseFileName.string();
+		const std::string baseFileNameString = reinterpret_cast<const char*>(baseFileName.u8string().c_str());
 
-		std::stringstream seqgroupname;
+		std::ostringstream seqgroupname;
 
 		//Group 0 is the main file and is never used to load files, and also doesn't have a filename set in the seqgroup structure
 		for (int i = 1; i < pStudioHdr->numseqgroups; i++)
@@ -263,13 +265,13 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 				throw assets::AssetException("Sequence group filename is too long");
 			}
 
-			strncpy(seqGroup->name, groupNameString.c_str(), groupNameString.length());
+			strncpy(seqGroup->name, reinterpret_cast<const char*>(groupNameString.c_str()), groupNameString.length());
 
 			seqGroup->name[sizeof(seqGroup->name) - 1] = '\0';
 		}
 	}
 
-	FILE* file = utf8_fopen(fileName.string().c_str(), "wb");
+	FILE* file = utf8_fopen(fileName.u8string().c_str(), "wb");
 
 	if (!file)
 	{
@@ -298,7 +300,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 		texturename += "T.mdl";
 
-		file = utf8_fopen(texturename.string().c_str(), "wb");
+		file = utf8_fopen(texturename.u8string().c_str(), "wb");
 
 		if (!file)
 		{
@@ -317,13 +319,15 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 	// write seq groups
 	if (pStudioHdr->numseqgroups > 1)
 	{
-		std::stringstream seqgroupname;
+		const std::string baseFileNameString = reinterpret_cast<const char*>(baseFileName.u8string().c_str());
+
+		std::ostringstream seqgroupname;
 
 		for (int i = 1; i < pStudioHdr->numseqgroups; ++i)
 		{
 			seqgroupname.str({});
 
-			seqgroupname << baseFileName.string() <<
+			seqgroupname << baseFileNameString <<
 				std::setfill('0') << std::setw(2) << i <<
 				std::setw(0) << ".mdl";
 

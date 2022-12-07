@@ -23,7 +23,6 @@
 
 #include "qt/QtLogging.hpp"
 
-#include "ui/Credits.hpp"
 #include "ui/DragNDropEventFilter.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/FileListPanel.hpp"
@@ -689,20 +688,43 @@ void MainWindow::OnShowAbout()
 
 	QMessageBox::about(this, "About " + programName,
 		QString::fromUtf8(
-			"%1 %2.%3.%4\n\n"
-			"2022 Sam Vanheer\n\n"
-			"Email:    sam.vanheer@outlook.com\n\n"
-			"Build Configuration: %5\n"
-			"Git Info:\n"
-			"\tBranch: %6\n"
-			"\tTag: %7\n"
-			"\tCommit Hash: %8\n\n"
-			"Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil \'Jed\' Jedrzejewski\n"
-			"Email:    jed@wunderboy.org\n"
-			"Web:      http://www.wunderboy.org/\n\n"
-			"Also based on Half-Life Model Viewer v1.25 © 2002 Mete Ciragan\n"
-			"Email:    mete@swissquake.ch\n"
-			"Web:      http://www.milkshape3d.com/\n\n")
+			reinterpret_cast<const char*>(u8R"(%1 %2.%3.%4
+
+2022 Sam Vanheer
+
+Email:	sam.vanheer@outlook.com
+
+Build Configuration: %5
+Git Info:
+	Branch: %6
+	Tag: %7
+	Commit Hash: %8
+
+Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil 'Jed' Jedrzejewski
+Email:	jed@wunderboy.org
+Web:	http://www.wunderboy.org/
+
+Also based on Half-Life Model Viewer v1.25 © 2002 Mete Ciragan
+Email:	mete@swissquake.ch
+Web:	http://www.milkshape3d.com/
+
+This product contains software technology licensed from Id Software, Inc.
+( "Id Technology" ). Id Technology © 1996 Id Software, Inc.
+All Rights Reserved.
+
+Copyright © 1998-2002, Valve LLC.
+All rights reserved.
+
+Uses OpenAL Soft
+Uses Ogg Vorbis
+Uses Libnyquist, Copyright (c) 2019, Dimitri Diakopoulos All rights reserved.
+Uses The OpenGL Mathemathics library (GLM)
+Copyright © 2005 - 2016 G-Truc Creation
+
+Uses Qt %9
+
+Build Date: %10
+)"))
 			.arg(programName)
 			.arg(HLAMVersionMajor)
 			.arg(HLAMVersionMinor)
@@ -711,7 +733,8 @@ void MainWindow::OnShowAbout()
 			.arg(QString::fromUtf8(HLAMGitBranchName.data()))
 			.arg(QString::fromUtf8(HLAMGitTagName.data()))
 			.arg(QString::fromUtf8(HLAMGitCommitHash.data()))
-		+ QString::fromUtf8(GetSharedCredits().c_str())
+			.arg(QT_VERSION_STR)
+			.arg(__DATE__)
 	);
 }
 
