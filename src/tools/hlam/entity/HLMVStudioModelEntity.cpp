@@ -10,7 +10,7 @@ void HLMVStudioModelEntity::Spawn()
 	SetThink(&ThisClass::AnimThink);
 
 	//Always think for smooth animations
-	SetFlags(entity::FL_ALWAYSTHINK);
+	AlwaysThink = true;
 
 	//TODO: same as base class?
 	SetSequence(0);

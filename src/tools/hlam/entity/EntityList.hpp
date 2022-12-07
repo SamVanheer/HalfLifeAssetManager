@@ -6,8 +6,6 @@
 #include <memory>
 #include <vector>
 
-#include "entity/EntityConstants.hpp"
-
 class BaseEntity;
 class EntityContext;
 class WorldTime;

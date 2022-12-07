@@ -14,7 +14,6 @@ target_sources(HLAM
 		ClippingBoxEntity.hpp
 		CrosshairEntity.cpp
 		CrosshairEntity.hpp
-		EntityConstants.hpp
 		EntityList.cpp
 		EntityList.hpp
 		Events.hpp

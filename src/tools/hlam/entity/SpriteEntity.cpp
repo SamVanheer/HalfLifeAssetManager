@@ -17,7 +17,7 @@ void SpriteEntity::Spawn()
 {
 	SetThink(&ThisClass::AnimThink);
 
-	SetFlags(entity::FL_ALWAYSTHINK);
+	AlwaysThink = true;
 }
 
 void SpriteEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)

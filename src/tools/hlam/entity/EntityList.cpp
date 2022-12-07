@@ -21,7 +21,7 @@ void EntityList::RunFrame()
 
 	for (auto& entity : _entities)
 	{
-		if (entity->AnyFlagsSet(entity::FL_ALWAYSTHINK) ||
+		if (entity->AlwaysThink ||
 			(entity->GetNextThinkTime() != 0 &&
 				entity->GetNextThinkTime() <= time->GetTime() &&
 				(time->GetTime() - time->GetFrameTime()) >= entity->GetLastThinkTime()))

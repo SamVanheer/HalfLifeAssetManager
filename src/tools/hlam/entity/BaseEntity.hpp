@@ -2,8 +2,6 @@
 
 #include <glm/vec3.hpp>
 
-#include "entity/EntityConstants.hpp"
-
 #include "graphics/GraphicsConstants.hpp"
 
 #include "utility/Class.hpp"
@@ -85,7 +83,6 @@ public:
 
 	/**
 	*	@brief Called when the entity has finished initializing.
-	*	@details Set the FL_KILLME flag if you need to be destroyed after construction
 	*/
 	virtual void Spawn() {}
 
@@ -107,7 +104,6 @@ public:
 	void SetEntityList(EntityList* entityList);
 
 private:
-	entity::Flags _flags = entity::FL_NONE;
 	glm::vec3 _origin{0};
 	glm::vec3 _angles{0};
 	glm::vec3 _scale{1.0f, 1.0f, 1.0f};
@@ -115,26 +111,7 @@ private:
 	float _transparency = 1.0f;
 
 public:
-	entity::Flags GetFlags() const { return _flags; }
-
-	bool AnyFlagsSet(const entity::Flags flags) const { return (_flags & flags) != 0; }
-
-	bool AllFlagsSet(const entity::Flags flags) const { return (_flags & flags) == flags; }
-
-	/**
-	*	@brief Sets the entity's flags to the given flags
-	*/
-	void InitFlags(const entity::Flags flags) { _flags = flags; }
-
-	/**
-	*	@brief Sets the given flags on the entity. Existing flags are unaffected.
-	*/
-	void SetFlags(const entity::Flags flags) { _flags |= flags; }
-
-	/**
-	*	@brief Clears the given flags from the entity's flags.
-	*/
-	void ClearFlags(const entity::Flags flags) { _flags &= ~flags; }
+	bool AlwaysThink = false;
 
 	const glm::vec3& GetOrigin() const { return _origin; }
 
