@@ -35,6 +35,8 @@ public:
 	DECLARE_CLASS(StudioModelEntity, BaseAnimating);
 
 public:
+	explicit StudioModelEntity(studiomdl::EditableStudioModel* model);
+
 	virtual void Spawn() override;
 
 	RenderPasses GetRenderPasses() const override { return RenderPass::Standard; }

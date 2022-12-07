@@ -25,14 +25,12 @@ Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSyste
 	: _textureLoader(textureLoader)
 	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(CreateQtLoggerSt(logging::HLAMSpriteRenderer()), worldTime))
 	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(CreateQtLoggerSt(logging::HLAMStudioModelRenderer())))
-	, _worldTime(worldTime)
-	, _entityList(std::make_unique<EntityList>(_worldTime))
-	, _entityContext(std::make_unique<EntityContext>(_worldTime,
+	, _entityContext(std::make_unique<EntityContext>(worldTime,
 		_studioModelRenderer.get(), _spriteRenderer.get(),
-		_entityList.get(),
 		soundSystem,
 		settings,
 		this))
+	, _entityList(std::make_unique<EntityList>(_entityContext.get()))
 {
 	assert(_textureLoader);
 

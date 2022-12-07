@@ -17,15 +17,17 @@ std::shared_ptr<BaseEntity> EntityList::GetEntityByIndex(std::size_t index) cons
 
 void EntityList::RunFrame()
 {
+	auto time = _context->Time;
+
 	for (auto& entity : _entities)
 	{
 		if (entity->AnyFlagsSet(entity::FL_ALWAYSTHINK) ||
 			(entity->GetNextThinkTime() != 0 &&
-				entity->GetNextThinkTime() <= _worldTime->GetTime() &&
-				(_worldTime->GetTime() - _worldTime->GetFrameTime()) >= entity->GetLastThinkTime()))
+				entity->GetNextThinkTime() <= time->GetTime() &&
+				(time->GetTime() - time->GetFrameTime()) >= entity->GetLastThinkTime()))
 		{
 			//Set first so entities can do lastthink + delay.
-			entity->SetLastThinkTime(_worldTime->GetTime());
+			entity->SetLastThinkTime(time->GetTime());
 			entity->SetNextThinkTime(0);
 
 			entity->Think();

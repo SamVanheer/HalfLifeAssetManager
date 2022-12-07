@@ -49,21 +49,18 @@ struct EntityContext final
 	WorldTime* const Time;
 	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
 	sprite::ISpriteRenderer* const SpriteRenderer;
-	::EntityList* const EntityList;
 	soundsystem::ISoundSystem* const SoundSystem;
 	ui::settings::StudioModelSettings* const Settings;
 	graphics::Scene* const Scene;
 
 	EntityContext(WorldTime* time,
 		studiomdl::IStudioModelRenderer* studioModelRenderer, sprite::ISpriteRenderer* spriteRenderer,
-		::EntityList* entityList,
 		soundsystem::ISoundSystem* soundSystem,
 		ui::settings::StudioModelSettings* settings,
 		graphics::Scene* scene)
 		: Time(time)
 		, SpriteRenderer(spriteRenderer)
 		, StudioModelRenderer(studioModelRenderer)
-		, EntityList(entityList)
 		, SoundSystem(soundSystem)
 		, Settings(settings)
 		, Scene(scene)
@@ -98,14 +95,16 @@ public:
 
 private:
 	EntityContext* _context{};
+	EntityList* _entityList{};
 
 public:
-	/**
-	*	@brief Sets the entity context
-	*/
+	EntityContext* GetContext() const { return _context; }
+
 	void SetEntityContext(EntityContext* context);
 
-	EntityContext* GetContext() const { return _context; }
+	EntityList* GetEntityList() const { return _entityList; }
+
+	void SetEntityList(EntityList* entityList);
 
 private:
 	entity::Flags _flags = entity::FL_NONE;

@@ -6,7 +6,15 @@
 void BaseEntity::SetEntityContext(EntityContext* context)
 {
 	assert(context);
+	assert(!_context);
 	_context = context;
+}
+
+void BaseEntity::SetEntityList(EntityList* entityList)
+{
+	assert(entityList);
+	assert(!_entityList);
+	_entityList = entityList;
 }
 
 void BaseEntity::SetTransparency(const float transparency)

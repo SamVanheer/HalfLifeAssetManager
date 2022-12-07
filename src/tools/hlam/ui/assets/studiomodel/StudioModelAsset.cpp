@@ -135,56 +135,25 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	UpdateColors();
 
 	// The order that entities are added matters for now since there's no sorting done.
-	_scene->GetEntityContext()->EntityList->Create<BackgroundEntity>()([this](auto entity)
-		{
-			entity->SetEntityContext(_scene->GetEntityContext());
-		}).Spawn();
+	_scene->GetEntityList()->Create<BackgroundEntity>();
 
-	_scene->GetEntityContext()->EntityList->Create<AxesEntity>()([this](auto entity)
-		{
-			entity->SetEntityContext(_scene->GetEntityContext());
-		}).Spawn();
+	_scene->GetEntityList()->Create<AxesEntity>();
 
-	auto entity = _scene->GetEntityContext()->EntityList->Create<HLMVStudioModelEntity>()([this](auto entity)
-		{
-			entity->SetEntityContext(_scene->GetEntityContext());
-			entity->SetEditableModel(GetEditableStudioModel());
-		}).SpawnAndGetEntity();
+	std::shared_ptr<HLMVStudioModelEntity> entity = _scene->GetEntityList()->Create<HLMVStudioModelEntity>(GetEditableStudioModel());
 
-	if (nullptr != entity)
-	{
-		_scene->SetEntity(entity);
-	}
+	_scene->SetEntity(entity);
 
-	_scene->GetEntityContext()->EntityList->Create<GroundEntity>()([this](auto entity)
-		{
-			entity->SetEntityContext(_scene->GetEntityContext());
-		}).Spawn();
+	_scene->GetEntityList()->Create<GroundEntity>();
 
-	_scene->GetEntityContext()->EntityList->Create<PlayerHitboxEntity>()([this](auto entity)
-		{
-			entity->SetEntityContext(_scene->GetEntityContext());
-		}).Spawn();
+	_scene->GetEntityList()->Create<PlayerHitboxEntity>();
 
-	_scene->GetEntityContext()->EntityList->Create<BoundingBoxEntity>()([this](auto entity)
-		{
-			entity->SetEntityContext(_scene->GetEntityContext());
-		}).Spawn();
+	_scene->GetEntityList()->Create<BoundingBoxEntity>();
 
-	_scene->GetEntityContext()->EntityList->Create<ClippingBoxEntity>()([this](auto entity)
-		{
-			entity->SetEntityContext(_scene->GetEntityContext());
-		}).Spawn();
+	_scene->GetEntityList()->Create<ClippingBoxEntity>();
 
-	_scene->GetEntityContext()->EntityList->Create<CrosshairEntity>()([this](auto entity)
-		{
-			entity->SetEntityContext(_scene->GetEntityContext());
-		}).Spawn();
+	_scene->GetEntityList()->Create<CrosshairEntity>();
 
-	_scene->GetEntityContext()->EntityList->Create<GuidelinesEntity>()([this](auto entity)
-		{
-			entity->SetEntityContext(_scene->GetEntityContext());
-		}).Spawn();
+	_scene->GetEntityList()->Create<GuidelinesEntity>();
 
 	auto arcBallCamera = new camera_operators::ArcBallCameraOperator(_editorContext->GetGeneralSettings());
 	_firstPersonCamera = new camera_operators::FirstPersonCameraOperator(_editorContext->GetGeneralSettings());
@@ -337,7 +306,7 @@ void StudioModelAsset::TryRefresh()
 
 		GetUndoStack()->clear();
 
-		auto entity = _scene->GetEntity();
+		std::shared_ptr<HLMVStudioModelEntity> entity = _scene->GetEntity();
 		entity->SetEditableModel(GetEditableStudioModel());
 		entity->Spawn();
 	}
@@ -354,7 +323,7 @@ void StudioModelAsset::TryRefresh()
 
 void StudioModelAsset::SaveEntityToSnapshot(StateSnapshot* snapshot)
 {
-	auto entity = _scene->GetEntity();
+	std::shared_ptr<HLMVStudioModelEntity> entity = _scene->GetEntity();
 	auto model = entity->GetEditableModel();
 
 	const int sequenceIndex = entity->GetSequence();
@@ -383,7 +352,7 @@ void StudioModelAsset::SaveEntityToSnapshot(StateSnapshot* snapshot)
 
 void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
 {
-	auto entity = _scene->GetEntity();
+	std::shared_ptr<HLMVStudioModelEntity> entity = _scene->GetEntity();
 	auto model = entity->GetEditableModel();
 
 	bool foundSequence = false;

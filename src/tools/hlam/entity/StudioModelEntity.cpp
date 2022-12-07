@@ -10,6 +10,11 @@
 
 #include "utility/WorldTime.hpp"
 
+StudioModelEntity::StudioModelEntity(studiomdl::EditableStudioModel* model)
+{
+	SetEditableModel(model);
+}
+
 void StudioModelEntity::Spawn()
 {
 	SetSequence(0);

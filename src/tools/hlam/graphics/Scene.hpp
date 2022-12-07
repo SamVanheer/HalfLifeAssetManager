@@ -72,6 +72,8 @@ public:
 
 	EntityContext* GetEntityContext() const { return _entityContext.get(); }
 
+	EntityList* GetEntityList() const { return _entityList.get(); }
+
 	Camera* GetCurrentCamera() { return _currentCamera; }
 
 	void SetCurrentCamera(Camera* camera)
@@ -163,11 +165,9 @@ private:
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 
-	WorldTime* const _worldTime;
+	std::unique_ptr<EntityContext> _entityContext;
 
 	std::unique_ptr<EntityList> _entityList;
-
-	std::unique_ptr<EntityContext> _entityContext;
 
 	Camera* _currentCamera{};
 

@@ -11,6 +11,8 @@ public:
 	DECLARE_CLASS(HLMVStudioModelEntity, StudioModelEntity);
 
 public:
+	using StudioModelEntity::StudioModelEntity;
+
 	virtual void Spawn() override;
 
 	virtual void HandleAnimEvent(const AnimEvent& event) override;
