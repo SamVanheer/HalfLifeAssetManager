@@ -268,8 +268,12 @@ QWidget* StudioModelAsset::GetEditWidget()
 
 	_editWidget = new StudioModelEditWidget(_editorContext, this);
 
-	_editWidget->connect(_editWidget->GetSceneWidget(), &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
-	_editWidget->connect(_editWidget->GetSceneWidget(), &SceneWidget::WheelEvent, this, &StudioModelAsset::OnSceneWidgetWheelEvent);
+	auto sceneWidget = _editWidget->GetSceneWidget();
+
+	_editWidget->connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
+	_editWidget->connect(sceneWidget, &SceneWidget::WheelEvent, this, &StudioModelAsset::OnSceneWidgetWheelEvent);
+
+	sceneWidget->SetScene(GetScene());
 
 	return _editWidget;
 }

@@ -5,7 +5,6 @@
 #include <QMap>
 
 #include "entity/HLMVStudioModelEntity.hpp"
-#include "graphics/Scene.hpp"
 
 #include "qt/QtUtilities.hpp"
 
@@ -55,13 +54,9 @@ StudioModelEditWidget::StudioModelEditWidget(
 {
 	_ui.setupUi(this);
 
-	const auto scene = _asset->GetScene();
-
 	_view = new StudioModelView(_ui.Window);
 
 	_sceneWidget = new SceneWidget(this);
-
-	_sceneWidget->SetScene(scene);
 
 	_textureWidget = new TextureWidget(this);
 
