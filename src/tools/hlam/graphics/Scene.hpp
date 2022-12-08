@@ -1,13 +1,9 @@
 #pragma once
 
-#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include <qopenglfunctions_1_1.h>
-
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
 
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
@@ -117,14 +113,6 @@ public:
 		}
 	}
 
-	glm::vec3 GetLightColor() const;
-
-	void SetLightColor(const glm::vec3& value);
-
-	glm::vec3 GetWireframeColor() const;
-
-	void SetWireframeColor(const glm::vec3& value);
-
 	unsigned int GetDrawnPolygonsCount() const { return _drawnPolygonsCount; }
 
 	void Initialize();
@@ -140,12 +128,7 @@ private:
 
 	void DrawRenderables(RenderPass::RenderPass renderPass);
 
-	//TODO: these are temporary until the graphics code can be refactored into an object based design
-public:
 	//TODO: having some colors as variables and some as methods is inconsistent
-	glm::vec3 GroundColor{0};
-	glm::vec3 BackgroundColor{0.5};
-	glm::vec3 CrosshairColor{1};
 
 private:
 	//Keep track of how many times we've been initialized and shut down so we don't do it at the wrong time

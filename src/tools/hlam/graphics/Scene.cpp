@@ -19,6 +19,11 @@
 
 #include "qt/QtLogSink.hpp"
 
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelColors.hpp"
+#include "ui/EditorContext.hpp"
+#include "ui/settings/ColorSettings.hpp"
+
 namespace graphics
 {
 Scene::Scene(ui::assets::studiomodel::StudioModelAsset* asset,
@@ -26,7 +31,7 @@ Scene::Scene(ui::assets::studiomodel::StudioModelAsset* asset,
 	ui::settings::StudioModelSettings* settings)
 	: _textureLoader(textureLoader)
 	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(CreateQtLoggerSt(logging::HLAMSpriteRenderer()), worldTime))
-	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(CreateQtLoggerSt(logging::HLAMStudioModelRenderer())))
+	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(CreateQtLoggerSt(logging::HLAMStudioModelRenderer()), asset->GetEditorContext()->GetColorSettings()))
 	, _entityContext(std::make_unique<EntityContext>(asset,
 		worldTime,
 		_studioModelRenderer.get(), _spriteRenderer.get(),
@@ -54,26 +59,6 @@ void Scene::SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions)
 {
 	_openglFunctions = openglFunctions;
 	_textureLoader->SetOpenGLFunctions(openglFunctions);
-}
-
-glm::vec3 Scene::GetLightColor() const
-{
-	return _studioModelRenderer->GetLightColor();
-}
-
-void Scene::SetLightColor(const glm::vec3& value)
-{
-	_studioModelRenderer->SetLightColor(value);
-}
-
-glm::vec3 Scene::GetWireframeColor() const
-{
-	return _studioModelRenderer->GetWireframeColor();
-}
-
-void Scene::SetWireframeColor(const glm::vec3& value)
-{
-	_studioModelRenderer->SetWireframeColor(value);
 }
 
 void Scene::Initialize()
@@ -115,12 +100,17 @@ void Scene::Shutdown()
 
 void Scene::Tick()
 {
+	_studioModelRenderer->RunFrame();
 	_entityList->RunFrame();
 }
 
 void Scene::Draw()
 {
-	_openglFunctions->glClearColor(BackgroundColor.r, BackgroundColor.g, BackgroundColor.b, 1.0f);
+	auto colors = _entityContext->Asset->GetEditorContext()->GetColorSettings();
+
+	const auto backgroundColor = ui::assets::studiomodel::ColorToVector(colors->GetColor(ui::assets::studiomodel::BackgroundColor.Name));
+
+	_openglFunctions->glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.0f);
 	_openglFunctions->glClearStencil(0);
 	_openglFunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 

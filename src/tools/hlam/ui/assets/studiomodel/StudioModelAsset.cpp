@@ -134,8 +134,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	connect(_cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
 
-	UpdateColors();
-
 	// The order that entities are added matters for now since there's no sorting done.
 	_backgroundEntity = _scene->GetEntityList()->Create<BackgroundEntity>();
 
@@ -182,7 +180,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	}
 
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
-	connect(_editorContext->GetColorSettings(), &settings::ColorSettings::ColorsChanged, this, &StudioModelAsset::UpdateColors);
 }
 
 StudioModelAsset::~StudioModelAsset()
@@ -437,22 +434,6 @@ void StudioModelAsset::OnCameraChanged(camera_operators::CameraOperator* previou
 {
 	_scene->SetCurrentCamera(current != nullptr ? current->GetCamera() : nullptr);
 	GetProvider()->GetStudioModelSettings()->CameraIsFirstPerson = current == _firstPersonCamera;
-}
-
-static glm::vec3 ColorToVector(const QColor& color)
-{
-	return {color.redF(), color.greenF(), color.blueF()};
-}
-
-void StudioModelAsset::UpdateColors()
-{
-	const auto colorSettings = _editorContext->GetColorSettings();
-
-	_scene->GroundColor = ColorToVector(colorSettings->GetColor(GroundColor.Name));
-	_scene->BackgroundColor = ColorToVector(colorSettings->GetColor(BackgroundColor.Name));
-	_scene->CrosshairColor = ColorToVector(colorSettings->GetColor(CrosshairColor.Name));
-	_scene->SetLightColor(ColorToVector(colorSettings->GetColor(LightColor.Name)));
-	_scene->SetWireframeColor(ColorToVector(colorSettings->GetColor(WireframeColor.Name)));
 }
 
 void StudioModelAsset::OnPreviousCamera()

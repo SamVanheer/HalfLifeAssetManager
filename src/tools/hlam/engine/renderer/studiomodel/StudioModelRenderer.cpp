@@ -13,6 +13,9 @@
 
 #include "engine/renderer/studiomodel/StudioModelRenderer.hpp"
 
+#include "ui/assets/studiomodel/StudioModelColors.hpp"
+#include "ui/settings/ColorSettings.hpp"
+
 #include "utility/mathlib.hpp"
 
 //Double to float conversion
@@ -20,8 +23,9 @@
 
 namespace studiomdl
 {
-StudioModelRenderer::StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger)
+StudioModelRenderer::StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger, ui::settings::ColorSettings* colorSettings)
 	: _logger(logger)
+	, _colorSettings(colorSettings)
 {
 }
 
@@ -41,6 +45,9 @@ void StudioModelRenderer::Shutdown()
 
 void StudioModelRenderer::RunFrame()
 {
+	// Cache colors once per frame.
+	_lightcolor = ui::assets::studiomodel::ColorToVector(_colorSettings->GetColor(ui::assets::studiomodel::LightColor.Name));
+	_wireframeColor = ui::assets::studiomodel::ColorToVector(_colorSettings->GetColor(ui::assets::studiomodel::WireframeColor.Name));
 }
 
 unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderInfo, const renderer::DrawFlags flags)

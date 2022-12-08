@@ -2,9 +2,11 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
-#include "graphics/Scene.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelColors.hpp"
+#include "ui/EditorContext.hpp"
+#include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
 void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
@@ -67,7 +69,11 @@ void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses rend
 		_floorTextureOffset.x = std::fmod(_floorTextureOffset.x, floorTextureLength);
 		_floorTextureOffset.y = std::fmod(_floorTextureOffset.y, floorTextureLength);
 
-		graphics::DrawFloor(openglFunctions, settings->FloorOrigin, settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, _texture, context->Scene->GroundColor, settings->MirrorOnGround);
+		auto colors = GetContext()->Asset->GetEditorContext()->GetColorSettings();
+
+		graphics::DrawFloor(openglFunctions,
+			settings->FloorOrigin, settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, _texture,
+			ui::assets::studiomodel::ColorToVector(colors->GetColor(ui::assets::studiomodel::GroundColor.Name)), settings->MirrorOnGround);
 	}
 }
 

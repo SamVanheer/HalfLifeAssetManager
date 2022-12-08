@@ -92,14 +92,6 @@ public:
 	*/
 	virtual void SetLightVector(const glm::vec3& lightvec) = 0;
 
-	virtual glm::vec3 GetLightColor() const = 0;
-
-	virtual void SetLightColor(const glm::vec3& color) = 0;
-
-	virtual glm::vec3 GetWireframeColor() const = 0;
-
-	virtual void SetWireframeColor(const glm::vec3& color) = 0;
-
 	/**
 	*	Draws the given model.
 	*	@param renderInfo Render info that describes the model.

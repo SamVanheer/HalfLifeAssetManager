@@ -7,6 +7,10 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/Scene.hpp"
 
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelColors.hpp"
+#include "ui/EditorContext.hpp"
+#include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
 void GuidelinesEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
@@ -33,7 +37,9 @@ void GuidelinesEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses 
 
 		openglFunctions->glDisable(GL_TEXTURE_2D);
 
-		openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{scene->CrosshairColor, 1}));
+		auto colors = GetContext()->Asset->GetEditorContext()->GetColorSettings();
+
+		openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{ui::assets::studiomodel::ColorToVector(colors->GetColor(ui::assets::studiomodel::CrosshairColor.Name)), 1}));
 
 		openglFunctions->glPointSize(GUIDELINES_LINE_WIDTH);
 		openglFunctions->glLineWidth(GUIDELINES_LINE_WIDTH);

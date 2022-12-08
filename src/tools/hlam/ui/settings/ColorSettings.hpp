@@ -8,6 +8,7 @@
 
 #include <QColor>
 #include <QObject>
+#include <QSettings>
 #include <QString>
 #include <QStringList>
 

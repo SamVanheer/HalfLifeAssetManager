@@ -227,8 +227,6 @@ private slots:
 
 	void OnCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current);
 
-	void UpdateColors();
-
 	void OnPreviousCamera();
 	void OnNextCamera();
 

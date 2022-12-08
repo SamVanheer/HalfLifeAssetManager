@@ -16,6 +16,11 @@
 #include "engine/shared/studiomodel/BoneTransformer.hpp"
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
+namespace ui::settings
+{
+class ColorSettings;
+}
+
 namespace studiomdl
 {
 struct Animation;
@@ -26,7 +31,7 @@ struct Sequence;
 class StudioModelRenderer final : public studiomdl::IStudioModelRenderer
 {
 public:
-	StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger);
+	StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger, ui::settings::ColorSettings* colorSettings);
 	~StudioModelRenderer();
 
 	StudioModelRenderer(const StudioModelRenderer&) = delete;
@@ -68,20 +73,6 @@ public:
 	void SetLightVector(const glm::vec3& lightvec) override final
 	{
 		_lightvec = lightvec;
-	}
-
-	glm::vec3 GetLightColor() const override final { return _lightcolor; }
-
-	void SetLightColor(const glm::vec3& color) override final
-	{
-		_lightcolor = color;
-	}
-
-	glm::vec3 GetWireframeColor() const override final { return _wireframeColor; }
-
-	void SetWireframeColor(const glm::vec3& color) override final
-	{
-		_wireframeColor = color;
 	}
 
 	unsigned int DrawModel(ModelRenderInfo& renderInfo, const renderer::DrawFlags flags) override final;
@@ -133,6 +124,8 @@ private:
 	static constexpr int MaxVertices = 0xFFFF;
 
 	std::shared_ptr<spdlog::logger> _logger;
+
+	ui::settings::ColorSettings* const _colorSettings;
 
 	QOpenGLFunctions_1_1* _openglFunctions = nullptr;
 
