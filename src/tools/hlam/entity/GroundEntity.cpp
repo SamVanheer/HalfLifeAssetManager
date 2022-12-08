@@ -4,6 +4,7 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/Scene.hpp"
 
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
 void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
@@ -16,7 +17,7 @@ void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses rend
 		glm::vec2 textureOffset{0};
 
 		//Calculate texture offset based on sequence movement and current frame
-		if (auto entity = context->Scene->GetEntity(); entity)
+		if (auto entity = context->Asset->GetEntity(); entity)
 		{
 			auto model = entity->GetEditableModel();
 

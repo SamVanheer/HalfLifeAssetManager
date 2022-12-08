@@ -63,7 +63,7 @@ StudioModelHitboxesPanel::~StudioModelHitboxesPanel() = default;
 
 void StudioModelHitboxesPanel::InitializeUI()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	this->setEnabled(!model->Hitboxes.empty());
 
@@ -105,7 +105,7 @@ void StudioModelHitboxesPanel::InitializeUI()
 
 void StudioModelHitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -194,12 +194,12 @@ void StudioModelHitboxesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 {
 	InitializeUI();
 
-	SetRestoredModelIndex(snapshot->Value("hitboxes.hitbox").toInt(), _asset->GetScene()->GetEntity()->GetEditableModel()->Hitboxes.size(), *_ui.Hitboxes);
+	SetRestoredModelIndex(snapshot->Value("hitboxes.hitbox").toInt(), _asset->GetEntity()->GetEditableModel()->Hitboxes.size(), *_ui.Hitboxes);
 }
 
 void StudioModelHitboxesPanel::UpdateQCString()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	const int index = _ui.Hitboxes->currentIndex();
 
@@ -227,7 +227,7 @@ void StudioModelHitboxesPanel::UpdateQCString()
 
 void StudioModelHitboxesPanel::OnHitboxChanged(int index)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	constexpr studiomdl::Hitbox emptyHitbox{};
 
@@ -270,7 +270,7 @@ void StudioModelHitboxesPanel::OnHighlightHitboxChanged()
 
 void StudioModelHitboxesPanel::OnBoneChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeHitboxBoneCommand(_asset, _ui.Hitboxes->currentIndex(), hitbox.Bone->ArrayIndex, _ui.Bone->currentIndex()));
@@ -278,7 +278,7 @@ void StudioModelHitboxesPanel::OnBoneChanged()
 
 void StudioModelHitboxesPanel::OnHitgroupChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeHitboxHitgroupCommand(_asset, _ui.Hitboxes->currentIndex(), hitbox.Group, _ui.Hitgroup->value()));
@@ -286,7 +286,7 @@ void StudioModelHitboxesPanel::OnHitgroupChanged()
 
 void StudioModelHitboxesPanel::OnBoundsChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeHitboxBoundsCommand(_asset, _ui.Hitboxes->currentIndex(),

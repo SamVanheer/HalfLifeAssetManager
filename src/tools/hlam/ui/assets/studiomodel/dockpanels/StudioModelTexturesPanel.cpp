@@ -158,7 +158,7 @@ QImage StudioModelTexturesPanel::GenerateTextureForDisplay()
 		return {};
 	}
 
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 
 	const auto model = entity->GetEditableModel();
 
@@ -189,7 +189,7 @@ QImage StudioModelTexturesPanel::GenerateTextureForDisplay()
 
 void StudioModelTexturesPanel::InitializeUI()
 {
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 
 	this->setEnabled(!model->Textures.empty());
 
@@ -239,7 +239,7 @@ static void SetTextureFlagCheckBoxes(Ui_StudioModelTexturesPanel& ui, int flags)
 
 void StudioModelTexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -302,7 +302,7 @@ void StudioModelTexturesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 {
 	if (auto index = _ui.Textures->currentIndex(); index != -1)
 	{
-		auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+		auto model = _asset->GetEntity()->GetEditableModel();
 
 		const auto& texture = *model->Textures[index];
 
@@ -318,7 +318,7 @@ void StudioModelTexturesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 	{
 		auto textureName = texture.toString().toStdString();
 
-		auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+		auto model = _asset->GetEntity()->GetEditableModel();
 
 		if (auto it = std::find_if(model->Textures.begin(), model->Textures.end(), [&](const auto& texture)
 			{
@@ -334,14 +334,12 @@ void StudioModelTexturesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 
 void StudioModelTexturesPanel::OnTextureChanged(int index)
 {
-	auto scene = _asset->GetScene();
+	auto entity = _asset->GetEntity();
 
 	_ui.Meshes->clear();
 	_ui.Meshes->setEnabled(index != -1);
 
 	const studiomdl::Texture emptyTexture{};
-
-	auto entity = scene->GetEntity();
 
 	const auto& texture = index != -1 ? *entity->GetEditableModel()->Textures[index] : emptyTexture;
 
@@ -419,7 +417,7 @@ void StudioModelTexturesPanel::OnUVLineWidthSpinnerChanged(double value)
 
 void StudioModelTexturesPanel::OnTextureNameChanged()
 {
-	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
+	const auto& texture = *_asset->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeTextureNameCommand(_asset, _ui.Textures->currentIndex(), texture.Name.c_str(), _ui.TextureName->text()));
 }
@@ -431,7 +429,7 @@ void StudioModelTexturesPanel::OnTextureNameRejected()
 
 void StudioModelTexturesPanel::OnChromeChanged()
 {
-	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
+	const auto& texture = *_asset->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
 	int flags = texture.Flags;
 
@@ -448,7 +446,7 @@ void StudioModelTexturesPanel::OnChromeChanged()
 
 void StudioModelTexturesPanel::OnAdditiveChanged()
 {
-	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
+	const auto& texture = *_asset->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
 	int flags = texture.Flags;
 
@@ -465,7 +463,7 @@ void StudioModelTexturesPanel::OnAdditiveChanged()
 
 void StudioModelTexturesPanel::OnTransparentChanged()
 {
-	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
+	const auto& texture = *_asset->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
 	int flags = texture.Flags;
 
@@ -482,7 +480,7 @@ void StudioModelTexturesPanel::OnTransparentChanged()
 
 void StudioModelTexturesPanel::OnFlatShadeChanged()
 {
-	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
+	const auto& texture = *_asset->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
 	const int flags = SetFlags(texture.Flags, STUDIO_NF_FLATSHADE, _ui.FlatShade->isChecked());
 
@@ -491,7 +489,7 @@ void StudioModelTexturesPanel::OnFlatShadeChanged()
 
 void StudioModelTexturesPanel::OnFullbrightChanged()
 {
-	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
+	const auto& texture = *_asset->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
 	const int flags = SetFlags(texture.Flags, STUDIO_NF_FULLBRIGHT, _ui.Fullbright->isChecked());
 
@@ -500,7 +498,7 @@ void StudioModelTexturesPanel::OnFullbrightChanged()
 
 void StudioModelTexturesPanel::OnMipmapsChanged()
 {
-	const auto& texture = *_asset->GetScene()->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
+	const auto& texture = *_asset->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
 	const int flags = SetFlags(texture.Flags, STUDIO_NF_NOMIPS, _ui.Mipmaps->isChecked());
 
@@ -554,7 +552,7 @@ void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studio
 
 void StudioModelTexturesPanel::RemapTexture(int index)
 {
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 
 	auto& texture = *model->Textures[index];
 
@@ -581,7 +579,7 @@ void StudioModelTexturesPanel::RemapTexture(int index)
 
 void StudioModelTexturesPanel::RemapTextures()
 {
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 
 	for (int i = 0; i < model->Textures.size(); ++i)
 	{
@@ -601,7 +599,7 @@ void StudioModelTexturesPanel::UpdateColormapValue()
 
 void StudioModelTexturesPanel::OnImportTexture()
 {
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 
 	const int iTextureIndex = _ui.Textures->currentIndex();
 
@@ -633,7 +631,7 @@ void StudioModelTexturesPanel::OnExportTexture()
 		return;
 	}
 
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 
 	const auto& texture = *model->Textures[textureIndex];
 
@@ -662,7 +660,7 @@ void StudioModelTexturesPanel::OnExportUVMap()
 		return;
 	}
 
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 
 	const auto model = entity->GetEditableModel();
 
@@ -708,7 +706,7 @@ void StudioModelTexturesPanel::OnImportAllTextures()
 		return;
 	}
 
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 
 	auto model = entity->GetEditableModel();
 
@@ -742,7 +740,7 @@ void StudioModelTexturesPanel::OnExportAllTextures()
 		return;
 	}
 
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 
 	QString errors;
 
@@ -812,7 +810,7 @@ void StudioModelTexturesPanel::OnTextureFiltersChanged()
 	const auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
 	graphicsContext->Begin();
-	_asset->GetScene()->GetEntity()->GetEditableModel()->UpdateFilters(*textureLoader);
+	_asset->GetEntity()->GetEditableModel()->UpdateFilters(*textureLoader);
 	graphicsContext->End();
 }
 
@@ -823,7 +821,7 @@ void StudioModelTexturesPanel::OnPowerOf2TexturesChanged()
 	const auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
 	graphicsContext->Begin();
-	_asset->GetScene()->GetEntity()->GetEditableModel()->ReuploadTextures(*_asset->GetTextureLoader());
+	_asset->GetEntity()->GetEditableModel()->ReuploadTextures(*_asset->GetTextureLoader());
 	graphicsContext->End();
 }
 }

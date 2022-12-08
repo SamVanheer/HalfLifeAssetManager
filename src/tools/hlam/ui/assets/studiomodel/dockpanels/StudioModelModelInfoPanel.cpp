@@ -26,7 +26,7 @@ StudioModelModelInfoPanel::~StudioModelModelInfoPanel() = default;
 
 void StudioModelModelInfoPanel::InitializeUI()
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 	auto model = entity->GetEditableModel();
 
 	_ui.BonesValue->setText(QString::number(model->Bones.size()));

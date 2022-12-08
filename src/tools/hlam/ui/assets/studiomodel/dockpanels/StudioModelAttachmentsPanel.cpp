@@ -67,7 +67,7 @@ StudioModelAttachmentsPanel::~StudioModelAttachmentsPanel() = default;
 
 void StudioModelAttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -169,12 +169,12 @@ void StudioModelAttachmentsPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 	InitializeUI();
 
 	SetRestoredModelIndex(
-		snapshot->Value("attachments.attachment").toInt(), _asset->GetScene()->GetEntity()->GetEditableModel()->Attachments.size(), *_ui.Attachments);
+		snapshot->Value("attachments.attachment").toInt(), _asset->GetEntity()->GetEditableModel()->Attachments.size(), *_ui.Attachments);
 }
 
 void StudioModelAttachmentsPanel::InitializeUI()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	this->setEnabled(!model->Attachments.empty());
 
@@ -217,7 +217,7 @@ void StudioModelAttachmentsPanel::InitializeUI()
 
 void StudioModelAttachmentsPanel::UpdateQCString()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	const int index = _ui.Attachments->currentIndex();
 
@@ -242,7 +242,7 @@ void StudioModelAttachmentsPanel::UpdateQCString()
 
 void StudioModelAttachmentsPanel::OnAttachmentChanged(int index)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	const studiomdl::Attachment emptyAttachment{};
 
@@ -277,7 +277,7 @@ void StudioModelAttachmentsPanel::OnHighlightAttachmentChanged()
 
 void StudioModelAttachmentsPanel::OnNameChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeAttachmentNameCommand(_asset, _ui.Attachments->currentIndex(), attachment.Name.c_str(), _ui.Name->text()));
@@ -290,7 +290,7 @@ void StudioModelAttachmentsPanel::OnNameRejected()
 
 void StudioModelAttachmentsPanel::OnTypeChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeAttachmentTypeCommand(_asset, _ui.Attachments->currentIndex(), attachment.Type, _ui.Type->value()));
@@ -298,7 +298,7 @@ void StudioModelAttachmentsPanel::OnTypeChanged()
 
 void StudioModelAttachmentsPanel::OnBoneChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeAttachmentBoneCommand(_asset, _ui.Attachments->currentIndex(), attachment.Bone->ArrayIndex, _ui.Bone->currentIndex()));
@@ -306,7 +306,7 @@ void StudioModelAttachmentsPanel::OnBoneChanged()
 
 void StudioModelAttachmentsPanel::OnOriginChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeAttachmentOriginCommand(_asset, _ui.Attachments->currentIndex(),

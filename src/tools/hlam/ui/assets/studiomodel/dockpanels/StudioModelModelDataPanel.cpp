@@ -105,7 +105,7 @@ void StudioModelModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 
 void StudioModelModelDataPanel::InitializeUI()
 {
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 
 	const QSignalBlocker blocker{_ui.EyePosition};
 	const QSignalBlocker bmin{_ui.BBoxMin};
@@ -122,30 +122,30 @@ void StudioModelModelDataPanel::InitializeUI()
 
 void StudioModelModelDataPanel::OnEyePositionChanged(const glm::vec3& value)
 {
-	_asset->AddUndoCommand(new ChangeEyePositionCommand(_asset, _asset->GetScene()->GetEntity()->GetEditableModel()->EyePosition, value));
+	_asset->AddUndoCommand(new ChangeEyePositionCommand(_asset, _asset->GetEntity()->GetEditableModel()->EyePosition, value));
 }
 
 void StudioModelModelDataPanel::OnBBoxMinChanged(const glm::vec3& value)
 {
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 	_asset->AddUndoCommand(new ChangeBBoxCommand(_asset, {model->BoundingMin, model->BoundingMax}, {value, model->BoundingMax}));
 }
 
 void StudioModelModelDataPanel::OnBBoxMaxChanged(const glm::vec3& value)
 {
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 	_asset->AddUndoCommand(new ChangeBBoxCommand(_asset, {model->BoundingMin, model->BoundingMax}, {model->BoundingMin, value}));
 }
 
 void StudioModelModelDataPanel::OnCBoxMinChanged(const glm::vec3& value)
 {
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 	_asset->AddUndoCommand(new ChangeCBoxCommand(_asset, {model->ClippingMin, model->ClippingMax}, {value, model->ClippingMax}));
 }
 
 void StudioModelModelDataPanel::OnCBoxMaxChanged(const glm::vec3& value)
 {
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 	_asset->AddUndoCommand(new ChangeCBoxCommand(_asset, {model->ClippingMin, model->ClippingMax}, {model->ClippingMin, value}));
 }
 }

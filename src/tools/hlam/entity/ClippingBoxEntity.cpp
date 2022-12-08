@@ -2,15 +2,15 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
-#include "graphics/Scene.hpp"
 
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
 void ClippingBoxEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
 {
 	if (GetContext()->Settings->ShowCBox)
 	{
-		if (auto entity = GetContext()->Scene->GetEntity(); entity)
+		if (auto entity = GetContext()->Asset->GetEntity(); entity)
 		{
 			//Draw a transparent orangeish box to display the clipping box
 			auto model = entity->GetEditableModel();

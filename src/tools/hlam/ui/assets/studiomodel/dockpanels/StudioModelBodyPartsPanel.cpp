@@ -77,7 +77,7 @@ StudioModelBodyPartsPanel::~StudioModelBodyPartsPanel() = default;
 
 void StudioModelBodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -204,7 +204,7 @@ void StudioModelBodyPartsPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 {
 	if (const int index = _ui.BodyParts->currentIndex(); index != -1)
 	{
-		const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+		const auto model = _asset->GetEntity()->GetEditableModel();
 
 		snapshot->SetValue("bodyparts.bodypart", QString::fromStdString(model->Bodyparts[index]->Name));
 	}
@@ -217,7 +217,7 @@ void StudioModelBodyPartsPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 {
 	InitializeUI();
 
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	if (auto bodypart = snapshot->Value("bodyparts.bodypart"); bodypart.isValid())
 	{
@@ -239,7 +239,7 @@ void StudioModelBodyPartsPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 
 void StudioModelBodyPartsPanel::InitializeUI()
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 	auto model = entity->GetEditableModel();
 
 	{
@@ -346,7 +346,7 @@ void StudioModelBodyPartsPanel::InitializeUI()
 
 void StudioModelBodyPartsPanel::UpdateControllerRange(const studiomdl::BoneController& boneController)
 {
-	const auto entity = _asset->GetScene()->GetEntity();
+	const auto entity = _asset->GetEntity();
 
 	float start, end;
 
@@ -397,7 +397,7 @@ void StudioModelBodyPartsPanel::OnLayoutDirectionChanged()
 
 void StudioModelBodyPartsPanel::OnBodyPartChanged(int index)
 {
-	const auto entity = _asset->GetScene()->GetEntity();
+	const auto entity = _asset->GetEntity();
 	const auto model = entity->GetEditableModel();
 
 	const studiomdl::Bodypart emptyBodypart{};
@@ -435,7 +435,7 @@ void StudioModelBodyPartsPanel::OnSubmodelChanged(int index)
 {
 	const int bodyPartIndex{_ui.BodyParts->currentIndex()};
 
-	const auto entity = _asset->GetScene()->GetEntity();
+	const auto entity = _asset->GetEntity();
 
 	//Treat no submodels as having the first selected
 	entity->SetBodygroup(bodyPartIndex, index != -1 ? index : 0);
@@ -485,14 +485,14 @@ void StudioModelBodyPartsPanel::OnSubmodelChanged(int index)
 
 void StudioModelBodyPartsPanel::OnSkinChanged(int index)
 {
-	const auto entity = _asset->GetScene()->GetEntity();
+	const auto entity = _asset->GetEntity();
 
 	entity->SetSkin(index);
 }
 
 void StudioModelBodyPartsPanel::OnModelNameChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& bodyPart = *model->Bodyparts[_ui.BodyParts->currentIndex()];
 	const auto& subModel = bodyPart.Models[_ui.Submodels->currentIndex()];
 
@@ -507,7 +507,7 @@ void StudioModelBodyPartsPanel::OnModelNameRejected()
 
 void StudioModelBodyPartsPanel::OnBoneControllerChanged(int index)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	static constexpr studiomdl::BoneController EmptyController{};
 
@@ -543,7 +543,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerValueSpinnerChanged(double value
 
 	if (boneControllerLogicalIndex != -1)
 	{
-		const auto entity = _asset->GetScene()->GetEntity();
+		const auto entity = _asset->GetEntity();
 		const auto model = entity->GetEditableModel();
 		const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
@@ -571,7 +571,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerRangeChanged()
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
 	_asset->AddUndoCommand(new ChangeBoneControllerRangeCommand(_asset, boneControllerLogicalIndex,
@@ -583,7 +583,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerRestChanged()
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
 	_asset->AddUndoCommand(new ChangeBoneControllerRestCommand(_asset, boneControllerLogicalIndex,
@@ -594,7 +594,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerIndexChanged()
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
 	_asset->AddUndoCommand(new ChangeBoneControllerIndexCommand(_asset, boneControllerLogicalIndex,
@@ -605,7 +605,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerBoneChanged(int index)
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
 	const auto oldConnection = model->FindBoneControllerIsAttachedTo(boneControllerLogicalIndex);
@@ -621,7 +621,7 @@ void StudioModelBodyPartsPanel::OnBoneControllerAxisChanged(int index)
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
 	//Will default to 0 if not currently attached to anything

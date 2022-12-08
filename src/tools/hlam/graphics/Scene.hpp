@@ -22,6 +22,11 @@ class StudioModelEntity;
 class WorldTime;
 struct EntityContext;
 
+namespace ui::assets::studiomodel
+{
+class StudioModelAsset;
+}
+
 namespace sprite
 {
 class ISpriteRenderer;
@@ -54,7 +59,9 @@ class TextureLoader;
 class Scene
 {
 public:
-	Scene(graphics::TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime, ui::settings::StudioModelSettings* settings);
+	Scene(ui::assets::studiomodel::StudioModelAsset* asset,
+		graphics::TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime,
+		ui::settings::StudioModelSettings* settings);
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
@@ -122,8 +129,7 @@ public:
 
 	unsigned int GetDrawnPolygonsCount() const { return _drawnPolygonsCount; }
 
-	const std::shared_ptr<HLMVStudioModelEntity>& GetEntity() { return _entity; }
-
+	// TODO: remove from Scene once resource loading is implemented properly.
 	void SetEntity(std::shared_ptr<HLMVStudioModelEntity> entity)
 	{
 		_entity = entity;
@@ -177,7 +183,7 @@ private:
 
 	unsigned int _drawnPolygonsCount = 0;
 
-	std::shared_ptr<HLMVStudioModelEntity> _entity{};
+	std::shared_ptr<HLMVStudioModelEntity> _entity;
 
 	std::vector<BaseEntity*> _renderablesToRender;
 };

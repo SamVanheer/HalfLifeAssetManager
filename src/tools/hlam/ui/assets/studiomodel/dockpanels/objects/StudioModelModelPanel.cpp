@@ -28,13 +28,13 @@ void StudioModelModelPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direc
 
 void StudioModelModelPanel::OnOriginChanged()
 {
-	_asset->GetScene()->GetEntity()->SetOrigin(_ui.Origin->GetValue());
+	_asset->GetEntity()->SetOrigin(_ui.Origin->GetValue());
 }
 
 void StudioModelModelPanel::OnCenterOnWorldOrigin()
 {
 	//TODO: need a better way to sync UI to origin
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 
 	entity->SetOrigin({0, 0, 0});
 
@@ -44,7 +44,7 @@ void StudioModelModelPanel::OnCenterOnWorldOrigin()
 
 void StudioModelModelPanel::OnAlignOnGround()
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 
 	entity->AlignOnGround();
 

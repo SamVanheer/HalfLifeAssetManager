@@ -31,6 +31,11 @@ namespace studiomdl
 class IStudioModelRenderer;
 }
 
+namespace ui::assets::studiomodel
+{
+class StudioModelAsset;
+}
+
 namespace ui::settings
 {
 class StudioModelSettings;
@@ -44,6 +49,7 @@ using ThinkFunction = void (BaseEntity::*)();
 struct EntityContext final
 {
 	//TODO: improve this
+	ui::assets::studiomodel::StudioModelAsset* Asset;
 	WorldTime* const Time;
 	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
 	sprite::ISpriteRenderer* const SpriteRenderer;
@@ -51,12 +57,14 @@ struct EntityContext final
 	ui::settings::StudioModelSettings* const Settings;
 	graphics::Scene* const Scene;
 
-	EntityContext(WorldTime* time,
+	EntityContext(ui::assets::studiomodel::StudioModelAsset* asset,
+		WorldTime* time,
 		studiomdl::IStudioModelRenderer* studioModelRenderer, sprite::ISpriteRenderer* spriteRenderer,
 		soundsystem::ISoundSystem* soundSystem,
 		ui::settings::StudioModelSettings* settings,
 		graphics::Scene* scene)
-		: Time(time)
+		: Asset(asset)
+		, Time(time)
 		, SpriteRenderer(spriteRenderer)
 		, StudioModelRenderer(studioModelRenderer)
 		, SoundSystem(soundSystem)

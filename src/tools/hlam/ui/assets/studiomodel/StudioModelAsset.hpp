@@ -17,6 +17,8 @@
 
 #include "utility/mathlib.hpp"
 
+class HLMVStudioModelEntity;
+
 namespace graphics
 {
 class TextureLoader;
@@ -184,6 +186,8 @@ public:
 		emit ModelChanged(event);
 	}
 
+	HLMVStudioModelEntity* GetEntity() { return _modelEntity.get(); }
+
 	Pose GetPose() const { return _pose; }
 
 private:
@@ -246,6 +250,8 @@ private:
 	camera_operators::CameraOperator* _firstPersonCamera;
 
 	StudioModelEditWidget* _editWidget{};
+
+	std::shared_ptr<HLMVStudioModelEntity> _modelEntity;
 
 	//TODO: this is temporarily put here, but needs to be put somewhere else eventually
 	Pose _pose = Pose::Sequences;

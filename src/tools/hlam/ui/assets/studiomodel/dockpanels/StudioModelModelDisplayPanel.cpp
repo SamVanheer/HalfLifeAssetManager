@@ -53,7 +53,7 @@ void StudioModelModelDisplayPanel::OnRenderModeChanged(int index)
 
 void StudioModelModelDisplayPanel::OnOpacityChanged(int value)
 {
-	_asset->GetScene()->GetEntity()->SetTransparency(value / 100.0f);
+	_asset->GetEntity()->SetTransparency(value / 100.0f);
 
 	_ui.OpacityValueLabel->setText(QString("%1%").arg(value));
 }
@@ -135,16 +135,16 @@ void StudioModelModelDisplayPanel::OnShowPlayerHitboxChanged()
 
 void StudioModelModelDisplayPanel::OnMirrorXAxisChanged()
 {
-	_asset->GetScene()->GetEntity()->GetScale().x = _ui.MirrorOnXAxis->isChecked() ? -1 : 1;
+	_asset->GetEntity()->GetScale().x = _ui.MirrorOnXAxis->isChecked() ? -1 : 1;
 }
 
 void StudioModelModelDisplayPanel::OnMirrorYAxisChanged()
 {
-	_asset->GetScene()->GetEntity()->GetScale().y = _ui.MirrorOnYAxis->isChecked() ? -1 : 1;
+	_asset->GetEntity()->GetScale().y = _ui.MirrorOnYAxis->isChecked() ? -1 : 1;
 }
 
 void StudioModelModelDisplayPanel::OnMirrorZAxisChanged()
 {
-	_asset->GetScene()->GetEntity()->GetScale().z = _ui.MirrorOnZAxis->isChecked() ? -1 : 1;
+	_asset->GetEntity()->GetScale().z = _ui.MirrorOnZAxis->isChecked() ? -1 : 1;
 }
 }

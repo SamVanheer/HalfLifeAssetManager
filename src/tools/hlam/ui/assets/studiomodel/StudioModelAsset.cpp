@@ -125,7 +125,9 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
 	, _textureLoader(std::make_unique<graphics::TextureLoader>())
-	, _scene(std::make_unique<graphics::Scene>(_textureLoader.get(), editorContext->GetSoundSystem(), editorContext->GetWorldTime(), provider->GetStudioModelSettings()))
+	, _scene(std::make_unique<graphics::Scene>(this,
+		_textureLoader.get(), editorContext->GetSoundSystem(), editorContext->GetWorldTime(),
+		provider->GetStudioModelSettings()))
 	, _cameraOperators(new camera_operators::CameraOperators(this))
 {
 	PushInputSink(this);
@@ -139,9 +141,9 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	_scene->GetEntityList()->Create<AxesEntity>();
 
-	std::shared_ptr<HLMVStudioModelEntity> entity = _scene->GetEntityList()->Create<HLMVStudioModelEntity>(GetEditableStudioModel());
+	_modelEntity = _scene->GetEntityList()->Create<HLMVStudioModelEntity>(GetEditableStudioModel());
 
-	_scene->SetEntity(entity);
+	_scene->SetEntity(_modelEntity);
 
 	_scene->GetEntityList()->Create<GroundEntity>();
 
@@ -162,17 +164,14 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	_cameraOperators->Add(new camera_operators::FreeLookCameraOperator(_editorContext->GetGeneralSettings()));
 	_cameraOperators->Add(_firstPersonCamera);
 
-	if (nullptr != entity)
-	{
-		const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*entity, Axis::X, true);
+	const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*_modelEntity, Axis::X, true);
 
-		for (int i = 0; i < _cameraOperators->Count(); ++i)
-		{
-			const auto cameraOperator = _cameraOperators->Get(i);
-			cameraOperator->CenterView(targetOrigin, cameraOrigin, pitch, yaw);
-			//Set initial restoration point to the initial camera view
-			cameraOperator->SaveView();
-		}
+	for (int i = 0; i < _cameraOperators->Count(); ++i)
+	{
+		const auto cameraOperator = _cameraOperators->Get(i);
+		cameraOperator->CenterView(targetOrigin, cameraOrigin, pitch, yaw);
+		//Set initial restoration point to the initial camera view
+		cameraOperator->SaveView();
 	}
 
 	if (_provider->GetStudioModelSettings()->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
@@ -306,9 +305,8 @@ void StudioModelAsset::TryRefresh()
 
 		GetUndoStack()->clear();
 
-		std::shared_ptr<HLMVStudioModelEntity> entity = _scene->GetEntity();
-		entity->SetEditableModel(GetEditableStudioModel());
-		entity->Spawn();
+		_modelEntity->SetEditableModel(GetEditableStudioModel());
+		_modelEntity->Spawn();
 	}
 	catch (const ::assets::AssetException& e)
 	{
@@ -323,37 +321,35 @@ void StudioModelAsset::TryRefresh()
 
 void StudioModelAsset::SaveEntityToSnapshot(StateSnapshot* snapshot)
 {
-	std::shared_ptr<HLMVStudioModelEntity> entity = _scene->GetEntity();
-	auto model = entity->GetEditableModel();
+	auto model = _modelEntity->GetEditableModel();
 
-	const int sequenceIndex = entity->GetSequence();
+	const int sequenceIndex = _modelEntity->GetSequence();
 
 	if (sequenceIndex >= 0 && sequenceIndex < model->Sequences.size())
 	{
 		snapshot->SetValue("entity.sequence", QVariant::fromValue(QString::fromStdString(model->Sequences[sequenceIndex]->Label)));
-		snapshot->SetValue("entity.frame", QVariant::fromValue(entity->GetFrame()));
+		snapshot->SetValue("entity.frame", QVariant::fromValue(_modelEntity->GetFrame()));
 	}
 
-	snapshot->SetValue("entity.skin", QVariant::fromValue(entity->GetSkin()));
-	snapshot->SetValue("entity.body", QVariant::fromValue(entity->GetBodygroup()));
+	snapshot->SetValue("entity.skin", QVariant::fromValue(_modelEntity->GetSkin()));
+	snapshot->SetValue("entity.body", QVariant::fromValue(_modelEntity->GetBodygroup()));
 
 	for (int i = 0; i < STUDIO_MAX_CONTROLLERS; ++i)
 	{
-		snapshot->SetValue(QString{"entity.bonecontroller%1"}.arg(i), QVariant::fromValue(entity->GetControllerValue(i)));
+		snapshot->SetValue(QString{"entity.bonecontroller%1"}.arg(i), QVariant::fromValue(_modelEntity->GetControllerValue(i)));
 	}
 
-	snapshot->SetValue("entity.mouth", QVariant::fromValue(entity->GetMouth()));
+	snapshot->SetValue("entity.mouth", QVariant::fromValue(_modelEntity->GetMouth()));
 
 	for (int i = 0; i < STUDIO_MAX_BLENDERS; ++i)
 	{
-		snapshot->SetValue(QString{"entity.blender%1"}.arg(i), QVariant::fromValue(entity->GetBlendingValue(i)));
+		snapshot->SetValue(QString{"entity.blender%1"}.arg(i), QVariant::fromValue(_modelEntity->GetBlendingValue(i)));
 	}
 }
 
 void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
 {
-	std::shared_ptr<HLMVStudioModelEntity> entity = _scene->GetEntity();
-	auto model = entity->GetEditableModel();
+	auto model = _modelEntity->GetEditableModel();
 
 	bool foundSequence = false;
 
@@ -368,10 +364,10 @@ void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
 		{
 			const auto index = it - model->Sequences.begin();
 
-			entity->SetSequence(static_cast<int>(index));
+			_modelEntity->SetSequence(static_cast<int>(index));
 
 			//Only set these if we were able to find the sequence
-			entity->SetFrame(snapshot->Value("entity.frame").toFloat());
+			_modelEntity->SetFrame(snapshot->Value("entity.frame").toFloat());
 
 			foundSequence = true;
 		}
@@ -380,22 +376,22 @@ void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
 	if (!foundSequence)
 	{
 		//Reset to default
-		entity->SetSequence(0);
+		_modelEntity->SetSequence(0);
 	}
 
-	entity->SetSkin(snapshot->Value("entity.skin").toInt());
-	entity->SetCompoundBodyValue(snapshot->Value("entity.body").toInt());
+	_modelEntity->SetSkin(snapshot->Value("entity.skin").toInt());
+	_modelEntity->SetCompoundBodyValue(snapshot->Value("entity.body").toInt());
 
 	for (int i = 0; i < STUDIO_MAX_CONTROLLERS; ++i)
 	{
-		entity->SetController(i, snapshot->Value(QString{"entity.bonecontroller%1"}.arg(i)).toFloat());
+		_modelEntity->SetController(i, snapshot->Value(QString{"entity.bonecontroller%1"}.arg(i)).toFloat());
 	}
 
-	entity->SetMouth(snapshot->Value("entity.mouth").toFloat());
+	_modelEntity->SetMouth(snapshot->Value("entity.mouth").toFloat());
 
 	for (int i = 0; i < STUDIO_MAX_BLENDERS; ++i)
 	{
-		entity->SetBlending(i, snapshot->Value(QString{"entity.blender%1"}.arg(i)).toFloat());
+		_modelEntity->SetBlending(i, snapshot->Value(QString{"entity.blender%1"}.arg(i)).toFloat());
 	}
 }
 
@@ -475,7 +471,7 @@ void StudioModelAsset::OnCenterView(Axis axis, bool positive)
 {
 	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
 	{
-		const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*_scene->GetEntity(), axis, positive);
+		const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*_modelEntity, axis, positive);
 
 		cameraOperator->CenterView(targetOrigin, cameraOrigin, pitch, yaw);
 	}
@@ -502,7 +498,7 @@ void StudioModelAsset::OnFlipNormals()
 	std::vector<glm::vec3> oldNormals;
 	std::vector<glm::vec3> newNormals;
 
-	auto model = GetScene()->GetEntity()->GetEditableModel();
+	auto model = _modelEntity->GetEditableModel();
 
 	for (auto& bodypart : model->Bodyparts)
 	{

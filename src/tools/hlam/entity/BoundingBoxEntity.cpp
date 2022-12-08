@@ -2,15 +2,15 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
-#include "graphics/Scene.hpp"
 
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
 void BoundingBoxEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
 {
 	if (GetContext()->Settings->ShowBBox)
 	{
-		if (auto entity = GetContext()->Scene->GetEntity(); entity)
+		if (auto entity = GetContext()->Asset->GetEntity(); entity)
 		{
 			//Draw a transparent brownish box to display the bounding box
 			auto model = entity->GetEditableModel();

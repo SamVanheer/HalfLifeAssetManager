@@ -67,11 +67,11 @@ StudioModelSequencesPanel::~StudioModelSequencesPanel() = default;
 
 void StudioModelSequencesPanel::InitializeUI()
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 
 	const int sequenceIndex = entity->GetSequence();
 
-	auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEntity()->GetEditableModel();
 
 	this->setEnabled(!model->Sequences.empty());
 
@@ -93,7 +93,7 @@ void StudioModelSequencesPanel::InitializeUI()
 
 void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -118,7 +118,7 @@ void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 			if (listChange.GetType() == AddRemoveType::Addition)
 			{
-				auto entity = _asset->GetScene()->GetEntity();
+				auto entity = _asset->GetEntity();
 				auto model = entity->GetEditableModel();
 				auto& sequence = *model->Sequences[entity->GetSequence()];
 
@@ -168,7 +168,7 @@ void StudioModelSequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 void StudioModelSequencesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 	const float xValue = entity->GetBlendingValue(0);
 	const float yValue = entity->GetBlendingValue(1);
 
@@ -182,7 +182,7 @@ void StudioModelSequencesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 
 void StudioModelSequencesPanel::OnPoseChanged(Pose pose)
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 
 	switch (pose)
 	{
@@ -202,7 +202,7 @@ void StudioModelSequencesPanel::InitializeBlenders(float initialXValue, float in
 {
 	const StudioBlendMode mode = static_cast<StudioBlendMode>(_ui.BlendMode->currentIndex());
 
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 
 	const int sequenceIndex = entity->GetSequence();
 
@@ -311,14 +311,14 @@ void StudioModelSequencesPanel::UpdateBlendValue(int blender, BlendUpdateSource 
 		slider->setValue(spinner->value() * _blendsScales[blender]);
 	}
 
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 
 	entity->SetBlending(blender, spinner->value());
 }
 
 void StudioModelSequencesPanel::OnSequenceChanged(int index)
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 
 	//Don't reset the frame unless the sequence has actually changed
 	const bool sequenceHasChanged = (entity->GetSequence()) != index;
@@ -394,7 +394,7 @@ void StudioModelSequencesPanel::OnSequenceChanged(int index)
 
 void StudioModelSequencesPanel::OnLoopingModeChanged(int index)
 {
-	_asset->GetScene()->GetEntity()->SetLoopingMode(static_cast<StudioLoopingMode>(index));
+	_asset->GetEntity()->SetLoopingMode(static_cast<StudioLoopingMode>(index));
 }
 
 void StudioModelSequencesPanel::OnBlendModeChanged(int index)
@@ -432,7 +432,7 @@ void StudioModelSequencesPanel::OnEventChanged(int index)
 
 	if (hasEvent)
 	{
-		const auto entity = _asset->GetScene()->GetEntity();
+		const auto entity = _asset->GetEntity();
 		const auto model = entity->GetEditableModel();
 		const auto& sequence = *model->Sequences[entity->GetSequence()];
 
@@ -480,7 +480,7 @@ void StudioModelSequencesPanel::OnRemoveEvent()
 {
 	const int index = _ui.EventsComboBox->currentIndex();
 
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 	auto model = entity->GetEditableModel();
 	auto& sequence = *model->Sequences[entity->GetSequence()];
 
@@ -489,7 +489,7 @@ void StudioModelSequencesPanel::OnRemoveEvent()
 
 void StudioModelSequencesPanel::OnEventEdited()
 {
-	const auto entity = _asset->GetScene()->GetEntity();
+	const auto entity = _asset->GetEntity();
 	const auto model = entity->GetEditableModel();
 	const auto& sequence = *model->Sequences[entity->GetSequence()];
 	const auto& event = *sequence.Events[_ui.EventsComboBox->currentIndex()];

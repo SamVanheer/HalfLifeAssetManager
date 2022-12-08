@@ -86,7 +86,7 @@ void Timeline::InitializeUI()
 {
 	if (_asset)
 	{
-		auto entity = _asset->GetScene()->GetEntity();
+		auto entity = _asset->GetEntity();
 		auto model = entity->GetEditableModel();
 
 		const int sequenceIndex = entity->GetSequence();
@@ -125,7 +125,7 @@ void Timeline::SetFrame(double value, bool updateEntity)
 
 	if (updateEntity)
 	{
-		_asset->GetScene()->GetEntity()->SetFrame(static_cast<float>(value));
+		_asset->GetEntity()->SetFrame(static_cast<float>(value));
 	}
 }
 
@@ -140,13 +140,13 @@ void Timeline::SetFramerate(double value, bool updateEntity)
 
 	if (updateEntity && _asset)
 	{
-		_asset->GetScene()->GetEntity()->SetFrameRate(static_cast<float>(value));
+		_asset->GetEntity()->SetFrameRate(static_cast<float>(value));
 	}
 }
 
 void Timeline::ModifyFrame(int amount)
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 
 	const auto& sequence = *entity->GetEditableModel()->Sequences[entity->GetSequence()];
 
@@ -168,7 +168,7 @@ void Timeline::ModifyFrame(int amount)
 
 void Timeline::OnTick()
 {
-	auto entity = _asset->GetScene()->GetEntity();
+	auto entity = _asset->GetEntity();
 	auto model = entity->GetEditableModel();
 
 	const int sequenceIndex = entity->GetSequence();
@@ -244,7 +244,7 @@ void Timeline::OnFramerateSpinnerChanged()
 
 void Timeline::OnRestart()
 {
-	_asset->GetScene()->GetEntity()->SetFrame(0);
+	_asset->GetEntity()->SetFrame(0);
 }
 
 void Timeline::OnTogglePlayback()

@@ -56,14 +56,14 @@ StudioModelFlagsPanel::StudioModelFlagsPanel(StudioModelAsset* asset, QWidget* p
 
 void StudioModelFlagsPanel::InitializeUI()
 {
-	SetFlags(_asset->GetScene()->GetEntity()->GetEditableModel()->Flags);
+	SetFlags(_asset->GetEntity()->GetEditableModel()->Flags);
 }
 
 void StudioModelFlagsPanel::OnModelChanged(const ModelChangeEvent& event)
 {
 	if (event.GetId() == ModelChangeId::ChangeModelFlags)
 	{
-		SetFlags(_asset->GetScene()->GetEntity()->GetEditableModel()->Flags);
+		SetFlags(_asset->GetEntity()->GetEditableModel()->Flags);
 	}
 }
 
@@ -97,7 +97,7 @@ void StudioModelFlagsPanel::OnFlagChanged(int state)
 {
 	const auto flagValue = sender()->property(CheckBoxModelFlagProperty.data()).toInt();
 
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	int newFlags = model->Flags;
 

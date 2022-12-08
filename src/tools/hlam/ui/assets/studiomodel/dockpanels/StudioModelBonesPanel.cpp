@@ -128,7 +128,7 @@ StudioModelBonesPanel::~StudioModelBonesPanel() = default;
 
 void StudioModelBonesPanel::InitializeUI()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	this->setEnabled(!model->Bones.empty());
 
@@ -186,7 +186,7 @@ void StudioModelBonesPanel::InitializeUI()
 
 void StudioModelBonesPanel::UpdateRootBonesCount()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	int count = 0;
 
@@ -203,7 +203,7 @@ void StudioModelBonesPanel::UpdateRootBonesCount()
 
 void StudioModelBonesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	switch (event.GetId())
 	{
@@ -319,7 +319,7 @@ void StudioModelBonesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 {
 	if (const int index = _ui.Bones->currentIndex(); index != -1)
 	{
-		const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+		const auto model = _asset->GetEntity()->GetEditableModel();
 
 		snapshot->SetValue("bones.bone", QString::fromStdString(model->Bones[index]->Name));
 	}
@@ -333,7 +333,7 @@ void StudioModelBonesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 	{
 		const auto boneName = bone.toString().toStdString();
 
-		const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+		const auto model = _asset->GetEntity()->GetEditableModel();
 
 		if (auto it = std::find_if(model->Bones.begin(), model->Bones.end(), [&](const auto& bone)
 			{
@@ -349,7 +349,7 @@ void StudioModelBonesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 
 void StudioModelBonesPanel::OnBoneChanged(int index)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	const bool isValidBone = index != -1;
 
@@ -384,7 +384,7 @@ void StudioModelBonesPanel::OnHightlightBoneChanged()
 
 void StudioModelBonesPanel::OnBoneNameChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
 	_asset->AddUndoCommand(new BoneRenameCommand(_asset, _ui.Bones->currentIndex(), bone.Name.c_str(), _ui.BoneName->text()));
@@ -397,7 +397,7 @@ void StudioModelBonesPanel::OnBoneNameRejected()
 
 void StudioModelBonesPanel::OnBoneParentChanged(int index)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeBoneParentCommand(_asset, _ui.Bones->currentIndex(), bone.Parent ? bone.Parent->ArrayIndex : -1, index - ParentBoneOffset));
@@ -405,7 +405,7 @@ void StudioModelBonesPanel::OnBoneParentChanged(int index)
 
 void StudioModelBonesPanel::OnBoneFlagsChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeBoneFlagsCommand(_asset, _ui.Bones->currentIndex(), bone.Flags, _ui.BoneFlags->value()));
@@ -413,7 +413,7 @@ void StudioModelBonesPanel::OnBoneFlagsChanged()
 
 void StudioModelBonesPanel::OnBonePropertyChanged()
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
 	_asset->AddUndoCommand(new ChangeBonePropertyCommand(_asset, _ui.Bones->currentIndex(),
@@ -447,7 +447,7 @@ void StudioModelBonesPanel::OnBoneControllerAxisChanged(int index)
 
 	const bool isValidBone = boneIndex != -1;
 
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	const studiomdl::Bone emptyBone{};
 
@@ -465,7 +465,7 @@ void StudioModelBonesPanel::OnBoneControllerAxisChanged(int index)
 
 void StudioModelBonesPanel::OnBoneControllerChanged(int index)
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
 	const int axis = _ui.BoneControllerAxis->currentIndex();

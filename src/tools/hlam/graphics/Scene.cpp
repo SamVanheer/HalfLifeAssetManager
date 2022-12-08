@@ -21,11 +21,14 @@
 
 namespace graphics
 {
-Scene::Scene(TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime, ui::settings::StudioModelSettings* settings)
+Scene::Scene(ui::assets::studiomodel::StudioModelAsset* asset,
+	TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime,
+	ui::settings::StudioModelSettings* settings)
 	: _textureLoader(textureLoader)
 	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(CreateQtLoggerSt(logging::HLAMSpriteRenderer()), worldTime))
 	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(CreateQtLoggerSt(logging::HLAMStudioModelRenderer())))
-	, _entityContext(std::make_unique<EntityContext>(worldTime,
+	, _entityContext(std::make_unique<EntityContext>(asset,
+		worldTime,
 		_studioModelRenderer.get(), _spriteRenderer.get(),
 		soundSystem,
 		settings,

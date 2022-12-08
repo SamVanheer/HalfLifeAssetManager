@@ -30,7 +30,7 @@ bool UniqueAttachmentNameValidator::IsUnique(const QString& text) const
 		return true;
 	}
 
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	for (int i = 0; i < model->Attachments.size(); ++i)
 	{
@@ -48,7 +48,7 @@ bool UniqueAttachmentNameValidator::IsUnique(const QString& text) const
 
 bool UniqueBoneNameValidator::IsUnique(const QString& text) const
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	for (int i = 0; i < model->Bones.size(); ++i)
 	{
@@ -66,7 +66,7 @@ bool UniqueBoneNameValidator::IsUnique(const QString& text) const
 
 bool UniqueTextureNameValidator::IsUnique(const QString& text) const
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	for (int i = 0; i < model->Textures.size(); ++i)
 	{
@@ -84,7 +84,7 @@ bool UniqueTextureNameValidator::IsUnique(const QString& text) const
 
 bool UniqueModelNameValidator::IsUnique(const QString& text) const
 {
-	const auto model = _asset->GetScene()->GetEntity()->GetEditableModel();
+	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	for (int i = 0; i < model->Bodyparts.size(); ++i)
 	{

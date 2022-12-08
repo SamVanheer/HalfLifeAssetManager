@@ -51,7 +51,7 @@ void StudioModelTransformPanel::OnApply()
 	{
 	case RotateId:
 	{
-		auto entity = _asset->GetScene()->GetEntity();
+		auto entity = _asset->GetEntity();
 
 		auto data{studiomdl::CalculateRotatedData(*entity->GetEditableModel(), _ui.RotateValues->GetValue())};
 
@@ -95,7 +95,7 @@ void StudioModelTransformPanel::OnApply()
 			flags |= studiomdl::ScaleFlags::ScaleAttachments;
 		}
 
-		auto entity = _asset->GetScene()->GetEntity();
+		auto entity = _asset->GetEntity();
 
 		auto data{studiomdl::CalculateScaleData(*entity->GetEditableModel(), scale, flags)};
 
@@ -106,7 +106,7 @@ void StudioModelTransformPanel::OnApply()
 
 	case MoveId:
 	{
-		auto moveData = studiomdl::CalculateMoveData(*_asset->GetScene()->GetEntity()->GetEditableModel(), _ui.MoveValues->GetValue());
+		auto moveData = studiomdl::CalculateMoveData(*_asset->GetEntity()->GetEditableModel(), _ui.MoveValues->GetValue());
 
 		if (!moveData.first.BoneData.empty())
 		{
