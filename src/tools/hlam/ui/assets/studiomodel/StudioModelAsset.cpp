@@ -130,6 +130,15 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		provider->GetStudioModelSettings()))
 	, _cameraOperators(new camera_operators::CameraOperators(this))
 {
+	auto studioModelSettings = _provider->GetStudioModelSettings();
+
+	_textureLoader->SetTextureFilters(
+		studioModelSettings->GetMinFilter(),
+		studioModelSettings->GetMagFilter(),
+		studioModelSettings->GetMipmapFilter());
+
+	_textureLoader->SetResizeToPowerOf2(studioModelSettings->ShouldResizeTexturesToPowerOf2());
+
 	PushInputSink(this);
 
 	connect(_cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
@@ -170,7 +179,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		cameraOperator->SaveView();
 	}
 
-	if (_provider->GetStudioModelSettings()->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
+	if (studioModelSettings->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
 	{
 		_cameraOperators->SetCurrent(_firstPersonCamera);
 	}

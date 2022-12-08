@@ -69,6 +69,31 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 
 	_ui.TextureName->setValidator(textureNameValidator);
 
+	const auto studioModelSettings{_asset->GetProvider()->GetStudioModelSettings()};
+
+	_ui.MinFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMinFilter()));
+	_ui.MagFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMagFilter()));
+	_ui.MipmapFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMipmapFilter()));
+
+	_ui.PowerOf2Textures->setChecked(studioModelSettings->ShouldResizeTexturesToPowerOf2());
+
+	_ui.ScaleTextureViewSpinner->setRange(TextureViewScaleMinimum, TextureViewScaleMaximum);
+	_ui.ScaleTextureViewSpinner->setValue(TextureViewScaleDefault);
+	_ui.ScaleTextureViewSpinner->setSingleStep(TextureViewScaleSingleStepValue);
+
+	_ui.ScaleTextureViewSlider->setRange(
+		0,
+		static_cast<int>((_ui.ScaleTextureViewSpinner->maximum() - _ui.ScaleTextureViewSpinner->minimum()) * TextureViewScaleSliderRatio));
+
+	_ui.ScaleTextureViewSlider->setValue(
+		static_cast<int>((_ui.ScaleTextureViewSpinner->value() - _ui.ScaleTextureViewSpinner->minimum()) * TextureViewScaleSliderRatio));
+
+	_ui.UVLineWidthSlider->setRange(
+		static_cast<int>(_ui.UVLineWidthSpinner->minimum() * UVLineWidthSliderRatio),
+		static_cast<int>(_ui.UVLineWidthSpinner->maximum() * UVLineWidthSliderRatio));
+
+	_ui.UVLineWidthSlider->setValue(static_cast<int>(_ui.UVLineWidthSpinner->value() * UVLineWidthSliderRatio));
+
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), textureNameValidator, &UniqueTextureNameValidator::SetCurrentIndex);
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelTexturesPanel::OnModelChanged);
@@ -114,35 +139,6 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset, QWid
 	connect(_ui.MipmapFilter, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::OnTextureFiltersChanged);
 
 	connect(_ui.PowerOf2Textures, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnPowerOf2TexturesChanged);
-
-	const auto studioModelSettings{_asset->GetProvider()->GetStudioModelSettings()};
-
-	_ui.MinFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMinFilter()));
-	_ui.MagFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMagFilter()));
-	_ui.MipmapFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMipmapFilter()));
-
-	//Force an update to ensure the loader is correctly configured
-	//TODO: maybe do this somewhere else?
-	OnTextureFiltersChanged();
-
-	_ui.PowerOf2Textures->setChecked(studioModelSettings->ShouldResizeTexturesToPowerOf2());
-
-	_ui.ScaleTextureViewSpinner->setRange(TextureViewScaleMinimum, TextureViewScaleMaximum);
-	_ui.ScaleTextureViewSpinner->setValue(TextureViewScaleDefault);
-	_ui.ScaleTextureViewSpinner->setSingleStep(TextureViewScaleSingleStepValue);
-
-	_ui.ScaleTextureViewSlider->setRange(
-		0,
-		static_cast<int>((_ui.ScaleTextureViewSpinner->maximum() - _ui.ScaleTextureViewSpinner->minimum()) * TextureViewScaleSliderRatio));
-
-	_ui.ScaleTextureViewSlider->setValue(
-		static_cast<int>((_ui.ScaleTextureViewSpinner->value() - _ui.ScaleTextureViewSpinner->minimum()) * TextureViewScaleSliderRatio));
-
-	_ui.UVLineWidthSlider->setRange(
-		static_cast<int>(_ui.UVLineWidthSpinner->minimum() * UVLineWidthSliderRatio),
-		static_cast<int>(_ui.UVLineWidthSpinner->maximum() * UVLineWidthSliderRatio));
-
-	_ui.UVLineWidthSlider->setValue(static_cast<int>(_ui.UVLineWidthSpinner->value() * UVLineWidthSliderRatio));
 
 	InitializeUI();
 }
