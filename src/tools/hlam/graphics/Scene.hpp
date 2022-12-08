@@ -3,8 +3,6 @@
 #include <memory>
 #include <vector>
 
-#include <qopenglfunctions_1_1.h>
-
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
 #include "graphics/Camera.hpp"
@@ -54,22 +52,16 @@ class Scene
 {
 public:
 	Scene(ui::assets::studiomodel::StudioModelAsset* asset,
+		IGraphicsContext* graphicsContext, QOpenGLFunctions_1_1* openglFunctions,
 		graphics::TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime,
 		ui::settings::StudioModelSettings* settings);
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
 
-	IGraphicsContext* GetGraphicsContext() const { return _graphicsContext.get(); }
+	IGraphicsContext* GetGraphicsContext() const { return _graphicsContext; }
 
-	void SetGraphicsContext(std::unique_ptr<IGraphicsContext>&& graphicsContext);
-
-	QOpenGLFunctions_1_1* GetOpenGLFunctions()
-	{
-		return _openglFunctions;
-	}
-
-	void SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions);
+	QOpenGLFunctions_1_1* GetOpenGLFunctions() { return _openglFunctions; }
 
 	EntityContext* GetEntityContext() const { return _entityContext.get(); }
 
@@ -134,11 +126,11 @@ private:
 	//Keep track of how many times we've been initialized and shut down so we don't do it at the wrong time
 	int _initializeCount{0};
 
-	QOpenGLFunctions_1_1* _openglFunctions = nullptr;
+	IGraphicsContext* const _graphicsContext;
+
+	QOpenGLFunctions_1_1* const _openglFunctions;
 
 	TextureLoader* const _textureLoader;
-
-	std::unique_ptr<IGraphicsContext> _graphicsContext;
 
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;

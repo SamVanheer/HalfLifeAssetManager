@@ -16,6 +16,8 @@
 #include "engine/shared/studiomodel/BoneTransformer.hpp"
 #include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 
+class QOpenGLFunctions_1_1;
+
 namespace ui::settings
 {
 class ColorSettings;
@@ -31,7 +33,7 @@ struct Sequence;
 class StudioModelRenderer final : public studiomdl::IStudioModelRenderer
 {
 public:
-	StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger, ui::settings::ColorSettings* colorSettings);
+	StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger, QOpenGLFunctions_1_1* openglFunctions, ui::settings::ColorSettings* colorSettings);
 	~StudioModelRenderer();
 
 	StudioModelRenderer(const StudioModelRenderer&) = delete;
@@ -42,11 +44,6 @@ public:
 	void Shutdown() override final;
 
 	void RunFrame() override final;
-
-	void SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions) override final
-	{
-		_openglFunctions = openglFunctions;
-	}
 
 	unsigned int GetModelsDrawnCount() const override final { return _modelsDrawnCount; }
 
@@ -125,9 +122,9 @@ private:
 
 	std::shared_ptr<spdlog::logger> _logger;
 
-	ui::settings::ColorSettings* const _colorSettings;
+	QOpenGLFunctions_1_1* const _openglFunctions;
 
-	QOpenGLFunctions_1_1* _openglFunctions = nullptr;
+	ui::settings::ColorSettings* const _colorSettings;
 
 	/**
 	*	Total number of models drawn by this renderer since the last time it was initialized.

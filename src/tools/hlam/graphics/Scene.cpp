@@ -1,7 +1,7 @@
 #include <cassert>
 #include <utility>
 
-#include <qopenglfunctions_1_1.h>
+#include <QOpenGLFunctions_1_1>
 
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -27,11 +27,15 @@
 namespace graphics
 {
 Scene::Scene(ui::assets::studiomodel::StudioModelAsset* asset,
+	IGraphicsContext* graphicsContext, QOpenGLFunctions_1_1* openglFunctions,
 	TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime,
 	ui::settings::StudioModelSettings* settings)
-	: _textureLoader(textureLoader)
+	: _graphicsContext(graphicsContext)
+	, _openglFunctions(openglFunctions)
+	, _textureLoader(textureLoader)
 	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(CreateQtLoggerSt(logging::HLAMSpriteRenderer()), worldTime))
-	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(CreateQtLoggerSt(logging::HLAMStudioModelRenderer()), asset->GetEditorContext()->GetColorSettings()))
+	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(
+		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()), _openglFunctions, asset->GetEditorContext()->GetColorSettings()))
 	, _entityContext(std::make_unique<EntityContext>(asset,
 		worldTime,
 		_studioModelRenderer.get(), _spriteRenderer.get(),
@@ -48,17 +52,6 @@ Scene::Scene(ui::assets::studiomodel::StudioModelAsset* asset,
 Scene::~Scene()
 {
 	_entityList->DestroyAll();
-}
-
-void Scene::SetGraphicsContext(std::unique_ptr<IGraphicsContext>&& graphicsContext)
-{
-	_graphicsContext = std::move(graphicsContext);
-}
-
-void Scene::SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions)
-{
-	_openglFunctions = openglFunctions;
-	_textureLoader->SetOpenGLFunctions(openglFunctions);
 }
 
 void Scene::Initialize()
@@ -122,7 +115,6 @@ void Scene::Draw()
 
 	auto camera = GetCurrentCamera();
 
-	_studioModelRenderer->SetOpenGLFunctions(_openglFunctions);
 	_studioModelRenderer->SetViewerOrigin(camera->GetOrigin());
 	_studioModelRenderer->SetViewerRight(camera->GetRightVector());
 

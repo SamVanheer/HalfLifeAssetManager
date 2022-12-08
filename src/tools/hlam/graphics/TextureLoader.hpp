@@ -31,13 +31,8 @@ enum class MipmapFilter
 class TextureLoader final
 {
 public:
-	TextureLoader();
+	explicit TextureLoader(QOpenGLFunctions_1_1* openglFunctions);
 	~TextureLoader();
-
-	void SetOpenGLFunctions(QOpenGLFunctions_1_1* openglFunctions)
-	{
-		_openglFunctions = openglFunctions;
-	}
 
 	TextureFilter GetMinFilter() const { return _minFilter; }
 
@@ -68,7 +63,7 @@ private:
 	std::pair<int, int> AdjustImageDimensions(int width, int height) const;
 
 private:
-	QOpenGLFunctions_1_1* _openglFunctions = nullptr;
+	QOpenGLFunctions_1_1* const _openglFunctions;
 
 	TextureFilter _minFilter{TextureFilter::Linear};
 	TextureFilter _magFilter{TextureFilter::Linear};

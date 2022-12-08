@@ -61,8 +61,6 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	_sceneWidget = new SceneWidget(scene, this);
 
-	scene->SetGraphicsContext(std::make_unique<OpenGLGraphicsContext>(_sceneWidget));
-
 	_textureWidget = new TextureWidget(this);
 
 	auto eventFilter = _editorContext->GetDragNDropEventFilter();

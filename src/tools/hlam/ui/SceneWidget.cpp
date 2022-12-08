@@ -1,11 +1,8 @@
-#include <cassert>
-
 #include <QApplication>
 #include <QWheelEvent>
 #include <QWidget>
 
 #include "graphics/Scene.hpp"
-#include "qt/QtLogging.hpp"
 #include "ui/SceneWidget.hpp"
 
 namespace ui
@@ -24,18 +21,9 @@ SceneWidget::SceneWidget(graphics::Scene* scene, QWidget* parent)
 	connect(qGuiApp, &QGuiApplication::focusObjectChanged, this, &SceneWidget::OnFocusObjectChanged);
 
 	_previousFocusObject = qGuiApp->focusObject();
-
-	_scene->SetOpenGLFunctions(this);
 }
 
-SceneWidget::~SceneWidget()
-{
-	makeCurrent();
-
-	_scene->Shutdown();
-
-	doneCurrent();
-}
+SceneWidget::~SceneWidget() = default;
 
 bool SceneWidget::event(QEvent* event)
 {
@@ -103,14 +91,7 @@ bool SceneWidget::event(QEvent* event)
 
 void SceneWidget::initializeGL()
 {
-	qCDebug(logging::HLAM) << "Initializing OpenGL";
-
-	assert(initializeOpenGLFunctions());
-
-	//TODO: since we're sharing contexts this can probably be done elsewhere to avoid multiple calls
-	_scene->Initialize();
-
-	qCDebug(logging::HLAM) << "Initialized OpenGL";
+	// Nothing. Initialization is done using the offscreen context.
 }
 
 void SceneWidget::resizeGL(int w, int h)

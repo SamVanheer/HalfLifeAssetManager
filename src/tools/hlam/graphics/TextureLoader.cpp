@@ -6,7 +6,8 @@
 
 namespace graphics
 {
-TextureLoader::TextureLoader()
+TextureLoader::TextureLoader(QOpenGLFunctions_1_1* openglFunctions)
+	: _openglFunctions(openglFunctions)
 {
 	SetTextureFilters(TextureFilter::Linear, TextureFilter::Linear, MipmapFilter::None);
 }

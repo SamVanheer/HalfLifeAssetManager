@@ -9,14 +9,17 @@
 #include <QTimer>
 #include <QUuid>
 
-class QOffscreenSurface;
-class QOpenGLContext;
-
+class QOpenGLFunctions_1_1;
 class WorldTime;
 
 namespace filesystem
 {
 class IFileSystem;
+}
+
+namespace graphics
+{
+class IGraphicsContext;
 }
 
 namespace soundsystem
@@ -62,6 +65,7 @@ public:
 		const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings,
 		std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
 		std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry,
+		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
 		QObject* parent = nullptr);
 	~EditorContext();
 	EditorContext(const EditorContext&) = delete;
@@ -91,13 +95,9 @@ public:
 
 	assets::IAssetProviderRegistry* GetAssetProviderRegistry() const { return _assetProviderRegistry.get(); }
 
-	QOpenGLContext* GetOffscreenContext() const { return _offscreenContext; }
+	graphics::IGraphicsContext* GetGraphicsContext() { return _graphicsContext.get(); }
 
-	void SetOffscreenContext(QOpenGLContext* offscreenContext);
-
-	QOffscreenSurface* GetOffscreenSurface() const { return _offscreenSurface; }
-
-	void SetOffscreenSurface(QOffscreenSurface* offscreenSurface);
+	QOpenGLFunctions_1_1* GetOpenGLFunctions() { return _openglFunctions.get(); }
 
 	void StartTimer();
 
@@ -141,7 +141,8 @@ private:
 
 	const std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
 
-	QOpenGLContext* _offscreenContext{};
-	QOffscreenSurface* _offscreenSurface{};
+	const std::unique_ptr<graphics::IGraphicsContext> _graphicsContext;
+
+	std::unique_ptr<QOpenGLFunctions_1_1> _openglFunctions;
 };
 }

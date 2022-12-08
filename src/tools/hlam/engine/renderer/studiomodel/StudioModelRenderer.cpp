@@ -2,7 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include <qopenglfunctions_1_1.h>
+#include <QOpenGLFunctions_1_1>
 
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -23,8 +23,9 @@
 
 namespace studiomdl
 {
-StudioModelRenderer::StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger, ui::settings::ColorSettings* colorSettings)
+StudioModelRenderer::StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger, QOpenGLFunctions_1_1* openglFunctions, ui::settings::ColorSettings* colorSettings)
 	: _logger(logger)
+	, _openglFunctions(openglFunctions)
 	, _colorSettings(colorSettings)
 {
 }

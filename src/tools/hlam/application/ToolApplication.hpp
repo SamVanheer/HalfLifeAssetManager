@@ -13,8 +13,11 @@
 #include "application/SingleInstance.hpp"
 
 class QApplication;
-class QOffscreenSurface;
-class QOpenGLContext;
+
+namespace graphics
+{
+class IGraphicsContext;
+}
 
 namespace ui
 {
@@ -46,9 +49,10 @@ private:
 
 	bool CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings);
 
-	std::unique_ptr<ui::EditorContext> CreateEditorContext(std::unique_ptr<QSettings>&& settings);
+	std::unique_ptr<ui::EditorContext> CreateEditorContext(
+		std::unique_ptr<QSettings>&& settings, std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext);
 
-	std::pair<QOpenGLContext*, QOffscreenSurface*> InitializeOpenGL();
+	std::unique_ptr<graphics::IGraphicsContext> InitializeOpenGL();
 
 private slots:
 	void OnExit();

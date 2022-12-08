@@ -27,6 +27,7 @@
 
 #include "ui/EditorContext.hpp"
 #include "ui/MainWindow.hpp"
+#include "ui/OpenGLGraphicsContext.hpp"
 
 #include "ui/assets/Assets.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
@@ -166,17 +167,14 @@ int ToolApplication::Run(int argc, char* argv[])
 			return EXIT_SUCCESS;
 		}
 
-		_editorContext = CreateEditorContext(std::move(settings));
+		auto offscreenContext{InitializeOpenGL()};
 
-		const auto offscreen{InitializeOpenGL()};
-
-		if (!offscreen.first ||!offscreen.second)
+		if (!offscreenContext)
 		{
 			return EXIT_FAILURE;
 		}
 
-		_editorContext->SetOffscreenContext(offscreen.first);
-		_editorContext->SetOffscreenSurface(offscreen.second);
+		_editorContext = CreateEditorContext(std::move(settings), std::move(offscreenContext));
 
 		_mainWindow = new ui::MainWindow(_editorContext.get());
 
@@ -311,7 +309,8 @@ bool ToolApplication::CheckSingleInstance(const QString& programName, const QStr
 	return false;
 }
 
-std::unique_ptr<ui::EditorContext> ToolApplication::CreateEditorContext(std::unique_ptr<QSettings>&& settings)
+std::unique_ptr<ui::EditorContext> ToolApplication::CreateEditorContext(
+	std::unique_ptr<QSettings>&& settings, std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext)
 {
 	const auto colorSettings{std::make_shared<ui::settings::ColorSettings>()};
 	const auto generalSettings{std::make_shared<ui::settings::GeneralSettings>()};
@@ -365,10 +364,11 @@ std::unique_ptr<ui::EditorContext> ToolApplication::CreateEditorContext(std::uni
 		recentFilesSettings,
 		gameConfigurationsSettings,
 		std::move(optionsPageRegistry),
-		std::move(assetProviderRegistry));
+		std::move(assetProviderRegistry),
+		std::move(graphicsContext));
 }
 
-std::pair<QOpenGLContext*, QOffscreenSurface*> ToolApplication::InitializeOpenGL()
+std::unique_ptr<graphics::IGraphicsContext> ToolApplication::InitializeOpenGL()
 {
 	auto context{std::make_unique<QOpenGLContext>()};
 
@@ -397,7 +397,7 @@ std::pair<QOpenGLContext*, QOffscreenSurface*> ToolApplication::InitializeOpenGL
 		return {};
 	}
 
-	return {context.release(), surface.release()};
+	return std::make_unique<ui::OpenGLGraphicsContext>(std::move(surface), std::move(context));
 }
 
 void ToolApplication::OnExit()

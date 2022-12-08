@@ -32,6 +32,7 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "entity/PlayerHitboxEntity.hpp"
 
+#include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
 #include "graphics/TextureLoader.hpp"
 
@@ -124,10 +125,11 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _editorContext(editorContext)
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
-	, _textureLoader(std::make_unique<graphics::TextureLoader>())
+	, _textureLoader(std::make_unique<graphics::TextureLoader>(_editorContext->GetOpenGLFunctions()))
 	, _scene(std::make_unique<graphics::Scene>(this,
-		_textureLoader.get(), editorContext->GetSoundSystem(), editorContext->GetWorldTime(),
-		provider->GetStudioModelSettings()))
+		_editorContext->GetGraphicsContext(), _editorContext->GetOpenGLFunctions(),
+		_textureLoader.get(), _editorContext->GetSoundSystem(), _editorContext->GetWorldTime(),
+		_provider->GetStudioModelSettings()))
 	, _cameraOperators(new camera_operators::CameraOperators(this))
 {
 	auto studioModelSettings = _provider->GetStudioModelSettings();
@@ -189,14 +191,21 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	}
 
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
+
+	// Initialize graphics resources.
+	auto context = _editorContext->GetGraphicsContext();
+	context->Begin();
+	_scene->Initialize();
+	context->End();
 }
 
 StudioModelAsset::~StudioModelAsset()
 {
-	auto context = _scene->GetGraphicsContext();
-	
+	auto context = _editorContext->GetGraphicsContext();
+
 	context->Begin();
 	_editableStudioModel->DeleteTextures(*_textureLoader);
+	_scene->Shutdown();
 	context->End();
 
 	PopInputSink();

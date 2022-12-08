@@ -12,6 +12,7 @@ target_sources(HLAM
 		MainWindow.cpp
 		MainWindow.hpp
 		MainWindow.ui
+		OpenGLGraphicsContext.hpp
 		SceneWidget.cpp
 		SceneWidget.hpp
 		StateSnapshot.hpp

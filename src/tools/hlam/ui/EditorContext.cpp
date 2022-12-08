@@ -4,14 +4,16 @@
 #include <iterator>
 #include <stdexcept>
 
-#include <QOffscreenSurface>
-#include <QOpenGLContext>
+#include <QOpenGLFunctions_1_1>
 
 #include <spdlog/logger.h>
 
 #include "filesystem/FileSystem.hpp"
 #include "filesystem/IFileSystem.hpp"
 
+#include "graphics/IGraphicsContext.hpp"
+
+#include "qt/QtLogging.hpp"
 #include "qt/QtLogSink.hpp"
 
 #include "soundsystem/DummySoundSystem.hpp"
@@ -42,6 +44,7 @@ EditorContext::EditorContext(
 	const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings,
 	std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
 	std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry,
+	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
 	QObject* parent)
 	: QObject(parent)
 	, _settings(settings)
@@ -58,8 +61,18 @@ EditorContext::EditorContext(
 		: std::make_unique<soundsystem::DummySoundSystem>())
 	, _worldTime(std::make_unique<WorldTime>())
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
+	, _graphicsContext(std::move(graphicsContext))
 {
 	_settings->setParent(this);
+
+	qCDebug(logging::HLAM) << "Initializing OpenGL";
+
+	_graphicsContext->Begin();
+	_openglFunctions = std::make_unique<QOpenGLFunctions_1_1>();
+	assert(_openglFunctions->initializeOpenGLFunctions());
+	_graphicsContext->End();
+
+	qCDebug(logging::HLAM) << "Initialized OpenGL";
 
 	_timer->setTimerType(Qt::TimerType::PreciseTimer);
 
@@ -75,36 +88,6 @@ EditorContext::EditorContext(
 EditorContext::~EditorContext()
 {
 	_soundSystem->Shutdown();
-}
-
-void EditorContext::SetOffscreenContext(QOpenGLContext* offscreenContext)
-{
-	if (_offscreenContext)
-	{
-		delete _offscreenContext;
-	}
-
-	_offscreenContext = offscreenContext;
-
-	if (_offscreenContext)
-	{
-		_offscreenContext->setParent(this);
-	}
-}
-
-void EditorContext::SetOffscreenSurface(QOffscreenSurface* offscreenSurface)
-{
-	if (_offscreenSurface)
-	{
-		delete _offscreenSurface;
-	}
-
-	_offscreenSurface = offscreenSurface;
-
-	if (_offscreenSurface)
-	{
-		_offscreenSurface->setParent(this);
-	}
 }
 
 void EditorContext::StartTimer()
