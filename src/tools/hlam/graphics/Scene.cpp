@@ -10,8 +10,8 @@
 #include "engine/renderer/studiomodel/StudioModelRenderer.hpp"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
+#include "entity/BaseEntity.hpp"
 #include "entity/EntityList.hpp"
-#include "entity/HLMVStudioModelEntity.hpp"
 
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
@@ -89,6 +89,11 @@ void Scene::Initialize()
 	{
 		//TODO: handle error
 	}
+
+	for (auto& entity : *_entityList)
+	{
+		entity->CreateDeviceObjects(_openglFunctions, *_textureLoader);
+	}
 }
 
 void Scene::Shutdown()
@@ -100,19 +105,12 @@ void Scene::Shutdown()
 		return;
 	}
 
+	for (auto& entity : *_entityList)
+	{
+		entity->DestroyDeviceObjects(_openglFunctions, *_textureLoader);
+	}
+
 	_studioModelRenderer->Shutdown();
-
-	if (BackgroundTexture != 0)
-	{
-		_openglFunctions->glDeleteTextures(1, &BackgroundTexture);
-		BackgroundTexture = 0;
-	}
-
-	if (GroundTexture != 0)
-	{
-		_openglFunctions->glDeleteTextures(1, &GroundTexture);
-		GroundTexture = 0;
-	}
 }
 
 void Scene::Tick()
@@ -122,18 +120,6 @@ void Scene::Tick()
 
 void Scene::Draw()
 {
-	//TODO: really ugly, needs reworking
-	if (nullptr != _entity)
-	{
-		auto model = _entity->GetEditableModel();
-		
-		if (model->TexturesNeedCreating)
-		{
-			model->TexturesNeedCreating = false;
-			model->CreateTextures(*_textureLoader);
-		}
-	}
-
 	_openglFunctions->glClearColor(BackgroundColor.r, BackgroundColor.g, BackgroundColor.b, 1.0f);
 	_openglFunctions->glClearStencil(0);
 	_openglFunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

@@ -37,11 +37,15 @@ public:
 public:
 	explicit StudioModelEntity(studiomdl::EditableStudioModel* model);
 
-	virtual void Spawn() override;
+	void Spawn() override;
 
 	RenderPasses GetRenderPasses() const override { return RenderPass::Standard; }
 
-	virtual void Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass) override;
+	void Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass) override;
+
+	void CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) override;
+
+	void DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) override;
 
 	studiomdl::ModelRenderInfo GetRenderInfo() const;
 

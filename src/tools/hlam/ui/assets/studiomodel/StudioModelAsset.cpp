@@ -137,15 +137,13 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	UpdateColors();
 
 	// The order that entities are added matters for now since there's no sorting done.
-	_scene->GetEntityList()->Create<BackgroundEntity>();
+	_backgroundEntity = _scene->GetEntityList()->Create<BackgroundEntity>();
 
 	_scene->GetEntityList()->Create<AxesEntity>();
 
 	_modelEntity = _scene->GetEntityList()->Create<HLMVStudioModelEntity>(GetEditableStudioModel());
 
-	_scene->SetEntity(_modelEntity);
-
-	_scene->GetEntityList()->Create<GroundEntity>();
+	_groundEntity = _scene->GetEntityList()->Create<GroundEntity>();
 
 	_scene->GetEntityList()->Create<PlayerHitboxEntity>();
 

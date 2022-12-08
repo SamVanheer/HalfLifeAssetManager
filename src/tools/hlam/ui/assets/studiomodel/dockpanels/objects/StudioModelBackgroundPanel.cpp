@@ -1,6 +1,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+#include "entity/BackgroundEntity.hpp"
+
 #include "graphics/IGraphicsContext.hpp"
 
 #include "qt/QtUtilities.hpp"
@@ -31,53 +33,21 @@ void StudioModelBackgroundPanel::OnShowBackgroundChanged()
 
 void StudioModelBackgroundPanel::OnTextureChanged()
 {
-	auto scene = _asset->GetScene();
-
-	auto openglFunctions = scene->GetOpenGLFunctions();
-
-	const QString fileName = _ui.BackgroundTexture->text();
-
-	bool setTexture = false;
-
-	scene->GetGraphicsContext()->Begin();
-
-	if (!fileName.isEmpty())
+	if (const QString fileName = _ui.BackgroundTexture->text(); !fileName.isEmpty())
 	{
-		QImage image{fileName};
-
-		if (!image.isNull())
+		if (QImage image{fileName}; !image.isNull())
 		{
 			image.convertTo(QImage::Format::Format_RGBA8888);
 
-			if (scene->BackgroundTexture == 0)
-			{
-				openglFunctions->glGenTextures(1, &scene->BackgroundTexture);
-			}
+			auto scene = _asset->GetScene();
 
-			openglFunctions->glBindTexture(GL_TEXTURE_2D, scene->BackgroundTexture);
+			scene->GetGraphicsContext()->Begin();
+			_asset->GetBackgroundEntity()->SetImage(scene->GetOpenGLFunctions(), image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits()));
+			scene->GetGraphicsContext()->End();
 
-			openglFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.constBits());
-			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			setTexture = true;
+			_ui.ShowBackground->setChecked(true);
 		}
 	}
-
-	if (setTexture)
-	{
-		_ui.ShowBackground->setChecked(true);
-	}
-	else
-	{
-		if (scene->BackgroundTexture != 0)
-		{
-			openglFunctions->glDeleteTextures(1, &scene->BackgroundTexture);
-			scene->BackgroundTexture = 0;
-		}
-	}
-
-	scene->GetGraphicsContext()->End();
 }
 
 void StudioModelBackgroundPanel::OnBrowseTexture()

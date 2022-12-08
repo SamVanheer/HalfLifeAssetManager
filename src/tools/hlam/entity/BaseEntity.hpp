@@ -14,6 +14,7 @@ class WorldTime;
 namespace graphics
 {
 class Scene;
+class TextureLoader;
 }
 
 namespace soundsystem
@@ -97,6 +98,10 @@ public:
 	virtual RenderPasses GetRenderPasses() const { return RenderPass::None; }
 
 	virtual void Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass) {}
+
+	virtual void CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) {}
+
+	virtual void DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) {}
 
 private:
 	EntityContext* _context{};

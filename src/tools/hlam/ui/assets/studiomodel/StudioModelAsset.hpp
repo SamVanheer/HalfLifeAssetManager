@@ -17,6 +17,8 @@
 
 #include "utility/mathlib.hpp"
 
+class BackgroundEntity;
+class GroundEntity;
 class HLMVStudioModelEntity;
 
 namespace graphics
@@ -188,6 +190,10 @@ public:
 
 	HLMVStudioModelEntity* GetEntity() { return _modelEntity.get(); }
 
+	BackgroundEntity* GetBackgroundEntity() { return _backgroundEntity.get(); }
+
+	GroundEntity* GetGroundEntity() { return _groundEntity.get(); }
+
 	Pose GetPose() const { return _pose; }
 
 private:
@@ -252,6 +258,8 @@ private:
 	StudioModelEditWidget* _editWidget{};
 
 	std::shared_ptr<HLMVStudioModelEntity> _modelEntity;
+	std::shared_ptr<BackgroundEntity> _backgroundEntity;
+	std::shared_ptr<GroundEntity> _groundEntity;
 
 	//TODO: this is temporarily put here, but needs to be put somewhere else eventually
 	Pose _pose = Pose::Sequences;

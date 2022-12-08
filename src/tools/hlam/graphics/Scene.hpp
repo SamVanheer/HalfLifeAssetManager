@@ -16,9 +16,7 @@
 
 class BaseEntity;
 class EntityList;
-class HLMVStudioModelEntity;
 class QOpenGLFunctions_1_1;
-class StudioModelEntity;
 class WorldTime;
 struct EntityContext;
 
@@ -129,12 +127,6 @@ public:
 
 	unsigned int GetDrawnPolygonsCount() const { return _drawnPolygonsCount; }
 
-	// TODO: remove from Scene once resource loading is implemented properly.
-	void SetEntity(std::shared_ptr<HLMVStudioModelEntity> entity)
-	{
-		_entity = entity;
-	}
-
 	void Initialize();
 
 	void Shutdown();
@@ -150,9 +142,6 @@ private:
 
 	//TODO: these are temporary until the graphics code can be refactored into an object based design
 public:
-	GLuint GroundTexture{0};
-	GLuint BackgroundTexture{0};
-
 	//TODO: having some colors as variables and some as methods is inconsistent
 	glm::vec3 GroundColor{0};
 	glm::vec3 BackgroundColor{0.5};
@@ -182,8 +171,6 @@ private:
 	unsigned int _windowWidth = 0, _windowHeight = 0;
 
 	unsigned int _drawnPolygonsCount = 0;
-
-	std::shared_ptr<HLMVStudioModelEntity> _entity;
 
 	std::vector<BaseEntity*> _renderablesToRender;
 };

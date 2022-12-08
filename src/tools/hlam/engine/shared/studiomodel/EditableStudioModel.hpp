@@ -236,9 +236,6 @@ public:
 	std::vector<std::unique_ptr<Texture>> Textures;
 	std::vector<std::vector<Texture*>> SkinFamilies;
 
-	//TODO: temporary until a better system can be put into place
-	bool TexturesNeedCreating = true;
-
 	std::vector<std::vector<std::uint8_t>> Transitions;
 
 	const Model* GetModelByBodyPart(const int iBody, const int iBodyPart) const;

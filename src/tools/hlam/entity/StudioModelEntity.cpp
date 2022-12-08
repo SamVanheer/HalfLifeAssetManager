@@ -132,6 +132,20 @@ void StudioModelEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses
 	}
 }
 
+void StudioModelEntity::CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader)
+{
+	auto model = GetEditableModel();
+
+	model->CreateTextures(textureLoader);
+}
+
+void StudioModelEntity::DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader)
+{
+	auto model = GetEditableModel();
+
+	model->DeleteTextures(textureLoader);
+}
+
 studiomdl::ModelRenderInfo StudioModelEntity::GetRenderInfo() const
 {
 	studiomdl::ModelRenderInfo renderInfo{};

@@ -1,9 +1,11 @@
 #pragma once
 
+#include <qopenglfunctions_1_1.h>
+
 #include "entity/BaseEntity.hpp"
 
 /**
-*	Draws the model's clipping box.
+*	Draws the background.
 */
 class BackgroundEntity : public BaseEntity
 {
@@ -13,5 +15,14 @@ public:
 public:
 	RenderPasses GetRenderPasses() const override { return RenderPass::Background; }
 
-	virtual void Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass) override;
+	void Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass) override;
+
+	void CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) override;
+
+	void DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) override;
+
+	void SetImage(QOpenGLFunctions_1_1* openglFunctions, int width, int height, const std::byte* data);
+
+private:
+	GLuint _texture{0};
 };

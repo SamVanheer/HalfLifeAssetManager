@@ -67,6 +67,26 @@ void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses rend
 		_floorTextureOffset.x = std::fmod(_floorTextureOffset.x, floorTextureLength);
 		_floorTextureOffset.y = std::fmod(_floorTextureOffset.y, floorTextureLength);
 
-		graphics::DrawFloor(openglFunctions, settings->FloorOrigin, settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, context->Scene->GroundTexture, context->Scene->GroundColor, settings->MirrorOnGround);
+		graphics::DrawFloor(openglFunctions, settings->FloorOrigin, settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, _texture, context->Scene->GroundColor, settings->MirrorOnGround);
 	}
+}
+
+void GroundEntity::CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader)
+{
+	openglFunctions->glGenTextures(1, &_texture);
+}
+
+void GroundEntity::DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader)
+{
+	openglFunctions->glDeleteTextures(1, &_texture);
+	_texture = 0;
+}
+
+void GroundEntity::SetImage(QOpenGLFunctions_1_1* openglFunctions, int width, int height, const std::byte* data)
+{
+	openglFunctions->glBindTexture(GL_TEXTURE_2D, _texture);
+
+	openglFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
