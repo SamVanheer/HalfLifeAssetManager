@@ -21,12 +21,14 @@ class SceneWidget final : public QOpenGLWindow
 	Q_OBJECT
 
 public:
-	SceneWidget(graphics::Scene* scene, QWidget* parent = nullptr);
+	SceneWidget(QWidget* parent = nullptr);
 	~SceneWidget();
 
 	QWidget* GetContainer() { return _container; }
 
 	graphics::Scene* GetScene() { return _scene; }
+
+	void SetScene(graphics::Scene* scene);
 
 signals:
 	void MouseEvent(QMouseEvent* event);
@@ -51,7 +53,7 @@ protected:
 
 private:
 	QWidget* const _container;
-	graphics::Scene* const _scene;
+	graphics::Scene* _scene = nullptr;
 	QPointer<QObject> _previousFocusObject;
 };
 }

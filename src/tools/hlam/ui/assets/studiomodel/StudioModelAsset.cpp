@@ -276,7 +276,9 @@ QWidget* StudioModelAsset::GetEditWidget()
 
 void StudioModelAsset::SetupFullscreenWidget(FullscreenWidget* fullscreenWidget)
 {
-	const auto sceneWidget = new SceneWidget(GetScene(), fullscreenWidget);
+	const auto sceneWidget = new SceneWidget(fullscreenWidget);
+
+	sceneWidget->SetScene(GetScene());
 
 	fullscreenWidget->setCentralWidget(sceneWidget->GetContainer());
 

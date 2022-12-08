@@ -59,7 +59,9 @@ StudioModelEditWidget::StudioModelEditWidget(
 
 	_view = new StudioModelView(_ui.Window);
 
-	_sceneWidget = new SceneWidget(scene, this);
+	_sceneWidget = new SceneWidget(this);
+
+	_sceneWidget->SetScene(scene);
 
 	_textureWidget = new TextureWidget(this);
 

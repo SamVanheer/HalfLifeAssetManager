@@ -7,13 +7,10 @@
 
 namespace ui
 {
-SceneWidget::SceneWidget(graphics::Scene* scene, QWidget* parent)
+SceneWidget::SceneWidget(QWidget* parent)
 	: QOpenGLWindow()
 	, _container(QWidget::createWindowContainer(this, parent))
-	, _scene(scene)
 {
-	assert(nullptr != _scene);
-
 	_container->setFocusPolicy(Qt::FocusPolicy::WheelFocus);
 
 	connect(this, &SceneWidget::frameSwapped, this, qOverload<>(&SceneWidget::update));
@@ -24,6 +21,17 @@ SceneWidget::SceneWidget(graphics::Scene* scene, QWidget* parent)
 }
 
 SceneWidget::~SceneWidget() = default;
+
+void SceneWidget::SetScene(graphics::Scene* scene)
+{
+	_scene = scene;
+
+	if (_scene)
+	{
+		const QSize size{this->size()};
+		_scene->UpdateWindowSize(static_cast<unsigned int>(size.width()), static_cast<unsigned int>(size.height()));
+	}
+}
 
 bool SceneWidget::event(QEvent* event)
 {
@@ -96,7 +104,10 @@ void SceneWidget::initializeGL()
 
 void SceneWidget::resizeGL(int w, int h)
 {
-	_scene->UpdateWindowSize(static_cast<unsigned int>(w), static_cast<unsigned int>(h));
+	if (_scene)
+	{
+		_scene->UpdateWindowSize(static_cast<unsigned int>(w), static_cast<unsigned int>(h));
+	}
 }
 
 void SceneWidget::paintGL()
@@ -107,9 +118,12 @@ void SceneWidget::paintGL()
 	//Otherwise problems could occur when the size is used to determine aspect ratios, viewports, etc
 	if (size.isValid())
 	{
-		//TODO: this is temporary until window sized resources can be decoupled from the scene class
-		_scene->UpdateWindowSize(static_cast<unsigned int>(size.width()), static_cast<unsigned int>(size.height()));
-		_scene->Draw();
+		if (_scene)
+		{
+			//TODO: this is temporary until window sized resources can be decoupled from the scene class
+			_scene->UpdateWindowSize(static_cast<unsigned int>(size.width()), static_cast<unsigned int>(size.height()));
+			_scene->Draw();
+		}
 	}
 }
 }
