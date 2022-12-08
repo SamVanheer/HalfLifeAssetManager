@@ -266,6 +266,10 @@ public:
 
 	void DeleteTextures(graphics::TextureLoader& textureLoader);
 
+	void RemapTexture(graphics::TextureLoader& textureLoader, int index, int top, int bottom);
+
+	void RemapTextures(graphics::TextureLoader& textureLoader, int top, int bottom);
+
 	std::vector<int> GetRootBoneIndices() const
 	{
 		std::vector<int> bones;

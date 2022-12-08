@@ -54,8 +54,6 @@ public:
 	graphics::Scene* GetScene() { return _scene; }
 
 signals:
-	void CreateDeviceResources();
-
 	void MouseEvent(QMouseEvent* event);
 
 	void WheelEvent(QWheelEvent* event);

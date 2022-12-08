@@ -7,6 +7,7 @@
 #include "engine/shared/studiomodel/BoneTransformer.hpp"
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
 
+#include "graphics/GraphicsUtils.hpp"
 #include "graphics/TextureLoader.hpp"
 
 #include "utility/mathlib.hpp"
@@ -110,7 +111,7 @@ void EditableStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 {
 	for (auto& texture : Textures)
 	{
-		texture->TextureId = textureLoader.CreateTexture();;
+		texture->TextureId = textureLoader.CreateTexture();
 
 		auto& data = texture->Data;
 
@@ -120,8 +121,11 @@ void EditableStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 			data.Pixels.data(),
 			data.Palette,
 			(texture->Flags & STUDIO_NF_NOMIPS) != 0,
-			(texture->Flags & STUDIO_NF_MASKED) != 0);;
+			(texture->Flags & STUDIO_NF_MASKED) != 0);
 	}
+
+	// Initialize remapping.
+	RemapTextures(textureLoader, 0, 0);
 }
 
 void EditableStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const std::byte* data, const graphics::RGBPalette& pal)
@@ -180,6 +184,35 @@ void EditableStudioModel::DeleteTextures(graphics::TextureLoader& textureLoader)
 	{
 		textureLoader.DeleteTexture(texture->TextureId);
 		texture->TextureId = 0;
+	}
+}
+
+void EditableStudioModel::RemapTexture(graphics::TextureLoader& textureLoader, int index, int top, int bottom)
+{
+	auto& texture = *Textures[index];
+
+	int low, mid, high;
+
+	if (graphics::TryGetRemapColors(texture.Name.c_str(), low, mid, high))
+	{
+		graphics::RGBPalette palette{texture.Data.Palette};
+
+		graphics::PaletteHueReplace(palette, top, low, mid);
+
+		if (high)
+		{
+			graphics::PaletteHueReplace(palette, bottom, mid + 1, high);
+		}
+
+		ReplaceTexture(textureLoader, &texture, texture.Data.Pixels.data(), palette);
+	}
+}
+
+void EditableStudioModel::RemapTextures(graphics::TextureLoader& textureLoader, int top, int bottom)
+{
+	for (int i = 0; i < Textures.size(); ++i)
+	{
+		RemapTexture(textureLoader, i, top, bottom);
 	}
 }
 

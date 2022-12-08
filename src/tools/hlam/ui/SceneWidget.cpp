@@ -110,8 +110,6 @@ void SceneWidget::initializeGL()
 	//TODO: since we're sharing contexts this can probably be done elsewhere to avoid multiple calls
 	_scene->Initialize();
 
-	emit CreateDeviceResources();
-
 	qCDebug(logging::HLAM) << "Initialized OpenGL";
 }
 

@@ -50,8 +50,6 @@ signals:
 	void TextureViewChanged();
 
 public slots:
-	void OnCreateDeviceResources();
-
 	void AdjustScale(double amount);
 
 private slots:

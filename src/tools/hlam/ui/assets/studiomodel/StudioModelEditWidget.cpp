@@ -181,7 +181,6 @@ StudioModelEditWidget::StudioModelEditWidget(
 		});
 	connect(_sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw);
 	connect(_editorContext, &EditorContext::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
-	connect(_sceneWidget, &SceneWidget::CreateDeviceResources, _texturesPanel, &StudioModelTexturesPanel::OnCreateDeviceResources);
 
 	connect(camerasDock, &QDockWidget::dockLocationChanged, [this](Qt::DockWidgetArea area)
 		{

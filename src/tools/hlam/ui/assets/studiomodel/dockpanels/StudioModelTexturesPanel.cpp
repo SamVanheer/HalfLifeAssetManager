@@ -207,12 +207,6 @@ void StudioModelTexturesPanel::InitializeUI()
 	_ui.Textures->addItems(textures);
 }
 
-void StudioModelTexturesPanel::OnCreateDeviceResources()
-{
-	//TODO: this shouldn't be done here
-	RemapTextures();
-}
-
 void StudioModelTexturesPanel::AdjustScale(double amount)
 {
 	_ui.ScaleTextureViewSpinner->setValue(_ui.ScaleTextureViewSpinner->value() + amount);
@@ -554,37 +548,22 @@ void StudioModelTexturesPanel::RemapTexture(int index)
 {
 	auto model = _asset->GetEntity()->GetEditableModel();
 
-	auto& texture = *model->Textures[index];
+	auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
-	int low, mid, high;
-
-	if (graphics::TryGetRemapColors(texture.Name.c_str(), low, mid, high))
-	{
-		graphics::RGBPalette palette{texture.Data.Palette};
-
-		graphics::PaletteHueReplace(palette, _ui.TopColorSlider->value(), low, mid);
-
-		if (high)
-		{
-			graphics::PaletteHueReplace(palette, _ui.BottomColorSlider->value(), mid + 1, high);
-		}
-
-		auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
-
-		graphicsContext->Begin();
-		model->ReplaceTexture(*_asset->GetTextureLoader(), &texture, texture.Data.Pixels.data(), palette);
-		graphicsContext->End();
-	}
+	graphicsContext->Begin();
+	model->RemapTexture(*_asset->GetTextureLoader(), index, _ui.TopColorSlider->value(), _ui.BottomColorSlider->value());
+	graphicsContext->End();
 }
 
 void StudioModelTexturesPanel::RemapTextures()
 {
 	auto model = _asset->GetEntity()->GetEditableModel();
 
-	for (int i = 0; i < model->Textures.size(); ++i)
-	{
-		RemapTexture(i);
-	}
+	auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
+
+	graphicsContext->Begin();
+	model->RemapTextures(*_asset->GetTextureLoader(), _ui.TopColorSlider->value(), _ui.BottomColorSlider->value());
+	graphicsContext->End();
 }
 
 void StudioModelTexturesPanel::UpdateColormapValue()
