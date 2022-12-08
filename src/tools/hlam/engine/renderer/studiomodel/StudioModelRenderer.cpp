@@ -32,18 +32,6 @@ StudioModelRenderer::StudioModelRenderer(const std::shared_ptr<spdlog::logger>& 
 
 StudioModelRenderer::~StudioModelRenderer() = default;
 
-bool StudioModelRenderer::Initialize()
-{
-	_modelsDrawnCount = 0;
-	_drawnPolygonsCount = 0;
-
-	return true;
-}
-
-void StudioModelRenderer::Shutdown()
-{
-}
-
 void StudioModelRenderer::RunFrame()
 {
 	// Cache colors once per frame.

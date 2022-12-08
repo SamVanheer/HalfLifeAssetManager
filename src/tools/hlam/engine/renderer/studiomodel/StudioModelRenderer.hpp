@@ -39,10 +39,6 @@ public:
 	StudioModelRenderer(const StudioModelRenderer&) = delete;
 	StudioModelRenderer& operator=(const StudioModelRenderer&) = delete;
 
-	bool Initialize() override final;
-
-	void Shutdown() override final;
-
 	void RunFrame() override final;
 
 	unsigned int GetModelsDrawnCount() const override final { return _modelsDrawnCount; }

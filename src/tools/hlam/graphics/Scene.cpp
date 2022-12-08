@@ -56,18 +56,6 @@ Scene::~Scene()
 
 void Scene::Initialize()
 {
-	++_initializeCount;
-
-	if (_initializeCount != 1)
-	{
-		return;
-	}
-
-	if (!_studioModelRenderer->Initialize())
-	{
-		//TODO: handle error
-	}
-
 	for (auto& entity : *_entityList)
 	{
 		entity->CreateDeviceObjects(_openglFunctions, *_textureLoader);
@@ -76,19 +64,10 @@ void Scene::Initialize()
 
 void Scene::Shutdown()
 {
-	--_initializeCount;
-
-	if (_initializeCount != 0)
-	{
-		return;
-	}
-
 	for (auto& entity : *_entityList)
 	{
 		entity->DestroyDeviceObjects(_openglFunctions, *_textureLoader);
 	}
-
-	_studioModelRenderer->Shutdown();
 }
 
 void Scene::Tick()

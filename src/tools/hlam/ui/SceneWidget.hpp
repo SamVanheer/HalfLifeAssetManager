@@ -53,7 +53,7 @@ protected:
 
 private:
 	QWidget* const _container;
-	graphics::Scene* _scene = nullptr;
+	graphics::Scene* _scene{};
 	QPointer<QObject> _previousFocusObject;
 };
 }

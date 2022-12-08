@@ -123,9 +123,6 @@ private:
 	//TODO: having some colors as variables and some as methods is inconsistent
 
 private:
-	//Keep track of how many times we've been initialized and shut down so we don't do it at the wrong time
-	int _initializeCount{0};
-
 	IGraphicsContext* const _graphicsContext;
 
 	QOpenGLFunctions_1_1* const _openglFunctions;
