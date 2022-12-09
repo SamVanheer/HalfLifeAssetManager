@@ -21,7 +21,7 @@ class StudioModelAsset;
 class StudioModelBodyPartsPanel final : public QWidget
 {
 public:
-	StudioModelBodyPartsPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelBodyPartsPanel(StudioModelAsset* asset);
 	~StudioModelBodyPartsPanel();
 
 private:

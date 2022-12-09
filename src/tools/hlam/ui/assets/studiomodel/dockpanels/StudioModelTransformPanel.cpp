@@ -12,9 +12,8 @@ constexpr int RotateId = 0;
 constexpr int ScaleId = 1;
 constexpr int MoveId = 2;
 
-StudioModelTransformPanel::StudioModelTransformPanel(StudioModelAsset* asset, QWidget* parent)
-	: QWidget(parent)
-	, _asset(asset)
+StudioModelTransformPanel::StudioModelTransformPanel(StudioModelAsset* asset)
+	: _asset(asset)
 {
 	_ui.setupUi(this);
 

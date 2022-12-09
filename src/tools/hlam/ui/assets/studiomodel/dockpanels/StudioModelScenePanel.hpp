@@ -20,7 +20,7 @@ class StudioModelScenePanel final : public QWidget
 	Q_OBJECT
 
 public:
-	StudioModelScenePanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelScenePanel(StudioModelAsset* asset);
 	~StudioModelScenePanel() = default;
 
 private:

@@ -23,7 +23,7 @@ class StudioModelAsset;
 class StudioModelSequencesPanel final : public QWidget
 {
 public:
-	StudioModelSequencesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelSequencesPanel(StudioModelAsset* asset);
 	~StudioModelSequencesPanel();
 
 private:

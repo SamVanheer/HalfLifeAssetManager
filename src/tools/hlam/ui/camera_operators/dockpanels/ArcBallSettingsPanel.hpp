@@ -11,7 +11,7 @@ class ArcBallCameraOperator;
 class ArcBallSettingsPanel : public QWidget
 {
 public:
-	ArcBallSettingsPanel(ArcBallCameraOperator* cameraOperator, QWidget* parent = nullptr);
+	ArcBallSettingsPanel(ArcBallCameraOperator* cameraOperator);
 	~ArcBallSettingsPanel();
 
 private slots:

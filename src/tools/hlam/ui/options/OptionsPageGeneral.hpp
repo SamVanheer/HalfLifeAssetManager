@@ -38,7 +38,7 @@ class OptionsPageGeneralWidget final : public OptionsWidget
 {
 public:
 	OptionsPageGeneralWidget(
-		EditorContext* editorContext, settings::GeneralSettings* generalSettings, settings::RecentFilesSettings* recentFilesSettings, QWidget* parent = nullptr);
+		EditorContext* editorContext, settings::GeneralSettings* generalSettings, settings::RecentFilesSettings* recentFilesSettings);
 	~OptionsPageGeneralWidget();
 
 	void ApplyChanges(QSettings& settings) override;

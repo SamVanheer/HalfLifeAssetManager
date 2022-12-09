@@ -12,7 +12,7 @@ class StudioModelAsset;
 class StudioModelGroundPanel final : public QWidget
 {
 public:
-	StudioModelGroundPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelGroundPanel(StudioModelAsset* asset);
 	~StudioModelGroundPanel() = default;
 
 public slots:

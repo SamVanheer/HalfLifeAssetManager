@@ -9,8 +9,7 @@
 
 namespace ui::camera_operators
 {
-CamerasPanel::CamerasPanel(QWidget* parent)
-	: QWidget(parent)
+CamerasPanel::CamerasPanel()
 {
 	_ui.setupUi(this);
 

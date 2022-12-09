@@ -11,7 +11,7 @@ class FreeLookCameraOperator;
 class FreeLookSettingsPanel : public QWidget
 {
 public:
-	FreeLookSettingsPanel(FreeLookCameraOperator* cameraOperator, QWidget* parent = nullptr);
+	FreeLookSettingsPanel(FreeLookCameraOperator* cameraOperator);
 	~FreeLookSettingsPanel();
 
 private slots:

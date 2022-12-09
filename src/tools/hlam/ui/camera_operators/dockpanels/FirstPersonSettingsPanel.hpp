@@ -11,7 +11,7 @@ class FirstPersonCameraOperator;
 class FirstPersonSettingsPanel : public QWidget
 {
 public:
-	FirstPersonSettingsPanel(FirstPersonCameraOperator* cameraOperator, QWidget* parent = nullptr);
+	FirstPersonSettingsPanel(FirstPersonCameraOperator* cameraOperator);
 	~FirstPersonSettingsPanel();
 
 private slots:

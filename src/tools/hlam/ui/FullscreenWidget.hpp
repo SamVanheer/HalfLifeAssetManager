@@ -16,7 +16,7 @@ public:
 	static constexpr Qt::Key ExitFullscreenKey{Qt::Key::Key_Escape};
 	static constexpr Qt::Key ToggleFullscreenKey{Qt::Key::Key_F11};
 
-	FullscreenWidget(QWidget* parent = nullptr);
+	FullscreenWidget();
 	~FullscreenWidget();
 
 	void ExitFullscreen();

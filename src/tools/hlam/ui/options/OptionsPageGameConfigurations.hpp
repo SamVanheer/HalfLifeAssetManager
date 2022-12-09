@@ -82,7 +82,7 @@ class OptionsPageGameConfigurationsWidget final : public OptionsWidget
 	};
 
 public:
-	OptionsPageGameConfigurationsWidget(EditorContext* editorContext, QWidget* parent = nullptr);
+	OptionsPageGameConfigurationsWidget(EditorContext* editorContext);
 	~OptionsPageGameConfigurationsWidget();
 
 	void ApplyChanges(QSettings& settings) override;

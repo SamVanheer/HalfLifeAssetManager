@@ -17,7 +17,7 @@ namespace assets::studiomodel
 class StudioModelDecompilerFrontEnd final : public CommandLineFrontEnd
 {
 public:
-	StudioModelDecompilerFrontEnd(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings, QWidget* parent = nullptr);
+	StudioModelDecompilerFrontEnd(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings);
 	~StudioModelDecompilerFrontEnd();
 
 private:

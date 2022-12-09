@@ -14,9 +14,8 @@ using namespace qt::widgets;
 
 namespace ui::assets::studiomodel
 {
-StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset, QWidget* parent)
-	: QWidget(parent)
-	, _asset(asset)
+StudioModelModelDataPanel::StudioModelModelDataPanel(StudioModelAsset* asset)
+	: _asset(asset)
 {
 	_ui.setupUi(this);
 

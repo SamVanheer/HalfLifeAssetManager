@@ -11,7 +11,7 @@ class StudioModelAsset;
 class StudioModelBackgroundPanel final : public QWidget
 {
 public:
-	StudioModelBackgroundPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelBackgroundPanel(StudioModelAsset* asset);
 	~StudioModelBackgroundPanel() = default;
 
 private slots:

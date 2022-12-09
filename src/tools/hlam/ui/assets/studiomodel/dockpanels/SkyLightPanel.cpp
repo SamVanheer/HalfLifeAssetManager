@@ -11,9 +11,8 @@
 
 namespace ui::assets::studiomodel
 {
-SkyLightPanel::SkyLightPanel(StudioModelAsset* asset, QWidget* parent)
-	: QWidget(parent)
-	, _asset(asset)
+SkyLightPanel::SkyLightPanel(StudioModelAsset* asset)
+	: _asset(asset)
 {
 	_ui.setupUi(this);
 

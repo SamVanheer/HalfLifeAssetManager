@@ -10,9 +10,8 @@
 
 namespace ui::camera_operators
 {
-FreeLookSettingsPanel::FreeLookSettingsPanel(FreeLookCameraOperator* cameraOperator, QWidget* parent)
-	: QWidget(parent)
-	, _cameraOperator(cameraOperator)
+FreeLookSettingsPanel::FreeLookSettingsPanel(FreeLookCameraOperator* cameraOperator)
+	: _cameraOperator(cameraOperator)
 {
 	assert(_cameraOperator);
 

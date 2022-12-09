@@ -19,7 +19,7 @@ namespace assets::studiomodel
 class StudioModelCompilerFrontEnd final : public CommandLineFrontEnd
 {
 public:
-	StudioModelCompilerFrontEnd(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings, QWidget* parent = nullptr);
+	StudioModelCompilerFrontEnd(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings);
 	~StudioModelCompilerFrontEnd();
 
 protected:

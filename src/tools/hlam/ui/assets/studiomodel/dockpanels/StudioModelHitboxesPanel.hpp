@@ -16,7 +16,7 @@ class StudioModelAsset;
 class StudioModelHitboxesPanel final : public QWidget
 {
 public:
-	StudioModelHitboxesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelHitboxesPanel(StudioModelAsset* asset);
 	~StudioModelHitboxesPanel();
 
 private:

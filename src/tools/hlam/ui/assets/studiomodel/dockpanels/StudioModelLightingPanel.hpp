@@ -12,7 +12,7 @@ class StudioModelAsset;
 class StudioModelLightingPanel final : public QWidget
 {
 public:
-	StudioModelLightingPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelLightingPanel(StudioModelAsset* asset);
 	~StudioModelLightingPanel();
 
 private:

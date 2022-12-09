@@ -5,8 +5,8 @@
 
 namespace ui::assets::studiomodel
 {
-StudioModelDecompilerFrontEnd::StudioModelDecompilerFrontEnd(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings, QWidget* parent)
-	: CommandLineFrontEnd(editorContext, parent)
+StudioModelDecompilerFrontEnd::StudioModelDecompilerFrontEnd(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings)
+	: CommandLineFrontEnd(editorContext)
 	, _studioModelSettings(studioModelSettings)
 {
 	SetProgram(_studioModelSettings->GetStudiomdlDecompilerFileName(), options::StudioModelExeFilter);

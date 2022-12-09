@@ -37,7 +37,7 @@ class OptionsPageStudioModelWidget final : public OptionsWidget
 	Q_OBJECT
 
 public:
-	OptionsPageStudioModelWidget(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings, QWidget* parent = nullptr);
+	OptionsPageStudioModelWidget(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings);
 	~OptionsPageStudioModelWidget();
 
 	void ApplyChanges(QSettings& settings) override;

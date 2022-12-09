@@ -37,7 +37,7 @@ class OptionsPageColorsWidget final : public OptionsWidget
 {
 public:
 	OptionsPageColorsWidget(
-		EditorContext* editorContext, settings::ColorSettings* colorSettings, QWidget* parent = nullptr);
+		EditorContext* editorContext, settings::ColorSettings* colorSettings);
 	~OptionsPageColorsWidget();
 
 	void ApplyChanges(QSettings& settings) override;

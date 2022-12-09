@@ -37,7 +37,7 @@ class StudioModelEditWidget final : public QWidget
 	Q_OBJECT
 
 public:
-	StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset);
 	~StudioModelEditWidget();
 
 	StudioModelAsset* GetAsset() const { return _asset; }

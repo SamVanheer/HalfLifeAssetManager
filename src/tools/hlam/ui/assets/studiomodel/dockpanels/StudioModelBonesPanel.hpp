@@ -15,7 +15,7 @@ class StudioModelAsset;
 class StudioModelBonesPanel final : public QWidget
 {
 public:
-	StudioModelBonesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelBonesPanel(StudioModelAsset* asset);
 	~StudioModelBonesPanel();
 
 private:

@@ -14,9 +14,8 @@
 
 namespace ui::assets::studiomodel
 {
-CommandLineFrontEnd::CommandLineFrontEnd(EditorContext* editorContext, QWidget* parent)
-	: QDialog(parent)
-	, _editorContext(editorContext)
+CommandLineFrontEnd::CommandLineFrontEnd(EditorContext* editorContext)
+	: _editorContext(editorContext)
 {
 	_ui.setupUi(this);
 

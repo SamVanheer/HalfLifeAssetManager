@@ -62,9 +62,8 @@ OptionsPageGameConfigurations::OptionsPageGameConfigurations(const std::shared_p
 	SetWidgetFactory([](EditorContext* editorContext) {return new OptionsPageGameConfigurationsWidget(editorContext); });
 }
 
-OptionsPageGameConfigurationsWidget::OptionsPageGameConfigurationsWidget(EditorContext* editorContext, QWidget* parent)
-	: OptionsWidget(parent)
-	, _editorContext(editorContext)
+OptionsPageGameConfigurationsWidget::OptionsPageGameConfigurationsWidget(EditorContext* editorContext)
+	: _editorContext(editorContext)
 {
 	_ui.setupUi(this);
 

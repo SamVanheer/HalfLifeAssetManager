@@ -18,7 +18,7 @@ class CamerasPanel : public QWidget
 	Q_OBJECT
 
 public:
-	CamerasPanel(QWidget* parent = nullptr);
+	CamerasPanel();
 	~CamerasPanel();
 
 	int GetCount() const { return _widgets.size(); }

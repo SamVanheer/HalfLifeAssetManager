@@ -8,8 +8,8 @@
 
 namespace ui::assets::studiomodel
 {
-StudioModelCompilerFrontEnd::StudioModelCompilerFrontEnd(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings, QWidget* parent)
-	: CommandLineFrontEnd(editorContext, parent)
+StudioModelCompilerFrontEnd::StudioModelCompilerFrontEnd(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings)
+	: CommandLineFrontEnd(editorContext)
 	, _studioModelSettings(studioModelSettings)
 {
 	_settingsWidget = new QWidget(this);

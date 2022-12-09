@@ -18,7 +18,7 @@ namespace assets::studiomodel
 class CommandLineFrontEnd : public QDialog
 {
 public:
-	CommandLineFrontEnd(EditorContext* editorContext, QWidget* parent = nullptr);
+	CommandLineFrontEnd(EditorContext* editorContext);
 	~CommandLineFrontEnd();
 
 protected:

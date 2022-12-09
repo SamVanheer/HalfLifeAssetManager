@@ -17,9 +17,8 @@
 
 namespace ui::assets::studiomodel
 {
-StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset, QWidget* parent)
-	: QWidget(parent)
-	, _asset(asset)
+StudioModelAttachmentsPanel::StudioModelAttachmentsPanel(StudioModelAsset* asset)
+	: _asset(asset)
 {
 	_ui.setupUi(this);
 

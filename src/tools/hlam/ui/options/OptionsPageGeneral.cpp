@@ -30,9 +30,8 @@ OptionsPageGeneral::OptionsPageGeneral(
 OptionsPageGeneral::~OptionsPageGeneral() = default;
 
 OptionsPageGeneralWidget::OptionsPageGeneralWidget(
-	EditorContext* editorContext, settings::GeneralSettings* generalSettings, settings::RecentFilesSettings* recentFilesSettings, QWidget* parent)
-	: OptionsWidget(parent)
-	, _editorContext(editorContext)
+	EditorContext* editorContext, settings::GeneralSettings* generalSettings, settings::RecentFilesSettings* recentFilesSettings)
+	: _editorContext(editorContext)
 	, _generalSettings(generalSettings)
 	, _recentFilesSettings(recentFilesSettings)
 {

@@ -15,7 +15,7 @@ namespace ui::assets::studiomodel
 class StudioModelExportUVMeshDialog final : public QDialog
 {
 public:
-	StudioModelExportUVMeshDialog(HLMVStudioModelEntity& entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent = nullptr);
+	StudioModelExportUVMeshDialog(HLMVStudioModelEntity& entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent);
 	~StudioModelExportUVMeshDialog();
 
 	QString GetFileName() const;

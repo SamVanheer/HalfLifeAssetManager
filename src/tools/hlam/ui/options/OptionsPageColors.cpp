@@ -30,9 +30,8 @@ OptionsPageColors::OptionsPageColors(
 OptionsPageColors::~OptionsPageColors() = default;
 
 OptionsPageColorsWidget::OptionsPageColorsWidget(
-	EditorContext* editorContext, settings::ColorSettings* colorSettings, QWidget* parent)
-	: OptionsWidget(parent)
-	, _editorContext(editorContext)
+	EditorContext* editorContext, settings::ColorSettings* colorSettings)
+	: _editorContext(editorContext)
 	, _colorSettings(colorSettings)
 {
 	_ui.setupUi(this);

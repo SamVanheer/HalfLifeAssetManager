@@ -21,7 +21,7 @@ class SceneWidget final : public QOpenGLWindow
 	Q_OBJECT
 
 public:
-	SceneWidget(QWidget* parent = nullptr);
+	SceneWidget(QWidget* parent);
 	~SceneWidget();
 
 	QWidget* GetContainer() { return _container; }

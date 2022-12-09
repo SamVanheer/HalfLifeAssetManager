@@ -19,7 +19,7 @@ class OptionsPage;
 class OptionsDialog final : public QDialog
 {
 public:
-	OptionsDialog(EditorContext* editorContext, QWidget* parent = nullptr);
+	OptionsDialog(EditorContext* editorContext, QWidget* parent);
 	~OptionsDialog();
 
 private slots:

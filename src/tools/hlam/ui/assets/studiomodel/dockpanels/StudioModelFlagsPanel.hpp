@@ -16,7 +16,7 @@ class StudioModelAsset;
 class StudioModelFlagsPanel final : public QWidget
 {
 public:
-	StudioModelFlagsPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelFlagsPanel(StudioModelAsset* asset);
 	~StudioModelFlagsPanel() = default;
 
 private:

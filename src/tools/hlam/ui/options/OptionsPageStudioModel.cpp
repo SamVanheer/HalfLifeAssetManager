@@ -26,9 +26,8 @@ OptionsPageStudioModel::OptionsPageStudioModel(const std::shared_ptr<settings::S
 
 OptionsPageStudioModel::~OptionsPageStudioModel() = default;
 
-OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings, QWidget* parent)
-	: OptionsWidget(parent)
-	, _editorContext(editorContext)
+OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings)
+	: _editorContext(editorContext)
 	, _studioModelSettings(studioModelSettings)
 {
 	_ui.setupUi(this);

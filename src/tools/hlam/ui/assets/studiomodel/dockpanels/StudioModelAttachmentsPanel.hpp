@@ -16,7 +16,7 @@ class StudioModelAsset;
 class StudioModelAttachmentsPanel final : public QWidget
 {
 public:
-	StudioModelAttachmentsPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelAttachmentsPanel(StudioModelAsset* asset);
 	~StudioModelAttachmentsPanel();
 
 private:

@@ -14,9 +14,8 @@ namespace ui::assets::studiomodel
 {
 const std::string_view CheckBoxModelFlagProperty{"CheckBoxFlagProperty"};
 
-StudioModelFlagsPanel::StudioModelFlagsPanel(StudioModelAsset* asset, QWidget* parent)
-	: QWidget(parent)
-	, _asset(asset)
+StudioModelFlagsPanel::StudioModelFlagsPanel(StudioModelAsset* asset)
+	: _asset(asset)
 {
 	_ui.setupUi(this);
 

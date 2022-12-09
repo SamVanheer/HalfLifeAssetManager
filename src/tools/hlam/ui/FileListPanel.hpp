@@ -22,7 +22,7 @@ class FileListPanel final : public QWidget
 	Q_OBJECT
 
 public:
-	FileListPanel(EditorContext* editorContext, QWidget* parent = nullptr);
+	FileListPanel(EditorContext* editorContext, QWidget* parent);
 	~FileListPanel();
 
 private:

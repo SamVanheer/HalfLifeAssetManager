@@ -7,9 +7,8 @@
 
 namespace ui::camera_operators
 {
-ArcBallSettingsPanel::ArcBallSettingsPanel(ArcBallCameraOperator* cameraOperator, QWidget* parent)
-	: QWidget(parent)
-	, _cameraOperator(cameraOperator)
+ArcBallSettingsPanel::ArcBallSettingsPanel(ArcBallCameraOperator* cameraOperator)
+	: _cameraOperator(cameraOperator)
 {
 	assert(_cameraOperator);
 

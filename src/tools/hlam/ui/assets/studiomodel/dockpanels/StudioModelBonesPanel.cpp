@@ -52,9 +52,8 @@ static void SyncBonePropertiesToUI(const studiomdl::Bone& bone, Ui_StudioModelBo
 	ui.RotationScaleZ->setValue(bone.Axes[5].Scale);
 }
 
-StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset, QWidget* parent)
-	: QWidget(parent)
-	, _asset(asset)
+StudioModelBonesPanel::StudioModelBonesPanel(StudioModelAsset* asset)
+	: _asset(asset)
 {
 	_ui.setupUi(this);
 

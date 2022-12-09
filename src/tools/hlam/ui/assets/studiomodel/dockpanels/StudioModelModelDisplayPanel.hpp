@@ -11,7 +11,7 @@ class StudioModelAsset;
 class StudioModelModelDisplayPanel final : public QWidget
 {
 public:
-	StudioModelModelDisplayPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelModelDisplayPanel(StudioModelAsset* asset);
 	~StudioModelModelDisplayPanel();
 
 private:

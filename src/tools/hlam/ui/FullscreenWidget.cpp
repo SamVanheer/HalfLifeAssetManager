@@ -6,8 +6,7 @@
 
 namespace ui
 {
-FullscreenWidget::FullscreenWidget(QWidget* parent)
-	: QMainWindow(parent)
+FullscreenWidget::FullscreenWidget()
 {
 	//This is not a primary window so don't keep the app running if we're still alive
 	setAttribute(Qt::WidgetAttribute::WA_QuitOnClose, false);

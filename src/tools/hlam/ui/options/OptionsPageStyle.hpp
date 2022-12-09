@@ -32,7 +32,7 @@ private:
 class OptionsPageStyleWidget final : public OptionsWidget
 {
 public:
-	OptionsPageStyleWidget(EditorContext* editorContext, settings::StyleSettings* styleSettings, QWidget* parent = nullptr);
+	OptionsPageStyleWidget(EditorContext* editorContext, settings::StyleSettings* styleSettings);
 	~OptionsPageStyleWidget();
 
 	void ApplyChanges(QSettings& settings) override;

@@ -32,7 +32,7 @@ class StudioModelTexturesPanel final : public QWidget
 	Q_OBJECT
 
 public:
-	StudioModelTexturesPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelTexturesPanel(StudioModelAsset* asset);
 	~StudioModelTexturesPanel();
 
 	QImage GenerateTextureForDisplay();

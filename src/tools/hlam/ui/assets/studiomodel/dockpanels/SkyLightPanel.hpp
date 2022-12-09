@@ -11,7 +11,7 @@ class StudioModelAsset;
 class SkyLightPanel final : public QWidget
 {
 public:
-	SkyLightPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	SkyLightPanel(StudioModelAsset* asset);
 	~SkyLightPanel();
 
 private slots:

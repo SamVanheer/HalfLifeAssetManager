@@ -16,7 +16,7 @@ class StudioModelAsset;
 class StudioModelModelPanel final : public QWidget
 {
 public:
-	StudioModelModelPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelModelPanel(StudioModelAsset* asset);
 	~StudioModelModelPanel() = default;
 
 public slots:

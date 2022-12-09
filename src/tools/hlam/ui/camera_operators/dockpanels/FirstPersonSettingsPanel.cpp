@@ -7,9 +7,8 @@
 
 namespace ui::camera_operators
 {
-FirstPersonSettingsPanel::FirstPersonSettingsPanel(FirstPersonCameraOperator* cameraOperator, QWidget* parent)
-	: QWidget(parent)
-	, _cameraOperator(cameraOperator)
+FirstPersonSettingsPanel::FirstPersonSettingsPanel(FirstPersonCameraOperator* cameraOperator)
+	: _cameraOperator(cameraOperator)
 {
 	assert(_cameraOperator);
 

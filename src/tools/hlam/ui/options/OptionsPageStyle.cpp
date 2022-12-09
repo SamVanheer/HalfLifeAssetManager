@@ -29,9 +29,8 @@ OptionsPageStyle::OptionsPageStyle(const std::shared_ptr<settings::StyleSettings
 
 OptionsPageStyle::~OptionsPageStyle() = default;
 
-OptionsPageStyleWidget::OptionsPageStyleWidget(EditorContext* editorContext, settings::StyleSettings* styleSettings, QWidget* parent)
-	: OptionsWidget(parent)
-	, _editorContext(editorContext)
+OptionsPageStyleWidget::OptionsPageStyleWidget(EditorContext* editorContext, settings::StyleSettings* styleSettings)
+	: _editorContext(editorContext)
 	, _styleSettings(styleSettings)
 {
 	_ui.setupUi(this);

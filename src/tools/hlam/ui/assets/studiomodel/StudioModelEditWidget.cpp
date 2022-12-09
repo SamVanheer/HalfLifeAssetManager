@@ -46,10 +46,8 @@
 
 namespace ui::assets::studiomodel
 {
-StudioModelEditWidget::StudioModelEditWidget(
-	EditorContext* editorContext, StudioModelAsset* asset, QWidget* parent)
-	: QWidget(parent)
-	, _editorContext(editorContext)
+StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset)
+	: _editorContext(editorContext)
 	, _asset(asset)
 {
 	_ui.setupUi(this);

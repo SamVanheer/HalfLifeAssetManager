@@ -13,7 +13,7 @@ class StudioModelAsset;
 class StudioModelTransformPanel : public QWidget
 {
 public:
-	StudioModelTransformPanel(StudioModelAsset* asset, QWidget* parent = nullptr);
+	StudioModelTransformPanel(StudioModelAsset* asset);
 	~StudioModelTransformPanel() = default;
 
 public slots:

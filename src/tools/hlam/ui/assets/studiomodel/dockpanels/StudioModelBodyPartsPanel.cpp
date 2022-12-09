@@ -20,9 +20,8 @@ namespace ui::assets::studiomodel
 //Parent indices are offset by one so -1 becomes 0, 0 becomes 1, etc
 constexpr int BoneOffset = 1;
 
-StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset, QWidget* parent)
-	: QWidget(parent)
-	, _asset(asset)
+StudioModelBodyPartsPanel::StudioModelBodyPartsPanel(StudioModelAsset* asset)
+	: _asset(asset)
 {
 	_ui.setupUi(this);
 

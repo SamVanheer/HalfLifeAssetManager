@@ -15,7 +15,7 @@ class StudioModelView final : public QWidget
 	Q_OBJECT
 
 public:
-	StudioModelView(QWidget* parent = nullptr);
+	StudioModelView(QWidget* parent);
 	~StudioModelView();
 
 	InfoBar* GetInfoBar() const { return _ui.InfoBar; }

@@ -15,9 +15,8 @@
 
 namespace ui::assets::studiomodel
 {
-StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset, QWidget* parent)
-	: QWidget(parent)
-	, _asset(asset)
+StudioModelHitboxesPanel::StudioModelHitboxesPanel(StudioModelAsset* asset)
+	: _asset(asset)
 {
 	_ui.setupUi(this);
 
