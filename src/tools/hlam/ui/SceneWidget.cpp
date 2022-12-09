@@ -3,6 +3,7 @@
 #include <QWidget>
 
 #include "graphics/Scene.hpp"
+#include "graphics/SceneContext.hpp"
 #include "ui/SceneWidget.hpp"
 
 namespace ui
@@ -10,6 +11,7 @@ namespace ui
 SceneWidget::SceneWidget(QWidget* parent)
 	: QOpenGLWindow()
 	, _container(QWidget::createWindowContainer(this, parent))
+	, _sceneContext(std::make_unique<graphics::SceneContext>())
 {
 	_container->setFocusPolicy(Qt::FocusPolicy::WheelFocus);
 
@@ -104,6 +106,9 @@ void SceneWidget::initializeGL()
 
 void SceneWidget::resizeGL(int w, int h)
 {
+	_sceneContext->WindowWidth = w;
+	_sceneContext->WindowHeight = h;
+
 	if (_scene)
 	{
 		_scene->UpdateWindowSize(static_cast<unsigned int>(w), static_cast<unsigned int>(h));
@@ -122,7 +127,7 @@ void SceneWidget::paintGL()
 		{
 			//TODO: this is temporary until window sized resources can be decoupled from the scene class
 			_scene->UpdateWindowSize(static_cast<unsigned int>(size.width()), static_cast<unsigned int>(size.height()));
-			_scene->Draw();
+			_scene->Draw(*_sceneContext);
 		}
 	}
 }

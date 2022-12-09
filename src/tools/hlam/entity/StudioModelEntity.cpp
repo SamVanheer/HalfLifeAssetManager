@@ -32,7 +32,7 @@ void StudioModelEntity::Spawn()
 	SetSkin(0);
 }
 
-void StudioModelEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
+void StudioModelEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	auto settings = GetContext()->Settings;
 

@@ -5,7 +5,7 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
-#include "graphics/Scene.hpp"
+#include "graphics/SceneContext.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
@@ -13,19 +13,17 @@
 #include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
-void CrosshairEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
+void CrosshairEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	if (GetContext()->Settings->ShowCrosshair)
 	{
-		auto scene = GetContext()->Scene;
-
-		const int centerX = scene->GetWindowWidth() / 2;
-		const int centerY = scene->GetWindowHeight() / 2;
+		const int centerX = sc.WindowWidth / 2;
+		const int centerY = sc.WindowHeight / 2;
 
 		openglFunctions->glMatrixMode(GL_PROJECTION);
 		openglFunctions->glLoadIdentity();
 
-		openglFunctions->glOrtho(0.0f, (float)scene->GetWindowWidth(), (float)scene->GetWindowHeight(), 0.0f, 1.0f, -1.0f);
+		openglFunctions->glOrtho(0.0f, (float)sc.WindowWidth, (float)sc.WindowHeight, 0.0f, 1.0f, -1.0f);
 
 		openglFunctions->glMatrixMode(GL_MODELVIEW);
 		openglFunctions->glPushMatrix();

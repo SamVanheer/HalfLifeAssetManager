@@ -4,7 +4,7 @@
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-void BackgroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
+void BackgroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	if (GetContext()->Settings->ShowBackground)
 	{

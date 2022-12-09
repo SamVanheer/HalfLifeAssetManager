@@ -12,5 +12,6 @@ target_sources(HLAM
 		Palette.hpp
 		Scene.cpp
 		Scene.hpp
+		SceneContext.hpp
 		TextureLoader.cpp
 		TextureLoader.hpp)

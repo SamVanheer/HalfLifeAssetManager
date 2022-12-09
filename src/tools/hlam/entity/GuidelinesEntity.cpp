@@ -5,7 +5,7 @@
 #include "entity/GuidelinesEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
-#include "graphics/Scene.hpp"
+#include "graphics/SceneContext.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
@@ -13,19 +13,17 @@
 #include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
-void GuidelinesEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
+void GuidelinesEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	if (GetContext()->Settings->ShowGuidelines)
 	{
-		auto scene = GetContext()->Scene;
-
-		const int centerX = scene->GetWindowWidth() / 2;
-		const int centerY = scene->GetWindowHeight() / 2;
+		const int centerX = sc.WindowWidth / 2;
+		const int centerY = sc.WindowHeight / 2;
 
 		openglFunctions->glMatrixMode(GL_PROJECTION);
 		openglFunctions->glLoadIdentity();
 
-		openglFunctions->glOrtho(0.0f, (float)scene->GetWindowWidth(), (float)scene->GetWindowHeight(), 0.0f, 1.0f, -1.0f);
+		openglFunctions->glOrtho(0.0f, (float)sc.WindowWidth, (float)sc.WindowHeight, 0.0f, 1.0f, -1.0f);
 
 		openglFunctions->glMatrixMode(GL_MODELVIEW);
 		openglFunctions->glPushMatrix();
@@ -46,7 +44,7 @@ void GuidelinesEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses 
 
 		openglFunctions->glBegin(GL_POINTS);
 
-		for (int yPos = scene->GetWindowHeight() - GUIDELINES_LINE_LENGTH;
+		for (int yPos = sc.WindowHeight - GUIDELINES_LINE_LENGTH;
 			yPos >= centerY + CrosshairEntity::CROSSHAIR_LINE_END;
 			yPos -= GUIDELINES_OFFSET)
 		{
@@ -57,7 +55,7 @@ void GuidelinesEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses 
 
 		openglFunctions->glBegin(GL_LINES);
 
-		for (int yPos = scene->GetWindowHeight() - GUIDELINES_LINE_LENGTH - GUIDELINES_POINT_LINE_OFFSET - GUIDELINES_LINE_WIDTH;
+		for (int yPos = sc.WindowHeight - GUIDELINES_LINE_LENGTH - GUIDELINES_POINT_LINE_OFFSET - GUIDELINES_LINE_WIDTH;
 			yPos >= centerY + CrosshairEntity::CROSSHAIR_LINE_END + GUIDELINES_LINE_LENGTH;
 			yPos -= GUIDELINES_OFFSET)
 		{
@@ -67,17 +65,17 @@ void GuidelinesEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses 
 
 		openglFunctions->glEnd();
 
-		const float flWidth = scene->GetWindowHeight() * (16 / 9.0);
+		const float flWidth = sc.WindowHeight * (16 / 9.0);
 
 		openglFunctions->glLineWidth(GUIDELINES_EDGE_WIDTH);
 
 		openglFunctions->glBegin(GL_LINES);
 
-		openglFunctions->glVertex2f((scene->GetWindowWidth() / 2.) - (flWidth / 2), 0);
-		openglFunctions->glVertex2f((scene->GetWindowWidth() / 2.) - (flWidth / 2), scene->GetWindowHeight());
+		openglFunctions->glVertex2f((sc.WindowWidth / 2.) - (flWidth / 2), 0);
+		openglFunctions->glVertex2f((sc.WindowWidth / 2.) - (flWidth / 2), sc.WindowHeight);
 
-		openglFunctions->glVertex2f((scene->GetWindowWidth() / 2.) + (flWidth / 2), 0);
-		openglFunctions->glVertex2f((scene->GetWindowWidth() / 2.) + (flWidth / 2), scene->GetWindowHeight());
+		openglFunctions->glVertex2f((sc.WindowWidth / 2.) + (flWidth / 2), 0);
+		openglFunctions->glVertex2f((sc.WindowWidth / 2.) + (flWidth / 2), sc.WindowHeight);
 
 		openglFunctions->glEnd();
 

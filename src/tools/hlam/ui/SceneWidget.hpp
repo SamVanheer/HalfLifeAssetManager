@@ -8,6 +8,7 @@
 namespace graphics
 {
 class Scene;
+class SceneContext;
 }
 
 namespace ui
@@ -53,6 +54,7 @@ protected:
 
 private:
 	QWidget* const _container;
+	const std::unique_ptr<graphics::SceneContext> _sceneContext;
 	graphics::Scene* _scene{};
 	QPointer<QObject> _previousFocusObject;
 };

@@ -9,7 +9,7 @@
 #include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
-void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
+void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	auto context = GetContext();
 	auto settings = context->Settings;

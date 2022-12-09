@@ -195,7 +195,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	// Initialize graphics resources.
 	auto context = _editorContext->GetGraphicsContext();
 	context->Begin();
-	_scene->Initialize();
+	_scene->CreateDeviceObjects();
 	context->End();
 }
 
@@ -205,7 +205,7 @@ StudioModelAsset::~StudioModelAsset()
 
 	context->Begin();
 	_editableStudioModel->DeleteTextures(*_textureLoader);
-	_scene->Shutdown();
+	_scene->DestroyDeviceObjects();
 	context->End();
 
 	PopInputSink();

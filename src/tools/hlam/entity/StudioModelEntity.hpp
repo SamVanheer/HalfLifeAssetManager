@@ -41,7 +41,7 @@ public:
 
 	RenderPasses GetRenderPasses() const override { return RenderPass::Standard; }
 
-	void Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass) override;
+	void Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass) override;
 
 	void CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) override;
 

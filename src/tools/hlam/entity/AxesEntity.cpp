@@ -2,7 +2,7 @@
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-void AxesEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
+void AxesEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	if (GetContext()->Settings->ShowAxes)
 	{

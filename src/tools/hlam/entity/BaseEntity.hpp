@@ -13,7 +13,7 @@ class WorldTime;
 
 namespace graphics
 {
-class Scene;
+class SceneContext;
 class TextureLoader;
 }
 
@@ -56,21 +56,18 @@ struct EntityContext final
 	sprite::ISpriteRenderer* const SpriteRenderer;
 	soundsystem::ISoundSystem* const SoundSystem;
 	ui::settings::StudioModelSettings* const Settings;
-	graphics::Scene* const Scene;
 
 	EntityContext(ui::assets::studiomodel::StudioModelAsset* asset,
 		WorldTime* time,
 		studiomdl::IStudioModelRenderer* studioModelRenderer, sprite::ISpriteRenderer* spriteRenderer,
 		soundsystem::ISoundSystem* soundSystem,
-		ui::settings::StudioModelSettings* settings,
-		graphics::Scene* scene)
+		ui::settings::StudioModelSettings* settings)
 		: Asset(asset)
 		, Time(time)
 		, SpriteRenderer(spriteRenderer)
 		, StudioModelRenderer(studioModelRenderer)
 		, SoundSystem(soundSystem)
 		, Settings(settings)
-		, Scene(scene)
 	{
 	}
 };
@@ -97,7 +94,7 @@ public:
 
 	virtual RenderPasses GetRenderPasses() const { return RenderPass::None; }
 
-	virtual void Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass) {}
+	virtual void Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass) {}
 
 	virtual void CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) {}
 

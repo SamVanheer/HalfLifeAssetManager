@@ -20,7 +20,7 @@ void SpriteEntity::Spawn()
 	AlwaysThink = true;
 }
 
-void SpriteEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
+void SpriteEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	sprite::SpriteRenderInfo info;
 

@@ -43,6 +43,7 @@ class StudioModelSettings;
 namespace graphics
 {
 class IGraphicsContext;
+class SceneContext;
 class TextureLoader;
 
 /**
@@ -82,10 +83,6 @@ public:
 		_currentCamera->SetWindowSize(_windowWidth, _windowHeight);
 	}
 
-	unsigned int GetWindowWidth() const { return _windowWidth; }
-
-	unsigned int GetWindowHeight() const { return _windowHeight; }
-
 	void UpdateWindowSize(unsigned int width, unsigned int height)
 	{
 		//Avoid constantly updating cameras
@@ -107,20 +104,18 @@ public:
 
 	unsigned int GetDrawnPolygonsCount() const { return _drawnPolygonsCount; }
 
-	void Initialize();
+	void CreateDeviceObjects();
 
-	void Shutdown();
+	void DestroyDeviceObjects();
 
 	void Tick();
 
-	void Draw();
+	void Draw(SceneContext& sc);
 
 private:
 	void CollectRenderables(RenderPass::RenderPass renderPass, std::vector<BaseEntity*>& renderablesToRender);
 
-	void DrawRenderables(RenderPass::RenderPass renderPass);
-
-	//TODO: having some colors as variables and some as methods is inconsistent
+	void DrawRenderables(graphics::SceneContext& sc, RenderPass::RenderPass renderPass);
 
 private:
 	IGraphicsContext* const _graphicsContext;

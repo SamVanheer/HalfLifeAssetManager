@@ -6,7 +6,7 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
-void BoundingBoxEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, RenderPasses renderPass)
+void BoundingBoxEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	if (GetContext()->Settings->ShowBBox)
 	{

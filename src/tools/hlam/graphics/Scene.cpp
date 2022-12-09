@@ -40,8 +40,7 @@ Scene::Scene(ui::assets::studiomodel::StudioModelAsset* asset,
 		worldTime,
 		_studioModelRenderer.get(), _spriteRenderer.get(),
 		soundSystem,
-		settings,
-		this))
+		settings))
 	, _entityList(std::make_unique<EntityList>(_entityContext.get()))
 {
 	assert(_textureLoader);
@@ -49,12 +48,9 @@ Scene::Scene(ui::assets::studiomodel::StudioModelAsset* asset,
 	SetCurrentCamera(nullptr);
 }
 
-Scene::~Scene()
-{
-	_entityList->DestroyAll();
-}
+Scene::~Scene() = default;
 
-void Scene::Initialize()
+void Scene::CreateDeviceObjects()
 {
 	for (auto& entity : *_entityList)
 	{
@@ -62,7 +58,7 @@ void Scene::Initialize()
 	}
 }
 
-void Scene::Shutdown()
+void Scene::DestroyDeviceObjects()
 {
 	for (auto& entity : *_entityList)
 	{
@@ -76,7 +72,7 @@ void Scene::Tick()
 	_entityList->RunFrame();
 }
 
-void Scene::Draw()
+void Scene::Draw(SceneContext& sc)
 {
 	auto colors = _entityContext->Asset->GetEditorContext()->GetColorSettings();
 
@@ -99,7 +95,7 @@ void Scene::Draw()
 
 	const unsigned int uiOldPolys = _studioModelRenderer->GetDrawnPolygonsCount();
 
-	DrawRenderables(RenderPass::Background);
+	DrawRenderables(sc, RenderPass::Background);
 
 	_openglFunctions->glMatrixMode(GL_PROJECTION);
 	_openglFunctions->glLoadMatrixf(glm::value_ptr(camera->GetProjectionMatrix()));
@@ -107,9 +103,9 @@ void Scene::Draw()
 	_openglFunctions->glMatrixMode(GL_MODELVIEW);
 	_openglFunctions->glLoadMatrixf(glm::value_ptr(camera->GetViewMatrix()));
 
-	DrawRenderables(RenderPass::Standard);
-	DrawRenderables(RenderPass::Overlay3D);
-	DrawRenderables(RenderPass::Overlay2D);
+	DrawRenderables(sc, RenderPass::Standard);
+	DrawRenderables(sc, RenderPass::Overlay3D);
+	DrawRenderables(sc, RenderPass::Overlay2D);
 
 	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;
 }
@@ -127,13 +123,13 @@ void Scene::CollectRenderables(RenderPass::RenderPass renderPass, std::vector<Ba
 	}
 }
 
-void Scene::DrawRenderables(RenderPass::RenderPass renderPass)
+void Scene::DrawRenderables(graphics::SceneContext& sc, RenderPass::RenderPass renderPass)
 {
 	CollectRenderables(renderPass, _renderablesToRender);
 
 	for (const auto& renderable : _renderablesToRender)
 	{
-		renderable->Draw(_openglFunctions, renderPass);
+		renderable->Draw(_openglFunctions, sc, renderPass);
 	}
 }
 }
