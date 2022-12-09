@@ -16,7 +16,7 @@ SkyLightPanel::SkyLightPanel(StudioModelAsset* asset)
 {
 	_ui.setupUi(this);
 
-	const glm::vec3 lightVector{_asset->GetScene()->GetEntityContext()->StudioModelRenderer->GetLightVector()};
+	const glm::vec3 lightVector{_asset->GetStudioModelRenderer()->GetLightVector()};
 
 	const glm::vec3 angles{VectorToAngles(lightVector)};
 
@@ -33,6 +33,6 @@ void SkyLightPanel::OnAnglesChanged()
 {
 	const glm::vec3 lightVector{AnglesToAimVector({_ui.XAngle->value(), _ui.YAngle->value(), 0})};
 
-	_asset->GetScene()->GetEntityContext()->StudioModelRenderer->SetLightVector(lightVector);
+	_asset->GetStudioModelRenderer()->SetLightVector(lightVector);
 }
 }

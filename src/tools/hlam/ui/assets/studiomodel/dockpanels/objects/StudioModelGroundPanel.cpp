@@ -6,6 +6,7 @@
 #include "entity/GroundEntity.hpp"
 
 #include "graphics/IGraphicsContext.hpp"
+#include "graphics/Scene.hpp"
 
 #include "qt/QtUtilities.hpp"
 

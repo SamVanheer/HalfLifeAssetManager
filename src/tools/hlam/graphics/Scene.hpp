@@ -3,42 +3,13 @@
 #include <memory>
 #include <vector>
 
-#include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
-
 #include "graphics/Camera.hpp"
 #include "graphics/GraphicsConstants.hpp"
 
 class BaseEntity;
 class EntityList;
 class QOpenGLFunctions_1_1;
-class WorldTime;
 struct EntityContext;
-
-namespace ui::assets::studiomodel
-{
-class StudioModelAsset;
-}
-
-namespace sprite
-{
-class ISpriteRenderer;
-}
-
-namespace studiomdl
-{
-class IStudioModelRenderer;
-}
-
-namespace soundsystem
-{
-class ISoundSystem;
-}
-
-// TODO: shouldn't depend on ui code here
-namespace ui::settings
-{
-class StudioModelSettings;
-}
 
 namespace graphics
 {
@@ -52,21 +23,19 @@ class TextureLoader;
 class Scene
 {
 public:
-	Scene(ui::assets::studiomodel::StudioModelAsset* asset,
-		IGraphicsContext* graphicsContext, QOpenGLFunctions_1_1* openglFunctions,
-		graphics::TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime,
-		ui::settings::StudioModelSettings* settings);
+	Scene(IGraphicsContext* graphicsContext,
+		QOpenGLFunctions_1_1* openglFunctions,
+		graphics::TextureLoader* textureLoader,
+		EntityContext* entityContext);
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
 
-	IGraphicsContext* GetGraphicsContext() const { return _graphicsContext; }
+	IGraphicsContext* GetGraphicsContext() { return _graphicsContext; }
 
 	QOpenGLFunctions_1_1* GetOpenGLFunctions() { return _openglFunctions; }
 
-	EntityContext* GetEntityContext() const { return _entityContext.get(); }
-
-	EntityList* GetEntityList() const { return _entityList.get(); }
+	EntityList* GetEntityList() { return _entityList.get(); }
 
 	Camera* GetCurrentCamera() { return _currentCamera; }
 
@@ -119,17 +88,11 @@ private:
 
 private:
 	IGraphicsContext* const _graphicsContext;
-
 	QOpenGLFunctions_1_1* const _openglFunctions;
-
 	TextureLoader* const _textureLoader;
+	EntityContext* const _entityContext;
 
-	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
-	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
-
-	std::unique_ptr<EntityContext> _entityContext;
-
-	std::unique_ptr<EntityList> _entityList;
+	const std::unique_ptr<EntityList> _entityList;
 
 	Camera* _currentCamera{};
 

@@ -26,8 +26,8 @@ StudioModelSequencesPanel::StudioModelSequencesPanel(StudioModelAsset* asset)
 	_ui.EventId->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 	_ui.EventType->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
-	_ui.PlaySound->setEnabled(_asset->GetScene()->GetEntityContext()->SoundSystem->IsSoundAvailable());
-	_ui.PitchFramerateAmplitude->setEnabled(_asset->GetScene()->GetEntityContext()->SoundSystem->IsSoundAvailable());
+	_ui.PlaySound->setEnabled(_asset->GetSoundSystem()->IsSoundAvailable());
+	_ui.PitchFramerateAmplitude->setEnabled(_asset->GetSoundSystem()->IsSoundAvailable());
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &StudioModelSequencesPanel::OnModelChanged);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelSequencesPanel::OnLoadSnapshot);

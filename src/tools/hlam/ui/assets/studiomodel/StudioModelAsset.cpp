@@ -16,6 +16,9 @@
 
 #include "assets/AssetIO.hpp"
 
+#include "engine/renderer/sprite/SpriteRenderer.hpp"
+#include "engine/renderer/studiomodel/StudioModelRenderer.hpp"
+#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 #include "engine/shared/studiomodel/DumpModelInfo.hpp"
 #include "engine/shared/studiomodel/StudioModelIO.hpp"
 #include "engine/shared/studiomodel/StudioModelUtils.hpp"
@@ -36,6 +39,7 @@
 #include "graphics/Scene.hpp"
 #include "graphics/TextureLoader.hpp"
 
+#include "qt/QtLogSink.hpp"
 #include "qt/QtUtilities.hpp"
 
 #include "ui/EditorContext.hpp"
@@ -126,10 +130,21 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
 	, _textureLoader(std::make_unique<graphics::TextureLoader>(_editorContext->GetOpenGLFunctions()))
-	, _scene(std::make_unique<graphics::Scene>(this,
-		_editorContext->GetGraphicsContext(), _editorContext->GetOpenGLFunctions(),
-		_textureLoader.get(), _editorContext->GetSoundSystem(), _editorContext->GetWorldTime(),
+	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(
+		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()), _editorContext->GetOpenGLFunctions(), _editorContext->GetColorSettings()))
+	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(
+		CreateQtLoggerSt(logging::HLAMSpriteRenderer()), _editorContext->GetWorldTime()))
+	, _entityContext(std::make_unique<EntityContext>(this,
+		_editorContext->GetWorldTime(),
+		_studioModelRenderer.get(),
+		_spriteRenderer.get(),
+		_editorContext->GetSoundSystem(),
 		_provider->GetStudioModelSettings()))
+	, _scene(std::make_unique<graphics::Scene>(
+		_editorContext->GetGraphicsContext(),
+		_editorContext->GetOpenGLFunctions(),
+		_textureLoader.get(),
+		_entityContext.get()))
 	, _cameraOperators(new camera_operators::CameraOperators(this))
 {
 	auto studioModelSettings = _provider->GetStudioModelSettings();
@@ -147,21 +162,13 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	// The order that entities are added matters for now since there's no sorting done.
 	_backgroundEntity = _scene->GetEntityList()->Create<BackgroundEntity>();
-
 	_scene->GetEntityList()->Create<AxesEntity>();
-
 	_modelEntity = _scene->GetEntityList()->Create<HLMVStudioModelEntity>(GetEditableStudioModel());
-
 	_groundEntity = _scene->GetEntityList()->Create<GroundEntity>();
-
 	_scene->GetEntityList()->Create<PlayerHitboxEntity>();
-
 	_scene->GetEntityList()->Create<BoundingBoxEntity>();
-
 	_scene->GetEntityList()->Create<ClippingBoxEntity>();
-
 	_scene->GetEntityList()->Create<CrosshairEntity>();
-
 	_scene->GetEntityList()->Create<GuidelinesEntity>();
 
 	auto arcBallCamera = new camera_operators::ArcBallCameraOperator(_editorContext->GetGeneralSettings());
@@ -338,6 +345,11 @@ void StudioModelAsset::TryRefresh()
 	emit LoadSnapshot(snapshot.get());
 }
 
+soundsystem::ISoundSystem* StudioModelAsset::GetSoundSystem()
+{
+	return _editorContext->GetSoundSystem();
+}
+
 void StudioModelAsset::SaveEntityToSnapshot(StateSnapshot* snapshot)
 {
 	auto model = _modelEntity->GetEditableModel();
@@ -417,6 +429,7 @@ void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
 void StudioModelAsset::OnTick()
 {
 	//TODO: update asset-local world time
+	_studioModelRenderer->RunFrame();
 	_scene->Tick();
 
 	emit Tick();

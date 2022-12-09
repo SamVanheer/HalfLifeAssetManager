@@ -4,6 +4,7 @@
 #include "entity/BackgroundEntity.hpp"
 
 #include "graphics/IGraphicsContext.hpp"
+#include "graphics/Scene.hpp"
 
 #include "qt/QtUtilities.hpp"
 

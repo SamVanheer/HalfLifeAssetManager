@@ -18,6 +18,7 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Palette.hpp"
+#include "graphics/Scene.hpp"
 #include "graphics/TextureLoader.hpp"
 
 #include "qt/QtUtilities.hpp"

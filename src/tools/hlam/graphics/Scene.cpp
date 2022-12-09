@@ -1,23 +1,13 @@
-#include <cassert>
-#include <utility>
-
 #include <QOpenGLFunctions_1_1>
 
-#include <glm/mat4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "engine/renderer/sprite/SpriteRenderer.hpp"
-#include "engine/renderer/studiomodel/StudioModelRenderer.hpp"
 #include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
 
 #include "entity/BaseEntity.hpp"
 #include "entity/EntityList.hpp"
 
-#include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
-#include "graphics/TextureLoader.hpp"
-
-#include "qt/QtLogSink.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
@@ -26,25 +16,16 @@
 
 namespace graphics
 {
-Scene::Scene(ui::assets::studiomodel::StudioModelAsset* asset,
-	IGraphicsContext* graphicsContext, QOpenGLFunctions_1_1* openglFunctions,
-	TextureLoader* textureLoader, soundsystem::ISoundSystem* soundSystem, WorldTime* worldTime,
-	ui::settings::StudioModelSettings* settings)
+Scene::Scene(IGraphicsContext* graphicsContext,
+	QOpenGLFunctions_1_1* openglFunctions,
+	TextureLoader* textureLoader,
+	EntityContext* entityContext)
 	: _graphicsContext(graphicsContext)
 	, _openglFunctions(openglFunctions)
 	, _textureLoader(textureLoader)
-	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(CreateQtLoggerSt(logging::HLAMSpriteRenderer()), worldTime))
-	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(
-		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()), _openglFunctions, asset->GetEditorContext()->GetColorSettings()))
-	, _entityContext(std::make_unique<EntityContext>(asset,
-		worldTime,
-		_studioModelRenderer.get(), _spriteRenderer.get(),
-		soundSystem,
-		settings))
-	, _entityList(std::make_unique<EntityList>(_entityContext.get()))
+	, _entityContext(entityContext)
+	, _entityList(std::make_unique<EntityList>(_entityContext))
 {
-	assert(_textureLoader);
-
 	SetCurrentCamera(nullptr);
 }
 
@@ -68,7 +49,6 @@ void Scene::DestroyDeviceObjects()
 
 void Scene::Tick()
 {
-	_studioModelRenderer->RunFrame();
 	_entityList->RunFrame();
 }
 
@@ -90,10 +70,10 @@ void Scene::Draw(SceneContext& sc)
 
 	auto camera = GetCurrentCamera();
 
-	_studioModelRenderer->SetViewerOrigin(camera->GetOrigin());
-	_studioModelRenderer->SetViewerRight(camera->GetRightVector());
+	_entityContext->StudioModelRenderer->SetViewerOrigin(camera->GetOrigin());
+	_entityContext->StudioModelRenderer->SetViewerRight(camera->GetRightVector());
 
-	const unsigned int uiOldPolys = _studioModelRenderer->GetDrawnPolygonsCount();
+	const unsigned int uiOldPolys = _entityContext->StudioModelRenderer->GetDrawnPolygonsCount();
 
 	DrawRenderables(sc, RenderPass::Background);
 
@@ -107,7 +87,7 @@ void Scene::Draw(SceneContext& sc)
 	DrawRenderables(sc, RenderPass::Overlay3D);
 	DrawRenderables(sc, RenderPass::Overlay2D);
 
-	_drawnPolygonsCount = _studioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;
+	_drawnPolygonsCount = _entityContext->StudioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;
 }
 
 void Scene::CollectRenderables(RenderPass::RenderPass renderPass, std::vector<BaseEntity*>& renderablesToRender)

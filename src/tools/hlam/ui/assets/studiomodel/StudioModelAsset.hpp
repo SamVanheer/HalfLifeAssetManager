@@ -10,20 +10,35 @@
 
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
 
-#include "graphics/Scene.hpp"
-
 #include "ui/IInputSink.hpp"
 #include "ui/assets/Assets.hpp"
 
 #include "utility/mathlib.hpp"
 
 class BackgroundEntity;
+class EntityContext;
 class GroundEntity;
 class HLMVStudioModelEntity;
 
 namespace graphics
 {
+class Scene;
 class TextureLoader;
+}
+
+namespace soundsystem
+{
+class ISoundSystem;
+}
+
+namespace sprite
+{
+class ISpriteRenderer;
+}
+
+namespace studiomdl
+{
+class IStudioModelRenderer;
 }
 
 namespace ui
@@ -160,6 +175,10 @@ public:
 
 	graphics::TextureLoader* GetTextureLoader() { return _textureLoader.get(); }
 
+	studiomdl::IStudioModelRenderer* GetStudioModelRenderer() { return _studioModelRenderer.get(); }
+
+	sprite::ISpriteRenderer* GetSpriteRenderer() { return _spriteRenderer.get(); }
+
 	graphics::Scene* GetScene() { return _scene.get(); }
 
 	IInputSink* GetInputSink() const { return _inputSinks.top(); }
@@ -195,6 +214,8 @@ public:
 	GroundEntity* GetGroundEntity() { return _groundEntity.get(); }
 
 	Pose GetPose() const { return _pose; }
+
+	soundsystem::ISoundSystem* GetSoundSystem();
 
 private:
 	void SaveEntityToSnapshot(StateSnapshot* snapshot);
@@ -245,6 +266,9 @@ private:
 	const StudioModelAssetProvider* const _provider;
 	std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;
 	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
+	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
+	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
+	const std::unique_ptr<EntityContext> _entityContext;
 	const std::unique_ptr<graphics::Scene> _scene;
 
 	std::stack<IInputSink*> _inputSinks;

@@ -2,6 +2,8 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "graphics/Scene.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/InfoBar.hpp"
 
