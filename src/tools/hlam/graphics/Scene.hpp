@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "graphics/Camera.hpp"
@@ -23,13 +24,13 @@ class TextureLoader;
 class Scene
 {
 public:
-	Scene(IGraphicsContext* graphicsContext,
-		QOpenGLFunctions_1_1* openglFunctions,
-		graphics::TextureLoader* textureLoader,
-		EntityContext* entityContext);
+	Scene(std::string&& name, IGraphicsContext* graphicsContext,QOpenGLFunctions_1_1* openglFunctions,
+		graphics::TextureLoader* textureLoader, EntityContext* entityContext);
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
+
+	const std::string& GetName() const { return _name; }
 
 	IGraphicsContext* GetGraphicsContext() { return _graphicsContext; }
 
@@ -87,6 +88,8 @@ private:
 	void DrawRenderables(graphics::SceneContext& sc, RenderPass::RenderPass renderPass);
 
 private:
+	const std::string _name;
+
 	IGraphicsContext* const _graphicsContext;
 	QOpenGLFunctions_1_1* const _openglFunctions;
 	TextureLoader* const _textureLoader;

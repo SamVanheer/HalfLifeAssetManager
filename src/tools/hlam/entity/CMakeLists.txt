@@ -28,4 +28,6 @@ target_sources(HLAM
 		SpriteEntity.cpp
 		SpriteEntity.hpp
 		StudioModelEntity.cpp
-		StudioModelEntity.hpp)
+		StudioModelEntity.hpp
+		TextureEntity.cpp
+		TextureEntity.hpp)

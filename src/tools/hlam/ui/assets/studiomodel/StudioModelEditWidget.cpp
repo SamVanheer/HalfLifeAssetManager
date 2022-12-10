@@ -6,12 +6,13 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "graphics/Scene.hpp"
+
 #include "qt/QtUtilities.hpp"
 
 #include "ui/DragNDropEventFilter.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/SceneWidget.hpp"
-#include "ui/TextureWidget.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
@@ -56,8 +57,6 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_sceneWidget = new SceneWidget(this);
 
-	_textureWidget = new TextureWidget(this);
-
 	auto eventFilter = _editorContext->GetDragNDropEventFilter();
 
 	//The filter needs to be installed on the main window (handles dropping on any child widget),
@@ -65,10 +64,12 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	_ui.Window->installEventFilter(eventFilter);
 	_sceneWidget->installEventFilter(eventFilter);
 
-	SetTextureBackgroundColor();
+	for (auto scene : _asset->GetScenes())
+	{
+		_view->AddScene(QString::fromStdString(scene->GetName()));
+	}
 
-	_view->AddWidget(_sceneWidget->GetContainer(), "Scene");
-	_view->AddWidget(_textureWidget, "Texture");
+	_view->SetWidget(_sceneWidget->GetContainer());
 
 	_ui.Window->setCentralWidget(_view);
 
@@ -96,7 +97,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	auto scenePanel = new StudioModelScenePanel(_asset);
 	auto bodyPartsPanel = new StudioModelBodyPartsPanel(_asset);
-	_texturesPanel = new StudioModelTexturesPanel(_asset);
+	auto texturesPanel = new StudioModelTexturesPanel(_asset);
 	auto modelDataPanel = new StudioModelModelDataPanel(_asset);
 	auto transformPanel = new StudioModelTransformPanel(_asset);
 
@@ -123,7 +124,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	addDockPanel(new StudioModelLightingPanel(_asset), "Lighting");
 	addDockPanel(new StudioModelSequencesPanel(_asset), "Sequences");
 	auto bodyPartsDock = addDockPanel(bodyPartsPanel, "Body Parts");
-	auto texturesDock = addDockPanel(_texturesPanel, "Textures");
+	auto texturesDock = addDockPanel(texturesPanel, "Textures");
 	auto modelDataDock = addDockPanel(modelDataPanel, "Model Data");
 	auto flagsDock = addDockPanel(new StudioModelFlagsPanel(_asset), "Model Flags");
 	addDockPanel(new StudioModelBonesPanel(_asset), "Bones");
@@ -168,6 +169,8 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	connect(cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelEditWidget::OnAssetCameraChanged);
 	connect(_camerasPanel, &camera_operators::CamerasPanel::CameraChanged, this, &StudioModelEditWidget::OnCameraChanged);
 
+	connect(_view, &StudioModelView::SceneChanged, this, &StudioModelEditWidget::SetSceneIndex);
+
 	connect(_view, &StudioModelView::PoseChanged, [this](int index)
 		{
 			_asset->SetPose(static_cast<Pose>(index));
@@ -185,18 +188,27 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	connect(texturesDock, &QDockWidget::visibilityChanged, this, &StudioModelEditWidget::OnTexturesDockVisibilityChanged);
 	connect(modelDataDock, &QDockWidget::dockLocationChanged, modelDataPanel, &StudioModelModelDataPanel::OnLayoutDirectionChanged);
 	connect(transformDock, &QDockWidget::visibilityChanged, transformPanel, &StudioModelTransformPanel::ResetValues);
-
-	connect(_editorContext->GetColorSettings(), &settings::ColorSettings::ColorsChanged, this, &StudioModelEditWidget::SetTextureBackgroundColor);
-	connect(_texturesPanel, &StudioModelTexturesPanel::CurrentTextureChanged, _textureWidget, &TextureWidget::ResetImagePosition);
-	connect(_texturesPanel, &StudioModelTexturesPanel::TextureViewChanged, this, &StudioModelEditWidget::OnTextureViewChanged);
-
-	connect(_textureWidget, &TextureWidget::ScaleChanged, _texturesPanel, &StudioModelTexturesPanel::AdjustScale);
-
-	//TODO: should happen automatically
-	OnTextureViewChanged();
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
+
+graphics::Scene* StudioModelEditWidget::GetCurrentScene()
+{
+	const int index = _view->GetSceneIndex();
+
+	if (index == -1)
+	{
+		return nullptr;
+	}
+
+	return _asset->GetScenes()[index];
+}
+
+void StudioModelEditWidget::SetSceneIndex(int index)
+{
+	_view->SetSceneIndex(index);
+	_sceneWidget->SetScene(_asset->GetScenes()[index]);
+}
 
 void StudioModelEditWidget::OnDockLocationChanged(Qt::DockWidgetArea area)
 {
@@ -253,24 +265,9 @@ void StudioModelEditWidget::OnTexturesDockVisibilityChanged(bool visible)
 {
 	if (_asset->GetProvider()->GetStudioModelSettings()->ShouldActivateTextureViewWhenTexturesPanelOpened())
 	{
-		if (visible)
-		{
-			_view->SetCurrentWidget(_textureWidget);
-		}
-		else
-		{
-			_view->SetCurrentWidget(_sceneWidget->GetContainer());
-		}
+		auto scene = visible ? _asset->GetTextureScene() : _asset->GetScene();
+
+		SetSceneIndex(_asset->GetScenes().indexOf(scene));
 	}
-}
-
-void StudioModelEditWidget::SetTextureBackgroundColor()
-{
-	_textureWidget->SetBackgroundColor(_editorContext->GetColorSettings()->GetColor(BackgroundColor.Name));
-}
-
-void StudioModelEditWidget::OnTextureViewChanged()
-{
-	_textureWidget->SetImage(_texturesPanel->GenerateTextureForDisplay());
 }
 }

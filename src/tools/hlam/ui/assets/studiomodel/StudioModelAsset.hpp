@@ -7,6 +7,7 @@
 
 #include <QLoggingCategory>
 #include <QObject>
+#include <QVector>
 
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
 
@@ -19,6 +20,7 @@ class BackgroundEntity;
 class EntityContext;
 class GroundEntity;
 class HLMVStudioModelEntity;
+class TextureEntity;
 
 namespace graphics
 {
@@ -49,6 +51,7 @@ namespace camera_operators
 {
 class CameraOperator;
 class CameraOperators;
+class TextureCameraOperator;
 }
 
 namespace settings
@@ -179,9 +182,11 @@ public:
 
 	sprite::ISpriteRenderer* GetSpriteRenderer() { return _spriteRenderer.get(); }
 
-	graphics::Scene* GetScene() { return _scene.get(); }
-
 	IInputSink* GetInputSink() const { return _inputSinks.top(); }
+
+	const QVector<graphics::Scene*>& GetScenes() { return _scenes; }
+
+	graphics::Scene* GetScene() { return _scene.get(); }
 
 	void PushInputSink(IInputSink* inputSink)
 	{
@@ -213,11 +218,20 @@ public:
 
 	GroundEntity* GetGroundEntity() { return _groundEntity.get(); }
 
+	graphics::Scene* GetTextureScene() { return _textureScene.get(); }
+
+	TextureEntity* GetTextureEntity() { return _textureEntity.get(); }
+
+	camera_operators::TextureCameraOperator* GetTextureCameraOperator() { return _textureCameraOperator.get(); }
+
 	Pose GetPose() const { return _pose; }
 
 	soundsystem::ISoundSystem* GetSoundSystem();
 
 private:
+	void CreateMainScene();
+	void CreateTextureScene();
+
 	void SaveEntityToSnapshot(StateSnapshot* snapshot);
 	void LoadEntityFromSnapshot(StateSnapshot* snapshot);
 
@@ -269,9 +283,12 @@ private:
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<EntityContext> _entityContext;
-	const std::unique_ptr<graphics::Scene> _scene;
 
 	std::stack<IInputSink*> _inputSinks;
+
+	QVector<graphics::Scene*> _scenes;
+
+	std::unique_ptr<graphics::Scene> _scene;
 
 	camera_operators::CameraOperators* _cameraOperators;
 
@@ -282,6 +299,12 @@ private:
 	std::shared_ptr<HLMVStudioModelEntity> _modelEntity;
 	std::shared_ptr<BackgroundEntity> _backgroundEntity;
 	std::shared_ptr<GroundEntity> _groundEntity;
+
+	std::unique_ptr<graphics::Scene> _textureScene;
+
+	std::shared_ptr<TextureEntity> _textureEntity;
+
+	std::unique_ptr<camera_operators::TextureCameraOperator> _textureCameraOperator;
 
 	//TODO: this is temporarily put here, but needs to be put somewhere else eventually
 	Pose _pose = Pose::Sequences;

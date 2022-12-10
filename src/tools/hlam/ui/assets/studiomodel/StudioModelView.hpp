@@ -8,7 +8,7 @@
 namespace ui::assets::studiomodel
 {
 /**
-*	@brief A collection of pages, an info bar and a tab bar to select the current page
+*	@brief A scene view, an info bar and a tab bar to select the current scene
 */
 class StudioModelView final : public QWidget
 {
@@ -20,12 +20,19 @@ public:
 
 	InfoBar* GetInfoBar() const { return _ui.InfoBar; }
 
-	void AddWidget(QWidget* widget, const QString& label);
+	int GetSceneIndex() const;
 
-	void SetCurrentWidget(QWidget* widget);
+	void AddScene(const QString& label);
+
+	void SetWidget(QWidget* widget);
 
 signals:
+	void SceneChanged(int index);
+
 	void PoseChanged(int index);
+
+public slots:
+	void SetSceneIndex(int index);
 
 private slots:
 	void OnPoseChanged(int index);

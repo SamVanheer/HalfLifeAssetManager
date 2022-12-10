@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0,0,0,0">
+  <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -42,6 +42,25 @@
      </property>
     </widget>
    </item>
+   <item row="1" column="4">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="1" alignment="Qt::AlignLeft">
+    <widget class="QTabBar" name="ViewSelection" native="true"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="ui::assets::studiomodel::InfoBar" name="InfoBar" native="true"/>
+   </item>
    <item row="1" column="3">
     <widget class="QComboBox" name="Pose">
      <property name="sizePolicy">
@@ -62,27 +81,8 @@
      </item>
     </widget>
    </item>
-   <item row="1" column="1" alignment="Qt::AlignLeft">
-    <widget class="QTabBar" name="ViewSelection" native="true"/>
-   </item>
-   <item row="1" column="0">
-    <widget class="ui::assets::studiomodel::InfoBar" name="InfoBar" native="true"/>
-   </item>
-   <item row="1" column="4">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>0</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="0" column="0" colspan="5">
-    <widget class="QStackedWidget" name="View"/>
+    <layout class="QVBoxLayout" name="SceneContainer"/>
    </item>
   </layout>
  </widget>

@@ -10,40 +10,34 @@ StudioModelView::StudioModelView(QWidget* parent)
 	_ui.ViewSelection->setShape(QTabBar::Shape::RoundedSouth);
 	_ui.ViewSelection->setToolTip("The current view");
 
-	connect(_ui.ViewSelection, &QTabBar::currentChanged, _ui.View, &QStackedWidget::setCurrentIndex);
+	connect(_ui.ViewSelection, &QTabBar::currentChanged, this, &StudioModelView::SceneChanged);
 	connect(_ui.Pose, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelView::OnPoseChanged);
 }
 
 StudioModelView::~StudioModelView() = default;
 
-void StudioModelView::AddWidget(QWidget* widget, const QString& label)
+int StudioModelView::GetSceneIndex() const
 {
-	_ui.View->addWidget(widget);
+	return _ui.ViewSelection->currentIndex();
+}
+
+void StudioModelView::AddScene(const QString& label)
+{
 	_ui.ViewSelection->addTab(label);
 }
 
-void StudioModelView::SetCurrentWidget(QWidget* widget)
+void StudioModelView::SetWidget(QWidget* widget)
 {
-	int index = -1;
-
-	if (widget)
+	if (_ui.SceneContainer->count() > 0)
 	{
-		for (int i = 0; i < _ui.View->count(); ++i)
-		{
-			if (_ui.View->widget(i) == widget)
-			{
-				index = i;
-				break;
-			}
-		}
-
-		if (index == -1)
-		{
-			//Not contained in this view
-			return;
-		}
+		_ui.SceneContainer->removeItem(_ui.SceneContainer->itemAt(0));
 	}
 
+	_ui.SceneContainer->addWidget(widget);
+}
+
+void StudioModelView::SetSceneIndex(int index)
+{
 	_ui.ViewSelection->setCurrentIndex(index);
 }
 

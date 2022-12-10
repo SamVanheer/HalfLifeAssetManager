@@ -7,13 +7,13 @@
 #include <QImage>
 #include <QMessageBox>
 #include <QMetaEnum>
-#include <QPainter>
 #include <QSignalBlocker>
 #include <QToolTip>
 
 #include <glm/vec2.hpp>
 
 #include "entity/HLMVStudioModelEntity.hpp"
+#include "entity/TextureEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"
@@ -31,6 +31,8 @@
 #include "ui/assets/studiomodel/StudioModelValidators.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelExportUVMeshDialog.hpp"
 #include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
+
+#include "ui/camera_operators/TextureCameraOperator.hpp"
 
 #include "ui/settings/StudioModelSettings.hpp"
 
@@ -100,6 +102,8 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset)
 	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &StudioModelTexturesPanel::OnSaveSnapshot);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &StudioModelTexturesPanel::OnLoadSnapshot);
 
+	connect(_asset->GetTextureCameraOperator(), &camera_operators::TextureCameraOperator::ScaleChanged, this, &StudioModelTexturesPanel::OnScaleChanged);
+
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::OnTextureChanged);
 	connect(_ui.ScaleTextureViewSlider, &QSlider::valueChanged, this, &StudioModelTexturesPanel::OnTextureViewScaleSliderChanged);
 	connect(_ui.ScaleTextureViewSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &StudioModelTexturesPanel::OnTextureViewScaleSpinnerChanged);
@@ -116,11 +120,11 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset)
 	connect(_ui.Fullbright, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnFullbrightChanged);
 	connect(_ui.Mipmaps, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnMipmapsChanged);
 
-	connect(_ui.ShowUVMap, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::TextureViewChanged);
-	connect(_ui.OverlayUVMap, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::TextureViewChanged);
-	connect(_ui.AntiAliasLines, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::TextureViewChanged);
+	connect(_ui.ShowUVMap, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnShowUVMapChanged);
+	connect(_ui.OverlayUVMap, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnOverlayUVMapChanged);
+	connect(_ui.AntiAliasLines, &QCheckBox::stateChanged, this, &StudioModelTexturesPanel::OnAntiAliasLinesChanged);
 
-	connect(_ui.Meshes, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::TextureViewChanged);
+	connect(_ui.Meshes, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelTexturesPanel::OnMeshChanged);
 
 	connect(_ui.ImportTexture, &QPushButton::clicked, this, &StudioModelTexturesPanel::OnImportTexture);
 	connect(_ui.ExportTexture, &QPushButton::clicked, this, &StudioModelTexturesPanel::OnExportTexture);
@@ -144,44 +148,6 @@ StudioModelTexturesPanel::StudioModelTexturesPanel(StudioModelAsset* asset)
 }
 
 StudioModelTexturesPanel::~StudioModelTexturesPanel() = default;
-
-QImage StudioModelTexturesPanel::GenerateTextureForDisplay()
-{
-	const int textureIndex = _ui.Textures->currentIndex();
-
-	if (textureIndex == -1)
-	{
-		return {};
-	}
-
-	auto entity = _asset->GetEntity();
-
-	const auto model = entity->GetEditableModel();
-
-	const auto& texture = *model->Textures[textureIndex];
-
-	const auto textureData = texture.Data.Pixels.data();
-
-	std::vector<QRgb> dataBuffer;
-
-	const auto textureImage{ConvertTextureToRGBImage(texture.Data, textureData, texture.Data.Palette, dataBuffer)};
-
-	const auto uvMapImage = CreateUVMapImage(
-		*model,
-		textureIndex, GetMeshIndexForDrawing(_ui.Meshes),
-		_ui.AntiAliasLines->isChecked(),
-		_ui.ScaleTextureViewSpinner->value(), _uvLineWidth);
-
-	QImage resultImage{uvMapImage.width(), uvMapImage.height(), QImage::Format::Format_RGBA8888};
-
-	const bool blackBackground = _ui.ShowUVMap->isChecked() && !_ui.OverlayUVMap->isChecked();
-
-	DrawUVImage(
-		blackBackground ? Qt::GlobalColor::black : Qt::GlobalColor::transparent,
-		_ui.ShowUVMap->isChecked(), _ui.OverlayUVMap->isChecked(), textureImage, uvMapImage, resultImage);
-
-	return resultImage;
-}
 
 void StudioModelTexturesPanel::InitializeUI()
 {
@@ -322,9 +288,19 @@ void StudioModelTexturesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 	}
 }
 
+void StudioModelTexturesPanel::OnScaleChanged(float adjust)
+{
+	_ui.ScaleTextureViewSpinner->setValue(_ui.ScaleTextureViewSpinner->value() + adjust);
+}
+
 void StudioModelTexturesPanel::OnTextureChanged(int index)
 {
 	auto entity = _asset->GetEntity();
+	auto textureEntity = _asset->GetTextureEntity();
+
+	//Reset texture position to be centered
+	textureEntity->XOffset = textureEntity->YOffset = 0;
+	textureEntity->TextureIndex = index;
 
 	_ui.Meshes->clear();
 	_ui.Meshes->setEnabled(index != -1);
@@ -353,8 +329,7 @@ void StudioModelTexturesPanel::OnTextureChanged(int index)
 		_ui.Meshes->addItem("All");
 	}
 
-	emit CurrentTextureChanged();
-	emit TextureViewChanged();
+	UpdateUVMapTexture();
 }
 
 void StudioModelTexturesPanel::OnTextureViewScaleSliderChanged(int value)
@@ -366,7 +341,9 @@ void StudioModelTexturesPanel::OnTextureViewScaleSliderChanged(int value)
 		_ui.ScaleTextureViewSpinner->setValue(newValue);
 	}
 
-	emit TextureViewChanged();
+	_asset->GetTextureEntity()->TextureScale = newValue;
+
+	UpdateUVMapTexture();
 }
 
 void StudioModelTexturesPanel::OnTextureViewScaleSpinnerChanged(double value)
@@ -376,7 +353,9 @@ void StudioModelTexturesPanel::OnTextureViewScaleSpinnerChanged(double value)
 		_ui.ScaleTextureViewSlider->setValue(static_cast<int>((value - _ui.ScaleTextureViewSpinner->minimum()) * UVLineWidthSliderRatio));
 	}
 
-	emit TextureViewChanged();
+	_asset->GetTextureEntity()->TextureScale = value;
+
+	UpdateUVMapTexture();
 }
 
 void StudioModelTexturesPanel::OnUVLineWidthSliderChanged(int value)
@@ -390,7 +369,7 @@ void StudioModelTexturesPanel::OnUVLineWidthSliderChanged(int value)
 		_ui.UVLineWidthSpinner->setValue(newValue);
 	}
 
-	emit TextureViewChanged();
+	UpdateUVMapTexture();
 }
 
 void StudioModelTexturesPanel::OnUVLineWidthSpinnerChanged(double value)
@@ -402,7 +381,7 @@ void StudioModelTexturesPanel::OnUVLineWidthSpinnerChanged(double value)
 		_ui.UVLineWidthSlider->setValue(static_cast<int>(value * UVLineWidthSliderRatio));
 	}
 
-	emit TextureViewChanged();
+	UpdateUVMapTexture();
 }
 
 void StudioModelTexturesPanel::OnTextureNameChanged()
@@ -495,6 +474,26 @@ void StudioModelTexturesPanel::OnMipmapsChanged()
 	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }
 
+void StudioModelTexturesPanel::OnShowUVMapChanged()
+{
+	UpdateUVMapTexture();
+}
+
+void StudioModelTexturesPanel::OnOverlayUVMapChanged()
+{
+	_asset->GetTextureEntity()->OverlayUVMap = _ui.OverlayUVMap->isChecked();
+}
+
+void StudioModelTexturesPanel::OnAntiAliasLinesChanged()
+{
+	UpdateUVMapTexture();
+}
+
+void StudioModelTexturesPanel::OnMeshChanged(int index)
+{
+	UpdateUVMapTexture();
+}
+
 void StudioModelTexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::EditableStudioModel& model, int textureIndex)
 {
 	QImage image{fileName};
@@ -570,6 +569,46 @@ void StudioModelTexturesPanel::UpdateColormapValue()
 	const int colormapValue = topColor & 0xFF | ((bottomColor & 0xFF) << 8);
 
 	_ui.ColormapValue->setText(QString::number(colormapValue));
+}
+
+void StudioModelTexturesPanel::UpdateUVMapTexture()
+{
+	auto textureEntity = _asset->GetTextureEntity();
+
+	auto scene = _asset->GetScene();
+
+	textureEntity->ShowUVMap = _ui.ShowUVMap->isChecked();
+
+	if (!_ui.ShowUVMap->isChecked())
+	{
+		return;
+	}
+
+	const int textureIndex = _ui.Textures->currentIndex();
+
+	if (textureIndex == -1)
+	{
+		//Make sure nothing is drawn when no texture is selected
+		std::byte transparentImage[4];
+
+		std::fill_n(transparentImage, std::size(transparentImage), std::byte{0});
+
+		textureEntity->SetUVMeshImage({1, 1, transparentImage});
+		return;
+	}
+
+	auto entity = _asset->GetEntity();
+
+	auto model = entity->GetEditableModel();
+
+	textureEntity->ShowUVMap = _ui.ShowUVMap->isChecked();
+
+	const float scale = textureEntity->TextureScale;
+
+	//Create an updated image of the UV map with current settings
+	const auto uvMapImage = CreateUVMapImage(*model, textureIndex, GetMeshIndexForDrawing(_ui.Meshes), _ui.AntiAliasLines->isChecked(), scale, _uvLineWidth);
+
+	textureEntity->SetUVMeshImage({uvMapImage.width(), uvMapImage.height(), reinterpret_cast<const std::byte*>(uvMapImage.constBits())});
 }
 
 void StudioModelTexturesPanel::OnImportTexture()

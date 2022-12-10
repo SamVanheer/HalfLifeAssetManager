@@ -34,6 +34,7 @@
 #include "entity/GuidelinesEntity.hpp"
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "entity/PlayerHitboxEntity.hpp"
+#include "entity/TextureEntity.hpp"
 
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
@@ -59,6 +60,7 @@
 #include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/FirstPersonCameraOperator.hpp"
 #include "ui/camera_operators/FreeLookCameraOperator.hpp"
+#include "ui/camera_operators/TextureCameraOperator.hpp"
 
 #include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
@@ -140,11 +142,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_spriteRenderer.get(),
 		_editorContext->GetSoundSystem(),
 		_provider->GetStudioModelSettings()))
-	, _scene(std::make_unique<graphics::Scene>(
-		_editorContext->GetGraphicsContext(),
-		_editorContext->GetOpenGLFunctions(),
-		_textureLoader.get(),
-		_entityContext.get()))
 	, _cameraOperators(new camera_operators::CameraOperators(this))
 {
 	auto studioModelSettings = _provider->GetStudioModelSettings();
@@ -160,16 +157,8 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	connect(_cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
 
-	// The order that entities are added matters for now since there's no sorting done.
-	_backgroundEntity = _scene->GetEntityList()->Create<BackgroundEntity>();
-	_scene->GetEntityList()->Create<AxesEntity>();
-	_modelEntity = _scene->GetEntityList()->Create<HLMVStudioModelEntity>(GetEditableStudioModel());
-	_groundEntity = _scene->GetEntityList()->Create<GroundEntity>();
-	_scene->GetEntityList()->Create<PlayerHitboxEntity>();
-	_scene->GetEntityList()->Create<BoundingBoxEntity>();
-	_scene->GetEntityList()->Create<ClippingBoxEntity>();
-	_scene->GetEntityList()->Create<CrosshairEntity>();
-	_scene->GetEntityList()->Create<GuidelinesEntity>();
+	CreateMainScene();
+	CreateTextureScene();
 
 	auto arcBallCamera = new camera_operators::ArcBallCameraOperator(_editorContext->GetGeneralSettings());
 	_firstPersonCamera = new camera_operators::FirstPersonCameraOperator(_editorContext->GetGeneralSettings());
@@ -202,7 +191,12 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	// Initialize graphics resources.
 	auto context = _editorContext->GetGraphicsContext();
 	context->Begin();
-	_scene->CreateDeviceObjects();
+
+	for (auto scene : _scenes)
+	{
+		scene->CreateDeviceObjects();
+	}
+
 	context->End();
 }
 
@@ -211,8 +205,14 @@ StudioModelAsset::~StudioModelAsset()
 	auto context = _editorContext->GetGraphicsContext();
 
 	context->Begin();
+
 	_editableStudioModel->DeleteTextures(*_textureLoader);
-	_scene->DestroyDeviceObjects();
+
+	for (auto it = _scenes.rbegin(), end = _scenes.rend(); it != end; ++it)
+	{
+		(*it)->DestroyDeviceObjects();
+	}
+
 	context->End();
 
 	PopInputSink();
@@ -350,6 +350,40 @@ soundsystem::ISoundSystem* StudioModelAsset::GetSoundSystem()
 	return _editorContext->GetSoundSystem();
 }
 
+void StudioModelAsset::CreateMainScene()
+{
+	_scene = std::make_unique<graphics::Scene>("Scene", _editorContext->GetGraphicsContext(), _editorContext->GetOpenGLFunctions(),
+		_textureLoader.get(), _entityContext.get());
+
+	_scenes.push_back(_scene.get());
+
+	// The order that entities are added matters for now since there's no sorting done.
+	_backgroundEntity = _scene->GetEntityList()->Create<BackgroundEntity>();
+	_scene->GetEntityList()->Create<AxesEntity>();
+	_modelEntity = _scene->GetEntityList()->Create<HLMVStudioModelEntity>(GetEditableStudioModel());
+	_groundEntity = _scene->GetEntityList()->Create<GroundEntity>();
+	_scene->GetEntityList()->Create<PlayerHitboxEntity>();
+	_scene->GetEntityList()->Create<BoundingBoxEntity>();
+	_scene->GetEntityList()->Create<ClippingBoxEntity>();
+	_scene->GetEntityList()->Create<CrosshairEntity>();
+	_scene->GetEntityList()->Create<GuidelinesEntity>();
+}
+
+void StudioModelAsset::CreateTextureScene()
+{
+	_textureScene = std::make_unique<graphics::Scene>("Texture", _editorContext->GetGraphicsContext(), _editorContext->GetOpenGLFunctions(),
+		_textureLoader.get(), _entityContext.get());
+
+	_scenes.push_back(_textureScene.get());
+
+	// The order that entities are added matters for now since there's no sorting done.
+	_textureEntity = _textureScene->GetEntityList()->Create<TextureEntity>();
+
+	_textureCameraOperator = std::make_unique<camera_operators::TextureCameraOperator>(_editorContext->GetGeneralSettings(), _textureEntity);
+
+	_textureScene->SetCurrentCamera(_textureCameraOperator->GetCamera());
+}
+
 void StudioModelAsset::SaveEntityToSnapshot(StateSnapshot* snapshot)
 {
 	auto model = _modelEntity->GetEditableModel();
@@ -430,24 +464,35 @@ void StudioModelAsset::OnTick()
 {
 	//TODO: update asset-local world time
 	_studioModelRenderer->RunFrame();
-	_scene->Tick();
+
+	for (auto scene : _scenes)
+	{
+		scene->Tick();
+	}
 
 	emit Tick();
 }
 
 void StudioModelAsset::OnMouseEvent(QMouseEvent* event)
 {
-	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
+	if (auto scene = _editWidget->GetCurrentScene(); scene)
 	{
-		cameraOperator->MouseEvent(*event);
+		// TODO: somehow get the camera operator from the scene.
+		if (auto cameraOperator = scene == _scene.get() ? _cameraOperators->GetCurrent() : _textureCameraOperator.get(); cameraOperator)
+		{
+			cameraOperator->MouseEvent(*event);
+		}
 	}
 }
 
 void StudioModelAsset::OnWheelEvent(QWheelEvent* event)
 {
-	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
+	if (auto scene = _editWidget->GetCurrentScene(); scene)
 	{
-		cameraOperator->WheelEvent(*event);
+		if (auto cameraOperator = scene == _scene.get() ? _cameraOperators->GetCurrent() : _textureCameraOperator.get(); cameraOperator)
+		{
+			cameraOperator->WheelEvent(*event);
+		}
 	}
 }
 

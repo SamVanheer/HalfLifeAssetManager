@@ -18,7 +18,6 @@ namespace ui
 {
 class EditorContext;
 class SceneWidget;
-class TextureWidget;
 
 namespace camera_operators
 {
@@ -29,7 +28,6 @@ class CamerasPanel;
 namespace assets::studiomodel
 {
 class StudioModelAsset;
-class StudioModelTexturesPanel;
 class StudioModelView;
 
 class StudioModelEditWidget final : public QWidget
@@ -46,7 +44,11 @@ public:
 
 	QList<QDockWidget*> GetDockWidgets() const { return _dockWidgets; }
 
+	graphics::Scene* GetCurrentScene();
+
 private slots:
+	void SetSceneIndex(int index);
+
 	void OnDockLocationChanged(Qt::DockWidgetArea area);
 
 	void OnAssetCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current);
@@ -54,10 +56,6 @@ private slots:
 	void OnCameraChanged(int index);
 
 	void OnTexturesDockVisibilityChanged(bool visible);
-
-	void SetTextureBackgroundColor();
-
-	void OnTextureViewChanged();
 
 private:
 	EditorContext* const _editorContext;
@@ -69,13 +67,10 @@ private:
 
 	SceneWidget* _sceneWidget;
 
-	TextureWidget* _textureWidget;
-
 	//Stored separately to maintain list order
 	QList<QDockWidget*> _dockWidgets;
 
 	camera_operators::CamerasPanel* _camerasPanel;
-	StudioModelTexturesPanel* _texturesPanel;
 };
 }
 }

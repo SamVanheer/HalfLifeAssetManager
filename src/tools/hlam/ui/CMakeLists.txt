@@ -15,9 +15,7 @@ target_sources(HLAM
 		OpenGLGraphicsContext.hpp
 		SceneWidget.cpp
 		SceneWidget.hpp
-		StateSnapshot.hpp
-		TextureWidget.cpp
-		TextureWidget.hpp)
+		StateSnapshot.hpp)
 
 add_subdirectory(assets)
 add_subdirectory(camera_operators)

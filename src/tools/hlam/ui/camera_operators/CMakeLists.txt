@@ -4,6 +4,8 @@ target_sources(HLAM
 		CameraOperator.hpp
 		CameraOperators.hpp
 		FirstPersonCameraOperator.hpp
-		FreeLookCameraOperator.hpp)
+		FreeLookCameraOperator.hpp
+		TextureCameraOperator.cpp
+		TextureCameraOperator.hpp)
 
 add_subdirectory(dockpanels)

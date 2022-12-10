@@ -16,11 +16,10 @@
 
 namespace graphics
 {
-Scene::Scene(IGraphicsContext* graphicsContext,
-	QOpenGLFunctions_1_1* openglFunctions,
-	TextureLoader* textureLoader,
-	EntityContext* entityContext)
-	: _graphicsContext(graphicsContext)
+Scene::Scene(std::string&& name, IGraphicsContext* graphicsContext, QOpenGLFunctions_1_1* openglFunctions,
+	TextureLoader* textureLoader, EntityContext* entityContext)
+	: _name(std::move(name))
+	, _graphicsContext(graphicsContext)
 	, _openglFunctions(openglFunctions)
 	, _textureLoader(textureLoader)
 	, _entityContext(entityContext)

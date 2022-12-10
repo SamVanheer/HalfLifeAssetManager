@@ -5,12 +5,9 @@
 
 #include "ui_StudioModelTexturesPanel.h"
 
-class StudioModelEntity;
-
 namespace studiomdl
 {
 class EditableStudioModel;
-struct Texture;
 }
 
 namespace ui
@@ -35,8 +32,6 @@ public:
 	StudioModelTexturesPanel(StudioModelAsset* asset);
 	~StudioModelTexturesPanel();
 
-	QImage GenerateTextureForDisplay();
-
 private:
 	void InitializeUI();
 
@@ -44,10 +39,7 @@ private:
 	void RemapTexture(int index);
 	void RemapTextures();
 	void UpdateColormapValue();
-
-signals:
-	void CurrentTextureChanged();
-	void TextureViewChanged();
+	void UpdateUVMapTexture();
 
 public slots:
 	void AdjustScale(double amount);
@@ -57,6 +49,8 @@ private slots:
 
 	void OnSaveSnapshot(StateSnapshot* snapshot);
 	void OnLoadSnapshot(StateSnapshot* snapshot);
+
+	void OnScaleChanged(float adjust);
 
 	void OnTextureChanged(int index);
 
@@ -75,6 +69,12 @@ private slots:
 	void OnFlatShadeChanged();
 	void OnFullbrightChanged();
 	void OnMipmapsChanged();
+
+	void OnShowUVMapChanged();
+	void OnOverlayUVMapChanged();
+	void OnAntiAliasLinesChanged();
+
+	void OnMeshChanged(int index);
 
 	void OnImportTexture();
 	void OnExportTexture();
