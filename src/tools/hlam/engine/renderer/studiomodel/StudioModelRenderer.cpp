@@ -28,6 +28,8 @@ StudioModelRenderer::StudioModelRenderer(const std::shared_ptr<spdlog::logger>& 
 	, _openglFunctions(openglFunctions)
 	, _colorSettings(colorSettings)
 {
+	// Initialize them now so the colors don't flicker for the first fraction of a second.
+	UpdateColors();
 }
 
 StudioModelRenderer::~StudioModelRenderer() = default;
@@ -35,8 +37,7 @@ StudioModelRenderer::~StudioModelRenderer() = default;
 void StudioModelRenderer::RunFrame()
 {
 	// Cache colors once per frame.
-	_lightcolor = ui::assets::studiomodel::ColorToVector(_colorSettings->GetColor(ui::assets::studiomodel::LightColor.Name));
-	_wireframeColor = ui::assets::studiomodel::ColorToVector(_colorSettings->GetColor(ui::assets::studiomodel::WireframeColor.Name));
+	UpdateColors();
 }
 
 unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderInfo, const renderer::DrawFlags flags)
@@ -309,6 +310,12 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 
 	_studioModel = nullptr;
 	_renderInfo = nullptr;
+}
+
+void StudioModelRenderer::UpdateColors()
+{
+	_lightcolor = ui::assets::studiomodel::ColorToVector(_colorSettings->GetColor(ui::assets::studiomodel::LightColor.Name));
+	_wireframeColor = ui::assets::studiomodel::ColorToVector(_colorSettings->GetColor(ui::assets::studiomodel::WireframeColor.Name));
 }
 
 void StudioModelRenderer::SetupPosition(const glm::vec3& origin, const glm::vec3& angles)

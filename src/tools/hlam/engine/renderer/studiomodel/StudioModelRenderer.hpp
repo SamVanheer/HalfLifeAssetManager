@@ -77,6 +77,8 @@ public:
 	void DrawSingleHitbox(ModelRenderInfo& renderInfo, const int hitboxIndex) override final;
 
 private:
+	void UpdateColors();
+
 	void SetupPosition(const glm::vec3& origin, const glm::vec3& angles);
 
 	void DrawBones();
@@ -150,7 +152,7 @@ private:
 	float			_shadelight;						// direct world light
 
 	glm::vec3		_lightvec = {0, 0, -1};			// light vector in model reference frame
-	glm::vec3		_lightcolor{255, 255, 255};
+	glm::vec3		_lightcolor{1, 1, 1};
 	glm::vec3		_blightvec[MAXSTUDIOBONES];		// light vectors in bone reference frames
 
 	glm::vec2		_chrome[MaxVertices];			// texture coords for surface normals
@@ -162,6 +164,6 @@ private:
 	glm::vec3		_viewerRight = {50, 50, 0};	// needs to be set to viewer's right in order for chrome to work
 	float			_lambert = 1.5f;					// modifier for pseudo-hemispherical lighting
 
-	glm::vec3 _wireframeColor{255, 0, 0};
+	glm::vec3 _wireframeColor{1, 0, 0};
 };
 }
