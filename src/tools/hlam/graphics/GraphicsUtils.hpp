@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
+#include <optional>
 #include <string_view>
 
 #include <glm/vec2.hpp>
@@ -100,7 +101,7 @@ void DrawFloorQuad(QOpenGLFunctions_1_1* openglFunctions, const glm::vec3& origi
 *	@param bMirror			If true, draws a solid underside
 */
 void DrawFloor(QOpenGLFunctions_1_1* openglFunctions, 
-	const glm::vec3& origin, float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, GLuint groundTexture,
+	const glm::vec3& origin, float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, std::optional<GLuint> groundTexture,
 	const glm::vec3& groundColor, const bool bMirror);
 
 /**

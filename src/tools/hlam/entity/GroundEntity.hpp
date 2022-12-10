@@ -30,6 +30,12 @@ public:
 	void SetImage(graphics::Image&& image)
 	{
 		_image = std::move(image);
+		_hasTexture = true;
+	}
+
+	void ClearImage()
+	{
+		_hasTexture = false;
 	}
 
 private:
@@ -40,4 +46,5 @@ private:
 
 	GLuint _texture{0};
 	graphics::Image _image;
+	bool _hasTexture = false;
 };

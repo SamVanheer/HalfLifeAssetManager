@@ -71,6 +71,8 @@ void StudioModelGroundPanel::OnGroundTextureSizeChanged()
 
 void StudioModelGroundPanel::OnTextureChanged()
 {
+	bool hasTexture = false;
+
 	if (const QString fileName = _ui.GroundTexture->text(); !fileName.isEmpty())
 	{
 		if (QImage image{fileName}; !image.isNull())
@@ -80,7 +82,13 @@ void StudioModelGroundPanel::OnTextureChanged()
 			_asset->GetGroundEntity()->SetImage({image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits())});
 
 			_ui.ShowGround->setChecked(true);
+			hasTexture = true;
 		}
+	}
+
+	if (!hasTexture)
+	{
+		_asset->GetGroundEntity()->ClearImage();
 	}
 }
 

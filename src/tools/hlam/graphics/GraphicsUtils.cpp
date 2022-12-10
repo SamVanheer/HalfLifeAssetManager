@@ -379,7 +379,7 @@ void DrawFloorQuad(QOpenGLFunctions_1_1* openglFunctions, const glm::vec3& origi
 
 void DrawFloor(QOpenGLFunctions_1_1* openglFunctions,
 	const glm::vec3& origin, float floorLength, float textureRepeatLength,
-	const glm::vec2& textureOffset, GLuint groundTexture, const glm::vec3& groundColor,
+	const glm::vec2& textureOffset, std::optional<GLuint> groundTexture, const glm::vec3& groundColor,
 	const bool bMirror)
 {
 	const auto cullFaceWasEnabled = openglFunctions->glIsEnabled(GL_CULL_FACE);
@@ -404,17 +404,17 @@ void DrawFloor(QOpenGLFunctions_1_1* openglFunctions,
 
 	openglFunctions->glEnable(GL_BLEND);
 
-	if (groundTexture == GL_INVALID_TEXTURE_ID)
+	if (groundTexture)
+	{
+		openglFunctions->glEnable(GL_TEXTURE_2D);
+		openglFunctions->glColor4f(1.0f, 1.0f, 1.0f, 0.6f);
+		openglFunctions->glBindTexture(GL_TEXTURE_2D, *groundTexture);
+	}
+	else
 	{
 		openglFunctions->glDisable(GL_TEXTURE_2D);
 		openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{groundColor, 0.7}));
 		openglFunctions->glBindTexture(GL_TEXTURE_2D, 0);
-	}
-	else
-	{
-		openglFunctions->glEnable(GL_TEXTURE_2D);
-		openglFunctions->glColor4f(1.0f, 1.0f, 1.0f, 0.6f);
-		openglFunctions->glBindTexture(GL_TEXTURE_2D, groundTexture);
 	}
 
 	openglFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

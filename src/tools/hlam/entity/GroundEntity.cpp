@@ -84,8 +84,15 @@ void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneCo
 
 		auto colors = GetContext()->Asset->GetEditorContext()->GetColorSettings();
 
+		std::optional<GLuint> texture;
+
+		if (_hasTexture)
+		{
+			texture = _texture;
+		}
+
 		graphics::DrawFloor(openglFunctions,
-			settings->FloorOrigin, settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, _texture,
+			settings->FloorOrigin, settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, texture,
 			ui::assets::studiomodel::ColorToVector(colors->GetColor(ui::assets::studiomodel::GroundColor.Name)), settings->MirrorOnGround);
 	}
 }
