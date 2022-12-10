@@ -69,7 +69,8 @@ EditorContext::EditorContext(
 
 	_graphicsContext->Begin();
 	_openglFunctions = std::make_unique<QOpenGLFunctions_1_1>();
-	assert(_openglFunctions->initializeOpenGLFunctions());
+	const bool initializedOpenGLFunctions = _openglFunctions->initializeOpenGLFunctions();
+	assert(initializedOpenGLFunctions);
 	_graphicsContext->End();
 
 	qCDebug(logging::HLAM) << "Initialized OpenGL";
