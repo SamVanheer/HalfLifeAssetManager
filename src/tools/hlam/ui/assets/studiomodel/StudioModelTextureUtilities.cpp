@@ -1,3 +1,5 @@
+#include <memory>
+
 #include <QPainter>
 
 #include "entity/HLMVStudioModelEntity.hpp"
@@ -88,19 +90,24 @@ QImage ConvertTextureToIndexed8Image(const studiomdl::TextureData& texture)
 	//Ensure data is 32 bit aligned
 	const int alignedWidth = (texture.Width + 3) & (~3);
 
-	std::vector<uchar> alignedPixels;
-
-	alignedPixels.resize(alignedWidth * texture.Height);
+	std::unique_ptr<uchar[]> alignedPixels = std::make_unique<uchar[]>(alignedWidth * texture.Height);
 
 	for (int h = 0; h < texture.Height; ++h)
 	{
 		for (int w = 0; w < texture.Width; ++w)
 		{
+			auto u = std::to_integer<uchar>(texture.Pixels[(texture.Width * h) + w]);
+			auto v = static_cast<uchar>(texture.Pixels[(texture.Width * h) + w]);
+
 			alignedPixels[(alignedWidth * h) + w] = std::to_integer<uchar>(texture.Pixels[(texture.Width * h) + w]);
 		}
 	}
 
-	QImage textureImage{alignedPixels.data(), texture.Width, texture.Height, QImage::Format::Format_Indexed8};
+	QImage textureImage{alignedPixels.release(), texture.Width, texture.Height, QImage::Format::Format_Indexed8, [](auto pixels)
+		{
+			delete[] reinterpret_cast<uchar*>(pixels);
+		}
+	};
 
 	QVector<QRgb> palette;
 
