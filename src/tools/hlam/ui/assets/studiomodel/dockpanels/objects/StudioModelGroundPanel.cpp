@@ -1,12 +1,8 @@
 #include <limits>
 
 #include <QFileDialog>
-#include <QMessageBox>
 
 #include "entity/GroundEntity.hpp"
-
-#include "graphics/IGraphicsContext.hpp"
-#include "graphics/Scene.hpp"
 
 #include "qt/QtUtilities.hpp"
 
@@ -55,8 +51,6 @@ void StudioModelGroundPanel::OnShowGroundChanged()
 
 void StudioModelGroundPanel::OnMirrorOnGroundChanged()
 {
-	auto scene = _asset->GetScene();
-
 	_asset->GetProvider()->GetStudioModelSettings()->MirrorOnGround = _ui.MirrorModelOnGround->isChecked();
 
 	if (_asset->GetProvider()->GetStudioModelSettings()->MirrorOnGround)
@@ -83,11 +77,7 @@ void StudioModelGroundPanel::OnTextureChanged()
 		{
 			image.convertTo(QImage::Format::Format_RGBA8888);
 
-			auto scene = _asset->GetScene();
-
-			scene->GetGraphicsContext()->Begin();
-			_asset->GetGroundEntity()->SetImage(scene->GetOpenGLFunctions(), image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits()));
-			scene->GetGraphicsContext()->End();
+			_asset->GetGroundEntity()->SetImage({image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits())});
 
 			_ui.ShowGround->setChecked(true);
 		}

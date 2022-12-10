@@ -1,10 +1,6 @@
 #include <QFileDialog>
-#include <QMessageBox>
 
 #include "entity/BackgroundEntity.hpp"
-
-#include "graphics/IGraphicsContext.hpp"
-#include "graphics/Scene.hpp"
 
 #include "qt/QtUtilities.hpp"
 
@@ -39,11 +35,7 @@ void StudioModelBackgroundPanel::OnTextureChanged()
 		{
 			image.convertTo(QImage::Format::Format_RGBA8888);
 
-			auto scene = _asset->GetScene();
-
-			scene->GetGraphicsContext()->Begin();
-			_asset->GetBackgroundEntity()->SetImage(scene->GetOpenGLFunctions(), image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits()));
-			scene->GetGraphicsContext()->End();
+			_asset->GetBackgroundEntity()->SetImage({image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits())});
 
 			_ui.ShowBackground->setChecked(true);
 		}

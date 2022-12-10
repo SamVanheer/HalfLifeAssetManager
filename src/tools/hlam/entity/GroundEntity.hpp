@@ -8,6 +8,8 @@
 
 #include "entity/BaseEntity.hpp"
 
+#include "graphics/Image.hpp"
+
 /**
 *	Draws the ground.
 */
@@ -25,7 +27,10 @@ public:
 
 	void DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) override;
 
-	void SetImage(QOpenGLFunctions_1_1* openglFunctions, int width, int height, const std::byte* data);
+	void SetImage(graphics::Image&& image)
+	{
+		_image = std::move(image);
+	}
 
 private:
 	int _floorSequence{-1};
@@ -34,4 +39,5 @@ private:
 	glm::vec2 _floorTextureOffset{0};
 
 	GLuint _texture{0};
+	graphics::Image _image;
 };

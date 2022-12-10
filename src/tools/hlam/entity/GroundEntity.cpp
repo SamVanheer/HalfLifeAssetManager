@@ -16,6 +16,19 @@ void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneCo
 
 	if (settings->ShowGround)
 	{
+		// Update image if changed.
+		if (!_image.GetData().empty())
+		{
+			openglFunctions->glBindTexture(GL_TEXTURE_2D, _texture);
+
+			openglFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+				_image.GetWidth(), _image.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, _image.GetData().data());
+			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			_image = {};
+		}
+
 		glm::vec2 textureOffset{0};
 
 		//Calculate texture offset based on sequence movement and current frame
@@ -86,13 +99,4 @@ void GroundEntity::DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, g
 {
 	openglFunctions->glDeleteTextures(1, &_texture);
 	_texture = 0;
-}
-
-void GroundEntity::SetImage(QOpenGLFunctions_1_1* openglFunctions, int width, int height, const std::byte* data)
-{
-	openglFunctions->glBindTexture(GL_TEXTURE_2D, _texture);
-
-	openglFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }

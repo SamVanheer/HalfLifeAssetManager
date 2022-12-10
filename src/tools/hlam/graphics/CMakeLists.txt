@@ -6,6 +6,7 @@ target_sources(HLAM
 		GraphicsConstants.hpp
 		GraphicsUtils.cpp
 		GraphicsUtils.hpp
+		Image.hpp
 		IGraphicsContext.hpp
 		OpenGL.cpp
 		OpenGL.hpp
