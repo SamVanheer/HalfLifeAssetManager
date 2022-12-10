@@ -7,6 +7,9 @@
 
 #include "utility/mathlib.hpp"
 
+class QMouseEvent;
+class QWheelEvent;
+
 namespace graphics
 {
 /**
@@ -121,5 +124,20 @@ private:
 	glm::mat4x4 _modelMatrix{glm::identity<glm::mat4x4>()};
 	glm::mat4x4 _viewMatrix{glm::identity<glm::mat4x4>()};
 	glm::mat4x4 _projectionMatrix{glm::identity<glm::mat4x4>()};
+};
+
+/**
+*	@brief Represents the operation of a camera.
+*/
+class ICameraOperator
+{
+public:
+	virtual ~ICameraOperator() = default;
+
+	virtual Camera* GetCamera() = 0;
+
+	virtual void MouseEvent(QMouseEvent& event) = 0;
+
+	virtual void WheelEvent(QWheelEvent& event) = 0;
 };
 }

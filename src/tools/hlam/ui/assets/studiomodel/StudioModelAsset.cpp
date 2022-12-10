@@ -375,9 +375,9 @@ void StudioModelAsset::CreateTextureScene()
 	// The order that entities are added matters for now since there's no sorting done.
 	_textureEntity = _textureScene->GetEntityList()->Create<TextureEntity>();
 
-	_textureCameraOperator = std::make_unique<camera_operators::TextureCameraOperator>(_editorContext->GetGeneralSettings(), _textureEntity);
+	_textureCameraOperator = std::make_unique<camera_operators::TextureCameraOperator>(_textureEntity);
 
-	_textureScene->SetCurrentCamera(_textureCameraOperator->GetCamera());
+	_textureScene->SetCurrentCamera(_textureCameraOperator.get());
 }
 
 void StudioModelAsset::SaveEntityToSnapshot(StateSnapshot* snapshot)
@@ -473,8 +473,7 @@ void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
 {
 	if (auto scene = _editWidget->GetCurrentScene(); scene)
 	{
-		// TODO: somehow get the camera operator from the scene.
-		if (auto cameraOperator = scene == _scene.get() ? _cameraOperators->GetCurrent() : _textureCameraOperator.get(); cameraOperator)
+		if (auto cameraOperator = scene->GetCurrentCamera(); cameraOperator)
 		{
 			cameraOperator->MouseEvent(*event);
 		}
@@ -485,16 +484,16 @@ void StudioModelAsset::OnSceneWidgetWheelEvent(QWheelEvent* event)
 {
 	if (auto scene = _editWidget->GetCurrentScene(); scene)
 	{
-		if (auto cameraOperator = scene == _scene.get() ? _cameraOperators->GetCurrent() : _textureCameraOperator.get(); cameraOperator)
+		if (auto cameraOperator = scene->GetCurrentCamera(); cameraOperator)
 		{
 			cameraOperator->WheelEvent(*event);
 		}
 	}
 }
 
-void StudioModelAsset::OnCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current)
+void StudioModelAsset::OnCameraChanged(camera_operators::SceneCameraOperator* previous, camera_operators::SceneCameraOperator* current)
 {
-	_scene->SetCurrentCamera(current != nullptr ? current->GetCamera() : nullptr);
+	_scene->SetCurrentCamera(current);
 	GetProvider()->GetStudioModelSettings()->CameraIsFirstPerson = current == _firstPersonCamera;
 }
 

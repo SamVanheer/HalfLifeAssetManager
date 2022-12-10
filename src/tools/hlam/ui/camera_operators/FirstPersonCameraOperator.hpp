@@ -8,13 +8,13 @@ namespace ui::camera_operators
 /**
 *	@brief Camera operator that allows the user to view an object in first person view
 */
-class FirstPersonCameraOperator final : public CameraOperator
+class FirstPersonCameraOperator final : public SceneCameraOperator
 {
 public:
 	static constexpr float DefaultFirstPersonFieldOfView = 74.f;
 
 	FirstPersonCameraOperator(settings::GeneralSettings* generalSettings)
-		: CameraOperator(generalSettings)
+		: SceneCameraOperator(generalSettings)
 	{
 		_camera.SetOrigin(glm::vec3{0});
 		_camera.SetFieldOfView(DefaultFirstPersonFieldOfView);

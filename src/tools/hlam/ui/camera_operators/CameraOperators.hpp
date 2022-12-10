@@ -20,26 +20,26 @@ public:
 	using QObject::QObject;
 	~CameraOperators() = default;
 
-	QList<CameraOperator*> GetAll() const { return _cameraOperators; }
+	QList<SceneCameraOperator*> GetAll() const { return _cameraOperators; }
 
 	int Count() const { return _cameraOperators.size(); }
 
-	CameraOperator* Get(int index) const
+	SceneCameraOperator* Get(int index) const
 	{
 		return _cameraOperators[index];
 	}
 
-	bool Contains(CameraOperator* cameraOperator) const
+	bool Contains(SceneCameraOperator* cameraOperator) const
 	{
 		return _cameraOperators.contains(cameraOperator);
 	}
 
-	int IndexOf(CameraOperator* cameraOperator) const
+	int IndexOf(SceneCameraOperator* cameraOperator) const
 	{
 		return _cameraOperators.indexOf(cameraOperator);
 	}
 
-	void Add(CameraOperator* cameraOperator)
+	void Add(SceneCameraOperator* cameraOperator)
 	{
 		assert(cameraOperator);
 
@@ -53,9 +53,9 @@ public:
 		cameraOperator->setParent(this);
 	}
 
-	CameraOperator* GetCurrent() const { return _current; }
+	SceneCameraOperator* GetCurrent() const { return _current; }
 
-	void SetCurrent(CameraOperator* cameraOperator);
+	void SetCurrent(SceneCameraOperator* cameraOperator);
 
 	void PreviousCamera();
 	void NextCamera();
@@ -64,15 +64,15 @@ private:
 	void ChangeCamera(bool next);
 
 signals:
-	void CameraChanged(CameraOperator* previous, CameraOperator* current);
+	void CameraChanged(SceneCameraOperator* previous, SceneCameraOperator* current);
 
 private:
-	QList<CameraOperator*> _cameraOperators;
+	QList<SceneCameraOperator*> _cameraOperators;
 
-	CameraOperator* _current = nullptr;
+	SceneCameraOperator* _current = nullptr;
 };
 
-inline void CameraOperators::SetCurrent(CameraOperator* cameraOperator)
+inline void CameraOperators::SetCurrent(SceneCameraOperator* cameraOperator)
 {
 	if (cameraOperator)
 	{

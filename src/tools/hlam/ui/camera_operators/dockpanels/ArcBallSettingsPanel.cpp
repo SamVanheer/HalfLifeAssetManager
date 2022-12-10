@@ -28,11 +28,11 @@ ArcBallSettingsPanel::ArcBallSettingsPanel(ArcBallCameraOperator* cameraOperator
 
 	_ui.Distance->setRange(0, std::numeric_limits<double>::max());
 
-	setProperty(CameraOperatorPropertyKey.data(), QVariant::fromValue(static_cast<CameraOperator*>(_cameraOperator)));
+	setProperty(CameraOperatorPropertyKey.data(), QVariant::fromValue(static_cast<SceneCameraOperator*>(_cameraOperator)));
 
 	UpdateCameraProperties();
 
-	connect(_cameraOperator, &CameraOperator::CameraPropertiesChanged, this, &ArcBallSettingsPanel::UpdateCameraProperties);
+	connect(_cameraOperator, &SceneCameraOperator::CameraPropertiesChanged, this, &ArcBallSettingsPanel::UpdateCameraProperties);
 
 	connect(_ui.CenterX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ArcBallSettingsPanel::OnPropertyChanged);
 	connect(_ui.CenterY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ArcBallSettingsPanel::OnPropertyChanged);

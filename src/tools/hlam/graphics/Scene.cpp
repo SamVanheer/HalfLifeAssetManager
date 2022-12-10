@@ -1,4 +1,6 @@
+#include <QMouseEvent>
 #include <QOpenGLFunctions_1_1>
+#include <QWheelEvent>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -16,6 +18,28 @@
 
 namespace graphics
 {
+namespace
+{
+class DefaultCameraOperator final : public ICameraOperator
+{
+public:
+	Camera* GetCamera() override { return &_camera; }
+
+	void MouseEvent(QMouseEvent& event) override
+	{
+		event.ignore();
+	}
+
+	void WheelEvent(QWheelEvent& event) override
+	{
+		event.ignore();
+	}
+
+private:
+	Camera _camera;
+};
+}
+
 Scene::Scene(std::string&& name, IGraphicsContext* graphicsContext, QOpenGLFunctions_1_1* openglFunctions,
 	TextureLoader* textureLoader, EntityContext* entityContext)
 	: _name(std::move(name))
@@ -24,6 +48,7 @@ Scene::Scene(std::string&& name, IGraphicsContext* graphicsContext, QOpenGLFunct
 	, _textureLoader(textureLoader)
 	, _entityContext(entityContext)
 	, _entityList(std::make_unique<EntityList>(_entityContext))
+	, _defaultCameraOperator(std::make_unique<DefaultCameraOperator>())
 {
 	SetCurrentCamera(nullptr);
 }
@@ -67,7 +92,7 @@ void Scene::Draw(SceneContext& sc)
 
 	_drawnPolygonsCount = 0;
 
-	auto camera = GetCurrentCamera();
+	auto camera = GetCurrentCamera()->GetCamera();
 
 	_entityContext->StudioModelRenderer->SetViewerOrigin(camera->GetOrigin());
 	_entityContext->StudioModelRenderer->SetViewerRight(camera->GetRightVector());

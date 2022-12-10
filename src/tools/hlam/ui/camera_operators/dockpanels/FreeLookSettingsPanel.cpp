@@ -29,11 +29,11 @@ FreeLookSettingsPanel::FreeLookSettingsPanel(FreeLookCameraOperator* cameraOpera
 		spinBox->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	}
 
-	setProperty(CameraOperatorPropertyKey.data(), QVariant::fromValue(static_cast<CameraOperator*>(_cameraOperator)));
+	setProperty(CameraOperatorPropertyKey.data(), QVariant::fromValue(static_cast<SceneCameraOperator*>(_cameraOperator)));
 
 	UpdateCameraProperties();
 
-	connect(_cameraOperator, &CameraOperator::CameraPropertiesChanged, this, &FreeLookSettingsPanel::UpdateCameraProperties);
+	connect(_cameraOperator, &SceneCameraOperator::CameraPropertiesChanged, this, &FreeLookSettingsPanel::UpdateCameraProperties);
 
 	connect(_ui.OriginX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &FreeLookSettingsPanel::OnOriginChanged);
 	connect(_ui.OriginY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &FreeLookSettingsPanel::OnOriginChanged);

@@ -47,8 +47,8 @@ class StateSnapshot;
 
 namespace camera_operators
 {
-class CameraOperator;
 class CameraOperators;
+class SceneCameraOperator;
 class TextureCameraOperator;
 }
 
@@ -240,7 +240,7 @@ private slots:
 
 	void OnSceneWidgetWheelEvent(QWheelEvent* event);
 
-	void OnCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current);
+	void OnCameraChanged(camera_operators::SceneCameraOperator* previous, camera_operators::SceneCameraOperator* current);
 
 	void OnPreviousCamera();
 	void OnNextCamera();
@@ -270,7 +270,7 @@ private:
 
 	camera_operators::CameraOperators* _cameraOperators;
 
-	camera_operators::CameraOperator* _firstPersonCamera;
+	camera_operators::SceneCameraOperator* _firstPersonCamera;
 
 	StudioModelEditWidget* _editWidget{};
 

@@ -19,24 +19,12 @@ class QWidget;
 
 namespace ui::camera_operators
 {
-class CameraOperator : public QObject
+class CameraOperator : public QObject, public graphics::ICameraOperator
 {
-	Q_OBJECT
-
 public:
-	CameraOperator(settings::GeneralSettings* generalSettings)
-		: _generalSettings(generalSettings)
-	{
-		assert(_generalSettings);
-	}
+	virtual ~CameraOperator() = default;
 
-	virtual ~CameraOperator() {}
-
-	graphics::Camera* GetCamera() { return &_camera; }
-
-	virtual QString GetName() const = 0;
-
-	virtual QWidget* CreateEditWidget() = 0;
+	graphics::Camera* GetCamera() override final { return &_camera; }
 
 	virtual void MouseEvent(QMouseEvent& event) = 0;
 
@@ -44,6 +32,25 @@ public:
 	{
 		event.ignore();
 	}
+
+protected:
+	graphics::Camera _camera;
+};
+
+class SceneCameraOperator : public CameraOperator
+{
+	Q_OBJECT
+
+public:
+	SceneCameraOperator(settings::GeneralSettings* generalSettings)
+		: _generalSettings(generalSettings)
+	{
+		assert(_generalSettings);
+	}
+
+	virtual QString GetName() const = 0;
+
+	virtual QWidget* CreateEditWidget() = 0;
 
 	virtual void CenterView(const glm::vec3& targetOrigin, const glm::vec3& cameraOrigin, float pitch, float yaw) = 0;
 
@@ -84,8 +91,7 @@ protected:
 
 	glm::vec2 _oldCoordinates{0.f};
 	Qt::MouseButtons _trackedButtons{};
-	graphics::Camera _camera;
 };
 }
 
-Q_DECLARE_METATYPE(ui::camera_operators::CameraOperator*)
+Q_DECLARE_METATYPE(ui::camera_operators::SceneCameraOperator*)

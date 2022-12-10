@@ -21,8 +21,8 @@ class SceneWidget;
 
 namespace camera_operators
 {
-class CameraOperator;
 class CamerasPanel;
+class SceneCameraOperator;
 }
 
 namespace assets::studiomodel
@@ -51,7 +51,7 @@ private slots:
 
 	void OnDockLocationChanged(Qt::DockWidgetArea area);
 
-	void OnAssetCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current);
+	void OnAssetCameraChanged(camera_operators::SceneCameraOperator* previous, camera_operators::SceneCameraOperator* current);
 
 	void OnCameraChanged(int index);
 

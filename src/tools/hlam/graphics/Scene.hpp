@@ -38,19 +38,19 @@ public:
 
 	EntityList* GetEntityList() { return _entityList.get(); }
 
-	Camera* GetCurrentCamera() { return _currentCamera; }
+	ICameraOperator* GetCurrentCamera() { return _currentCamera; }
 
-	void SetCurrentCamera(Camera* camera)
+	void SetCurrentCamera(ICameraOperator* camera)
 	{
 		if (!camera)
 		{
-			camera = &_defaultCamera;
+			camera = _defaultCameraOperator.get();
 		}
 
 		_currentCamera = camera;
 
 		//Update the camera's projection matrix
-		_currentCamera->SetWindowSize(_windowWidth, _windowHeight);
+		_currentCamera->GetCamera()->SetWindowSize(_windowWidth, _windowHeight);
 	}
 
 	void UpdateWindowSize(unsigned int width, unsigned int height)
@@ -63,11 +63,11 @@ public:
 			_windowHeight = height;
 
 			//Always update the default camera
-			_defaultCamera.SetWindowSize(_windowWidth, _windowHeight);
+			_defaultCameraOperator->GetCamera()->SetWindowSize(_windowWidth, _windowHeight);
 
-			if (_currentCamera != &_defaultCamera)
+			if (_currentCamera != _defaultCameraOperator.get())
 			{
-				_currentCamera->SetWindowSize(_windowWidth, _windowHeight);
+				_currentCamera->GetCamera()->SetWindowSize(_windowWidth, _windowHeight);
 			}
 		}
 	}
@@ -97,9 +97,9 @@ private:
 
 	const std::unique_ptr<EntityList> _entityList;
 
-	Camera* _currentCamera{};
+	const std::unique_ptr<ICameraOperator> _defaultCameraOperator;
 
-	Camera _defaultCamera;
+	ICameraOperator* _currentCamera{};
 
 	unsigned int _windowWidth = 0, _windowHeight = 0;
 

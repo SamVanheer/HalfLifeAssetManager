@@ -226,7 +226,7 @@ void StudioModelEditWidget::OnDockLocationChanged(Qt::DockWidgetArea area)
 	}
 }
 
-void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::CameraOperator* previous, camera_operators::CameraOperator* current)
+void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::SceneCameraOperator* previous, camera_operators::SceneCameraOperator* current)
 {
 	int index = -1;
 
@@ -234,7 +234,7 @@ void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::CameraOperato
 	{
 		const auto widget = _camerasPanel->GetWidget(i);
 
-		if (const auto candidate = widget->property(camera_operators::CameraOperatorPropertyKey.data()).value<camera_operators::CameraOperator*>();
+		if (const auto candidate = widget->property(camera_operators::CameraOperatorPropertyKey.data()).value<camera_operators::SceneCameraOperator*>();
 			candidate == current)
 		{
 			index = i;
@@ -251,11 +251,11 @@ void StudioModelEditWidget::OnCameraChanged(int index)
 
 	auto widget = _camerasPanel->GetWidget(index);
 
-	camera_operators::CameraOperator* cameraOperator = nullptr;
+	camera_operators::SceneCameraOperator* cameraOperator = nullptr;
 
 	if (widget)
 	{
-		cameraOperator = widget->property(camera_operators::CameraOperatorPropertyKey.data()).value<camera_operators::CameraOperator*>();
+		cameraOperator = widget->property(camera_operators::CameraOperatorPropertyKey.data()).value<camera_operators::SceneCameraOperator*>();
 	}
 	
 	cameraOperators->SetCurrent(cameraOperator);

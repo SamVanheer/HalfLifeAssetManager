@@ -10,13 +10,13 @@ namespace ui::camera_operators
 /**
 *	@brief Camera operator that allows the user to move in the 3D world freely using the mouse and keyboard
 */
-class FreeLookCameraOperator final : public CameraOperator
+class FreeLookCameraOperator final : public SceneCameraOperator
 {
 public:
 	static constexpr float DefaultFOV = 65.f;
 
 	FreeLookCameraOperator(settings::GeneralSettings* generalSettings)
-		: CameraOperator(generalSettings)
+		: SceneCameraOperator(generalSettings)
 	{
 		_camera.SetFieldOfView(DefaultFOV);
 	}
