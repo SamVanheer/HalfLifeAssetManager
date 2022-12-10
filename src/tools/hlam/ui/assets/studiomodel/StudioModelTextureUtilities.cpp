@@ -96,9 +96,6 @@ QImage ConvertTextureToIndexed8Image(const studiomdl::TextureData& texture)
 	{
 		for (int w = 0; w < texture.Width; ++w)
 		{
-			auto u = std::to_integer<uchar>(texture.Pixels[(texture.Width * h) + w]);
-			auto v = static_cast<uchar>(texture.Pixels[(texture.Width * h) + w]);
-
 			alignedPixels[(alignedWidth * h) + w] = std::to_integer<uchar>(texture.Pixels[(texture.Width * h) + w]);
 		}
 	}
