@@ -153,8 +153,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	_textureLoader->SetResizeToPowerOf2(studioModelSettings->ShouldResizeTexturesToPowerOf2());
 
-	PushInputSink(this);
-
 	connect(_cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
 
 	CreateMainScene();
@@ -214,8 +212,6 @@ StudioModelAsset::~StudioModelAsset()
 	}
 
 	context->End();
-
-	PopInputSink();
 
 	delete _editWidget;
 }
@@ -473,7 +469,7 @@ void StudioModelAsset::OnTick()
 	emit Tick();
 }
 
-void StudioModelAsset::OnMouseEvent(QMouseEvent* event)
+void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
 {
 	if (auto scene = _editWidget->GetCurrentScene(); scene)
 	{
@@ -485,7 +481,7 @@ void StudioModelAsset::OnMouseEvent(QMouseEvent* event)
 	}
 }
 
-void StudioModelAsset::OnWheelEvent(QWheelEvent* event)
+void StudioModelAsset::OnSceneWidgetWheelEvent(QWheelEvent* event)
 {
 	if (auto scene = _editWidget->GetCurrentScene(); scene)
 	{
@@ -493,22 +489,6 @@ void StudioModelAsset::OnWheelEvent(QWheelEvent* event)
 		{
 			cameraOperator->WheelEvent(*event);
 		}
-	}
-}
-
-void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
-{
-	if (!_inputSinks.empty())
-	{
-		_inputSinks.top()->OnMouseEvent(event);
-	}
-}
-
-void StudioModelAsset::OnSceneWidgetWheelEvent(QWheelEvent* event)
-{
-	if (!_inputSinks.empty())
-	{
-		_inputSinks.top()->OnWheelEvent(event);
 	}
 }
 

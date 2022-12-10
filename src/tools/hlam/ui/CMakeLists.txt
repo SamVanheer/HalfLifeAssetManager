@@ -8,7 +8,6 @@ target_sources(HLAM
 		FileListPanel.ui
 		FullscreenWidget.cpp
 		FullscreenWidget.hpp
-		IInputSink.hpp
 		MainWindow.cpp
 		MainWindow.hpp
 		MainWindow.ui

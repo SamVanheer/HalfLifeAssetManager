@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <memory>
-#include <stack>
 #include <vector>
 
 #include <QLoggingCategory>
@@ -11,7 +10,6 @@
 
 #include "engine/shared/studiomodel/EditableStudioModel.hpp"
 
-#include "ui/IInputSink.hpp"
 #include "ui/assets/Assets.hpp"
 
 #include "utility/mathlib.hpp"
@@ -143,7 +141,7 @@ enum class Pose
 	Skeleton
 };
 
-class StudioModelAsset final : public Asset, public IInputSink
+class StudioModelAsset final : public Asset
 {
 	Q_OBJECT
 
@@ -168,10 +166,6 @@ public:
 
 	void TryRefresh() override;
 
-	void OnMouseEvent(QMouseEvent* event) override;
-
-	void OnWheelEvent(QWheelEvent* event) override;
-
 	EditorContext* GetEditorContext() { return _editorContext; }
 
 	studiomdl::EditableStudioModel* GetEditableStudioModel() { return _editableStudioModel.get(); }
@@ -182,23 +176,9 @@ public:
 
 	sprite::ISpriteRenderer* GetSpriteRenderer() { return _spriteRenderer.get(); }
 
-	IInputSink* GetInputSink() const { return _inputSinks.top(); }
-
 	const QVector<graphics::Scene*>& GetScenes() { return _scenes; }
 
 	graphics::Scene* GetScene() { return _scene.get(); }
-
-	void PushInputSink(IInputSink* inputSink)
-	{
-		assert(inputSink);
-
-		_inputSinks.push(inputSink);
-	}
-
-	void PopInputSink()
-	{
-		_inputSinks.pop();
-	}
 
 	camera_operators::CameraOperators* GetCameraOperators() const { return _cameraOperators; }
 
@@ -283,8 +263,6 @@ private:
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<EntityContext> _entityContext;
-
-	std::stack<IInputSink*> _inputSinks;
 
 	QVector<graphics::Scene*> _scenes;
 
