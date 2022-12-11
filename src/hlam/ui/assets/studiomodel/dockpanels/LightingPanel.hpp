@@ -5,11 +5,13 @@
 
 #include "ui_LightingPanel.h"
 
+#include "ui/DockableWidget.hpp"
+
 namespace ui::assets::studiomodel
 {
 class StudioModelAsset;
 
-class LightingPanel final : public QWidget
+class LightingPanel final : public DockableWidget
 {
 public:
 	LightingPanel(StudioModelAsset* asset);

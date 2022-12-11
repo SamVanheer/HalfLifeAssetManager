@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-
 #include "ui_ModelDataPanel.h"
+
+#include "ui/DockableWidget.hpp"
 
 namespace ui
 {
@@ -13,14 +13,13 @@ namespace assets::studiomodel
 class ModelChangeEvent;
 class StudioModelAsset;
 
-class ModelDataPanel final : public QWidget
+class ModelDataPanel final : public DockableWidget
 {
 public:
 	ModelDataPanel(StudioModelAsset* asset);
 	~ModelDataPanel();
 
-public slots:
-	void OnLayoutDirectionChanged();
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);

@@ -1,5 +1,4 @@
 #include <QAction>
-#include <QBoxLayout>
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QMap>
@@ -8,6 +7,7 @@
 
 #include "qt/QtUtilities.hpp"
 
+#include "ui/DockableWidget.hpp"
 #include "ui/DragNDropEventFilter.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/SceneWidget.hpp"
@@ -33,8 +33,6 @@
 #include "ui/assets/studiomodel/dockpanels/TransformPanel.hpp"
 
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
-
-#include "ui/settings/StudioModelSettings.hpp"
 
 namespace ui::assets::studiomodel
 {
@@ -74,15 +72,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_ui.Window->setDocumentMode(true);
 
-	auto camerasPanel = new camera_operators::CamerasPanel(_asset->GetCameraOperators());
-
-	auto scenePanel = new ScenePanel(_asset);
-	auto bodyPartsPanel = new BodyPartsPanel(_asset);
-	auto texturesPanel = new TexturesPanel(_asset);
-	auto modelDataPanel = new ModelDataPanel(_asset);
-	auto transformPanel = new TransformPanel(_asset);
-
-	auto addDockPanel = [&](QWidget* widget, const QString& label, Qt::DockWidgetArea area = Qt::DockWidgetArea::BottomDockWidgetArea)
+	auto addDockPanel = [&](DockableWidget* widget, const QString& label, Qt::DockWidgetArea area = Qt::DockWidgetArea::BottomDockWidgetArea)
 	{
 		auto dock = new QDockWidget(label, _ui.Window);
 
@@ -90,6 +80,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 		dock->setObjectName(label);
 
 		connect(dock, &QDockWidget::dockLocationChanged, this, &StudioModelEditWidget::OnDockLocationChanged);
+		connect(dock, &QDockWidget::visibilityChanged, this, &StudioModelEditWidget::OnDockVisibilityChanged);
 
 		_ui.Window->addDockWidget(area, dock);
 
@@ -98,20 +89,20 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 		return dock;
 	};
 
-	auto camerasDock = addDockPanel(camerasPanel, "Cameras");
-	auto sceneDock = addDockPanel(scenePanel, "Scene");
+	addDockPanel(new camera_operators::CamerasPanel(_asset->GetCameraOperators()), "Cameras");
+	addDockPanel(new ScenePanel(_asset), "Scene");
 	addDockPanel(new ModelInfoPanel(_asset), "Model Info");
 	auto modelDisplayDock = addDockPanel(new ModelDisplayPanel(_asset), "Model Display");
 	addDockPanel(new LightingPanel(_asset), "Lighting");
 	addDockPanel(new SequencesPanel(_asset), "Sequences");
-	auto bodyPartsDock = addDockPanel(bodyPartsPanel, "Body Parts");
-	auto texturesDock = addDockPanel(texturesPanel, "Textures");
-	auto modelDataDock = addDockPanel(modelDataPanel, "Model Data");
+	addDockPanel(new BodyPartsPanel(_asset), "Body Parts");
+	addDockPanel(new TexturesPanel(_asset), "Textures");
+	addDockPanel(new ModelDataPanel(_asset), "Model Data");
 	auto flagsDock = addDockPanel(new FlagsPanel(_asset), "Model Flags");
 	addDockPanel(new BonesPanel(_asset), "Bones");
 	addDockPanel(new AttachmentsPanel(_asset), "Attachments");
 	addDockPanel(new HitboxesPanel(_asset), "Hitboxes");
-	auto transformDock = addDockPanel(transformPanel, "Transformation", Qt::DockWidgetArea::LeftDockWidgetArea);
+	auto transformDock = addDockPanel(new TransformPanel(_asset), "Transformation", Qt::DockWidgetArea::LeftDockWidgetArea);
 
 	//Tabify all dock widgets except floating ones
 	{
@@ -155,17 +146,6 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 		});
 	connect(_sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw);
 	connect(_editorContext, &EditorContext::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
-
-	connect(camerasDock, &QDockWidget::dockLocationChanged, [camerasPanel, this](Qt::DockWidgetArea area)
-		{
-			camerasPanel->OnLayoutDirectionChanged(qt::GetDirectionForDockArea(area));
-		});
-
-	connect(sceneDock, &QDockWidget::dockLocationChanged, scenePanel, &ScenePanel::OnLayoutDirectionChanged);
-	connect(bodyPartsDock, &QDockWidget::dockLocationChanged, bodyPartsPanel, &BodyPartsPanel::OnLayoutDirectionChanged);
-	connect(texturesDock, &QDockWidget::visibilityChanged, this, &StudioModelEditWidget::OnTexturesDockVisibilityChanged);
-	connect(modelDataDock, &QDockWidget::dockLocationChanged, modelDataPanel, &ModelDataPanel::OnLayoutDirectionChanged);
-	connect(transformDock, &QDockWidget::visibilityChanged, transformPanel, &TransformPanel::ResetValues);
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
@@ -191,11 +171,9 @@ void StudioModelEditWidget::SetSceneIndex(int index)
 void StudioModelEditWidget::OnDockLocationChanged(Qt::DockWidgetArea area)
 {
 	auto dock = static_cast<QDockWidget*>(sender());
+	auto widget = static_cast<DockableWidget*>(dock->widget());
 
-	auto widget = dock->widget();
-
-	//Automatically change the layout for panels using a box layout
-	qt::TrySetBoxLayoutDirection(widget, qt::GetDirectionForDockArea(area));
+	widget->OnLayoutDirectionChanged(qt::GetDirectionForDockArea(area));
 
 	if (area != Qt::DockWidgetArea::NoDockWidgetArea)
 	{
@@ -204,13 +182,11 @@ void StudioModelEditWidget::OnDockLocationChanged(Qt::DockWidgetArea area)
 	}
 }
 
-void StudioModelEditWidget::OnTexturesDockVisibilityChanged(bool visible)
+void StudioModelEditWidget::OnDockVisibilityChanged(bool visible)
 {
-	if (_asset->GetProvider()->GetStudioModelSettings()->ShouldActivateTextureViewWhenTexturesPanelOpened())
-	{
-		auto scene = visible ? _asset->GetTextureScene() : _asset->GetScene();
+	auto dock = static_cast<QDockWidget*>(sender());
+	auto widget = static_cast<DockableWidget*>(dock->widget());
 
-		SetSceneIndex(_asset->GetScenes().indexOf(scene));
-	}
+	widget->OnVisibilityChanged(visible);
 }
 }

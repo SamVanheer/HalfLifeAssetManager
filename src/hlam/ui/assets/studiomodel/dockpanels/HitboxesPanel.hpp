@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-
 #include "ui_HitboxesPanel.h"
+
+#include "ui/DockableWidget.hpp"
 
 namespace ui
 {
@@ -13,7 +13,7 @@ namespace assets::studiomodel
 class ModelChangeEvent;
 class StudioModelAsset;
 
-class HitboxesPanel final : public QWidget
+class HitboxesPanel final : public DockableWidget
 {
 public:
 	HitboxesPanel(StudioModelAsset* asset);

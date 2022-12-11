@@ -1,9 +1,8 @@
 #pragma once
 
-#include <QMouseEvent>
-#include <QWidget>
-
 #include "ui_TexturesPanel.h"
+
+#include "ui/DockableWidget.hpp"
 
 namespace studiomdl
 {
@@ -19,13 +18,15 @@ namespace assets::studiomodel
 class ModelChangeEvent;
 class StudioModelAsset;
 
-class TexturesPanel final : public QWidget
+class TexturesPanel final : public DockableWidget
 {
 	Q_OBJECT
 
 public:
 	TexturesPanel(StudioModelAsset* asset);
 	~TexturesPanel();
+
+	void OnVisibilityChanged(bool visible) override;
 
 private:
 	void InitializeUI();

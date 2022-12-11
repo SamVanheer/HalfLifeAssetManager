@@ -149,6 +149,16 @@ TexturesPanel::TexturesPanel(StudioModelAsset* asset)
 
 TexturesPanel::~TexturesPanel() = default;
 
+void TexturesPanel::OnVisibilityChanged(bool visible)
+{
+	if (_asset->GetProvider()->GetStudioModelSettings()->ShouldActivateTextureViewWhenTexturesPanelOpened())
+	{
+		auto scene = visible ? _asset->GetTextureScene() : _asset->GetScene();
+
+		_asset->SetCurrentScene(scene);
+	}
+}
+
 void TexturesPanel::InitializeUI()
 {
 	auto model = _asset->GetEntity()->GetEditableModel();

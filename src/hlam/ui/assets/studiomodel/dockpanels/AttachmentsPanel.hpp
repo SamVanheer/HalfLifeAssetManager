@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-
 #include "ui_AttachmentsPanel.h"
+
+#include "ui/DockableWidget.hpp"
 
 namespace ui
 {
@@ -13,7 +13,7 @@ namespace assets::studiomodel
 class ModelChangeEvent;
 class StudioModelAsset;
 
-class AttachmentsPanel final : public QWidget
+class AttachmentsPanel final : public DockableWidget
 {
 public:
 	AttachmentsPanel(StudioModelAsset* asset);

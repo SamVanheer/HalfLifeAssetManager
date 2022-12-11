@@ -6,6 +6,8 @@
 
 #include "ui_ScenePanel.h"
 
+#include "ui/DockableWidget.hpp"
+
 namespace ui
 {
 class StateSnapshot;
@@ -15,13 +17,15 @@ namespace assets::studiomodel
 class ModelChangeEvent;
 class StudioModelAsset;
 
-class ScenePanel final : public QWidget
+class ScenePanel final : public DockableWidget
 {
 	Q_OBJECT
 
 public:
 	ScenePanel(StudioModelAsset* asset);
 	~ScenePanel() = default;
+
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
 
 private:
 	void InitializeUI();
@@ -30,9 +34,6 @@ private:
 
 signals:
 	void LayoutDirectionChanged(QBoxLayout::Direction direction);
-
-public slots:
-	void OnLayoutDirectionChanged();
 
 private:
 	Ui_ScenePanel _ui;

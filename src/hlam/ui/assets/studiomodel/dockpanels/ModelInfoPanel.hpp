@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-
 #include "ui_ModelInfoPanel.h"
+
+#include "ui/DockableWidget.hpp"
 
 namespace ui
 {
@@ -12,7 +12,7 @@ namespace assets::studiomodel
 {
 class StudioModelAsset;
 
-class ModelInfoPanel final : public QWidget
+class ModelInfoPanel final : public DockableWidget
 {
 public:
 	ModelInfoPanel(StudioModelAsset* asset);

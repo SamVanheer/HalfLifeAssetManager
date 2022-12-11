@@ -40,12 +40,13 @@ public:
 
 	graphics::Scene* GetCurrentScene();
 
-private slots:
+public slots:
 	void SetSceneIndex(int index);
 
+private slots:
 	void OnDockLocationChanged(Qt::DockWidgetArea area);
 
-	void OnTexturesDockVisibilityChanged(bool visible);
+	void OnDockVisibilityChanged(bool visible);
 
 private:
 	EditorContext* const _editorContext;

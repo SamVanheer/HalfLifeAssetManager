@@ -1,20 +1,23 @@
 #pragma once
 
-#include <QWidget>
-
 #include "ui_TransformPanel.h"
 
-class QAction;
+#include "ui/DockableWidget.hpp"
 
 namespace ui::assets::studiomodel
 {
 class StudioModelAsset;
 
-class TransformPanel : public QWidget
+class TransformPanel : public DockableWidget
 {
 public:
 	TransformPanel(StudioModelAsset* asset);
 	~TransformPanel() = default;
+
+	void OnVisibilityChanged(bool visible) override
+	{
+		ResetValues();
+	}
 
 public slots:
 	void ResetValues();

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <QWidget>
-
 #include "ui_ModelDisplayPanel.h"
+
+#include "ui/DockableWidget.hpp"
 
 namespace ui::assets::studiomodel
 {
 class StudioModelAsset;
 
-class ModelDisplayPanel final : public QWidget
+class ModelDisplayPanel final : public DockableWidget
 {
 public:
 	ModelDisplayPanel(StudioModelAsset* asset);

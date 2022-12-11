@@ -2,13 +2,13 @@
 
 #include <QSlider>
 #include <QSpinBox>
-#include <QWidget>
 
 #include "ui_SequencesPanel.h"
 
 #include "entity/StudioModelEntity.hpp"
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
 
+#include "ui/DockableWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
 namespace ui
@@ -20,7 +20,7 @@ namespace assets::studiomodel
 class ModelChangeEvent;
 class StudioModelAsset;
 
-class SequencesPanel final : public QWidget
+class SequencesPanel final : public DockableWidget
 {
 public:
 	SequencesPanel(StudioModelAsset* asset);

@@ -387,9 +387,9 @@ void BodyPartsPanel::UpdateControllerRange(const studiomdl::BoneController& bone
 	}
 }
 
-void BodyPartsPanel::OnLayoutDirectionChanged()
+void BodyPartsPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 {
-	const auto direction = _ui.MainLayout->direction();
+	DockableWidget::OnLayoutDirectionChanged(direction);
 
 	_ui.ControllerDataLayout->setDirection(direction);
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-
 #include "ui_FlagsPanel.h"
+
+#include "ui/DockableWidget.hpp"
 
 namespace ui
 {
@@ -13,7 +13,7 @@ namespace assets::studiomodel
 class ModelChangeEvent;
 class StudioModelAsset;
 
-class FlagsPanel final : public QWidget
+class FlagsPanel final : public DockableWidget
 {
 public:
 	FlagsPanel(StudioModelAsset* asset);

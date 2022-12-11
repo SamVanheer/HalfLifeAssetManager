@@ -54,9 +54,9 @@ ModelDataPanel::ModelDataPanel(StudioModelAsset* asset)
 
 ModelDataPanel::~ModelDataPanel() = default;
 
-void ModelDataPanel::OnLayoutDirectionChanged()
+void ModelDataPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 {
-	const auto direction = _ui.MainLayout->direction();
+	DockableWidget::OnLayoutDirectionChanged(direction);
 
 	_ui.BoundingBoxLayout->setDirection(direction);
 	_ui.ClippingBoxLayout->setDirection(direction);

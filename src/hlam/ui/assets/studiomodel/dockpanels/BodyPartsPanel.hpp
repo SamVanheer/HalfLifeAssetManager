@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-
 #include "ui_BodyPartsPanel.h"
+
+#include "ui/DockableWidget.hpp"
 
 namespace studiomdl
 {
@@ -18,19 +18,18 @@ namespace assets::studiomodel
 class ModelChangeEvent;
 class StudioModelAsset;
 
-class BodyPartsPanel final : public QWidget
+class BodyPartsPanel final : public DockableWidget
 {
 public:
 	BodyPartsPanel(StudioModelAsset* asset);
 	~BodyPartsPanel();
 
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
+
 private:
 	void InitializeUI();
 
 	void UpdateControllerRange(const studiomdl::BoneController& boneController);
-
-public slots:
-	void OnLayoutDirectionChanged();
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);

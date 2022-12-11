@@ -9,6 +9,8 @@
 
 #include "ui_CamerasPanel.h"
 
+#include "ui/DockableWidget.hpp"
+
 namespace ui::camera_operators
 {
 class CameraOperators;
@@ -16,11 +18,13 @@ class SceneCameraOperator;
 
 constexpr std::string_view CameraOperatorPropertyKey{"CameraOperator"};
 
-class CamerasPanel : public QWidget
+class CamerasPanel : public DockableWidget
 {
 public:
 	explicit CamerasPanel(CameraOperators* cameraOperators);
 	~CamerasPanel();
+
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
 
 	int GetCount() const { return _widgets.size(); }
 
@@ -31,7 +35,6 @@ private:
 
 public slots:
 	void ChangeCamera(int index);
-	void OnLayoutDirectionChanged(QBoxLayout::Direction direction);
 
 private slots:
 	void OnChangeCamera(int index);

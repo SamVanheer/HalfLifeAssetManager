@@ -37,8 +37,10 @@ void ScenePanel::AddObject(QWidget* widget, const QString& label)
 	_ui.ObjectStack->addWidget(widget);
 }
 
-void ScenePanel::OnLayoutDirectionChanged()
+void ScenePanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 {
-	emit LayoutDirectionChanged(_ui.MainLayout->direction());
+	DockableWidget::OnLayoutDirectionChanged(direction);
+
+	emit LayoutDirectionChanged(direction);
 }
 }

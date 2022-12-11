@@ -341,6 +341,13 @@ void StudioModelAsset::TryRefresh()
 	emit LoadSnapshot(snapshot.get());
 }
 
+void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
+{
+	assert(_scenes.contains(scene));
+
+	_editWidget->SetSceneIndex(_scenes.indexOf(scene));
+}
+
 soundsystem::ISoundSystem* StudioModelAsset::GetSoundSystem()
 {
 	return _editorContext->GetSoundSystem();

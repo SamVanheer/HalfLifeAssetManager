@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-
 #include "ui_BonesPanel.h"
+
+#include "ui/DockableWidget.hpp"
 
 namespace ui
 {
@@ -12,7 +12,7 @@ namespace assets::studiomodel
 class ModelChangeEvent;
 class StudioModelAsset;
 
-class BonesPanel final : public QWidget
+class BonesPanel final : public DockableWidget
 {
 public:
 	BonesPanel(StudioModelAsset* asset);

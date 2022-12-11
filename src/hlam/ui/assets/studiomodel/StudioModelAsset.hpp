@@ -178,6 +178,8 @@ public:
 
 	const QVector<graphics::Scene*>& GetScenes() { return _scenes; }
 
+	void SetCurrentScene(graphics::Scene* scene);
+
 	graphics::Scene* GetScene() { return _scene.get(); }
 
 	camera_operators::CameraOperators* GetCameraOperators() const { return _cameraOperators; }

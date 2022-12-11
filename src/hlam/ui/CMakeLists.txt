@@ -1,5 +1,6 @@
 target_sources(HLAM
 	PRIVATE
+		DockableWidget.hpp
 		DragNDropEventFilter.hpp
 		EditorContext.cpp
 		EditorContext.hpp
