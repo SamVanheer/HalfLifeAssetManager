@@ -1,15 +1,5 @@
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-find_package(glm REQUIRED)
-find_package(spdlog REQUIRED)
-find_package(OpenAL REQUIRED)
-find_package(libnyquist REQUIRED)
-
 if (MSVC)
-	configure_file(
-		${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
-		${CMAKE_CURRENT_BINARY_DIR}/version_generated.rc
-		@ONLY)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version_generated.rc @ONLY)
 endif()
 
 add_executable(HLAM WIN32)
@@ -56,10 +46,7 @@ target_link_options(HLAM
 
 target_sources(HLAM
 	PRIVATE
-		$<$<CXX_COMPILER_ID:MSVC>:
-			hlam.rc
-			version.rc
-		>
+		$<$<CXX_COMPILER_ID:MSVC>:hlam.rc version.rc>
 		Main.cpp
 		resources.qrc)
 
@@ -80,9 +67,7 @@ get_target_property(SOURCE_FILES HLAM SOURCES)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_FILES})
 
 # Add this after source_group to avoid errors with root paths
-target_sources(HLAM
-	PRIVATE
-		${CMAKE_BINARY_DIR}/ProjectInfo.hpp)
+target_sources(HLAM PRIVATE ${CMAKE_BINARY_DIR}/ProjectInfo.hpp)
 
 # Copy runtime dependencies automatically for dev builds.
 add_custom_command(TARGET HLAM POST_BUILD

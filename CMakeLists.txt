@@ -18,6 +18,20 @@ project(HL_Tools
 	DESCRIPTION "Half-Life Modding Tools"
 	LANGUAGES CXX)
 
+# Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# Instruct CMake to run moc automatically when needed
+set(CMAKE_AUTOMOC ON)
+
+# Create code from a list of Qt designer ui files
+set(CMAKE_AUTOUIC ON)
+
+# Process resources files
+set(CMAKE_AUTORCC ON)
+
 find_package(Git REQUIRED)
 
 add_custom_target(ProjectInfo
@@ -28,5 +42,30 @@ add_custom_target(ProjectInfo
 		-D GIT_EXECUTABLE=${GIT_EXECUTABLE}
 		-P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/UpdateProjectInfo.cmake
 	BYPRODUCTS ${CMAKE_BINARY_DIR}/ProjectInfo.hpp)
+
+# Find the QtWidgets library
+find_package(Qt5 COMPONENTS Widgets Network REQUIRED)
+
+function(copy_qt_dependencies target_name plugins)
+	foreach(plugin ${${plugins}})
+		# Copy plugins to the directory relative to the plugins directory in the Qt install directory
+		get_target_property(TARGET_LOCATION ${plugin} LOCATION)
+		get_filename_component(PARENT_DIR ${TARGET_LOCATION} DIRECTORY)
+		get_filename_component(TARGET_DIR_NAME ${PARENT_DIR} NAME)
+		
+		add_custom_command(TARGET ${target_name} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${target_name}>/${TARGET_DIR_NAME})
+	  
+		add_custom_command(TARGET ${target_name} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+				$<TARGET_FILE:${plugin}>
+				$<TARGET_FILE_DIR:${target_name}>/${TARGET_DIR_NAME})
+	endforeach()
+endfunction()
+
+find_package(glm REQUIRED)
+find_package(spdlog REQUIRED)
+find_package(OpenAL REQUIRED)
+find_package(libnyquist REQUIRED)
 
 add_subdirectory(src)
