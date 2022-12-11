@@ -4,8 +4,6 @@
 #include <QMainWindow>
 #include <QMap>
 
-#include "entity/HLMVStudioModelEntity.hpp"
-
 #include "graphics/Scene.hpp"
 
 #include "qt/QtUtilities.hpp"
@@ -15,7 +13,6 @@
 #include "ui/SceneWidget.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/assets/studiomodel/StudioModelColors.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelView.hpp"
 
@@ -35,14 +32,8 @@
 #include "ui/assets/studiomodel/dockpanels/StudioModelTransformPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
 
-#include "ui/camera_operators/CameraOperator.hpp"
-#include "ui/camera_operators/CameraOperators.hpp"
-
-#include "ui/camera_operators/ArcBallCameraOperator.hpp"
-#include "ui/camera_operators/FirstPersonCameraOperator.hpp"
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
 
-#include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
 namespace ui::assets::studiomodel
@@ -83,17 +74,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_ui.Window->setDocumentMode(true);
 
-	_camerasPanel = new camera_operators::CamerasPanel();
-
-	auto cameraOperators = _asset->GetCameraOperators();
-
-	for (int i = 0; i < cameraOperators->Count(); ++i)
-	{
-		const auto cameraOperator = cameraOperators->Get(i);
-		_camerasPanel->AddCameraOperator(cameraOperator->GetName(), cameraOperator->CreateEditWidget());
-	}
-
-	OnAssetCameraChanged(nullptr, cameraOperators->GetCurrent());
+	auto camerasPanel = new camera_operators::CamerasPanel(_asset->GetCameraOperators());
 
 	auto scenePanel = new StudioModelScenePanel(_asset);
 	auto bodyPartsPanel = new StudioModelBodyPartsPanel(_asset);
@@ -117,7 +98,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 		return dock;
 	};
 
-	auto camerasDock = addDockPanel(_camerasPanel, "Cameras");
+	auto camerasDock = addDockPanel(camerasPanel, "Cameras");
 	auto sceneDock = addDockPanel(scenePanel, "Scene");
 	addDockPanel(new StudioModelModelInfoPanel(_asset), "Model Info");
 	auto modelDisplayDock = addDockPanel(new StudioModelModelDisplayPanel(_asset), "Model Display");
@@ -166,9 +147,6 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_ui.Timeline->SetAsset(_asset);
 
-	connect(cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelEditWidget::OnAssetCameraChanged);
-	connect(_camerasPanel, &camera_operators::CamerasPanel::CameraChanged, this, &StudioModelEditWidget::OnCameraChanged);
-
 	connect(_view, &StudioModelView::SceneChanged, this, &StudioModelEditWidget::SetSceneIndex);
 
 	connect(_view, &StudioModelView::PoseChanged, [this](int index)
@@ -178,9 +156,9 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	connect(_sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw);
 	connect(_editorContext, &EditorContext::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
 
-	connect(camerasDock, &QDockWidget::dockLocationChanged, [this](Qt::DockWidgetArea area)
+	connect(camerasDock, &QDockWidget::dockLocationChanged, [camerasPanel, this](Qt::DockWidgetArea area)
 		{
-			_camerasPanel->OnLayoutDirectionChanged(qt::GetDirectionForDockArea(area));
+			camerasPanel->OnLayoutDirectionChanged(qt::GetDirectionForDockArea(area));
 		});
 
 	connect(sceneDock, &QDockWidget::dockLocationChanged, scenePanel, &StudioModelScenePanel::OnLayoutDirectionChanged);
@@ -224,41 +202,6 @@ void StudioModelEditWidget::OnDockLocationChanged(Qt::DockWidgetArea area)
 		//Force the window to resize the dock area to fit to the new set of dock widgets
 		_ui.Window->resizeDocks({dock}, {0}, qt::GetOrientationForDockArea(area));
 	}
-}
-
-void StudioModelEditWidget::OnAssetCameraChanged(camera_operators::SceneCameraOperator* previous, camera_operators::SceneCameraOperator* current)
-{
-	int index = -1;
-
-	for (int i = 0; i < _camerasPanel->GetCount(); ++i)
-	{
-		const auto widget = _camerasPanel->GetWidget(i);
-
-		if (const auto candidate = widget->property(camera_operators::CameraOperatorPropertyKey.data()).value<camera_operators::SceneCameraOperator*>();
-			candidate == current)
-		{
-			index = i;
-			break;
-		}
-	}
-
-	_camerasPanel->ChangeCamera(index);
-}
-
-void StudioModelEditWidget::OnCameraChanged(int index)
-{
-	auto cameraOperators = _asset->GetCameraOperators();
-
-	auto widget = _camerasPanel->GetWidget(index);
-
-	camera_operators::SceneCameraOperator* cameraOperator = nullptr;
-
-	if (widget)
-	{
-		cameraOperator = widget->property(camera_operators::CameraOperatorPropertyKey.data()).value<camera_operators::SceneCameraOperator*>();
-	}
-	
-	cameraOperators->SetCurrent(cameraOperator);
 }
 
 void StudioModelEditWidget::OnTexturesDockVisibilityChanged(bool visible)

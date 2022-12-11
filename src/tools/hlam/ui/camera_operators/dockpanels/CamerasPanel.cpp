@@ -1,21 +1,31 @@
 #include <algorithm>
 #include <cassert>
 
-#include <QDebug>
-
 #include "qt/QtUtilities.hpp"
 
+#include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
 
 namespace ui::camera_operators
 {
-CamerasPanel::CamerasPanel()
+CamerasPanel::CamerasPanel(CameraOperators* cameraOperators)
+	: _cameraOperators(cameraOperators)
 {
 	_ui.setupUi(this);
 
 	connect(_ui.Cameras, qOverload<int>(&QComboBox::currentIndexChanged), this, &CamerasPanel::OnChangeCamera);
 	connect(_ui.Previous, &QPushButton::clicked, this, &CamerasPanel::ChangeToPreviousCamera);
 	connect(_ui.Next, &QPushButton::clicked, this, &CamerasPanel::ChangeToNextCamera);
+
+	connect(_cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &CamerasPanel::OnAssetCameraChanged);
+
+	for (int i = 0; i < _cameraOperators->Count(); ++i)
+	{
+		const auto cameraOperator = _cameraOperators->Get(i);
+		AddCameraOperator(cameraOperator->GetName(), cameraOperator->CreateEditWidget());
+	}
+
+	OnAssetCameraChanged(nullptr, _cameraOperators->GetCurrent());
 }
 
 CamerasPanel::~CamerasPanel() = default;
@@ -36,12 +46,6 @@ void CamerasPanel::AddCameraOperator(const QString& name, QWidget* widget)
 {
 	assert(widget);
 
-	if (std::find(_widgets.begin(), _widgets.end(), widget) != _widgets.end())
-	{
-		qDebug() << "Attempted to add duplicate camera operator";
-		return;
-	}
-
 	_widgets.emplace_back(widget);
 
 	//Add the widget before adding the combo box item because the combo box will select the first item that gets added automatically
@@ -58,7 +62,35 @@ void CamerasPanel::OnChangeCamera(int index)
 {
 	_ui.CamerasStack->setCurrentIndex(index);
 
-	emit CameraChanged(index);
+	auto widget = GetWidget(index);
+
+	SceneCameraOperator* cameraOperator = nullptr;
+
+	if (widget)
+	{
+		cameraOperator = widget->property(CameraOperatorPropertyKey.data()).value<SceneCameraOperator*>();
+	}
+
+	_cameraOperators->SetCurrent(cameraOperator);
+}
+
+void CamerasPanel::OnAssetCameraChanged(SceneCameraOperator* previous, SceneCameraOperator* current)
+{
+	int index = -1;
+
+	for (int i = 0; i < GetCount(); ++i)
+	{
+		const auto widget = GetWidget(i);
+
+		if (const auto candidate = widget->property(CameraOperatorPropertyKey.data()).value<SceneCameraOperator*>();
+			candidate == current)
+		{
+			index = i;
+			break;
+		}
+	}
+
+	ChangeCamera(index);
 }
 
 void CamerasPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)

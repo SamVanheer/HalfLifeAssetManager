@@ -19,12 +19,6 @@ namespace ui
 class EditorContext;
 class SceneWidget;
 
-namespace camera_operators
-{
-class CamerasPanel;
-class SceneCameraOperator;
-}
-
 namespace assets::studiomodel
 {
 class StudioModelAsset;
@@ -51,10 +45,6 @@ private slots:
 
 	void OnDockLocationChanged(Qt::DockWidgetArea area);
 
-	void OnAssetCameraChanged(camera_operators::SceneCameraOperator* previous, camera_operators::SceneCameraOperator* current);
-
-	void OnCameraChanged(int index);
-
 	void OnTexturesDockVisibilityChanged(bool visible);
 
 private:
@@ -69,8 +59,6 @@ private:
 
 	//Stored separately to maintain list order
 	QList<QDockWidget*> _dockWidgets;
-
-	camera_operators::CamerasPanel* _camerasPanel;
 };
 }
 }

@@ -11,24 +11,23 @@
 
 namespace ui::camera_operators
 {
+class CameraOperators;
+class SceneCameraOperator;
+
 constexpr std::string_view CameraOperatorPropertyKey{"CameraOperator"};
 
 class CamerasPanel : public QWidget
 {
-	Q_OBJECT
-
 public:
-	CamerasPanel();
+	explicit CamerasPanel(CameraOperators* cameraOperators);
 	~CamerasPanel();
 
 	int GetCount() const { return _widgets.size(); }
 
 	QWidget* GetWidget(int index) const;
 
+private:
 	void AddCameraOperator(const QString& name, QWidget* widget);
-
-signals:
-	void CameraChanged(int index);
 
 public slots:
 	void ChangeCamera(int index);
@@ -36,12 +35,15 @@ public slots:
 
 private slots:
 	void OnChangeCamera(int index);
+	void OnAssetCameraChanged(SceneCameraOperator* previous, SceneCameraOperator* current);
 
 	void ChangeToPreviousCamera();
 	void ChangeToNextCamera();
 
 private:
 	Ui_CamerasPanel _ui;
+
+	CameraOperators* _cameraOperators;
 
 	std::vector<QWidget*> _widgets;
 };
