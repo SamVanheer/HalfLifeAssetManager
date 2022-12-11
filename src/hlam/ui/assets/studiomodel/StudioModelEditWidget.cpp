@@ -16,21 +16,21 @@
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelView.hpp"
 
+#include "ui/assets/studiomodel/dockpanels/AttachmentsPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/BodyPartsPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/BonesPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/FlagsPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/HitboxesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/InfoBar.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelAttachmentsPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelBodyPartsPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelBonesPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelFlagsPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelHitboxesPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelLightingPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelModelDataPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelModelDisplayPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelModelInfoPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelScenePanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelSequencesPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelTexturesPanel.hpp"
-#include "ui/assets/studiomodel/dockpanels/StudioModelTransformPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/LightingPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/ModelDataPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/ModelDisplayPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/ModelInfoPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/ScenePanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/SequencesPanel.hpp"
+#include "ui/assets/studiomodel/dockpanels/TexturesPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
+#include "ui/assets/studiomodel/dockpanels/TransformPanel.hpp"
 
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
 
@@ -76,11 +76,11 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	auto camerasPanel = new camera_operators::CamerasPanel(_asset->GetCameraOperators());
 
-	auto scenePanel = new StudioModelScenePanel(_asset);
-	auto bodyPartsPanel = new StudioModelBodyPartsPanel(_asset);
-	auto texturesPanel = new StudioModelTexturesPanel(_asset);
-	auto modelDataPanel = new StudioModelModelDataPanel(_asset);
-	auto transformPanel = new StudioModelTransformPanel(_asset);
+	auto scenePanel = new ScenePanel(_asset);
+	auto bodyPartsPanel = new BodyPartsPanel(_asset);
+	auto texturesPanel = new TexturesPanel(_asset);
+	auto modelDataPanel = new ModelDataPanel(_asset);
+	auto transformPanel = new TransformPanel(_asset);
 
 	auto addDockPanel = [&](QWidget* widget, const QString& label, Qt::DockWidgetArea area = Qt::DockWidgetArea::BottomDockWidgetArea)
 	{
@@ -100,17 +100,17 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	auto camerasDock = addDockPanel(camerasPanel, "Cameras");
 	auto sceneDock = addDockPanel(scenePanel, "Scene");
-	addDockPanel(new StudioModelModelInfoPanel(_asset), "Model Info");
-	auto modelDisplayDock = addDockPanel(new StudioModelModelDisplayPanel(_asset), "Model Display");
-	addDockPanel(new StudioModelLightingPanel(_asset), "Lighting");
-	addDockPanel(new StudioModelSequencesPanel(_asset), "Sequences");
+	addDockPanel(new ModelInfoPanel(_asset), "Model Info");
+	auto modelDisplayDock = addDockPanel(new ModelDisplayPanel(_asset), "Model Display");
+	addDockPanel(new LightingPanel(_asset), "Lighting");
+	addDockPanel(new SequencesPanel(_asset), "Sequences");
 	auto bodyPartsDock = addDockPanel(bodyPartsPanel, "Body Parts");
 	auto texturesDock = addDockPanel(texturesPanel, "Textures");
 	auto modelDataDock = addDockPanel(modelDataPanel, "Model Data");
-	auto flagsDock = addDockPanel(new StudioModelFlagsPanel(_asset), "Model Flags");
-	addDockPanel(new StudioModelBonesPanel(_asset), "Bones");
-	addDockPanel(new StudioModelAttachmentsPanel(_asset), "Attachments");
-	addDockPanel(new StudioModelHitboxesPanel(_asset), "Hitboxes");
+	auto flagsDock = addDockPanel(new FlagsPanel(_asset), "Model Flags");
+	addDockPanel(new BonesPanel(_asset), "Bones");
+	addDockPanel(new AttachmentsPanel(_asset), "Attachments");
+	addDockPanel(new HitboxesPanel(_asset), "Hitboxes");
 	auto transformDock = addDockPanel(transformPanel, "Transformation", Qt::DockWidgetArea::LeftDockWidgetArea);
 
 	//Tabify all dock widgets except floating ones
@@ -161,11 +161,11 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 			camerasPanel->OnLayoutDirectionChanged(qt::GetDirectionForDockArea(area));
 		});
 
-	connect(sceneDock, &QDockWidget::dockLocationChanged, scenePanel, &StudioModelScenePanel::OnLayoutDirectionChanged);
-	connect(bodyPartsDock, &QDockWidget::dockLocationChanged, bodyPartsPanel, &StudioModelBodyPartsPanel::OnLayoutDirectionChanged);
+	connect(sceneDock, &QDockWidget::dockLocationChanged, scenePanel, &ScenePanel::OnLayoutDirectionChanged);
+	connect(bodyPartsDock, &QDockWidget::dockLocationChanged, bodyPartsPanel, &BodyPartsPanel::OnLayoutDirectionChanged);
 	connect(texturesDock, &QDockWidget::visibilityChanged, this, &StudioModelEditWidget::OnTexturesDockVisibilityChanged);
-	connect(modelDataDock, &QDockWidget::dockLocationChanged, modelDataPanel, &StudioModelModelDataPanel::OnLayoutDirectionChanged);
-	connect(transformDock, &QDockWidget::visibilityChanged, transformPanel, &StudioModelTransformPanel::ResetValues);
+	connect(modelDataDock, &QDockWidget::dockLocationChanged, modelDataPanel, &ModelDataPanel::OnLayoutDirectionChanged);
+	connect(transformDock, &QDockWidget::visibilityChanged, transformPanel, &TransformPanel::ResetValues);
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;

@@ -1,56 +1,56 @@
 target_sources(HLAM
 	PRIVATE
+		AttachmentsPanel.cpp
+		AttachmentsPanel.hpp
+		AttachmentsPanel.ui
+		BodyPartsPanel.cpp
+		BodyPartsPanel.hpp
+		BodyPartsPanel.ui
+		BonesPanel.cpp
+		BonesPanel.hpp
+		BonesPanel.ui
+		DockHelpers.hpp
+		ExportUVMeshDialog.hpp
+		ExportUVMeshDialog.cpp
+		ExportUVMeshDialog.ui
+		FlagsPanel.cpp
+		FlagsPanel.hpp
+		FlagsPanel.ui
+		HitboxesPanel.cpp
+		HitboxesPanel.hpp
+		HitboxesPanel.ui
 		InfoBar.cpp
 		InfoBar.hpp
 		InfoBar.ui
+		LightingPanel.cpp
+		LightingPanel.hpp
+		LightingPanel.ui
+		ModelDataPanel.cpp
+		ModelDataPanel.hpp
+		ModelDataPanel.ui
+		ModelDisplayPanel.cpp
+		ModelDisplayPanel.hpp
+		ModelDisplayPanel.ui
+		ModelInfoPanel.cpp
+		ModelInfoPanel.hpp
+		ModelInfoPanel.ui
+		ScenePanel.cpp
+		ScenePanel.hpp
+		ScenePanel.ui
+		SequencesPanel.cpp
+		SequencesPanel.hpp
+		SequencesPanel.ui
 		SkyLightPanel.cpp
 		SkyLightPanel.hpp
 		SkyLightPanel.ui
-		StudioModelAttachmentsPanel.cpp
-		StudioModelAttachmentsPanel.hpp
-		StudioModelAttachmentsPanel.ui
-		StudioModelBodyPartsPanel.cpp
-		StudioModelBodyPartsPanel.hpp
-		StudioModelBodyPartsPanel.ui
-		StudioModelBonesPanel.cpp
-		StudioModelBonesPanel.hpp
-		StudioModelBonesPanel.ui
-		StudioModelDockHelpers.hpp
-		StudioModelExportUVMeshDialog.hpp
-		StudioModelExportUVMeshDialog.cpp
-		StudioModelExportUVMeshDialog.ui
-		StudioModelFlagsPanel.cpp
-		StudioModelFlagsPanel.hpp
-		StudioModelFlagsPanel.ui
-		StudioModelHitboxesPanel.cpp
-		StudioModelHitboxesPanel.hpp
-		StudioModelHitboxesPanel.ui
-		StudioModelLightingPanel.cpp
-		StudioModelLightingPanel.hpp
-		StudioModelLightingPanel.ui
-		StudioModelModelDataPanel.cpp
-		StudioModelModelDataPanel.hpp
-		StudioModelModelDataPanel.ui
-		StudioModelModelDisplayPanel.cpp
-		StudioModelModelDisplayPanel.hpp
-		StudioModelModelDisplayPanel.ui
-		StudioModelModelInfoPanel.cpp
-		StudioModelModelInfoPanel.hpp
-		StudioModelModelInfoPanel.ui
-		StudioModelScenePanel.cpp
-		StudioModelScenePanel.hpp
-		StudioModelScenePanel.ui
-		StudioModelSequencesPanel.cpp
-		StudioModelSequencesPanel.hpp
-		StudioModelSequencesPanel.ui
-		StudioModelTexturesPanel.cpp
-		StudioModelTexturesPanel.hpp
-		StudioModelTexturesPanel.ui
-		StudioModelTransformPanel.cpp
-		StudioModelTransformPanel.hpp
-		StudioModelTransformPanel.ui
+		TexturesPanel.cpp
+		TexturesPanel.hpp
+		TexturesPanel.ui
 		Timeline.cpp
 		Timeline.hpp
-		Timeline.ui)
+		Timeline.ui
+		TransformPanel.cpp
+		TransformPanel.hpp
+		TransformPanel.ui)
 
 add_subdirectory(objects)
