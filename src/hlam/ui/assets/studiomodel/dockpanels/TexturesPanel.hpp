@@ -14,11 +14,6 @@ namespace ui
 {
 class StateSnapshot;
 
-namespace camera_operators
-{
-class CameraOperator;
-}
-
 namespace assets::studiomodel
 {
 class ModelChangeEvent;
