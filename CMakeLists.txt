@@ -29,4 +29,4 @@ add_custom_target(ProjectInfo
 		-P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/UpdateProjectInfo.cmake
 	BYPRODUCTS ${CMAKE_BINARY_DIR}/ProjectInfo.hpp)
 
-add_subdirectory(src/tools)
+add_subdirectory(src)
