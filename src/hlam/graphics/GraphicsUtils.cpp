@@ -8,9 +8,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
-
 #include "entity/StudioModelEntity.hpp"
+
+#include "formats/studiomodel/IStudioModelRenderer.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/Palette.hpp"

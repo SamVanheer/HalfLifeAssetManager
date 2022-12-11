@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QVector>
 
-#include "engine/shared/studiomodel/EditableStudioModel.hpp"
+#include "formats/studiomodel/EditableStudioModel.hpp"
 
 #include "ui/assets/Assets.hpp"
 

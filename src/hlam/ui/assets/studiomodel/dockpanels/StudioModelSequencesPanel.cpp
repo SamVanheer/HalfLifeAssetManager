@@ -1,8 +1,8 @@
 #include <limits>
 
-#include "engine/shared/activity.hpp"
-
 #include "entity/HLMVStudioModelEntity.hpp"
+
+#include "formats/activity.hpp"
 
 #include "qt/ByteLengthValidator.hpp"
 

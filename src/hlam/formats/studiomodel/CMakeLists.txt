@@ -1,0 +1,20 @@
+target_sources(HLAM
+	PRIVATE
+		BoneTransformer.cpp
+		BoneTransformer.hpp
+		DumpModelInfo.cpp
+		DumpModelInfo.hpp
+		EditableStudioModel.cpp
+		EditableStudioModel.hpp
+		IStudioModelRenderer.hpp
+		ModelRenderInfo.hpp
+		StudioModel.hpp
+		StudioModelFileFormat.hpp
+		StudioModelIO.cpp
+		StudioModelIO.hpp
+		StudioModelRenderer.cpp
+		StudioModelRenderer.hpp
+		StudioModelUtils.cpp
+		StudioModelUtils.hpp
+		StudioSorting.cpp
+		StudioSorting.hpp)

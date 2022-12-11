@@ -5,13 +5,12 @@
 #include <optional>
 #include <vector>
 
-#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
-
-#include "engine/shared/studiomodel/EditableStudioModel.hpp"
-
 #include "entity/AnimEvent.hpp"
 #include "entity/BaseAnimating.hpp"
 #include "entity/Events.hpp"
+
+#include "formats/studiomodel/EditableStudioModel.hpp"
+#include "formats/studiomodel/IStudioModelRenderer.hpp"
 
 enum class StudioLoopingMode
 {

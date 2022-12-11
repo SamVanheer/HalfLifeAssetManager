@@ -1,7 +1,7 @@
-#include "engine/shared/sprite/Sprite.hpp"
-#include "engine/shared/sprite/SpriteFileFormat.hpp"
-#include "engine/shared/renderer/sprite/ISpriteRenderer.hpp"
-#include "engine/shared/renderer/sprite/SpriteRenderInfo.hpp"
+#include "formats/sprite/ISpriteRenderer.hpp"
+#include "formats/sprite/Sprite.hpp"
+#include "formats/sprite/SpriteFileFormat.hpp"
+#include "formats/sprite/SpriteRenderInfo.hpp"
 
 #include "entity/SpriteEntity.hpp"
 

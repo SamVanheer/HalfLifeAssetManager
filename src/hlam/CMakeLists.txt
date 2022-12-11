@@ -52,10 +52,9 @@ target_sources(HLAM
 
 add_subdirectory(application)
 add_subdirectory(assets)
-add_subdirectory(engine)
-add_subdirectory(engine/shared)
 add_subdirectory(entity)
 add_subdirectory(filesystem)
+add_subdirectory(formats)
 add_subdirectory(graphics)
 add_subdirectory(qt)
 add_subdirectory(soundsystem)

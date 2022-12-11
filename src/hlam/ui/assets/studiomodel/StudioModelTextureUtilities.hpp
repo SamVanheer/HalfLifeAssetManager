@@ -9,7 +9,7 @@
 #include <QImage>
 #include <QRgb>
 
-#include "engine/shared/studiomodel/EditableStudioModel.hpp"
+#include "formats/studiomodel/EditableStudioModel.hpp"
 #include "graphics/Palette.hpp"
 
 namespace ui

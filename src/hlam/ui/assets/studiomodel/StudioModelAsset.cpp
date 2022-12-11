@@ -16,13 +16,6 @@
 
 #include "assets/AssetIO.hpp"
 
-#include "engine/renderer/sprite/SpriteRenderer.hpp"
-#include "engine/renderer/studiomodel/StudioModelRenderer.hpp"
-#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
-#include "engine/shared/studiomodel/DumpModelInfo.hpp"
-#include "engine/shared/studiomodel/StudioModelIO.hpp"
-#include "engine/shared/studiomodel/StudioModelUtils.hpp"
-
 #include "entity/AxesEntity.hpp"
 #include "entity/BackgroundEntity.hpp"
 #include "entity/BaseEntity.hpp"
@@ -35,6 +28,13 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "entity/PlayerHitboxEntity.hpp"
 #include "entity/TextureEntity.hpp"
+
+#include "formats/sprite/SpriteRenderer.hpp"
+#include "formats/studiomodel/DumpModelInfo.hpp"
+#include "formats/studiomodel/IStudioModelRenderer.hpp"
+#include "formats/studiomodel/StudioModelIO.hpp"
+#include "formats/studiomodel/StudioModelRenderer.hpp"
+#include "formats/studiomodel/StudioModelUtils.hpp"
 
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"

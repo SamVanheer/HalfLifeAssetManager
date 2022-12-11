@@ -6,8 +6,8 @@
 
 #include "ui_StudioModelSequencesPanel.h"
 
-#include "engine/shared/studiomodel/StudioModelFileFormat.hpp"
 #include "entity/StudioModelEntity.hpp"
+#include "formats/studiomodel/StudioModelFileFormat.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 

@@ -4,10 +4,10 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "engine/shared/renderer/studiomodel/IStudioModelRenderer.hpp"
-
 #include "entity/BaseEntity.hpp"
 #include "entity/EntityList.hpp"
+
+#include "formats/studiomodel/IStudioModelRenderer.hpp"
 
 #include "graphics/Scene.hpp"
 

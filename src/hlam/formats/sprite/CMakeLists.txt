@@ -1,0 +1,10 @@
+target_sources(HLAM
+	PRIVATE
+		ISpriteRenderer.hpp
+		Sprite.cpp
+		Sprite.hpp
+		SpriteFileFormat.cpp
+		SpriteFileFormat.hpp
+		SpriteRenderer.cpp
+		SpriteRenderer.hpp
+		SpriteRenderInfo.hpp)
