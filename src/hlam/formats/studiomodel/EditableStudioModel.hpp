@@ -11,9 +11,8 @@
 
 #include <glm/vec3.hpp>
 
-#include <qopenglfunctions_1_1.h>
-
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
+#include "graphics/OpenGL.hpp"
 #include "graphics/Palette.hpp"
 
 namespace graphics

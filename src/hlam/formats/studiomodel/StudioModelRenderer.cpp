@@ -2,8 +2,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include <QOpenGLFunctions_1_1>
-
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -11,6 +9,7 @@
 #include "formats/studiomodel/StudioModelRenderer.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
+#include "graphics/OpenGL.hpp"
 
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
 #include "ui/settings/ColorSettings.hpp"

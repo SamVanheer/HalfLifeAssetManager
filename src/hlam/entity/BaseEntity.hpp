@@ -3,6 +3,7 @@
 #include <glm/vec3.hpp>
 
 #include "graphics/GraphicsConstants.hpp"
+#include "graphics/OpenGL.hpp"
 
 #include "utility/Class.hpp"
 

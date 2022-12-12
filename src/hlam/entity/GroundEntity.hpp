@@ -2,8 +2,6 @@
 
 #include <cstddef>
 
-#include <qopenglfunctions_1_1.h>
-
 #include <glm/vec2.hpp>
 
 #include "entity/BaseEntity.hpp"

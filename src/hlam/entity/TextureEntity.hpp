@@ -2,8 +2,6 @@
 
 #include <cstddef>
 
-#include <qopenglfunctions_1_1.h>
-
 #include "entity/BaseEntity.hpp"
 
 #include "graphics/Image.hpp"

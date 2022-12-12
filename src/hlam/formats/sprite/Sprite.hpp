@@ -1,8 +1,8 @@
 #pragma once
 
-#include <qopenglfunctions_1_1.h>
-
 #include "formats/sprite/SpriteFileFormat.hpp"
+
+class QOpenGLFunctions_1_1;
 
 namespace sprite
 {

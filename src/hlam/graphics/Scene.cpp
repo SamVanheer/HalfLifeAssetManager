@@ -1,5 +1,4 @@
 #include <QMouseEvent>
-#include <QOpenGLFunctions_1_1>
 #include <QWheelEvent>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -9,6 +8,7 @@
 
 #include "formats/studiomodel/IStudioModelRenderer.hpp"
 
+#include "graphics/OpenGL.hpp"
 #include "graphics/Scene.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"

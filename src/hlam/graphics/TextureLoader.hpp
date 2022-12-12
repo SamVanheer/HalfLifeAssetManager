@@ -3,8 +3,7 @@
 #include <cstddef>
 #include <utility>
 
-#include <qopenglfunctions_1_1.h>
-
+#include "graphics/OpenGL.hpp"
 #include "graphics/Palette.hpp"
 
 namespace graphics

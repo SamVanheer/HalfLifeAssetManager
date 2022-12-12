@@ -1,8 +1,8 @@
 #pragma once
 
-#include <qopenglfunctions_1_1.h>
-
 #include "formats/DrawConstants.hpp"
+
+class QOpenGLFunctions_1_1;
 
 /**
 *	@defgroup SpriteRenderer Sprite Renderer
