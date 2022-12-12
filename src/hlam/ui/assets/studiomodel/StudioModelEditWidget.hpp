@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include <QList>
+#include <QVector>
 #include <QWidget>
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
@@ -36,7 +36,7 @@ public:
 
 	SceneWidget* GetSceneWidget() const { return _sceneWidget; }
 
-	QList<QDockWidget*> GetDockWidgets() const { return _dockWidgets; }
+	const QVector<QDockWidget*>& GetDockWidgets() const { return _dockWidgets; }
 
 	graphics::Scene* GetCurrentScene();
 
@@ -59,7 +59,7 @@ private:
 	SceneWidget* _sceneWidget;
 
 	//Stored separately to maintain list order
-	QList<QDockWidget*> _dockWidgets;
+	QVector<QDockWidget*> _dockWidgets;
 };
 }
 }
