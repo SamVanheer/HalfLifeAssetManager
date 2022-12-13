@@ -270,7 +270,7 @@ private:
 	EditorContext* const _editorContext;
 	const StudioModelAssetProvider* const _provider;
 	std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;
-	StudioModelData* const _modelData;
+	StudioModelData* _modelData;
 	graphics::TextureLoader* const _textureLoader;
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;

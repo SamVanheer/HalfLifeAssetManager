@@ -131,7 +131,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _editorContext(editorContext)
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
-	, _modelData(new StudioModelData(this))
+	, _modelData(new StudioModelData(_editableStudioModel.get(), this))
 	, _textureLoader(_editorContext->GetTextureLoader())
 	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(
 		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()), _editorContext->GetOpenGLFunctions(), _editorContext->GetColorSettings()))
@@ -146,8 +146,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_provider->GetStudioModelSettings()))
 	, _cameraOperators(new camera_operators::CameraOperators(this))
 {
-	_modelData->Initialize(_editableStudioModel.get());
-
 	connect(_cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
 
 	CreateMainScene();
@@ -334,7 +332,8 @@ void StudioModelAsset::TryRefresh()
 
 		_editableStudioModel = std::move(newModel);
 
-		_modelData->Initialize(_editableStudioModel.get());
+		delete _modelData;
+		_modelData = new StudioModelData(_editableStudioModel.get(), this);
 
 		GetUndoStack()->clear();
 

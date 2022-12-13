@@ -1,7 +1,8 @@
 #pragma once
 
 #include <QObject>
-#include <QStandardItemModel>
+
+class QAbstractItemModel;
 
 namespace studiomdl
 {
@@ -12,22 +13,23 @@ namespace ui::assets::studiomodel
 {
 class StudioModelData final : public QObject
 {
+private:
+	explicit StudioModelData(QObject* parent);
+
 public:
 	static StudioModelData* GetEmptyModel();
 
-	StudioModelData(QObject* parent);
+	StudioModelData(studiomdl::EditableStudioModel* model, QObject* parent);
 
-	void Initialize(studiomdl::EditableStudioModel* model);
-
-	QStandardItemModel* const Attachments;
-	QStandardItemModel* const BodyParts;
-	QStandardItemModel* const Bones;
-	QStandardItemModel* const BonesWithNone;
-	QStandardItemModel* const BoneControllers;
-	QStandardItemModel* const BoneControllersWithNone;
-	QStandardItemModel* const Hitboxes;
-	QStandardItemModel* const Sequences;
-	QStandardItemModel* const Skins;
-	QStandardItemModel* const Textures;
+	QAbstractItemModel* const Attachments;
+	QAbstractItemModel* const BodyParts;
+	QAbstractItemModel* const Bones;
+	QAbstractItemModel* const BonesWithNone;
+	QAbstractItemModel* const BoneControllers;
+	QAbstractItemModel* const BoneControllersWithNone;
+	QAbstractItemModel* const Hitboxes;
+	QAbstractItemModel* const Sequences;
+	QAbstractItemModel* const Skins;
+	QAbstractItemModel* const Textures;
 };
 }
