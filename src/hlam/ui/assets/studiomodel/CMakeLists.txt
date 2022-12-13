@@ -3,6 +3,8 @@ target_sources(HLAM
 		StudioModelAsset.cpp
 		StudioModelAsset.hpp
 		StudioModelColors.hpp
+		StudioModelData.cpp
+		StudioModelData.hpp
 		StudioModelEditWidget.cpp
 		StudioModelEditWidget.hpp
 		StudioModelEditWidget.ui

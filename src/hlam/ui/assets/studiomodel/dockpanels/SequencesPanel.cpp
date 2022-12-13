@@ -9,6 +9,7 @@
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/SequencesPanel.hpp"
 
@@ -25,6 +26,7 @@ SequencesPanel::SequencesPanel(StudioModelAsset* asset)
 	_ui.EventType->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &SequencesPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::AssetChanged, this, &SequencesPanel::OnAssetChanged);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &SequencesPanel::OnLoadSnapshot);
 	connect(_asset, &StudioModelAsset::PoseChanged, this, &SequencesPanel::OnPoseChanged);
 
@@ -51,36 +53,10 @@ SequencesPanel::SequencesPanel(StudioModelAsset* asset)
 
 	_ui.EventDataWidget->setEnabled(false);
 
-	InitializeUI();
+	OnAssetChanged(nullptr);
 }
 
 SequencesPanel::~SequencesPanel() = default;
-
-void SequencesPanel::InitializeUI()
-{
-	auto entity = _asset->GetEntity();
-
-	const int sequenceIndex = entity->GetSequence();
-
-	auto model = _asset->GetEntity()->GetEditableModel();
-
-	this->setEnabled(!model->Sequences.empty());
-
-	_ui.SequenceComboBox->clear();
-
-	QStringList sequences;
-
-	sequences.reserve(model->Sequences.size());
-
-	for (const auto& sequence : model->Sequences)
-	{
-		sequences.append(sequence->Label.c_str());
-	}
-
-	_ui.SequenceComboBox->addItems(sequences);
-
-	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex);
-}
 
 void SequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
@@ -157,13 +133,23 @@ void SequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
+void SequencesPanel::OnAssetChanged(StudioModelAsset* asset)
+{
+	const int sequenceIndex = asset ? asset->GetEntity()->GetSequence() : -1;
+
+	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+
+	_ui.SequenceComboBox->setModel(modelData->Sequences);
+	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex);
+
+	this->setEnabled(_ui.SequenceComboBox->count() > 0);
+}
+
 void SequencesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 {
 	auto entity = _asset->GetEntity();
 	const float xValue = entity->GetBlendingValue(0);
 	const float yValue = entity->GetBlendingValue(1);
-
-	InitializeUI();
 
 	//Sequence index is restored by the asset, no need to do this here
 

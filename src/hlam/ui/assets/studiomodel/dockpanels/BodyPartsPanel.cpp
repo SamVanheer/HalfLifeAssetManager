@@ -10,6 +10,7 @@
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/StudioModelValidators.hpp"
 #include "ui/assets/studiomodel/dockpanels/BodyPartsPanel.hpp"
@@ -46,6 +47,7 @@ BodyPartsPanel::BodyPartsPanel(StudioModelAsset* asset)
 	connect(_ui.Submodels, qOverload<int>(&QComboBox::currentIndexChanged), modelNameValidator, &UniqueModelNameValidator::SetCurrentIndex);
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &BodyPartsPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::AssetChanged, this, &BodyPartsPanel::OnAssetChanged);
 	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &BodyPartsPanel::OnSaveSnapshot);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &BodyPartsPanel::OnLoadSnapshot);
 
@@ -69,7 +71,7 @@ BodyPartsPanel::BodyPartsPanel(StudioModelAsset* asset)
 	connect(_ui.BoneControllerBone, qOverload<int>(&QComboBox::currentIndexChanged), this, &BodyPartsPanel::OnBoneControllerBoneChanged);
 	connect(_ui.BoneControllerBoneAxis, qOverload<int>(&QComboBox::currentIndexChanged), this, &BodyPartsPanel::OnBoneControllerAxisChanged);
 
-	InitializeUI();
+	OnAssetChanged(nullptr);
 }
 
 BodyPartsPanel::~BodyPartsPanel() = default;
@@ -199,6 +201,53 @@ void BodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
+void BodyPartsPanel::OnAssetChanged(StudioModelAsset* asset)
+{
+	const int skin = asset ? asset->GetEntity()->GetSkin() : -1;
+	const int bodygroup = asset ? asset->GetEntity()->GetBodygroup() : 0;
+	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+
+	{
+		const QSignalBlocker blocker{_ui.BoneControllerBone};
+		_ui.BoneControllerBone->setModel(modelData->BonesWithNone);
+		//Start off with nothing selected
+		_ui.BoneControllerBone->setCurrentIndex(-1);
+	}
+
+	_ui.BodyParts->setModel(modelData->BodyParts);
+	_ui.BodyParts->setEnabled(_ui.BodyParts->count() > 0);
+
+	_ui.BodypartsDataWidget->setVisible(_ui.BodyParts->isEnabled());
+
+	// TODO: maybe store the list of submodels for each bodypart in user data.
+	_ui.Submodels->setEnabled(_ui.BodyParts->isEnabled());
+
+	_ui.Skins->setModel(modelData->Skins);
+	_ui.Skins->setCurrentIndex(skin);
+	_ui.Skins->setEnabled(_ui.Skins->count() > 0);
+
+	_ui.BoneControllers->setModel(modelData->BoneControllers);
+	_ui.BoneControllers->setEnabled(_ui.BoneControllers->count() > 0);
+
+	_ui.ControllerDataWidget->setVisible(_ui.BoneControllers->isEnabled());
+
+	_ui.BoneControllerValueSlider->setEnabled(_ui.BoneControllers->count() > 0);
+	_ui.BoneControllerValueSpinner->setEnabled(_ui.BoneControllers->count() > 0);
+
+	if (!_ui.BoneControllers->isEnabled())
+	{
+		//Disable and center it
+		_ui.BoneControllerValueSlider->setRange(0, 2);
+		_ui.BoneControllerValueSlider->setValue(1);
+
+		_ui.BoneControllerValueSpinner->setRange(0, 1);
+		_ui.BoneControllerValueSpinner->setValue(0);
+	}
+
+	//Should already be set but if there are no body parts and/or submodels it won't have been
+	_ui.BodyValue->setText(QString::number(bodygroup));
+}
+
 void BodyPartsPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 {
 	if (const int index = _ui.BodyParts->currentIndex(); index != -1)
@@ -214,8 +263,6 @@ void BodyPartsPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 
 void BodyPartsPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 {
-	InitializeUI();
-
 	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	if (auto bodypart = snapshot->Value("bodyparts.bodypart"); bodypart.isValid())
@@ -234,116 +281,6 @@ void BodyPartsPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 	}
 
 	SetRestoredModelIndex(snapshot->Value("bodyparts.bonecontroller").toInt(), model->BoneControllers.size(), *_ui.BoneControllers);
-}
-
-void BodyPartsPanel::InitializeUI()
-{
-	auto entity = _asset->GetEntity();
-
-	const int skin = entity->GetSkin();
-
-	auto model = entity->GetEditableModel();
-
-	{
-		const QSignalBlocker blocker{_ui.BoneControllerBone};
-
-		_ui.BoneControllerBone->clear();
-
-		QStringList bones;
-
-		bones.reserve(model->Bones.size() + 1);
-
-		bones.append("None (-1)");
-
-		for (int i = 0; i < model->Bones.size(); ++i)
-		{
-			bones.append(QString{"%1 (%2)"}.arg(model->Bones[i]->Name.c_str()).arg(i));
-		}
-
-		_ui.BoneControllerBone->addItems(bones);
-
-		//Start off with nothing selected
-		_ui.BoneControllerBone->setCurrentIndex(-1);
-	}
-
-	_ui.BodyParts->clear();
-	_ui.BodyParts->setEnabled(!model->Bodyparts.empty());
-
-	if (!model->Bodyparts.empty())
-	{
-		QStringList bodyParts;
-
-		bodyParts.reserve(model->Bodyparts.size());
-
-		for (int i = 0; i < model->Bodyparts.size(); ++i)
-		{
-			bodyParts.append(model->Bodyparts[i]->Name.c_str());
-		}
-
-		_ui.BodyParts->addItems(bodyParts);
-	}
-	else
-	{
-		_ui.Submodels->setEnabled(false);
-	}
-
-	{
-		_ui.Skins->clear();
-
-		QStringList skins;
-
-		for (int i = 0; i < model->SkinFamilies.size(); ++i)
-		{
-			skins.append(QString{"Skin %1"}.arg(i + 1));
-		}
-
-		_ui.Skins->addItems(skins);
-
-		_ui.Skins->setCurrentIndex(skin);
-
-		_ui.Skins->setEnabled(!model->SkinFamilies.empty());
-	}
-
-	_ui.BoneControllers->clear();
-
-	if (!model->BoneControllers.empty())
-	{
-		QStringList boneControllers;
-
-		for (int i = 0; i < model->BoneControllers.size(); ++i)
-		{
-			const auto& boneController = *model->BoneControllers[i];
-
-			if (boneController.Index == STUDIO_MOUTH_CONTROLLER)
-			{
-				boneControllers.append("Mouth");
-			}
-			else
-			{
-				boneControllers.append(QString{"Controller %1"}.arg(boneController.Index));
-			}
-		}
-
-		_ui.BoneControllers->addItems(boneControllers);
-	}
-	else
-	{
-		//Disable and center it
-		_ui.BoneControllerValueSlider->setEnabled(false);
-		_ui.BoneControllerValueSlider->setRange(0, 2);
-		_ui.BoneControllerValueSlider->setValue(1);
-
-		_ui.BoneControllerValueSpinner->setEnabled(false);
-		_ui.BoneControllerValueSpinner->setRange(0, 1);
-		_ui.BoneControllerValueSpinner->setValue(0);
-	}
-
-	_ui.BoneControllers->setEnabled(!model->BoneControllers.empty());
-	_ui.ControllerDataWidget->setVisible(!model->BoneControllers.empty());
-	_ui.BodypartsDataWidget->setVisible(!model->Bodyparts.empty());
-
-	//Should already be set but if there are no body parts and/or submodels it won't have been
-	_ui.BodyValue->setText(QString::number(entity->GetBodygroup()));
 }
 
 void BodyPartsPanel::UpdateControllerRange(const studiomdl::BoneController& boneController)

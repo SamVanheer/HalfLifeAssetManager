@@ -7,6 +7,11 @@
 
 namespace ui
 {
+QString FormatTextureName(const studiomdl::Texture& texture)
+{
+	return QString{"%1 (%2 x %3)"}.arg(texture.Name.c_str()).arg(texture.Data.Width).arg(texture.Data.Height);
+}
+
 std::optional<std::tuple<studiomdl::TextureData, bool>> ConvertImageToTexture(QImage image)
 {
 	const QImage::Format inputFormat = image.format();

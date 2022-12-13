@@ -23,6 +23,7 @@
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelTextureUtilities.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/StudioModelValidators.hpp"
@@ -52,11 +53,6 @@ static int GetMeshIndexForDrawing(QComboBox* comboBox)
 	}
 
 	return meshIndex;
-}
-
-static QString FormatTextureName(const studiomdl::Texture& texture)
-{
-	return QString{"%1 (%2 x %3)"}.arg(texture.Name.c_str()).arg(texture.Data.Width).arg(texture.Data.Height);
 }
 
 TexturesPanel::TexturesPanel(StudioModelAsset* asset)
@@ -90,6 +86,7 @@ TexturesPanel::TexturesPanel(StudioModelAsset* asset)
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), textureNameValidator, &UniqueTextureNameValidator::SetCurrentIndex);
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &TexturesPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::AssetChanged, this, &TexturesPanel::OnAssetChanged);
 	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &TexturesPanel::OnSaveSnapshot);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &TexturesPanel::OnLoadSnapshot);
 
@@ -129,7 +126,7 @@ TexturesPanel::TexturesPanel(StudioModelAsset* asset)
 	connect(_ui.TopColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &TexturesPanel::OnTopColorSpinnerChanged);
 	connect(_ui.BottomColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &TexturesPanel::OnBottomColorSpinnerChanged);
 
-	InitializeUI();
+	OnAssetChanged(nullptr);
 }
 
 TexturesPanel::~TexturesPanel() = default;
@@ -142,26 +139,6 @@ void TexturesPanel::OnVisibilityChanged(bool visible)
 
 		_asset->SetCurrentScene(scene);
 	}
-}
-
-void TexturesPanel::InitializeUI()
-{
-	auto model = _asset->GetEntity()->GetEditableModel();
-
-	this->setEnabled(!model->Textures.empty());
-
-	_ui.Textures->clear();
-
-	QStringList textures;
-
-	textures.reserve(model->Textures.size());
-
-	for (std::size_t i = 0; i < model->Textures.size(); ++i)
-	{
-		textures.append(FormatTextureName(*model->Textures[i]));
-	}
-
-	_ui.Textures->addItems(textures);
 }
 
 static void SetTextureFlagCheckBoxes(Ui_TexturesPanel& ui, int flags)
@@ -228,6 +205,15 @@ void TexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
+void TexturesPanel::OnAssetChanged(StudioModelAsset* asset)
+{
+	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+
+	_ui.Textures->setModel(modelData->Textures);
+
+	this->setEnabled(_ui.Textures->count() > 0);
+}
+
 void TexturesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 {
 	if (auto index = _ui.Textures->currentIndex(); index != -1)
@@ -242,8 +228,6 @@ void TexturesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 
 void TexturesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 {
-	InitializeUI();
-
 	if (auto texture = snapshot->Value("textures.texture"); texture.isValid())
 	{
 		auto textureName = texture.toString().toStdString();

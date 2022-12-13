@@ -49,6 +49,7 @@
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
+#include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelCompilerFrontEnd.hpp"
@@ -130,6 +131,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _editorContext(editorContext)
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
+	, _modelData(new StudioModelData(this))
 	, _textureLoader(_editorContext->GetTextureLoader())
 	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(
 		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()), _editorContext->GetOpenGLFunctions(), _editorContext->GetColorSettings()))
@@ -144,6 +146,8 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_provider->GetStudioModelSettings()))
 	, _cameraOperators(new camera_operators::CameraOperators(this))
 {
+	_modelData->Initialize(_editableStudioModel.get());
+
 	connect(_cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
 
 	CreateMainScene();
@@ -274,6 +278,9 @@ QWidget* StudioModelAsset::GetEditWidget()
 
 	sceneWidget->SetScene(GetScene());
 
+	// TODO: needs to be moved once single instance has been implemented.
+	emit AssetChanged(this);
+
 	return _editWidget;
 }
 
@@ -315,6 +322,9 @@ void StudioModelAsset::TryRefresh()
 
 		auto newModel = std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
 
+		// Clear UI to null state so changes to the models don't trigger changes in UI slots.
+		emit AssetChanged(nullptr);
+
 		auto context = _editorContext->GetGraphicsContext();
 		context->Begin();
 
@@ -324,6 +334,8 @@ void StudioModelAsset::TryRefresh()
 
 		_editableStudioModel = std::move(newModel);
 
+		_modelData->Initialize(_editableStudioModel.get());
+
 		GetUndoStack()->clear();
 
 		_modelEntity->SetEditableModel(GetEditableStudioModel());
@@ -332,6 +344,8 @@ void StudioModelAsset::TryRefresh()
 		_modelEntity->CreateDeviceObjects(_editorContext->GetOpenGLFunctions(), *_textureLoader);
 
 		context->End();
+
+		emit AssetChanged(this);
 	}
 	catch (const ::assets::AssetException& e)
 	{

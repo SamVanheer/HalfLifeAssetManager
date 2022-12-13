@@ -19,12 +19,12 @@ public:
 	~BonesPanel();
 
 private:
-	void InitializeUI();
-
 	void UpdateRootBonesCount();
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnSaveSnapshot(StateSnapshot* snapshot);
 	void OnLoadSnapshot(StateSnapshot* snapshot);

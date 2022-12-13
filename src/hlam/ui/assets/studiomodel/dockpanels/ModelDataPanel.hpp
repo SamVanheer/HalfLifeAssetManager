@@ -24,7 +24,7 @@ public:
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
 
-	void InitializeUI();
+	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnEyePositionChanged(const glm::vec3& value);
 

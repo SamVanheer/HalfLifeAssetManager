@@ -7,6 +7,7 @@
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/DockHelpers.hpp"
 #include "ui/assets/studiomodel/dockpanels/HitboxesPanel.hpp"
@@ -38,6 +39,7 @@ HitboxesPanel::HitboxesPanel(StudioModelAsset* asset)
 	}
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &HitboxesPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::AssetChanged, this, &HitboxesPanel::OnAssetChanged);
 	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &HitboxesPanel::OnSaveSnapshot);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &HitboxesPanel::OnLoadSnapshot);
 
@@ -55,52 +57,10 @@ HitboxesPanel::HitboxesPanel(StudioModelAsset* asset)
 	connect(_ui.MaximumY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
 	connect(_ui.MaximumZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
 
-	InitializeUI();
+	OnAssetChanged(nullptr);
 }
 
 HitboxesPanel::~HitboxesPanel() = default;
-
-void HitboxesPanel::InitializeUI()
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-
-	this->setEnabled(!model->Hitboxes.empty());
-
-	{
-		const QSignalBlocker blocker{_ui.Bone};
-
-		QStringList bones;
-
-		bones.reserve(model->Bones.size());
-
-		for (int i = 0; i < model->Bones.size(); ++i)
-		{
-			bones.append(QString{"%1 (%2)"}.arg(model->Bones[i]->Name.c_str()).arg(i));
-		}
-
-		_ui.Bone->clear();
-		_ui.Bone->addItems(bones);
-
-		//Start off with nothing selected
-		_ui.Bone->setCurrentIndex(-1);
-	}
-
-	_ui.Hitboxes->clear();
-
-	if (!model->Hitboxes.empty())
-	{
-		QStringList hitboxes;
-
-		hitboxes.reserve(model->Hitboxes.size());
-
-		for (int i = 0; i < model->Hitboxes.size(); ++i)
-		{
-			hitboxes.append(QString{"Hitbox %1"}.arg(i + 1));
-		}
-
-		_ui.Hitboxes->addItems(hitboxes);
-	}
-}
 
 void HitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 {
@@ -184,6 +144,22 @@ void HitboxesPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
+void HitboxesPanel::OnAssetChanged(StudioModelAsset* asset)
+{
+	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+
+	{
+		const QSignalBlocker blocker{_ui.Bone};
+		_ui.Bone->setModel(modelData->Bones);
+		// Start off with nothing selected
+		_ui.Bone->setCurrentIndex(-1);
+	}
+
+	_ui.Hitboxes->setModel(modelData->Hitboxes);
+
+	this->setEnabled(_ui.Hitboxes->count() > 0);
+}
+
 void HitboxesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 {
 	snapshot->SetValue("hitboxes.hitbox", _ui.Hitboxes->currentIndex());
@@ -191,8 +167,6 @@ void HitboxesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 
 void HitboxesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 {
-	InitializeUI();
-
 	SetRestoredModelIndex(snapshot->Value("hitboxes.hitbox").toInt(), _asset->GetEntity()->GetEditableModel()->Hitboxes.size(), *_ui.Hitboxes);
 }
 

@@ -19,7 +19,7 @@ public:
 	~ModelInfoPanel();
 
 private slots:
-	void InitializeUI();
+	void OnAssetChanged(StudioModelAsset* asset);
 
 private:
 	Ui_ModelInfoPanel _ui;

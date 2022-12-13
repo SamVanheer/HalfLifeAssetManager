@@ -61,6 +61,7 @@ namespace assets::studiomodel
 {
 class ModelChangeEvent;
 class StudioModelAsset;
+class StudioModelData;
 class StudioModelEditWidget;
 
 inline const QString StudioModelExtension{QStringLiteral("mdl")};
@@ -170,6 +171,8 @@ public:
 
 	studiomdl::EditableStudioModel* GetEditableStudioModel() { return _editableStudioModel.get(); }
 
+	StudioModelData* GetModelData() { return _modelData; }
+
 	graphics::TextureLoader* GetTextureLoader() { return _textureLoader; }
 
 	studiomdl::IStudioModelRenderer* GetStudioModelRenderer() { return _studioModelRenderer.get(); }
@@ -222,6 +225,8 @@ signals:
 
 	void ModelChanged(const ModelChangeEvent& event);
 
+	void AssetChanged(StudioModelAsset* asset);
+
 	void SaveSnapshot(StateSnapshot* snapshot);
 
 	void LoadSnapshot(StateSnapshot* snapshot);
@@ -265,6 +270,7 @@ private:
 	EditorContext* const _editorContext;
 	const StudioModelAssetProvider* const _provider;
 	std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;
+	StudioModelData* const _modelData;
 	graphics::TextureLoader* const _textureLoader;
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;

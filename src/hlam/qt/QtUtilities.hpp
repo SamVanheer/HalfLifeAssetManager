@@ -4,6 +4,8 @@
 #include <QString>
 #include <QWidget>
 
+class QAbstractItemModel;
+
 namespace qt
 {
 bool LaunchDefaultProgram(const QString& fileName);
@@ -11,6 +13,11 @@ bool LaunchDefaultProgram(const QString& fileName);
 QString GetImagesFileFilter();
 
 QString GetSeparatedImagesFileFilter();
+
+/**
+*	@brief Gets an empty item model that should be used for widgets that don't allow setting a null model.
+*/
+QAbstractItemModel* GetEmptyModel();
 
 inline QBoxLayout::Direction GetDirectionForDockArea(Qt::DockWidgetArea area)
 {

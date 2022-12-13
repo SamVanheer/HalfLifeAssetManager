@@ -8,6 +8,7 @@
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/StudioModelValidators.hpp"
 #include "ui/assets/studiomodel/dockpanels/AttachmentsPanel.hpp"
@@ -43,6 +44,7 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAsset* asset)
 	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), attachmentNameValidator, &UniqueAttachmentNameValidator::SetCurrentIndex);
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &AttachmentsPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::AssetChanged, this, &AttachmentsPanel::OnAssetChanged);
 	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &AttachmentsPanel::OnSaveSnapshot);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &AttachmentsPanel::OnLoadSnapshot);
 
@@ -59,7 +61,7 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAsset* asset)
 	connect(_ui.OriginY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &AttachmentsPanel::OnOriginChanged);
 	connect(_ui.OriginZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &AttachmentsPanel::OnOriginChanged);
 
-	InitializeUI();
+	OnAssetChanged(nullptr);
 }
 
 AttachmentsPanel::~AttachmentsPanel() = default;
@@ -158,6 +160,23 @@ void AttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
+void AttachmentsPanel::OnAssetChanged(StudioModelAsset* asset)
+{
+	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+
+	{
+		const QSignalBlocker blocker{_ui.Bone};
+		_ui.Bone->setModel(modelData->Bones);
+
+		//Start off with nothing selected
+		_ui.Bone->setCurrentIndex(-1);
+	}
+
+	_ui.Attachments->setModel(modelData->Attachments);
+
+	this->setEnabled(_ui.Attachments->count() > 0);
+}
+
 void AttachmentsPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 {
 	snapshot->SetValue("attachments.attachment", _ui.Attachments->currentIndex());
@@ -165,53 +184,8 @@ void AttachmentsPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 
 void AttachmentsPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 {
-	InitializeUI();
-
 	SetRestoredModelIndex(
 		snapshot->Value("attachments.attachment").toInt(), _asset->GetEntity()->GetEditableModel()->Attachments.size(), *_ui.Attachments);
-}
-
-void AttachmentsPanel::InitializeUI()
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-
-	this->setEnabled(!model->Attachments.empty());
-
-	{
-		const QSignalBlocker blocker{_ui.Bone};
-
-		_ui.Bone->clear();
-
-		QStringList bones;
-
-		bones.reserve(model->Bones.size());
-
-		for (int i = 0; i < model->Bones.size(); ++i)
-		{
-			bones.append(QString{"%1 (%2)"}.arg(model->Bones[i]->Name.c_str()).arg(i));
-		}
-
-		_ui.Bone->addItems(bones);
-
-		//Start off with nothing selected
-		_ui.Bone->setCurrentIndex(-1);
-	}
-
-	_ui.Attachments->clear();
-
-	if (!model->Attachments.empty())
-	{
-		QStringList attachments;
-
-		attachments.reserve(model->Attachments.size());
-
-		for (int i = 0; i < model->Attachments.size(); ++i)
-		{
-			attachments.append(QString{"Attachment %1"}.arg(i + 1));
-		}
-
-		_ui.Attachments->addItems(attachments);
-	}
 }
 
 void AttachmentsPanel::UpdateQCString()

@@ -20,12 +20,12 @@ public:
 	~HitboxesPanel();
 
 private:
-	void InitializeUI();
-
 	void UpdateQCString();
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnSaveSnapshot(StateSnapshot* snapshot);
 	void OnLoadSnapshot(StateSnapshot* snapshot);

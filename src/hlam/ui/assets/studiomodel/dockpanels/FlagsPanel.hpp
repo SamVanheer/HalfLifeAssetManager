@@ -23,9 +23,9 @@ private:
 	void SetFlags(int flags);
 
 private slots:
-	void InitializeUI();
-
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnFlagChanged(int state);
 

@@ -20,7 +20,7 @@ FlagsPanel::FlagsPanel(StudioModelAsset* asset)
 	_ui.setupUi(this);
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &FlagsPanel::OnModelChanged);
-	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &FlagsPanel::InitializeUI);
+	connect(_asset, &StudioModelAsset::AssetChanged, this, &FlagsPanel::OnAssetChanged);
 
 	connect(_ui.RocketTrail, &QCheckBox::stateChanged, this, &FlagsPanel::OnFlagChanged);
 	connect(_ui.GrenadeSmoke, &QCheckBox::stateChanged, this, &FlagsPanel::OnFlagChanged);
@@ -50,12 +50,7 @@ FlagsPanel::FlagsPanel(StudioModelAsset* asset)
 	_ui.HitboxCollision->setProperty(CheckBoxModelFlagProperty.data(), EF_HITBOXCOLLISIONS);
 	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty.data(), EF_FORCESKYLIGHT);
 
-	InitializeUI();
-}
-
-void FlagsPanel::InitializeUI()
-{
-	SetFlags(_asset->GetEntity()->GetEditableModel()->Flags);
+	OnAssetChanged(nullptr);
 }
 
 void FlagsPanel::OnModelChanged(const ModelChangeEvent& event)
@@ -64,6 +59,12 @@ void FlagsPanel::OnModelChanged(const ModelChangeEvent& event)
 	{
 		SetFlags(_asset->GetEntity()->GetEditableModel()->Flags);
 	}
+}
+
+void FlagsPanel::OnAssetChanged(StudioModelAsset* asset)
+{
+	SetFlags(asset ? asset->GetEntity()->GetEditableModel()->Flags : 0);
+	this->setEnabled(asset != nullptr);
 }
 
 void FlagsPanel::SetFlags(int flags)

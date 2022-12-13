@@ -29,14 +29,14 @@ public:
 	void OnVisibilityChanged(bool visible) override;
 
 private:
-	void InitializeUI();
-
 	void ImportTextureFrom(const QString& fileName, studiomdl::EditableStudioModel& model, int textureIndex);
 	void UpdateColormapValue();
 	void UpdateUVMapTexture();
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnSaveSnapshot(StateSnapshot* snapshot);
 	void OnLoadSnapshot(StateSnapshot* snapshot);

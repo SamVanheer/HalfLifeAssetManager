@@ -39,7 +39,7 @@ ModelDataPanel::ModelDataPanel(StudioModelAsset* asset)
 	_ui.CBoxMax->SetPrefix("Max ");
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &ModelDataPanel::OnModelChanged);
-	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &ModelDataPanel::InitializeUI);
+	connect(_asset, &StudioModelAsset::AssetChanged, this, &ModelDataPanel::OnAssetChanged);
 
 	connect(_ui.EyePosition, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnEyePositionChanged);
 
@@ -49,7 +49,7 @@ ModelDataPanel::ModelDataPanel(StudioModelAsset* asset)
 	connect(_ui.CBoxMin, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxMinChanged);
 	connect(_ui.CBoxMax, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxMaxChanged);
 
-	InitializeUI();
+	OnAssetChanged(nullptr);
 }
 
 ModelDataPanel::~ModelDataPanel() = default;
@@ -102,21 +102,32 @@ void ModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
-void ModelDataPanel::InitializeUI()
+void ModelDataPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-
 	const QSignalBlocker blocker{_ui.EyePosition};
 	const QSignalBlocker bmin{_ui.BBoxMin};
 	const QSignalBlocker bmax{_ui.BBoxMax};
 	const QSignalBlocker cmin{_ui.CBoxMin};
 	const QSignalBlocker cmax{_ui.CBoxMax};
 
-	_ui.EyePosition->SetValue(model->EyePosition);
-	_ui.BBoxMin->SetValue(model->BoundingMin);
-	_ui.BBoxMax->SetValue(model->BoundingMax);
-	_ui.CBoxMin->SetValue(model->ClippingMin);
-	_ui.CBoxMax->SetValue(model->ClippingMax);
+	if (asset)
+	{
+		auto model = asset->GetEntity()->GetEditableModel();
+
+		_ui.EyePosition->SetValue(model->EyePosition);
+		_ui.BBoxMin->SetValue(model->BoundingMin);
+		_ui.BBoxMax->SetValue(model->BoundingMax);
+		_ui.CBoxMin->SetValue(model->ClippingMin);
+		_ui.CBoxMax->SetValue(model->ClippingMax);
+	}
+	else
+	{
+		_ui.EyePosition->SetValue(glm::vec3{0});
+		_ui.BBoxMin->SetValue(glm::vec3{0});
+		_ui.BBoxMax->SetValue(glm::vec3{0});
+		_ui.CBoxMin->SetValue(glm::vec3{0});
+		_ui.CBoxMax->SetValue(glm::vec3{0});
+	}
 }
 
 void ModelDataPanel::OnEyePositionChanged(const glm::vec3& value)

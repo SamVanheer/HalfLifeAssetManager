@@ -8,6 +8,7 @@
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/StudioModelValidators.hpp"
 #include "ui/assets/studiomodel/dockpanels/BonesPanel.hpp"
@@ -87,6 +88,7 @@ BonesPanel::BonesPanel(StudioModelAsset* asset)
 	connect(_ui.Bones, qOverload<int>(&QComboBox::currentIndexChanged), boneNameValidator, &UniqueBoneNameValidator::SetCurrentIndex);
 
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &BonesPanel::OnModelChanged);
+	connect(_asset, &StudioModelAsset::AssetChanged, this, &BonesPanel::OnAssetChanged);
 	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &BonesPanel::OnSaveSnapshot);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &BonesPanel::OnLoadSnapshot);
 
@@ -120,68 +122,10 @@ BonesPanel::BonesPanel(StudioModelAsset* asset)
 	connect(_ui.BoneControllerAxis, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneControllerAxisChanged);
 	connect(_ui.BoneController, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneControllerChanged);
 
-	InitializeUI();
+	OnAssetChanged(nullptr);
 }
 
 BonesPanel::~BonesPanel() = default;
-
-void BonesPanel::InitializeUI()
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-
-	this->setEnabled(!model->Bones.empty());
-
-	QStringList bones;
-
-	bones.reserve(model->Bones.size() + 1);
-
-	bones.append("None (-1)");
-
-	for (int i = 0; i < model->Bones.size(); ++i)
-	{
-		bones.append(QString{"%1 (%2)"}.arg(model->Bones[i]->Name.c_str()).arg(i));
-	}
-
-	//Set up this list first so when the first bone is selected by _ui.Bones->addItems it has everything set up properly
-	{
-		const QSignalBlocker blocker{_ui.ParentBone};
-
-		_ui.ParentBone->clear();
-		_ui.ParentBone->addItems(bones);
-
-		//Start off with nothing selected
-		_ui.ParentBone->setCurrentIndex(-1);
-	}
-
-	bones.removeAt(0);
-
-	_ui.Bones->clear();
-	_ui.Bones->addItems(bones);
-
-	//Select the first property to make it clear it's the active page
-	_ui.BonePropertyList->setCurrentRow(0);
-
-	QStringList boneControllers;
-
-	boneControllers.append("None (-1)");
-
-	boneControllers.reserve(model->BoneControllers.size() + 1);
-
-	for (int i = 0; i < model->BoneControllers.size(); ++i)
-	{
-		boneControllers.append(QString{"Controller %1"}.arg(i + 1));
-	}
-
-	{
-		const QSignalBlocker blocker{_ui.BoneController};
-
-		_ui.BoneController->clear();
-		_ui.BoneController->addItems(boneControllers);
-		_ui.BoneController->setCurrentIndex(0);
-	}
-
-	UpdateRootBonesCount();
-}
 
 void BonesPanel::UpdateRootBonesCount()
 {
@@ -314,6 +258,36 @@ void BonesPanel::OnModelChanged(const ModelChangeEvent& event)
 	}
 }
 
+void BonesPanel::OnAssetChanged(StudioModelAsset* asset)
+{
+	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+
+	const auto model = _asset->GetEntity()->GetEditableModel();
+
+	this->setEnabled(modelData->Bones->rowCount() > 0);
+
+	//Set up this list first so when the first bone is selected by _ui.Bones->setModel it has everything set up properly
+	{
+		const QSignalBlocker blocker{_ui.ParentBone};
+		_ui.ParentBone->setModel(modelData->BonesWithNone);
+		//Start off with nothing selected
+		_ui.ParentBone->setCurrentIndex(-1);
+	}
+
+	_ui.Bones->setModel(modelData->Bones);
+
+	//Select the first property to make it clear it's the active page
+	_ui.BonePropertyList->setCurrentRow(0);
+
+	{
+		const QSignalBlocker blocker{_ui.BoneController};
+		_ui.BoneController->setModel(modelData->BoneControllersWithNone);
+		_ui.BoneController->setCurrentIndex(0);
+	}
+
+	UpdateRootBonesCount();
+}
+
 void BonesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 {
 	if (const int index = _ui.Bones->currentIndex(); index != -1)
@@ -326,8 +300,6 @@ void BonesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 
 void BonesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 {
-	InitializeUI();
-
 	if (auto bone = snapshot->Value("bones.bone"); bone.isValid())
 	{
 		const auto boneName = bone.toString().toStdString();

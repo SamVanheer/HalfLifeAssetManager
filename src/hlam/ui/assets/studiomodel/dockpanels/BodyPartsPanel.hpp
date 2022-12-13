@@ -27,12 +27,12 @@ public:
 	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
 
 private:
-	void InitializeUI();
-
 	void UpdateControllerRange(const studiomdl::BoneController& boneController);
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnSaveSnapshot(StateSnapshot* snapshot);
 	void OnLoadSnapshot(StateSnapshot* snapshot);

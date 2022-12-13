@@ -8,12 +8,15 @@
 #include <QColor>
 #include <QImage>
 #include <QRgb>
+#include <QString>
 
 #include "formats/studiomodel/EditableStudioModel.hpp"
 #include "graphics/Palette.hpp"
 
 namespace ui
 {
+QString FormatTextureName(const studiomdl::Texture& texture);
+
 /**
 *	@brief Converts an image to an indexed 8 bit image compatible with GoldSource
 *	@return If conversion succeeded, the converted texture and whether the image was converted from another format to index 8 bit

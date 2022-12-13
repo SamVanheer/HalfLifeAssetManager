@@ -11,6 +11,8 @@
 #include "ui/DockableWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
+class QAbstractItemModel;
+
 namespace ui
 {
 class StateSnapshot;
@@ -33,14 +35,14 @@ private:
 		Spinner
 	};
 
-	void InitializeUI();
-
 	void InitializeBlenders(float initialXValue = 0.f, float initialYValue = 0.f);
 
 	void UpdateBlendValue(int blender, BlendUpdateSource source, QSlider* slider, QDoubleSpinBox* spinner);
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
+
+	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnLoadSnapshot(StateSnapshot* snapshot);
 
