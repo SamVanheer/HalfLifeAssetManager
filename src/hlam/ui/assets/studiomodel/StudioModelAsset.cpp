@@ -204,8 +204,6 @@ StudioModelAsset::~StudioModelAsset()
 
 	context->Begin();
 
-	_editableStudioModel->DeleteTextures(*_textureLoader);
-
 	for (auto it = _scenes.rbegin(), end = _scenes.rend(); it != end; ++it)
 	{
 		(*it)->DestroyDeviceObjects();
@@ -319,9 +317,12 @@ void StudioModelAsset::TryRefresh()
 
 		auto newModel = std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
 
+		auto context = _editorContext->GetGraphicsContext();
+		context->Begin();
+
 		//Clean up old model resources
 		//TODO: needs to be handled better
-		_editableStudioModel->DeleteTextures(*_textureLoader);
+		_modelEntity->DestroyDeviceObjects(_editorContext->GetOpenGLFunctions(), *_textureLoader);
 
 		_editableStudioModel = std::move(newModel);
 
@@ -329,6 +330,10 @@ void StudioModelAsset::TryRefresh()
 
 		_modelEntity->SetEditableModel(GetEditableStudioModel());
 		_modelEntity->Spawn();
+
+		_modelEntity->CreateDeviceObjects(_editorContext->GetOpenGLFunctions(), *_textureLoader);
+
+		context->End();
 	}
 	catch (const ::assets::AssetException& e)
 	{
