@@ -10,8 +10,8 @@ class StateSnapshot;
 
 namespace assets::studiomodel
 {
-class ModelChangeEvent;
 class StudioModelAsset;
+class StudioModelData;
 
 class HitboxesPanel final : public DockableWidget
 {
@@ -23,8 +23,6 @@ private:
 	void UpdateQCString();
 
 private slots:
-	void OnModelChanged(const ModelChangeEvent& event);
-
 	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnSaveSnapshot(StateSnapshot* snapshot);
@@ -42,6 +40,7 @@ private slots:
 private:
 	Ui_HitboxesPanel _ui;
 	StudioModelAsset* const _asset;
+	StudioModelData* _previousModelData{};
 };
 }
 }

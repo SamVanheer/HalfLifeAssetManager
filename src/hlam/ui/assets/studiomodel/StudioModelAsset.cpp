@@ -332,7 +332,7 @@ void StudioModelAsset::TryRefresh()
 
 		_editableStudioModel = std::move(newModel);
 
-		delete _modelData;
+		auto oldModelData = _modelData;
 		_modelData = new StudioModelData(_editableStudioModel.get(), this);
 
 		GetUndoStack()->clear();
@@ -345,6 +345,9 @@ void StudioModelAsset::TryRefresh()
 		context->End();
 
 		emit AssetChanged(this);
+
+		// Delete the old data now that any remaining references have been cleared.
+		delete oldModelData;
 	}
 	catch (const ::assets::AssetException& e)
 	{

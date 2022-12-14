@@ -10,8 +10,8 @@ class StateSnapshot;
 
 namespace assets::studiomodel
 {
-class ModelChangeEvent;
 class StudioModelAsset;
+class StudioModelData;
 
 class ModelDataPanel final : public DockableWidget
 {
@@ -22,8 +22,6 @@ public:
 	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
 
 private slots:
-	void OnModelChanged(const ModelChangeEvent& event);
-
 	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnEyePositionChanged(const glm::vec3& value);
@@ -37,6 +35,7 @@ private slots:
 private:
 	Ui_ModelDataPanel _ui;
 	StudioModelAsset* const _asset;
+	StudioModelData* _previousModelData{};
 };
 }
 }

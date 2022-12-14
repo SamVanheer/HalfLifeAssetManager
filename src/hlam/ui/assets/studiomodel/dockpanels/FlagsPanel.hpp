@@ -10,8 +10,8 @@ class StateSnapshot;
 
 namespace assets::studiomodel
 {
-class ModelChangeEvent;
 class StudioModelAsset;
+class StudioModelData;
 
 class FlagsPanel final : public DockableWidget
 {
@@ -23,8 +23,6 @@ private:
 	void SetFlags(int flags);
 
 private slots:
-	void OnModelChanged(const ModelChangeEvent& event);
-
 	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnFlagChanged(int state);
@@ -32,6 +30,7 @@ private slots:
 private:
 	Ui_FlagsPanel _ui;
 	StudioModelAsset* const _asset;
+	StudioModelData* _previousModelData{};
 };
 }
 }

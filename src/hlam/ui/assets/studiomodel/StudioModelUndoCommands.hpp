@@ -16,6 +16,8 @@
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
+class QAbstractItemModel;
+
 namespace studiomdl
 {
 struct ScaleBonesBoneData;
@@ -74,182 +76,6 @@ enum class AddRemoveType
 };
 
 /**
-*	@brief Base class for all model change events
-*	Indicates that a change has been made to a model
-*/
-class ModelChangeEvent
-{
-public:
-	ModelChangeEvent(ModelChangeId id)
-		: _id(id)
-	{
-	}
-
-	ModelChangeEvent(const ModelChangeEvent&) = delete;
-	ModelChangeEvent& operator=(const ModelChangeEvent&) = delete;
-
-	ModelChangeId GetId() const { return _id; }
-
-private:
-	const ModelChangeId _id;
-};
-
-/**
-*	@brief Base class for model change events that have a single (compound) value
-*/
-template<typename T>
-class ModelValueChangeEvent : public ModelChangeEvent
-{
-public:
-	ModelValueChangeEvent(ModelChangeId id, const T& value)
-		: ModelChangeEvent(id)
-		, _value(value)
-	{
-	}
-
-	const T& GetValue() const { return _value; }
-
-private:
-	const T _value;
-};
-
-/**
-*	@brief Base class for all model change events that involve a change that occurred in a list
-*/
-class ModelListChangeEvent : public ModelChangeEvent
-{
-public:
-	ModelListChangeEvent(ModelChangeId id, int sourceIndex, int destinationIndex = -1)
-		: ModelChangeEvent(id)
-		, _sourceIndex(sourceIndex)
-		, _destinationIndex(destinationIndex)
-	{
-	}
-
-	/**
-	*	@brief The list entry being changed. If this change involves the moving of a list entry, this is where the entry was moved from
-	*/
-	int GetSourceIndex() const { return _sourceIndex; }
-
-	/**
-	*	@brief If this change involves the moving of a list entry, this is where the entry was moved to
-	*/
-	int GetDestinationIndex() const { return _destinationIndex; }
-
-private:
-	const int _sourceIndex;
-	const int _destinationIndex;
-};
-
-/**
-*	@brief Base class for model change events that have a single (compound) value
-*/
-template<typename T>
-class ModelListValueChangeEvent : public ModelListChangeEvent
-{
-public:
-	ModelListValueChangeEvent(ModelChangeId id, int sourceIndex, int destinationIndex, const T& value)
-		: ModelListChangeEvent(id, sourceIndex, destinationIndex)
-		, _value(value)
-	{
-	}
-
-	const T& GetValue() const { return _value; }
-
-private:
-	const T _value;
-};
-
-/**
-*	@brief Base class for all model change events that involve a change that occurred in a list inside another list
-*/
-class ModelListSubListChangeEvent : public ModelListChangeEvent
-{
-public:
-	ModelListSubListChangeEvent(ModelChangeId id, int sourceIndex, int destinationIndex, int sourceSubIndex, int destinationSubIndex)
-		: ModelListChangeEvent(id, sourceIndex, destinationIndex)
-		, _sourceSubIndex(sourceSubIndex)
-		, _destinationSubIndex(destinationSubIndex)
-	{
-	}
-
-	/**
-	*	@brief The list entry being changed. If this change involves the moving of a list entry, this is where the entry was moved from
-	*/
-	int GetSourceSubIndex() const { return _sourceSubIndex; }
-
-	/**
-	*	@brief If this change involves the moving of a list entry, this is where the entry was moved to
-	*/
-	int GetDestinationSubIndex() const { return _destinationSubIndex; }
-
-private:
-	const int _sourceSubIndex;
-	const int _destinationSubIndex;
-};
-
-/**
-*	@brief Base class for all model add and remove events that involve an addition or removal that occurred in a list
-*/
-class ModelListAddRemoveEvent : public ModelChangeEvent
-{
-public:
-	ModelListAddRemoveEvent(ModelChangeId id, AddRemoveType type, int index)
-		: ModelChangeEvent(id)
-		, _type(type)
-		, _index(index)
-	{
-	}
-
-	AddRemoveType GetType() const { return _type; }
-
-	/**
-	*	@brief The list entry being removed
-	*/
-	int GetSourceIndex() const { return _index; }
-
-private:
-	const AddRemoveType _type;
-	const int _index;
-};
-
-/**
-*	@brief Base class for all model add and remove events that involve a change that occurred in a list inside another list
-*/
-class ModelListSubListAddRemoveEvent : public ModelListAddRemoveEvent
-{
-public:
-	ModelListSubListAddRemoveEvent(ModelChangeId id, AddRemoveType type, int index, int subIndex)
-		: ModelListAddRemoveEvent(id, type, index)
-		, _subIndex(subIndex)
-	{
-	}
-
-	/**
-	*	@brief The list entry being added or removed
-	*/
-	int GetSourceSubIndex() const { return _subIndex; }
-
-private:
-	const int _subIndex;
-};
-
-using ModelEyePositionChangeEvent = ModelValueChangeEvent<glm::vec3>;
-
-using ModelBBoxChangeEvent = ModelValueChangeEvent<std::pair<glm::vec3, glm::vec3>>;
-using ModelCBoxChangeEvent = ModelValueChangeEvent<std::pair<glm::vec3, glm::vec3>>;
-
-/**
-* @brief axis, controller index
-*/
-using ModelBoneControllerFromBoneChangeEvent = ModelListValueChangeEvent<std::pair<int, int>>;
-
-/**
-*	@brief bone, axis
-*/
-using ModelBoneControllerFromControllerChangeEvent = ModelListValueChangeEvent<std::pair<int, int>>;
-
-/**
 *	@brief Base class for all undo commands related to Studiomodel editing
 */
 class BaseModelUndoCommand : public QUndoCommand
@@ -266,9 +92,10 @@ public:
 	int id() const override final { return static_cast<int>(_id); }
 
 protected:
-	StudioModelAsset* const _asset;
+	void EmitDataChanged(QAbstractItemModel* model, int index);
 
 protected:
+	StudioModelAsset* const _asset;
 	const ModelChangeId _id;
 };
 
@@ -314,13 +141,11 @@ public:
 	void undo() override
 	{
 		Apply(_newValue, _oldValue);
-		EmitEvent(_newValue, _oldValue);
 	}
 
 	void redo() override
 	{
 		Apply(_oldValue, _newValue);
-		EmitEvent(_oldValue, _newValue);
 	}
 
 	const T& GetOldValue() const { return _oldValue; }
@@ -331,11 +156,6 @@ protected:
 	virtual bool CanMerge(const ModelUndoCommand* other) { return false; }
 
 	virtual void Apply(const T& oldValue, const T& newValue) = 0;
-
-	virtual void EmitEvent(const T& oldValue, const T& newValue)
-	{
-		_asset->EmitModelChanged(ModelChangeEvent{_id});
-	}
 
 protected:
 	const T _oldValue;
@@ -391,13 +211,11 @@ public:
 	void undo() override
 	{
 		Apply(_index, _newValue, _oldValue);
-		EmitEvent(_newValue, _oldValue);
 	}
 
 	void redo() override
 	{
 		Apply(_index, _oldValue, _newValue);
-		EmitEvent(_oldValue, _newValue);
 	}
 
 	int GetIndex() const { return _index; }
@@ -410,11 +228,6 @@ protected:
 	virtual bool CanMerge(const ModelListUndoCommand* other) { return false; }
 
 	virtual void Apply(int index, const T& oldValue, const T& newValue) = 0;
-
-	virtual void EmitEvent(const T& oldValue, const T& newValue)
-	{
-		_asset->EmitModelChanged(ModelListChangeEvent{_id, _index});
-	}
 
 protected:
 	const int _index;
@@ -458,11 +271,6 @@ protected:
 	virtual void Add(int index, const T& value) = 0;
 	virtual void Remove(int index, const T& value) = 0;
 
-	virtual void EmitEvent(AddRemoveType type)
-	{
-		_asset->EmitModelChanged(ModelListAddRemoveEvent{_id, type, _index});
-	}
-
 private:
 	void Apply(bool redo)
 	{
@@ -491,8 +299,6 @@ private:
 		{
 			Remove(_index, _value);
 		}
-
-		EmitEvent(type);
 	}
 
 protected:
@@ -517,11 +323,6 @@ protected:
 	}
 
 	void Apply(const glm::vec3& oldValue, const glm::vec3& newValue) override;
-
-	void EmitEvent(const glm::vec3& oldValue, const glm::vec3& newValue) override
-	{
-		_asset->EmitModelChanged(ModelEyePositionChangeEvent{_id, newValue});
-	}
 };
 
 class ChangeBBoxCommand : public ModelUndoCommand<std::pair<glm::vec3, glm::vec3>>
@@ -540,11 +341,6 @@ protected:
 	}
 
 	void Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
-
-	void EmitEvent(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override
-	{
-		_asset->EmitModelChanged(ModelBBoxChangeEvent{_id, newValue});
-	}
 };
 
 class ChangeCBoxCommand : public ModelUndoCommand<std::pair<glm::vec3, glm::vec3>>
@@ -563,11 +359,6 @@ protected:
 	}
 
 	void Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
-
-	void EmitEvent(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override
-	{
-		_asset->EmitModelChanged(ModelCBoxChangeEvent{_id, newValue});
-	}
 };
 
 class BoneRenameCommand : public ModelListUndoCommand<QString>
@@ -660,11 +451,6 @@ protected:
 	}
 
 	void Apply(int index, const int& oldValue, const int& newValue) override;
-
-	void EmitEvent(const int& oldValue, const int& newValue) override
-	{
-		_asset->EmitModelChanged(ModelBoneControllerFromBoneChangeEvent{_id, _index, -1, {_boneControllerAxis, newValue}});
-	}
 
 private:
 	const int _boneControllerAxis;
@@ -830,11 +616,6 @@ protected:
 	}
 
 	void Apply(int index, const ChangeBoneControllerData& oldValue, const ChangeBoneControllerData& newValue) override;
-
-	void EmitEvent(const ChangeBoneControllerData& oldValue, const ChangeBoneControllerData& newValue) override
-	{
-		_asset->EmitModelChanged(ModelBoneControllerFromControllerChangeEvent{_id, _index, -1, {newValue.first, newValue.second}});
-	}
 };
 
 class ChangeModelFlagsCommand : public ModelUndoCommand<int>
@@ -1025,11 +806,6 @@ public:
 protected:
 	void Apply(int index, const studiomdl::SequenceEvent& oldValue, const studiomdl::SequenceEvent& newValue) override;
 
-	void EmitEvent(const studiomdl::SequenceEvent& oldValue, const studiomdl::SequenceEvent& newValue) override
-	{
-		_asset->EmitModelChanged(ModelListSubListChangeEvent(_id, _index, -1, _eventIndex, -1));
-	}
-
 private:
 	const int _eventIndex;
 };
@@ -1055,11 +831,6 @@ protected:
 	void Add(int index, const studiomdl::SequenceEvent& value) override;
 	void Remove(int index, const studiomdl::SequenceEvent& value) override;
 
-	void EmitEvent(AddRemoveType type) override
-	{
-		_asset->EmitModelChanged(ModelListSubListAddRemoveEvent{_id, type, _index, _eventIndex});
-	}
-
 private:
 	const int _eventIndex;
 };
@@ -1082,11 +853,6 @@ protected:
 
 	void Apply(int index, const QString& oldValue, const QString& newValue) override;
 
-	void EmitEvent(const QString& oldValue, const QString& newValue) override
-	{
-		_asset->EmitModelChanged(ModelListSubListChangeEvent{_id, _index, -1, _modelIndex, -1});
-	}
-
 protected:
 	const int _modelIndex;
 };
@@ -1107,10 +873,5 @@ protected:
 	}
 
 	void Apply(int index, const std::vector<glm::vec3>& oldValue, const std::vector<glm::vec3>& newValue) override;
-
-	void EmitEvent(const std::vector<glm::vec3>& oldValue, const std::vector<glm::vec3>& newValue) override
-	{
-		_asset->EmitModelChanged(ModelValueChangeEvent{_id, newValue});
-	}
 };
 }

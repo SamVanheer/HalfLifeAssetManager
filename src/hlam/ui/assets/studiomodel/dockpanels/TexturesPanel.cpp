@@ -85,7 +85,6 @@ TexturesPanel::TexturesPanel(StudioModelAsset* asset)
 
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), textureNameValidator, &UniqueTextureNameValidator::SetCurrentIndex);
 
-	connect(_asset, &StudioModelAsset::ModelChanged, this, &TexturesPanel::OnModelChanged);
 	connect(_asset, &StudioModelAsset::AssetChanged, this, &TexturesPanel::OnAssetChanged);
 	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &TexturesPanel::OnSaveSnapshot);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &TexturesPanel::OnLoadSnapshot);
@@ -160,51 +159,6 @@ static void SetTextureFlagCheckBoxes(Ui_TexturesPanel& ui, int flags)
 	ui.Mipmaps->setChecked((flags & STUDIO_NF_NOMIPS) != 0);
 }
 
-void TexturesPanel::OnModelChanged(const ModelChangeEvent& event)
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-
-	switch (event.GetId())
-	{
-	case ModelChangeId::ImportTexture:
-		//Use the same code for texture name changes
-		[[fallthrough]];
-
-	case ModelChangeId::ChangeTextureName:
-	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		const auto& texture = *model->Textures[listChange.GetSourceIndex()];
-
-		_ui.Textures->setItemText(listChange.GetSourceIndex(), FormatTextureName(texture));
-
-		if (listChange.GetSourceIndex() == _ui.Textures->currentIndex())
-		{
-			const QString name{texture.Name.c_str()};
-
-			//Avoid resetting the edit position
-			if (_ui.TextureName->text() != name)
-			{
-				const QSignalBlocker blocker{_ui.TextureName};
-				_ui.TextureName->setText(name);
-			}
-		}
-		break;
-	}
-
-	case ModelChangeId::ChangeTextureFlags:
-	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		if (listChange.GetSourceIndex() == _ui.Textures->currentIndex())
-		{
-			SetTextureFlagCheckBoxes(_ui, model->Textures[listChange.GetSourceIndex()]->Flags);
-		}
-		break;
-	}
-	}
-}
-
 void TexturesPanel::OnAssetChanged(StudioModelAsset* asset)
 {
 	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
@@ -212,6 +166,36 @@ void TexturesPanel::OnAssetChanged(StudioModelAsset* asset)
 	_ui.Textures->setModel(modelData->Textures);
 
 	this->setEnabled(_ui.Textures->count() > 0);
+
+	if (_previousModelData)
+	{
+		_previousModelData->DisconnectFromAll(this);
+	}
+
+	_previousModelData = modelData;
+
+	connect(modelData, &StudioModelData::TextureNameChanged, this, [this](int index)
+		{
+			if (index == _ui.Textures->currentIndex())
+			{
+				const QString name{_asset->GetEditableStudioModel()->Textures[index]->Name.c_str()};
+
+				//Avoid resetting the edit position
+				if (_ui.TextureName->text() != name)
+				{
+					const QSignalBlocker blocker{_ui.TextureName};
+					_ui.TextureName->setText(name);
+				}
+			}
+		});
+
+	connect(modelData, &StudioModelData::TextureFlagsChanged, this, [this](int index)
+		{
+			if (index == _ui.Textures->currentIndex())
+			{
+				SetTextureFlagCheckBoxes(_ui, _asset->GetEditableStudioModel()->Textures[index]->Flags);
+			}
+		});
 }
 
 void TexturesPanel::OnSaveSnapshot(StateSnapshot* snapshot)

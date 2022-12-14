@@ -7,6 +7,7 @@
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/FlagsPanel.hpp"
 
@@ -19,7 +20,6 @@ FlagsPanel::FlagsPanel(StudioModelAsset* asset)
 {
 	_ui.setupUi(this);
 
-	connect(_asset, &StudioModelAsset::ModelChanged, this, &FlagsPanel::OnModelChanged);
 	connect(_asset, &StudioModelAsset::AssetChanged, this, &FlagsPanel::OnAssetChanged);
 
 	connect(_ui.RocketTrail, &QCheckBox::stateChanged, this, &FlagsPanel::OnFlagChanged);
@@ -53,18 +53,24 @@ FlagsPanel::FlagsPanel(StudioModelAsset* asset)
 	OnAssetChanged(nullptr);
 }
 
-void FlagsPanel::OnModelChanged(const ModelChangeEvent& event)
-{
-	if (event.GetId() == ModelChangeId::ChangeModelFlags)
-	{
-		SetFlags(_asset->GetEntity()->GetEditableModel()->Flags);
-	}
-}
-
 void FlagsPanel::OnAssetChanged(StudioModelAsset* asset)
 {
+	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+
 	SetFlags(asset ? asset->GetEntity()->GetEditableModel()->Flags : 0);
 	this->setEnabled(asset != nullptr);
+
+	if (_previousModelData)
+	{
+		_previousModelData->DisconnectFromAll(this);
+	}
+
+	_previousModelData = modelData;
+
+	connect(modelData, &StudioModelData::ModelFlagsChanged, this, [this]()
+		{
+			SetFlags(_asset->GetEditableStudioModel()->Flags);
+		});
 }
 
 void FlagsPanel::SetFlags(int flags)

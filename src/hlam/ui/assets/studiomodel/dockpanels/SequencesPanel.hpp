@@ -11,16 +11,14 @@
 #include "ui/DockableWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
-class QAbstractItemModel;
-
 namespace ui
 {
 class StateSnapshot;
 
 namespace assets::studiomodel
 {
-class ModelChangeEvent;
 class StudioModelAsset;
+class StudioModelData;
 
 class SequencesPanel final : public DockableWidget
 {
@@ -40,8 +38,6 @@ private:
 	void UpdateBlendValue(int blender, BlendUpdateSource source, QSlider* slider, QDoubleSpinBox* spinner);
 
 private slots:
-	void OnModelChanged(const ModelChangeEvent& event);
-
 	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnLoadSnapshot(StateSnapshot* snapshot);
@@ -73,6 +69,7 @@ private slots:
 private:
 	Ui_SequencesPanel _ui;
 	StudioModelAsset* const _asset;
+	StudioModelData* _previousModelData{};
 
 	double _blendsScales[SequenceBlendCount]{};
 };

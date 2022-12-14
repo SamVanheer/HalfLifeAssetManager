@@ -46,7 +46,6 @@ BodyPartsPanel::BodyPartsPanel(StudioModelAsset* asset)
 	connect(_ui.BodyParts, qOverload<int>(&QComboBox::currentIndexChanged), modelNameValidator, &UniqueModelNameValidator::SetCurrentBodyPartIndex);
 	connect(_ui.Submodels, qOverload<int>(&QComboBox::currentIndexChanged), modelNameValidator, &UniqueModelNameValidator::SetCurrentIndex);
 
-	connect(_asset, &StudioModelAsset::ModelChanged, this, &BodyPartsPanel::OnModelChanged);
 	connect(_asset, &StudioModelAsset::AssetChanged, this, &BodyPartsPanel::OnAssetChanged);
 	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &BodyPartsPanel::OnSaveSnapshot);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &BodyPartsPanel::OnLoadSnapshot);
@@ -75,131 +74,6 @@ BodyPartsPanel::BodyPartsPanel(StudioModelAsset* asset)
 }
 
 BodyPartsPanel::~BodyPartsPanel() = default;
-
-void BodyPartsPanel::OnModelChanged(const ModelChangeEvent& event)
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-
-	switch (event.GetId())
-	{
-	case ModelChangeId::RenameBone:
-	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		const auto& bone = *model->Bones[listChange.GetSourceIndex()];
-
-		const QSignalBlocker boneControllerBone{_ui.BoneControllerBone};
-		_ui.BoneControllerBone->setItemText(listChange.GetSourceIndex() + BoneOffset, QString{"%1 (%2)"}.arg(bone.Name.c_str()).arg(listChange.GetSourceIndex()));
-		break;
-	}
-
-	case ModelChangeId::ChangeBoneControllerRange:
-	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		if (listChange.GetSourceIndex() == _ui.BoneControllers->currentIndex())
-		{
-			const auto& controller = *model->BoneControllers[listChange.GetSourceIndex()];
-
-			const QSignalBlocker start{_ui.BoneControllerStart};
-			const QSignalBlocker end{_ui.BoneControllerEnd};
-
-			_ui.BoneControllerStart->setValue(controller.Start);
-			_ui.BoneControllerEnd->setValue(controller.End);
-
-			UpdateControllerRange(controller);
-
-			//Reset the value back to 0
-			OnBoneControllerValueSpinnerChanged(0);
-		}
-
-		break;
-	}
-
-	case ModelChangeId::ChangeBoneControllerRest:
-	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		if (listChange.GetSourceIndex() == _ui.BoneControllers->currentIndex())
-		{
-			const auto& controller = *model->BoneControllers[listChange.GetSourceIndex()];
-
-			const QSignalBlocker rest{_ui.BoneControllerRest};
-			_ui.BoneControllerRest->setValue(controller.Rest);
-		}
-
-		break;
-	}
-
-	case ModelChangeId::ChangeBoneControllerIndex:
-	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		if (listChange.GetSourceIndex() == _ui.BoneControllers->currentIndex())
-		{
-			const auto& controller = *model->BoneControllers[listChange.GetSourceIndex()];
-
-			const QSignalBlocker index{_ui.BoneControllerIndex};
-			_ui.BoneControllerIndex->setCurrentIndex(controller.Index);
-
-			//Ensure values are set
-			OnBoneControllerValueSpinnerChanged(_ui.BoneControllerValueSpinner->value());
-		}
-
-		break;
-	}
-
-	case ModelChangeId::ChangeBoneControllerFromBone:
-	{
-		const auto& listChange{static_cast<const ModelBoneControllerFromBoneChangeEvent&>(event)};
-
-		if (listChange.GetValue().second == _ui.BoneControllers->currentIndex())
-		{
-			const QSignalBlocker bone{_ui.BoneControllerBone};
-			const QSignalBlocker axis{_ui.BoneControllerBoneAxis};
-
-			_ui.BoneControllerBone->setCurrentIndex(listChange.GetSourceIndex() + BoneOffset);
-			_ui.BoneControllerBoneAxis->setCurrentIndex(listChange.GetValue().first);
-		}
-		break;
-	}
-
-	case ModelChangeId::ChangeBoneControllerFromController:
-	{
-		const auto& listChange{static_cast<const ModelBoneControllerFromControllerChangeEvent&>(event)};
-
-		if (listChange.GetSourceIndex() == _ui.BoneControllers->currentIndex())
-		{
-			const QSignalBlocker bone{_ui.BoneControllerBone};
-			const QSignalBlocker axis{_ui.BoneControllerBoneAxis};
-
-			_ui.BoneControllerBone->setCurrentIndex(listChange.GetValue().first + BoneOffset);
-			_ui.BoneControllerBoneAxis->setCurrentIndex(listChange.GetValue().second);
-		}
-		break;
-	}
-
-	case ModelChangeId::ChangeModelName:
-	{
-		const auto& listChange{static_cast<const ModelListSubListChangeEvent&>(event)};
-
-		if (listChange.GetSourceIndex() == _ui.BodyParts->currentIndex() && listChange.GetSourceSubIndex() == _ui.Submodels->currentIndex())
-		{
-			const auto& bodyPart = *model->Bodyparts[_ui.BodyParts->currentIndex()];
-			const auto& subModel = bodyPart.Models[_ui.Submodels->currentIndex()];
-
-			const QString name{subModel.Name.c_str()};
-
-			if (_ui.ModelName->text() != name)
-			{
-				const QSignalBlocker index{_ui.ModelName};
-				_ui.ModelName->setText(name);
-			}
-		}
-		break;
-	}
-	}
-}
 
 void BodyPartsPanel::OnAssetChanged(StudioModelAsset* asset)
 {
@@ -246,6 +120,84 @@ void BodyPartsPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	//Should already be set but if there are no body parts and/or submodels it won't have been
 	_ui.BodyValue->setText(QString::number(bodygroup));
+
+	if (_previousModelData)
+	{
+		_previousModelData->DisconnectFromAll(this);
+	}
+
+	_previousModelData = modelData;
+
+	connect(modelData, &StudioModelData::BoneControllerRangeChanged, this, [this](int index)
+		{
+			if (index == _ui.BoneControllers->currentIndex())
+			{
+				const auto& controller = *_asset->GetEditableStudioModel()->BoneControllers[index];
+
+				const QSignalBlocker start{_ui.BoneControllerStart};
+				const QSignalBlocker end{_ui.BoneControllerEnd};
+
+				_ui.BoneControllerStart->setValue(controller.Start);
+				_ui.BoneControllerEnd->setValue(controller.End);
+
+				UpdateControllerRange(controller);
+
+				//Reset the value back to 0
+				OnBoneControllerValueSpinnerChanged(0);
+			}
+		});
+
+	connect(modelData, &StudioModelData::BoneControllerRestChanged, this, [this](int index)
+		{
+			if (index == _ui.BoneControllers->currentIndex())
+			{
+				const QSignalBlocker rest{_ui.BoneControllerRest};
+				_ui.BoneControllerRest->setValue(_asset->GetEditableStudioModel()->BoneControllers[index]->Rest);
+			}
+		});
+
+	connect(modelData, &StudioModelData::BoneControllerIndexChanged, this, [this](int index)
+		{
+			if (index == _ui.BoneControllers->currentIndex())
+			{
+				const QSignalBlocker controllerIndex{_ui.BoneControllerIndex};
+				_ui.BoneControllerIndex->setCurrentIndex(_asset->GetEditableStudioModel()->BoneControllers[index]->Index);
+
+				//Ensure values are set
+				OnBoneControllerValueSpinnerChanged(_ui.BoneControllerValueSpinner->value());
+			}
+		});
+
+	connect(modelData, &StudioModelData::BoneControllerChangedFromBone, this, [this](int controllerIndex, int boneIndex)
+		{
+			if (controllerIndex == _ui.BoneControllers->currentIndex())
+			{
+				OnBoneControllerChanged(controllerIndex);
+			}
+		});
+
+	connect(modelData, &StudioModelData::BoneControllerChangedFromController, this, [this](int controllerIndex, int boneIndex)
+		{
+			if (controllerIndex == _ui.BoneControllers->currentIndex())
+			{
+				OnBoneControllerChanged(controllerIndex);
+			}
+		});
+
+	connect(modelData, &StudioModelData::SubModelNameChanged, this, [this](int bodyPartIndex, int modelIndex)
+		{
+			if (bodyPartIndex == _ui.BodyParts->currentIndex() && modelIndex == _ui.Submodels->currentIndex())
+			{
+				// TODO: use fromStdString
+				const QString name{_asset->GetEditableStudioModel()->Bodyparts[bodyPartIndex]->Models[modelIndex].Name.c_str()};
+
+				if (_ui.ModelName->text() != name)
+				{
+					const QSignalBlocker index{_ui.ModelName};
+					_ui.ModelName->setText(name);
+				}
+			}
+		});
 }
 
 void BodyPartsPanel::OnSaveSnapshot(StateSnapshot* snapshot)

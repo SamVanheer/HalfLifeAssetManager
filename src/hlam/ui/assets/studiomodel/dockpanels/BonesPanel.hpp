@@ -4,13 +4,15 @@
 
 #include "ui/DockableWidget.hpp"
 
+class QModelIndex;
+
 namespace ui
 {
 class StateSnapshot;
 namespace assets::studiomodel
 {
-class ModelChangeEvent;
 class StudioModelAsset;
+class StudioModelData;
 
 class BonesPanel final : public DockableWidget
 {
@@ -22,8 +24,6 @@ private:
 	void UpdateRootBonesCount();
 
 private slots:
-	void OnModelChanged(const ModelChangeEvent& event);
-
 	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnSaveSnapshot(StateSnapshot* snapshot);
@@ -31,6 +31,8 @@ private slots:
 
 	void OnBoneChanged(int index);
 	void OnHightlightBoneChanged();
+
+	void SyncBoneName(const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
 	void OnBoneNameChanged();
 	void OnBoneNameRejected();
@@ -48,6 +50,7 @@ private slots:
 private:
 	Ui_BonesPanel _ui;
 	StudioModelAsset* const _asset;
+	StudioModelData* _previousModelData{};
 };
 }
 }

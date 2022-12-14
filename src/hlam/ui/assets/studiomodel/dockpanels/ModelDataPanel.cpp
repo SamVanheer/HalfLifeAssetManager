@@ -7,6 +7,7 @@
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/ModelDataPanel.hpp"
 
@@ -38,7 +39,6 @@ ModelDataPanel::ModelDataPanel(StudioModelAsset* asset)
 	_ui.CBoxMax->SetDecimals(6);
 	_ui.CBoxMax->SetPrefix("Max ");
 
-	connect(_asset, &StudioModelAsset::ModelChanged, this, &ModelDataPanel::OnModelChanged);
 	connect(_asset, &StudioModelAsset::AssetChanged, this, &ModelDataPanel::OnAssetChanged);
 
 	connect(_ui.EyePosition, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnEyePositionChanged);
@@ -62,48 +62,10 @@ void ModelDataPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 	_ui.ClippingBoxLayout->setDirection(direction);
 }
 
-void ModelDataPanel::OnModelChanged(const ModelChangeEvent& event)
-{
-	switch (event.GetId())
-	{
-	case ModelChangeId::ChangeEyePosition:
-	{
-		const auto& change = static_cast<const ModelEyePositionChangeEvent&>(event);
-
-		const QSignalBlocker blocker{_ui.EyePosition};
-
-		_ui.EyePosition->SetValue(change.GetValue());
-		break;
-	}
-
-	case ModelChangeId::ChangeBBox:
-	{
-		const auto& change = static_cast<const ModelBBoxChangeEvent&>(event);
-
-		const QSignalBlocker min{_ui.BBoxMin};
-		const QSignalBlocker max{_ui.BBoxMax};
-
-		_ui.BBoxMin->SetValue(change.GetValue().first);
-		_ui.BBoxMax->SetValue(change.GetValue().second);
-		break;
-	}
-
-	case ModelChangeId::ChangeCBox:
-	{
-		const auto& change = static_cast<const ModelCBoxChangeEvent&>(event);
-
-		const QSignalBlocker min{_ui.CBoxMin};
-		const QSignalBlocker max{_ui.CBoxMax};
-
-		_ui.CBoxMin->SetValue(change.GetValue().first);
-		_ui.CBoxMax->SetValue(change.GetValue().second);
-		break;
-	}
-	}
-}
-
 void ModelDataPanel::OnAssetChanged(StudioModelAsset* asset)
 {
+	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+
 	const QSignalBlocker blocker{_ui.EyePosition};
 	const QSignalBlocker bmin{_ui.BBoxMin};
 	const QSignalBlocker bmax{_ui.BBoxMax};
@@ -128,6 +90,37 @@ void ModelDataPanel::OnAssetChanged(StudioModelAsset* asset)
 		_ui.CBoxMin->SetValue(glm::vec3{0});
 		_ui.CBoxMax->SetValue(glm::vec3{0});
 	}
+
+	if (_previousModelData)
+	{
+		_previousModelData->DisconnectFromAll(this);
+	}
+
+	_previousModelData = modelData;
+
+	connect(modelData, &StudioModelData::EyePositionChanged, this, [this]()
+		{
+			const QSignalBlocker blocker{_ui.EyePosition};
+			_ui.EyePosition->SetValue(_asset->GetEditableStudioModel()->EyePosition);
+		});
+
+	connect(modelData, &StudioModelData::ModelBBoxChanged, this, [this]()
+		{
+			auto model = _asset->GetEditableStudioModel();
+			const QSignalBlocker min{_ui.BBoxMin};
+			const QSignalBlocker max{_ui.BBoxMax};
+			_ui.BBoxMin->SetValue(model->BoundingMin);
+			_ui.BBoxMax->SetValue(model->BoundingMax);
+		});
+
+	connect(modelData, &StudioModelData::ModelCBoxChanged, this, [this]()
+		{
+			auto model = _asset->GetEditableStudioModel();
+			const QSignalBlocker min{_ui.CBoxMin};
+			const QSignalBlocker max{_ui.CBoxMax};
+			_ui.CBoxMin->SetValue(model->ClippingMin);
+			_ui.CBoxMax->SetValue(model->ClippingMax);
+		});
 }
 
 void ModelDataPanel::OnEyePositionChanged(const glm::vec3& value)

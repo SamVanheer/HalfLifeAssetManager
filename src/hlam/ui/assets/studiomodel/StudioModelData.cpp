@@ -255,4 +255,26 @@ StudioModelData::StudioModelData(studiomdl::EditableStudioModel* model, QObject*
 	, Textures(new TexturesItemModel(model ? &model->Textures : nullptr, this))
 {
 }
+
+void StudioModelData::DisconnectFromAll(QObject* receiver)
+{
+	this->disconnect(receiver);
+
+	for (auto model :
+		{
+			Attachments,
+			BodyParts,
+			Bones,
+			BonesWithNone,
+			BoneControllers,
+			BoneControllersWithNone,
+			Hitboxes,
+			Sequences,
+			Skins,
+			Textures
+		})
+	{
+		model->disconnect(receiver);
+	}
+}
 }

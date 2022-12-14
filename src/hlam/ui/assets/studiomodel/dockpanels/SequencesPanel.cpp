@@ -25,7 +25,6 @@ SequencesPanel::SequencesPanel(StudioModelAsset* asset)
 	_ui.EventId->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 	_ui.EventType->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
-	connect(_asset, &StudioModelAsset::ModelChanged, this, &SequencesPanel::OnModelChanged);
 	connect(_asset, &StudioModelAsset::AssetChanged, this, &SequencesPanel::OnAssetChanged);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &SequencesPanel::OnLoadSnapshot);
 	connect(_asset, &StudioModelAsset::PoseChanged, this, &SequencesPanel::OnPoseChanged);
@@ -58,32 +57,35 @@ SequencesPanel::SequencesPanel(StudioModelAsset* asset)
 
 SequencesPanel::~SequencesPanel() = default;
 
-void SequencesPanel::OnModelChanged(const ModelChangeEvent& event)
+void SequencesPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	const auto model = _asset->GetEntity()->GetEditableModel();
+	const int sequenceIndex = asset ? asset->GetEntity()->GetSequence() : -1;
 
-	switch (event.GetId())
-	{
-	case ModelChangeId::ChangeEvent:
-	{
-		const auto& listChange = static_cast<const ModelListSubListChangeEvent&>(event);
+	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
 
-		if (listChange.GetSourceIndex() == _ui.SequenceComboBox->currentIndex() && listChange.GetSourceSubIndex() == _ui.EventsComboBox->currentIndex())
-		{
-			OnEventChanged(_ui.EventsComboBox->currentIndex());
-		}
-		break;
+	_ui.SequenceComboBox->setModel(modelData->Sequences);
+	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex);
+
+	this->setEnabled(_ui.SequenceComboBox->count() > 0);
+
+	if (_previousModelData)
+	{
+		_previousModelData->DisconnectFromAll(this);
 	}
 
-	case ModelChangeId::AddRemoveEvent:
-	{
-		const auto& listChange = static_cast<const ModelListSubListAddRemoveEvent&>(event);
+	_previousModelData = modelData;
 
-		if (listChange.GetSourceIndex() == _ui.SequenceComboBox->currentIndex())
+	connect(modelData, &StudioModelData::EventChanged, this, [this](int sequenceIndex, int eventIndex)
 		{
-			const int index = listChange.GetSourceSubIndex();
+			if (sequenceIndex == _ui.SequenceComboBox->currentIndex() && eventIndex == _ui.EventsComboBox->currentIndex())
+			{
+				OnEventChanged(eventIndex);
+			}
+		});
 
-			if (listChange.GetType() == AddRemoveType::Addition)
+	connect(modelData, &StudioModelData::EventAdded, this, [this](int sequenceIndex, int eventIndex)
+		{
+			if (sequenceIndex == _ui.SequenceComboBox->currentIndex())
 			{
 				auto entity = _asset->GetEntity();
 				auto model = entity->GetEditableModel();
@@ -96,15 +98,19 @@ void SequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 
 					//Add new entry to the combo box
 					_ui.EventsComboBox->addItem(QString{"Event %1"}.arg(sequence.Events.size()));
-					_ui.EventsComboBox->setCurrentIndex(static_cast<int>(index));
+					_ui.EventsComboBox->setCurrentIndex(eventIndex);
 					_ui.EventsComboBox->setEnabled(true);
 				}
 
-				OnEventChanged(static_cast<int>(index));
+				OnEventChanged(eventIndex);
 
 				_ui.RemoveEvent->setEnabled(true);
 			}
-			else
+		});
+
+	connect(modelData, &StudioModelData::EventRemoved, this, [this](int sequenceIndex, int eventIndex)
+		{
+			if (sequenceIndex == _ui.SequenceComboBox->currentIndex())
 			{
 				//Always remove the last entry since they're numbered independently of their associated event
 				_ui.EventsComboBox->removeItem(_ui.EventsComboBox->count() - 1);
@@ -114,7 +120,7 @@ void SequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 				//Sync up combo box and event data to the next event
 				if (hasEvents)
 				{
-					const int newIndex = index > 0 ? index - 1 : 0;
+					const int newIndex = eventIndex > 0 ? eventIndex - 1 : 0;
 
 					{
 						const QSignalBlocker blocker{_ui.EventsComboBox};
@@ -127,22 +133,7 @@ void SequencesPanel::OnModelChanged(const ModelChangeEvent& event)
 				_ui.EventsComboBox->setEnabled(hasEvents);
 				_ui.RemoveEvent->setEnabled(hasEvents);
 			}
-		}
-		break;
-	}
-	}
-}
-
-void SequencesPanel::OnAssetChanged(StudioModelAsset* asset)
-{
-	const int sequenceIndex = asset ? asset->GetEntity()->GetSequence() : -1;
-
-	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
-
-	_ui.SequenceComboBox->setModel(modelData->Sequences);
-	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex);
-
-	this->setEnabled(_ui.SequenceComboBox->count() > 0);
+		});
 }
 
 void SequencesPanel::OnLoadSnapshot(StateSnapshot* snapshot)

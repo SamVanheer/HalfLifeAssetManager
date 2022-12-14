@@ -43,7 +43,6 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAsset* asset)
 
 	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), attachmentNameValidator, &UniqueAttachmentNameValidator::SetCurrentIndex);
 
-	connect(_asset, &StudioModelAsset::ModelChanged, this, &AttachmentsPanel::OnModelChanged);
 	connect(_asset, &StudioModelAsset::AssetChanged, this, &AttachmentsPanel::OnAssetChanged);
 	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &AttachmentsPanel::OnSaveSnapshot);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &AttachmentsPanel::OnLoadSnapshot);
@@ -66,100 +65,6 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAsset* asset)
 
 AttachmentsPanel::~AttachmentsPanel() = default;
 
-void AttachmentsPanel::OnModelChanged(const ModelChangeEvent& event)
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-
-	switch (event.GetId())
-	{
-	case ModelChangeId::RenameBone:
-	{
-		const QSignalBlocker boneBlocker{_ui.Bone};
-
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		const auto& bone = *model->Bones[listChange.GetSourceIndex()];
-
-		_ui.Bone->setItemText(listChange.GetSourceIndex(), QString{"%1 (%2)"}.arg(bone.Name.c_str()).arg(listChange.GetSourceIndex()));
-		UpdateQCString();
-		break;
-	}
-
-	case ModelChangeId::ChangeAttachmentName:
-	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
-		{
-			const auto& attachment = *model->Attachments[listChange.GetSourceIndex()];
-
-			const QString text{attachment.Name.c_str()};
-
-			//Avoid resetting the edit position
-			if (_ui.Name->text() != text)
-			{
-				const QSignalBlocker name{_ui.Name};
-				_ui.Name->setText(text);
-				UpdateQCString();
-			}
-		}
-		break;
-	}
-
-	case ModelChangeId::ChangeAttachmentType:
-	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
-		{
-			const auto& attachment = *model->Attachments[listChange.GetSourceIndex()];
-
-			const QSignalBlocker type{_ui.Type};
-
-			_ui.Type->setValue(attachment.Type);
-			UpdateQCString();
-		}
-		break;
-	}
-
-	case ModelChangeId::ChangeAttachmentBone:
-	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
-		{
-			const auto& attachment = *model->Attachments[listChange.GetSourceIndex()];
-
-			const QSignalBlocker bone{_ui.Bone};
-
-			_ui.Bone->setCurrentIndex(attachment.Bone->ArrayIndex);
-			UpdateQCString();
-		}
-		break;
-	}
-
-	case ModelChangeId::ChangeAttachmentOrigin:
-	{
-		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
-
-		if (listChange.GetSourceIndex() == _ui.Attachments->currentIndex())
-		{
-			const auto& attachment = *model->Attachments[listChange.GetSourceIndex()];
-
-			const QSignalBlocker originX{_ui.OriginX};
-			const QSignalBlocker originY{_ui.OriginY};
-			const QSignalBlocker originZ{_ui.OriginZ};
-
-			_ui.OriginX->setValue(attachment.Origin[0]);
-			_ui.OriginY->setValue(attachment.Origin[1]);
-			_ui.OriginZ->setValue(attachment.Origin[2]);
-			UpdateQCString();
-		}
-		break;
-	}
-	}
-}
-
 void AttachmentsPanel::OnAssetChanged(StudioModelAsset* asset)
 {
 	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
@@ -175,6 +80,68 @@ void AttachmentsPanel::OnAssetChanged(StudioModelAsset* asset)
 	_ui.Attachments->setModel(modelData->Attachments);
 
 	this->setEnabled(_ui.Attachments->count() > 0);
+
+	if (_previousModelData)
+	{
+		_previousModelData->DisconnectFromAll(this);
+	}
+
+	_previousModelData = modelData;
+
+	connect(modelData->Bones, &QAbstractItemModel::dataChanged, this, &AttachmentsPanel::UpdateQCString);
+
+	connect(modelData, &StudioModelData::AttachmentNameChanged, this, [this](int index)
+		{
+			if (index == _ui.Attachments->currentIndex())
+			{
+				const QString text{_asset->GetEditableStudioModel()->Attachments[index]->Name.c_str()};
+
+				//Avoid resetting the edit position
+				if (_ui.Name->text() != text)
+				{
+					const QSignalBlocker name{_ui.Name};
+					_ui.Name->setText(text);
+					UpdateQCString();
+				}
+			}
+		});
+
+	connect(modelData, &StudioModelData::AttachmentTypeChanged, this, [this](int index)
+		{
+			if (index == _ui.Attachments->currentIndex())
+			{
+				const QSignalBlocker type{_ui.Type};
+				_ui.Type->setValue(_asset->GetEditableStudioModel()->Attachments[index]->Type);
+				UpdateQCString();
+			}
+		});
+
+	connect(modelData, &StudioModelData::AttachmentBoneChanged, this, [this](int index)
+		{
+			if (index == _ui.Attachments->currentIndex())
+			{
+				const QSignalBlocker bone{_ui.Bone};
+				_ui.Bone->setCurrentIndex(_asset->GetEditableStudioModel()->Attachments[index]->Bone->ArrayIndex);
+				UpdateQCString();
+			}
+		});
+
+	connect(modelData, &StudioModelData::AttachmentOriginChanged, this, [this](int index)
+		{
+			if (index == _ui.Attachments->currentIndex())
+			{
+				const auto& attachment = *_asset->GetEditableStudioModel()->Attachments[index];
+
+				const QSignalBlocker originX{_ui.OriginX};
+				const QSignalBlocker originY{_ui.OriginY};
+				const QSignalBlocker originZ{_ui.OriginZ};
+
+				_ui.OriginX->setValue(attachment.Origin[0]);
+				_ui.OriginY->setValue(attachment.Origin[1]);
+				_ui.OriginZ->setValue(attachment.Origin[2]);
+				UpdateQCString();
+			}
+		});
 }
 
 void AttachmentsPanel::OnSaveSnapshot(StateSnapshot* snapshot)

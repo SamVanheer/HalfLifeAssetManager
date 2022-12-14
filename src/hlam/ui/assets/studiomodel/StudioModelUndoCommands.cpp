@@ -1,61 +1,67 @@
 #include <cmath>
 
+#include <QAbstractItemModel>
+
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 
 namespace ui::assets::studiomodel
 {
+void BaseModelUndoCommand::EmitDataChanged(QAbstractItemModel* model, int index)
+{
+	const auto modelIndex = model->index(index, 0);
+	emit model->dataChanged(modelIndex, modelIndex);
+}
+
 void ChangeEyePositionCommand::Apply(const glm::vec3& oldValue, const glm::vec3& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	model->EyePosition = newValue;
+	_asset->GetEditableStudioModel()->EyePosition = newValue;
+	emit _asset->GetModelData()->EyePositionChanged();
 }
 
 void ChangeBBoxCommand::Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEditableStudioModel();
 	model->BoundingMin = newValue.first;
 	model->BoundingMax = newValue.second;
+	emit _asset->GetModelData()->ModelBBoxChanged();
 }
 
 void ChangeCBoxCommand::Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEditableStudioModel();
 	model->ClippingMin = newValue.first;
 	model->ClippingMax = newValue.second;
+	emit _asset->GetModelData()->ModelCBoxChanged();
 }
 
 void BoneRenameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& bone = *model->Bones[index];
-
-	bone.Name = newValue.toStdString();
+	_asset->GetEditableStudioModel()->Bones[index]->Name = newValue.toStdString();
+	EmitDataChanged(_asset->GetModelData()->Bones, index);
+	EmitDataChanged(_asset->GetModelData()->BonesWithNone, index + 1);
 }
 
 void ChangeBoneParentCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& bone = *model->Bones[index];
-
-	bone.Parent = newValue != -1 ? model->Bones[newValue].get() : nullptr;
+	auto model = _asset->GetEditableStudioModel();
+	model->Bones[index]->Parent = newValue != -1 ? model->Bones[newValue].get() : nullptr;
+	emit _asset->GetModelData()->BoneParentChanged(index);
 }
 
 void ChangeBoneFlagsCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& bone = *model->Bones[index];
-
-	bone.Flags = newValue;
+	_asset->GetEditableStudioModel()->Bones[index]->Flags = newValue;
+	emit _asset->GetModelData()->BoneFlagsChanged(index);
 }
 
 void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& oldValue, const ChangeBoneProperties& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& bone = *model->Bones[index];
+	auto& bone = *_asset->GetEditableStudioModel()->Bones[index];
 
 	for (std::size_t j = 0; j < newValue.Values.size(); ++j)
 	{
@@ -65,11 +71,13 @@ void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& old
 			bone.Axes[(j * newValue.Scales[j].length()) + i].Scale = newValue.Scales[j][i];
 		}
 	}
+
+	emit _asset->GetModelData()->BonePropertiesChanged(index);
 }
 
 void ChangeBoneControllerFromBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEditableStudioModel();
 	
 	auto oldController = oldValue != -1 ? model->BoneControllers[oldValue].get() : nullptr;
 	auto newController = newValue != -1 ? model->BoneControllers[newValue].get() : nullptr;
@@ -103,71 +111,63 @@ void ChangeBoneControllerFromBoneCommand::Apply(int index, const int& oldValue, 
 		auto& bone = *model->Bones[index];
 		bone.Axes[_boneControllerAxis].Controller = newController;
 	}
+
+	// TODO: simplify
+	emit _asset->GetModelData()->BoneControllerChangedFromBone(oldValue, index);
+	emit _asset->GetModelData()->BoneControllerChangedFromBone(newValue, index);
 }
 
 void ChangeAttachmentNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& attachment = *model->Attachments[index];
-
-	attachment.Name = newValue.toStdString();
+	_asset->GetEditableStudioModel()->Attachments[index]->Name = newValue.toStdString();
+	emit _asset->GetModelData()->AttachmentNameChanged(index);
+	EmitDataChanged(_asset->GetModelData()->Attachments, index);
 }
 
 void ChangeAttachmentTypeCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& attachment = *model->Attachments[index];
-
-	attachment.Type = newValue;
+	_asset->GetEditableStudioModel()->Attachments[index]->Type = newValue;
+	emit _asset->GetModelData()->AttachmentTypeChanged(index);
 }
 
 void ChangeAttachmentBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& attachment = *model->Attachments[index];
-
-	attachment.Bone = newValue != -1 ? model->Bones[index].get() : nullptr;
+	auto model = _asset->GetEditableStudioModel();
+	model->Attachments[index]->Bone = newValue != -1 ? model->Bones[index].get() : nullptr;
+	emit _asset->GetModelData()->AttachmentBoneChanged(index);
 }
 
 void ChangeAttachmentOriginCommand::Apply(int index, const glm::vec3& oldValue, const glm::vec3& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& attachment = *model->Attachments[index];
-
-	for (int i = 0; i < newValue.length(); ++i)
-	{
-		attachment.Origin[i] = newValue[i];
-	}
+	_asset->GetEditableStudioModel()->Attachments[index]->Origin = newValue;
+	emit _asset->GetModelData()->AttachmentOriginChanged(index);
 }
 
 void ChangeBoneControllerRangeCommand::Apply(int index, const ChangeBoneControllerRange& oldValue, const ChangeBoneControllerRange& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& controller = *model->BoneControllers[index];
+	auto& controller = *_asset->GetEditableStudioModel()->BoneControllers[index];
 
 	controller.Start = newValue.Start;
 	controller.End = newValue.End;
+
+	emit _asset->GetModelData()->BoneControllerRangeChanged(index);
 }
 
 void ChangeBoneControllerRestCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& controller = *model->BoneControllers[index];
-
-	controller.Rest = newValue;
+	_asset->GetEditableStudioModel()->BoneControllers[index]->Rest = newValue;
+	emit _asset->GetModelData()->BoneControllerRestChanged(index);
 }
 
 void ChangeBoneControllerIndexCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& controller = *model->BoneControllers[index];
-
-	controller.Index = newValue;
+	_asset->GetEditableStudioModel()->BoneControllers[index]->Index = newValue;
+	emit _asset->GetModelData()->BoneControllerIndexChanged(index);
 }
 
 void ChangeBoneControllerFromControllerCommand::Apply(int index, const ChangeBoneControllerData& oldValue, const ChangeBoneControllerData& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEditableStudioModel();
 
 	auto& controller = *model->BoneControllers[index];
 
@@ -190,93 +190,95 @@ void ChangeBoneControllerFromControllerCommand::Apply(int index, const ChangeBon
 	{
 		controller.Type = 0;
 	}
+
+	// TODO: simplify
+	emit _asset->GetModelData()->BoneControllerChangedFromController(index, oldValue.first);
+	emit _asset->GetModelData()->BoneControllerChangedFromController(index, newValue.first);
 }
 
 void ChangeModelFlagsCommand::Apply(const int& oldValue, const int& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-
-	model->Flags = newValue;
+	_asset->GetEditableStudioModel()->Flags = newValue;
+	emit _asset->GetModelData()->ModelFlagsChanged();
 }
 
 void ChangeModelOriginCommand::Apply(const studiomdl::MoveData& oldValue, const studiomdl::MoveData& newValue)
 {
-	ApplyMoveData(*_asset->GetEntity()->GetEditableModel(), newValue);
+	ApplyMoveData(*_asset->GetEditableStudioModel(), newValue);
+	emit _asset->GetModelData()->ModelOriginChanged();
 }
 
 void ChangeModelScaleCommand::Apply(const studiomdl::ScaleData& oldValue, const studiomdl::ScaleData& newValue)
 {
-	ApplyScaleData(*_asset->GetEntity()->GetEditableModel(), newValue);
+	ApplyScaleData(*_asset->GetEditableStudioModel(), newValue);
+	emit _asset->GetModelData()->ModelScaleChanged();
 }
 
 void ChangeModelRotationCommand::Apply(const studiomdl::RotateData& oldValue, const studiomdl::RotateData& newValue)
 {
-	ApplyRotateData(*_asset->GetEntity()->GetEditableModel(), newValue);
+	ApplyRotateData(*_asset->GetEditableStudioModel(), newValue);
+	emit _asset->GetModelData()->ModelRotationChanged();
 }
 
 void ChangeHitboxBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& hitbox = *model->Hitboxes[index];
-
-	hitbox.Bone = model->Bones[newValue].get();
+	auto model = _asset->GetEditableStudioModel();
+	model->Hitboxes[index]->Bone = model->Bones[newValue].get();
+	emit _asset->GetModelData()->HitboxBoneChanged(index);
 }
 
 void ChangeHitboxHitgroupCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& hitbox = *model->Hitboxes[index];
-
-	hitbox.Group = newValue;
+	_asset->GetEditableStudioModel()->Hitboxes[index]->Group = newValue;
+	emit _asset->GetModelData()->HitboxHitgroupChanged(index);
 }
 
 void ChangeHitboxBoundsCommand::Apply(int index, const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& hitbox = *model->Hitboxes[index];
-
+	auto& hitbox = *_asset->GetEditableStudioModel()->Hitboxes[index];
 	hitbox.Min = newValue.first;
 	hitbox.Max = newValue.second;
+	emit _asset->GetModelData()->HitboxBoundsChanged(index);
 }
 
 void ChangeTextureNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& texture = *model->Textures[index];
-
-	texture.Name = newValue.toStdString();
+	_asset->GetEditableStudioModel()->Textures[index]->Name = newValue.toStdString();
+	emit _asset->GetModelData()->TextureNameChanged(index);
+	EmitDataChanged(_asset->GetModelData()->Textures, index);
 }
 
 void ChangeTextureFlagsCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& texture = *model->Textures[index];
-
-	texture.Flags = newValue;
+	auto model = _asset->GetEditableStudioModel();
+	model->Textures[index]->Flags = newValue;
 
 	auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
 	graphicsContext->Begin();
 	model->UpdateTexture(*_asset->GetTextureLoader(), index);
 	graphicsContext->End();
+
+	emit _asset->GetModelData()->TextureFlagsChanged(index);
 }
 
 void ImportTextureCommand::Apply(int index, const ImportTextureData& oldValue, const ImportTextureData& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& texture = *model->Textures[index];
+	auto model = _asset->GetEditableStudioModel();
+	model->Textures[index]->Data = newValue.Data;
 
-	texture.Data = newValue.Data;
+	auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
+	graphicsContext->Begin();
 	model->UpdateTexture(*_asset->GetTextureLoader(), index);
+	graphicsContext->End();
 
 	studiomdl::ApplyScaledSTCoordinatesData(*model, index, newValue.ScaledSTCoordinates);
 }
 
 void ChangeEventCommand::Apply(int index, const studiomdl::SequenceEvent& oldValue, const studiomdl::SequenceEvent& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& sequence = *model->Sequences[index];
+	auto& sequence = *_asset->GetEditableStudioModel()->Sequences[index];
 
 	*sequence.Events[_eventIndex] = newValue;
 
@@ -285,41 +287,40 @@ void ChangeEventCommand::Apply(int index, const studiomdl::SequenceEvent& oldVal
 	{
 		studiomdl::SortEventsList(sequence.SortedEvents);
 	}
+
+	emit _asset->GetModelData()->EventChanged(index, _eventIndex);
 }
 
 void AddRemoveEventCommand::Add(int index, const studiomdl::SequenceEvent& value)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& sequence = *model->Sequences[index];
+	auto& sequence = *_asset->GetEditableStudioModel()->Sequences[index];
 
 	auto event = sequence.Events.insert(sequence.Events.begin() + _eventIndex, std::make_unique<studiomdl::SequenceEvent>(value))->get();
 	sequence.SortedEvents.push_back(event);
 
 	studiomdl::SortEventsList(sequence.SortedEvents);
+	emit _asset->GetModelData()->EventAdded(index, _eventIndex);
 }
 
 void AddRemoveEventCommand::Remove(int index, const studiomdl::SequenceEvent& value)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& sequence = *model->Sequences[index];
+	auto& sequence = *_asset->GetEditableStudioModel()->Sequences[index];
 
 	sequence.SortedEvents.erase(
 		std::remove(sequence.SortedEvents.begin(), sequence.SortedEvents.end(), sequence.Events[_eventIndex].get()), sequence.SortedEvents.end());
 	sequence.Events.erase(sequence.Events.begin() + _eventIndex);
+	emit _asset->GetModelData()->EventRemoved(index, _eventIndex);
 }
 
 void ChangeModelNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
-	auto& bodyPart = *model->Bodyparts[index];
-	auto& subModel = bodyPart.Models[_modelIndex];
-
-	subModel.Name = newValue.toStdString();
+	_asset->GetEditableStudioModel()->Bodyparts[index]->Models[_modelIndex].Name = newValue.toStdString();
+	emit _asset->GetModelData()->SubModelNameChanged(index, _modelIndex);
 }
 
 void FlipNormalsCommand::Apply(int index, const std::vector<glm::vec3>& oldValue, const std::vector<glm::vec3>& newValue)
 {
-	auto model = _asset->GetEntity()->GetEditableModel();
+	auto model = _asset->GetEditableStudioModel();
 
 	std::size_t normalIndex = 0;
 	

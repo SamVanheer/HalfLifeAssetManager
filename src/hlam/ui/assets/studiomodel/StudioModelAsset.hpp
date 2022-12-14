@@ -59,7 +59,6 @@ class StudioModelSettings;
 
 namespace assets::studiomodel
 {
-class ModelChangeEvent;
 class StudioModelAsset;
 class StudioModelData;
 class StudioModelEditWidget;
@@ -192,11 +191,6 @@ public:
 		GetUndoStack()->push(command);
 	}
 
-	void EmitModelChanged(const ModelChangeEvent& event)
-	{
-		emit ModelChanged(event);
-	}
-
 	HLMVStudioModelEntity* GetEntity() { return _modelEntity.get(); }
 
 	BackgroundEntity* GetBackgroundEntity() { return _backgroundEntity.get(); }
@@ -222,8 +216,6 @@ private:
 
 signals:
 	void Tick();
-
-	void ModelChanged(const ModelChangeEvent& event);
 
 	void AssetChanged(StudioModelAsset* asset);
 

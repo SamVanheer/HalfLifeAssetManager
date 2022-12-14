@@ -14,7 +14,6 @@ class StateSnapshot;
 
 namespace assets::studiomodel
 {
-class ModelChangeEvent;
 class StudioModelAsset;
 
 class ScenePanel final : public DockableWidget
