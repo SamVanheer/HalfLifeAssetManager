@@ -133,8 +133,8 @@ void ChangeAttachmentTypeCommand::Apply(int index, const int& oldValue, const in
 void ChangeAttachmentBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	auto model = _asset->GetEditableStudioModel();
-	model->Attachments[index]->Bone = newValue != -1 ? model->Bones[index].get() : nullptr;
 	emit _asset->GetModelData()->AttachmentBoneChanged(index);
+	model->Attachments[index]->Bone = newValue != -1 ? model->Bones[newValue].get() : nullptr;
 }
 
 void ChangeAttachmentOriginCommand::Apply(int index, const glm::vec3& oldValue, const glm::vec3& newValue)
