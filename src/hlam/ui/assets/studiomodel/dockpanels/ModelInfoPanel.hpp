@@ -11,6 +11,7 @@ class StateSnapshot;
 namespace assets::studiomodel
 {
 class StudioModelAsset;
+class StudioModelData;
 
 class ModelInfoPanel final : public DockableWidget
 {
@@ -24,6 +25,7 @@ private slots:
 private:
 	Ui_ModelInfoPanel _ui;
 	StudioModelAsset* const _asset;
+	StudioModelData* _previousModelData{};
 };
 }
 }

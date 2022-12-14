@@ -1,4 +1,4 @@
-#include <QSignalBlocker>
+#include <QAbstractItemModel>
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelData.hpp"
@@ -14,32 +14,49 @@ ModelInfoPanel::ModelInfoPanel(StudioModelAsset* asset)
 	connect(_asset, &StudioModelAsset::AssetChanged, this, &ModelInfoPanel::OnAssetChanged);
 
 	OnAssetChanged(nullptr);
-
-	//TODO: listen to changes made to the model to update values
 }
 
 ModelInfoPanel::~ModelInfoPanel() = default;
 
 void ModelInfoPanel::OnAssetChanged(StudioModelAsset* asset)
 {
+	const auto model = asset ? asset->GetEditableStudioModel() : nullptr;
 	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+
+	if (_previousModelData)
+	{
+		_previousModelData->DisconnectFromAll(this);
+	}
+
+	_previousModelData = modelData;
+
+	const auto itemModelSetup = [this](QLabel* label, QAbstractItemModel* itemModel)
+	{
+		const auto lambda = [label, itemModel]()
+		{
+			label->setText(QString::number(itemModel->rowCount()));
+		};
+		
+		// Immediately set the label.
+		lambda();
+
+		QObject::connect(itemModel, &QAbstractItemModel::rowsInserted, this, lambda);
+		QObject::connect(itemModel, &QAbstractItemModel::rowsRemoved, this, lambda);
+	};
+
+	itemModelSetup(_ui.BonesValue, modelData->Bones);
+	itemModelSetup(_ui.BoneControllersValue, modelData->BoneControllers);
+	itemModelSetup(_ui.HitBoxesValue, modelData->Hitboxes);
+	itemModelSetup(_ui.SequencesValue, modelData->Sequences);
+	_ui.SequenceGroupsValue->setText(QString::number(model ? model->SequenceGroups.size() : 0));
+
+	itemModelSetup(_ui.TexturesValue, modelData->Textures);
+	itemModelSetup(_ui.SkinFamiliesValue, modelData->Skins);
+	itemModelSetup(_ui.BodyPartsValue, modelData->BodyParts);
+	itemModelSetup(_ui.AttachmentsValue, modelData->Attachments);
+	_ui.TransitionsValue->setText(QString::number(model ? model->Transitions.size() : 0));
 
 	// TODO: this panel isn't terribly useful. Folding this information into the other panels will largely eliminate the need for this.
 	// Either way, this panel should be turned into a dialog to show the extra info on-demand, since it's just cluttering up the UI.
-
-	//TODO
-	/*
-	_ui.BonesValue->setText(QString::number(modelData->Bones->rowCount()));
-	_ui.BoneControllersValue->setText(QString::number(modelData->BoneControllers->rowCount()));
-	_ui.HitBoxesValue->setText(QString::number(modelData->Hitboxes->rowCount()));
-	_ui.SequencesValue->setText(QString::number(modelData->Sequences->rowCount()));
-	_ui.SequenceGroupsValue->setText(QString::number(modelData->SequenceGroups->rowCount()));
-
-	_ui.TexturesValue->setText(QString::number(modelData->Textures->rowCount()));
-	_ui.SkinFamiliesValue->setText(QString::number(modelData->Skins->rowCount()));
-	_ui.BodyPartsValue->setText(QString::number(modelData->BodyParts->rowCount()));
-	_ui.AttachmentsValue->setText(QString::number(modelData->Attachments->rowCount()));
-	_ui.TransitionsValue->setText(QString::number(modelData->Transitions->rowCount()));
-	*/
 }
 }
