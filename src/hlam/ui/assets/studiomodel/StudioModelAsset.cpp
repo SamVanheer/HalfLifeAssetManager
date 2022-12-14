@@ -484,7 +484,7 @@ void StudioModelAsset::OnResizeTexturesToPowerOf2Changed()
 	auto context = _editorContext->GetGraphicsContext();
 
 	context->Begin();
-	_editableStudioModel->UpdateFilters(*_textureLoader);
+	_editableStudioModel->UpdateTextures(*_textureLoader);
 	context->End();
 }
 
@@ -493,7 +493,7 @@ void StudioModelAsset::OnTextureFiltersChanged()
 	auto context = _editorContext->GetGraphicsContext();
 
 	context->Begin();
-	_editableStudioModel->UpdateTextures(*_textureLoader);
+	_editableStudioModel->UpdateFilters(*_textureLoader);
 	context->End();
 }
 
