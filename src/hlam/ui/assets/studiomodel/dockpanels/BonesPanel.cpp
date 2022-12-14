@@ -253,6 +253,12 @@ void BonesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 
 void BonesPanel::OnBoneChanged(int index)
 {
+	// Don't refresh the UI if this is getting called in response to a change we made.
+	if (_changingBoneProperties)
+	{
+		return;
+	}
+
 	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	const bool isValidBone = index != -1;
@@ -321,6 +327,8 @@ void BonesPanel::OnBonePropertyChanged()
 	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
+	_changingBoneProperties = true;
+
 	_asset->AddUndoCommand(new ChangeBonePropertyCommand(_asset, _ui.Bones->currentIndex(),
 		{
 			{
@@ -342,6 +350,8 @@ void BonesPanel::OnBonePropertyChanged()
 				glm::vec3{_ui.RotationScaleX->value(), _ui.RotationScaleY->value(), _ui.RotationScaleZ->value()}
 			}
 		}));
+
+	_changingBoneProperties = false;
 }
 
 void BonesPanel::OnBoneControllerAxisChanged(int index)
