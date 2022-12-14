@@ -177,47 +177,35 @@ void BonesPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	_previousModelData = modelData;
 
-	connect(modelData->Bones, &QAbstractItemModel::dataChanged, this, &BonesPanel::SyncBoneName);
-
-	connect(modelData, &StudioModelData::BoneParentChanged, this, [this](int index)
+	connect(modelData->Bones, &QAbstractItemModel::dataChanged, this, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight)
 		{
-			if (_ui.Bones->currentIndex() == index)
+			if (topLeft.row() <= _ui.Bones->currentIndex() && _ui.Bones->currentIndex() <= bottomRight.row())
 			{
-				const QSignalBlocker parentBone{_ui.ParentBone};
-				const auto& bone = *_asset->GetEditableStudioModel()->Bones[index];
-				_ui.ParentBone->setCurrentIndex(bone.Parent ? (bone.Parent->ArrayIndex + ParentBoneOffset) : 0);
+				const auto model = _asset->GetEntity()->GetEditableModel();
+				const QString text{model->Bones[topLeft.row()]->Name.c_str()};
+
+				//Avoid resetting the edit position
+				if (_ui.BoneName->text() != text)
+				{
+					const QSignalBlocker boneName{_ui.BoneName};
+					_ui.BoneName->setText(text);
+				}
 			}
 
 			UpdateRootBonesCount();
 		});
 
-	connect(modelData, &StudioModelData::BoneFlagsChanged, this, [this](int index)
+	connect(modelData, &StudioModelData::BoneDataChanged, this, [this](int index)
 		{
 			if (_ui.Bones->currentIndex() == index)
 			{
-				const QSignalBlocker flags{_ui.BoneFlags};
-				_ui.BoneFlags->setValue(_asset->GetEditableStudioModel()->Bones[index]->Flags);
+				OnBoneChanged(index);
 			}
+
+			UpdateRootBonesCount();
 		});
 
-	connect(modelData, &StudioModelData::BonePropertiesChanged, this, [this](int index)
-		{
-			if (_ui.Bones->currentIndex() == index)
-			{
-				SyncBonePropertiesToUI(*_asset->GetEditableStudioModel()->Bones[index], _ui);
-			}
-		});
-
-	connect(modelData, &StudioModelData::BoneControllerChangedFromBone, this, [this](int controllerIndex, int boneIndex)
-		{
-			if (_ui.Bones->currentIndex() == controllerIndex && boneIndex == _ui.BoneControllerAxis->currentIndex())
-			{
-				const QSignalBlocker controller{_ui.BoneController};
-				_ui.BoneController->setCurrentIndex(boneIndex + BoneControllerOffset);
-			}
-		});
-
-	connect(modelData, &StudioModelData::BoneControllerChangedFromController, this, [this]()
+	connect(modelData, &StudioModelData::BoneControllerDataChanged, this, [this]()
 		{
 			//Resync any changes
 			OnBoneControllerAxisChanged(_ui.BoneControllerAxis->currentIndex());
@@ -296,22 +284,6 @@ void BonesPanel::OnBoneChanged(int index)
 void BonesPanel::OnHightlightBoneChanged()
 {
 	_asset->GetProvider()->GetStudioModelSettings()->DrawSingleBoneIndex = _ui.HighlightBone->isChecked() ? _ui.Bones->currentIndex() : -1;
-}
-
-void BonesPanel::SyncBoneName(const QModelIndex& topLeft, const QModelIndex& bottomRight)
-{
-	if (topLeft.row() <= _ui.Bones->currentIndex() && _ui.Bones->currentIndex() <= bottomRight.row())
-	{
-		const auto model = _asset->GetEntity()->GetEditableModel();
-		const QString text{model->Bones[topLeft.row()]->Name.c_str()};
-
-		//Avoid resetting the edit position
-		if (_ui.BoneName->text() != text)
-		{
-			const QSignalBlocker boneName{_ui.BoneName};
-			_ui.BoneName->setText(text);
-		}
-	}
 }
 
 void BonesPanel::OnBoneNameChanged()

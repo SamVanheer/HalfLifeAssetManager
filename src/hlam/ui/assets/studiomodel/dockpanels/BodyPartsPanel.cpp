@@ -128,59 +128,11 @@ void BodyPartsPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	_previousModelData = modelData;
 
-	connect(modelData, &StudioModelData::BoneControllerRangeChanged, this, [this](int index)
+	connect(modelData, &StudioModelData::BoneControllerDataChanged, this, [this](int index)
 		{
 			if (index == _ui.BoneControllers->currentIndex())
 			{
-				const auto& controller = *_asset->GetEditableStudioModel()->BoneControllers[index];
-
-				const QSignalBlocker start{_ui.BoneControllerStart};
-				const QSignalBlocker end{_ui.BoneControllerEnd};
-
-				_ui.BoneControllerStart->setValue(controller.Start);
-				_ui.BoneControllerEnd->setValue(controller.End);
-
-				UpdateControllerRange(controller);
-
-				//Reset the value back to 0
-				OnBoneControllerValueSpinnerChanged(0);
-			}
-		});
-
-	connect(modelData, &StudioModelData::BoneControllerRestChanged, this, [this](int index)
-		{
-			if (index == _ui.BoneControllers->currentIndex())
-			{
-				const QSignalBlocker rest{_ui.BoneControllerRest};
-				_ui.BoneControllerRest->setValue(_asset->GetEditableStudioModel()->BoneControllers[index]->Rest);
-			}
-		});
-
-	connect(modelData, &StudioModelData::BoneControllerIndexChanged, this, [this](int index)
-		{
-			if (index == _ui.BoneControllers->currentIndex())
-			{
-				const QSignalBlocker controllerIndex{_ui.BoneControllerIndex};
-				_ui.BoneControllerIndex->setCurrentIndex(_asset->GetEditableStudioModel()->BoneControllers[index]->Index);
-
-				//Ensure values are set
-				OnBoneControllerValueSpinnerChanged(_ui.BoneControllerValueSpinner->value());
-			}
-		});
-
-	connect(modelData, &StudioModelData::BoneControllerChangedFromBone, this, [this](int controllerIndex, int boneIndex)
-		{
-			if (controllerIndex == _ui.BoneControllers->currentIndex())
-			{
-				OnBoneControllerChanged(controllerIndex);
-			}
-		});
-
-	connect(modelData, &StudioModelData::BoneControllerChangedFromController, this, [this](int controllerIndex, int boneIndex)
-		{
-			if (controllerIndex == _ui.BoneControllers->currentIndex())
-			{
-				OnBoneControllerChanged(controllerIndex);
+				OnBoneControllerChanged(index);
 			}
 		});
 
@@ -188,8 +140,7 @@ void BodyPartsPanel::OnAssetChanged(StudioModelAsset* asset)
 		{
 			if (bodyPartIndex == _ui.BodyParts->currentIndex() && modelIndex == _ui.Submodels->currentIndex())
 			{
-				// TODO: use fromStdString
-				const QString name{_asset->GetEditableStudioModel()->Bodyparts[bodyPartIndex]->Models[modelIndex].Name.c_str()};
+				const auto name{QString::fromStdString(_asset->GetEditableStudioModel()->Bodyparts[bodyPartIndex]->Models[modelIndex].Name)};
 
 				if (_ui.ModelName->text() != name)
 				{

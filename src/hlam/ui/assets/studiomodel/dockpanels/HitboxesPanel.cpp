@@ -85,47 +85,11 @@ void HitboxesPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	connect(modelData->Bones, &QAbstractItemModel::dataChanged, this, &HitboxesPanel::UpdateQCString);
 
-	connect(modelData, &StudioModelData::HitboxBoneChanged, this, [this](int index)
+	connect(modelData, &StudioModelData::HitboxDataChanged, this, [this](int index)
 		{
 			if (index == _ui.Hitboxes->currentIndex())
 			{
-				const QSignalBlocker blocker{_ui.Bone};
-				_ui.Bone->setCurrentIndex(_asset->GetEditableStudioModel()->Hitboxes[index]->Bone->ArrayIndex);
-				UpdateQCString();
-			}
-		});
-
-	connect(modelData, &StudioModelData::HitboxHitgroupChanged, this, [this](int index)
-		{
-			if (index == _ui.Hitboxes->currentIndex())
-			{
-				const QSignalBlocker blocker{_ui.Hitgroup};
-				_ui.Hitgroup->setValue(_asset->GetEditableStudioModel()->Hitboxes[index]->Group);
-				UpdateQCString();
-			}
-		});
-
-	connect(modelData, &StudioModelData::HitboxBoundsChanged, this, [this](int index)
-		{
-			if (index == _ui.Hitboxes->currentIndex())
-			{
-				const auto& hitbox = *_asset->GetEditableStudioModel()->Hitboxes[index];
-
-				const QSignalBlocker minimumX{_ui.MinimumX};
-				const QSignalBlocker minimumY{_ui.MinimumY};
-				const QSignalBlocker minimumZ{_ui.MinimumZ};
-				const QSignalBlocker maximumX{_ui.MaximumX};
-				const QSignalBlocker maximumY{_ui.MaximumY};
-				const QSignalBlocker maximumZ{_ui.MaximumZ};
-
-				_ui.MinimumX->setValue(hitbox.Min[0]);
-				_ui.MinimumY->setValue(hitbox.Min[1]);
-				_ui.MinimumZ->setValue(hitbox.Min[2]);
-				_ui.MaximumX->setValue(hitbox.Max[0]);
-				_ui.MaximumY->setValue(hitbox.Max[1]);
-				_ui.MaximumZ->setValue(hitbox.Max[2]);
-
-				UpdateQCString();
+				OnHitboxChanged(index);
 			}
 		});
 }

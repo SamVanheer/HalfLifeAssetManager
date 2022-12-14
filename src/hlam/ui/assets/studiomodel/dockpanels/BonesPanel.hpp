@@ -32,8 +32,6 @@ private slots:
 	void OnBoneChanged(int index);
 	void OnHightlightBoneChanged();
 
-	void SyncBoneName(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-
 	void OnBoneNameChanged();
 	void OnBoneNameRejected();
 

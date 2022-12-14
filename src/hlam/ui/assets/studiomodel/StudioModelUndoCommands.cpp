@@ -50,13 +50,13 @@ void ChangeBoneParentCommand::Apply(int index, const int& oldValue, const int& n
 {
 	auto model = _asset->GetEditableStudioModel();
 	model->Bones[index]->Parent = newValue != -1 ? model->Bones[newValue].get() : nullptr;
-	emit _asset->GetModelData()->BoneParentChanged(index);
+	emit _asset->GetModelData()->BoneDataChanged(index);
 }
 
 void ChangeBoneFlagsCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	_asset->GetEditableStudioModel()->Bones[index]->Flags = newValue;
-	emit _asset->GetModelData()->BoneFlagsChanged(index);
+	emit _asset->GetModelData()->BoneDataChanged(index);
 }
 
 void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& oldValue, const ChangeBoneProperties& newValue)
@@ -72,7 +72,7 @@ void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& old
 		}
 	}
 
-	emit _asset->GetModelData()->BonePropertiesChanged(index);
+	emit _asset->GetModelData()->BoneDataChanged(index);
 }
 
 void ChangeBoneControllerFromBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
@@ -112,35 +112,34 @@ void ChangeBoneControllerFromBoneCommand::Apply(int index, const int& oldValue, 
 		bone.Axes[_boneControllerAxis].Controller = newController;
 	}
 
-	// TODO: simplify
-	emit _asset->GetModelData()->BoneControllerChangedFromBone(oldValue, index);
-	emit _asset->GetModelData()->BoneControllerChangedFromBone(newValue, index);
+	emit _asset->GetModelData()->BoneControllerDataChanged(oldValue);
+	emit _asset->GetModelData()->BoneControllerDataChanged(newValue);
 }
 
 void ChangeAttachmentNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
 {
 	_asset->GetEditableStudioModel()->Attachments[index]->Name = newValue.toStdString();
-	emit _asset->GetModelData()->AttachmentNameChanged(index);
+	emit _asset->GetModelData()->AttachmentDataChanged(index);
 	EmitDataChanged(_asset->GetModelData()->Attachments, index);
 }
 
 void ChangeAttachmentTypeCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	_asset->GetEditableStudioModel()->Attachments[index]->Type = newValue;
-	emit _asset->GetModelData()->AttachmentTypeChanged(index);
+	emit _asset->GetModelData()->AttachmentDataChanged(index);
 }
 
 void ChangeAttachmentBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	auto model = _asset->GetEditableStudioModel();
-	emit _asset->GetModelData()->AttachmentBoneChanged(index);
 	model->Attachments[index]->Bone = newValue != -1 ? model->Bones[newValue].get() : nullptr;
+	emit _asset->GetModelData()->AttachmentDataChanged(index);
 }
 
 void ChangeAttachmentOriginCommand::Apply(int index, const glm::vec3& oldValue, const glm::vec3& newValue)
 {
 	_asset->GetEditableStudioModel()->Attachments[index]->Origin = newValue;
-	emit _asset->GetModelData()->AttachmentOriginChanged(index);
+	emit _asset->GetModelData()->AttachmentDataChanged(index);
 }
 
 void ChangeBoneControllerRangeCommand::Apply(int index, const ChangeBoneControllerRange& oldValue, const ChangeBoneControllerRange& newValue)
@@ -150,19 +149,19 @@ void ChangeBoneControllerRangeCommand::Apply(int index, const ChangeBoneControll
 	controller.Start = newValue.Start;
 	controller.End = newValue.End;
 
-	emit _asset->GetModelData()->BoneControllerRangeChanged(index);
+	emit _asset->GetModelData()->BoneControllerDataChanged(index);
 }
 
 void ChangeBoneControllerRestCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	_asset->GetEditableStudioModel()->BoneControllers[index]->Rest = newValue;
-	emit _asset->GetModelData()->BoneControllerRestChanged(index);
+	emit _asset->GetModelData()->BoneControllerDataChanged(index);
 }
 
 void ChangeBoneControllerIndexCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	_asset->GetEditableStudioModel()->BoneControllers[index]->Index = newValue;
-	emit _asset->GetModelData()->BoneControllerIndexChanged(index);
+	emit _asset->GetModelData()->BoneControllerDataChanged(index);
 }
 
 void ChangeBoneControllerFromControllerCommand::Apply(int index, const ChangeBoneControllerData& oldValue, const ChangeBoneControllerData& newValue)
@@ -191,9 +190,7 @@ void ChangeBoneControllerFromControllerCommand::Apply(int index, const ChangeBon
 		controller.Type = 0;
 	}
 
-	// TODO: simplify
-	emit _asset->GetModelData()->BoneControllerChangedFromController(index, oldValue.first);
-	emit _asset->GetModelData()->BoneControllerChangedFromController(index, newValue.first);
+	emit _asset->GetModelData()->BoneControllerDataChanged(index);
 }
 
 void ChangeModelFlagsCommand::Apply(const int& oldValue, const int& newValue)
@@ -224,13 +221,13 @@ void ChangeHitboxBoneCommand::Apply(int index, const int& oldValue, const int& n
 {
 	auto model = _asset->GetEditableStudioModel();
 	model->Hitboxes[index]->Bone = model->Bones[newValue].get();
-	emit _asset->GetModelData()->HitboxBoneChanged(index);
+	emit _asset->GetModelData()->HitboxDataChanged(index);
 }
 
 void ChangeHitboxHitgroupCommand::Apply(int index, const int& oldValue, const int& newValue)
 {
 	_asset->GetEditableStudioModel()->Hitboxes[index]->Group = newValue;
-	emit _asset->GetModelData()->HitboxHitgroupChanged(index);
+	emit _asset->GetModelData()->HitboxDataChanged(index);
 }
 
 void ChangeHitboxBoundsCommand::Apply(int index, const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue)
@@ -238,7 +235,7 @@ void ChangeHitboxBoundsCommand::Apply(int index, const std::pair<glm::vec3, glm:
 	auto& hitbox = *_asset->GetEditableStudioModel()->Hitboxes[index];
 	hitbox.Min = newValue.first;
 	hitbox.Max = newValue.second;
-	emit _asset->GetModelData()->HitboxBoundsChanged(index);
+	emit _asset->GetModelData()->HitboxDataChanged(index);
 }
 
 void ChangeTextureNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)

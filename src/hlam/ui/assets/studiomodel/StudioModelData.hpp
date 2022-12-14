@@ -46,27 +46,15 @@ signals:
 	void ModelCBoxChanged();
 	void ModelFlagsChanged();
 
-	void AttachmentNameChanged(int index);
-	void AttachmentTypeChanged(int index);
-	void AttachmentBoneChanged(int index);
-	void AttachmentOriginChanged(int index);
+	void AttachmentDataChanged(int index);
 
-	void BoneParentChanged(int index);
-	void BoneFlagsChanged(int index);
-	void BonePropertiesChanged(int index);
+	void BoneDataChanged(int index);
 
-	void BoneControllerRangeChanged(int index);
-	void BoneControllerRestChanged(int index);
-	void BoneControllerIndexChanged(int index);
-
-	void BoneControllerChangedFromBone(int controllerIndex, int boneIndex);
-	void BoneControllerChangedFromController(int controllerIndex, int boneIndex);
+	void BoneControllerDataChanged(int index);
 
 	void SubModelNameChanged(int bodyPartIndex, int modelIndex);
 
-	void HitboxBoneChanged(int index);
-	void HitboxHitgroupChanged(int index);
-	void HitboxBoundsChanged(int index);
+	void HitboxDataChanged(int index);
 
 	void EventChanged(int sequenceIndex, int eventIndex);
 	void EventAdded(int sequenceIndex, int eventIndex);

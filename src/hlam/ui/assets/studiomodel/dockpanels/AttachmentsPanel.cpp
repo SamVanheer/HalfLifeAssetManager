@@ -90,56 +90,11 @@ void AttachmentsPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	connect(modelData->Bones, &QAbstractItemModel::dataChanged, this, &AttachmentsPanel::UpdateQCString);
 
-	connect(modelData, &StudioModelData::AttachmentNameChanged, this, [this](int index)
+	connect(modelData, &StudioModelData::AttachmentDataChanged, this, [this](int index)
 		{
 			if (index == _ui.Attachments->currentIndex())
 			{
-				const QString text{_asset->GetEditableStudioModel()->Attachments[index]->Name.c_str()};
-
-				//Avoid resetting the edit position
-				if (_ui.Name->text() != text)
-				{
-					const QSignalBlocker name{_ui.Name};
-					_ui.Name->setText(text);
-					UpdateQCString();
-				}
-			}
-		});
-
-	connect(modelData, &StudioModelData::AttachmentTypeChanged, this, [this](int index)
-		{
-			if (index == _ui.Attachments->currentIndex())
-			{
-				const QSignalBlocker type{_ui.Type};
-				_ui.Type->setValue(_asset->GetEditableStudioModel()->Attachments[index]->Type);
-				UpdateQCString();
-			}
-		});
-
-	connect(modelData, &StudioModelData::AttachmentBoneChanged, this, [this](int index)
-		{
-			if (index == _ui.Attachments->currentIndex())
-			{
-				const QSignalBlocker bone{_ui.Bone};
-				_ui.Bone->setCurrentIndex(_asset->GetEditableStudioModel()->Attachments[index]->Bone->ArrayIndex);
-				UpdateQCString();
-			}
-		});
-
-	connect(modelData, &StudioModelData::AttachmentOriginChanged, this, [this](int index)
-		{
-			if (index == _ui.Attachments->currentIndex())
-			{
-				const auto& attachment = *_asset->GetEditableStudioModel()->Attachments[index];
-
-				const QSignalBlocker originX{_ui.OriginX};
-				const QSignalBlocker originY{_ui.OriginY};
-				const QSignalBlocker originZ{_ui.OriginZ};
-
-				_ui.OriginX->setValue(attachment.Origin[0]);
-				_ui.OriginY->setValue(attachment.Origin[1]);
-				_ui.OriginZ->setValue(attachment.Origin[2]);
-				UpdateQCString();
+				OnAttachmentChanged(index);
 			}
 		});
 }
@@ -189,14 +144,21 @@ void AttachmentsPanel::OnAttachmentChanged(int index)
 	const auto& attachment = index != -1 ? *model->Attachments[index] : emptyAttachment;
 
 	{
-		const QSignalBlocker name{_ui.Name};
-		const QSignalBlocker type{_ui.Type};
-		const QSignalBlocker bone{_ui.Bone};
-		const QSignalBlocker originX{_ui.OriginX};
-		const QSignalBlocker originY{_ui.OriginY};
-		const QSignalBlocker originZ{_ui.OriginZ};
+		const QSignalBlocker nameBlocker{_ui.Name};
+		const QSignalBlocker typeBlocker{_ui.Type};
+		const QSignalBlocker boneBlocker{_ui.Bone};
+		const QSignalBlocker originXBlocker{_ui.OriginX};
+		const QSignalBlocker originYBlocker{_ui.OriginY};
+		const QSignalBlocker originZBlocker{_ui.OriginZ};
 
-		_ui.Name->setText(attachment.Name.c_str());
+		const auto name = QString::fromStdString(attachment.Name);
+
+		//Avoid resetting the edit position if possible
+		if (_ui.Name->text() != name)
+		{
+			_ui.Name->setText(name);
+		}
+
 		_ui.Type->setValue(attachment.Type);
 		_ui.Bone->setCurrentIndex(attachment.Bone ? attachment.Bone->ArrayIndex : -1);
 
