@@ -239,6 +239,9 @@ void BodyPartsPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 void BodyPartsPanel::InitializeUI()
 {
 	auto entity = _asset->GetEntity();
+
+	const int skin = entity->GetSkin();
+
 	auto model = entity->GetEditableModel();
 
 	{
@@ -296,7 +299,7 @@ void BodyPartsPanel::InitializeUI()
 
 		_ui.Skins->addItems(skins);
 
-		_ui.Skins->setCurrentIndex(entity->GetSkin());
+		_ui.Skins->setCurrentIndex(skin);
 
 		_ui.Skins->setEnabled(!model->SkinFamilies.empty());
 	}
