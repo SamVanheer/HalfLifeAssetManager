@@ -32,13 +32,8 @@ private:
 	void InitializeUI();
 
 	void ImportTextureFrom(const QString& fileName, studiomdl::EditableStudioModel& model, int textureIndex);
-	void RemapTexture(int index);
-	void RemapTextures();
 	void UpdateColormapValue();
 	void UpdateUVMapTexture();
-
-public slots:
-	void AdjustScale(double amount);
 
 private slots:
 	void OnModelChanged(const ModelChangeEvent& event);
@@ -66,11 +61,7 @@ private slots:
 	void OnFullbrightChanged();
 	void OnMipmapsChanged();
 
-	void OnShowUVMapChanged();
 	void OnOverlayUVMapChanged();
-	void OnAntiAliasLinesChanged();
-
-	void OnMeshChanged(int index);
 
 	void OnImportTexture();
 	void OnExportTexture();
@@ -90,8 +81,6 @@ private slots:
 private:
 	Ui_TexturesPanel _ui;
 	StudioModelAsset* const _asset;
-
-	qreal _uvLineWidth{1};
 };
 }
 }

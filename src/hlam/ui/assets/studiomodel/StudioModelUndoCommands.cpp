@@ -1,6 +1,8 @@
 #include <cmath>
 
 #include "entity/HLMVStudioModelEntity.hpp"
+#include "graphics/IGraphicsContext.hpp"
+#include "graphics/Scene.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 
@@ -251,6 +253,12 @@ void ChangeTextureFlagsCommand::Apply(int index, const int& oldValue, const int&
 	auto& texture = *model->Textures[index];
 
 	texture.Flags = newValue;
+
+	auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
+
+	graphicsContext->Begin();
+	model->UpdateTexture(*_asset->GetTextureLoader(), index);
+	graphicsContext->End();
 }
 
 void ImportTextureCommand::Apply(int index, const ImportTextureData& oldValue, const ImportTextureData& newValue)
@@ -260,7 +268,7 @@ void ImportTextureCommand::Apply(int index, const ImportTextureData& oldValue, c
 
 	texture.Data = newValue.Data;
 
-	model->ReplaceTexture(*_asset->GetTextureLoader(), &texture, newValue.Data.Pixels.data(), newValue.Data.Palette);
+	model->UpdateTexture(*_asset->GetTextureLoader(), index);
 
 	studiomdl::ApplyScaledSTCoordinatesData(*model, index, newValue.ScaledSTCoordinates);
 }

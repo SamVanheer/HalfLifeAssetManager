@@ -112,69 +112,49 @@ void EditableStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 	for (auto& texture : Textures)
 	{
 		texture->TextureId = textureLoader.CreateTexture();
-
-		auto& data = texture->Data;
-
-		textureLoader.UploadIndexed8(
-			texture->TextureId,
-			data.Width, data.Height,
-			data.Pixels.data(),
-			data.Palette,
-			(texture->Flags & STUDIO_NF_NOMIPS) != 0,
-			(texture->Flags & STUDIO_NF_MASKED) != 0);
 	}
 
-	// Initialize remapping.
-	RemapTextures(textureLoader, 0, 0);
+	UpdateTextures(textureLoader);
 }
 
-void EditableStudioModel::ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const std::byte* data, const graphics::RGBPalette& pal)
+void EditableStudioModel::UpdateTexture(graphics::TextureLoader& textureLoader, std::size_t index)
 {
-	textureLoader.UploadIndexed8(
-		texture->TextureId,
-		texture->Data.Width, texture->Data.Height,
-		data,
-		pal,
-		(texture->Flags & STUDIO_NF_NOMIPS) != 0,
-		(texture->Flags & STUDIO_NF_MASKED) != 0);
-}
-
-void EditableStudioModel::ReuploadTexture(graphics::TextureLoader& textureLoader, Texture* texture)
-{
-	assert(texture);
-
-	//TODO: could use the index to check if it's a member
-	if (std::find_if(Textures.begin(), Textures.end(), [=](const auto& candidate)
-		{
-			return candidate.get() == texture;
-		}
-	) == Textures.end())
+	if (index >= Textures.size())
 	{
+		assert(false);
 		return;
 	}
 
-	ReplaceTexture(textureLoader, texture, texture->Data.Pixels.data(), texture->Data.Palette);
-}
+	auto& texture = *Textures[index];
 
-void EditableStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
-{
-	for (const auto& texture : Textures)
+	graphics::RGBPalette palette{texture.Data.Palette};
+
+	int low, mid, high;
+
+	if (graphics::TryGetRemapColors(texture.Name.c_str(), low, mid, high))
 	{
-		if (texture->TextureId)
+		graphics::PaletteHueReplace(palette, TopColor, low, mid);
+
+		if (high)
 		{
-			textureLoader.SetFilters(texture->TextureId, (texture->Flags & STUDIO_NF_NOMIPS) != 0);
+			graphics::PaletteHueReplace(palette, BottomColor, mid + 1, high);
 		}
 	}
+
+	textureLoader.UploadIndexed8(
+		texture.TextureId,
+		texture.Data.Width, texture.Data.Height,
+		texture.Data.Pixels.data(),
+		palette,
+		(texture.Flags & STUDIO_NF_NOMIPS) != 0,
+		(texture.Flags & STUDIO_NF_MASKED) != 0);
 }
 
-void EditableStudioModel::ReuploadTextures(graphics::TextureLoader& textureLoader)
+void EditableStudioModel::UpdateTextures(graphics::TextureLoader& textureLoader)
 {
-	for (const auto& texture : Textures)
+	for (std::size_t index = 0; const auto& texture : Textures)
 	{
-		if (texture->TextureId)
-		{
-			ReplaceTexture(textureLoader, texture.get(), texture->Data.Pixels.data(), texture->Data.Palette);
-		}
+		UpdateTexture(textureLoader, index++);
 	}
 }
 
@@ -187,32 +167,14 @@ void EditableStudioModel::DeleteTextures(graphics::TextureLoader& textureLoader)
 	}
 }
 
-void EditableStudioModel::RemapTexture(graphics::TextureLoader& textureLoader, int index, int top, int bottom)
+void EditableStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
 {
-	auto& texture = *Textures[index];
-
-	int low, mid, high;
-
-	if (graphics::TryGetRemapColors(texture.Name.c_str(), low, mid, high))
+	for (const auto& texture : Textures)
 	{
-		graphics::RGBPalette palette{texture.Data.Palette};
-
-		graphics::PaletteHueReplace(palette, top, low, mid);
-
-		if (high)
+		if (texture->TextureId)
 		{
-			graphics::PaletteHueReplace(palette, bottom, mid + 1, high);
+			textureLoader.SetFilters(texture->TextureId, (texture->Flags & STUDIO_NF_NOMIPS) != 0);
 		}
-
-		ReplaceTexture(textureLoader, &texture, texture.Data.Pixels.data(), palette);
-	}
-}
-
-void EditableStudioModel::RemapTextures(graphics::TextureLoader& textureLoader, int top, int bottom)
-{
-	for (int i = 0; i < Textures.size(); ++i)
-	{
-		RemapTexture(textureLoader, i, top, bottom);
 	}
 }
 

@@ -237,6 +237,10 @@ public:
 
 	std::vector<std::vector<std::uint8_t>> Transitions;
 
+	// Used for remapping; not stored in the model.
+	int TopColor = 0;
+	int BottomColor = 0;
+
 	const Model* GetModelByBodyPart(const int iBody, const int iBodyPart) const;
 
 	int GetBodyValueForGroup(int compositeValue, int group) const;
@@ -247,24 +251,18 @@ public:
 
 	void CreateTextures(graphics::TextureLoader& textureLoader);
 
-	void ReplaceTexture(graphics::TextureLoader& textureLoader, Texture* texture, const std::byte* data, const graphics::RGBPalette& pal);
-
 	/**
-	*	Reuploads a texture. Useful for making changes made to the texture's pixel, palette or flag data show up in the model itself.
+	*	(Re)uploads a texture. Useful for making changes made to the texture's pixel, palette or flag data show up in the model itself.
 	* *	@param textureLoader Loader to use for texture uploading
 	*	@param texture Texture to reupload. Must be a texture that is part of this model.
 	*/
-	void ReuploadTexture(graphics::TextureLoader& textureLoader, Texture* texture);
+	void UpdateTexture(graphics::TextureLoader& textureLoader, std::size_t index);
 
-	void UpdateFilters(graphics::TextureLoader& textureLoader);
-
-	void ReuploadTextures(graphics::TextureLoader& textureLoader);
+	void UpdateTextures(graphics::TextureLoader& textureLoader);
 
 	void DeleteTextures(graphics::TextureLoader& textureLoader);
 
-	void RemapTexture(graphics::TextureLoader& textureLoader, int index, int top, int bottom);
-
-	void RemapTextures(graphics::TextureLoader& textureLoader, int top, int bottom);
+	void UpdateFilters(graphics::TextureLoader& textureLoader);
 
 	std::vector<int> GetRootBoneIndices() const
 	{

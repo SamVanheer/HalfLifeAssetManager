@@ -10,12 +10,9 @@
 #include <QSignalBlocker>
 #include <QToolTip>
 
-#include <glm/vec2.hpp>
-
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "entity/TextureEntity.hpp"
 
-#include "graphics/GraphicsUtils.hpp"
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Palette.hpp"
 #include "graphics/Scene.hpp"
@@ -120,11 +117,11 @@ TexturesPanel::TexturesPanel(StudioModelAsset* asset)
 	connect(_ui.Fullbright, &QCheckBox::stateChanged, this, &TexturesPanel::OnFullbrightChanged);
 	connect(_ui.Mipmaps, &QCheckBox::stateChanged, this, &TexturesPanel::OnMipmapsChanged);
 
-	connect(_ui.ShowUVMap, &QCheckBox::stateChanged, this, &TexturesPanel::OnShowUVMapChanged);
+	connect(_ui.ShowUVMap, &QCheckBox::stateChanged, this, &TexturesPanel::UpdateUVMapTexture);
 	connect(_ui.OverlayUVMap, &QCheckBox::stateChanged, this, &TexturesPanel::OnOverlayUVMapChanged);
-	connect(_ui.AntiAliasLines, &QCheckBox::stateChanged, this, &TexturesPanel::OnAntiAliasLinesChanged);
+	connect(_ui.AntiAliasLines, &QCheckBox::stateChanged, this, &TexturesPanel::UpdateUVMapTexture);
 
-	connect(_ui.Meshes, qOverload<int>(&QComboBox::currentIndexChanged), this, &TexturesPanel::OnMeshChanged);
+	connect(_ui.Meshes, qOverload<int>(&QComboBox::currentIndexChanged), this, &TexturesPanel::UpdateUVMapTexture);
 
 	connect(_ui.ImportTexture, &QPushButton::clicked, this, &TexturesPanel::OnImportTexture);
 	connect(_ui.ExportTexture, &QPushButton::clicked, this, &TexturesPanel::OnExportTexture);
@@ -179,11 +176,6 @@ void TexturesPanel::InitializeUI()
 	_ui.Textures->addItems(textures);
 }
 
-void TexturesPanel::AdjustScale(double amount)
-{
-	_ui.ScaleTextureViewSpinner->setValue(_ui.ScaleTextureViewSpinner->value() + amount);
-}
-
 static void SetTextureFlagCheckBoxes(Ui_TexturesPanel& ui, int flags)
 {
 	const QSignalBlocker chrome{ui.Chrome};
@@ -232,12 +224,6 @@ void TexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 				_ui.TextureName->setText(name);
 			}
 		}
-
-		if (event.GetId() == ModelChangeId::ChangeTextureName)
-		{
-			//TODO: shouldn't be done here
-			RemapTexture(listChange.GetSourceIndex());
-		}
 		break;
 	}
 
@@ -245,19 +231,9 @@ void TexturesPanel::OnModelChanged(const ModelChangeEvent& event)
 	{
 		const auto& listChange{static_cast<const ModelListChangeEvent&>(event)};
 
-		const auto& texture = model->Textures[listChange.GetSourceIndex()];
-
-		//TODO: shouldn't be done here
-		auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
-
-		graphicsContext->Begin();
-		model->ReuploadTexture(*_asset->GetTextureLoader(), texture.get());
-		RemapTexture(listChange.GetSourceIndex());
-		graphicsContext->End();
-
 		if (listChange.GetSourceIndex() == _ui.Textures->currentIndex())
 		{
-			SetTextureFlagCheckBoxes(_ui, texture->Flags);
+			SetTextureFlagCheckBoxes(_ui, model->Textures[listChange.GetSourceIndex()]->Flags);
 		}
 		break;
 	}
@@ -372,8 +348,6 @@ void TexturesPanel::OnUVLineWidthSliderChanged(int value)
 {
 	const double newValue = value / UVLineWidthSliderRatio;
 
-	_uvLineWidth = static_cast<qreal>(newValue);
-
 	{
 		const QSignalBlocker blocker{_ui.UVLineWidthSpinner};
 		_ui.UVLineWidthSpinner->setValue(newValue);
@@ -384,8 +358,6 @@ void TexturesPanel::OnUVLineWidthSliderChanged(int value)
 
 void TexturesPanel::OnUVLineWidthSpinnerChanged(double value)
 {
-	_uvLineWidth = static_cast<qreal>(value);
-
 	{
 		const QSignalBlocker blocker{_ui.UVLineWidthSlider};
 		_ui.UVLineWidthSlider->setValue(static_cast<int>(value * UVLineWidthSliderRatio));
@@ -484,24 +456,9 @@ void TexturesPanel::OnMipmapsChanged()
 	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }
 
-void TexturesPanel::OnShowUVMapChanged()
-{
-	UpdateUVMapTexture();
-}
-
 void TexturesPanel::OnOverlayUVMapChanged()
 {
 	_asset->GetTextureEntity()->OverlayUVMap = _ui.OverlayUVMap->isChecked();
-}
-
-void TexturesPanel::OnAntiAliasLinesChanged()
-{
-	UpdateUVMapTexture();
-}
-
-void TexturesPanel::OnMeshChanged(int index)
-{
-	UpdateUVMapTexture();
 }
 
 void TexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::EditableStudioModel& model, int textureIndex)
@@ -549,28 +506,6 @@ void TexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::Editab
 	_asset->AddUndoCommand(new ImportTextureCommand(_asset, textureIndex, std::move(oldTexture), std::move(newTexture)));
 }
 
-void TexturesPanel::RemapTexture(int index)
-{
-	auto model = _asset->GetEntity()->GetEditableModel();
-
-	auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
-
-	graphicsContext->Begin();
-	model->RemapTexture(*_asset->GetTextureLoader(), index, _ui.TopColorSlider->value(), _ui.BottomColorSlider->value());
-	graphicsContext->End();
-}
-
-void TexturesPanel::RemapTextures()
-{
-	auto model = _asset->GetEntity()->GetEditableModel();
-
-	auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
-
-	graphicsContext->Begin();
-	model->RemapTextures(*_asset->GetTextureLoader(), _ui.TopColorSlider->value(), _ui.BottomColorSlider->value());
-	graphicsContext->End();
-}
-
 void TexturesPanel::UpdateColormapValue()
 {
 	const auto topColor = _ui.TopColorSlider->value();
@@ -579,6 +514,17 @@ void TexturesPanel::UpdateColormapValue()
 	const int colormapValue = topColor & 0xFF | ((bottomColor & 0xFF) << 8);
 
 	_ui.ColormapValue->setText(QString::number(colormapValue));
+
+	auto model = _asset->GetEditableStudioModel();
+
+	model->TopColor = topColor;
+	model->BottomColor = bottomColor;
+
+	auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
+
+	graphicsContext->Begin();
+	model->UpdateTextures(*_asset->GetTextureLoader());
+	graphicsContext->End();
 }
 
 void TexturesPanel::UpdateUVMapTexture()
@@ -616,7 +562,9 @@ void TexturesPanel::UpdateUVMapTexture()
 	const float scale = textureEntity->TextureScale;
 
 	//Create an updated image of the UV map with current settings
-	const auto uvMapImage = CreateUVMapImage(*model, textureIndex, GetMeshIndexForDrawing(_ui.Meshes), _ui.AntiAliasLines->isChecked(), scale, _uvLineWidth);
+	const auto uvMapImage = CreateUVMapImage(
+		*model, textureIndex, GetMeshIndexForDrawing(_ui.Meshes),
+		_ui.AntiAliasLines->isChecked(), scale, _ui.UVLineWidthSpinner->value());
 
 	textureEntity->SetUVMeshImage({uvMapImage.width(), uvMapImage.height(), reinterpret_cast<const std::byte*>(uvMapImage.constBits())});
 }
@@ -641,8 +589,6 @@ void TexturesPanel::OnImportTexture()
 	}
 
 	ImportTextureFrom(fileName, *model, iTextureIndex);
-
-	RemapTexture(iTextureIndex);
 }
 
 void TexturesPanel::OnExportTexture()
@@ -751,8 +697,6 @@ void TexturesPanel::OnImportAllTextures()
 	}
 
 	_asset->GetUndoStack()->endMacro();
-
-	RemapTextures();
 }
 
 void TexturesPanel::OnExportAllTextures()
@@ -790,36 +734,29 @@ void TexturesPanel::OnExportAllTextures()
 	}
 }
 
+// TODO: check if this causes the colormap to update twice
 void TexturesPanel::OnTopColorSliderChanged()
 {
 	_ui.TopColorSpinner->setValue(_ui.TopColorSlider->value());
-
 	UpdateColormapValue();
-	RemapTextures();
 }
 
 void TexturesPanel::OnBottomColorSliderChanged()
 {
 	_ui.BottomColorSpinner->setValue(_ui.BottomColorSlider->value());
-
 	UpdateColormapValue();
-	RemapTextures();
 }
 
 void TexturesPanel::OnTopColorSpinnerChanged()
 {
 	_ui.TopColorSlider->setValue(_ui.TopColorSpinner->value());
-
 	UpdateColormapValue();
-	RemapTextures();
 }
 
 void TexturesPanel::OnBottomColorSpinnerChanged()
 {
 	_ui.BottomColorSlider->setValue(_ui.BottomColorSpinner->value());
-
 	UpdateColormapValue();
-	RemapTextures();
 }
 
 void TexturesPanel::OnTextureFiltersChanged()
@@ -845,7 +782,7 @@ void TexturesPanel::OnPowerOf2TexturesChanged()
 	const auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
 
 	graphicsContext->Begin();
-	_asset->GetEntity()->GetEditableModel()->ReuploadTextures(*_asset->GetTextureLoader());
+	_asset->GetEntity()->GetEditableModel()->UpdateTextures(*_asset->GetTextureLoader());
 	graphicsContext->End();
 }
 }
