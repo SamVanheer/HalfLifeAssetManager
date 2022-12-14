@@ -86,6 +86,8 @@ private slots:
 
 	void OnFileSelected(const QString& fileName);
 
+	void OnTextureFiltersChanged();
+
 	void OnRefreshAsset();
 
 	void OnPlaySoundsChanged();

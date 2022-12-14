@@ -21,6 +21,8 @@
 #include "filesystem/IFileSystem.hpp"
 #include "filesystem/FileSystemConstants.hpp"
 
+#include "graphics/TextureLoader.hpp"
+
 #include "qt/QtLogging.hpp"
 
 #include "soundsystem/ISoundSystem.hpp"
@@ -129,6 +131,19 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionExit, &QAction::triggered, this, &MainWindow::OnExit);
 
 	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnGoFullscreen);
+
+	connect(_ui.ActionPowerOf2Textures, &QAction::toggled,
+		_editorContext->GetGeneralSettings(), &settings::GeneralSettings::SetResizeTexturesToPowerOf2);
+
+	connect(_ui.ActionMinPoint, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
+	connect(_ui.ActionMinLinear, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
+
+	connect(_ui.ActionMagPoint, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
+	connect(_ui.ActionMagLinear, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
+
+	connect(_ui.ActionMipmapNone, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
+	connect(_ui.ActionMipmapPoint, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
+	connect(_ui.ActionMipmapLinear, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
 
 	connect(_ui.ActionRefresh, &QAction::triggered, this, &MainWindow::OnRefreshAsset);
 
@@ -247,6 +262,16 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		{
 			restoreGeometry(geometry.toByteArray());
 		}
+	}
+
+	// TODO: it might be easier to load settings after creating the main window and letting signals set this up.
+	{
+		auto textureLoader = _editorContext->GetTextureLoader();
+
+		_ui.ActionPowerOf2Textures->setChecked(textureLoader->ShouldResizeToPowerOf2());
+		_ui.MinFilterGroup->actions()[static_cast<int>(textureLoader->GetMinFilter())]->setChecked(true);
+		_ui.MagFilterGroup->actions()[static_cast<int>(textureLoader->GetMagFilter())]->setChecked(true);
+		_ui.MipmapFilterGroup->actions()[static_cast<int>(textureLoader->GetMipmapFilter())]->setChecked(true);
 	}
 
 	SyncSettings();
@@ -669,6 +694,26 @@ void MainWindow::OnGoFullscreen()
 void MainWindow::OnFileSelected(const QString& fileName)
 {
 	TryLoadAsset(fileName);
+}
+
+void MainWindow::OnTextureFiltersChanged()
+{
+	const auto currentIndex = [](QActionGroup* group)
+	{
+		const int index = group->actions().indexOf(group->checkedAction());
+
+		if (index == -1)
+		{
+			return 0;
+		}
+
+		return index;
+	};
+
+	_editorContext->GetGeneralSettings()->SetTextureFilters(
+		static_cast<graphics::TextureFilter>(currentIndex(_ui.MinFilterGroup)),
+		static_cast<graphics::TextureFilter>(currentIndex(_ui.MagFilterGroup)),
+		static_cast<graphics::MipmapFilter>(currentIndex(_ui.MipmapFilterGroup)));
 }
 
 void MainWindow::OnRefreshAsset()

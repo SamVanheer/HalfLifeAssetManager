@@ -70,12 +70,6 @@ TexturesPanel::TexturesPanel(StudioModelAsset* asset)
 
 	const auto studioModelSettings{_asset->GetProvider()->GetStudioModelSettings()};
 
-	_ui.MinFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMinFilter()));
-	_ui.MagFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMagFilter()));
-	_ui.MipmapFilter->setCurrentIndex(static_cast<int>(studioModelSettings->GetMipmapFilter()));
-
-	_ui.PowerOf2Textures->setChecked(studioModelSettings->ShouldResizeTexturesToPowerOf2());
-
 	_ui.ScaleTextureViewSpinner->setRange(TextureViewScaleMinimum, TextureViewScaleMaximum);
 	_ui.ScaleTextureViewSpinner->setValue(TextureViewScaleDefault);
 	_ui.ScaleTextureViewSpinner->setSingleStep(TextureViewScaleSingleStepValue);
@@ -134,12 +128,6 @@ TexturesPanel::TexturesPanel(StudioModelAsset* asset)
 	connect(_ui.BottomColorSlider, &QSlider::valueChanged, this, &TexturesPanel::OnBottomColorSliderChanged);
 	connect(_ui.TopColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &TexturesPanel::OnTopColorSpinnerChanged);
 	connect(_ui.BottomColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &TexturesPanel::OnBottomColorSpinnerChanged);
-
-	connect(_ui.MinFilter, qOverload<int>(&QComboBox::currentIndexChanged), this, &TexturesPanel::OnTextureFiltersChanged);
-	connect(_ui.MagFilter, qOverload<int>(&QComboBox::currentIndexChanged), this, &TexturesPanel::OnTextureFiltersChanged);
-	connect(_ui.MipmapFilter, qOverload<int>(&QComboBox::currentIndexChanged), this, &TexturesPanel::OnTextureFiltersChanged);
-
-	connect(_ui.PowerOf2Textures, &QCheckBox::stateChanged, this, &TexturesPanel::OnPowerOf2TexturesChanged);
 
 	InitializeUI();
 }
@@ -757,32 +745,5 @@ void TexturesPanel::OnBottomColorSpinnerChanged()
 {
 	_ui.BottomColorSlider->setValue(_ui.BottomColorSpinner->value());
 	UpdateColormapValue();
-}
-
-void TexturesPanel::OnTextureFiltersChanged()
-{
-	const auto textureLoader{_asset->GetTextureLoader()};
-
-	textureLoader->SetTextureFilters(
-		static_cast<graphics::TextureFilter>(_ui.MinFilter->currentIndex()),
-		static_cast<graphics::TextureFilter>(_ui.MagFilter->currentIndex()),
-		static_cast<graphics::MipmapFilter>(_ui.MipmapFilter->currentIndex()));
-
-	const auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
-
-	graphicsContext->Begin();
-	_asset->GetEntity()->GetEditableModel()->UpdateFilters(*textureLoader);
-	graphicsContext->End();
-}
-
-void TexturesPanel::OnPowerOf2TexturesChanged()
-{
-	_asset->GetTextureLoader()->SetResizeToPowerOf2(_ui.PowerOf2Textures->isChecked());
-
-	const auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
-
-	graphicsContext->Begin();
-	_asset->GetEntity()->GetEditableModel()->UpdateTextures(*_asset->GetTextureLoader());
-	graphicsContext->End();
 }
 }

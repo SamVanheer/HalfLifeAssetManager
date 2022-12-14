@@ -12,6 +12,7 @@
 #include "filesystem/IFileSystem.hpp"
 
 #include "graphics/IGraphicsContext.hpp"
+#include "graphics/TextureLoader.hpp"
 
 #include "qt/QtLogging.hpp"
 #include "qt/QtLogSink.hpp"
@@ -62,16 +63,19 @@ EditorContext::EditorContext(
 	, _worldTime(std::make_unique<WorldTime>())
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
 	, _graphicsContext(std::move(graphicsContext))
+	, _openglFunctions(std::make_unique<QOpenGLFunctions_1_1>())
+	, _textureLoader(std::make_unique<graphics::TextureLoader>(_openglFunctions.get()))
 {
 	_settings->setParent(this);
 
 	qCDebug(logging::HLAM) << "Initializing OpenGL";
 
 	_graphicsContext->Begin();
-	_openglFunctions = std::make_unique<QOpenGLFunctions_1_1>();
 	const bool initializedOpenGLFunctions = _openglFunctions->initializeOpenGLFunctions();
 	assert(initializedOpenGLFunctions);
 	_graphicsContext->End();
+
+	_textureLoader->SetTextureFilters(_generalSettings->GetMinFilter(), _generalSettings->GetMagFilter(), _generalSettings->GetMipmapFilter());
 
 	qCDebug(logging::HLAM) << "Initialized OpenGL";
 
@@ -84,6 +88,14 @@ EditorContext::EditorContext(
 
 	connect(_timer, &QTimer::timeout, this, &EditorContext::OnTimerTick);
 	connect(_generalSettings.get(), &settings::GeneralSettings::TickRateChanged, this, &EditorContext::OnTickRateChanged);
+
+	connect(_generalSettings.get(), &settings::GeneralSettings::ResizeTexturesToPowerOf2Changed,
+		this, [this](bool value) { _textureLoader->SetResizeToPowerOf2(value); });
+	connect(_generalSettings.get(), &settings::GeneralSettings::TextureFiltersChanged,
+		this, [this](graphics::TextureFilter minFilter, graphics::TextureFilter magFilter, graphics::MipmapFilter mipmapFilter)
+		{
+			_textureLoader->SetTextureFilters(minFilter, magFilter, mipmapFilter);
+		});
 }
 
 EditorContext::~EditorContext()

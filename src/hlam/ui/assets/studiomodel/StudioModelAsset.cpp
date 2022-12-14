@@ -38,7 +38,6 @@
 
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
-#include "graphics/TextureLoader.hpp"
 
 #include "qt/QtLogSink.hpp"
 #include "qt/QtUtilities.hpp"
@@ -131,7 +130,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _editorContext(editorContext)
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
-	, _textureLoader(std::make_unique<graphics::TextureLoader>(_editorContext->GetOpenGLFunctions()))
+	, _textureLoader(_editorContext->GetTextureLoader())
 	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(
 		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()), _editorContext->GetOpenGLFunctions(), _editorContext->GetColorSettings()))
 	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(
@@ -145,15 +144,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_provider->GetStudioModelSettings()))
 	, _cameraOperators(new camera_operators::CameraOperators(this))
 {
-	auto studioModelSettings = _provider->GetStudioModelSettings();
-
-	_textureLoader->SetTextureFilters(
-		studioModelSettings->GetMinFilter(),
-		studioModelSettings->GetMagFilter(),
-		studioModelSettings->GetMipmapFilter());
-
-	_textureLoader->SetResizeToPowerOf2(studioModelSettings->ShouldResizeTexturesToPowerOf2());
-
 	connect(_cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
 
 	CreateMainScene();
@@ -176,6 +166,8 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		cameraOperator->SaveView();
 	}
 
+	auto studioModelSettings = _provider->GetStudioModelSettings();
+
 	if (studioModelSettings->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
 	{
 		_cameraOperators->SetCurrent(_firstPersonCamera);
@@ -186,6 +178,11 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	}
 
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
+
+	connect(_editorContext->GetGeneralSettings(), &ui::settings::GeneralSettings::ResizeTexturesToPowerOf2Changed,
+		this, &StudioModelAsset::OnResizeTexturesToPowerOf2Changed);
+	connect(_editorContext->GetGeneralSettings(), &ui::settings::GeneralSettings::TextureFiltersChanged,
+		this, &StudioModelAsset::OnTextureFiltersChanged);
 
 	// Initialize graphics resources.
 	auto context = _editorContext->GetGraphicsContext();
@@ -362,7 +359,7 @@ soundsystem::ISoundSystem* StudioModelAsset::GetSoundSystem()
 void StudioModelAsset::CreateMainScene()
 {
 	_scene = std::make_unique<graphics::Scene>("Scene", _editorContext->GetGraphicsContext(), _editorContext->GetOpenGLFunctions(),
-		_textureLoader.get(), _entityContext.get());
+		_textureLoader, _entityContext.get());
 
 	_scenes.push_back(_scene.get());
 
@@ -381,7 +378,7 @@ void StudioModelAsset::CreateMainScene()
 void StudioModelAsset::CreateTextureScene()
 {
 	_textureScene = std::make_unique<graphics::Scene>("Texture", _editorContext->GetGraphicsContext(), _editorContext->GetOpenGLFunctions(),
-		_textureLoader.get(), _entityContext.get());
+		_textureLoader, _entityContext.get());
 
 	_scenes.push_back(_textureScene.get());
 
@@ -480,6 +477,24 @@ void StudioModelAsset::OnTick()
 	}
 
 	emit Tick();
+}
+
+void StudioModelAsset::OnResizeTexturesToPowerOf2Changed()
+{
+	auto context = _editorContext->GetGraphicsContext();
+
+	context->Begin();
+	_editableStudioModel->UpdateFilters(*_textureLoader);
+	context->End();
+}
+
+void StudioModelAsset::OnTextureFiltersChanged()
+{
+	auto context = _editorContext->GetGraphicsContext();
+
+	context->Begin();
+	_editableStudioModel->UpdateTextures(*_textureLoader);
+	context->End();
 }
 
 void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)

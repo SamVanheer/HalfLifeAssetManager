@@ -20,6 +20,7 @@ class IFileSystem;
 namespace graphics
 {
 class IGraphicsContext;
+class TextureLoader;
 }
 
 namespace soundsystem
@@ -99,6 +100,8 @@ public:
 
 	QOpenGLFunctions_1_1* GetOpenGLFunctions() { return _openglFunctions.get(); }
 
+	graphics::TextureLoader* GetTextureLoader() { return _textureLoader.get(); }
+
 	void StartTimer();
 
 signals:
@@ -142,7 +145,7 @@ private:
 	const std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
 
 	const std::unique_ptr<graphics::IGraphicsContext> _graphicsContext;
-
-	std::unique_ptr<QOpenGLFunctions_1_1> _openglFunctions;
+	const std::unique_ptr<QOpenGLFunctions_1_1> _openglFunctions;
+	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
 };
 }

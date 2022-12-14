@@ -404,6 +404,8 @@ void ToolApplication::OnExit()
 {
 	const auto settings = _editorContext->GetSettings();
 
+	// TODO: rework this so it doesn't need to be called manually for everything.
+	_editorContext->GetGeneralSettings()->SaveSettings(*settings);
 	_editorContext->GetRecentFiles()->SaveSettings(*settings);
 
 	settings->sync();

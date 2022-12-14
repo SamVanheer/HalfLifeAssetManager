@@ -170,7 +170,7 @@ public:
 
 	studiomdl::EditableStudioModel* GetEditableStudioModel() { return _editableStudioModel.get(); }
 
-	graphics::TextureLoader* GetTextureLoader() { return _textureLoader.get(); }
+	graphics::TextureLoader* GetTextureLoader() { return _textureLoader; }
 
 	studiomdl::IStudioModelRenderer* GetStudioModelRenderer() { return _studioModelRenderer.get(); }
 
@@ -238,6 +238,10 @@ public slots:
 private slots:
 	void OnTick();
 
+	void OnResizeTexturesToPowerOf2Changed();
+
+	void OnTextureFiltersChanged();
+
 	void OnSceneWidgetMouseEvent(QMouseEvent* event);
 
 	void OnSceneWidgetWheelEvent(QWheelEvent* event);
@@ -261,7 +265,7 @@ private:
 	EditorContext* const _editorContext;
 	const StudioModelAssetProvider* const _provider;
 	std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;
-	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
+	graphics::TextureLoader* const _textureLoader;
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<EntityContext> _entityContext;

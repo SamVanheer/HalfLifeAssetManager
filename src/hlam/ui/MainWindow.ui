@@ -82,9 +82,42 @@
      <string>Asset</string>
     </property>
    </widget>
+   <widget class="QMenu" name="MenuRenderer">
+    <property name="title">
+     <string>Renderer</string>
+    </property>
+    <widget class="QMenu" name="MenuMinFilter">
+     <property name="title">
+      <string>Min Filter</string>
+     </property>
+     <addaction name="ActionMinPoint"/>
+     <addaction name="ActionMinLinear"/>
+    </widget>
+    <widget class="QMenu" name="MenuMagFilter">
+     <property name="title">
+      <string>Mag Filter</string>
+     </property>
+     <addaction name="ActionMagPoint"/>
+     <addaction name="ActionMagLinear"/>
+    </widget>
+    <widget class="QMenu" name="MenuMipmapFilter">
+     <property name="title">
+      <string>Mipmap Filter</string>
+     </property>
+     <addaction name="ActionMipmapNone"/>
+     <addaction name="ActionMipmapPoint"/>
+     <addaction name="ActionMipmapLinear"/>
+    </widget>
+    <addaction name="ActionPowerOf2Textures"/>
+    <addaction name="separator"/>
+    <addaction name="MenuMinFilter"/>
+    <addaction name="MenuMagFilter"/>
+    <addaction name="MenuMipmapFilter"/>
+   </widget>
    <addaction name="MenuFile"/>
    <addaction name="MenuEdit"/>
    <addaction name="MenuView"/>
+   <addaction name="MenuRenderer"/>
    <addaction name="MenuAsset"/>
    <addaction name="MenuTools"/>
    <addaction name="MenuHelp"/>
@@ -184,6 +217,99 @@
     <string>Framerate Affects Pitch</string>
    </property>
   </action>
+  <action name="ActionFilters">
+   <property name="text">
+    <string>Filters</string>
+   </property>
+  </action>
+  <action name="ActionPowerOf2Textures">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Power Of 2 Textures</string>
+   </property>
+  </action>
+  <actiongroup name="MinFilterGroup">
+   <action name="ActionMinPoint">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>Point</string>
+    </property>
+   </action>
+   <action name="ActionMinLinear">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>Linear</string>
+    </property>
+   </action>
+  </actiongroup>
+  <actiongroup name="MagFilterGroup">
+   <action name="ActionMagPoint">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>Point</string>
+    </property>
+   </action>
+   <action name="ActionMagLinear">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>Linear</string>
+    </property>
+   </action>
+  </actiongroup>
+  <actiongroup name="MipmapFilterGroup">
+   <action name="ActionMipmapNone">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>None</string>
+    </property>
+   </action>
+   <action name="ActionMipmapPoint">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>Point</string>
+    </property>
+   </action>
+   <action name="ActionMipmapLinear">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>Linear</string>
+    </property>
+   </action>
+  </actiongroup>
  </widget>
  <resources/>
  <connections/>
