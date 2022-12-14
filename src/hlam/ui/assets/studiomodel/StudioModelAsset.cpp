@@ -141,6 +141,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_studioModelRenderer.get(),
 		_spriteRenderer.get(),
 		_editorContext->GetSoundSystem(),
+		_editorContext->GetGeneralSettings(),
 		_provider->GetStudioModelSettings()))
 	, _cameraOperators(new camera_operators::CameraOperators(this))
 {

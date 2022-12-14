@@ -27,6 +27,8 @@ public:
 	static constexpr int MaximumMouseWheelSpeed{2048};
 
 	static constexpr bool DefaultEnableAudioPlayback{true};
+	static constexpr bool DefaultPlaySounds{true};
+	static constexpr bool DefaultFramerateAffectsPitch{false};
 
 	GeneralSettings() = default;
 
@@ -57,6 +59,8 @@ public:
 
 		settings.beginGroup("audio");
 		_enableAudioPlayback = settings.value("EnableAudioPlayback", DefaultEnableAudioPlayback).toBool();
+		PlaySounds = settings.value("PlaySounds", DefaultPlaySounds).toBool();
+		FramerateAffectsPitch = settings.value("FramerateAffectsPitch", DefaultFramerateAffectsPitch).toBool();
 		settings.endGroup();
 	}
 
@@ -80,6 +84,8 @@ public:
 
 		settings.beginGroup("audio");
 		settings.setValue("EnableAudioPlayback", _enableAudioPlayback);
+		settings.setValue("PlaySounds", PlaySounds);
+		settings.setValue("FramerateAffectsPitch", FramerateAffectsPitch);
 		settings.endGroup();
 	}
 
@@ -140,6 +146,9 @@ public:
 	{
 		_enableAudioPlayback = value;
 	}
+
+	bool PlaySounds = DefaultPlaySounds;
+	bool FramerateAffectsPitch = DefaultFramerateAffectsPitch;
 
 signals:
 	void TickRateChanged(int value);

@@ -23,6 +23,8 @@
 
 #include "qt/QtLogging.hpp"
 
+#include "soundsystem/ISoundSystem.hpp"
+
 #include "ui/DragNDropEventFilter.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/FileListPanel.hpp"
@@ -130,6 +132,9 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	connect(_ui.ActionRefresh, &QAction::triggered, this, &MainWindow::OnRefreshAsset);
 
+	connect(_ui.ActionPlaySounds, &QAction::triggered, this, &MainWindow::OnPlaySoundsChanged);
+	connect(_ui.ActionFramerateAffectsPitch, &QAction::triggered, this, &MainWindow::OnFramerateAffectsPitchChanged);
+
 	connect(_ui.ActionOptions, &QAction::triggered, this, &MainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &MainWindow::OnShowAbout);
 	connect(_ui.ActionAboutQt, &QAction::triggered, QApplication::instance(), &QApplication::aboutQt);
@@ -145,6 +150,19 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_editorContext, &EditorContext::SettingsChanged, this, &MainWindow::SyncSettings);
 	connect(_editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged,
 		this, &MainWindow::OnActiveConfigurationChanged);
+
+	{
+		const bool isSoundAvailable = _editorContext->GetSoundSystem()->IsSoundAvailable();
+
+		_ui.ActionPlaySounds->setEnabled(isSoundAvailable);
+		_ui.ActionFramerateAffectsPitch->setEnabled(isSoundAvailable);
+
+		if (isSoundAvailable)
+		{
+			_ui.ActionPlaySounds->setChecked(_editorContext->GetGeneralSettings()->PlaySounds);
+			_ui.ActionFramerateAffectsPitch->setChecked(_editorContext->GetGeneralSettings()->FramerateAffectsPitch);
+		}
+	}
 
 	_ui.ActionSave->setEnabled(false);
 	_ui.ActionSaveAs->setEnabled(false);
@@ -665,6 +683,16 @@ void MainWindow::OnRefreshAsset()
 
 		asset->TryRefresh();
 	}
+}
+
+void MainWindow::OnPlaySoundsChanged()
+{
+	_editorContext->GetGeneralSettings()->PlaySounds = _ui.ActionPlaySounds->isChecked();
+}
+
+void MainWindow::OnFramerateAffectsPitchChanged()
+{
+	_editorContext->GetGeneralSettings()->FramerateAffectsPitch = _ui.ActionFramerateAffectsPitch->isChecked();
 }
 
 void MainWindow::OnOpenOptionsDialog()

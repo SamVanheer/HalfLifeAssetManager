@@ -62,10 +62,6 @@ private slots:
 
 	void OnEventChanged(int index);
 
-	void OnPlaySoundChanged();
-
-	void OnPitchFramerateAmplitudeChanged();
-
 	void OnAddEvent();
 
 	void OnRemoveEvent();

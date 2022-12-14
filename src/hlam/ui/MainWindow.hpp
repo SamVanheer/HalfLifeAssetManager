@@ -88,6 +88,10 @@ private slots:
 
 	void OnRefreshAsset();
 
+	void OnPlaySoundsChanged();
+
+	void OnFramerateAffectsPitchChanged();
+
 	void OnOpenOptionsDialog();
 
 	void OnShowAbout();

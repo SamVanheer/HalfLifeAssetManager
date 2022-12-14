@@ -40,6 +40,7 @@ class StudioModelAsset;
 
 namespace ui::settings
 {
+class GeneralSettings;
 class StudioModelSettings;
 }
 
@@ -56,18 +57,22 @@ struct EntityContext final
 	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
 	sprite::ISpriteRenderer* const SpriteRenderer;
 	soundsystem::ISoundSystem* const SoundSystem;
+	ui::settings::GeneralSettings* const GeneralSettings;
 	ui::settings::StudioModelSettings* const Settings;
 
 	EntityContext(ui::assets::studiomodel::StudioModelAsset* asset,
 		WorldTime* time,
-		studiomdl::IStudioModelRenderer* studioModelRenderer, sprite::ISpriteRenderer* spriteRenderer,
+		studiomdl::IStudioModelRenderer* studioModelRenderer,
+		sprite::ISpriteRenderer* spriteRenderer,
 		soundsystem::ISoundSystem* soundSystem,
+		ui::settings::GeneralSettings* generalSettings,
 		ui::settings::StudioModelSettings* settings)
 		: Asset(asset)
 		, Time(time)
 		, SpriteRenderer(spriteRenderer)
 		, StudioModelRenderer(studioModelRenderer)
 		, SoundSystem(soundSystem)
+		, GeneralSettings(generalSettings)
 		, Settings(settings)
 	{
 	}

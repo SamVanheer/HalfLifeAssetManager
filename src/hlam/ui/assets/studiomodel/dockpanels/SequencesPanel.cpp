@@ -6,8 +6,6 @@
 
 #include "qt/ByteLengthValidator.hpp"
 
-#include "soundsystem/ISoundSystem.hpp"
-
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
@@ -26,9 +24,6 @@ SequencesPanel::SequencesPanel(StudioModelAsset* asset)
 	_ui.EventId->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 	_ui.EventType->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
-	_ui.PlaySound->setEnabled(_asset->GetSoundSystem()->IsSoundAvailable());
-	_ui.PitchFramerateAmplitude->setEnabled(_asset->GetSoundSystem()->IsSoundAvailable());
-
 	connect(_asset, &StudioModelAsset::ModelChanged, this, &SequencesPanel::OnModelChanged);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &SequencesPanel::OnLoadSnapshot);
 	connect(_asset, &StudioModelAsset::PoseChanged, this, &SequencesPanel::OnPoseChanged);
@@ -43,9 +38,6 @@ SequencesPanel::SequencesPanel(StudioModelAsset* asset)
 	connect(_ui.BlendYSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &SequencesPanel::OnBlendYSpinnerChanged);
 
 	connect(_ui.EventsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnEventChanged);
-
-	connect(_ui.PlaySound, &QCheckBox::stateChanged, this, &SequencesPanel::OnPlaySoundChanged);
-	connect(_ui.PitchFramerateAmplitude, &QCheckBox::stateChanged, this, &SequencesPanel::OnPitchFramerateAmplitudeChanged);
 
 	connect(_ui.AddEvent, &QPushButton::clicked, this, &SequencesPanel::OnAddEvent);
 	connect(_ui.RemoveEvent, &QPushButton::clicked, this, &SequencesPanel::OnRemoveEvent);
@@ -458,16 +450,6 @@ void SequencesPanel::OnEventChanged(int index)
 	_ui.EventType->setValue(event->Type);
 
 	_ui.EventDataWidget->setEnabled(hasEvent);
-}
-
-void SequencesPanel::OnPlaySoundChanged()
-{
-	_asset->GetProvider()->GetStudioModelSettings()->PlaySound = _ui.PlaySound->isChecked();
-}
-
-void SequencesPanel::OnPitchFramerateAmplitudeChanged()
-{
-	_asset->GetProvider()->GetStudioModelSettings()->PitchFramerateAmplitude = _ui.PitchFramerateAmplitude->isChecked();
 }
 
 void SequencesPanel::OnAddEvent()

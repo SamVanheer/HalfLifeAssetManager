@@ -180,8 +180,6 @@ public:
 	int DrawSingleHitboxIndex = -1;
 
 	bool PlaySequence = true;
-	bool PlaySound = false;
-	bool PitchFramerateAmplitude = false;
 
 private:
 	bool _autodetectViewModels{DefaultAutodetectViewmodels};

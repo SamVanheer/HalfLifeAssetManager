@@ -29,6 +29,9 @@
     </property>
     <addaction name="ActionRefresh"/>
     <addaction name="separator"/>
+    <addaction name="ActionPlaySounds"/>
+    <addaction name="ActionFramerateAffectsPitch"/>
+    <addaction name="separator"/>
     <addaction name="ActionOptions"/>
    </widget>
    <widget class="QMenu" name="MenuFile">
@@ -160,6 +163,25 @@
   <action name="ActionAboutQt">
    <property name="text">
     <string>About Qt</string>
+   </property>
+  </action>
+  <action name="ActionPlaySounds">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Play Sounds</string>
+   </property>
+  </action>
+  <action name="ActionFramerateAffectsPitch">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Framerate Affects Pitch</string>
    </property>
   </action>
  </widget>
