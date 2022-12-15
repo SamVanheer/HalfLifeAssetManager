@@ -232,6 +232,25 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		_saveFileFilter = setupFileFilters(assets::ProviderFeature::AssetSaving);
 	}
 
+	// TODO: it might be easier to load settings after creating the main window and letting signals set this up.
+	{
+		auto textureLoader = _editorContext->GetTextureLoader();
+
+		_ui.ActionPowerOf2Textures->setChecked(textureLoader->ShouldResizeToPowerOf2());
+		_ui.MinFilterGroup->actions()[static_cast<int>(textureLoader->GetMinFilter())]->setChecked(true);
+		_ui.MagFilterGroup->actions()[static_cast<int>(textureLoader->GetMagFilter())]->setChecked(true);
+		_ui.MipmapFilterGroup->actions()[static_cast<int>(textureLoader->GetMipmapFilter())]->setChecked(true);
+	}
+
+	SyncSettings();
+
+	_editorContext->StartTimer();
+}
+
+MainWindow::~MainWindow() = default;
+
+void MainWindow::LoadSettings()
+{
 	auto settings = _editorContext->GetSettings();
 
 	{
@@ -263,23 +282,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 			restoreGeometry(geometry.toByteArray());
 		}
 	}
-
-	// TODO: it might be easier to load settings after creating the main window and letting signals set this up.
-	{
-		auto textureLoader = _editorContext->GetTextureLoader();
-
-		_ui.ActionPowerOf2Textures->setChecked(textureLoader->ShouldResizeToPowerOf2());
-		_ui.MinFilterGroup->actions()[static_cast<int>(textureLoader->GetMinFilter())]->setChecked(true);
-		_ui.MagFilterGroup->actions()[static_cast<int>(textureLoader->GetMagFilter())]->setChecked(true);
-		_ui.MipmapFilterGroup->actions()[static_cast<int>(textureLoader->GetMipmapFilter())]->setChecked(true);
-	}
-
-	SyncSettings();
-
-	_editorContext->StartTimer();
 }
-
-MainWindow::~MainWindow() = default;
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {

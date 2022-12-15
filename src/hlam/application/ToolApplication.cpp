@@ -183,8 +183,11 @@ int ToolApplication::Run(int argc, char* argv[])
 			_editorContext->TryLoadAsset(fileName);
 		}
 
-		//Note: must come after the file is loaded or it won't actually show maximized
+		//Note: do this after the file has loaded to avoid any flickering.
 		_mainWindow->showMaximized();
+
+		// Now load settings to restore window geometry.
+		_mainWindow->LoadSettings();
 
 		return app.exec();
 	}

@@ -36,6 +36,8 @@ public:
 	MainWindow(EditorContext* editorContext);
 	~MainWindow();
 
+	void LoadSettings();
+
 protected:
 	void closeEvent(QCloseEvent* event) override;
 
