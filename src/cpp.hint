@@ -1,0 +1,12 @@
+//Qt macros
+#define signals
+#define slots
+#define Q_OBJECT
+
+//HLAM macros
+#define DECLARE_CLASS_NOBASE(thisClass)	\
+using ThisClass = thisClass
+
+#define DECLARE_CLASS(thisClass, baseClass)	\
+DECLARE_CLASS_NOBASE(thisClass);			\
+using BaseClass = baseClass
