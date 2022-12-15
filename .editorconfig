@@ -1,0 +1,4 @@
+[*]
+# For Editor Guidelines extension: https://marketplace.visualstudio.com/items?itemName=PaulHarrington.EditorGuidelinesPreview
+guidelines = 120
+guidelines_style = 1px solid red
