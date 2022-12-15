@@ -349,6 +349,12 @@ void BodyPartsPanel::OnModelNameRejected()
 
 void BodyPartsPanel::OnBoneControllerChanged(int index)
 {
+	// Don't refresh the UI if this is getting called in response to a change we made.
+	if (_changingBoneControllerProperties)
+	{
+		return;
+	}
+
 	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	static constexpr studiomdl::BoneController EmptyController{};
@@ -416,9 +422,13 @@ void BodyPartsPanel::OnBoneControllerRangeChanged()
 	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
+	_changingBoneControllerProperties = true;
+
 	_asset->AddUndoCommand(new ChangeBoneControllerRangeCommand(_asset, boneControllerLogicalIndex,
 		{boneController.Start, boneController.End},
 		{static_cast<float>(_ui.BoneControllerStart->value()), static_cast<float>(_ui.BoneControllerEnd->value())}));
+
+	_changingBoneControllerProperties = false;
 }
 
 void BodyPartsPanel::OnBoneControllerRestChanged()

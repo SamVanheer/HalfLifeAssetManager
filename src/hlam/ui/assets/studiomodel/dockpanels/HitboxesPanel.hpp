@@ -41,6 +41,8 @@ private:
 	Ui_HitboxesPanel _ui;
 	StudioModelAsset* const _asset;
 	StudioModelData* _previousModelData{};
+
+	bool _changingHitboxProperties{false};
 };
 }
 }

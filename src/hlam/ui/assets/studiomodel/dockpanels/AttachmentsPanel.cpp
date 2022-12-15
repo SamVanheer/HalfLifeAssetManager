@@ -137,6 +137,12 @@ void AttachmentsPanel::UpdateQCString()
 
 void AttachmentsPanel::OnAttachmentChanged(int index)
 {
+	// Don't refresh the UI if this is getting called in response to a change we made.
+	if (_changingAttachmentProperties)
+	{
+		return;
+	}
+
 	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	const studiomdl::Attachment emptyAttachment{};
@@ -211,8 +217,12 @@ void AttachmentsPanel::OnOriginChanged()
 	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
+	_changingAttachmentProperties = true;
+
 	_asset->AddUndoCommand(new ChangeAttachmentOriginCommand(_asset, _ui.Attachments->currentIndex(),
 		{attachment.Origin[0], attachment.Origin[1], attachment.Origin[2]},
 		{_ui.OriginX->value(), _ui.OriginY->value(), _ui.OriginZ->value()}));
+
+	_changingAttachmentProperties = false;
 }
 }

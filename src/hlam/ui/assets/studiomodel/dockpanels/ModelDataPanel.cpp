@@ -43,11 +43,11 @@ ModelDataPanel::ModelDataPanel(StudioModelAsset* asset)
 
 	connect(_ui.EyePosition, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnEyePositionChanged);
 
-	connect(_ui.BBoxMin, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxMinChanged);
-	connect(_ui.BBoxMax, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxMaxChanged);
+	connect(_ui.BBoxMin, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxChanged);
+	connect(_ui.BBoxMax, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxChanged);
 
-	connect(_ui.CBoxMin, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxMinChanged);
-	connect(_ui.CBoxMax, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxMaxChanged);
+	connect(_ui.CBoxMin, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
+	connect(_ui.CBoxMax, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
 
 	OnAssetChanged(nullptr);
 }
@@ -100,12 +100,24 @@ void ModelDataPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	connect(modelData, &StudioModelData::EyePositionChanged, this, [this]()
 		{
+			// Don't refresh the UI if this is getting called in response to a change we made.
+			if (_changingDataProperties)
+			{
+				return;
+			}
+
 			const QSignalBlocker blocker{_ui.EyePosition};
 			_ui.EyePosition->SetValue(_asset->GetEditableStudioModel()->EyePosition);
 		});
 
 	connect(modelData, &StudioModelData::ModelBBoxChanged, this, [this]()
 		{
+			// Don't refresh the UI if this is getting called in response to a change we made.
+			if (_changingDataProperties)
+			{
+				return;
+			}
+
 			auto model = _asset->GetEditableStudioModel();
 			const QSignalBlocker min{_ui.BBoxMin};
 			const QSignalBlocker max{_ui.BBoxMax};
@@ -115,6 +127,12 @@ void ModelDataPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	connect(modelData, &StudioModelData::ModelCBoxChanged, this, [this]()
 		{
+			// Don't refresh the UI if this is getting called in response to a change we made.
+			if (_changingDataProperties)
+			{
+				return;
+			}
+
 			auto model = _asset->GetEditableStudioModel();
 			const QSignalBlocker min{_ui.CBoxMin};
 			const QSignalBlocker max{_ui.CBoxMax};
@@ -123,32 +141,29 @@ void ModelDataPanel::OnAssetChanged(StudioModelAsset* asset)
 		});
 }
 
-void ModelDataPanel::OnEyePositionChanged(const glm::vec3& value)
+void ModelDataPanel::OnEyePositionChanged()
 {
-	_asset->AddUndoCommand(new ChangeEyePositionCommand(_asset, _asset->GetEntity()->GetEditableModel()->EyePosition, value));
+	_changingDataProperties = true;
+	_asset->AddUndoCommand(
+		new ChangeEyePositionCommand(_asset, _asset->GetEntity()->GetEditableModel()->EyePosition, _ui.EyePosition->GetValue()));
+	_changingDataProperties = false;
 }
 
-void ModelDataPanel::OnBBoxMinChanged(const glm::vec3& value)
+void ModelDataPanel::OnBBoxChanged()
 {
 	auto model = _asset->GetEntity()->GetEditableModel();
-	_asset->AddUndoCommand(new ChangeBBoxCommand(_asset, {model->BoundingMin, model->BoundingMax}, {value, model->BoundingMax}));
+	_changingDataProperties = true;
+	_asset->AddUndoCommand(
+		new ChangeBBoxCommand(_asset, {model->BoundingMin, model->BoundingMax}, {_ui.BBoxMin->GetValue(), _ui.BBoxMax->GetValue()}));
+	_changingDataProperties = false;
 }
 
-void ModelDataPanel::OnBBoxMaxChanged(const glm::vec3& value)
+void ModelDataPanel::OnCBoxChanged()
 {
 	auto model = _asset->GetEntity()->GetEditableModel();
-	_asset->AddUndoCommand(new ChangeBBoxCommand(_asset, {model->BoundingMin, model->BoundingMax}, {model->BoundingMin, value}));
-}
-
-void ModelDataPanel::OnCBoxMinChanged(const glm::vec3& value)
-{
-	auto model = _asset->GetEntity()->GetEditableModel();
-	_asset->AddUndoCommand(new ChangeCBoxCommand(_asset, {model->ClippingMin, model->ClippingMax}, {value, model->ClippingMax}));
-}
-
-void ModelDataPanel::OnCBoxMaxChanged(const glm::vec3& value)
-{
-	auto model = _asset->GetEntity()->GetEditableModel();
-	_asset->AddUndoCommand(new ChangeCBoxCommand(_asset, {model->ClippingMin, model->ClippingMax}, {model->ClippingMin, value}));
+	_changingDataProperties = true;
+	_asset->AddUndoCommand(
+		new ChangeCBoxCommand(_asset, {model->ClippingMin, model->ClippingMax}, {_ui.CBoxMin->GetValue(), _ui.CBoxMax->GetValue()}));
+	_changingDataProperties = false;
 }
 }

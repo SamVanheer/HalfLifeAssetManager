@@ -43,6 +43,8 @@ private:
 	Ui_AttachmentsPanel _ui;
 	StudioModelAsset* const _asset;
 	StudioModelData* _previousModelData{};
+
+	bool _changingAttachmentProperties{false};
 };
 }
 }

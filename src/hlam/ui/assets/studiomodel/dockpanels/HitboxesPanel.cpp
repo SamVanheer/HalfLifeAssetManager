@@ -132,6 +132,12 @@ void HitboxesPanel::UpdateQCString()
 
 void HitboxesPanel::OnHitboxChanged(int index)
 {
+	// Don't refresh the UI if this is getting called in response to a change we made.
+	if (_changingHitboxProperties)
+	{
+		return;
+	}
+
 	constexpr studiomdl::Hitbox emptyHitbox{};
 
 	const auto& hitbox = index != -1 ? *_asset->GetEditableStudioModel()->Hitboxes[index] : emptyHitbox;
@@ -192,6 +198,8 @@ void HitboxesPanel::OnBoundsChanged()
 	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
 
+	_changingHitboxProperties = true;
+
 	_asset->AddUndoCommand(new ChangeHitboxBoundsCommand(_asset, _ui.Hitboxes->currentIndex(),
 		std::make_pair(
 			glm::vec3{hitbox.Min[0], hitbox.Min[1], hitbox.Min[2]},
@@ -199,5 +207,7 @@ void HitboxesPanel::OnBoundsChanged()
 		std::make_pair(
 			glm::vec3{_ui.MinimumX->value(), _ui.MinimumY->value(), _ui.MinimumZ->value()},
 			glm::vec3{_ui.MaximumX->value(), _ui.MaximumY->value(), _ui.MaximumZ->value()})));
+
+	_changingHitboxProperties = false;
 }
 }

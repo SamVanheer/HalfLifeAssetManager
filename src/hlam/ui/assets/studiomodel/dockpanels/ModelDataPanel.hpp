@@ -24,18 +24,16 @@ public:
 private slots:
 	void OnAssetChanged(StudioModelAsset* asset);
 
-	void OnEyePositionChanged(const glm::vec3& value);
-
-	void OnBBoxMinChanged(const glm::vec3& value);
-	void OnBBoxMaxChanged(const glm::vec3& value);
-
-	void OnCBoxMinChanged(const glm::vec3& value);
-	void OnCBoxMaxChanged(const glm::vec3& value);
+	void OnEyePositionChanged();
+	void OnBBoxChanged();
+	void OnCBoxChanged();
 
 private:
 	Ui_ModelDataPanel _ui;
 	StudioModelAsset* const _asset;
 	StudioModelData* _previousModelData{};
+
+	bool _changingDataProperties{false};
 };
 }
 }

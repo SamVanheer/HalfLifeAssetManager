@@ -62,6 +62,8 @@ private:
 	StudioModelAsset* const _asset;
 	StudioModelData* _previousModelData{};
 
+	bool _changingBoneControllerProperties{false};
+
 	float _controllerSliderScale{1.f};
 };
 }
