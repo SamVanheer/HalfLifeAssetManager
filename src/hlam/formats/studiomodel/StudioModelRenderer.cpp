@@ -312,8 +312,8 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 
 void StudioModelRenderer::UpdateColors()
 {
-	_lightcolor = ui::assets::studiomodel::ColorToVector(_colorSettings->GetColor(ui::assets::studiomodel::LightColor.Name));
-	_wireframeColor = ui::assets::studiomodel::ColorToVector(_colorSettings->GetColor(ui::assets::studiomodel::WireframeColor.Name));
+	_lightcolor = _colorSettings->GetColor(ui::assets::studiomodel::LightColor.Name);
+	_wireframeColor = _colorSettings->GetColor(ui::assets::studiomodel::WireframeColor.Name);
 }
 
 void StudioModelRenderer::SetupPosition(const glm::vec3& origin, const glm::vec3& angles)

@@ -37,7 +37,7 @@ void CrosshairEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::Scen
 
 		auto colors = GetContext()->Asset->GetEditorContext()->GetColorSettings();
 
-		openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{ui::assets::studiomodel::ColorToVector(colors->GetColor(ui::assets::studiomodel::CrosshairColor.Name)), 1}));
+		openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{colors->GetColor(ui::assets::studiomodel::CrosshairColor.Name), 1}));
 
 		openglFunctions->glPointSize(CROSSHAIR_LINE_WIDTH);
 		openglFunctions->glLineWidth(CROSSHAIR_LINE_WIDTH);

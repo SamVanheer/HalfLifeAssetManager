@@ -7,6 +7,8 @@
 #include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/settings/ColorSettings.hpp"
 
+using namespace ui::settings;
+
 namespace ui::options
 {
 const QString OptionsPageColorsId{QStringLiteral("D.Colors")};
@@ -46,7 +48,7 @@ OptionsPageColorsWidget::OptionsPageColorsWidget(
 
 	for (const auto& key : keys)
 	{
-		_ui.ColorList->addItem(key, _colorSettings->GetColor(key));
+		_ui.ColorList->addItem(key, VectorToColor(_colorSettings->GetColor(key)));
 	}
 }
 
@@ -56,7 +58,7 @@ void OptionsPageColorsWidget::ApplyChanges(QSettings& settings)
 {
 	for (int i = 0; i < _ui.ColorList->count(); ++i)
 	{
-		_colorSettings->Set(_ui.ColorList->itemText(i), _ui.ColorList->itemData(i).value<QColor>());
+		_colorSettings->Set(_ui.ColorList->itemText(i), ColorToVector(_ui.ColorList->itemData(i).value<QColor>()));
 	}
 
 	emit _colorSettings->ColorsChanged();
@@ -84,7 +86,7 @@ void OptionsPageColorsWidget::OnChangeColor()
 
 	if (color.isValid())
 	{
-		_colorSettings->Set(_ui.ColorList->currentText(), color);
+		_colorSettings->Set(_ui.ColorList->currentText(), ColorToVector(color));
 		_ui.ColorList->setItemData(_ui.ColorList->currentIndex(), color);
 		SetPreviewColor(color);
 	}
@@ -94,10 +96,12 @@ void OptionsPageColorsWidget::OnResetColor()
 {
 	const QString key{_ui.ColorList->currentText()};
 
-	const QColor defaultColor{_colorSettings->GetDefaultColor(key)};
+	const glm::vec3 defaultColor{_colorSettings->GetDefaultColor(key)};
+
+	const QColor defaultColorAsColor = VectorToColor(defaultColor);
 
 	_colorSettings->Set(key, defaultColor);
-	_ui.ColorList->setItemData(_ui.ColorList->currentIndex(), defaultColor);
-	SetPreviewColor(defaultColor);
+	_ui.ColorList->setItemData(_ui.ColorList->currentIndex(), defaultColorAsColor);
+	SetPreviewColor(defaultColorAsColor);
 }
 }

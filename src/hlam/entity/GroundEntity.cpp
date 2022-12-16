@@ -93,7 +93,7 @@ void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneCo
 
 		graphics::DrawFloor(openglFunctions,
 			settings->FloorOrigin, settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, texture,
-			ui::assets::studiomodel::ColorToVector(colors->GetColor(ui::assets::studiomodel::GroundColor.Name)), settings->MirrorOnGround);
+			colors->GetColor(ui::assets::studiomodel::GroundColor.Name), settings->MirrorOnGround);
 	}
 }
 

@@ -12,10 +12,27 @@
 #include <QString>
 #include <QStringList>
 
+#include <glm/vec3.hpp>
+
 #include "qt/HashFunctions.hpp"
 
 namespace ui::settings
 {
+inline glm::vec3 ColorToVector(const QColor& color)
+{
+	return {color.redF(), color.greenF(), color.blueF()};
+}
+
+inline QColor VectorToColor(const glm::vec3& color)
+{
+	return QColor::fromRgbF(color.r, color.g, color.b);
+}
+
+inline glm::vec3 RGB888ToVector(int r, int g, int b)
+{
+	return {r / 255.f, g / 255.f, b / 255.f};
+}
+
 class ColorSettings final : public QObject
 {
 	Q_OBJECT
@@ -38,7 +55,7 @@ public:
 		{
 			settings.setArrayIndex(i);
 
-			Set(settings.value("Name").toString(), settings.value("Color").value<QColor>());
+			Set(settings.value("Name").toString(), ColorToVector(settings.value("Color").value<QColor>()));
 		}
 
 		settings.endArray();
@@ -59,7 +76,7 @@ public:
 			settings.setArrayIndex(i);
 
 			settings.setValue("Name", keys[i]);
-			settings.setValue("Color", GetColor(keys[i]));
+			settings.setValue("Color", VectorToColor(GetColor(keys[i])));
 		}
 
 		settings.endArray();
@@ -80,17 +97,17 @@ public:
 		return keys;
 	}
 
-	QColor GetDefaultColor(const QString& key) const
+	glm::vec3 GetDefaultColor(const QString& key) const
 	{
 		if (auto it = _colors.find(key); it != _colors.end())
 		{
 			return it->second.first;
 		}
 
-		return Qt::GlobalColor::black;
+		return glm::vec3{0};
 	}
 
-	QColor GetColor(const QString& key, const QColor& defaultValue = Qt::GlobalColor::black) const
+	glm::vec3 GetColor(const QString& key, const glm::vec3& defaultValue = glm::vec3{0}) const
 	{
 		if (auto it = _colors.find(key); it != _colors.end())
 		{
@@ -100,12 +117,12 @@ public:
 		return defaultValue;
 	}
 
-	void Add(const QString& key, const QColor& defaultColor)
+	void Add(const QString& key, const glm::vec3& defaultColor)
 	{
 		_colors.emplace(key, std::make_pair(defaultColor, defaultColor));
 	}
 
-	void Set(const QString& key, const QColor& color)
+	void Set(const QString& key, const glm::vec3& color)
 	{
 		if (auto it = _colors.find(key); it != _colors.end())
 		{
@@ -117,6 +134,6 @@ signals:
 	void ColorsChanged();
 
 private:
-	std::unordered_map<QString, std::pair<QColor, QColor>> _colors;
+	std::unordered_map<QString, std::pair<glm::vec3, glm::vec3>> _colors;
 };
 }
