@@ -5,10 +5,13 @@
 #include <QOpenGLWindow>
 #include <QPointer>
 
+class QOpenGLFunctions_1_1;
+
 namespace graphics
 {
 class Scene;
 class SceneContext;
+class TextureLoader;
 }
 
 /**
@@ -20,7 +23,7 @@ class SceneWidget final : public QOpenGLWindow
 	Q_OBJECT
 
 public:
-	SceneWidget(QWidget* parent);
+	SceneWidget(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader* textureLoader, QWidget* parent);
 	~SceneWidget();
 
 	QWidget* GetContainer() { return _container; }

@@ -6,10 +6,10 @@
 #include "graphics/SceneContext.hpp"
 #include "ui/SceneWidget.hpp"
 
-SceneWidget::SceneWidget(QWidget* parent)
+SceneWidget::SceneWidget(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader* textureLoader, QWidget* parent)
 	: QOpenGLWindow()
 	, _container(QWidget::createWindowContainer(this, parent))
-	, _sceneContext(std::make_unique<graphics::SceneContext>())
+	, _sceneContext(std::make_unique<graphics::SceneContext>(openglFunctions, textureLoader))
 {
 	_container->setFocusPolicy(Qt::FocusPolicy::WheelFocus);
 

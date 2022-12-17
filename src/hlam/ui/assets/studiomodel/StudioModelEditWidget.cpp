@@ -44,7 +44,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_view = new StudioModelView(_ui.Window);
 
-	_sceneWidget = new SceneWidget(this);
+	_sceneWidget = new SceneWidget(editorContext->GetOpenGLFunctions(), editorContext->GetTextureLoader(), this);
 
 	auto eventFilter = _editorContext->GetDragNDropEventFilter();
 

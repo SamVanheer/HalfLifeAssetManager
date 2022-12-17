@@ -13,5 +13,5 @@ public:
 public:
 	RenderPasses GetRenderPasses() const override { return RenderPass::Standard; }
 
-	virtual void Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass) override;
+	virtual void Draw(graphics::SceneContext& sc, RenderPasses renderPass) override;
 };

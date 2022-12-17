@@ -250,7 +250,7 @@ void ChangeTextureFlagsCommand::Apply(int index, const int& oldValue, const int&
 	auto model = _asset->GetEditableStudioModel();
 	model->Textures[index]->Flags = newValue;
 
-	auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
+	auto graphicsContext = _asset->GetGraphicsContext();
 
 	graphicsContext->Begin();
 	model->UpdateTexture(*_asset->GetTextureLoader(), index);
@@ -264,7 +264,7 @@ void ImportTextureCommand::Apply(int index, const ImportTextureData& oldValue, c
 	auto model = _asset->GetEditableStudioModel();
 	model->Textures[index]->Data = newValue.Data;
 
-	auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
+	auto graphicsContext = _asset->GetGraphicsContext();
 
 	graphicsContext->Begin();
 	model->UpdateTexture(*_asset->GetTextureLoader(), index);

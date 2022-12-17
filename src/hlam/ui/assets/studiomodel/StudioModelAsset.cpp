@@ -38,6 +38,7 @@
 
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/Scene.hpp"
+#include "graphics/SceneContext.hpp"
 
 #include "qt/QtLogSink.hpp"
 #include "qt/QtUtilities.hpp"
@@ -132,7 +133,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
 	, _modelData(new StudioModelData(_editableStudioModel.get(), this))
-	, _textureLoader(_editorContext->GetTextureLoader())
 	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(
 		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()), _editorContext->GetOpenGLFunctions(), _editorContext->GetColorSettings()))
 	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(
@@ -187,29 +187,37 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		this, &StudioModelAsset::OnTextureFiltersChanged);
 
 	// Initialize graphics resources.
-	auto context = _editorContext->GetGraphicsContext();
-	context->Begin();
-
-	for (auto scene : _scenes)
 	{
-		scene->CreateDeviceObjects();
-	}
+		graphics::SceneContext sc{_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader()};
 
-	context->End();
+		auto context = _editorContext->GetGraphicsContext();
+		context->Begin();
+
+		for (auto scene : _scenes)
+		{
+			scene->CreateDeviceObjects(sc);
+		}
+
+		context->End();
+	}
 }
 
 StudioModelAsset::~StudioModelAsset()
 {
-	auto context = _editorContext->GetGraphicsContext();
-
-	context->Begin();
-
-	for (auto it = _scenes.rbegin(), end = _scenes.rend(); it != end; ++it)
 	{
-		(*it)->DestroyDeviceObjects();
-	}
+		graphics::SceneContext sc{_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader()};
 
-	context->End();
+		auto context = _editorContext->GetGraphicsContext();
+
+		context->Begin();
+
+		for (auto it = _scenes.rbegin(), end = _scenes.rend(); it != end; ++it)
+		{
+			(*it)->DestroyDeviceObjects(sc);
+		}
+
+		context->End();
+	}
 
 	delete _editWidget;
 }
@@ -284,7 +292,8 @@ QWidget* StudioModelAsset::GetEditWidget()
 
 void StudioModelAsset::SetupFullscreenWidget(FullscreenWidget* fullscreenWidget)
 {
-	const auto sceneWidget = new SceneWidget(fullscreenWidget);
+	const auto sceneWidget = new SceneWidget(
+		_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader(), fullscreenWidget);
 
 	sceneWidget->SetScene(GetScene());
 
@@ -323,12 +332,14 @@ void StudioModelAsset::TryRefresh()
 		// Clear UI to null state so changes to the models don't trigger changes in UI slots.
 		emit AssetChanged(nullptr);
 
+		graphics::SceneContext sc{_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader()};
+
 		auto context = _editorContext->GetGraphicsContext();
 		context->Begin();
 
 		//Clean up old model resources
 		//TODO: needs to be handled better
-		_modelEntity->DestroyDeviceObjects(_editorContext->GetOpenGLFunctions(), *_textureLoader);
+		_modelEntity->DestroyDeviceObjects(sc);
 
 		_editableStudioModel = std::move(newModel);
 
@@ -340,7 +351,7 @@ void StudioModelAsset::TryRefresh()
 		_modelEntity->SetEditableModel(GetEditableStudioModel());
 		_modelEntity->Spawn();
 
-		_modelEntity->CreateDeviceObjects(_editorContext->GetOpenGLFunctions(), *_textureLoader);
+		_modelEntity->CreateDeviceObjects(sc);
 
 		context->End();
 
@@ -360,6 +371,16 @@ void StudioModelAsset::TryRefresh()
 	emit LoadSnapshot(snapshot.get());
 }
 
+graphics::IGraphicsContext* StudioModelAsset::GetGraphicsContext()
+{
+	return _editorContext->GetGraphicsContext();
+}
+
+graphics::TextureLoader* StudioModelAsset::GetTextureLoader()
+{
+	return _editorContext->GetTextureLoader();
+}
+
 void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 {
 	assert(_scenes.contains(scene));
@@ -367,15 +388,9 @@ void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 	_editWidget->SetSceneIndex(_scenes.indexOf(scene));
 }
 
-ISoundSystem* StudioModelAsset::GetSoundSystem()
-{
-	return _editorContext->GetSoundSystem();
-}
-
 void StudioModelAsset::CreateMainScene()
 {
-	_scene = std::make_unique<graphics::Scene>("Scene", _editorContext->GetGraphicsContext(), _editorContext->GetOpenGLFunctions(),
-		_textureLoader, _entityContext.get());
+	_scene = std::make_unique<graphics::Scene>("Scene", _entityContext.get());
 
 	_scenes.push_back(_scene.get());
 
@@ -393,8 +408,7 @@ void StudioModelAsset::CreateMainScene()
 
 void StudioModelAsset::CreateTextureScene()
 {
-	_textureScene = std::make_unique<graphics::Scene>("Texture", _editorContext->GetGraphicsContext(), _editorContext->GetOpenGLFunctions(),
-		_textureLoader, _entityContext.get());
+	_textureScene = std::make_unique<graphics::Scene>("Texture", _entityContext.get());
 
 	_scenes.push_back(_textureScene.get());
 
@@ -500,7 +514,7 @@ void StudioModelAsset::OnResizeTexturesToPowerOf2Changed()
 	auto context = _editorContext->GetGraphicsContext();
 
 	context->Begin();
-	_editableStudioModel->UpdateTextures(*_textureLoader);
+	_editableStudioModel->UpdateTextures(*GetTextureLoader());
 	context->End();
 }
 
@@ -509,7 +523,7 @@ void StudioModelAsset::OnTextureFiltersChanged()
 	auto context = _editorContext->GetGraphicsContext();
 
 	context->Begin();
-	_editableStudioModel->UpdateFilters(*_textureLoader);
+	_editableStudioModel->UpdateFilters(*GetTextureLoader());
 	context->End();
 }
 

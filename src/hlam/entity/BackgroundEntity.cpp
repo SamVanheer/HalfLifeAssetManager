@@ -1,37 +1,38 @@
 #include "entity/BackgroundEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
+#include "graphics/SceneContext.hpp"
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-void BackgroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
+void BackgroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	if (GetContext()->Settings->ShowBackground)
 	{
 		// Update image if changed.
 		if (!_image.GetData().empty())
 		{
-			openglFunctions->glBindTexture(GL_TEXTURE_2D, _texture);
+			sc.OpenGLFunctions->glBindTexture(GL_TEXTURE_2D, _texture);
 
-			openglFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+			sc.OpenGLFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
 				_image.GetWidth(), _image.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, _image.GetData().data());
-			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			sc.OpenGLFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			sc.OpenGLFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 			_image = {};
 		}
 
-		graphics::DrawBackground(openglFunctions, _texture);
+		graphics::DrawBackground(sc.OpenGLFunctions, _texture);
 	}
 }
 
-void BackgroundEntity::CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader)
+void BackgroundEntity::CreateDeviceObjects(graphics::SceneContext& sc)
 {
-	openglFunctions->glGenTextures(1, &_texture);
+	sc.OpenGLFunctions->glGenTextures(1, &_texture);
 }
 
-void BackgroundEntity::DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader)
+void BackgroundEntity::DestroyDeviceObjects(graphics::SceneContext& sc)
 {
-	openglFunctions->glDeleteTextures(1, &_texture);
+	sc.OpenGLFunctions->glDeleteTextures(1, &_texture);
 	_texture = 0;
 }

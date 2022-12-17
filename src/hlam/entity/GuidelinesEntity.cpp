@@ -13,75 +13,75 @@
 #include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
-void GuidelinesEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
+void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	if (GetContext()->Settings->ShowGuidelines)
 	{
 		const int centerX = sc.WindowWidth / 2;
 		const int centerY = sc.WindowHeight / 2;
 
-		openglFunctions->glMatrixMode(GL_PROJECTION);
-		openglFunctions->glLoadIdentity();
+		sc.OpenGLFunctions->glMatrixMode(GL_PROJECTION);
+		sc.OpenGLFunctions->glLoadIdentity();
 
-		openglFunctions->glOrtho(0.0f, (float)sc.WindowWidth, (float)sc.WindowHeight, 0.0f, 1.0f, -1.0f);
+		sc.OpenGLFunctions->glOrtho(0.0f, (float)sc.WindowWidth, (float)sc.WindowHeight, 0.0f, 1.0f, -1.0f);
 
-		openglFunctions->glMatrixMode(GL_MODELVIEW);
-		openglFunctions->glPushMatrix();
-		openglFunctions->glLoadIdentity();
+		sc.OpenGLFunctions->glMatrixMode(GL_MODELVIEW);
+		sc.OpenGLFunctions->glPushMatrix();
+		sc.OpenGLFunctions->glLoadIdentity();
 
-		openglFunctions->glDisable(GL_CULL_FACE);
+		sc.OpenGLFunctions->glDisable(GL_CULL_FACE);
 
-		openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		sc.OpenGLFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		openglFunctions->glDisable(GL_TEXTURE_2D);
+		sc.OpenGLFunctions->glDisable(GL_TEXTURE_2D);
 
 		auto colors = GetContext()->Asset->GetEditorContext()->GetColorSettings();
 
-		openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{colors->GetColor(studiomodel::CrosshairColor.Name), 1}));
+		sc.OpenGLFunctions->glColor4fv(glm::value_ptr(glm::vec4{colors->GetColor(studiomodel::CrosshairColor.Name), 1}));
 
-		openglFunctions->glPointSize(GUIDELINES_LINE_WIDTH);
-		openglFunctions->glLineWidth(GUIDELINES_LINE_WIDTH);
+		sc.OpenGLFunctions->glPointSize(GUIDELINES_LINE_WIDTH);
+		sc.OpenGLFunctions->glLineWidth(GUIDELINES_LINE_WIDTH);
 
-		openglFunctions->glBegin(GL_POINTS);
+		sc.OpenGLFunctions->glBegin(GL_POINTS);
 
 		for (int yPos = sc.WindowHeight - GUIDELINES_LINE_LENGTH;
 			yPos >= centerY + CrosshairEntity::CROSSHAIR_LINE_END;
 			yPos -= GUIDELINES_OFFSET)
 		{
-			openglFunctions->glVertex2f(centerX - GUIDELINES_LINE_WIDTH, yPos);
+			sc.OpenGLFunctions->glVertex2f(centerX - GUIDELINES_LINE_WIDTH, yPos);
 		}
 
-		openglFunctions->glEnd();
+		sc.OpenGLFunctions->glEnd();
 
-		openglFunctions->glBegin(GL_LINES);
+		sc.OpenGLFunctions->glBegin(GL_LINES);
 
 		for (int yPos = sc.WindowHeight - GUIDELINES_LINE_LENGTH - GUIDELINES_POINT_LINE_OFFSET - GUIDELINES_LINE_WIDTH;
 			yPos >= centerY + CrosshairEntity::CROSSHAIR_LINE_END + GUIDELINES_LINE_LENGTH;
 			yPos -= GUIDELINES_OFFSET)
 		{
-			openglFunctions->glVertex2f(centerX, yPos);
-			openglFunctions->glVertex2f(centerX, yPos - GUIDELINES_LINE_LENGTH);
+			sc.OpenGLFunctions->glVertex2f(centerX, yPos);
+			sc.OpenGLFunctions->glVertex2f(centerX, yPos - GUIDELINES_LINE_LENGTH);
 		}
 
-		openglFunctions->glEnd();
+		sc.OpenGLFunctions->glEnd();
 
 		const float flWidth = sc.WindowHeight * (16 / 9.0);
 
-		openglFunctions->glLineWidth(GUIDELINES_EDGE_WIDTH);
+		sc.OpenGLFunctions->glLineWidth(GUIDELINES_EDGE_WIDTH);
 
-		openglFunctions->glBegin(GL_LINES);
+		sc.OpenGLFunctions->glBegin(GL_LINES);
 
-		openglFunctions->glVertex2f((sc.WindowWidth / 2.) - (flWidth / 2), 0);
-		openglFunctions->glVertex2f((sc.WindowWidth / 2.) - (flWidth / 2), sc.WindowHeight);
+		sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) - (flWidth / 2), 0);
+		sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) - (flWidth / 2), sc.WindowHeight);
 
-		openglFunctions->glVertex2f((sc.WindowWidth / 2.) + (flWidth / 2), 0);
-		openglFunctions->glVertex2f((sc.WindowWidth / 2.) + (flWidth / 2), sc.WindowHeight);
+		sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) + (flWidth / 2), 0);
+		sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) + (flWidth / 2), sc.WindowHeight);
 
-		openglFunctions->glEnd();
+		sc.OpenGLFunctions->glEnd();
 
-		openglFunctions->glPointSize(1);
-		openglFunctions->glLineWidth(1);
+		sc.OpenGLFunctions->glPointSize(1);
+		sc.OpenGLFunctions->glLineWidth(1);
 
-		openglFunctions->glPopMatrix();
+		sc.OpenGLFunctions->glPopMatrix();
 	}
 }

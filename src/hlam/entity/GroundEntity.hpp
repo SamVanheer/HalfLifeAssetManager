@@ -19,11 +19,11 @@ public:
 public:
 	RenderPasses GetRenderPasses() const override { return RenderPass::Standard; }
 
-	void Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass) override;
+	void Draw(graphics::SceneContext& sc, RenderPasses renderPass) override;
 
-	void CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) override;
+	void CreateDeviceObjects(graphics::SceneContext& sc) override;
 
-	void DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) override;
+	void DestroyDeviceObjects(graphics::SceneContext& sc) override;
 
 	void SetImage(graphics::Image&& image)
 	{

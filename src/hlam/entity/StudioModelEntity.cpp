@@ -5,6 +5,7 @@
 #include "entity/StudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
+#include "graphics/SceneContext.hpp"
 
 #include "ui/settings/StudioModelSettings.hpp"
 
@@ -32,14 +33,14 @@ void StudioModelEntity::Spawn()
 	SetSkin(0);
 }
 
-void StudioModelEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
+void StudioModelEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	auto settings = GetContext()->Settings;
 
 	// setup stencil buffer and draw mirror
 	if (settings->MirrorOnGround)
 	{
-		graphics::DrawMirroredModel(openglFunctions,
+		graphics::DrawMirroredModel(sc.OpenGLFunctions,
 			*GetContext()->StudioModelRenderer, this,
 			settings->CurrentRenderMode,
 			settings->ShowWireframeOverlay,
@@ -48,14 +49,14 @@ void StudioModelEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::Sc
 			settings->EnableBackfaceCulling);
 	}
 
-	graphics::SetupRenderMode(openglFunctions, settings->CurrentRenderMode, settings->EnableBackfaceCulling);
+	graphics::SetupRenderMode(sc.OpenGLFunctions, settings->CurrentRenderMode, settings->EnableBackfaceCulling);
 
 	const glm::vec3& vecScale = GetScale();
 
 	//Determine if an odd number of scale values are negative. The cull face has to be changed if so.
 	const float flScale = vecScale.x * vecScale.y * vecScale.z;
 
-	openglFunctions->glCullFace(flScale > 0 ? GL_FRONT : GL_BACK);
+	sc.OpenGLFunctions->glCullFace(flScale > 0 ? GL_FRONT : GL_BACK);
 
 	renderer::DrawFlags flags = renderer::DrawFlag::NONE;
 
@@ -132,18 +133,18 @@ void StudioModelEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::Sc
 	}
 }
 
-void StudioModelEntity::CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader)
+void StudioModelEntity::CreateDeviceObjects(graphics::SceneContext& sc)
 {
 	auto model = GetEditableModel();
 
-	model->CreateTextures(textureLoader);
+	model->CreateTextures(*sc.TextureLoader);
 }
 
-void StudioModelEntity::DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader)
+void StudioModelEntity::DestroyDeviceObjects(graphics::SceneContext& sc)
 {
 	auto model = GetEditableModel();
 
-	model->DeleteTextures(textureLoader);
+	model->DeleteTextures(*sc.TextureLoader);
 }
 
 studiomdl::ModelRenderInfo StudioModelEntity::GetRenderInfo() const

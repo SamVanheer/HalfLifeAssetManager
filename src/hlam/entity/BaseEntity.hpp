@@ -9,13 +9,11 @@
 
 class BaseEntity;
 class EntityList;
-class QOpenGLFunctions_1_1;
 class WorldTime;
 
 namespace graphics
 {
 class SceneContext;
-class TextureLoader;
 }
 
 class ISoundSystem;
@@ -94,11 +92,11 @@ public:
 
 	virtual RenderPasses GetRenderPasses() const { return RenderPass::None; }
 
-	virtual void Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass) {}
+	virtual void Draw(graphics::SceneContext& sc, RenderPasses renderPass) {}
 
-	virtual void CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) {}
+	virtual void CreateDeviceObjects(graphics::SceneContext& sc) {}
 
-	virtual void DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader) {}
+	virtual void DestroyDeviceObjects(graphics::SceneContext& sc) {}
 
 private:
 	EntityContext* _context{};

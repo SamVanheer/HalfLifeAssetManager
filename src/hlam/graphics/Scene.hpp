@@ -9,12 +9,10 @@
 
 class BaseEntity;
 class EntityList;
-class QOpenGLFunctions_1_1;
 struct EntityContext;
 
 namespace graphics
 {
-class IGraphicsContext;
 class SceneContext;
 class TextureLoader;
 
@@ -24,17 +22,12 @@ class TextureLoader;
 class Scene
 {
 public:
-	Scene(std::string&& name, IGraphicsContext* graphicsContext,QOpenGLFunctions_1_1* openglFunctions,
-		graphics::TextureLoader* textureLoader, EntityContext* entityContext);
+	Scene(std::string&& name, EntityContext* entityContext);
 	~Scene();
 	Scene(const Scene&) = delete;
 	Scene& operator=(const Scene&) = delete;
 
 	const std::string& GetName() const { return _name; }
-
-	IGraphicsContext* GetGraphicsContext() { return _graphicsContext; }
-
-	QOpenGLFunctions_1_1* GetOpenGLFunctions() { return _openglFunctions; }
 
 	EntityList* GetEntityList() { return _entityList.get(); }
 
@@ -62,21 +55,15 @@ public:
 			_windowWidth = width;
 			_windowHeight = height;
 
-			//Always update the default camera
-			_defaultCameraOperator->GetCamera()->SetWindowSize(_windowWidth, _windowHeight);
-
-			if (_currentCamera != _defaultCameraOperator.get())
-			{
-				_currentCamera->GetCamera()->SetWindowSize(_windowWidth, _windowHeight);
-			}
+			_currentCamera->GetCamera()->SetWindowSize(_windowWidth, _windowHeight);
 		}
 	}
 
 	unsigned int GetDrawnPolygonsCount() const { return _drawnPolygonsCount; }
 
-	void CreateDeviceObjects();
+	void CreateDeviceObjects(SceneContext& sc);
 
-	void DestroyDeviceObjects();
+	void DestroyDeviceObjects(SceneContext& sc);
 
 	void Tick();
 
@@ -85,14 +72,11 @@ public:
 private:
 	void CollectRenderables(RenderPass::RenderPass renderPass, std::vector<BaseEntity*>& renderablesToRender);
 
-	void DrawRenderables(graphics::SceneContext& sc, RenderPass::RenderPass renderPass);
+	void DrawRenderables(SceneContext& sc, RenderPass::RenderPass renderPass);
 
 private:
 	const std::string _name;
 
-	IGraphicsContext* const _graphicsContext;
-	QOpenGLFunctions_1_1* const _openglFunctions;
-	TextureLoader* const _textureLoader;
 	EntityContext* const _entityContext;
 
 	const std::unique_ptr<EntityList> _entityList;

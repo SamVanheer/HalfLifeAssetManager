@@ -10,6 +10,7 @@
 
 #include "graphics/OpenGL.hpp"
 #include "graphics/Scene.hpp"
+#include "graphics/SceneContext.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
@@ -40,12 +41,8 @@ private:
 };
 }
 
-Scene::Scene(std::string&& name, IGraphicsContext* graphicsContext, QOpenGLFunctions_1_1* openglFunctions,
-	TextureLoader* textureLoader, EntityContext* entityContext)
+Scene::Scene(std::string&& name, EntityContext* entityContext)
 	: _name(std::move(name))
-	, _graphicsContext(graphicsContext)
-	, _openglFunctions(openglFunctions)
-	, _textureLoader(textureLoader)
 	, _entityContext(entityContext)
 	, _entityList(std::make_unique<EntityList>(_entityContext))
 	, _defaultCameraOperator(std::make_unique<DefaultCameraOperator>())
@@ -55,19 +52,19 @@ Scene::Scene(std::string&& name, IGraphicsContext* graphicsContext, QOpenGLFunct
 
 Scene::~Scene() = default;
 
-void Scene::CreateDeviceObjects()
+void Scene::CreateDeviceObjects(SceneContext& sc)
 {
 	for (auto& entity : *_entityList)
 	{
-		entity->CreateDeviceObjects(_openglFunctions, *_textureLoader);
+		entity->CreateDeviceObjects(sc);
 	}
 }
 
-void Scene::DestroyDeviceObjects()
+void Scene::DestroyDeviceObjects(SceneContext& sc)
 {
 	for (auto& entity : *_entityList)
 	{
-		entity->DestroyDeviceObjects(_openglFunctions, *_textureLoader);
+		entity->DestroyDeviceObjects(sc);
 	}
 }
 
@@ -82,13 +79,13 @@ void Scene::Draw(SceneContext& sc)
 
 	const auto backgroundColor = colors->GetColor(studiomodel::BackgroundColor.Name);
 
-	_openglFunctions->glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.0f);
-	_openglFunctions->glClearStencil(0);
-	_openglFunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	sc.OpenGLFunctions->glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.0f);
+	sc.OpenGLFunctions->glClearStencil(0);
+	sc.OpenGLFunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	_openglFunctions->glViewport(0, 0, _windowWidth, _windowHeight);
+	sc.OpenGLFunctions->glViewport(0, 0, _windowWidth, _windowHeight);
 
-	_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	sc.OpenGLFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	_drawnPolygonsCount = 0;
 
@@ -101,11 +98,11 @@ void Scene::Draw(SceneContext& sc)
 
 	DrawRenderables(sc, RenderPass::Background);
 
-	_openglFunctions->glMatrixMode(GL_PROJECTION);
-	_openglFunctions->glLoadMatrixf(glm::value_ptr(camera->GetProjectionMatrix()));
+	sc.OpenGLFunctions->glMatrixMode(GL_PROJECTION);
+	sc.OpenGLFunctions->glLoadMatrixf(glm::value_ptr(camera->GetProjectionMatrix()));
 
-	_openglFunctions->glMatrixMode(GL_MODELVIEW);
-	_openglFunctions->glLoadMatrixf(glm::value_ptr(camera->GetViewMatrix()));
+	sc.OpenGLFunctions->glMatrixMode(GL_MODELVIEW);
+	sc.OpenGLFunctions->glLoadMatrixf(glm::value_ptr(camera->GetViewMatrix()));
 
 	DrawRenderables(sc, RenderPass::Standard);
 	DrawRenderables(sc, RenderPass::Overlay3D);
@@ -127,13 +124,13 @@ void Scene::CollectRenderables(RenderPass::RenderPass renderPass, std::vector<Ba
 	}
 }
 
-void Scene::DrawRenderables(graphics::SceneContext& sc, RenderPass::RenderPass renderPass)
+void Scene::DrawRenderables(SceneContext& sc, RenderPass::RenderPass renderPass)
 {
 	CollectRenderables(renderPass, _renderablesToRender);
 
 	for (const auto& renderable : _renderablesToRender)
 	{
-		renderable->Draw(_openglFunctions, sc, renderPass);
+		renderable->Draw(sc, renderPass);
 	}
 }
 }

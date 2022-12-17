@@ -476,7 +476,7 @@ void TexturesPanel::UpdateColormapValue()
 	model->TopColor = topColor;
 	model->BottomColor = bottomColor;
 
-	auto graphicsContext = _asset->GetScene()->GetGraphicsContext();
+	auto graphicsContext = _asset->GetGraphicsContext();
 
 	graphicsContext->Begin();
 	model->UpdateTextures(*_asset->GetTextureLoader());

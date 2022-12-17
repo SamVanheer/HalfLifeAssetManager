@@ -2,6 +2,7 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
+#include "graphics/SceneContext.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
@@ -9,7 +10,7 @@
 #include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
-void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
+void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	auto context = GetContext();
 	auto settings = context->Settings;
@@ -19,12 +20,12 @@ void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneCo
 		// Update image if changed.
 		if (!_image.GetData().empty())
 		{
-			openglFunctions->glBindTexture(GL_TEXTURE_2D, _texture);
+			sc.OpenGLFunctions->glBindTexture(GL_TEXTURE_2D, _texture);
 
-			openglFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+			sc.OpenGLFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
 				_image.GetWidth(), _image.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, _image.GetData().data());
-			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			sc.OpenGLFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			sc.OpenGLFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 			_image = {};
 		}
@@ -91,19 +92,19 @@ void GroundEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneCo
 			texture = _texture;
 		}
 
-		graphics::DrawFloor(openglFunctions,
+		graphics::DrawFloor(sc.OpenGLFunctions,
 			settings->FloorOrigin, settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, texture,
 			colors->GetColor(studiomodel::GroundColor.Name), settings->MirrorOnGround);
 	}
 }
 
-void GroundEntity::CreateDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader)
+void GroundEntity::CreateDeviceObjects(graphics::SceneContext& sc)
 {
-	openglFunctions->glGenTextures(1, &_texture);
+	sc.OpenGLFunctions->glGenTextures(1, &_texture);
 }
 
-void GroundEntity::DestroyDeviceObjects(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader& textureLoader)
+void GroundEntity::DestroyDeviceObjects(graphics::SceneContext& sc)
 {
-	openglFunctions->glDeleteTextures(1, &_texture);
+	sc.OpenGLFunctions->glDeleteTextures(1, &_texture);
 	_texture = 0;
 }

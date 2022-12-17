@@ -13,60 +13,60 @@
 #include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
-void CrosshairEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
+void CrosshairEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	if (GetContext()->Settings->ShowCrosshair)
 	{
 		const int centerX = sc.WindowWidth / 2;
 		const int centerY = sc.WindowHeight / 2;
 
-		openglFunctions->glMatrixMode(GL_PROJECTION);
-		openglFunctions->glLoadIdentity();
+		sc.OpenGLFunctions->glMatrixMode(GL_PROJECTION);
+		sc.OpenGLFunctions->glLoadIdentity();
 
-		openglFunctions->glOrtho(0.0f, (float)sc.WindowWidth, (float)sc.WindowHeight, 0.0f, 1.0f, -1.0f);
+		sc.OpenGLFunctions->glOrtho(0.0f, (float)sc.WindowWidth, (float)sc.WindowHeight, 0.0f, 1.0f, -1.0f);
 
-		openglFunctions->glMatrixMode(GL_MODELVIEW);
-		openglFunctions->glPushMatrix();
-		openglFunctions->glLoadIdentity();
+		sc.OpenGLFunctions->glMatrixMode(GL_MODELVIEW);
+		sc.OpenGLFunctions->glPushMatrix();
+		sc.OpenGLFunctions->glLoadIdentity();
 
-		openglFunctions->glDisable(GL_CULL_FACE);
+		sc.OpenGLFunctions->glDisable(GL_CULL_FACE);
 
-		openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		sc.OpenGLFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		openglFunctions->glDisable(GL_TEXTURE_2D);
+		sc.OpenGLFunctions->glDisable(GL_TEXTURE_2D);
 
 		auto colors = GetContext()->Asset->GetEditorContext()->GetColorSettings();
 
-		openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{colors->GetColor(studiomodel::CrosshairColor.Name), 1}));
+		sc.OpenGLFunctions->glColor4fv(glm::value_ptr(glm::vec4{colors->GetColor(studiomodel::CrosshairColor.Name), 1}));
 
-		openglFunctions->glPointSize(CROSSHAIR_LINE_WIDTH);
-		openglFunctions->glLineWidth(CROSSHAIR_LINE_WIDTH);
+		sc.OpenGLFunctions->glPointSize(CROSSHAIR_LINE_WIDTH);
+		sc.OpenGLFunctions->glLineWidth(CROSSHAIR_LINE_WIDTH);
 
-		openglFunctions->glBegin(GL_POINTS);
+		sc.OpenGLFunctions->glBegin(GL_POINTS);
 
-		openglFunctions->glVertex2f(centerX - CROSSHAIR_LINE_WIDTH / 2, centerY + 1);
+		sc.OpenGLFunctions->glVertex2f(centerX - CROSSHAIR_LINE_WIDTH / 2, centerY + 1);
 
-		openglFunctions->glEnd();
+		sc.OpenGLFunctions->glEnd();
 
-		openglFunctions->glBegin(GL_LINES);
+		sc.OpenGLFunctions->glBegin(GL_LINES);
 
-		openglFunctions->glVertex2f(centerX - CROSSHAIR_LINE_START, centerY);
-		openglFunctions->glVertex2f(centerX - CROSSHAIR_LINE_END, centerY);
+		sc.OpenGLFunctions->glVertex2f(centerX - CROSSHAIR_LINE_START, centerY);
+		sc.OpenGLFunctions->glVertex2f(centerX - CROSSHAIR_LINE_END, centerY);
 
-		openglFunctions->glVertex2f(centerX + CROSSHAIR_LINE_START, centerY);
-		openglFunctions->glVertex2f(centerX + CROSSHAIR_LINE_END, centerY);
+		sc.OpenGLFunctions->glVertex2f(centerX + CROSSHAIR_LINE_START, centerY);
+		sc.OpenGLFunctions->glVertex2f(centerX + CROSSHAIR_LINE_END, centerY);
 
-		openglFunctions->glVertex2f(centerX, centerY - CROSSHAIR_LINE_START);
-		openglFunctions->glVertex2f(centerX, centerY - CROSSHAIR_LINE_END);
+		sc.OpenGLFunctions->glVertex2f(centerX, centerY - CROSSHAIR_LINE_START);
+		sc.OpenGLFunctions->glVertex2f(centerX, centerY - CROSSHAIR_LINE_END);
 
-		openglFunctions->glVertex2f(centerX, centerY + CROSSHAIR_LINE_START);
-		openglFunctions->glVertex2f(centerX, centerY + CROSSHAIR_LINE_END);
+		sc.OpenGLFunctions->glVertex2f(centerX, centerY + CROSSHAIR_LINE_START);
+		sc.OpenGLFunctions->glVertex2f(centerX, centerY + CROSSHAIR_LINE_END);
 
-		openglFunctions->glEnd();
+		sc.OpenGLFunctions->glEnd();
 
-		openglFunctions->glPointSize(1);
-		openglFunctions->glLineWidth(1);
+		sc.OpenGLFunctions->glPointSize(1);
+		sc.OpenGLFunctions->glLineWidth(1);
 
-		openglFunctions->glPopMatrix();
+		sc.OpenGLFunctions->glPopMatrix();
 	}
 }

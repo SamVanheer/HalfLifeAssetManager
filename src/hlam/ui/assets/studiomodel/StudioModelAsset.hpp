@@ -24,6 +24,7 @@ class TextureEntity;
 
 namespace graphics
 {
+class IGraphicsContext;
 class Scene;
 class TextureLoader;
 }
@@ -159,7 +160,9 @@ public:
 
 	StudioModelData* GetModelData() { return _modelData; }
 
-	graphics::TextureLoader* GetTextureLoader() { return _textureLoader; }
+	graphics::IGraphicsContext* GetGraphicsContext();
+
+	graphics::TextureLoader* GetTextureLoader();
 
 	studiomdl::IStudioModelRenderer* GetStudioModelRenderer() { return _studioModelRenderer.get(); }
 
@@ -191,8 +194,6 @@ public:
 	TextureCameraOperator* GetTextureCameraOperator() { return _textureCameraOperator.get(); }
 
 	Pose GetPose() const { return _pose; }
-
-	ISoundSystem* GetSoundSystem();
 
 private:
 	void CreateMainScene();
@@ -250,7 +251,6 @@ private:
 	const StudioModelAssetProvider* const _provider;
 	std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;
 	StudioModelData* _modelData;
-	graphics::TextureLoader* const _textureLoader;
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<EntityContext> _entityContext;

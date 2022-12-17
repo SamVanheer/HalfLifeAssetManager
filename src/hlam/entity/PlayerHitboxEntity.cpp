@@ -1,10 +1,11 @@
 #include "entity/PlayerHitboxEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
+#include "graphics/SceneContext.hpp"
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-void PlayerHitboxEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::SceneContext& sc, RenderPasses renderPass)
+void PlayerHitboxEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	if (GetContext()->Settings->ShowPlayerHitbox)
 	{
@@ -14,6 +15,6 @@ void PlayerHitboxEntity::Draw(QOpenGLFunctions_1_1* openglFunctions, graphics::S
 
 		auto v = graphics::CreateBoxFromBounds(bbmin, bbmax);
 
-		graphics::DrawOutlinedBox(openglFunctions, v, {0.0f, 1.0f, 0.0f, 0.5f}, {0.0f, 0.5f, 0.0f, 1.f});
+		graphics::DrawOutlinedBox(sc.OpenGLFunctions, v, {0.0f, 1.0f, 0.0f, 0.5f}, {0.0f, 0.5f, 0.0f, 1.f});
 	}
 }
