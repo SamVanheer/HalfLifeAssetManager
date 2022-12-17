@@ -374,9 +374,11 @@ graphics::TextureLoader* StudioModelAsset::GetTextureLoader()
 
 void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 {
-	assert(_scenes.contains(scene));
+	const auto it = std::find(_scenes.begin(), _scenes.end(), scene);
 
-	_editWidget->SetSceneIndex(_scenes.indexOf(scene));
+	assert(it != _scenes.end());
+
+	_editWidget->SetSceneIndex(it != _scenes.end() ? it - _scenes.begin() : -1);
 }
 
 void StudioModelAsset::CreateMainScene()

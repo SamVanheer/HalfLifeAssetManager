@@ -3,8 +3,6 @@
 #include <memory>
 #include <vector>
 
-#include <QVector>
-
 #include "formats/studiomodel/EditableStudioModel.hpp"
 
 #include "ui/assets/Assets.hpp"
@@ -90,7 +88,7 @@ public:
 
 	sprite::ISpriteRenderer* GetSpriteRenderer() { return _spriteRenderer.get(); }
 
-	const QVector<graphics::Scene*>& GetScenes() { return _scenes; }
+	const std::vector<graphics::Scene*>& GetScenes() { return _scenes; }
 
 	void SetCurrentScene(graphics::Scene* scene);
 
@@ -177,7 +175,7 @@ private:
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<EntityContext> _entityContext;
 
-	QVector<graphics::Scene*> _scenes;
+	std::vector<graphics::Scene*> _scenes;
 
 	std::unique_ptr<graphics::Scene> _scene;
 
