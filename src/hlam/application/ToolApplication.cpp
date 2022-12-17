@@ -12,7 +12,6 @@
 #include <QMessageBox>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
-#include <QScopedPointer>
 #include <QSettings>
 #include <QSurfaceFormat>
 #include <QTextStream>
@@ -438,11 +437,7 @@ void ToolApplication::OnExit()
 
 	settings->sync();
 
-	if (_singleInstance)
-	{
-		_singleInstance.reset();
-	}
-
+	_singleInstance.reset();
 	_editorContext.reset();
 
 	CallPlugins(&IAssetManagerPlugin::Shutdown);

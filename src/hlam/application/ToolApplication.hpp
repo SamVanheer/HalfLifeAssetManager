@@ -7,7 +7,6 @@
 #include <QMainWindow>
 #include <QObject>
 #include <QPointer>
-#include <QScopedPointer>
 #include <QSettings>
 #include <QString>
 
@@ -90,5 +89,5 @@ private:
 	std::unique_ptr<EditorContext> _editorContext;
 	QPointer<MainWindow> _mainWindow;
 
-	QScopedPointer<SingleInstance> _singleInstance;
+	std::unique_ptr<SingleInstance> _singleInstance;
 };
