@@ -9,35 +9,28 @@
 
 #include "ui/options/OptionsPage.hpp"
 
-namespace ui
-{
 class EditorContext;
 
-namespace settings
-{
 class ColorSettings;
-}
 
-namespace options
-{
 extern const QString OptionsPageColorsId;
 
 class OptionsPageColors : public OptionsPage
 {
 public:
 	OptionsPageColors(
-		const std::shared_ptr<settings::ColorSettings>& colorSettings);
+		const std::shared_ptr<ColorSettings>& colorSettings);
 	~OptionsPageColors();
 
 private:
-	const std::shared_ptr<settings::ColorSettings> _colorSettings;
+	const std::shared_ptr<ColorSettings> _colorSettings;
 };
 
 class OptionsPageColorsWidget final : public OptionsWidget
 {
 public:
 	OptionsPageColorsWidget(
-		EditorContext* editorContext, settings::ColorSettings* colorSettings);
+		EditorContext* editorContext, ColorSettings* colorSettings);
 	~OptionsPageColorsWidget();
 
 	void ApplyChanges(QSettings& settings) override;
@@ -57,7 +50,5 @@ private:
 
 	EditorContext* const _editorContext;
 
-	settings::ColorSettings* const _colorSettings;
+	ColorSettings* const _colorSettings;
 };
-}
-}

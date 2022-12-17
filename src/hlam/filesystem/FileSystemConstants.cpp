@@ -1,7 +1,5 @@
 #include "filesystem/FileSystemConstants.hpp"
 
-namespace filesystem
-{
 std::vector<std::string> GetSteamPipeDirectoryExtensions()
 {
 	return
@@ -11,5 +9,4 @@ std::vector<std::string> GetSteamPipeDirectoryExtensions()
 		"_addon",
 		"_hd"
 	};
-}
 }

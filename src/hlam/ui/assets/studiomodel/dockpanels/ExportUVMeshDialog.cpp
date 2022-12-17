@@ -11,7 +11,7 @@
 #include "ui/assets/studiomodel/StudioModelTextureUtilities.hpp"
 #include "ui/assets/studiomodel/dockpanels/ExportUVMeshDialog.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 ExportUVMeshDialog::ExportUVMeshDialog(
 	HLMVStudioModelEntity& entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent)

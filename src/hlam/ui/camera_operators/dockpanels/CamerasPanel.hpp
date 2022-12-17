@@ -11,8 +11,6 @@
 
 #include "ui/DockableWidget.hpp"
 
-namespace ui::camera_operators
-{
 class CameraOperators;
 class SceneCameraOperator;
 
@@ -50,4 +48,3 @@ private:
 
 	std::vector<QWidget*> _widgets;
 };
-}

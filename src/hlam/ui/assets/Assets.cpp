@@ -5,8 +5,6 @@
 #include "ui/assets/Assets.hpp"
 #include "utility/IOUtils.hpp"
 
-namespace ui::assets
-{
 std::vector<AssetProvider*> AssetProviderRegistry::GetAssetProviders() const
 {
 	std::vector<AssetProvider*> providers;
@@ -40,7 +38,7 @@ std::unique_ptr<Asset> AssetProviderRegistry::Load(EditorContext* editorContext,
 
 	if (!file)
 	{
-		throw ::assets::AssetException("Could not open asset: file does not exist or is currently opened by another program");
+		throw AssetException("Could not open asset: file does not exist or is currently opened by another program");
 	}
 
 	for (const auto& provider : _providers)
@@ -54,6 +52,5 @@ std::unique_ptr<Asset> AssetProviderRegistry::Load(EditorContext* editorContext,
 		rewind(file.get());
 	}
 
-	throw ::assets::AssetException("File type not supported");
-}
+	throw AssetException("File type not supported");
 }

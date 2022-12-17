@@ -18,10 +18,7 @@
 
 class QOpenGLFunctions_1_1;
 
-namespace ui::settings
-{
 class ColorSettings;
-}
 
 namespace studiomdl
 {
@@ -33,7 +30,7 @@ struct Sequence;
 class StudioModelRenderer final : public studiomdl::IStudioModelRenderer
 {
 public:
-	StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger, QOpenGLFunctions_1_1* openglFunctions, ui::settings::ColorSettings* colorSettings);
+	StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger, QOpenGLFunctions_1_1* openglFunctions, ColorSettings* colorSettings);
 	~StudioModelRenderer();
 
 	StudioModelRenderer(const StudioModelRenderer&) = delete;
@@ -122,7 +119,7 @@ private:
 
 	QOpenGLFunctions_1_1* const _openglFunctions;
 
-	ui::settings::ColorSettings* const _colorSettings;
+	ColorSettings* const _colorSettings;
 
 	/**
 	*	Total number of models drawn by this renderer since the last time it was initialized.

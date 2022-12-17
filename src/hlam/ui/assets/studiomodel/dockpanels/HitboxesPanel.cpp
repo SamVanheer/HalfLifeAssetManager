@@ -14,7 +14,7 @@
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 HitboxesPanel::HitboxesPanel(StudioModelAsset* asset)
 	: _asset(asset)

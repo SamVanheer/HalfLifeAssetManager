@@ -5,7 +5,7 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelValidators.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 BaseUniqueNameValidator::State BaseUniqueNameValidator::validate(QString& text, int& pos) const
 {

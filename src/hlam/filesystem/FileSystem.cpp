@@ -6,8 +6,6 @@
 
 #include "utility/IOUtils.hpp"
 
-namespace filesystem
-{
 FileSystem::FileSystem()
 {
 	SetBasePath(".");
@@ -123,5 +121,4 @@ bool FileSystem::FileExists(const std::string& fileName) const
 	}
 
 	return false;
-}
 }

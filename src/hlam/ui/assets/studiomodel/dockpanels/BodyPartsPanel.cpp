@@ -16,7 +16,7 @@
 #include "ui/assets/studiomodel/dockpanels/BodyPartsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/DockHelpers.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 //Parent indices are offset by one so -1 becomes 0, 0 becomes 1, etc
 constexpr int BoneOffset = 1;

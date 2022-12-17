@@ -9,7 +9,7 @@
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 BackgroundPanel::BackgroundPanel(StudioModelAsset* asset)
 	: _asset(asset)

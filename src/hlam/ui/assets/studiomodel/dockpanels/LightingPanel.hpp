@@ -7,7 +7,7 @@
 
 #include "ui/DockableWidget.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 

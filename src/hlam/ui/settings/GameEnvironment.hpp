@@ -12,8 +12,6 @@
 
 #include "ui/settings/GameConfiguration.hpp"
 
-namespace ui::settings
-{
 /**
 *	@brief Defines a game installation along with a set of game configurations
 */
@@ -142,6 +140,5 @@ private:
 
 	std::vector<std::unique_ptr<GameConfiguration>> _gameConfigurations;
 };
-}
 
-Q_DECLARE_METATYPE(ui::settings::GameEnvironment*)
+Q_DECLARE_METATYPE(GameEnvironment*)

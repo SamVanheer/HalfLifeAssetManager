@@ -7,7 +7,7 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/InfoBar.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 InfoBar::InfoBar(QWidget* parent)
 	: QWidget(parent)

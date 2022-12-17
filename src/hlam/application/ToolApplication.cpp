@@ -43,7 +43,6 @@
 #include "ui/settings/RecentFilesSettings.hpp"
 #include "ui/settings/StyleSettings.hpp"
 
-using namespace ui::assets;
 using namespace logging;
 
 const QString LogBaseFileName{QStringLiteral("HLAM-Log.txt")};
@@ -183,7 +182,7 @@ int ToolApplication::Run(int argc, char* argv[])
 			return EXIT_FAILURE;
 		}
 
-		_mainWindow = new ui::MainWindow(_editorContext.get());
+		_mainWindow = new MainWindow(_editorContext.get());
 
 		if (!fileName.isEmpty())
 		{
@@ -304,7 +303,7 @@ std::unique_ptr<QSettings> ToolApplication::CreateSettings(const QString& progra
 
 bool ToolApplication::CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings)
 {
-	if (ui::settings::GeneralSettings::ShouldUseSingleInstance(settings))
+	if (GeneralSettings::ShouldUseSingleInstance(settings))
 	{
 		_singleInstance.reset(new SingleInstance());
 
@@ -319,19 +318,19 @@ bool ToolApplication::CheckSingleInstance(const QString& programName, const QStr
 	return false;
 }
 
-std::unique_ptr<ui::EditorContext> ToolApplication::CreateEditorContext(
+std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 	std::unique_ptr<QSettings>&& settings, std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext)
 {
-	const auto colorSettings{std::make_shared<ui::settings::ColorSettings>()};
-	const auto generalSettings{std::make_shared<ui::settings::GeneralSettings>()};
-	const auto gameConfigurationsSettings{std::make_shared<ui::settings::GameConfigurationsSettings>()};
-	const auto recentFilesSettings{std::make_shared<ui::settings::RecentFilesSettings>()};
-	const auto styleSettings{std::make_shared<ui::settings::StyleSettings>()};
+	const auto colorSettings{std::make_shared<ColorSettings>()};
+	const auto generalSettings{std::make_shared<GeneralSettings>()};
+	const auto gameConfigurationsSettings{std::make_shared<GameConfigurationsSettings>()};
+	const auto recentFilesSettings{std::make_shared<RecentFilesSettings>()};
+	const auto styleSettings{std::make_shared<StyleSettings>()};
 
-	connect(styleSettings.get(), &ui::settings::StyleSettings::StylePathChanged, this, &ToolApplication::OnStylePathChanged);
+	connect(styleSettings.get(), &StyleSettings::StylePathChanged, this, &ToolApplication::OnStylePathChanged);
 
-	auto assetProviderRegistry{std::make_unique<ui::assets::AssetProviderRegistry>()};
-	auto optionsPageRegistry{std::make_unique<ui::options::OptionsPageRegistry>()};
+	auto assetProviderRegistry{std::make_unique<AssetProviderRegistry>()};
+	auto optionsPageRegistry{std::make_unique<OptionsPageRegistry>()};
 
 	if (!AddPlugins(settings.get(), colorSettings.get(), assetProviderRegistry.get(), optionsPageRegistry.get()))
 	{
@@ -347,12 +346,12 @@ std::unique_ptr<ui::EditorContext> ToolApplication::CreateEditorContext(
 
 	CallPlugins(&IAssetManagerPlugin::LoadSettings, *settings);
 
-	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGeneral>(generalSettings, recentFilesSettings));
-	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageColors>(colorSettings));
-	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGameConfigurations>(gameConfigurationsSettings));
-	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageStyle>(styleSettings));
+	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGeneral>(generalSettings, recentFilesSettings));
+	optionsPageRegistry->AddPage(std::make_unique<OptionsPageColors>(colorSettings));
+	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGameConfigurations>(gameConfigurationsSettings));
+	optionsPageRegistry->AddPage(std::make_unique<OptionsPageStyle>(styleSettings));
 
-	return std::make_unique<ui::EditorContext>(
+	return std::make_unique<EditorContext>(
 		settings.release(),
 		generalSettings,
 		colorSettings,
@@ -365,9 +364,9 @@ std::unique_ptr<ui::EditorContext> ToolApplication::CreateEditorContext(
 
 bool ToolApplication::AddPlugins(
 	QSettings* settings,
-	ui::settings::ColorSettings* colorSettings,
-	ui::assets::IAssetProviderRegistry* assetProviderRegistry,
-	ui::options::OptionsPageRegistry* optionsPageRegistry)
+	ColorSettings* colorSettings,
+	IAssetProviderRegistry* assetProviderRegistry,
+	OptionsPageRegistry* optionsPageRegistry)
 {
 	ApplicationBuilder builder{_application, settings, colorSettings, assetProviderRegistry, optionsPageRegistry};
 
@@ -424,7 +423,7 @@ std::unique_ptr<graphics::IGraphicsContext> ToolApplication::InitializeOpenGL()
 		return {};
 	}
 
-	return std::make_unique<ui::OpenGLGraphicsContext>(std::move(surface), std::move(context));
+	return std::make_unique<OpenGLGraphicsContext>(std::move(surface), std::move(context));
 }
 
 void ToolApplication::OnExit()

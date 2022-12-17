@@ -8,8 +8,6 @@
 
 class TextureEntity;
 
-namespace ui::camera_operators
-{
 /**
 *	@brief Camera operator that allows the user to view a texture and move the camera along the major axes
 */
@@ -39,4 +37,3 @@ private:
 	Qt::MouseButtons _trackedMouseButtons;
 	glm::ivec2 _dragPosition{0};
 };
-}

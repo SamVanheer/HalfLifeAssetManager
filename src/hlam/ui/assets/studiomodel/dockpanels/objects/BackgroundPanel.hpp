@@ -4,7 +4,7 @@
 
 #include "ui_BackgroundPanel.h"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 

@@ -42,8 +42,6 @@
 #include "ui/settings/PathSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
 
-namespace ui
-{
 constexpr std::string_view TabWidgetAssetProperty{"TabWidgetAssetProperty"};
 const QString AssetPathName{QStringLiteral("AssetPath")};
 
@@ -133,7 +131,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnGoFullscreen);
 
 	connect(_ui.ActionPowerOf2Textures, &QAction::toggled,
-		_editorContext->GetGeneralSettings(), &settings::GeneralSettings::SetResizeTexturesToPowerOf2);
+		_editorContext->GetGeneralSettings(), &GeneralSettings::SetResizeTexturesToPowerOf2);
 
 	connect(_ui.ActionMinPoint, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
 	connect(_ui.ActionMinLinear, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
@@ -154,7 +152,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionAbout, &QAction::triggered, this, &MainWindow::OnShowAbout);
 	connect(_ui.ActionAboutQt, &QAction::triggered, QApplication::instance(), &QApplication::aboutQt);
 
-	connect(_editorContext->GetRecentFiles(), &settings::RecentFilesSettings::RecentFilesChanged, this, &MainWindow::OnRecentFilesChanged);
+	connect(_editorContext->GetRecentFiles(), &RecentFilesSettings::RecentFilesChanged, this, &MainWindow::OnRecentFilesChanged);
 
 	connect(_undoGroup, &QUndoGroup::cleanChanged, this, &MainWindow::OnAssetCleanChanged);
 
@@ -163,7 +161,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	connect(_editorContext, &EditorContext::TryingToLoadAsset, this, &MainWindow::TryLoadAsset);
 	connect(_editorContext, &EditorContext::SettingsChanged, this, &MainWindow::SyncSettings);
-	connect(_editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged,
+	connect(_editorContext->GetGameConfigurations(), &GameConfigurationsSettings::ActiveConfigurationChanged,
 		this, &MainWindow::OnActiveConfigurationChanged);
 
 	{
@@ -192,7 +190,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	{
 		//Construct the file filters used for loading and saving
-		auto setupFileFilters = [this](assets::ProviderFeature feature)
+		auto setupFileFilters = [this](ProviderFeature feature)
 		{
 			QStringList filters;
 
@@ -228,8 +226,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 			return fileFilters;
 		};
 
-		_loadFileFilter = setupFileFilters(assets::ProviderFeature::AssetLoading);
-		_saveFileFilter = setupFileFilters(assets::ProviderFeature::AssetSaving);
+		_loadFileFilter = setupFileFilters(ProviderFeature::AssetLoading);
+		_saveFileFilter = setupFileFilters(ProviderFeature::AssetSaving);
 	}
 
 	// TODO: it might be easier to load settings after creating the main window and letting signals set this up.
@@ -353,17 +351,17 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 	return QMainWindow::eventFilter(watched, event);
 }
 
-assets::Asset* MainWindow::GetAsset(int index) const
+Asset* MainWindow::GetAsset(int index) const
 {
-	return _assetTabs->widget(index)->property(TabWidgetAssetProperty.data()).value<assets::Asset*>();
+	return _assetTabs->widget(index)->property(TabWidgetAssetProperty.data()).value<Asset*>();
 }
 
-assets::Asset* MainWindow::GetCurrentAsset() const
+Asset* MainWindow::GetCurrentAsset() const
 {
 	return _currentAsset;
 }
 
-bool MainWindow::SaveAsset(assets::Asset* asset)
+bool MainWindow::SaveAsset(Asset* asset)
 {
 	assert(asset);
 
@@ -373,7 +371,7 @@ bool MainWindow::SaveAsset(assets::Asset* asset)
 	{
 		asset->Save();
 	}
-	catch (const ::assets::AssetException& e)
+	catch (const AssetException& e)
 	{
 		QMessageBox::critical(this, "Error saving asset", QString{"Error saving asset:\n%1"}.arg(e.what()));
 		return false;
@@ -386,7 +384,7 @@ bool MainWindow::SaveAsset(assets::Asset* asset)
 	return true;
 }
 
-bool MainWindow::VerifyNoUnsavedChanges(assets::Asset* asset)
+bool MainWindow::VerifyNoUnsavedChanges(Asset* asset)
 {
 	assert(asset);
 
@@ -475,7 +473,7 @@ bool MainWindow::TryLoadAsset(QString fileName)
 
 			qCDebug(logging::HLAM) << "Asset" << fileName << "loaded as" << currentFileName;
 
-			connect(asset.get(), &assets::Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
+			connect(asset.get(), &Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
 
 			const auto editWidget = asset->GetEditWidget();
 
@@ -509,7 +507,7 @@ bool MainWindow::TryLoadAsset(QString fileName)
 			QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\nNull asset returned"}.arg(fileName));
 		}
 	}
-	catch (const ::assets::AssetException& e)
+	catch (const AssetException& e)
 	{
 		QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\n%2"}.arg(fileName).arg(e.what()));
 	}
@@ -521,7 +519,7 @@ void MainWindow::SyncSettings()
 {
 	auto settings = _editorContext->GetSettings();
 
-	if (settings->value("General/AllowTabCloseWithMiddleClick", settings::GeneralSettings::DefaultAllowTabCloseWithMiddleClick).toBool())
+	if (settings->value("General/AllowTabCloseWithMiddleClick", GeneralSettings::DefaultAllowTabCloseWithMiddleClick).toBool())
 	{
 		_assetTabs->tabBar()->installEventFilter(this);
 	}
@@ -534,11 +532,11 @@ void MainWindow::SyncSettings()
 void MainWindow::OnOpenLoadAssetDialog()
 {
 	if (const auto fileName = QFileDialog::getOpenFileName(this, "Select asset",
-		settings::GetSavedPath(*_editorContext->GetSettings(), AssetPathName),
+		GetSavedPath(*_editorContext->GetSettings(), AssetPathName),
 		_loadFileFilter);
 		!fileName.isEmpty())
 	{
-		settings::SetSavedPath(*_editorContext->GetSettings(), AssetPathName, QFileInfo(fileName).absolutePath());
+		SetSavedPath(*_editorContext->GetSettings(), AssetPathName, QFileInfo(fileName).absolutePath());
 
 		TryLoadAsset(fileName);
 	}
@@ -596,7 +594,7 @@ void MainWindow::OnAssetTabCloseRequested(int index)
 
 void MainWindow::OnAssetFileNameChanged(const QString& fileName)
 {
-	auto asset = static_cast<assets::Asset*>(sender());
+	auto asset = static_cast<Asset*>(sender());
 
 	const int index = _assetTabs->indexOf(asset->GetEditWidget());
 
@@ -631,7 +629,7 @@ void MainWindow::OnSaveAssetAs()
 	if (!fileName.isEmpty())
 	{
 		//Also update the saved path when saving files
-		settings::SetSavedPath(*_editorContext->GetSettings(), AssetPathName, QFileInfo(fileName).absolutePath());
+		SetSavedPath(*_editorContext->GetSettings(), AssetPathName, QFileInfo(fileName).absolutePath());
 		asset->SetFileName(std::move(fileName));
 		SaveAsset(asset);
 	}
@@ -745,7 +743,7 @@ void MainWindow::OnFramerateAffectsPitchChanged()
 
 void MainWindow::OnOpenOptionsDialog()
 {
-	options::OptionsDialog dialog{_editorContext, this};
+	OptionsDialog dialog{_editorContext, this};
 
 	dialog.exec();
 }
@@ -814,7 +812,7 @@ Build Date: %10
 	);
 }
 
-void MainWindow::SetupFileSystem(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration)
+void MainWindow::SetupFileSystem(std::pair<GameEnvironment*, GameConfiguration*> activeConfiguration)
 {
 	auto fileSystem = _editorContext->GetFileSystem();
 
@@ -826,7 +824,7 @@ void MainWindow::SetupFileSystem(std::pair<settings::GameEnvironment*, settings:
 
 	fileSystem->SetBasePath(environment->GetInstallationPath().toStdString().c_str());
 
-	const auto directoryExtensions{filesystem::GetSteamPipeDirectoryExtensions()};
+	const auto directoryExtensions{GetSteamPipeDirectoryExtensions()};
 
 	const auto gameDir{defaultGameConfiguration->GetDirectory().toStdString()};
 	const auto modDir{configuration->GetDirectory().toStdString()};
@@ -846,17 +844,17 @@ void MainWindow::SetupFileSystem(std::pair<settings::GameEnvironment*, settings:
 	}
 }
 
-void MainWindow::OnActiveConfigurationChanged(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> current,
-	std::pair<settings::GameEnvironment*, settings::GameConfiguration*> previous)
+void MainWindow::OnActiveConfigurationChanged(std::pair<GameEnvironment*, GameConfiguration*> current,
+	std::pair<GameEnvironment*, GameConfiguration*> previous)
 {
 	if (previous.second)
 	{
-		disconnect(previous.second, &settings::GameConfiguration::DirectoryChanged, this, &MainWindow::OnGameConfigurationDirectoryChanged);
+		disconnect(previous.second, &GameConfiguration::DirectoryChanged, this, &MainWindow::OnGameConfigurationDirectoryChanged);
 	}
 
 	if (current.second)
 	{
-		connect(current.second, &settings::GameConfiguration::DirectoryChanged, this, &MainWindow::OnGameConfigurationDirectoryChanged);
+		connect(current.second, &GameConfiguration::DirectoryChanged, this, &MainWindow::OnGameConfigurationDirectoryChanged);
 
 		SetupFileSystem(current);
 	}
@@ -871,5 +869,4 @@ void MainWindow::OnActiveConfigurationChanged(std::pair<settings::GameEnvironmen
 void MainWindow::OnGameConfigurationDirectoryChanged()
 {
 	SetupFileSystem(_editorContext->GetGameConfigurations()->GetActiveConfiguration());
-}
 }

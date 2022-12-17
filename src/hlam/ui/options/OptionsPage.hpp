@@ -9,12 +9,8 @@
 #include <QString>
 #include <QWidget>
 
-namespace ui
-{
 class EditorContext;
 
-namespace options
-{
 class OptionsWidget : public QWidget
 {
 public:
@@ -86,5 +82,3 @@ protected:
 	WidgetFactory _widgetFactory;
 	QPointer<OptionsWidget> _widget;
 };
-}
-}

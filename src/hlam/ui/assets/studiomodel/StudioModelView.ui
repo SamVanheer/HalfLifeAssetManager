@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ui::assets::studiomodel::StudioModelView</class>
- <widget class="QWidget" name="ui::assets::studiomodel::StudioModelView">
+ <class>studiomodel::StudioModelView</class>
+ <widget class="QWidget" name="studiomodel::StudioModelView">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -59,7 +59,7 @@
     <widget class="QTabBar" name="ViewSelection" native="true"/>
    </item>
    <item row="1" column="0">
-    <widget class="ui::assets::studiomodel::InfoBar" name="InfoBar" native="true"/>
+    <widget class="studiomodel::InfoBar" name="InfoBar" native="true"/>
    </item>
    <item row="1" column="3">
     <widget class="QComboBox" name="Pose">
@@ -88,7 +88,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ui::assets::studiomodel::InfoBar</class>
+   <class>studiomodel::InfoBar</class>
    <extends>QWidget</extends>
    <header>ui/assets/studiomodel/dockpanels/InfoBar.hpp</header>
    <container>1</container>

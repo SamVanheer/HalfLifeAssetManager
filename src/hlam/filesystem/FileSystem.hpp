@@ -10,8 +10,6 @@
 *	@{
 */
 
-namespace filesystem
-{
 class FileSystem final : public IFileSystem
 {
 public:
@@ -41,6 +39,5 @@ private:
 	std::string _basePath;
 	std::vector<std::string> _searchPaths;
 };
-}
 
 /** @} */

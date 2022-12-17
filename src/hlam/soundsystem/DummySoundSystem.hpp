@@ -2,14 +2,12 @@
 
 #include "soundsystem/ISoundSystem.hpp"
 
-namespace soundsystem
-{
 class DummySoundSystem final : public ISoundSystem
 {
 public:
 	bool IsSoundAvailable() const override { return false; }
 
-	bool Initialize(filesystem::IFileSystem*) override { return true; }
+	bool Initialize(IFileSystem*) override { return true; }
 
 	void Shutdown() override {}
 
@@ -19,4 +17,3 @@ public:
 
 	void StopAllSounds() override {}
 };
-}

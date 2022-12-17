@@ -7,14 +7,10 @@
 #include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/settings/ColorSettings.hpp"
 
-using namespace ui::settings;
-
-namespace ui::options
-{
 const QString OptionsPageColorsId{QStringLiteral("D.Colors")};
 
 OptionsPageColors::OptionsPageColors(
-	const std::shared_ptr<settings::ColorSettings>& colorSettings)
+	const std::shared_ptr<ColorSettings>& colorSettings)
 	: _colorSettings(colorSettings)
 {
 	assert(_colorSettings);
@@ -32,7 +28,7 @@ OptionsPageColors::OptionsPageColors(
 OptionsPageColors::~OptionsPageColors() = default;
 
 OptionsPageColorsWidget::OptionsPageColorsWidget(
-	EditorContext* editorContext, settings::ColorSettings* colorSettings)
+	EditorContext* editorContext, ColorSettings* colorSettings)
 	: _editorContext(editorContext)
 	, _colorSettings(colorSettings)
 {
@@ -103,5 +99,4 @@ void OptionsPageColorsWidget::OnResetColor()
 	_colorSettings->Set(key, defaultColor);
 	_ui.ColorList->setItemData(_ui.ColorList->currentIndex(), defaultColorAsColor);
 	SetPreviewColor(defaultColorAsColor);
-}
 }

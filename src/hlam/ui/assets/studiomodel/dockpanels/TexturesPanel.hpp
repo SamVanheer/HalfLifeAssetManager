@@ -9,11 +9,9 @@ namespace studiomdl
 class EditableStudioModel;
 }
 
-namespace ui
-{
 class StateSnapshot;
 
-namespace assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 class StudioModelData;
@@ -78,5 +76,4 @@ private:
 	StudioModelAsset* const _asset;
 	StudioModelData* _previousModelData{};
 };
-}
 }

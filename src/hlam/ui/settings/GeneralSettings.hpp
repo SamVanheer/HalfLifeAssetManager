@@ -5,8 +5,6 @@
 
 #include "graphics/TextureLoader.hpp"
 
-namespace ui::settings
-{
 class GeneralSettings final : public QObject
 {
 	Q_OBJECT
@@ -251,4 +249,3 @@ private:
 	graphics::TextureFilter _magFilter{DefaultMagFilter};
 	graphics::MipmapFilter _mipmapFilter{DefaultMipmapFilter};
 };
-}

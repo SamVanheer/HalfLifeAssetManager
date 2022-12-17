@@ -11,22 +11,14 @@
 
 #include "ui_MainWindow.h"
 
-namespace ui
-{
 class EditorContext;
 class FileListPanel;
 class FullscreenWidget;
 
-namespace assets
-{
 class Asset;
-}
 
-namespace settings
-{
 class GameConfiguration;
 class GameEnvironment;
-}
 
 class MainWindow final : public QMainWindow
 {
@@ -44,18 +36,18 @@ protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
-	assets::Asset* GetAsset(int index) const;
-	assets::Asset* GetCurrentAsset() const;
+	Asset* GetAsset(int index) const;
+	Asset* GetCurrentAsset() const;
 
-	bool SaveAsset(assets::Asset* asset);
+	bool SaveAsset(Asset* asset);
 
-	bool VerifyNoUnsavedChanges(assets::Asset* asset);
+	bool VerifyNoUnsavedChanges(Asset* asset);
 
 	bool TryCloseAsset(int index, bool verifyUnsavedChanges);
 
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
 
-	void SetupFileSystem(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration);
+	void SetupFileSystem(std::pair<GameEnvironment*, GameConfiguration*> activeConfiguration);
 
 private slots:
 	bool TryLoadAsset(QString fileName);
@@ -100,8 +92,8 @@ private slots:
 
 	void OnShowAbout();
 
-	void OnActiveConfigurationChanged(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> current,
-		std::pair<settings::GameEnvironment*, settings::GameConfiguration*> previous);
+	void OnActiveConfigurationChanged(std::pair<GameEnvironment*, GameConfiguration*> current,
+		std::pair<GameEnvironment*, GameConfiguration*> previous);
 
 	void OnGameConfigurationDirectoryChanged();
 
@@ -117,10 +109,9 @@ private:
 	QString _loadFileFilter;
 	QString _saveFileFilter;
 
-	QPointer<assets::Asset> _currentAsset;
+	QPointer<Asset> _currentAsset;
 
 	std::unique_ptr<FullscreenWidget> _fullscreenWidget;
 
 	QPointer<QDockWidget> _fileListDock;
 };
-}

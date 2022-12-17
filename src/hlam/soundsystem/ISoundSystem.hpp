@@ -10,13 +10,8 @@
 *	@{
 */
 
-namespace filesystem
-{
 class IFileSystem;
-}
 
-namespace soundsystem
-{
 /**
 *	A sound system that can be used to play back sounds. Sounds are non-looping.
 */
@@ -34,7 +29,7 @@ public:
 	*	Initializes the sound system. Should be called on startup.
 	*	@return true on success, false otherwise.
 	*/
-	virtual bool Initialize(filesystem::IFileSystem* filesystem) = 0;
+	virtual bool Initialize(IFileSystem* filesystem) = 0;
 
 	/**
 	*	Shuts down the sound system. Should be called on shutdown.
@@ -59,6 +54,5 @@ public:
 	*/
 	virtual void StopAllSounds() = 0;
 };
-}
 
 /** @} */

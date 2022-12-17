@@ -4,11 +4,9 @@
 
 #include "ui/DockableWidget.hpp"
 
-namespace ui
-{
 class StateSnapshot;
 
-namespace assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 class StudioModelData;
@@ -46,5 +44,4 @@ private:
 
 	bool _changingAttachmentProperties{false};
 };
-}
 }

@@ -8,11 +8,9 @@
 
 #include "ui/settings/StyleSettings.hpp"
 
-namespace ui::options
-{
 const QString OptionsPageStyleId{QStringLiteral("B.Style")};
 
-OptionsPageStyle::OptionsPageStyle(const std::shared_ptr<settings::StyleSettings>& styleSettings)
+OptionsPageStyle::OptionsPageStyle(const std::shared_ptr<StyleSettings>& styleSettings)
 	: _styleSettings(styleSettings)
 {
 	assert(_styleSettings);
@@ -29,7 +27,7 @@ OptionsPageStyle::OptionsPageStyle(const std::shared_ptr<settings::StyleSettings
 
 OptionsPageStyle::~OptionsPageStyle() = default;
 
-OptionsPageStyleWidget::OptionsPageStyleWidget(EditorContext* editorContext, settings::StyleSettings* styleSettings)
+OptionsPageStyleWidget::OptionsPageStyleWidget(EditorContext* editorContext, StyleSettings* styleSettings)
 	: _editorContext(editorContext)
 	, _styleSettings(styleSettings)
 {
@@ -57,5 +55,4 @@ void OptionsPageStyleWidget::OnBrowseStyle()
 	{
 		_ui.CurrentStyle->setText(fileName);
 	}
-}
 }

@@ -7,8 +7,6 @@
 
 #include "graphics/IGraphicsContext.hpp"
 
-namespace ui
-{
 class OpenGLGraphicsContext final : public graphics::IGraphicsContext
 {
 public:
@@ -32,4 +30,3 @@ private:
 	const std::unique_ptr<QSurface> _surface;
 	const std::unique_ptr<QOpenGLContext> _context;
 };
-}

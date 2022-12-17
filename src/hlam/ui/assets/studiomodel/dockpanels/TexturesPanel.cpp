@@ -34,7 +34,7 @@
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 static constexpr double TextureViewScaleMinimum = 0.1;
 static constexpr double TextureViewScaleMaximum = 20;
@@ -89,7 +89,7 @@ TexturesPanel::TexturesPanel(StudioModelAsset* asset)
 	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &TexturesPanel::OnSaveSnapshot);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &TexturesPanel::OnLoadSnapshot);
 
-	connect(_asset->GetTextureCameraOperator(), &camera_operators::TextureCameraOperator::ScaleChanged, this, &TexturesPanel::OnScaleChanged);
+	connect(_asset->GetTextureCameraOperator(), &TextureCameraOperator::ScaleChanged, this, &TexturesPanel::OnScaleChanged);
 
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), this, &TexturesPanel::OnTextureChanged);
 	connect(_ui.ScaleTextureViewSlider, &QSlider::valueChanged, this, &TexturesPanel::OnTextureViewScaleSliderChanged);

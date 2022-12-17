@@ -7,8 +7,6 @@
 
 #include "CameraOperator.hpp"
 
-namespace ui::camera_operators
-{
 /**
 *	@brief Manages the set of camera operators, signals when the operator changes
 */
@@ -143,5 +141,4 @@ inline void CameraOperators::ChangeCamera(bool next)
 	}
 
 	SetCurrent(index != -1 ? _cameraOperators[index] : nullptr);
-}
 }

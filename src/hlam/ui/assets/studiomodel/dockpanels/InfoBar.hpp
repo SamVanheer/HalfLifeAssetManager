@@ -4,7 +4,7 @@
 
 #include "ui_InfoBar.h"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 

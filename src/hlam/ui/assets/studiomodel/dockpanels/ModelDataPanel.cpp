@@ -13,7 +13,7 @@
 
 using namespace qt::widgets;
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 ModelDataPanel::ModelDataPanel(StudioModelAsset* asset)
 	: _asset(asset)

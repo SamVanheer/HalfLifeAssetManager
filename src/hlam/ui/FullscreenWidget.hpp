@@ -2,8 +2,6 @@
 
 #include <QMainWindow>
 
-namespace ui
-{
 /**
 *	@brief Window to host fullscreen widgets specified by assets that support it
 *	Can be used as an event filter to handle exiting fullscreen by pressing the exit fullscreen key
@@ -28,4 +26,3 @@ protected:
 	bool eventFilter(QObject* object, QEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
 };
-}

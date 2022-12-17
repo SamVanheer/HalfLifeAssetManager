@@ -6,9 +6,9 @@
 #include "ui/settings/StudioModelSettings.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelCompilerFrontEnd.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
-StudioModelCompilerFrontEnd::StudioModelCompilerFrontEnd(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings)
+StudioModelCompilerFrontEnd::StudioModelCompilerFrontEnd(EditorContext* editorContext, StudioModelSettings* studioModelSettings)
 	: CommandLineFrontEnd(editorContext)
 	, _studioModelSettings(studioModelSettings)
 {
@@ -32,7 +32,7 @@ StudioModelCompilerFrontEnd::StudioModelCompilerFrontEnd(EditorContext* editorCo
 	connect(_settingsUi.TextureReplacements, &QTableWidget::currentItemChanged, this, &StudioModelCompilerFrontEnd::OnCurrentTextureReplacementChanged);
 	connect(_settingsUi.TextureReplacements, &QTableWidget::cellChanged, this, &StudioModelCompilerFrontEnd::UpdateCompleteCommandLine);
 
-	SetProgram(_studioModelSettings->GetStudiomdlCompilerFileName(), options::StudioModelExeFilter);
+	SetProgram(_studioModelSettings->GetStudiomdlCompilerFileName(), StudioModelExeFilter);
 	SetInputFileFilter("QC Files (*.qc);;All Files (*.*)");
 	SetSettingsWidget(_settingsWidget);
 }

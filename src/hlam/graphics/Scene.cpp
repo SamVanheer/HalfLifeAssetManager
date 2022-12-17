@@ -80,7 +80,7 @@ void Scene::Draw(SceneContext& sc)
 {
 	auto colors = _entityContext->Asset->GetEditorContext()->GetColorSettings();
 
-	const auto backgroundColor = colors->GetColor(ui::assets::studiomodel::BackgroundColor.Name);
+	const auto backgroundColor = colors->GetColor(studiomodel::BackgroundColor.Name);
 
 	_openglFunctions->glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.0f);
 	_openglFunctions->glClearStencil(0);

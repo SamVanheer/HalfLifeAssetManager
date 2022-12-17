@@ -13,13 +13,9 @@
 
 class QMenu;
 
-namespace ui
-{
 class EditorContext;
 class FullscreenWidget;
 
-namespace assets
-{
 class AssetProvider;
 
 enum class ProviderFeature
@@ -159,7 +155,5 @@ public:
 private:
 	std::vector<std::unique_ptr<AssetProvider>> _providers;
 };
-}
-}
 
-Q_DECLARE_METATYPE(ui::assets::Asset*)
+Q_DECLARE_METATYPE(Asset*)

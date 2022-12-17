@@ -11,7 +11,7 @@
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/FlagsPanel.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 const std::string_view CheckBoxModelFlagProperty{"CheckBoxFlagProperty"};
 

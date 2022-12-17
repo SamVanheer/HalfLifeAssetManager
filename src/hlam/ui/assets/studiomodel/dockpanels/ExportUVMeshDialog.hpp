@@ -10,7 +10,7 @@
 
 class HLMVStudioModelEntity;
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 class ExportUVMeshDialog final : public QDialog
 {

@@ -5,8 +5,6 @@
 #include <QUuid>
 #include <QVariant>
 
-namespace ui::settings
-{
 /**
 *	@brief Defines a mod
 */
@@ -65,6 +63,5 @@ private:
 	QString _directory;
 	QString _name;
 };
-}
 
-Q_DECLARE_METATYPE(ui::settings::GameConfiguration*)
+Q_DECLARE_METATYPE(GameConfiguration*)

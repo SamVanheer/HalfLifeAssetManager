@@ -5,11 +5,9 @@
 
 #include "ui_ModelPanel.h"
 
-namespace ui
-{
 class StateSnapshot;
 
-namespace assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 
@@ -32,5 +30,4 @@ private:
 	Ui_ModelPanel _ui;
 	StudioModelAsset* const _asset;
 };
-}
 }

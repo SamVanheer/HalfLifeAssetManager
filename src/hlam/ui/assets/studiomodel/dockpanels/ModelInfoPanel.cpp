@@ -4,7 +4,7 @@
 #include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/dockpanels/ModelInfoPanel.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 ModelInfoPanel::ModelInfoPanel(StudioModelAsset* asset)
 	: _asset(asset)

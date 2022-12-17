@@ -13,8 +13,6 @@
 #include "formats/studiomodel/EditableStudioModel.hpp"
 #include "graphics/Palette.hpp"
 
-namespace ui
-{
 QString FormatTextureName(const studiomdl::Texture& texture);
 
 /**
@@ -32,4 +30,3 @@ QImage CreateUVMapImage(
 	const studiomdl::EditableStudioModel& model, int textureIndex, int meshIndex, bool antiAliasLines, float textureScale, qreal lineWidth);
 
 void DrawUVImage(const QColor& backgroundColor, bool showUVMap, bool overlayOnTexture, const QImage& texture, const QImage& uvMap, QImage& target);
-}

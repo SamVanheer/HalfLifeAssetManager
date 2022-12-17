@@ -5,13 +5,11 @@
 #include "ui/settings/GeneralSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
 
-namespace ui::options
-{
 const QString OptionsPageGeneralCategory{QStringLiteral("A.General")};
 const QString OptionsPageGeneralId{QStringLiteral("A.General")};
 
 OptionsPageGeneral::OptionsPageGeneral(
-	const std::shared_ptr<settings::GeneralSettings>& generalSettings, const std::shared_ptr<settings::RecentFilesSettings>& recentFilesSettings)
+	const std::shared_ptr<GeneralSettings>& generalSettings, const std::shared_ptr<RecentFilesSettings>& recentFilesSettings)
 	: _generalSettings(generalSettings)
 	, _recentFilesSettings(recentFilesSettings)
 {
@@ -30,7 +28,7 @@ OptionsPageGeneral::OptionsPageGeneral(
 OptionsPageGeneral::~OptionsPageGeneral() = default;
 
 OptionsPageGeneralWidget::OptionsPageGeneralWidget(
-	EditorContext* editorContext, settings::GeneralSettings* generalSettings, settings::RecentFilesSettings* recentFilesSettings)
+	EditorContext* editorContext, GeneralSettings* generalSettings, RecentFilesSettings* recentFilesSettings)
 	: _editorContext(editorContext)
 	, _generalSettings(generalSettings)
 	, _recentFilesSettings(recentFilesSettings)
@@ -39,18 +37,18 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 
 	auto settings = _editorContext->GetSettings();
 
-	_ui.TickRate->setRange(settings::GeneralSettings::MinimumTickRate, settings::GeneralSettings::MaximumTickRate);
+	_ui.TickRate->setRange(GeneralSettings::MinimumTickRate, GeneralSettings::MaximumTickRate);
 
-	_ui.MouseSensitivitySlider->setRange(settings::GeneralSettings::MinimumMouseSensitivity, settings::GeneralSettings::MaximumMouseSensitivity);
-	_ui.MouseSensitivitySpinner->setRange(settings::GeneralSettings::MinimumMouseSensitivity, settings::GeneralSettings::MaximumMouseSensitivity);
+	_ui.MouseSensitivitySlider->setRange(GeneralSettings::MinimumMouseSensitivity, GeneralSettings::MaximumMouseSensitivity);
+	_ui.MouseSensitivitySpinner->setRange(GeneralSettings::MinimumMouseSensitivity, GeneralSettings::MaximumMouseSensitivity);
 
-	_ui.MouseWheelSpeedSlider->setRange(settings::GeneralSettings::MinimumMouseWheelSpeed, settings::GeneralSettings::MaximumMouseWheelSpeed);
-	_ui.MouseWheelSpeedSpinner->setRange(settings::GeneralSettings::MinimumMouseWheelSpeed, settings::GeneralSettings::MaximumMouseWheelSpeed);
+	_ui.MouseWheelSpeedSlider->setRange(GeneralSettings::MinimumMouseWheelSpeed, GeneralSettings::MaximumMouseWheelSpeed);
+	_ui.MouseWheelSpeedSpinner->setRange(GeneralSettings::MinimumMouseWheelSpeed, GeneralSettings::MaximumMouseWheelSpeed);
 
 	_ui.UseSingleInstance->setChecked(_generalSettings->ShouldUseSingleInstance());
 	_ui.PauseAnimationsOnTimelineClick->setChecked(_generalSettings->PauseAnimationsOnTimelineClick);
 	_ui.AllowTabCloseWithMiddleClick->setChecked(
-		settings->value("General/AllowTabCloseWithMiddleClick", settings::GeneralSettings::DefaultAllowTabCloseWithMiddleClick).toBool());
+		settings->value("General/AllowTabCloseWithMiddleClick", GeneralSettings::DefaultAllowTabCloseWithMiddleClick).toBool());
 	_ui.MaxRecentFiles->setValue(_recentFilesSettings->GetMaxRecentFiles());
 	_ui.TickRate->setValue(_generalSettings->GetTickRate());
 	_ui.InvertMouseX->setChecked(_generalSettings->ShouldInvertMouseX());
@@ -85,5 +83,4 @@ void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 
 	_generalSettings->SaveSettings(settings);
 	_recentFilesSettings->SaveSettings(settings);
-}
 }

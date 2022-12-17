@@ -9,11 +9,9 @@ namespace studiomdl
 struct BoneController;
 }
 
-namespace ui
-{
 class StateSnapshot;
 
-namespace assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 class StudioModelData;
@@ -66,5 +64,4 @@ private:
 
 	float _controllerSliderScale{1.f};
 };
-}
 }

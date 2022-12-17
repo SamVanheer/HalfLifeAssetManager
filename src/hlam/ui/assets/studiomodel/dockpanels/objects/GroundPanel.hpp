@@ -5,7 +5,7 @@
 
 #include "ui_GroundPanel.h"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 

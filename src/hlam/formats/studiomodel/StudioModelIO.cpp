@@ -75,7 +75,7 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* exis
 
 		if (!file)
 		{
-			throw assets::AssetException(std::string{"File \""} + utf8FileName + "\" does not exist or is currently opened by another program");
+			throw AssetException(std::string{"File \""} + utf8FileName + "\" does not exist or is currently opened by another program");
 		}
 	}
 
@@ -96,30 +96,30 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* exis
 
 	if (readCount != 1)
 	{
-		throw assets::AssetException(std::string{"Error reading file \""} + utf8FileName + "\"");
+		throw AssetException(std::string{"Error reading file \""} + utf8FileName + "\"");
 	}
 
 	if (strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_HDR_ID, 4) &&
 		strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		throw assets::AssetException(std::string{"The file \""} + utf8FileName + "\" is neither a studio header nor a sequence header");
+		throw AssetException(std::string{"The file \""} + utf8FileName + "\" is neither a studio header nor a sequence header");
 	}
 
 	if (!bAllowSeqGroup && !strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4))
 	{
-		throw assets::AssetException(std::string{"File \""} + utf8FileName + "\": Expected a main studio model file, got a sequence file");
+		throw AssetException(std::string{"File \""} + utf8FileName + "\": Expected a main studio model file, got a sequence file");
 	}
 
 	if (header->version != STUDIO_VERSION)
 	{
-		throw assets::AssetException(std::string{"File \""} + utf8FileName + "\": version differs: expected \"" +
+		throw AssetException(std::string{"File \""} + utf8FileName + "\": version differs: expected \"" +
 			std::to_string(STUDIO_VERSION) + "\", got \"" + std::to_string(header->version) + "\"");
 	}
 
 	//Validate header length. This should always be valid since it's set by the compiler
 	if (header->length < 0 || (static_cast<size_t>(header->length) != size))
 	{
-		throw assets::AssetException(std::string{"File \""} + utf8FileName + "\": length does not match file size: expected \""
+		throw AssetException(std::string{"File \""} + utf8FileName + "\": length does not match file size: expected \""
 			+ std::to_string(size) + "\", got \"" + std::to_string(header->length) + "\"");
 	}
 
@@ -150,7 +150,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 			message += u8" (it is probably a texture file)";
 		}
 
-		throw assets::AssetException(message);
+		throw AssetException(message);
 	}
 
 	studio_ptr<studiohdr_t> textureHeader;
@@ -200,7 +200,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 {
 	if (fileName.empty())
 	{
-		throw assets::AssetException("Empty filename provided");
+		throw AssetException("Empty filename provided");
 	}
 
 	studiohdr_t* const pStudioHdr = model.GetStudioHeader();
@@ -229,7 +229,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 		if (!foundRelative)
 		{
-			throw assets::AssetException("Could not find base directory \"models\" in model filename; needed to correct sequence group filenames");
+			throw AssetException("Could not find base directory \"models\" in model filename; needed to correct sequence group filenames");
 		}
 
 		std::error_code e;
@@ -238,7 +238,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 		if (e)
 		{
-			throw assets::AssetException("Could not determine base filename for model to correct sequence group filenames");
+			throw AssetException("Could not determine base filename for model to correct sequence group filenames");
 		}
 
 		baseFileName.replace_extension();
@@ -262,7 +262,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 			if (groupNameString.length() >= sizeof(seqGroup->name))
 			{
-				throw assets::AssetException("Sequence group filename is too long");
+				throw AssetException("Sequence group filename is too long");
 			}
 
 			strncpy(seqGroup->name, reinterpret_cast<const char*>(groupNameString.c_str()), groupNameString.length());
@@ -275,7 +275,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 	if (!file)
 	{
-		throw assets::AssetException("Could not open main file for writing");
+		throw AssetException("Could not open main file for writing");
 	}
 
 	bool success = fwrite(pStudioHdr, sizeof(std::byte), pStudioHdr->length, file) == pStudioHdr->length;
@@ -284,7 +284,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 	if (!success)
 	{
-		throw assets::AssetException("Error while writing to main file");
+		throw AssetException("Error while writing to main file");
 	}
 
 	auto baseFileName{fileName};
@@ -304,7 +304,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 		if (!file)
 		{
-			throw assets::AssetException("Could not open texture file for writing");
+			throw AssetException("Could not open texture file for writing");
 		}
 
 		success = fwrite(pTextureHdr, sizeof(std::byte), pTextureHdr->length, file) == pTextureHdr->length;
@@ -312,7 +312,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 		if (!success)
 		{
-			throw assets::AssetException("Error while writing to texture file");
+			throw AssetException("Error while writing to texture file");
 		}
 	}
 
@@ -335,7 +335,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 			if (!file)
 			{
-				throw assets::AssetException("Could not open sequence file for writing");
+				throw AssetException("Could not open sequence file for writing");
 			}
 
 			const auto pAnimHdr = model.GetSeqGroupHeader(i - 1);
@@ -345,7 +345,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 			if (!success)
 			{
-				throw assets::AssetException("Error while writing to sequence file");
+				throw AssetException("Error while writing to sequence file");
 			}
 		}
 	}

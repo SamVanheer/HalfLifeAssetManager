@@ -13,10 +13,7 @@
 
 #include "soundsystem/ISoundSystem.hpp"
 
-namespace filesystem
-{
 class IFileSystem;
-}
 
 namespace nqr
 {
@@ -29,8 +26,6 @@ class NyquistIO;
 *	@{
 */
 
-namespace soundsystem
-{
 class SoundSystem final : public ISoundSystem
 {
 public:
@@ -64,7 +59,7 @@ public:
 
 	bool IsSoundAvailable() const override final { return _device != nullptr; }
 
-	bool Initialize(filesystem::IFileSystem* filesystem) override final;
+	bool Initialize(IFileSystem* filesystem) override final;
 	void Shutdown() override final;
 
 	void RunFrame() override final;
@@ -83,7 +78,7 @@ private:
 private:
 	std::shared_ptr<spdlog::logger> _logger;
 
-	filesystem::IFileSystem* _fileSystem{};
+	IFileSystem* _fileSystem{};
 
 	ALCdevice* _device{};
 	ALCcontext* _context{};
@@ -94,6 +89,5 @@ private:
 
 	std::unique_ptr<nqr::NyquistIO> m_Loader;
 };
-}
 
 /** @} */

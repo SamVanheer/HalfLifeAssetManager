@@ -42,14 +42,14 @@ void HLMVStudioModelEntity::HandleAnimEvent(const AnimEvent& event)
 	{
 		if (GetContext()->GeneralSettings->PlaySounds)
 		{
-			int pitch = soundsystem::PITCH_NORM;
+			int pitch = PITCH_NORM;
 
 			if (GetContext()->GeneralSettings->FramerateAffectsPitch)
 			{
 				pitch = static_cast<int>(pitch * GetFrameRate());
 			}
 
-			GetContext()->SoundSystem->PlaySound(event.options, soundsystem::VOLUME_NORM, pitch);
+			GetContext()->SoundSystem->PlaySound(event.options, VOLUME_NORM, pitch);
 		}
 
 		break;

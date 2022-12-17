@@ -16,8 +16,6 @@
 
 #include "qt/HashFunctions.hpp"
 
-namespace ui::settings
-{
 inline glm::vec3 ColorToVector(const QColor& color)
 {
 	return {color.redF(), color.greenF(), color.blueF()};
@@ -136,4 +134,3 @@ signals:
 private:
 	std::unordered_map<QString, std::pair<glm::vec3, glm::vec3>> _colors;
 };
-}

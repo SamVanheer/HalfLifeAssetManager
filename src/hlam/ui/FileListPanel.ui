@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ui::FileListPanel</class>
- <widget class="QWidget" name="ui::FileListPanel">
+ <class>FileListPanel</class>
+ <widget class="QWidget" name="FileListPanel">
   <property name="geometry">
    <rect>
     <x>0</x>

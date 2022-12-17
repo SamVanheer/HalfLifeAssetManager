@@ -21,26 +21,14 @@ namespace graphics
 class IGraphicsContext;
 }
 
-namespace ui
-{
 class EditorContext;
 class MainWindow;
-}
 
-namespace ui::assets
-{
 class IAssetProviderRegistry;
-}
 
-namespace ui::options
-{
 class OptionsPageRegistry;
-}
 
-namespace ui::settings
-{
 class ColorSettings;
-}
 
 /**
 *	@brief Handles program startup and shutdown
@@ -66,14 +54,14 @@ private:
 
 	bool CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings);
 
-	std::unique_ptr<ui::EditorContext> CreateEditorContext(
+	std::unique_ptr<EditorContext> CreateEditorContext(
 		std::unique_ptr<QSettings>&& settings, std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext);
 
 	bool AddPlugins(
 		QSettings* settings,
-		ui::settings::ColorSettings* colorSettings,
-		ui::assets::IAssetProviderRegistry* assetProviderRegistry,
-		ui::options::OptionsPageRegistry* optionsPageRegistry);
+		ColorSettings* colorSettings,
+		IAssetProviderRegistry* assetProviderRegistry,
+		OptionsPageRegistry* optionsPageRegistry);
 
 	std::unique_ptr<graphics::IGraphicsContext> InitializeOpenGL();
 
@@ -99,8 +87,8 @@ private:
 
 	std::vector<std::unique_ptr<IAssetManagerPlugin>> _plugins;
 
-	std::unique_ptr<ui::EditorContext> _editorContext;
-	QPointer<ui::MainWindow> _mainWindow;
+	std::unique_ptr<EditorContext> _editorContext;
+	QPointer<MainWindow> _mainWindow;
 
 	QScopedPointer<SingleInstance> _singleInstance;
 };

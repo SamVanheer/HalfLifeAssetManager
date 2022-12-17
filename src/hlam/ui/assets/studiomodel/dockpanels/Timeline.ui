@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ui::assets::studiomodel::Timeline</class>
- <widget class="QWidget" name="ui::assets::studiomodel::Timeline">
+ <class>studiomodel::Timeline</class>
+ <widget class="QWidget" name="studiomodel::Timeline">
   <property name="geometry">
    <rect>
     <x>0</x>

@@ -13,7 +13,7 @@
 #include "ui/settings/GeneralSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 Timeline::Timeline(QWidget* parent)
 	: QWidget(parent)

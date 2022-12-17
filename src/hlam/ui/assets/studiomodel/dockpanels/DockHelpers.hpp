@@ -2,7 +2,7 @@
 
 #include <QComboBox>
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 inline void SetRestoredModelIndex(int index, int count, QComboBox& comboBox)
 {

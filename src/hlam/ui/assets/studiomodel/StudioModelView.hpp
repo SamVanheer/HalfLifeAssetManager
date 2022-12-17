@@ -5,7 +5,7 @@
 
 #include "ui_StudioModelView.h"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 /**
 *	@brief A scene view, an info bar and a tab bar to select the current scene

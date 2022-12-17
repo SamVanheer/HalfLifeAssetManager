@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ui::assets::studiomodel::CommandLineFrontEnd</class>
- <widget class="QDialog" name="ui::assets::studiomodel::CommandLineFrontEnd">
+ <class>studiomodel::CommandLineFrontEnd</class>
+ <widget class="QDialog" name="studiomodel::CommandLineFrontEnd">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -361,7 +361,7 @@
   <connection>
    <sender>DialogButtons</sender>
    <signal>accepted()</signal>
-   <receiver>ui::assets::studiomodel::CommandLineFrontEnd</receiver>
+   <receiver>studiomodel::CommandLineFrontEnd</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -377,7 +377,7 @@
   <connection>
    <sender>DialogButtons</sender>
    <signal>rejected()</signal>
-   <receiver>ui::assets::studiomodel::CommandLineFrontEnd</receiver>
+   <receiver>studiomodel::CommandLineFrontEnd</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

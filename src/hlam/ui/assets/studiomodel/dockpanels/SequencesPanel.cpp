@@ -15,7 +15,7 @@
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 SequencesPanel::SequencesPanel(StudioModelAsset* asset)
 	: _asset(asset)

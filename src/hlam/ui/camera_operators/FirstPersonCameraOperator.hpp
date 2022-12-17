@@ -3,8 +3,6 @@
 #include "ui/camera_operators/CameraOperator.hpp"
 #include "ui/camera_operators/dockpanels/FirstPersonSettingsPanel.hpp"
 
-namespace ui::camera_operators
-{
 /**
 *	@brief Camera operator that allows the user to view an object in first person view
 */
@@ -13,7 +11,7 @@ class FirstPersonCameraOperator final : public SceneCameraOperator
 public:
 	static constexpr float DefaultFirstPersonFieldOfView = 74.f;
 
-	FirstPersonCameraOperator(settings::GeneralSettings* generalSettings)
+	FirstPersonCameraOperator(GeneralSettings* generalSettings)
 		: SceneCameraOperator(generalSettings)
 	{
 		_camera.SetOrigin(glm::vec3{0});
@@ -42,4 +40,3 @@ public:
 
 	void RestoreView() override {}
 };
-}

@@ -5,8 +5,6 @@
 #include <QString>
 #include <QStringList>
 
-namespace ui::settings
-{
 /**
 *	@brief Stores the list of recent files, from newest (0) to oldest (GetCount() - 1)
 */
@@ -127,4 +125,3 @@ private:
 
 	int _maxRecentFiles{DefaultMaxRecentFiles};
 };
-}

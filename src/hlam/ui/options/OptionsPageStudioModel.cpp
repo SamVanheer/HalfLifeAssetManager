@@ -6,13 +6,11 @@
 #include "ui/options/OptionsPageStudioModel.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
-namespace ui::options
-{
 const QString OptionsPageStudioModelCategory{QStringLiteral("D.Assets")};
 const QString OptionsPageStudioModelId{QStringLiteral("Studiomodel")};
 const QString StudioModelExeFilter{QStringLiteral("Executable Files (*.exe *.com);;All Files (*.*)")};
 
-OptionsPageStudioModel::OptionsPageStudioModel(const std::shared_ptr<settings::StudioModelSettings>& studioModelSettings)
+OptionsPageStudioModel::OptionsPageStudioModel(const std::shared_ptr<StudioModelSettings>& studioModelSettings)
 	: _studioModelSettings(studioModelSettings)
 {
 	assert(_studioModelSettings);
@@ -26,7 +24,7 @@ OptionsPageStudioModel::OptionsPageStudioModel(const std::shared_ptr<settings::S
 
 OptionsPageStudioModel::~OptionsPageStudioModel() = default;
 
-OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings)
+OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(EditorContext* editorContext, StudioModelSettings* studioModelSettings)
 	: _editorContext(editorContext)
 	, _studioModelSettings(studioModelSettings)
 {
@@ -89,5 +87,4 @@ void OptionsPageStudioModelWidget::OnBrowseDecompiler()
 	{
 		_ui.Decompiler->setText(fileName);
 	}
-}
 }

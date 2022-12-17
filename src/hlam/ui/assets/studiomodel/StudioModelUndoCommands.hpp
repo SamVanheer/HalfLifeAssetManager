@@ -24,7 +24,7 @@ struct ScaleBonesBoneData;
 struct ScaleMeshesData;
 }
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 enum class ModelChangeId
 {

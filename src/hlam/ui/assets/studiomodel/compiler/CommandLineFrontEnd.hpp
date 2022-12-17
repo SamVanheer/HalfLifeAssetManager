@@ -9,11 +9,9 @@
 class QListWidgetItem;
 class QWidget;
 
-namespace ui
-{
 class EditorContext;
 
-namespace assets::studiomodel
+namespace studiomodel
 {
 class CommandLineFrontEnd : public QDialog
 {
@@ -89,5 +87,4 @@ private:
 
 	bool _outputIsError{false};
 };
-}
 }

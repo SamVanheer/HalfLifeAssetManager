@@ -8,11 +8,9 @@
 
 #include "ui/DockableWidget.hpp"
 
-namespace ui
-{
 class StateSnapshot;
 
-namespace assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 
@@ -38,5 +36,4 @@ private:
 	Ui_ScenePanel _ui;
 	StudioModelAsset* const _asset;
 };
-}
 }

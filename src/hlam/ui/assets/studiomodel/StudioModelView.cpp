@@ -1,6 +1,6 @@
 #include "ui/assets/studiomodel/StudioModelView.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 StudioModelView::StudioModelView(QWidget* parent)
 	: QWidget(parent)

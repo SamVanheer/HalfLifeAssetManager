@@ -15,27 +15,20 @@
 
 #include "ui/options/OptionsPage.hpp"
 
-namespace ui
-{
 class EditorContext;
 
-namespace settings
-{
 class GameConfigurationsSettings;
 class GameEnvironment;
-}
 
-namespace options
-{
 extern const QString OptionsPageGameConfigurationsId;
 
 class OptionsPageGameConfigurations final : public OptionsPage
 {
 public:
-	OptionsPageGameConfigurations(const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings);
+	OptionsPageGameConfigurations(const std::shared_ptr<GameConfigurationsSettings>& gameConfigurationsSettings);
 
 private:
-	const std::shared_ptr<settings::GameConfigurationsSettings> _gameConfigurationsSettings;
+	const std::shared_ptr<GameConfigurationsSettings> _gameConfigurationsSettings;
 };
 
 class OptionsPageGameConfigurationsWidget final : public OptionsWidget
@@ -90,7 +83,7 @@ public:
 private:
 	ChangeSet* GetOrCreateGameConfigurationChangeSet(const QUuid& id);
 
-	void AddGameEnvironment(std::unique_ptr<settings::GameEnvironment>&& gameEnvironment);
+	void AddGameEnvironment(std::unique_ptr<GameEnvironment>&& gameEnvironment);
 
 private slots:
 	void OnActiveGameEnvironmentChanged(int index);
@@ -117,7 +110,7 @@ private:
 
 	EditorContext* const _editorContext;
 
-	std::vector<std::unique_ptr<settings::GameEnvironment>> _gameEnvironments;
+	std::vector<std::unique_ptr<GameEnvironment>> _gameEnvironments;
 
 	ChangeSet _gameEnvironmentsChangeSet;
 
@@ -128,5 +121,3 @@ private:
 
 	bool _currentEnvironmentIsActive = false;
 };
-}
-}

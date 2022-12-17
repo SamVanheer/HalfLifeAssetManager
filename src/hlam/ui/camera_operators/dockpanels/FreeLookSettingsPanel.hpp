@@ -4,8 +4,6 @@
 
 #include "ui_FreeLookSettingsPanel.h"
 
-namespace ui::camera_operators
-{
 class FreeLookCameraOperator;
 
 class FreeLookSettingsPanel : public QWidget
@@ -28,4 +26,3 @@ private:
 	Ui_FreeLookSettingsPanel _ui;
 	FreeLookCameraOperator* const _cameraOperator;
 };
-}

@@ -8,12 +8,8 @@
 
 #include "ui_OptionsDialog.h"
 
-namespace ui
-{
 class EditorContext;
 
-namespace options
-{
 class OptionsPage;
 
 class OptionsDialog final : public QDialog
@@ -28,11 +24,9 @@ private slots:
 	void OnButtonClicked(QAbstractButton* button);
 
 private:
-	ui::Ui_OptionsDialog _ui;
+	Ui_OptionsDialog _ui;
 
 	EditorContext* const _editorContext;
 
 	std::vector<OptionsPage*> _pages;
 };
-}
-}

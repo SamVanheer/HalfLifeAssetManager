@@ -18,6 +18,8 @@ class BackgroundEntity;
 class EntityContext;
 class GroundEntity;
 class HLMVStudioModelEntity;
+class StateSnapshot;
+class StudioModelSettings;
 class TextureEntity;
 
 namespace graphics
@@ -26,10 +28,7 @@ class Scene;
 class TextureLoader;
 }
 
-namespace soundsystem
-{
 class ISoundSystem;
-}
 
 namespace sprite
 {
@@ -41,23 +40,11 @@ namespace studiomdl
 class IStudioModelRenderer;
 }
 
-namespace ui
-{
-class StateSnapshot;
-
-namespace camera_operators
-{
 class CameraOperators;
 class SceneCameraOperator;
 class TextureCameraOperator;
-}
 
-namespace settings
-{
-class StudioModelSettings;
-}
-
-namespace assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 class StudioModelData;
@@ -71,7 +58,7 @@ Q_DECLARE_LOGGING_CATEGORY(HLAMStudioModel)
 class StudioModelAssetProvider final : public AssetProvider
 {
 public:
-	StudioModelAssetProvider(const std::shared_ptr<settings::StudioModelSettings>& studioModelSettings)
+	StudioModelAssetProvider(const std::shared_ptr<StudioModelSettings>& studioModelSettings)
 		: _studioModelSettings(studioModelSettings)
 	{
 	}
@@ -92,10 +79,10 @@ public:
 
 	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) const override;
 
-	settings::StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
+	StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
 
 private:
-	const std::shared_ptr<settings::StudioModelSettings> _studioModelSettings;
+	const std::shared_ptr<StudioModelSettings> _studioModelSettings;
 };
 
 /**
@@ -184,7 +171,7 @@ public:
 
 	graphics::Scene* GetScene() { return _scene.get(); }
 
-	camera_operators::CameraOperators* GetCameraOperators() const { return _cameraOperators; }
+	CameraOperators* GetCameraOperators() const { return _cameraOperators; }
 
 	void AddUndoCommand(QUndoCommand* command)
 	{
@@ -201,11 +188,11 @@ public:
 
 	TextureEntity* GetTextureEntity() { return _textureEntity.get(); }
 
-	camera_operators::TextureCameraOperator* GetTextureCameraOperator() { return _textureCameraOperator.get(); }
+	TextureCameraOperator* GetTextureCameraOperator() { return _textureCameraOperator.get(); }
 
 	Pose GetPose() const { return _pose; }
 
-	soundsystem::ISoundSystem* GetSoundSystem();
+	ISoundSystem* GetSoundSystem();
 
 private:
 	void CreateMainScene();
@@ -243,7 +230,7 @@ private slots:
 
 	void OnSceneWidgetWheelEvent(QWheelEvent* event);
 
-	void OnCameraChanged(camera_operators::SceneCameraOperator* previous, camera_operators::SceneCameraOperator* current);
+	void OnCameraChanged(SceneCameraOperator* previous, SceneCameraOperator* current);
 
 	void OnPreviousCamera();
 	void OnNextCamera();
@@ -272,9 +259,9 @@ private:
 
 	std::unique_ptr<graphics::Scene> _scene;
 
-	camera_operators::CameraOperators* _cameraOperators;
+	CameraOperators* _cameraOperators;
 
-	camera_operators::SceneCameraOperator* _firstPersonCamera;
+	SceneCameraOperator* _firstPersonCamera;
 
 	StudioModelEditWidget* _editWidget{};
 
@@ -286,10 +273,9 @@ private:
 
 	std::shared_ptr<TextureEntity> _textureEntity;
 
-	std::unique_ptr<camera_operators::TextureCameraOperator> _textureCameraOperator;
+	std::unique_ptr<TextureCameraOperator> _textureCameraOperator;
 
 	//TODO: this is temporarily put here, but needs to be put somewhere else eventually
 	Pose _pose = Pose::Sequences;
 };
-}
 }

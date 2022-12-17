@@ -3,8 +3,6 @@
 #include <QSettings>
 #include <QString>
 
-namespace ui::settings
-{
 inline const QString PathsGroupName{QStringLiteral("paths")};
 
 inline QString GetSavedPath(QSettings& settings, const QString& pathName)
@@ -21,5 +19,4 @@ inline void SetSavedPath(QSettings& settings, const QString& pathName, const QSt
 	settings.beginGroup(PathsGroupName);
 	settings.setValue(pathName, path);
 	settings.endGroup();
-}
 }

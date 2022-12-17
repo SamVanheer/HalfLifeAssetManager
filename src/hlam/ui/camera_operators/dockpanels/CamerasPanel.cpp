@@ -6,8 +6,6 @@
 #include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
 
-namespace ui::camera_operators
-{
 CamerasPanel::CamerasPanel(CameraOperators* cameraOperators)
 	: _cameraOperators(cameraOperators)
 {
@@ -17,7 +15,7 @@ CamerasPanel::CamerasPanel(CameraOperators* cameraOperators)
 	connect(_ui.Previous, &QPushButton::clicked, this, &CamerasPanel::ChangeToPreviousCamera);
 	connect(_ui.Next, &QPushButton::clicked, this, &CamerasPanel::ChangeToNextCamera);
 
-	connect(_cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &CamerasPanel::OnAssetCameraChanged);
+	connect(_cameraOperators, &CameraOperators::CameraChanged, this, &CamerasPanel::OnAssetCameraChanged);
 
 	for (int i = 0; i < _cameraOperators->Count(); ++i)
 	{
@@ -140,5 +138,4 @@ void CamerasPanel::ChangeToNextCamera()
 	}
 
 	_ui.Cameras->setCurrentIndex(index);
-}
 }

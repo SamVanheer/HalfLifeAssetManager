@@ -16,10 +16,6 @@
 
 //TODO: implement automatic scanning of mods
 
-using namespace ui::settings;
-
-namespace ui::options
-{
 const QString OptionsPageGameConfigurationsCategory{QStringLiteral("T.GameConfigurations")};
 const QString OptionsPageGameConfigurationsId{QStringLiteral("T.GameConfigurations")};
 
@@ -52,7 +48,7 @@ static QString GenerateUniqueName(const QString& baseName, const Container& cont
 	return baseName + " (Duplicate)";
 }
 
-OptionsPageGameConfigurations::OptionsPageGameConfigurations(const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings)
+OptionsPageGameConfigurations::OptionsPageGameConfigurations(const std::shared_ptr<GameConfigurationsSettings>& gameConfigurationsSettings)
 	: _gameConfigurationsSettings(gameConfigurationsSettings)
 {
 	SetCategory(QString{OptionsPageGameConfigurationsCategory});
@@ -572,5 +568,4 @@ void OptionsPageGameConfigurationsWidget::OnRemoveGameConfiguration()
 	gameEnvironment->RemoveGameConfiguration(gameConfiguration->GetId());
 
 	_gameConfigurationsModel->removeRow(item->row());
-}
 }

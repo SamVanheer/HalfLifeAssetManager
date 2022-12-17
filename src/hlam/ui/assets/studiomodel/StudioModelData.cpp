@@ -10,7 +10,7 @@
 #include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelTextureUtilities.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 /**
 *	@brief Base class for item models for studiomodel data.

@@ -12,8 +12,6 @@
 #include "ui/options/OptionsPage.hpp"
 #include "ui/options/OptionsPageRegistry.hpp"
 
-namespace ui::options
-{
 const int PageIndexRole = Qt::ItemDataRole::UserRole;
 
 OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
@@ -104,5 +102,4 @@ void OptionsDialog::OnButtonClicked(QAbstractButton* button)
 
 		emit _editorContext->SettingsChanged();
 	}
-}
 }

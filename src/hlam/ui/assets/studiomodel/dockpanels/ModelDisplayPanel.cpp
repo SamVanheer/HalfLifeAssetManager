@@ -5,7 +5,7 @@
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 ModelDisplayPanel::ModelDisplayPanel(StudioModelAsset* asset)
 	: _asset(asset)

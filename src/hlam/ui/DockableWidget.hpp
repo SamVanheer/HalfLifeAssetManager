@@ -5,8 +5,6 @@
 
 #include "qt/QtUtilities.hpp"
 
-namespace ui
-{
 /**
 *	@brief Base class for widgets that may be wrapped by a <tt>QDockWidget</tt>.
 */
@@ -22,4 +20,3 @@ public:
 
 	virtual void OnVisibilityChanged(bool visible) {}
 };
-}

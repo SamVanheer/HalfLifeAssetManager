@@ -2,7 +2,7 @@
 
 #include "qt/ByteLengthValidator.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 

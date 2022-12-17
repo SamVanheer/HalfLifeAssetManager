@@ -2,8 +2,6 @@
 
 #include <stdexcept>
 
-namespace assets
-{
 /**
 *	@brief Exception used for asset errors
 */
@@ -17,4 +15,3 @@ public:
 	{
 	}
 };
-}

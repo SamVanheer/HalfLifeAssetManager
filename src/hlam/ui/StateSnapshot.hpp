@@ -6,8 +6,6 @@
 #include <QStringList>
 #include <QVariant>
 
-namespace ui
-{
 /**
 *	@brief Used to create and restore snapshots of an asset's UI state
 */
@@ -61,5 +59,4 @@ inline void StateSnapshot::Remove(const QString& key)
 inline void StateSnapshot::Clear()
 {
 	_values.clear();
-}
 }

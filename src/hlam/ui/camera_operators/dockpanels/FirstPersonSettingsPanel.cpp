@@ -5,8 +5,6 @@
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
 #include "ui/camera_operators/dockpanels/FirstPersonSettingsPanel.hpp"
 
-namespace ui::camera_operators
-{
 FirstPersonSettingsPanel::FirstPersonSettingsPanel(FirstPersonCameraOperator* cameraOperator)
 	: _cameraOperator(cameraOperator)
 {
@@ -32,5 +30,4 @@ void FirstPersonSettingsPanel::OnFieldOfViewChanged(double value)
 void FirstPersonSettingsPanel::OnResetFieldOfView()
 {
 	_ui.FieldOfView->setValue(FirstPersonCameraOperator::DefaultFirstPersonFieldOfView);
-}
 }

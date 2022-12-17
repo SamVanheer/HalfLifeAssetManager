@@ -11,8 +11,6 @@ class Scene;
 class SceneContext;
 }
 
-namespace ui
-{
 /**
 *	@brief Renders a scene to an OpenGL window
 *	TODO: rework this so it isn't tied directly to OpenGL (allow D3D or Vulkan backends)
@@ -58,4 +56,3 @@ private:
 	graphics::Scene* _scene{};
 	QPointer<QObject> _previousFocusObject;
 };
-}

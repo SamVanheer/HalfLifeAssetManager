@@ -4,8 +4,6 @@
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 
-namespace ui
-{
 FullscreenWidget::FullscreenWidget()
 {
 	//This is not a primary window so don't keep the app running if we're still alive
@@ -77,5 +75,4 @@ void FullscreenWidget::keyPressEvent(QKeyEvent* event)
 	}
 
 	QMainWindow::keyPressEvent(event);
-}
 }

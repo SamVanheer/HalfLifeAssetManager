@@ -8,37 +8,30 @@
 
 #include "ui/options/OptionsPage.hpp"
 
-namespace ui
-{
 class EditorContext;
 
-namespace settings
-{
 class GeneralSettings;
 class RecentFilesSettings;
-}
 
-namespace options
-{
 extern const QString OptionsPageGeneralCategory;
 
 class OptionsPageGeneral : public OptionsPage
 {
 public:
 	OptionsPageGeneral(
-		const std::shared_ptr<settings::GeneralSettings>& generalSettings, const std::shared_ptr<settings::RecentFilesSettings>& recentFilesSettings);
+		const std::shared_ptr<GeneralSettings>& generalSettings, const std::shared_ptr<RecentFilesSettings>& recentFilesSettings);
 	~OptionsPageGeneral();
 
 private:
-	const std::shared_ptr<settings::GeneralSettings> _generalSettings;
-	const std::shared_ptr<settings::RecentFilesSettings> _recentFilesSettings;
+	const std::shared_ptr<GeneralSettings> _generalSettings;
+	const std::shared_ptr<RecentFilesSettings> _recentFilesSettings;
 };
 
 class OptionsPageGeneralWidget final : public OptionsWidget
 {
 public:
 	OptionsPageGeneralWidget(
-		EditorContext* editorContext, settings::GeneralSettings* generalSettings, settings::RecentFilesSettings* recentFilesSettings);
+		EditorContext* editorContext, GeneralSettings* generalSettings, RecentFilesSettings* recentFilesSettings);
 	~OptionsPageGeneralWidget();
 
 	void ApplyChanges(QSettings& settings) override;
@@ -48,8 +41,6 @@ private:
 
 	EditorContext* const _editorContext;
 
-	settings::GeneralSettings* const _generalSettings;
-	settings::RecentFilesSettings* const _recentFilesSettings;
+	GeneralSettings* const _generalSettings;
+	RecentFilesSettings* const _recentFilesSettings;
 };
-}
-}

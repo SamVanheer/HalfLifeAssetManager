@@ -4,7 +4,7 @@
 
 #include "ui_SkyLightPanel.h"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 

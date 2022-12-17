@@ -11,7 +11,7 @@
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 GroundPanel::GroundPanel(StudioModelAsset* asset)
 	: _asset(asset)

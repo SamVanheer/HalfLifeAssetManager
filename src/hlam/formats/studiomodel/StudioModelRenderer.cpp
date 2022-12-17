@@ -21,7 +21,7 @@
 
 namespace studiomdl
 {
-StudioModelRenderer::StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger, QOpenGLFunctions_1_1* openglFunctions, ui::settings::ColorSettings* colorSettings)
+StudioModelRenderer::StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger, QOpenGLFunctions_1_1* openglFunctions, ColorSettings* colorSettings)
 	: _logger(logger)
 	, _openglFunctions(openglFunctions)
 	, _colorSettings(colorSettings)
@@ -312,8 +312,8 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 
 void StudioModelRenderer::UpdateColors()
 {
-	_lightcolor = _colorSettings->GetColor(ui::assets::studiomodel::LightColor.Name);
-	_wireframeColor = _colorSettings->GetColor(ui::assets::studiomodel::WireframeColor.Name);
+	_lightcolor = _colorSettings->GetColor(studiomodel::LightColor.Name);
+	_wireframeColor = _colorSettings->GetColor(studiomodel::WireframeColor.Name);
 }
 
 void StudioModelRenderer::SetupPosition(const glm::vec3& origin, const glm::vec3& angles)

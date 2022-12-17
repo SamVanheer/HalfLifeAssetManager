@@ -17,8 +17,6 @@
 
 class QWidget;
 
-namespace ui::camera_operators
-{
 class CameraOperator : public QObject, public graphics::ICameraOperator
 {
 public:
@@ -42,7 +40,7 @@ class SceneCameraOperator : public CameraOperator
 	Q_OBJECT
 
 public:
-	SceneCameraOperator(settings::GeneralSettings* generalSettings)
+	SceneCameraOperator(GeneralSettings* generalSettings)
 		: _generalSettings(generalSettings)
 	{
 		assert(_generalSettings);
@@ -87,11 +85,10 @@ signals:
 	void CameraPropertiesChanged();
 
 protected:
-	const settings::GeneralSettings* const _generalSettings;
+	const GeneralSettings* const _generalSettings;
 
 	glm::vec2 _oldCoordinates{0.f};
 	Qt::MouseButtons _trackedButtons{};
 };
-}
 
-Q_DECLARE_METATYPE(ui::camera_operators::SceneCameraOperator*)
+Q_DECLARE_METATYPE(SceneCameraOperator*)

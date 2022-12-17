@@ -15,7 +15,7 @@
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 //Parent indices are offset by one so -1 becomes 0, 0 becomes 1, etc
 constexpr int ParentBoneOffset = 1;

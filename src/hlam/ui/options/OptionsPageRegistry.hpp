@@ -6,8 +6,6 @@
 #include <QString>
 #include <QWidget>
 
-namespace ui::options
-{
 class OptionsPage;
 
 class OptionsPageRegistry final
@@ -27,4 +25,3 @@ private:
 
 	bool _sorted{false};
 };
-}

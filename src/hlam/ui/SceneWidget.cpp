@@ -6,8 +6,6 @@
 #include "graphics/SceneContext.hpp"
 #include "ui/SceneWidget.hpp"
 
-namespace ui
-{
 SceneWidget::SceneWidget(QWidget* parent)
 	: QOpenGLWindow()
 	, _container(QWidget::createWindowContainer(this, parent))
@@ -130,5 +128,4 @@ void SceneWidget::paintGL()
 			_scene->Draw(*_sceneContext);
 		}
 	}
-}
 }

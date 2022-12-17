@@ -8,9 +8,6 @@
 *
 *	@{
 */
-namespace filesystem
-{
 std::vector<std::string> GetSteamPipeDirectoryExtensions();
-}
 
 /** @} */

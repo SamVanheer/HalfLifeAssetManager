@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ui::assets::studiomodel::ExportUVMeshDialog</class>
- <widget class="QDialog" name="ui::assets::studiomodel::ExportUVMeshDialog">
+ <class>studiomodel::ExportUVMeshDialog</class>
+ <widget class="QDialog" name="studiomodel::ExportUVMeshDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -231,7 +231,7 @@
   <connection>
    <sender>OkButton</sender>
    <signal>clicked()</signal>
-   <receiver>ui::assets::studiomodel::ExportUVMeshDialog</receiver>
+   <receiver>studiomodel::ExportUVMeshDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -247,7 +247,7 @@
   <connection>
    <sender>CancelButton</sender>
    <signal>clicked()</signal>
-   <receiver>ui::assets::studiomodel::ExportUVMeshDialog</receiver>
+   <receiver>studiomodel::ExportUVMeshDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

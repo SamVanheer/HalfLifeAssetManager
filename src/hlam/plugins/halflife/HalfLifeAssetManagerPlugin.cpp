@@ -11,7 +11,7 @@
 #include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
-using namespace ui::assets::studiomodel;
+using namespace studiomodel;
 
 bool HalfLifeAssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 {
@@ -27,7 +27,7 @@ bool HalfLifeAssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 	addColor(LightColor);
 	addColor(WireframeColor);
 
-	const auto studioModelSettings{std::make_shared<ui::settings::StudioModelSettings>()};
+	const auto studioModelSettings{std::make_shared<StudioModelSettings>()};
 
 	// TODO: needs to be moved later on
 	studioModelSettings->LoadSettings(*builder.Settings);
@@ -38,7 +38,7 @@ bool HalfLifeAssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 	builder.AssetProviderRegistry->AddProvider(std::move(studioModelAssetProvider));
 	builder.AssetProviderRegistry->AddProvider(std::move(studioModelImportProvider));
 
-	builder.OptionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageStudioModel>(studioModelSettings));
+	builder.OptionsPageRegistry->AddPage(std::make_unique<OptionsPageStudioModel>(studioModelSettings));
 
 	return true;
 }

@@ -9,7 +9,7 @@
 
 #include "utility/mathlib.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 SkyLightPanel::SkyLightPanel(StudioModelAsset* asset)
 	: _asset(asset)

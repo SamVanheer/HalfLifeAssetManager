@@ -9,7 +9,7 @@
 #include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 void BaseModelUndoCommand::EmitDataChanged(QAbstractItemModel* model, int index)
 {

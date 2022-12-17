@@ -34,7 +34,7 @@
 
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset)
 	: _editorContext(editorContext)
@@ -89,7 +89,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 		return dock;
 	};
 
-	addDockPanel(new camera_operators::CamerasPanel(_asset->GetCameraOperators()), "Cameras");
+	addDockPanel(new CamerasPanel(_asset->GetCameraOperators()), "Cameras");
 	addDockPanel(new ScenePanel(_asset), "Scene");
 	addDockPanel(new ModelInfoPanel(_asset), "Model Info");
 	auto modelDisplayDock = addDockPanel(new ModelDisplayPanel(_asset), "Model Display");

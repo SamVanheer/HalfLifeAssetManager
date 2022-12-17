@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ui::camera_operators::CamerasPanel</class>
- <widget class="QWidget" name="ui::camera_operators::CamerasPanel">
+ <class>CamerasPanel</class>
+ <widget class="QWidget" name="CamerasPanel">
   <property name="geometry">
    <rect>
     <x>0</x>

@@ -16,7 +16,7 @@
 
 #include "ui/settings/StudioModelSettings.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 AttachmentsPanel::AttachmentsPanel(StudioModelAsset* asset)
 	: _asset(asset)

@@ -2,8 +2,6 @@
 
 #include "ui/camera_operators/TextureCameraOperator.hpp"
 
-namespace ui::camera_operators
-{
 void TextureCameraOperator::MouseEvent(QMouseEvent& event)
 {
 	switch (event.type())
@@ -51,5 +49,4 @@ void TextureCameraOperator::MouseEvent(QMouseEvent& event)
 		break;
 	}
 	}
-}
 }

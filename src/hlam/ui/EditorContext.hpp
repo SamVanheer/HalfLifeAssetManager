@@ -12,10 +12,7 @@
 class QOpenGLFunctions_1_1;
 class WorldTime;
 
-namespace filesystem
-{
 class IFileSystem;
-}
 
 namespace graphics
 {
@@ -23,32 +20,18 @@ class IGraphicsContext;
 class TextureLoader;
 }
 
-namespace soundsystem
-{
 class ISoundSystem;
-}
 
-namespace ui
-{
 class DragNDropEventFilter;
 
-namespace assets
-{
 class IAssetProviderRegistry;
-}
 
-namespace options
-{
 class OptionsPageRegistry;
-}
 
-namespace settings
-{
 class ColorSettings;
 class GameConfigurationsSettings;
 class GeneralSettings;
 class RecentFilesSettings;
-}
 
 /**
 *	@brief Used to communicate between the main window and edit widgets
@@ -60,12 +43,12 @@ class EditorContext final : public QObject
 public:
 	EditorContext(
 		QSettings* settings,
-		const std::shared_ptr<settings::GeneralSettings>& generalSettings,
-		const std::shared_ptr<settings::ColorSettings>& colorSettings,
-		const std::shared_ptr<settings::RecentFilesSettings>& recentFilesSettings,
-		const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings,
-		std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
-		std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry,
+		const std::shared_ptr<GeneralSettings>& generalSettings,
+		const std::shared_ptr<ColorSettings>& colorSettings,
+		const std::shared_ptr<RecentFilesSettings>& recentFilesSettings,
+		const std::shared_ptr<GameConfigurationsSettings>& gameConfigurationsSettings,
+		std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
+		std::unique_ptr<IAssetProviderRegistry>&& assetProviderRegistry,
 		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
 		QObject* parent = nullptr);
 	~EditorContext();
@@ -76,25 +59,25 @@ public:
 
 	DragNDropEventFilter* GetDragNDropEventFilter() const { return _dragNDropEventFilter; }
 
-	settings::GeneralSettings* GetGeneralSettings() const { return _generalSettings.get(); }
+	GeneralSettings* GetGeneralSettings() const { return _generalSettings.get(); }
 
-	settings::ColorSettings* GetColorSettings() const { return _colorSettings.get(); }
+	ColorSettings* GetColorSettings() const { return _colorSettings.get(); }
 
-	settings::RecentFilesSettings* GetRecentFiles() const { return _recentFilesSettings.get(); }
+	RecentFilesSettings* GetRecentFiles() const { return _recentFilesSettings.get(); }
 
-	settings::GameConfigurationsSettings* GetGameConfigurations() const { return _gameConfigurationsSettings.get(); }
+	GameConfigurationsSettings* GetGameConfigurations() const { return _gameConfigurationsSettings.get(); }
 
 	QTimer* GetTimer() const { return _timer; }
 
-	options::OptionsPageRegistry* GetOptionsPageRegistry() const { return _optionsPageRegistry.get(); }
+	OptionsPageRegistry* GetOptionsPageRegistry() const { return _optionsPageRegistry.get(); }
 
-	filesystem::IFileSystem* GetFileSystem() const { return _fileSystem.get(); }
+	IFileSystem* GetFileSystem() const { return _fileSystem.get(); }
 
-	soundsystem::ISoundSystem* GetSoundSystem() const { return _soundSystem.get(); }
+	ISoundSystem* GetSoundSystem() const { return _soundSystem.get(); }
 
 	WorldTime* GetWorldTime() const { return _worldTime.get(); }
 
-	assets::IAssetProviderRegistry* GetAssetProviderRegistry() const { return _assetProviderRegistry.get(); }
+	IAssetProviderRegistry* GetAssetProviderRegistry() const { return _assetProviderRegistry.get(); }
 
 	graphics::IGraphicsContext* GetGraphicsContext() { return _graphicsContext.get(); }
 
@@ -129,23 +112,22 @@ private:
 	QSettings* const _settings;
 	DragNDropEventFilter* const _dragNDropEventFilter;
 
-	const std::shared_ptr<settings::GeneralSettings> _generalSettings;
-	const std::shared_ptr<settings::ColorSettings> _colorSettings;
-	const std::shared_ptr<settings::RecentFilesSettings> _recentFilesSettings;
-	const std::shared_ptr<settings::GameConfigurationsSettings> _gameConfigurationsSettings;
+	const std::shared_ptr<GeneralSettings> _generalSettings;
+	const std::shared_ptr<ColorSettings> _colorSettings;
+	const std::shared_ptr<RecentFilesSettings> _recentFilesSettings;
+	const std::shared_ptr<GameConfigurationsSettings> _gameConfigurationsSettings;
 
 	QTimer* const _timer;
 
-	const std::unique_ptr<options::OptionsPageRegistry> _optionsPageRegistry;
+	const std::unique_ptr<OptionsPageRegistry> _optionsPageRegistry;
 
-	const std::unique_ptr<filesystem::IFileSystem> _fileSystem;
-	const std::unique_ptr<soundsystem::ISoundSystem> _soundSystem;
+	const std::unique_ptr<IFileSystem> _fileSystem;
+	const std::unique_ptr<ISoundSystem> _soundSystem;
 	const std::unique_ptr<WorldTime> _worldTime;
 
-	const std::unique_ptr<assets::IAssetProviderRegistry> _assetProviderRegistry;
+	const std::unique_ptr<IAssetProviderRegistry> _assetProviderRegistry;
 
 	const std::unique_ptr<graphics::IGraphicsContext> _graphicsContext;
 	const std::unique_ptr<QOpenGLFunctions_1_1> _openglFunctions;
 	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
 };
-}

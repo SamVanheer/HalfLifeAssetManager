@@ -14,12 +14,10 @@ namespace graphics
 class Scene;
 }
 
-namespace ui
-{
 class EditorContext;
 class SceneWidget;
 
-namespace assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 class StudioModelView;
@@ -61,5 +59,4 @@ private:
 	//Stored separately to maintain list order
 	QVector<QDockWidget*> _dockWidgets;
 };
-}
 }

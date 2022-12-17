@@ -5,8 +5,6 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "ui/assets/studiomodel/StudioModelTextureUtilities.hpp"
 
-namespace ui
-{
 QString FormatTextureName(const studiomdl::Texture& texture)
 {
 	return QString{"%1 (%2 x %3)"}.arg(texture.Name.c_str()).arg(texture.Data.Width).arg(texture.Data.Height);
@@ -223,5 +221,4 @@ void DrawUVImage(const QColor& backgroundColor, bool showUVMap, bool overlayOnTe
 	{
 		painter.drawImage(drawRect, uvMap);
 	}
-}
 }

@@ -11,8 +11,6 @@
 *	@{
 */
 
-namespace filesystem
-{
 /**
 *	@brief Represents the SteamPipe filesystem. This can find game resources.
 *
@@ -75,6 +73,5 @@ public:
 	*/
 	virtual bool FileExists(const std::string& fileName) const = 0;
 };
-}
 
 /** @} */

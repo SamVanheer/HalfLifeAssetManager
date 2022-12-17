@@ -15,8 +15,6 @@
 
 #include "ui/settings/GameConfigurationsSettings.hpp"
 
-namespace ui
-{
 FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 	: QWidget(parent)
 {
@@ -96,7 +94,7 @@ void FileListPanel::SetRootDirectory(const QString& directory)
 	_ui.Root->setText(directory);
 }
 
-void FileListPanel::UpdateCurrentRootPath(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> activeConfiguration)
+void FileListPanel::UpdateCurrentRootPath(std::pair<GameEnvironment*, GameConfiguration*> activeConfiguration)
 {
 	QString directory;
 
@@ -137,5 +135,4 @@ void FileListPanel::OnFileSelected(const QModelIndex& index)
 	{
 		emit FileSelected(_model->filePath(index));
 	}
-}
 }

@@ -6,7 +6,7 @@
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/TransformPanel.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 constexpr int RotateId = 0;
 constexpr int ScaleId = 1;

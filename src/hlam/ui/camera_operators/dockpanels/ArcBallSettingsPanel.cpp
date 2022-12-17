@@ -5,8 +5,6 @@
 #include "ui/camera_operators/dockpanels/ArcBallSettingsPanel.hpp"
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
 
-namespace ui::camera_operators
-{
 ArcBallSettingsPanel::ArcBallSettingsPanel(ArcBallCameraOperator* cameraOperator)
 	: _cameraOperator(cameraOperator)
 {
@@ -88,5 +86,4 @@ void ArcBallSettingsPanel::OnFieldOfViewChanged(double value)
 void ArcBallSettingsPanel::OnResetFieldOfView()
 {
 	_ui.FieldOfView->setValue(ArcBallCameraOperator::DefaultFOV);
-}
 }

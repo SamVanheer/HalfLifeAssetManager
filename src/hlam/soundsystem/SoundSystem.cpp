@@ -16,8 +16,6 @@
 
 #include "soundsystem/SoundSystem.hpp"
 
-namespace soundsystem
-{
 bool SoundSystem::CheckALErrorsCore(const char* file, int line)
 {
 	auto error = alGetError();
@@ -45,7 +43,7 @@ SoundSystem::SoundSystem(const std::shared_ptr<spdlog::logger>& logger)
 
 SoundSystem::~SoundSystem() = default;
 
-bool SoundSystem::Initialize(filesystem::IFileSystem* filesystem)
+bool SoundSystem::Initialize(IFileSystem* filesystem)
 {
 	_fileSystem = filesystem;
 
@@ -307,5 +305,4 @@ std::unique_ptr<SoundSystem::Sound> SoundSystem::TryLoadFile(const std::string& 
 	}
 
 	return sound;
-}
 }

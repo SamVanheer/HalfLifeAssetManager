@@ -68,7 +68,7 @@
 #include "utility/IOUtils.hpp"
 #include "utility/mathlib.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 Q_LOGGING_CATEGORY(HLAMStudioModel, "hlam.studiomodel")
 
@@ -144,18 +144,18 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_editorContext->GetSoundSystem(),
 		_editorContext->GetGeneralSettings(),
 		_provider->GetStudioModelSettings()))
-	, _cameraOperators(new camera_operators::CameraOperators(this))
+	, _cameraOperators(new CameraOperators(this))
 {
-	connect(_cameraOperators, &camera_operators::CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
+	connect(_cameraOperators, &CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
 
 	CreateMainScene();
 	CreateTextureScene();
 
-	auto arcBallCamera = new camera_operators::ArcBallCameraOperator(_editorContext->GetGeneralSettings());
-	_firstPersonCamera = new camera_operators::FirstPersonCameraOperator(_editorContext->GetGeneralSettings());
+	auto arcBallCamera = new ArcBallCameraOperator(_editorContext->GetGeneralSettings());
+	_firstPersonCamera = new FirstPersonCameraOperator(_editorContext->GetGeneralSettings());
 
 	_cameraOperators->Add(arcBallCamera);
-	_cameraOperators->Add(new camera_operators::FreeLookCameraOperator(_editorContext->GetGeneralSettings()));
+	_cameraOperators->Add(new FreeLookCameraOperator(_editorContext->GetGeneralSettings()));
 	_cameraOperators->Add(_firstPersonCamera);
 
 	const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*_modelEntity, Axis::X, true);
@@ -181,9 +181,9 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
 
-	connect(_editorContext->GetGeneralSettings(), &ui::settings::GeneralSettings::ResizeTexturesToPowerOf2Changed,
+	connect(_editorContext->GetGeneralSettings(), &GeneralSettings::ResizeTexturesToPowerOf2Changed,
 		this, &StudioModelAsset::OnResizeTexturesToPowerOf2Changed);
-	connect(_editorContext->GetGeneralSettings(), &ui::settings::GeneralSettings::TextureFiltersChanged,
+	connect(_editorContext->GetGeneralSettings(), &GeneralSettings::TextureFiltersChanged,
 		this, &StudioModelAsset::OnTextureFiltersChanged);
 
 	// Initialize graphics resources.
@@ -349,7 +349,7 @@ void StudioModelAsset::TryRefresh()
 		// Delete the old data now that any remaining references have been cleared.
 		delete oldModelData;
 	}
-	catch (const ::assets::AssetException& e)
+	catch (const AssetException& e)
 	{
 		QMessageBox::critical(nullptr, "Error", QString{"An error occurred while reloading the model \"%1\":\n%2"}.arg(GetFileName()).arg(e.what()));
 		return;
@@ -367,7 +367,7 @@ void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 	_editWidget->SetSceneIndex(_scenes.indexOf(scene));
 }
 
-soundsystem::ISoundSystem* StudioModelAsset::GetSoundSystem()
+ISoundSystem* StudioModelAsset::GetSoundSystem()
 {
 	return _editorContext->GetSoundSystem();
 }
@@ -401,7 +401,7 @@ void StudioModelAsset::CreateTextureScene()
 	// The order that entities are added matters for now since there's no sorting done.
 	_textureEntity = _textureScene->GetEntityList()->Create<TextureEntity>();
 
-	_textureCameraOperator = std::make_unique<camera_operators::TextureCameraOperator>(_textureEntity);
+	_textureCameraOperator = std::make_unique<TextureCameraOperator>(_textureEntity);
 
 	_textureScene->SetCurrentCamera(_textureCameraOperator.get());
 }
@@ -535,7 +535,7 @@ void StudioModelAsset::OnSceneWidgetWheelEvent(QWheelEvent* event)
 	}
 }
 
-void StudioModelAsset::OnCameraChanged(camera_operators::SceneCameraOperator* previous, camera_operators::SceneCameraOperator* current)
+void StudioModelAsset::OnCameraChanged(SceneCameraOperator* previous, SceneCameraOperator* current)
 {
 	_scene->SetCurrentCamera(current);
 	GetProvider()->GetStudioModelSettings()->CameraIsFirstPerson = current == _firstPersonCamera;

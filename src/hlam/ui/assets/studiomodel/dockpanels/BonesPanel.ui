@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ui::assets::studiomodel::BonesPanel</class>
- <widget class="QWidget" name="ui::assets::studiomodel::BonesPanel">
+ <class>studiomodel::BonesPanel</class>
+ <widget class="QWidget" name="studiomodel::BonesPanel">
   <property name="geometry">
    <rect>
     <x>0</x>

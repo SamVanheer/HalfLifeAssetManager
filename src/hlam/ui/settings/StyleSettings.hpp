@@ -3,8 +3,6 @@
 #include <QObject>
 #include <QSettings>
 
-namespace ui::settings
-{
 class StyleSettings final : public QObject
 {
 	Q_OBJECT
@@ -45,4 +43,3 @@ signals:
 private:
 	QString _stylePath;
 };
-}

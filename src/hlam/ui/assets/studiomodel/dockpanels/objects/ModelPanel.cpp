@@ -5,7 +5,7 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/objects/ModelPanel.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 ModelPanel::ModelPanel(StudioModelAsset* asset)
 	: _asset(asset)

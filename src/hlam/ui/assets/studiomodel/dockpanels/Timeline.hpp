@@ -4,11 +4,9 @@
 
 #include "ui_Timeline.h"
 
-namespace ui
-{
 class StateSnapshot;
 
-namespace assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 
@@ -64,5 +62,4 @@ private:
 
 	StudioModelAsset* _asset = nullptr;
 };
-}
 }

@@ -2,8 +2,6 @@
 
 #include "ui/options/OptionsPage.hpp"
 
-namespace ui::options
-{
 QWidget* OptionsPage::GetWidget(EditorContext* editorContext)
 {
 	assert(editorContext);
@@ -36,5 +34,4 @@ void OptionsPage::DestroyWidget()
 		_widget->Destroy();
 		delete _widget;
 	}
-}
 }

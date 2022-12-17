@@ -4,8 +4,6 @@
 
 #include "ui_ArcBallSettingsPanel.h"
 
-namespace ui::camera_operators
-{
 class ArcBallCameraOperator;
 
 class ArcBallSettingsPanel : public QWidget
@@ -26,4 +24,3 @@ private:
 	Ui_ArcBallSettingsPanel _ui;
 	ArcBallCameraOperator* const _cameraOperator;
 };
-}

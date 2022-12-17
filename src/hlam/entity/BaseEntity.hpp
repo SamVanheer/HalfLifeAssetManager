@@ -18,10 +18,7 @@ class SceneContext;
 class TextureLoader;
 }
 
-namespace soundsystem
-{
 class ISoundSystem;
-}
 
 namespace sprite
 {
@@ -33,16 +30,13 @@ namespace studiomdl
 class IStudioModelRenderer;
 }
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 }
 
-namespace ui::settings
-{
 class GeneralSettings;
 class StudioModelSettings;
-}
 
 /**
 *	Pointer to member function used for think methods.
@@ -52,21 +46,21 @@ using ThinkFunction = void (BaseEntity::*)();
 struct EntityContext final
 {
 	//TODO: improve this
-	ui::assets::studiomodel::StudioModelAsset* Asset;
+	studiomodel::StudioModelAsset* Asset;
 	WorldTime* const Time;
 	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
 	sprite::ISpriteRenderer* const SpriteRenderer;
-	soundsystem::ISoundSystem* const SoundSystem;
-	ui::settings::GeneralSettings* const GeneralSettings;
-	ui::settings::StudioModelSettings* const Settings;
+	ISoundSystem* const SoundSystem;
+	GeneralSettings* const GeneralSettings;
+	StudioModelSettings* const Settings;
 
-	EntityContext(ui::assets::studiomodel::StudioModelAsset* asset,
+	EntityContext(studiomodel::StudioModelAsset* asset,
 		WorldTime* time,
 		studiomdl::IStudioModelRenderer* studioModelRenderer,
 		sprite::ISpriteRenderer* spriteRenderer,
-		soundsystem::ISoundSystem* soundSystem,
-		ui::settings::GeneralSettings* generalSettings,
-		ui::settings::StudioModelSettings* settings)
+		ISoundSystem* soundSystem,
+		::GeneralSettings* generalSettings,
+		StudioModelSettings* settings)
 		: Asset(asset)
 		, Time(time)
 		, SpriteRenderer(spriteRenderer)

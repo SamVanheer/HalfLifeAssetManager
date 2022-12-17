@@ -11,11 +11,9 @@
 #include "ui/DockableWidget.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
-namespace ui
-{
 class StateSnapshot;
 
-namespace assets::studiomodel
+namespace studiomodel
 {
 class StudioModelAsset;
 class StudioModelData;
@@ -73,5 +71,4 @@ private:
 
 	double _blendsScales[SequenceBlendCount]{};
 };
-}
 }

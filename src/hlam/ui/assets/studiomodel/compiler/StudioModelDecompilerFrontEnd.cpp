@@ -3,13 +3,13 @@
 #include "ui/settings/StudioModelSettings.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelDecompilerFrontEnd.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
-StudioModelDecompilerFrontEnd::StudioModelDecompilerFrontEnd(EditorContext* editorContext, settings::StudioModelSettings* studioModelSettings)
+StudioModelDecompilerFrontEnd::StudioModelDecompilerFrontEnd(EditorContext* editorContext, StudioModelSettings* studioModelSettings)
 	: CommandLineFrontEnd(editorContext)
 	, _studioModelSettings(studioModelSettings)
 {
-	SetProgram(_studioModelSettings->GetStudiomdlDecompilerFileName(), options::StudioModelExeFilter);
+	SetProgram(_studioModelSettings->GetStudiomdlDecompilerFileName(), StudioModelExeFilter);
 	SetInputFileFilter("MDL Files (*.mdl);;All Files (*.*)");
 }
 

@@ -11,8 +11,6 @@
 #include "graphics/GraphicsConstants.hpp"
 #undef PlaySound
 
-namespace ui::settings
-{
 class StudioModelSettings final : public QObject
 {
 	Q_OBJECT
@@ -136,4 +134,3 @@ private:
 	QString _studiomdlCompilerFileName;
 	QString _studiomdlDecompilerFileName;
 };
-}

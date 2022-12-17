@@ -3,7 +3,7 @@
 #include "ui/assets/studiomodel/dockpanels/objects/GroundPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/objects/ModelPanel.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 ScenePanel::ScenePanel(StudioModelAsset* asset)
 	: _asset(asset)

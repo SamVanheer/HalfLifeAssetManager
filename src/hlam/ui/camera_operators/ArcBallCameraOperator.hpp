@@ -9,8 +9,6 @@
 
 #include "utility/CoordinateSystem.hpp"
 
-namespace ui::camera_operators
-{
 /**
 *	@brief Maps user mouse input to a sphere that can be rotated
 */
@@ -29,7 +27,7 @@ private:
 public:
 	static constexpr float DefaultFOV = 65.f;
 
-	ArcBallCameraOperator(settings::GeneralSettings* generalSettings)
+	ArcBallCameraOperator(GeneralSettings* generalSettings)
 		: SceneCameraOperator(generalSettings)
 	{
 		_camera.SetFieldOfView(DefaultFOV);
@@ -185,4 +183,3 @@ private:
 	ArcBallParameters _parameters;
 	ArcBallParameters _savedParameters;
 };
-}

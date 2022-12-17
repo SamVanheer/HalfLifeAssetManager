@@ -9,7 +9,7 @@ namespace studiomdl
 class EditableStudioModel;
 }
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 class StudioModelData final : public QObject
 {

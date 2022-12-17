@@ -13,8 +13,6 @@
 #include "ui/settings/GameConfiguration.hpp"
 #include "ui/settings/GameEnvironment.hpp"
 
-namespace ui::settings
-{
 class GameConfigurationsSettings final : public QObject
 {
 	Q_OBJECT
@@ -180,9 +178,9 @@ public:
 		settings.endGroup();
 	}
 
-	std::vector<settings::GameEnvironment*> GetGameEnvironments() const
+	std::vector<GameEnvironment*> GetGameEnvironments() const
 	{
-		std::vector<settings::GameEnvironment*> environments;
+		std::vector<GameEnvironment*> environments;
 
 		environments.reserve(_gameEnvironments.size());
 
@@ -194,7 +192,7 @@ public:
 		return environments;
 	}
 
-	settings::GameEnvironment* GetGameEnvironmentById(const QUuid& id) const
+	GameEnvironment* GetGameEnvironmentById(const QUuid& id) const
 	{
 		if (auto it = std::find_if(_gameEnvironments.begin(), _gameEnvironments.end(), [&](const auto& environment)
 			{
@@ -208,7 +206,7 @@ public:
 		return nullptr;
 	}
 
-	void AddGameEnvironment(std::unique_ptr<settings::GameEnvironment>&& gameEnvironment)
+	void AddGameEnvironment(std::unique_ptr<GameEnvironment>&& gameEnvironment)
 	{
 		assert(gameEnvironment);
 
@@ -225,7 +223,7 @@ public:
 			}
 		); it != _gameEnvironments.end())
 		{
-			const std::unique_ptr<settings::GameEnvironment> gameEnvironment{std::move(*it)};
+			const std::unique_ptr<GameEnvironment> gameEnvironment{std::move(*it)};
 
 			if (_activeConfiguration.first == gameEnvironment.get())
 			{
@@ -244,15 +242,15 @@ public:
 
 		for (auto it = _gameEnvironments.begin(); it != _gameEnvironments.end();)
 		{
-			const std::unique_ptr<settings::GameEnvironment> gameEnvironment{std::move(*it)};
+			const std::unique_ptr<GameEnvironment> gameEnvironment{std::move(*it)};
 			it = _gameEnvironments.erase(it);
 			emit GameEnvironmentRemoved(gameEnvironment.get());
 		}
 	}
 
-	std::pair<settings::GameEnvironment*, settings::GameConfiguration*> GetActiveConfiguration() const { return _activeConfiguration; }
+	std::pair<GameEnvironment*, GameConfiguration*> GetActiveConfiguration() const { return _activeConfiguration; }
 
-	void SetActiveConfiguration(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> configuration)
+	void SetActiveConfiguration(std::pair<GameEnvironment*, GameConfiguration*> configuration)
 	{
 		if (_activeConfiguration != configuration)
 		{
@@ -271,15 +269,14 @@ public:
 	}
 
 signals:
-	void GameEnvironmentAdded(settings::GameEnvironment* gameEnvironment);
-	void GameEnvironmentRemoved(settings::GameEnvironment* gameEnvironment);
+	void GameEnvironmentAdded(GameEnvironment* gameEnvironment);
+	void GameEnvironmentRemoved(GameEnvironment* gameEnvironment);
 
-	void ActiveConfigurationChanged(std::pair<settings::GameEnvironment*, settings::GameConfiguration*> current,
-		std::pair<settings::GameEnvironment*, settings::GameConfiguration*> previous);
+	void ActiveConfigurationChanged(std::pair<GameEnvironment*, GameConfiguration*> current,
+		std::pair<GameEnvironment*, GameConfiguration*> previous);
 
 private:
-	std::vector<std::unique_ptr<settings::GameEnvironment>> _gameEnvironments;
+	std::vector<std::unique_ptr<GameEnvironment>> _gameEnvironments;
 
-	std::pair<settings::GameEnvironment*, settings::GameConfiguration*> _activeConfiguration{};
+	std::pair<GameEnvironment*, GameConfiguration*> _activeConfiguration{};
 };
-}

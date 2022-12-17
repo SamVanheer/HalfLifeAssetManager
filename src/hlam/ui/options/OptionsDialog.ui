@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ui::OptionsDialog</class>
- <widget class="QDialog" name="ui::OptionsDialog">
+ <class>OptionsDialog</class>
+ <widget class="QDialog" name="OptionsDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -68,7 +68,7 @@
   <connection>
    <sender>DialogButtons</sender>
    <signal>accepted()</signal>
-   <receiver>ui::OptionsDialog</receiver>
+   <receiver>OptionsDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -84,7 +84,7 @@
   <connection>
    <sender>DialogButtons</sender>
    <signal>rejected()</signal>
-   <receiver>ui::OptionsDialog</receiver>
+   <receiver>OptionsDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

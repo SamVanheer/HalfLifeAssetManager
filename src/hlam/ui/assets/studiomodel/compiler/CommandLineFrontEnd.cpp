@@ -12,7 +12,7 @@
 #include "ui/EditorContext.hpp"
 #include "ui/assets/studiomodel/compiler/CommandLineFrontEnd.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 CommandLineFrontEnd::CommandLineFrontEnd(EditorContext* editorContext)
 	: _editorContext(editorContext)

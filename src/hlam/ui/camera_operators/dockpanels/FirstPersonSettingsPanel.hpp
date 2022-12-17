@@ -4,8 +4,6 @@
 
 #include "ui_FirstPersonSettingsPanel.h"
 
-namespace ui::camera_operators
-{
 class FirstPersonCameraOperator;
 
 class FirstPersonSettingsPanel : public QWidget
@@ -22,4 +20,3 @@ private:
 	Ui_FirstPersonSettingsPanel _ui;
 	FirstPersonCameraOperator* const _cameraOperator;
 };
-}

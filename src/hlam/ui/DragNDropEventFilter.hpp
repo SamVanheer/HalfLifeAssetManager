@@ -8,8 +8,6 @@
 
 #include "EditorContext.hpp"
 
-namespace ui
-{
 /**
 *	@brief Handles drag&drop events and automatically forwards dropped files to the editor context
 */
@@ -58,4 +56,3 @@ protected:
 private:
 	EditorContext* const _editorContext;
 };
-}

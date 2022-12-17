@@ -8,8 +8,6 @@
 
 #include "utility/mathlib.hpp"
 
-namespace ui::camera_operators
-{
 FreeLookSettingsPanel::FreeLookSettingsPanel(FreeLookCameraOperator* cameraOperator)
 	: _cameraOperator(cameraOperator)
 {
@@ -89,5 +87,4 @@ void FreeLookSettingsPanel::OnFieldOfViewChanged(double value)
 void FreeLookSettingsPanel::OnResetFieldOfView()
 {
 	_ui.FieldOfView->setValue(FreeLookCameraOperator::DefaultFOV);
-}
 }

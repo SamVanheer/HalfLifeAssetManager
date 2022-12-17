@@ -35,16 +35,14 @@
 
 #include "utility/WorldTime.hpp"
 
-namespace ui
-{
 EditorContext::EditorContext(
 	QSettings* settings,
-	const std::shared_ptr<settings::GeneralSettings>& generalSettings,
-	const std::shared_ptr<settings::ColorSettings>& colorSettings,
-	const std::shared_ptr<settings::RecentFilesSettings>& recentFilesSettings,
-	const std::shared_ptr<settings::GameConfigurationsSettings>& gameConfigurationsSettings,
-	std::unique_ptr<options::OptionsPageRegistry>&& optionsPageRegistry,
-	std::unique_ptr<assets::IAssetProviderRegistry>&& assetProviderRegistry,
+	const std::shared_ptr<GeneralSettings>& generalSettings,
+	const std::shared_ptr<ColorSettings>& colorSettings,
+	const std::shared_ptr<RecentFilesSettings>& recentFilesSettings,
+	const std::shared_ptr<GameConfigurationsSettings>& gameConfigurationsSettings,
+	std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
+	std::unique_ptr<IAssetProviderRegistry>&& assetProviderRegistry,
 	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
 	QObject* parent)
 	: QObject(parent)
@@ -56,10 +54,10 @@ EditorContext::EditorContext(
 	, _gameConfigurationsSettings(gameConfigurationsSettings)
 	, _timer(new QTimer(this))
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
-	, _fileSystem(std::make_unique<filesystem::FileSystem>())
+	, _fileSystem(std::make_unique<FileSystem>())
 	, _soundSystem(_generalSettings->ShouldEnableAudioPlayback()
-		? std::unique_ptr<soundsystem::ISoundSystem>(std::make_unique<soundsystem::SoundSystem>(CreateQtLoggerSt(logging::HLAMSoundSystem())))
-		: std::make_unique<soundsystem::DummySoundSystem>())
+		? std::unique_ptr<ISoundSystem>(std::make_unique<SoundSystem>(CreateQtLoggerSt(logging::HLAMSoundSystem())))
+		: std::make_unique<DummySoundSystem>())
 	, _worldTime(std::make_unique<WorldTime>())
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
 	, _graphicsContext(std::move(graphicsContext))
@@ -87,11 +85,11 @@ EditorContext::EditorContext(
 	}
 
 	connect(_timer, &QTimer::timeout, this, &EditorContext::OnTimerTick);
-	connect(_generalSettings.get(), &settings::GeneralSettings::TickRateChanged, this, &EditorContext::OnTickRateChanged);
+	connect(_generalSettings.get(), &GeneralSettings::TickRateChanged, this, &EditorContext::OnTickRateChanged);
 
-	connect(_generalSettings.get(), &settings::GeneralSettings::ResizeTexturesToPowerOf2Changed,
+	connect(_generalSettings.get(), &GeneralSettings::ResizeTexturesToPowerOf2Changed,
 		this, [this](bool value) { _textureLoader->SetResizeToPowerOf2(value); });
-	connect(_generalSettings.get(), &settings::GeneralSettings::TextureFiltersChanged,
+	connect(_generalSettings.get(), &GeneralSettings::TextureFiltersChanged,
 		this, [this](graphics::TextureFilter minFilter, graphics::TextureFilter magFilter, graphics::MipmapFilter mipmapFilter)
 		{
 			_textureLoader->SetTextureFilters(minFilter, magFilter, mipmapFilter);
@@ -141,5 +139,4 @@ void EditorContext::OnTickRateChanged(int value)
 	{
 		StartTimer();
 	}
-}
 }

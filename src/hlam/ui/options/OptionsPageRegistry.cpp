@@ -6,8 +6,6 @@
 #include "ui/options/OptionsPage.hpp"
 #include "ui/options/OptionsPageRegistry.hpp"
 
-namespace ui::options
-{
 static bool ComparePages(const std::unique_ptr<OptionsPage>& lhs, const std::unique_ptr<OptionsPage>& rhs)
 {
 	if (lhs->GetCategory() != rhs->GetCategory())
@@ -92,5 +90,4 @@ void OptionsPageRegistry::AddPage(std::unique_ptr<OptionsPage>&& page)
 	_pages.emplace_back(std::move(page));
 
 	_sorted = false;
-}
 }

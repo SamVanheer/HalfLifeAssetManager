@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ui::camera_operators::FreeLookSettingsPanel</class>
- <widget class="QWidget" name="ui::camera_operators::FreeLookSettingsPanel">
+ <class>FreeLookSettingsPanel</class>
+ <widget class="QWidget" name="FreeLookSettingsPanel">
   <property name="geometry">
    <rect>
     <x>0</x>

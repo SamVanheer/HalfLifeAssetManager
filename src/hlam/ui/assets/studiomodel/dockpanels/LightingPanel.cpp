@@ -4,7 +4,7 @@
 #include "ui/assets/studiomodel/dockpanels/SkyLightPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/LightingPanel.hpp"
 
-namespace ui::assets::studiomodel
+namespace studiomodel
 {
 LightingPanel::LightingPanel(StudioModelAsset* asset)
 	: _asset(asset)
