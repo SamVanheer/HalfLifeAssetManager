@@ -8,6 +8,16 @@
 
 class StudioModelSettings;
 
+namespace sprite
+{
+class ISpriteRenderer;
+}
+
+namespace studiomdl
+{
+class IStudioModelRenderer;
+}
+
 namespace studiomodel
 {
 inline const QString StudioModelExtension{QStringLiteral("mdl")};
@@ -18,11 +28,7 @@ Q_DECLARE_LOGGING_CATEGORY(HLAMStudioModel)
 class StudioModelAssetProvider final : public AssetProvider
 {
 public:
-	StudioModelAssetProvider(const std::shared_ptr<StudioModelSettings>& studioModelSettings)
-		: _studioModelSettings(studioModelSettings)
-	{
-	}
-
+	explicit StudioModelAssetProvider(const std::shared_ptr<StudioModelSettings>& studioModelSettings);
 	~StudioModelAssetProvider();
 
 	QString GetProviderName() const override { return "Studiomodel"; }
@@ -40,12 +46,26 @@ public:
 
 	bool CanLoad(const QString& fileName, FILE* file) const override;
 
-	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) const override;
+	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) override;
 
 	StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
 
+	studiomdl::IStudioModelRenderer* GetStudioModelRenderer() const { return _studioModelRenderer.get(); }
+
+	sprite::ISpriteRenderer* GetSpriteRenderer() const { return _spriteRenderer.get(); }
+
+private:
+	void Initialize(EditorContext* editorContext);
+
+private slots:
+	void OnTick();
+
 private:
 	const std::shared_ptr<StudioModelSettings> _studioModelSettings;
+	std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
+	std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
+
+	bool _initialized = false;
 };
 
 /**
@@ -76,7 +96,7 @@ public:
 		return _assetProvider->CanLoad(fileName, file);
 	}
 
-	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) const override
+	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) override
 	{
 		return _assetProvider->Load(editorContext, fileName, file);
 	}

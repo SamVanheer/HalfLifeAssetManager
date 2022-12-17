@@ -2,11 +2,15 @@
 #include <QFileInfo>
 #include <QMenu>
 
+#include "formats/sprite/SpriteRenderer.hpp"
 #include "formats/studiomodel/StudioModelIO.hpp"
+#include "formats/studiomodel/StudioModelRenderer.hpp"
 #include "formats/studiomodel/StudioModelUtils.hpp"
 
+#include "qt/QtLogSink.hpp"
 #include "qt/QtUtilities.hpp"
 
+#include "ui/EditorContext.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelAssetProvider.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelCompilerFrontEnd.hpp"
@@ -15,6 +19,11 @@
 namespace studiomodel
 {
 Q_LOGGING_CATEGORY(HLAMStudioModel, "hlam.studiomodel")
+
+StudioModelAssetProvider::StudioModelAssetProvider(const std::shared_ptr<StudioModelSettings>& studioModelSettings)
+	: _studioModelSettings(studioModelSettings)
+{
+}
 
 StudioModelAssetProvider::~StudioModelAssetProvider() = default;
 
@@ -52,8 +61,14 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) cons
 	return studiomdl::IsStudioModel(file);
 }
 
-std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName, FILE* file) const
+std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName, FILE* file)
 {
+	if (!_initialized)
+	{
+		_initialized = true;
+		Initialize(editorContext);
+	}
+
 	qCDebug(HLAMStudioModel) << "Trying to load model" << fileName;
 
 	const auto filePath = std::filesystem::u8path(fileName.toStdString());
@@ -75,5 +90,22 @@ std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorConte
 
 	return std::make_unique<StudioModelAsset>(std::move(updatedFileName), editorContext, this,
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
+}
+
+void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
+{
+	_studioModelRenderer = std::make_unique<studiomdl::StudioModelRenderer>(
+		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()),
+		editorContext->GetOpenGLFunctions(), editorContext->GetColorSettings());
+
+	_spriteRenderer = std::make_unique<sprite::SpriteRenderer>(
+		CreateQtLoggerSt(logging::HLAMSpriteRenderer()), editorContext->GetWorldTime());
+
+	connect(editorContext, &EditorContext::Tick, this, &StudioModelAssetProvider::OnTick);
+}
+
+void StudioModelAssetProvider::OnTick()
+{
+	_studioModelRenderer->RunFrame();
 }
 }

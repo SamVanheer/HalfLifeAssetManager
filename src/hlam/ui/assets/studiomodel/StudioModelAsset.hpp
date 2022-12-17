@@ -11,10 +11,13 @@
 #include "utility/mathlib.hpp"
 
 class BackgroundEntity;
+class CameraOperators;
 class EntityContext;
 class GroundEntity;
 class HLMVStudioModelEntity;
+class SceneCameraOperator;
 class StateSnapshot;
+class TextureCameraOperator;
 class TextureEntity;
 
 namespace graphics
@@ -24,19 +27,10 @@ class Scene;
 class TextureLoader;
 }
 
-namespace sprite
-{
-class ISpriteRenderer;
-}
-
 namespace studiomdl
 {
 class IStudioModelRenderer;
 }
-
-class CameraOperators;
-class SceneCameraOperator;
-class TextureCameraOperator;
 
 namespace studiomodel
 {
@@ -84,9 +78,7 @@ public:
 
 	graphics::TextureLoader* GetTextureLoader();
 
-	studiomdl::IStudioModelRenderer* GetStudioModelRenderer() { return _studioModelRenderer.get(); }
-
-	sprite::ISpriteRenderer* GetSpriteRenderer() { return _spriteRenderer.get(); }
+	studiomdl::IStudioModelRenderer* GetStudioModelRenderer() const;
 
 	const std::vector<graphics::Scene*>& GetScenes() { return _scenes; }
 
@@ -171,8 +163,6 @@ private:
 	const StudioModelAssetProvider* const _provider;
 	std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;
 	StudioModelData* _modelData;
-	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
-	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<EntityContext> _entityContext;
 
 	std::vector<graphics::Scene*> _scenes;

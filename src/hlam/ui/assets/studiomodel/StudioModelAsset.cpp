@@ -25,10 +25,8 @@
 #include "entity/PlayerHitboxEntity.hpp"
 #include "entity/TextureEntity.hpp"
 
-#include "formats/sprite/SpriteRenderer.hpp"
 #include "formats/studiomodel/DumpModelInfo.hpp"
 #include "formats/studiomodel/StudioModelIO.hpp"
-#include "formats/studiomodel/StudioModelRenderer.hpp"
 #include "formats/studiomodel/StudioModelUtils.hpp"
 
 #include "graphics/IGraphicsContext.hpp"
@@ -124,14 +122,10 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
 	, _modelData(new StudioModelData(_editableStudioModel.get(), this))
-	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(
-		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()), _editorContext->GetOpenGLFunctions(), _editorContext->GetColorSettings()))
-	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(
-		CreateQtLoggerSt(logging::HLAMSpriteRenderer()), _editorContext->GetWorldTime()))
 	, _entityContext(std::make_unique<EntityContext>(this,
 		_editorContext->GetWorldTime(),
-		_studioModelRenderer.get(),
-		_spriteRenderer.get(),
+		_provider->GetStudioModelRenderer(),
+		_provider->GetSpriteRenderer(),
 		_editorContext->GetSoundSystem(),
 		_editorContext->GetGeneralSettings(),
 		_provider->GetStudioModelSettings()))
@@ -372,6 +366,11 @@ graphics::TextureLoader* StudioModelAsset::GetTextureLoader()
 	return _editorContext->GetTextureLoader();
 }
 
+studiomdl::IStudioModelRenderer* StudioModelAsset::GetStudioModelRenderer() const
+{
+	return GetProvider()->GetStudioModelRenderer();
+}
+
 void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 {
 	const auto it = std::find(_scenes.begin(), _scenes.end(), scene);
@@ -492,8 +491,6 @@ void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
 void StudioModelAsset::OnTick()
 {
 	//TODO: update asset-local world time
-	_studioModelRenderer->RunFrame();
-
 	for (auto scene : _scenes)
 	{
 		scene->Tick();

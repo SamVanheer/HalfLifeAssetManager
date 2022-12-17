@@ -120,7 +120,7 @@ public:
 	virtual bool CanLoad(const QString& fileName, FILE* file) const = 0;
 
 	//TODO: pass a filesystem object to resolve additional file locations with
-	virtual std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) const = 0;
+	virtual std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) = 0;
 };
 
 /**
