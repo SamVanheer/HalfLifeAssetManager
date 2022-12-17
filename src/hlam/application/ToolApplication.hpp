@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include <QMainWindow>
 #include <QObject>
@@ -12,6 +13,7 @@
 
 #include "application/SingleInstance.hpp"
 
+class IAssetManagerPlugin;
 class QApplication;
 
 namespace graphics
@@ -23,6 +25,21 @@ namespace ui
 {
 class EditorContext;
 class MainWindow;
+}
+
+namespace ui::assets
+{
+class IAssetProviderRegistry;
+}
+
+namespace ui::options
+{
+class OptionsPageRegistry;
+}
+
+namespace ui::settings
+{
+class ColorSettings;
 }
 
 /**
@@ -52,7 +69,23 @@ private:
 	std::unique_ptr<ui::EditorContext> CreateEditorContext(
 		std::unique_ptr<QSettings>&& settings, std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext);
 
+	bool AddPlugins(
+		QSettings* settings,
+		ui::settings::ColorSettings* colorSettings,
+		ui::assets::IAssetProviderRegistry* assetProviderRegistry,
+		ui::options::OptionsPageRegistry* optionsPageRegistry);
+
 	std::unique_ptr<graphics::IGraphicsContext> InitializeOpenGL();
+
+private:
+	template<typename TFunction, typename... Args>
+	void CallPlugins(TFunction&& function, Args&&... args)
+	{
+		for (auto& plugin : _plugins)
+		{
+			(*plugin.*function)(std::forward<Args>(args)...);
+		}
+	}
 
 private slots:
 	void OnExit();
@@ -63,6 +96,8 @@ private slots:
 
 private:
 	QApplication* _application{};
+
+	std::vector<std::unique_ptr<IAssetManagerPlugin>> _plugins;
 
 	std::unique_ptr<ui::EditorContext> _editorContext;
 	QPointer<ui::MainWindow> _mainWindow;

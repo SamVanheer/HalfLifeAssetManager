@@ -8,20 +8,20 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
-#include <QLocalServer>
-#include <QLocalSocket>
 #include <QLoggingCategory>
 #include <QMessageBox>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
-#include <QOpenGLFunctions>
 #include <QScopedPointer>
 #include <QSettings>
-#include <QStyleFactory>
 #include <QSurfaceFormat>
 #include <QTextStream>
 
+#include "application/ApplicationBuilder.hpp"
 #include "application/ToolApplication.hpp"
+
+#include "plugins/IAssetManagerPlugin.hpp"
+#include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
 
 #include "qt/QtLogging.hpp"
 
@@ -30,24 +30,21 @@
 #include "ui/OpenGLGraphicsContext.hpp"
 
 #include "ui/assets/Assets.hpp"
-#include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/assets/studiomodel/StudioModelColors.hpp"
 
 #include "ui/options/OptionsPageColors.hpp"
 #include "ui/options/OptionsPageGameConfigurations.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/options/OptionsPageRegistry.hpp"
-#include "ui/options/OptionsPageStudioModel.hpp"
 #include "ui/options/OptionsPageStyle.hpp"
 
 #include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/GameConfigurationsSettings.hpp"
 #include "ui/settings/GeneralSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
-#include "ui/settings/StudioModelSettings.hpp"
 #include "ui/settings/StyleSettings.hpp"
 
 using namespace ui::assets;
+using namespace logging;
 
 const QString LogBaseFileName{QStringLiteral("HLAM-Log.txt")};
 
@@ -95,7 +92,8 @@ void FileMessageOutput(QtMsgType type, const QMessageLogContext& context, const 
 		break;
 	}
 
-	stream << messageType << ": " << msg << " (" << context.file << ":" << context.line << ", " << context.function << ")\n";
+	stream << messageType << ": "
+		<< msg << " (" << context.file << ":" << context.line << ", " << context.function << ")\n";
 
 	//Let the default handler handle abort
 	/*
@@ -153,10 +151,14 @@ int ToolApplication::Run(int argc, char* argv[])
 			const int minimumSupportedVersionCode = makeVersionCode(2, 1);
 
 			//Only check this once
-			if (!settings->value("graphics/checked_opengl_version", false).toBool() && versionCode < minimumSupportedVersionCode)
+			if (!settings->value("graphics/checked_opengl_version", false).toBool()
+				&& versionCode < minimumSupportedVersionCode)
 			{
-				QMessageBox::warning(nullptr, "Warning", QString{"%1 may not work correctly with your version of OpenGL (%2.%3)"}
-					.arg(programName).arg(openGLFormat.majorVersion()).arg(openGLFormat.minorVersion()));
+				QMessageBox::warning(nullptr, "Warning",
+					QString{"%1 may not work correctly with your version of OpenGL (%2.%3)"}
+						.arg(programName)
+						.arg(openGLFormat.majorVersion())
+						.arg(openGLFormat.minorVersion()));
 
 				settings->setValue("graphics/checked_opengl_version", true);
 			}
@@ -175,6 +177,11 @@ int ToolApplication::Run(int argc, char* argv[])
 		}
 
 		_editorContext = CreateEditorContext(std::move(settings), std::move(offscreenContext));
+
+		if (!_editorContext)
+		{
+			return EXIT_FAILURE;
+		}
 
 		_mainWindow = new ui::MainWindow(_editorContext.get());
 
@@ -319,46 +326,31 @@ std::unique_ptr<ui::EditorContext> ToolApplication::CreateEditorContext(
 	const auto generalSettings{std::make_shared<ui::settings::GeneralSettings>()};
 	const auto gameConfigurationsSettings{std::make_shared<ui::settings::GameConfigurationsSettings>()};
 	const auto recentFilesSettings{std::make_shared<ui::settings::RecentFilesSettings>()};
-	const auto studioModelSettings{std::make_shared<ui::settings::StudioModelSettings>()};
 	const auto styleSettings{std::make_shared<ui::settings::StyleSettings>()};
 
 	connect(styleSettings.get(), &ui::settings::StyleSettings::StylePathChanged, this, &ToolApplication::OnStylePathChanged);
 
-	//TODO: this needs to be simplified and moved somewhere else
-	const auto addColor = [&](const studiomodel::ColorInfo& color)
-	{
-		colorSettings->Add(color.Name, color.DefaultColor);
-	};
+	auto assetProviderRegistry{std::make_unique<ui::assets::AssetProviderRegistry>()};
+	auto optionsPageRegistry{std::make_unique<ui::options::OptionsPageRegistry>()};
 
-	addColor(studiomodel::GroundColor);
-	addColor(studiomodel::BackgroundColor);
-	addColor(studiomodel::CrosshairColor);
-	addColor(studiomodel::LightColor);
-	addColor(studiomodel::WireframeColor);
+	if (!AddPlugins(settings.get(), colorSettings.get(), assetProviderRegistry.get(), optionsPageRegistry.get()))
+	{
+		return {};
+	}
 
 	//TODO: settings loading needs to be made more flexible
 	colorSettings->LoadSettings(*settings);
 	generalSettings->LoadSettings(*settings);
 	recentFilesSettings->LoadSettings(*settings);
 	gameConfigurationsSettings->LoadSettings(*settings);
-	studioModelSettings->LoadSettings(*settings);
 	styleSettings->LoadSettings(*settings);
 
-	auto optionsPageRegistry{std::make_unique<ui::options::OptionsPageRegistry>()};
+	CallPlugins(&IAssetManagerPlugin::LoadSettings, *settings);
 
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGeneral>(generalSettings, recentFilesSettings));
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageColors>(colorSettings));
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageGameConfigurations>(gameConfigurationsSettings));
-	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageStudioModel>(studioModelSettings));
 	optionsPageRegistry->AddPage(std::make_unique<ui::options::OptionsPageStyle>(styleSettings));
-
-	auto assetProviderRegistry{std::make_unique<ui::assets::AssetProviderRegistry>()};
-
-	auto studioModelAssetProvider = std::make_unique<studiomodel::StudioModelAssetProvider>(studioModelSettings);
-	auto studioModelImportProvider = std::make_unique<studiomodel::StudioModelDolImportProvider>(studioModelAssetProvider.get());
-
-	assetProviderRegistry->AddProvider(std::move(studioModelAssetProvider));
-	assetProviderRegistry->AddProvider(std::move(studioModelImportProvider));
 
 	return std::make_unique<ui::EditorContext>(
 		settings.release(),
@@ -369,6 +361,38 @@ std::unique_ptr<ui::EditorContext> ToolApplication::CreateEditorContext(
 		std::move(optionsPageRegistry),
 		std::move(assetProviderRegistry),
 		std::move(graphicsContext));
+}
+
+bool ToolApplication::AddPlugins(
+	QSettings* settings,
+	ui::settings::ColorSettings* colorSettings,
+	ui::assets::IAssetProviderRegistry* assetProviderRegistry,
+	ui::options::OptionsPageRegistry* optionsPageRegistry)
+{
+	ApplicationBuilder builder{_application, settings, colorSettings, assetProviderRegistry, optionsPageRegistry};
+
+	const auto addPlugin = [&builder, this](std::unique_ptr<IAssetManagerPlugin>&& plugin)
+	{
+		if (!plugin->Initialize(builder))
+		{
+			QMessageBox::critical(nullptr, "Fatal Error",
+				QString{"Error initializing plugin \"%1\""}.arg(plugin->GetName()));
+			return false;
+		}
+
+		qCDebug(HLAM) << "Adding plugin " << plugin->GetName();
+
+		_plugins.push_back(std::move(plugin));
+
+		return true;
+	};
+
+	if (!addPlugin(std::make_unique<HalfLifeAssetManagerPlugin>()))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 std::unique_ptr<graphics::IGraphicsContext> ToolApplication::InitializeOpenGL()
@@ -411,6 +435,8 @@ void ToolApplication::OnExit()
 	_editorContext->GetGeneralSettings()->SaveSettings(*settings);
 	_editorContext->GetRecentFiles()->SaveSettings(*settings);
 
+	CallPlugins(&IAssetManagerPlugin::SaveSettings, *settings);
+
 	settings->sync();
 
 	if (_singleInstance)
@@ -419,6 +445,10 @@ void ToolApplication::OnExit()
 	}
 
 	_editorContext.reset();
+
+	CallPlugins(&IAssetManagerPlugin::Shutdown);
+
+	_plugins.clear();
 }
 
 void ToolApplication::OnFileNameReceived(const QString& fileName)
