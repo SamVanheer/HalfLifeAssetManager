@@ -9,12 +9,12 @@
 
 namespace studiomodel
 {
-class StudioModelAsset;
+class StudioModelAssetProvider;
 
 class LightingPanel final : public DockableWidget
 {
 public:
-	LightingPanel(StudioModelAsset* asset);
+	explicit LightingPanel(StudioModelAssetProvider* provider);
 	~LightingPanel();
 
 private:
@@ -22,6 +22,6 @@ private:
 
 private:
 	Ui_LightingPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
 };
 }

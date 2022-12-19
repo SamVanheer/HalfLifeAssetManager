@@ -5,6 +5,7 @@
 
 #include "formats/studiomodel/EditableStudioModel.hpp"
 
+#include "ui/StateSnapshot.hpp"
 #include "ui/assets/Assets.hpp"
 #include "ui/assets/studiomodel/StudioModelAssetProvider.hpp"
 
@@ -16,7 +17,6 @@ class EntityContext;
 class GroundEntity;
 class HLMVStudioModelEntity;
 class SceneCameraOperator;
-class StateSnapshot;
 class TextureCameraOperator;
 class TextureEntity;
 
@@ -35,7 +35,6 @@ class IStudioModelRenderer;
 namespace studiomodel
 {
 class StudioModelData;
-class StudioModelEditWidget;
 
 enum class Pose
 {
@@ -49,7 +48,7 @@ class StudioModelAsset final : public Asset
 
 public:
 	StudioModelAsset(QString&& fileName,
-		EditorContext* editorContext, const StudioModelAssetProvider* provider,
+		EditorContext* editorContext, StudioModelAssetProvider* provider,
 		std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel);
 
 	~StudioModelAsset();
@@ -82,6 +81,8 @@ public:
 
 	const std::vector<graphics::Scene*>& GetScenes() { return _scenes; }
 
+	graphics::Scene* GetCurrentScene() const { return _currentScene; }
+
 	void SetCurrentScene(graphics::Scene* scene);
 
 	graphics::Scene* GetScene() { return _scene.get(); }
@@ -107,6 +108,9 @@ public:
 
 	Pose GetPose() const { return _pose; }
 
+	void OnActivated();
+	void OnDeactivated();
+
 private:
 	void CreateMainScene();
 	void CreateTextureScene();
@@ -116,8 +120,6 @@ private:
 
 signals:
 	void Tick();
-
-	void AssetChanged(StudioModelAsset* asset);
 
 	void SaveSnapshot(StateSnapshot* snapshot);
 
@@ -134,6 +136,8 @@ public slots:
 
 private slots:
 	void OnTick();
+
+	void OnIsActiveChanged(bool value);
 
 	void OnResizeTexturesToPowerOf2Changed();
 
@@ -162,7 +166,7 @@ private slots:
 
 private:
 	EditorContext* const _editorContext;
-	const StudioModelAssetProvider* const _provider;
+	StudioModelAssetProvider* const _provider;
 	std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;
 	StudioModelData* _modelData;
 	const std::unique_ptr<EntityContext> _entityContext;
@@ -177,7 +181,7 @@ private:
 
 	SceneCameraOperator* _firstPersonCamera;
 
-	StudioModelEditWidget* _editWidget{};
+	QWidget* _editWidget{};
 
 	std::shared_ptr<HLMVStudioModelEntity> _modelEntity;
 	std::shared_ptr<BackgroundEntity> _backgroundEntity;
@@ -189,7 +193,11 @@ private:
 
 	std::unique_ptr<TextureCameraOperator> _textureCameraOperator;
 
+	StateSnapshot _snapshot;
+
 	//TODO: this is temporarily put here, but needs to be put somewhere else eventually
 	Pose _pose = Pose::Sequences;
+
+	QMetaObject::Connection _tickConnection;
 };
 }

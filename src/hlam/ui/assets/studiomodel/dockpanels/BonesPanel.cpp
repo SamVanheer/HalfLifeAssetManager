@@ -53,8 +53,8 @@ static void SyncBonePropertiesToUI(const studiomdl::Bone& bone, Ui_BonesPanel& u
 	ui.RotationScaleZ->setValue(bone.Axes[5].Scale);
 }
 
-BonesPanel::BonesPanel(StudioModelAsset* asset)
-	: _asset(asset)
+BonesPanel::BonesPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
@@ -81,15 +81,13 @@ BonesPanel::BonesPanel(StudioModelAsset* asset)
 		spinBox->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	}
 
-	const auto boneNameValidator = new UniqueBoneNameValidator(MaxBoneNameBytes - 1, _asset, this);
+	const auto boneNameValidator = new UniqueBoneNameValidator(MaxBoneNameBytes - 1, _provider, this);
 
 	_ui.BoneName->setValidator(boneNameValidator);
 
 	connect(_ui.Bones, qOverload<int>(&QComboBox::currentIndexChanged), boneNameValidator, &UniqueBoneNameValidator::SetCurrentIndex);
 
-	connect(_asset, &StudioModelAsset::AssetChanged, this, &BonesPanel::OnAssetChanged);
-	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &BonesPanel::OnSaveSnapshot);
-	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &BonesPanel::OnLoadSnapshot);
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &BonesPanel::OnAssetChanged);
 
 	connect(_ui.Bones, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneChanged);
 	connect(_ui.HighlightBone, &QCheckBox::stateChanged, this, &BonesPanel::OnHightlightBoneChanged);
@@ -121,7 +119,7 @@ BonesPanel::BonesPanel(StudioModelAsset* asset)
 	connect(_ui.BoneControllerAxis, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneControllerAxisChanged);
 	connect(_ui.BoneController, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneControllerChanged);
 
-	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
+	OnAssetChanged(_provider->GetDummyAsset());
 }
 
 BonesPanel::~BonesPanel() = default;
@@ -145,7 +143,17 @@ void BonesPanel::UpdateRootBonesCount()
 
 void BonesPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto modelData = asset->GetModelData();
+	if (_asset)
+	{
+		_asset->disconnect(this);
+	}
+
+	_asset = asset;
+
+	auto modelData = _asset->GetModelData();
+
+	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &BonesPanel::OnSaveSnapshot);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &BonesPanel::OnLoadSnapshot);
 
 	//Set up this list first so when the first bone is selected by _ui.Bones->setModel it has everything set up properly
 	{

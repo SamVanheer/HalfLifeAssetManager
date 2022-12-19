@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <QAction>
 #include <QDockWidget>
 #include <QMainWindow>
@@ -36,13 +38,17 @@
 
 namespace studiomodel
 {
-StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset)
+StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAssetProvider* provider)
 	: _editorContext(editorContext)
-	, _asset(asset)
+	, _provider(provider)
 {
 	_ui.setupUi(this);
 
 	_view = new StudioModelView(_ui.Window);
+
+	_timeline = new Timeline(_provider, this);
+
+	_ui.MainLayout->addWidget(_timeline);
 
 	_sceneWidget = new SceneWidget(editorContext->GetOpenGLFunctions(), editorContext->GetTextureLoader(), this);
 
@@ -52,11 +58,6 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	//as well as the scene widget (has special behavior due to being OpenGL)
 	_ui.Window->installEventFilter(eventFilter);
 	_sceneWidget->installEventFilter(eventFilter);
-
-	for (auto scene : _asset->GetScenes())
-	{
-		_view->AddScene(QString::fromStdString(scene->GetName()));
-	}
 
 	_view->SetWidget(_sceneWidget->GetContainer());
 
@@ -89,20 +90,22 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 		return dock;
 	};
 
-	addDockPanel(new CamerasPanel(_asset->GetCameraOperators()), "Cameras");
-	addDockPanel(new ScenePanel(_asset), "Scene");
-	addDockPanel(new ModelInfoPanel(_asset), "Model Info");
-	auto modelDisplayDock = addDockPanel(new ModelDisplayPanel(_asset), "Model Display");
-	addDockPanel(new LightingPanel(_asset), "Lighting");
-	addDockPanel(new SequencesPanel(_asset), "Sequences");
-	addDockPanel(new BodyPartsPanel(_asset), "Body Parts");
-	addDockPanel(new TexturesPanel(_asset), "Textures");
-	addDockPanel(new ModelDataPanel(_asset), "Model Data");
-	auto flagsDock = addDockPanel(new FlagsPanel(_asset), "Model Flags");
-	addDockPanel(new BonesPanel(_asset), "Bones");
-	addDockPanel(new AttachmentsPanel(_asset), "Attachments");
-	addDockPanel(new HitboxesPanel(_asset), "Hitboxes");
-	auto transformDock = addDockPanel(new TransformPanel(_asset), "Transformation", Qt::DockWidgetArea::LeftDockWidgetArea);
+	_camerasPanel = new CamerasPanel();
+
+	addDockPanel(_camerasPanel, "Cameras");
+	addDockPanel(new ScenePanel(_provider), "Scene");
+	addDockPanel(new ModelInfoPanel(_provider), "Model Info");
+	auto modelDisplayDock = addDockPanel(new ModelDisplayPanel(_provider), "Model Display");
+	addDockPanel(new LightingPanel(_provider), "Lighting");
+	addDockPanel(new SequencesPanel(_provider), "Sequences");
+	addDockPanel(new BodyPartsPanel(_provider), "Body Parts");
+	addDockPanel(new TexturesPanel(_provider), "Textures");
+	addDockPanel(new ModelDataPanel(_provider), "Model Data");
+	auto flagsDock = addDockPanel(new FlagsPanel(_provider), "Model Flags");
+	addDockPanel(new BonesPanel(_provider), "Bones");
+	addDockPanel(new AttachmentsPanel(_provider), "Attachments");
+	addDockPanel(new HitboxesPanel(_provider), "Hitboxes");
+	auto transformDock = addDockPanel(new TransformPanel(_provider), "Transformation", Qt::DockWidgetArea::LeftDockWidgetArea);
 
 	//Tabify all dock widgets except floating ones
 	{
@@ -134,14 +137,12 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	transformDock->toggleViewAction()->setShortcut(QKeySequence{Qt::CTRL + Qt::Key::Key_M});
 
-	_view->GetInfoBar()->SetAsset(_asset);
-
-	_ui.Timeline->SetAsset(_asset);
-
 	connect(_view, &StudioModelView::SceneIndexChanged, this, &StudioModelEditWidget::SceneIndexChanged);
 	connect(_view, &StudioModelView::PoseChanged, this, &StudioModelEditWidget::PoseChanged);
 	connect(_sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw);
 	connect(_editorContext, &EditorContext::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
+
+	SetAsset(_provider->GetDummyAsset());
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
@@ -149,6 +150,31 @@ StudioModelEditWidget::~StudioModelEditWidget() = default;
 int StudioModelEditWidget::GetSceneIndex() const
 {
 	return _view->GetSceneIndex();
+}
+
+void StudioModelEditWidget::SetAsset(StudioModelAsset* asset)
+{
+	{
+		const QSignalBlocker viewBlocker{_view};
+		_view->Clear();
+
+		for (auto scene : asset->GetScenes())
+		{
+			_view->AddScene(QString::fromStdString(scene->GetName()));
+		}
+	}
+
+	const auto& scenes = asset->GetScenes();
+
+	const int index = std::find(scenes.begin(), scenes.end(), asset->GetCurrentScene()) - scenes.begin();
+
+	_view->SetSceneIndex(index);
+	_sceneWidget->SetScene(asset->GetCurrentScene());
+
+	_view->GetInfoBar()->SetAsset(asset);
+	_timeline->SetAsset(asset);
+
+	_camerasPanel->SetCameraOperators(asset->GetCameraOperators());
 }
 
 void StudioModelEditWidget::SetSceneIndex(int index)

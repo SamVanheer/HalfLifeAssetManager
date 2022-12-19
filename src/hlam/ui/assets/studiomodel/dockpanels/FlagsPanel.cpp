@@ -15,12 +15,12 @@ namespace studiomodel
 {
 const std::string_view CheckBoxModelFlagProperty{"CheckBoxFlagProperty"};
 
-FlagsPanel::FlagsPanel(StudioModelAsset* asset)
-	: _asset(asset)
+FlagsPanel::FlagsPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
-	connect(_asset, &StudioModelAsset::AssetChanged, this, &FlagsPanel::OnAssetChanged);
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &FlagsPanel::OnAssetChanged);
 
 	connect(_ui.RocketTrail, &QCheckBox::stateChanged, this, &FlagsPanel::OnFlagChanged);
 	connect(_ui.GrenadeSmoke, &QCheckBox::stateChanged, this, &FlagsPanel::OnFlagChanged);
@@ -50,12 +50,19 @@ FlagsPanel::FlagsPanel(StudioModelAsset* asset)
 	_ui.HitboxCollision->setProperty(CheckBoxModelFlagProperty.data(), EF_HITBOXCOLLISIONS);
 	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty.data(), EF_FORCESKYLIGHT);
 
-	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
+	OnAssetChanged(_provider->GetDummyAsset());
 }
 
 void FlagsPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto modelData = asset->GetModelData();
+	if (_asset)
+	{
+		_asset->disconnect(this);
+	}
+
+	_asset = asset;
+
+	auto modelData = _asset->GetModelData();
 
 	SetFlags(asset->GetEntity()->GetEditableModel()->Flags);
 

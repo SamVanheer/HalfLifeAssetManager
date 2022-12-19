@@ -15,10 +15,13 @@
 
 namespace studiomodel
 {
-Timeline::Timeline(QWidget* parent)
+Timeline::Timeline(StudioModelAssetProvider* provider, QWidget* parent)
 	: QWidget(parent)
+	, _provider(provider)
 {
 	_ui.setupUi(this);
+
+	connect(_provider, &StudioModelAssetProvider::Tick, this, &Timeline::OnTick);
 
 	connect(_ui.FrameSlider, &QSlider::valueChanged, this, &Timeline::OnFrameSliderChanged);
 	connect(_ui.FrameSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Timeline::OnFrameSpinnerChanged);
@@ -67,7 +70,6 @@ void Timeline::SetAsset(StudioModelAsset* asset)
 
 	if (_asset)
 	{
-		disconnect(_asset, &StudioModelAsset::Tick, this, &Timeline::OnTick);
 		disconnect(_asset, &StudioModelAsset::LoadSnapshot, this, &Timeline::OnLoadSnapshot);
 	}
 
@@ -75,7 +77,6 @@ void Timeline::SetAsset(StudioModelAsset* asset)
 
 	if (_asset)
 	{
-		connect(_asset, &StudioModelAsset::Tick, this, &Timeline::OnTick);
 		connect(_asset, &StudioModelAsset::LoadSnapshot, this, &Timeline::OnLoadSnapshot);
 	}
 

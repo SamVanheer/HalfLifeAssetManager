@@ -9,12 +9,13 @@ class StateSnapshot;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 class StudioModelData;
 
 class HitboxesPanel final : public DockableWidget
 {
 public:
-	HitboxesPanel(StudioModelAsset* asset);
+	explicit HitboxesPanel(StudioModelAssetProvider* provider);
 	~HitboxesPanel();
 
 private:
@@ -37,7 +38,8 @@ private slots:
 
 private:
 	Ui_HitboxesPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 	StudioModelData* _previousModelData{};
 
 	bool _changingHitboxProperties{false};

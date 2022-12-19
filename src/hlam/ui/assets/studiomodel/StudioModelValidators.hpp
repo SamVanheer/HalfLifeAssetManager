@@ -4,21 +4,21 @@
 
 namespace studiomodel
 {
-class StudioModelAsset;
+class StudioModelAssetProvider;
 
 class BaseUniqueNameValidator : public qt::ByteLengthValidator
 {
 public:
-	BaseUniqueNameValidator(int maxByteLength, StudioModelAsset* asset, QObject* parent = nullptr)
+	BaseUniqueNameValidator(int maxByteLength, StudioModelAssetProvider* provider, QObject* parent = nullptr)
 		: ByteLengthValidator(maxByteLength, parent)
-		, _asset(asset)
+		, _provider(provider)
 	{
 	}
 
 	State validate(QString& text, int& pos) const override;
 
 protected:
-	virtual bool IsUnique(const QString& text) const = 0;
+	virtual bool IsUnique(StudioModelAsset* asset, const QString& text) const = 0;
 
 public slots:
 	void SetCurrentIndex(int index)
@@ -32,7 +32,7 @@ public slots:
 
 protected:
 	int _currentIndex{-1};
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
 };
 
 class UniqueAttachmentNameValidator : public BaseUniqueNameValidator
@@ -41,7 +41,7 @@ public:
 	using BaseUniqueNameValidator::BaseUniqueNameValidator;
 
 protected:
-	bool IsUnique(const QString& text) const override;
+	bool IsUnique(StudioModelAsset* asset, const QString& text) const override;
 };
 
 class UniqueBoneNameValidator : public BaseUniqueNameValidator
@@ -50,7 +50,7 @@ public:
 	using BaseUniqueNameValidator::BaseUniqueNameValidator;
 
 protected:
-	bool IsUnique(const QString& text) const override;
+	bool IsUnique(StudioModelAsset* asset, const QString& text) const override;
 };
 
 class UniqueTextureNameValidator : public BaseUniqueNameValidator
@@ -59,7 +59,7 @@ public:
 	using BaseUniqueNameValidator::BaseUniqueNameValidator;
 
 protected:
-	bool IsUnique(const QString& text) const override;
+	bool IsUnique(StudioModelAsset* asset, const QString& text) const override;
 };
 
 class UniqueModelNameValidator : public BaseUniqueNameValidator
@@ -68,7 +68,7 @@ public:
 	using BaseUniqueNameValidator::BaseUniqueNameValidator;
 
 protected:
-	bool IsUnique(const QString& text) const override;
+	bool IsUnique(StudioModelAsset* asset, const QString& text) const override;
 
 public slots:
 	void SetCurrentBodyPartIndex(int index)

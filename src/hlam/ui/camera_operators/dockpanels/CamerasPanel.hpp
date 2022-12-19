@@ -19,7 +19,7 @@ constexpr std::string_view CameraOperatorPropertyKey{"CameraOperator"};
 class CamerasPanel : public DockableWidget
 {
 public:
-	explicit CamerasPanel(CameraOperators* cameraOperators);
+	explicit CamerasPanel();
 	~CamerasPanel();
 
 	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
@@ -32,6 +32,7 @@ private:
 	void AddCameraOperator(const QString& name, QWidget* widget);
 
 public slots:
+	void SetCameraOperators(CameraOperators* cameraOperators);
 	void ChangeCamera(int index);
 
 private slots:
@@ -44,7 +45,7 @@ private slots:
 private:
 	Ui_CamerasPanel _ui;
 
-	CameraOperators* _cameraOperators;
+	CameraOperators* _cameraOperators{};
 
 	std::vector<QWidget*> _widgets;
 };

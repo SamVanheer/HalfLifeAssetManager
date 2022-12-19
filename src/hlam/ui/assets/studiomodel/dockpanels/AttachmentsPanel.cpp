@@ -18,8 +18,8 @@
 
 namespace studiomodel
 {
-AttachmentsPanel::AttachmentsPanel(StudioModelAsset* asset)
-	: _asset(asset)
+AttachmentsPanel::AttachmentsPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
@@ -37,15 +37,13 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAsset* asset)
 		spinBox->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	}
 
-	const auto attachmentNameValidator = new UniqueAttachmentNameValidator(MaxAttachmentNameBytes - 1, _asset, this);
+	const auto attachmentNameValidator = new UniqueAttachmentNameValidator(MaxAttachmentNameBytes - 1, _provider, this);
 
 	_ui.Name->setValidator(attachmentNameValidator);
 
 	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), attachmentNameValidator, &UniqueAttachmentNameValidator::SetCurrentIndex);
 
-	connect(_asset, &StudioModelAsset::AssetChanged, this, &AttachmentsPanel::OnAssetChanged);
-	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &AttachmentsPanel::OnSaveSnapshot);
-	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &AttachmentsPanel::OnLoadSnapshot);
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &AttachmentsPanel::OnAssetChanged);
 
 	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), this, &AttachmentsPanel::OnAttachmentChanged);
 	connect(_ui.HighlightAttachment, &QCheckBox::stateChanged, this, &AttachmentsPanel::OnHighlightAttachmentChanged);
@@ -60,14 +58,24 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAsset* asset)
 	connect(_ui.OriginY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &AttachmentsPanel::OnOriginChanged);
 	connect(_ui.OriginZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &AttachmentsPanel::OnOriginChanged);
 
-	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
+	OnAssetChanged(_provider->GetDummyAsset());
 }
 
 AttachmentsPanel::~AttachmentsPanel() = default;
 
 void AttachmentsPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto modelData = asset->GetModelData();
+	if (_asset)
+	{
+		_asset->disconnect(this);
+	}
+
+	_asset = asset;
+
+	auto modelData = _asset->GetModelData();
+
+	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &AttachmentsPanel::OnSaveSnapshot);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &AttachmentsPanel::OnLoadSnapshot);
 
 	{
 		const QSignalBlocker blocker{_ui.Bone};

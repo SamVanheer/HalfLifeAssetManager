@@ -13,13 +13,14 @@ class StateSnapshot;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 
 class ScenePanel final : public DockableWidget
 {
 	Q_OBJECT
 
 public:
-	ScenePanel(StudioModelAsset* asset);
+	explicit ScenePanel(StudioModelAssetProvider* provider);
 	~ScenePanel() = default;
 
 	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
@@ -34,6 +35,7 @@ signals:
 
 private:
 	Ui_ScenePanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 };
 }

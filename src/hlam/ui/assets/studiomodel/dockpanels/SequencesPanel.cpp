@@ -17,17 +17,15 @@
 
 namespace studiomodel
 {
-SequencesPanel::SequencesPanel(StudioModelAsset* asset)
-	: _asset(asset)
+SequencesPanel::SequencesPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
 	_ui.EventId->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 	_ui.EventType->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
-	connect(_asset, &StudioModelAsset::AssetChanged, this, &SequencesPanel::OnAssetChanged);
-	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &SequencesPanel::OnLoadSnapshot);
-	connect(_asset, &StudioModelAsset::PoseChanged, this, &SequencesPanel::OnPoseChanged);
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &SequencesPanel::OnAssetChanged);
 
 	connect(_ui.SequenceComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnSequenceChanged);
 	connect(_ui.LoopingModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnLoopingModeChanged);
@@ -52,18 +50,30 @@ SequencesPanel::SequencesPanel(StudioModelAsset* asset)
 
 	_ui.EventDataWidget->setEnabled(false);
 
-	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
+	OnAssetChanged(_provider->GetDummyAsset());
 }
 
 SequencesPanel::~SequencesPanel() = default;
 
 void SequencesPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	const int sequenceIndex = asset->GetEntity()->GetSequence();
+	if (_asset)
+	{
+		_asset->disconnect(this);
+	}
 
-	auto modelData = asset->GetModelData();
+	_asset = asset;
 
-	_ui.SequenceComboBox->setModel(modelData->Sequences);
+	auto modelData = _asset->GetModelData();
+
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &SequencesPanel::OnLoadSnapshot);
+	connect(_asset, &StudioModelAsset::PoseChanged, this, &SequencesPanel::OnPoseChanged);
+
+	const int sequenceIndex = _asset->GetEntity()->GetSequence();
+	{
+		const QSignalBlocker sequenceBlocker{_ui.SequenceComboBox};
+		_ui.SequenceComboBox->setModel(modelData->Sequences);
+	}
 	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex);
 
 	this->setEnabled(_ui.SequenceComboBox->count() > 0);

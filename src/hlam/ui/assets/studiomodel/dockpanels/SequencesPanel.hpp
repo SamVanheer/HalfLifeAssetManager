@@ -16,12 +16,13 @@ class StateSnapshot;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 class StudioModelData;
 
 class SequencesPanel final : public DockableWidget
 {
 public:
-	SequencesPanel(StudioModelAsset* asset);
+	explicit SequencesPanel(StudioModelAssetProvider* provider);
 	~SequencesPanel();
 
 private:
@@ -66,7 +67,8 @@ private slots:
 
 private:
 	Ui_SequencesPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 	StudioModelData* _previousModelData{};
 
 	double _blendsScales[SequenceBlendCount]{};

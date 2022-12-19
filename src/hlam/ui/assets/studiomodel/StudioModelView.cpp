@@ -36,6 +36,14 @@ void StudioModelView::SetWidget(QWidget* widget)
 	_ui.SceneContainer->addWidget(widget);
 }
 
+void StudioModelView::Clear()
+{
+	while (_ui.ViewSelection->count() > 0)
+	{
+		_ui.ViewSelection->removeTab(0);
+	}
+}
+
 void StudioModelView::SetSceneIndex(int index)
 {
 	_ui.ViewSelection->setCurrentIndex(index);

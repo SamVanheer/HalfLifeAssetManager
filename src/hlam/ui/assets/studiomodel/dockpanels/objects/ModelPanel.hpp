@@ -9,12 +9,12 @@ class StateSnapshot;
 
 namespace studiomodel
 {
-class StudioModelAsset;
+class StudioModelAssetProvider;
 
 class ModelPanel final : public QWidget
 {
 public:
-	ModelPanel(StudioModelAsset* asset);
+	explicit ModelPanel(StudioModelAssetProvider* provider);
 	~ModelPanel() = default;
 
 public slots:
@@ -28,6 +28,6 @@ private slots:
 
 private:
 	Ui_ModelPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
 };
 }

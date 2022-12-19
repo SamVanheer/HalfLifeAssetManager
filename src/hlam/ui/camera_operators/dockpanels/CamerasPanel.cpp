@@ -3,35 +3,26 @@
 
 #include "qt/QtUtilities.hpp"
 
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
+
 #include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
 
-CamerasPanel::CamerasPanel(CameraOperators* cameraOperators)
-	: _cameraOperators(cameraOperators)
+using namespace studiomodel;
+
+CamerasPanel::CamerasPanel()
 {
 	_ui.setupUi(this);
 
 	connect(_ui.Cameras, qOverload<int>(&QComboBox::currentIndexChanged), this, &CamerasPanel::OnChangeCamera);
 	connect(_ui.Previous, &QPushButton::clicked, this, &CamerasPanel::ChangeToPreviousCamera);
 	connect(_ui.Next, &QPushButton::clicked, this, &CamerasPanel::ChangeToNextCamera);
-
-	connect(_cameraOperators, &CameraOperators::CameraChanged, this, &CamerasPanel::OnAssetCameraChanged);
-
-	for (int i = 0; i < _cameraOperators->Count(); ++i)
-	{
-		const auto cameraOperator = _cameraOperators->Get(i);
-		AddCameraOperator(cameraOperator->GetName(), cameraOperator->CreateEditWidget());
-	}
-
-	OnAssetCameraChanged(nullptr, _cameraOperators->GetCurrent());
 }
 
 CamerasPanel::~CamerasPanel() = default;
 
 QWidget* CamerasPanel::GetWidget(int index) const
 {
-	assert(index >= 0 && index < _widgets.size());
-
 	if (index < 0 || index >= _widgets.size())
 	{
 		return nullptr;
@@ -49,6 +40,39 @@ void CamerasPanel::AddCameraOperator(const QString& name, QWidget* widget)
 	//Add the widget before adding the combo box item because the combo box will select the first item that gets added automatically
 	_ui.CamerasStack->addWidget(widget);
 	_ui.Cameras->addItem(name);
+}
+
+void CamerasPanel::SetCameraOperators(CameraOperators* cameraOperators)
+{
+	if (_cameraOperators)
+	{
+		_cameraOperators->disconnect(this);
+
+		// TODO: need to rework camera operators to cache widgets
+		for (auto widget : _widgets)
+		{
+			_ui.CamerasStack->removeWidget(widget);
+			delete widget;
+		}
+
+		_widgets.clear();
+		_ui.Cameras->clear();
+	}
+
+	_cameraOperators = cameraOperators;
+
+	if (_cameraOperators)
+	{
+		connect(_cameraOperators, &CameraOperators::CameraChanged, this, &CamerasPanel::OnAssetCameraChanged);
+
+		for (int i = 0; i < _cameraOperators->Count(); ++i)
+		{
+			const auto cameraOperator = _cameraOperators->Get(i);
+			AddCameraOperator(cameraOperator->GetName(), cameraOperator->CreateEditWidget());
+		}
+
+		OnAssetCameraChanged(nullptr, _cameraOperators->GetCurrent());
+	}
 }
 
 void CamerasPanel::ChangeCamera(int index)

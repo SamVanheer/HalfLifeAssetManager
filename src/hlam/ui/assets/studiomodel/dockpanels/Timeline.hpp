@@ -9,6 +9,7 @@ class StateSnapshot;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 
 class Timeline final : public QWidget
 {
@@ -22,7 +23,7 @@ public:
 
 	static constexpr int FrameSliderRangeMultiplier = 10;
 
-	Timeline(QWidget* parent = nullptr);
+	Timeline(StudioModelAssetProvider* provider, QWidget* parent = nullptr);
 
 	~Timeline();
 
@@ -59,7 +60,7 @@ private slots:
 
 private:
 	Ui_Timeline _ui;
-
-	StudioModelAsset* _asset = nullptr;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 };
 }

@@ -1,3 +1,5 @@
+#include <QSignalBlocker>
+
 #include "entity/HLMVStudioModelEntity.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
@@ -7,10 +9,12 @@
 
 namespace studiomodel
 {
-ModelDisplayPanel::ModelDisplayPanel(StudioModelAsset* asset)
-	: _asset(asset)
+ModelDisplayPanel::ModelDisplayPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
+
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &ModelDisplayPanel::OnAssetChanged);
 
 	connect(_ui.RenderModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &ModelDisplayPanel::OnRenderModeChanged);
 
@@ -40,10 +44,23 @@ ModelDisplayPanel::ModelDisplayPanel(StudioModelAsset* asset)
 	connect(_ui.MirrorOnYAxis, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnMirrorYAxisChanged);
 	connect(_ui.MirrorOnZAxis, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnMirrorZAxisChanged);
 
-	_ui.RenderModeComboBox->setCurrentIndex(static_cast<int>(_asset->GetProvider()->GetStudioModelSettings()->CurrentRenderMode));
+	{
+		const QSignalBlocker rendermodeBlocker{_ui.RenderModeComboBox};
+		_ui.RenderModeComboBox->setCurrentIndex(static_cast<int>(_provider->GetStudioModelSettings()->CurrentRenderMode));
+	}
 }
 
 ModelDisplayPanel::~ModelDisplayPanel() = default;
+
+void ModelDisplayPanel::OnAssetChanged(StudioModelAsset* asset)
+{
+	if (_asset)
+	{
+		_asset->disconnect(this);
+	}
+
+	_asset = asset;
+}
 
 void ModelDisplayPanel::OnRenderModeChanged(int index)
 {

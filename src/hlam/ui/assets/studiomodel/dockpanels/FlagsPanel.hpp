@@ -9,12 +9,13 @@ class StateSnapshot;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 class StudioModelData;
 
 class FlagsPanel final : public DockableWidget
 {
 public:
-	FlagsPanel(StudioModelAsset* asset);
+	explicit FlagsPanel(StudioModelAssetProvider* provider);
 	~FlagsPanel() = default;
 
 private:
@@ -27,7 +28,8 @@ private slots:
 
 private:
 	Ui_FlagsPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 	StudioModelData* _previousModelData{};
 };
 }

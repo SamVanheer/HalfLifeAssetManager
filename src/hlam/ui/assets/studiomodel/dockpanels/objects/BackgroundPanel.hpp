@@ -6,12 +6,12 @@
 
 namespace studiomodel
 {
-class StudioModelAsset;
+class StudioModelAssetProvider;
 
 class BackgroundPanel final : public QWidget
 {
 public:
-	BackgroundPanel(StudioModelAsset* asset);
+	explicit BackgroundPanel(StudioModelAssetProvider* provider);
 	~BackgroundPanel() = default;
 
 private slots:
@@ -22,6 +22,6 @@ private slots:
 
 private:
 	Ui_BackgroundPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
 };
 }

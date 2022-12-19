@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
+  <layout class="QVBoxLayout" name="MainLayout" stretch="1">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -32,19 +32,8 @@
    <item>
     <widget class="QMainWindow" name="Window"/>
    </item>
-   <item>
-    <widget class="studiomodel::Timeline" name="Timeline" native="true"/>
-   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>studiomodel::Timeline</class>
-   <extends>QWidget</extends>
-   <header>ui/assets/studiomodel/dockpanels/Timeline.hpp</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

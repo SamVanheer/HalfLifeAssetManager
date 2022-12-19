@@ -2,6 +2,7 @@
 #include <tuple>
 #include <vector>
 
+#include <QBoxLayout>
 #include <QDir>
 #include <QDockWidget>
 #include <QFileDialog>
@@ -9,6 +10,8 @@
 #include <QImage>
 #include <QMenu>
 #include <QMessageBox>
+#include <QSignalBlocker>
+#include <QWidget>
 
 #include "assets/AssetIO.hpp"
 
@@ -115,7 +118,7 @@ static std::tuple<glm::vec3, glm::vec3, float, float> GetCenteredValues(const HL
 }
 
 StudioModelAsset::StudioModelAsset(QString&& fileName,
-	EditorContext* editorContext, const StudioModelAssetProvider* provider,
+	EditorContext* editorContext, StudioModelAssetProvider* provider,
 	std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel)
 	: Asset(std::move(fileName))
 	, _editorContext(editorContext)
@@ -131,6 +134,14 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_provider->GetStudioModelSettings()))
 	, _cameraOperators(new CameraOperators(this))
 {
+	{
+		_editWidget = new QWidget();
+		auto layout = new QVBoxLayout(_editWidget);
+		layout->setContentsMargins(0, 0, 0, 0);
+		layout->setSpacing(0);
+		_editWidget->setLayout(layout);
+	}
+
 	connect(_cameraOperators, &CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
 
 	CreateMainScene();
@@ -164,8 +175,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_cameraOperators->SetCurrent(arcBallCamera);
 	}
 
-	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAsset::OnTick);
-
+	connect(this, &StudioModelAsset::IsActiveChanged, this, &StudioModelAsset::OnIsActiveChanged);
 	connect(_editorContext->GetGeneralSettings(), &GeneralSettings::ResizeTexturesToPowerOf2Changed,
 		this, &StudioModelAsset::OnResizeTexturesToPowerOf2Changed);
 	connect(_editorContext->GetGeneralSettings(), &GeneralSettings::TextureFiltersChanged,
@@ -185,6 +195,8 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 
 		context->End();
 	}
+
+	SetCurrentScene(GetScene());
 }
 
 StudioModelAsset::~StudioModelAsset()
@@ -212,7 +224,7 @@ void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 	{
 		auto panelsMenu = menu->addMenu("Panels");
 
-		for (auto dock : _editWidget->GetDockWidgets())
+		for (auto dock : _provider->GetEditWidget()->GetDockWidgets())
 		{
 			panelsMenu->addAction(dock->toggleViewAction());
 		}
@@ -255,25 +267,6 @@ void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 
 QWidget* StudioModelAsset::GetEditWidget()
 {
-	if (_editWidget)
-	{
-		return _editWidget;
-	}
-
-	_editWidget = new StudioModelEditWidget(_editorContext, this);
-
-	auto sceneWidget = _editWidget->GetSceneWidget();
-
-	connect(_editWidget, &StudioModelEditWidget::SceneIndexChanged, this, &StudioModelAsset::OnSceneIndexChanged);
-	connect(_editWidget, &StudioModelEditWidget::PoseChanged, this, &StudioModelAsset::SetPose);
-	connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
-	connect(sceneWidget, &SceneWidget::WheelEvent, this, &StudioModelAsset::OnSceneWidgetWheelEvent);
-
-	sceneWidget->SetScene(GetScene());
-
-	// TODO: needs to be moved once single instance has been implemented.
-	emit AssetChanged(this);
-
 	return _editWidget;
 }
 
@@ -309,6 +302,8 @@ void StudioModelAsset::TryRefresh()
 
 	emit SaveSnapshot(snapshot.get());
 
+	auto oldModelData = _modelData;
+
 	try
 	{
 		const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
@@ -317,7 +312,7 @@ void StudioModelAsset::TryRefresh()
 		auto newModel = std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
 
 		// Clear UI to null state so changes to the models don't trigger changes in UI slots.
-		emit AssetChanged(_provider->GetDummyAsset());
+		emit _provider->AssetChanged(_provider->GetDummyAsset());
 
 		graphics::SceneContext sc{_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader()};
 
@@ -330,7 +325,6 @@ void StudioModelAsset::TryRefresh()
 
 		_editableStudioModel = std::move(newModel);
 
-		auto oldModelData = _modelData;
 		_modelData = new StudioModelData(_editableStudioModel.get(), this);
 
 		GetUndoStack()->clear();
@@ -341,11 +335,6 @@ void StudioModelAsset::TryRefresh()
 		_modelEntity->CreateDeviceObjects(sc);
 
 		context->End();
-
-		emit AssetChanged(this);
-
-		// Delete the old data now that any remaining references have been cleared.
-		delete oldModelData;
 	}
 	catch (const AssetException& e)
 	{
@@ -354,6 +343,11 @@ void StudioModelAsset::TryRefresh()
 	}
 
 	LoadEntityFromSnapshot(snapshot.get());
+
+	emit _provider->AssetChanged(this);
+
+	// Delete the old data now that any remaining references have been cleared.
+	delete oldModelData;
 
 	emit LoadSnapshot(snapshot.get());
 }
@@ -379,9 +373,51 @@ void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 
 	assert(it != _scenes.end());
 
-	_currentScene = it != _scenes.end() ? *it : nullptr;
-	_editWidget->SetSceneIndex(it != _scenes.end() ? it - _scenes.begin() : -1);
-	_editWidget->GetSceneWidget()->SetScene(_currentScene);
+	const int index = it != _scenes.end() ? it - _scenes.begin() : 0;
+
+	_currentScene = _scenes[index];
+
+	if (IsActive())
+	{
+		auto editWidget = _provider->GetEditWidget();
+		editWidget->SetSceneIndex(index);
+		editWidget->GetSceneWidget()->SetScene(_currentScene);
+	}
+}
+
+void StudioModelAsset::OnActivated()
+{
+	auto editWidget = _provider->GetEditWidget();
+	auto sceneWidget = editWidget->GetSceneWidget();
+
+	{
+		const QSignalBlocker editBlocker{editWidget};
+		editWidget->SetAsset(this);
+	}
+
+	connect(editWidget, &StudioModelEditWidget::SceneIndexChanged, this, &StudioModelAsset::OnSceneIndexChanged);
+	connect(editWidget, &StudioModelEditWidget::PoseChanged, this, &StudioModelAsset::SetPose);
+	connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
+	connect(sceneWidget, &SceneWidget::WheelEvent, this, &StudioModelAsset::OnSceneWidgetWheelEvent);
+
+	editWidget->setParent(_editWidget);
+	_editWidget->layout()->addWidget(editWidget);
+
+	emit LoadSnapshot(&_snapshot);
+}
+
+void StudioModelAsset::OnDeactivated()
+{
+	emit SaveSnapshot(&_snapshot);
+
+	auto editWidget = _provider->GetEditWidget();
+	auto sceneWidget = editWidget->GetSceneWidget();
+
+	editWidget->disconnect(this);
+	sceneWidget->disconnect(this);
+	editWidget->SetAsset(_provider->GetDummyAsset());
+
+	_editWidget->layout()->removeWidget(editWidget);
 }
 
 void StudioModelAsset::CreateMainScene()
@@ -501,6 +537,22 @@ void StudioModelAsset::OnTick()
 	}
 
 	emit Tick();
+}
+
+void StudioModelAsset::OnIsActiveChanged(bool value)
+{
+	// Only update if we're active.
+	if (value)
+	{
+		if (!_tickConnection)
+		{
+			_tickConnection = connect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick);
+		}
+	}
+	else
+	{
+		disconnect(_tickConnection);
+	}
 }
 
 void StudioModelAsset::OnResizeTexturesToPowerOf2Changed()
@@ -646,7 +698,7 @@ void StudioModelAsset::OnTakeScreenshot()
 	//Should always be the case since the screenshot action is only available if the edit widget is open
 	GetEditWidget();
 
-	const QImage screenshot = _editWidget->GetSceneWidget()->grabFramebuffer();
+	const QImage screenshot = _provider->GetEditWidget()->GetSceneWidget()->grabFramebuffer();
 
 	const QString fileName{QFileDialog::getSaveFileName(nullptr, {}, {}, qt::GetImagesFileFilter())};
 

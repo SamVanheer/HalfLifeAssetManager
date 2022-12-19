@@ -7,14 +7,17 @@
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 
 class ModelDisplayPanel final : public DockableWidget
 {
 public:
-	ModelDisplayPanel(StudioModelAsset* asset);
+	explicit ModelDisplayPanel(StudioModelAssetProvider* provider);
 	~ModelDisplayPanel();
 
-private:
+private slots:
+	void OnAssetChanged(StudioModelAsset* asset);
+
 	void OnRenderModeChanged(int index);
 	void OnOpacityChanged(int value);
 
@@ -44,6 +47,7 @@ private:
 
 private:
 	Ui_ModelDisplayPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 };
 }

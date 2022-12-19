@@ -11,12 +11,12 @@
 
 namespace studiomodel
 {
-SkyLightPanel::SkyLightPanel(StudioModelAsset* asset)
-	: _asset(asset)
+SkyLightPanel::SkyLightPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
-	const glm::vec3 lightVector{_asset->GetStudioModelRenderer()->GetLightVector()};
+	const glm::vec3 lightVector{_provider->GetStudioModelRenderer()->GetLightVector()};
 
 	const glm::vec3 angles{VectorToAngles(lightVector)};
 
@@ -33,6 +33,6 @@ void SkyLightPanel::OnAnglesChanged()
 {
 	const glm::vec3 lightVector{AnglesToAimVector({_ui.XAngle->value(), _ui.YAngle->value(), 0})};
 
-	_asset->GetStudioModelRenderer()->SetLightVector(lightVector);
+	_provider->GetStudioModelRenderer()->SetLightVector(lightVector);
 }
 }

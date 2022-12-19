@@ -432,6 +432,8 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges)
 
 		_undoGroup->removeStack(asset->GetUndoStack());
 
+		asset->SetActive(false);
+
 		delete asset;
 	}
 
@@ -551,25 +553,23 @@ void MainWindow::OnAssetTabChanged(int index)
 {
 	_ui.MenuAsset->clear();
 
+	if (_currentAsset)
+	{
+		_currentAsset->SetActive(false);
+	}
+
+	_currentAsset = index != -1 ? GetAsset(index) : nullptr;
+
 	bool success = false;
 
 	if (index != -1)
 	{
-		const auto asset = GetAsset(index);
+		_undoGroup->setActiveStack(_currentAsset->GetUndoStack());
 
-		if (_currentAsset)
-		{
-			_currentAsset->SetActive(false);
-		}
+		UpdateTitle(_currentAsset->GetFileName(), !_undoGroup->isClean());
+		_currentAsset->PopulateAssetMenu(_ui.MenuAsset);
 
-		_undoGroup->setActiveStack(asset->GetUndoStack());
-
-		UpdateTitle(asset->GetFileName(), !_undoGroup->isClean());
-		asset->PopulateAssetMenu(_ui.MenuAsset);
-
-		_currentAsset = asset;
-
-		asset->SetActive(true);
+		_currentAsset->SetActive(true);
 
 		success = true;
 	}
@@ -578,8 +578,9 @@ void MainWindow::OnAssetTabChanged(int index)
 	{
 		_undoGroup->setActiveStack(nullptr);
 		setWindowTitle({});
-		_currentAsset = nullptr;
 	}
+
+	emit _editorContext->ActiveAssetChanged(_currentAsset);
 
 	_ui.ActionSave->setEnabled(success);
 	_ui.ActionSaveAs->setEnabled(success);

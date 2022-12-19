@@ -16,8 +16,8 @@
 
 namespace studiomodel
 {
-HitboxesPanel::HitboxesPanel(StudioModelAsset* asset)
-	: _asset(asset)
+HitboxesPanel::HitboxesPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
@@ -38,9 +38,7 @@ HitboxesPanel::HitboxesPanel(StudioModelAsset* asset)
 		spinBox->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	}
 
-	connect(_asset, &StudioModelAsset::AssetChanged, this, &HitboxesPanel::OnAssetChanged);
-	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &HitboxesPanel::OnSaveSnapshot);
-	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &HitboxesPanel::OnLoadSnapshot);
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &HitboxesPanel::OnAssetChanged);
 
 	connect(_ui.Hitboxes, qOverload<int>(&QComboBox::currentIndexChanged), this, &HitboxesPanel::OnHitboxChanged);
 	connect(_ui.HighlightHitbox, &QCheckBox::stateChanged, this, &HitboxesPanel::OnHighlightHitboxChanged);
@@ -56,14 +54,24 @@ HitboxesPanel::HitboxesPanel(StudioModelAsset* asset)
 	connect(_ui.MaximumY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
 	connect(_ui.MaximumZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
 
-	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
+	OnAssetChanged(_provider->GetDummyAsset());
 }
 
 HitboxesPanel::~HitboxesPanel() = default;
 
 void HitboxesPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto modelData = asset->GetModelData();
+	if (_asset)
+	{
+		_asset->disconnect(this);
+	}
+
+	_asset = asset;
+
+	auto modelData = _asset->GetModelData();
+
+	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &HitboxesPanel::OnSaveSnapshot);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &HitboxesPanel::OnLoadSnapshot);
 
 	{
 		const QSignalBlocker blocker{_ui.Bone};

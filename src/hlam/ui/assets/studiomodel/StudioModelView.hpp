@@ -28,6 +28,8 @@ public:
 
 	void SetWidget(QWidget* widget);
 
+	void Clear();
+
 signals:
 	void SceneIndexChanged(int index);
 

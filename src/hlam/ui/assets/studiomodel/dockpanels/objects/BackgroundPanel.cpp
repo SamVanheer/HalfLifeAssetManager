@@ -11,8 +11,8 @@
 
 namespace studiomodel
 {
-BackgroundPanel::BackgroundPanel(StudioModelAsset* asset)
-	: _asset(asset)
+BackgroundPanel::BackgroundPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
@@ -24,7 +24,7 @@ BackgroundPanel::BackgroundPanel(StudioModelAsset* asset)
 
 void BackgroundPanel::OnShowBackgroundChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowBackground = _ui.ShowBackground->isChecked();
+	_provider->GetStudioModelSettings()->ShowBackground = _ui.ShowBackground->isChecked();
 }
 
 void BackgroundPanel::OnTextureChanged()
@@ -35,7 +35,8 @@ void BackgroundPanel::OnTextureChanged()
 		{
 			image.convertTo(QImage::Format::Format_RGBA8888);
 
-			_asset->GetBackgroundEntity()->SetImage({image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits())});
+			_provider->GetCurrentAsset()->GetBackgroundEntity()->SetImage(
+				{image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits())});
 
 			_ui.ShowBackground->setChecked(true);
 		}

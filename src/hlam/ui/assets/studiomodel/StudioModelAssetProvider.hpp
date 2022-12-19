@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <QLoggingCategory>
+#include <QPointer>
 
 #include "ui/assets/Assets.hpp"
 
@@ -21,6 +22,7 @@ class IStudioModelRenderer;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelEditWidget;
 
 inline const QString StudioModelExtension{QStringLiteral("mdl")};
 inline const QString StudioModelPS2Extension{QStringLiteral("dol")};
@@ -29,6 +31,8 @@ Q_DECLARE_LOGGING_CATEGORY(HLAMStudioModel)
 
 class StudioModelAssetProvider final : public AssetProvider
 {
+	Q_OBJECT
+
 public:
 	explicit StudioModelAssetProvider(const std::shared_ptr<StudioModelSettings>& studioModelSettings);
 	~StudioModelAssetProvider();
@@ -56,13 +60,24 @@ public:
 
 	sprite::ISpriteRenderer* GetSpriteRenderer() const { return _spriteRenderer.get(); }
 
+	StudioModelEditWidget* GetEditWidget() const;
+
 	StudioModelAsset* GetDummyAsset() const { return _dummyAsset.get(); }
+
+	StudioModelAsset* GetCurrentAsset() const { return _currentAsset; }
 
 private:
 	void Initialize(EditorContext* editorContext);
 
+signals:
+	void Tick();
+
+	void AssetChanged(StudioModelAsset* asset);
+
 private slots:
 	void OnTick();
+
+	void OnActiveAssetChanged(Asset* asset);
 
 private:
 	const std::shared_ptr<StudioModelSettings> _studioModelSettings;
@@ -70,7 +85,11 @@ private:
 	std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	std::unique_ptr<StudioModelAsset> _dummyAsset;
 
+	QPointer<StudioModelEditWidget> _editWidget;
+
 	bool _initialized = false;
+
+	StudioModelAsset* _currentAsset{};
 };
 
 /**

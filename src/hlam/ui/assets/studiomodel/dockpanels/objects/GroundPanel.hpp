@@ -7,12 +7,12 @@
 
 namespace studiomodel
 {
-class StudioModelAsset;
+class StudioModelAssetProvider;
 
 class GroundPanel final : public QWidget
 {
 public:
-	GroundPanel(StudioModelAsset* asset);
+	explicit GroundPanel(StudioModelAssetProvider* provider);
 	~GroundPanel() = default;
 
 public slots:
@@ -32,6 +32,6 @@ private slots:
 
 private:
 	Ui_GroundPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
 };
 }

@@ -7,11 +7,12 @@
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 
 class TransformPanel : public DockableWidget
 {
 public:
-	TransformPanel(StudioModelAsset* asset);
+	explicit TransformPanel(StudioModelAssetProvider* provider);
 	~TransformPanel() = default;
 
 	void OnVisibilityChanged(bool visible) override
@@ -26,8 +27,7 @@ private slots:
 	void OnApply();
 
 private:
-	StudioModelAsset* const _asset;
-
 	Ui_TransformPanel _ui;
+	StudioModelAssetProvider* const _provider;
 };
 }

@@ -15,8 +15,8 @@ using namespace qt::widgets;
 
 namespace studiomodel
 {
-ModelDataPanel::ModelDataPanel(StudioModelAsset* asset)
-	: _asset(asset)
+ModelDataPanel::ModelDataPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
@@ -39,7 +39,7 @@ ModelDataPanel::ModelDataPanel(StudioModelAsset* asset)
 	_ui.CBoxMax->SetDecimals(6);
 	_ui.CBoxMax->SetPrefix("Max ");
 
-	connect(_asset, &StudioModelAsset::AssetChanged, this, &ModelDataPanel::OnAssetChanged);
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &ModelDataPanel::OnAssetChanged);
 
 	connect(_ui.EyePosition, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnEyePositionChanged);
 
@@ -49,7 +49,7 @@ ModelDataPanel::ModelDataPanel(StudioModelAsset* asset)
 	connect(_ui.CBoxMin, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
 	connect(_ui.CBoxMax, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
 
-	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
+	OnAssetChanged(_provider->GetDummyAsset());
 }
 
 ModelDataPanel::~ModelDataPanel() = default;
@@ -64,7 +64,14 @@ void ModelDataPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 
 void ModelDataPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto modelData = asset->GetModelData();
+	if (_asset)
+	{
+		_asset->disconnect(this);
+	}
+
+	_asset = asset;
+
+	auto modelData = _asset->GetModelData();
 
 	const QSignalBlocker blocker{_ui.EyePosition};
 	const QSignalBlocker bmin{_ui.BBoxMin};

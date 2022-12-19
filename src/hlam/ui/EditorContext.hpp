@@ -9,29 +9,24 @@
 #include <QTimer>
 #include <QUuid>
 
-class QOpenGLFunctions_1_1;
-class WorldTime;
-
+class Asset;
+class ColorSettings;
+class DragNDropEventFilter;
+class GameConfigurationsSettings;
+class GeneralSettings;
+class IAssetProviderRegistry;
 class IFileSystem;
+class ISoundSystem;
+class OptionsPageRegistry;
+class QOpenGLFunctions_1_1;
+class RecentFilesSettings;
+class WorldTime;
 
 namespace graphics
 {
 class IGraphicsContext;
 class TextureLoader;
 }
-
-class ISoundSystem;
-
-class DragNDropEventFilter;
-
-class IAssetProviderRegistry;
-
-class OptionsPageRegistry;
-
-class ColorSettings;
-class GameConfigurationsSettings;
-class GeneralSettings;
-class RecentFilesSettings;
 
 /**
 *	@brief Used to communicate between the main window and edit widgets
@@ -95,6 +90,8 @@ signals:
 
 	void TryingToLoadAsset(const QString& fileName);
 
+	void ActiveAssetChanged(Asset* asset);
+
 	void SettingsChanged();
 
 public slots:
@@ -129,6 +126,4 @@ private:
 	const std::unique_ptr<IFileSystem> _fileSystem;
 	const std::unique_ptr<ISoundSystem> _soundSystem;
 	const std::unique_ptr<WorldTime> _worldTime;
-
-	
 };

@@ -55,16 +55,14 @@ static int GetMeshIndexForDrawing(QComboBox* comboBox)
 	return meshIndex;
 }
 
-TexturesPanel::TexturesPanel(StudioModelAsset* asset)
-	: _asset(asset)
+TexturesPanel::TexturesPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
-	const auto textureNameValidator = new UniqueTextureNameValidator(MaxTextureNameBytes - 1, _asset, this);
+	const auto textureNameValidator = new UniqueTextureNameValidator(MaxTextureNameBytes - 1, _provider, this);
 
 	_ui.TextureName->setValidator(textureNameValidator);
-
-	const auto studioModelSettings{_asset->GetProvider()->GetStudioModelSettings()};
 
 	_ui.ScaleTextureViewSpinner->setRange(TextureViewScaleMinimum, TextureViewScaleMaximum);
 	_ui.ScaleTextureViewSpinner->setValue(TextureViewScaleDefault);
@@ -85,11 +83,7 @@ TexturesPanel::TexturesPanel(StudioModelAsset* asset)
 
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), textureNameValidator, &UniqueTextureNameValidator::SetCurrentIndex);
 
-	connect(_asset, &StudioModelAsset::AssetChanged, this, &TexturesPanel::OnAssetChanged);
-	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &TexturesPanel::OnSaveSnapshot);
-	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &TexturesPanel::OnLoadSnapshot);
-
-	connect(_asset->GetTextureCameraOperator(), &TextureCameraOperator::ScaleChanged, this, &TexturesPanel::OnScaleChanged);
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &TexturesPanel::OnAssetChanged);
 
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), this, &TexturesPanel::OnTextureChanged);
 	connect(_ui.ScaleTextureViewSlider, &QSlider::valueChanged, this, &TexturesPanel::OnTextureViewScaleSliderChanged);
@@ -125,14 +119,15 @@ TexturesPanel::TexturesPanel(StudioModelAsset* asset)
 	connect(_ui.TopColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &TexturesPanel::OnTopColorSpinnerChanged);
 	connect(_ui.BottomColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &TexturesPanel::OnBottomColorSpinnerChanged);
 
-	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
+	OnAssetChanged(_provider->GetDummyAsset());
 }
 
 TexturesPanel::~TexturesPanel() = default;
 
 void TexturesPanel::OnVisibilityChanged(bool visible)
 {
-	if (_asset->GetProvider()->GetStudioModelSettings()->ShouldActivateTextureViewWhenTexturesPanelOpened())
+	if (_provider->GetStudioModelSettings()->ShouldActivateTextureViewWhenTexturesPanelOpened()
+		&& _asset->GetEditWidget()->isVisible())
 	{
 		auto scene = visible ? _asset->GetTextureScene() : _asset->GetScene();
 
@@ -161,7 +156,19 @@ static void SetTextureFlagCheckBoxes(Ui_TexturesPanel& ui, int flags)
 
 void TexturesPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto modelData = asset->GetModelData();
+	if (_asset)
+	{
+		_asset->disconnect(this);
+		_asset->GetTextureCameraOperator()->disconnect(this);
+	}
+
+	_asset = asset;
+
+	auto modelData = _asset->GetModelData();
+
+	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &TexturesPanel::OnSaveSnapshot);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &TexturesPanel::OnLoadSnapshot);
+	connect(_asset->GetTextureCameraOperator(), &TextureCameraOperator::ScaleChanged, this, &TexturesPanel::OnScaleChanged);
 
 	_ui.Textures->setModel(modelData->Textures);
 

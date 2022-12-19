@@ -21,8 +21,8 @@ namespace studiomodel
 //Parent indices are offset by one so -1 becomes 0, 0 becomes 1, etc
 constexpr int BoneOffset = 1;
 
-BodyPartsPanel::BodyPartsPanel(StudioModelAsset* asset)
-	: _asset(asset)
+BodyPartsPanel::BodyPartsPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
@@ -39,16 +39,14 @@ BodyPartsPanel::BodyPartsPanel(StudioModelAsset* asset)
 		spinBox->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	}
 
-	const auto modelNameValidator = new UniqueModelNameValidator(MaxModelNameBytes - 1, _asset, this);
+	const auto modelNameValidator = new UniqueModelNameValidator(MaxModelNameBytes - 1, _provider, this);
 
 	_ui.ModelName->setValidator(modelNameValidator);
 
 	connect(_ui.BodyParts, qOverload<int>(&QComboBox::currentIndexChanged), modelNameValidator, &UniqueModelNameValidator::SetCurrentBodyPartIndex);
 	connect(_ui.Submodels, qOverload<int>(&QComboBox::currentIndexChanged), modelNameValidator, &UniqueModelNameValidator::SetCurrentIndex);
 
-	connect(_asset, &StudioModelAsset::AssetChanged, this, &BodyPartsPanel::OnAssetChanged);
-	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &BodyPartsPanel::OnSaveSnapshot);
-	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &BodyPartsPanel::OnLoadSnapshot);
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &BodyPartsPanel::OnAssetChanged);
 
 	connect(_ui.BodyParts, qOverload<int>(&QComboBox::currentIndexChanged), this, &BodyPartsPanel::OnBodyPartChanged);
 	connect(_ui.Submodels, qOverload<int>(&QComboBox::currentIndexChanged), this, &BodyPartsPanel::OnSubmodelChanged);
@@ -70,16 +68,24 @@ BodyPartsPanel::BodyPartsPanel(StudioModelAsset* asset)
 	connect(_ui.BoneControllerBone, qOverload<int>(&QComboBox::currentIndexChanged), this, &BodyPartsPanel::OnBoneControllerBoneChanged);
 	connect(_ui.BoneControllerBoneAxis, qOverload<int>(&QComboBox::currentIndexChanged), this, &BodyPartsPanel::OnBoneControllerAxisChanged);
 
-	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
+	OnAssetChanged(_provider->GetDummyAsset());
 }
 
 BodyPartsPanel::~BodyPartsPanel() = default;
 
 void BodyPartsPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	const int skin = asset->GetEntity()->GetSkin();
-	const int bodygroup = asset->GetEntity()->GetBodygroup();
-	auto modelData = asset->GetModelData();
+	if (_asset)
+	{
+		_asset->disconnect(this);
+	}
+
+	_asset = asset;
+
+	auto modelData = _asset->GetModelData();
+
+	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &BodyPartsPanel::OnSaveSnapshot);
+	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &BodyPartsPanel::OnLoadSnapshot);
 
 	{
 		const QSignalBlocker blocker{_ui.BoneControllerBone};
@@ -96,8 +102,11 @@ void BodyPartsPanel::OnAssetChanged(StudioModelAsset* asset)
 	// TODO: maybe store the list of submodels for each bodypart in user data.
 	_ui.Submodels->setEnabled(_ui.BodyParts->isEnabled());
 
-	_ui.Skins->setModel(modelData->Skins);
-	_ui.Skins->setCurrentIndex(skin);
+	const int skin = _asset->GetEntity()->GetSkin();
+	{
+		const QSignalBlocker skinBlocker{_ui.Skins};
+		_ui.Skins->setModel(modelData->Skins);
+	}
 	_ui.Skins->setEnabled(_ui.Skins->count() > 0);
 
 	_ui.BoneControllers->setModel(modelData->BoneControllers);
@@ -119,7 +128,7 @@ void BodyPartsPanel::OnAssetChanged(StudioModelAsset* asset)
 	}
 
 	//Should already be set but if there are no body parts and/or submodels it won't have been
-	_ui.BodyValue->setText(QString::number(bodygroup));
+	_ui.BodyValue->setText(QString::number(_asset->GetEntity()->GetBodygroup()));
 
 	if (_previousModelData)
 	{

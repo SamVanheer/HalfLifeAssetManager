@@ -14,6 +14,7 @@ class StateSnapshot;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 class StudioModelData;
 
 class TexturesPanel final : public DockableWidget
@@ -21,7 +22,7 @@ class TexturesPanel final : public DockableWidget
 	Q_OBJECT
 
 public:
-	TexturesPanel(StudioModelAsset* asset);
+	explicit TexturesPanel(StudioModelAssetProvider* provider);
 	~TexturesPanel();
 
 	void OnVisibilityChanged(bool visible) override;
@@ -73,7 +74,8 @@ private slots:
 
 private:
 	Ui_TexturesPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 	StudioModelData* _previousModelData{};
 };
 }

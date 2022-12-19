@@ -11,12 +11,13 @@ class StateSnapshot;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 class StudioModelData;
 
 class BonesPanel final : public DockableWidget
 {
 public:
-	BonesPanel(StudioModelAsset* asset);
+	explicit BonesPanel(StudioModelAssetProvider* provider);
 	~BonesPanel();
 
 private:
@@ -46,7 +47,8 @@ private slots:
 
 private:
 	Ui_BonesPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 	StudioModelData* _previousModelData{};
 
 	bool _changingBoneProperties{false};

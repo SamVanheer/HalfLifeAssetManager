@@ -9,12 +9,13 @@ class StateSnapshot;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 class StudioModelData;
 
 class ModelDataPanel final : public DockableWidget
 {
 public:
-	ModelDataPanel(StudioModelAsset* asset);
+	explicit ModelDataPanel(StudioModelAssetProvider* provider);
 	~ModelDataPanel();
 
 	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
@@ -28,7 +29,8 @@ private slots:
 
 private:
 	Ui_ModelDataPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 	StudioModelData* _previousModelData{};
 
 	bool _changingDataProperties{false};

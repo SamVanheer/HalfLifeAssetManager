@@ -14,12 +14,13 @@ class StateSnapshot;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 class StudioModelData;
 
 class BodyPartsPanel final : public DockableWidget
 {
 public:
-	BodyPartsPanel(StudioModelAsset* asset);
+	explicit BodyPartsPanel(StudioModelAssetProvider* provider);
 	~BodyPartsPanel();
 
 	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
@@ -57,7 +58,8 @@ private slots:
 
 private:
 	Ui_BodyPartsPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 	StudioModelData* _previousModelData{};
 
 	bool _changingBoneControllerProperties{false};

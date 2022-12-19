@@ -7,8 +7,8 @@
 
 namespace studiomodel
 {
-ModelPanel::ModelPanel(StudioModelAsset* asset)
-	: _asset(asset)
+ModelPanel::ModelPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
@@ -27,13 +27,13 @@ void ModelPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 
 void ModelPanel::OnOriginChanged()
 {
-	_asset->GetEntity()->SetOrigin(_ui.Origin->GetValue());
+	_provider->GetCurrentAsset()->GetEntity()->SetOrigin(_ui.Origin->GetValue());
 }
 
 void ModelPanel::OnCenterOnWorldOrigin()
 {
 	//TODO: need a better way to sync UI to origin
-	auto entity = _asset->GetEntity();
+	auto entity = _provider->GetCurrentAsset()->GetEntity();
 
 	entity->SetOrigin({0, 0, 0});
 
@@ -43,7 +43,7 @@ void ModelPanel::OnCenterOnWorldOrigin()
 
 void ModelPanel::OnAlignOnGround()
 {
-	auto entity = _asset->GetEntity();
+	auto entity = _provider->GetCurrentAsset()->GetEntity();
 
 	entity->AlignOnGround();
 

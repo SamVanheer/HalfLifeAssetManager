@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <QAction>
 
 #include "entity/HLMVStudioModelEntity.hpp"
@@ -12,8 +14,8 @@ constexpr int RotateId = 0;
 constexpr int ScaleId = 1;
 constexpr int MoveId = 2;
 
-TransformPanel::TransformPanel(StudioModelAsset* asset)
-	: _asset(asset)
+TransformPanel::TransformPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
@@ -46,15 +48,20 @@ void TransformPanel::ResetValues()
 
 void TransformPanel::OnApply()
 {
+	const auto asset = _provider->GetCurrentAsset();
+
+	// We should only get here if we have an asset. Otherwise the UI should be disabled and possibly hidden.
+	assert(asset);
+
 	switch (_ui.ModeGroup->checkedId())
 	{
 	case RotateId:
 	{
-		auto entity = _asset->GetEntity();
+		auto entity = asset->GetEntity();
 
 		auto data{studiomdl::CalculateRotatedData(*entity->GetEditableModel(), _ui.RotateValues->GetValue())};
 
-		_asset->AddUndoCommand(new ChangeModelRotationCommand(_asset, std::move(data.first), std::move(data.second)));
+		asset->AddUndoCommand(new ChangeModelRotationCommand(asset, std::move(data.first), std::move(data.second)));
 		break;
 	}
 
@@ -94,22 +101,22 @@ void TransformPanel::OnApply()
 			flags |= studiomdl::ScaleFlags::ScaleAttachments;
 		}
 
-		auto entity = _asset->GetEntity();
+		auto entity = asset->GetEntity();
 
 		auto data{studiomdl::CalculateScaleData(*entity->GetEditableModel(), scale, flags)};
 
-		_asset->AddUndoCommand(new ChangeModelScaleCommand(_asset, std::move(data.first), std::move(data.second)));
+		asset->AddUndoCommand(new ChangeModelScaleCommand(asset, std::move(data.first), std::move(data.second)));
 
 		break;
 	}
 
 	case MoveId:
 	{
-		auto moveData = studiomdl::CalculateMoveData(*_asset->GetEntity()->GetEditableModel(), _ui.MoveValues->GetValue());
+		auto moveData = studiomdl::CalculateMoveData(*asset->GetEntity()->GetEditableModel(), _ui.MoveValues->GetValue());
 
 		if (!moveData.first.BoneData.empty())
 		{
-			_asset->AddUndoCommand(new ChangeModelOriginCommand(_asset, std::move(moveData.first), std::move(moveData.second)));
+			asset->AddUndoCommand(new ChangeModelOriginCommand(asset, std::move(moveData.first), std::move(moveData.second)));
 		}
 		break;
 	}

@@ -9,12 +9,13 @@ class StateSnapshot;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 class StudioModelData;
 
 class AttachmentsPanel final : public DockableWidget
 {
 public:
-	AttachmentsPanel(StudioModelAsset* asset);
+	explicit AttachmentsPanel(StudioModelAssetProvider* provider);
 	~AttachmentsPanel();
 
 private:
@@ -39,7 +40,8 @@ private slots:
 
 private:
 	Ui_AttachmentsPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 	StudioModelData* _previousModelData{};
 
 	bool _changingAttachmentProperties{false};

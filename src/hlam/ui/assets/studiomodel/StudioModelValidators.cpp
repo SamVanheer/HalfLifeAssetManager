@@ -14,7 +14,14 @@ BaseUniqueNameValidator::State BaseUniqueNameValidator::validate(QString& text, 
 		return state;
 	}
 
-	if (!IsUnique(text))
+	const auto asset = _provider->GetCurrentAsset();
+
+	if (!asset)
+	{
+		return State::Acceptable;
+	}
+
+	if (!IsUnique(asset, text))
 	{
 		return State::Invalid;
 	}
@@ -22,7 +29,7 @@ BaseUniqueNameValidator::State BaseUniqueNameValidator::validate(QString& text, 
 	return State::Acceptable;
 }
 
-bool UniqueAttachmentNameValidator::IsUnique(const QString& text) const
+bool UniqueAttachmentNameValidator::IsUnique(StudioModelAsset* asset, const QString& text) const
 {
 	//Attachments names are all empty by default so they are always valid in this state
 	if (text.isEmpty())
@@ -30,7 +37,7 @@ bool UniqueAttachmentNameValidator::IsUnique(const QString& text) const
 		return true;
 	}
 
-	const auto model = _asset->GetEntity()->GetEditableModel();
+	const auto model = asset->GetEntity()->GetEditableModel();
 
 	for (int i = 0; i < model->Attachments.size(); ++i)
 	{
@@ -46,9 +53,9 @@ bool UniqueAttachmentNameValidator::IsUnique(const QString& text) const
 	return true;
 }
 
-bool UniqueBoneNameValidator::IsUnique(const QString& text) const
+bool UniqueBoneNameValidator::IsUnique(StudioModelAsset* asset, const QString& text) const
 {
-	const auto model = _asset->GetEntity()->GetEditableModel();
+	const auto model = asset->GetEntity()->GetEditableModel();
 
 	for (int i = 0; i < model->Bones.size(); ++i)
 	{
@@ -64,9 +71,9 @@ bool UniqueBoneNameValidator::IsUnique(const QString& text) const
 	return true;
 }
 
-bool UniqueTextureNameValidator::IsUnique(const QString& text) const
+bool UniqueTextureNameValidator::IsUnique(StudioModelAsset* asset, const QString& text) const
 {
-	const auto model = _asset->GetEntity()->GetEditableModel();
+	const auto model = asset->GetEntity()->GetEditableModel();
 
 	for (int i = 0; i < model->Textures.size(); ++i)
 	{
@@ -82,9 +89,9 @@ bool UniqueTextureNameValidator::IsUnique(const QString& text) const
 	return true;
 }
 
-bool UniqueModelNameValidator::IsUnique(const QString& text) const
+bool UniqueModelNameValidator::IsUnique(StudioModelAsset* asset, const QString& text) const
 {
-	const auto model = _asset->GetEntity()->GetEditableModel();
+	const auto model = asset->GetEntity()->GetEditableModel();
 
 	for (int i = 0; i < model->Bodyparts.size(); ++i)
 	{

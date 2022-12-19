@@ -6,22 +6,29 @@
 
 namespace studiomodel
 {
-ModelInfoPanel::ModelInfoPanel(StudioModelAsset* asset)
-	: _asset(asset)
+ModelInfoPanel::ModelInfoPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
-	connect(_asset, &StudioModelAsset::AssetChanged, this, &ModelInfoPanel::OnAssetChanged);
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &ModelInfoPanel::OnAssetChanged);
 
-	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
+	OnAssetChanged(_provider->GetDummyAsset());
 }
 
 ModelInfoPanel::~ModelInfoPanel() = default;
 
 void ModelInfoPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	const auto model = asset->GetEditableStudioModel();
-	auto modelData = asset->GetModelData();
+	if (_asset)
+	{
+		_asset->disconnect(this);
+	}
+
+	_asset = asset;
+
+	const auto model = _asset->GetEditableStudioModel();
+	auto modelData = _asset->GetModelData();
 
 	if (_previousModelData)
 	{
@@ -48,13 +55,13 @@ void ModelInfoPanel::OnAssetChanged(StudioModelAsset* asset)
 	itemModelSetup(_ui.BoneControllersValue, modelData->BoneControllers);
 	itemModelSetup(_ui.HitBoxesValue, modelData->Hitboxes);
 	itemModelSetup(_ui.SequencesValue, modelData->Sequences);
-	_ui.SequenceGroupsValue->setText(QString::number(model ? model->SequenceGroups.size() : 0));
+	_ui.SequenceGroupsValue->setText(QString::number(model->SequenceGroups.size()));
 
 	itemModelSetup(_ui.TexturesValue, modelData->Textures);
 	itemModelSetup(_ui.SkinFamiliesValue, modelData->Skins);
 	itemModelSetup(_ui.BodyPartsValue, modelData->BodyParts);
 	itemModelSetup(_ui.AttachmentsValue, modelData->Attachments);
-	_ui.TransitionsValue->setText(QString::number(model ? model->Transitions.size() : 0));
+	_ui.TransitionsValue->setText(QString::number(model->Transitions.size()));
 
 	// TODO: this panel isn't terribly useful. Folding this information into the other panels will largely eliminate the need for this.
 	// Either way, this panel should be turned into a dialog to show the extra info on-demand, since it's just cluttering up the UI.

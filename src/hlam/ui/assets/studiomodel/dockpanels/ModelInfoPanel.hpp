@@ -9,12 +9,13 @@ class StateSnapshot;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 class StudioModelData;
 
 class ModelInfoPanel final : public DockableWidget
 {
 public:
-	ModelInfoPanel(StudioModelAsset* asset);
+	explicit ModelInfoPanel(StudioModelAssetProvider* provider);
 	~ModelInfoPanel();
 
 private slots:
@@ -22,7 +23,8 @@ private slots:
 
 private:
 	Ui_ModelInfoPanel _ui;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
+	StudioModelAsset* _asset{};
 	StudioModelData* _previousModelData{};
 };
 }

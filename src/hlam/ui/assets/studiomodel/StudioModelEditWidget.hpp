@@ -8,6 +8,7 @@
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
+class CamerasPanel;
 class QDockWidget;
 
 namespace graphics
@@ -21,17 +22,17 @@ class SceneWidget;
 namespace studiomodel
 {
 class StudioModelAsset;
+class StudioModelAssetProvider;
 class StudioModelView;
+class Timeline;
 
 class StudioModelEditWidget final : public QWidget
 {
 	Q_OBJECT
 
 public:
-	StudioModelEditWidget(EditorContext* editorContext, StudioModelAsset* asset);
+	StudioModelEditWidget(EditorContext* editorContext, StudioModelAssetProvider* provider);
 	~StudioModelEditWidget();
-
-	StudioModelAsset* GetAsset() const { return _asset; }
 
 	SceneWidget* GetSceneWidget() const { return _sceneWidget; }
 
@@ -45,6 +46,8 @@ signals:
 	void PoseChanged(Pose pose);
 
 public slots:
+	void SetAsset(StudioModelAsset* asset);
+
 	void SetSceneIndex(int index);
 
 private slots:
@@ -54,7 +57,7 @@ private slots:
 
 private:
 	EditorContext* const _editorContext;
-	StudioModelAsset* const _asset;
+	StudioModelAssetProvider* const _provider;
 
 	Ui_StudioModelEditWidget _ui;
 
@@ -62,7 +65,11 @@ private:
 
 	SceneWidget* _sceneWidget;
 
+	Timeline* _timeline;
+
 	//Stored separately to maintain list order
 	QVector<QDockWidget*> _dockWidgets;
+
+	CamerasPanel* _camerasPanel{};
 };
 }

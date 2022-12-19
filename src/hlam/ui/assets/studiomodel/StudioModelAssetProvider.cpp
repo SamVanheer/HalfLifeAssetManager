@@ -1,6 +1,9 @@
+#include <cassert>
+
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMenu>
+#include <QSignalBlocker>
 
 #include "formats/sprite/SpriteRenderer.hpp"
 #include "formats/studiomodel/StudioModelIO.hpp"
@@ -13,6 +16,7 @@
 #include "ui/EditorContext.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelAssetProvider.hpp"
+#include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelCompilerFrontEnd.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelDecompilerFrontEnd.hpp"
 
@@ -25,7 +29,10 @@ StudioModelAssetProvider::StudioModelAssetProvider(const std::shared_ptr<StudioM
 {
 }
 
-StudioModelAssetProvider::~StudioModelAssetProvider() = default;
+StudioModelAssetProvider::~StudioModelAssetProvider()
+{
+	delete _editWidget;
+}
 
 QMenu* StudioModelAssetProvider::CreateToolMenu(EditorContext* editorContext)
 {
@@ -92,6 +99,12 @@ std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorConte
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
 }
 
+StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget() const
+{
+	assert(_editWidget);
+	return _editWidget;
+}
+
 void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
 {
 	_studioModelRenderer = std::make_unique<studiomdl::StudioModelRenderer>(
@@ -104,11 +117,45 @@ void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
 	_dummyAsset = std::make_unique<StudioModelAsset>(
 		"", editorContext, this, std::make_unique<studiomdl::EditableStudioModel>());
 
+	_editWidget = new StudioModelEditWidget(editorContext, this);
+
 	connect(editorContext, &EditorContext::Tick, this, &StudioModelAssetProvider::OnTick);
+	connect(editorContext, &EditorContext::ActiveAssetChanged, this, &StudioModelAssetProvider::OnActiveAssetChanged);
 }
 
 void StudioModelAssetProvider::OnTick()
 {
 	_studioModelRenderer->RunFrame();
+
+	emit Tick();
+}
+
+void StudioModelAssetProvider::OnActiveAssetChanged(Asset* asset)
+{
+	if (_currentAsset == GetDummyAsset())
+	{
+		// Don't let it overwrite the changes made by the new asset.
+		const QSignalBlocker assetBlocker{_currentAsset};
+		_currentAsset->SetActive(false);
+	}
+
+	if (_currentAsset)
+	{
+		_currentAsset->OnDeactivated();
+	}
+
+	_currentAsset = asset && asset->GetProvider() == this ? static_cast<StudioModelAsset*>(asset) : GetDummyAsset();
+
+	if (_currentAsset == GetDummyAsset())
+	{
+		_currentAsset->SetActive(true);
+	}
+
+	emit AssetChanged(_currentAsset);
+
+	_currentAsset->OnActivated();
+
+	_editWidget->setEnabled(_currentAsset != GetDummyAsset());
+	_editWidget->setVisible(_currentAsset != GetDummyAsset());
 }
 }

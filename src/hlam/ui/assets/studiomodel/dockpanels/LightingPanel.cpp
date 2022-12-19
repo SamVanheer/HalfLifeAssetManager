@@ -6,14 +6,14 @@
 
 namespace studiomodel
 {
-LightingPanel::LightingPanel(StudioModelAsset* asset)
-	: _asset(asset)
+LightingPanel::LightingPanel(StudioModelAssetProvider* provider)
+	: _provider(provider)
 {
 	_ui.setupUi(this);
 
 	connect(_ui.Lights, &QListWidget::currentRowChanged, _ui.LightSettingsContainer, &QStackedWidget::setCurrentIndex);
 
-	AddLight("Sky Light", new SkyLightPanel(_asset));
+	AddLight("Sky Light", new SkyLightPanel(_provider));
 
 	_ui.Lights->setCurrentRow(0);
 }
