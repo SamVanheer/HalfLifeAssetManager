@@ -10,7 +10,7 @@ StudioModelView::StudioModelView(QWidget* parent)
 	_ui.ViewSelection->setShape(QTabBar::Shape::RoundedSouth);
 	_ui.ViewSelection->setToolTip("The current view");
 
-	connect(_ui.ViewSelection, &QTabBar::currentChanged, this, &StudioModelView::SceneChanged);
+	connect(_ui.ViewSelection, &QTabBar::currentChanged, this, &StudioModelView::SceneIndexChanged);
 	connect(_ui.Pose, qOverload<int>(&QComboBox::currentIndexChanged), this, &StudioModelView::OnPoseChanged);
 }
 
@@ -43,6 +43,6 @@ void StudioModelView::SetSceneIndex(int index)
 
 void StudioModelView::OnPoseChanged(int index)
 {
-	emit PoseChanged(index);
+	emit PoseChanged(static_cast<Pose>(index));
 }
 }

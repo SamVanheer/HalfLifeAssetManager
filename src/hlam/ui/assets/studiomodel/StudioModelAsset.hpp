@@ -139,6 +139,8 @@ private slots:
 
 	void OnTextureFiltersChanged();
 
+	void OnSceneIndexChanged(int index);
+
 	void OnSceneWidgetMouseEvent(QMouseEvent* event);
 
 	void OnSceneWidgetWheelEvent(QWheelEvent* event);
@@ -166,6 +168,8 @@ private:
 	const std::unique_ptr<EntityContext> _entityContext;
 
 	std::vector<graphics::Scene*> _scenes;
+
+	graphics::Scene* _currentScene{};
 
 	std::unique_ptr<graphics::Scene> _scene;
 

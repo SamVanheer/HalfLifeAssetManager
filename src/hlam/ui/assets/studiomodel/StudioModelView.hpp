@@ -5,6 +5,8 @@
 
 #include "ui_StudioModelView.h"
 
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
+
 namespace studiomodel
 {
 /**
@@ -27,9 +29,9 @@ public:
 	void SetWidget(QWidget* widget);
 
 signals:
-	void SceneChanged(int index);
+	void SceneIndexChanged(int index);
 
-	void PoseChanged(int index);
+	void PoseChanged(Pose pose);
 
 public slots:
 	void SetSceneIndex(int index);

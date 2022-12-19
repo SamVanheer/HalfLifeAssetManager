@@ -264,8 +264,10 @@ QWidget* StudioModelAsset::GetEditWidget()
 
 	auto sceneWidget = _editWidget->GetSceneWidget();
 
-	_editWidget->connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
-	_editWidget->connect(sceneWidget, &SceneWidget::WheelEvent, this, &StudioModelAsset::OnSceneWidgetWheelEvent);
+	connect(_editWidget, &StudioModelEditWidget::SceneIndexChanged, this, &StudioModelAsset::OnSceneIndexChanged);
+	connect(_editWidget, &StudioModelEditWidget::PoseChanged, this, &StudioModelAsset::SetPose);
+	connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
+	connect(sceneWidget, &SceneWidget::WheelEvent, this, &StudioModelAsset::OnSceneWidgetWheelEvent);
 
 	sceneWidget->SetScene(GetScene());
 
@@ -517,11 +519,18 @@ void StudioModelAsset::OnTextureFiltersChanged()
 	context->End();
 }
 
+void StudioModelAsset::OnSceneIndexChanged(int index)
+{
+	_currentScene = index != -1 ? GetScenes()[index] : nullptr;
+	_editWidget->SetSceneIndex(index);
+	_editWidget->GetSceneWidget()->SetScene(_currentScene);
+}
+
 void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
 {
-	if (auto scene = _editWidget->GetCurrentScene(); scene)
+	if (_currentScene)
 	{
-		if (auto cameraOperator = scene->GetCurrentCamera(); cameraOperator)
+		if (auto cameraOperator = _currentScene->GetCurrentCamera(); cameraOperator)
 		{
 			cameraOperator->MouseEvent(*event);
 		}
@@ -530,9 +539,9 @@ void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
 
 void StudioModelAsset::OnSceneWidgetWheelEvent(QWheelEvent* event)
 {
-	if (auto scene = _editWidget->GetCurrentScene(); scene)
+	if (_currentScene)
 	{
-		if (auto cameraOperator = scene->GetCurrentCamera(); cameraOperator)
+		if (auto cameraOperator = _currentScene->GetCurrentCamera(); cameraOperator)
 		{
 			cameraOperator->WheelEvent(*event);
 		}

@@ -4,8 +4,9 @@
 #include <QVector>
 #include <QWidget>
 
-#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui_StudioModelEditWidget.h"
+
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
 class QDockWidget;
 
@@ -36,7 +37,12 @@ public:
 
 	const QVector<QDockWidget*>& GetDockWidgets() const { return _dockWidgets; }
 
-	graphics::Scene* GetCurrentScene();
+	int GetSceneIndex() const;
+
+signals:
+	void SceneIndexChanged(int index);
+
+	void PoseChanged(Pose pose);
 
 public slots:
 	void SetSceneIndex(int index);

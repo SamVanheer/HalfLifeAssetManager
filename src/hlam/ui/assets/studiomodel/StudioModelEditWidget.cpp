@@ -138,34 +138,22 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_ui.Timeline->SetAsset(_asset);
 
-	connect(_view, &StudioModelView::SceneChanged, this, &StudioModelEditWidget::SetSceneIndex);
-
-	connect(_view, &StudioModelView::PoseChanged, [this](int index)
-		{
-			_asset->SetPose(static_cast<Pose>(index));
-		});
+	connect(_view, &StudioModelView::SceneIndexChanged, this, &StudioModelEditWidget::SceneIndexChanged);
+	connect(_view, &StudioModelView::PoseChanged, this, &StudioModelEditWidget::PoseChanged);
 	connect(_sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw);
 	connect(_editorContext, &EditorContext::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
 
-graphics::Scene* StudioModelEditWidget::GetCurrentScene()
+int StudioModelEditWidget::GetSceneIndex() const
 {
-	const int index = _view->GetSceneIndex();
-
-	if (index == -1)
-	{
-		return nullptr;
-	}
-
-	return _asset->GetScenes()[index];
+	return _view->GetSceneIndex();
 }
 
 void StudioModelEditWidget::SetSceneIndex(int index)
 {
 	_view->SetSceneIndex(index);
-	_sceneWidget->SetScene(_asset->GetScenes()[index]);
 }
 
 void StudioModelEditWidget::OnDockLocationChanged(Qt::DockWidgetArea area)
