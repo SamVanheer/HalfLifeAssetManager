@@ -5,8 +5,6 @@
 
 #include "formats/studiomodel/EditableStudioModel.hpp"
 
-#include "qt/QtUtilities.hpp"
-
 #include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelTextureUtilities.hpp"
 
@@ -219,27 +217,6 @@ protected:
 		return FormatTextureName(*(*_items)[index.row()]);
 	}
 };
-
-StudioModelData* StudioModelData::GetEmptyModel()
-{
-	static StudioModelData modelData{nullptr};
-	return &modelData;
-}
-
-StudioModelData::StudioModelData(QObject* parent)
-	: QObject(parent)
-	, Attachments(qt::GetEmptyModel())
-	, BodyParts(qt::GetEmptyModel())
-	, Bones(qt::GetEmptyModel())
-	, BonesWithNone(qt::GetEmptyModel())
-	, BoneControllers(qt::GetEmptyModel())
-	, BoneControllersWithNone(qt::GetEmptyModel())
-	, Hitboxes(qt::GetEmptyModel())
-	, Sequences(qt::GetEmptyModel())
-	, Skins(qt::GetEmptyModel())
-	, Textures(qt::GetEmptyModel())
-{
-}
 
 StudioModelData::StudioModelData(studiomdl::EditableStudioModel* model, QObject* parent)
 	: QObject(parent)

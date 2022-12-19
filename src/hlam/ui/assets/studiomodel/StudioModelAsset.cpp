@@ -317,7 +317,7 @@ void StudioModelAsset::TryRefresh()
 		auto newModel = std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
 
 		// Clear UI to null state so changes to the models don't trigger changes in UI slots.
-		emit AssetChanged(nullptr);
+		emit AssetChanged(_provider->GetDummyAsset());
 
 		graphics::SceneContext sc{_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader()};
 
@@ -379,7 +379,9 @@ void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 
 	assert(it != _scenes.end());
 
+	_currentScene = it != _scenes.end() ? *it : nullptr;
 	_editWidget->SetSceneIndex(it != _scenes.end() ? it - _scenes.begin() : -1);
+	_editWidget->GetSceneWidget()->SetScene(_currentScene);
 }
 
 void StudioModelAsset::CreateMainScene()
@@ -521,9 +523,7 @@ void StudioModelAsset::OnTextureFiltersChanged()
 
 void StudioModelAsset::OnSceneIndexChanged(int index)
 {
-	_currentScene = index != -1 ? GetScenes()[index] : nullptr;
-	_editWidget->SetSceneIndex(index);
-	_editWidget->GetSceneWidget()->SetScene(_currentScene);
+	SetCurrentScene(index != -1 ? GetScenes()[index] : nullptr);
 }
 
 void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)

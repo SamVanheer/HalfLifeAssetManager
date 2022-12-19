@@ -125,7 +125,7 @@ TexturesPanel::TexturesPanel(StudioModelAsset* asset)
 	connect(_ui.TopColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &TexturesPanel::OnTopColorSpinnerChanged);
 	connect(_ui.BottomColorSpinner, qOverload<int>(&QSpinBox::valueChanged), this, &TexturesPanel::OnBottomColorSpinnerChanged);
 
-	OnAssetChanged(nullptr);
+	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
 }
 
 TexturesPanel::~TexturesPanel() = default;
@@ -161,7 +161,7 @@ static void SetTextureFlagCheckBoxes(Ui_TexturesPanel& ui, int flags)
 
 void TexturesPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+	auto modelData = asset->GetModelData();
 
 	_ui.Textures->setModel(modelData->Textures);
 

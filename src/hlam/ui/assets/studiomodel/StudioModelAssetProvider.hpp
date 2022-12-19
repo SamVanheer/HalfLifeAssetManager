@@ -20,6 +20,8 @@ class IStudioModelRenderer;
 
 namespace studiomodel
 {
+class StudioModelAsset;
+
 inline const QString StudioModelExtension{QStringLiteral("mdl")};
 inline const QString StudioModelPS2Extension{QStringLiteral("dol")};
 
@@ -54,6 +56,8 @@ public:
 
 	sprite::ISpriteRenderer* GetSpriteRenderer() const { return _spriteRenderer.get(); }
 
+	StudioModelAsset* GetDummyAsset() const { return _dummyAsset.get(); }
+
 private:
 	void Initialize(EditorContext* editorContext);
 
@@ -64,6 +68,7 @@ private:
 	const std::shared_ptr<StudioModelSettings> _studioModelSettings;
 	std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 	std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
+	std::unique_ptr<StudioModelAsset> _dummyAsset;
 
 	bool _initialized = false;
 };

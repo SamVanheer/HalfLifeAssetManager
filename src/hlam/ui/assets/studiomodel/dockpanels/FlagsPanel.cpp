@@ -50,15 +50,14 @@ FlagsPanel::FlagsPanel(StudioModelAsset* asset)
 	_ui.HitboxCollision->setProperty(CheckBoxModelFlagProperty.data(), EF_HITBOXCOLLISIONS);
 	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty.data(), EF_FORCESKYLIGHT);
 
-	OnAssetChanged(nullptr);
+	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
 }
 
 void FlagsPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+	auto modelData = asset->GetModelData();
 
-	SetFlags(asset ? asset->GetEntity()->GetEditableModel()->Flags : 0);
-	this->setEnabled(asset != nullptr);
+	SetFlags(asset->GetEntity()->GetEditableModel()->Flags);
 
 	if (_previousModelData)
 	{

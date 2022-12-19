@@ -15,12 +15,7 @@ class StudioModelData final : public QObject
 {
 	Q_OBJECT
 
-private:
-	explicit StudioModelData(QObject* parent);
-
 public:
-	static StudioModelData* GetEmptyModel();
-
 	StudioModelData(studiomdl::EditableStudioModel* model, QObject* parent);
 
 	void DisconnectFromAll(QObject* receiver);

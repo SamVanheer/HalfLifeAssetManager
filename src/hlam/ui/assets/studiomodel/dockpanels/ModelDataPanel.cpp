@@ -49,7 +49,7 @@ ModelDataPanel::ModelDataPanel(StudioModelAsset* asset)
 	connect(_ui.CBoxMin, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
 	connect(_ui.CBoxMax, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
 
-	OnAssetChanged(nullptr);
+	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
 }
 
 ModelDataPanel::~ModelDataPanel() = default;
@@ -64,7 +64,7 @@ void ModelDataPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 
 void ModelDataPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+	auto modelData = asset->GetModelData();
 
 	const QSignalBlocker blocker{_ui.EyePosition};
 	const QSignalBlocker bmin{_ui.BBoxMin};
@@ -72,24 +72,13 @@ void ModelDataPanel::OnAssetChanged(StudioModelAsset* asset)
 	const QSignalBlocker cmin{_ui.CBoxMin};
 	const QSignalBlocker cmax{_ui.CBoxMax};
 
-	if (asset)
-	{
-		auto model = asset->GetEntity()->GetEditableModel();
+	auto model = asset->GetEntity()->GetEditableModel();
 
-		_ui.EyePosition->SetValue(model->EyePosition);
-		_ui.BBoxMin->SetValue(model->BoundingMin);
-		_ui.BBoxMax->SetValue(model->BoundingMax);
-		_ui.CBoxMin->SetValue(model->ClippingMin);
-		_ui.CBoxMax->SetValue(model->ClippingMax);
-	}
-	else
-	{
-		_ui.EyePosition->SetValue(glm::vec3{0});
-		_ui.BBoxMin->SetValue(glm::vec3{0});
-		_ui.BBoxMax->SetValue(glm::vec3{0});
-		_ui.CBoxMin->SetValue(glm::vec3{0});
-		_ui.CBoxMax->SetValue(glm::vec3{0});
-	}
+	_ui.EyePosition->SetValue(model->EyePosition);
+	_ui.BBoxMin->SetValue(model->BoundingMin);
+	_ui.BBoxMax->SetValue(model->BoundingMax);
+	_ui.CBoxMin->SetValue(model->ClippingMin);
+	_ui.CBoxMax->SetValue(model->ClippingMax);
 
 	if (_previousModelData)
 	{

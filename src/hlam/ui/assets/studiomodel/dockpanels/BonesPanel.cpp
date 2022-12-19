@@ -121,7 +121,7 @@ BonesPanel::BonesPanel(StudioModelAsset* asset)
 	connect(_ui.BoneControllerAxis, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneControllerAxisChanged);
 	connect(_ui.BoneController, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneControllerChanged);
 
-	OnAssetChanged(nullptr);
+	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
 }
 
 BonesPanel::~BonesPanel() = default;
@@ -145,7 +145,7 @@ void BonesPanel::UpdateRootBonesCount()
 
 void BonesPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+	auto modelData = asset->GetModelData();
 
 	//Set up this list first so when the first bone is selected by _ui.Bones->setModel it has everything set up properly
 	{

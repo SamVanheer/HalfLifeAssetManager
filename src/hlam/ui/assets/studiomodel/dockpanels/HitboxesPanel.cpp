@@ -56,14 +56,14 @@ HitboxesPanel::HitboxesPanel(StudioModelAsset* asset)
 	connect(_ui.MaximumY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
 	connect(_ui.MaximumZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
 
-	OnAssetChanged(nullptr);
+	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
 }
 
 HitboxesPanel::~HitboxesPanel() = default;
 
 void HitboxesPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+	auto modelData = asset->GetModelData();
 
 	{
 		const QSignalBlocker blocker{_ui.Bone};

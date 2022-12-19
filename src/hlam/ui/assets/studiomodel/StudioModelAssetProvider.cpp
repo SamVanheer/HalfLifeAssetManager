@@ -101,6 +101,9 @@ void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
 	_spriteRenderer = std::make_unique<sprite::SpriteRenderer>(
 		CreateQtLoggerSt(logging::HLAMSpriteRenderer()), editorContext->GetWorldTime());
 
+	_dummyAsset = std::make_unique<StudioModelAsset>(
+		"", editorContext, this, std::make_unique<studiomdl::EditableStudioModel>());
+
 	connect(editorContext, &EditorContext::Tick, this, &StudioModelAssetProvider::OnTick);
 }
 

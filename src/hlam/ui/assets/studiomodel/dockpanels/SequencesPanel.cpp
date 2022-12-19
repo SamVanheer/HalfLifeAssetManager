@@ -52,16 +52,16 @@ SequencesPanel::SequencesPanel(StudioModelAsset* asset)
 
 	_ui.EventDataWidget->setEnabled(false);
 
-	OnAssetChanged(nullptr);
+	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
 }
 
 SequencesPanel::~SequencesPanel() = default;
 
 void SequencesPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	const int sequenceIndex = asset ? asset->GetEntity()->GetSequence() : -1;
+	const int sequenceIndex = asset->GetEntity()->GetSequence();
 
-	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+	auto modelData = asset->GetModelData();
 
 	_ui.SequenceComboBox->setModel(modelData->Sequences);
 	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex);

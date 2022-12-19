@@ -37,32 +37,32 @@
 
 EditorContext::EditorContext(
 	QSettings* settings,
+	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
+	std::unique_ptr<IAssetProviderRegistry>&& assetProviderRegistry,
+	std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
 	const std::shared_ptr<GeneralSettings>& generalSettings,
 	const std::shared_ptr<ColorSettings>& colorSettings,
 	const std::shared_ptr<RecentFilesSettings>& recentFilesSettings,
 	const std::shared_ptr<GameConfigurationsSettings>& gameConfigurationsSettings,
-	std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
-	std::unique_ptr<IAssetProviderRegistry>&& assetProviderRegistry,
-	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
 	QObject* parent)
 	: QObject(parent)
 	, _settings(settings)
 	, _dragNDropEventFilter(new DragNDropEventFilter(this, this))
-	, _generalSettings(generalSettings)
-	, _colorSettings(colorSettings)
-	, _recentFilesSettings(recentFilesSettings)
-	, _gameConfigurationsSettings(gameConfigurationsSettings)
-	, _timer(new QTimer(this))
+	, _graphicsContext(std::move(graphicsContext))
+	, _openglFunctions(std::make_unique<QOpenGLFunctions_1_1>())
+	, _textureLoader(std::make_unique<graphics::TextureLoader>(_openglFunctions.get()))
+	, _assetProviderRegistry(std::move(assetProviderRegistry))
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
 	, _fileSystem(std::make_unique<FileSystem>())
 	, _soundSystem(_generalSettings->ShouldEnableAudioPlayback()
 		? std::unique_ptr<ISoundSystem>(std::make_unique<SoundSystem>(CreateQtLoggerSt(logging::HLAMSoundSystem())))
 		: std::make_unique<DummySoundSystem>())
 	, _worldTime(std::make_unique<WorldTime>())
-	, _assetProviderRegistry(std::move(assetProviderRegistry))
-	, _graphicsContext(std::move(graphicsContext))
-	, _openglFunctions(std::make_unique<QOpenGLFunctions_1_1>())
-	, _textureLoader(std::make_unique<graphics::TextureLoader>(_openglFunctions.get()))
+	, _generalSettings(generalSettings)
+	, _colorSettings(colorSettings)
+	, _recentFilesSettings(recentFilesSettings)
+	, _gameConfigurationsSettings(gameConfigurationsSettings)
+	, _timer(new QTimer(this))
 {
 	_settings->setParent(this);
 

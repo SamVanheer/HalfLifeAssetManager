@@ -43,13 +43,13 @@ class EditorContext final : public QObject
 public:
 	EditorContext(
 		QSettings* settings,
+		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
+		std::unique_ptr<IAssetProviderRegistry>&& assetProviderRegistry,
+		std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
 		const std::shared_ptr<GeneralSettings>& generalSettings,
 		const std::shared_ptr<ColorSettings>& colorSettings,
 		const std::shared_ptr<RecentFilesSettings>& recentFilesSettings,
 		const std::shared_ptr<GameConfigurationsSettings>& gameConfigurationsSettings,
-		std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
-		std::unique_ptr<IAssetProviderRegistry>&& assetProviderRegistry,
-		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
 		QObject* parent = nullptr);
 	~EditorContext();
 	EditorContext(const EditorContext&) = delete;
@@ -112,6 +112,13 @@ private:
 	QSettings* const _settings;
 	DragNDropEventFilter* const _dragNDropEventFilter;
 
+	const std::unique_ptr<graphics::IGraphicsContext> _graphicsContext;
+	const std::unique_ptr<QOpenGLFunctions_1_1> _openglFunctions;
+	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
+
+	const std::unique_ptr<IAssetProviderRegistry> _assetProviderRegistry;
+	const std::unique_ptr<OptionsPageRegistry> _optionsPageRegistry;
+
 	const std::shared_ptr<GeneralSettings> _generalSettings;
 	const std::shared_ptr<ColorSettings> _colorSettings;
 	const std::shared_ptr<RecentFilesSettings> _recentFilesSettings;
@@ -119,15 +126,9 @@ private:
 
 	QTimer* const _timer;
 
-	const std::unique_ptr<OptionsPageRegistry> _optionsPageRegistry;
-
 	const std::unique_ptr<IFileSystem> _fileSystem;
 	const std::unique_ptr<ISoundSystem> _soundSystem;
 	const std::unique_ptr<WorldTime> _worldTime;
 
-	const std::unique_ptr<IAssetProviderRegistry> _assetProviderRegistry;
-
-	const std::unique_ptr<graphics::IGraphicsContext> _graphicsContext;
-	const std::unique_ptr<QOpenGLFunctions_1_1> _openglFunctions;
-	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
+	
 };

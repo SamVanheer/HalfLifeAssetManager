@@ -13,15 +13,15 @@ ModelInfoPanel::ModelInfoPanel(StudioModelAsset* asset)
 
 	connect(_asset, &StudioModelAsset::AssetChanged, this, &ModelInfoPanel::OnAssetChanged);
 
-	OnAssetChanged(nullptr);
+	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
 }
 
 ModelInfoPanel::~ModelInfoPanel() = default;
 
 void ModelInfoPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	const auto model = asset ? asset->GetEditableStudioModel() : nullptr;
-	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+	const auto model = asset->GetEditableStudioModel();
+	auto modelData = asset->GetModelData();
 
 	if (_previousModelData)
 	{

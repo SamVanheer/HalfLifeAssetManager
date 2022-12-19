@@ -70,16 +70,16 @@ BodyPartsPanel::BodyPartsPanel(StudioModelAsset* asset)
 	connect(_ui.BoneControllerBone, qOverload<int>(&QComboBox::currentIndexChanged), this, &BodyPartsPanel::OnBoneControllerBoneChanged);
 	connect(_ui.BoneControllerBoneAxis, qOverload<int>(&QComboBox::currentIndexChanged), this, &BodyPartsPanel::OnBoneControllerAxisChanged);
 
-	OnAssetChanged(nullptr);
+	OnAssetChanged(_asset->GetProvider()->GetDummyAsset());
 }
 
 BodyPartsPanel::~BodyPartsPanel() = default;
 
 void BodyPartsPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	const int skin = asset ? asset->GetEntity()->GetSkin() : -1;
-	const int bodygroup = asset ? asset->GetEntity()->GetBodygroup() : 0;
-	auto modelData = asset ? asset->GetModelData() : StudioModelData::GetEmptyModel();
+	const int skin = asset->GetEntity()->GetSkin();
+	const int bodygroup = asset->GetEntity()->GetBodygroup();
+	auto modelData = asset->GetModelData();
 
 	{
 		const QSignalBlocker blocker{_ui.BoneControllerBone};

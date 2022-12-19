@@ -1,6 +1,5 @@
 #include <memory>
 
-#include <QAbstractItemModel>
 #include <QDesktopServices>
 #include <QFileInfo>
 #include <QImageWriter>
@@ -70,24 +69,5 @@ QString GetSeparatedImagesFileFilter()
 	}
 
 	return cachedFilter;
-}
-
-class EmptyItemModel : public QAbstractItemModel
-{
-public:
-	explicit EmptyItemModel(QObject* parent = nullptr) : QAbstractItemModel(parent) {}
-	QModelIndex index(int, int, const QModelIndex&) const override { return QModelIndex(); }
-	QModelIndex parent(const QModelIndex&) const override { return QModelIndex(); }
-	int rowCount(const QModelIndex&) const override { return 0; }
-	int columnCount(const QModelIndex&) const override { return 0; }
-	bool hasChildren(const QModelIndex&) const override { return false; }
-	QVariant data(const QModelIndex&, int) const override { return QVariant(); }
-};
-
-static const std::unique_ptr<EmptyItemModel> EmptyModel = std::make_unique<EmptyItemModel>();
-
-QAbstractItemModel* GetEmptyModel()
-{
-	return EmptyModel.get();
 }
 }

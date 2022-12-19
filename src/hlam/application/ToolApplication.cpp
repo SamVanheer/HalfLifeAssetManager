@@ -352,13 +352,13 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 
 	return std::make_unique<EditorContext>(
 		settings.release(),
+		std::move(graphicsContext),
+		std::move(assetProviderRegistry),
+		std::move(optionsPageRegistry),
 		generalSettings,
 		colorSettings,
 		recentFilesSettings,
-		gameConfigurationsSettings,
-		std::move(optionsPageRegistry),
-		std::move(assetProviderRegistry),
-		std::move(graphicsContext));
+		gameConfigurationsSettings);
 }
 
 bool ToolApplication::AddPlugins(
