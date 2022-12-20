@@ -78,7 +78,14 @@ void OptionsPageColorsWidget::OnChangeColor()
 {
 	const QColor current{_ui.ColorList->currentData().value<QColor>()};
 
-	const QColor color{QColorDialog::getColor(current, this)};
+	QColorDialog::ColorDialogOptions options{};
+
+	if (_colorSettings->HasAlphaChannel(_ui.ColorList->currentText()))
+	{
+		options |= QColorDialog::ColorDialogOption::ShowAlphaChannel;
+	}
+
+	const QColor color{QColorDialog::getColor(current, this, {}, options)};
 
 	if (color.isValid())
 	{
@@ -92,7 +99,7 @@ void OptionsPageColorsWidget::OnResetColor()
 {
 	const QString key{_ui.ColorList->currentText()};
 
-	const glm::vec3 defaultColor{_colorSettings->GetDefaultColor(key)};
+	const glm::vec4 defaultColor{_colorSettings->GetDefaultColor(key)};
 
 	const QColor defaultColorAsColor = VectorToColor(defaultColor);
 

@@ -379,7 +379,7 @@ void DrawFloorQuad(QOpenGLFunctions_1_1* openglFunctions, const glm::vec3& origi
 
 void DrawFloor(QOpenGLFunctions_1_1* openglFunctions,
 	const glm::vec3& origin, float floorLength, float textureRepeatLength,
-	const glm::vec2& textureOffset, std::optional<GLuint> groundTexture, const glm::vec3& groundColor,
+	const glm::vec2& textureOffset, std::optional<GLuint> groundTexture, const glm::vec4& groundColor,
 	const bool bMirror)
 {
 	const auto cullFaceWasEnabled = openglFunctions->glIsEnabled(GL_CULL_FACE);
@@ -413,7 +413,7 @@ void DrawFloor(QOpenGLFunctions_1_1* openglFunctions,
 	else
 	{
 		openglFunctions->glDisable(GL_TEXTURE_2D);
-		openglFunctions->glColor4fv(glm::value_ptr(glm::vec4{groundColor, 0.7}));
+		openglFunctions->glColor4fv(glm::value_ptr(groundColor));
 		openglFunctions->glBindTexture(GL_TEXTURE_2D, 0);
 	}
 

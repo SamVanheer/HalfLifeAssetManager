@@ -102,7 +102,7 @@ void DrawFloorQuad(QOpenGLFunctions_1_1* openglFunctions, const glm::vec3& origi
 */
 void DrawFloor(QOpenGLFunctions_1_1* openglFunctions, 
 	const glm::vec3& origin, float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, std::optional<GLuint> groundTexture,
-	const glm::vec3& groundColor, const bool bMirror);
+	const glm::vec4& groundColor, const bool bMirror);
 
 /**
 *	Draws a mirrored model.

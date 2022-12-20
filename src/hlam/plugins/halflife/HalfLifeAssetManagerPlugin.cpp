@@ -15,7 +15,7 @@ using namespace studiomodel;
 
 bool HalfLifeAssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 {
-	builder.ColorSettings->Add(GroundColor, RGB888ToVector(216, 216, 175));
+	builder.ColorSettings->Add(GroundColor, RGBA8888ToVector(216, 216, 175, 178));
 	builder.ColorSettings->Add(BackgroundColor, RGB888ToVector(63, 127, 127));
 	builder.ColorSettings->Add(CrosshairColor, RGB888ToVector(255, 0, 0));
 	builder.ColorSettings->Add(LightColor, RGB888ToVector(255, 255, 255));

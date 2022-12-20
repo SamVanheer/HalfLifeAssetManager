@@ -13,27 +13,43 @@
 #include <QStringList>
 
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 #include "qt/HashFunctions.hpp"
 
-inline glm::vec3 ColorToVector(const QColor& color)
+inline glm::vec4 ColorToVector(const QColor& color)
 {
-	return {color.redF(), color.greenF(), color.blueF()};
+	return {color.redF(), color.greenF(), color.blueF(), color.alphaF()};
 }
 
-inline QColor VectorToColor(const glm::vec3& color)
+inline QColor VectorToColor(const glm::vec4& color)
 {
-	return QColor::fromRgbF(color.r, color.g, color.b);
+	return QColor::fromRgbF(color.r, color.g, color.b, color.a);
 }
 
-inline glm::vec3 RGB888ToVector(int r, int g, int b)
+inline glm::vec4 RGB888ToVector(int r, int g, int b)
 {
-	return {r / 255.f, g / 255.f, b / 255.f};
+	return {r / 255.f, g / 255.f, b / 255.f, 1};
+}
+
+inline glm::vec4 RGBA8888ToVector(int r, int g, int b, int a)
+{
+	return {r / 255.f, g / 255.f, b / 255.f, a / 255.f};
 }
 
 class ColorSettings final : public QObject
 {
 	Q_OBJECT
+
+private:
+	struct ColorData
+	{
+		glm::vec4 DefaultColor;
+		glm::vec4 Color;
+		bool HasAlphaChannel;
+	};
+
+	static constexpr glm::vec4 DefaultColor{0, 0, 0, 1};
 
 public:
 	ColorSettings(QObject* parent = nullptr)
@@ -95,36 +111,52 @@ public:
 		return keys;
 	}
 
-	glm::vec3 GetDefaultColor(const QString& key) const
+	glm::vec4 GetDefaultColor(const QString& key) const
 	{
 		if (auto it = _colors.find(key); it != _colors.end())
 		{
-			return it->second.first;
+			return it->second.DefaultColor;
 		}
 
-		return glm::vec3{0};
+		return DefaultColor;
 	}
 
-	glm::vec3 GetColor(const QString& key, const glm::vec3& defaultValue = glm::vec3{0}) const
+	glm::vec4 GetColor(const QString& key, const glm::vec4& defaultValue = DefaultColor) const
 	{
 		if (auto it = _colors.find(key); it != _colors.end())
 		{
-			return it->second.second;
+			return it->second.Color;
 		}
 
 		return defaultValue;
 	}
 
-	void Add(const QString& key, const glm::vec3& defaultColor)
-	{
-		_colors.emplace(key, std::make_pair(defaultColor, defaultColor));
-	}
-
-	void Set(const QString& key, const glm::vec3& color)
+	bool HasAlphaChannel(const QString& key) const
 	{
 		if (auto it = _colors.find(key); it != _colors.end())
 		{
-			it->second.second = color;
+			return it->second.HasAlphaChannel;
+		}
+
+		return false;
+	}
+
+	void Add(const QString& key, const glm::vec4& defaultColor)
+	{
+		_colors.emplace(key, ColorData(defaultColor, defaultColor, true));
+	}
+
+	void Add(const QString& key, const glm::vec3& defaultColor)
+	{
+		const glm::vec4 rgba{defaultColor, 1};
+		_colors.emplace(key, ColorData(rgba, rgba, false));
+	}
+
+	void Set(const QString& key, const glm::vec4& color)
+	{
+		if (auto it = _colors.find(key); it != _colors.end())
+		{
+			it->second.Color = color;
 		}
 	}
 
@@ -132,5 +164,5 @@ signals:
 	void ColorsChanged();
 
 private:
-	std::unordered_map<QString, std::pair<glm::vec3, glm::vec3>> _colors;
+	std::unordered_map<QString, ColorData> _colors;
 };
