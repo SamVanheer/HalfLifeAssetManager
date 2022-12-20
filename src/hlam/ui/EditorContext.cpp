@@ -74,7 +74,9 @@ EditorContext::EditorContext(
 	assert(initializedOpenGLFunctions);
 	_graphicsContext->End();
 
-	_textureLoader->SetTextureFilters(_generalSettings->GetMinFilter(), _generalSettings->GetMagFilter(), _generalSettings->GetMipmapFilter());
+	_textureLoader->SetResizeToPowerOf2(_generalSettings->ShouldResizeTexturesToPowerOf2());
+	_textureLoader->SetTextureFilters(
+		_generalSettings->GetMinFilter(), _generalSettings->GetMagFilter(), _generalSettings->GetMipmapFilter());
 
 	qCDebug(logging::HLAM) << "Initialized OpenGL";
 

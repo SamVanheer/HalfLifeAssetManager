@@ -31,7 +31,7 @@ public:
 	static constexpr bool DefaultPlaySounds{true};
 	static constexpr bool DefaultFramerateAffectsPitch{false};
 
-	static constexpr bool DefaultPowerOf2Textures{true};
+	static constexpr bool DefaultPowerOf2Textures{false};
 
 	static constexpr int DefaultMSAASamples{-1};
 
