@@ -43,6 +43,9 @@ ArcBallSettingsPanel::ArcBallSettingsPanel(ArcBallCameraOperator* cameraOperator
 
 	connect(_ui.FieldOfView, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ArcBallSettingsPanel::OnFieldOfViewChanged);
 	connect(_ui.DefaultFieldOfView, &QPushButton::clicked, this, &ArcBallSettingsPanel::OnResetFieldOfView);
+
+	connect(_ui.ProjectionMode, qOverload<int>(&QComboBox::currentIndexChanged),
+		this, &ArcBallSettingsPanel::OnProjectionModeChanged);
 }
 
 ArcBallSettingsPanel::~ArcBallSettingsPanel() = default;
@@ -58,6 +61,8 @@ void ArcBallSettingsPanel::UpdateCameraProperties()
 
 	const QSignalBlocker fov{_ui.FieldOfView};
 
+	const QSignalBlocker projectionmode{_ui.ProjectionMode};
+
 	auto camera = _cameraOperator->GetCamera();
 
 	_ui.CenterX->setValue(_cameraOperator->GetTargetPosition().x);
@@ -70,6 +75,8 @@ void ArcBallSettingsPanel::UpdateCameraProperties()
 	_ui.Distance->setValue(_cameraOperator->GetDistance());
 
 	_ui.FieldOfView->setValue(camera->GetFieldOfView());
+
+	_ui.ProjectionMode->setCurrentIndex(static_cast<int>(camera->GetProjectionMode()));
 }
 
 void ArcBallSettingsPanel::OnPropertyChanged()
@@ -86,4 +93,9 @@ void ArcBallSettingsPanel::OnFieldOfViewChanged(double value)
 void ArcBallSettingsPanel::OnResetFieldOfView()
 {
 	_ui.FieldOfView->setValue(ArcBallCameraOperator::DefaultFOV);
+}
+
+void ArcBallSettingsPanel::OnProjectionModeChanged(int index)
+{
+	_cameraOperator->GetCamera()->SetProjectionMode(static_cast<graphics::ProjectionMode>(index));
 }

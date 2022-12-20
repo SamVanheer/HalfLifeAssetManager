@@ -116,8 +116,8 @@ public:
 
 	void CenterView(const glm::vec3&, const glm::vec3& cameraOrigin, float pitch, float yaw) override
 	{
-		_camera.SetOrigin(cameraOrigin);
-		_camera.SetAngles(pitch, yaw);
+		// Free look has no concept of distance that can be meaningfully converted to an orthographic distance.
+		_camera.SetProperties(cameraOrigin, pitch, yaw, 0);
 		emit CameraPropertiesChanged();
 	}
 

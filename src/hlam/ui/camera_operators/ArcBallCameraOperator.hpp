@@ -174,7 +174,7 @@ private:
 		cameraPosition += _parameters.TargetPosition;
 
 		//Set camera variables
-		_camera.SetProperties(cameraPosition, _parameters.Pitch, _parameters.Yaw);
+		_camera.SetProperties(cameraPosition, _parameters.Pitch, _parameters.Yaw, _parameters.Distance);
 
 		emit CameraPropertiesChanged();
 	}

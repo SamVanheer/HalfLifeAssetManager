@@ -12,6 +12,12 @@ class QWheelEvent;
 
 namespace graphics
 {
+enum class ProjectionMode
+{
+	Perspective = 0,
+	Orthographic
+};
+
 /**
 *	@brief Represents a camera in the world.
 */
@@ -68,11 +74,12 @@ public:
 		UpdateModelMatrix();
 	}
 
-	void SetProperties(const glm::vec3& origin, float pitch, float yaw)
+	void SetProperties(const glm::vec3& origin, float pitch, float yaw, float distance)
 	{
 		_origin = origin;
 		_pitch = pitch;
 		_yaw = yaw;
+		_distance = distance;
 
 		UpdateModelMatrix();
 	}
@@ -84,6 +91,25 @@ public:
 		_fov = value;
 
 		UpdateProjectionMatrix();
+	}
+
+	float GetDistance() const { return _distance; }
+
+	void SetDistance(float distance)
+	{
+		_distance = distance;
+		UpdateModelMatrix();
+	}
+
+	ProjectionMode GetProjectionMode() const { return _projectionMode; }
+
+	void SetProjectionMode(ProjectionMode projectionMode)
+	{
+		if (_projectionMode != projectionMode)
+		{
+			_projectionMode = projectionMode;
+			UpdateProjectionMatrix();
+		}
 	}
 
 	void SetWindowSize(float windowWidth, float windowHeight)
@@ -117,6 +143,9 @@ private:
 	float _pitch{0};
 	float _yaw{0};
 	float _fov{90.f};
+	float _distance{0};
+
+	ProjectionMode _projectionMode{ProjectionMode::Perspective};
 
 	float _windowWidth{0.f};
 	float _windowHeight{0.f};

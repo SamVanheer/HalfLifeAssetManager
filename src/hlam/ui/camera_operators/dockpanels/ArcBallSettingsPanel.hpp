@@ -20,6 +20,8 @@ private slots:
 	void OnFieldOfViewChanged(double value);
 	void OnResetFieldOfView();
 
+	void OnProjectionModeChanged(int index);
+
 private:
 	Ui_ArcBallSettingsPanel _ui;
 	ArcBallCameraOperator* const _cameraOperator;
