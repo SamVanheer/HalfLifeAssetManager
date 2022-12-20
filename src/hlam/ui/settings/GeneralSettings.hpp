@@ -33,6 +33,8 @@ public:
 
 	static constexpr bool DefaultPowerOf2Textures{true};
 
+	static constexpr int DefaultMSAASamples{-1};
+
 	static constexpr graphics::TextureFilter DefaultMinFilter{graphics::TextureFilter::Linear};
 	static constexpr graphics::TextureFilter DefaultMagFilter{graphics::TextureFilter::Linear};
 	static constexpr graphics::MipmapFilter DefaultMipmapFilter{graphics::MipmapFilter::None};
@@ -42,6 +44,16 @@ public:
 	static bool ShouldUseSingleInstance(QSettings& settings)
 	{
 		return settings.value("Startup/UseSingleInstance", DefaultUseSingleInstance).toBool();
+	}
+
+	static int GetMSAALevel(QSettings& settings)
+	{
+		return settings.value("Graphics/MSAALevel", DefaultMSAASamples).toInt();
+	}
+
+	static void SetMSAALevel(QSettings& settings, int msaaSamples)
+	{
+		settings.setValue("Graphics/MSAALevel", msaaSamples);
 	}
 
 	void LoadSettings(QSettings& settings)

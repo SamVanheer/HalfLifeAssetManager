@@ -1,16 +1,30 @@
 #include <QApplication>
+#include <QSurfaceFormat>
 #include <QWheelEvent>
 #include <QWidget>
 
 #include "graphics/Scene.hpp"
 #include "graphics/SceneContext.hpp"
+#include "ui/EditorContext.hpp"
 #include "ui/SceneWidget.hpp"
+#include "ui/settings/GeneralSettings.hpp"
 
-SceneWidget::SceneWidget(QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader* textureLoader, QWidget* parent)
+SceneWidget::SceneWidget(EditorContext* editorContext,
+	QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader* textureLoader,
+	QWidget* parent)
 	: QOpenGLWindow()
 	, _container(QWidget::createWindowContainer(this, parent))
 	, _sceneContext(std::make_unique<graphics::SceneContext>(openglFunctions, textureLoader))
 {
+	// It's safe to modify this since it doesn't affect the underlying window, only the FBO used for MSAA.
+	auto format = QSurfaceFormat::defaultFormat();
+
+	const int msaaLevel = GeneralSettings::GetMSAALevel(*editorContext->GetSettings());
+
+	format.setSamples(msaaLevel != -1 ? 1 << msaaLevel : -1);
+
+	setFormat(format);
+
 	_container->setFocusPolicy(Qt::FocusPolicy::WheelFocus);
 
 	connect(this, &SceneWidget::frameSwapped, this, qOverload<>(&SceneWidget::update));

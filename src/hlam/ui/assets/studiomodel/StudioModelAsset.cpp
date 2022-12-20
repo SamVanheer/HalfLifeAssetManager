@@ -273,7 +273,9 @@ QWidget* StudioModelAsset::GetEditWidget()
 void StudioModelAsset::SetupFullscreenWidget(FullscreenWidget* fullscreenWidget)
 {
 	const auto sceneWidget = new SceneWidget(
-		_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader(), fullscreenWidget);
+		_editorContext,
+		_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader(),
+		fullscreenWidget);
 
 	sceneWidget->SetScene(GetScene());
 

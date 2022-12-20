@@ -35,6 +35,13 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 {
 	_ui.setupUi(this);
 
+	_ui.AntiAliasing->addItem("None");
+
+	for (int i = 0; i < 5; ++i)
+	{
+		_ui.AntiAliasing->addItem(QString{"%1x MSAA"}.arg(1 << i));
+	}
+
 	auto settings = _editorContext->GetSettings();
 
 	_ui.TickRate->setRange(GeneralSettings::MinimumTickRate, GeneralSettings::MaximumTickRate);
@@ -58,6 +65,7 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 	_ui.MouseWheelSpeedSlider->setValue(_generalSettings->GetMouseWheelSpeed());
 	_ui.MouseWheelSpeedSpinner->setValue(_generalSettings->GetMouseWheelSpeed());
 	_ui.EnableAudioPlayback->setChecked(_generalSettings->ShouldEnableAudioPlayback());
+	_ui.AntiAliasing->setCurrentIndex(GeneralSettings::GetMSAALevel(*settings) + 1);
 
 	connect(_ui.MouseSensitivitySlider, &QSlider::valueChanged, _ui.MouseSensitivitySpinner, &QSpinBox::setValue);
 	connect(_ui.MouseSensitivitySpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.MouseSensitivitySlider, &QSlider::setValue);
@@ -80,6 +88,7 @@ void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 	_generalSettings->SetMouseSensitivity(_ui.MouseSensitivitySlider->value());
 	_generalSettings->SetMouseWheelSpeed(_ui.MouseWheelSpeedSlider->value());
 	_generalSettings->SetEnableAudioPlayback(_ui.EnableAudioPlayback->isChecked());
+	GeneralSettings::SetMSAALevel(settings, _ui.AntiAliasing->currentIndex() - 1);
 
 	_generalSettings->SaveSettings(settings);
 	_recentFilesSettings->SaveSettings(settings);

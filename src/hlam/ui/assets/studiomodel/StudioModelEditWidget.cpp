@@ -50,7 +50,10 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_ui.MainLayout->addWidget(_timeline);
 
-	_sceneWidget = new SceneWidget(editorContext->GetOpenGLFunctions(), editorContext->GetTextureLoader(), this);
+	_sceneWidget = new SceneWidget(
+		editorContext,
+		editorContext->GetOpenGLFunctions(), editorContext->GetTextureLoader(),
+		this);
 
 	auto eventFilter = _editorContext->GetDragNDropEventFilter();
 
