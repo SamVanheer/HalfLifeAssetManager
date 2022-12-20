@@ -149,7 +149,7 @@ int ToolApplication::Run(int argc, char* argv[])
 			const int minimumSupportedVersionCode = makeVersionCode(2, 1);
 
 			//Only check this once
-			if (!settings->value("graphics/checked_opengl_version", false).toBool()
+			if (!settings->value("Graphics/CheckedOpenGLVersion", false).toBool()
 				&& versionCode < minimumSupportedVersionCode)
 			{
 				QMessageBox::warning(nullptr, "Warning",
@@ -158,7 +158,7 @@ int ToolApplication::Run(int argc, char* argv[])
 						.arg(openGLFormat.majorVersion())
 						.arg(openGLFormat.minorVersion()));
 
-				settings->setValue("graphics/checked_opengl_version", true);
+				settings->setValue("Graphics/CheckedOpenGLVersion", true);
 			}
 		}
 

@@ -29,7 +29,7 @@ public:
 	{
 		RemoveAllGameEnvironments();
 
-		settings.beginGroup("game_environments");
+		settings.beginGroup("GameEnvironments");
 
 		const int environmentCount = settings.beginReadArray("List");
 
@@ -112,7 +112,7 @@ public:
 
 	void SaveSettings(QSettings& settings)
 	{
-		settings.beginGroup("game_environments");
+		settings.beginGroup("GameEnvironments");
 
 		settings.remove("List");
 

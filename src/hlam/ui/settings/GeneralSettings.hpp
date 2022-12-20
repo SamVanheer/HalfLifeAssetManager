@@ -41,30 +41,26 @@ public:
 
 	static bool ShouldUseSingleInstance(QSettings& settings)
 	{
-		settings.beginGroup("startup");
-		const bool useSingleInstance = settings.value("UseSingleInstance", DefaultUseSingleInstance).toBool();
-		settings.endGroup();
-
-		return useSingleInstance;
+		return settings.value("Startup/UseSingleInstance", DefaultUseSingleInstance).toBool();
 	}
 
 	void LoadSettings(QSettings& settings)
 	{
 		_useSingleInstance = ShouldUseSingleInstance(settings);
 
-		settings.beginGroup("general");
+		settings.beginGroup("General");
 		PauseAnimationsOnTimelineClick = settings.value("PauseAnimationsOnTimelineClick", DefaultPauseAnimationsOnTimelineClick).toBool();
 		_tickRate = std::clamp(settings.value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
 		settings.endGroup();
 
-		settings.beginGroup("mouse");
+		settings.beginGroup("Mouse");
 		_invertMouseX = settings.value("InvertMouseX", false).toBool();
 		_invertMouseY = settings.value("InvertMouseY", false).toBool();
 		_mouseSensitivity = std::clamp(settings.value("MouseSensitivity", DefaultMouseSensitivity).toInt(), MinimumMouseSensitivity, MaximumMouseSensitivity);
 		_mouseWheelSpeed = std::clamp(settings.value("MouseWheelSpeed", DefaultMouseWheelSpeed).toInt(), MinimumMouseWheelSpeed, MaximumMouseWheelSpeed);
 		settings.endGroup();
 
-		settings.beginGroup("audio");
+		settings.beginGroup("Audio");
 		_enableAudioPlayback = settings.value("EnableAudioPlayback", DefaultEnableAudioPlayback).toBool();
 		PlaySounds = settings.value("PlaySounds", DefaultPlaySounds).toBool();
 		FramerateAffectsPitch = settings.value("FramerateAffectsPitch", DefaultFramerateAffectsPitch).toBool();
@@ -97,23 +93,23 @@ public:
 
 	void SaveSettings(QSettings& settings)
 	{
-		settings.beginGroup("startup");
+		settings.beginGroup("Startup");
 		settings.setValue("UseSingleInstance", _useSingleInstance);
 		settings.endGroup();
 
-		settings.beginGroup("general");
+		settings.beginGroup("General");
 		settings.setValue("PauseAnimationsOnTimelineClick", PauseAnimationsOnTimelineClick);
 		settings.setValue("TickRate", _tickRate);
 		settings.endGroup();
 
-		settings.beginGroup("mouse");
+		settings.beginGroup("Mouse");
 		settings.setValue("InvertMouseX", _invertMouseX);
 		settings.setValue("InvertMouseY", _invertMouseY);
 		settings.setValue("MouseSensitivity", _mouseSensitivity);
 		settings.setValue("MouseWheelSpeed", _mouseWheelSpeed);
 		settings.endGroup();
 
-		settings.beginGroup("audio");
+		settings.beginGroup("Audio");
 		settings.setValue("EnableAudioPlayback", _enableAudioPlayback);
 		settings.setValue("PlaySounds", PlaySounds);
 		settings.setValue("FramerateAffectsPitch", FramerateAffectsPitch);

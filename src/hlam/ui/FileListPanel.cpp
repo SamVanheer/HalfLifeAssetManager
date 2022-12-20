@@ -24,7 +24,7 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 
 	{
 		const auto settings = editorContext->GetSettings();
-		settings->beginGroup("file_list");
+		settings->beginGroup("FileList");
 		_model->setNameFilterDisables(!settings->value("HideFilesThatDontMatch", true).toBool());
 		settings->endGroup();
 	}
@@ -44,7 +44,7 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 			_model->setNameFilterDisables(!_ui.HideFilesThatDontMatch->isChecked());
 
 			const auto settings = editorContext->GetSettings();
-			settings->beginGroup("file_list");
+			settings->beginGroup("FileList");
 			settings->setValue("HideFilesThatDontMatch", _ui.HideFilesThatDontMatch->isChecked());
 			settings->endGroup();
 		});

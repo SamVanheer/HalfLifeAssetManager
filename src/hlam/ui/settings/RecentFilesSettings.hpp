@@ -26,7 +26,7 @@ public:
 	{
 		_recentFiles.clear();
 
-		settings.beginGroup("recent_files");
+		settings.beginGroup("RecentFiles");
 
 		_maxRecentFiles = std::max(0, settings.value("MaxRecentFiles", DefaultMaxRecentFiles).toInt());
 
@@ -49,7 +49,7 @@ public:
 
 	void SaveSettings(QSettings& settings)
 	{
-		settings.beginGroup("recent_files");
+		settings.beginGroup("RecentFiles");
 
 		settings.setValue("MaxRecentFiles", _maxRecentFiles);
 

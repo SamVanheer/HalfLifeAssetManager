@@ -257,9 +257,9 @@ void MainWindow::LoadSettings()
 	auto settings = _editorContext->GetSettings();
 
 	{
-		settings->beginGroup("main_window");
-		const auto screenName = settings->value("screen_name");
-		const auto geometry = settings->value("screen_geometry");
+		settings->beginGroup("MainWindow");
+		const auto screenName = settings->value("ScreenName");
+		const auto geometry = settings->value("ScreenGeometry");
 		settings->endGroup();
 
 		//Calling this forces the creation of a QWindow handle now, instead of later
@@ -316,9 +316,9 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 	auto settings = _editorContext->GetSettings();
 
-	settings->beginGroup("main_window");
-	settings->setValue("screen_name", name);
-	settings->setValue("screen_geometry", saveGeometry());
+	settings->beginGroup("MainWindow");
+	settings->setValue("ScreenName", name);
+	settings->setValue("ScreenGeometry", saveGeometry());
 	settings->endGroup();
 
 	//Main window cleanup has to be done here because Qt won't call the destructor

@@ -3,7 +3,7 @@
 #include <QSettings>
 #include <QString>
 
-inline const QString PathsGroupName{QStringLiteral("paths")};
+inline const QString PathsGroupName{QStringLiteral("Paths")};
 
 inline QString GetSavedPath(QSettings& settings, const QString& pathName)
 {

@@ -61,7 +61,7 @@ public:
 
 	void LoadSettings(QSettings& settings)
 	{
-		settings.beginGroup("colors");
+		settings.beginGroup("Colors");
 
 		const int colorCount{settings.beginReadArray("List")};
 
@@ -78,7 +78,7 @@ public:
 
 	void SaveSettings(QSettings& settings)
 	{
-		settings.beginGroup("colors");
+		settings.beginGroup("Colors");
 		settings.remove("List");
 
 		settings.beginWriteArray("List", _colors.size());

@@ -12,7 +12,7 @@ public:
 
 	void LoadSettings(QSettings& settings)
 	{
-		settings.beginGroup("style");
+		settings.beginGroup("Style");
 		const QString stylePath = settings.value("CurrentStyle").toString();
 		settings.endGroup();
 
@@ -21,7 +21,7 @@ public:
 
 	void SaveSettings(QSettings& settings)
 	{
-		settings.beginGroup("style");
+		settings.beginGroup("Style");
 		settings.setValue("CurrentStyle", _stylePath);
 		settings.endGroup();
 	}

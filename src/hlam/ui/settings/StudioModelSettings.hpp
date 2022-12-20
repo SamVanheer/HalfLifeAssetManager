@@ -27,7 +27,7 @@ public:
 
 	void LoadSettings(QSettings& settings)
 	{
-		settings.beginGroup("assets/studiomodel");
+		settings.beginGroup("Assets/StudioModel");
 		_autodetectViewModels = settings.value("AutodetectViewmodels", DefaultAutodetectViewmodels).toBool();
 		_activateTextureViewWhenTexturesPanelOpened = settings.value(
 			"ActivateTextureViewWhenTexturesPanelOpened", DefaultActivateTextureViewWhenTexturesPanelOpened).toBool();
@@ -39,7 +39,7 @@ public:
 
 	void SaveSettings(QSettings& settings)
 	{
-		settings.beginGroup("assets/studiomodel");
+		settings.beginGroup("Assets/StudioModel");
 		settings.setValue("AutodetectViewmodels", _autodetectViewModels);
 		settings.setValue("ActivateTextureViewWhenTexturesPanelOpened", _activateTextureViewWhenTexturesPanelOpened);
 		settings.setValue("FloorLength", _floorLength);
