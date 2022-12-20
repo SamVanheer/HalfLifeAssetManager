@@ -21,4 +21,6 @@ public:
 	RenderPasses GetRenderPasses() const override { return RenderPass::Overlay2D; }
 
 	virtual void Draw(graphics::SceneContext& sc, RenderPasses renderPass) override;
+
+	bool ShowGuidelines = false;
 };

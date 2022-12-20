@@ -1,6 +1,7 @@
 #include <limits>
 
 #include <QFileDialog>
+#include <QSignalBlocker>
 
 #include "entity/GroundEntity.hpp"
 
@@ -9,8 +10,6 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/objects/GroundPanel.hpp"
 
-#include "ui/settings/StudioModelSettings.hpp"
-
 namespace studiomodel
 {
 GroundPanel::GroundPanel(StudioModelAssetProvider* provider)
@@ -18,10 +17,10 @@ GroundPanel::GroundPanel(StudioModelAssetProvider* provider)
 {
 	_ui.setupUi(this);
 
-	_ui.GroundTextureSize->setValue(_provider->GetStudioModelSettings()->FloorTextureLength);
-
 	_ui.GroundOrigin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	_ui.GroundOrigin->SetDecimals(6);
+
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &GroundPanel::OnAssetChanged);
 
 	connect(_ui.ShowGround, &QCheckBox::stateChanged, this, &GroundPanel::OnShowGroundChanged);
 	connect(_ui.MirrorModelOnGround, &QCheckBox::stateChanged, this, &GroundPanel::OnMirrorOnGroundChanged);
@@ -39,11 +38,30 @@ void GroundPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 	_ui.MainLayout->setDirection(direction);
 }
 
+void GroundPanel::OnAssetChanged(StudioModelAsset* asset)
+{
+	const QSignalBlocker showGroundBlocker{_ui.ShowGround};
+	const QSignalBlocker mirrorBlocker{_ui.MirrorModelOnGround};
+	const QSignalBlocker tilingBlocker{_ui.EnableGroundTextureTiling};
+	const QSignalBlocker textureSizeBlocker{_ui.GroundTextureSize};
+	const QSignalBlocker groundTextureBlocker{_ui.GroundTexture};
+	const QSignalBlocker originBlocker{_ui.GroundOrigin};
+
+	auto entity = asset->GetGroundEntity();
+
+	_ui.ShowGround->setChecked(entity->ShowGround);
+	_ui.MirrorModelOnGround->setChecked(entity->MirrorOnGround);
+	_ui.EnableGroundTextureTiling->setChecked(entity->EnableFloorTextureTiling);
+	_ui.GroundTextureSize->setValue(entity->FloorTextureLength);
+	_ui.GroundTexture->setText(QString::fromStdString(entity->GetImageName()));
+	_ui.GroundOrigin->SetValue(entity->GetOrigin());
+}
+
 void GroundPanel::OnShowGroundChanged()
 {
-	_provider->GetStudioModelSettings()->ShowGround = _ui.ShowGround->isChecked();
+	_provider->GetCurrentAsset()->GetGroundEntity()->ShowGround = _ui.ShowGround->isChecked();
 
-	if (!_provider->GetStudioModelSettings()->ShowGround)
+	if (!_provider->GetCurrentAsset()->GetGroundEntity()->ShowGround)
 	{
 		_ui.MirrorModelOnGround->setChecked(false);
 	}
@@ -51,9 +69,9 @@ void GroundPanel::OnShowGroundChanged()
 
 void GroundPanel::OnMirrorOnGroundChanged()
 {
-	_provider->GetStudioModelSettings()->MirrorOnGround = _ui.MirrorModelOnGround->isChecked();
+	_provider->GetCurrentAsset()->GetGroundEntity()->MirrorOnGround = _ui.MirrorModelOnGround->isChecked();
 
-	if (_provider->GetStudioModelSettings()->MirrorOnGround)
+	if (_provider->GetCurrentAsset()->GetGroundEntity()->MirrorOnGround)
 	{
 		_ui.ShowGround->setChecked(true);
 	}
@@ -61,12 +79,12 @@ void GroundPanel::OnMirrorOnGroundChanged()
 
 void GroundPanel::OnEnableGroundTextureTilingChanged()
 {
-	_provider->GetStudioModelSettings()->EnableFloorTextureTiling = _ui.EnableGroundTextureTiling->isChecked();
+	_provider->GetCurrentAsset()->GetGroundEntity()->EnableFloorTextureTiling = _ui.EnableGroundTextureTiling->isChecked();
 }
 
 void GroundPanel::OnGroundTextureSizeChanged()
 {
-	_provider->GetStudioModelSettings()->FloorTextureLength = _ui.GroundTextureSize->value();
+	_provider->GetCurrentAsset()->GetGroundEntity()->FloorTextureLength = _ui.GroundTextureSize->value();
 }
 
 void GroundPanel::OnTextureChanged()
@@ -79,7 +97,7 @@ void GroundPanel::OnTextureChanged()
 		{
 			image.convertTo(QImage::Format::Format_RGBA8888);
 
-			_provider->GetCurrentAsset()->GetGroundEntity()->SetImage(
+			_provider->GetCurrentAsset()->GetGroundEntity()->SetImage(fileName.toStdString(),
 				{image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits())});
 
 			_ui.ShowGround->setChecked(true);
@@ -105,6 +123,6 @@ void GroundPanel::OnBrowseTexture()
 
 void GroundPanel::OnOriginChanged()
 {
-	_provider->GetStudioModelSettings()->FloorOrigin = _ui.GroundOrigin->GetValue();
+	_provider->GetCurrentAsset()->GetGroundEntity()->SetOrigin(_ui.GroundOrigin->GetValue());
 }
 }

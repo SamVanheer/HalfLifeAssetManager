@@ -11,11 +11,10 @@
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/settings/ColorSettings.hpp"
-#include "ui/settings/StudioModelSettings.hpp"
 
 void CrosshairEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
-	if (GetContext()->Settings->ShowCrosshair)
+	if (ShowCrosshair)
 	{
 		const int centerX = sc.WindowWidth / 2;
 		const int centerY = sc.WindowHeight / 2;

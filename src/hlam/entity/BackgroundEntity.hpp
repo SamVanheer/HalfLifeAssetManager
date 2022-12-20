@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "entity/BaseEntity.hpp"
 
 #include "graphics/Image.hpp"
@@ -21,12 +23,18 @@ public:
 
 	void DestroyDeviceObjects(graphics::SceneContext& sc) override;
 
-	void SetImage(graphics::Image&& image)
+	const std::string& GetImageName() const { return _imageName; }
+
+	void SetImage(std::string&& imageName, graphics::Image&& image)
 	{
+		_imageName = std::move(imageName);
 		_image = std::move(image);
 	}
 
+	bool ShowBackground = false;
+
 private:
 	GLuint _texture{0};
+	std::string _imageName;
 	graphics::Image _image;
 };

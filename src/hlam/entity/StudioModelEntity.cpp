@@ -2,11 +2,13 @@
 
 #include <glm/geometric.hpp>
 
+#include "entity/GroundEntity.hpp"
 #include "entity/StudioModelEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/SceneContext.hpp"
 
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/settings/StudioModelSettings.hpp"
 
 #include "utility/WorldTime.hpp"
@@ -35,21 +37,22 @@ void StudioModelEntity::Spawn()
 
 void StudioModelEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
+	auto asset = GetContext()->Asset;
 	auto settings = GetContext()->Settings;
 
 	// setup stencil buffer and draw mirror
-	if (settings->MirrorOnGround)
+	if (asset->GetGroundEntity()->MirrorOnGround)
 	{
 		graphics::DrawMirroredModel(sc.OpenGLFunctions,
 			*GetContext()->StudioModelRenderer, this,
-			settings->CurrentRenderMode,
-			settings->ShowWireframeOverlay,
-			settings->FloorOrigin,
+			asset->CurrentRenderMode,
+			asset->ShowWireframeOverlay,
+			asset->GetGroundEntity()->GetOrigin(),
 			settings->GetFloorLength(),
-			settings->EnableBackfaceCulling);
+			asset->EnableBackfaceCulling);
 	}
 
-	graphics::SetupRenderMode(sc.OpenGLFunctions, settings->CurrentRenderMode, settings->EnableBackfaceCulling);
+	graphics::SetupRenderMode(sc.OpenGLFunctions, asset->CurrentRenderMode, asset->EnableBackfaceCulling);
 
 	const glm::vec3& vecScale = GetScale();
 
@@ -60,48 +63,48 @@ void StudioModelEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass
 
 	renderer::DrawFlags flags = renderer::DrawFlag::NONE;
 
-	if (settings->ShowWireframeOverlay)
+	if (asset->ShowWireframeOverlay)
 	{
 		flags |= renderer::DrawFlag::WIREFRAME_OVERLAY;
 	}
 
-	if (settings->CameraIsFirstPerson)
+	if (asset->CameraIsFirstPerson())
 	{
 		flags |= renderer::DrawFlag::IS_VIEW_MODEL;
 	}
 
-	if (settings->DrawShadows)
+	if (asset->DrawShadows)
 	{
 		flags |= renderer::DrawFlag::DRAW_SHADOWS;
 	}
 
-	if (settings->FixShadowZFighting)
+	if (asset->FixShadowZFighting)
 	{
 		flags |= renderer::DrawFlag::FIX_SHADOW_Z_FIGHTING;
 	}
 
 	//TODO: these should probably be made separate somehow
-	if (settings->ShowHitboxes)
+	if (asset->ShowHitboxes)
 	{
 		flags |= renderer::DrawFlag::DRAW_HITBOXES;
 	}
 
-	if (settings->ShowBones)
+	if (asset->ShowBones)
 	{
 		flags |= renderer::DrawFlag::DRAW_BONES;
 	}
 
-	if (settings->ShowAttachments)
+	if (asset->ShowAttachments)
 	{
 		flags |= renderer::DrawFlag::DRAW_ATTACHMENTS;
 	}
 
-	if (settings->ShowEyePosition)
+	if (asset->ShowEyePosition)
 	{
 		flags |= renderer::DrawFlag::DRAW_EYE_POSITION;
 	}
 
-	if (settings->ShowNormals)
+	if (asset->ShowNormals)
 	{
 		flags |= renderer::DrawFlag::DRAW_NORMALS;
 	}
@@ -112,24 +115,24 @@ void StudioModelEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass
 
 	//TODO: this is a temporary hack. The graphics scene architecture needs a complete overhaul first,
 		//then this can be done by rendering the model in a separate viewmodel layer
-	if (settings->CameraIsFirstPerson)
+	if (asset->CameraIsFirstPerson())
 	{
 		renderInfo.Origin.z -= 1;
 	}
 
-	if (settings->DrawSingleBoneIndex != -1)
+	if (asset->DrawSingleBoneIndex != -1)
 	{
-		GetContext()->StudioModelRenderer->DrawSingleBone(renderInfo, settings->DrawSingleBoneIndex);
+		GetContext()->StudioModelRenderer->DrawSingleBone(renderInfo, asset->DrawSingleBoneIndex);
 	}
 
-	if (settings->DrawSingleAttachmentIndex != -1)
+	if (asset->DrawSingleAttachmentIndex != -1)
 	{
-		GetContext()->StudioModelRenderer->DrawSingleAttachment(renderInfo, settings->DrawSingleAttachmentIndex);
+		GetContext()->StudioModelRenderer->DrawSingleAttachment(renderInfo, asset->DrawSingleAttachmentIndex);
 	}
 
-	if (settings->DrawSingleHitboxIndex != -1)
+	if (asset->DrawSingleHitboxIndex != -1)
 	{
-		GetContext()->StudioModelRenderer->DrawSingleHitbox(renderInfo, settings->DrawSingleHitboxIndex);
+		GetContext()->StudioModelRenderer->DrawSingleHitbox(renderInfo, asset->DrawSingleHitboxIndex);
 	}
 }
 

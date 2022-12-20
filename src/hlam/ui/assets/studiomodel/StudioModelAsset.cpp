@@ -385,6 +385,11 @@ void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 	}
 }
 
+bool StudioModelAsset::CameraIsFirstPerson() const
+{
+	return _cameraOperators->GetCurrent() == _firstPersonCamera;
+}
+
 void StudioModelAsset::OnActivated()
 {
 	auto editWidget = _provider->GetEditWidget();
@@ -428,14 +433,14 @@ void StudioModelAsset::CreateMainScene()
 
 	// The order that entities are added matters for now since there's no sorting done.
 	_backgroundEntity = _scene->GetEntityList()->Create<BackgroundEntity>();
-	_scene->GetEntityList()->Create<AxesEntity>();
+	_axesEntity = _scene->GetEntityList()->Create<AxesEntity>();
 	_modelEntity = _scene->GetEntityList()->Create<HLMVStudioModelEntity>(GetEditableStudioModel());
 	_groundEntity = _scene->GetEntityList()->Create<GroundEntity>();
-	_scene->GetEntityList()->Create<PlayerHitboxEntity>();
-	_scene->GetEntityList()->Create<BoundingBoxEntity>();
-	_scene->GetEntityList()->Create<ClippingBoxEntity>();
-	_scene->GetEntityList()->Create<CrosshairEntity>();
-	_scene->GetEntityList()->Create<GuidelinesEntity>();
+	_playerHitboxEntity = _scene->GetEntityList()->Create<PlayerHitboxEntity>();
+	_boundingBoxEntity = _scene->GetEntityList()->Create<BoundingBoxEntity>();
+	_clippingBoxEntity = _scene->GetEntityList()->Create<ClippingBoxEntity>();
+	_crosshairEntity = _scene->GetEntityList()->Create<CrosshairEntity>();
+	_guidelinesEntity = _scene->GetEntityList()->Create<GuidelinesEntity>();
 }
 
 void StudioModelAsset::CreateTextureScene()
@@ -603,7 +608,6 @@ void StudioModelAsset::OnSceneWidgetWheelEvent(QWheelEvent* event)
 void StudioModelAsset::OnCameraChanged(SceneCameraOperator* previous, SceneCameraOperator* current)
 {
 	_scene->SetCurrentCamera(current);
-	GetProvider()->GetStudioModelSettings()->CameraIsFirstPerson = current == _firstPersonCamera;
 }
 
 void StudioModelAsset::OnPreviousCamera()

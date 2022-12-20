@@ -14,4 +14,6 @@ public:
 	RenderPasses GetRenderPasses() const override { return RenderPass::Standard; }
 
 	virtual void Draw(graphics::SceneContext& sc, RenderPasses renderPass) override;
+
+	bool ShowCBox = false;
 };

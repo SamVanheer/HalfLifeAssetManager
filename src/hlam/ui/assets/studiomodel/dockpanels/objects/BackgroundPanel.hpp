@@ -6,6 +6,7 @@
 
 namespace studiomodel
 {
+class StudioModelAsset;
 class StudioModelAssetProvider;
 
 class BackgroundPanel final : public QWidget
@@ -15,6 +16,8 @@ public:
 	~BackgroundPanel() = default;
 
 private slots:
+	void OnAssetChanged(StudioModelAsset* asset);
+
 	void OnShowBackgroundChanged();
 
 	void OnTextureChanged();

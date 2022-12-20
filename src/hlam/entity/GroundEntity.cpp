@@ -15,7 +15,7 @@ void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 	auto context = GetContext();
 	auto settings = context->Settings;
 
-	if (settings->ShowGround)
+	if (ShowGround)
 	{
 		// Update image if changed.
 		if (!_image.GetData().empty())
@@ -77,7 +77,7 @@ void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		_floorTextureOffset += textureOffset;
 
-		const float floorTextureLength = settings->EnableFloorTextureTiling ? settings->FloorTextureLength : settings->GetFloorLength();
+		const float floorTextureLength = EnableFloorTextureTiling ? FloorTextureLength : settings->GetFloorLength();
 
 		//Prevent the offset from overflowing
 		_floorTextureOffset.x = std::fmod(_floorTextureOffset.x, floorTextureLength);
@@ -93,8 +93,8 @@ void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 		}
 
 		graphics::DrawFloor(sc.OpenGLFunctions,
-			settings->FloorOrigin, settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, texture,
-			colors->GetColor(studiomodel::GroundColor.Name), settings->MirrorOnGround);
+			GetOrigin(), settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, texture,
+			colors->GetColor(studiomodel::GroundColor.Name), MirrorOnGround);
 	}
 }
 

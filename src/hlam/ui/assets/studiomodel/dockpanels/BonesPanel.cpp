@@ -13,8 +13,6 @@
 #include "ui/assets/studiomodel/StudioModelValidators.hpp"
 #include "ui/assets/studiomodel/dockpanels/BonesPanel.hpp"
 
-#include "ui/settings/StudioModelSettings.hpp"
-
 namespace studiomodel
 {
 //Parent indices are offset by one so -1 becomes 0, 0 becomes 1, etc
@@ -297,7 +295,7 @@ void BonesPanel::OnBoneChanged(int index)
 
 void BonesPanel::OnHightlightBoneChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->DrawSingleBoneIndex = _ui.HighlightBone->isChecked() ? _ui.Bones->currentIndex() : -1;
+	_asset->DrawSingleBoneIndex = _ui.HighlightBone->isChecked() ? _ui.Bones->currentIndex() : -1;
 }
 
 void BonesPanel::OnBoneNameChanged()

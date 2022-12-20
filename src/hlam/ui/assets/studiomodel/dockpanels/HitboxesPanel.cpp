@@ -12,8 +12,6 @@
 #include "ui/assets/studiomodel/dockpanels/DockHelpers.hpp"
 #include "ui/assets/studiomodel/dockpanels/HitboxesPanel.hpp"
 
-#include "ui/settings/StudioModelSettings.hpp"
-
 namespace studiomodel
 {
 HitboxesPanel::HitboxesPanel(StudioModelAssetProvider* provider)
@@ -182,7 +180,7 @@ void HitboxesPanel::OnHitboxChanged(int index)
 
 void HitboxesPanel::OnHighlightHitboxChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->DrawSingleHitboxIndex = _ui.HighlightHitbox->isChecked() ? _ui.Hitboxes->currentIndex() : -1;
+	_asset->DrawSingleHitboxIndex = _ui.HighlightHitbox->isChecked() ? _ui.Hitboxes->currentIndex() : -1;
 }
 
 void HitboxesPanel::OnBoneChanged()

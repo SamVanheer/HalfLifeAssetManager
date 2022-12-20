@@ -2,11 +2,9 @@
 
 #include "graphics/SceneContext.hpp"
 
-#include "ui/settings/StudioModelSettings.hpp"
-
 void AxesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
-	if (GetContext()->Settings->ShowAxes)
+	if (ShowAxes)
 	{
 		sc.OpenGLFunctions->glDisable(GL_TEXTURE_2D);
 		sc.OpenGLFunctions->glEnable(GL_DEPTH_TEST);

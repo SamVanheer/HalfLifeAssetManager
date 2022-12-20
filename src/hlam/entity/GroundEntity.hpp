@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <string>
 
 #include <glm/vec2.hpp>
 
@@ -25,8 +26,11 @@ public:
 
 	void DestroyDeviceObjects(graphics::SceneContext& sc) override;
 
-	void SetImage(graphics::Image&& image)
+	const std::string& GetImageName() const { return _imageName; }
+
+	void SetImage(std::string&& imageName, graphics::Image&& image)
 	{
+		_imageName = std::move(imageName);
 		_image = std::move(image);
 		_hasTexture = true;
 	}
@@ -36,6 +40,11 @@ public:
 		_hasTexture = false;
 	}
 
+	bool ShowGround = false;
+	bool MirrorOnGround = false;
+	bool EnableFloorTextureTiling{false};
+	int FloorTextureLength{16};
+
 private:
 	int _floorSequence{-1};
 	float _previousFloorFrame{0};
@@ -43,6 +52,7 @@ private:
 	glm::vec2 _floorTextureOffset{0};
 
 	GLuint _texture{0};
+	std::string _imageName;
 	graphics::Image _image;
 	bool _hasTexture = false;
 };

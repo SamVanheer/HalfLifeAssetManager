@@ -5,11 +5,10 @@
 #include "graphics/SceneContext.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/settings/StudioModelSettings.hpp"
 
 void ClippingBoxEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
-	if (GetContext()->Settings->ShowCBox)
+	if (ShowCBox)
 	{
 		if (auto entity = GetContext()->Asset->GetEntity(); entity)
 		{

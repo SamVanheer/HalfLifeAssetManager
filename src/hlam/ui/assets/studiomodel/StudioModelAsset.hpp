@@ -5,17 +5,25 @@
 
 #include "formats/studiomodel/EditableStudioModel.hpp"
 
+#include "graphics/GraphicsConstants.hpp"
+
 #include "ui/StateSnapshot.hpp"
 #include "ui/assets/Assets.hpp"
 #include "ui/assets/studiomodel/StudioModelAssetProvider.hpp"
 
 #include "utility/mathlib.hpp"
 
+class AxesEntity;
 class BackgroundEntity;
+class BoundingBoxEntity;
 class CameraOperators;
+class ClippingBoxEntity;
+class CrosshairEntity;
 class EntityContext;
 class GroundEntity;
+class GuidelinesEntity;
 class HLMVStudioModelEntity;
+class PlayerHitboxEntity;
 class SceneCameraOperator;
 class TextureCameraOperator;
 class TextureEntity;
@@ -96,9 +104,21 @@ public:
 
 	HLMVStudioModelEntity* GetEntity() { return _modelEntity.get(); }
 
+	AxesEntity* GetAxesEntity() { return _axesEntity.get(); }
+
 	BackgroundEntity* GetBackgroundEntity() { return _backgroundEntity.get(); }
 
 	GroundEntity* GetGroundEntity() { return _groundEntity.get(); }
+
+	PlayerHitboxEntity* GetPlayerHitboxEntity() { return _playerHitboxEntity.get(); }
+
+	BoundingBoxEntity* GetBoundingBoxEntity() { return _boundingBoxEntity.get(); }
+
+	ClippingBoxEntity* GetClippingBoxEntity() { return _clippingBoxEntity.get(); }
+
+	CrosshairEntity* GetCrosshairEntity() { return _crosshairEntity.get(); }
+
+	GuidelinesEntity* GetGuidelinesEntity() { return _guidelinesEntity.get(); }
 
 	graphics::Scene* GetTextureScene() { return _textureScene.get(); }
 
@@ -107,6 +127,8 @@ public:
 	TextureCameraOperator* GetTextureCameraOperator() { return _textureCameraOperator.get(); }
 
 	Pose GetPose() const { return _pose; }
+
+	bool CameraIsFirstPerson() const;
 
 	void OnActivated();
 	void OnDeactivated();
@@ -164,6 +186,26 @@ private slots:
 
 	void OnTakeScreenshot();
 
+public:
+	RenderMode CurrentRenderMode = RenderMode::TEXTURE_SHADED;
+
+	bool ShowHitboxes = false;
+	bool ShowBones = false;
+	bool ShowAttachments = false;
+	bool ShowEyePosition = false;
+
+	bool EnableBackfaceCulling = true;
+	bool ShowWireframeOverlay = false;
+	bool DrawShadows = false;
+	bool FixShadowZFighting = false;
+	bool ShowNormals = false;
+
+	int DrawSingleBoneIndex = -1;
+	int DrawSingleAttachmentIndex = -1;
+	int DrawSingleHitboxIndex = -1;
+
+	bool PlaySequence = true;
+
 private:
 	EditorContext* const _editorContext;
 	StudioModelAssetProvider* const _provider;
@@ -184,8 +226,14 @@ private:
 	QWidget* _editWidget{};
 
 	std::shared_ptr<HLMVStudioModelEntity> _modelEntity;
+	std::shared_ptr<AxesEntity> _axesEntity;
 	std::shared_ptr<BackgroundEntity> _backgroundEntity;
 	std::shared_ptr<GroundEntity> _groundEntity;
+	std::shared_ptr<PlayerHitboxEntity> _playerHitboxEntity;
+	std::shared_ptr<BoundingBoxEntity> _boundingBoxEntity;
+	std::shared_ptr<ClippingBoxEntity> _clippingBoxEntity;
+	std::shared_ptr<CrosshairEntity> _crosshairEntity;
+	std::shared_ptr<GuidelinesEntity> _guidelinesEntity;
 
 	std::unique_ptr<graphics::Scene> _textureScene;
 

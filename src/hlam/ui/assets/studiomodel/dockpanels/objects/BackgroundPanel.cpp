@@ -1,4 +1,5 @@
 #include <QFileDialog>
+#include <QSignalBlocker>
 
 #include "entity/BackgroundEntity.hpp"
 
@@ -7,8 +8,6 @@
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/objects/BackgroundPanel.hpp"
 
-#include "ui/settings/StudioModelSettings.hpp"
-
 namespace studiomodel
 {
 BackgroundPanel::BackgroundPanel(StudioModelAssetProvider* provider)
@@ -16,15 +15,28 @@ BackgroundPanel::BackgroundPanel(StudioModelAssetProvider* provider)
 {
 	_ui.setupUi(this);
 
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &BackgroundPanel::OnAssetChanged);
+
 	connect(_ui.ShowBackground, &QCheckBox::stateChanged, this, &BackgroundPanel::OnShowBackgroundChanged);
 
 	connect(_ui.BackgroundTexture, &QLineEdit::textChanged, this, &BackgroundPanel::OnTextureChanged);
 	connect(_ui.BrowseBackgroundTexture, &QPushButton::clicked, this, &BackgroundPanel::OnBrowseTexture);
 }
 
+void BackgroundPanel::OnAssetChanged(StudioModelAsset* asset)
+{
+	const QSignalBlocker backgroundTextureBlocker{_ui.BackgroundTexture};
+	const QSignalBlocker showBackgroundBlocker{_ui.ShowBackground};
+
+	auto entity = asset->GetBackgroundEntity();
+
+	_ui.BackgroundTexture->setText(QString::fromStdString(entity->GetImageName()));
+	_ui.ShowBackground->setChecked(entity->ShowBackground);
+}
+
 void BackgroundPanel::OnShowBackgroundChanged()
 {
-	_provider->GetStudioModelSettings()->ShowBackground = _ui.ShowBackground->isChecked();
+	_provider->GetCurrentAsset()->GetBackgroundEntity()->ShowBackground = _ui.ShowBackground->isChecked();
 }
 
 void BackgroundPanel::OnTextureChanged()
@@ -35,7 +47,7 @@ void BackgroundPanel::OnTextureChanged()
 		{
 			image.convertTo(QImage::Format::Format_RGBA8888);
 
-			_provider->GetCurrentAsset()->GetBackgroundEntity()->SetImage(
+			_provider->GetCurrentAsset()->GetBackgroundEntity()->SetImage(fileName.toStdString(),
 				{image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits())});
 
 			_ui.ShowBackground->setChecked(true);

@@ -15,6 +15,8 @@ ModelPanel::ModelPanel(StudioModelAssetProvider* provider)
 	_ui.Origin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 	_ui.Origin->SetDecimals(6);
 
+	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &ModelPanel::OnAssetChanged);
+
 	connect(_ui.Origin, &qt::widgets::Vector3Edit::ValueChanged, this, &ModelPanel::OnOriginChanged);
 	connect(_ui.CenterOnWorldOrigin, &QPushButton::clicked, this, &ModelPanel::OnCenterOnWorldOrigin);
 	connect(_ui.AlignOnGround, &QPushButton::clicked, this, &ModelPanel::OnAlignOnGround);
@@ -23,6 +25,15 @@ ModelPanel::ModelPanel(StudioModelAssetProvider* provider)
 void ModelPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 {
 	_ui.MainLayout->setDirection(direction);
+}
+
+void ModelPanel::OnAssetChanged(StudioModelAsset* asset)
+{
+	const QSignalBlocker originBlocker{_ui.Origin};
+
+	auto entity = asset->GetEntity();
+
+	_ui.Origin->SetValue(entity->GetOrigin());
 }
 
 void ModelPanel::OnOriginChanged()

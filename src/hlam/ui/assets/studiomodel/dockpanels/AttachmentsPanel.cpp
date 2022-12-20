@@ -14,8 +14,6 @@
 #include "ui/assets/studiomodel/dockpanels/AttachmentsPanel.hpp"
 #include "ui/assets/studiomodel/dockpanels/DockHelpers.hpp"
 
-#include "ui/settings/StudioModelSettings.hpp"
-
 namespace studiomodel
 {
 AttachmentsPanel::AttachmentsPanel(StudioModelAssetProvider* provider)
@@ -188,7 +186,7 @@ void AttachmentsPanel::OnAttachmentChanged(int index)
 
 void AttachmentsPanel::OnHighlightAttachmentChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->DrawSingleAttachmentIndex = _ui.HighlightAttachment->isChecked() ? _ui.Attachments->currentIndex() : -1;
+	_asset->DrawSingleAttachmentIndex = _ui.HighlightAttachment->isChecked() ? _ui.Attachments->currentIndex() : -1;
 }
 
 void AttachmentsPanel::OnNameChanged()

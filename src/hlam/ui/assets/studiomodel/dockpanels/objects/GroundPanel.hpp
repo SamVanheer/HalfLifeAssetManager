@@ -7,6 +7,7 @@
 
 namespace studiomodel
 {
+class StudioModelAsset;
 class StudioModelAssetProvider;
 
 class GroundPanel final : public QWidget
@@ -19,6 +20,8 @@ public slots:
 	void OnLayoutDirectionChanged(QBoxLayout::Direction direction);
 
 private slots:
+	void OnAssetChanged(StudioModelAsset* asset);
+
 	void OnShowGroundChanged();
 	void OnMirrorOnGroundChanged();
 

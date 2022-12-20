@@ -3,11 +3,9 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/SceneContext.hpp"
 
-#include "ui/settings/StudioModelSettings.hpp"
-
 void BackgroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
-	if (GetContext()->Settings->ShowBackground)
+	if (ShowBackground)
 	{
 		// Update image if changed.
 		if (!_image.GetData().empty())

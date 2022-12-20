@@ -5,10 +5,9 @@
 
 #include "ui_ModelPanel.h"
 
-class StateSnapshot;
-
 namespace studiomodel
 {
+class StudioModelAsset;
 class StudioModelAssetProvider;
 
 class ModelPanel final : public QWidget
@@ -21,6 +20,8 @@ public slots:
 	void OnLayoutDirectionChanged(QBoxLayout::Direction direction);
 
 private slots:
+	void OnAssetChanged(StudioModelAsset* asset);
+
 	void OnOriginChanged();
 
 	void OnCenterOnWorldOrigin();

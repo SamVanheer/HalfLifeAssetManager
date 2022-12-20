@@ -5,11 +5,10 @@
 #include "graphics/SceneContext.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/settings/StudioModelSettings.hpp"
 
 void BoundingBoxEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
-	if (GetContext()->Settings->ShowBBox)
+	if (ShowBBox)
 	{
 		if (auto entity = GetContext()->Asset->GetEntity(); entity)
 		{

@@ -3,8 +3,8 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/settings/GeneralSettings.hpp"
-#include "ui/settings/StudioModelSettings.hpp"
 
 void HLMVStudioModelEntity::Spawn()
 {
@@ -61,7 +61,7 @@ void HLMVStudioModelEntity::HandleAnimEvent(const AnimEvent& event)
 
 void HLMVStudioModelEntity::AnimThink()
 {
-	if (GetContext()->Settings->PlaySequence)
+	if (GetContext()->Asset->PlaySequence)
 	{
 		const float flTime = AdvanceFrame(0.0f, 0.1f);
 

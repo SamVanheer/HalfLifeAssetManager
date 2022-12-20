@@ -1,11 +1,15 @@
 #include <QSignalBlocker>
 
+#include "entity/AxesEntity.hpp"
+#include "entity/BoundingBoxEntity.hpp"
+#include "entity/ClippingBoxEntity.hpp"
+#include "entity/CrosshairEntity.hpp"
+#include "entity/GuidelinesEntity.hpp"
 #include "entity/HLMVStudioModelEntity.hpp"
+#include "entity/PlayerHitboxEntity.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/ModelDisplayPanel.hpp"
-
-#include "ui/settings/StudioModelSettings.hpp"
 
 namespace studiomodel
 {
@@ -43,11 +47,6 @@ ModelDisplayPanel::ModelDisplayPanel(StudioModelAssetProvider* provider)
 	connect(_ui.MirrorOnXAxis, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnMirrorXAxisChanged);
 	connect(_ui.MirrorOnYAxis, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnMirrorYAxisChanged);
 	connect(_ui.MirrorOnZAxis, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnMirrorZAxisChanged);
-
-	{
-		const QSignalBlocker rendermodeBlocker{_ui.RenderModeComboBox};
-		_ui.RenderModeComboBox->setCurrentIndex(static_cast<int>(_provider->GetStudioModelSettings()->CurrentRenderMode));
-	}
 }
 
 ModelDisplayPanel::~ModelDisplayPanel() = default;
@@ -60,11 +59,55 @@ void ModelDisplayPanel::OnAssetChanged(StudioModelAsset* asset)
 	}
 
 	_asset = asset;
+
+	const auto entity = _asset->GetEntity();
+
+	const QSignalBlocker rendermodeBlocker{_ui.RenderModeComboBox};
+	const QSignalBlocker hitboxes{_ui.ShowHitboxes};
+	const QSignalBlocker bones{_ui.ShowBones};
+	const QSignalBlocker attachments{_ui.ShowAttachments};
+	const QSignalBlocker eyePosition{_ui.ShowEyePosition};
+	const QSignalBlocker bbox{_ui.ShowBBox};
+	const QSignalBlocker cbox{_ui.ShowCBox};
+	const QSignalBlocker backfaceCulling{_ui.BackfaceCulling};
+	const QSignalBlocker wireframe{_ui.WireframeOverlay};
+	const QSignalBlocker shadows{_ui.DrawShadows};
+	const QSignalBlocker shadowZFighting{_ui.FixShadowZFighting};
+	const QSignalBlocker axes{_ui.ShowAxes};
+	const QSignalBlocker normals{_ui.ShowNormals};
+	const QSignalBlocker crosshair{_ui.ShowCrosshair};
+	const QSignalBlocker guidelines{_ui.ShowGuidelines};
+	const QSignalBlocker playerHitbox{_ui.ShowPlayerHitbox};
+	const QSignalBlocker mirrorX{_ui.MirrorOnXAxis};
+	const QSignalBlocker mirrorY{_ui.MirrorOnYAxis};
+	const QSignalBlocker mirrorZ{_ui.MirrorOnZAxis};
+
+	_ui.RenderModeComboBox->setCurrentIndex(static_cast<int>(_asset->CurrentRenderMode));
+	_ui.OpacitySlider->setValue(static_cast<int>(entity->GetTransparency() * 100));
+	_ui.ShowHitboxes->setChecked(_asset->ShowHitboxes);
+	_ui.ShowBones->setChecked(_asset->ShowBones);
+	_ui.ShowAttachments->setChecked(_asset->ShowAttachments);
+	_ui.ShowEyePosition->setChecked(_asset->ShowEyePosition);
+	_ui.ShowBBox->setChecked(_asset->GetBoundingBoxEntity()->ShowBBox);
+	_ui.ShowCBox->setChecked(_asset->GetClippingBoxEntity()->ShowCBox);
+	_ui.BackfaceCulling->setChecked(_asset->EnableBackfaceCulling);
+	_ui.WireframeOverlay->setChecked(_asset->ShowWireframeOverlay);
+	_ui.DrawShadows->setChecked(_asset->DrawShadows);
+	_ui.FixShadowZFighting->setChecked(_asset->FixShadowZFighting);
+	_ui.ShowAxes->setChecked(_asset->GetAxesEntity()->ShowAxes);
+	_ui.ShowNormals->setChecked(_asset->ShowNormals);
+	_ui.ShowCrosshair->setChecked(_asset->GetCrosshairEntity()->ShowCrosshair);
+	_ui.ShowGuidelines->setChecked(_asset->GetGuidelinesEntity()->ShowGuidelines);
+	_ui.ShowPlayerHitbox->setChecked(_asset->GetPlayerHitboxEntity()->ShowPlayerHitbox);
+
+	_ui.MirrorOnXAxis->setChecked(entity->GetScale().x == -1);
+	_ui.MirrorOnYAxis->setChecked(entity->GetScale().y == -1);
+	_ui.MirrorOnZAxis->setChecked(entity->GetScale().z == -1);
 }
 
 void ModelDisplayPanel::OnRenderModeChanged(int index)
 {
-	_asset->GetProvider()->GetStudioModelSettings()->CurrentRenderMode = static_cast<RenderMode>(index);
+	_asset->CurrentRenderMode = static_cast<RenderMode>(index);
 }
 
 void ModelDisplayPanel::OnOpacityChanged(int value)
@@ -76,77 +119,77 @@ void ModelDisplayPanel::OnOpacityChanged(int value)
 
 void ModelDisplayPanel::OnShowHitboxesChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowHitboxes = _ui.ShowHitboxes->isChecked();
+	_asset->ShowHitboxes = _ui.ShowHitboxes->isChecked();
 }
 
 void ModelDisplayPanel::OnShowBonesChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowBones = _ui.ShowBones->isChecked();
+	_asset->ShowBones = _ui.ShowBones->isChecked();
 }
 
 void ModelDisplayPanel::OnShowAttachmentsChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowAttachments = _ui.ShowAttachments->isChecked();
+	_asset->ShowAttachments = _ui.ShowAttachments->isChecked();
 }
 
 void ModelDisplayPanel::OnShowEyePositionChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowEyePosition = _ui.ShowEyePosition->isChecked();
+	_asset->ShowEyePosition = _ui.ShowEyePosition->isChecked();
 }
 
 void ModelDisplayPanel::OnShowBBoxChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowBBox = _ui.ShowBBox->isChecked();
+	_asset->GetBoundingBoxEntity()->ShowBBox = _ui.ShowBBox->isChecked();
 }
 
 void ModelDisplayPanel::OnShowCBoxChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowCBox = _ui.ShowCBox->isChecked();
+	_asset->GetClippingBoxEntity()->ShowCBox = _ui.ShowCBox->isChecked();
 }
 
 void ModelDisplayPanel::OnEnableBackfaceCullingChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->EnableBackfaceCulling = _ui.BackfaceCulling->isChecked();
+	_asset->EnableBackfaceCulling = _ui.BackfaceCulling->isChecked();
 }
 
 void ModelDisplayPanel::OnWireframeOverlayChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowWireframeOverlay = _ui.WireframeOverlay->isChecked();
+	_asset->ShowWireframeOverlay = _ui.WireframeOverlay->isChecked();
 }
 
 void ModelDisplayPanel::OnDrawShadowsChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->DrawShadows = _ui.DrawShadows->isChecked();
+	_asset->DrawShadows = _ui.DrawShadows->isChecked();
 }
 
 void ModelDisplayPanel::OnFixShadowZFightingChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->FixShadowZFighting = _ui.FixShadowZFighting->isChecked();
+	_asset->FixShadowZFighting = _ui.FixShadowZFighting->isChecked();
 }
 
 void ModelDisplayPanel::OnShowAxesChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowAxes = _ui.ShowAxes->isChecked();
+	_asset->GetAxesEntity()->ShowAxes = _ui.ShowAxes->isChecked();
 }
 
 void ModelDisplayPanel::OnShowNormalsChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowNormals = _ui.ShowNormals->isChecked();
+	_asset->ShowNormals = _ui.ShowNormals->isChecked();
 }
 
 void ModelDisplayPanel::OnShowCrosshairChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowCrosshair = _ui.ShowCrosshair->isChecked();
+	_asset->GetCrosshairEntity()->ShowCrosshair = _ui.ShowCrosshair->isChecked();
 }
 
 void ModelDisplayPanel::OnShowGuidelinesChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowGuidelines = _ui.ShowGuidelines->isChecked();
+	_asset->GetGuidelinesEntity()->ShowGuidelines = _ui.ShowGuidelines->isChecked();
 }
 
 void ModelDisplayPanel::OnShowPlayerHitboxChanged()
 {
-	_asset->GetProvider()->GetStudioModelSettings()->ShowPlayerHitbox = _ui.ShowPlayerHitbox->isChecked();
+	_asset->GetPlayerHitboxEntity()->ShowPlayerHitbox = _ui.ShowPlayerHitbox->isChecked();
 }
 
 void ModelDisplayPanel::OnMirrorXAxisChanged()
