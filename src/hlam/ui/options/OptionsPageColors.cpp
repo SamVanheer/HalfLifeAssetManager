@@ -89,7 +89,6 @@ void OptionsPageColorsWidget::OnChangeColor()
 
 	if (color.isValid())
 	{
-		_colorSettings->Set(_ui.ColorList->currentText(), ColorToVector(color));
 		_ui.ColorList->setItemData(_ui.ColorList->currentIndex(), color);
 		SetPreviewColor(color);
 	}
@@ -103,7 +102,6 @@ void OptionsPageColorsWidget::OnResetColor()
 
 	const QColor defaultColorAsColor = VectorToColor(defaultColor);
 
-	_colorSettings->Set(key, defaultColor);
 	_ui.ColorList->setItemData(_ui.ColorList->currentIndex(), defaultColorAsColor);
 	SetPreviewColor(defaultColorAsColor);
 }
