@@ -11,7 +11,7 @@ public:
 	DECLARE_CLASS(AxesEntity, BaseEntity);
 
 public:
-	RenderPasses GetRenderPasses() const override { return RenderPass::Standard; }
+	RenderPasses GetRenderPasses() const override { return RenderPass::Overlay3D; }
 
 	virtual void Draw(graphics::SceneContext& sc, RenderPasses renderPass) override;
 

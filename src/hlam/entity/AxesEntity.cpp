@@ -7,7 +7,7 @@ void AxesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 	if (ShowAxes)
 	{
 		sc.OpenGLFunctions->glDisable(GL_TEXTURE_2D);
-		sc.OpenGLFunctions->glEnable(GL_DEPTH_TEST);
+		sc.OpenGLFunctions->glDisable(GL_DEPTH_TEST);
 
 		const float flLength = 50.0f;
 
