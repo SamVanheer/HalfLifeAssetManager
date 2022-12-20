@@ -12,10 +12,13 @@ class HLMVStudioModelEntity;
 
 namespace studiomodel
 {
+class StudioModelAsset;
+
 class ExportUVMeshDialog final : public QDialog
 {
 public:
-	ExportUVMeshDialog(HLMVStudioModelEntity& entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent);
+	ExportUVMeshDialog(StudioModelAsset* asset,
+		HLMVStudioModelEntity& entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent);
 	~ExportUVMeshDialog();
 
 	QString GetFileName() const;
@@ -45,6 +48,7 @@ private slots:
 
 private:
 	Ui_ExportUVMeshDialog _ui;
+	StudioModelAsset* const _asset;
 
 	HLMVStudioModelEntity& _entity;
 	const int _textureIndex;

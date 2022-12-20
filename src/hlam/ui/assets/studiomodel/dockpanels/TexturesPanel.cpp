@@ -20,6 +20,7 @@
 
 #include "qt/QtUtilities.hpp"
 
+#include "ui/EditorContext.hpp"
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
@@ -544,12 +545,15 @@ void TexturesPanel::OnImportTexture()
 		return;
 	}
 
-	const QString fileName = QFileDialog::getOpenFileName(this, {}, {}, qt::GetImagesFileFilter());
+	const QString fileName = QFileDialog::getOpenFileName(
+		this, {}, _asset->GetEditorContext()->GetPath(TexturePathName), qt::GetImagesFileFilter());
 
 	if (fileName.isEmpty())
 	{
 		return;
 	}
+
+	_asset->GetEditorContext()->SetPath(TexturePathName, fileName);
 
 	ImportTextureFrom(fileName, *model, iTextureIndex);
 }
@@ -568,7 +572,11 @@ void TexturesPanel::OnExportTexture()
 
 	const auto& texture = *model->Textures[textureIndex];
 
-	const QString fileName = QFileDialog::getSaveFileName(this, {}, texture.Name.c_str(), qt::GetSeparatedImagesFileFilter());
+	const QString fileName = QFileDialog::getSaveFileName(
+		this, {}, QString{"%1/%2"}
+			.arg(_asset->GetEditorContext()->GetPath(TexturePathName))
+			.arg(QString::fromStdString(texture.Name)),
+		qt::GetSeparatedImagesFileFilter());
 
 	if (fileName.isEmpty())
 	{
@@ -577,7 +585,11 @@ void TexturesPanel::OnExportTexture()
 
 	auto textureImage = ConvertTextureToIndexed8Image(texture.Data);
 
-	if (!textureImage.save(fileName))
+	if (textureImage.save(fileName))
+	{
+		_asset->GetEditorContext()->SetPath(TexturePathName, fileName);
+	}
+	else
 	{
 		QMessageBox::critical(this, "Error", QString{"Failed to save image \"%1\""}.arg(fileName));
 	}
@@ -605,7 +617,7 @@ void TexturesPanel::OnExportUVMap()
 
 	auto textureImage{ConvertTextureToRGBImage(texture.Data, textureData, texture.Data.Palette, dataBuffer)};
 
-	if (ExportUVMeshDialog dialog{*entity, textureIndex, GetMeshIndexForDrawing(_ui.Meshes), textureImage, this};
+	if (ExportUVMeshDialog dialog{_asset, *entity, textureIndex, GetMeshIndexForDrawing(_ui.Meshes), textureImage, this};
 		QDialog::DialogCode::Accepted == dialog.exec())
 	{
 		//Redraw the final image with a transparent background
@@ -632,12 +644,16 @@ void TexturesPanel::OnExportUVMap()
 
 void TexturesPanel::OnImportAllTextures()
 {
-	const auto path = QFileDialog::getExistingDirectory(this, "Select the directory to import all textures from");
+	const auto path = QFileDialog::getExistingDirectory(
+		this, "Select the directory to import all textures from",
+		_asset->GetEditorContext()->GetPath(TexturePathName));
 
 	if (path.isEmpty())
 	{
 		return;
 	}
+
+	_asset->GetEditorContext()->SetPath(TexturePathName, path);
 
 	auto entity = _asset->GetEntity();
 
@@ -664,12 +680,16 @@ void TexturesPanel::OnImportAllTextures()
 
 void TexturesPanel::OnExportAllTextures()
 {
-	const auto path = QFileDialog::getExistingDirectory(this, "Select the directory to export all textures to");
+	const auto path = QFileDialog::getExistingDirectory(
+		this, "Select the directory to export all textures to",
+		_asset->GetEditorContext()->GetPath(TexturePathName));
 
 	if (path.isEmpty())
 	{
 		return;
 	}
+
+	_asset->GetEditorContext()->SetPath(TexturePathName, path);
 
 	auto model = _asset->GetEntity()->GetEditableModel();
 

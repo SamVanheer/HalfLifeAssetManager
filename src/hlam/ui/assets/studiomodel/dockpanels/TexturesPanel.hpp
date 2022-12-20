@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QString>
+
 #include "ui_TexturesPanel.h"
 
 #include "ui/DockableWidget.hpp"
@@ -16,6 +18,8 @@ namespace studiomodel
 class StudioModelAsset;
 class StudioModelAssetProvider;
 class StudioModelData;
+
+const inline QString TexturePathName{QStringLiteral("TexturePath")};
 
 class TexturesPanel final : public DockableWidget
 {

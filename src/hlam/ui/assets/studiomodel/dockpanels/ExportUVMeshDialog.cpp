@@ -8,14 +8,18 @@
 
 #include "qt/QtUtilities.hpp"
 
+#include "ui/EditorContext.hpp"
+#include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelTextureUtilities.hpp"
 #include "ui/assets/studiomodel/dockpanels/ExportUVMeshDialog.hpp"
+#include "ui/assets/studiomodel/dockpanels/TexturesPanel.hpp"
 
 namespace studiomodel
 {
-ExportUVMeshDialog::ExportUVMeshDialog(
+ExportUVMeshDialog::ExportUVMeshDialog(StudioModelAsset* asset,
 	HLMVStudioModelEntity& entity, int textureIndex, int meshIndex, const QImage& texture, QWidget* parent)
 	: QDialog(parent)
+	, _asset(asset)
 	, _entity(entity)
 	, _textureIndex(textureIndex)
 	, _meshIndex(meshIndex)
@@ -85,10 +89,13 @@ void ExportUVMeshDialog::OnFileNameChanged()
 
 void ExportUVMeshDialog::OnBrowseFileName()
 {
-	const QString fileName = QFileDialog::getSaveFileName(this, "Select Image Filename", {}, qt::GetSeparatedImagesFileFilter());
+	const QString fileName = QFileDialog::getSaveFileName(
+		this, "Select Image Filename", _asset->GetEditorContext()->GetPath(TexturePathName),
+		qt::GetSeparatedImagesFileFilter());
 
 	if (!fileName.isEmpty())
 	{
+		_asset->GetEditorContext()->SetPath(TexturePathName, fileName);
 		_ui.FileName->setText(fileName);
 	}
 }

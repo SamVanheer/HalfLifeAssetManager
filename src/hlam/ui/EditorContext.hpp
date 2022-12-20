@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include <QSettings>
+#include <QString>
 #include <QTimer>
 #include <QUuid>
 
@@ -81,6 +82,10 @@ public:
 	graphics::TextureLoader* GetTextureLoader() { return _textureLoader.get(); }
 
 	void StartTimer();
+
+	QString GetPath(const QString& pathName) const;
+
+	void SetPath(const QString& pathName, const QString& path);
 
 signals:
 	/**

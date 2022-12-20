@@ -31,6 +31,7 @@
 #include "ui/settings/ColorSettings.hpp"
 #include "ui/settings/GameConfigurationsSettings.hpp"
 #include "ui/settings/GeneralSettings.hpp"
+#include "ui/settings/PathSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
 
 #include "utility/WorldTime.hpp"
@@ -104,6 +105,16 @@ EditorContext::~EditorContext()
 void EditorContext::StartTimer()
 {
 	_timer->start(1000 / _generalSettings->GetTickRate());
+}
+
+QString EditorContext::GetPath(const QString& pathName) const
+{
+	return GetSavedPath(*_settings, pathName);
+}
+
+void EditorContext::SetPath(const QString& pathName, const QString& path)
+{
+	SetSavedPath(*_settings, pathName, path);
 }
 
 void EditorContext::OnTimerTick()

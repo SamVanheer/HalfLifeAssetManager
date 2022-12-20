@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFileInfo>
 #include <QSettings>
 #include <QString>
 
@@ -16,7 +17,9 @@ inline QString GetSavedPath(QSettings& settings, const QString& pathName)
 
 inline void SetSavedPath(QSettings& settings, const QString& pathName, const QString& path)
 {
+	const QFileInfo info(path);
+
 	settings.beginGroup(PathsGroupName);
-	settings.setValue(pathName, path);
+	settings.setValue(pathName, info.isFile() ? info.canonicalPath() : info.canonicalFilePath());
 	settings.endGroup();
 }
