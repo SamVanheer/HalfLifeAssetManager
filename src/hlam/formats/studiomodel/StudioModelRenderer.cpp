@@ -312,7 +312,6 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 
 void StudioModelRenderer::UpdateColors()
 {
-	_lightcolor = _colorSettings->GetColor(studiomodel::LightColor.Name);
 	_wireframeColor = _colorSettings->GetColor(studiomodel::WireframeColor.Name);
 }
 
@@ -536,7 +535,7 @@ void StudioModelRenderer::SetupLighting()
 		auto matrix = _bonetransform[i];
 		matrix[3] = glm::vec4{0, 0, 0, 1};
 		matrix = glm::inverse(matrix);
-		_blightvec[i] = matrix * glm::vec4{_lightvec, 1};
+		_blightvec[i] = matrix * glm::vec4{_skyLight.Direction, 1};
 	}
 }
 
@@ -819,8 +818,8 @@ unsigned int StudioModelRenderer::InternalDrawShadows()
 
 				glm::vec3 point;
 
-				point.x = vertex.x - _lightvec.x * lightDistance;
-				point.y = vertex.y - _lightvec.y * lightDistance;
+				point.x = vertex.x - _skyLight.Direction.x * lightDistance;
+				point.y = vertex.y - _skyLight.Direction.y * lightDistance;
 				point.z = shadowHeight;
 
 				_openglFunctions->glVertex3fv(glm::value_ptr(point));
@@ -876,7 +875,7 @@ void StudioModelRenderer::Lighting(glm::vec3& lv, int bone, int flags, const glm
 		lv = illum * (1.0f / max);
 	else lv = illum;
 
-	lv *= _lightcolor;
+	lv *= _skyLight.Color;
 }
 
 

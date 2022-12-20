@@ -16,6 +16,8 @@
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
 #include "formats/studiomodel/StudioSorting.hpp"
 
+#include "graphics/Light.hpp"
+
 class QOpenGLFunctions_1_1;
 
 class ColorSettings;
@@ -58,11 +60,11 @@ public:
 		_viewerRight = viewerRight;
 	}
 
-	const glm::vec3& GetLightVector() const override final { return _lightvec; }
+	const graphics::Light& GetSkyLight() const override { return _skyLight; }
 
-	void SetLightVector(const glm::vec3& lightvec) override final
+	void SetSkyLight(const graphics::Light& light) override
 	{
-		_lightvec = lightvec;
+		_skyLight = light;
 	}
 
 	unsigned int DrawModel(ModelRenderInfo& renderInfo, const renderer::DrawFlags flags) override final;
@@ -148,8 +150,7 @@ private:
 	int				_ambientlight;						// ambient world light
 	float			_shadelight;						// direct world light
 
-	glm::vec3		_lightvec = {0, 0, -1};			// light vector in model reference frame
-	glm::vec3		_lightcolor{1, 1, 1};
+	graphics::Light _skyLight;
 	glm::vec3		_blightvec[MAXSTUDIOBONES];		// light vectors in bone reference frames
 
 	glm::vec2		_chrome[MaxVertices];			// texture coords for surface normals

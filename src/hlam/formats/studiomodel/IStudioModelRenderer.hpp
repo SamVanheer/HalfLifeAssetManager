@@ -6,6 +6,11 @@
 
 #include "formats/studiomodel/ModelRenderInfo.hpp"
 
+namespace graphics
+{
+struct Light;
+}
+
 /**
 *	@defgroup StudioModelRenderer StudioModel Renderer.
 *
@@ -64,15 +69,9 @@ public:
 	*/
 	virtual void SetViewerRight(const glm::vec3& viewerRight) = 0;
 
-	/**
-	*	@return The current light vector.
-	*/
-	virtual const glm::vec3& GetLightVector() const = 0;
+	virtual const graphics::Light& GetSkyLight() const = 0;
 
-	/**
-	*	Sets the current light vector.
-	*/
-	virtual void SetLightVector(const glm::vec3& lightvec) = 0;
+	virtual void SetSkyLight(const graphics::Light& light) = 0;
 
 	/**
 	*	Draws the given model.

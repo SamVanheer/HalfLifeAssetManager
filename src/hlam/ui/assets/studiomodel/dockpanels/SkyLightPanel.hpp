@@ -6,6 +6,7 @@
 
 namespace studiomodel
 {
+class StudioModelAsset;
 class StudioModelAssetProvider;
 
 class SkyLightPanel final : public QWidget
@@ -15,6 +16,8 @@ public:
 	~SkyLightPanel();
 
 private slots:
+	void OnAssetChanged(StudioModelAsset* asset);
+
 	void OnAnglesChanged();
 
 private:

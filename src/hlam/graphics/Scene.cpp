@@ -91,8 +91,11 @@ void Scene::Draw(SceneContext& sc)
 
 	auto camera = GetCurrentCamera()->GetCamera();
 
+	SkyLight.Color = colors->GetColor(studiomodel::LightColor.Name);
+
 	_entityContext->StudioModelRenderer->SetViewerOrigin(camera->GetOrigin());
 	_entityContext->StudioModelRenderer->SetViewerRight(camera->GetRightVector());
+	_entityContext->StudioModelRenderer->SetSkyLight(SkyLight);
 
 	const unsigned int uiOldPolys = _entityContext->StudioModelRenderer->GetDrawnPolygonsCount();
 

@@ -8,6 +8,7 @@ target_sources(HLAM
 		GraphicsUtils.hpp
 		Image.hpp
 		IGraphicsContext.hpp
+		Light.hpp
 		OpenGL.cpp
 		OpenGL.hpp
 		Palette.hpp

@@ -6,6 +6,7 @@
 
 #include "graphics/Camera.hpp"
 #include "graphics/GraphicsConstants.hpp"
+#include "graphics/Light.hpp"
 
 class BaseEntity;
 class EntityList;
@@ -73,6 +74,9 @@ private:
 	void CollectRenderables(RenderPass::RenderPass renderPass, std::vector<BaseEntity*>& renderablesToRender);
 
 	void DrawRenderables(SceneContext& sc, RenderPass::RenderPass renderPass);
+
+public:
+	Light SkyLight;
 
 private:
 	const std::string _name;
