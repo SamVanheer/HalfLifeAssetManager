@@ -94,7 +94,7 @@ void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		graphics::DrawFloor(sc.OpenGLFunctions,
 			GetOrigin(), settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, texture,
-			colors->GetColor(studiomodel::GroundColor.Name), MirrorOnGround);
+			colors->GetColor(studiomodel::GroundColor), MirrorOnGround);
 	}
 }
 

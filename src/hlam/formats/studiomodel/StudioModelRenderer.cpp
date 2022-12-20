@@ -312,7 +312,7 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 
 void StudioModelRenderer::UpdateColors()
 {
-	_wireframeColor = _colorSettings->GetColor(studiomodel::WireframeColor.Name);
+	_wireframeColor = _colorSettings->GetColor(studiomodel::WireframeColor);
 }
 
 void StudioModelRenderer::SetupPosition(const glm::vec3& origin, const glm::vec3& angles)

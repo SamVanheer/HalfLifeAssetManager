@@ -77,7 +77,7 @@ void Scene::Draw(SceneContext& sc)
 {
 	auto colors = _entityContext->Asset->GetEditorContext()->GetColorSettings();
 
-	const auto backgroundColor = colors->GetColor(studiomodel::BackgroundColor.Name);
+	const auto backgroundColor = colors->GetColor(studiomodel::BackgroundColor);
 
 	sc.OpenGLFunctions->glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.0f);
 	sc.OpenGLFunctions->glClearStencil(0);
@@ -91,7 +91,7 @@ void Scene::Draw(SceneContext& sc)
 
 	auto camera = GetCurrentCamera()->GetCamera();
 
-	SkyLight.Color = colors->GetColor(studiomodel::LightColor.Name);
+	SkyLight.Color = colors->GetColor(studiomodel::LightColor);
 
 	_entityContext->StudioModelRenderer->SetViewerOrigin(camera->GetOrigin());
 	_entityContext->StudioModelRenderer->SetViewerRight(camera->GetRightVector());

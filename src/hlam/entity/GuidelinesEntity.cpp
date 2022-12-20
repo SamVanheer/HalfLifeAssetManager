@@ -36,7 +36,7 @@ void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		auto colors = GetContext()->Asset->GetEditorContext()->GetColorSettings();
 
-		sc.OpenGLFunctions->glColor4fv(glm::value_ptr(glm::vec4{colors->GetColor(studiomodel::CrosshairColor.Name), 1}));
+		sc.OpenGLFunctions->glColor4fv(glm::value_ptr(glm::vec4{colors->GetColor(studiomodel::CrosshairColor), 1}));
 
 		sc.OpenGLFunctions->glPointSize(GUIDELINES_LINE_WIDTH);
 		sc.OpenGLFunctions->glLineWidth(GUIDELINES_LINE_WIDTH);
