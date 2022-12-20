@@ -33,7 +33,7 @@ public:
 
 	static constexpr bool DefaultPowerOf2Textures{false};
 
-	static constexpr int DefaultMSAASamples{-1};
+	static constexpr int DefaultMSAALevel{-1};
 
 	static constexpr graphics::TextureFilter DefaultMinFilter{graphics::TextureFilter::Linear};
 	static constexpr graphics::TextureFilter DefaultMagFilter{graphics::TextureFilter::Linear};
@@ -44,16 +44,6 @@ public:
 	static bool ShouldUseSingleInstance(QSettings& settings)
 	{
 		return settings.value("Startup/UseSingleInstance", DefaultUseSingleInstance).toBool();
-	}
-
-	static int GetMSAALevel(QSettings& settings)
-	{
-		return settings.value("Graphics/MSAALevel", DefaultMSAASamples).toInt();
-	}
-
-	static void SetMSAALevel(QSettings& settings, int msaaSamples)
-	{
-		settings.setValue("Graphics/MSAALevel", msaaSamples);
 	}
 
 	void LoadSettings(QSettings& settings)
@@ -99,6 +89,7 @@ public:
 			static_cast<int>(graphics::MipmapFilter::Last)));
 		settings.endGroup();
 
+		_msaaLevel = settings.value("MSAALevel", DefaultMSAALevel).toInt();
 		TransparentScreenshots = settings.value("TransparentScreenshots", DefaultTransparentScreenshots).toBool();
 		settings.endGroup();
 	}
@@ -136,6 +127,7 @@ public:
 		settings.setValue("Mipmap", static_cast<int>(_mipmapFilter));
 		settings.endGroup();
 
+		settings.setValue("Graphics/MSAALevel", _msaaLevel);
 		settings.setValue("TransparentScreenshots", DefaultTransparentScreenshots);
 		settings.endGroup();
 	}
@@ -232,12 +224,26 @@ public:
 		emit TextureFiltersChanged(_minFilter, _magFilter, _mipmapFilter);
 	}
 
+	int GetMSAALevel() const { return _msaaLevel; }
+
+	void SetMSAALevel(int msaaLevel)
+	{
+		if (_msaaLevel != msaaLevel)
+		{
+			_msaaLevel = msaaLevel;
+			emit MSAALevelChanged(_msaaLevel);
+		}
+	}
+
 signals:
 	void TickRateChanged(int value);
 
 	void ResizeTexturesToPowerOf2Changed(bool value);
 
-	void TextureFiltersChanged(graphics::TextureFilter minFilter, graphics::TextureFilter magFilter, graphics::MipmapFilter mipmapFilter);
+	void TextureFiltersChanged(
+		graphics::TextureFilter minFilter, graphics::TextureFilter magFilter, graphics::MipmapFilter mipmapFilter);
+
+	void MSAALevelChanged(int msaaLevel);
 
 public:
 	bool PauseAnimationsOnTimelineClick{DefaultPauseAnimationsOnTimelineClick};
@@ -262,4 +268,6 @@ private:
 	graphics::TextureFilter _minFilter{DefaultMinFilter};
 	graphics::TextureFilter _magFilter{DefaultMagFilter};
 	graphics::MipmapFilter _mipmapFilter{DefaultMipmapFilter};
+
+	int _msaaLevel{DefaultMSAALevel};
 };

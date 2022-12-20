@@ -36,6 +36,8 @@ public:
 
 	SceneWidget* GetSceneWidget() const { return _sceneWidget; }
 
+	void RecreateSceneWidget();
+
 	const QVector<QDockWidget*>& GetDockWidgets() const { return _dockWidgets; }
 
 	int GetSceneIndex() const;
@@ -63,7 +65,7 @@ private:
 
 	StudioModelView* _view;
 
-	SceneWidget* _sceneWidget;
+	SceneWidget* _sceneWidget{};
 
 	Timeline* _timeline;
 

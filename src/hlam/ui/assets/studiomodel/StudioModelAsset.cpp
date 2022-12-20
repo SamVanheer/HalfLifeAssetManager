@@ -395,7 +395,6 @@ bool StudioModelAsset::CameraIsFirstPerson() const
 void StudioModelAsset::OnActivated()
 {
 	auto editWidget = _provider->GetEditWidget();
-	auto sceneWidget = editWidget->GetSceneWidget();
 
 	{
 		const QSignalBlocker editBlocker{editWidget};
@@ -404,8 +403,8 @@ void StudioModelAsset::OnActivated()
 
 	connect(editWidget, &StudioModelEditWidget::SceneIndexChanged, this, &StudioModelAsset::OnSceneIndexChanged);
 	connect(editWidget, &StudioModelEditWidget::PoseChanged, this, &StudioModelAsset::SetPose);
-	connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
-	connect(sceneWidget, &SceneWidget::WheelEvent, this, &StudioModelAsset::OnSceneWidgetWheelEvent);
+
+	OnSceneWidgetRecreated();
 
 	editWidget->setParent(_editWidget);
 	_editWidget->layout()->addWidget(editWidget);
@@ -555,11 +554,25 @@ void StudioModelAsset::OnIsActiveChanged(bool value)
 		{
 			_tickConnection = connect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick);
 		}
+
+		if (!_sceneWidgetRecreatedConnection)
+		{
+			_sceneWidgetRecreatedConnection = connect(_provider, &StudioModelAssetProvider::SceneWidgetRecreated,
+				this, &StudioModelAsset::OnSceneWidgetRecreated);
+		}
 	}
 	else
 	{
 		disconnect(_tickConnection);
+		disconnect(_sceneWidgetRecreatedConnection);
 	}
+}
+
+void StudioModelAsset::OnSceneWidgetRecreated()
+{
+	auto sceneWidget = _provider->GetEditWidget()->GetSceneWidget();
+	connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
+	connect(sceneWidget, &SceneWidget::WheelEvent, this, &StudioModelAsset::OnSceneWidgetWheelEvent);
 }
 
 void StudioModelAsset::OnResizeTexturesToPowerOf2Changed()

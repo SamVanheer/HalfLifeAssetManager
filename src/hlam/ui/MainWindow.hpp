@@ -11,14 +11,13 @@
 
 #include "ui_MainWindow.h"
 
+class Asset;
 class EditorContext;
 class FileListPanel;
 class FullscreenWidget;
-
-class Asset;
-
 class GameConfiguration;
 class GameEnvironment;
+class QActionGroup;
 
 class MainWindow final : public QMainWindow
 {
@@ -101,6 +100,8 @@ private:
 	Ui_MainWindow _ui;
 
 	EditorContext* const _editorContext;
+
+	QActionGroup* _msaaActionGroup;
 
 	QUndoGroup* const _undoGroup = new QUndoGroup(this);
 

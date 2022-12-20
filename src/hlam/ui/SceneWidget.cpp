@@ -19,7 +19,7 @@ SceneWidget::SceneWidget(EditorContext* editorContext,
 	// It's safe to modify this since it doesn't affect the underlying window, only the FBO used for MSAA.
 	auto format = QSurfaceFormat::defaultFormat();
 
-	const int msaaLevel = GeneralSettings::GetMSAALevel(*editorContext->GetSettings());
+	const int msaaLevel = editorContext->GetGeneralSettings()->GetMSAALevel();
 
 	format.setSamples(msaaLevel != -1 ? 1 << msaaLevel : -1);
 

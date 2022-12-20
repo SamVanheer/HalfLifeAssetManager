@@ -74,6 +74,8 @@ signals:
 
 	void AssetChanged(StudioModelAsset* asset);
 
+	void SceneWidgetRecreated();
+
 private slots:
 	void OnTick();
 

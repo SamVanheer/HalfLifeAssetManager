@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 
+#include <QActionGroup>
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDir>
@@ -121,6 +122,30 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	setAcceptDrops(true);
 
+	{
+		_msaaActionGroup = new QActionGroup(this);
+
+		_msaaActionGroup->addAction(_ui.ActionMSAANone);
+
+		for (int i = 0; i < 5; ++i)
+		{
+			auto action = _ui.MenuMSAA->addAction(QString{"%1x MSAA"}.arg(1 << i));
+			_msaaActionGroup->addAction(action);
+
+			action->setCheckable(true);
+		}
+
+		int index = _editorContext->GetGeneralSettings()->GetMSAALevel() + 1;
+
+		// Won't match the actual setting but this lets the user override the level manually.
+		if (index < 0 || index >= _msaaActionGroup->actions().size())
+		{
+			index = 0;
+		}
+
+		_msaaActionGroup->actions()[index]->setChecked(true);
+	}
+
 	connect(_ui.ActionLoad, &QAction::triggered, this, &MainWindow::OnOpenLoadAssetDialog);
 	connect(_ui.ActionSave, &QAction::triggered, this, &MainWindow::OnSaveAsset);
 	connect(_ui.ActionSaveAs, &QAction::triggered, this, &MainWindow::OnSaveAssetAs);
@@ -141,6 +166,19 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionMipmapNone, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
 	connect(_ui.ActionMipmapPoint, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
 	connect(_ui.ActionMipmapLinear, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
+
+	{
+		const auto lambda = [this]()
+		{
+			const int index = _msaaActionGroup->actions().indexOf(_msaaActionGroup->checkedAction());
+			_editorContext->GetGeneralSettings()->SetMSAALevel(index - 1);
+		};
+
+		for (auto action : _msaaActionGroup->actions())
+		{
+			connect(action, &QAction::triggered, this, lambda);
+		}
+	}
 
 	connect(_ui.ActionTransparentScreenshots, &QAction::triggered, this, [this](bool value)
 		{

@@ -161,6 +161,8 @@ private slots:
 
 	void OnIsActiveChanged(bool value);
 
+	void OnSceneWidgetRecreated();
+
 	void OnResizeTexturesToPowerOf2Changed();
 
 	void OnTextureFiltersChanged();
@@ -247,5 +249,6 @@ private:
 	Pose _pose = Pose::Sequences;
 
 	QMetaObject::Connection _tickConnection;
+	QMetaObject::Connection _sceneWidgetRecreatedConnection;
 };
 }

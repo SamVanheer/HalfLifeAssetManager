@@ -108,11 +108,19 @@
      <addaction name="ActionMipmapPoint"/>
      <addaction name="ActionMipmapLinear"/>
     </widget>
+    <widget class="QMenu" name="MenuMSAA">
+     <property name="title">
+      <string>MSAA</string>
+     </property>
+     <addaction name="ActionMSAANone"/>
+    </widget>
     <addaction name="ActionPowerOf2Textures"/>
     <addaction name="separator"/>
     <addaction name="MenuMinFilter"/>
     <addaction name="MenuMagFilter"/>
     <addaction name="MenuMipmapFilter"/>
+    <addaction name="separator"/>
+    <addaction name="MenuMSAA"/>
     <addaction name="separator"/>
     <addaction name="ActionTransparentScreenshots"/>
    </widget>
@@ -241,6 +249,14 @@
    </property>
    <property name="text">
     <string>Transparent Screenshots</string>
+   </property>
+  </action>
+  <action name="ActionMSAANone">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>None</string>
    </property>
   </action>
   <actiongroup name="MinFilterGroup">

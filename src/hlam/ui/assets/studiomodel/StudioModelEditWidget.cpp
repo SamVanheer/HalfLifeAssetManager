@@ -50,19 +50,11 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_ui.MainLayout->addWidget(_timeline);
 
-	_sceneWidget = new SceneWidget(
-		editorContext,
-		editorContext->GetOpenGLFunctions(), editorContext->GetTextureLoader(),
-		this);
-
-	auto eventFilter = _editorContext->GetDragNDropEventFilter();
+	RecreateSceneWidget();
 
 	//The filter needs to be installed on the main window (handles dropping on any child widget),
 	//as well as the scene widget (has special behavior due to being OpenGL)
-	_ui.Window->installEventFilter(eventFilter);
-	_sceneWidget->installEventFilter(eventFilter);
-
-	_view->SetWidget(_sceneWidget->GetContainer());
+	_ui.Window->installEventFilter(_editorContext->GetDragNDropEventFilter());
 
 	_ui.Window->setCentralWidget(_view);
 
@@ -142,13 +134,36 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	connect(_view, &StudioModelView::SceneIndexChanged, this, &StudioModelEditWidget::SceneIndexChanged);
 	connect(_view, &StudioModelView::PoseChanged, this, &StudioModelEditWidget::PoseChanged);
-	connect(_sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw);
 	connect(_editorContext, &EditorContext::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
 
 	SetAsset(_provider->GetDummyAsset());
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
+
+void StudioModelEditWidget::RecreateSceneWidget()
+{
+	auto scene = _sceneWidget ? _sceneWidget->GetScene() : nullptr;
+
+	if (_sceneWidget)
+	{
+		delete _sceneWidget->GetContainer();
+	}
+
+	_sceneWidget = new SceneWidget(
+		_editorContext,
+		_editorContext->GetOpenGLFunctions(),
+		_editorContext->GetTextureLoader(),
+		this);
+
+	_sceneWidget->installEventFilter(_editorContext->GetDragNDropEventFilter());
+
+	_view->SetWidget(_sceneWidget->GetContainer());
+
+	_sceneWidget->SetScene(scene);
+
+	connect(_sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw);
+}
 
 int StudioModelEditWidget::GetSceneIndex() const
 {
