@@ -33,7 +33,7 @@ public:
 
 	static constexpr bool DefaultPowerOf2Textures{false};
 
-	static constexpr int DefaultMSAALevel{-1};
+	static constexpr int DefaultMSAALevel{0};
 
 	static constexpr graphics::TextureFilter DefaultMinFilter{graphics::TextureFilter::Linear};
 	static constexpr graphics::TextureFilter DefaultMagFilter{graphics::TextureFilter::Linear};
@@ -127,7 +127,7 @@ public:
 		settings.setValue("Mipmap", static_cast<int>(_mipmapFilter));
 		settings.endGroup();
 
-		settings.setValue("Graphics/MSAALevel", _msaaLevel);
+		settings.setValue("MSAALevel", _msaaLevel);
 		settings.setValue("TransparentScreenshots", DefaultTransparentScreenshots);
 		settings.endGroup();
 	}

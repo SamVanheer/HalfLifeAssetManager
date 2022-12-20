@@ -127,7 +127,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 		_msaaActionGroup->addAction(_ui.ActionMSAANone);
 
-		for (int i = 0; i < 5; ++i)
+		for (int i = 1; i < 5; ++i)
 		{
 			auto action = _ui.MenuMSAA->addAction(QString{"%1x MSAA"}.arg(1 << i));
 			_msaaActionGroup->addAction(action);
@@ -135,7 +135,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 			action->setCheckable(true);
 		}
 
-		int index = _editorContext->GetGeneralSettings()->GetMSAALevel() + 1;
+		int index = _editorContext->GetGeneralSettings()->GetMSAALevel();
 
 		// Won't match the actual setting but this lets the user override the level manually.
 		if (index < 0 || index >= _msaaActionGroup->actions().size())
@@ -171,7 +171,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		const auto lambda = [this]()
 		{
 			const int index = _msaaActionGroup->actions().indexOf(_msaaActionGroup->checkedAction());
-			_editorContext->GetGeneralSettings()->SetMSAALevel(index - 1);
+			_editorContext->GetGeneralSettings()->SetMSAALevel(index);
 		};
 
 		for (auto action : _msaaActionGroup->actions())

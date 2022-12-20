@@ -21,7 +21,7 @@ SceneWidget::SceneWidget(EditorContext* editorContext,
 
 	const int msaaLevel = editorContext->GetGeneralSettings()->GetMSAALevel();
 
-	format.setSamples(msaaLevel != -1 ? 1 << msaaLevel : -1);
+	format.setSamples(msaaLevel > 0 && msaaLevel < 32 ? 1 << msaaLevel : -1);
 
 	setFormat(format);
 
