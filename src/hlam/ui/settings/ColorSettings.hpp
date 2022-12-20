@@ -27,9 +27,9 @@ inline QColor VectorToColor(const glm::vec4& color)
 	return QColor::fromRgbF(color.r, color.g, color.b, color.a);
 }
 
-inline glm::vec4 RGB888ToVector(int r, int g, int b)
+inline glm::vec3 RGB888ToVector(int r, int g, int b)
 {
-	return {r / 255.f, g / 255.f, b / 255.f, 1};
+	return {r / 255.f, g / 255.f, b / 255.f};
 }
 
 inline glm::vec4 RGBA8888ToVector(int r, int g, int b, int a)
