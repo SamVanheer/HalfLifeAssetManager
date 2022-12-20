@@ -12,6 +12,7 @@ class GeneralSettings final : public QObject
 public:
 	static constexpr bool DefaultUseSingleInstance{true};
 	static constexpr bool DefaultPauseAnimationsOnTimelineClick{true};
+	static constexpr bool DefaultTransparentScreenshots{false};
 	static constexpr bool DefaultAllowTabCloseWithMiddleClick{false};
 
 	static constexpr int DefaultTickRate{60};
@@ -89,6 +90,8 @@ public:
 			static_cast<int>(graphics::MipmapFilter::First),
 			static_cast<int>(graphics::MipmapFilter::Last)));
 		settings.endGroup();
+
+		TransparentScreenshots = settings.value("TransparentScreenshots", DefaultTransparentScreenshots).toBool();
 		settings.endGroup();
 	}
 
@@ -124,6 +127,8 @@ public:
 		settings.setValue("Mag", static_cast<int>(_magFilter));
 		settings.setValue("Mipmap", static_cast<int>(_mipmapFilter));
 		settings.endGroup();
+
+		settings.setValue("TransparentScreenshots", DefaultTransparentScreenshots);
 		settings.endGroup();
 	}
 
@@ -228,6 +233,7 @@ signals:
 
 public:
 	bool PauseAnimationsOnTimelineClick{DefaultPauseAnimationsOnTimelineClick};
+	bool TransparentScreenshots{DefaultTransparentScreenshots};
 
 private:
 	bool _useSingleInstance{DefaultUseSingleInstance};

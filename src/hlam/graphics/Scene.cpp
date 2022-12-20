@@ -16,6 +16,7 @@
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/settings/ColorSettings.hpp"
+#include "ui/settings/GeneralSettings.hpp"
 
 namespace graphics
 {
@@ -75,11 +76,14 @@ void Scene::Tick()
 
 void Scene::Draw(SceneContext& sc)
 {
+	auto generalSettings = _entityContext->GeneralSettings;
 	auto colors = _entityContext->Asset->GetEditorContext()->GetColorSettings();
 
 	const auto backgroundColor = colors->GetColor(studiomodel::BackgroundColor);
 
-	sc.OpenGLFunctions->glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.0f);
+	const float backgroundAlpha = generalSettings->TransparentScreenshots ? 0 : 1;
+
+	sc.OpenGLFunctions->glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundAlpha);
 	sc.OpenGLFunctions->glClearStencil(0);
 	sc.OpenGLFunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 

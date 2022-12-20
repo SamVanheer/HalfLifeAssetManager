@@ -113,6 +113,8 @@
     <addaction name="MenuMinFilter"/>
     <addaction name="MenuMagFilter"/>
     <addaction name="MenuMipmapFilter"/>
+    <addaction name="separator"/>
+    <addaction name="ActionTransparentScreenshots"/>
    </widget>
    <addaction name="MenuFile"/>
    <addaction name="MenuEdit"/>
@@ -231,6 +233,14 @@
    </property>
    <property name="text">
     <string>Power Of 2 Textures</string>
+   </property>
+  </action>
+  <action name="ActionTransparentScreenshots">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Transparent Screenshots</string>
    </property>
   </action>
   <actiongroup name="MinFilterGroup">

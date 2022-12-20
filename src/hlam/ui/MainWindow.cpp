@@ -143,6 +143,11 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionMipmapPoint, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
 	connect(_ui.ActionMipmapLinear, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
 
+	connect(_ui.ActionTransparentScreenshots, &QAction::triggered, this, [this](bool value)
+		{
+			_editorContext->GetGeneralSettings()->TransparentScreenshots = value;
+		});
+
 	connect(_ui.ActionRefresh, &QAction::triggered, this, &MainWindow::OnRefreshAsset);
 
 	connect(_ui.ActionPlaySounds, &QAction::triggered, this, &MainWindow::OnPlaySoundsChanged);
