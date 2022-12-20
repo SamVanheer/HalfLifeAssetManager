@@ -285,8 +285,6 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 	else
 		_openglFunctions->glEnable(GL_DEPTH_TEST);
 
-	_openglFunctions->glColor4f(1, 0, 0, 0.5f);
-
 	_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	_openglFunctions->glEnable(GL_BLEND);
 	_openglFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -304,7 +302,8 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 		v2[i] = hitboxBoneTransform * glm::vec4{v[i], 1};
 	}
 
-	graphics::DrawBox(_openglFunctions, v2);
+	graphics::DrawOutlinedBox(_openglFunctions, v2,
+		_colorSettings->GetColor(studiomodel::HitboxFaceColor), _colorSettings->GetColor(studiomodel::HitboxEdgeColor));
 
 	_studioModel = nullptr;
 	_renderInfo = nullptr;
@@ -433,11 +432,12 @@ void StudioModelRenderer::DrawHitBoxes()
 	else
 		_openglFunctions->glEnable(GL_DEPTH_TEST);
 
-	_openglFunctions->glColor4f(1, 0, 0, 0.5f);
-
 	_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	_openglFunctions->glEnable(GL_BLEND);
 	_openglFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	const glm::vec4 faceColor = _colorSettings->GetColor(studiomodel::HitboxFaceColor);
+	const glm::vec4 edgeColor = _colorSettings->GetColor(studiomodel::HitboxEdgeColor);
 
 	for (int i = 0; i < _studioModel->Hitboxes.size(); i++)
 	{
@@ -454,7 +454,7 @@ void StudioModelRenderer::DrawHitBoxes()
 			v2[i] = hitboxTransform * glm::vec4{v[i], 1};
 		}
 
-		graphics::DrawBox(_openglFunctions, v2);
+		graphics::DrawOutlinedBox(_openglFunctions, v2, faceColor, edgeColor);
 	}
 }
 

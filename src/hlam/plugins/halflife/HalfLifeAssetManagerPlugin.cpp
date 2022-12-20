@@ -20,6 +20,8 @@ bool HalfLifeAssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 	builder.ColorSettings->Add(CrosshairColor, RGB888ToVector(255, 0, 0));
 	builder.ColorSettings->Add(LightColor, RGB888ToVector(255, 255, 255));
 	builder.ColorSettings->Add(WireframeColor, RGB888ToVector(255, 0, 0));
+	builder.ColorSettings->Add(HitboxEdgeColor, RGBA8888ToVector(255, 0, 0, 128));
+	builder.ColorSettings->Add(HitboxFaceColor, RGBA8888ToVector(128, 0, 0, 0));
 
 	const auto studioModelSettings{std::make_shared<StudioModelSettings>()};
 

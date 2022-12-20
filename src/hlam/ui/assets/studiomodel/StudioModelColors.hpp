@@ -9,4 +9,6 @@ const inline QString BackgroundColor{QStringLiteral("Background")};
 const inline QString CrosshairColor{QStringLiteral("Crosshair")};
 const inline QString LightColor{QStringLiteral("Light")};
 const inline QString WireframeColor{QStringLiteral("Wireframe")};
+const inline QString HitboxEdgeColor{QStringLiteral("HitboxEdge")};
+const inline QString HitboxFaceColor{QStringLiteral("HitboxFace")};
 }
