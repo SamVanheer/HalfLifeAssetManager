@@ -10,8 +10,25 @@ QString FormatTextureName(const studiomdl::Texture& texture)
 	return QString{"%1 (%2 x %3)"}.arg(texture.Name.c_str()).arg(texture.Data.Width).arg(texture.Data.Height);
 }
 
-std::optional<std::tuple<studiomdl::TextureData, bool>> ConvertImageToTexture(QImage image)
+std::optional<std::tuple<studiomdl::TextureData, bool, bool>> ConvertImageToTexture(QImage image)
 {
+	const bool upscaleToMultipleOf4 = ((image.width() * image.height()) % 4) != 0;
+
+	if (upscaleToMultipleOf4)
+	{
+		// Round the width up so that it's a multiple.
+		int width = image.width();
+		const int height = image.height();
+
+		do
+		{
+			++width;
+		}
+		while (((width * height) % 4) != 0);
+
+		image = image.scaled(width, height);
+	}
+
 	const QImage::Format inputFormat = image.format();
 
 	const bool convertToIndexed8 = inputFormat != QImage::Format::Format_Indexed8;
@@ -67,7 +84,12 @@ std::optional<std::tuple<studiomdl::TextureData, bool>> ConvertImageToTexture(QI
 		convertedPalette[paletteIndex] = {0, 0, 0};
 	}
 
-	return std::tuple{studiomdl::TextureData{image.width(), image.height(), std::move(pixels), convertedPalette}, convertToIndexed8};
+	return std::tuple
+	{
+		studiomdl::TextureData{image.width(), image.height(), std::move(pixels), convertedPalette},
+		upscaleToMultipleOf4,
+		convertToIndexed8
+	};
 }
 
 QImage ConvertTextureToRGBImage(

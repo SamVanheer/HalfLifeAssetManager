@@ -445,6 +445,11 @@ void TexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::Editab
 
 	if (std::get<1>(convertedTexture.value()))
 	{
+		QMessageBox::warning(this, "Warning", "Image pixel count is not a multiple of 4 and will be upscaled");
+	}
+
+	if (std::get<2>(convertedTexture.value()))
+	{
 		QMessageBox::warning(this, "Warning",
 			QString{"Image \"%1\" has the format \"%2\" and will be converted to an indexed 8 bit image. Loss of color depth may occur."}
 			.arg(fileName)
@@ -456,7 +461,7 @@ void TexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::Editab
 	auto& texture = *model.Textures[textureIndex];
 
 	auto scaledSTCoordinates = studiomdl::CalculateScaledSTCoordinatesData(
-		model, textureIndex, texture.Data.Width, texture.Data.Height, image.width(), image.height());
+		model, textureIndex, texture.Data.Width, texture.Data.Height, textureData.Width, textureData.Height);
 
 	ImportTextureData oldTexture;
 	ImportTextureData newTexture;

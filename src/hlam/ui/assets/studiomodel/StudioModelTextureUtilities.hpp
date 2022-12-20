@@ -19,7 +19,7 @@ QString FormatTextureName(const studiomdl::Texture& texture);
 *	@brief Converts an image to an indexed 8 bit image compatible with GoldSource
 *	@return If conversion succeeded, the converted texture and whether the image was converted from another format to index 8 bit
 */
-std::optional<std::tuple<studiomdl::TextureData, bool>> ConvertImageToTexture(QImage image);
+std::optional<std::tuple<studiomdl::TextureData, bool, bool>> ConvertImageToTexture(QImage image);
 
 QImage ConvertTextureToRGBImage(
 	const studiomdl::TextureData& texture, const std::byte* textureData, const graphics::RGBPalette& texturePalette, std::vector<QRgb>& dataBuffer);
