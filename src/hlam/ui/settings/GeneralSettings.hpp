@@ -69,7 +69,7 @@ public:
 		FramerateAffectsPitch = settings.value("FramerateAffectsPitch", DefaultFramerateAffectsPitch).toBool();
 		settings.endGroup();
 
-		settings.beginGroup("Renderer");
+		settings.beginGroup("Graphics");
 
 		_powerOf2Textures = settings.value("PowerOf2Textures", DefaultPowerOf2Textures).toBool();
 
@@ -116,7 +116,7 @@ public:
 		settings.setValue("FramerateAffectsPitch", FramerateAffectsPitch);
 		settings.endGroup();
 
-		settings.beginGroup("Renderer");
+		settings.beginGroup("Graphics");
 		settings.setValue("PowerOf2Textures", _powerOf2Textures);
 
 		settings.beginGroup("TextureFilters");

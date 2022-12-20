@@ -82,9 +82,9 @@
      <string>Asset</string>
     </property>
    </widget>
-   <widget class="QMenu" name="MenuRenderer">
+   <widget class="QMenu" name="MenuGraphics">
     <property name="title">
-     <string>Renderer</string>
+     <string>Graphics</string>
     </property>
     <widget class="QMenu" name="MenuMinFilter">
      <property name="title">
@@ -117,7 +117,7 @@
    <addaction name="MenuFile"/>
    <addaction name="MenuEdit"/>
    <addaction name="MenuView"/>
-   <addaction name="MenuRenderer"/>
+   <addaction name="MenuGraphics"/>
    <addaction name="MenuAsset"/>
    <addaction name="MenuTools"/>
    <addaction name="MenuHelp"/>
