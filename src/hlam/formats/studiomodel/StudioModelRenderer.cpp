@@ -791,6 +791,8 @@ unsigned int StudioModelRenderer::InternalDrawShadows()
 	const auto lightSampleHeight = _renderInfo->Origin.z;
 	const auto shadowHeight = lightSampleHeight + 1.0;
 
+	const glm::vec3 shadeVector = -_skyLight.Direction;
+
 	for (int i = 0; i < _model->Meshes.size(); ++i)
 	{
 		const auto& mesh = _model->Meshes[i];
@@ -818,8 +820,8 @@ unsigned int StudioModelRenderer::InternalDrawShadows()
 
 				glm::vec3 point;
 
-				point.x = vertex.x - _skyLight.Direction.x * lightDistance;
-				point.y = vertex.y - _skyLight.Direction.y * lightDistance;
+				point.x = vertex.x - shadeVector.x * lightDistance;
+				point.y = vertex.y - shadeVector.y * lightDistance;
 				point.z = shadowHeight;
 
 				_openglFunctions->glVertex3fv(glm::value_ptr(point));
