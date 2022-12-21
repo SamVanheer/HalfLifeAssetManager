@@ -20,6 +20,9 @@ public:
 private:
 	void SetButtonColor(const QColor& color);
 
+public slots:
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction);
+
 private slots:
 	void OnAssetChanged(StudioModelAsset* asset);
 

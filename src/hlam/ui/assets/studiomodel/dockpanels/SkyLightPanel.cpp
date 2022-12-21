@@ -34,6 +34,11 @@ void SkyLightPanel::SetButtonColor(const QColor& color)
 	_ui.Color->setStyleSheet(QString{"border: 1px solid black; background-color: %1"}.arg(color.name()));
 }
 
+void SkyLightPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
+{
+	_ui.MainLayout->setDirection(direction);
+}
+
 void SkyLightPanel::OnAssetChanged(StudioModelAsset* asset)
 {
 	const QSignalBlocker xAngle{_ui.XAngle};

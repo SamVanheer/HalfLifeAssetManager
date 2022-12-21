@@ -13,12 +13,23 @@ LightingPanel::LightingPanel(StudioModelAssetProvider* provider)
 
 	connect(_ui.Lights, &QListWidget::currentRowChanged, _ui.LightSettingsContainer, &QStackedWidget::setCurrentIndex);
 
-	AddLight("Sky Light", new SkyLightPanel(_provider));
+	auto skyLightPanel = new SkyLightPanel(_provider);
+
+	AddLight("Sky Light", skyLightPanel);
 
 	_ui.Lights->setCurrentRow(0);
+
+	connect(this, &LightingPanel::LayoutDirectionChanged, skyLightPanel, &SkyLightPanel::OnLayoutDirectionChanged);
 }
 
 LightingPanel::~LightingPanel() = default;
+
+void LightingPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
+{
+	DockableWidget::OnLayoutDirectionChanged(direction);
+
+	emit LayoutDirectionChanged(direction);
+}
 
 void LightingPanel::AddLight(const QString& name, QWidget* settingsPanel)
 {

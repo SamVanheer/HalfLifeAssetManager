@@ -13,9 +13,16 @@ class StudioModelAssetProvider;
 
 class LightingPanel final : public DockableWidget
 {
+	Q_OBJECT
+
 public:
 	explicit LightingPanel(StudioModelAssetProvider* provider);
 	~LightingPanel();
+
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
+
+signals:
+	void LayoutDirectionChanged(QBoxLayout::Direction direction);
 
 private:
 	void AddLight(const QString& name, QWidget* settingsPanel);
