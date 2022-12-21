@@ -147,9 +147,6 @@ private:
 
 	const glm::mat4x4* _bonetransform{};	// bone transformation matrix
 
-	int				_ambientlight;						// ambient world light
-	float			_shadelight;						// direct world light
-
 	graphics::Light _skyLight;
 	glm::vec3		_blightvec[MAXSTUDIOBONES];		// light vectors in bone reference frames
 

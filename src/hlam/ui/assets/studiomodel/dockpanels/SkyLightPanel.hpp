@@ -27,6 +27,10 @@ private slots:
 
 	void OnSelectColor();
 
+	void OnAmbientChanged(int value);
+
+	void OnShadeChanged(int value);
+
 private:
 	Ui_SkyLightPanel _ui;
 	StudioModelAssetProvider* const _provider;

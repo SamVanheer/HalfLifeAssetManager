@@ -527,9 +527,6 @@ void StudioModelRenderer::SetUpBones()
 
 void StudioModelRenderer::SetupLighting()
 {
-	_ambientlight = 32;
-	_shadelight = 192;
-
 	for (int i = 0; i < _studioModel->Bones.size(); i++)
 	{
 		auto matrix = _bonetransform[i];
@@ -836,8 +833,8 @@ unsigned int StudioModelRenderer::InternalDrawShadows()
 
 void StudioModelRenderer::Lighting(glm::vec3& lv, int bone, int flags, const glm::vec3& normal)
 {
-	const float ambient = std::max(0.1f, (float)_ambientlight / 255.0f); // to avoid divison by zero
-	const float shade = _shadelight / 255.0f;
+	const float ambient = std::max(0.1f, (float)_skyLight.Ambient / 255.0f); // to avoid divison by zero
+	const float shade = _skyLight.Shade / 255.0f;
 	glm::vec3 illum{ambient};
 
 	if (flags & STUDIO_NF_FULLBRIGHT)
@@ -855,7 +852,7 @@ void StudioModelRenderer::Lighting(glm::vec3& lv, int bone, int flags, const glm
 
 		if (lightcos > 1.0f) lightcos = 1;
 
-		illum += _shadelight / 255.0f;
+		illum += shade;
 
 		auto r = _lambert;
 		if (r < 1.0f) r = 1.0f;

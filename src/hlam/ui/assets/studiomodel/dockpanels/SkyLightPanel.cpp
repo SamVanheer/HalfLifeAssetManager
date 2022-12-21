@@ -21,6 +21,8 @@ SkyLightPanel::SkyLightPanel(StudioModelAssetProvider* provider)
 	connect(_ui.XAngle, &QDial::valueChanged, this, &SkyLightPanel::OnAnglesChanged);
 	connect(_ui.YAngle, &QDial::valueChanged, this, &SkyLightPanel::OnAnglesChanged);
 	connect(_ui.Color, &QPushButton::clicked, this, &SkyLightPanel::OnSelectColor);
+	connect(_ui.Ambient, qOverload<int>(&QSpinBox::valueChanged), this, &SkyLightPanel::OnAmbientChanged);
+	connect(_ui.Shade, qOverload<int>(&QSpinBox::valueChanged), this, &SkyLightPanel::OnShadeChanged);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }
@@ -36,13 +38,20 @@ void SkyLightPanel::OnAssetChanged(StudioModelAsset* asset)
 {
 	const QSignalBlocker xAngle{_ui.XAngle};
 	const QSignalBlocker yAngle{_ui.YAngle};
+	const QSignalBlocker ambient{_ui.Ambient};
+	const QSignalBlocker shade{_ui.Shade};
 
-	const glm::vec3 angles{VectorToAngles(asset->GetScene()->SkyLight.Direction)};
+	auto scene = asset->GetScene();
+
+	const glm::vec3 angles{VectorToAngles(scene->SkyLight.Direction)};
 
 	_ui.XAngle->setValue(angles.x);
 	_ui.YAngle->setValue(angles.y);
 
-	SetButtonColor(VectorToColor(asset->GetScene()->SkyLight.Color));
+	SetButtonColor(VectorToColor(scene->SkyLight.Color));
+
+	_ui.Ambient->setValue(scene->SkyLight.Ambient);
+	_ui.Shade->setValue(scene->SkyLight.Shade);
 }
 
 void SkyLightPanel::OnAnglesChanged()
@@ -62,5 +71,15 @@ void SkyLightPanel::OnSelectColor()
 		asset->GetScene()->SkyLight.Color = ColorToVector(color);
 		SetButtonColor(color);
 	}
+}
+
+void SkyLightPanel::OnAmbientChanged(int value)
+{
+	_provider->GetCurrentAsset()->GetScene()->SkyLight.Ambient = value;
+}
+
+void SkyLightPanel::OnShadeChanged(int value)
+{
+	_provider->GetCurrentAsset()->GetScene()->SkyLight.Shade = value;
 }
 }
