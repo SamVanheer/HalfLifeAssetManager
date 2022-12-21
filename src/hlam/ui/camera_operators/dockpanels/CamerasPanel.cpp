@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <cassert>
 
+#include <QSignalBlocker>
+
 #include "qt/QtUtilities.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
@@ -47,6 +49,7 @@ void CamerasPanel::SetCameraOperators(CameraOperators* cameraOperators)
 	if (_cameraOperators)
 	{
 		_cameraOperators->disconnect(this);
+		_cameraOperators = nullptr;
 
 		// TODO: need to rework camera operators to cache widgets
 		for (auto widget : _widgets)
@@ -64,6 +67,8 @@ void CamerasPanel::SetCameraOperators(CameraOperators* cameraOperators)
 	if (_cameraOperators)
 	{
 		connect(_cameraOperators, &CameraOperators::CameraChanged, this, &CamerasPanel::OnAssetCameraChanged);
+
+		const QSignalBlocker camerasBlocker{_ui.Cameras};
 
 		for (int i = 0; i < _cameraOperators->Count(); ++i)
 		{
@@ -93,7 +98,10 @@ void CamerasPanel::OnChangeCamera(int index)
 		cameraOperator = widget->property(CameraOperatorPropertyKey.data()).value<SceneCameraOperator*>();
 	}
 
-	_cameraOperators->SetCurrent(cameraOperator);
+	if (_cameraOperators)
+	{
+		_cameraOperators->SetCurrent(cameraOperator);
+	}
 }
 
 void CamerasPanel::OnAssetCameraChanged(SceneCameraOperator* previous, SceneCameraOperator* current)
