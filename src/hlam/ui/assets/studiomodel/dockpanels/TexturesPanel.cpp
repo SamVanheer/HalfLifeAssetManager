@@ -492,17 +492,14 @@ void TexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::Editab
 
 void TexturesPanel::UpdateColormapValue()
 {
-	const auto topColor = _ui.TopColorSlider->value();
-	const auto bottomColor = _ui.BottomColorSlider->value();
-
-	const int colormapValue = topColor & 0xFF | ((bottomColor & 0xFF) << 8);
-
-	_ui.ColormapValue->setText(QString::number(colormapValue));
-
 	auto model = _asset->GetEditableStudioModel();
 
-	model->TopColor = topColor;
-	model->BottomColor = bottomColor;
+	model->TopColor = _ui.TopColorSlider->value();
+	model->BottomColor = _ui.BottomColorSlider->value();
+
+	const int colormapValue = model->TopColor & 0xFF | ((model->BottomColor & 0xFF) << 8);
+
+	_ui.ColormapValue->setText(QString::number(colormapValue));
 
 	auto graphicsContext = _asset->GetGraphicsContext();
 
@@ -753,12 +750,10 @@ void TexturesPanel::OnBottomColorSliderChanged()
 void TexturesPanel::OnTopColorSpinnerChanged()
 {
 	_ui.TopColorSlider->setValue(_ui.TopColorSpinner->value());
-	UpdateColormapValue();
 }
 
 void TexturesPanel::OnBottomColorSpinnerChanged()
 {
 	_ui.BottomColorSlider->setValue(_ui.BottomColorSpinner->value());
-	UpdateColormapValue();
 }
 }
