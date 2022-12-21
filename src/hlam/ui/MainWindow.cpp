@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QDockWidget>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QScreen>
@@ -509,15 +510,45 @@ void MainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
 
 bool MainWindow::TryLoadAsset(QString fileName)
 {
-	fileName = QDir::cleanPath(fileName);
+	fileName = fileName.trimmed();
+
+	if (fileName.isEmpty())
+	{
+		qCDebug(logging::HLAM) << "Asset filename is empty";
+		QMessageBox::critical(this, "Error loading asset", "Asset filename is empty");
+		return false;
+	}
+
+	const QFileInfo fileInfo{fileName};
+
+	fileName = fileInfo.absoluteFilePath();
 
 	qCDebug(logging::HLAM) << "Trying to load asset" << fileName;
 
-	if (!QFile::exists(fileName))
+	if (!fileInfo.exists())
 	{
 		qCDebug(logging::HLAM) << "Asset" << fileName << "does not exist";
 		QMessageBox::critical(this, "Error loading asset", QString{"Asset \"%1\" does not exist"}.arg(fileName));
 		return false;
+	}
+
+	// First check if it's already loaded.
+	for (int i = 0; i < _assetTabs->count(); ++i)
+	{
+		auto asset = GetAsset(i);
+
+		if (asset->GetFileName() == fileName)
+		{
+			_assetTabs->setCurrentIndex(i);
+			const bool result = OnRefreshAsset();
+
+			if (result)
+			{
+				_editorContext->GetRecentFiles()->Add(fileName);
+			}
+
+			return result;
+		}
 	}
 
 	try
@@ -770,18 +801,20 @@ void MainWindow::OnTextureFiltersChanged()
 		static_cast<graphics::MipmapFilter>(currentIndex(_ui.MipmapFilterGroup)));
 }
 
-void MainWindow::OnRefreshAsset()
+bool MainWindow::OnRefreshAsset()
 {
 	if (auto asset = GetCurrentAsset(); asset)
 	{
 		if (!VerifyNoUnsavedChanges(asset))
 		{
 			//User canceled, abort refresh
-			return;
+			return false;
 		}
 
-		asset->TryRefresh();
+		return asset->TryRefresh();
 	}
+
+	return false;
 }
 
 void MainWindow::OnPlaySoundsChanged()

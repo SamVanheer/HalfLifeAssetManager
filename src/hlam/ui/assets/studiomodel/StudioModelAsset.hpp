@@ -73,7 +73,7 @@ public:
 
 	void Save() override;
 
-	void TryRefresh() override;
+	bool TryRefresh() override;
 
 	EditorContext* GetEditorContext() { return _editorContext; }
 

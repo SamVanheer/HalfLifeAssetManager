@@ -82,7 +82,7 @@ public:
 
 	virtual void Save() = 0;
 
-	virtual void TryRefresh() = 0;
+	virtual bool TryRefresh() = 0;
 
 signals:
 	void FileNameChanged(const QString& fileName);

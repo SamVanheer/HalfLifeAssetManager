@@ -318,7 +318,7 @@ void StudioModelAsset::Save()
 	studiomdl::SaveStudioModel(filePath, result, false);
 }
 
-void StudioModelAsset::TryRefresh()
+bool StudioModelAsset::TryRefresh()
 {
 	auto snapshot = std::make_unique<StateSnapshot>();
 
@@ -363,7 +363,7 @@ void StudioModelAsset::TryRefresh()
 	catch (const AssetException& e)
 	{
 		QMessageBox::critical(nullptr, "Error", QString{"An error occurred while reloading the model \"%1\":\n%2"}.arg(GetFileName()).arg(e.what()));
-		return;
+		return false;
 	}
 
 	LoadEntityFromSnapshot(snapshot.get());
@@ -374,6 +374,8 @@ void StudioModelAsset::TryRefresh()
 	delete oldModelData;
 
 	emit LoadSnapshot(snapshot.get());
+
+	return true;
 }
 
 graphics::IGraphicsContext* StudioModelAsset::GetGraphicsContext()

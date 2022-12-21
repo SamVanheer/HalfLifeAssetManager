@@ -81,7 +81,7 @@ private slots:
 
 	void OnTextureFiltersChanged();
 
-	void OnRefreshAsset();
+	bool OnRefreshAsset();
 
 	void OnPlaySoundsChanged();
 
