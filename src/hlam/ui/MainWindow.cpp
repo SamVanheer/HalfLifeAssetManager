@@ -146,6 +146,11 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		_msaaActionGroup->actions()[index]->setChecked(true);
 	}
 
+	{
+		const int index = static_cast<int>(_editorContext->GetGeneralSettings()->GuidelinesAspectRatio);
+		_ui.GuidelinesAspectRatioGroup->actions()[index]->setChecked(true);
+	}
+
 	connect(_ui.ActionLoad, &QAction::triggered, this, &MainWindow::OnOpenLoadAssetDialog);
 	connect(_ui.ActionSave, &QAction::triggered, this, &MainWindow::OnSaveAsset);
 	connect(_ui.ActionSaveAs, &QAction::triggered, this, &MainWindow::OnSaveAssetAs);
@@ -189,6 +194,20 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	connect(_ui.ActionPlaySounds, &QAction::triggered, this, &MainWindow::OnPlaySoundsChanged);
 	connect(_ui.ActionFramerateAffectsPitch, &QAction::triggered, this, &MainWindow::OnFramerateAffectsPitchChanged);
+
+	{
+		const auto lambda = [this]()
+		{
+			const int index = _ui.GuidelinesAspectRatioGroup->actions()
+				.indexOf(_ui.GuidelinesAspectRatioGroup->checkedAction());
+			_editorContext->GetGeneralSettings()->GuidelinesAspectRatio = static_cast<GuidelinesAspectRatio>(index);
+		};
+
+		for (auto action : _ui.GuidelinesAspectRatioGroup->actions())
+		{
+			connect(action, &QAction::triggered, this, lambda);
+		}
+	}
 
 	connect(_ui.ActionOptions, &QAction::triggered, this, &MainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &MainWindow::OnShowAbout);

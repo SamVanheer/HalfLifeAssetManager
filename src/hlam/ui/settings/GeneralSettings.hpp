@@ -5,6 +5,13 @@
 
 #include "graphics/TextureLoader.hpp"
 
+enum class GuidelinesAspectRatio
+{
+	FourThree,
+	SixteenNine,
+	SixteenTen
+};
+
 class GeneralSettings final : public QObject
 {
 	Q_OBJECT
@@ -39,6 +46,8 @@ public:
 	static constexpr graphics::TextureFilter DefaultMagFilter{graphics::TextureFilter::Linear};
 	static constexpr graphics::MipmapFilter DefaultMipmapFilter{graphics::MipmapFilter::None};
 
+	static constexpr GuidelinesAspectRatio DefaultGuidelinesAspectRatio{GuidelinesAspectRatio::SixteenNine};
+
 	GeneralSettings() = default;
 
 	static bool ShouldUseSingleInstance(QSettings& settings)
@@ -53,6 +62,12 @@ public:
 		settings.beginGroup("General");
 		PauseAnimationsOnTimelineClick = settings.value("PauseAnimationsOnTimelineClick", DefaultPauseAnimationsOnTimelineClick).toBool();
 		_tickRate = std::clamp(settings.value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
+
+		GuidelinesAspectRatio = static_cast<::GuidelinesAspectRatio>(settings.value(
+			"GuidelinesAspectRatio", static_cast<int>(GuidelinesAspectRatio::SixteenNine)).toInt());
+
+		GuidelinesAspectRatio = std::clamp(
+			GuidelinesAspectRatio, ::GuidelinesAspectRatio::FourThree, ::GuidelinesAspectRatio::SixteenTen);
 		settings.endGroup();
 
 		settings.beginGroup("Mouse");
@@ -103,6 +118,7 @@ public:
 		settings.beginGroup("General");
 		settings.setValue("PauseAnimationsOnTimelineClick", PauseAnimationsOnTimelineClick);
 		settings.setValue("TickRate", _tickRate);
+		settings.setValue("GuidelinesAspectRatio", static_cast<int>(GuidelinesAspectRatio));
 		settings.endGroup();
 
 		settings.beginGroup("Mouse");
@@ -248,6 +264,8 @@ signals:
 public:
 	bool PauseAnimationsOnTimelineClick{DefaultPauseAnimationsOnTimelineClick};
 	bool TransparentScreenshots{DefaultTransparentScreenshots};
+
+	GuidelinesAspectRatio GuidelinesAspectRatio{DefaultGuidelinesAspectRatio};
 
 private:
 	bool _useSingleInstance{DefaultUseSingleInstance};

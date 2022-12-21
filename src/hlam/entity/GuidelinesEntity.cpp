@@ -11,6 +11,17 @@
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/settings/ColorSettings.hpp"
+#include "ui/settings/GeneralSettings.hpp"
+
+constexpr float GetAspectRatio(GuidelinesAspectRatio aspectRatio)
+{
+	switch (aspectRatio)
+	{
+	case GuidelinesAspectRatio::FourThree: return 4.f / 3.f;
+	default: return 16.f / 9.f;
+	case GuidelinesAspectRatio::SixteenTen: return 16.f / 10.f;
+	}
+}
 
 void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
@@ -64,7 +75,7 @@ void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		sc.OpenGLFunctions->glEnd();
 
-		const float flWidth = sc.WindowHeight * (16 / 9.0);
+		const float flWidth = sc.WindowHeight * GetAspectRatio(GetContext()->GeneralSettings->GuidelinesAspectRatio);
 
 		sc.OpenGLFunctions->glLineWidth(GUIDELINES_EDGE_WIDTH);
 

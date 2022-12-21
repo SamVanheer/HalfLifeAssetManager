@@ -27,10 +27,20 @@
     <property name="title">
      <string>Tools</string>
     </property>
+    <widget class="QMenu" name="menuGuidelines_Aspect_Ratio">
+     <property name="title">
+      <string>Guidelines Aspect Ratio</string>
+     </property>
+     <addaction name="Action4_3"/>
+     <addaction name="Action16_9"/>
+     <addaction name="Action16_10"/>
+    </widget>
     <addaction name="ActionRefresh"/>
     <addaction name="separator"/>
     <addaction name="ActionPlaySounds"/>
     <addaction name="ActionFramerateAffectsPitch"/>
+    <addaction name="separator"/>
+    <addaction name="menuGuidelines_Aspect_Ratio"/>
     <addaction name="separator"/>
     <addaction name="ActionOptions"/>
    </widget>
@@ -336,6 +346,35 @@
     </property>
     <property name="text">
      <string>Linear</string>
+    </property>
+   </action>
+  </actiongroup>
+  <actiongroup name="GuidelinesAspectRatioGroup">
+   <action name="Action4_3">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>4 / 3</string>
+    </property>
+   </action>
+   <action name="Action16_9">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>16 / 9</string>
+    </property>
+   </action>
+   <action name="Action16_10">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>16 / 10</string>
     </property>
    </action>
   </actiongroup>
