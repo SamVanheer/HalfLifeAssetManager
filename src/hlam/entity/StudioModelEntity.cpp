@@ -193,6 +193,8 @@ float StudioModelEntity::AdvanceFrame(float deltaTime, const float maximum)
 		return 0;
 	}
 
+	deltaTime = std::max(0.f, deltaTime);
+
 	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 
 	if (deltaTime == 0)

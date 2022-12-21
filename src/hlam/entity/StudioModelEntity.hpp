@@ -50,7 +50,6 @@ public:
 
 	/**
 	*	Advances the frame. If dt is 0, advances to current time, otherwise, advances by the given amount of time.
-	*	TODO: clamp dt to positive?
 	*	@param deltaTime Delta time.
 	*	@param maximum Maximum amount of time to advance by. If -1, no limit.
 	*	@return Delta time that was used to advance the frame. Can be 0.

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "entity/BaseEntity.hpp"
 
 /**
@@ -31,6 +33,6 @@ public:
 	*/
 	void SetFrameRate(const float frameRate)
 	{
-		_frameRate = frameRate;
+		_frameRate = std::max(0.f, frameRate);
 	}
 };
