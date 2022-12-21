@@ -216,6 +216,9 @@ void TexturesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 
 		snapshot->SetValue("textures.texture", QString::fromStdString(texture.Name));
 	}
+
+	snapshot->SetValue("textures.topcolor", _ui.TopColorSlider->value());
+	snapshot->SetValue("textures.bottomcolor", _ui.BottomColorSlider->value());
 }
 
 void TexturesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
@@ -235,6 +238,20 @@ void TexturesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 
 			_ui.Textures->setCurrentIndex(index);
 		}
+	}
+
+	const int topcolor = snapshot->Value("textures.topcolor", 0).toInt();
+	const int bottomcolor = snapshot->Value("textures.bottomcolor", 0).toInt();
+
+	if (_ui.TopColorSlider->value() != topcolor || _ui.BottomColorSlider->value() != bottomcolor)
+	{
+		_ui.TopColorSlider->setValue(topcolor);
+		_ui.BottomColorSlider->setValue(bottomcolor);
+	}
+	else
+	{
+		// Force an update so that refreshed assets update correctly.
+		UpdateColormapValue();
 	}
 }
 
