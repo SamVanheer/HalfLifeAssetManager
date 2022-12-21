@@ -54,7 +54,7 @@ public:
 	*	@param maximum Maximum amount of time to advance by. If -1, no limit.
 	*	@return Delta time that was used to advance the frame. Can be 0.
 	*/
-	float	AdvanceFrame(float deltaTime = 0.0f, const float maximum = -1.f);
+	float AdvanceFrame(float deltaTime = 0.0f, const float maximum = -1.f);
 
 	/**
 	*	Gets an animation event for the current sequence for the given time range.
@@ -78,10 +78,6 @@ public:
 	virtual void HandleAnimEvent(const AnimEvent& event);
 
 public:
-	/**
-	*	@brief Sets the frame for this model.
-	*	@param frame Frame index.
-	*/
 	void SetFrame(float frame);
 
 private:
@@ -135,30 +131,14 @@ private:
 	const IBlender* _blender = &StandardBlender;
 
 public:
-	/**
-	*	Gets the model.
-	*/
 	studiomdl::EditableStudioModel* GetEditableModel() const { return _editableModel; }
 
-	/**
-	*	Sets the model.
-	*/
 	void SetEditableModel(studiomdl::EditableStudioModel* model);
 
-	/**
-	*	Gets the number of frames that the current sequence has.
-	*/
 	int GetNumFrames() const;
 
-	/**
-	*	Gets the current sequence index.
-	*/
 	int GetSequence() const { return _sequence; }
 
-	/**
-	*	Sets the current sequence.
-	*	@param sequence Sequence to use.
-	*/
 	void SetSequence(int sequence);
 
 	/**
@@ -168,9 +148,6 @@ public:
 	*/
 	void GetSequenceInfo(float& frameRate, float& groundSpeed) const;
 
-	/**
-	*	Gets the bodygroup.
-	*/
 	int GetBodygroup() const { return _bodygroup; }
 
 	int GetBodyValueForGroup(int group) const;
@@ -188,15 +165,8 @@ public:
 		_bodygroup = value;
 	}
 
-	/**
-	*	Gets the current skin.
-	*/
 	int GetSkin() const { return _skin; }
 
-	/**
-	*	Sets the current skin.
-	*	@param skin Skin to use.
-	*/
 	void SetSkin(const int skin);
 
 	/**
@@ -273,7 +243,8 @@ public:
 	void SetBlending(const int blender, float value);
 
 	/**
-	*	Gets the last event check. This is the end of the range used to check for animation events the last time DispatchAnimEvents was called.
+	*	Gets the last event check.
+	*	This is the end of the range used to check for animation events the last time DispatchAnimEvents was called.
 	*/
 	float GetLastEventCheck() const { return _lastEventCheck; }
 

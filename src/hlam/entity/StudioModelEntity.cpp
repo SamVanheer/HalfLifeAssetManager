@@ -323,10 +323,14 @@ void StudioModelEntity::DispatchAnimEvents()
 		return;
 	}
 
-	//This is based on Source's DispatchAnimEvents. It fixes the bug where events don't get triggered, and get triggered multiple times due to the workaround.
-	//Plays from previous frame to current. This differs from GoldSource in that GoldSource plays from current to predicted future frame.
-	//This is more accurate, since it's based on actual frame data, rather than predicted frames, but results in events firing later than before.
-	//The difference is ~0.1 seconds when running at 60 FPS. On dedicated servers the difference will be smaller if the tick rate is higher.
+	// This is based on Source's DispatchAnimEvents.
+	// It fixes the bug where events don't get triggered, and get triggered multiple times due to the workaround.
+	// Plays from previous frame to current.
+	// This differs from GoldSource in that GoldSource plays from current to predicted future frame.
+	// This is more accurate, since it's based on actual frame data, rather than predicted frames,
+	// but results in events firing later than before.
+	// The difference is ~0.1 seconds when running at 60 FPS.
+	// On dedicated servers the difference will be smaller if the tick rate is higher.
 	float start = _lastEventCheck;
 	float end = _frame;
 	_lastEventCheck = _frame;
@@ -381,10 +385,7 @@ void StudioModelEntity::SetFrame(float frame)
 
 void StudioModelEntity::SetEditableModel(studiomdl::EditableStudioModel* model)
 {
-	//TODO: release old model.
 	_editableModel = model;
-
-	//TODO: reinit entity settings
 }
 
 int StudioModelEntity::GetNumFrames() const

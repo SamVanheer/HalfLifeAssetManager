@@ -14,18 +14,7 @@
 
 namespace studiomdl
 {
-EditableStudioModel::~EditableStudioModel()
-{
-	// TODO: rework resource management.
-	/*
-	//TODO: need to be sure the context is valid when this is done
-	for (auto& texture : Textures)
-	{
-		glDeleteTextures(1, &texture->TextureId);
-		texture->TextureId = 0;
-	}
-	*/
-}
+EditableStudioModel::~EditableStudioModel() = default;
 
 const Model* EditableStudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart) const
 {

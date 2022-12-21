@@ -13,7 +13,6 @@ void HLMVStudioModelEntity::Spawn()
 	//Always think for smooth animations
 	AlwaysThink = true;
 
-	//TODO: same as base class?
 	SetSequence(0);
 	SetController(0, 0.0f);
 	SetController(1, 0.0f);
@@ -33,7 +32,6 @@ void HLMVStudioModelEntity::Spawn()
 
 void HLMVStudioModelEntity::HandleAnimEvent(const AnimEvent& event)
 {
-	//TODO: move to subclass.
 	switch (event.id)
 	{
 	case SCRIPT_EVENT_SOUND:			// Play a named wave file
