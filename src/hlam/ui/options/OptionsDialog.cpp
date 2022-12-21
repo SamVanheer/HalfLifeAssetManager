@@ -2,7 +2,10 @@
 #include <unordered_map>
 
 #include <QApplication>
+#include <QDesktopServices>
 #include <QDesktopWidget>
+#include <QFileInfo>
+#include <QUrl>
 
 #include "qt/HashFunctions.hpp"
 
@@ -60,6 +63,13 @@ OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
 
 	connect(_ui.OptionsPagesList, &QTreeWidget::currentItemChanged, this, &OptionsDialog::OnPageSelected);
 	connect(_ui.DialogButtons, &QDialogButtonBox::clicked, this, &OptionsDialog::OnButtonClicked);
+	connect(_ui.OpenConfigDirectory, &QPushButton::clicked, this, [this]()
+		{
+			const QString fileName = _editorContext->GetSettings()->fileName();
+			const QFileInfo fileInfo{fileName};
+			const QString fullPath = fileInfo.absolutePath();
+			QDesktopServices::openUrl(QUrl{QString{"file:///%1"}.arg(fullPath), QUrl::TolerantMode});
+		});
 
 	_ui.OptionsPagesList->setCurrentItem(_ui.OptionsPagesList->topLevelItem(0));
 }
