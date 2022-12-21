@@ -269,7 +269,7 @@ float StudioModelEntity::AdvanceFrame(float deltaTime, const float maximum)
 	return deltaTime;
 }
 
-int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float end, int index, const bool allowClientEvents)
+int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float end, int index)
 {
 	if (!_editableModel)
 	{
@@ -300,16 +300,6 @@ int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float en
 	{
 		const auto& candidate = *sequenceDescriptor.SortedEvents[index];
 
-		//TODO: maybe leave it up to the listener to filter these out?
-		if (!allowClientEvents)
-		{
-			// Don't send client-side events to the server AI
-			if (candidate.EventId >= EVENT_CLIENT)
-			{
-				continue;
-			}
-		}
-
 		if ((candidate.Frame >= start && candidate.Frame < end) ||
 			((sequenceDescriptor.Flags & STUDIO_LOOPING)
 				&& end >= sequenceDescriptor.NumFrames - 1
@@ -324,7 +314,7 @@ int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float en
 	return 0;
 }
 
-void StudioModelEntity::DispatchAnimEvents(const bool allowClientEvents)
+void StudioModelEntity::DispatchAnimEvents()
 {
 	if (!_editableModel)
 	{
@@ -343,7 +333,7 @@ void StudioModelEntity::DispatchAnimEvents(const bool allowClientEvents)
 
 	int index = 0;
 
-	while ((index = GetAnimationEvent(event, start, end, index, allowClientEvents)) != 0)
+	while ((index = GetAnimationEvent(event, start, end, index)) != 0)
 	{
 		HandleAnimEvent(event);
 	}

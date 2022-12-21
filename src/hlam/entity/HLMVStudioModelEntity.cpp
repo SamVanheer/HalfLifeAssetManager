@@ -65,6 +65,6 @@ void HLMVStudioModelEntity::AnimThink()
 	{
 		const float flTime = AdvanceFrame(0.0f, 0.1f);
 
-		DispatchAnimEvents(true);
+		DispatchAnimEvents();
 	}
 }

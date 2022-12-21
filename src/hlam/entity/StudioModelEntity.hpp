@@ -63,16 +63,15 @@ public:
 	*	@param start Start of the range of frames to check.
 	*	@param end End of the range of frames to check.
 	*	@param index Event index to start checking at.
-	*	@param allowClientEvents Whether to process client events or not.
 	*	@return Next event index to use as the index parameter. If 0, no more events are left.
 	*/
-	int		GetAnimationEvent(AnimEvent& event, float start, float end, int index, const bool allowClientEvents);
+	int GetAnimationEvent(AnimEvent& event, float start, float end, int index);
 
 	/**
-	*	Dispatches events for the current sequence and frame. This will dispatch events between the frame number during last call to DispatchAnimEvents and the current frame.
-	*	@param allowClientEvents Whether to process client events or not.
+	*	Dispatches events for the current sequence and frame.
+	*	This will dispatch events between the frame number during last call to DispatchAnimEvents and the current frame.
 	*/
-	void	DispatchAnimEvents(const bool allowClientEvents);
+	void DispatchAnimEvents();
 
 	/**
 	*	Method to handle animation events. Override to handle events.
