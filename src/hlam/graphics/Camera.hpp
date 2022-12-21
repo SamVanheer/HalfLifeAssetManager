@@ -98,7 +98,7 @@ public:
 	void SetDistance(float distance)
 	{
 		_distance = distance;
-		UpdateModelMatrix();
+		UpdateProjectionMatrix();
 	}
 
 	ProjectionMode GetProjectionMode() const { return _projectionMode; }

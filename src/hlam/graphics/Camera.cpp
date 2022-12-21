@@ -9,7 +9,6 @@ namespace graphics
 {
 void Camera::UpdateModelMatrix()
 {
-	// TODO: camera doesn't need a model matrix?
 	_modelMatrix = glm::identity<glm::mat4x4>();
 
 	_modelMatrix = glm::translate(_modelMatrix, _origin);
