@@ -196,6 +196,9 @@
    </property>
   </action>
   <action name="ActionRefresh">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Refresh</string>
    </property>

@@ -479,12 +479,6 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges)
 		delete asset;
 	}
 
-	const bool hasOpenAssets = _assetTabs->count() > 0;
-
-	_assetTabs->setVisible(hasOpenAssets);
-	_ui.ActionFullscreen->setEnabled(hasOpenAssets);
-	_ui.ActionRefresh->setEnabled(hasOpenAssets);
-
 	return true;
 }
 
@@ -533,11 +527,6 @@ bool MainWindow::TryLoadAsset(QString fileName)
 			const auto index = _assetTabs->addTab(editWidget, currentFileName);
 
 			_assetTabs->setCurrentIndex(index);
-
-			//TODO: this is duplicated between this and TryCloseAsset
-			_assetTabs->setVisible(true);
-			_ui.ActionFullscreen->setEnabled(true);
-			_ui.ActionRefresh->setEnabled(true);
 
 			_editorContext->GetRecentFiles()->Add(fileName);
 
@@ -627,6 +616,9 @@ void MainWindow::OnAssetTabChanged(int index)
 	_ui.ActionSaveAs->setEnabled(success);
 	_ui.ActionClose->setEnabled(success);
 	_ui.MenuAsset->setEnabled(success);
+	_assetTabs->setVisible(success);
+	_ui.ActionFullscreen->setEnabled(success);
+	_ui.ActionRefresh->setEnabled(success);
 }
 
 void MainWindow::OnAssetTabCloseRequested(int index)

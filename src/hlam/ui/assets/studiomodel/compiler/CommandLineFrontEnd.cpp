@@ -37,7 +37,6 @@ CommandLineFrontEnd::CommandLineFrontEnd(EditorContext* editorContext)
 
 	connect(_ui.BrowseWorkingDirectory, &QPushButton::clicked, this, &CommandLineFrontEnd::OnBrowseWorkingDirectory);
 
-	//TODO: maybe have special change handling for command line arguments to avoid having to reparse it every time
 	connect(_ui.AdditionalCommandLineArguments, &QPlainTextEdit::textChanged, this, &CommandLineFrontEnd::UpdateCompleteCommandLine);
 
 	connect(_ui.Compile, &QPushButton::clicked, this, &CommandLineFrontEnd::OnCompile);

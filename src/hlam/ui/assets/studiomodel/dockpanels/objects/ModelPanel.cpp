@@ -43,7 +43,6 @@ void ModelPanel::OnOriginChanged()
 
 void ModelPanel::OnCenterOnWorldOrigin()
 {
-	//TODO: need a better way to sync UI to origin
 	auto entity = _provider->GetCurrentAsset()->GetEntity();
 
 	entity->SetOrigin({0, 0, 0});
