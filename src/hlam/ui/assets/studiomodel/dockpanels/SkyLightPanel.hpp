@@ -4,6 +4,8 @@
 
 #include "ui_SkyLightPanel.h"
 
+class QColor;
+
 namespace studiomodel
 {
 class StudioModelAsset;
@@ -15,10 +17,15 @@ public:
 	explicit SkyLightPanel(StudioModelAssetProvider* provider);
 	~SkyLightPanel();
 
+private:
+	void SetButtonColor(const QColor& color);
+
 private slots:
 	void OnAssetChanged(StudioModelAsset* asset);
 
 	void OnAnglesChanged();
+
+	void OnSelectColor();
 
 private:
 	Ui_SkyLightPanel _ui;

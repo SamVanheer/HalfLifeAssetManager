@@ -18,7 +18,7 @@ bool HalfLifeAssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 	builder.ColorSettings->Add(GroundColor, RGBA8888ToVector(216, 216, 175, 178));
 	builder.ColorSettings->Add(BackgroundColor, RGB888ToVector(63, 127, 127));
 	builder.ColorSettings->Add(CrosshairColor, RGB888ToVector(255, 0, 0));
-	builder.ColorSettings->Add(LightColor, RGB888ToVector(255, 255, 255));
+	builder.ColorSettings->Add(SkyLightColor, RGB888ToVector(255, 255, 255));
 	builder.ColorSettings->Add(WireframeColor, RGB888ToVector(255, 0, 0));
 	builder.ColorSettings->Add(HitboxEdgeColor, RGBA8888ToVector(255, 0, 0, 128));
 	builder.ColorSettings->Add(HitboxFaceColor, RGBA8888ToVector(128, 0, 0, 0));

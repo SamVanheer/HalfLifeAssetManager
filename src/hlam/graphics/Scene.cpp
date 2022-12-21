@@ -49,6 +49,8 @@ Scene::Scene(std::string&& name, EntityContext* entityContext)
 	, _defaultCameraOperator(std::make_unique<DefaultCameraOperator>())
 {
 	SetCurrentCamera(nullptr);
+
+	SkyLight.Color = _entityContext->Asset->GetEditorContext()->GetColorSettings()->GetColor(studiomodel::SkyLightColor);
 }
 
 Scene::~Scene() = default;
@@ -94,8 +96,6 @@ void Scene::Draw(SceneContext& sc)
 	_drawnPolygonsCount = 0;
 
 	auto camera = GetCurrentCamera()->GetCamera();
-
-	SkyLight.Color = colors->GetColor(studiomodel::LightColor);
 
 	_entityContext->StudioModelRenderer->SetViewerOrigin(camera->GetOrigin());
 	_entityContext->StudioModelRenderer->SetViewerRight(camera->GetRightVector());
