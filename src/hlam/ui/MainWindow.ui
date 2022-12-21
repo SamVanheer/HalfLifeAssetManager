@@ -110,7 +110,7 @@
     </widget>
     <widget class="QMenu" name="MenuMSAA">
      <property name="title">
-      <string>MSAA</string>
+      <string>Anti-Aliasing</string>
      </property>
      <addaction name="ActionMSAANone"/>
     </widget>
