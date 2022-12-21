@@ -150,9 +150,7 @@ static void SetTextureFlagCheckBoxes(Ui_TexturesPanel& ui, int flags)
 	ui.Transparent->setChecked((flags & STUDIO_NF_MASKED) != 0);
 	ui.FlatShade->setChecked((flags & STUDIO_NF_FLATSHADE) != 0);
 	ui.Fullbright->setChecked((flags & STUDIO_NF_FULLBRIGHT) != 0);
-
-	//TODO: change the constant name to reflect the actual behavior (flag enables mipmaps)
-	ui.Mipmaps->setChecked((flags & STUDIO_NF_NOMIPS) != 0);
+	ui.Mipmaps->setChecked((flags & STUDIO_NF_MIPMAPS) != 0);
 }
 
 void TexturesPanel::OnAssetChanged(StudioModelAsset* asset)
@@ -432,7 +430,7 @@ void TexturesPanel::OnMipmapsChanged()
 {
 	const auto& texture = *_asset->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	const int flags = SetFlags(texture.Flags, STUDIO_NF_NOMIPS, _ui.Mipmaps->isChecked());
+	const int flags = SetFlags(texture.Flags, STUDIO_NF_MIPMAPS, _ui.Mipmaps->isChecked());
 
 	_asset->AddUndoCommand(new ChangeTextureFlagsCommand(_asset, _ui.Textures->currentIndex(), texture.Flags, flags));
 }

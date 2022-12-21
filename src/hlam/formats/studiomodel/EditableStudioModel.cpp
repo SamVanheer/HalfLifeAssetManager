@@ -135,7 +135,7 @@ void EditableStudioModel::UpdateTexture(graphics::TextureLoader& textureLoader, 
 		texture.Data.Width, texture.Data.Height,
 		texture.Data.Pixels.data(),
 		palette,
-		(texture.Flags & STUDIO_NF_NOMIPS) != 0,
+		(texture.Flags & STUDIO_NF_MIPMAPS) != 0,
 		(texture.Flags & STUDIO_NF_MASKED) != 0);
 }
 
@@ -162,7 +162,7 @@ void EditableStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
 	{
 		if (texture->TextureId)
 		{
-			textureLoader.SetFilters(texture->TextureId, (texture->Flags & STUDIO_NF_NOMIPS) != 0);
+			textureLoader.SetFilters(texture->TextureId, (texture->Flags & STUDIO_NF_MIPMAPS) != 0);
 		}
 	}
 }
