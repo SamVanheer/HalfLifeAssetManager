@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cstdint>
 #include <cstring>
 #include <vector>
 
@@ -154,8 +156,7 @@ void TextureLoader::UploadRGBA8888(GLuint texture, int width, int height, const 
 
 	if (generateMipmaps)
 	{
-		// TODO: reimplement
-		//glGenerateMipmap(GL_TEXTURE_2D);
+		GenerateMipmaps(newWidth, newHeight, rgbaPixels);
 	}
 }
 
@@ -231,5 +232,43 @@ std::pair<int, int> TextureLoader::AdjustImageDimensions(int width, int height) 
 	}
 
 	return {newWidth, newHeight};
+}
+
+void TextureLoader::GenerateMipmaps(int width, int height, const std::byte* pixels)
+{
+	std::vector<std::byte> rescaledPixels{pixels, pixels + (width * height * 4)};
+
+	int mipLevel = 0;
+
+	while (width > 1 || height > 1)
+	{
+		const int rowLength = width * 4;
+
+		width = std::max(1, width / 2);
+		height = std::max(1, height / 2);
+
+		ResizeMipmap(rescaledPixels, width, height, rowLength);
+
+		_openglFunctions->glTexImage2D(
+			GL_TEXTURE_2D, ++mipLevel, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rescaledPixels.data());
+	}
+}
+
+void TextureLoader::ResizeMipmap(std::vector<std::byte>& pixels, int width, int height, int rowLength)
+{
+	auto src = reinterpret_cast<const std::uint8_t*>(pixels.data());
+	auto dest = reinterpret_cast<std::uint8_t*>(pixels.data());
+
+	// Average out 4 pixels into one.
+	for (int y = 0; y < height; ++y, src += rowLength)
+	{
+		for (int x = 0; x < width; ++x, src += 8, dest += 4)
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				dest[i] = (src[i] + src[i + 4] + src[rowLength + i] + src[rowLength + i + 4]) / 4;
+			}
+		}
+	}
 }
 }

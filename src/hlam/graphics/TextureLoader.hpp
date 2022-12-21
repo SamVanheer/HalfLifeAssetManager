@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <utility>
+#include <vector>
 
 #include "graphics/OpenGL.hpp"
 #include "graphics/Palette.hpp"
@@ -60,6 +61,10 @@ public:
 
 private:
 	std::pair<int, int> AdjustImageDimensions(int width, int height) const;
+
+	void GenerateMipmaps(int width, int height, const std::byte* pixels);
+
+	void ResizeMipmap(std::vector<std::byte>& pixels, int width, int height, int rowLength);
 
 private:
 	QOpenGLFunctions_1_1* const _openglFunctions;
