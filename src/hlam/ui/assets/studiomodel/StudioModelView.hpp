@@ -20,6 +20,8 @@ public:
 	StudioModelView(QWidget* parent);
 	~StudioModelView();
 
+	QWidget* GetControlsBar() const { return _ui.ControlsBar; }
+
 	InfoBar* GetInfoBar() const { return _ui.InfoBar; }
 
 	int GetSceneIndex() const;

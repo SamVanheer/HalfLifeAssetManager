@@ -230,6 +230,28 @@ void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 		}
 	}
 
+	{
+		const auto controlsbar = menu->addAction("Show Controls Bar", this, [this](bool checked)
+			{
+				_provider->GetEditWidget()->SetControlsBarVisible(checked);
+			});
+		const QSignalBlocker blocker{controlsbar};
+		controlsbar->setCheckable(true);
+		controlsbar->setChecked(_provider->GetEditWidget()->IsControlsBarVisible());
+	}
+
+	{
+		const auto timeline = menu->addAction("Show Timeline", this, [this](bool checked)
+			{
+				_provider->GetEditWidget()->SetTimelineVisible(checked);
+			});
+		const QSignalBlocker blocker{timeline};
+		timeline->setCheckable(true);
+		timeline->setChecked(_provider->GetEditWidget()->IsTimelineVisible());
+	}
+
+	menu->addSeparator();
+
 	menu->addAction("Previous Camera", this, &StudioModelAsset::OnPreviousCamera, QKeySequence{Qt::CTRL + Qt::Key::Key_U});
 	menu->addAction("Next Camera", this, &StudioModelAsset::OnNextCamera, QKeySequence{Qt::CTRL + Qt::Key::Key_I});
 

@@ -38,6 +38,14 @@ public:
 
 	void RecreateSceneWidget();
 
+	bool IsControlsBarVisible() const;
+
+	void SetControlsBarVisible(bool state);
+
+	bool IsTimelineVisible() const;
+	
+	void SetTimelineVisible(bool state);
+
 	const QVector<QDockWidget*>& GetDockWidgets() const { return _dockWidgets; }
 
 	int GetSceneIndex() const;

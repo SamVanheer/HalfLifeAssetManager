@@ -165,6 +165,27 @@ void StudioModelEditWidget::RecreateSceneWidget()
 	connect(_sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw);
 }
 
+bool StudioModelEditWidget::IsControlsBarVisible() const
+{
+	// isVisible doesn't work here because it's not a top level widget.
+	return !_view->GetControlsBar()->isHidden();
+}
+
+void StudioModelEditWidget::SetControlsBarVisible(bool state)
+{
+	_view->GetControlsBar()->setVisible(state);
+}
+
+bool StudioModelEditWidget::IsTimelineVisible() const
+{
+	return !_timeline->isHidden();
+}
+
+void StudioModelEditWidget::SetTimelineVisible(bool state)
+{
+	_timeline->setVisible(state);
+}
+
 int StudioModelEditWidget::GetSceneIndex() const
 {
 	return _view->GetSceneIndex();
