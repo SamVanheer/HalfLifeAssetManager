@@ -292,7 +292,9 @@ std::unique_ptr<QSettings> ToolApplication::CreateSettings(const QString& progra
 {
 	if (isPortable)
 	{
-		return std::make_unique<QSettings>(QString{"%1.ini"}.arg(programName), QSettings::Format::IniFormat);
+		const QString directory = QApplication::applicationDirPath();
+		const QString fileName = QString{"%1/%2.ini"}.arg(directory).arg(programName);
+		return std::make_unique<QSettings>(fileName, QSettings::Format::IniFormat);
 	}
 	else
 	{

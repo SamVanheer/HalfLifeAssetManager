@@ -20,6 +20,6 @@ inline void SetSavedPath(QSettings& settings, const QString& pathName, const QSt
 	const QFileInfo info(path);
 
 	settings.beginGroup(PathsGroupName);
-	settings.setValue(pathName, info.isFile() ? info.canonicalPath() : info.canonicalFilePath());
+	settings.setValue(pathName, info.isFile() ? info.absolutePath() : info.absoluteFilePath());
 	settings.endGroup();
 }
