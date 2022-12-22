@@ -75,6 +75,12 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* exis
 
 		if (!file)
 		{
+			// Not necessarily an error.
+			if (externalTextures)
+			{
+				return {};
+			}
+
 			throw AssetException(std::string{"File \""} + utf8FileName + "\" does not exist or is currently opened by another program");
 		}
 	}
@@ -165,6 +171,15 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 		texturename += extension;
 
 		textureHeader = LoadStudioHeader<studiohdr_t>(texturename, nullptr, true, true);
+
+		// If the model doesn't reference any textures then there might not be a T model.
+		if (mainHeader->numbodyparts > 0 && !textureHeader)
+		{
+			throw AssetException(
+				std::string{"External texture file \""}
+					+ reinterpret_cast<const char*>(fileName.u8string().c_str())
+					+ "\" does not exist or is currently opened by another program");
+		}
 	}
 
 	std::vector<studio_ptr<studioseqhdr_t>> sequenceHeaders;
