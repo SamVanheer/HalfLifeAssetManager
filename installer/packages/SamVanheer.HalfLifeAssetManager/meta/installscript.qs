@@ -28,7 +28,7 @@ AddRegisterFileTypes = function()
 	// don't show when updating or uninstalling
 	if (installer.isInstaller())
 	{
-		installer.addWizardPageItem(component, "RegisterFileTypesForm", QInstaller.TargetDirectory);
+		installer.addWizardPageItem(component, "InstallOptionsForm", QInstaller.TargetDirectory);
     }
 }
 
@@ -60,9 +60,12 @@ Component.prototype.createOperations = function()
 {
 	component.createOperations();
 
-	if (component.userInterface("RegisterFileTypesForm"))
+	var optionsForm = component.userInterface("InstallOptionsForm");
+
+	if (optionsForm)
 	{
-		var isRegisterMDLChecked = component.userInterface("RegisterFileTypesForm").RegisterMDLExtension.checked;
+		var isRegisterMDLChecked = optionsForm.RegisterMDLExtension.checked;
+		var addStartMenuEntry = optionsForm.AddStartMenuEntry.checked;
     }
 	
 	if (systemInfo.productType === "windows")
@@ -74,6 +77,13 @@ Component.prototype.createOperations = function()
 				"\"@TargetDir@/bin/HLAM.exe\" \"%1\"",
 				"Half-Life studiomodel file",
 				"application/octet-stream");
+		}
+		
+		if (addStartMenuEntry)
+		{
+			component.addOperation("CreateShortcut", "@TargetDir@/bin/HLAM.exe", "@StartMenuDir@/Half-Life Asset Manager.lnk",
+            "workingDirectory=@TargetDir@/bin", "iconPath=@TargetDir@/bin/HLAM.exe",
+            "iconId=0", "description=Launch Half-Life Asset Manager");
 		}
 		
 		// Exit code 1638 is returned when the redist is already installed

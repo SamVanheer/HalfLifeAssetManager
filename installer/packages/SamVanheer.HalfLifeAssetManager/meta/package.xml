@@ -8,6 +8,6 @@
     <Default>true</Default>
     <Script>installscript.qs</Script>
     <UserInterfaces>
-        <UserInterface>RegisterFileTypesForm.ui</UserInterface>
+        <UserInterface>InstallOptionsForm.ui</UserInterface>
     </UserInterfaces>
 </Package>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RegisterFileTypesForm</class>
- <widget class="QWidget" name="RegisterFileTypesForm">
+ <class>InstallOptionsForm</class>
+ <widget class="QWidget" name="InstallOptionsForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -18,6 +18,16 @@
     <widget class="QCheckBox" name="RegisterMDLExtension">
      <property name="text">
       <string>Register.mdl extension</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="AddStartMenuEntry">
+     <property name="text">
+      <string>Add Start menu entry</string>
      </property>
      <property name="checked">
       <bool>true</bool>
