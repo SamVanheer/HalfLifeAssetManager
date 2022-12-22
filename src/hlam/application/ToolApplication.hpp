@@ -49,9 +49,9 @@ private:
 	
 	ParsedCommandLine ParseCommandLine(const QStringList& arguments);
 
-	void ConfigureOpenGL();
-
 	std::unique_ptr<QSettings> CreateSettings(const QString& programName, bool isPortable);
+
+	void ConfigureOpenGL();
 
 	bool CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings);
 

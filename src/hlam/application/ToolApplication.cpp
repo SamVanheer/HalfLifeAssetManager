@@ -119,6 +119,8 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		const auto commandLine = ParseCommandLine(QStringList(argv, argv + argc));
 
+		auto settings{CreateSettings(programName, commandLine.IsPortable)};
+
 		ConfigureOpenGL();
 
 		QApplication app(argc, argv);
@@ -135,8 +137,6 @@ int ToolApplication::Run(int argc, char* argv[])
 		{
 			qInstallMessageHandler(&FileMessageOutput);
 		}
-
-		auto settings{CreateSettings(programName, commandLine.IsPortable)};
 
 		{
 			const auto openGLFormat = QOpenGLContext::globalShareContext()->format();
@@ -255,6 +255,20 @@ ParsedCommandLine ToolApplication::ParseCommandLine(const QStringList& arguments
 	return result;
 }
 
+std::unique_ptr<QSettings> ToolApplication::CreateSettings(const QString& programName, bool isPortable)
+{
+	if (isPortable)
+	{
+		const QString directory = QApplication::applicationDirPath();
+		const QString fileName = QString{"%1/%2.ini"}.arg(directory).arg(programName);
+		return std::make_unique<QSettings>(fileName, QSettings::Format::IniFormat);
+	}
+	else
+	{
+		return std::make_unique<QSettings>();
+	}
+}
+
 void ToolApplication::ConfigureOpenGL()
 {
 	//Neither OpenGL ES nor Software OpenGL will work here
@@ -287,20 +301,6 @@ void ToolApplication::ConfigureOpenGL()
 	qCDebug(logging::HLAM) << "Configuring OpenGL for" << defaultFormat;
 
 	QSurfaceFormat::setDefaultFormat(defaultFormat);
-}
-
-std::unique_ptr<QSettings> ToolApplication::CreateSettings(const QString& programName, bool isPortable)
-{
-	if (isPortable)
-	{
-		const QString directory = QApplication::applicationDirPath();
-		const QString fileName = QString{"%1/%2.ini"}.arg(directory).arg(programName);
-		return std::make_unique<QSettings>(fileName, QSettings::Format::IniFormat);
-	}
-	else
-	{
-		return std::make_unique<QSettings>();
-	}
 }
 
 bool ToolApplication::CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings)
