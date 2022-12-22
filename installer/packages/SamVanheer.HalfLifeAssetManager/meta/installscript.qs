@@ -65,7 +65,7 @@ Component.prototype.createOperations = function()
 		var isRegisterMDLChecked = component.userInterface("RegisterFileTypesForm").RegisterMDLExtension.checked;
     }
 	
-	if (installer.value("os") === "win")
+	if (systemInfo.productType === "windows")
 	{
 		if (isRegisterMDLChecked)
 		{
