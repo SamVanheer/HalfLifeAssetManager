@@ -12,9 +12,6 @@ class EditorContext;
 
 class StudioModelSettings;
 
-extern const QString OptionsPageStudiomodelId;
-extern const QString StudioModelExeFilter;
-
 class OptionsPageStudioModel : public OptionsPage
 {
 public:
@@ -37,10 +34,6 @@ public:
 
 private slots:
 	void OnResetFloorLength();
-
-	void OnBrowseCompiler();
-	void OnBrowseDecompiler();
-	void OnBrowseXashModelViewer();
 
 private:
 	Ui_OptionsPageStudioModel _ui;

@@ -7,14 +7,12 @@
 
 #include "ui/assets/studiomodel/compiler/CommandLineFrontEnd.hpp"
 
-class StudioModelSettings;
-
 namespace studiomodel
 {
 class StudioModelCompilerFrontEnd final : public CommandLineFrontEnd
 {
 public:
-	StudioModelCompilerFrontEnd(EditorContext* editorContext, StudioModelSettings* studioModelSettings);
+	StudioModelCompilerFrontEnd(EditorContext* editorContext);
 	~StudioModelCompilerFrontEnd();
 
 protected:
@@ -27,8 +25,6 @@ private slots:
 	void OnCurrentTextureReplacementChanged(QTableWidgetItem* current);
 
 private:
-	StudioModelSettings* const _studioModelSettings;
-
 	QWidget* _settingsWidget;
 	Ui_StudioModelCompilerFrontEnd _settingsUi;
 };

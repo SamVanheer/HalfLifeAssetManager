@@ -8,6 +8,9 @@ target_sources(HLAM
 		OptionsPageColors.cpp
 		OptionsPageColors.hpp
 		OptionsPageColors.ui
+		OptionsPageExternalPrograms.cpp
+		OptionsPageExternalPrograms.hpp
+		OptionsPageExternalPrograms.ui
 		OptionsPageGameConfigurations.cpp
 		OptionsPageGameConfigurations.hpp
 		OptionsPageGameConfigurations.ui

@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QSettings>
+#include <QString>
 
 #include "graphics/TextureLoader.hpp"
 
@@ -50,7 +51,14 @@ public:
 
 	static constexpr GuidelinesAspectRatio DefaultGuidelinesAspectRatio{GuidelinesAspectRatio::SixteenNine};
 
-	GeneralSettings() = default;
+	static const inline QString StudiomdlCompilerFileNameKey{"ExternalPrograms/StudioMdlCompilerFileName"};
+	static const inline QString StudiomdlDecompilerFileNameKey{"ExternalPrograms/StudioMdlDecompilerFileName"};
+	static const inline QString XashModelViewerFileNameKey{"ExternalPrograms/XashModelViewerFileName"};
+
+	GeneralSettings(QSettings* settings)
+		: _settings(settings)
+	{
+	}
 
 	static bool ShouldUseSingleInstance(QSettings& settings)
 	{
@@ -258,6 +266,36 @@ public:
 		}
 	}
 
+	QString GetStudiomdlCompilerFileName() const
+	{
+		return _settings->value(StudiomdlCompilerFileNameKey).toString();
+	}
+
+	void SetStudiomdlCompilerFileName(const QString& fileName)
+	{
+		_settings->setValue(StudiomdlCompilerFileNameKey, fileName);
+	}
+
+	QString GetStudiomdlDecompilerFileName() const
+	{
+		return _settings->value(StudiomdlDecompilerFileNameKey).toString();
+	}
+
+	void SetStudiomdlDecompilerFileName(const QString& fileName)
+	{
+		_settings->setValue(StudiomdlDecompilerFileNameKey, fileName);
+	}
+
+	QString GetXashModelViewerFileName() const
+	{
+		return _settings->value(XashModelViewerFileNameKey).toString();
+	}
+
+	void SetXashModelViewerFileName(const QString& fileName)
+	{
+		_settings->setValue(XashModelViewerFileNameKey, fileName);
+	}
+
 signals:
 	void TickRateChanged(int value);
 
@@ -277,6 +315,8 @@ public:
 	GuidelinesAspectRatio GuidelinesAspectRatio{DefaultGuidelinesAspectRatio};
 
 private:
+	QSettings* const _settings;
+
 	bool _useSingleInstance{DefaultUseSingleInstance};
 
 	int _tickRate{DefaultTickRate};

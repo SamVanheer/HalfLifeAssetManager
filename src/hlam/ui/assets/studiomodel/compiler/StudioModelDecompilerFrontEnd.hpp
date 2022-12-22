@@ -5,17 +5,12 @@
 
 #include "ui/assets/studiomodel/compiler/CommandLineFrontEnd.hpp"
 
-class StudioModelSettings;
-
 namespace studiomodel
 {
 class StudioModelDecompilerFrontEnd final : public CommandLineFrontEnd
 {
 public:
-	StudioModelDecompilerFrontEnd(EditorContext* editorContext, StudioModelSettings* studioModelSettings);
+	StudioModelDecompilerFrontEnd(EditorContext* editorContext);
 	~StudioModelDecompilerFrontEnd();
-
-private:
-	StudioModelSettings* const _studioModelSettings;
 };
 }

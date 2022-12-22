@@ -45,13 +45,13 @@ QMenu* StudioModelAssetProvider::CreateToolMenu(EditorContext* editorContext)
 
 	menu->addAction("Compile Model...", [=]
 		{
-			StudioModelCompilerFrontEnd compiler{editorContext, GetStudioModelSettings()};
+			StudioModelCompilerFrontEnd compiler{editorContext};
 	compiler.exec();
 		});
 
 	menu->addAction("Decompile Model...", [=]
 		{
-			StudioModelDecompilerFrontEnd decompiler{editorContext, GetStudioModelSettings()};
+			StudioModelDecompilerFrontEnd decompiler{editorContext};
 	decompiler.exec();
 		});
 
@@ -92,7 +92,7 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 		qCDebug(HLAMStudioModel) << "Model" << fileName << "is a Xash model";
 
 		const auto result = editorContext->TryLaunchExternalProgram(
-			_studioModelSettings->XashModelViewerFileName,
+			editorContext->GetGeneralSettings()->GetXashModelViewerFileName(),
 			QStringList(fileName),
 			"This is a Xash model which requires it to be loaded in Xash Model Viewer.");
 

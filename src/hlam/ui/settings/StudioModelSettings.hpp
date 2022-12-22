@@ -32,9 +32,6 @@ public:
 		_activateTextureViewWhenTexturesPanelOpened = settings.value(
 			"ActivateTextureViewWhenTexturesPanelOpened", DefaultActivateTextureViewWhenTexturesPanelOpened).toBool();
 		_floorLength = std::clamp(settings.value("FloorLength", DefaultFloorLength).toInt(), MinimumFloorLength, MaximumFloorLength);
-		_studiomdlCompilerFileName = settings.value("CompilerFileName").toString();
-		_studiomdlDecompilerFileName = settings.value("DecompilerFileName").toString();
-		XashModelViewerFileName = settings.value("XashModelViewerFileName").toString();
 		settings.endGroup();
 	}
 
@@ -44,9 +41,6 @@ public:
 		settings.setValue("AutodetectViewmodels", _autodetectViewModels);
 		settings.setValue("ActivateTextureViewWhenTexturesPanelOpened", _activateTextureViewWhenTexturesPanelOpened);
 		settings.setValue("FloorLength", _floorLength);
-		settings.setValue("CompilerFileName", _studiomdlCompilerFileName);
-		settings.setValue("DecompilerFileName", _studiomdlDecompilerFileName);
-		settings.setValue("XashModelViewerFileName", XashModelViewerFileName);
 		settings.endGroup();
 	}
 
@@ -74,29 +68,9 @@ public:
 		_floorLength = value;
 	}
 
-	QString GetStudiomdlCompilerFileName() const { return _studiomdlCompilerFileName; }
-
-	void SetStudiomdlCompilerFileName(const QString& fileName)
-	{
-		_studiomdlCompilerFileName = fileName;
-	}
-
-	QString GetStudiomdlDecompilerFileName() const { return _studiomdlDecompilerFileName; }
-
-	void SetStudiomdlDecompilerFileName(const QString& fileName)
-	{
-		_studiomdlDecompilerFileName = fileName;
-	}
-
-	QString XashModelViewerFileName;
-
 private:
 	bool _autodetectViewModels{DefaultAutodetectViewmodels};
 	bool _activateTextureViewWhenTexturesPanelOpened{DefaultActivateTextureViewWhenTexturesPanelOpened};
 
 	int _floorLength = DefaultFloorLength;
-
-	// TODO: remove getters and setters
-	QString _studiomdlCompilerFileName;
-	QString _studiomdlDecompilerFileName;
 };

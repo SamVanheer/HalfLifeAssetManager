@@ -31,6 +31,7 @@
 #include "ui/assets/Assets.hpp"
 
 #include "ui/options/OptionsPageColors.hpp"
+#include "ui/options/OptionsPageExternalPrograms.hpp"
 #include "ui/options/OptionsPageGameConfigurations.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/options/OptionsPageRegistry.hpp"
@@ -325,7 +326,7 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 	std::unique_ptr<QSettings>&& settings, std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext)
 {
 	const auto colorSettings{std::make_shared<ColorSettings>()};
-	const auto generalSettings{std::make_shared<GeneralSettings>()};
+	const auto generalSettings{std::make_shared<GeneralSettings>(settings.get())};
 	const auto gameConfigurationsSettings{std::make_shared<GameConfigurationsSettings>()};
 	const auto recentFilesSettings{std::make_shared<RecentFilesSettings>()};
 	const auto styleSettings{std::make_shared<StyleSettings>()};
@@ -351,6 +352,7 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGeneral>(generalSettings, recentFilesSettings));
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageColors>(colorSettings));
+	optionsPageRegistry->AddPage(std::make_unique<OptionsPageExternalPrograms>(generalSettings));
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGameConfigurations>(gameConfigurationsSettings));
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageStyle>(styleSettings));
 
