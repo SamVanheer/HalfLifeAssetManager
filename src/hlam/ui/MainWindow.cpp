@@ -53,6 +53,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	: QMainWindow()
 	, _editorContext(editorContext)
 {
+	_editorContext->SetMainWindow(this);
+
 	_ui.setupUi(this);
 
 	this->setAttribute(Qt::WidgetAttribute::WA_DeleteOnClose);
@@ -310,7 +312,10 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	_editorContext->StartTimer();
 }
 
-MainWindow::~MainWindow() = default;
+MainWindow::~MainWindow()
+{
+	_editorContext->SetMainWindow(nullptr);
+}
 
 void MainWindow::LoadSettings()
 {

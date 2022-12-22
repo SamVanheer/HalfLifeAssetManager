@@ -185,8 +185,6 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		_mainWindow = new MainWindow(_editorContext.get());
 
-		_editorContext->SetMainWindow(_mainWindow);
-
 		if (!commandLine.FileName.isEmpty())
 		{
 			_editorContext->TryLoadAsset(commandLine.FileName);
@@ -450,10 +448,6 @@ void ToolApplication::OnExit()
 	CallPlugins(&IAssetManagerPlugin::Shutdown);
 
 	_plugins.clear();
-
-	_editorContext->SetMainWindow(nullptr);
-
-	// TODO: destroy main window
 
 	_singleInstance.reset();
 	_editorContext.reset();
