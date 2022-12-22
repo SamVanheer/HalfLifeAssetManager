@@ -113,7 +113,7 @@ int ToolApplication::Run(int argc, char* argv[])
 {
 	try
 	{
-		const QString programName{"Half-Life Asset Manager"};
+		const QString programName{QStringLiteral("Half-Life Asset Manager")};
 
 		ConfigureApplication(programName);
 
@@ -208,7 +208,7 @@ int ToolApplication::Run(int argc, char* argv[])
 void ToolApplication::ConfigureApplication(const QString& programName)
 {
 	QApplication::setOrganizationName(programName);
-	QApplication::setOrganizationDomain("https://github.com/Solokiller/HL_Tools");
+	QApplication::setOrganizationDomain(QStringLiteral("https://github.com/Solokiller/HL_Tools"));
 	QApplication::setApplicationName(programName);
 	QApplication::setApplicationDisplayName(programName);
 

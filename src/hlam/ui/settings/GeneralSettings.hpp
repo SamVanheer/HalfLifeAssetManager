@@ -52,10 +52,14 @@ public:
 
 	static constexpr GuidelinesAspectRatio DefaultGuidelinesAspectRatio{GuidelinesAspectRatio::SixteenNine};
 
-	static const inline QString StudiomdlCompilerFileNameKey{"ExternalPrograms/StudioMdlCompilerFileName"};
-	static const inline QString StudiomdlDecompilerFileNameKey{"ExternalPrograms/StudioMdlDecompilerFileName"};
-	static const inline QString XashModelViewerFileNameKey{"ExternalPrograms/XashModelViewerFileName"};
-	static const inline QString Quake1ModelViewerFileNameKey{"ExternalPrograms/Quake1ModelViewerFileName"};
+	static const inline QString StudiomdlCompilerFileNameKey{
+		QStringLiteral("ExternalPrograms/StudioMdlCompilerFileName")};
+	static const inline QString StudiomdlDecompilerFileNameKey{
+		QStringLiteral("ExternalPrograms/StudioMdlDecompilerFileName")};
+	static const inline QString XashModelViewerFileNameKey{
+		QStringLiteral("ExternalPrograms/XashModelViewerFileName")};
+	static const inline QString Quake1ModelViewerFileNameKey{
+		QStringLiteral("ExternalPrograms/Quake1ModelViewerFileName")};
 
 	GeneralSettings(QSettings* settings)
 		: _settings(settings)
