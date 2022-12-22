@@ -121,7 +121,7 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		auto settings{CreateSettings(programName, commandLine.IsPortable)};
 
-		ConfigureOpenGL();
+		ConfigureOpenGL(*settings);
 
 		QApplication app(argc, argv);
 
@@ -269,7 +269,7 @@ std::unique_ptr<QSettings> ToolApplication::CreateSettings(const QString& progra
 	}
 }
 
-void ToolApplication::ConfigureOpenGL()
+void ToolApplication::ConfigureOpenGL(QSettings& settings)
 {
 	//Neither OpenGL ES nor Software OpenGL will work here
 	QApplication::setAttribute(Qt::ApplicationAttribute::AA_UseDesktopOpenGL, true);
@@ -297,6 +297,7 @@ void ToolApplication::ConfigureOpenGL()
 	defaultFormat.setGreenBufferSize(4);
 	defaultFormat.setBlueBufferSize(4);
 	defaultFormat.setAlphaBufferSize(4);
+	defaultFormat.setSwapInterval(GeneralSettings::ShouldEnableVSync(settings) ? 1 : 0);
 
 	qCDebug(logging::HLAM) << "Configuring OpenGL for" << defaultFormat;
 

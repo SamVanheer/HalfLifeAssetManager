@@ -51,7 +51,7 @@ private:
 
 	std::unique_ptr<QSettings> CreateSettings(const QString& programName, bool isPortable);
 
-	void ConfigureOpenGL();
+	void ConfigureOpenGL(QSettings& settings);
 
 	bool CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings);
 

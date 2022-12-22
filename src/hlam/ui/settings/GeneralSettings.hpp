@@ -41,6 +41,7 @@ public:
 	static constexpr bool DefaultPlaySounds{true};
 	static constexpr bool DefaultFramerateAffectsPitch{false};
 
+	static constexpr bool DefaultEnableVSync{true};
 	static constexpr bool DefaultPowerOf2Textures{false};
 
 	static constexpr int DefaultMSAALevel{0};
@@ -64,6 +65,11 @@ public:
 	static bool ShouldUseSingleInstance(QSettings& settings)
 	{
 		return settings.value("Startup/UseSingleInstance", DefaultUseSingleInstance).toBool();
+	}
+
+	static bool ShouldEnableVSync(QSettings& settings)
+	{
+		return settings.value("Graphics/EnableVSync", DefaultEnableVSync).toBool();
 	}
 
 	void LoadSettings(QSettings& settings)
@@ -224,6 +230,11 @@ public:
 
 	bool PlaySounds = DefaultPlaySounds;
 	bool FramerateAffectsPitch = DefaultFramerateAffectsPitch;
+
+	void SetEnableVSync(bool value)
+	{
+		_settings->setValue("Graphics/EnableVSync", value);
+	}
 
 	bool ShouldResizeTexturesToPowerOf2() const { return _powerOf2Textures; }
 

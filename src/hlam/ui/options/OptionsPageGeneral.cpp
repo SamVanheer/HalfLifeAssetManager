@@ -60,6 +60,7 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 	_ui.MouseWheelSpeedSlider->setValue(_generalSettings->GetMouseWheelSpeed());
 	_ui.MouseWheelSpeedSpinner->setValue(_generalSettings->GetMouseWheelSpeed());
 	_ui.EnableAudioPlayback->setChecked(_generalSettings->ShouldEnableAudioPlayback());
+	_ui.EnableVerticalSync->setChecked(GeneralSettings::ShouldEnableVSync(*settings));
 
 	connect(_ui.MouseSensitivitySlider, &QSlider::valueChanged, _ui.MouseSensitivitySpinner, &QSpinBox::setValue);
 	connect(_ui.MouseSensitivitySpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.MouseSensitivitySlider, &QSlider::setValue);
@@ -84,6 +85,7 @@ void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 	_generalSettings->SetMouseSensitivity(_ui.MouseSensitivitySlider->value());
 	_generalSettings->SetMouseWheelSpeed(_ui.MouseWheelSpeedSlider->value());
 	_generalSettings->SetEnableAudioPlayback(_ui.EnableAudioPlayback->isChecked());
+	_generalSettings->SetEnableVSync(_ui.EnableVerticalSync->isChecked());
 
 	_generalSettings->SaveSettings(settings);
 	_recentFilesSettings->SaveSettings(settings);
