@@ -49,6 +49,7 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 	_ui.PauseAnimationsOnTimelineClick->setChecked(_generalSettings->PauseAnimationsOnTimelineClick);
 	_ui.AllowTabCloseWithMiddleClick->setChecked(
 		settings->value("General/AllowTabCloseWithMiddleClick", GeneralSettings::DefaultAllowTabCloseWithMiddleClick).toBool());
+	_ui.OneAssetAtATime->setChecked(_generalSettings->OneAssetAtATime);
 	_ui.MaxRecentFiles->setValue(_recentFilesSettings->GetMaxRecentFiles());
 	_ui.TickRate->setValue(_generalSettings->GetTickRate());
 	_ui.InvertMouseX->setChecked(_generalSettings->ShouldInvertMouseX());
@@ -73,6 +74,7 @@ void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 	_generalSettings->SetUseSingleInstance(_ui.UseSingleInstance->isChecked());
 	_generalSettings->PauseAnimationsOnTimelineClick = _ui.PauseAnimationsOnTimelineClick->isChecked();
 	settings.setValue("General/AllowTabCloseWithMiddleClick", _ui.AllowTabCloseWithMiddleClick->isChecked());
+	_generalSettings->OneAssetAtATime = _ui.OneAssetAtATime->isChecked();
 	_recentFilesSettings->SetMaxRecentFiles(_ui.MaxRecentFiles->value());
 	_generalSettings->SetTickRate(_ui.TickRate->value());
 	_generalSettings->SetInvertMouseX(_ui.InvertMouseX->isChecked());

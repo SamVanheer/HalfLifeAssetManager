@@ -21,6 +21,7 @@ public:
 	static constexpr bool DefaultPauseAnimationsOnTimelineClick{true};
 	static constexpr bool DefaultTransparentScreenshots{false};
 	static constexpr bool DefaultAllowTabCloseWithMiddleClick{false};
+	static constexpr bool DefaultOneAssetAtATime{false};
 
 	static constexpr int DefaultTickRate{60};
 	static constexpr int MinimumTickRate{1};
@@ -61,6 +62,7 @@ public:
 
 		settings.beginGroup("General");
 		PauseAnimationsOnTimelineClick = settings.value("PauseAnimationsOnTimelineClick", DefaultPauseAnimationsOnTimelineClick).toBool();
+		OneAssetAtATime = settings.value("OneAssetAtATime", DefaultOneAssetAtATime).toBool();
 		_tickRate = std::clamp(settings.value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
 
 		GuidelinesAspectRatio = static_cast<::GuidelinesAspectRatio>(settings.value(
@@ -117,6 +119,7 @@ public:
 
 		settings.beginGroup("General");
 		settings.setValue("PauseAnimationsOnTimelineClick", PauseAnimationsOnTimelineClick);
+		settings.setValue("OneAssetAtATime", OneAssetAtATime);
 		settings.setValue("TickRate", _tickRate);
 		settings.setValue("GuidelinesAspectRatio", static_cast<int>(GuidelinesAspectRatio));
 		settings.endGroup();
@@ -263,6 +266,7 @@ signals:
 
 public:
 	bool PauseAnimationsOnTimelineClick{DefaultPauseAnimationsOnTimelineClick};
+	bool OneAssetAtATime{DefaultOneAssetAtATime};
 	bool TransparentScreenshots{DefaultTransparentScreenshots};
 
 	GuidelinesAspectRatio GuidelinesAspectRatio{DefaultGuidelinesAspectRatio};

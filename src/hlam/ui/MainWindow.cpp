@@ -351,7 +351,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	{
 		const auto asset = GetAsset(i);
 
-		if (!VerifyNoUnsavedChanges(asset))
+		if (!VerifyNoUnsavedChanges(asset, true))
 		{
 			event->ignore();
 			return;
@@ -446,7 +446,7 @@ bool MainWindow::SaveAsset(Asset* asset)
 	return true;
 }
 
-bool MainWindow::VerifyNoUnsavedChanges(Asset* asset)
+bool MainWindow::VerifyNoUnsavedChanges(Asset* asset, bool allowCancel)
 {
 	assert(asset);
 
@@ -455,11 +455,18 @@ bool MainWindow::VerifyNoUnsavedChanges(Asset* asset)
 		return true;
 	}
 
+	QMessageBox::StandardButtons buttons = QMessageBox::StandardButton::Save | QMessageBox::StandardButton::Discard;
+
+	if (allowCancel)
+	{
+		buttons |= QMessageBox::StandardButton::Cancel;
+	}
+
 	const QMessageBox::StandardButton action = QMessageBox::question(
 		this,
 		{},
 		QString{"Save changes made to \"%1\"?"}.arg(asset->GetFileName()),
-		QMessageBox::StandardButton::Save | QMessageBox::StandardButton::Discard | QMessageBox::StandardButton::Cancel,
+		buttons,
 		QMessageBox::StandardButton::Save);
 
 	switch (action)
@@ -471,8 +478,13 @@ bool MainWindow::VerifyNoUnsavedChanges(Asset* asset)
 	}
 }
 
-bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges)
+bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowCancel)
 {
+	if (index >= _assetTabs->count())
+	{
+		return true;
+	}
+
 	if (_fullscreenWidget)
 	{
 		//Always exit the fullscreen window if we're getting a close request
@@ -484,7 +496,7 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges)
 	{
 		const auto asset = GetAsset(index);
 
-		if (verifyUnsavedChanges && !VerifyNoUnsavedChanges(asset))
+		if (verifyUnsavedChanges && !VerifyNoUnsavedChanges(asset, allowCancel))
 		{
 			//User cancelled or an error occurred
 			return false;
@@ -508,7 +520,7 @@ void MainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
 	setWindowModified(hasUnsavedChanges);
 }
 
-bool MainWindow::TryLoadAsset(QString fileName)
+LoadResult MainWindow::TryLoadAsset(QString fileName)
 {
 	fileName = fileName.trimmed();
 
@@ -516,7 +528,7 @@ bool MainWindow::TryLoadAsset(QString fileName)
 	{
 		qCDebug(logging::HLAM) << "Asset filename is empty";
 		QMessageBox::critical(this, "Error loading asset", "Asset filename is empty");
-		return false;
+		return LoadResult::Failed;
 	}
 
 	const QFileInfo fileInfo{fileName};
@@ -529,7 +541,7 @@ bool MainWindow::TryLoadAsset(QString fileName)
 	{
 		qCDebug(logging::HLAM) << "Asset" << fileName << "does not exist";
 		QMessageBox::critical(this, "Error loading asset", QString{"Asset \"%1\" does not exist"}.arg(fileName));
-		return false;
+		return LoadResult::Failed;
 	}
 
 	// First check if it's already loaded.
@@ -547,7 +559,16 @@ bool MainWindow::TryLoadAsset(QString fileName)
 				_editorContext->GetRecentFiles()->Add(fileName);
 			}
 
-			return result;
+			return result ? LoadResult::Success : LoadResult::Cancelled;
+		}
+	}
+
+	if (_editorContext->GetGeneralSettings()->OneAssetAtATime)
+	{
+		if (!TryCloseAsset(0, true))
+		{
+			//User canceled, abort load
+			return LoadResult::Cancelled;
 		}
 	}
 
@@ -582,7 +603,7 @@ bool MainWindow::TryLoadAsset(QString fileName)
 
 			qCDebug(logging::HLAM) << "Loaded asset" << fileName;
 
-			return true;
+			return LoadResult::Success;
 		}
 		else
 		{
@@ -595,7 +616,7 @@ bool MainWindow::TryLoadAsset(QString fileName)
 		QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\n%2"}.arg(fileName).arg(e.what()));
 	}
 
-	return false;
+	return LoadResult::Failed;
 }
 
 void MainWindow::SyncSettings()
@@ -609,6 +630,14 @@ void MainWindow::SyncSettings()
 	else
 	{
 		_assetTabs->tabBar()->removeEventFilter(this);
+	}
+
+	if (_editorContext->GetGeneralSettings()->OneAssetAtATime)
+	{
+		while (_assetTabs->count() > 1)
+		{
+			TryCloseAsset(1, true, false);
+		}
 	}
 }
 
@@ -747,7 +776,7 @@ void MainWindow::OnOpenRecentFile()
 
 	const QString fileName{action->text()};
 
-	if (!TryLoadAsset(fileName))
+	if (TryLoadAsset(fileName) == LoadResult::Failed)
 	{
 		_editorContext->GetRecentFiles()->Remove(fileName);
 	}
@@ -805,7 +834,7 @@ bool MainWindow::OnRefreshAsset()
 {
 	if (auto asset = GetCurrentAsset(); asset)
 	{
-		if (!VerifyNoUnsavedChanges(asset))
+		if (!VerifyNoUnsavedChanges(asset, true))
 		{
 			//User canceled, abort refresh
 			return false;

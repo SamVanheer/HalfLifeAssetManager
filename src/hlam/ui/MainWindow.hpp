@@ -19,6 +19,13 @@ class GameConfiguration;
 class GameEnvironment;
 class QActionGroup;
 
+enum class LoadResult
+{
+	Success = 0,
+	Failed,
+	Cancelled
+};
+
 class MainWindow final : public QMainWindow
 {
 	Q_OBJECT
@@ -40,16 +47,16 @@ private:
 
 	bool SaveAsset(Asset* asset);
 
-	bool VerifyNoUnsavedChanges(Asset* asset);
+	bool VerifyNoUnsavedChanges(Asset* asset, bool allowCancel);
 
-	bool TryCloseAsset(int index, bool verifyUnsavedChanges);
+	bool TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowCancel = true);
 
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
 
 	void SetupFileSystem(std::pair<GameEnvironment*, GameConfiguration*> activeConfiguration);
 
 private slots:
-	bool TryLoadAsset(QString fileName);
+	LoadResult TryLoadAsset(QString fileName);
 
 	void SyncSettings();
 
