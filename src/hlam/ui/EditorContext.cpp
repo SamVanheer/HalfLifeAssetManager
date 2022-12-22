@@ -122,7 +122,8 @@ void EditorContext::SetPath(const QString& pathName, const QString& path)
 	SetSavedPath(*_settings, pathName, path);
 }
 
-LaunchExternalProgramResult EditorContext::TryLaunchExternalProgram(QString exeFileName, const QStringList& arguments)
+LaunchExternalProgramResult EditorContext::TryLaunchExternalProgram(
+	QString exeFileName, const QStringList& arguments, const QString& message)
 {
 	exeFileName = exeFileName.trimmed();
 
@@ -147,7 +148,7 @@ LaunchExternalProgramResult EditorContext::TryLaunchExternalProgram(QString exeF
 	if (_generalSettings->PromptExternalProgramLaunch)
 	{
 		action = QMessageBox::question(GetMainWindow(), "Launch External Program",
-			QString{"Launch \"%1\"?"}.arg(info.fileName()),
+			QString{"%1\nLaunch \"%2\"?"}.arg(message).arg(info.fileName()),
 			QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::Cancel);
 	}
 

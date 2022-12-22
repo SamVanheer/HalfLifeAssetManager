@@ -91,8 +91,10 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 	{
 		qCDebug(HLAMStudioModel) << "Model" << fileName << "is a Xash model";
 
-		const auto result = editorContext->TryLaunchExternalProgram(_studioModelSettings->XashModelViewerFileName,
-			QStringList(fileName));
+		const auto result = editorContext->TryLaunchExternalProgram(
+			_studioModelSettings->XashModelViewerFileName,
+			QStringList(fileName),
+			"This is a Xash model which requires it to be loaded in Xash Model Viewer.");
 
 		if (result != LaunchExternalProgramResult::Failed)
 		{

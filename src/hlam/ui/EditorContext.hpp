@@ -107,7 +107,8 @@ public:
 	*	@brief Try to launch an external program.
 	*	The user is asked what to do.
 	*/
-	LaunchExternalProgramResult TryLaunchExternalProgram(QString exeFileName, const QStringList& arguments);
+	LaunchExternalProgramResult TryLaunchExternalProgram(
+		QString exeFileName, const QStringList& arguments, const QString& message);
 
 signals:
 	/**
