@@ -32,7 +32,8 @@ void AssetProviderRegistry::AddProvider(std::unique_ptr<AssetProvider>&& provide
 	_providers.push_back(std::move(provider));
 }
 
-std::unique_ptr<Asset> AssetProviderRegistry::Load(EditorContext* editorContext, const QString& fileName) const
+std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> AssetProviderRegistry::Load(
+	EditorContext* editorContext, const QString& fileName) const
 {
 	std::unique_ptr<FILE, decltype(::fclose)*> file{utf8_exclusive_read_fopen(fileName.toStdString().c_str(), true), &::fclose};
 

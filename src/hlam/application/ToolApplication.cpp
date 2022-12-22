@@ -183,6 +183,8 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		_mainWindow = new MainWindow(_editorContext.get());
 
+		_editorContext->SetMainWindow(_mainWindow);
+
 		if (!fileName.isEmpty())
 		{
 			_editorContext->TryLoadAsset(fileName);
@@ -439,12 +441,16 @@ void ToolApplication::OnExit()
 
 	settings->sync();
 
-	_singleInstance.reset();
-	_editorContext.reset();
-
 	CallPlugins(&IAssetManagerPlugin::Shutdown);
 
 	_plugins.clear();
+
+	_editorContext->SetMainWindow(nullptr);
+
+	// TODO: destroy main window
+
+	_singleInstance.reset();
+	_editorContext.reset();
 }
 
 void ToolApplication::OnFileNameReceived(const QString& fileName)

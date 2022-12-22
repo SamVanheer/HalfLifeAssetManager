@@ -13,6 +13,12 @@ EditableStudioModel ConvertToEditable(const StudioModel& studioModel);
 StudioModel ConvertFromEditable(const std::filesystem::path& fileName, const EditableStudioModel& studioModel);
 
 /**
+*	@brief Detects whether the given model is a Xash model.
+*	Xash models have bone weights
+*/
+bool IsXashModel(const StudioModel& studioModel);
+
+/**
 *	Returns the string representation for a studio control value.
 *	@param iControl Value containing a STUDIO_* control bit.
 *	@return String representation for the control, or nullptr.

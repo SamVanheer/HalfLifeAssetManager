@@ -20,6 +20,8 @@ class IFileSystem;
 class ISoundSystem;
 class OptionsPageRegistry;
 class QOpenGLFunctions_1_1;
+class QStringList;
+class QWidget;
 class RecentFilesSettings;
 class WorldTime;
 
@@ -28,6 +30,13 @@ namespace graphics
 class IGraphicsContext;
 class TextureLoader;
 }
+
+enum class LaunchExternalProgramResult
+{
+	Success = 0,
+	Failed,
+	Cancelled
+};
 
 /**
 *	@brief Used to communicate between the main window and edit widgets
@@ -81,11 +90,24 @@ public:
 
 	graphics::TextureLoader* GetTextureLoader() { return _textureLoader.get(); }
 
+	QWidget* GetMainWindow() const { return _mainWindow; }
+
+	void SetMainWindow(QWidget* widget)
+	{
+		_mainWindow = widget;
+	}
+
 	void StartTimer();
 
 	QString GetPath(const QString& pathName) const;
 
 	void SetPath(const QString& pathName, const QString& path);
+
+	/**
+	*	@brief Try to launch an external program.
+	*	The user is asked what to do.
+	*/
+	LaunchExternalProgramResult TryLaunchExternalProgram(QString exeFileName, const QStringList& arguments);
 
 signals:
 	/**
@@ -131,4 +153,6 @@ private:
 	const std::unique_ptr<IFileSystem> _fileSystem;
 	const std::unique_ptr<ISoundSystem> _soundSystem;
 	const std::unique_ptr<WorldTime> _worldTime;
+
+	QWidget* _mainWindow{};
 };

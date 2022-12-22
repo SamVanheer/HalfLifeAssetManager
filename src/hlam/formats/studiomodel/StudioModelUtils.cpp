@@ -1297,6 +1297,15 @@ StudioModel ConvertFromEditable(const std::filesystem::path& fileName, const Edi
 	return StudioModel{studio_ptr<studiohdr_t>{reinterpret_cast<studiohdr_t*>(studioHeader.release())}, {}, {}, false};
 }
 
+bool IsXashModel(const StudioModel& studioModel)
+{
+	const auto header = studioModel.GetStudioHeader();
+
+	// Xash models store the offset to the second header in this variable.
+	// If it's not zero this is a Xash model.
+	return header->soundtable != 0;
+}
+
 const char* ControlToString(const int iControl)
 {
 	switch (iControl)

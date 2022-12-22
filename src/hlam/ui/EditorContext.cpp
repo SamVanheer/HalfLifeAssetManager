@@ -4,7 +4,10 @@
 #include <iterator>
 #include <stdexcept>
 
+#include <QFileInfo>
+#include <QMessageBox>
 #include <QOpenGLFunctions_1_1>
+#include <QProcess>
 
 #include <spdlog/logger.h>
 
@@ -117,6 +120,53 @@ QString EditorContext::GetPath(const QString& pathName) const
 void EditorContext::SetPath(const QString& pathName, const QString& path)
 {
 	SetSavedPath(*_settings, pathName, path);
+}
+
+LaunchExternalProgramResult EditorContext::TryLaunchExternalProgram(QString exeFileName, const QStringList& arguments)
+{
+	exeFileName = exeFileName.trimmed();
+
+	if (exeFileName.isEmpty())
+	{
+		return LaunchExternalProgramResult::Failed;
+	}
+
+	const QFileInfo info{exeFileName};
+
+	if (!info.exists())
+	{
+		const QString errorMessage = QString{
+			"The external program \"%1\" does not exist. Check the program settings to ensure the path is correct."}
+				.arg(exeFileName);
+		QMessageBox::critical(GetMainWindow(), "Error Launching External Program", errorMessage);
+		return LaunchExternalProgramResult::Failed;
+	}
+
+	QMessageBox::StandardButton action = QMessageBox::StandardButton::Yes;
+
+	if (_generalSettings->PromptExternalProgramLaunch)
+	{
+		action = QMessageBox::question(GetMainWindow(), "Launch External Program",
+			QString{"Launch \"%1\"?"}.arg(info.fileName()),
+			QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::Cancel);
+	}
+
+	if (action == QMessageBox::StandardButton::Cancel)
+	{
+		return LaunchExternalProgramResult::Cancelled;
+	}
+
+	// Make sure the working directory is the exe location to avoid bugs.
+	if (!QProcess::startDetached(exeFileName, arguments, info.absolutePath()))
+	{
+		QMessageBox::critical(GetMainWindow(), "Error Launching External Program", 
+			QString{"The external program \"%1\" could not be launched.\nArguments:\n%2"}
+				.arg(exeFileName)
+				.arg(arguments.join("\n")));
+	}
+
+	// If process start failed we've already logged an error, caller doesn't need to handle it.
+	return LaunchExternalProgramResult::Success;
 }
 
 void EditorContext::OnTimerTick()

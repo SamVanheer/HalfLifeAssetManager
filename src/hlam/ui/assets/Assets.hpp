@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include <QFlags>
@@ -95,6 +96,11 @@ private:
 	bool _isActive{false};
 };
 
+struct AssetLoadInExternalProgram
+{
+	bool Loaded = false;
+};
+
 /**
 *	@brief Provides a means of loading and saving assets
 */
@@ -120,7 +126,8 @@ public:
 	virtual bool CanLoad(const QString& fileName, FILE* file) const = 0;
 
 	//TODO: pass a filesystem object to resolve additional file locations with
-	virtual std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) = 0;
+	virtual std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
+		EditorContext* editorContext, const QString& fileName, FILE* file) = 0;
 };
 
 /**
@@ -135,7 +142,8 @@ public:
 
 	virtual void AddProvider(std::unique_ptr<AssetProvider>&& provider) = 0;
 
-	virtual std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const = 0;
+	virtual std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
+		EditorContext* editorContext, const QString& fileName) const = 0;
 };
 
 class AssetProviderRegistry final : public IAssetProviderRegistry
@@ -150,7 +158,8 @@ public:
 
 	void AddProvider(std::unique_ptr<AssetProvider>&& provider) override;
 
-	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName) const override;
+	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
+		EditorContext* editorContext, const QString& fileName) const override;
 
 private:
 	std::vector<std::unique_ptr<AssetProvider>> _providers;

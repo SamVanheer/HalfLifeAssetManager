@@ -40,6 +40,7 @@ private slots:
 
 	void OnBrowseCompiler();
 	void OnBrowseDecompiler();
+	void OnBrowseXashModelViewer();
 
 private:
 	Ui_OptionsPageStudioModel _ui;

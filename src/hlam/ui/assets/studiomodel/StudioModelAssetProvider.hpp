@@ -52,7 +52,8 @@ public:
 
 	bool CanLoad(const QString& fileName, FILE* file) const override;
 
-	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) override;
+	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
+		EditorContext* editorContext, const QString& fileName, FILE* file) override;
 
 	StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
 
@@ -122,7 +123,8 @@ public:
 		return _assetProvider->CanLoad(fileName, file);
 	}
 
-	std::unique_ptr<Asset> Load(EditorContext* editorContext, const QString& fileName, FILE* file) override
+	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
+		EditorContext* editorContext, const QString& fileName, FILE* file) override
 	{
 		return _assetProvider->Load(editorContext, fileName, file);
 	}

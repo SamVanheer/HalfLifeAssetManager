@@ -34,6 +34,7 @@ public:
 		_floorLength = std::clamp(settings.value("FloorLength", DefaultFloorLength).toInt(), MinimumFloorLength, MaximumFloorLength);
 		_studiomdlCompilerFileName = settings.value("CompilerFileName").toString();
 		_studiomdlDecompilerFileName = settings.value("DecompilerFileName").toString();
+		XashModelViewerFileName = settings.value("XashModelViewerFileName").toString();
 		settings.endGroup();
 	}
 
@@ -45,6 +46,7 @@ public:
 		settings.setValue("FloorLength", _floorLength);
 		settings.setValue("CompilerFileName", _studiomdlCompilerFileName);
 		settings.setValue("DecompilerFileName", _studiomdlDecompilerFileName);
+		settings.setValue("XashModelViewerFileName", XashModelViewerFileName);
 		settings.endGroup();
 	}
 
@@ -86,12 +88,15 @@ public:
 		_studiomdlDecompilerFileName = fileName;
 	}
 
+	QString XashModelViewerFileName;
+
 private:
 	bool _autodetectViewModels{DefaultAutodetectViewmodels};
 	bool _activateTextureViewWhenTexturesPanelOpened{DefaultActivateTextureViewWhenTexturesPanelOpened};
 
 	int _floorLength = DefaultFloorLength;
 
+	// TODO: remove getters and setters
 	QString _studiomdlCompilerFileName;
 	QString _studiomdlDecompilerFileName;
 };

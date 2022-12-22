@@ -14,12 +14,16 @@
 #include "qt/QtUtilities.hpp"
 
 #include "ui/EditorContext.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelAssetProvider.hpp"
 #include "ui/assets/studiomodel/StudioModelEditWidget.hpp"
+
 #include "ui/assets/studiomodel/compiler/StudioModelCompilerFrontEnd.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelDecompilerFrontEnd.hpp"
+
 #include "ui/settings/GeneralSettings.hpp"
+#include "ui/settings/StudioModelSettings.hpp"
 
 namespace studiomodel
 {
@@ -69,7 +73,8 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) cons
 	return studiomdl::IsStudioModel(file);
 }
 
-std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorContext, const QString& fileName, FILE* file)
+std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAssetProvider::Load(
+	EditorContext* editorContext, const QString& fileName, FILE* file)
 {
 	if (!_initialized)
 	{
@@ -81,6 +86,23 @@ std::unique_ptr<Asset> StudioModelAssetProvider::Load(EditorContext* editorConte
 
 	const auto filePath = std::filesystem::u8path(fileName.toStdString());
 	auto studioModel = studiomdl::LoadStudioModel(filePath, file);
+
+	if (studiomdl::IsXashModel(*studioModel))
+	{
+		qCDebug(HLAMStudioModel) << "Model" << fileName << "is a Xash model";
+
+		const auto result = editorContext->TryLaunchExternalProgram(_studioModelSettings->XashModelViewerFileName,
+			QStringList(fileName));
+
+		if (result != LaunchExternalProgramResult::Failed)
+		{
+			return AssetLoadInExternalProgram{.Loaded = result == LaunchExternalProgramResult::Success};
+		}
+		
+		throw AssetException(std::string{"File \""} + fileName.toStdString()
+			+ "\" is a Xash model and cannot be opened by this program."
+			+ "\nSet the Xash Model Viewer executable setting to open the model through that program instead.");
+	}
 
 	auto editableStudioModel = studiomdl::ConvertToEditable(*studioModel);
 

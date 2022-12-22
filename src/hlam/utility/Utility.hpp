@@ -39,3 +39,6 @@ TFlags SetFlags(TFlags flags, TFlag flag, bool set = true)
 		return flags & ~convertedValue;
 	}
 }
+
+template<class>
+inline constexpr bool always_false_v = false;

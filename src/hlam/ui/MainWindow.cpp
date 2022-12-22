@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -42,6 +43,8 @@
 #include "ui/settings/GameConfigurationsSettings.hpp"
 #include "ui/settings/GeneralSettings.hpp"
 #include "ui/settings/RecentFilesSettings.hpp"
+
+#include "utility/Utility.hpp"
 
 constexpr std::string_view TabWidgetAssetProperty{"TabWidgetAssetProperty"};
 const QString AssetPathName{QStringLiteral("AssetPath")};
@@ -576,44 +579,70 @@ LoadResult MainWindow::TryLoadAsset(QString fileName)
 	{
 		auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName);
 
-		if (nullptr != asset)
-		{
-			auto currentFileName = asset->GetFileName();
+		return std::visit([&, this](auto&& result)
+			{
+				using T = std::decay_t<decltype(result)>;
 
-			qCDebug(logging::HLAM) << "Asset" << fileName << "loaded as" << currentFileName;
+				bool loaded = false;
 
-			connect(asset.get(), &Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
+				if constexpr (std::is_same_v<T, std::unique_ptr<Asset>>)
+				{
+					if (!result)
+					{
+						qCDebug(logging::HLAM) << "Asset" << fileName << "couldn't be loaded";
+						QMessageBox::critical(this, "Error loading asset",
+							QString{"Error loading asset \"%1\":\nNull asset returned"}.arg(fileName));
+						return LoadResult::Failed;
+					}
 
-			const auto editWidget = asset->GetEditWidget();
+					auto currentFileName = result->GetFileName();
 
-			editWidget->setProperty(TabWidgetAssetProperty.data(), QVariant::fromValue(asset.get()));
+					qCDebug(logging::HLAM) << "Asset" << fileName << "loaded as" << currentFileName;
 
-			_undoGroup->addStack(asset->GetUndoStack());
+					connect(result.get(), &Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
 
-			//Now owned by this window
-			asset->setParent(this);
-			asset.release();
+					const auto editWidget = result->GetEditWidget();
 
-			//Use the current filename for this
-			const auto index = _assetTabs->addTab(editWidget, currentFileName);
+					editWidget->setProperty(TabWidgetAssetProperty.data(), QVariant::fromValue(result.get()));
 
-			_assetTabs->setCurrentIndex(index);
+					_undoGroup->addStack(result->GetUndoStack());
 
-			_editorContext->GetRecentFiles()->Add(fileName);
+					//Now owned by this window
+					result->setParent(this);
+					result.release();
 
-			qCDebug(logging::HLAM) << "Loaded asset" << fileName;
+					//Use the current filename for this
+					const auto index = _assetTabs->addTab(editWidget, currentFileName);
 
-			return LoadResult::Success;
-		}
-		else
-		{
-			qCDebug(logging::HLAM) << "Asset" << fileName << "couldn't be loaded";
-			QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\nNull asset returned"}.arg(fileName));
-		}
+					_assetTabs->setCurrentIndex(index);
+
+					qCDebug(logging::HLAM) << "Loaded asset" << fileName;
+
+					loaded = true;
+				}
+				else if constexpr (std::is_same_v<T, AssetLoadInExternalProgram>)
+				{
+					loaded = result.Loaded;
+				}
+				else
+				{
+					static_assert(always_false_v<T>, "Unhandled Asset load return type");
+				}
+
+				if (loaded)
+				{
+					_editorContext->GetRecentFiles()->Add(fileName);
+				}
+
+				return LoadResult::Success;
+			}, asset);
+
+		
 	}
 	catch (const AssetException& e)
 	{
-		QMessageBox::critical(this, "Error loading asset", QString{"Error loading asset \"%1\":\n%2"}.arg(fileName).arg(e.what()));
+		QMessageBox::critical(this, "Error loading asset",
+			QString{"Error loading asset \"%1\":\n%2"}.arg(fileName).arg(e.what()));
 	}
 
 	return LoadResult::Failed;

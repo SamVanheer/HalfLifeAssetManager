@@ -41,6 +41,7 @@ OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(EditorContext* editor
 
 	_ui.Compiler->setText(_studioModelSettings->GetStudiomdlCompilerFileName());
 	_ui.Decompiler->setText(_studioModelSettings->GetStudiomdlDecompilerFileName());
+	_ui.XashModelViewer->setText(_studioModelSettings->XashModelViewerFileName);
 
 	connect(_ui.FloorLengthSlider, &QSlider::valueChanged, _ui.FloorLengthSpinner, &QSpinBox::setValue);
 	connect(_ui.FloorLengthSpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.FloorLengthSlider, &QSlider::setValue);
@@ -48,6 +49,8 @@ OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(EditorContext* editor
 
 	connect(_ui.BrowseCompiler, &QPushButton::clicked, this, &OptionsPageStudioModelWidget::OnBrowseCompiler);
 	connect(_ui.BrowseDecompiler, &QPushButton::clicked, this, &OptionsPageStudioModelWidget::OnBrowseDecompiler);
+	connect(_ui.BrowseXashModelViewer, &QPushButton::clicked,
+		this, &OptionsPageStudioModelWidget::OnBrowseXashModelViewer);
 }
 
 OptionsPageStudioModelWidget::~OptionsPageStudioModelWidget() = default;
@@ -59,6 +62,7 @@ void OptionsPageStudioModelWidget::ApplyChanges(QSettings& settings)
 	_studioModelSettings->SetFloorLength(_ui.FloorLengthSlider->value());
 	_studioModelSettings->SetStudiomdlCompilerFileName(_ui.Compiler->text());
 	_studioModelSettings->SetStudiomdlDecompilerFileName(_ui.Decompiler->text());
+	_studioModelSettings->XashModelViewerFileName = _ui.XashModelViewer->text();
 
 	_studioModelSettings->SaveSettings(settings);
 }
@@ -69,22 +73,27 @@ void OptionsPageStudioModelWidget::OnResetFloorLength()
 	_ui.FloorLengthSpinner->setValue(_studioModelSettings->DefaultFloorLength);
 }
 
-void OptionsPageStudioModelWidget::OnBrowseCompiler()
+static void BrowseExeFile(QWidget* parent, const QString& title, QLineEdit* lineEdit)
 {
-	const QString fileName{QFileDialog::getOpenFileName(this, "Select Studiomdl Compiler", _ui.Compiler->text(), StudioModelExeFilter)};
+	const QString fileName{QFileDialog::getOpenFileName(parent, title, lineEdit->text(), StudioModelExeFilter)};
 
 	if (!fileName.isEmpty())
 	{
-		_ui.Compiler->setText(fileName);
+		lineEdit->setText(fileName);
 	}
+}
+
+void OptionsPageStudioModelWidget::OnBrowseCompiler()
+{
+	BrowseExeFile(this, "Select Studiomdl Compiler", _ui.Compiler);
 }
 
 void OptionsPageStudioModelWidget::OnBrowseDecompiler()
 {
-	const QString fileName{QFileDialog::getOpenFileName(this, "Select Studiomdl Decompiler", _ui.Decompiler->text(), StudioModelExeFilter)};
+	BrowseExeFile(this, "Select Studiomdl Decompiler", _ui.Decompiler);
+}
 
-	if (!fileName.isEmpty())
-	{
-		_ui.Decompiler->setText(fileName);
-	}
+void OptionsPageStudioModelWidget::OnBrowseXashModelViewer()
+{
+	BrowseExeFile(this, "Select Xash Model Viewer", _ui.XashModelViewer);
 }
