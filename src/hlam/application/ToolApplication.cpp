@@ -119,16 +119,6 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		const auto commandLine = ParseCommandLine(QStringList(argv, argv + argc));
 
-		auto settings{CreateSettings(programName, commandLine.IsPortable)};
-
-		ConfigureOpenGL(*settings);
-
-		QApplication app(argc, argv);
-
-		_application = &app;
-
-		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
-
 		LogFileName = QApplication::applicationDirPath() + QDir::separator() + LogBaseFileName;
 
 		QFile::remove(LogFileName);
@@ -137,6 +127,21 @@ int ToolApplication::Run(int argc, char* argv[])
 		{
 			qInstallMessageHandler(&FileMessageOutput);
 		}
+
+		auto settings{CreateSettings(programName, commandLine.IsPortable)};
+
+		if (CheckSingleInstance(programName, commandLine.FileName, *settings))
+		{
+			return EXIT_SUCCESS;
+		}
+
+		ConfigureOpenGL(*settings);
+
+		QApplication app(argc, argv);
+
+		_application = &app;
+
+		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
 		{
 			const auto openGLFormat = QOpenGLContext::globalShareContext()->format();
@@ -162,11 +167,6 @@ int ToolApplication::Run(int argc, char* argv[])
 
 				settings->setValue("Graphics/CheckedOpenGLVersion", true);
 			}
-		}
-
-		if (CheckSingleInstance(programName, commandLine.FileName, *settings))
-		{
-			return EXIT_SUCCESS;
 		}
 
 		auto offscreenContext{InitializeOpenGL()};
