@@ -13,24 +13,23 @@
 #include "application/SingleInstance.hpp"
 
 class ApplicationBuilder;
-
+class EditorContext;
 class IAssetManagerPlugin;
+class MainWindow;
 class QApplication;
+class QStringList;
 
 namespace graphics
 {
 class IGraphicsContext;
 }
 
-class EditorContext;
-class MainWindow;
-
-class IAssetProviderRegistry;
-
-class OptionsPageRegistry;
-
-class ColorSettings;
-class GeneralSettings;
+struct ParsedCommandLine
+{
+	bool IsPortable{false};
+	bool LogDebugMessagesToConsole{false};
+	QString FileName;
+};
 
 /**
 *	@brief Handles program startup and shutdown
@@ -48,9 +47,9 @@ public:
 private:
 	void ConfigureApplication(const QString& programName);
 	
-	void ConfigureOpenGL();
+	ParsedCommandLine ParseCommandLine(const QStringList& arguments);
 
-	std::tuple<bool, bool, QString> ParseCommandLine(QApplication& application);
+	void ConfigureOpenGL();
 
 	std::unique_ptr<QSettings> CreateSettings(const QString& programName, bool isPortable);
 

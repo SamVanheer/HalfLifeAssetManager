@@ -117,6 +117,8 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		ConfigureApplication(programName);
 
+		const auto commandLine = ParseCommandLine(QStringList(argv, argv + argc));
+
 		ConfigureOpenGL();
 
 		QApplication app(argc, argv);
@@ -125,18 +127,16 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
-		const auto [isPortable, logDebugMsgsToFile, fileName] = ParseCommandLine(app);
-
 		LogFileName = QApplication::applicationDirPath() + QDir::separator() + LogBaseFileName;
 
 		QFile::remove(LogFileName);
 
-		if (logDebugMsgsToFile)
+		if (commandLine.LogDebugMessagesToConsole)
 		{
 			qInstallMessageHandler(&FileMessageOutput);
 		}
 
-		auto settings{CreateSettings(programName, isPortable)};
+		auto settings{CreateSettings(programName, commandLine.IsPortable)};
 
 		{
 			const auto openGLFormat = QOpenGLContext::globalShareContext()->format();
@@ -164,7 +164,7 @@ int ToolApplication::Run(int argc, char* argv[])
 			}
 		}
 
-		if (CheckSingleInstance(programName, fileName, *settings))
+		if (CheckSingleInstance(programName, commandLine.FileName, *settings))
 		{
 			return EXIT_SUCCESS;
 		}
@@ -187,9 +187,9 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		_editorContext->SetMainWindow(_mainWindow);
 
-		if (!fileName.isEmpty())
+		if (!commandLine.FileName.isEmpty())
 		{
-			_editorContext->TryLoadAsset(fileName);
+			_editorContext->TryLoadAsset(commandLine.FileName);
 		}
 
 		//Note: do this after the file has loaded to avoid any flickering.
@@ -215,6 +215,44 @@ void ToolApplication::ConfigureApplication(const QString& programName)
 	QApplication::setApplicationDisplayName(programName);
 
 	QSettings::setDefaultFormat(QSettings::Format::IniFormat);
+}
+
+ParsedCommandLine ToolApplication::ParseCommandLine(const QStringList& arguments)
+{
+	QCommandLineParser parser;
+
+	parser.addOption(QCommandLineOption{"portable", "Launch in portable mode"});
+	parser.addOption(QCommandLineOption{"log-to-file", "Log debug messages to a file"});
+	parser.addPositionalArgument("fileName", "Filename of the model to load on startup", "[fileName]");
+
+	parser.process(arguments);
+
+	ParsedCommandLine result;
+
+	result.IsPortable = parser.isSet("portable");
+	result.LogDebugMessagesToConsole = parser.isSet("log-to-file");
+
+	const auto positionalArguments = parser.positionalArguments();
+
+	if (!positionalArguments.empty())
+	{
+		result.FileName = positionalArguments[0];
+
+		// Check if this filename is valid.
+		// If not, try to combine all positional arguments into a single filename.
+		// If that's valid, use it. Otherwise use only the first argument and let error handling deal with it.
+		if (!QFile::exists(result.FileName))
+		{
+			result.FileName = positionalArguments.join(" ");
+
+			if (!QFile::exists(result.FileName))
+			{
+				result.FileName = positionalArguments[0];
+			}
+		}
+	}
+
+	return result;
 }
 
 void ToolApplication::ConfigureOpenGL()
@@ -249,47 +287,6 @@ void ToolApplication::ConfigureOpenGL()
 	qCDebug(logging::HLAM) << "Configuring OpenGL for" << defaultFormat;
 
 	QSurfaceFormat::setDefaultFormat(defaultFormat);
-}
-
-std::tuple<bool, bool, QString> ToolApplication::ParseCommandLine(QApplication& application)
-{
-	QCommandLineParser parser;
-
-	parser.addOption(QCommandLineOption{"portable", "Launch in portable mode"});
-
-	parser.addOption(QCommandLineOption{"log-to-file", "Log debug messages to a file"});
-
-	parser.addPositionalArgument("fileName", "Filename of the model to load on startup", "[fileName]");
-
-	parser.process(application);
-
-	const bool isPortable = parser.isSet("portable");
-
-	const bool logDebugMsgsToFile = parser.isSet("log-to-file");
-
-	const auto positionalArguments = parser.positionalArguments();
-
-	QString fileName;
-
-	if (!positionalArguments.empty())
-	{
-		fileName = positionalArguments[0];
-
-		// Check if this filename is valid.
-		// If not, try to combine all positional arguments into a single filename.
-		// If that's valid, use it. Otherwise use only the first argument and let error handling deal with it.
-		if (!QFile{fileName}.exists())
-		{
-			fileName = positionalArguments.join(" ");
-
-			if (!QFile{fileName}.exists())
-			{
-				fileName = positionalArguments[0];
-			}
-		}
-	}
-
-	return std::make_tuple(isPortable, logDebugMsgsToFile, fileName);
 }
 
 std::unique_ptr<QSettings> ToolApplication::CreateSettings(const QString& programName, bool isPortable)
