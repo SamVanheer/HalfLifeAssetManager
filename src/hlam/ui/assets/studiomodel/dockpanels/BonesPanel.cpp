@@ -95,7 +95,6 @@ BonesPanel::BonesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.BoneName, &QLineEdit::textChanged, this, &BonesPanel::OnBoneNameChanged);
 	connect(_ui.BoneName, &QLineEdit::inputRejected, this, &BonesPanel::OnBoneNameRejected);
 
-	connect(_ui.ParentBone, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneParentChanged);
 	connect(_ui.BoneFlags, qOverload<int>(&QSpinBox::valueChanged), this, &BonesPanel::OnBoneFlagsChanged);
 
 	connect(_ui.PositionX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
@@ -152,14 +151,6 @@ void BonesPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	connect(_asset, &StudioModelAsset::SaveSnapshot, this, &BonesPanel::OnSaveSnapshot);
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &BonesPanel::OnLoadSnapshot);
-
-	//Set up this list first so when the first bone is selected by _ui.Bones->setModel it has everything set up properly
-	{
-		const QSignalBlocker blocker{_ui.ParentBone};
-		_ui.ParentBone->setModel(modelData->BonesWithNone);
-		//Start off with nothing selected
-		_ui.ParentBone->setCurrentIndex(-1);
-	}
 
 	_ui.Bones->setModel(modelData->Bones);
 
@@ -280,7 +271,18 @@ void BonesPanel::OnBoneChanged(int index)
 		const QSignalBlocker controllerAxis{_ui.BoneControllerAxis};
 
 		_ui.BoneName->setText(bone.Name.c_str());
-		_ui.ParentBone->setCurrentIndex(bone.Parent ? (bone.Parent->ArrayIndex + ParentBoneOffset) : 0);
+
+		if (bone.Parent)
+		{
+			_ui.ParentBone->setText(QString{"%1 (%2)"}
+				.arg(QString::fromStdString(bone.Parent->Name))
+				.arg(bone.Parent->ArrayIndex));
+		}
+		else
+		{
+			_ui.ParentBone->clear();
+		}
+
 		_ui.BoneFlags->setValue(bone.Flags);
 
 		SyncBonePropertiesToUI(bone, _ui);
@@ -309,15 +311,6 @@ void BonesPanel::OnBoneNameChanged()
 void BonesPanel::OnBoneNameRejected()
 {
 	QToolTip::showText(_ui.BoneName->mapToGlobal({0, -20}), "Bone names must be unique");
-}
-
-void BonesPanel::OnBoneParentChanged(int index)
-{
-	// TODO: prevent setting self as parent
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
-
-	_asset->AddUndoCommand(new ChangeBoneParentCommand(_asset, _ui.Bones->currentIndex(), bone.Parent ? bone.Parent->ArrayIndex : -1, index - ParentBoneOffset));
 }
 
 void BonesPanel::OnBoneFlagsChanged()

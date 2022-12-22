@@ -35,8 +35,6 @@ private slots:
 	void OnBoneNameChanged();
 	void OnBoneNameRejected();
 
-	void OnBoneParentChanged(int index);
-
 	void OnBoneFlagsChanged();
 
 	void OnBonePropertyChanged();
