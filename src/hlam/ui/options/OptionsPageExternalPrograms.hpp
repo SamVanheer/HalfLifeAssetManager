@@ -34,10 +34,12 @@ public:
 
 	void ApplyChanges(QSettings& settings) override;
 
+	// TODO: could convert this into a table or something to avoid having to add more slots and stuff.
 private slots:
 	void OnBrowseCompiler();
 	void OnBrowseDecompiler();
 	void OnBrowseXashModelViewer();
+	void OnBrowseQuake1ModelViewer();
 
 private:
 	Ui_OptionsPageExternalPrograms _ui;

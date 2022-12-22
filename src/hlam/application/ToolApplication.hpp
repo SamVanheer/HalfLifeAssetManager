@@ -12,6 +12,8 @@
 
 #include "application/SingleInstance.hpp"
 
+class ApplicationBuilder;
+
 class IAssetManagerPlugin;
 class QApplication;
 
@@ -28,6 +30,7 @@ class IAssetProviderRegistry;
 class OptionsPageRegistry;
 
 class ColorSettings;
+class GeneralSettings;
 
 /**
 *	@brief Handles program startup and shutdown
@@ -56,11 +59,7 @@ private:
 	std::unique_ptr<EditorContext> CreateEditorContext(
 		std::unique_ptr<QSettings>&& settings, std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext);
 
-	bool AddPlugins(
-		QSettings* settings,
-		ColorSettings* colorSettings,
-		IAssetProviderRegistry* assetProviderRegistry,
-		OptionsPageRegistry* optionsPageRegistry);
+	bool AddPlugins(ApplicationBuilder& builder);
 
 	std::unique_ptr<graphics::IGraphicsContext> InitializeOpenGL();
 

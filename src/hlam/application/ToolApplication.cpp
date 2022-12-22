@@ -21,6 +21,7 @@
 
 #include "plugins/IAssetManagerPlugin.hpp"
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
+#include "plugins/quake1/Quake1AssetManagerPlugin.hpp"
 
 #include "qt/QtLogging.hpp"
 
@@ -336,9 +337,21 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 	auto assetProviderRegistry{std::make_unique<AssetProviderRegistry>()};
 	auto optionsPageRegistry{std::make_unique<OptionsPageRegistry>()};
 
-	if (!AddPlugins(settings.get(), colorSettings.get(), assetProviderRegistry.get(), optionsPageRegistry.get()))
 	{
-		return {};
+		ApplicationBuilder builder
+		{
+			_application,
+			settings.get(),
+			generalSettings.get(),
+			colorSettings.get(),
+			assetProviderRegistry.get(),
+			optionsPageRegistry.get()
+		};
+
+		if (!AddPlugins(builder))
+		{
+			return {};
+		}
 	}
 
 	//TODO: settings loading needs to be made more flexible
@@ -367,36 +380,29 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 		gameConfigurationsSettings);
 }
 
-bool ToolApplication::AddPlugins(
-	QSettings* settings,
-	ColorSettings* colorSettings,
-	IAssetProviderRegistry* assetProviderRegistry,
-	OptionsPageRegistry* optionsPageRegistry)
+bool ToolApplication::AddPlugins(ApplicationBuilder& builder)
 {
-	ApplicationBuilder builder{_application, settings, colorSettings, assetProviderRegistry, optionsPageRegistry};
+	bool success = true;
 
-	const auto addPlugin = [&builder, this](std::unique_ptr<IAssetManagerPlugin>&& plugin)
+	const auto addPlugin = [&builder, &success, this](std::unique_ptr<IAssetManagerPlugin>&& plugin)
 	{
 		if (!plugin->Initialize(builder))
 		{
 			QMessageBox::critical(nullptr, "Fatal Error",
 				QString{"Error initializing plugin \"%1\""}.arg(plugin->GetName()));
-			return false;
+			success = false;
+			return;
 		}
 
 		qCDebug(HLAM) << "Adding plugin " << plugin->GetName();
 
 		_plugins.push_back(std::move(plugin));
-
-		return true;
 	};
 
-	if (!addPlugin(std::make_unique<HalfLifeAssetManagerPlugin>()))
-	{
-		return false;
-	}
+	addPlugin(std::make_unique<HalfLifeAssetManagerPlugin>());
+	addPlugin(std::make_unique<Quake1AssetManagerPlugin>());
 
-	return true;
+	return success;
 }
 
 std::unique_ptr<graphics::IGraphicsContext> ToolApplication::InitializeOpenGL()

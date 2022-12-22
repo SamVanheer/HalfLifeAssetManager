@@ -54,6 +54,7 @@ public:
 	static const inline QString StudiomdlCompilerFileNameKey{"ExternalPrograms/StudioMdlCompilerFileName"};
 	static const inline QString StudiomdlDecompilerFileNameKey{"ExternalPrograms/StudioMdlDecompilerFileName"};
 	static const inline QString XashModelViewerFileNameKey{"ExternalPrograms/XashModelViewerFileName"};
+	static const inline QString Quake1ModelViewerFileNameKey{"ExternalPrograms/Quake1ModelViewerFileName"};
 
 	GeneralSettings(QSettings* settings)
 		: _settings(settings)
@@ -294,6 +295,16 @@ public:
 	void SetXashModelViewerFileName(const QString& fileName)
 	{
 		_settings->setValue(XashModelViewerFileNameKey, fileName);
+	}
+
+	QString GetQuake1ModelViewerFileName() const
+	{
+		return _settings->value(Quake1ModelViewerFileNameKey).toString();
+	}
+
+	void SetQuake1ModelViewerFileName(const QString& fileName)
+	{
+		_settings->setValue(Quake1ModelViewerFileNameKey, fileName);
 	}
 
 signals:
