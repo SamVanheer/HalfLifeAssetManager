@@ -1,5 +1,7 @@
 #include <limits>
 
+#include <QAbstractItemView>
+
 #include "entity/HLMVStudioModelEntity.hpp"
 
 #include "formats/activity.hpp"
@@ -22,13 +24,47 @@ SequencesPanel::SequencesPanel(StudioModelAssetProvider* provider)
 {
 	_ui.setupUi(this);
 
+	_ui.FPS->setRange(0, std::numeric_limits<double>::max());
+	_ui.ActWeight->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+
 	_ui.EventId->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 	_ui.EventType->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
+	// TODO: will need to do this for every activity map once users can define their own.
+	{
+		QStringList items;
+
+		items.append("None (0)");
+
+		for (const auto& activity : activity_map)
+		{
+			// TODO: remove once list is user-defined.
+			if (!activity.name)
+			{
+				break;
+			}
+
+			items.append(QString{"%1 (%2)"}.arg(activity.name).arg(activity.type));
+		}
+
+		_ui.Activity->addItems(items);
+
+		// Set the popup to be wide enough to fit the longest name.
+		_ui.Activity->view()->setMinimumWidth(_ui.Activity->minimumSizeHint().width());
+	}
+
 	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &SequencesPanel::OnAssetChanged);
 
-	connect(_ui.SequenceComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnSequenceChanged);
-	connect(_ui.LoopingModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnLoopingModeChanged);
+	connect(_ui.Sequences, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnSequenceChanged);
+	connect(_ui.LoopingMode, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnLoopingModeChanged);
+
+	connect(_ui.IsLooping, &QCheckBox::toggled, this, &SequencesPanel::OnSequencePropertiesChanged);
+	connect(_ui.FPS, qOverload<double>(&QDoubleSpinBox::valueChanged),
+		this, &SequencesPanel::OnSequencePropertiesChanged);
+	connect(_ui.ActWeight, qOverload<int>(&QSpinBox::valueChanged),
+		this, &SequencesPanel::OnSequencePropertiesChanged);
+	connect(_ui.Activity, qOverload<int>(&QComboBox::currentIndexChanged),
+		this, &SequencesPanel::OnSequencePropertiesChanged);
 
 	connect(_ui.BlendMode, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnBlendModeChanged);
 	connect(_ui.BlendXSlider, &QSlider::valueChanged, this, &SequencesPanel::OnBlendXSliderChanged);
@@ -36,7 +72,7 @@ SequencesPanel::SequencesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.BlendYSlider, &QSlider::valueChanged, this, &SequencesPanel::OnBlendYSliderChanged);
 	connect(_ui.BlendYSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &SequencesPanel::OnBlendYSpinnerChanged);
 
-	connect(_ui.EventsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnEventChanged);
+	connect(_ui.Events, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnEventChanged);
 
 	connect(_ui.AddEvent, &QPushButton::clicked, this, &SequencesPanel::OnAddEvent);
 	connect(_ui.RemoveEvent, &QPushButton::clicked, this, &SequencesPanel::OnRemoveEvent);
@@ -71,12 +107,13 @@ void SequencesPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	const int sequenceIndex = _asset->GetEntity()->GetSequence();
 	{
-		const QSignalBlocker sequenceBlocker{_ui.SequenceComboBox};
-		_ui.SequenceComboBox->setModel(modelData->Sequences);
+		const QSignalBlocker sequenceBlocker{_ui.Sequences};
+		_ui.Sequences->setModel(modelData->Sequences);
+		_ui.Sequences->setCurrentIndex(sequenceIndex);
 	}
-	_ui.SequenceComboBox->setCurrentIndex(sequenceIndex);
+	OnSequenceChanged(sequenceIndex);
 
-	this->setEnabled(_ui.SequenceComboBox->count() > 0);
+	this->setEnabled(_ui.Sequences->count() > 0);
 
 	if (_previousModelData)
 	{
@@ -85,9 +122,18 @@ void SequencesPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	_previousModelData = modelData;
 
+	connect(modelData->Sequences, &QAbstractItemModel::dataChanged, this,
+		[this](const QModelIndex& topLeft, const QModelIndex& bottomRight)
+		{
+			if (topLeft.row() <= _ui.Sequences->currentIndex() && _ui.Sequences->currentIndex() <= bottomRight.row())
+			{
+				OnSequenceChanged(_ui.Sequences->currentIndex());
+			}
+		});
+
 	connect(modelData, &StudioModelData::EventChanged, this, [this](int sequenceIndex, int eventIndex)
 		{
-			if (sequenceIndex == _ui.SequenceComboBox->currentIndex() && eventIndex == _ui.EventsComboBox->currentIndex())
+			if (sequenceIndex == _ui.Sequences->currentIndex() && eventIndex == _ui.Events->currentIndex())
 			{
 				OnEventChanged(eventIndex);
 			}
@@ -95,7 +141,7 @@ void SequencesPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	connect(modelData, &StudioModelData::EventAdded, this, [this](int sequenceIndex, int eventIndex)
 		{
-			if (sequenceIndex == _ui.SequenceComboBox->currentIndex())
+			if (sequenceIndex == _ui.Sequences->currentIndex())
 			{
 				auto entity = _asset->GetEntity();
 				auto model = entity->GetEditableModel();
@@ -104,12 +150,12 @@ void SequencesPanel::OnAssetChanged(StudioModelAsset* asset)
 				//Update UI to show new event
 				{
 					//Don't rely on the slot for this because the old index could match sometimes
-					const QSignalBlocker blocker{_ui.EventsComboBox};
+					const QSignalBlocker blocker{_ui.Events};
 
 					//Add new entry to the combo box
-					_ui.EventsComboBox->addItem(QString{"Event %1"}.arg(sequence.Events.size()));
-					_ui.EventsComboBox->setCurrentIndex(eventIndex);
-					_ui.EventsComboBox->setEnabled(true);
+					_ui.Events->addItem(QString{"Event %1"}.arg(sequence.Events.size()));
+					_ui.Events->setCurrentIndex(eventIndex);
+					_ui.Events->setEnabled(true);
 				}
 
 				OnEventChanged(eventIndex);
@@ -120,12 +166,12 @@ void SequencesPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	connect(modelData, &StudioModelData::EventRemoved, this, [this](int sequenceIndex, int eventIndex)
 		{
-			if (sequenceIndex == _ui.SequenceComboBox->currentIndex())
+			if (sequenceIndex == _ui.Sequences->currentIndex())
 			{
 				//Always remove the last entry since they're numbered independently of their associated event
-				_ui.EventsComboBox->removeItem(_ui.EventsComboBox->count() - 1);
+				_ui.Events->removeItem(_ui.Events->count() - 1);
 
-				const bool hasEvents = _ui.EventsComboBox->count() > 0;
+				const bool hasEvents = _ui.Events->count() > 0;
 
 				//Sync up combo box and event data to the next event
 				if (hasEvents)
@@ -133,14 +179,14 @@ void SequencesPanel::OnAssetChanged(StudioModelAsset* asset)
 					const int newIndex = eventIndex > 0 ? eventIndex - 1 : 0;
 
 					{
-						const QSignalBlocker blocker{_ui.EventsComboBox};
-						_ui.EventsComboBox->setCurrentIndex(newIndex);
+						const QSignalBlocker blocker{_ui.Events};
+						_ui.Events->setCurrentIndex(newIndex);
 					}
 
 					OnEventChanged(newIndex);
 				}
 
-				_ui.EventsComboBox->setEnabled(hasEvents);
+				_ui.Events->setEnabled(hasEvents);
 				_ui.RemoveEvent->setEnabled(hasEvents);
 			}
 		});
@@ -165,7 +211,7 @@ void SequencesPanel::OnPoseChanged(Pose pose)
 	switch (pose)
 	{
 	case Pose::Sequences:
-		entity->SetSequence(_ui.SequenceComboBox->currentIndex());
+		entity->SetSequence(_ui.Sequences->currentIndex());
 		this->setEnabled(true);
 		break;
 
@@ -296,6 +342,11 @@ void SequencesPanel::UpdateBlendValue(int blender, BlendUpdateSource source, QSl
 
 void SequencesPanel::OnSequenceChanged(int index)
 {
+	const QSignalBlocker isLoopingBlocker{_ui.IsLooping};
+	const QSignalBlocker fpsBlocker{_ui.FPS};
+	const QSignalBlocker actWeightBlocker{_ui.ActWeight};
+	const QSignalBlocker activityBlocker{_ui.Activity};
+
 	auto entity = _asset->GetEntity();
 
 	//Don't reset the frame unless the sequence has actually changed
@@ -310,38 +361,22 @@ void SequencesPanel::OnSequenceChanged(int index)
 
 	const auto& sequence = index != -1 ? *entity->GetEditableModel()->Sequences[index] : emptySequence;
 
-	const auto durationInSeconds = sequence.FPS != 0 ? sequence.NumFrames / sequence.FPS : 0;
-
-	_ui.SequenceLabel->setText(QString::number(index));
-	_ui.FrameCountLabel->setText(QString::number(sequence.NumFrames));
-	_ui.FPSLabel->setText(QString::number(sequence.FPS, 'f', 2));
-	_ui.DurationLabel->setText(QString::number(durationInSeconds, 'f', 2));
-
-	_ui.EventCountLabel->setText(QString::number(sequence.Events.size()));
-	_ui.IsLoopingLabel->setText((sequence.Flags & STUDIO_LOOPING) ? "Yes" : "No");
 	_ui.BlendCountLabel->setText(QString::number(sequence.AnimationBlends.size()));
-	_ui.ActivityWeightLabel->setText(QString::number(sequence.ActivityWeight));
+	_ui.DurationLabel->setText(
+		sequence.FPS != 0 ? QString::number(sequence.NumFrames / sequence.FPS, 'f', 2) : "Infinite");
+	_ui.FrameCountLabel->setText(QString::number(sequence.NumFrames));
 
-	QString activityName{"Unknown"};
-
-	if (sequence.Activity >= ACT_IDLE && sequence.Activity <= ACT_FLINCH_RIGHTLEG)
-	{
-		activityName = activity_map[sequence.Activity - 1].name;
-	}
-	else if (sequence.Activity == ACT_RESET)
-	{
-		activityName = "None";
-	}
-
-	_ui.ActivityName->setText(QString{"%1 (%2)"}.arg(activityName).arg(sequence.Activity));
-	_ui.ActivityName->setCursorPosition(0);
+	_ui.IsLooping->setChecked((sequence.Flags & STUDIO_LOOPING) != 0);
+	_ui.FPS->setValue(sequence.FPS);
+	_ui.ActWeight->setValue(sequence.ActivityWeight);
+	_ui.Activity->setCurrentIndex(sequence.Activity);
 
 	if (sequenceHasChanged)
 	{
 		InitializeBlenders();
 	}
 
-	_ui.EventsComboBox->clear();
+	_ui.Events->clear();
 
 	{
 		const QSignalBlocker blocker{_ui.EventFrameIndex};
@@ -361,18 +396,40 @@ void SequencesPanel::OnSequenceChanged(int index)
 			events.append(QString("Event %1").arg(i + 1));
 		}
 
-		_ui.EventsComboBox->addItems(events);
+		_ui.Events->addItems(events);
 	}
 
-	_ui.EventsComboBox->setEnabled(hasEvents);
+	_ui.Events->setEnabled(hasEvents);
 	_ui.RemoveEvent->setEnabled(hasEvents);
-
-	_ui.EventsWidget->setEnabled(index != -1);
 }
 
 void SequencesPanel::OnLoopingModeChanged(int index)
 {
 	_asset->GetEntity()->SetLoopingMode(static_cast<StudioLoopingMode>(index));
+}
+
+void SequencesPanel::OnSequencePropertiesChanged()
+{
+	const auto& sequence = *_asset->GetEditableStudioModel()->Sequences[_ui.Sequences->currentIndex()];
+
+	const SequenceProps oldProps
+	{
+		.IsLooping = (sequence.Flags & STUDIO_LOOPING) != 0,
+		.FPS = sequence.FPS,
+		.Activity = sequence.Activity,
+		.ActivityWeight = sequence.ActivityWeight
+	};
+
+	const SequenceProps newProps
+	{
+		.IsLooping = _ui.IsLooping->isChecked(),
+		.FPS = static_cast<float>(_ui.FPS->value()),
+		.Activity = _ui.Activity->currentIndex(),
+		.ActivityWeight = _ui.ActWeight->value()
+	};
+
+	_asset->AddUndoCommand(
+		new ChangeSequencePropsCommand(_asset, _ui.Sequences->currentIndex(), oldProps, newProps));
 }
 
 void SequencesPanel::OnBlendModeChanged(int index)
@@ -441,18 +498,18 @@ void SequencesPanel::OnEventChanged(int index)
 
 void SequencesPanel::OnAddEvent()
 {
-	_asset->AddUndoCommand(new AddRemoveEventCommand(_asset, AddRemoveType::Addition, _ui.SequenceComboBox->currentIndex(), _ui.EventsComboBox->count(), {}));
+	_asset->AddUndoCommand(new AddRemoveEventCommand(_asset, AddRemoveType::Addition, _ui.Sequences->currentIndex(), _ui.Events->count(), {}));
 }
 
 void SequencesPanel::OnRemoveEvent()
 {
-	const int index = _ui.EventsComboBox->currentIndex();
+	const int index = _ui.Events->currentIndex();
 
 	auto entity = _asset->GetEntity();
 	auto model = entity->GetEditableModel();
 	auto& sequence = *model->Sequences[entity->GetSequence()];
 
-	_asset->AddUndoCommand(new AddRemoveEventCommand(_asset, AddRemoveType::Removal, _ui.SequenceComboBox->currentIndex(), index, *sequence.Events[index]));
+	_asset->AddUndoCommand(new AddRemoveEventCommand(_asset, AddRemoveType::Removal, _ui.Sequences->currentIndex(), index, *sequence.Events[index]));
 }
 
 void SequencesPanel::OnEventEdited()
@@ -460,7 +517,7 @@ void SequencesPanel::OnEventEdited()
 	const auto entity = _asset->GetEntity();
 	const auto model = entity->GetEditableModel();
 	const auto& sequence = *model->Sequences[entity->GetSequence()];
-	const auto& event = *sequence.Events[_ui.EventsComboBox->currentIndex()];
+	const auto& event = *sequence.Events[_ui.Events->currentIndex()];
 
 	auto changedEvent{event};
 
@@ -470,6 +527,6 @@ void SequencesPanel::OnEventEdited()
 
 	changedEvent.Options = _ui.EventOptions->text().toStdString();
 
-	_asset->AddUndoCommand(new ChangeEventCommand(_asset, _ui.SequenceComboBox->currentIndex(), _ui.EventsComboBox->currentIndex(), event, changedEvent));
+	_asset->AddUndoCommand(new ChangeEventCommand(_asset, _ui.Sequences->currentIndex(), _ui.Events->currentIndex(), event, changedEvent));
 }
 }

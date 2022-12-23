@@ -47,6 +47,8 @@ private slots:
 
 	void OnLoopingModeChanged(int index);
 
+	void OnSequencePropertiesChanged();
+
 	void OnBlendModeChanged(int index);
 
 	void OnBlendXSliderChanged();

@@ -184,7 +184,9 @@ public:
 protected:
 	QString ElementToString(const QModelIndex& index) const override
 	{
-		return QString::fromStdString((*_items)[index.row()]->Label);
+		return QString{"%1 (%2)"}
+			.arg(QString::fromStdString((*_items)[index.row()]->Label))
+			.arg(index.row());
 	}
 };
 

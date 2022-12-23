@@ -273,6 +273,28 @@ void ImportTextureCommand::Apply(int index, const ImportTextureData& oldValue, c
 	studiomdl::ApplyScaledSTCoordinatesData(*model, index, newValue.ScaledSTCoordinates);
 }
 
+void ChangeSequencePropsCommand::Apply(int index, const SequenceProps& oldValue, const SequenceProps& newValue)
+{
+	auto model = _asset->GetEditableStudioModel();
+	auto& sequence = *model->Sequences[index];
+
+	if (newValue.IsLooping)
+	{
+		sequence.Flags |= STUDIO_LOOPING;
+	}
+	else
+	{
+		sequence.Flags &= ~STUDIO_LOOPING;
+	}
+
+	sequence.FPS = newValue.FPS;
+	sequence.Activity = newValue.Activity;
+	sequence.ActivityWeight = newValue.ActivityWeight;
+
+	EmitDataChanged(_asset->GetModelData()->Sequences, index);
+}
+
+
 void ChangeEventCommand::Apply(int index, const studiomdl::SequenceEvent& oldValue, const studiomdl::SequenceEvent& newValue)
 {
 	auto& sequence = *_asset->GetEditableStudioModel()->Sequences[index];

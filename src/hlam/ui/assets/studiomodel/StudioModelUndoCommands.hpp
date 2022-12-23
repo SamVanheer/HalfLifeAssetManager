@@ -61,6 +61,8 @@ enum class ModelChangeId
 	ChangeTextureFlags,
 	ImportTexture,
 
+	ChangeSequenceProperties,
+
 	ChangeEvent,
 	AddRemoveEvent,
 
@@ -790,6 +792,28 @@ public:
 
 protected:
 	void Apply(int index, const ImportTextureData& oldValue, const ImportTextureData& newValue) override;
+};
+
+struct SequenceProps
+{
+	bool IsLooping{};
+	float FPS{};
+	int Activity{};
+	int ActivityWeight{};
+};
+
+class ChangeSequencePropsCommand : public ModelListUndoCommand<SequenceProps>
+{
+public:
+	ChangeSequencePropsCommand(StudioModelAsset* asset, int sequenceIndex, const SequenceProps& oldProps, const SequenceProps& newProps)
+		: ModelListUndoCommand(
+			asset, ModelChangeId::ChangeSequenceProperties, sequenceIndex, oldProps, newProps)
+	{
+		setText("Change sequence properties");
+	}
+
+protected:
+	void Apply(int index, const SequenceProps& oldValue, const SequenceProps& newValue) override;
 };
 
 class ChangeEventCommand : public ModelListUndoCommand<studiomdl::SequenceEvent>
