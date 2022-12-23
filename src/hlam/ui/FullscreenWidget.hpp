@@ -33,4 +33,8 @@ protected:
 	bool eventFilter(QObject* object, QEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
 	void closeEvent(QCloseEvent* event) override;
+
+private:
+	// Initial size is maximized so F11 works properly. User can change this later.
+	Qt::WindowStates _windowedState = Qt::WindowMaximized;
 };

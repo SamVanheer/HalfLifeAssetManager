@@ -14,6 +14,8 @@ FullscreenWidget::FullscreenWidget()
 
 	//Without this going fullscreen will cause black flickering
 	QWindowsWindowFunctions::setHasBorderInFullScreen(this->windowHandle(), true);
+
+	setWindowState(_windowedState);
 }
 
 FullscreenWidget::~FullscreenWidget() = default;
@@ -45,13 +47,14 @@ bool FullscreenWidget::ProcessKeyEvent(QKeyEvent* event)
 
 	case ToggleFullscreenKey:
 	{
-		if (this->isFullScreen())
+		if (windowState() & Qt::WindowFullScreen)
 		{
-			this->showMaximized();
+			setWindowState(_windowedState);
 		}
 		else
 		{
-			this->showFullScreen();
+			_windowedState = windowState() & ~(Qt::WindowMinimized | Qt::WindowFullScreen);
+			setWindowState((windowState() & ~(Qt::WindowMinimized | Qt::WindowMaximized)) | Qt::WindowFullScreen);
 		}
 
 		return true;
