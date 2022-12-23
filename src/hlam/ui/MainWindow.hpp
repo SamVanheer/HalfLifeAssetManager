@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include <QMainWindow>
 #include <QPointer>
@@ -119,6 +120,7 @@ private:
 	QString _loadFileFilter;
 	QString _saveFileFilter;
 
+	std::vector<std::unique_ptr<Asset>> _assets;
 	QPointer<Asset> _currentAsset;
 
 	std::unique_ptr<FullscreenWidget> _fullscreenWidget;

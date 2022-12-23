@@ -47,7 +47,6 @@
 
 #include "utility/Utility.hpp"
 
-constexpr std::string_view TabWidgetAssetProperty{"TabWidgetAssetProperty"};
 const QString AssetPathName{QStringLiteral("AssetPath")};
 
 MainWindow::MainWindow(EditorContext* editorContext)
@@ -426,7 +425,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 
 Asset* MainWindow::GetAsset(int index) const
 {
-	return _assetTabs->widget(index)->property(TabWidgetAssetProperty.data()).value<Asset*>();
+	return _assets[index].get();
 }
 
 Asset* MainWindow::GetCurrentAsset() const
@@ -505,21 +504,22 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowC
 	}
 
 	{
-		const auto asset = GetAsset(index);
-
-		if (verifyUnsavedChanges && !VerifyNoUnsavedChanges(asset, allowCancel))
+		if (verifyUnsavedChanges && !VerifyNoUnsavedChanges(GetAsset(index), allowCancel))
 		{
 			//User cancelled or an error occurred
 			return false;
 		}
 
-		_assetTabs->removeTab(index);
+		// Don't destroy the asset until after we've cleaned everything up.
+		const std::unique_ptr<Asset> asset = std::move(_assets[index]);
 
 		_undoGroup->removeStack(asset->GetUndoStack());
 
 		asset->SetActive(false);
 
-		delete asset;
+		_assets.erase(_assets.begin() + index);
+
+		_assetTabs->removeTab(index);
 	}
 
 	return true;
@@ -611,16 +611,15 @@ LoadResult MainWindow::TryLoadAsset(QString fileName)
 
 					const auto editWidget = result->GetEditWidget();
 
-					editWidget->setProperty(TabWidgetAssetProperty.data(), QVariant::fromValue(result.get()));
-
 					_undoGroup->addStack(result->GetUndoStack());
 
 					//Now owned by this window
-					result->setParent(this);
-					result.release();
+					_assets.push_back(std::move(result));
 
 					//Use the current filename for this
 					const auto index = _assetTabs->addTab(editWidget, currentFileName);
+
+					assert(index == (_assets.size() - 1));
 
 					_assetTabs->setCurrentIndex(index);
 
