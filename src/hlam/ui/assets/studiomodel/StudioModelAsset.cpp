@@ -40,7 +40,6 @@
 #include "qt/QtUtilities.hpp"
 
 #include "ui/EditorContext.hpp"
-#include "ui/FullscreenWidget.hpp"
 #include "ui/SceneWidget.hpp"
 #include "ui/StateSnapshot.hpp"
 
@@ -292,22 +291,16 @@ QWidget* StudioModelAsset::GetEditWidget()
 	return _editWidget;
 }
 
-void StudioModelAsset::SetupFullscreenWidget(FullscreenWidget* fullscreenWidget)
+void StudioModelAsset::EnterFullscreen(FullscreenWidget* fullscreenWidget)
 {
-	const auto sceneWidget = new SceneWidget(
-		_editorContext,
-		_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader(),
-		fullscreenWidget);
+	auto sceneWidget = _editorContext->GetSceneWidget();
 
-	sceneWidget->SetScene(GetScene());
+	_provider->GetEditWidget()->DetachSceneWidget();
+}
 
-	fullscreenWidget->setCentralWidget(sceneWidget->GetContainer());
-
-	//sceneWidget->connect(this, &StudioModelAsset::Draw, sceneWidget, &SceneWidget::requestUpdate);
-	sceneWidget->connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
-
-	//Filter key events on the scene widget so we can capture exit even if it has focus
-	sceneWidget->installEventFilter(fullscreenWidget);
+void StudioModelAsset::ExitFullscreen(FullscreenWidget* fullscreenWidget)
+{
+	_provider->GetEditWidget()->AttachSceneWidget();
 }
 
 void StudioModelAsset::Save()
@@ -407,7 +400,7 @@ void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 	{
 		auto editWidget = _provider->GetEditWidget();
 		editWidget->SetSceneIndex(index);
-		editWidget->GetSceneWidget()->SetScene(_currentScene);
+		_editorContext->GetSceneWidget()->SetScene(_currentScene);
 	}
 }
 
@@ -441,7 +434,7 @@ void StudioModelAsset::OnDeactivated()
 	emit SaveSnapshot(&_snapshot);
 
 	auto editWidget = _provider->GetEditWidget();
-	auto sceneWidget = editWidget->GetSceneWidget();
+	auto sceneWidget = _editorContext->GetSceneWidget();
 
 	editWidget->disconnect(this);
 	sceneWidget->disconnect(this);
@@ -574,27 +567,27 @@ void StudioModelAsset::OnIsActiveChanged(bool value)
 	// Only update if we're active.
 	if (value)
 	{
-		if (!_tickConnection)
-		{
-			_tickConnection = connect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick);
-		}
-
-		if (!_sceneWidgetRecreatedConnection)
-		{
-			_sceneWidgetRecreatedConnection = connect(_provider, &StudioModelAssetProvider::SceneWidgetRecreated,
-				this, &StudioModelAsset::OnSceneWidgetRecreated);
-		}
+		connect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick, Qt::UniqueConnection);
+		connect(_editorContext, &EditorContext::SceneWidgetRecreated, this, &StudioModelAsset::OnSceneWidgetRecreated,
+			Qt::UniqueConnection);
 	}
 	else
 	{
-		disconnect(_tickConnection);
-		disconnect(_sceneWidgetRecreatedConnection);
+		disconnect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick);
+		disconnect(_editorContext, &EditorContext::SceneWidgetRecreated,
+			this, &StudioModelAsset::OnSceneWidgetRecreated);
 	}
 }
 
 void StudioModelAsset::OnSceneWidgetRecreated()
 {
-	auto sceneWidget = _provider->GetEditWidget()->GetSceneWidget();
+	if (!_editorContext->IsFullscreen())
+	{
+		_provider->GetEditWidget()->AttachSceneWidget();
+	}
+
+	auto sceneWidget = _editorContext->GetSceneWidget();
+	sceneWidget->SetScene(GetCurrentScene());
 	connect(sceneWidget, &SceneWidget::MouseEvent, this, &StudioModelAsset::OnSceneWidgetMouseEvent);
 	connect(sceneWidget, &SceneWidget::WheelEvent, this, &StudioModelAsset::OnSceneWidgetWheelEvent);
 }
@@ -741,7 +734,7 @@ void StudioModelAsset::OnTakeScreenshot()
 	//Should always be the case since the screenshot action is only available if the edit widget is open
 	GetEditWidget();
 
-	const QImage screenshot = _provider->GetEditWidget()->GetSceneWidget()->grabFramebuffer();
+	const QImage screenshot = _editorContext->GetSceneWidget()->grabFramebuffer();
 
 	const QString fileName{QFileDialog::getSaveFileName(nullptr, {}, {}, qt::GetImagesFileFilter())};
 

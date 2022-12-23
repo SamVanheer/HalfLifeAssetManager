@@ -146,11 +146,6 @@ void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
 
 	connect(editorContext, &EditorContext::Tick, this, &StudioModelAssetProvider::OnTick);
 	connect(editorContext, &EditorContext::ActiveAssetChanged, this, &StudioModelAssetProvider::OnActiveAssetChanged);
-	connect(editorContext->GetGeneralSettings(), &GeneralSettings::MSAALevelChanged, this, [this]()
-		{
-			_editWidget->RecreateSceneWidget();
-			emit SceneWidgetRecreated();
-		});
 }
 
 void StudioModelAssetProvider::OnTick()

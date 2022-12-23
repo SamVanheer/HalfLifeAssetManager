@@ -82,7 +82,9 @@ private slots:
 
 	void OnExit();
 
-	void OnGoFullscreen();
+	void OnEnterFullscreen();
+
+	void OnExitFullscreen();
 
 	void OnFileSelected(const QString& fileName);
 

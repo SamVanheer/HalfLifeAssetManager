@@ -50,10 +50,6 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_ui.MainLayout->addWidget(_timeline);
 
-	RecreateSceneWidget();
-
-	//The filter needs to be installed on the main window (handles dropping on any child widget),
-	//as well as the scene widget (has special behavior due to being OpenGL)
 	_ui.Window->installEventFilter(_editorContext->GetDragNDropEventFilter());
 
 	_ui.Window->setCentralWidget(_view);
@@ -141,28 +137,26 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
 
-void StudioModelEditWidget::RecreateSceneWidget()
+void StudioModelEditWidget::AttachSceneWidget()
 {
-	auto scene = _sceneWidget ? _sceneWidget->GetScene() : nullptr;
+	auto sceneWidget = _editorContext->GetSceneWidget();
 
-	if (_sceneWidget)
-	{
-		delete _sceneWidget->GetContainer();
-	}
+	_view->SetWidget(sceneWidget->GetContainer());
 
-	_sceneWidget = new SceneWidget(
-		_editorContext,
-		_editorContext->GetOpenGLFunctions(),
-		_editorContext->GetTextureLoader(),
-		this);
+	connect(sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw, Qt::UniqueConnection);
 
-	_sceneWidget->installEventFilter(_editorContext->GetDragNDropEventFilter());
+	this->setVisible(true);
+}
 
-	_view->SetWidget(_sceneWidget->GetContainer());
+void StudioModelEditWidget::DetachSceneWidget()
+{
+	auto sceneWidget = _editorContext->GetSceneWidget();
 
-	_sceneWidget->SetScene(scene);
+	sceneWidget->disconnect(_view->GetInfoBar());
+	sceneWidget->GetContainer()->setParent(nullptr);
 
-	connect(_sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw);
+	// Hide ourselves so it doesn't show laid out strangely.
+	this->setVisible(false);
 }
 
 bool StudioModelEditWidget::IsControlsBarVisible() const
@@ -208,7 +202,6 @@ void StudioModelEditWidget::SetAsset(StudioModelAsset* asset)
 	const int index = std::find(scenes.begin(), scenes.end(), asset->GetCurrentScene()) - scenes.begin();
 
 	_view->SetSceneIndex(index);
-	_sceneWidget->SetScene(asset->GetCurrentScene());
 
 	_view->GetInfoBar()->SetAsset(asset);
 	_timeline->SetAsset(asset);

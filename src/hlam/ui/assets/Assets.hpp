@@ -79,7 +79,9 @@ public:
 	*/
 	virtual QWidget* GetEditWidget() = 0;
 
-	virtual void SetupFullscreenWidget(FullscreenWidget* fullscreenWidget) = 0;
+	virtual void EnterFullscreen(FullscreenWidget* fullscreenWidget) = 0;
+
+	virtual void ExitFullscreen(FullscreenWidget* fullscreenWidget) = 0;
 
 	virtual void Save() = 0;
 

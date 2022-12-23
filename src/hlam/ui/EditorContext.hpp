@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <QObject>
+#include <QPointer>
 #include <QSettings>
 #include <QString>
 #include <QTimer>
@@ -23,6 +24,7 @@ class QOpenGLFunctions_1_1;
 class QStringList;
 class QWidget;
 class RecentFilesSettings;
+class SceneWidget;
 class WorldTime;
 
 namespace graphics
@@ -97,6 +99,20 @@ public:
 		_mainWindow = widget;
 	}
 
+	/**
+	*	@brief Gets the shared scene widget.
+	*/
+	SceneWidget* GetSceneWidget();
+
+	void RecreateSceneWidget();
+
+	bool IsFullscreen() const { return _isFullscreen; }
+
+	void SetIsFullscreen(bool isFullscreen)
+	{
+		_isFullscreen = isFullscreen;
+	}
+
 	void StartTimer();
 
 	QString GetPath(const QString& pathName) const;
@@ -121,6 +137,8 @@ signals:
 	void ActiveAssetChanged(Asset* asset);
 
 	void SettingsChanged();
+
+	void SceneWidgetRecreated();
 
 public slots:
 	void TryLoadAsset(const QString& fileName)
@@ -156,4 +174,7 @@ private:
 	const std::unique_ptr<WorldTime> _worldTime;
 
 	QWidget* _mainWindow{};
+	QPointer<SceneWidget> _sceneWidget;
+
+	bool _isFullscreen{false};
 };

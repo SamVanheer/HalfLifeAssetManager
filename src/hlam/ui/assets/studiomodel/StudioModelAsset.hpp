@@ -69,7 +69,9 @@ public:
 
 	QWidget* GetEditWidget() override;
 
-	void SetupFullscreenWidget(FullscreenWidget* fullscreenWidget) override;
+	void EnterFullscreen(FullscreenWidget* fullscreenWidget) override;
+
+	void ExitFullscreen(FullscreenWidget* fullscreenWidget) override;
 
 	void Save() override;
 
@@ -247,8 +249,5 @@ private:
 
 	//TODO: this is temporarily put here, but needs to be put somewhere else eventually
 	Pose _pose = Pose::Sequences;
-
-	QMetaObject::Connection _tickConnection;
-	QMetaObject::Connection _sceneWidgetRecreatedConnection;
 };
 }

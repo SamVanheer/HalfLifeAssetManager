@@ -17,12 +17,20 @@ public:
 	FullscreenWidget();
 	~FullscreenWidget();
 
+	void SetWidget(QWidget* widget);
+
 	void ExitFullscreen();
+
+signals:
+	void ExitedFullscreen();
 
 private:
 	bool ProcessKeyEvent(QKeyEvent* event);
 
+	void CleanupOldWidget();
+
 protected:
 	bool eventFilter(QObject* object, QEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
+	void closeEvent(QCloseEvent* event) override;
 };

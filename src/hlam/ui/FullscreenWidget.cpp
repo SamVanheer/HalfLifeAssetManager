@@ -18,13 +18,19 @@ FullscreenWidget::FullscreenWidget()
 
 FullscreenWidget::~FullscreenWidget() = default;
 
+void FullscreenWidget::SetWidget(QWidget* widget)
+{
+	CleanupOldWidget();
+	setCentralWidget(widget);
+	//Filter key events on the scene widget so we can capture exit even if it has focus
+	widget->installEventFilter(this);
+}
+
 void FullscreenWidget::ExitFullscreen()
 {
 	this->hide();
-	//This ensures the old widget is deleted now to avoid having a dangling reference to an unloaded asset
-	auto oldWidget = this->takeCentralWidget();
-
-	delete oldWidget;
+	CleanupOldWidget();
+	emit ExitedFullscreen();
 }
 
 bool FullscreenWidget::ProcessKeyEvent(QKeyEvent* event)
@@ -55,6 +61,18 @@ bool FullscreenWidget::ProcessKeyEvent(QKeyEvent* event)
 	}
 }
 
+void FullscreenWidget::CleanupOldWidget()
+{
+	// The fullscreen widget doesn't own the central widget so it has to be removed on close.
+	auto widget = this->takeCentralWidget();
+
+	if (widget)
+	{
+		widget->removeEventFilter(this);
+		widget->setParent(nullptr);
+	}
+}
+
 bool FullscreenWidget::eventFilter(QObject* object, QEvent* event)
 {
 	if (event->type() == QEvent::Type::KeyPress)
@@ -75,4 +93,10 @@ void FullscreenWidget::keyPressEvent(QKeyEvent* event)
 	}
 
 	QMainWindow::keyPressEvent(event);
+}
+
+void FullscreenWidget::closeEvent(QCloseEvent* event)
+{
+	ExitFullscreen();
+	QMainWindow::closeEvent(event);
 }

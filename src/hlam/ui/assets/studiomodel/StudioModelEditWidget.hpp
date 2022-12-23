@@ -34,9 +34,9 @@ public:
 	StudioModelEditWidget(EditorContext* editorContext, StudioModelAssetProvider* provider);
 	~StudioModelEditWidget();
 
-	SceneWidget* GetSceneWidget() const { return _sceneWidget; }
+	void AttachSceneWidget();
 
-	void RecreateSceneWidget();
+	void DetachSceneWidget();
 
 	bool IsControlsBarVisible() const;
 
@@ -72,8 +72,6 @@ private:
 	Ui_StudioModelEditWidget _ui;
 
 	StudioModelView* _view;
-
-	SceneWidget* _sceneWidget{};
 
 	Timeline* _timeline;
 

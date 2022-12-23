@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include <QFileInfo>
+#include <QLayout>
 #include <QMessageBox>
 #include <QOpenGLFunctions_1_1>
 #include <QProcess>
@@ -26,6 +27,7 @@
 
 #include "ui/DragNDropEventFilter.hpp"
 #include "ui/EditorContext.hpp"
+#include "ui/SceneWidget.hpp"
 
 #include "ui/assets/Assets.hpp"
 
@@ -100,11 +102,43 @@ EditorContext::EditorContext(
 		{
 			_textureLoader->SetTextureFilters(minFilter, magFilter, mipmapFilter);
 		});
+
+	connect(_generalSettings.get(), &GeneralSettings::MSAALevelChanged, this, &EditorContext::RecreateSceneWidget);
 }
 
 EditorContext::~EditorContext()
 {
 	_soundSystem->Shutdown();
+
+	delete _sceneWidget;
+}
+
+SceneWidget* EditorContext::GetSceneWidget()
+{
+	if (!_sceneWidget)
+	{
+		RecreateSceneWidget();
+	}
+
+	return _sceneWidget;
+}
+
+void EditorContext::RecreateSceneWidget()
+{
+	auto oldWidget = _sceneWidget.data();
+
+	// The filter needs to be installed on the main window (handles dropping on any child widget),
+	// as well as the scene widget (has special behavior due to being OpenGL)
+	_sceneWidget = new SceneWidget(this, GetOpenGLFunctions(), GetTextureLoader(), nullptr);
+	_sceneWidget->installEventFilter(GetDragNDropEventFilter());
+
+	emit SceneWidgetRecreated();
+
+	// Delete the widget after notifying everybody so any remaining references to this can be removed.
+	if (oldWidget)
+	{
+		delete oldWidget;
+	}
 }
 
 void EditorContext::StartTimer()

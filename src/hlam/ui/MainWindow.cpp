@@ -35,6 +35,7 @@
 #include "ui/FileListPanel.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/MainWindow.hpp"
+#include "ui/SceneWidget.hpp"
 
 #include "ui/assets/Assets.hpp"
 
@@ -163,7 +164,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionClose, &QAction::triggered, this, &MainWindow::OnCloseAsset);
 	connect(_ui.ActionExit, &QAction::triggered, this, &MainWindow::OnExit);
 
-	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnGoFullscreen);
+	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnEnterFullscreen);
 
 	connect(_ui.ActionPowerOf2Textures, &QAction::toggled,
 		_editorContext->GetGeneralSettings(), &GeneralSettings::SetResizeTexturesToPowerOf2);
@@ -354,6 +355,9 @@ void MainWindow::LoadSettings()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
+	// If the user is in fullscreen mode force them out of it.
+	OnExitFullscreen();
+
 	//If the user cancels any close request cancel the window close event as well
 	for (int i = 0; i < _assetTabs->count(); ++i)
 	{
@@ -391,7 +395,6 @@ void MainWindow::closeEvent(QCloseEvent* event)
 		_editorContext->GetTimer()->stop();
 
 		delete _fileListDock;
-		_fullscreenWidget.reset();
 		_currentAsset.clear();
 		delete _assetTabs;
 	}
@@ -821,22 +824,62 @@ void MainWindow::OnExit()
 	this->close();
 }
 
-void MainWindow::OnGoFullscreen()
+void MainWindow::OnEnterFullscreen()
 {
-	if (!_fullscreenWidget)
+	if (_fullscreenWidget)
 	{
-		//Note: creating this window as a child of the main window causes problems with OpenGL rendering
-		//This must be created with no parent to function properly
-		_fullscreenWidget = std::make_unique<FullscreenWidget>();
+		return;
 	}
+
+	//Note: creating this window as a child of the main window causes problems with OpenGL rendering
+	//This must be created with no parent to function properly
+	_fullscreenWidget = std::make_unique<FullscreenWidget>();
+
+	connect(_fullscreenWidget.get(), &FullscreenWidget::ExitedFullscreen, this, &MainWindow::OnExitFullscreen);
 
 	const auto asset = GetCurrentAsset();
 
-	asset->SetupFullscreenWidget(_fullscreenWidget.get());
+	asset->EnterFullscreen(_fullscreenWidget.get());
+
+	const auto lambda = [this]()
+	{
+		_fullscreenWidget->SetWidget(_editorContext->GetSceneWidget()->GetContainer());
+	};
+
+	lambda();
+
+	connect(_editorContext, &EditorContext::SceneWidgetRecreated, _fullscreenWidget.get(), lambda);
 
 	_fullscreenWidget->raise();
 	_fullscreenWidget->showFullScreen();
 	_fullscreenWidget->activateWindow();
+
+	// Prevent a bunch of edge cases by disabling these.
+	_ui.MenuFile->setEnabled(false);
+	_ui.ActionFullscreen->setEnabled(false);
+	_assetTabs->setEnabled(false);
+
+	_editorContext->SetIsFullscreen(true);
+}
+
+void MainWindow::OnExitFullscreen()
+{
+	if (!_fullscreenWidget)
+	{
+		return;
+	}
+
+	_editorContext->SetIsFullscreen(false);
+
+	const auto asset = GetCurrentAsset();
+
+	asset->ExitFullscreen(_fullscreenWidget.get());
+
+	_fullscreenWidget.reset();
+
+	_assetTabs->setEnabled(true);
+	_ui.ActionFullscreen->setEnabled(true);
+	_ui.MenuFile->setEnabled(true);
 }
 
 void MainWindow::OnFileSelected(const QString& fileName)
