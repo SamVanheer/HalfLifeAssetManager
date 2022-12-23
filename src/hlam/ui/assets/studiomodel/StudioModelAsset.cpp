@@ -40,6 +40,7 @@
 #include "qt/QtUtilities.hpp"
 
 #include "ui/EditorContext.hpp"
+#include "ui/FullscreenWidget.hpp"
 #include "ui/SceneWidget.hpp"
 #include "ui/StateSnapshot.hpp"
 
@@ -293,9 +294,8 @@ QWidget* StudioModelAsset::GetEditWidget()
 
 void StudioModelAsset::EnterFullscreen(FullscreenWidget* fullscreenWidget)
 {
-	auto sceneWidget = _editorContext->GetSceneWidget();
-
 	_provider->GetEditWidget()->DetachSceneWidget();
+	fullscreenWidget->SetWidget(_editorContext->GetSceneWidget()->GetContainer());
 }
 
 void StudioModelAsset::ExitFullscreen(FullscreenWidget* fullscreenWidget)
@@ -581,7 +581,11 @@ void StudioModelAsset::OnIsActiveChanged(bool value)
 
 void StudioModelAsset::OnSceneWidgetRecreated()
 {
-	if (!_editorContext->IsFullscreen())
+	if (auto fullscreenWidget = _editorContext->GetFullscreenWidget(); fullscreenWidget)
+	{
+		fullscreenWidget->SetWidget(_editorContext->GetSceneWidget()->GetContainer());
+	}
+	else
 	{
 		_provider->GetEditWidget()->AttachSceneWidget();
 	}

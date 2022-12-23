@@ -14,6 +14,7 @@
 class Asset;
 class ColorSettings;
 class DragNDropEventFilter;
+class FullscreenWidget;
 class GameConfigurationsSettings;
 class GeneralSettings;
 class IAssetProviderRegistry;
@@ -106,11 +107,11 @@ public:
 
 	void RecreateSceneWidget();
 
-	bool IsFullscreen() const { return _isFullscreen; }
+	FullscreenWidget* GetFullscreenWidget() { return _fullscreenWidget; }
 
-	void SetIsFullscreen(bool isFullscreen)
+	void SetFullscreenWidget(FullscreenWidget* fullscreenWidget)
 	{
-		_isFullscreen = isFullscreen;
+		_fullscreenWidget = fullscreenWidget;
 	}
 
 	void StartTimer();
@@ -175,6 +176,5 @@ private:
 
 	QWidget* _mainWindow{};
 	QPointer<SceneWidget> _sceneWidget;
-
-	bool _isFullscreen{false};
+	FullscreenWidget* _fullscreenWidget{};
 };

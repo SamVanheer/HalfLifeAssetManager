@@ -858,7 +858,7 @@ void MainWindow::OnEnterFullscreen()
 	_ui.ActionFullscreen->setEnabled(false);
 	_assetTabs->setEnabled(false);
 
-	_editorContext->SetIsFullscreen(true);
+	_editorContext->SetFullscreenWidget(_fullscreenWidget.get());
 }
 
 void MainWindow::OnExitFullscreen()
@@ -868,7 +868,7 @@ void MainWindow::OnExitFullscreen()
 		return;
 	}
 
-	_editorContext->SetIsFullscreen(false);
+	_editorContext->SetFullscreenWidget(nullptr);
 
 	const auto asset = GetCurrentAsset();
 
