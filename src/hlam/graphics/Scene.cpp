@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <QMouseEvent>
 #include <QWheelEvent>
 
@@ -134,6 +136,17 @@ void Scene::CollectRenderables(RenderPass::RenderPass renderPass, std::vector<Ba
 void Scene::DrawRenderables(SceneContext& sc, RenderPass::RenderPass renderPass)
 {
 	CollectRenderables(renderPass, _renderablesToRender);
+
+	const glm::vec3& cameraOrigin = _currentCamera->GetCamera()->GetOrigin();
+
+	std::stable_sort(_renderablesToRender.begin(), _renderablesToRender.end(), [&](const auto& lhs, const auto& rhs)
+		{
+			const auto lhsDistance = lhs->GetRenderDistance(cameraOrigin);
+			const auto rhsDistance = rhs->GetRenderDistance(cameraOrigin);
+
+			// Farther objects render earlier.
+			return lhsDistance > rhsDistance;
+		});
 
 	for (const auto& renderable : _renderablesToRender)
 	{

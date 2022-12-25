@@ -150,6 +150,18 @@ void StudioModelEntity::DestroyDeviceObjects(graphics::SceneContext& sc)
 	model->DeleteTextures(*sc.TextureLoader);
 }
 
+float StudioModelEntity::GetRenderDistance(const glm::vec3& cameraOrigin) const
+{
+	// Models should use the model's center point for rendering.
+	glm::vec3 mins, maxs;
+	ExtractBbox(mins, maxs);
+
+	const glm::vec3 modelCenter = ((mins + maxs) * 0.5f);
+	const glm::vec3 renderOrigin = GetOrigin() + modelCenter;
+
+	return glm::length(renderOrigin - cameraOrigin);
+}
+
 studiomdl::ModelRenderInfo StudioModelEntity::GetRenderInfo() const
 {
 	studiomdl::ModelRenderInfo renderInfo{};

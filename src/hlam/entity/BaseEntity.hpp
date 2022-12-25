@@ -98,6 +98,8 @@ public:
 
 	virtual void DestroyDeviceObjects(graphics::SceneContext& sc) {}
 
+	virtual float GetRenderDistance(const glm::vec3& cameraOrigin) const { return 1000000000.0f; }
+
 private:
 	EntityContext* _context{};
 	EntityList* _entityList{};

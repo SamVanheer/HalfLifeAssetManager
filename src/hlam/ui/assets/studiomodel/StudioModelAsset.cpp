@@ -449,7 +449,6 @@ void StudioModelAsset::CreateMainScene()
 
 	_scenes.push_back(_scene.get());
 
-	// The order that entities are added matters for now since there's no sorting done.
 	_backgroundEntity = _scene->GetEntityList()->Create<BackgroundEntity>();
 	_axesEntity = _scene->GetEntityList()->Create<AxesEntity>();
 	_modelEntity = _scene->GetEntityList()->Create<HLMVStudioModelEntity>(GetEditableStudioModel());

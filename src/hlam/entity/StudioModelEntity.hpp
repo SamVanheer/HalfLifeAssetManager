@@ -46,6 +46,8 @@ public:
 
 	void DestroyDeviceObjects(graphics::SceneContext& sc) override;
 
+	float GetRenderDistance(const glm::vec3& cameraOrigin) const override;
+
 	studiomdl::ModelRenderInfo GetRenderInfo() const;
 
 	/**

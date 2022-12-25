@@ -1,3 +1,5 @@
+#include <glm/geometric.hpp>
+
 #include "entity/GroundEntity.hpp"
 #include "entity/HLMVStudioModelEntity.hpp"
 
@@ -107,4 +109,9 @@ void GroundEntity::DestroyDeviceObjects(graphics::SceneContext& sc)
 {
 	sc.OpenGLFunctions->glDeleteTextures(1, &_texture);
 	_texture = 0;
+}
+
+float GroundEntity::GetRenderDistance(const glm::vec3& cameraOrigin) const
+{
+	return glm::length(GetOrigin() - cameraOrigin);
 }
