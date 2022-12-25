@@ -38,6 +38,8 @@
 
 namespace studiomodel
 {
+const int StateVersion = 0;
+
 StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAssetProvider* provider)
 	: _editorContext(editorContext)
 	, _provider(provider)
@@ -133,9 +135,26 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	connect(_editorContext, &EditorContext::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
 
 	SetAsset(_provider->GetDummyAsset());
+
+	_initialState = SaveState();
 }
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
+
+QByteArray StudioModelEditWidget::SaveState()
+{
+	return _ui.Window->saveState(StateVersion);
+}
+
+void StudioModelEditWidget::RestoreState(const QByteArray& state)
+{
+	_ui.Window->restoreState(state, StateVersion);
+}
+
+void StudioModelEditWidget::ResetToInitialState()
+{
+	RestoreState(_initialState);
+}
 
 void StudioModelEditWidget::AttachSceneWidget()
 {

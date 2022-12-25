@@ -29,6 +29,8 @@ namespace studiomodel
 {
 Q_LOGGING_CATEGORY(HLAMStudioModel, "hlam.studiomodel")
 
+const QString WindowStateKey{QStringLiteral("Asset/StudioModel/WindowState")};
+
 StudioModelAssetProvider::StudioModelAssetProvider(const std::shared_ptr<StudioModelSettings>& studioModelSettings)
 	: _studioModelSettings(studioModelSettings)
 {
@@ -59,7 +61,10 @@ void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
 
 void StudioModelAssetProvider::Shutdown()
 {
-
+	if (_editWidget)
+	{
+		_editorContext->GetSettings()->setValue(WindowStateKey, _editWidget->SaveState());
+	}
 }
 
 QMenu* StudioModelAssetProvider::CreateToolMenu()
@@ -147,6 +152,7 @@ StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget()
 	{
 		assert(_editorContext);
 		_editWidget = new StudioModelEditWidget(_editorContext, this);
+		_editWidget->RestoreState(_editorContext->GetSettings()->value(WindowStateKey).toByteArray());
 	}
 
 	return _editWidget;

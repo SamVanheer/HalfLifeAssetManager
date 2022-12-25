@@ -34,6 +34,12 @@ public:
 	StudioModelEditWidget(EditorContext* editorContext, StudioModelAssetProvider* provider);
 	~StudioModelEditWidget();
 
+	QByteArray SaveState();
+
+	void RestoreState(const QByteArray& state);
+
+	void ResetToInitialState();
+
 	void AttachSceneWidget();
 
 	void DetachSceneWidget();
@@ -77,6 +83,7 @@ private:
 
 	//Stored separately to maintain list order
 	QVector<QDockWidget*> _dockWidgets;
+	QByteArray _initialState;
 
 	CamerasPanel* _camerasPanel{};
 };

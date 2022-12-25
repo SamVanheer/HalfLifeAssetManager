@@ -230,6 +230,11 @@ void StudioModelAsset::PopulateAssetMenu(QMenu* menu)
 		}
 	}
 
+	menu->addAction("Reset dock widgets", this, [this]()
+		{
+			_provider->GetEditWidget()->ResetToInitialState();
+		});
+
 	{
 		const auto controlsbar = menu->addAction("Show Controls Bar", this, [this](bool checked)
 			{
