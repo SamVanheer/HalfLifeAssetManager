@@ -68,12 +68,14 @@ void CamerasPanel::SetCameraOperators(CameraOperators* cameraOperators)
 	{
 		connect(_cameraOperators, &CameraOperators::CameraChanged, this, &CamerasPanel::OnAssetCameraChanged);
 
-		const QSignalBlocker camerasBlocker{_ui.Cameras};
-
-		for (int i = 0; i < _cameraOperators->Count(); ++i)
 		{
-			const auto cameraOperator = _cameraOperators->Get(i);
-			AddCameraOperator(cameraOperator->GetName(), cameraOperator->CreateEditWidget());
+			const QSignalBlocker camerasBlocker{_ui.Cameras};
+
+			for (int i = 0; i < _cameraOperators->Count(); ++i)
+			{
+				const auto cameraOperator = _cameraOperators->Get(i);
+				AddCameraOperator(cameraOperator->GetName(), cameraOperator->CreateEditWidget());
+			}
 		}
 
 		OnAssetCameraChanged(nullptr, _cameraOperators->GetCurrent());
