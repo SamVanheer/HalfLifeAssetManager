@@ -120,35 +120,32 @@ public:
 
 	virtual ProviderFeatures GetFeatures() const = 0;
 
+	virtual void Initialize(EditorContext* editorContext)
+	{
+		_editorContext = editorContext;
+	}
+
+	virtual void Shutdown() {}
+
 	/**
 	*	@brief Creates the tool menu for this asset, or nullptr if no menu is available
 	*/
-	virtual QMenu* CreateToolMenu(EditorContext* editorContext) = 0;
+	virtual QMenu* CreateToolMenu() = 0;
 
 	virtual bool CanLoad(const QString& fileName, FILE* file) const = 0;
 
 	//TODO: pass a filesystem object to resolve additional file locations with
 	virtual std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		EditorContext* editorContext, const QString& fileName, FILE* file) = 0;
+		const QString& fileName, FILE* file) = 0;
+
+protected:
+	EditorContext* _editorContext{};
 };
 
 /**
 *	@brief Stores the list of asset providers
 */
-class IAssetProviderRegistry
-{
-public:
-	virtual ~IAssetProviderRegistry() {}
-
-	virtual std::vector<AssetProvider*> GetAssetProviders() const = 0;
-
-	virtual void AddProvider(std::unique_ptr<AssetProvider>&& provider) = 0;
-
-	virtual std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		EditorContext* editorContext, const QString& fileName) const = 0;
-};
-
-class AssetProviderRegistry final : public IAssetProviderRegistry
+class AssetProviderRegistry final
 {
 public:
 	AssetProviderRegistry() = default;
@@ -156,12 +153,15 @@ public:
 	AssetProviderRegistry(const AssetProviderRegistry&) = delete;
 	AssetProviderRegistry& operator=(const AssetProviderRegistry&) = delete;
 
-	std::vector<AssetProvider*> GetAssetProviders() const override;
+	std::vector<AssetProvider*> GetAssetProviders() const;
 
-	void AddProvider(std::unique_ptr<AssetProvider>&& provider) override;
+	void AddProvider(std::unique_ptr<AssetProvider>&& provider);
 
-	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		EditorContext* editorContext, const QString& fileName) const override;
+	void Initialize(EditorContext* editorContext);
+
+	void Shutdown();
+
+	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(const QString& fileName) const;
 
 private:
 	std::vector<std::unique_ptr<AssetProvider>> _providers;

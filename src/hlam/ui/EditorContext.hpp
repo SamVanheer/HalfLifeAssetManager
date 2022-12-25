@@ -12,12 +12,12 @@
 #include <QUuid>
 
 class Asset;
+class AssetProviderRegistry;
 class ColorSettings;
 class DragNDropEventFilter;
 class FullscreenWidget;
 class GameConfigurationsSettings;
 class GeneralSettings;
-class IAssetProviderRegistry;
 class IFileSystem;
 class ISoundSystem;
 class OptionsPageRegistry;
@@ -52,7 +52,7 @@ public:
 	EditorContext(
 		QSettings* settings,
 		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
-		std::unique_ptr<IAssetProviderRegistry>&& assetProviderRegistry,
+		std::unique_ptr<AssetProviderRegistry>&& assetProviderRegistry,
 		std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
 		const std::shared_ptr<GeneralSettings>& generalSettings,
 		const std::shared_ptr<ColorSettings>& colorSettings,
@@ -85,7 +85,7 @@ public:
 
 	WorldTime* GetWorldTime() const { return _worldTime.get(); }
 
-	IAssetProviderRegistry* GetAssetProviderRegistry() const { return _assetProviderRegistry.get(); }
+	AssetProviderRegistry* GetAssetProviderRegistry() const { return _assetProviderRegistry.get(); }
 
 	graphics::IGraphicsContext* GetGraphicsContext() { return _graphicsContext.get(); }
 
@@ -160,7 +160,7 @@ private:
 	const std::unique_ptr<QOpenGLFunctions_1_1> _openglFunctions;
 	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
 
-	const std::unique_ptr<IAssetProviderRegistry> _assetProviderRegistry;
+	const std::unique_ptr<AssetProviderRegistry> _assetProviderRegistry;
 	const std::unique_ptr<OptionsPageRegistry> _optionsPageRegistry;
 
 	const std::shared_ptr<GeneralSettings> _generalSettings;

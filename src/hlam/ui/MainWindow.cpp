@@ -82,7 +82,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 		for (auto provider : _editorContext->GetAssetProviderRegistry()->GetAssetProviders())
 		{
-			if (auto menu = provider->CreateToolMenu(_editorContext); menu)
+			if (auto menu = provider->CreateToolMenu(); menu)
 			{
 				menus.emplace_back(provider->GetProviderName(), menu);
 			}
@@ -585,7 +585,7 @@ LoadResult MainWindow::TryLoadAsset(QString fileName)
 
 	try
 	{
-		auto asset = _editorContext->GetAssetProviderRegistry()->Load(_editorContext, fileName);
+		auto asset = _editorContext->GetAssetProviderRegistry()->Load(fileName);
 
 		return std::visit([&, this](auto&& result)
 			{

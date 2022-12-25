@@ -31,7 +31,7 @@ public:
 
 	ProviderFeatures GetFeatures() const override { return ProviderFeature::AssetLoading; }
 
-	QMenu* CreateToolMenu(EditorContext* editorContext) override { return nullptr; }
+	QMenu* CreateToolMenu() override { return nullptr; }
 
 	bool CanLoad(const QString& fileName, FILE* file) const override
 	{
@@ -49,9 +49,9 @@ public:
 	}
 
 	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		EditorContext* editorContext, const QString& fileName, FILE* file) override
+		const QString& fileName, FILE* file) override
 	{
-		const auto result = editorContext->TryLaunchExternalProgram(
+		const auto result = _editorContext->TryLaunchExternalProgram(
 			_generalSettings->GetQuake1ModelViewerFileName(),
 			QStringList(fileName),
 			"This is a Quake 1 Alias model which requires it to be loaded in Quake 1 Model Viewer.");

@@ -44,7 +44,7 @@
 EditorContext::EditorContext(
 	QSettings* settings,
 	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
-	std::unique_ptr<IAssetProviderRegistry>&& assetProviderRegistry,
+	std::unique_ptr<AssetProviderRegistry>&& assetProviderRegistry,
 	std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
 	const std::shared_ptr<GeneralSettings>& generalSettings,
 	const std::shared_ptr<ColorSettings>& colorSettings,

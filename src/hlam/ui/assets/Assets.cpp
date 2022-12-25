@@ -32,8 +32,24 @@ void AssetProviderRegistry::AddProvider(std::unique_ptr<AssetProvider>&& provide
 	_providers.push_back(std::move(provider));
 }
 
+void AssetProviderRegistry::Initialize(EditorContext* editorContext)
+{
+	for (const auto& provider : _providers)
+	{
+		provider->Initialize(editorContext);
+	}
+}
+
+void AssetProviderRegistry::Shutdown()
+{
+	for (const auto& provider : _providers)
+	{
+		provider->Shutdown();
+	}
+}
+
 std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> AssetProviderRegistry::Load(
-	EditorContext* editorContext, const QString& fileName) const
+	const QString& fileName) const
 {
 	std::unique_ptr<FILE, decltype(::fclose)*> file{utf8_exclusive_read_fopen(fileName.toStdString().c_str(), true), &::fclose};
 
@@ -47,7 +63,7 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> AssetProviderRe
 		if (provider->CanLoad(fileName, file.get()))
 		{
 			rewind(file.get());
-			return provider->Load(editorContext, fileName, file.get());
+			return provider->Load(fileName, file.get());
 		}
 
 		rewind(file.get());

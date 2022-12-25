@@ -48,12 +48,16 @@ public:
 		return ProviderFeature::AssetLoading | ProviderFeature::AssetSaving;
 	}
 
-	QMenu* CreateToolMenu(EditorContext* editorContext) override;
+	void Initialize(EditorContext* editorContext) override;
+
+	void Shutdown() override;
+
+	QMenu* CreateToolMenu() override;
 
 	bool CanLoad(const QString& fileName, FILE* file) const override;
 
 	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		EditorContext* editorContext, const QString& fileName, FILE* file) override;
+		const QString& fileName, FILE* file) override;
 
 	StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
 
@@ -61,14 +65,11 @@ public:
 
 	sprite::ISpriteRenderer* GetSpriteRenderer() const { return _spriteRenderer.get(); }
 
-	StudioModelEditWidget* GetEditWidget() const;
+	StudioModelEditWidget* GetEditWidget();
 
 	StudioModelAsset* GetDummyAsset() const { return _dummyAsset.get(); }
 
 	StudioModelAsset* GetCurrentAsset() const { return _currentAsset; }
-
-private:
-	void Initialize(EditorContext* editorContext);
 
 signals:
 	void Tick();
@@ -114,7 +115,7 @@ public:
 
 	ProviderFeatures GetFeatures() const override { return ProviderFeature::AssetLoading; }
 
-	QMenu* CreateToolMenu(EditorContext* editorContext) override { return nullptr; }
+	QMenu* CreateToolMenu() override { return nullptr; }
 
 	bool CanLoad(const QString& fileName, FILE* file) const override
 	{
@@ -122,9 +123,9 @@ public:
 	}
 
 	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		EditorContext* editorContext, const QString& fileName, FILE* file) override
+		const QString& fileName, FILE* file) override
 	{
-		return _assetProvider->Load(editorContext, fileName, file);
+		return _assetProvider->Load(fileName, file);
 	}
 
 private:

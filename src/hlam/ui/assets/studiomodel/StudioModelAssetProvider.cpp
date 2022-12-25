@@ -39,19 +39,42 @@ StudioModelAssetProvider::~StudioModelAssetProvider()
 	delete _editWidget;
 }
 
-QMenu* StudioModelAssetProvider::CreateToolMenu(EditorContext* editorContext)
+void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
+{
+	AssetProvider::Initialize(editorContext);
+
+	_studioModelRenderer = std::make_unique<studiomdl::StudioModelRenderer>(
+		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()),
+		_editorContext->GetOpenGLFunctions(), _editorContext->GetColorSettings());
+
+	_spriteRenderer = std::make_unique<sprite::SpriteRenderer>(
+		CreateQtLoggerSt(logging::HLAMSpriteRenderer()), _editorContext->GetWorldTime());
+
+	_dummyAsset = std::make_unique<StudioModelAsset>(
+		"", _editorContext, this, std::make_unique<studiomdl::EditableStudioModel>());
+
+	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAssetProvider::OnTick);
+	connect(_editorContext, &EditorContext::ActiveAssetChanged, this, &StudioModelAssetProvider::OnActiveAssetChanged);
+}
+
+void StudioModelAssetProvider::Shutdown()
+{
+
+}
+
+QMenu* StudioModelAssetProvider::CreateToolMenu()
 {
 	auto menu = new QMenu("StudioModel");
 
 	menu->addAction("Compile Model...", [=]
 		{
-			StudioModelCompilerFrontEnd compiler{editorContext};
+			StudioModelCompilerFrontEnd compiler{_editorContext};
 	compiler.exec();
 		});
 
 	menu->addAction("Decompile Model...", [=]
 		{
-			StudioModelDecompilerFrontEnd decompiler{editorContext};
+			StudioModelDecompilerFrontEnd decompiler{_editorContext};
 	decompiler.exec();
 		});
 
@@ -74,14 +97,8 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) cons
 }
 
 std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAssetProvider::Load(
-	EditorContext* editorContext, const QString& fileName, FILE* file)
+	const QString& fileName, FILE* file)
 {
-	if (!_initialized)
-	{
-		_initialized = true;
-		Initialize(editorContext);
-	}
-
 	qCDebug(HLAMStudioModel) << "Trying to load model" << fileName;
 
 	const auto filePath = std::filesystem::u8path(fileName.toStdString());
@@ -91,8 +108,8 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 	{
 		qCDebug(HLAMStudioModel) << "Model" << fileName << "is a Xash model";
 
-		const auto result = editorContext->TryLaunchExternalProgram(
-			editorContext->GetGeneralSettings()->GetXashModelViewerFileName(),
+		const auto result = _editorContext->TryLaunchExternalProgram(
+			_editorContext->GetGeneralSettings()->GetXashModelViewerFileName(),
 			QStringList(fileName),
 			"This is a Xash model which requires it to be loaded in Xash Model Viewer.");
 
@@ -120,32 +137,19 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 
 	qCDebug(HLAMStudioModel) << "Loaded model" << fileName << "as" << updatedFileName;
 
-	return std::make_unique<StudioModelAsset>(std::move(updatedFileName), editorContext, this,
+	return std::make_unique<StudioModelAsset>(std::move(updatedFileName), _editorContext, this,
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
 }
 
-StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget() const
+StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget()
 {
-	assert(_editWidget);
+	if (!_editWidget)
+	{
+		assert(_editorContext);
+		_editWidget = new StudioModelEditWidget(_editorContext, this);
+	}
+
 	return _editWidget;
-}
-
-void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
-{
-	_studioModelRenderer = std::make_unique<studiomdl::StudioModelRenderer>(
-		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()),
-		editorContext->GetOpenGLFunctions(), editorContext->GetColorSettings());
-
-	_spriteRenderer = std::make_unique<sprite::SpriteRenderer>(
-		CreateQtLoggerSt(logging::HLAMSpriteRenderer()), editorContext->GetWorldTime());
-
-	_dummyAsset = std::make_unique<StudioModelAsset>(
-		"", editorContext, this, std::make_unique<studiomdl::EditableStudioModel>());
-
-	_editWidget = new StudioModelEditWidget(editorContext, this);
-
-	connect(editorContext, &EditorContext::Tick, this, &StudioModelAssetProvider::OnTick);
-	connect(editorContext, &EditorContext::ActiveAssetChanged, this, &StudioModelAssetProvider::OnActiveAssetChanged);
 }
 
 void StudioModelAssetProvider::OnTick()

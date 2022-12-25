@@ -365,7 +365,7 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGameConfigurations>(gameConfigurationsSettings));
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageStyle>(styleSettings));
 
-	return std::make_unique<EditorContext>(
+	auto editorContext = std::make_unique<EditorContext>(
 		settings.release(),
 		std::move(graphicsContext),
 		std::move(assetProviderRegistry),
@@ -374,6 +374,10 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 		colorSettings,
 		recentFilesSettings,
 		gameConfigurationsSettings);
+
+	editorContext->GetAssetProviderRegistry()->Initialize(editorContext.get());
+
+	return editorContext;
 }
 
 bool ToolApplication::AddPlugins(ApplicationBuilder& builder)
@@ -442,6 +446,8 @@ void ToolApplication::OnExit()
 	_editorContext->GetRecentFiles()->SaveSettings(*settings);
 
 	CallPlugins(&IAssetManagerPlugin::SaveSettings, *settings);
+
+	_editorContext->GetAssetProviderRegistry()->Shutdown();
 
 	settings->sync();
 

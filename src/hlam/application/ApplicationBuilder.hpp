@@ -1,8 +1,8 @@
 #pragma once
 
+class AssetProviderRegistry;
 class ColorSettings;
 class GeneralSettings;
-class IAssetProviderRegistry;
 class OptionsPageRegistry;
 class QApplication;
 class QSettings;
@@ -18,6 +18,6 @@ public:
 	// TODO: shouldn't pass specific settings objects around here
 	GeneralSettings* const GeneralSettings;
 	ColorSettings* const ColorSettings;
-	IAssetProviderRegistry* const AssetProviderRegistry;
+	AssetProviderRegistry* const AssetProviderRegistry;
 	OptionsPageRegistry* const OptionsPageRegistry;
 };
