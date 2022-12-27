@@ -5,12 +5,8 @@
 
 #include "qt/QtUtilities.hpp"
 
-#include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
-
 #include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"
-
-using namespace studiomodel;
 
 CamerasPanel::CamerasPanel()
 {
