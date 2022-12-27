@@ -219,7 +219,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionAbout, &QAction::triggered, this, &MainWindow::OnShowAbout);
 	connect(_ui.ActionAboutQt, &QAction::triggered, QApplication::instance(), &QApplication::aboutQt);
 
-	connect(_editorContext->GetRecentFiles(), &RecentFilesSettings::RecentFilesChanged, this, &MainWindow::OnRecentFilesChanged);
+	connect(_editorContext->GetApplicationSettings()->GetRecentFiles(), &RecentFilesSettings::RecentFilesChanged,
+		this, &MainWindow::OnRecentFilesChanged);
 
 	connect(_undoGroup, &QUndoGroup::cleanChanged, this, &MainWindow::OnAssetCleanChanged);
 
@@ -567,7 +568,7 @@ LoadResult MainWindow::TryLoadAsset(QString fileName)
 
 			if (result)
 			{
-				_editorContext->GetRecentFiles()->Add(fileName);
+				_editorContext->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
 			}
 
 			return result ? LoadResult::Success : LoadResult::Cancelled;
@@ -638,7 +639,7 @@ LoadResult MainWindow::TryLoadAsset(QString fileName)
 
 				if (loaded)
 				{
-					_editorContext->GetRecentFiles()->Add(fileName);
+					_editorContext->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
 				}
 
 				return LoadResult::Success;
@@ -749,7 +750,7 @@ void MainWindow::OnAssetFileNameChanged(const QString& fileName)
 	{
 		_assetTabs->setTabText(index, fileName);
 
-		_editorContext->GetRecentFiles()->Add(fileName);
+		_editorContext->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
 
 		if (_assetTabs->currentWidget() == asset->GetEditWidget())
 		{
@@ -792,7 +793,7 @@ void MainWindow::OnCloseAsset()
 
 void MainWindow::OnRecentFilesChanged()
 {
-	const auto recentFiles = _editorContext->GetRecentFiles();
+	const auto recentFiles = _editorContext->GetApplicationSettings()->GetRecentFiles();
 
 	_ui.MenuRecentFiles->clear();
 
@@ -812,7 +813,7 @@ void MainWindow::OnOpenRecentFile()
 
 	if (TryLoadAsset(fileName) == LoadResult::Failed)
 	{
-		_editorContext->GetRecentFiles()->Remove(fileName);
+		_editorContext->GetApplicationSettings()->GetRecentFiles()->Remove(fileName);
 	}
 }
 

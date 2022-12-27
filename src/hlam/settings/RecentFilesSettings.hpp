@@ -15,57 +15,57 @@ class RecentFilesSettings final : public QObject
 public:
 	static constexpr int DefaultMaxRecentFiles{10};
 
-	RecentFilesSettings(QObject* parent = nullptr)
-		: QObject(parent)
+	explicit RecentFilesSettings(QSettings* settings)
+		: _settings(settings)
 	{
 	}
 
 	~RecentFilesSettings() = default;
 
-	void LoadSettings(QSettings& settings)
+	void LoadSettings()
 	{
 		_recentFiles.clear();
 
-		settings.beginGroup("RecentFiles");
+		_settings->beginGroup("RecentFiles");
 
-		_maxRecentFiles = std::max(0, settings.value("MaxRecentFiles", DefaultMaxRecentFiles).toInt());
+		_maxRecentFiles = std::max(0, _settings->value("MaxRecentFiles", DefaultMaxRecentFiles).toInt());
 
-		const int fileCount = settings.beginReadArray("list");
+		const int fileCount = _settings->beginReadArray("list");
 
 		for (int i = 0; i < fileCount; ++i)
 		{
-			settings.setArrayIndex(i);
-			_recentFiles.append(settings.value("FileName").toString());
+			_settings->setArrayIndex(i);
+			_recentFiles.append(_settings->value("FileName").toString());
 		}
 
-		settings.endArray();
+		_settings->endArray();
 
-		settings.endGroup();
+		_settings->endGroup();
 
 		CheckMaximum();
 
 		emit RecentFilesChanged();
 	}
 
-	void SaveSettings(QSettings& settings)
+	void SaveSettings()
 	{
-		settings.beginGroup("RecentFiles");
+		_settings->beginGroup("RecentFiles");
 
-		settings.setValue("MaxRecentFiles", _maxRecentFiles);
+		_settings->setValue("MaxRecentFiles", _maxRecentFiles);
 
-		settings.remove("List");
+		_settings->remove("List");
 
-		settings.beginWriteArray("List", _recentFiles.size());
+		_settings->beginWriteArray("List", _recentFiles.size());
 
 		for (int i = 0; i < _recentFiles.size(); ++i)
 		{
-			settings.setArrayIndex(i);
-			settings.setValue("FileName", _recentFiles[i]);
+			_settings->setArrayIndex(i);
+			_settings->setValue("FileName", _recentFiles[i]);
 		}
 
-		settings.endArray();
+		_settings->endArray();
 
-		settings.endGroup();
+		_settings->endGroup();
 	}
 
 	int GetCount() const { return _recentFiles.count(); }
@@ -121,6 +121,8 @@ signals:
 	void RecentFilesChanged();
 
 private:
+	QSettings* const _settings;
+
 	QStringList _recentFiles;
 
 	int _maxRecentFiles{DefaultMaxRecentFiles};

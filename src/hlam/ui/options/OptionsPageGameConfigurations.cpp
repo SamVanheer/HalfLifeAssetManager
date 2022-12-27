@@ -49,8 +49,7 @@ static QString GenerateUniqueName(const QString& baseName, const Container& cont
 	return baseName + " (Duplicate)";
 }
 
-OptionsPageGameConfigurations::OptionsPageGameConfigurations(const std::shared_ptr<GameConfigurationsSettings>& gameConfigurationsSettings)
-	: _gameConfigurationsSettings(gameConfigurationsSettings)
+OptionsPageGameConfigurations::OptionsPageGameConfigurations()
 {
 	SetCategory(QString{OptionsPageGameConfigurationsCategory});
 	SetCategoryTitle("Game Configurations");
@@ -147,7 +146,7 @@ OptionsPageGameConfigurationsWidget::OptionsPageGameConfigurationsWidget(EditorC
 
 OptionsPageGameConfigurationsWidget::~OptionsPageGameConfigurationsWidget() = default;
 
-void OptionsPageGameConfigurationsWidget::ApplyChanges(QSettings& settings)
+void OptionsPageGameConfigurationsWidget::ApplyChanges()
 {
 	const auto gameConfigurations = _editorContext->GetGameConfigurations();
 
@@ -237,8 +236,6 @@ void OptionsPageGameConfigurationsWidget::ApplyChanges(QSettings& settings)
 	}
 
 	gameConfigurations->SetActiveConfiguration({activeEnvironment, activeConfiguration});
-
-	gameConfigurations->SaveSettings(settings);
 }
 
 OptionsPageGameConfigurationsWidget::ChangeSet* OptionsPageGameConfigurationsWidget::GetOrCreateGameConfigurationChangeSet(const QUuid& id)

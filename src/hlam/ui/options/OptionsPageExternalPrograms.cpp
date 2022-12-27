@@ -53,15 +53,13 @@ OptionsPageExternalProgramsWidget::OptionsPageExternalProgramsWidget(
 
 OptionsPageExternalProgramsWidget::~OptionsPageExternalProgramsWidget() = default;
 
-void OptionsPageExternalProgramsWidget::ApplyChanges(QSettings& settings)
+void OptionsPageExternalProgramsWidget::ApplyChanges()
 {
 	_applicationSettings->SetStudiomdlCompilerFileName(_ui.Compiler->text());
 	_applicationSettings->SetStudiomdlDecompilerFileName(_ui.Decompiler->text());
 	_applicationSettings->SetXashModelViewerFileName(_ui.XashModelViewer->text());
 	_applicationSettings->SetQuake1ModelViewerFileName(_ui.Quake1ModelViewer->text());
 	_applicationSettings->SetSource1ModelViewerFileName(_ui.Source1ModelViewer->text());
-
-	_applicationSettings->SaveSettings();
 }
 
 static void BrowseExeFile(QWidget* parent, const QString& title, QLineEdit* lineEdit)

@@ -15,8 +15,8 @@
 
 #include "ui/options/OptionsPage.hpp"
 
+class ApplicationSettings;
 class EditorContext;
-
 class GameConfigurationsSettings;
 class GameEnvironment;
 
@@ -25,10 +25,7 @@ extern const QString OptionsPageGameConfigurationsId;
 class OptionsPageGameConfigurations final : public OptionsPage
 {
 public:
-	OptionsPageGameConfigurations(const std::shared_ptr<GameConfigurationsSettings>& gameConfigurationsSettings);
-
-private:
-	const std::shared_ptr<GameConfigurationsSettings> _gameConfigurationsSettings;
+	explicit OptionsPageGameConfigurations();
 };
 
 class OptionsPageGameConfigurationsWidget final : public OptionsWidget
@@ -78,7 +75,7 @@ public:
 	OptionsPageGameConfigurationsWidget(EditorContext* editorContext);
 	~OptionsPageGameConfigurationsWidget();
 
-	void ApplyChanges(QSettings& settings) override;
+	void ApplyChanges() override;
 
 private:
 	ChangeSet* GetOrCreateGameConfigurationChangeSet(const QUuid& id);

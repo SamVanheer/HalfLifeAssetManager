@@ -1,6 +1,7 @@
 #include "application/ApplicationBuilder.hpp"
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
 
+#include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 #include "settings/StudioModelSettings.hpp"
 
@@ -15,18 +16,23 @@ using namespace studiomodel;
 
 bool HalfLifeAssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 {
-	builder.ColorSettings->Add(GroundColor, RGBA8888ToVector(216, 216, 175, 178));
-	builder.ColorSettings->Add(BackgroundColor, RGB888ToVector(63, 127, 127));
-	builder.ColorSettings->Add(CrosshairColor, RGB888ToVector(255, 0, 0));
-	builder.ColorSettings->Add(SkyLightColor, RGB888ToVector(255, 255, 255));
-	builder.ColorSettings->Add(WireframeColor, RGB888ToVector(255, 0, 0));
-	builder.ColorSettings->Add(HitboxEdgeColor, RGBA8888ToVector(255, 0, 0, 128));
-	builder.ColorSettings->Add(HitboxFaceColor, RGBA8888ToVector(128, 0, 0, 0));
+	auto colorSettings = builder.ApplicationSettings->GetColorSettings();
 
-	const auto studioModelSettings{std::make_shared<StudioModelSettings>()};
+	colorSettings->Add(GroundColor, RGBA8888ToVector(216, 216, 175, 178));
+	colorSettings->Add(BackgroundColor, RGB888ToVector(63, 127, 127));
+	colorSettings->Add(CrosshairColor, RGB888ToVector(255, 0, 0));
+	colorSettings->Add(SkyLightColor, RGB888ToVector(255, 255, 255));
+	colorSettings->Add(WireframeColor, RGB888ToVector(255, 0, 0));
+	colorSettings->Add(HitboxEdgeColor, RGBA8888ToVector(255, 0, 0, 128));
+	colorSettings->Add(HitboxFaceColor, RGBA8888ToVector(128, 0, 0, 0));
+
+	const auto studioModelSettings{std::make_shared<StudioModelSettings>(builder.ApplicationSettings->GetSettings())};
+
+	QObject::connect(builder.ApplicationSettings, &ApplicationSettings::SettingsSaved,
+		studioModelSettings.get(), &StudioModelSettings::SaveSettings);
 
 	// TODO: needs to be moved later on
-	studioModelSettings->LoadSettings(*builder.Settings);
+	studioModelSettings->LoadSettings();
 
 	auto studioModelAssetProvider = std::make_unique<StudioModelAssetProvider>(studioModelSettings);
 	auto studioModelImportProvider = std::make_unique<StudioModelDolImportProvider>(studioModelAssetProvider.get());

@@ -2,6 +2,7 @@
 
 #include <QColorDialog>
 
+#include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 
 #include "ui/EditorContext.hpp"
@@ -11,10 +12,10 @@
 const QString OptionsPageColorsId{QStringLiteral("D.Colors")};
 
 OptionsPageColors::OptionsPageColors(
-	const std::shared_ptr<ColorSettings>& colorSettings)
-	: _colorSettings(colorSettings)
+	const std::shared_ptr<ApplicationSettings>& applicationSettings)
+	: _applicationSettings(applicationSettings)
 {
-	assert(_colorSettings);
+	assert(_applicationSettings);
 
 	SetCategory(QString{OptionsPageGeneralCategory});
 	SetCategoryTitle("General");
@@ -22,7 +23,7 @@ OptionsPageColors::OptionsPageColors(
 	SetPageTitle("Colors");
 	SetWidgetFactory([this](EditorContext* editorContext)
 		{
-			return new OptionsPageColorsWidget(editorContext, _colorSettings.get());
+			return new OptionsPageColorsWidget(editorContext, _applicationSettings->GetColorSettings());
 		});
 }
 
@@ -51,7 +52,7 @@ OptionsPageColorsWidget::OptionsPageColorsWidget(
 
 OptionsPageColorsWidget::~OptionsPageColorsWidget() = default;
 
-void OptionsPageColorsWidget::ApplyChanges(QSettings& settings)
+void OptionsPageColorsWidget::ApplyChanges()
 {
 	for (int i = 0; i < _ui.ColorList->count(); ++i)
 	{
@@ -59,8 +60,6 @@ void OptionsPageColorsWidget::ApplyChanges(QSettings& settings)
 	}
 
 	emit _colorSettings->ColorsChanged();
-
-	_colorSettings->SaveSettings(settings);
 }
 
 void OptionsPageColorsWidget::SetPreviewColor(const QColor& color)

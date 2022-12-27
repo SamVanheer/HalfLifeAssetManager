@@ -7,7 +7,6 @@
 #include <QMainWindow>
 #include <QObject>
 #include <QPointer>
-#include <QSettings>
 #include <QString>
 
 #include "application/SingleInstance.hpp"
@@ -18,6 +17,7 @@ class EditorContext;
 class IAssetManagerPlugin;
 class MainWindow;
 class QApplication;
+class QSettings;
 class QStringList;
 
 namespace graphics
@@ -56,8 +56,7 @@ private:
 
 	bool CheckSingleInstance(const QString& programName, const QString& fileName, ApplicationSettings& settings);
 
-	std::unique_ptr<EditorContext> CreateEditorContext(std::unique_ptr<QSettings>&& settings,
-		std::shared_ptr<ApplicationSettings> applicationSettings,
+	std::unique_ptr<EditorContext> CreateEditorContext(std::shared_ptr<ApplicationSettings> applicationSettings,
 		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext);
 
 	bool AddPlugins(ApplicationBuilder& builder);

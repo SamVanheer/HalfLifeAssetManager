@@ -1,10 +1,16 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
-#include <QSettings>
 #include <QString>
 
 #include "graphics/TextureLoader.hpp"
+
+class ColorSettings;
+class GameConfigurationsSettings;
+class QSettings;
+class RecentFilesSettings;
 
 enum class GuidelinesAspectRatio
 {
@@ -52,133 +58,25 @@ public:
 
 	static constexpr GuidelinesAspectRatio DefaultGuidelinesAspectRatio{GuidelinesAspectRatio::SixteenNine};
 
-	static const inline QString StudiomdlCompilerFileNameKey{
-		QStringLiteral("ExternalPrograms/StudioMdlCompilerFileName")};
-	static const inline QString StudiomdlDecompilerFileNameKey{
-		QStringLiteral("ExternalPrograms/StudioMdlDecompilerFileName")};
-	static const inline QString XashModelViewerFileNameKey{
-		QStringLiteral("ExternalPrograms/XashModelViewerFileName")};
-	static const inline QString Quake1ModelViewerFileNameKey{
-		QStringLiteral("ExternalPrograms/Quake1ModelViewerFileName")};
-	static const inline QString Source1ModelViewerFileNameKey{
-		QStringLiteral("ExternalPrograms/Source1ModelViewerFileName")};
+	explicit ApplicationSettings(QSettings* settings);
+	~ApplicationSettings() override;
 
-	explicit ApplicationSettings(QSettings* settings)
-		: _settings(settings)
-	{
-	}
+	QSettings* GetSettings() const { return _settings; }
 
-	void LoadSettings()
-	{
-		_settings->beginGroup("General");
-		PauseAnimationsOnTimelineClick = _settings->value("PauseAnimationsOnTimelineClick", DefaultPauseAnimationsOnTimelineClick).toBool();
-		OneAssetAtATime = _settings->value("OneAssetAtATime", DefaultOneAssetAtATime).toBool();
-		PromptExternalProgramLaunch = _settings->value(
-			"PromptExternalProgramLaunch", DefaultPromptExternalProgramLaunch).toBool();
-		_tickRate = std::clamp(_settings->value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
+	RecentFilesSettings* GetRecentFiles() const { return _recentFiles.get(); }
 
-		GuidelinesAspectRatio = static_cast<::GuidelinesAspectRatio>(_settings->value(
-			"GuidelinesAspectRatio", static_cast<int>(GuidelinesAspectRatio::SixteenNine)).toInt());
+	ColorSettings* GetColorSettings() const { return _colorSettings.get(); }
 
-		GuidelinesAspectRatio = std::clamp(
-			GuidelinesAspectRatio, ::GuidelinesAspectRatio::FourThree, ::GuidelinesAspectRatio::SixteenTen);
-		_settings->endGroup();
+	GameConfigurationsSettings* GetGameConfigurations() const { return _gameConfigurations.get(); }
 
-		_settings->beginGroup("Mouse");
-		_invertMouseX = _settings->value("InvertMouseX", false).toBool();
-		_invertMouseY = _settings->value("InvertMouseY", false).toBool();
-		_mouseSensitivity = std::clamp(_settings->value("MouseSensitivity", DefaultMouseSensitivity).toInt(), MinimumMouseSensitivity, MaximumMouseSensitivity);
-		_mouseWheelSpeed = std::clamp(_settings->value("MouseWheelSpeed", DefaultMouseWheelSpeed).toInt(), MinimumMouseWheelSpeed, MaximumMouseWheelSpeed);
-		_settings->endGroup();
+	void LoadSettings();
+	void SaveSettings();
 
-		_settings->beginGroup("Audio");
-		_enableAudioPlayback = _settings->value("EnableAudioPlayback", DefaultEnableAudioPlayback).toBool();
-		PlaySounds = _settings->value("PlaySounds", DefaultPlaySounds).toBool();
-		FramerateAffectsPitch = _settings->value("FramerateAffectsPitch", DefaultFramerateAffectsPitch).toBool();
-		_settings->endGroup();
+	bool ShouldUseSingleInstance() const;
+	void SetUseSingleInstance(bool value);
 
-		_settings->beginGroup("Graphics");
-
-		_powerOf2Textures = _settings->value("PowerOf2Textures", DefaultPowerOf2Textures).toBool();
-
-		_settings->beginGroup("TextureFilters");
-		_minFilter = static_cast<graphics::TextureFilter>(std::clamp(
-			_settings->value("Min", static_cast<int>(DefaultMinFilter)).toInt(),
-			static_cast<int>(graphics::TextureFilter::First),
-			static_cast<int>(graphics::TextureFilter::Last)));
-
-		_magFilter = static_cast<graphics::TextureFilter>(std::clamp(
-			_settings->value("Mag", static_cast<int>(DefaultMagFilter)).toInt(),
-			static_cast<int>(graphics::TextureFilter::First),
-			static_cast<int>(graphics::TextureFilter::Last)));
-
-		_mipmapFilter = static_cast<graphics::MipmapFilter>(std::clamp(
-			_settings->value("Mipmap", static_cast<int>(DefaultMipmapFilter)).toInt(),
-			static_cast<int>(graphics::MipmapFilter::First),
-			static_cast<int>(graphics::MipmapFilter::Last)));
-		_settings->endGroup();
-
-		_msaaLevel = _settings->value("MSAALevel", DefaultMSAALevel).toInt();
-		TransparentScreenshots = _settings->value("TransparentScreenshots", DefaultTransparentScreenshots).toBool();
-		_settings->endGroup();
-	}
-
-	void SaveSettings()
-	{
-		_settings->beginGroup("General");
-		_settings->setValue("PauseAnimationsOnTimelineClick", PauseAnimationsOnTimelineClick);
-		_settings->setValue("OneAssetAtATime", OneAssetAtATime);
-		_settings->setValue("PromptExternalProgramLaunch", PromptExternalProgramLaunch);
-		_settings->setValue("TickRate", _tickRate);
-		_settings->setValue("GuidelinesAspectRatio", static_cast<int>(GuidelinesAspectRatio));
-		_settings->endGroup();
-
-		_settings->beginGroup("Mouse");
-		_settings->setValue("InvertMouseX", _invertMouseX);
-		_settings->setValue("InvertMouseY", _invertMouseY);
-		_settings->setValue("MouseSensitivity", _mouseSensitivity);
-		_settings->setValue("MouseWheelSpeed", _mouseWheelSpeed);
-		_settings->endGroup();
-
-		_settings->beginGroup("Audio");
-		_settings->setValue("EnableAudioPlayback", _enableAudioPlayback);
-		_settings->setValue("PlaySounds", PlaySounds);
-		_settings->setValue("FramerateAffectsPitch", FramerateAffectsPitch);
-		_settings->endGroup();
-
-		_settings->beginGroup("Graphics");
-		_settings->setValue("PowerOf2Textures", _powerOf2Textures);
-
-		_settings->beginGroup("TextureFilters");
-		_settings->setValue("Min", static_cast<int>(_minFilter));
-		_settings->setValue("Mag", static_cast<int>(_magFilter));
-		_settings->setValue("Mipmap", static_cast<int>(_mipmapFilter));
-		_settings->endGroup();
-
-		_settings->setValue("MSAALevel", _msaaLevel);
-		_settings->setValue("TransparentScreenshots", DefaultTransparentScreenshots);
-		_settings->endGroup();
-	}
-
-	bool ShouldUseSingleInstance() const
-	{
-		return _settings->value("Startup/UseSingleInstance", DefaultUseSingleInstance).toBool();
-	}
-
-	void SetUseSingleInstance(bool value)
-	{
-		_settings->setValue("Startup/UseSingleInstance", value);
-	}
-
-	bool ShouldAllowTabCloseWithMiddleClick() const
-	{
-		return _settings->value("General/AllowTabCloseWithMiddleClick", DefaultAllowTabCloseWithMiddleClick).toBool();
-	}
-
-	void SetAllowTabCloseWithMiddleClick(bool value)
-	{
-		_settings->setValue("General/AllowTabCloseWithMiddleClick", value);
-	}
+	bool ShouldAllowTabCloseWithMiddleClick() const;
+	void SetAllowTabCloseWithMiddleClick(bool value);
 
 	int GetTickRate() const { return _tickRate; }
 
@@ -234,15 +132,8 @@ public:
 	bool PlaySounds = DefaultPlaySounds;
 	bool FramerateAffectsPitch = DefaultFramerateAffectsPitch;
 
-	bool ShouldEnableVSync() const
-	{
-		return _settings->value("Graphics/EnableVSync", DefaultEnableVSync).toBool();
-	}
-
-	void SetEnableVSync(bool value)
-	{
-		_settings->setValue("Graphics/EnableVSync", value);
-	}
+	bool ShouldEnableVSync() const;
+	void SetEnableVSync(bool value);
 
 	bool ShouldResizeTexturesToPowerOf2() const { return _powerOf2Textures; }
 
@@ -261,7 +152,8 @@ public:
 
 	graphics::MipmapFilter GetMipmapFilter() const { return _mipmapFilter; }
 
-	void SetTextureFilters(graphics::TextureFilter minFilter, graphics::TextureFilter magFilter, graphics::MipmapFilter mipmapFilter)
+	void SetTextureFilters(
+		graphics::TextureFilter minFilter, graphics::TextureFilter magFilter, graphics::MipmapFilter mipmapFilter)
 	{
 		if (_minFilter == minFilter && _magFilter == magFilter && _mipmapFilter == mipmapFilter)
 		{
@@ -286,57 +178,30 @@ public:
 		}
 	}
 
-	QString GetStudiomdlCompilerFileName() const
-	{
-		return _settings->value(StudiomdlCompilerFileNameKey).toString();
-	}
+	QString GetStudiomdlCompilerFileName() const;
+	void SetStudiomdlCompilerFileName(const QString& fileName);
 
-	void SetStudiomdlCompilerFileName(const QString& fileName)
-	{
-		_settings->setValue(StudiomdlCompilerFileNameKey, fileName);
-	}
+	QString GetStudiomdlDecompilerFileName() const;
+	void SetStudiomdlDecompilerFileName(const QString& fileName);
 
-	QString GetStudiomdlDecompilerFileName() const
-	{
-		return _settings->value(StudiomdlDecompilerFileNameKey).toString();
-	}
+	QString GetXashModelViewerFileName() const;
+	void SetXashModelViewerFileName(const QString& fileName);
 
-	void SetStudiomdlDecompilerFileName(const QString& fileName)
-	{
-		_settings->setValue(StudiomdlDecompilerFileNameKey, fileName);
-	}
+	QString GetQuake1ModelViewerFileName() const;
+	void SetQuake1ModelViewerFileName(const QString& fileName);
 
-	QString GetXashModelViewerFileName() const
-	{
-		return _settings->value(XashModelViewerFileNameKey).toString();
-	}
+	QString GetSource1ModelViewerFileName() const;
+	void SetSource1ModelViewerFileName(const QString& fileName);
 
-	void SetXashModelViewerFileName(const QString& fileName)
-	{
-		_settings->setValue(XashModelViewerFileNameKey, fileName);
-	}
+	QString GetSavedPath(const QString& pathName);
+	void SetSavedPath(const QString& pathName, const QString& path);
 
-	QString GetQuake1ModelViewerFileName() const
-	{
-		return _settings->value(Quake1ModelViewerFileNameKey).toString();
-	}
-
-	void SetQuake1ModelViewerFileName(const QString& fileName)
-	{
-		_settings->setValue(Quake1ModelViewerFileNameKey, fileName);
-	}
-
-	QString GetSource1ModelViewerFileName() const
-	{
-		return _settings->value(Source1ModelViewerFileNameKey).toString();
-	}
-
-	void SetSource1ModelViewerFileName(const QString& fileName)
-	{
-		_settings->setValue(Source1ModelViewerFileNameKey, fileName);
-	}
+	QString GetStylePath() const;
+	void SetStylePath(const QString& stylePath);
 
 signals:
+	void SettingsSaved();
+
 	void TickRateChanged(int value);
 
 	void ResizeTexturesToPowerOf2Changed(bool value);
@@ -345,6 +210,8 @@ signals:
 		graphics::TextureFilter minFilter, graphics::TextureFilter magFilter, graphics::MipmapFilter mipmapFilter);
 
 	void MSAALevelChanged(int msaaLevel);
+
+	void StylePathChanged(const QString& stylePath);
 
 public:
 	bool PauseAnimationsOnTimelineClick{DefaultPauseAnimationsOnTimelineClick};
@@ -356,6 +223,10 @@ public:
 
 private:
 	QSettings* const _settings;
+
+	const std::unique_ptr<RecentFilesSettings> _recentFiles;
+	const std::unique_ptr<ColorSettings> _colorSettings;
+	const std::unique_ptr<GameConfigurationsSettings> _gameConfigurations;
 
 	int _tickRate{DefaultTickRate};
 

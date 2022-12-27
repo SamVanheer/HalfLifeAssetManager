@@ -2,7 +2,7 @@
 
 #include <QFileDialog>
 
-#include "settings/StyleSettings.hpp"
+#include "settings/ApplicationSettings.hpp"
 
 #include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
@@ -10,10 +10,10 @@
 
 const QString OptionsPageStyleId{QStringLiteral("B.Style")};
 
-OptionsPageStyle::OptionsPageStyle(const std::shared_ptr<StyleSettings>& styleSettings)
-	: _styleSettings(styleSettings)
+OptionsPageStyle::OptionsPageStyle(const std::shared_ptr<ApplicationSettings>& applicationSettings)
+	: _applicationSettings(applicationSettings)
 {
-	assert(_styleSettings);
+	assert(_applicationSettings);
 
 	SetCategory(QString{OptionsPageGeneralCategory});
 	SetCategoryTitle("General");
@@ -21,30 +21,28 @@ OptionsPageStyle::OptionsPageStyle(const std::shared_ptr<StyleSettings>& styleSe
 	SetPageTitle("Style");
 	SetWidgetFactory([this](EditorContext* editorContext)
 		{
-			return new OptionsPageStyleWidget(editorContext, _styleSettings.get());
+			return new OptionsPageStyleWidget(editorContext, _applicationSettings.get());
 		});
 }
 
 OptionsPageStyle::~OptionsPageStyle() = default;
 
-OptionsPageStyleWidget::OptionsPageStyleWidget(EditorContext* editorContext, StyleSettings* styleSettings)
+OptionsPageStyleWidget::OptionsPageStyleWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings)
 	: _editorContext(editorContext)
-	, _styleSettings(styleSettings)
+	, _applicationSettings(applicationSettings)
 {
 	_ui.setupUi(this);
 
-	_ui.CurrentStyle->setText(_styleSettings->GetStylePath());
+	_ui.CurrentStyle->setText(_applicationSettings->GetStylePath());
 
 	connect(_ui.BrowseStyle, &QPushButton::clicked, this, &OptionsPageStyleWidget::OnBrowseStyle);
 }
 
 OptionsPageStyleWidget::~OptionsPageStyleWidget() = default;
 
-void OptionsPageStyleWidget::ApplyChanges(QSettings& settings)
+void OptionsPageStyleWidget::ApplyChanges()
 {
-	_styleSettings->SetStylePath(_ui.CurrentStyle->text());
-
-	_styleSettings->SaveSettings(settings);
+	_applicationSettings->SetStylePath(_ui.CurrentStyle->text());
 }
 
 void OptionsPageStyleWidget::OnBrowseStyle()

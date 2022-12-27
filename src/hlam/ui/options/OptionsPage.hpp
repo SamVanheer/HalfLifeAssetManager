@@ -5,7 +5,6 @@
 
 #include <QPointer>
 #include <QObject>
-#include <QSettings>
 #include <QString>
 #include <QWidget>
 
@@ -16,7 +15,7 @@ class OptionsWidget : public QWidget
 public:
 	using QWidget::QWidget;
 
-	virtual void ApplyChanges(QSettings& settings) = 0;
+	virtual void ApplyChanges() = 0;
 
 	virtual void Destroy() {}
 };
@@ -43,7 +42,7 @@ public:
 
 	virtual QWidget* GetWidget(EditorContext* editorContext);
 
-	virtual void ApplyChanges(QSettings& settings);
+	virtual void ApplyChanges();
 
 	virtual void DestroyWidget();
 

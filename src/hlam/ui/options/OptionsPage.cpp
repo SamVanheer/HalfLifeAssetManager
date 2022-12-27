@@ -15,13 +15,13 @@ QWidget* OptionsPage::GetWidget(EditorContext* editorContext)
 	return _widget;
 }
 
-void OptionsPage::ApplyChanges(QSettings& settings)
+void OptionsPage::ApplyChanges()
 {
 	assert(_widgetFactory);
 
 	if (_widgetFactory && _widget)
 	{
-		_widget->ApplyChanges(settings);
+		_widget->ApplyChanges();
 	}
 }
 

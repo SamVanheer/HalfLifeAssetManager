@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QSettings>
 #include <QString>
 #include <QWidget>
 
@@ -11,30 +10,26 @@
 class EditorContext;
 
 class ApplicationSettings;
-class RecentFilesSettings;
 
 extern const QString OptionsPageGeneralCategory;
 
 class OptionsPageGeneral : public OptionsPage
 {
 public:
-	OptionsPageGeneral(const std::shared_ptr<ApplicationSettings>& applicationSettings,
-		const std::shared_ptr<RecentFilesSettings>& recentFilesSettings);
+	OptionsPageGeneral(const std::shared_ptr<ApplicationSettings>& applicationSettings);
 	~OptionsPageGeneral();
 
 private:
 	const std::shared_ptr<ApplicationSettings> _applicationSettings;
-	const std::shared_ptr<RecentFilesSettings> _recentFilesSettings;
 };
 
 class OptionsPageGeneralWidget final : public OptionsWidget
 {
 public:
-	OptionsPageGeneralWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings,
-		RecentFilesSettings* recentFilesSettings);
+	OptionsPageGeneralWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings);
 	~OptionsPageGeneralWidget();
 
-	void ApplyChanges(QSettings& settings) override;
+	void ApplyChanges() override;
 
 private:
 	Ui_OptionsPageGeneral _ui;
@@ -42,5 +37,4 @@ private:
 	EditorContext* const _editorContext;
 
 	ApplicationSettings* const _applicationSettings;
-	RecentFilesSettings* const _recentFilesSettings;
 };

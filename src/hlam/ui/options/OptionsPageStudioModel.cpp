@@ -46,13 +46,11 @@ OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(EditorContext* editor
 
 OptionsPageStudioModelWidget::~OptionsPageStudioModelWidget() = default;
 
-void OptionsPageStudioModelWidget::ApplyChanges(QSettings& settings)
+void OptionsPageStudioModelWidget::ApplyChanges()
 {
 	_studioModelSettings->SetAutodetectViewmodels(_ui.AutodetectViewmodels->isChecked());
 	_studioModelSettings->SetActivateTextureViewWhenTexturesPanelOpened(_ui.ActivateTextureViewWhenTexturesPanelOpened->isChecked());
 	_studioModelSettings->SetFloorLength(_ui.FloorLengthSlider->value());
-
-	_studioModelSettings->SaveSettings(settings);
 }
 
 void OptionsPageStudioModelWidget::OnResetFloorLength()

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QSettings>
 #include <QString>
 #include <QWidget>
 
@@ -30,7 +29,7 @@ public:
 	OptionsPageStudioModelWidget(EditorContext* editorContext, StudioModelSettings* studioModelSettings);
 	~OptionsPageStudioModelWidget();
 
-	void ApplyChanges(QSettings& settings) override;
+	void ApplyChanges() override;
 
 private slots:
 	void OnResetFloorLength();

@@ -30,7 +30,6 @@
 #include "settings/ColorSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
-#include "settings/StyleSettings.hpp"
 
 #include "ui/EditorContext.hpp"
 #include "ui/MainWindow.hpp"
@@ -129,9 +128,10 @@ int ToolApplication::Run(int argc, char* argv[])
 			qInstallMessageHandler(&FileMessageOutput);
 		}
 
-		auto settings{CreateSettings(programName, commandLine.IsPortable)};
+		const auto applicationSettings = std::make_shared<ApplicationSettings>(
+			CreateSettings(programName, commandLine.IsPortable).release());
 
-		const auto applicationSettings = std::make_shared<ApplicationSettings>(settings.get());
+		auto settings = applicationSettings->GetSettings();
 
 		applicationSettings->LoadSettings();
 
@@ -181,7 +181,7 @@ int ToolApplication::Run(int argc, char* argv[])
 			return EXIT_FAILURE;
 		}
 
-		_editorContext = CreateEditorContext(std::move(settings), applicationSettings, std::move(offscreenContext));
+		_editorContext = CreateEditorContext(applicationSettings, std::move(offscreenContext));
 
 		if (!_editorContext)
 		{
@@ -325,16 +325,11 @@ bool ToolApplication::CheckSingleInstance(
 	return false;
 }
 
-std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(std::unique_ptr<QSettings>&& settings,
+std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 	std::shared_ptr<ApplicationSettings> applicationSettings,
 	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext)
 {
-	const auto colorSettings{std::make_shared<ColorSettings>()};
-	const auto gameConfigurationsSettings{std::make_shared<GameConfigurationsSettings>()};
-	const auto recentFilesSettings{std::make_shared<RecentFilesSettings>()};
-	const auto styleSettings{std::make_shared<StyleSettings>()};
-
-	connect(styleSettings.get(), &StyleSettings::StylePathChanged, this, &ToolApplication::OnStylePathChanged);
+	connect(applicationSettings.get(), &ApplicationSettings::StylePathChanged, this, &ToolApplication::OnStylePathChanged);
 
 	auto assetProviderRegistry{std::make_unique<AssetProviderRegistry>()};
 	auto optionsPageRegistry{std::make_unique<OptionsPageRegistry>()};
@@ -343,9 +338,7 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(std::unique_
 		ApplicationBuilder builder
 		{
 			_application,
-			settings.get(),
 			applicationSettings.get(),
-			colorSettings.get(),
 			assetProviderRegistry.get(),
 			optionsPageRegistry.get()
 		};
@@ -356,30 +349,19 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(std::unique_
 		}
 	}
 
-	//TODO: settings loading needs to be made more flexible
-	colorSettings->LoadSettings(*settings);
-	applicationSettings->LoadSettings();
-	recentFilesSettings->LoadSettings(*settings);
-	gameConfigurationsSettings->LoadSettings(*settings);
-	styleSettings->LoadSettings(*settings);
+	CallPlugins(&IAssetManagerPlugin::LoadSettings, *applicationSettings->GetSettings());
 
-	CallPlugins(&IAssetManagerPlugin::LoadSettings, *settings);
-
-	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGeneral>(applicationSettings, recentFilesSettings));
-	optionsPageRegistry->AddPage(std::make_unique<OptionsPageColors>(colorSettings));
+	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGeneral>(applicationSettings));
+	optionsPageRegistry->AddPage(std::make_unique<OptionsPageColors>(applicationSettings));
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageExternalPrograms>(applicationSettings));
-	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGameConfigurations>(gameConfigurationsSettings));
-	optionsPageRegistry->AddPage(std::make_unique<OptionsPageStyle>(styleSettings));
+	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGameConfigurations>());
+	optionsPageRegistry->AddPage(std::make_unique<OptionsPageStyle>(applicationSettings));
 
 	auto editorContext = std::make_unique<EditorContext>(
-		settings.release(),
+		applicationSettings,
 		std::move(graphicsContext),
 		std::move(assetProviderRegistry),
-		std::move(optionsPageRegistry),
-		applicationSettings,
-		colorSettings,
-		recentFilesSettings,
-		gameConfigurationsSettings);
+		std::move(optionsPageRegistry));
 
 	editorContext->GetAssetProviderRegistry()->Initialize(editorContext.get());
 
@@ -448,9 +430,7 @@ void ToolApplication::OnExit()
 {
 	const auto settings = _editorContext->GetSettings();
 
-	// TODO: rework this so it doesn't need to be called manually for everything.
 	_editorContext->GetApplicationSettings()->SaveSettings();
-	_editorContext->GetRecentFiles()->SaveSettings(*settings);
 
 	CallPlugins(&IAssetManagerPlugin::SaveSettings, *settings);
 

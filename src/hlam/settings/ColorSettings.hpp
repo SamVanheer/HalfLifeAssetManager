@@ -57,49 +57,49 @@ private:
 	static constexpr glm::vec4 DefaultColor{0, 0, 0, 1};
 
 public:
-	ColorSettings(QObject* parent = nullptr)
-		: QObject(parent)
+	explicit ColorSettings(QSettings* settings)
+		: _settings(settings)
 	{
 	}
 
 	~ColorSettings() = default;
 
-	void LoadSettings(QSettings& settings)
+	void LoadSettings()
 	{
-		settings.beginGroup("Colors");
+		_settings->beginGroup("Colors");
 
-		const int colorCount{settings.beginReadArray("List")};
+		const int colorCount{_settings->beginReadArray("List")};
 
 		for (int i = 0; i < colorCount; ++i)
 		{
-			settings.setArrayIndex(i);
+			_settings->setArrayIndex(i);
 
-			Set(settings.value("Name").toString(), ColorToVector(settings.value("Color").value<QColor>()));
+			Set(_settings->value("Name").toString(), ColorToVector(_settings->value("Color").value<QColor>()));
 		}
 
-		settings.endArray();
-		settings.endGroup();
+		_settings->endArray();
+		_settings->endGroup();
 	}
 
-	void SaveSettings(QSettings& settings)
+	void SaveSettings()
 	{
-		settings.beginGroup("Colors");
-		settings.remove("List");
+		_settings->beginGroup("Colors");
+		_settings->remove("List");
 
-		settings.beginWriteArray("List", _colors.size());
+		_settings->beginWriteArray("List", _colors.size());
 
 		const auto keys{GetKeys()};
 
 		for (int i = 0; i < keys.size(); ++i)
 		{
-			settings.setArrayIndex(i);
+			_settings->setArrayIndex(i);
 
-			settings.setValue("Name", keys[i]);
-			settings.setValue("Color", VectorToColor(GetColor(keys[i])));
+			_settings->setValue("Name", keys[i]);
+			_settings->setValue("Color", VectorToColor(GetColor(keys[i])));
 		}
 
-		settings.endArray();
-		settings.endGroup();
+		_settings->endArray();
+		_settings->endGroup();
 	}
 
 	QStringList GetKeys() const
@@ -169,5 +169,6 @@ signals:
 	void ColorsChanged();
 
 private:
+	QSettings* const _settings;
 	std::unordered_map<QString, ColorData> _colors;
 };

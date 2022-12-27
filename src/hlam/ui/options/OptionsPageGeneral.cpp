@@ -9,12 +9,10 @@
 const QString OptionsPageGeneralCategory{QStringLiteral("A.General")};
 const QString OptionsPageGeneralId{QStringLiteral("A.General")};
 
-OptionsPageGeneral::OptionsPageGeneral(const std::shared_ptr<ApplicationSettings>& applicationSettings,
-	const std::shared_ptr<RecentFilesSettings>& recentFilesSettings)
+OptionsPageGeneral::OptionsPageGeneral(const std::shared_ptr<ApplicationSettings>& applicationSettings)
 	: _applicationSettings(applicationSettings)
-	, _recentFilesSettings(recentFilesSettings)
 {
-	assert(applicationSettings);
+	assert(_applicationSettings);
 
 	SetCategory(QString{OptionsPageGeneralCategory});
 	SetCategoryTitle("General");
@@ -22,17 +20,16 @@ OptionsPageGeneral::OptionsPageGeneral(const std::shared_ptr<ApplicationSettings
 	SetPageTitle("General");
 	SetWidgetFactory([this](EditorContext* editorContext)
 		{
-			return new OptionsPageGeneralWidget(editorContext, _applicationSettings.get(), _recentFilesSettings.get());
+			return new OptionsPageGeneralWidget(editorContext, _applicationSettings.get());
 		});
 }
 
 OptionsPageGeneral::~OptionsPageGeneral() = default;
 
 OptionsPageGeneralWidget::OptionsPageGeneralWidget(
-	EditorContext* editorContext, ApplicationSettings* applicationSettings, RecentFilesSettings* recentFilesSettings)
+	EditorContext* editorContext, ApplicationSettings* applicationSettings)
 	: _editorContext(editorContext)
 	, _applicationSettings(applicationSettings)
-	, _recentFilesSettings(recentFilesSettings)
 {
 	_ui.setupUi(this);
 
@@ -51,7 +48,7 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 	_ui.AllowTabCloseWithMiddleClick->setChecked(_applicationSettings->ShouldAllowTabCloseWithMiddleClick());
 	_ui.OneAssetAtATime->setChecked(_applicationSettings->OneAssetAtATime);
 	_ui.PromptExternalProgramLaunch->setChecked(_applicationSettings->PromptExternalProgramLaunch);
-	_ui.MaxRecentFiles->setValue(_recentFilesSettings->GetMaxRecentFiles());
+	_ui.MaxRecentFiles->setValue(_applicationSettings->GetRecentFiles()->GetMaxRecentFiles());
 	_ui.TickRate->setValue(_applicationSettings->GetTickRate());
 	_ui.InvertMouseX->setChecked(_applicationSettings->ShouldInvertMouseX());
 	_ui.InvertMouseY->setChecked(_applicationSettings->ShouldInvertMouseY());
@@ -71,14 +68,14 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 
 OptionsPageGeneralWidget::~OptionsPageGeneralWidget() = default;
 
-void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
+void OptionsPageGeneralWidget::ApplyChanges()
 {
 	_applicationSettings->SetUseSingleInstance(_ui.UseSingleInstance->isChecked());
 	_applicationSettings->PauseAnimationsOnTimelineClick = _ui.PauseAnimationsOnTimelineClick->isChecked();
 	_applicationSettings->SetAllowTabCloseWithMiddleClick(_ui.AllowTabCloseWithMiddleClick->isChecked());
 	_applicationSettings->OneAssetAtATime = _ui.OneAssetAtATime->isChecked();
 	_applicationSettings->PromptExternalProgramLaunch = _ui.PromptExternalProgramLaunch->isChecked();
-	_recentFilesSettings->SetMaxRecentFiles(_ui.MaxRecentFiles->value());
+	_applicationSettings->GetRecentFiles()->SetMaxRecentFiles(_ui.MaxRecentFiles->value());
 	_applicationSettings->SetTickRate(_ui.TickRate->value());
 	_applicationSettings->SetInvertMouseX(_ui.InvertMouseX->isChecked());
 	_applicationSettings->SetInvertMouseY(_ui.InvertMouseY->isChecked());
@@ -86,7 +83,4 @@ void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 	_applicationSettings->SetMouseWheelSpeed(_ui.MouseWheelSpeedSlider->value());
 	_applicationSettings->SetEnableAudioPlayback(_ui.EnableAudioPlayback->isChecked());
 	_applicationSettings->SetEnableVSync(_ui.EnableVerticalSync->isChecked());
-
-	_applicationSettings->SaveSettings();
-	_recentFilesSettings->SaveSettings(settings);
 }

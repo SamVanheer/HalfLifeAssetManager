@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QSettings>
 #include <QString>
 #include <QWidget>
 
@@ -31,7 +30,7 @@ public:
 	OptionsPageExternalProgramsWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings);
 	~OptionsPageExternalProgramsWidget();
 
-	void ApplyChanges(QSettings& settings) override;
+	void ApplyChanges() override;
 
 	// TODO: could convert this into a table or something to avoid having to add more slots and stuff.
 private slots:

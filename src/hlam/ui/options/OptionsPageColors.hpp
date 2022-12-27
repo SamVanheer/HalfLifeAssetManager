@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QColor>
-#include <QSettings>
 #include <QString>
 #include <QWidget>
 
@@ -9,9 +8,9 @@
 
 #include "ui/options/OptionsPage.hpp"
 
-class EditorContext;
-
+class ApplicationSettings;
 class ColorSettings;
+class EditorContext;
 
 extern const QString OptionsPageColorsId;
 
@@ -19,11 +18,11 @@ class OptionsPageColors : public OptionsPage
 {
 public:
 	OptionsPageColors(
-		const std::shared_ptr<ColorSettings>& colorSettings);
+		const std::shared_ptr<ApplicationSettings>& applicationSettings);
 	~OptionsPageColors();
 
 private:
-	const std::shared_ptr<ColorSettings> _colorSettings;
+	const std::shared_ptr<ApplicationSettings> _applicationSettings;
 };
 
 class OptionsPageColorsWidget final : public OptionsWidget
@@ -33,7 +32,7 @@ public:
 		EditorContext* editorContext, ColorSettings* colorSettings);
 	~OptionsPageColorsWidget();
 
-	void ApplyChanges(QSettings& settings) override;
+	void ApplyChanges() override;
 
 private:
 	void SetPreviewColor(const QColor& color);

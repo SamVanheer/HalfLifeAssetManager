@@ -9,6 +9,8 @@
 
 #include "qt/HashFunctions.hpp"
 
+#include "settings/ApplicationSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 
 #include "ui/options/OptionsDialog.hpp"
@@ -101,14 +103,14 @@ void OptionsDialog::OnButtonClicked(QAbstractButton* button)
 	if (role == QDialogButtonBox::ButtonRole::AcceptRole ||
 		role == QDialogButtonBox::ButtonRole::ApplyRole)
 	{
-		auto settings = _editorContext->GetSettings();
-
 		for (auto page : _pages)
 		{
-			page->ApplyChanges(*settings);
+			page->ApplyChanges();
 		}
 
-		settings->sync();
+		_editorContext->GetApplicationSettings()->SaveSettings();
+
+		_editorContext->GetApplicationSettings()->GetSettings()->sync();
 
 		emit _editorContext->SettingsChanged();
 	}

@@ -4,7 +4,6 @@
 
 #include <QAbstractButton>
 #include <QDialog>
-#include <QSettings>
 
 #include "ui_OptionsDialog.h"
 

@@ -1,11 +1,10 @@
 target_sources(HLAM
 	PRIVATE
+		ApplicationSettings.cpp
 		ApplicationSettings.hpp
 		ColorSettings.hpp
 		GameConfiguration.hpp
 		GameConfigurationsSettings.hpp
 		GameEnvironment.hpp
-		PathSettings.hpp
 		RecentFilesSettings.hpp
-		StudioModelSettings.hpp
-		StyleSettings.hpp)
+		StudioModelSettings.hpp)

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QSettings>
 #include <QString>
 #include <QWidget>
 
@@ -8,27 +7,26 @@
 
 #include "ui/options/OptionsPage.hpp"
 
+class ApplicationSettings;
 class EditorContext;
-
-class StyleSettings;
 
 class OptionsPageStyle : public OptionsPage
 {
 public:
-	OptionsPageStyle(const std::shared_ptr<StyleSettings>& styleSettings);
+	OptionsPageStyle(const std::shared_ptr<ApplicationSettings>& applicationSettings);
 	~OptionsPageStyle();
 
 private:
-	const std::shared_ptr<StyleSettings> _styleSettings;
+	const std::shared_ptr<ApplicationSettings> _applicationSettings;
 };
 
 class OptionsPageStyleWidget final : public OptionsWidget
 {
 public:
-	OptionsPageStyleWidget(EditorContext* editorContext, StyleSettings* styleSettings);
+	OptionsPageStyleWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings);
 	~OptionsPageStyleWidget();
 
-	void ApplyChanges(QSettings& settings) override;
+	void ApplyChanges() override;
 
 private slots:
 	void OnBrowseStyle();
@@ -38,5 +36,5 @@ private:
 
 	EditorContext* const _editorContext;
 
-	StyleSettings* const _styleSettings;
+	ApplicationSettings* const _applicationSettings;
 };

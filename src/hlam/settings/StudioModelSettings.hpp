@@ -18,30 +18,30 @@ public:
 	static constexpr int MaximumFloorLength = 2048;
 	static constexpr int DefaultFloorLength = 100;
 
-	StudioModelSettings(QObject* parent = nullptr)
-		: QObject(parent)
+	StudioModelSettings(QSettings* settings)
+		: _settings(settings)
 	{
 	}
 
 	~StudioModelSettings() = default;
 
-	void LoadSettings(QSettings& settings)
+	void LoadSettings()
 	{
-		settings.beginGroup("Assets/StudioModel");
-		_autodetectViewModels = settings.value("AutodetectViewmodels", DefaultAutodetectViewmodels).toBool();
-		_activateTextureViewWhenTexturesPanelOpened = settings.value(
+		_settings->beginGroup("Assets/StudioModel");
+		_autodetectViewModels = _settings->value("AutodetectViewmodels", DefaultAutodetectViewmodels).toBool();
+		_activateTextureViewWhenTexturesPanelOpened = _settings->value(
 			"ActivateTextureViewWhenTexturesPanelOpened", DefaultActivateTextureViewWhenTexturesPanelOpened).toBool();
-		_floorLength = std::clamp(settings.value("FloorLength", DefaultFloorLength).toInt(), MinimumFloorLength, MaximumFloorLength);
-		settings.endGroup();
+		_floorLength = std::clamp(_settings->value("FloorLength", DefaultFloorLength).toInt(), MinimumFloorLength, MaximumFloorLength);
+		_settings->endGroup();
 	}
 
-	void SaveSettings(QSettings& settings)
+	void SaveSettings()
 	{
-		settings.beginGroup("Assets/StudioModel");
-		settings.setValue("AutodetectViewmodels", _autodetectViewModels);
-		settings.setValue("ActivateTextureViewWhenTexturesPanelOpened", _activateTextureViewWhenTexturesPanelOpened);
-		settings.setValue("FloorLength", _floorLength);
-		settings.endGroup();
+		_settings->beginGroup("Assets/StudioModel");
+		_settings->setValue("AutodetectViewmodels", _autodetectViewModels);
+		_settings->setValue("ActivateTextureViewWhenTexturesPanelOpened", _activateTextureViewWhenTexturesPanelOpened);
+		_settings->setValue("FloorLength", _floorLength);
+		_settings->endGroup();
 	}
 
 	bool ShouldAutodetectViewmodels() const { return _autodetectViewModels; }
@@ -69,6 +69,8 @@ public:
 	}
 
 private:
+	QSettings* const _settings;
+
 	bool _autodetectViewModels{DefaultAutodetectViewmodels};
 	bool _activateTextureViewWhenTexturesPanelOpened{DefaultActivateTextureViewWhenTexturesPanelOpened};
 

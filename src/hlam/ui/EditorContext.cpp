@@ -22,10 +22,7 @@
 #include "qt/QtLogSink.hpp"
 
 #include "settings/ApplicationSettings.hpp"
-#include "settings/ColorSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
-#include "settings/PathSettings.hpp"
-#include "settings/RecentFilesSettings.hpp"
 
 #include "soundsystem/DummySoundSystem.hpp"
 #include "soundsystem/ISoundSystem.hpp"
@@ -42,37 +39,30 @@
 #include "utility/WorldTime.hpp"
 
 EditorContext::EditorContext(
-	QSettings* settings,
+	const std::shared_ptr<ApplicationSettings>& applicationSettings,
 	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
 	std::unique_ptr<AssetProviderRegistry>&& assetProviderRegistry,
 	std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
-	const std::shared_ptr<ApplicationSettings>& applicationSettings,
-	const std::shared_ptr<ColorSettings>& colorSettings,
-	const std::shared_ptr<RecentFilesSettings>& recentFilesSettings,
-	const std::shared_ptr<GameConfigurationsSettings>& gameConfigurationsSettings,
 	QObject* parent)
 	: QObject(parent)
-	, _settings(settings)
+	, _applicationSettings(applicationSettings)
 	, _dragNDropEventFilter(new DragNDropEventFilter(this, this))
+
 	, _graphicsContext(std::move(graphicsContext))
 	, _openglFunctions(std::make_unique<QOpenGLFunctions_1_1>())
 	, _textureLoader(std::make_unique<graphics::TextureLoader>(_openglFunctions.get()))
+
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
+
+	, _timer(new QTimer(this))
+
 	, _fileSystem(std::make_unique<FileSystem>())
-	// TODO: don't access settings until it's been initialized
 	, _soundSystem(_applicationSettings->ShouldEnableAudioPlayback()
 		? std::unique_ptr<ISoundSystem>(std::make_unique<SoundSystem>(CreateQtLoggerSt(logging::HLAMSoundSystem())))
 		: std::make_unique<DummySoundSystem>())
 	, _worldTime(std::make_unique<WorldTime>())
-	, _applicationSettings(applicationSettings)
-	, _colorSettings(colorSettings)
-	, _recentFilesSettings(recentFilesSettings)
-	, _gameConfigurationsSettings(gameConfigurationsSettings)
-	, _timer(new QTimer(this))
 {
-	_settings->setParent(this);
-
 	qCDebug(logging::HLAM) << "Initializing OpenGL";
 
 	_graphicsContext->Begin();
@@ -114,6 +104,21 @@ EditorContext::~EditorContext()
 	delete _sceneWidget;
 }
 
+QSettings* EditorContext::GetSettings() const
+{
+	return _applicationSettings->GetSettings();
+}
+
+ColorSettings* EditorContext::GetColorSettings() const
+{
+	return _applicationSettings->GetColorSettings();
+}
+
+GameConfigurationsSettings* EditorContext::GetGameConfigurations() const
+{
+	return _applicationSettings->GetGameConfigurations();
+}
+
 SceneWidget* EditorContext::GetSceneWidget()
 {
 	if (!_sceneWidget)
@@ -149,12 +154,12 @@ void EditorContext::StartTimer()
 
 QString EditorContext::GetPath(const QString& pathName) const
 {
-	return GetSavedPath(*_settings, pathName);
+	return _applicationSettings->GetSavedPath(pathName);
 }
 
 void EditorContext::SetPath(const QString& pathName, const QString& path)
 {
-	SetSavedPath(*_settings, pathName, path);
+	_applicationSettings->SetSavedPath(pathName, path);
 }
 
 LaunchExternalProgramResult EditorContext::TryLaunchExternalProgram(
