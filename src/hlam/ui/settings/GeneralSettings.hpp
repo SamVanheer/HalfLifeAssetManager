@@ -60,6 +60,8 @@ public:
 		QStringLiteral("ExternalPrograms/XashModelViewerFileName")};
 	static const inline QString Quake1ModelViewerFileNameKey{
 		QStringLiteral("ExternalPrograms/Quake1ModelViewerFileName")};
+	static const inline QString Source1ModelViewerFileNameKey{
+		QStringLiteral("ExternalPrograms/Source1ModelViewerFileName")};
 
 	GeneralSettings(QSettings* settings)
 		: _settings(settings)
@@ -320,6 +322,16 @@ public:
 	void SetQuake1ModelViewerFileName(const QString& fileName)
 	{
 		_settings->setValue(Quake1ModelViewerFileNameKey, fileName);
+	}
+
+	QString GetSource1ModelViewerFileName() const
+	{
+		return _settings->value(Source1ModelViewerFileNameKey).toString();
+	}
+
+	void SetSource1ModelViewerFileName(const QString& fileName)
+	{
+		_settings->setValue(Source1ModelViewerFileNameKey, fileName);
 	}
 
 signals:

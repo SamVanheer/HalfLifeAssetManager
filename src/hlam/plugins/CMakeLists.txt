@@ -4,4 +4,6 @@ target_sources(HLAM
 		halflife/HalfLifeAssetManagerPlugin.cpp
 		halflife/HalfLifeAssetManagerPlugin.hpp
 		quake1/Quake1AssetManagerPlugin.cpp
-		quake1/Quake1AssetManagerPlugin.hpp)
+		quake1/Quake1AssetManagerPlugin.hpp
+		source1/Source1AssetManagerPlugin.cpp
+		source1/Source1AssetManagerPlugin.hpp)

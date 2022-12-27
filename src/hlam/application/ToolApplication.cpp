@@ -22,6 +22,7 @@
 #include "plugins/IAssetManagerPlugin.hpp"
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
 #include "plugins/quake1/Quake1AssetManagerPlugin.hpp"
+#include "plugins/source1/Source1AssetManagerPlugin.hpp"
 
 #include "qt/QtLogging.hpp"
 
@@ -401,6 +402,7 @@ bool ToolApplication::AddPlugins(ApplicationBuilder& builder)
 
 	addPlugin(std::make_unique<HalfLifeAssetManagerPlugin>());
 	addPlugin(std::make_unique<Quake1AssetManagerPlugin>());
+	addPlugin(std::make_unique<Source1AssetManagerPlugin>());
 
 	return success;
 }

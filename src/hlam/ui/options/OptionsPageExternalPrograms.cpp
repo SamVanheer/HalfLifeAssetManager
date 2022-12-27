@@ -34,6 +34,7 @@ OptionsPageExternalProgramsWidget::OptionsPageExternalProgramsWidget(EditorConte
 	_ui.Decompiler->setText(_generalSettings->GetStudiomdlDecompilerFileName());
 	_ui.XashModelViewer->setText(_generalSettings->GetXashModelViewerFileName());
 	_ui.Quake1ModelViewer->setText(_generalSettings->GetQuake1ModelViewerFileName());
+	_ui.Source1ModelViewer->setText(_generalSettings->GetSource1ModelViewerFileName());
 
 	connect(_ui.BrowseCompiler, &QPushButton::clicked, this, &OptionsPageExternalProgramsWidget::OnBrowseCompiler);
 	connect(_ui.BrowseDecompiler, &QPushButton::clicked, this, &OptionsPageExternalProgramsWidget::OnBrowseDecompiler);
@@ -41,6 +42,8 @@ OptionsPageExternalProgramsWidget::OptionsPageExternalProgramsWidget(EditorConte
 		this, &OptionsPageExternalProgramsWidget::OnBrowseXashModelViewer);
 	connect(_ui.BrowseQuake1ModelViewer, &QPushButton::clicked,
 		this, &OptionsPageExternalProgramsWidget::OnBrowseQuake1ModelViewer);
+	connect(_ui.BrowseSource1ModelViewer, &QPushButton::clicked,
+		this, &OptionsPageExternalProgramsWidget::OnBrowseSource1ModelViewer);
 }
 
 OptionsPageExternalProgramsWidget::~OptionsPageExternalProgramsWidget() = default;
@@ -51,6 +54,7 @@ void OptionsPageExternalProgramsWidget::ApplyChanges(QSettings& settings)
 	_generalSettings->SetStudiomdlDecompilerFileName(_ui.Decompiler->text());
 	_generalSettings->SetXashModelViewerFileName(_ui.XashModelViewer->text());
 	_generalSettings->SetQuake1ModelViewerFileName(_ui.Quake1ModelViewer->text());
+	_generalSettings->SetSource1ModelViewerFileName(_ui.Source1ModelViewer->text());
 
 	_generalSettings->SaveSettings(settings);
 }
@@ -83,4 +87,9 @@ void OptionsPageExternalProgramsWidget::OnBrowseXashModelViewer()
 void OptionsPageExternalProgramsWidget::OnBrowseQuake1ModelViewer()
 {
 	BrowseExeFile(this, "Select Quake 1 Model Viewer", _ui.Quake1ModelViewer);
+}
+
+void OptionsPageExternalProgramsWidget::OnBrowseSource1ModelViewer()
+{
+	BrowseExeFile(this, "Select Source 1 Model Viewer", _ui.Source1ModelViewer);
 }

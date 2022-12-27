@@ -40,6 +40,7 @@ private slots:
 	void OnBrowseDecompiler();
 	void OnBrowseXashModelViewer();
 	void OnBrowseQuake1ModelViewer();
+	void OnBrowseSource1ModelViewer();
 
 private:
 	Ui_OptionsPageExternalPrograms _ui;
