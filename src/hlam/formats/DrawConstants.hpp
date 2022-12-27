@@ -20,31 +20,31 @@ enum DrawFlag : DrawFlags
 	/**
 	*	Don't draw the model itself.
 	*/
-	NODRAW = Bit(0),
+	NODRAW = 1 << 0,
 
 	/**
 	*	Draw wireframe overlay.
 	*/
-	WIREFRAME_OVERLAY = Bit(1),
+	WIREFRAME_OVERLAY = 1 << 1,
 
 	/**
 	*	Whether this is a view model
 	*/
-	IS_VIEW_MODEL = Bit(2),
+	IS_VIEW_MODEL = 1 << 2,
 
-	DRAW_SHADOWS = Bit(3), //! Whether to draw shadows
+	DRAW_SHADOWS = 1 << 3, //! Whether to draw shadows
 
-	FIX_SHADOW_Z_FIGHTING = Bit(4), //! Whether to fix Shadow Z fighting
+	FIX_SHADOW_Z_FIGHTING = 1 << 4, //! Whether to fix Shadow Z fighting
 
-	DRAW_HITBOXES = Bit(5),
+	DRAW_HITBOXES = 1 << 5,
 
-	DRAW_BONES = Bit(6),
+	DRAW_BONES = 1 << 6,
 
-	DRAW_ATTACHMENTS = Bit(7),
+	DRAW_ATTACHMENTS = 1 << 7,
 
-	DRAW_EYE_POSITION = Bit(8),
+	DRAW_EYE_POSITION = 1 << 8,
 
-	DRAW_NORMALS = Bit(9),
+	DRAW_NORMALS = 1 << 9,
 };
 }
 }

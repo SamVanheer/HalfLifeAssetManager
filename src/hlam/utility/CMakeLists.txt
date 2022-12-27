@@ -1,8 +1,6 @@
 target_sources(HLAM
 	PRIVATE
 		BoundingBox.hpp
-		ByteSwap.cpp
-		ByteSwap.hpp
 		Class.hpp
 		Const.hpp
 		CoordinateSystem.hpp
@@ -11,8 +9,6 @@ target_sources(HLAM
 		mathlib.cpp
 		mathlib.hpp
 		Platform.hpp
-		Random.cpp
-		Random.hpp
 		StringUtils.hpp
 		Utility.hpp
 		WorldTime.cpp

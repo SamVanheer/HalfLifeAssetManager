@@ -7,7 +7,6 @@
 
 #include "graphics/Palette.hpp"
 
-#include "utility/ByteSwap.hpp"
 #include "utility/IOUtils.hpp"
 
 namespace sprite
@@ -68,10 +67,10 @@ std::byte* LoadSpriteFrame(QOpenGLFunctions_1_1* openglFunctions, std::byte* pIn
 
 	dspriteframe_t* pFrame = reinterpret_cast<dspriteframe_t*>(pIn);
 
-	const int iWidth = LittleValue(pFrame->width);
-	const int iHeight = LittleValue(pFrame->height);
+	const int iWidth = pFrame->width;
+	const int iHeight = pFrame->height;
 
-	const glm::ivec2 vecOrigin{LittleValue(pFrame->origin[0]), LittleValue(pFrame->origin[1])};
+	const glm::ivec2 vecOrigin{pFrame->origin[0], pFrame->origin[1]};
 
 	mspriteframe_t* pSpriteFrame = new mspriteframe_t;
 
@@ -79,8 +78,8 @@ std::byte* LoadSpriteFrame(QOpenGLFunctions_1_1* openglFunctions, std::byte* pIn
 
 	*ppFrame = pSpriteFrame;
 
-	pSpriteFrame->width = LittleValue(pFrame->width);
-	pSpriteFrame->height = LittleValue(pFrame->height);
+	pSpriteFrame->width = pFrame->width;
+	pSpriteFrame->height = pFrame->height;
 
 	pSpriteFrame->up = static_cast<float>(vecOrigin[1]);
 	pSpriteFrame->down = static_cast<float>(vecOrigin[1] - iHeight);
@@ -121,7 +120,7 @@ std::byte* LoadSpriteGroup(QOpenGLFunctions_1_1* openglFunctions, std::byte* pIn
 {
 	dspritegroup_t* pGroup = reinterpret_cast<dspritegroup_t*>(pIn);
 
-	const int iNumFrames = LittleValue(pGroup->numframes);
+	const int iNumFrames = pGroup->numframes;
 
 	const size_t size = sizeof(mspritegroup_t) + ((iNumFrames - 1) * sizeof(mspriteframe_t*));
 
@@ -139,7 +138,7 @@ std::byte* LoadSpriteGroup(QOpenGLFunctions_1_1* openglFunctions, std::byte* pIn
 
 	for (int iIndex = 0; iIndex < iNumFrames; ++iIndex, ++pInIntervals, ++pOutIntervals)
 	{
-		*pOutIntervals = LittleValue(*pInIntervals);
+		*pOutIntervals = *pInIntervals;
 
 		//TODO: error checking
 	}
@@ -160,10 +159,10 @@ bool LoadSpriteInternal(QOpenGLFunctions_1_1* openglFunctions, std::byte* pIn, m
 
 	dsprite_t* pHeader = reinterpret_cast<dsprite_t*>(pIn);
 
-	if (LittleValue(pHeader->version) != SPRITE_VERSION)
+	if (pHeader->version != SPRITE_VERSION)
 		return false;
 
-	if (LittleValue(pHeader->ident) != SPRITE_ID)
+	if (pHeader->ident != SPRITE_ID)
 		return false;
 
 	if (*reinterpret_cast<short*>(pHeader + 1) != graphics::RGBPalette::EntriesCount)
@@ -176,13 +175,13 @@ bool LoadSpriteInternal(QOpenGLFunctions_1_1* openglFunctions, std::byte* pIn, m
 	//Offset in the buffer where the frames are located
 	const size_t uiFrameOffset = reinterpret_cast<const std::byte*>(&palette) + palette.GetSizeInBytes() - pIn;
 
-	const TexFormat::TexFormat texFormat = LittleEnumValue(pHeader->texFormat);
+	const TexFormat::TexFormat texFormat = pHeader->texFormat;
 
 	graphics::RGBAPalette convertedPalette;
 
 	Convert8To32Bit(palette, convertedPalette, texFormat);
 
-	const int iNumFrames = LittleValue(pHeader->numframes);
+	const int iNumFrames = pHeader->numframes;
 
 	const size_t size = sizeof(msprite_t) + (sizeof(mspriteframedesc_t) * iNumFrames - 1);
 
@@ -190,12 +189,12 @@ bool LoadSpriteInternal(QOpenGLFunctions_1_1* openglFunctions, std::byte* pIn, m
 
 	memset(pSprite, 0, size);
 
-	pSprite->type = LittleEnumValue(pHeader->type);
+	pSprite->type = pHeader->type;
 	pSprite->texFormat = texFormat;
-	pSprite->maxwidth = LittleValue(pHeader->width);
-	pSprite->maxheight = LittleValue(pHeader->height);
+	pSprite->maxwidth = pHeader->width;
+	pSprite->maxheight = pHeader->height;
 	pSprite->numframes = iNumFrames;
-	pSprite->beamlength = LittleValue(pHeader->beamlength);
+	pSprite->beamlength = pHeader->beamlength;
 	//TODO: sync type
 
 	//Load frames
@@ -204,7 +203,7 @@ bool LoadSpriteInternal(QOpenGLFunctions_1_1* openglFunctions, std::byte* pIn, m
 
 	for (int iFrame = 0; iFrame < iNumFrames; ++iFrame)
 	{
-		const spriteframetype_t type = LittleEnumValue(*pType);
+		const spriteframetype_t type = *pType;
 
 		pSprite->frames[iFrame].type = type;
 
