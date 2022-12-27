@@ -3,11 +3,12 @@
 #include <QWheelEvent>
 #include <QWidget>
 
+#include "settings/GeneralSettings.hpp"
+
 #include "graphics/Scene.hpp"
 #include "graphics/SceneContext.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/SceneWidget.hpp"
-#include "ui/settings/GeneralSettings.hpp"
 
 SceneWidget::SceneWidget(EditorContext* editorContext,
 	QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader* textureLoader,

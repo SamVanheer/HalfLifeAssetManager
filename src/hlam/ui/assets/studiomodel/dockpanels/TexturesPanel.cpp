@@ -20,6 +20,8 @@
 
 #include "qt/QtUtilities.hpp"
 
+#include "settings/StudioModelSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/StateSnapshot.hpp"
 
@@ -32,8 +34,6 @@
 #include "ui/assets/studiomodel/dockpanels/TexturesPanel.hpp"
 
 #include "ui/camera_operators/TextureCameraOperator.hpp"
-
-#include "ui/settings/StudioModelSettings.hpp"
 
 namespace studiomodel
 {

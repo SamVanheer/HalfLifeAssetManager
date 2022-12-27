@@ -21,6 +21,12 @@
 #include "qt/QtLogging.hpp"
 #include "qt/QtLogSink.hpp"
 
+#include "settings/ColorSettings.hpp"
+#include "settings/GameConfigurationsSettings.hpp"
+#include "settings/GeneralSettings.hpp"
+#include "settings/PathSettings.hpp"
+#include "settings/RecentFilesSettings.hpp"
+
 #include "soundsystem/DummySoundSystem.hpp"
 #include "soundsystem/ISoundSystem.hpp"
 #include "soundsystem/SoundSystem.hpp"
@@ -32,12 +38,6 @@
 #include "ui/assets/Assets.hpp"
 
 #include "ui/options/OptionsPageRegistry.hpp"
-
-#include "ui/settings/ColorSettings.hpp"
-#include "ui/settings/GameConfigurationsSettings.hpp"
-#include "ui/settings/GeneralSettings.hpp"
-#include "ui/settings/PathSettings.hpp"
-#include "ui/settings/RecentFilesSettings.hpp"
 
 #include "utility/WorldTime.hpp"
 

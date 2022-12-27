@@ -13,7 +13,7 @@
 
 #include "graphics/Camera.hpp"
 
-#include "ui/settings/GeneralSettings.hpp"
+#include "settings/GeneralSettings.hpp"
 
 class QWidget;
 

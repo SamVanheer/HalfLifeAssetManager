@@ -4,13 +4,13 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "settings/GeneralSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/Timeline.hpp"
-
-#include "ui/settings/GeneralSettings.hpp"
 
 namespace studiomodel
 {

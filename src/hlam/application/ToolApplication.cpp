@@ -26,6 +26,12 @@
 
 #include "qt/QtLogging.hpp"
 
+#include "settings/ColorSettings.hpp"
+#include "settings/GameConfigurationsSettings.hpp"
+#include "settings/GeneralSettings.hpp"
+#include "settings/RecentFilesSettings.hpp"
+#include "settings/StyleSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/MainWindow.hpp"
 #include "ui/OpenGLGraphicsContext.hpp"
@@ -38,12 +44,6 @@
 #include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/options/OptionsPageRegistry.hpp"
 #include "ui/options/OptionsPageStyle.hpp"
-
-#include "ui/settings/ColorSettings.hpp"
-#include "ui/settings/GameConfigurationsSettings.hpp"
-#include "ui/settings/GeneralSettings.hpp"
-#include "ui/settings/RecentFilesSettings.hpp"
-#include "ui/settings/StyleSettings.hpp"
 
 using namespace logging;
 

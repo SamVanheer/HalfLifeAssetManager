@@ -8,14 +8,14 @@
 
 #include "qt/ByteLengthValidator.hpp"
 
+#include "settings/StudioModelSettings.hpp"
+
 #include "ui/StateSnapshot.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelData.hpp"
 #include "ui/assets/studiomodel/StudioModelUndoCommands.hpp"
 #include "ui/assets/studiomodel/dockpanels/SequencesPanel.hpp"
-
-#include "ui/settings/StudioModelSettings.hpp"
 
 namespace studiomodel
 {

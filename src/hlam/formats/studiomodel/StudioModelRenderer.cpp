@@ -11,8 +11,9 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/OpenGL.hpp"
 
+#include "settings/ColorSettings.hpp"
+
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
-#include "ui/settings/ColorSettings.hpp"
 
 #include "utility/mathlib.hpp"
 

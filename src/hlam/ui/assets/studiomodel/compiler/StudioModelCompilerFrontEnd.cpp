@@ -1,10 +1,11 @@
 #include <QSignalBlocker>
 #include <QString>
 
+#include "settings/GeneralSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageExternalPrograms.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelCompilerFrontEnd.hpp"
-#include "ui/settings/GeneralSettings.hpp"
 
 namespace studiomodel
 {

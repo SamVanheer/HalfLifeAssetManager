@@ -1,15 +1,15 @@
 #include "application/ApplicationBuilder.hpp"
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
 
+#include "settings/ColorSettings.hpp"
+#include "settings/StudioModelSettings.hpp"
+
 #include "ui/assets/Assets.hpp"
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
 
 #include "ui/options/OptionsPageRegistry.hpp"
 #include "ui/options/OptionsPageStudioModel.hpp"
-
-#include "ui/settings/ColorSettings.hpp"
-#include "ui/settings/StudioModelSettings.hpp"
 
 using namespace studiomodel;
 

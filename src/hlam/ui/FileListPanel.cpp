@@ -8,12 +8,12 @@
 #include <QSettings>
 #include <QString>
 
+#include "settings/GameConfigurationsSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/FileListPanel.hpp"
 
 #include "ui/assets/Assets.hpp"
-
-#include "ui/settings/GameConfigurationsSettings.hpp"
 
 FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 	: QWidget(parent)

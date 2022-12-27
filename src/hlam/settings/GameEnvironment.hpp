@@ -10,7 +10,7 @@
 #include <QUuid>
 #include <QVariant>
 
-#include "ui/settings/GameConfiguration.hpp"
+#include "settings/GameConfiguration.hpp"
 
 /**
 *	@brief Defines a game installation along with a set of game configurations

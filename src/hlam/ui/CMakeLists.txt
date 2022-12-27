@@ -20,4 +20,3 @@ target_sources(HLAM
 add_subdirectory(assets)
 add_subdirectory(camera_operators)
 add_subdirectory(options)
-add_subdirectory(settings)

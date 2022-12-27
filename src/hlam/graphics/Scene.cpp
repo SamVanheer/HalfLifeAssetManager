@@ -14,11 +14,12 @@
 #include "graphics/Scene.hpp"
 #include "graphics/SceneContext.hpp"
 
+#include "settings/ColorSettings.hpp"
+#include "settings/GeneralSettings.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
 #include "ui/EditorContext.hpp"
-#include "ui/settings/ColorSettings.hpp"
-#include "ui/settings/GeneralSettings.hpp"
 
 namespace graphics
 {

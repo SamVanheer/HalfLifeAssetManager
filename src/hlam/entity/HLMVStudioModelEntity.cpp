@@ -3,8 +3,9 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
+#include "settings/GeneralSettings.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/settings/GeneralSettings.hpp"
 
 void HLMVStudioModelEntity::Spawn()
 {

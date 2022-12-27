@@ -2,10 +2,11 @@
 
 #include <QColorDialog>
 
+#include "settings/ColorSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageColors.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
-#include "ui/settings/ColorSettings.hpp"
 
 const QString OptionsPageColorsId{QStringLiteral("D.Colors")};
 

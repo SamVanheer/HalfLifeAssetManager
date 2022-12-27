@@ -1,9 +1,10 @@
 #include <cassert>
 
+#include "settings/GeneralSettings.hpp"
+#include "settings/RecentFilesSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
-#include "ui/settings/GeneralSettings.hpp"
-#include "ui/settings/RecentFilesSettings.hpp"
 
 const QString OptionsPageGeneralCategory{QStringLiteral("A.General")};
 const QString OptionsPageGeneralId{QStringLiteral("A.General")};

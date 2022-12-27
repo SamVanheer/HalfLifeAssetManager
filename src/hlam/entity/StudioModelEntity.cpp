@@ -8,8 +8,9 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/SceneContext.hpp"
 
+#include "settings/StudioModelSettings.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/settings/StudioModelSettings.hpp"
 
 #include "utility/WorldTime.hpp"
 

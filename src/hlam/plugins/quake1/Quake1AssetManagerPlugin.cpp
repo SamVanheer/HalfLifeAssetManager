@@ -5,11 +5,11 @@
 #include "assets/AssetIO.hpp"
 #include "plugins/quake1/Quake1AssetManagerPlugin.hpp"
 
+#include "settings/GeneralSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 
 #include "ui/assets/Assets.hpp"
-
-#include "ui/settings/GeneralSettings.hpp"
 
 const QString AliasModelExtension{QStringLiteral("mdl")};
 

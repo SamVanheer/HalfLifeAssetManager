@@ -2,10 +2,11 @@
 
 #include <QFileDialog>
 
+#include "settings/GeneralSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageExternalPrograms.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
-#include "ui/settings/GeneralSettings.hpp"
 
 const QString OptionsPageExternalProgramsId{QStringLiteral("E.ExternalPrograms")};
 const QString ExternalProgramsExeFilter{QStringLiteral("Executable Files (*.exe *.com);;All Files (*.*)")};

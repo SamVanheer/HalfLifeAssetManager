@@ -28,6 +28,10 @@
 
 #include "qt/QtLogging.hpp"
 
+#include "settings/GameConfigurationsSettings.hpp"
+#include "settings/GeneralSettings.hpp"
+#include "settings/RecentFilesSettings.hpp"
+
 #include "soundsystem/ISoundSystem.hpp"
 
 #include "ui/DragNDropEventFilter.hpp"
@@ -40,10 +44,6 @@
 #include "ui/assets/Assets.hpp"
 
 #include "ui/options/OptionsDialog.hpp"
-
-#include "ui/settings/GameConfigurationsSettings.hpp"
-#include "ui/settings/GeneralSettings.hpp"
-#include "ui/settings/RecentFilesSettings.hpp"
 
 #include "utility/Utility.hpp"
 

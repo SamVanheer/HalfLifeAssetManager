@@ -1,7 +1,7 @@
+#include "settings/GeneralSettings.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageExternalPrograms.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelDecompilerFrontEnd.hpp"
-#include "ui/settings/GeneralSettings.hpp"
 
 namespace studiomodel
 {

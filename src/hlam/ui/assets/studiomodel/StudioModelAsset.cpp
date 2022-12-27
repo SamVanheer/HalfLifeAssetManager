@@ -39,6 +39,9 @@
 #include "qt/QtLogSink.hpp"
 #include "qt/QtUtilities.hpp"
 
+#include "settings/ColorSettings.hpp"
+#include "settings/StudioModelSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/SceneWidget.hpp"
@@ -57,9 +60,6 @@
 #include "ui/camera_operators/FirstPersonCameraOperator.hpp"
 #include "ui/camera_operators/FreeLookCameraOperator.hpp"
 #include "ui/camera_operators/TextureCameraOperator.hpp"
-
-#include "ui/settings/ColorSettings.hpp"
-#include "ui/settings/StudioModelSettings.hpp"
 
 #include "utility/IOUtils.hpp"
 

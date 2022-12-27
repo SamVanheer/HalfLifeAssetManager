@@ -13,6 +13,9 @@
 #include "qt/QtLogSink.hpp"
 #include "qt/QtUtilities.hpp"
 
+#include "settings/GeneralSettings.hpp"
+#include "settings/StudioModelSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
@@ -21,9 +24,6 @@
 
 #include "ui/assets/studiomodel/compiler/StudioModelCompilerFrontEnd.hpp"
 #include "ui/assets/studiomodel/compiler/StudioModelDecompilerFrontEnd.hpp"
-
-#include "ui/settings/GeneralSettings.hpp"
-#include "ui/settings/StudioModelSettings.hpp"
 
 namespace studiomodel
 {

@@ -7,12 +7,13 @@
 #include <QSignalBlocker>
 #include <QStringLiteral>
 
+#include "settings/GameConfiguration.hpp"
+#include "settings/GameConfigurationsSettings.hpp"
+#include "settings/GameEnvironment.hpp"
+
 #include "ui/EditorContext.hpp"
 
 #include "ui/options/OptionsPageGameConfigurations.hpp"
-#include "ui/settings/GameConfiguration.hpp"
-#include "ui/settings/GameConfigurationsSettings.hpp"
-#include "ui/settings/GameEnvironment.hpp"
 
 //TODO: implement automatic scanning of mods
 

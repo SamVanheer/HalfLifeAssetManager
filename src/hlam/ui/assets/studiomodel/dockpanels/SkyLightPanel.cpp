@@ -3,9 +3,10 @@
 
 #include "graphics/Scene.hpp"
 
+#include "settings/ColorSettings.hpp"
+
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/dockpanels/SkyLightPanel.hpp"
-#include "ui/settings/ColorSettings.hpp"
 
 #include "utility/mathlib.hpp"
 

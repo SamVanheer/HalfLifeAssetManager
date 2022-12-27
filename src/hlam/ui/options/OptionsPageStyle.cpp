@@ -2,11 +2,11 @@
 
 #include <QFileDialog>
 
+#include "settings/StyleSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/options/OptionsPageStyle.hpp"
-
-#include "ui/settings/StyleSettings.hpp"
 
 const QString OptionsPageStyleId{QStringLiteral("B.Style")};
 

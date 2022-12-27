@@ -2,9 +2,10 @@
 
 #include <QFileDialog>
 
+#include "settings/StudioModelSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageStudioModel.hpp"
-#include "ui/settings/StudioModelSettings.hpp"
 
 const QString OptionsPageStudioModelCategory{QStringLiteral("D.Assets")};
 const QString OptionsPageStudioModelId{QStringLiteral("Studiomodel")};

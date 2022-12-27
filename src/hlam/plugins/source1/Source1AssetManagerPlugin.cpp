@@ -6,11 +6,11 @@
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
 #include "plugins/source1/Source1AssetManagerPlugin.hpp"
 
+#include "settings/GeneralSettings.hpp"
+
 #include "ui/EditorContext.hpp"
 
 #include "ui/assets/Assets.hpp"
-
-#include "ui/settings/GeneralSettings.hpp"
 
 const QString Source1ModelExtension{QStringLiteral("mdl")};
 

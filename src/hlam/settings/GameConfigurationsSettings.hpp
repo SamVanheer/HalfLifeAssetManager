@@ -10,8 +10,8 @@
 #include <QObject>
 #include <QSettings>
 
-#include "ui/settings/GameConfiguration.hpp"
-#include "ui/settings/GameEnvironment.hpp"
+#include "settings/GameConfiguration.hpp"
+#include "settings/GameEnvironment.hpp"
 
 class GameConfigurationsSettings final : public QObject
 {
