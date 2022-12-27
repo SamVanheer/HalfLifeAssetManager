@@ -27,8 +27,8 @@ private:
 public:
 	static constexpr float DefaultFOV = 65.f;
 
-	ArcBallCameraOperator(GeneralSettings* generalSettings)
-		: SceneCameraOperator(generalSettings)
+	ArcBallCameraOperator(ApplicationSettings* applicationSettings)
+		: SceneCameraOperator(applicationSettings)
 	{
 		_camera.SetFieldOfView(DefaultFOV);
 	}
@@ -117,7 +117,7 @@ public:
 	{
 		if (const QPoint degrees = event.angleDelta() / 8; !degrees.isNull())
 		{
-			_parameters.Distance -= (degrees.y() / 15.f) * _generalSettings->GetMouseWheelSpeed();
+			_parameters.Distance -= (degrees.y() / 15.f) * _applicationSettings->GetMouseWheelSpeed();
 			UpdateArcBallCamera();
 		}
 

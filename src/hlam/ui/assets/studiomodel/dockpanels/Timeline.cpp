@@ -4,7 +4,7 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
-#include "settings/GeneralSettings.hpp"
+#include "settings/ApplicationSettings.hpp"
 
 #include "ui/EditorContext.hpp"
 #include "ui/StateSnapshot.hpp"
@@ -218,7 +218,7 @@ void Timeline::OnFrameSliderChanged()
 {
 	SetFrame(static_cast<double>(_ui.FrameSlider->value()) / FrameSliderRangeMultiplier, true);
 
-	if (_asset && _asset->GetEditorContext()->GetGeneralSettings()->PauseAnimationsOnTimelineClick)
+	if (_asset && _asset->GetEditorContext()->GetApplicationSettings()->PauseAnimationsOnTimelineClick)
 	{
 		if (_asset->PlaySequence)
 		{

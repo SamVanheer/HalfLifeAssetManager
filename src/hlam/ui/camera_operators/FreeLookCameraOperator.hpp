@@ -13,8 +13,8 @@ class FreeLookCameraOperator final : public SceneCameraOperator
 public:
 	static constexpr float DefaultFOV = 65.f;
 
-	FreeLookCameraOperator(GeneralSettings* generalSettings)
-		: SceneCameraOperator(generalSettings)
+	FreeLookCameraOperator(ApplicationSettings* applicationSettings)
+		: SceneCameraOperator(applicationSettings)
 	{
 		_camera.SetFieldOfView(DefaultFOV);
 	}
@@ -108,7 +108,7 @@ public:
 	{
 		if (const QPoint degrees = event.angleDelta() / 8; !degrees.isNull())
 		{
-			SetOrigin(_camera.GetOrigin() + (_camera.GetForwardVector() * ((degrees.y() / 15.f) * _generalSettings->GetMouseWheelSpeed())));
+			SetOrigin(_camera.GetOrigin() + (_camera.GetForwardVector() * ((degrees.y() / 15.f) * _applicationSettings->GetMouseWheelSpeed())));
 		}
 
 		event.accept();

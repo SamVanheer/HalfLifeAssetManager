@@ -11,13 +11,13 @@
 #include <QTimer>
 #include <QUuid>
 
+class ApplicationSettings;
 class Asset;
 class AssetProviderRegistry;
 class ColorSettings;
 class DragNDropEventFilter;
 class FullscreenWidget;
 class GameConfigurationsSettings;
-class GeneralSettings;
 class IFileSystem;
 class ISoundSystem;
 class OptionsPageRegistry;
@@ -54,7 +54,7 @@ public:
 		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
 		std::unique_ptr<AssetProviderRegistry>&& assetProviderRegistry,
 		std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
-		const std::shared_ptr<GeneralSettings>& generalSettings,
+		const std::shared_ptr<ApplicationSettings>& applicationSettings,
 		const std::shared_ptr<ColorSettings>& colorSettings,
 		const std::shared_ptr<RecentFilesSettings>& recentFilesSettings,
 		const std::shared_ptr<GameConfigurationsSettings>& gameConfigurationsSettings,
@@ -67,7 +67,7 @@ public:
 
 	DragNDropEventFilter* GetDragNDropEventFilter() const { return _dragNDropEventFilter; }
 
-	GeneralSettings* GetGeneralSettings() const { return _generalSettings.get(); }
+	ApplicationSettings* GetApplicationSettings() const { return _applicationSettings.get(); }
 
 	ColorSettings* GetColorSettings() const { return _colorSettings.get(); }
 
@@ -163,7 +163,7 @@ private:
 	const std::unique_ptr<AssetProviderRegistry> _assetProviderRegistry;
 	const std::unique_ptr<OptionsPageRegistry> _optionsPageRegistry;
 
-	const std::shared_ptr<GeneralSettings> _generalSettings;
+	const std::shared_ptr<ApplicationSettings> _applicationSettings;
 	const std::shared_ptr<ColorSettings> _colorSettings;
 	const std::shared_ptr<RecentFilesSettings> _recentFilesSettings;
 	const std::shared_ptr<GameConfigurationsSettings> _gameConfigurationsSettings;

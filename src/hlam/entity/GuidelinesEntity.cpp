@@ -7,8 +7,8 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/SceneContext.hpp"
 
+#include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
-#include "settings/GeneralSettings.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
@@ -76,7 +76,7 @@ void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		sc.OpenGLFunctions->glEnd();
 
-		const float flWidth = sc.WindowHeight * GetAspectRatio(GetContext()->GeneralSettings->GuidelinesAspectRatio);
+		const float flWidth = sc.WindowHeight * GetAspectRatio(GetContext()->ApplicationSettings->GuidelinesAspectRatio);
 
 		sc.OpenGLFunctions->glLineWidth(GUIDELINES_EDGE_WIDTH);
 

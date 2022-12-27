@@ -21,9 +21,9 @@
 #include "qt/QtLogging.hpp"
 #include "qt/QtLogSink.hpp"
 
+#include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
-#include "settings/GeneralSettings.hpp"
 #include "settings/PathSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
@@ -46,7 +46,7 @@ EditorContext::EditorContext(
 	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
 	std::unique_ptr<AssetProviderRegistry>&& assetProviderRegistry,
 	std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
-	const std::shared_ptr<GeneralSettings>& generalSettings,
+	const std::shared_ptr<ApplicationSettings>& applicationSettings,
 	const std::shared_ptr<ColorSettings>& colorSettings,
 	const std::shared_ptr<RecentFilesSettings>& recentFilesSettings,
 	const std::shared_ptr<GameConfigurationsSettings>& gameConfigurationsSettings,
@@ -60,11 +60,12 @@ EditorContext::EditorContext(
 	, _assetProviderRegistry(std::move(assetProviderRegistry))
 	, _optionsPageRegistry(std::move(optionsPageRegistry))
 	, _fileSystem(std::make_unique<FileSystem>())
-	, _soundSystem(_generalSettings->ShouldEnableAudioPlayback()
+	// TODO: don't access settings until it's been initialized
+	, _soundSystem(_applicationSettings->ShouldEnableAudioPlayback()
 		? std::unique_ptr<ISoundSystem>(std::make_unique<SoundSystem>(CreateQtLoggerSt(logging::HLAMSoundSystem())))
 		: std::make_unique<DummySoundSystem>())
 	, _worldTime(std::make_unique<WorldTime>())
-	, _generalSettings(generalSettings)
+	, _applicationSettings(applicationSettings)
 	, _colorSettings(colorSettings)
 	, _recentFilesSettings(recentFilesSettings)
 	, _gameConfigurationsSettings(gameConfigurationsSettings)
@@ -79,9 +80,9 @@ EditorContext::EditorContext(
 	assert(initializedOpenGLFunctions);
 	_graphicsContext->End();
 
-	_textureLoader->SetResizeToPowerOf2(_generalSettings->ShouldResizeTexturesToPowerOf2());
-	_textureLoader->SetTextureFilters(
-		_generalSettings->GetMinFilter(), _generalSettings->GetMagFilter(), _generalSettings->GetMipmapFilter());
+	_textureLoader->SetResizeToPowerOf2(_applicationSettings->ShouldResizeTexturesToPowerOf2());
+	_textureLoader->SetTextureFilters(_applicationSettings->GetMinFilter(), _applicationSettings->GetMagFilter(),
+		_applicationSettings->GetMipmapFilter());
 
 	qCDebug(logging::HLAM) << "Initialized OpenGL";
 
@@ -93,17 +94,17 @@ EditorContext::EditorContext(
 	}
 
 	connect(_timer, &QTimer::timeout, this, &EditorContext::OnTimerTick);
-	connect(_generalSettings.get(), &GeneralSettings::TickRateChanged, this, &EditorContext::OnTickRateChanged);
+	connect(_applicationSettings.get(), &ApplicationSettings::TickRateChanged, this, &EditorContext::OnTickRateChanged);
 
-	connect(_generalSettings.get(), &GeneralSettings::ResizeTexturesToPowerOf2Changed,
+	connect(_applicationSettings.get(), &ApplicationSettings::ResizeTexturesToPowerOf2Changed,
 		this, [this](bool value) { _textureLoader->SetResizeToPowerOf2(value); });
-	connect(_generalSettings.get(), &GeneralSettings::TextureFiltersChanged,
+	connect(_applicationSettings.get(), &ApplicationSettings::TextureFiltersChanged,
 		this, [this](graphics::TextureFilter minFilter, graphics::TextureFilter magFilter, graphics::MipmapFilter mipmapFilter)
 		{
 			_textureLoader->SetTextureFilters(minFilter, magFilter, mipmapFilter);
 		});
 
-	connect(_generalSettings.get(), &GeneralSettings::MSAALevelChanged, this, &EditorContext::RecreateSceneWidget);
+	connect(_applicationSettings.get(), &ApplicationSettings::MSAALevelChanged, this, &EditorContext::RecreateSceneWidget);
 }
 
 EditorContext::~EditorContext()
@@ -143,7 +144,7 @@ void EditorContext::RecreateSceneWidget()
 
 void EditorContext::StartTimer()
 {
-	_timer->start(1000 / _generalSettings->GetTickRate());
+	_timer->start(1000 / _applicationSettings->GetTickRate());
 }
 
 QString EditorContext::GetPath(const QString& pathName) const
@@ -179,7 +180,7 @@ LaunchExternalProgramResult EditorContext::TryLaunchExternalProgram(
 
 	QMessageBox::StandardButton action = QMessageBox::StandardButton::Yes;
 
-	if (_generalSettings->PromptExternalProgramLaunch)
+	if (_applicationSettings->PromptExternalProgramLaunch)
 	{
 		action = QMessageBox::question(GetMainWindow(), "Launch External Program",
 			QString{"%1\nLaunch \"%2\"?"}.arg(message).arg(info.fileName()),

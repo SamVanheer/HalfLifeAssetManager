@@ -2,7 +2,7 @@
 
 #include <QFileDialog>
 
-#include "settings/GeneralSettings.hpp"
+#include "settings/ApplicationSettings.hpp"
 
 #include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageExternalPrograms.hpp"
@@ -11,31 +11,35 @@
 const QString OptionsPageExternalProgramsId{QStringLiteral("E.ExternalPrograms")};
 const QString ExternalProgramsExeFilter{QStringLiteral("Executable Files (*.exe *.com);;All Files (*.*)")};
 
-OptionsPageExternalPrograms::OptionsPageExternalPrograms(const std::shared_ptr<GeneralSettings>& generalSettings)
-	: _generalSettings(generalSettings)
+OptionsPageExternalPrograms::OptionsPageExternalPrograms(const std::shared_ptr<ApplicationSettings>& applicationSettings)
+	: _applicationSettings(applicationSettings)
 {
-	assert(_generalSettings);
+	assert(_applicationSettings);
 
 	SetCategory(QString{OptionsPageGeneralCategory});
 	SetCategoryTitle("General");
 	SetId(QString{OptionsPageExternalProgramsId});
 	SetPageTitle("External Programs");
-	SetWidgetFactory([this](EditorContext* editorContext) { return new OptionsPageExternalProgramsWidget(editorContext, _generalSettings.get()); });
+	SetWidgetFactory([this](EditorContext* editorContext)
+		{
+			return new OptionsPageExternalProgramsWidget(editorContext, _applicationSettings.get());
+		});
 }
 
 OptionsPageExternalPrograms::~OptionsPageExternalPrograms() = default;
 
-OptionsPageExternalProgramsWidget::OptionsPageExternalProgramsWidget(EditorContext* editorContext, GeneralSettings* generalSettings)
+OptionsPageExternalProgramsWidget::OptionsPageExternalProgramsWidget(
+	EditorContext* editorContext, ApplicationSettings* applicationSettings)
 	: _editorContext(editorContext)
-	, _generalSettings(generalSettings)
+	, _applicationSettings(applicationSettings)
 {
 	_ui.setupUi(this);
 
-	_ui.Compiler->setText(_generalSettings->GetStudiomdlCompilerFileName());
-	_ui.Decompiler->setText(_generalSettings->GetStudiomdlDecompilerFileName());
-	_ui.XashModelViewer->setText(_generalSettings->GetXashModelViewerFileName());
-	_ui.Quake1ModelViewer->setText(_generalSettings->GetQuake1ModelViewerFileName());
-	_ui.Source1ModelViewer->setText(_generalSettings->GetSource1ModelViewerFileName());
+	_ui.Compiler->setText(_applicationSettings->GetStudiomdlCompilerFileName());
+	_ui.Decompiler->setText(_applicationSettings->GetStudiomdlDecompilerFileName());
+	_ui.XashModelViewer->setText(_applicationSettings->GetXashModelViewerFileName());
+	_ui.Quake1ModelViewer->setText(_applicationSettings->GetQuake1ModelViewerFileName());
+	_ui.Source1ModelViewer->setText(_applicationSettings->GetSource1ModelViewerFileName());
 
 	connect(_ui.BrowseCompiler, &QPushButton::clicked, this, &OptionsPageExternalProgramsWidget::OnBrowseCompiler);
 	connect(_ui.BrowseDecompiler, &QPushButton::clicked, this, &OptionsPageExternalProgramsWidget::OnBrowseDecompiler);
@@ -51,13 +55,13 @@ OptionsPageExternalProgramsWidget::~OptionsPageExternalProgramsWidget() = defaul
 
 void OptionsPageExternalProgramsWidget::ApplyChanges(QSettings& settings)
 {
-	_generalSettings->SetStudiomdlCompilerFileName(_ui.Compiler->text());
-	_generalSettings->SetStudiomdlDecompilerFileName(_ui.Decompiler->text());
-	_generalSettings->SetXashModelViewerFileName(_ui.XashModelViewer->text());
-	_generalSettings->SetQuake1ModelViewerFileName(_ui.Quake1ModelViewer->text());
-	_generalSettings->SetSource1ModelViewerFileName(_ui.Source1ModelViewer->text());
+	_applicationSettings->SetStudiomdlCompilerFileName(_ui.Compiler->text());
+	_applicationSettings->SetStudiomdlDecompilerFileName(_ui.Decompiler->text());
+	_applicationSettings->SetXashModelViewerFileName(_ui.XashModelViewer->text());
+	_applicationSettings->SetQuake1ModelViewerFileName(_ui.Quake1ModelViewer->text());
+	_applicationSettings->SetSource1ModelViewerFileName(_ui.Source1ModelViewer->text());
 
-	_generalSettings->SaveSettings(settings);
+	_applicationSettings->SaveSettings(settings);
 }
 
 static void BrowseExeFile(QWidget* parent, const QString& title, QLineEdit* lineEdit)

@@ -10,7 +10,7 @@
 
 class EditorContext;
 
-class GeneralSettings;
+class ApplicationSettings;
 class RecentFilesSettings;
 
 extern const QString OptionsPageGeneralCategory;
@@ -18,20 +18,20 @@ extern const QString OptionsPageGeneralCategory;
 class OptionsPageGeneral : public OptionsPage
 {
 public:
-	OptionsPageGeneral(
-		const std::shared_ptr<GeneralSettings>& generalSettings, const std::shared_ptr<RecentFilesSettings>& recentFilesSettings);
+	OptionsPageGeneral(const std::shared_ptr<ApplicationSettings>& applicationSettings,
+		const std::shared_ptr<RecentFilesSettings>& recentFilesSettings);
 	~OptionsPageGeneral();
 
 private:
-	const std::shared_ptr<GeneralSettings> _generalSettings;
+	const std::shared_ptr<ApplicationSettings> _applicationSettings;
 	const std::shared_ptr<RecentFilesSettings> _recentFilesSettings;
 };
 
 class OptionsPageGeneralWidget final : public OptionsWidget
 {
 public:
-	OptionsPageGeneralWidget(
-		EditorContext* editorContext, GeneralSettings* generalSettings, RecentFilesSettings* recentFilesSettings);
+	OptionsPageGeneralWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings,
+		RecentFilesSettings* recentFilesSettings);
 	~OptionsPageGeneralWidget();
 
 	void ApplyChanges(QSettings& settings) override;
@@ -41,6 +41,6 @@ private:
 
 	EditorContext* const _editorContext;
 
-	GeneralSettings* const _generalSettings;
+	ApplicationSettings* const _applicationSettings;
 	RecentFilesSettings* const _recentFilesSettings;
 };

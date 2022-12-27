@@ -8,20 +8,19 @@
 
 #include "ui/options/OptionsPage.hpp"
 
+class ApplicationSettings;
 class EditorContext;
-
-class GeneralSettings;
 
 extern const QString ExternalProgramsExeFilter;
 
 class OptionsPageExternalPrograms : public OptionsPage
 {
 public:
-	OptionsPageExternalPrograms(const std::shared_ptr<GeneralSettings>& generalSettings);
+	OptionsPageExternalPrograms(const std::shared_ptr<ApplicationSettings>& applicationSettings);
 	~OptionsPageExternalPrograms();
 
 private:
-	const std::shared_ptr<GeneralSettings> _generalSettings;
+	const std::shared_ptr<ApplicationSettings> _applicationSettings;
 };
 
 class OptionsPageExternalProgramsWidget final : public OptionsWidget
@@ -29,7 +28,7 @@ class OptionsPageExternalProgramsWidget final : public OptionsWidget
 	Q_OBJECT
 
 public:
-	OptionsPageExternalProgramsWidget(EditorContext* editorContext, GeneralSettings* generalSettings);
+	OptionsPageExternalProgramsWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings);
 	~OptionsPageExternalProgramsWidget();
 
 	void ApplyChanges(QSettings& settings) override;
@@ -47,5 +46,5 @@ private:
 
 	EditorContext* const _editorContext;
 
-	GeneralSettings* const _generalSettings;
+	ApplicationSettings* const _applicationSettings;
 };

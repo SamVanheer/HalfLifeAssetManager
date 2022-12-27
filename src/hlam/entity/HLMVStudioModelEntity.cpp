@@ -3,7 +3,7 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
-#include "settings/GeneralSettings.hpp"
+#include "settings/ApplicationSettings.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 
@@ -39,11 +39,11 @@ void HLMVStudioModelEntity::HandleAnimEvent(const AnimEvent& event)
 	case SCRIPT_EVENT_SOUND_VOICE:
 	case SCRIPT_CLIENT_EVENT_SOUND:
 	{
-		if (GetContext()->GeneralSettings->PlaySounds)
+		if (GetContext()->ApplicationSettings->PlaySounds)
 		{
 			int pitch = PITCH_NORM;
 
-			if (GetContext()->GeneralSettings->FramerateAffectsPitch)
+			if (GetContext()->ApplicationSettings->FramerateAffectsPitch)
 			{
 				pitch = static_cast<int>(pitch * GetFrameRate());
 			}

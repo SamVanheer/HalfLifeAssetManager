@@ -130,7 +130,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_provider->GetStudioModelRenderer(),
 		_provider->GetSpriteRenderer(),
 		_editorContext->GetSoundSystem(),
-		_editorContext->GetGeneralSettings(),
+		_editorContext->GetApplicationSettings(),
 		_provider->GetStudioModelSettings()))
 	, _cameraOperators(new CameraOperators(this))
 {
@@ -147,11 +147,11 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	CreateMainScene();
 	CreateTextureScene();
 
-	auto arcBallCamera = new ArcBallCameraOperator(_editorContext->GetGeneralSettings());
-	_firstPersonCamera = new FirstPersonCameraOperator(_editorContext->GetGeneralSettings());
+	auto arcBallCamera = new ArcBallCameraOperator(_editorContext->GetApplicationSettings());
+	_firstPersonCamera = new FirstPersonCameraOperator(_editorContext->GetApplicationSettings());
 
 	_cameraOperators->Add(arcBallCamera);
-	_cameraOperators->Add(new FreeLookCameraOperator(_editorContext->GetGeneralSettings()));
+	_cameraOperators->Add(new FreeLookCameraOperator(_editorContext->GetApplicationSettings()));
 	_cameraOperators->Add(_firstPersonCamera);
 
 	const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*_modelEntity, Axis::X, true);
@@ -176,9 +176,9 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	}
 
 	connect(this, &StudioModelAsset::IsActiveChanged, this, &StudioModelAsset::OnIsActiveChanged);
-	connect(_editorContext->GetGeneralSettings(), &GeneralSettings::ResizeTexturesToPowerOf2Changed,
+	connect(_editorContext->GetApplicationSettings(), &ApplicationSettings::ResizeTexturesToPowerOf2Changed,
 		this, &StudioModelAsset::OnResizeTexturesToPowerOf2Changed);
-	connect(_editorContext->GetGeneralSettings(), &GeneralSettings::TextureFiltersChanged,
+	connect(_editorContext->GetApplicationSettings(), &ApplicationSettings::TextureFiltersChanged,
 		this, &StudioModelAsset::OnTextureFiltersChanged);
 
 	// Initialize graphics resources.

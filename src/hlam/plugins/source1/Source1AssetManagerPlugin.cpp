@@ -6,7 +6,7 @@
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
 #include "plugins/source1/Source1AssetManagerPlugin.hpp"
 
-#include "settings/GeneralSettings.hpp"
+#include "settings/ApplicationSettings.hpp"
 
 #include "ui/EditorContext.hpp"
 
@@ -20,8 +20,8 @@ constexpr int Source1StudioVersionMax = 48;
 class Source1StudioModelAssetProvider final : public AssetProvider
 {
 public:
-	explicit Source1StudioModelAssetProvider(GeneralSettings* generalSettings)
-		: _generalSettings(generalSettings)
+	explicit Source1StudioModelAssetProvider(ApplicationSettings* applicationSettings)
+		: _applicationSettings(applicationSettings)
 	{
 	}
 
@@ -58,7 +58,7 @@ public:
 		const QString& fileName, FILE* file) override
 	{
 		const auto result = _editorContext->TryLaunchExternalProgram(
-			_generalSettings->GetSource1ModelViewerFileName(),
+			_applicationSettings->GetSource1ModelViewerFileName(),
 			QStringList(fileName),
 			"This is a Source 1 Studio model which requires it to be loaded in Source 1 Half-Life Model Viewer.");
 
@@ -73,12 +73,12 @@ public:
 	}
 
 private:
-	GeneralSettings* const _generalSettings;
+	ApplicationSettings* const _applicationSettings;
 };
 
 bool Source1AssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 {
-	auto source1StudioModelAssetProvider = std::make_unique<Source1StudioModelAssetProvider>(builder.GeneralSettings);
+	auto source1StudioModelAssetProvider = std::make_unique<Source1StudioModelAssetProvider>(builder.ApplicationSettings);
 	builder.AssetProviderRegistry->AddProvider(std::move(source1StudioModelAssetProvider));
 	return true;
 }

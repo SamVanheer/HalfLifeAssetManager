@@ -3,7 +3,7 @@
 #include <QWheelEvent>
 #include <QWidget>
 
-#include "settings/GeneralSettings.hpp"
+#include "settings/ApplicationSettings.hpp"
 
 #include "graphics/Scene.hpp"
 #include "graphics/SceneContext.hpp"
@@ -20,7 +20,7 @@ SceneWidget::SceneWidget(EditorContext* editorContext,
 	// It's safe to modify this since it doesn't affect the underlying window, only the FBO used for MSAA.
 	auto format = QSurfaceFormat::defaultFormat();
 
-	const int msaaLevel = editorContext->GetGeneralSettings()->GetMSAALevel();
+	const int msaaLevel = editorContext->GetApplicationSettings()->GetMSAALevel();
 
 	format.setSamples(msaaLevel > 0 && msaaLevel < 32 ? 1 << msaaLevel : -1);
 

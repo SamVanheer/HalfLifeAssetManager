@@ -1,7 +1,7 @@
 #include <QSignalBlocker>
 #include <QString>
 
-#include "settings/GeneralSettings.hpp"
+#include "settings/ApplicationSettings.hpp"
 
 #include "ui/EditorContext.hpp"
 #include "ui/options/OptionsPageExternalPrograms.hpp"
@@ -32,7 +32,7 @@ StudioModelCompilerFrontEnd::StudioModelCompilerFrontEnd(EditorContext* editorCo
 	connect(_settingsUi.TextureReplacements, &QTableWidget::currentItemChanged, this, &StudioModelCompilerFrontEnd::OnCurrentTextureReplacementChanged);
 	connect(_settingsUi.TextureReplacements, &QTableWidget::cellChanged, this, &StudioModelCompilerFrontEnd::UpdateCompleteCommandLine);
 
-	SetProgram(_editorContext->GetGeneralSettings()->GetStudiomdlCompilerFileName(), ExternalProgramsExeFilter);
+	SetProgram(_editorContext->GetApplicationSettings()->GetStudiomdlCompilerFileName(), ExternalProgramsExeFilter);
 	SetInputFileFilter("QC Files (*.qc);;All Files (*.*)");
 	SetSettingsWidget(_settingsWidget);
 }
@@ -40,9 +40,9 @@ StudioModelCompilerFrontEnd::StudioModelCompilerFrontEnd(EditorContext* editorCo
 StudioModelCompilerFrontEnd::~StudioModelCompilerFrontEnd()
 {
 	//Sync any changes made to settings
-	_editorContext->GetGeneralSettings()->SetStudiomdlCompilerFileName(GetProgram());
+	_editorContext->GetApplicationSettings()->SetStudiomdlCompilerFileName(GetProgram());
 
-	_editorContext->GetGeneralSettings()->SaveSettings(*_editorContext->GetSettings());
+	_editorContext->GetApplicationSettings()->SaveSettings(*_editorContext->GetSettings());
 }
 
 void StudioModelCompilerFrontEnd::GetArgumentsCore(QStringList& arguments)

@@ -26,9 +26,9 @@
 
 #include "qt/QtLogging.hpp"
 
+#include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
-#include "settings/GeneralSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 #include "settings/StyleSettings.hpp"
 
@@ -296,7 +296,7 @@ void ToolApplication::ConfigureOpenGL(QSettings& settings)
 	defaultFormat.setGreenBufferSize(4);
 	defaultFormat.setBlueBufferSize(4);
 	defaultFormat.setAlphaBufferSize(4);
-	defaultFormat.setSwapInterval(GeneralSettings::ShouldEnableVSync(settings) ? 1 : 0);
+	defaultFormat.setSwapInterval(ApplicationSettings::ShouldEnableVSync(settings) ? 1 : 0);
 
 	qCDebug(logging::HLAM) << "Configuring OpenGL for" << defaultFormat;
 
@@ -305,7 +305,7 @@ void ToolApplication::ConfigureOpenGL(QSettings& settings)
 
 bool ToolApplication::CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings)
 {
-	if (GeneralSettings::ShouldUseSingleInstance(settings))
+	if (ApplicationSettings::ShouldUseSingleInstance(settings))
 	{
 		_singleInstance.reset(new SingleInstance());
 
@@ -324,7 +324,7 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 	std::unique_ptr<QSettings>&& settings, std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext)
 {
 	const auto colorSettings{std::make_shared<ColorSettings>()};
-	const auto generalSettings{std::make_shared<GeneralSettings>(settings.get())};
+	const auto applicationSettings{std::make_shared<ApplicationSettings>(settings.get())};
 	const auto gameConfigurationsSettings{std::make_shared<GameConfigurationsSettings>()};
 	const auto recentFilesSettings{std::make_shared<RecentFilesSettings>()};
 	const auto styleSettings{std::make_shared<StyleSettings>()};
@@ -339,7 +339,7 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 		{
 			_application,
 			settings.get(),
-			generalSettings.get(),
+			applicationSettings.get(),
 			colorSettings.get(),
 			assetProviderRegistry.get(),
 			optionsPageRegistry.get()
@@ -353,16 +353,16 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 
 	//TODO: settings loading needs to be made more flexible
 	colorSettings->LoadSettings(*settings);
-	generalSettings->LoadSettings(*settings);
+	applicationSettings->LoadSettings(*settings);
 	recentFilesSettings->LoadSettings(*settings);
 	gameConfigurationsSettings->LoadSettings(*settings);
 	styleSettings->LoadSettings(*settings);
 
 	CallPlugins(&IAssetManagerPlugin::LoadSettings, *settings);
 
-	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGeneral>(generalSettings, recentFilesSettings));
+	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGeneral>(applicationSettings, recentFilesSettings));
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageColors>(colorSettings));
-	optionsPageRegistry->AddPage(std::make_unique<OptionsPageExternalPrograms>(generalSettings));
+	optionsPageRegistry->AddPage(std::make_unique<OptionsPageExternalPrograms>(applicationSettings));
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGameConfigurations>(gameConfigurationsSettings));
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageStyle>(styleSettings));
 
@@ -371,7 +371,7 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 		std::move(graphicsContext),
 		std::move(assetProviderRegistry),
 		std::move(optionsPageRegistry),
-		generalSettings,
+		applicationSettings,
 		colorSettings,
 		recentFilesSettings,
 		gameConfigurationsSettings);
@@ -444,7 +444,7 @@ void ToolApplication::OnExit()
 	const auto settings = _editorContext->GetSettings();
 
 	// TODO: rework this so it doesn't need to be called manually for everything.
-	_editorContext->GetGeneralSettings()->SaveSettings(*settings);
+	_editorContext->GetApplicationSettings()->SaveSettings(*settings);
 	_editorContext->GetRecentFiles()->SaveSettings(*settings);
 
 	CallPlugins(&IAssetManagerPlugin::SaveSettings, *settings);

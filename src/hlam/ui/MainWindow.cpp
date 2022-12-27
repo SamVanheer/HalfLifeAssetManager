@@ -28,8 +28,8 @@
 
 #include "qt/QtLogging.hpp"
 
+#include "settings/ApplicationSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
-#include "settings/GeneralSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
 #include "soundsystem/ISoundSystem.hpp"
@@ -141,7 +141,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 			action->setCheckable(true);
 		}
 
-		int index = _editorContext->GetGeneralSettings()->GetMSAALevel();
+		int index = _editorContext->GetApplicationSettings()->GetMSAALevel();
 
 		// Won't match the actual setting but this lets the user override the level manually.
 		if (index < 0 || index >= _msaaActionGroup->actions().size())
@@ -153,7 +153,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	}
 
 	{
-		const int index = static_cast<int>(_editorContext->GetGeneralSettings()->GuidelinesAspectRatio);
+		const int index = static_cast<int>(_editorContext->GetApplicationSettings()->GuidelinesAspectRatio);
 		_ui.GuidelinesAspectRatioGroup->actions()[index]->setChecked(true);
 	}
 
@@ -166,7 +166,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnEnterFullscreen);
 
 	connect(_ui.ActionPowerOf2Textures, &QAction::toggled,
-		_editorContext->GetGeneralSettings(), &GeneralSettings::SetResizeTexturesToPowerOf2);
+		_editorContext->GetApplicationSettings(), &ApplicationSettings::SetResizeTexturesToPowerOf2);
 
 	connect(_ui.ActionMinPoint, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
 	connect(_ui.ActionMinLinear, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
@@ -182,7 +182,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		const auto lambda = [this]()
 		{
 			const int index = _msaaActionGroup->actions().indexOf(_msaaActionGroup->checkedAction());
-			_editorContext->GetGeneralSettings()->SetMSAALevel(index);
+			_editorContext->GetApplicationSettings()->SetMSAALevel(index);
 		};
 
 		for (auto action : _msaaActionGroup->actions())
@@ -193,7 +193,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	connect(_ui.ActionTransparentScreenshots, &QAction::triggered, this, [this](bool value)
 		{
-			_editorContext->GetGeneralSettings()->TransparentScreenshots = value;
+			_editorContext->GetApplicationSettings()->TransparentScreenshots = value;
 		});
 
 	connect(_ui.ActionRefresh, &QAction::triggered, this, &MainWindow::OnRefreshAsset);
@@ -206,7 +206,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		{
 			const int index = _ui.GuidelinesAspectRatioGroup->actions()
 				.indexOf(_ui.GuidelinesAspectRatioGroup->checkedAction());
-			_editorContext->GetGeneralSettings()->GuidelinesAspectRatio = static_cast<GuidelinesAspectRatio>(index);
+			_editorContext->GetApplicationSettings()->GuidelinesAspectRatio = static_cast<GuidelinesAspectRatio>(index);
 		};
 
 		for (auto action : _ui.GuidelinesAspectRatioGroup->actions())
@@ -239,8 +239,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 		if (isSoundAvailable)
 		{
-			_ui.ActionPlaySounds->setChecked(_editorContext->GetGeneralSettings()->PlaySounds);
-			_ui.ActionFramerateAffectsPitch->setChecked(_editorContext->GetGeneralSettings()->FramerateAffectsPitch);
+			_ui.ActionPlaySounds->setChecked(_editorContext->GetApplicationSettings()->PlaySounds);
+			_ui.ActionFramerateAffectsPitch->setChecked(_editorContext->GetApplicationSettings()->FramerateAffectsPitch);
 		}
 	}
 
@@ -574,7 +574,7 @@ LoadResult MainWindow::TryLoadAsset(QString fileName)
 		}
 	}
 
-	if (_editorContext->GetGeneralSettings()->OneAssetAtATime)
+	if (_editorContext->GetApplicationSettings()->OneAssetAtATime)
 	{
 		if (!TryCloseAsset(0, true))
 		{
@@ -659,7 +659,7 @@ void MainWindow::SyncSettings()
 {
 	auto settings = _editorContext->GetSettings();
 
-	if (settings->value("General/AllowTabCloseWithMiddleClick", GeneralSettings::DefaultAllowTabCloseWithMiddleClick).toBool())
+	if (settings->value("General/AllowTabCloseWithMiddleClick", ApplicationSettings::DefaultAllowTabCloseWithMiddleClick).toBool())
 	{
 		_assetTabs->tabBar()->installEventFilter(this);
 	}
@@ -668,7 +668,7 @@ void MainWindow::SyncSettings()
 		_assetTabs->tabBar()->removeEventFilter(this);
 	}
 
-	if (_editorContext->GetGeneralSettings()->OneAssetAtATime)
+	if (_editorContext->GetApplicationSettings()->OneAssetAtATime)
 	{
 		while (_assetTabs->count() > 1)
 		{
@@ -900,7 +900,7 @@ void MainWindow::OnTextureFiltersChanged()
 		return index;
 	};
 
-	_editorContext->GetGeneralSettings()->SetTextureFilters(
+	_editorContext->GetApplicationSettings()->SetTextureFilters(
 		static_cast<graphics::TextureFilter>(currentIndex(_ui.MinFilterGroup)),
 		static_cast<graphics::TextureFilter>(currentIndex(_ui.MagFilterGroup)),
 		static_cast<graphics::MipmapFilter>(currentIndex(_ui.MipmapFilterGroup)));
@@ -924,12 +924,12 @@ bool MainWindow::OnRefreshAsset()
 
 void MainWindow::OnPlaySoundsChanged()
 {
-	_editorContext->GetGeneralSettings()->PlaySounds = _ui.ActionPlaySounds->isChecked();
+	_editorContext->GetApplicationSettings()->PlaySounds = _ui.ActionPlaySounds->isChecked();
 }
 
 void MainWindow::OnFramerateAffectsPitchChanged()
 {
-	_editorContext->GetGeneralSettings()->FramerateAffectsPitch = _ui.ActionFramerateAffectsPitch->isChecked();
+	_editorContext->GetApplicationSettings()->FramerateAffectsPitch = _ui.ActionFramerateAffectsPitch->isChecked();
 }
 
 void MainWindow::OnOpenOptionsDialog()

@@ -5,7 +5,7 @@
 #include "assets/AssetIO.hpp"
 #include "plugins/quake1/Quake1AssetManagerPlugin.hpp"
 
-#include "settings/GeneralSettings.hpp"
+#include "settings/ApplicationSettings.hpp"
 
 #include "ui/EditorContext.hpp"
 
@@ -18,8 +18,8 @@ constexpr char AliasModelHeaderId[] = "IDPO";
 class Quake1AliasModelAssetProvider final : public AssetProvider
 {
 public:
-	explicit Quake1AliasModelAssetProvider(GeneralSettings* generalSettings)
-		: _generalSettings(generalSettings)
+	explicit Quake1AliasModelAssetProvider(ApplicationSettings* applicationSettings)
+		: _applicationSettings(applicationSettings)
 	{
 	}
 
@@ -52,7 +52,7 @@ public:
 		const QString& fileName, FILE* file) override
 	{
 		const auto result = _editorContext->TryLaunchExternalProgram(
-			_generalSettings->GetQuake1ModelViewerFileName(),
+			_applicationSettings->GetQuake1ModelViewerFileName(),
 			QStringList(fileName),
 			"This is a Quake 1 Alias model which requires it to be loaded in Quake 1 Model Viewer.");
 
@@ -67,12 +67,12 @@ public:
 	}
 
 private:
-	GeneralSettings* const _generalSettings;
+	ApplicationSettings* const _applicationSettings;
 };
 
 bool Quake1AssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 {
-	auto quake1AliasModelAssetProvider = std::make_unique<Quake1AliasModelAssetProvider>(builder.GeneralSettings);
+	auto quake1AliasModelAssetProvider = std::make_unique<Quake1AliasModelAssetProvider>(builder.ApplicationSettings);
 	builder.AssetProviderRegistry->AddProvider(std::move(quake1AliasModelAssetProvider));
 	return true;
 }

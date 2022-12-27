@@ -13,7 +13,7 @@ enum class GuidelinesAspectRatio
 	SixteenTen
 };
 
-class GeneralSettings final : public QObject
+class ApplicationSettings final : public QObject
 {
 	Q_OBJECT
 
@@ -63,7 +63,7 @@ public:
 	static const inline QString Source1ModelViewerFileNameKey{
 		QStringLiteral("ExternalPrograms/Source1ModelViewerFileName")};
 
-	GeneralSettings(QSettings* settings)
+	explicit ApplicationSettings(QSettings* settings)
 		: _settings(settings)
 	{
 	}

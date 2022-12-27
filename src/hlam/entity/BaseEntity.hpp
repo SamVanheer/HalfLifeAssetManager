@@ -7,16 +7,17 @@
 
 #include "utility/Class.hpp"
 
+class ApplicationSettings;
 class BaseEntity;
 class EntityList;
+class ISoundSystem;
+class StudioModelSettings;
 class WorldTime;
 
 namespace graphics
 {
 class SceneContext;
 }
-
-class ISoundSystem;
 
 namespace sprite
 {
@@ -33,9 +34,6 @@ namespace studiomodel
 class StudioModelAsset;
 }
 
-class GeneralSettings;
-class StudioModelSettings;
-
 /**
 *	Pointer to member function used for think methods.
 */
@@ -49,7 +47,7 @@ struct EntityContext final
 	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
 	sprite::ISpriteRenderer* const SpriteRenderer;
 	ISoundSystem* const SoundSystem;
-	GeneralSettings* const GeneralSettings;
+	ApplicationSettings* const ApplicationSettings;
 	StudioModelSettings* const Settings;
 
 	EntityContext(studiomodel::StudioModelAsset* asset,
@@ -57,14 +55,14 @@ struct EntityContext final
 		studiomdl::IStudioModelRenderer* studioModelRenderer,
 		sprite::ISpriteRenderer* spriteRenderer,
 		ISoundSystem* soundSystem,
-		::GeneralSettings* generalSettings,
+		::ApplicationSettings* applicationSettings,
 		StudioModelSettings* settings)
 		: Asset(asset)
 		, Time(time)
 		, SpriteRenderer(spriteRenderer)
 		, StudioModelRenderer(studioModelRenderer)
 		, SoundSystem(soundSystem)
-		, GeneralSettings(generalSettings)
+		, ApplicationSettings(applicationSettings)
 		, Settings(settings)
 	{
 	}

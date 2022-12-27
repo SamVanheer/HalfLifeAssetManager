@@ -13,7 +13,7 @@
 
 #include "graphics/Camera.hpp"
 
-#include "settings/GeneralSettings.hpp"
+#include "settings/ApplicationSettings.hpp"
 
 class QWidget;
 
@@ -40,10 +40,10 @@ class SceneCameraOperator : public CameraOperator
 	Q_OBJECT
 
 public:
-	SceneCameraOperator(GeneralSettings* generalSettings)
-		: _generalSettings(generalSettings)
+	SceneCameraOperator(ApplicationSettings* applicationSettings)
+		: _applicationSettings(applicationSettings)
 	{
-		assert(_generalSettings);
+		assert(_applicationSettings);
 	}
 
 	virtual QString GetName() const = 0;
@@ -59,24 +59,24 @@ public:
 protected:
 	float GetMouseXValue(float value)
 	{
-		if (_generalSettings->ShouldInvertMouseX())
+		if (_applicationSettings->ShouldInvertMouseX())
 		{
 			value = -value;
 		}
 
-		value *= _generalSettings->GetNormalizedMouseSensitivity();
+		value *= _applicationSettings->GetNormalizedMouseSensitivity();
 
 		return value;
 	}
 
 	float GetMouseYValue(float value)
 	{
-		if (_generalSettings->ShouldInvertMouseY())
+		if (_applicationSettings->ShouldInvertMouseY())
 		{
 			value = -value;
 		}
 
-		value *= _generalSettings->GetNormalizedMouseSensitivity();
+		value *= _applicationSettings->GetNormalizedMouseSensitivity();
 
 		return value;
 	}
@@ -85,7 +85,7 @@ signals:
 	void CameraPropertiesChanged();
 
 protected:
-	const GeneralSettings* const _generalSettings;
+	const ApplicationSettings* const _applicationSettings;
 
 	glm::vec2 _oldCoordinates{0.f};
 	Qt::MouseButtons _trackedButtons{};

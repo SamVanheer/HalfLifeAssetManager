@@ -13,7 +13,7 @@
 #include "qt/QtLogSink.hpp"
 #include "qt/QtUtilities.hpp"
 
-#include "settings/GeneralSettings.hpp"
+#include "settings/ApplicationSettings.hpp"
 #include "settings/StudioModelSettings.hpp"
 
 #include "ui/EditorContext.hpp"
@@ -114,7 +114,7 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 		qCDebug(HLAMStudioModel) << "Model" << fileName << "is a Xash model";
 
 		const auto result = _editorContext->TryLaunchExternalProgram(
-			_editorContext->GetGeneralSettings()->GetXashModelViewerFileName(),
+			_editorContext->GetApplicationSettings()->GetXashModelViewerFileName(),
 			QStringList(fileName),
 			"This is a Xash model which requires it to be loaded in Xash Model Viewer.");
 

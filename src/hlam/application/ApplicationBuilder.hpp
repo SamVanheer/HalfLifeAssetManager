@@ -2,7 +2,7 @@
 
 class AssetProviderRegistry;
 class ColorSettings;
-class GeneralSettings;
+class ApplicationSettings;
 class OptionsPageRegistry;
 class QApplication;
 class QSettings;
@@ -16,7 +16,7 @@ public:
 	QApplication* const Application;
 	QSettings* const Settings;
 	// TODO: shouldn't pass specific settings objects around here
-	GeneralSettings* const GeneralSettings;
+	ApplicationSettings* const ApplicationSettings;
 	ColorSettings* const ColorSettings;
 	AssetProviderRegistry* const AssetProviderRegistry;
 	OptionsPageRegistry* const OptionsPageRegistry;

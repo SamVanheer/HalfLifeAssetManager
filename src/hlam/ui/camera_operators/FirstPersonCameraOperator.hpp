@@ -11,8 +11,8 @@ class FirstPersonCameraOperator final : public SceneCameraOperator
 public:
 	static constexpr float DefaultFirstPersonFieldOfView = 74.f;
 
-	FirstPersonCameraOperator(GeneralSettings* generalSettings)
-		: SceneCameraOperator(generalSettings)
+	FirstPersonCameraOperator(ApplicationSettings* applicationSettings)
+		: SceneCameraOperator(applicationSettings)
 	{
 		_camera.SetOrigin(glm::vec3{0});
 		_camera.SetFieldOfView(DefaultFirstPersonFieldOfView);

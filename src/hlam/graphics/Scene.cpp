@@ -14,8 +14,8 @@
 #include "graphics/Scene.hpp"
 #include "graphics/SceneContext.hpp"
 
+#include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
-#include "settings/GeneralSettings.hpp"
 
 #include "ui/assets/studiomodel/StudioModelAsset.hpp"
 #include "ui/assets/studiomodel/StudioModelColors.hpp"
@@ -81,12 +81,12 @@ void Scene::Tick()
 
 void Scene::Draw(SceneContext& sc)
 {
-	auto generalSettings = _entityContext->GeneralSettings;
+	auto applicationSettings = _entityContext->ApplicationSettings;
 	auto colors = _entityContext->Asset->GetEditorContext()->GetColorSettings();
 
 	const auto backgroundColor = colors->GetColor(studiomodel::BackgroundColor);
 
-	const float backgroundAlpha = generalSettings->TransparentScreenshots ? 0 : 1;
+	const float backgroundAlpha = applicationSettings->TransparentScreenshots ? 0 : 1;
 
 	sc.OpenGLFunctions->glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundAlpha);
 	sc.OpenGLFunctions->glClearStencil(0);
