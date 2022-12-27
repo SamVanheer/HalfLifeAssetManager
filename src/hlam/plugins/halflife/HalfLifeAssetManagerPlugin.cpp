@@ -1,13 +1,13 @@
 #include "application/ApplicationBuilder.hpp"
+#include "assets/Assets.hpp"
+
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
+#include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/StudioModelColors.hpp"
 
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 #include "settings/StudioModelSettings.hpp"
-
-#include "ui/assets/Assets.hpp"
-#include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/assets/studiomodel/StudioModelColors.hpp"
 
 #include "ui/options/OptionsPageRegistry.hpp"
 #include "ui/options/OptionsPageStudioModel.hpp"

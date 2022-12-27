@@ -5,7 +5,7 @@
 
 #include "qt/QtUtilities.hpp"
 
-#include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 
 #include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"

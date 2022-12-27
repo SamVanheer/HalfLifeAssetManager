@@ -4,7 +4,7 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/SceneContext.hpp"
 
-#include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 
 void BoundingBoxEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {

@@ -3,9 +3,9 @@
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
-#include "settings/ApplicationSettings.hpp"
+#include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 
-#include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "settings/ApplicationSettings.hpp"
 
 void HLMVStudioModelEntity::Spawn()
 {

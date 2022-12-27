@@ -10,8 +10,8 @@
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 
-#include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/assets/studiomodel/StudioModelColors.hpp"
+#include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/StudioModelColors.hpp"
 #include "ui/EditorContext.hpp"
 
 constexpr float GetAspectRatio(GuidelinesAspectRatio aspectRatio)

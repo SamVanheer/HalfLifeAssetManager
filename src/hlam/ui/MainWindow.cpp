@@ -20,6 +20,7 @@
 #include "ProjectInfo.hpp"
 
 #include "assets/AssetIO.hpp"
+#include "assets/Assets.hpp"
 
 #include "filesystem/IFileSystem.hpp"
 #include "filesystem/FileSystemConstants.hpp"
@@ -40,8 +41,6 @@
 #include "ui/FullscreenWidget.hpp"
 #include "ui/MainWindow.hpp"
 #include "ui/SceneWidget.hpp"
-
-#include "ui/assets/Assets.hpp"
 
 #include "ui/options/OptionsDialog.hpp"
 

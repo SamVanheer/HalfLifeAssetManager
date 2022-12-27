@@ -1,3 +1,5 @@
 target_sources(HLAM
 	PRIVATE
-		AssetIO.hpp)
+		AssetIO.hpp
+		Assets.cpp
+		Assets.hpp)

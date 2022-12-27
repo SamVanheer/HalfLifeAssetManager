@@ -1,0 +1,19 @@
+target_sources(HLAM
+	PRIVATE
+		StudioModelData.cpp
+		StudioModelData.hpp
+		StudioModelEditWidget.cpp
+		StudioModelEditWidget.hpp
+		StudioModelEditWidget.ui
+		StudioModelTextureUtilities.cpp
+		StudioModelTextureUtilities.hpp
+		StudioModelUndoCommands.cpp
+		StudioModelUndoCommands.hpp
+		StudioModelValidators.cpp
+		StudioModelValidators.hpp
+		StudioModelView.cpp
+		StudioModelView.hpp
+		StudioModelView.ui)
+
+add_subdirectory(compiler)
+add_subdirectory(dockpanels)

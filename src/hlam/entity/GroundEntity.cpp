@@ -9,8 +9,8 @@
 #include "settings/ColorSettings.hpp"
 #include "settings/StudioModelSettings.hpp"
 
-#include "ui/assets/studiomodel/StudioModelAsset.hpp"
-#include "ui/assets/studiomodel/StudioModelColors.hpp"
+#include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/StudioModelColors.hpp"
 #include "ui/EditorContext.hpp"
 
 void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)

@@ -3,7 +3,7 @@
 
 #include "graphics/SceneContext.hpp"
 
-#include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 
 void TextureEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {

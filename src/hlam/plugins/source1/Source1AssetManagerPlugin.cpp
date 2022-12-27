@@ -3,14 +3,13 @@
 
 #include "application/ApplicationBuilder.hpp"
 #include "assets/AssetIO.hpp"
+#include "assets/Assets.hpp"
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
 #include "plugins/source1/Source1AssetManagerPlugin.hpp"
 
 #include "settings/ApplicationSettings.hpp"
 
 #include "ui/EditorContext.hpp"
-
-#include "ui/assets/Assets.hpp"
 
 const QString Source1ModelExtension{QStringLiteral("mdl")};
 

@@ -18,6 +18,7 @@
 
 #include "application/ApplicationBuilder.hpp"
 #include "application/ToolApplication.hpp"
+#include "assets/Assets.hpp"
 
 #include "plugins/IAssetManagerPlugin.hpp"
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
@@ -34,8 +35,6 @@
 #include "ui/EditorContext.hpp"
 #include "ui/MainWindow.hpp"
 #include "ui/OpenGLGraphicsContext.hpp"
-
-#include "ui/assets/Assets.hpp"
 
 #include "ui/options/OptionsPageColors.hpp"
 #include "ui/options/OptionsPageExternalPrograms.hpp"

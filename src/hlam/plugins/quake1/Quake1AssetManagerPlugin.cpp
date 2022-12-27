@@ -3,13 +3,12 @@
 
 #include "application/ApplicationBuilder.hpp"
 #include "assets/AssetIO.hpp"
+#include "assets/Assets.hpp"
 #include "plugins/quake1/Quake1AssetManagerPlugin.hpp"
 
 #include "settings/ApplicationSettings.hpp"
 
 #include "ui/EditorContext.hpp"
-
-#include "ui/assets/Assets.hpp"
 
 const QString AliasModelExtension{QStringLiteral("mdl")};
 

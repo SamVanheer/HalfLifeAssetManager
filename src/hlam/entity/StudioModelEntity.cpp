@@ -10,7 +10,7 @@
 
 #include "settings/StudioModelSettings.hpp"
 
-#include "ui/assets/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 
 #include "utility/WorldTime.hpp"
 

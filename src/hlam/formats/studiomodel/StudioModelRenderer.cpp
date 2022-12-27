@@ -13,7 +13,7 @@
 
 #include "settings/ColorSettings.hpp"
 
-#include "ui/assets/studiomodel/StudioModelColors.hpp"
+#include "plugins/halflife/studiomodel/StudioModelColors.hpp"
 
 #include "utility/mathlib.hpp"
 

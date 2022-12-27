@@ -12,6 +12,8 @@
 
 #include <spdlog/logger.h>
 
+#include "assets/Assets.hpp"
+
 #include "filesystem/FileSystem.hpp"
 #include "filesystem/IFileSystem.hpp"
 
@@ -31,8 +33,6 @@
 #include "ui/DragNDropEventFilter.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/SceneWidget.hpp"
-
-#include "ui/assets/Assets.hpp"
 
 #include "ui/options/OptionsPageRegistry.hpp"
 
