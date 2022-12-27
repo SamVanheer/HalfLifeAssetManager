@@ -1,3 +1,5 @@
+#include <QOpenGLFunctions_1_1>
+
 #include "entity/AxesEntity.hpp"
 
 #include "graphics/SceneContext.hpp"

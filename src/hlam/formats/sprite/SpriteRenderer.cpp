@@ -1,6 +1,8 @@
 #include <cassert>
 #include <cmath>
 
+#include <QOpenGLFunctions_1_1>
+
 #include <spdlog/spdlog.h>
 
 #include <glm/vec4.hpp>

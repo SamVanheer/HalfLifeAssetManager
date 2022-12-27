@@ -1,3 +1,5 @@
+#include <QOpenGLFunctions_1_1>
+
 #include "entity/BackgroundEntity.hpp"
 
 #include "graphics/GraphicsUtils.hpp"

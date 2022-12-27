@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <memory>
 
+#include <QOpenGLFunctions_1_1>
+
 #include "formats/sprite/Sprite.hpp"
 
 #include "graphics/Palette.hpp"

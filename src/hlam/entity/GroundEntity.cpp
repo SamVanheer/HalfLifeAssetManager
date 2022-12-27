@@ -1,3 +1,5 @@
+#include <QOpenGLFunctions_1_1>
+
 #include <glm/geometric.hpp>
 
 #include "entity/GroundEntity.hpp"

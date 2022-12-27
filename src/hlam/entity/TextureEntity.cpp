@@ -1,3 +1,5 @@
+#include <QOpenGLFunctions_1_1>
+
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "entity/TextureEntity.hpp"
 

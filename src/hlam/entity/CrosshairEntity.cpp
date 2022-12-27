@@ -1,3 +1,5 @@
+#include <QOpenGLFunctions_1_1>
+
 #include <glm/vec4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 

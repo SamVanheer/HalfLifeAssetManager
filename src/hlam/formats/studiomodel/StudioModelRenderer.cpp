@@ -1,5 +1,7 @@
 #include <algorithm>
 
+#include <QOpenGLFunctions_1_1>
+
 #include <spdlog/spdlog.h>
 
 #include <glm/gtc/matrix_inverse.hpp>

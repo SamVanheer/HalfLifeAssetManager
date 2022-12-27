@@ -3,6 +3,8 @@
 #include <cstring>
 #include <vector>
 
+#include <QOpenGLFunctions_1_1>
+
 #include "graphics/Palette.hpp"
 #include "graphics/TextureLoader.hpp"
 

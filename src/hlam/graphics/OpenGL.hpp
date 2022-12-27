@@ -1,6 +1,8 @@
 #pragma once
 
-#include <QOpenGLFunctions_1_1>
+#include <qopengl.h>
+
+class QOpenGLFunctions_1_1;
 
 /**
 *	As specified by the OpenGL standard, 0 is not a valid texture id.

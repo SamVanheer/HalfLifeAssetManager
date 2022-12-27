@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include <QMouseEvent>
+#include <QOpenGLFunctions_1_1>
 #include <QWheelEvent>
 
 #include <glm/gtc/type_ptr.hpp>
