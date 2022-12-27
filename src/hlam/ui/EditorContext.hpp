@@ -6,10 +6,8 @@
 
 #include <QObject>
 #include <QPointer>
-#include <QSettings>
 #include <QString>
 #include <QTimer>
-#include <QUuid>
 
 class ApplicationSettings;
 class Asset;
@@ -22,6 +20,7 @@ class IFileSystem;
 class ISoundSystem;
 class OptionsPageRegistry;
 class QOpenGLFunctions_1_1;
+class QSettings;
 class QStringList;
 class QWidget;
 class SceneWidget;

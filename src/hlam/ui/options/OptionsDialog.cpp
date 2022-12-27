@@ -5,6 +5,7 @@
 #include <QDesktopServices>
 #include <QDesktopWidget>
 #include <QFileInfo>
+#include <QSettings>
 #include <QUrl>
 
 #include "qt/HashFunctions.hpp"
