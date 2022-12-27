@@ -68,119 +68,116 @@ public:
 	{
 	}
 
-	static bool ShouldUseSingleInstance(QSettings& settings)
+	void LoadSettings()
 	{
-		return settings.value("Startup/UseSingleInstance", DefaultUseSingleInstance).toBool();
-	}
-
-	static bool ShouldEnableVSync(QSettings& settings)
-	{
-		return settings.value("Graphics/EnableVSync", DefaultEnableVSync).toBool();
-	}
-
-	void LoadSettings(QSettings& settings)
-	{
-		_useSingleInstance = ShouldUseSingleInstance(settings);
-
-		settings.beginGroup("General");
-		PauseAnimationsOnTimelineClick = settings.value("PauseAnimationsOnTimelineClick", DefaultPauseAnimationsOnTimelineClick).toBool();
-		OneAssetAtATime = settings.value("OneAssetAtATime", DefaultOneAssetAtATime).toBool();
-		PromptExternalProgramLaunch = settings.value(
+		_settings->beginGroup("General");
+		PauseAnimationsOnTimelineClick = _settings->value("PauseAnimationsOnTimelineClick", DefaultPauseAnimationsOnTimelineClick).toBool();
+		OneAssetAtATime = _settings->value("OneAssetAtATime", DefaultOneAssetAtATime).toBool();
+		PromptExternalProgramLaunch = _settings->value(
 			"PromptExternalProgramLaunch", DefaultPromptExternalProgramLaunch).toBool();
-		_tickRate = std::clamp(settings.value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
+		_tickRate = std::clamp(_settings->value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
 
-		GuidelinesAspectRatio = static_cast<::GuidelinesAspectRatio>(settings.value(
+		GuidelinesAspectRatio = static_cast<::GuidelinesAspectRatio>(_settings->value(
 			"GuidelinesAspectRatio", static_cast<int>(GuidelinesAspectRatio::SixteenNine)).toInt());
 
 		GuidelinesAspectRatio = std::clamp(
 			GuidelinesAspectRatio, ::GuidelinesAspectRatio::FourThree, ::GuidelinesAspectRatio::SixteenTen);
-		settings.endGroup();
+		_settings->endGroup();
 
-		settings.beginGroup("Mouse");
-		_invertMouseX = settings.value("InvertMouseX", false).toBool();
-		_invertMouseY = settings.value("InvertMouseY", false).toBool();
-		_mouseSensitivity = std::clamp(settings.value("MouseSensitivity", DefaultMouseSensitivity).toInt(), MinimumMouseSensitivity, MaximumMouseSensitivity);
-		_mouseWheelSpeed = std::clamp(settings.value("MouseWheelSpeed", DefaultMouseWheelSpeed).toInt(), MinimumMouseWheelSpeed, MaximumMouseWheelSpeed);
-		settings.endGroup();
+		_settings->beginGroup("Mouse");
+		_invertMouseX = _settings->value("InvertMouseX", false).toBool();
+		_invertMouseY = _settings->value("InvertMouseY", false).toBool();
+		_mouseSensitivity = std::clamp(_settings->value("MouseSensitivity", DefaultMouseSensitivity).toInt(), MinimumMouseSensitivity, MaximumMouseSensitivity);
+		_mouseWheelSpeed = std::clamp(_settings->value("MouseWheelSpeed", DefaultMouseWheelSpeed).toInt(), MinimumMouseWheelSpeed, MaximumMouseWheelSpeed);
+		_settings->endGroup();
 
-		settings.beginGroup("Audio");
-		_enableAudioPlayback = settings.value("EnableAudioPlayback", DefaultEnableAudioPlayback).toBool();
-		PlaySounds = settings.value("PlaySounds", DefaultPlaySounds).toBool();
-		FramerateAffectsPitch = settings.value("FramerateAffectsPitch", DefaultFramerateAffectsPitch).toBool();
-		settings.endGroup();
+		_settings->beginGroup("Audio");
+		_enableAudioPlayback = _settings->value("EnableAudioPlayback", DefaultEnableAudioPlayback).toBool();
+		PlaySounds = _settings->value("PlaySounds", DefaultPlaySounds).toBool();
+		FramerateAffectsPitch = _settings->value("FramerateAffectsPitch", DefaultFramerateAffectsPitch).toBool();
+		_settings->endGroup();
 
-		settings.beginGroup("Graphics");
+		_settings->beginGroup("Graphics");
 
-		_powerOf2Textures = settings.value("PowerOf2Textures", DefaultPowerOf2Textures).toBool();
+		_powerOf2Textures = _settings->value("PowerOf2Textures", DefaultPowerOf2Textures).toBool();
 
-		settings.beginGroup("TextureFilters");
+		_settings->beginGroup("TextureFilters");
 		_minFilter = static_cast<graphics::TextureFilter>(std::clamp(
-			settings.value("Min", static_cast<int>(DefaultMinFilter)).toInt(),
+			_settings->value("Min", static_cast<int>(DefaultMinFilter)).toInt(),
 			static_cast<int>(graphics::TextureFilter::First),
 			static_cast<int>(graphics::TextureFilter::Last)));
 
 		_magFilter = static_cast<graphics::TextureFilter>(std::clamp(
-			settings.value("Mag", static_cast<int>(DefaultMagFilter)).toInt(),
+			_settings->value("Mag", static_cast<int>(DefaultMagFilter)).toInt(),
 			static_cast<int>(graphics::TextureFilter::First),
 			static_cast<int>(graphics::TextureFilter::Last)));
 
 		_mipmapFilter = static_cast<graphics::MipmapFilter>(std::clamp(
-			settings.value("Mipmap", static_cast<int>(DefaultMipmapFilter)).toInt(),
+			_settings->value("Mipmap", static_cast<int>(DefaultMipmapFilter)).toInt(),
 			static_cast<int>(graphics::MipmapFilter::First),
 			static_cast<int>(graphics::MipmapFilter::Last)));
-		settings.endGroup();
+		_settings->endGroup();
 
-		_msaaLevel = settings.value("MSAALevel", DefaultMSAALevel).toInt();
-		TransparentScreenshots = settings.value("TransparentScreenshots", DefaultTransparentScreenshots).toBool();
-		settings.endGroup();
+		_msaaLevel = _settings->value("MSAALevel", DefaultMSAALevel).toInt();
+		TransparentScreenshots = _settings->value("TransparentScreenshots", DefaultTransparentScreenshots).toBool();
+		_settings->endGroup();
 	}
 
-	void SaveSettings(QSettings& settings)
+	void SaveSettings()
 	{
-		settings.beginGroup("Startup");
-		settings.setValue("UseSingleInstance", _useSingleInstance);
-		settings.endGroup();
+		_settings->beginGroup("General");
+		_settings->setValue("PauseAnimationsOnTimelineClick", PauseAnimationsOnTimelineClick);
+		_settings->setValue("OneAssetAtATime", OneAssetAtATime);
+		_settings->setValue("PromptExternalProgramLaunch", PromptExternalProgramLaunch);
+		_settings->setValue("TickRate", _tickRate);
+		_settings->setValue("GuidelinesAspectRatio", static_cast<int>(GuidelinesAspectRatio));
+		_settings->endGroup();
 
-		settings.beginGroup("General");
-		settings.setValue("PauseAnimationsOnTimelineClick", PauseAnimationsOnTimelineClick);
-		settings.setValue("OneAssetAtATime", OneAssetAtATime);
-		settings.setValue("PromptExternalProgramLaunch", PromptExternalProgramLaunch);
-		settings.setValue("TickRate", _tickRate);
-		settings.setValue("GuidelinesAspectRatio", static_cast<int>(GuidelinesAspectRatio));
-		settings.endGroup();
+		_settings->beginGroup("Mouse");
+		_settings->setValue("InvertMouseX", _invertMouseX);
+		_settings->setValue("InvertMouseY", _invertMouseY);
+		_settings->setValue("MouseSensitivity", _mouseSensitivity);
+		_settings->setValue("MouseWheelSpeed", _mouseWheelSpeed);
+		_settings->endGroup();
 
-		settings.beginGroup("Mouse");
-		settings.setValue("InvertMouseX", _invertMouseX);
-		settings.setValue("InvertMouseY", _invertMouseY);
-		settings.setValue("MouseSensitivity", _mouseSensitivity);
-		settings.setValue("MouseWheelSpeed", _mouseWheelSpeed);
-		settings.endGroup();
+		_settings->beginGroup("Audio");
+		_settings->setValue("EnableAudioPlayback", _enableAudioPlayback);
+		_settings->setValue("PlaySounds", PlaySounds);
+		_settings->setValue("FramerateAffectsPitch", FramerateAffectsPitch);
+		_settings->endGroup();
 
-		settings.beginGroup("Audio");
-		settings.setValue("EnableAudioPlayback", _enableAudioPlayback);
-		settings.setValue("PlaySounds", PlaySounds);
-		settings.setValue("FramerateAffectsPitch", FramerateAffectsPitch);
-		settings.endGroup();
+		_settings->beginGroup("Graphics");
+		_settings->setValue("PowerOf2Textures", _powerOf2Textures);
 
-		settings.beginGroup("Graphics");
-		settings.setValue("PowerOf2Textures", _powerOf2Textures);
+		_settings->beginGroup("TextureFilters");
+		_settings->setValue("Min", static_cast<int>(_minFilter));
+		_settings->setValue("Mag", static_cast<int>(_magFilter));
+		_settings->setValue("Mipmap", static_cast<int>(_mipmapFilter));
+		_settings->endGroup();
 
-		settings.beginGroup("TextureFilters");
-		settings.setValue("Min", static_cast<int>(_minFilter));
-		settings.setValue("Mag", static_cast<int>(_magFilter));
-		settings.setValue("Mipmap", static_cast<int>(_mipmapFilter));
-		settings.endGroup();
-
-		settings.setValue("MSAALevel", _msaaLevel);
-		settings.setValue("TransparentScreenshots", DefaultTransparentScreenshots);
-		settings.endGroup();
+		_settings->setValue("MSAALevel", _msaaLevel);
+		_settings->setValue("TransparentScreenshots", DefaultTransparentScreenshots);
+		_settings->endGroup();
 	}
 
-	bool ShouldUseSingleInstance() const { return _useSingleInstance; }
+	bool ShouldUseSingleInstance() const
+	{
+		return _settings->value("Startup/UseSingleInstance", DefaultUseSingleInstance).toBool();
+	}
 
 	void SetUseSingleInstance(bool value)
 	{
-		_useSingleInstance = value;
+		_settings->setValue("Startup/UseSingleInstance", value);
+	}
+
+	bool ShouldAllowTabCloseWithMiddleClick() const
+	{
+		return _settings->value("General/AllowTabCloseWithMiddleClick", DefaultAllowTabCloseWithMiddleClick).toBool();
+	}
+
+	void SetAllowTabCloseWithMiddleClick(bool value)
+	{
+		_settings->setValue("General/AllowTabCloseWithMiddleClick", value);
 	}
 
 	int GetTickRate() const { return _tickRate; }
@@ -236,6 +233,11 @@ public:
 
 	bool PlaySounds = DefaultPlaySounds;
 	bool FramerateAffectsPitch = DefaultFramerateAffectsPitch;
+
+	bool ShouldEnableVSync() const
+	{
+		return _settings->value("Graphics/EnableVSync", DefaultEnableVSync).toBool();
+	}
 
 	void SetEnableVSync(bool value)
 	{
@@ -354,8 +356,6 @@ public:
 
 private:
 	QSettings* const _settings;
-
-	bool _useSingleInstance{DefaultUseSingleInstance};
 
 	int _tickRate{DefaultTickRate};
 

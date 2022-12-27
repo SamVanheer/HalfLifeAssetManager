@@ -131,12 +131,16 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		auto settings{CreateSettings(programName, commandLine.IsPortable)};
 
-		if (CheckSingleInstance(programName, commandLine.FileName, *settings))
+		const auto applicationSettings = std::make_shared<ApplicationSettings>(settings.get());
+
+		applicationSettings->LoadSettings();
+
+		if (CheckSingleInstance(programName, commandLine.FileName, *applicationSettings))
 		{
 			return EXIT_SUCCESS;
 		}
 
-		ConfigureOpenGL(*settings);
+		ConfigureOpenGL(*applicationSettings);
 
 		QApplication app(argc, argv);
 
@@ -177,7 +181,7 @@ int ToolApplication::Run(int argc, char* argv[])
 			return EXIT_FAILURE;
 		}
 
-		_editorContext = CreateEditorContext(std::move(settings), std::move(offscreenContext));
+		_editorContext = CreateEditorContext(std::move(settings), applicationSettings, std::move(offscreenContext));
 
 		if (!_editorContext)
 		{
@@ -268,7 +272,7 @@ std::unique_ptr<QSettings> ToolApplication::CreateSettings(const QString& progra
 	}
 }
 
-void ToolApplication::ConfigureOpenGL(QSettings& settings)
+void ToolApplication::ConfigureOpenGL(ApplicationSettings& settings)
 {
 	//Neither OpenGL ES nor Software OpenGL will work here
 	QApplication::setAttribute(Qt::ApplicationAttribute::AA_UseDesktopOpenGL, true);
@@ -296,16 +300,17 @@ void ToolApplication::ConfigureOpenGL(QSettings& settings)
 	defaultFormat.setGreenBufferSize(4);
 	defaultFormat.setBlueBufferSize(4);
 	defaultFormat.setAlphaBufferSize(4);
-	defaultFormat.setSwapInterval(ApplicationSettings::ShouldEnableVSync(settings) ? 1 : 0);
+	defaultFormat.setSwapInterval(settings.ShouldEnableVSync() ? 1 : 0);
 
 	qCDebug(logging::HLAM) << "Configuring OpenGL for" << defaultFormat;
 
 	QSurfaceFormat::setDefaultFormat(defaultFormat);
 }
 
-bool ToolApplication::CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings)
+bool ToolApplication::CheckSingleInstance(
+	const QString& programName, const QString& fileName, ApplicationSettings& settings)
 {
-	if (ApplicationSettings::ShouldUseSingleInstance(settings))
+	if (settings.ShouldUseSingleInstance())
 	{
 		_singleInstance.reset(new SingleInstance());
 
@@ -320,11 +325,11 @@ bool ToolApplication::CheckSingleInstance(const QString& programName, const QStr
 	return false;
 }
 
-std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
-	std::unique_ptr<QSettings>&& settings, std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext)
+std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(std::unique_ptr<QSettings>&& settings,
+	std::shared_ptr<ApplicationSettings> applicationSettings,
+	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext)
 {
 	const auto colorSettings{std::make_shared<ColorSettings>()};
-	const auto applicationSettings{std::make_shared<ApplicationSettings>(settings.get())};
 	const auto gameConfigurationsSettings{std::make_shared<GameConfigurationsSettings>()};
 	const auto recentFilesSettings{std::make_shared<RecentFilesSettings>()};
 	const auto styleSettings{std::make_shared<StyleSettings>()};
@@ -353,7 +358,7 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 
 	//TODO: settings loading needs to be made more flexible
 	colorSettings->LoadSettings(*settings);
-	applicationSettings->LoadSettings(*settings);
+	applicationSettings->LoadSettings();
 	recentFilesSettings->LoadSettings(*settings);
 	gameConfigurationsSettings->LoadSettings(*settings);
 	styleSettings->LoadSettings(*settings);
@@ -444,7 +449,7 @@ void ToolApplication::OnExit()
 	const auto settings = _editorContext->GetSettings();
 
 	// TODO: rework this so it doesn't need to be called manually for everything.
-	_editorContext->GetApplicationSettings()->SaveSettings(*settings);
+	_editorContext->GetApplicationSettings()->SaveSettings();
 	_editorContext->GetRecentFiles()->SaveSettings(*settings);
 
 	CallPlugins(&IAssetManagerPlugin::SaveSettings, *settings);

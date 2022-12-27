@@ -61,7 +61,7 @@ void OptionsPageExternalProgramsWidget::ApplyChanges(QSettings& settings)
 	_applicationSettings->SetQuake1ModelViewerFileName(_ui.Quake1ModelViewer->text());
 	_applicationSettings->SetSource1ModelViewerFileName(_ui.Source1ModelViewer->text());
 
-	_applicationSettings->SaveSettings(settings);
+	_applicationSettings->SaveSettings();
 }
 
 static void BrowseExeFile(QWidget* parent, const QString& title, QLineEdit* lineEdit)

@@ -42,7 +42,7 @@ StudioModelCompilerFrontEnd::~StudioModelCompilerFrontEnd()
 	//Sync any changes made to settings
 	_editorContext->GetApplicationSettings()->SetStudiomdlCompilerFileName(GetProgram());
 
-	_editorContext->GetApplicationSettings()->SaveSettings(*_editorContext->GetSettings());
+	_editorContext->GetApplicationSettings()->SaveSettings();
 }
 
 void StudioModelCompilerFrontEnd::GetArgumentsCore(QStringList& arguments)

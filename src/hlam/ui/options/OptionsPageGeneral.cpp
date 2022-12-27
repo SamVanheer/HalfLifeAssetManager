@@ -48,8 +48,7 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 
 	_ui.UseSingleInstance->setChecked(_applicationSettings->ShouldUseSingleInstance());
 	_ui.PauseAnimationsOnTimelineClick->setChecked(_applicationSettings->PauseAnimationsOnTimelineClick);
-	_ui.AllowTabCloseWithMiddleClick->setChecked(
-		settings->value("General/AllowTabCloseWithMiddleClick", ApplicationSettings::DefaultAllowTabCloseWithMiddleClick).toBool());
+	_ui.AllowTabCloseWithMiddleClick->setChecked(_applicationSettings->ShouldAllowTabCloseWithMiddleClick());
 	_ui.OneAssetAtATime->setChecked(_applicationSettings->OneAssetAtATime);
 	_ui.PromptExternalProgramLaunch->setChecked(_applicationSettings->PromptExternalProgramLaunch);
 	_ui.MaxRecentFiles->setValue(_recentFilesSettings->GetMaxRecentFiles());
@@ -61,7 +60,7 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 	_ui.MouseWheelSpeedSlider->setValue(_applicationSettings->GetMouseWheelSpeed());
 	_ui.MouseWheelSpeedSpinner->setValue(_applicationSettings->GetMouseWheelSpeed());
 	_ui.EnableAudioPlayback->setChecked(_applicationSettings->ShouldEnableAudioPlayback());
-	_ui.EnableVerticalSync->setChecked(ApplicationSettings::ShouldEnableVSync(*settings));
+	_ui.EnableVerticalSync->setChecked(_applicationSettings->ShouldEnableVSync());
 
 	connect(_ui.MouseSensitivitySlider, &QSlider::valueChanged, _ui.MouseSensitivitySpinner, &QSpinBox::setValue);
 	connect(_ui.MouseSensitivitySpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.MouseSensitivitySlider, &QSlider::setValue);
@@ -76,7 +75,7 @@ void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 {
 	_applicationSettings->SetUseSingleInstance(_ui.UseSingleInstance->isChecked());
 	_applicationSettings->PauseAnimationsOnTimelineClick = _ui.PauseAnimationsOnTimelineClick->isChecked();
-	settings.setValue("General/AllowTabCloseWithMiddleClick", _ui.AllowTabCloseWithMiddleClick->isChecked());
+	_applicationSettings->SetAllowTabCloseWithMiddleClick(_ui.AllowTabCloseWithMiddleClick->isChecked());
 	_applicationSettings->OneAssetAtATime = _ui.OneAssetAtATime->isChecked();
 	_applicationSettings->PromptExternalProgramLaunch = _ui.PromptExternalProgramLaunch->isChecked();
 	_recentFilesSettings->SetMaxRecentFiles(_ui.MaxRecentFiles->value());
@@ -88,6 +87,6 @@ void OptionsPageGeneralWidget::ApplyChanges(QSettings& settings)
 	_applicationSettings->SetEnableAudioPlayback(_ui.EnableAudioPlayback->isChecked());
 	_applicationSettings->SetEnableVSync(_ui.EnableVerticalSync->isChecked());
 
-	_applicationSettings->SaveSettings(settings);
+	_applicationSettings->SaveSettings();
 	_recentFilesSettings->SaveSettings(settings);
 }

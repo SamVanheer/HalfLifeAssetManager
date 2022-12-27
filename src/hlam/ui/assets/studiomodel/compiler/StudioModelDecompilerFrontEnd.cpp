@@ -17,6 +17,6 @@ StudioModelDecompilerFrontEnd::~StudioModelDecompilerFrontEnd()
 	//Sync any changes made to settings
 	_editorContext->GetApplicationSettings()->SetStudiomdlDecompilerFileName(GetProgram());
 
-	_editorContext->GetApplicationSettings()->SaveSettings(*_editorContext->GetSettings());
+	_editorContext->GetApplicationSettings()->SaveSettings();
 }
 }

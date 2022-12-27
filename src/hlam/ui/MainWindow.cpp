@@ -657,9 +657,7 @@ LoadResult MainWindow::TryLoadAsset(QString fileName)
 
 void MainWindow::SyncSettings()
 {
-	auto settings = _editorContext->GetSettings();
-
-	if (settings->value("General/AllowTabCloseWithMiddleClick", ApplicationSettings::DefaultAllowTabCloseWithMiddleClick).toBool())
+	if (_editorContext->GetApplicationSettings()->ShouldAllowTabCloseWithMiddleClick())
 	{
 		_assetTabs->tabBar()->installEventFilter(this);
 	}
