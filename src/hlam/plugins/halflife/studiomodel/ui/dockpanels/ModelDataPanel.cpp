@@ -20,47 +20,20 @@ ModelDataPanel::ModelDataPanel(StudioModelAssetProvider* provider)
 {
 	_ui.setupUi(this);
 
-	_ui.EyePosition->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	_ui.EyePosition->SetDecimals(6);
-
-	_ui.BBoxMin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	_ui.BBoxMin->SetDecimals(6);
-	_ui.BBoxMin->SetPrefix("Min ");
-
-	_ui.BBoxMax->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	_ui.BBoxMax->SetDecimals(6);
-	_ui.BBoxMax->SetPrefix("Max ");
-
-	_ui.CBoxMin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	_ui.CBoxMin->SetDecimals(6);
-	_ui.CBoxMin->SetPrefix("Min ");
-
-	_ui.CBoxMax->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	_ui.CBoxMax->SetDecimals(6);
-	_ui.CBoxMax->SetPrefix("Max ");
-
 	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &ModelDataPanel::OnAssetChanged);
 
-	connect(_ui.EyePosition, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnEyePositionChanged);
+	connect(_ui.EyePosition, &SimpleVector3Edit::ValueChanged, this, &ModelDataPanel::OnEyePositionChanged);
 
-	connect(_ui.BBoxMin, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxChanged);
-	connect(_ui.BBoxMax, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxChanged);
+	connect(_ui.BBoxMin, &SimpleVector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxChanged);
+	connect(_ui.BBoxMax, &SimpleVector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxChanged);
 
-	connect(_ui.CBoxMin, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
-	connect(_ui.CBoxMax, &Vector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
+	connect(_ui.CBoxMin, &SimpleVector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
+	connect(_ui.CBoxMax, &SimpleVector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }
 
 ModelDataPanel::~ModelDataPanel() = default;
-
-void ModelDataPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
-{
-	DockableWidget::OnLayoutDirectionChanged(direction);
-
-	_ui.BoundingBoxLayout->setDirection(direction);
-	_ui.ClippingBoxLayout->setDirection(direction);
-}
 
 void ModelDataPanel::OnAssetChanged(StudioModelAsset* asset)
 {
