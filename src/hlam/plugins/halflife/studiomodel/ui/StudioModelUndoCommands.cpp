@@ -75,47 +75,6 @@ void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& old
 	emit _asset->GetModelData()->BoneDataChanged(index);
 }
 
-void ChangeBoneControllerFromBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
-{
-	auto model = _asset->GetEditableStudioModel();
-	
-	auto oldController = oldValue != -1 ? model->BoneControllers[oldValue].get() : nullptr;
-	auto newController = newValue != -1 ? model->BoneControllers[newValue].get() : nullptr;
-
-	//Detach old controller, if any
-	if (oldController)
-	{
-		oldController->Type = 0;
-	}
-
-	//Set up new controller to attach to bone
-	if (newController)
-	{
-		//Find any other bones (including target bone) that have the new controller tied to it
-		//and remove it (moves controller from bone axis to bone axis)
-		for ( auto& bone : model->Bones)
-		{
-			for (auto& axis : bone->Axes)
-			{
-				if (axis.Controller == newController)
-				{
-					axis.Controller = nullptr;
-				}
-			}
-		}
-
-		newController->Type = 1 << _boneControllerAxis;
-	}
-
-	{
-		auto& bone = *model->Bones[index];
-		bone.Axes[_boneControllerAxis].Controller = newController;
-	}
-
-	emit _asset->GetModelData()->BoneControllerDataChanged(oldValue);
-	emit _asset->GetModelData()->BoneControllerDataChanged(newValue);
-}
-
 void ChangeAttachmentNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
 {
 	_asset->GetEditableStudioModel()->Attachments[index]->Name = newValue.toStdString();

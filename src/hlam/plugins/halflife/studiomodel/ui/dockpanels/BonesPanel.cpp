@@ -47,9 +47,6 @@ BonesPanel::BonesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.Rotation, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnBonePropertyChanged);
 	connect(_ui.RotationScale, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnBonePropertyChanged);
 
-	connect(_ui.BoneControllerAxis, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneControllerAxisChanged);
-	connect(_ui.BoneController, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneControllerChanged);
-
 	OnAssetChanged(_provider->GetDummyAsset());
 }
 
@@ -88,12 +85,6 @@ void BonesPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	_ui.Bones->setModel(modelData->Bones);
 
-	{
-		const QSignalBlocker blocker{_ui.BoneController};
-		_ui.BoneController->setModel(modelData->BoneControllersWithNone);
-		_ui.BoneController->setCurrentIndex(0);
-	}
-
 	this->setEnabled(_ui.Bones->count() > 0);
 
 	UpdateRootBonesCount();
@@ -131,12 +122,6 @@ void BonesPanel::OnAssetChanged(StudioModelAsset* asset)
 			}
 
 			UpdateRootBonesCount();
-		});
-
-	connect(modelData, &StudioModelData::BoneControllerDataChanged, this, [this]()
-		{
-			//Resync any changes
-			OnBoneControllerAxisChanged(_ui.BoneControllerAxis->currentIndex());
 		});
 
 	const auto genericChangeHandler = [this]()
@@ -199,7 +184,6 @@ void BonesPanel::OnBoneChanged(int index)
 		const QSignalBlocker boneName{_ui.BoneName};
 		const QSignalBlocker parentBone{_ui.ParentBone};
 		const QSignalBlocker boneFlags{_ui.BoneFlags};
-		const QSignalBlocker controllerAxis{_ui.BoneControllerAxis};
 
 		_ui.BoneName->setText(bone.Name.c_str());
 
@@ -225,10 +209,6 @@ void BonesPanel::OnBoneChanged(int index)
 		_ui.PositionScale->SetValue(glm::vec3{bone.Axes[0].Scale, bone.Axes[1].Scale, bone.Axes[2].Scale});
 		_ui.Rotation->SetValue(glm::vec3{bone.Axes[3].Value, bone.Axes[4].Value, bone.Axes[5].Value});
 		_ui.RotationScale->SetValue(glm::vec3{bone.Axes[3].Scale, bone.Axes[4].Scale, bone.Axes[5].Scale});
-
-		//Ensure axis initializes to index 0
-		_ui.BoneControllerAxis->setCurrentIndex(0);
-		OnBoneControllerAxisChanged(_ui.BoneControllerAxis->currentIndex());
 	}
 
 	OnHightlightBoneChanged();
@@ -284,40 +264,5 @@ void BonesPanel::OnBonePropertyChanged()
 		}));
 
 	_changingBoneProperties = false;
-}
-
-void BonesPanel::OnBoneControllerAxisChanged(int index)
-{
-	const QSignalBlocker controller{_ui.BoneController};
-
-	const int boneIndex = _ui.Bones->currentIndex();
-
-	const bool isValidBone = boneIndex != -1;
-
-	const auto model = _asset->GetEntity()->GetEditableModel();
-
-	const studiomdl::Bone emptyBone{};
-
-	const auto& bone = isValidBone  ? *model->Bones[boneIndex] : emptyBone;
-
-	if (isValidBone && index != -1 && bone.Axes[index].Controller)
-	{
-		_ui.BoneController->setCurrentIndex(bone.Axes[index].Controller->ArrayIndex + BoneControllerOffset);
-	}
-	else
-	{
-		_ui.BoneController->setCurrentIndex(0);
-	}
-}
-
-void BonesPanel::OnBoneControllerChanged(int index)
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
-
-	const int axis = _ui.BoneControllerAxis->currentIndex();
-
-	_asset->AddUndoCommand(new ChangeBoneControllerFromBoneCommand(_asset, _ui.Bones->currentIndex(), axis,
-		bone.Axes[axis].Controller ? bone.Axes[axis].Controller->ArrayIndex : -1, index - BoneControllerOffset));
 }
 }

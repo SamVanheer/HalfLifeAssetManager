@@ -39,10 +39,6 @@ private slots:
 
 	void OnBonePropertyChanged();
 
-	void OnBoneControllerAxisChanged(int index);
-
-	void OnBoneControllerChanged(int index);
-
 private:
 	Ui_BonesPanel _ui;
 	StudioModelAssetProvider* const _provider;

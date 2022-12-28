@@ -25,7 +25,6 @@ public:
 	QAbstractItemModel* const Bones;
 	QAbstractItemModel* const BonesWithNone;
 	QAbstractItemModel* const BoneControllers;
-	QAbstractItemModel* const BoneControllersWithNone;
 	QAbstractItemModel* const Hitboxes;
 	QAbstractItemModel* const Sequences;
 	QAbstractItemModel* const Skins;

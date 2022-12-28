@@ -139,8 +139,8 @@ protected:
 class BoneControllersItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::BoneController>>
 {
 public:
-	BoneControllersItemModel(std::vector<std::unique_ptr<studiomdl::BoneController>>* items, QObject* parent, bool hasInvalidElement)
-		: BaseStudioModelItemModel(items, parent, hasInvalidElement)
+	BoneControllersItemModel(std::vector<std::unique_ptr<studiomdl::BoneController>>* items, QObject* parent)
+		: BaseStudioModelItemModel(items, parent, false)
 	{
 	}
 
@@ -226,8 +226,7 @@ StudioModelData::StudioModelData(studiomdl::EditableStudioModel* model, QObject*
 	, BodyParts(new BodyPartsItemModel(model ? &model->Bodyparts : nullptr, this))
 	, Bones(new BonesItemModel(model ? &model->Bones : nullptr, this, false))
 	, BonesWithNone(new BonesItemModel(model ? &model->Bones : nullptr, this, true))
-	, BoneControllers(new BoneControllersItemModel(model ? &model->BoneControllers : nullptr, this, false))
-	, BoneControllersWithNone(new BoneControllersItemModel(model ? &model->BoneControllers : nullptr, this, true))
+	, BoneControllers(new BoneControllersItemModel(model ? &model->BoneControllers : nullptr, this))
 	, Hitboxes(new HitboxesItemModel(model ? &model->Hitboxes : nullptr, this))
 	, Sequences(new SequencesItemModel(model ? &model->Sequences : nullptr, this))
 	, Skins(new SkinsItemModel(model ? &model->SkinFamilies : nullptr, this))
@@ -246,7 +245,6 @@ void StudioModelData::DisconnectFromAll(QObject* receiver)
 			Bones,
 			BonesWithNone,
 			BoneControllers,
-			BoneControllersWithNone,
 			Hitboxes,
 			Sequences,
 			Skins,

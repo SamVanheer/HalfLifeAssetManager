@@ -436,28 +436,6 @@ protected:
 	void Apply(int index, const ChangeBoneProperties& oldValue, const ChangeBoneProperties& newValue) override;
 };
 
-class ChangeBoneControllerFromBoneCommand : public ModelListUndoCommand<int>
-{
-public:
-	ChangeBoneControllerFromBoneCommand(StudioModelAsset* asset, int boneIndex, int boneControllerAxis, int oldBoneControllerIndex, int newBoneControllerIndex)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerFromBone, boneIndex, oldBoneControllerIndex, newBoneControllerIndex)
-		, _boneControllerAxis(boneControllerAxis)
-	{
-		setText("Change bone controller");
-	}
-
-protected:
-	bool CanMerge(const ModelListUndoCommand<int>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const int& oldValue, const int& newValue) override;
-
-private:
-	const int _boneControllerAxis;
-};
-
 class ChangeAttachmentNameCommand : public ModelListUndoCommand<QString>
 {
 public:
