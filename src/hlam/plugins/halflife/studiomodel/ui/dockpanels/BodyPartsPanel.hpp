@@ -4,11 +4,6 @@
 
 #include "ui/DockableWidget.hpp"
 
-namespace studiomdl
-{
-struct BoneController;
-}
-
 class StateSnapshot;
 
 namespace studiomodel
@@ -25,9 +20,6 @@ public:
 
 	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
 
-private:
-	void UpdateControllerRange(const studiomdl::BoneController& boneController);
-
 private slots:
 	void OnAssetChanged(StudioModelAsset* asset);
 
@@ -43,19 +35,6 @@ private slots:
 	void OnModelNameChanged();
 	void OnModelNameRejected();
 
-	void OnBoneControllerChanged(int index);
-
-	void OnBoneControllerValueSliderChanged(int value);
-	void OnBoneControllerValueSpinnerChanged(double value);
-
-	void OnBoneControllerRangeChanged();
-
-	void OnBoneControllerRestChanged();
-	void OnBoneControllerIndexChanged();
-
-	void OnBoneControllerBoneChanged(int index);
-	void OnBoneControllerAxisChanged(int index);
-
 private:
 	Ui_BodyPartsPanel _ui;
 	StudioModelAssetProvider* const _provider;
@@ -63,7 +42,5 @@ private:
 	StudioModelData* _previousModelData{};
 
 	bool _changingBoneControllerProperties{false};
-
-	float _controllerSliderScale{1.f};
 };
 }

@@ -20,6 +20,7 @@
 
 #include "plugins/halflife/studiomodel/ui/dockpanels/AttachmentsPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/BodyPartsPanel.hpp"
+#include "plugins/halflife/studiomodel/ui/dockpanels/BoneControllersPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/BonesPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/FlagsPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/HitboxesPanel.hpp"
@@ -96,6 +97,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	addDockPanel(new ModelDataPanel(_provider), "Model Data");
 	auto flagsDock = addDockPanel(new FlagsPanel(_provider), "Model Flags");
 	addDockPanel(new BonesPanel(_provider), "Bones");
+	addDockPanel(new BoneControllersPanel(_provider), "Bone Controllers");
 	addDockPanel(new AttachmentsPanel(_provider), "Attachments");
 	addDockPanel(new HitboxesPanel(_provider), "Hitboxes");
 	auto transformDock = addDockPanel(new TransformPanel(_provider), "Transformation", Qt::DockWidgetArea::LeftDockWidgetArea);

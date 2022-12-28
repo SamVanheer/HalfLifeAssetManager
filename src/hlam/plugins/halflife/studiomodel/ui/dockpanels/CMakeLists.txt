@@ -6,6 +6,9 @@ target_sources(HLAM
 		BodyPartsPanel.cpp
 		BodyPartsPanel.hpp
 		BodyPartsPanel.ui
+		BoneControllersPanel.cpp
+		BoneControllersPanel.hpp
+		BoneControllersPanel.ui
 		BonesPanel.cpp
 		BonesPanel.hpp
 		BonesPanel.ui
