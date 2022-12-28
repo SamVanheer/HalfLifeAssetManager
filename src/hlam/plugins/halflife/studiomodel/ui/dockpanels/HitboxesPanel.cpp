@@ -21,21 +21,6 @@ HitboxesPanel::HitboxesPanel(StudioModelAssetProvider* provider)
 
 	_ui.Hitgroup->setRange(0, std::numeric_limits<int>::max());
 
-	QDoubleSpinBox* const spinBoxes[] =
-	{
-		_ui.MinimumX,
-		_ui.MinimumY,
-		_ui.MinimumZ,
-		_ui.MaximumX,
-		_ui.MaximumY,
-		_ui.MaximumZ
-	};
-
-	for (auto spinBox : spinBoxes)
-	{
-		spinBox->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	}
-
 	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &HitboxesPanel::OnAssetChanged);
 
 	connect(_ui.Hitboxes, qOverload<int>(&QComboBox::currentIndexChanged), this, &HitboxesPanel::OnHitboxChanged);
@@ -44,13 +29,8 @@ HitboxesPanel::HitboxesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.Bone, qOverload<int>(&QComboBox::currentIndexChanged), this, &HitboxesPanel::OnBoneChanged);
 	connect(_ui.Hitgroup, qOverload<int>(&QSpinBox::valueChanged), this, &HitboxesPanel::OnHitgroupChanged);
 
-	connect(_ui.MinimumX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
-	connect(_ui.MinimumY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
-	connect(_ui.MinimumZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
-
-	connect(_ui.MaximumX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
-	connect(_ui.MaximumY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
-	connect(_ui.MaximumZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &HitboxesPanel::OnBoundsChanged);
+	connect(_ui.Minimum, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &HitboxesPanel::OnBoundsChanged);
+	connect(_ui.Maximum, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &HitboxesPanel::OnBoundsChanged);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }
@@ -151,26 +131,13 @@ void HitboxesPanel::OnHitboxChanged(int index)
 	{
 		const QSignalBlocker bone{_ui.Bone};
 		const QSignalBlocker hitgroup{_ui.Hitgroup};
-
-		const QSignalBlocker minimumX{_ui.MinimumX};
-		const QSignalBlocker minimumY{_ui.MinimumY};
-		const QSignalBlocker minimumZ{_ui.MinimumZ};
-
-		const QSignalBlocker maximumX{_ui.MaximumX};
-		const QSignalBlocker maximumY{_ui.MaximumY};
-		const QSignalBlocker maximumZ{_ui.MaximumZ};
+		const QSignalBlocker minimum{_ui.Minimum};
+		const QSignalBlocker maximum{_ui.Maximum};
 
 		_ui.Bone->setCurrentIndex(hitbox.Bone ? hitbox.Bone->ArrayIndex : -1);
-
 		_ui.Hitgroup->setValue(hitbox.Group);
-
-		_ui.MinimumX->setValue(hitbox.Min[0]);
-		_ui.MinimumY->setValue(hitbox.Min[1]);
-		_ui.MinimumZ->setValue(hitbox.Min[2]);
-
-		_ui.MaximumX->setValue(hitbox.Max[0]);
-		_ui.MaximumY->setValue(hitbox.Max[1]);
-		_ui.MaximumZ->setValue(hitbox.Max[2]);
+		_ui.Minimum->SetValue(hitbox.Min);
+		_ui.Maximum->SetValue(hitbox.Max);
 	}
 
 	UpdateQCString();
@@ -207,12 +174,7 @@ void HitboxesPanel::OnBoundsChanged()
 	_changingHitboxProperties = true;
 
 	_asset->AddUndoCommand(new ChangeHitboxBoundsCommand(_asset, _ui.Hitboxes->currentIndex(),
-		std::make_pair(
-			glm::vec3{hitbox.Min[0], hitbox.Min[1], hitbox.Min[2]},
-			glm::vec3{hitbox.Max[0], hitbox.Max[1], hitbox.Max[2]}),
-		std::make_pair(
-			glm::vec3{_ui.MinimumX->value(), _ui.MinimumY->value(), _ui.MinimumZ->value()},
-			glm::vec3{_ui.MaximumX->value(), _ui.MaximumY->value(), _ui.MaximumZ->value()})));
+		std::make_pair(hitbox.Min, hitbox.Max), std::make_pair(_ui.Minimum->GetValue(), _ui.Maximum->GetValue())));
 
 	_changingHitboxProperties = false;
 }

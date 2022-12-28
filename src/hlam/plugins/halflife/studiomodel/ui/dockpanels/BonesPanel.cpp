@@ -19,65 +19,12 @@ namespace studiomodel
 constexpr int ParentBoneOffset = 1;
 constexpr int BoneControllerOffset = 1;
 
-static void SyncBonePropertiesToUI(const studiomdl::Bone& bone, Ui_BonesPanel& ui)
-{
-	const QSignalBlocker positionX{ui.PositionX};
-	const QSignalBlocker positionY{ui.PositionY};
-	const QSignalBlocker positionZ{ui.PositionZ};
-	const QSignalBlocker positionScaleX{ui.PositionScaleX};
-	const QSignalBlocker positionScaleY{ui.PositionScaleY};
-	const QSignalBlocker positionScaleZ{ui.PositionScaleZ};
-	const QSignalBlocker rotationX{ui.RotationX};
-	const QSignalBlocker rotationY{ui.RotationY};
-	const QSignalBlocker rotationZ{ui.RotationZ};
-	const QSignalBlocker rotationScaleX{ui.RotationScaleX};
-	const QSignalBlocker rotationScaleY{ui.RotationScaleY};
-	const QSignalBlocker rotationScaleZ{ui.RotationScaleZ};
-
-	ui.PositionX->setValue(bone.Axes[0].Value);
-	ui.PositionY->setValue(bone.Axes[1].Value);
-	ui.PositionZ->setValue(bone.Axes[2].Value);
-
-	ui.PositionScaleX->setValue(bone.Axes[0].Scale);
-	ui.PositionScaleY->setValue(bone.Axes[1].Scale);
-	ui.PositionScaleZ->setValue(bone.Axes[2].Scale);
-
-	ui.RotationX->setValue(bone.Axes[3].Value);
-	ui.RotationY->setValue(bone.Axes[4].Value);
-	ui.RotationZ->setValue(bone.Axes[5].Value);
-
-	ui.RotationScaleX->setValue(bone.Axes[3].Scale);
-	ui.RotationScaleY->setValue(bone.Axes[4].Scale);
-	ui.RotationScaleZ->setValue(bone.Axes[5].Scale);
-}
-
 BonesPanel::BonesPanel(StudioModelAssetProvider* provider)
 	: _provider(provider)
 {
 	_ui.setupUi(this);
 
 	_ui.BoneFlags->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
-
-	QDoubleSpinBox* const spinBoxes[] =
-	{
-		_ui.PositionX,
-		_ui.PositionY,
-		_ui.PositionZ,
-		_ui.PositionScaleX,
-		_ui.PositionScaleY,
-		_ui.PositionScaleZ,
-		_ui.RotationX,
-		_ui.RotationY,
-		_ui.RotationZ,
-		_ui.RotationScaleX,
-		_ui.RotationScaleY,
-		_ui.RotationScaleZ
-	};
-
-	for (auto spinBox : spinBoxes)
-	{
-		spinBox->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	}
 
 	const auto boneNameValidator = new UniqueBoneNameValidator(MaxBoneNameBytes - 1, _provider, this);
 
@@ -90,28 +37,15 @@ BonesPanel::BonesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.Bones, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneChanged);
 	connect(_ui.HighlightBone, &QCheckBox::stateChanged, this, &BonesPanel::OnHightlightBoneChanged);
 
-	connect(_ui.BonePropertyList, qOverload<int>(&QListWidget::currentRowChanged), _ui.BonePropertyStack, &QStackedWidget::setCurrentIndex);
-
 	connect(_ui.BoneName, &QLineEdit::textChanged, this, &BonesPanel::OnBoneNameChanged);
 	connect(_ui.BoneName, &QLineEdit::inputRejected, this, &BonesPanel::OnBoneNameRejected);
 
 	connect(_ui.BoneFlags, qOverload<int>(&QSpinBox::valueChanged), this, &BonesPanel::OnBoneFlagsChanged);
 
-	connect(_ui.PositionX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
-	connect(_ui.PositionY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
-	connect(_ui.PositionZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
-
-	connect(_ui.PositionScaleX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
-	connect(_ui.PositionScaleY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
-	connect(_ui.PositionScaleZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
-
-	connect(_ui.RotationX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
-	connect(_ui.RotationY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
-	connect(_ui.RotationZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
-
-	connect(_ui.RotationScaleX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
-	connect(_ui.RotationScaleY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
-	connect(_ui.RotationScaleZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &BonesPanel::OnBonePropertyChanged);
+	connect(_ui.Position, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnBonePropertyChanged);
+	connect(_ui.PositionScale, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnBonePropertyChanged);
+	connect(_ui.Rotation, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnBonePropertyChanged);
+	connect(_ui.RotationScale, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnBonePropertyChanged);
 
 	connect(_ui.BoneControllerAxis, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneControllerAxisChanged);
 	connect(_ui.BoneController, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneControllerChanged);
@@ -153,9 +87,6 @@ void BonesPanel::OnAssetChanged(StudioModelAsset* asset)
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &BonesPanel::OnLoadSnapshot);
 
 	_ui.Bones->setModel(modelData->Bones);
-
-	//Select the first property to make it clear it's the active page
-	_ui.BonePropertyList->setCurrentRow(0);
 
 	{
 		const QSignalBlocker blocker{_ui.BoneController};
@@ -285,7 +216,15 @@ void BonesPanel::OnBoneChanged(int index)
 
 		_ui.BoneFlags->setValue(bone.Flags);
 
-		SyncBonePropertiesToUI(bone, _ui);
+		const QSignalBlocker position{_ui.Position};
+		const QSignalBlocker positionScale{_ui.PositionScale};
+		const QSignalBlocker rotation{_ui.Rotation};
+		const QSignalBlocker rotationScale{_ui.RotationScale};
+
+		_ui.Position->SetValue(glm::vec3{bone.Axes[0].Value, bone.Axes[1].Value, bone.Axes[2].Value});
+		_ui.PositionScale->SetValue(glm::vec3{bone.Axes[0].Scale, bone.Axes[1].Scale, bone.Axes[2].Scale});
+		_ui.Rotation->SetValue(glm::vec3{bone.Axes[3].Value, bone.Axes[4].Value, bone.Axes[5].Value});
+		_ui.RotationScale->SetValue(glm::vec3{bone.Axes[3].Scale, bone.Axes[4].Scale, bone.Axes[5].Scale});
 
 		//Ensure axis initializes to index 0
 		_ui.BoneControllerAxis->setCurrentIndex(0);
@@ -340,14 +279,8 @@ void BonesPanel::OnBonePropertyChanged()
 			}
 		},
 		{
-			{
-				glm::vec3{_ui.PositionX->value(), _ui.PositionY->value(), _ui.PositionZ->value()},
-				glm::vec3{_ui.RotationX->value(), _ui.RotationY->value(), _ui.RotationZ->value()}
-			},
-			{
-				glm::vec3{_ui.PositionScaleX->value(), _ui.PositionScaleY->value(), _ui.PositionScaleZ->value()},
-				glm::vec3{_ui.RotationScaleX->value(), _ui.RotationScaleY->value(), _ui.RotationScaleZ->value()}
-			}
+			{_ui.Position->GetValue(), _ui.Rotation->GetValue()},
+			{_ui.PositionScale->GetValue(), _ui.RotationScale->GetValue()}
 		}));
 
 	_changingBoneProperties = false;

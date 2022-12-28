@@ -23,18 +23,6 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAssetProvider* provider)
 
 	_ui.Type->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
-	QDoubleSpinBox* const spinBoxes[] =
-	{
-		_ui.OriginX,
-		_ui.OriginY,
-		_ui.OriginZ
-	};
-
-	for (auto spinBox : spinBoxes)
-	{
-		spinBox->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	}
-
 	const auto attachmentNameValidator = new UniqueAttachmentNameValidator(MaxAttachmentNameBytes - 1, _provider, this);
 
 	_ui.Name->setValidator(attachmentNameValidator);
@@ -52,9 +40,7 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAssetProvider* provider)
 	connect(_ui.Type, qOverload<int>(&QSpinBox::valueChanged), this, &AttachmentsPanel::OnTypeChanged);
 	connect(_ui.Bone, qOverload<int>(&QComboBox::currentIndexChanged), this, &AttachmentsPanel::OnBoneChanged);
 
-	connect(_ui.OriginX, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &AttachmentsPanel::OnOriginChanged);
-	connect(_ui.OriginY, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &AttachmentsPanel::OnOriginChanged);
-	connect(_ui.OriginZ, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &AttachmentsPanel::OnOriginChanged);
+	connect(_ui.Origin, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &AttachmentsPanel::OnOriginChanged);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }
@@ -159,9 +145,7 @@ void AttachmentsPanel::OnAttachmentChanged(int index)
 		const QSignalBlocker nameBlocker{_ui.Name};
 		const QSignalBlocker typeBlocker{_ui.Type};
 		const QSignalBlocker boneBlocker{_ui.Bone};
-		const QSignalBlocker originXBlocker{_ui.OriginX};
-		const QSignalBlocker originYBlocker{_ui.OriginY};
-		const QSignalBlocker originZBlocker{_ui.OriginZ};
+		const QSignalBlocker originBlocker{_ui.Origin};
 
 		const auto name = QString::fromStdString(attachment.Name);
 
@@ -173,10 +157,7 @@ void AttachmentsPanel::OnAttachmentChanged(int index)
 
 		_ui.Type->setValue(attachment.Type);
 		_ui.Bone->setCurrentIndex(attachment.Bone ? attachment.Bone->ArrayIndex : -1);
-
-		_ui.OriginX->setValue(attachment.Origin[0]);
-		_ui.OriginY->setValue(attachment.Origin[1]);
-		_ui.OriginZ->setValue(attachment.Origin[2]);
+		_ui.Origin->SetValue(attachment.Origin);
 	}
 
 	UpdateQCString();
@@ -226,8 +207,7 @@ void AttachmentsPanel::OnOriginChanged()
 	_changingAttachmentProperties = true;
 
 	_asset->AddUndoCommand(new ChangeAttachmentOriginCommand(_asset, _ui.Attachments->currentIndex(),
-		{attachment.Origin[0], attachment.Origin[1], attachment.Origin[2]},
-		{_ui.OriginX->value(), _ui.OriginY->value(), _ui.OriginZ->value()}));
+		attachment.Origin, _ui.Origin->GetValue()));
 
 	_changingAttachmentProperties = false;
 }
