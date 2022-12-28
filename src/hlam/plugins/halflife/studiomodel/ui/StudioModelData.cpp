@@ -216,7 +216,12 @@ public:
 protected:
 	QString ElementToString(const QModelIndex& index) const override
 	{
-		return FormatTextureName(*(*_items)[index.row()]);
+		const auto& texture = *(*_items)[index.row()];
+
+		return QString{"%1 (%2 x %3)"}
+			.arg(QString::fromStdString(texture.Name))
+			.arg(texture.Data.Width)
+			.arg(texture.Data.Height);
 	}
 };
 

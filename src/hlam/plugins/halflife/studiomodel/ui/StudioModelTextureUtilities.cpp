@@ -5,11 +5,6 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelTextureUtilities.hpp"
 
-QString FormatTextureName(const studiomdl::Texture& texture)
-{
-	return QString{"%1 (%2 x %3)"}.arg(texture.Name.c_str()).arg(texture.Data.Width).arg(texture.Data.Height);
-}
-
 std::optional<std::tuple<studiomdl::TextureData, bool, bool>> ConvertImageToTexture(QImage image)
 {
 	const bool upscaleToMultipleOf4 = ((image.width() * image.height()) % 4) != 0;
