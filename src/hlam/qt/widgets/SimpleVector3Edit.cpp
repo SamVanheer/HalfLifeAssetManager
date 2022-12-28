@@ -1,5 +1,6 @@
 #include <cstring>
 
+#include <QLocale>
 #include <QRegularExpressionValidator>
 #include <QSignalBlocker>
 
@@ -16,6 +17,8 @@ SimpleVector3Edit::SimpleVector3Edit(QWidget* parent)
 	this->setValidator(_validator);
 
 	connect(this, &QLineEdit::textChanged, this, &SimpleVector3Edit::OnValueChanged);
+
+	SetValue(glm::vec3{0});
 }
 
 SimpleVector3Edit::~SimpleVector3Edit() = default;
@@ -29,7 +32,10 @@ void SimpleVector3Edit::SetValue(const glm::vec3& value)
 {
 	{
 		const QSignalBlocker blocker{this};
-		this->setText(QString{"%1 %2 %3"}.arg(value.x).arg(value.y).arg(value.z));
+		this->setText(QString{"%1 %2 %3"}
+			.arg(value.x, 0, 'f', QLocale::FloatingPointShortest)
+			.arg(value.y, 0, 'f', QLocale::FloatingPointShortest)
+			.arg(value.z, 0, 'f', QLocale::FloatingPointShortest));
 	}
 
 	OnValueChanged();
