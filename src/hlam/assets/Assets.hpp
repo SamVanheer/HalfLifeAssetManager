@@ -42,7 +42,7 @@ protected:
 public:
 	virtual ~Asset() {}
 
-	virtual const AssetProvider* GetProvider() const = 0;
+	virtual AssetProvider* GetProvider() const = 0;
 
 	QString GetFileName() const { return _fileName; }
 
@@ -68,11 +68,6 @@ public:
 			emit IsActiveChanged(_isActive);
 		}
 	}
-
-	/**
-	*	@brief Populates the Asset menu with actions and submenus specific to this asset
-	*/
-	virtual void PopulateAssetMenu(QMenu* menu) = 0;
 
 	/**
 	*	@brief Gets a widget to view and edit this asset
@@ -128,9 +123,15 @@ public:
 	virtual void Shutdown() {}
 
 	/**
-	*	@brief Creates the tool menu for this asset, or nullptr if no menu is available
+	*	@brief Creates the tool menu for this asset, or nullptr if no menu is available.
 	*/
-	virtual QMenu* CreateToolMenu() = 0;
+	virtual QMenu* CreateToolMenu() { return nullptr; }
+
+	/**
+	*	@brief Populates the Asset menu with actions and submenus, or nullptr if no menu is available.
+	*	The provider is responsible for forwarding actions to the current asset.
+	*/
+	virtual void PopulateAssetMenu(QMenu* menu) {}
 
 	virtual bool CanLoad(const QString& fileName, FILE* file) const = 0;
 

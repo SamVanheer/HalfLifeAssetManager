@@ -30,8 +30,6 @@ public:
 
 	ProviderFeatures GetFeatures() const override { return ProviderFeature::AssetLoading; }
 
-	QMenu* CreateToolMenu() override { return nullptr; }
-
 	bool CanLoad(const QString& fileName, FILE* file) const override
 	{
 		int id;

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <QMainWindow>
+#include <QMap>
 #include <QPointer>
 #include <QString>
 #include <QTabWidget>
@@ -13,6 +14,7 @@
 #include "ui_MainWindow.h"
 
 class Asset;
+class AssetProvider;
 class EditorContext;
 class FileListPanel;
 class FullscreenWidget;
@@ -110,6 +112,10 @@ private:
 	Ui_MainWindow _ui;
 
 	EditorContext* const _editorContext;
+
+	QMap<AssetProvider*, QMenu*> _assetMenus;
+
+	QPointer<QMenu> _assetMenu;
 
 	QActionGroup* _msaaActionGroup;
 

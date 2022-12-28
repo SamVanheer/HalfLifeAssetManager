@@ -73,6 +73,18 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		_ui.MenuEdit->addAction(redo);
 	}
 
+	// Create and add asset menus for each provider.
+	for (auto provider : _editorContext->GetAssetProviderRegistry()->GetAssetProviders())
+	{
+		auto menu = new QMenu("Asset", _ui.MenuBar);
+
+		provider->PopulateAssetMenu(menu);
+
+		_assetMenus.insert(provider, menu);
+		_ui.MenuBar->insertMenu(_ui.MenuTools->menuAction(), menu);
+		menu->menuAction()->setVisible(false);
+	}
+
 	{
 		const auto before = _ui.MenuTools->insertSeparator(_ui.ActionOptions);
 
@@ -247,7 +259,6 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	_ui.ActionSave->setEnabled(false);
 	_ui.ActionSaveAs->setEnabled(false);
 	_ui.ActionClose->setEnabled(false);
-	_ui.MenuAsset->setEnabled(false);
 	_assetTabs->setVisible(false);
 
 	OnRecentFilesChanged();
@@ -694,7 +705,10 @@ void MainWindow::OnAssetCleanChanged(bool clean)
 
 void MainWindow::OnAssetTabChanged(int index)
 {
-	_ui.MenuAsset->clear();
+	if (_assetMenu)
+	{
+		_assetMenu->menuAction()->setVisible(false);
+	}
 
 	if (_currentAsset)
 	{
@@ -710,7 +724,16 @@ void MainWindow::OnAssetTabChanged(int index)
 		_undoGroup->setActiveStack(_currentAsset->GetUndoStack());
 
 		UpdateTitle(_currentAsset->GetFileName(), !_undoGroup->isClean());
-		_currentAsset->PopulateAssetMenu(_ui.MenuAsset);
+
+		if (auto menu = _assetMenus.find(_currentAsset->GetProvider()); menu != _assetMenus.end())
+		{
+			_assetMenu = *menu;
+			_assetMenu->menuAction()->setVisible(true);
+		}
+		else
+		{
+			_assetMenu = nullptr;
+		}
 
 		_currentAsset->SetActive(true);
 
@@ -728,7 +751,6 @@ void MainWindow::OnAssetTabChanged(int index)
 	_ui.ActionSave->setEnabled(success);
 	_ui.ActionSaveAs->setEnabled(success);
 	_ui.ActionClose->setEnabled(success);
-	_ui.MenuAsset->setEnabled(success);
 	_assetTabs->setVisible(success);
 	_ui.ActionFullscreen->setEnabled(success);
 	_ui.ActionRefresh->setEnabled(success);

@@ -1,5 +1,6 @@
 #include <cassert>
 
+#include <QDockWidget>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMenu>
@@ -94,6 +95,90 @@ QMenu* StudioModelAssetProvider::CreateToolMenu()
 		});
 
 	return menu;
+}
+
+void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
+{
+	{
+		auto panelsMenu = menu->addMenu("Panels");
+
+		for (auto dock : GetEditWidget()->GetDockWidgets())
+		{
+			panelsMenu->addAction(dock->toggleViewAction());
+		}
+	}
+
+	menu->addAction("Reset dock widgets", this, [this]()
+		{
+			GetEditWidget()->ResetToInitialState();
+		});
+
+	{
+		const auto controlsbar = menu->addAction("Show Controls Bar", this, [this](bool checked)
+			{
+				GetEditWidget()->SetControlsBarVisible(checked);
+			});
+		const QSignalBlocker blocker{controlsbar};
+		controlsbar->setCheckable(true);
+		controlsbar->setChecked(GetEditWidget()->IsControlsBarVisible());
+	}
+
+	{
+		const auto timeline = menu->addAction("Show Timeline", this, [this](bool checked)
+			{
+				GetEditWidget()->SetTimelineVisible(checked);
+			});
+		const QSignalBlocker blocker{timeline};
+		timeline->setCheckable(true);
+		timeline->setChecked(GetEditWidget()->IsTimelineVisible());
+	}
+
+	menu->addSeparator();
+
+	menu->addAction("Previous Camera", this,
+		[this]()
+		{
+			GetCurrentAsset()->OnPreviousCamera();
+		},
+		QKeySequence{Qt::CTRL + Qt::Key::Key_U});
+
+	menu->addAction("Next Camera", this,
+		[this]()
+		{
+			GetCurrentAsset()->OnNextCamera();
+		},
+		QKeySequence{Qt::CTRL + Qt::Key::Key_I});
+
+	menu->addSeparator();
+
+	{
+		auto centerMenu = menu->addMenu("Center View");
+
+		centerMenu->addAction("Center On Positive X", [this]() { GetCurrentAsset()->OnCenterView(Axis::X, true); });
+		centerMenu->addAction("Center On Negative X", [this]() { GetCurrentAsset()->OnCenterView(Axis::X, false); });
+
+		//TODO: camera position doesn't match what's shown by "Draw Axes" on the Y axis
+		centerMenu->addAction("Center On Positive Y", [this]() { GetCurrentAsset()->OnCenterView(Axis::Y, false); });
+		centerMenu->addAction("Center On Negative Y", [this]() { GetCurrentAsset()->OnCenterView(Axis::Y, true); });
+
+		centerMenu->addAction("Center On Positive Z", [this]() { GetCurrentAsset()->OnCenterView(Axis::Z, true); });
+		centerMenu->addAction("Center On Negative Z", [this]() { GetCurrentAsset()->OnCenterView(Axis::Z, false); });
+	}
+
+	menu->addAction("Save View", this, [this]() { GetCurrentAsset()->OnSaveView(); });
+	menu->addAction("Restore View", this, [this]() { GetCurrentAsset()->OnRestoreView(); });
+
+	menu->addSeparator();
+
+	menu->addAction("Flip Normals", this, [this]() { GetCurrentAsset()->OnFlipNormals(); });
+
+	menu->addSeparator();
+
+	menu->addAction("Dump Model Info...", this, [this]() { GetCurrentAsset()->OnDumpModelInfo(); });
+
+	menu->addSeparator();
+
+	menu->addAction("Take Screenshot...", this, [this]() { GetCurrentAsset()->OnTakeScreenshot(); });
 }
 
 bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) const

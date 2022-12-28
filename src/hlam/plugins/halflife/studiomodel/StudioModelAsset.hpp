@@ -64,9 +64,7 @@ public:
 	StudioModelAsset(const StudioModelAsset&) = delete;
 	StudioModelAsset& operator=(const StudioModelAsset&) = delete;
 
-	const StudioModelAssetProvider* GetProvider() const override { return _provider; }
-
-	void PopulateAssetMenu(QMenu* menu) override;
+	StudioModelAssetProvider* GetProvider() const override { return _provider; }
 
 	QWidget* GetEditWidget() override;
 
@@ -136,6 +134,19 @@ public:
 	void OnActivated();
 	void OnDeactivated();
 
+	void OnPreviousCamera();
+	void OnNextCamera();
+
+	void OnCenterView(Axis axis, bool positive);
+	void OnSaveView();
+	void OnRestoreView();
+
+	void OnFlipNormals();
+
+	void OnDumpModelInfo();
+
+	void OnTakeScreenshot();
+
 private:
 	void CreateMainScene();
 	void CreateTextureScene();
@@ -177,19 +188,6 @@ private slots:
 	void OnSceneWidgetWheelEvent(QWheelEvent* event);
 
 	void OnCameraChanged(SceneCameraOperator* previous, SceneCameraOperator* current);
-
-	void OnPreviousCamera();
-	void OnNextCamera();
-
-	void OnCenterView(Axis axis, bool positive);
-	void OnSaveView();
-	void OnRestoreView();
-
-	void OnFlipNormals();
-
-	void OnDumpModelInfo();
-
-	void OnTakeScreenshot();
 
 public:
 	RenderMode CurrentRenderMode = RenderMode::TEXTURE_SHADED;

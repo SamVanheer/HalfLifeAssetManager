@@ -54,6 +54,8 @@ public:
 
 	QMenu* CreateToolMenu() override;
 
+	void PopulateAssetMenu(QMenu* menu) override;
+
 	bool CanLoad(const QString& fileName, FILE* file) const override;
 
 	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
@@ -89,8 +91,6 @@ private:
 
 	QPointer<StudioModelEditWidget> _editWidget;
 
-	bool _initialized = false;
-
 	StudioModelAsset* _currentAsset{};
 };
 
@@ -114,8 +114,6 @@ public:
 	QString GetPreferredFileType() const override { return StudioModelPS2Extension; }
 
 	ProviderFeatures GetFeatures() const override { return ProviderFeature::AssetLoading; }
-
-	QMenu* CreateToolMenu() override { return nullptr; }
 
 	bool CanLoad(const QString& fileName, FILE* file) const override
 	{
