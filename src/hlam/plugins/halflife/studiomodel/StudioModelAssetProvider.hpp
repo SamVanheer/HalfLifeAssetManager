@@ -7,6 +7,7 @@
 
 #include "assets/Assets.hpp"
 
+class QAction;
 class StudioModelSettings;
 
 namespace sprite
@@ -67,6 +68,8 @@ public:
 
 	sprite::ISpriteRenderer* GetSpriteRenderer() const { return _spriteRenderer.get(); }
 
+	bool AreEditControlsVisible() const;
+
 	StudioModelEditWidget* GetEditWidget();
 
 	StudioModelAsset* GetDummyAsset() const { return _dummyAsset.get(); }
@@ -88,6 +91,8 @@ private:
 	std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 	std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	std::unique_ptr<StudioModelAsset> _dummyAsset;
+
+	QPointer<QAction> _editControlsVisible;
 
 	QPointer<StudioModelEditWidget> _editWidget;
 

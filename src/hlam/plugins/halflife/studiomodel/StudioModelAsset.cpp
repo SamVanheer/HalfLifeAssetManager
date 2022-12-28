@@ -355,8 +355,15 @@ void StudioModelAsset::OnActivated()
 
 	OnSceneWidgetRecreated();
 
-	editWidget->setParent(_editWidget);
-	_editWidget->layout()->addWidget(editWidget);
+	if (_provider->AreEditControlsVisible())
+	{
+		editWidget->setParent(_editWidget);
+		_editWidget->layout()->addWidget(editWidget);
+	}
+	else
+	{
+		_editWidget->layout()->addWidget(_editorContext->GetSceneWidget()->GetContainer());
+	}
 
 	emit LoadSnapshot(&_snapshot);
 }
@@ -372,7 +379,9 @@ void StudioModelAsset::OnDeactivated()
 	sceneWidget->disconnect(this);
 	editWidget->SetAsset(_provider->GetDummyAsset());
 
-	_editWidget->layout()->removeWidget(editWidget);
+	auto item = _editWidget->layout()->takeAt(0);
+	_editWidget->layout()->removeItem(item);
+	delete item;
 }
 
 void StudioModelAsset::CreateMainScene()
@@ -516,7 +525,7 @@ void StudioModelAsset::OnSceneWidgetRecreated()
 	{
 		fullscreenWidget->SetWidget(_editorContext->GetSceneWidget()->GetContainer());
 	}
-	else
+	else if (_provider->AreEditControlsVisible())
 	{
 		_provider->GetEditWidget()->AttachSceneWidget();
 	}

@@ -113,24 +113,47 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 			GetEditWidget()->ResetToInitialState();
 		});
 
+	const auto controlsbar = menu->addAction("Show Controls Bar", this, [this](bool checked)
+		{
+			GetEditWidget()->SetControlsBarVisible(checked);
+		});
+
 	{
-		const auto controlsbar = menu->addAction("Show Controls Bar", this, [this](bool checked)
-			{
-				GetEditWidget()->SetControlsBarVisible(checked);
-			});
 		const QSignalBlocker blocker{controlsbar};
 		controlsbar->setCheckable(true);
 		controlsbar->setChecked(GetEditWidget()->IsControlsBarVisible());
 	}
 
+	const auto timeline = menu->addAction("Show Timeline", this, [this](bool checked)
+		{
+			GetEditWidget()->SetTimelineVisible(checked);
+		});
+
 	{
-		const auto timeline = menu->addAction("Show Timeline", this, [this](bool checked)
-			{
-				GetEditWidget()->SetTimelineVisible(checked);
-			});
 		const QSignalBlocker blocker{timeline};
 		timeline->setCheckable(true);
 		timeline->setChecked(GetEditWidget()->IsTimelineVisible());
+	}
+
+	{
+		_editControlsVisible = menu->addAction("Show Edit Controls", this,
+			[this, controlsbar, timeline](bool checked)
+			{
+				controlsbar->setEnabled(checked);
+				timeline->setEnabled(checked);
+
+				auto asset = GetCurrentAsset();
+
+				if (asset != GetDummyAsset())
+				{
+					asset->OnDeactivated();
+					asset->OnActivated();
+				}
+			});
+
+		const QSignalBlocker blocker{_editControlsVisible};
+		_editControlsVisible->setCheckable(true);
+		_editControlsVisible->setChecked(true);
 	}
 
 	menu->addSeparator();
@@ -229,6 +252,11 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 
 	return std::make_unique<StudioModelAsset>(std::move(updatedFileName), _editorContext, this,
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
+}
+
+bool StudioModelAssetProvider::AreEditControlsVisible() const
+{
+	return _editControlsVisible->isChecked();
 }
 
 StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget()
