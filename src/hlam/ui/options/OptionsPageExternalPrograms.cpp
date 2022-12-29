@@ -1,6 +1,7 @@
 #include <cassert>
 
 #include <QFileDialog>
+#include <QPushButton>
 
 #include "settings/ApplicationSettings.hpp"
 
@@ -35,64 +36,68 @@ OptionsPageExternalProgramsWidget::OptionsPageExternalProgramsWidget(
 {
 	_ui.setupUi(this);
 
-	_ui.Compiler->setText(_applicationSettings->GetStudiomdlCompilerFileName());
-	_ui.Decompiler->setText(_applicationSettings->GetStudiomdlDecompilerFileName());
-	_ui.XashModelViewer->setText(_applicationSettings->GetXashModelViewerFileName());
-	_ui.Quake1ModelViewer->setText(_applicationSettings->GetQuake1ModelViewerFileName());
-	_ui.Source1ModelViewer->setText(_applicationSettings->GetSource1ModelViewerFileName());
+	auto externalPrograms = _applicationSettings->GetExternalPrograms();
 
-	connect(_ui.BrowseCompiler, &QPushButton::clicked, this, &OptionsPageExternalProgramsWidget::OnBrowseCompiler);
-	connect(_ui.BrowseDecompiler, &QPushButton::clicked, this, &OptionsPageExternalProgramsWidget::OnBrowseDecompiler);
-	connect(_ui.BrowseXashModelViewer, &QPushButton::clicked,
-		this, &OptionsPageExternalProgramsWidget::OnBrowseXashModelViewer);
-	connect(_ui.BrowseQuake1ModelViewer, &QPushButton::clicked,
-		this, &OptionsPageExternalProgramsWidget::OnBrowseQuake1ModelViewer);
-	connect(_ui.BrowseSource1ModelViewer, &QPushButton::clicked,
-		this, &OptionsPageExternalProgramsWidget::OnBrowseSource1ModelViewer);
+	auto keys = externalPrograms->GetMap().keys();
+
+	keys.sort();
+
+	_ui.Programs->setRowCount(keys.count());
+
+	for (int row = 0; const auto& key : keys)
+	{
+		auto name = new QTableWidgetItem(externalPrograms->GetName(key));
+
+		name->setFlags(name->flags() & ~(Qt::ItemFlag::ItemIsEditable));
+
+		_ui.Programs->setItem(row, 0, name);
+
+		auto executable = new QTableWidgetItem(externalPrograms->GetProgram(key));
+
+		executable->setData(Qt::UserRole, key);
+
+		_ui.Programs->setItem(row, 1, executable);
+
+		auto button = new QPushButton("Browse", _ui.Programs);
+
+		button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+		connect(button, &QPushButton::clicked,
+			this, [this, name, executable]()
+			{
+				const QString fileName{QFileDialog::getOpenFileName(
+					this, QString{"Select %1"}.arg(name->text()), executable->text(), ExternalProgramsExeFilter)};
+
+				if (!fileName.isEmpty())
+				{
+					executable->setText(fileName);
+				}
+			});
+
+		_ui.Programs->setCellWidget(row, 2, button);
+
+		++row;
+	}
+
+	_ui.Programs->resizeColumnsToContents();
+
+	_ui.Programs->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeMode::Fixed);
+	_ui.Programs->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+	_ui.Programs->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeMode::Fixed);
+
+	setEnabled(keys.size() > 0);
 }
 
 OptionsPageExternalProgramsWidget::~OptionsPageExternalProgramsWidget() = default;
 
 void OptionsPageExternalProgramsWidget::ApplyChanges()
 {
-	_applicationSettings->SetStudiomdlCompilerFileName(_ui.Compiler->text());
-	_applicationSettings->SetStudiomdlDecompilerFileName(_ui.Decompiler->text());
-	_applicationSettings->SetXashModelViewerFileName(_ui.XashModelViewer->text());
-	_applicationSettings->SetQuake1ModelViewerFileName(_ui.Quake1ModelViewer->text());
-	_applicationSettings->SetSource1ModelViewerFileName(_ui.Source1ModelViewer->text());
-}
+	auto externalPrograms = _applicationSettings->GetExternalPrograms();
 
-static void BrowseExeFile(QWidget* parent, const QString& title, QLineEdit* lineEdit)
-{
-	const QString fileName{QFileDialog::getOpenFileName(parent, title, lineEdit->text(), ExternalProgramsExeFilter)};
-
-	if (!fileName.isEmpty())
+	for (int row = 0; row < _ui.Programs->rowCount(); ++row)
 	{
-		lineEdit->setText(fileName);
+		auto executable = _ui.Programs->item(row, 1);
+
+		externalPrograms->SetProgram(executable->data(Qt::UserRole).toString(), executable->text());
 	}
-}
-
-void OptionsPageExternalProgramsWidget::OnBrowseCompiler()
-{
-	BrowseExeFile(this, "Select Studiomdl Compiler", _ui.Compiler);
-}
-
-void OptionsPageExternalProgramsWidget::OnBrowseDecompiler()
-{
-	BrowseExeFile(this, "Select Studiomdl Decompiler", _ui.Decompiler);
-}
-
-void OptionsPageExternalProgramsWidget::OnBrowseXashModelViewer()
-{
-	BrowseExeFile(this, "Select Xash Model Viewer", _ui.XashModelViewer);
-}
-
-void OptionsPageExternalProgramsWidget::OnBrowseQuake1ModelViewer()
-{
-	BrowseExeFile(this, "Select Quake 1 Model Viewer", _ui.Quake1ModelViewer);
-}
-
-void OptionsPageExternalProgramsWidget::OnBrowseSource1ModelViewer()
-{
-	BrowseExeFile(this, "Select Source 1 Model Viewer", _ui.Source1ModelViewer);
 }

@@ -10,6 +10,7 @@
 
 #include "ui/EditorContext.hpp"
 
+static const QString Quake1ModelViewerFileNameKey{QStringLiteral("Quake1ModelViewerFileName")};
 const QString AliasModelExtension{QStringLiteral("mdl")};
 
 constexpr char AliasModelHeaderId[] = "IDPO";
@@ -49,8 +50,7 @@ public:
 		const QString& fileName, FILE* file) override
 	{
 		const auto result = _editorContext->TryLaunchExternalProgram(
-			_applicationSettings->GetQuake1ModelViewerFileName(),
-			QStringList(fileName),
+			Quake1ModelViewerFileNameKey, QStringList(fileName),
 			"This is a Quake 1 Alias model which requires it to be loaded in Quake 1 Model Viewer.");
 
 		if (result != LaunchExternalProgramResult::Failed)
@@ -69,7 +69,10 @@ private:
 
 bool Quake1AssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 {
+	builder.ApplicationSettings->GetExternalPrograms()->AddProgram(Quake1ModelViewerFileNameKey, "Quake 1 Model Viewer");
+
 	auto quake1AliasModelAssetProvider = std::make_unique<Quake1AliasModelAssetProvider>(builder.ApplicationSettings);
 	builder.AssetProviderRegistry->AddProvider(std::move(quake1AliasModelAssetProvider));
+
 	return true;
 }

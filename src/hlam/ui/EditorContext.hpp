@@ -117,7 +117,7 @@ public:
 	*	The user is asked what to do.
 	*/
 	LaunchExternalProgramResult TryLaunchExternalProgram(
-		QString exeFileName, const QStringList& arguments, const QString& message);
+		const QString& programKey, const QStringList& arguments, const QString& message);
 
 signals:
 	/**

@@ -25,6 +25,7 @@ namespace studiomodel
 class StudioModelAsset;
 class StudioModelEditWidget;
 
+inline const QString XashModelViewerFileNameKey{QStringLiteral("XashModelViewerFileName")};
 inline const QString StudioModelExtension{QStringLiteral("mdl")};
 inline const QString StudioModelPS2Extension{QStringLiteral("dol")};
 

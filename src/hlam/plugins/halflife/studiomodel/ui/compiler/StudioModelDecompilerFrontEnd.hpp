@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QString>
 #include <QStringList>
 #include <QWidget>
 
@@ -7,6 +8,8 @@
 
 namespace studiomodel
 {
+const inline QString StudiomdlDecompilerFileNameKey{QStringLiteral("StudioMdlDecompilerFileName")};
+
 class StudioModelDecompilerFrontEnd final : public CommandLineFrontEnd
 {
 public:

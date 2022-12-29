@@ -11,6 +11,7 @@
 
 #include "ui/EditorContext.hpp"
 
+static const QString Source1ModelViewerFileNameKey{QStringLiteral("Source1ModelViewerFileName")};
 const QString Source1ModelExtension{QStringLiteral("mdl")};
 
 constexpr int Source1StudioVersionMin = 44;
@@ -55,8 +56,7 @@ public:
 		const QString& fileName, FILE* file) override
 	{
 		const auto result = _editorContext->TryLaunchExternalProgram(
-			_applicationSettings->GetSource1ModelViewerFileName(),
-			QStringList(fileName),
+			Source1ModelViewerFileNameKey, QStringList(fileName),
 			"This is a Source 1 Studio model which requires it to be loaded in Source 1 Half-Life Model Viewer.");
 
 		if (result != LaunchExternalProgramResult::Failed)
@@ -75,6 +75,8 @@ private:
 
 bool Source1AssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 {
+	builder.ApplicationSettings->GetExternalPrograms()->AddProgram(Source1ModelViewerFileNameKey, "Source 1 Model Viewer");
+
 	auto source1StudioModelAssetProvider = std::make_unique<Source1StudioModelAssetProvider>(builder.ApplicationSettings);
 	builder.AssetProviderRegistry->AddProvider(std::move(source1StudioModelAssetProvider));
 	return true;

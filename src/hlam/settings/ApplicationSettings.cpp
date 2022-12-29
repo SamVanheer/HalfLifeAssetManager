@@ -6,19 +6,57 @@
 #include "settings/GameConfigurationsSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
-static const QString StudiomdlCompilerFileNameKey{QStringLiteral("ExternalPrograms/StudioMdlCompilerFileName")};
-static const QString StudiomdlDecompilerFileNameKey{QStringLiteral("ExternalPrograms/StudioMdlDecompilerFileName")};
-static const QString XashModelViewerFileNameKey{QStringLiteral("ExternalPrograms/XashModelViewerFileName")};
-static const QString Quake1ModelViewerFileNameKey{QStringLiteral("ExternalPrograms/Quake1ModelViewerFileName")};
-static const QString Source1ModelViewerFileNameKey{QStringLiteral("ExternalPrograms/Source1ModelViewerFileName")};
+void ExternalProgramSettings::LoadSettings()
+{
+	_settings->beginGroup("ExternalPrograms");
+	// Load all settings that are in the config file even if they haven't been added yet.
+	for (auto& program : _settings->childKeys())
+	{
+		SetProgram(program, _settings->value(program, QString{}).toString());
+	}
+	_settings->endGroup();
+}
+
+void ExternalProgramSettings::SaveSettings()
+{
+	_settings->beginGroup("ExternalPrograms");
+	for (auto& program : _externalPrograms.keys())
+	{
+		_settings->setValue(program, _externalPrograms[program].ExecutablePath);
+	}
+	_settings->endGroup();
+}
+
+void ExternalProgramSettings::AddProgram(const QString& key, const QString& name)
+{
+	// Insert or update entry.
+	_externalPrograms[key].Name = name;
+}
+
+QString ExternalProgramSettings::GetName(const QString& key) const
+{
+	return _externalPrograms.value(key).Name;
+}
+
+QString ExternalProgramSettings::GetProgram(const QString& key) const
+{
+	return _externalPrograms.value(key).ExecutablePath;
+}
+
+void ExternalProgramSettings::SetProgram(const QString& key, const QString& value)
+{
+	_externalPrograms[key].ExecutablePath = value;
+}
 
 ApplicationSettings::ApplicationSettings(QSettings* settings)
 	: _settings(settings)
 	, _recentFiles(std::make_unique<RecentFilesSettings>(settings))
 	, _colorSettings(std::make_unique<ColorSettings>(settings))
 	, _gameConfigurations(std::make_unique<GameConfigurationsSettings>(settings))
+	, _externalPrograms(std::make_unique<ExternalProgramSettings>(settings))
 {
 	_settings->setParent(this);
+	_settingsObjects.push_back(_externalPrograms.get());
 }
 
 ApplicationSettings::~ApplicationSettings() = default;
@@ -80,6 +118,11 @@ void ApplicationSettings::LoadSettings()
 	_recentFiles->LoadSettings();
 	_colorSettings->LoadSettings();
 	_gameConfigurations->LoadSettings();
+
+	for (auto settings : _settingsObjects)
+	{
+		settings->LoadSettings();
+	}
 }
 
 void ApplicationSettings::SaveSettings()
@@ -122,6 +165,11 @@ void ApplicationSettings::SaveSettings()
 	_colorSettings->SaveSettings();
 	_gameConfigurations->SaveSettings();
 
+	for (auto settings : _settingsObjects)
+	{
+		settings->SaveSettings();
+	}
+
 	emit SettingsSaved();
 }
 
@@ -153,56 +201,6 @@ bool ApplicationSettings::ShouldEnableVSync() const
 void ApplicationSettings::SetEnableVSync(bool value)
 {
 	_settings->setValue("Graphics/EnableVSync", value);
-}
-
-QString ApplicationSettings::GetStudiomdlCompilerFileName() const
-{
-	return _settings->value(StudiomdlCompilerFileNameKey).toString();
-}
-
-void ApplicationSettings::SetStudiomdlCompilerFileName(const QString& fileName)
-{
-	_settings->setValue(StudiomdlCompilerFileNameKey, fileName);
-}
-
-QString ApplicationSettings::GetStudiomdlDecompilerFileName() const
-{
-	return _settings->value(StudiomdlDecompilerFileNameKey).toString();
-}
-
-void ApplicationSettings::SetStudiomdlDecompilerFileName(const QString& fileName)
-{
-	_settings->setValue(StudiomdlDecompilerFileNameKey, fileName);
-}
-
-QString ApplicationSettings::GetXashModelViewerFileName() const
-{
-	return _settings->value(XashModelViewerFileNameKey).toString();
-}
-
-void ApplicationSettings::SetXashModelViewerFileName(const QString& fileName)
-{
-	_settings->setValue(XashModelViewerFileNameKey, fileName);
-}
-
-QString ApplicationSettings::GetQuake1ModelViewerFileName() const
-{
-	return _settings->value(Quake1ModelViewerFileNameKey).toString();
-}
-
-void ApplicationSettings::SetQuake1ModelViewerFileName(const QString& fileName)
-{
-	_settings->setValue(Quake1ModelViewerFileNameKey, fileName);
-}
-
-QString ApplicationSettings::GetSource1ModelViewerFileName() const
-{
-	return _settings->value(Source1ModelViewerFileNameKey).toString();
-}
-
-void ApplicationSettings::SetSource1ModelViewerFileName(const QString& fileName)
-{
-	_settings->setValue(Source1ModelViewerFileNameKey, fileName);
 }
 
 QString ApplicationSettings::GetSavedPath(const QString& pathName)

@@ -24,21 +24,11 @@ private:
 
 class OptionsPageExternalProgramsWidget final : public OptionsWidget
 {
-	Q_OBJECT
-
 public:
 	OptionsPageExternalProgramsWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings);
 	~OptionsPageExternalProgramsWidget();
 
 	void ApplyChanges() override;
-
-	// TODO: could convert this into a table or something to avoid having to add more slots and stuff.
-private slots:
-	void OnBrowseCompiler();
-	void OnBrowseDecompiler();
-	void OnBrowseXashModelViewer();
-	void OnBrowseQuake1ModelViewer();
-	void OnBrowseSource1ModelViewer();
 
 private:
 	Ui_OptionsPageExternalPrograms _ui;

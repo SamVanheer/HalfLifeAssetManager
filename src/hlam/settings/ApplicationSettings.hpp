@@ -2,8 +2,10 @@
 
 #include <memory>
 
+#include <QMap>
 #include <QObject>
 #include <QString>
+#include <QVector>
 
 #include "graphics/TextureLoader.hpp"
 
@@ -17,6 +19,51 @@ enum class GuidelinesAspectRatio
 	FourThree,
 	SixteenNine,
 	SixteenTen
+};
+
+class BaseSettings : public QObject
+{
+public:
+	explicit BaseSettings(QSettings* settings)
+		: _settings(settings)
+	{
+	}
+
+	~BaseSettings() = default;
+
+	virtual void LoadSettings() = 0;
+	virtual void SaveSettings() = 0;
+
+protected:
+	QSettings* const _settings;
+};
+
+struct ExternalProgram
+{
+	QString Name;
+	QString ExecutablePath;
+};
+
+class ExternalProgramSettings final : public BaseSettings
+{
+public:
+	using BaseSettings::BaseSettings;
+
+	void LoadSettings() override;
+	void SaveSettings() override;
+
+	const QMap<QString, ExternalProgram>& GetMap() const { return _externalPrograms; }
+
+	void AddProgram(const QString& key, const QString& name);
+
+	QString GetName(const QString& key) const;
+
+	QString GetProgram(const QString& key) const;
+
+	void SetProgram(const QString& key, const QString& value);
+
+private:
+	QMap<QString, ExternalProgram> _externalPrograms;
 };
 
 class ApplicationSettings final : public QObject
@@ -68,6 +115,8 @@ public:
 	ColorSettings* GetColorSettings() const { return _colorSettings.get(); }
 
 	GameConfigurationsSettings* GetGameConfigurations() const { return _gameConfigurations.get(); }
+
+	ExternalProgramSettings* GetExternalPrograms() const { return _externalPrograms.get(); }
 
 	void LoadSettings();
 	void SaveSettings();
@@ -178,21 +227,6 @@ public:
 		}
 	}
 
-	QString GetStudiomdlCompilerFileName() const;
-	void SetStudiomdlCompilerFileName(const QString& fileName);
-
-	QString GetStudiomdlDecompilerFileName() const;
-	void SetStudiomdlDecompilerFileName(const QString& fileName);
-
-	QString GetXashModelViewerFileName() const;
-	void SetXashModelViewerFileName(const QString& fileName);
-
-	QString GetQuake1ModelViewerFileName() const;
-	void SetQuake1ModelViewerFileName(const QString& fileName);
-
-	QString GetSource1ModelViewerFileName() const;
-	void SetSource1ModelViewerFileName(const QString& fileName);
-
 	QString GetSavedPath(const QString& pathName);
 	void SetSavedPath(const QString& pathName, const QString& path);
 
@@ -224,9 +258,12 @@ public:
 private:
 	QSettings* const _settings;
 
+	QVector<BaseSettings*> _settingsObjects;
+
 	const std::unique_ptr<RecentFilesSettings> _recentFiles;
 	const std::unique_ptr<ColorSettings> _colorSettings;
 	const std::unique_ptr<GameConfigurationsSettings> _gameConfigurations;
+	const std::unique_ptr<ExternalProgramSettings> _externalPrograms;
 
 	int _tickRate{DefaultTickRate};
 

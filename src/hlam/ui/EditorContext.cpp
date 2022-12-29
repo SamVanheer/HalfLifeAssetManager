@@ -163,8 +163,10 @@ void EditorContext::SetPath(const QString& pathName, const QString& path)
 }
 
 LaunchExternalProgramResult EditorContext::TryLaunchExternalProgram(
-	QString exeFileName, const QStringList& arguments, const QString& message)
+	const QString& programKey, const QStringList& arguments, const QString& message)
 {
+	QString exeFileName = GetApplicationSettings()->GetExternalPrograms()->GetProgram(programKey);
+
 	exeFileName = exeFileName.trimmed();
 
 	if (exeFileName.isEmpty())

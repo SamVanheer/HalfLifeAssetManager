@@ -5,6 +5,7 @@
 #include "settings/ApplicationSettings.hpp"
 
 #include "ui/EditorContext.hpp"
+//TODO: move exe filter constant somewhere else
 #include "ui/options/OptionsPageExternalPrograms.hpp"
 
 namespace studiomodel
@@ -32,7 +33,8 @@ StudioModelCompilerFrontEnd::StudioModelCompilerFrontEnd(EditorContext* editorCo
 	connect(_settingsUi.TextureReplacements, &QTableWidget::currentItemChanged, this, &StudioModelCompilerFrontEnd::OnCurrentTextureReplacementChanged);
 	connect(_settingsUi.TextureReplacements, &QTableWidget::cellChanged, this, &StudioModelCompilerFrontEnd::UpdateCompleteCommandLine);
 
-	SetProgram(_editorContext->GetApplicationSettings()->GetStudiomdlCompilerFileName(), ExternalProgramsExeFilter);
+	SetProgram(_editorContext->GetApplicationSettings()->GetExternalPrograms()->GetProgram(StudiomdlCompilerFileNameKey),
+		ExternalProgramsExeFilter);
 	SetInputFileFilter("QC Files (*.qc);;All Files (*.*)");
 	SetSettingsWidget(_settingsWidget);
 }
@@ -40,7 +42,8 @@ StudioModelCompilerFrontEnd::StudioModelCompilerFrontEnd(EditorContext* editorCo
 StudioModelCompilerFrontEnd::~StudioModelCompilerFrontEnd()
 {
 	//Sync any changes made to settings
-	_editorContext->GetApplicationSettings()->SetStudiomdlCompilerFileName(GetProgram());
+	_editorContext->GetApplicationSettings()->GetExternalPrograms()->SetProgram(
+		StudiomdlCompilerFileNameKey, GetProgram());
 
 	_editorContext->GetApplicationSettings()->SaveSettings();
 }

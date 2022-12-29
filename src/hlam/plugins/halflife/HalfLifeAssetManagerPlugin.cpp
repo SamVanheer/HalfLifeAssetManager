@@ -4,6 +4,8 @@
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
+#include "plugins/halflife/studiomodel/ui/compiler/StudioModelCompilerFrontEnd.hpp"
+#include "plugins/halflife/studiomodel/ui/compiler/StudioModelDecompilerFrontEnd.hpp"
 
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
@@ -16,6 +18,10 @@ using namespace studiomodel;
 
 bool HalfLifeAssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 {
+	builder.ApplicationSettings->GetExternalPrograms()->AddProgram(StudiomdlCompilerFileNameKey, "Studiomdl compiler");
+	builder.ApplicationSettings->GetExternalPrograms()->AddProgram(StudiomdlDecompilerFileNameKey, "Studiomdl Decompiler");
+	builder.ApplicationSettings->GetExternalPrograms()->AddProgram(XashModelViewerFileNameKey, "Xash Model Viewer");
+
 	auto colorSettings = builder.ApplicationSettings->GetColorSettings();
 
 	colorSettings->Add(GroundColor, RGBA8888ToVector(216, 216, 175, 178));
