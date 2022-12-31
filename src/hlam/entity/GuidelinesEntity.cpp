@@ -16,13 +16,13 @@
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
 #include "ui/EditorContext.hpp"
 
-constexpr float GetAspectRatio(GuidelinesAspectRatio aspectRatio)
+constexpr float GetAspectRatio(AspectRatioOption aspectRatio)
 {
 	switch (aspectRatio)
 	{
-	case GuidelinesAspectRatio::FourThree: return 4.f / 3.f;
+	case AspectRatioOption::FourThree: return 4.f / 3.f;
 	default: return 16.f / 9.f;
-	case GuidelinesAspectRatio::SixteenTen: return 16.f / 10.f;
+	case AspectRatioOption::SixteenTen: return 16.f / 10.f;
 	}
 }
 

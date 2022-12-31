@@ -14,7 +14,7 @@ class GameConfigurationsSettings;
 class QSettings;
 class RecentFilesSettings;
 
-enum class GuidelinesAspectRatio
+enum class AspectRatioOption
 {
 	FourThree,
 	SixteenNine,
@@ -106,7 +106,7 @@ public:
 	static constexpr graphics::TextureFilter DefaultMagFilter{graphics::TextureFilter::Linear};
 	static constexpr graphics::MipmapFilter DefaultMipmapFilter{graphics::MipmapFilter::None};
 
-	static constexpr GuidelinesAspectRatio DefaultGuidelinesAspectRatio{GuidelinesAspectRatio::SixteenNine};
+	static constexpr AspectRatioOption DefaultGuidelinesAspectRatio{AspectRatioOption::SixteenNine};
 
 	explicit ApplicationSettings(QSettings* settings);
 	~ApplicationSettings() override;
@@ -255,7 +255,7 @@ public:
 	bool OneAssetAtATime{DefaultOneAssetAtATime};
 	bool TransparentScreenshots{DefaultTransparentScreenshots};
 
-	GuidelinesAspectRatio GuidelinesAspectRatio{DefaultGuidelinesAspectRatio};
+	AspectRatioOption GuidelinesAspectRatio{DefaultGuidelinesAspectRatio};
 
 private:
 	QSettings* const _settings;

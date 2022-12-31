@@ -217,7 +217,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		{
 			const int index = _ui.GuidelinesAspectRatioGroup->actions()
 				.indexOf(_ui.GuidelinesAspectRatioGroup->checkedAction());
-			_editorContext->GetApplicationSettings()->GuidelinesAspectRatio = static_cast<GuidelinesAspectRatio>(index);
+			_editorContext->GetApplicationSettings()->GuidelinesAspectRatio = static_cast<AspectRatioOption>(index);
 		};
 
 		for (auto action : _ui.GuidelinesAspectRatioGroup->actions())

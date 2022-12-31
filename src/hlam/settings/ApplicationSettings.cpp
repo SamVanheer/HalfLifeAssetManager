@@ -77,11 +77,11 @@ void ApplicationSettings::LoadSettings()
 	OneAssetAtATime = _settings->value("OneAssetAtATime", DefaultOneAssetAtATime).toBool();
 	_tickRate = std::clamp(_settings->value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
 
-	GuidelinesAspectRatio = static_cast<::GuidelinesAspectRatio>(_settings->value(
-		"GuidelinesAspectRatio", static_cast<int>(GuidelinesAspectRatio::SixteenNine)).toInt());
+	GuidelinesAspectRatio = static_cast<AspectRatioOption>(_settings->value(
+		"GuidelinesAspectRatio", static_cast<int>(AspectRatioOption::SixteenNine)).toInt());
 
 	GuidelinesAspectRatio = std::clamp(
-		GuidelinesAspectRatio, ::GuidelinesAspectRatio::FourThree, ::GuidelinesAspectRatio::SixteenTen);
+		GuidelinesAspectRatio, AspectRatioOption::FourThree, AspectRatioOption::SixteenTen);
 	_settings->endGroup();
 
 	_settings->beginGroup("Mouse");
