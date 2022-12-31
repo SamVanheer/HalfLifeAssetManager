@@ -5,10 +5,9 @@
 #include <QDesktopServices>
 #include <QDesktopWidget>
 #include <QFileInfo>
+#include <QMap>
 #include <QSettings>
 #include <QUrl>
-
-#include "qt/HashFunctions.hpp"
 
 #include "settings/ApplicationSettings.hpp"
 
@@ -31,7 +30,7 @@ OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
 
 	this->resize(static_cast<int>(std::ceil(screenSize.width() * 0.9)), static_cast<int>(std::ceil(screenSize.height() * 0.9)));
 
-	std::unordered_map<QString, QTreeWidgetItem*> categoryMap;
+	QMap<QString, QTreeWidgetItem*> categoryMap;
 
 	_pages = _editorContext->GetOptionsPageRegistry()->GetPages();
 
@@ -51,7 +50,7 @@ OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
 
 			newCategory->setExpanded(true);
 
-			it = categoryMap.emplace(page->GetCategory(), newCategory).first;
+			it = categoryMap.insert(page->GetCategory(), newCategory);
 		}
 
 		auto pageItem = new QTreeWidgetItem();
@@ -59,7 +58,7 @@ OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
 		pageItem->setText(0, page->GetPageTitle());
 		pageItem->setData(0, PageIndexRole, _ui.OptionsPagesStack->count());
 
-		it->second->addChild(pageItem);
+		it.value()->addChild(pageItem);
 
 		_ui.OptionsPagesStack->addWidget(page->GetWidget(_editorContext));
 	}

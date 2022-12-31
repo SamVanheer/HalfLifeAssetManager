@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <QColor>
+#include <QMap>
 #include <QObject>
 #include <QSettings>
 #include <QString>
@@ -14,8 +15,6 @@
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
-
-#include "qt/HashFunctions.hpp"
 
 inline glm::vec4 ColorToVector(const QColor& color)
 {
@@ -104,23 +103,14 @@ public:
 
 	QStringList GetKeys() const
 	{
-		QStringList keys;
-
-		keys.reserve(_colors.size());
-
-		std::transform(_colors.begin(), _colors.end(), std::back_inserter(keys), [](const auto& color)
-			{
-				return color.first;
-			});
-
-		return keys;
+		return _colors.keys();
 	}
 
 	glm::vec4 GetDefaultColor(const QString& key) const
 	{
 		if (auto it = _colors.find(key); it != _colors.end())
 		{
-			return it->second.DefaultColor;
+			return it->DefaultColor;
 		}
 
 		return DefaultColor;
@@ -130,7 +120,7 @@ public:
 	{
 		if (auto it = _colors.find(key); it != _colors.end())
 		{
-			return it->second.Color;
+			return it->Color;
 		}
 
 		return defaultValue;
@@ -140,7 +130,7 @@ public:
 	{
 		if (auto it = _colors.find(key); it != _colors.end())
 		{
-			return it->second.HasAlphaChannel;
+			return it->HasAlphaChannel;
 		}
 
 		return false;
@@ -148,20 +138,20 @@ public:
 
 	void Add(const QString& key, const glm::vec4& defaultColor)
 	{
-		_colors.emplace(key, ColorData(defaultColor, defaultColor, true));
+		_colors.insert(key, ColorData(defaultColor, defaultColor, true));
 	}
 
 	void Add(const QString& key, const glm::vec3& defaultColor)
 	{
 		const glm::vec4 rgba{defaultColor, 1};
-		_colors.emplace(key, ColorData(rgba, rgba, false));
+		_colors.insert(key, ColorData(rgba, rgba, false));
 	}
 
 	void Set(const QString& key, const glm::vec4& color)
 	{
 		if (auto it = _colors.find(key); it != _colors.end())
 		{
-			it->second.Color = color;
+			it->Color = color;
 		}
 	}
 
@@ -170,5 +160,5 @@ signals:
 
 private:
 	QSettings* const _settings;
-	std::unordered_map<QString, ColorData> _colors;
+	QMap<QString, ColorData> _colors;
 };
