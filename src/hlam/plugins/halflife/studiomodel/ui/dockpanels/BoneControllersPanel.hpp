@@ -6,7 +6,7 @@
 
 namespace studiomdl
 {
-struct BoneController;
+struct StudioBoneController;
 }
 
 class StateSnapshot;
@@ -26,7 +26,7 @@ public:
 	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
 
 private:
-	void UpdateControllerRange(const studiomdl::BoneController& boneController);
+	void UpdateControllerRange(const studiomdl::StudioBoneController& boneController);
 
 private slots:
 	void OnAssetChanged(StudioModelAsset* asset);

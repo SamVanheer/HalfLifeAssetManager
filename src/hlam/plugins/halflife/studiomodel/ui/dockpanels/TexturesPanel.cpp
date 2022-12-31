@@ -270,7 +270,7 @@ void TexturesPanel::OnTextureChanged(int index)
 	_ui.Meshes->clear();
 	_ui.Meshes->setEnabled(index != -1);
 
-	const studiomdl::Texture emptyTexture{};
+	const studiomdl::StudioTexture emptyTexture{};
 
 	const auto& texture = index != -1 ? *entity->GetEditableModel()->Textures[index] : emptyTexture;
 

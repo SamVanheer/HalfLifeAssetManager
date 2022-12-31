@@ -139,7 +139,7 @@ void BodyPartsPanel::OnBodyPartChanged(int index)
 	const auto entity = _asset->GetEntity();
 	const auto model = entity->GetEditableModel();
 
-	const studiomdl::Bodypart emptyBodypart{};
+	const studiomdl::StudioBodypart emptyBodypart{};
 
 	const auto& bodyPart = index != -1 ? *model->Bodyparts[index] : emptyBodypart;
 

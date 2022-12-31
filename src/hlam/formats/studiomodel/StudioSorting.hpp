@@ -2,11 +2,11 @@
 
 namespace studiomdl
 {
-struct Mesh;
+struct StudioMesh;
 
 struct SortedMesh
 {
-	const Mesh* Mesh;
+	const StudioMesh* Mesh;
 	int Flags;
 };
 

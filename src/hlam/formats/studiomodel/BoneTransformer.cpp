@@ -12,7 +12,8 @@
 
 namespace studiomdl
 {
-const std::array<glm::mat4x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo)
+const std::array<glm::mat4x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(
+	const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo)
 {
 	int sequenceIndex = transformInfo.SequenceIndex;
 
@@ -21,7 +22,7 @@ const std::array<glm::mat4x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const
 		sequenceIndex = 0;
 	}
 
-	const Sequence emptySequence;
+	const StudioSequence emptySequence;
 
 	const auto& sequence = sequenceIndex  != -1 ? *studioModel.Sequences[sequenceIndex] : emptySequence;
 
@@ -113,7 +114,7 @@ const std::array<glm::mat4x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const
 	}
 	else
 	{
-		std::array<Animation, MAXSTUDIOBONES> dummyAnims;
+		std::array<StudioAnimation, MAXSTUDIOBONES> dummyAnims;
 
 		CalculateRotations(studioModel, transformInfo, sequence, dummyAnims.data(), _transformStates[0]);
 	}
@@ -139,8 +140,9 @@ const std::array<glm::mat4x4, MAXSTUDIOBONES>& BoneTransformer::SetUpBones(const
 	return _boneTransform;
 }
 
-void BoneTransformer::CalculateRotations(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
-	const Sequence& sequence, const Animation* anims, TransformState& transformState)
+void BoneTransformer::CalculateRotations(
+	const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
+	const StudioSequence& sequence, const StudioAnimation* anims, TransformState& transformState)
 {
 	const int frame = (int)transformInfo.Frame;
 	const float s = (transformInfo.Frame - frame);
@@ -174,7 +176,8 @@ void BoneTransformer::CalculateRotations(const EditableStudioModel& studioModel,
 	}
 }
 
-void BoneTransformer::CalculateBoneAdjust(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
+void BoneTransformer::CalculateBoneAdjust(
+	const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
 	std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust)
 {
 	for (std::size_t j = 0; j < studioModel.BoneControllers.size(); ++j)
@@ -221,7 +224,8 @@ void BoneTransformer::CalculateBoneAdjust(const EditableStudioModel& studioModel
 	}
 }
 
-void BoneTransformer::CalculateBoneQuaternion(const int frame, const float s, const Bone& bone, const Animation& anim,
+void BoneTransformer::CalculateBoneQuaternion(
+	const int frame, const float s, const StudioBone& bone, const StudioAnimation& anim,
 	const std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust, glm::quat& q)
 {
 	glm::vec3 angle1{}, angle2{};
@@ -304,7 +308,8 @@ void BoneTransformer::CalculateBoneQuaternion(const int frame, const float s, co
 	}
 }
 
-void BoneTransformer::CalculateBonePosition(const int frame, const float s, const Bone& bone, const Animation& anim,
+void BoneTransformer::CalculateBonePosition(
+	const int frame, const float s, const StudioBone& bone, const StudioAnimation& anim,
 	const std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust, glm::vec3& pos)
 {
 	for (std::size_t j = 0; j < 3; ++j)
@@ -360,7 +365,8 @@ void BoneTransformer::CalculateBonePosition(const int frame, const float s, cons
 	}
 }
 
-void BoneTransformer::SlerpBones(const EditableStudioModel& studioModel, float s, const TransformState& fromState, TransformState& toState)
+void BoneTransformer::SlerpBones(
+	const EditableStudioModel& studioModel, float s, const TransformState& fromState, TransformState& toState)
 {
 	s = std::clamp(s, 0.0f, 1.0f);
 

@@ -91,10 +91,10 @@ protected:
 	const bool _hasInvalidElement;
 };
 
-class AttachmentsItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::Attachment>>
+class AttachmentsItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::StudioAttachment>>
 {
 public:
-	AttachmentsItemModel(std::vector<std::unique_ptr<studiomdl::Attachment>>* items, QObject* parent)
+	AttachmentsItemModel(std::vector<std::unique_ptr<studiomdl::StudioAttachment>>* items, QObject* parent)
 		: BaseStudioModelItemModel(items, parent, false)
 	{
 	}
@@ -106,10 +106,10 @@ protected:
 	}
 };
 
-class BodyPartsItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::Bodypart>>
+class BodyPartsItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::StudioBodypart>>
 {
 public:
-	BodyPartsItemModel(std::vector<std::unique_ptr<studiomdl::Bodypart>>* items, QObject* parent)
+	BodyPartsItemModel(std::vector<std::unique_ptr<studiomdl::StudioBodypart>>* items, QObject* parent)
 		: BaseStudioModelItemModel(items, parent, false)
 	{
 	}
@@ -121,10 +121,10 @@ protected:
 	}
 };
 
-class BonesItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::Bone>>
+class BonesItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::StudioBone>>
 {
 public:
-	BonesItemModel(std::vector<std::unique_ptr<studiomdl::Bone>>* items, QObject* parent, bool hasInvalidElement)
+	BonesItemModel(std::vector<std::unique_ptr<studiomdl::StudioBone>>* items, QObject* parent, bool hasInvalidElement)
 		: BaseStudioModelItemModel(items, parent, hasInvalidElement)
 	{
 	}
@@ -136,10 +136,10 @@ protected:
 	}
 };
 
-class BoneControllersItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::BoneController>>
+class BoneControllersItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::StudioBoneController>>
 {
 public:
-	BoneControllersItemModel(std::vector<std::unique_ptr<studiomdl::BoneController>>* items, QObject* parent)
+	BoneControllersItemModel(std::vector<std::unique_ptr<studiomdl::StudioBoneController>>* items, QObject* parent)
 		: BaseStudioModelItemModel(items, parent, false)
 	{
 	}
@@ -158,10 +158,10 @@ protected:
 	}
 };
 
-class HitboxesItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::Hitbox>>
+class HitboxesItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::StudioHitbox>>
 {
 public:
-	HitboxesItemModel(std::vector<std::unique_ptr<studiomdl::Hitbox>>* items, QObject* parent)
+	HitboxesItemModel(std::vector<std::unique_ptr<studiomdl::StudioHitbox>>* items, QObject* parent)
 		: BaseStudioModelItemModel(items, parent, false)
 	{
 	}
@@ -173,10 +173,10 @@ protected:
 	}
 };
 
-class SequencesItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::Sequence>>
+class SequencesItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::StudioSequence>>
 {
 public:
-	SequencesItemModel(std::vector<std::unique_ptr<studiomdl::Sequence>>* items, QObject* parent)
+	SequencesItemModel(std::vector<std::unique_ptr<studiomdl::StudioSequence>>* items, QObject* parent)
 		: BaseStudioModelItemModel(items, parent, false)
 	{
 	}
@@ -190,10 +190,10 @@ protected:
 	}
 };
 
-class SkinsItemModel final : public BaseStudioModelItemModel<std::vector<studiomdl::Texture*>>
+class SkinsItemModel final : public BaseStudioModelItemModel<std::vector<studiomdl::StudioTexture*>>
 {
 public:
-	SkinsItemModel(std::vector<std::vector<studiomdl::Texture*>>* items, QObject* parent)
+	SkinsItemModel(std::vector<std::vector<studiomdl::StudioTexture*>>* items, QObject* parent)
 		: BaseStudioModelItemModel(items, parent, false)
 	{
 	}
@@ -205,10 +205,10 @@ protected:
 	}
 };
 
-class TexturesItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::Texture>>
+class TexturesItemModel final : public BaseStudioModelItemModel<std::unique_ptr<studiomdl::StudioTexture>>
 {
 public:
-	TexturesItemModel(std::vector<std::unique_ptr<studiomdl::Texture>>* items, QObject* parent)
+	TexturesItemModel(std::vector<std::unique_ptr<studiomdl::StudioTexture>>* items, QObject* parent)
 		: BaseStudioModelItemModel(items, parent, false)
 	{
 	}

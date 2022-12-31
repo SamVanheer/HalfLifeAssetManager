@@ -24,10 +24,10 @@ class ColorSettings;
 
 namespace studiomdl
 {
-struct Animation;
-struct Bone;
-struct Model;
-struct Sequence;
+struct StudioAnimation;
+struct StudioBone;
+struct StudioSubModel;
+struct StudioSequence;
 
 class StudioModelRenderer final : public studiomdl::IStudioModelRenderer
 {
@@ -132,7 +132,7 @@ private:
 
 	studiomdl::EditableStudioModel* _studioModel{};
 
-	const Model* _model = nullptr;
+	const StudioSubModel* _model = nullptr;
 
 	/**
 	*	The number of polygons drawn since the last call to Initialize.

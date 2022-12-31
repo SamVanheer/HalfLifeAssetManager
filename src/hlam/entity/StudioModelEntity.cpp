@@ -693,7 +693,8 @@ float StudioModelEntity::GetBlendingValue(const int blender) const
 	return _blendingValues[blender];
 }
 
-std::optional<std::uint8_t> StudioModelEntity::StandardBlender::CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const
+std::optional<std::uint8_t> StudioModelEntity::StandardBlender::CalculateBlend(
+	const studiomdl::StudioSequence& sequenceDescriptor, int blender, float value) const
 {
 	if (sequenceDescriptor.BlendData[blender].Type == 0)
 	{
@@ -731,7 +732,8 @@ std::optional<std::uint8_t> StudioModelEntity::StandardBlender::CalculateBlend(c
 	return setting;
 }
 
-std::optional<std::uint8_t> StudioModelEntity::CounterStrikeBlender::CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const
+std::optional<std::uint8_t> StudioModelEntity::CounterStrikeBlender::CalculateBlend(
+	const studiomdl::StudioSequence& sequenceDescriptor, int blender, float value) const
 {
 	switch (blender)
 	{
@@ -801,7 +803,7 @@ void StudioModelEntity::AlignOnGround()
 
 	//First try finding the idle sequence, since that typically represents a model "at rest"
 	//Failing that, use the first sequence
-	auto idleFinder = [&]() -> const studiomdl::Sequence*
+	auto idleFinder = [&]() -> const studiomdl::StudioSequence*
 	{
 		if (model->Sequences.empty())
 		{

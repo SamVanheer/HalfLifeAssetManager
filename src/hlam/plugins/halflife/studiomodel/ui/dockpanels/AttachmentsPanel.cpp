@@ -137,7 +137,7 @@ void AttachmentsPanel::OnAttachmentChanged(int index)
 
 	const auto model = _asset->GetEntity()->GetEditableModel();
 
-	const studiomdl::Attachment emptyAttachment{};
+	const studiomdl::StudioAttachment emptyAttachment{};
 
 	const auto& attachment = index != -1 ? *model->Attachments[index] : emptyAttachment;
 

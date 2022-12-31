@@ -230,7 +230,7 @@ void SequencesPanel::InitializeBlenders(float initialXValue, float initialYValue
 
 	const int sequenceIndex = entity->GetSequence();
 
-	const studiomdl::Sequence emptySequence{};
+	const studiomdl::StudioSequence emptySequence{};
 
 	const auto& sequence = sequenceIndex != -1 ? *entity->GetEditableModel()->Sequences[sequenceIndex] : emptySequence;
 
@@ -357,7 +357,7 @@ void SequencesPanel::OnSequenceChanged(int index)
 		entity->SetSequence(index);
 	}
 
-	const studiomdl::Sequence emptySequence{};
+	const studiomdl::StudioSequence emptySequence{};
 
 	const auto& sequence = index != -1 ? *entity->GetEditableModel()->Sequences[index] : emptySequence;
 
@@ -459,9 +459,9 @@ void SequencesPanel::OnBlendYSpinnerChanged()
 
 void SequencesPanel::OnEventChanged(int index)
 {
-	const studiomdl::SequenceEvent emptyEvent{};
+	const studiomdl::StudioSequenceEvent emptyEvent{};
 
-	const studiomdl::SequenceEvent* event = &emptyEvent;
+	const studiomdl::StudioSequenceEvent* event = &emptyEvent;
 
 	const bool hasEvent = index != -1;
 

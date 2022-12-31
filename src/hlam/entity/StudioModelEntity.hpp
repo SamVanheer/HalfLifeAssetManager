@@ -106,7 +106,8 @@ private:
 
 		virtual bool AlwaysHasBlender() const = 0;
 
-		virtual std::optional<std::uint8_t> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const = 0;
+		virtual std::optional<std::uint8_t> CalculateBlend(
+			const studiomdl::StudioSequence& sequenceDescriptor, int blender, float value) const = 0;
 	};
 
 	struct StandardBlender final : public IBlender
@@ -115,7 +116,8 @@ private:
 
 		bool AlwaysHasBlender() const override final { return false; }
 
-		std::optional<std::uint8_t> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const override final;
+		std::optional<std::uint8_t> CalculateBlend(
+			const studiomdl::StudioSequence& sequenceDescriptor, int blender, float value) const override final;
 	};
 
 	struct CounterStrikeBlender final : public IBlender
@@ -124,7 +126,8 @@ private:
 
 		bool AlwaysHasBlender() const override final { return true; }
 
-		std::optional<std::uint8_t> CalculateBlend(const studiomdl::Sequence& sequenceDescriptor, int blender, float value) const override final;
+		std::optional<std::uint8_t> CalculateBlend(
+			const studiomdl::StudioSequence& sequenceDescriptor, int blender, float value) const override final;
 	};
 
 	static constexpr StandardBlender StandardBlender{};

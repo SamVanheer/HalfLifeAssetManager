@@ -16,7 +16,7 @@ namespace studiomdl
 {
 EditableStudioModel::~EditableStudioModel() = default;
 
-const Model* EditableStudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart) const
+const StudioSubModel* EditableStudioModel::GetModelByBodyPart(const int iBody, const int iBodyPart) const
 {
 	auto& bodypart = *Bodyparts[iBodyPart];
 
@@ -55,14 +55,14 @@ bool EditableStudioModel::CalculateBodygroup(const int iGroup, const int iValue,
 	return true;
 }
 
-std::vector<const studiomdl::Mesh*> EditableStudioModel::ComputeMeshList(const int texture) const
+std::vector<const StudioMesh*> EditableStudioModel::ComputeMeshList(const int texture) const
 {
 	if (texture == -1)
 	{
 		return {};
 	}
 
-	std::vector<const studiomdl::Mesh*> meshes;
+	std::vector<const StudioMesh*> meshes;
 
 	int iBodygroup = 0;
 
@@ -74,7 +74,7 @@ std::vector<const studiomdl::Mesh*> EditableStudioModel::ComputeMeshList(const i
 		{
 			CalculateBodygroup(iBodyPart, iModel, iBodygroup);
 
-			const studiomdl::Model& model = *GetModelByBodyPart(iBodygroup, iBodyPart);
+			const StudioSubModel& model = *GetModelByBodyPart(iBodygroup, iBodyPart);
 
 			for (int iMesh = 0; iMesh < model.Meshes.size(); ++iMesh)
 			{
@@ -195,9 +195,9 @@ glm::vec3 FindAverageOfRootBones(const EditableStudioModel& studioModel)
 	return center;
 }
 
-const Bone* FindNearestRootBone(const EditableStudioModel& studioModel, const glm::vec3& position)
+const StudioBone* FindNearestRootBone(const EditableStudioModel& studioModel, const glm::vec3& position)
 {
-	const Bone* nearest = nullptr;
+	const StudioBone* nearest = nullptr;
 
 	float dist = std::numeric_limits<float>::max();
 
@@ -227,7 +227,7 @@ std::pair<RotateData, RotateData> CalculateRotatedData(const EditableStudioModel
 	//Determine center of model from root bone nearest to average of all root bones
 	glm::vec3 center{FindAverageOfRootBones(studioModel)};
 
-	if (const Bone* nearest = FindNearestRootBone(studioModel, center); nearest)
+	if (const StudioBone* nearest = FindNearestRootBone(studioModel, center); nearest)
 	{
 		center = {nearest->Axes[0].Value, nearest->Axes[1].Value, nearest->Axes[2].Value};
 	}
@@ -776,7 +776,7 @@ void ApplyScaledSTCoordinatesData(const EditableStudioModel& studioModel, const 
 	}
 }
 
-void SortEventsList(std::vector<SequenceEvent*>& events)
+void SortEventsList(std::vector<StudioSequenceEvent*>& events)
 {
 	//Retain relative order of events
 	std::stable_sort(events.begin(), events.end(), [](const auto& lhs, const auto& rhs)

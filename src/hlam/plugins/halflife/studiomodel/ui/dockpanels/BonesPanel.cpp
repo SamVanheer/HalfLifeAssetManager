@@ -176,7 +176,7 @@ void BonesPanel::OnBoneChanged(int index)
 
 	const bool isValidBone = index != -1;
 
-	const studiomdl::Bone emptyBone{};
+	const studiomdl::StudioBone emptyBone{};
 
 	const auto& bone = isValidBone ? *model->Bones[index] : emptyBone;
 

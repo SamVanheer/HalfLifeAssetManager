@@ -16,11 +16,11 @@ namespace studiomdl
 {
 namespace
 {
-std::vector<std::unique_ptr<BoneController>> ConvertBoneControllersToEditable(const StudioModel& studioModel)
+std::vector<std::unique_ptr<StudioBoneController>> ConvertBoneControllersToEditable(const StudioModel& studioModel)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<std::unique_ptr<BoneController>> result;
+	std::vector<std::unique_ptr<StudioBoneController>> result;
 
 	result.reserve(header->numbonecontrollers);
 
@@ -28,7 +28,7 @@ std::vector<std::unique_ptr<BoneController>> ConvertBoneControllersToEditable(co
 	{
 		auto source = header->GetBoneController(i);
 
-		BoneController controller
+		StudioBoneController controller
 		{
 			source->type,
 			source->start,
@@ -38,17 +38,18 @@ std::vector<std::unique_ptr<BoneController>> ConvertBoneControllersToEditable(co
 			i
 		};
 
-		result.push_back(std::make_unique<BoneController>(controller));
+		result.push_back(std::make_unique<StudioBoneController>(controller));
 	}
 
 	return result;
 }
 
-std::vector<std::unique_ptr<Bone>> ConvertBonesToEditable(const StudioModel& studioModel, std::vector<std::unique_ptr<BoneController>>& boneControllers)
+std::vector<std::unique_ptr<StudioBone>> ConvertBonesToEditable(
+	const StudioModel& studioModel, std::vector<std::unique_ptr<StudioBoneController>>& boneControllers)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<std::unique_ptr<Bone>> result;
+	std::vector<std::unique_ptr<StudioBone>> result;
 
 	result.reserve(header->numbones);
 
@@ -56,7 +57,7 @@ std::vector<std::unique_ptr<Bone>> ConvertBonesToEditable(const StudioModel& stu
 	{
 		auto source = header->GetBone(i);
 
-		std::array<BoneAxisData, STUDIO_NUM_COORDINATE_AXES> axisData{};
+		std::array<StudioBoneAxisData, STUDIO_NUM_COORDINATE_AXES> axisData{};
 
 		for (int j = 0; j < axisData.size(); ++j)
 		{
@@ -71,7 +72,7 @@ std::vector<std::unique_ptr<Bone>> ConvertBonesToEditable(const StudioModel& stu
 			data.Scale = source->scale[j];
 		}
 
-		Bone bone
+		StudioBone bone
 		{
 			source->name,
 			nullptr,
@@ -80,7 +81,7 @@ std::vector<std::unique_ptr<Bone>> ConvertBonesToEditable(const StudioModel& stu
 			i
 		};
 
-		result.push_back(std::make_unique<Bone>(bone));
+		result.push_back(std::make_unique<StudioBone>(bone));
 	}
 
 	//Patch up parent bones
@@ -97,11 +98,12 @@ std::vector<std::unique_ptr<Bone>> ConvertBonesToEditable(const StudioModel& stu
 	return result;
 }
 
-std::vector<std::unique_ptr<Hitbox>> ConvertHitboxesToEditable(const StudioModel& studioModel, std::vector<std::unique_ptr<Bone>>& bones)
+std::vector<std::unique_ptr<StudioHitbox>> ConvertHitboxesToEditable(
+	const StudioModel& studioModel, std::vector<std::unique_ptr<StudioBone>>& bones)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<std::unique_ptr<Hitbox>> result;
+	std::vector<std::unique_ptr<StudioHitbox>> result;
 
 	result.reserve(header->numhitboxes);
 
@@ -109,7 +111,7 @@ std::vector<std::unique_ptr<Hitbox>> ConvertHitboxesToEditable(const StudioModel
 	{
 		auto source = header->GetHitBox(i);
 
-		Hitbox hitbox
+		StudioHitbox hitbox
 		{
 			bones[source->bone].get(),
 			source->group,
@@ -117,17 +119,17 @@ std::vector<std::unique_ptr<Hitbox>> ConvertHitboxesToEditable(const StudioModel
 			source->bbmax
 		};
 
-		result.push_back(std::make_unique<Hitbox>(hitbox));
+		result.push_back(std::make_unique<StudioHitbox>(hitbox));
 	}
 
 	return result;
 }
 
-std::vector<std::unique_ptr<SequenceGroup>> ConvertSequenceGroupsToEditable(const StudioModel& studioModel)
+std::vector<std::unique_ptr<StudioSequenceGroup>> ConvertSequenceGroupsToEditable(const StudioModel& studioModel)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<std::unique_ptr<SequenceGroup>> result;
+	std::vector<std::unique_ptr<StudioSequenceGroup>> result;
 
 	//Only copy the first group (main file)
 	const int numseqgroups = 1; //header->numseqgroups;
@@ -138,22 +140,23 @@ std::vector<std::unique_ptr<SequenceGroup>> ConvertSequenceGroupsToEditable(cons
 	{
 		auto source = header->GetSequenceGroup(i);
 
-		SequenceGroup group
+		StudioSequenceGroup group
 		{
 			source->label
 		};
 
-		result.push_back(std::make_unique<SequenceGroup>(std::move(group)));
+		result.push_back(std::make_unique<StudioSequenceGroup>(std::move(group)));
 	}
 
 	return result;
 }
 
-std::vector<std::unique_ptr<SequenceEvent>> ConvertEventsToEditable(const StudioModel& studioModel, const mstudioseqdesc_t& sequence)
+std::vector<std::unique_ptr<StudioSequenceEvent>> ConvertEventsToEditable(
+	const StudioModel& studioModel, const mstudioseqdesc_t& sequence)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<std::unique_ptr<SequenceEvent>> result;
+	std::vector<std::unique_ptr<StudioSequenceEvent>> result;
 
 	result.reserve(sequence.numevents);
 
@@ -161,7 +164,7 @@ std::vector<std::unique_ptr<SequenceEvent>> ConvertEventsToEditable(const Studio
 	{
 		auto source = reinterpret_cast<const mstudioevent_t*>(header->GetData() + sequence.eventindex) + i;
 
-		SequenceEvent event
+		StudioSequenceEvent event
 		{
 			source->frame,
 			source->event,
@@ -169,17 +172,18 @@ std::vector<std::unique_ptr<SequenceEvent>> ConvertEventsToEditable(const Studio
 			source->options
 		};
 
-		result.push_back(std::make_unique<SequenceEvent>(std::move(event)));
+		result.push_back(std::make_unique<StudioSequenceEvent>(std::move(event)));
 	}
 
 	return result;
 }
 
-std::vector<SequencePivot> ConvertPivotsToEditable(const StudioModel& studioModel, const mstudioseqdesc_t& sequence)
+std::vector<StudioSequencePivot> ConvertPivotsToEditable(
+	const StudioModel& studioModel, const mstudioseqdesc_t& sequence)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<SequencePivot> result;
+	std::vector<StudioSequencePivot> result;
 
 	result.reserve(sequence.numpivots);
 
@@ -187,7 +191,7 @@ std::vector<SequencePivot> ConvertPivotsToEditable(const StudioModel& studioMode
 	{
 		auto source = reinterpret_cast<const mstudiopivot_t*>(header->GetData() + sequence.pivotindex) + i;
 
-		SequencePivot pivot
+		StudioSequencePivot pivot
 		{
 			source->org,
 			source->start,
@@ -200,11 +204,12 @@ std::vector<SequencePivot> ConvertPivotsToEditable(const StudioModel& studioMode
 	return result;
 }
 
-std::vector<std::vector<Animation>> ConvertAnimationBlendsToEditable(const StudioModel& studioModel, const mstudioseqdesc_t& sequence)
+std::vector<std::vector<StudioAnimation>> ConvertAnimationBlendsToEditable(
+	const StudioModel& studioModel, const mstudioseqdesc_t& sequence)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<std::vector<Animation>> result;
+	std::vector<std::vector<StudioAnimation>> result;
 
 	result.reserve(sequence.numblends);
 
@@ -212,13 +217,13 @@ std::vector<std::vector<Animation>> ConvertAnimationBlendsToEditable(const Studi
 
 	for (int i = 0; i < sequence.numblends; ++i)
 	{
-		std::vector<Animation> animations;
+		std::vector<StudioAnimation> animations;
 
 		animations.reserve(header->numbones);
 
 		for (int b = 0; b < header->numbones; ++b, ++source)
 		{
-			Animation animation;
+			StudioAnimation animation;
 
 			for (int j = 0; j < STUDIO_NUM_COORDINATE_AXES; ++j)
 			{
@@ -265,11 +270,11 @@ std::vector<std::vector<Animation>> ConvertAnimationBlendsToEditable(const Studi
 	return result;
 }
 
-std::vector<std::unique_ptr<Sequence>> ConvertSequencesToEditable(const StudioModel& studioModel)
+std::vector<std::unique_ptr<StudioSequence>> ConvertSequencesToEditable(const StudioModel& studioModel)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<std::unique_ptr<Sequence>> result;
+	std::vector<std::unique_ptr<StudioSequence>> result;
 
 	result.reserve(header->numseq);
 
@@ -279,7 +284,7 @@ std::vector<std::unique_ptr<Sequence>> ConvertSequencesToEditable(const StudioMo
 
 		auto events = ConvertEventsToEditable(studioModel, *source);
 
-		std::vector<SequenceEvent*> sortedEvents;
+		std::vector<StudioSequenceEvent*> sortedEvents;
 
 		sortedEvents.reserve(events.size());
 
@@ -291,7 +296,7 @@ std::vector<std::unique_ptr<Sequence>> ConvertSequencesToEditable(const StudioMo
 
 		SortEventsList(sortedEvents);
 
-		Sequence sequence
+		StudioSequence sequence
 		{
 			source->label,
 			source->fps,
@@ -328,17 +333,18 @@ std::vector<std::unique_ptr<Sequence>> ConvertSequencesToEditable(const StudioMo
 			source->nextseq
 		};
 
-		result.push_back(std::make_unique<Sequence>(std::move(sequence)));
+		result.push_back(std::make_unique<StudioSequence>(std::move(sequence)));
 	}
 
 	return result;
 }
 
-std::vector<std::unique_ptr<Attachment>> ConvertAttachmentsToEditable(const StudioModel& studioModel, std::vector<std::unique_ptr<Bone>>& bones)
+std::vector<std::unique_ptr<StudioAttachment>> ConvertAttachmentsToEditable(
+	const StudioModel& studioModel, std::vector<std::unique_ptr<StudioBone>>& bones)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<std::unique_ptr<Attachment>> result;
+	std::vector<std::unique_ptr<StudioAttachment>> result;
 
 	result.reserve(header->numattachments);
 
@@ -346,7 +352,7 @@ std::vector<std::unique_ptr<Attachment>> ConvertAttachmentsToEditable(const Stud
 	{
 		auto source = header->GetAttachment(i);
 
-		Attachment attachment
+		StudioAttachment attachment
 		{
 			source->name,
 			source->type,
@@ -359,17 +365,17 @@ std::vector<std::unique_ptr<Attachment>> ConvertAttachmentsToEditable(const Stud
 			}
 		};
 
-		result.push_back(std::make_unique<Attachment>(attachment));
+		result.push_back(std::make_unique<StudioAttachment>(attachment));
 	}
 
 	return result;
 }
 
-std::vector<Mesh> ConvertMeshesToEditable(const StudioModel& studioModel, const mstudiomodel_t& model)
+std::vector<StudioMesh> ConvertMeshesToEditable(const StudioModel& studioModel, const mstudiomodel_t& model)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<Mesh> result;
+	std::vector<StudioMesh> result;
 
 	result.reserve(model.nummesh);
 
@@ -385,7 +391,7 @@ std::vector<Mesh> ConvertMeshesToEditable(const StudioModel& studioModel, const 
 			cmdEnd += i * 4;
 		}
 
-		Mesh mesh
+		StudioMesh mesh
 		{
 			{cmdStart, cmdEnd},
 			source->numtris,
@@ -399,18 +405,19 @@ std::vector<Mesh> ConvertMeshesToEditable(const StudioModel& studioModel, const 
 	return result;
 }
 
-std::vector<ModelVertexInfo> ConvertModelVertexInfoToEditable(const StudioModel& studioModel, std::vector<std::unique_ptr<Bone>>& bones,
+std::vector<StudioModelVertexInfo> ConvertModelVertexInfoToEditable(
+	const StudioModel& studioModel, std::vector<std::unique_ptr<StudioBone>>& bones,
 	int vertexIndex, int vertexInfoIndex, int count)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<ModelVertexInfo> result;
+	std::vector<StudioModelVertexInfo> result;
 
 	result.reserve(count);
 
 	for (int i = 0; i < count; ++i)
 	{
-		ModelVertexInfo info
+		StudioModelVertexInfo info
 		{
 			reinterpret_cast<const glm::vec3*>(header->GetData() + vertexIndex)[i],
 			bones[reinterpret_cast<std::uint8_t*>(header->GetData() + vertexInfoIndex)[i]].get()
@@ -422,11 +429,12 @@ std::vector<ModelVertexInfo> ConvertModelVertexInfoToEditable(const StudioModel&
 	return result;
 }
 
-std::vector<Model> ConvertModelsToEditable(const StudioModel& studioModel, std::vector<std::unique_ptr<Bone>>& bones, const mstudiobodyparts_t& bodypart)
+std::vector<StudioSubModel> ConvertModelsToEditable(
+	const StudioModel& studioModel, std::vector<std::unique_ptr<StudioBone>>& bones, const mstudiobodyparts_t& bodypart)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<Model> result;
+	std::vector<StudioSubModel> result;
 
 	result.reserve(bodypart.nummodels);
 
@@ -434,7 +442,7 @@ std::vector<Model> ConvertModelsToEditable(const StudioModel& studioModel, std::
 	{
 		auto source = reinterpret_cast<const mstudiomodel_t*>(header->GetData() + bodypart.modelindex) + i;
 
-		Model model
+		StudioSubModel model
 		{
 			source->name,
 			source->type,
@@ -450,11 +458,12 @@ std::vector<Model> ConvertModelsToEditable(const StudioModel& studioModel, std::
 	return result;
 }
 
-std::vector<std::unique_ptr<Bodypart>> ConvertBodypartsToEditable(const StudioModel& studioModel, std::vector<std::unique_ptr<Bone>>& bones)
+std::vector<std::unique_ptr<StudioBodypart>> ConvertBodypartsToEditable(
+	const StudioModel& studioModel, std::vector<std::unique_ptr<StudioBone>>& bones)
 {
 	auto header = studioModel.GetStudioHeader();
 
-	std::vector<std::unique_ptr<Bodypart>> result;
+	std::vector<std::unique_ptr<StudioBodypart>> result;
 
 	result.reserve(header->numbodyparts);
 
@@ -462,14 +471,14 @@ std::vector<std::unique_ptr<Bodypart>> ConvertBodypartsToEditable(const StudioMo
 	{
 		auto source = header->GetBodypart(i);
 
-		Bodypart bodypart
+		StudioBodypart bodypart
 		{
 			source->name,
 			source->base,
 			ConvertModelsToEditable(studioModel, bones, *source)
 		};
 
-		result.push_back(std::make_unique<Bodypart>(std::move(bodypart)));
+		result.push_back(std::make_unique<StudioBodypart>(std::move(bodypart)));
 	}
 
 	return result;
@@ -477,11 +486,11 @@ std::vector<std::unique_ptr<Bodypart>> ConvertBodypartsToEditable(const StudioMo
 
 //Dol differs only in texture storage
 //Instead of pixels followed by RGB palette, it has a 32 byte texture name (name of file without extension), followed by an RGBA palette and pixels
-std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioModel& studioModel)
+std::vector<std::unique_ptr<StudioTexture>> ConvertDolTexturesToEditable(const StudioModel& studioModel)
 {
 	auto header = studioModel.GetTextureHeader();
 
-	std::vector<std::unique_ptr<Texture>> result;
+	std::vector<std::unique_ptr<StudioTexture>> result;
 
 	result.reserve(header->numtextures);
 
@@ -533,7 +542,7 @@ std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioM
 			pixels[i] = std::byte(pixel);
 		}
 
-		Texture texture
+		StudioTexture texture
 		{
 			source->name,
 			source->flags,
@@ -546,17 +555,17 @@ std::vector<std::unique_ptr<Texture>> ConvertDolTexturesToEditable(const StudioM
 			i
 		};
 
-		result.push_back(std::make_unique<Texture>(texture));
+		result.push_back(std::make_unique<StudioTexture>(texture));
 	}
 
 	return result;
 }
 
-std::vector<std::unique_ptr<Texture>> ConvertMdlTexturesToEditable(const StudioModel& studioModel)
+std::vector<std::unique_ptr<StudioTexture>> ConvertMdlTexturesToEditable(const StudioModel& studioModel)
 {
 	auto header = studioModel.GetTextureHeader();
 
-	std::vector<std::unique_ptr<Texture>> result;
+	std::vector<std::unique_ptr<StudioTexture>> result;
 
 	result.reserve(header->numtextures);
 
@@ -568,7 +577,7 @@ std::vector<std::unique_ptr<Texture>> ConvertMdlTexturesToEditable(const StudioM
 
 		std::memcpy(palette.AsByteArray(), header->GetData() + source->index + (source->width * source->height), sizeof(palette));
 
-		Texture texture
+		StudioTexture texture
 		{
 			source->name,
 			source->flags,
@@ -581,13 +590,13 @@ std::vector<std::unique_ptr<Texture>> ConvertMdlTexturesToEditable(const StudioM
 			i
 		};
 
-		result.push_back(std::make_unique<Texture>(texture));
+		result.push_back(std::make_unique<StudioTexture>(texture));
 	}
 
 	return result;
 }
 
-std::vector<std::unique_ptr<Texture>> ConvertTexturesToEditable(const StudioModel& studioModel)
+std::vector<std::unique_ptr<StudioTexture>> ConvertTexturesToEditable(const StudioModel& studioModel)
 {
 	if (studioModel.IsDol())
 	{
@@ -599,11 +608,12 @@ std::vector<std::unique_ptr<Texture>> ConvertTexturesToEditable(const StudioMode
 	}
 }
 
-std::vector<std::vector<Texture*>> ConvertSkinFamiliesToEditable(const StudioModel& studioModel, std::vector<std::unique_ptr<Texture>>& textures)
+std::vector<std::vector<StudioTexture*>> ConvertSkinFamiliesToEditable(
+	const StudioModel& studioModel, std::vector<std::unique_ptr<StudioTexture>>& textures)
 {
 	auto header = studioModel.GetTextureHeader();
 
-	std::vector<std::vector<Texture*>> result;
+	std::vector<std::vector<StudioTexture*>> result;
 
 	result.reserve(header->numskinfamilies);
 
@@ -611,7 +621,7 @@ std::vector<std::vector<Texture*>> ConvertSkinFamiliesToEditable(const StudioMod
 
 	for (int i = 0; i < header->numskinfamilies; ++i)
 	{
-		std::vector<Texture*> skinRef;
+		std::vector<StudioTexture*> skinRef;
 
 		skinRef.reserve(header->numskinref);
 

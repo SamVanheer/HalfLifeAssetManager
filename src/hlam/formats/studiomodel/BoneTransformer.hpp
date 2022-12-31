@@ -14,9 +14,9 @@
 
 namespace studiomdl
 {
-struct Animation;
-struct Bone;
-struct Sequence;
+struct StudioAnimation;
+struct StudioBone;
+struct StudioSequence;
 class EditableStudioModel;
 
 struct BoneTransformInfo
@@ -51,19 +51,25 @@ public:
 	*	@brief Sets up a bone array based on the given model and transform information
 	*	@return Reference to the bone array, valid only when used immediately after this call
 	*/
-	const std::array<glm::mat4x4, MAXSTUDIOBONES>& SetUpBones(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo);
+	const std::array<glm::mat4x4, MAXSTUDIOBONES>& SetUpBones(
+		const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo);
 
 private:
-	static void CalculateRotations(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
-		const Sequence& sequence, const Animation* anims, TransformState& transformState);
+	static void CalculateRotations(
+		const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
+		const StudioSequence& sequence, const StudioAnimation* anims, TransformState& transformState);
 
-	static void CalculateBoneAdjust(const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
+	static void CalculateBoneAdjust(
+		const EditableStudioModel& studioModel, const BoneTransformInfo& transformInfo,
 		std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust);
-	static void CalculateBoneQuaternion(const int frame, const float s, const Bone& bone, const Animation& anim,
+	static void CalculateBoneQuaternion(
+		const int frame, const float s, const StudioBone& bone, const StudioAnimation& anim,
 		const std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust, glm::quat& q);
-	static void CalculateBonePosition(const int frame, const float s, const Bone&, const Animation& anim,
+	static void CalculateBonePosition(
+		const int frame, const float s, const StudioBone&, const StudioAnimation& anim,
 		const std::array<float, MAXSTUDIOCONTROLLERS>& boneAdjust, glm::vec3& pos);
-	static void SlerpBones(const EditableStudioModel& studioModel, float s, const TransformState& fromState, TransformState& toState);
+	static void SlerpBones(
+		const EditableStudioModel& studioModel, float s, const TransformState& fromState, TransformState& toState);
 
 private:
 	//Used to store temporary calculations before calculating final values stored in _boneTransform

@@ -124,7 +124,7 @@ void HitboxesPanel::OnHitboxChanged(int index)
 		return;
 	}
 
-	constexpr studiomdl::Hitbox emptyHitbox{};
+	constexpr studiomdl::StudioHitbox emptyHitbox{};
 
 	const auto& hitbox = index != -1 ? *_asset->GetEditableStudioModel()->Hitboxes[index] : emptyHitbox;
 

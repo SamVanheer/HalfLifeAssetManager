@@ -750,7 +750,7 @@ protected:
 
 struct ImportTextureData
 {
-	studiomdl::TextureData Data;
+	studiomdl::StudioTextureData Data;
 
 	studiomdl::ScaleSTCoordinatesData ScaledSTCoordinates;
 
@@ -794,11 +794,11 @@ protected:
 	void Apply(int index, const SequenceProps& oldValue, const SequenceProps& newValue) override;
 };
 
-class ChangeEventCommand : public ModelListUndoCommand<studiomdl::SequenceEvent>
+class ChangeEventCommand : public ModelListUndoCommand<studiomdl::StudioSequenceEvent>
 {
 public:
 	ChangeEventCommand(StudioModelAsset* asset, int sequenceIndex, int eventIndex,
-		const studiomdl::SequenceEvent& oldEvent, const studiomdl::SequenceEvent& newEvent)
+		const studiomdl::StudioSequenceEvent& oldEvent, const studiomdl::StudioSequenceEvent& newEvent)
 		: ModelListUndoCommand(asset, ModelChangeId::ChangeEvent, sequenceIndex, oldEvent, newEvent)
 		, _eventIndex(eventIndex)
 	{
@@ -806,16 +806,18 @@ public:
 	}
 
 protected:
-	void Apply(int index, const studiomdl::SequenceEvent& oldValue, const studiomdl::SequenceEvent& newValue) override;
+	void Apply(int index,
+		const studiomdl::StudioSequenceEvent& oldValue, const studiomdl::StudioSequenceEvent& newValue) override;
 
 private:
 	const int _eventIndex;
 };
 
-class AddRemoveEventCommand : public ModelListAddRemoveUndoCommand<studiomdl::SequenceEvent>
+class AddRemoveEventCommand : public ModelListAddRemoveUndoCommand<studiomdl::StudioSequenceEvent>
 {
 public:
-	AddRemoveEventCommand(StudioModelAsset* asset, AddRemoveType type, int index, int eventIndex, const studiomdl::SequenceEvent& value)
+	AddRemoveEventCommand(StudioModelAsset* asset, AddRemoveType type, int index, int eventIndex,
+		const studiomdl::StudioSequenceEvent& value)
 		: ModelListAddRemoveUndoCommand(asset, ModelChangeId::AddRemoveEvent, type, index, value)
 		, _eventIndex(eventIndex)
 	{
@@ -830,8 +832,8 @@ public:
 	}
 
 protected:
-	void Add(int index, const studiomdl::SequenceEvent& value) override;
-	void Remove(int index, const studiomdl::SequenceEvent& value) override;
+	void Add(int index, const studiomdl::StudioSequenceEvent& value) override;
+	void Remove(int index, const studiomdl::StudioSequenceEvent& value) override;
 
 private:
 	const int _eventIndex;

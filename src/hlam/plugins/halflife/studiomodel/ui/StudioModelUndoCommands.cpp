@@ -254,7 +254,8 @@ void ChangeSequencePropsCommand::Apply(int index, const SequenceProps& oldValue,
 }
 
 
-void ChangeEventCommand::Apply(int index, const studiomdl::SequenceEvent& oldValue, const studiomdl::SequenceEvent& newValue)
+void ChangeEventCommand::Apply(int index,
+	const studiomdl::StudioSequenceEvent& oldValue, const studiomdl::StudioSequenceEvent& newValue)
 {
 	auto& sequence = *_asset->GetEditableStudioModel()->Sequences[index];
 
@@ -269,18 +270,18 @@ void ChangeEventCommand::Apply(int index, const studiomdl::SequenceEvent& oldVal
 	emit _asset->GetModelData()->EventChanged(index, _eventIndex);
 }
 
-void AddRemoveEventCommand::Add(int index, const studiomdl::SequenceEvent& value)
+void AddRemoveEventCommand::Add(int index, const studiomdl::StudioSequenceEvent& value)
 {
 	auto& sequence = *_asset->GetEditableStudioModel()->Sequences[index];
 
-	auto event = sequence.Events.insert(sequence.Events.begin() + _eventIndex, std::make_unique<studiomdl::SequenceEvent>(value))->get();
+	auto event = sequence.Events.insert(sequence.Events.begin() + _eventIndex, std::make_unique<studiomdl::StudioSequenceEvent>(value))->get();
 	sequence.SortedEvents.push_back(event);
 
 	studiomdl::SortEventsList(sequence.SortedEvents);
 	emit _asset->GetModelData()->EventAdded(index, _eventIndex);
 }
 
-void AddRemoveEventCommand::Remove(int index, const studiomdl::SequenceEvent& value)
+void AddRemoveEventCommand::Remove(int index, const studiomdl::StudioSequenceEvent& value)
 {
 	auto& sequence = *_asset->GetEditableStudioModel()->Sequences[index];
 

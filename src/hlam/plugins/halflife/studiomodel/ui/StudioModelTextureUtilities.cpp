@@ -5,7 +5,7 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelTextureUtilities.hpp"
 
-std::optional<std::tuple<studiomdl::TextureData, bool, bool>> ConvertImageToTexture(QImage image)
+std::optional<std::tuple<studiomdl::StudioTextureData, bool, bool>> ConvertImageToTexture(QImage image)
 {
 	const bool upscaleToMultipleOf4 = ((image.width() * image.height()) % 4) != 0;
 
@@ -81,14 +81,15 @@ std::optional<std::tuple<studiomdl::TextureData, bool, bool>> ConvertImageToText
 
 	return std::tuple
 	{
-		studiomdl::TextureData{image.width(), image.height(), std::move(pixels), convertedPalette},
+		studiomdl::StudioTextureData{image.width(), image.height(), std::move(pixels), convertedPalette},
 		upscaleToMultipleOf4,
 		convertToIndexed8
 	};
 }
 
 QImage ConvertTextureToRGBImage(
-	const studiomdl::TextureData& texture, const std::byte* textureData, const graphics::RGBPalette& texturePalette, std::vector<QRgb>& dataBuffer)
+	const studiomdl::StudioTextureData& texture, const std::byte* textureData,
+	const graphics::RGBPalette& texturePalette, std::vector<QRgb>& dataBuffer)
 {
 	dataBuffer.resize(texture.Width * texture.Height);
 
@@ -105,7 +106,7 @@ QImage ConvertTextureToRGBImage(
 	return QImage{reinterpret_cast<const uchar*>(dataBuffer.data()), texture.Width, texture.Height, QImage::Format::Format_RGB32};
 }
 
-QImage ConvertTextureToIndexed8Image(const studiomdl::TextureData& texture)
+QImage ConvertTextureToIndexed8Image(const studiomdl::StudioTextureData& texture)
 {
 	//Ensure data is 32 bit aligned
 	const int alignedWidth = (texture.Width + 3) & (~3);

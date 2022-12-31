@@ -22,7 +22,7 @@ class TextureLoader;
 
 namespace studiomdl
 {
-struct BoneController
+struct StudioBoneController
 {
 	int Type = 0;
 	float Start = 0;
@@ -32,39 +32,39 @@ struct BoneController
 	int ArrayIndex = -1;
 };
 
-struct BoneAxisData
+struct StudioBoneAxisData
 {
-	BoneController* Controller = nullptr;
+	StudioBoneController* Controller = nullptr;
 	float Value = 0;
 	float Scale = 0;
 };
 
-struct Bone
+struct StudioBone
 {
 	std::string Name;
-	Bone* Parent = nullptr;
+	StudioBone* Parent = nullptr;
 	int Flags = 0;
-	std::array<BoneAxisData, STUDIO_NUM_COORDINATE_AXES> Axes;
+	std::array<StudioBoneAxisData, STUDIO_NUM_COORDINATE_AXES> Axes;
 
 	//Index of this bone. Always use this for indexed operations
 	int ArrayIndex = -1;
 };
 
-struct Hitbox
+struct StudioHitbox
 {
-	Bone* Bone = nullptr;
+	StudioBone* Bone = nullptr;
 	int Group = 0;
 
 	glm::vec3 Min{0};
 	glm::vec3 Max{0};
 };
 
-struct SequenceGroup
+struct StudioSequenceGroup
 {
 	std::string Label;
 };
 
-struct SequenceEvent
+struct StudioSequenceEvent
 {
 	int Frame = 0;
 	int EventId = 0;
@@ -72,27 +72,27 @@ struct SequenceEvent
 	std::string Options;
 };
 
-struct Animation
+struct StudioAnimation
 {
 	//std::array<std::vector<short>, STUDIO_MAX_PER_BONE_CONTROLLERS> Data;
 	std::array<std::vector<mstudioanimvalue_t>, STUDIO_NUM_COORDINATE_AXES> Data;
 };
 
-struct SequenceBlendData
+struct StudioSequenceBlendData
 {
 	int Type = 0;
 	float Start = 0;
 	float End = 0;
 };
 
-struct SequencePivot
+struct StudioSequencePivot
 {
 	glm::vec3 Origin{0};
 	int Start = 0;
 	int End = 0;
 };
 
-struct Sequence
+struct StudioSequence
 {
 	std::string Label;
 
@@ -103,14 +103,14 @@ struct Sequence
 	int ActivityWeight = 0;
 
 	//List of events used for modifying data in UI
-	std::vector<std::unique_ptr<SequenceEvent>> Events;
+	std::vector<std::unique_ptr<StudioSequenceEvent>> Events;
 
 	//List of events used for saving to disk & event playback
-	std::vector<SequenceEvent*> SortedEvents;
+	std::vector<StudioSequenceEvent*> SortedEvents;
 
 	int NumFrames = 0;
 
-	std::vector<SequencePivot> Pivots;
+	std::vector<StudioSequencePivot> Pivots;
 
 	int MotionType = 0;
 	int MotionBone = 0;
@@ -120,9 +120,9 @@ struct Sequence
 	glm::vec3 BBMin{0};
 	glm::vec3 BBMax{0};
 
-	std::vector<std::vector<Animation>> AnimationBlends;
+	std::vector<std::vector<StudioAnimation>> AnimationBlends;
 
-	std::array<SequenceBlendData, SequenceBlendCount> BlendData;
+	std::array<StudioSequenceBlendData, SequenceBlendCount> BlendData;
 
 	int EntryNode = 0;
 	int ExitNode = 0;
@@ -131,20 +131,20 @@ struct Sequence
 	int NextSequence = 0;
 };
 
-struct Attachment
+struct StudioAttachment
 {
 	std::string Name;
 
 	int Type = 0;
 
-	Bone* Bone = nullptr;
+	StudioBone* Bone = nullptr;
 
 	glm::vec3 Origin{0};
 
 	std::array<glm::vec3, STUDIO_ATTACH_NUM_VECTORS> Vectors{{glm::vec3{0}, glm::vec3{0}, glm::vec3{0}}};
 };
 
-struct Mesh
+struct StudioMesh
 {
 	std::vector<short> Triangles;
 	
@@ -153,32 +153,32 @@ struct Mesh
 	int SkinRef = 0;
 };
 
-struct ModelVertexInfo
+struct StudioModelVertexInfo
 {
 	glm::vec3 Vertex{0};
-	Bone* Bone = nullptr;
+	StudioBone* Bone = nullptr;
 };
 
-struct Model
+struct StudioSubModel
 {
 	std::string Name;
 
 	int Type = 0;
 	float BoundingRadius = 0;
 
-	std::vector<Mesh> Meshes;
-	std::vector<ModelVertexInfo> Vertices;
-	std::vector<ModelVertexInfo> Normals;
+	std::vector<StudioMesh> Meshes;
+	std::vector<StudioModelVertexInfo> Vertices;
+	std::vector<StudioModelVertexInfo> Normals;
 };
 
-struct Bodypart
+struct StudioBodypart
 {
 	std::string Name;
 	int Base = 0;
-	std::vector<Model> Models;
+	std::vector<StudioSubModel> Models;
 };
 
-struct TextureData
+struct StudioTextureData
 {
 	int Width = 0;
 	int Height = 0;
@@ -186,18 +186,18 @@ struct TextureData
 	graphics::RGBPalette Palette;
 };
 
-struct Texture
+struct StudioTexture
 {
 	std::string Name;
 	int Flags = 0;
-	TextureData Data;
+	StudioTextureData Data;
 
 	int ArrayIndex = -1;
 
 	GLuint TextureId = 0;
 };
 
-constexpr std::array<SequenceBlendData, SequenceBlendCount> CounterStrikeBlendRanges{{{0, -180, 180}, {0, -45, 45}}};
+constexpr std::array<StudioSequenceBlendData, SequenceBlendCount> CounterStrikeBlendRanges{{{0, -180, 180}, {0, -45, 45}}};
 
 /**
 *	@brief Contains studiomodel data in a format that can be easily edited
@@ -224,16 +224,16 @@ public:
 
 	int Flags = 0;
 
-	std::vector<std::unique_ptr<Bone>> Bones;
-	std::vector<std::unique_ptr<BoneController>> BoneControllers;
-	std::vector<std::unique_ptr<Hitbox>> Hitboxes;
-	std::vector<std::unique_ptr<SequenceGroup>> SequenceGroups;
-	std::vector<std::unique_ptr<Sequence>> Sequences;
-	std::vector<std::unique_ptr<Attachment>> Attachments;
-	std::vector<std::unique_ptr<Bodypart>> Bodyparts;
+	std::vector<std::unique_ptr<StudioBone>> Bones;
+	std::vector<std::unique_ptr<StudioBoneController>> BoneControllers;
+	std::vector<std::unique_ptr<StudioHitbox>> Hitboxes;
+	std::vector<std::unique_ptr<StudioSequenceGroup>> SequenceGroups;
+	std::vector<std::unique_ptr<StudioSequence>> Sequences;
+	std::vector<std::unique_ptr<StudioAttachment>> Attachments;
+	std::vector<std::unique_ptr<StudioBodypart>> Bodyparts;
 
-	std::vector<std::unique_ptr<Texture>> Textures;
-	std::vector<std::vector<Texture*>> SkinFamilies;
+	std::vector<std::unique_ptr<StudioTexture>> Textures;
+	std::vector<std::vector<StudioTexture*>> SkinFamilies;
 
 	std::vector<std::vector<std::uint8_t>> Transitions;
 
@@ -241,13 +241,13 @@ public:
 	int TopColor = 0;
 	int BottomColor = 0;
 
-	const Model* GetModelByBodyPart(const int iBody, const int iBodyPart) const;
+	const StudioSubModel* GetModelByBodyPart(const int iBody, const int iBodyPart) const;
 
 	int GetBodyValueForGroup(int compositeValue, int group) const;
 
 	bool CalculateBodygroup(const int iGroup, const int iValue, int& iInOutBodygroup) const;
 
-	std::vector<const studiomdl::Mesh*> ComputeMeshList(const int texture) const;
+	std::vector<const StudioMesh*> ComputeMeshList(const int texture) const;
 
 	void CreateTextures(graphics::TextureLoader& textureLoader);
 
@@ -445,5 +445,5 @@ std::pair<ScaleSTCoordinatesData, ScaleSTCoordinatesData> CalculateScaledSTCoord
 
 void ApplyScaledSTCoordinatesData(const EditableStudioModel& studioModel, const int textureIndex, const ScaleSTCoordinatesData& data);
 
-void SortEventsList(std::vector<SequenceEvent*>& events);
+void SortEventsList(std::vector<StudioSequenceEvent*>& events);
 }

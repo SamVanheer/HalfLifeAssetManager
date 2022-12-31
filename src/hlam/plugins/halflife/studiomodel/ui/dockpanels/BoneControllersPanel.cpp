@@ -134,7 +134,7 @@ void BoneControllersPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 		snapshot->Value("bonecontrollers.bonecontroller").toInt(), model->BoneControllers.size(), *_ui.BoneControllers);
 }
 
-void BoneControllersPanel::UpdateControllerRange(const studiomdl::BoneController& boneController)
+void BoneControllersPanel::UpdateControllerRange(const studiomdl::StudioBoneController& boneController)
 {
 	const auto entity = _asset->GetEntity();
 
@@ -197,7 +197,7 @@ void BoneControllersPanel::OnBoneControllerChanged(int index)
 
 	const auto model = _asset->GetEntity()->GetEditableModel();
 
-	static constexpr studiomdl::BoneController EmptyController{};
+	static constexpr studiomdl::StudioBoneController EmptyController{};
 
 	const auto& boneController = index != -1 ? *model->BoneControllers[index] : EmptyController;
 
