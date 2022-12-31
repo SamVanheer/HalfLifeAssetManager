@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <cstring>
 #include <sstream>
 
 #include "formats/studiomodel/StudioModel.hpp"
