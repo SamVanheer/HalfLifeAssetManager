@@ -39,7 +39,7 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 	//connect(editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::ActiveConfigurationChanged, this, &FileListPanel::UpdateCurrentRootPath);
 	connect(_ui.Filters, qOverload<int>(&QComboBox::currentIndexChanged), this, &FileListPanel::OnFilterChanged);
 
-	connect(_ui.HideFilesThatDontMatch, &QCheckBox::stateChanged, [=]
+	connect(_ui.HideFilesThatDontMatch, &QCheckBox::stateChanged, [this, editorContext]
 		{
 			_model->setNameFilterDisables(!_ui.HideFilesThatDontMatch->isChecked());
 
@@ -51,7 +51,7 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 
 	connect(_ui.FileView, &QTreeView::activated, this, &FileListPanel::OnFileSelected);
 
-	connect(_ui.BrowseRoot, &QPushButton::clicked, [=]
+	connect(_ui.BrowseRoot, &QPushButton::clicked, [this]
 		{
 			const QString fileName{QFileDialog::getExistingDirectory(this, {}, _ui.Root->text())};
 
