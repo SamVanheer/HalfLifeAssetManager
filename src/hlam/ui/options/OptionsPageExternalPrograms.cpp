@@ -38,6 +38,8 @@ OptionsPageExternalProgramsWidget::OptionsPageExternalProgramsWidget(
 
 	auto externalPrograms = _applicationSettings->GetExternalPrograms();
 
+	_ui.PromptExternalProgramLaunch->setChecked(externalPrograms->PromptExternalProgramLaunch);
+
 	auto keys = externalPrograms->GetMap().keys();
 
 	keys.sort();
@@ -93,6 +95,8 @@ OptionsPageExternalProgramsWidget::~OptionsPageExternalProgramsWidget() = defaul
 void OptionsPageExternalProgramsWidget::ApplyChanges()
 {
 	auto externalPrograms = _applicationSettings->GetExternalPrograms();
+
+	externalPrograms->PromptExternalProgramLaunch = _ui.PromptExternalProgramLaunch->isChecked();
 
 	for (int row = 0; row < _ui.Programs->rowCount(); ++row)
 	{

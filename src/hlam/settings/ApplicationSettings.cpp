@@ -9,21 +9,30 @@
 void ExternalProgramSettings::LoadSettings()
 {
 	_settings->beginGroup("ExternalPrograms");
+	PromptExternalProgramLaunch = _settings->value(
+		"PromptExternalProgramLaunch", DefaultPromptExternalProgramLaunch).toBool();
+
+	_settings->beginGroup("Programs");
 	// Load all settings that are in the config file even if they haven't been added yet.
 	for (auto& program : _settings->childKeys())
 	{
 		SetProgram(program, _settings->value(program, QString{}).toString());
 	}
 	_settings->endGroup();
+	_settings->endGroup();
 }
 
 void ExternalProgramSettings::SaveSettings()
 {
 	_settings->beginGroup("ExternalPrograms");
+	_settings->setValue("PromptExternalProgramLaunch", PromptExternalProgramLaunch);
+
+	_settings->beginGroup("Programs");
 	for (auto& program : _externalPrograms.keys())
 	{
 		_settings->setValue(program, _externalPrograms[program].ExecutablePath);
 	}
+	_settings->endGroup();
 	_settings->endGroup();
 }
 
@@ -66,8 +75,6 @@ void ApplicationSettings::LoadSettings()
 	_settings->beginGroup("General");
 	PauseAnimationsOnTimelineClick = _settings->value("PauseAnimationsOnTimelineClick", DefaultPauseAnimationsOnTimelineClick).toBool();
 	OneAssetAtATime = _settings->value("OneAssetAtATime", DefaultOneAssetAtATime).toBool();
-	PromptExternalProgramLaunch = _settings->value(
-		"PromptExternalProgramLaunch", DefaultPromptExternalProgramLaunch).toBool();
 	_tickRate = std::clamp(_settings->value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
 
 	GuidelinesAspectRatio = static_cast<::GuidelinesAspectRatio>(_settings->value(
@@ -130,7 +137,6 @@ void ApplicationSettings::SaveSettings()
 	_settings->beginGroup("General");
 	_settings->setValue("PauseAnimationsOnTimelineClick", PauseAnimationsOnTimelineClick);
 	_settings->setValue("OneAssetAtATime", OneAssetAtATime);
-	_settings->setValue("PromptExternalProgramLaunch", PromptExternalProgramLaunch);
 	_settings->setValue("TickRate", _tickRate);
 	_settings->setValue("GuidelinesAspectRatio", static_cast<int>(GuidelinesAspectRatio));
 	_settings->endGroup();

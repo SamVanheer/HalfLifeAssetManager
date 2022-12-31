@@ -47,7 +47,6 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 	_ui.PauseAnimationsOnTimelineClick->setChecked(_applicationSettings->PauseAnimationsOnTimelineClick);
 	_ui.AllowTabCloseWithMiddleClick->setChecked(_applicationSettings->ShouldAllowTabCloseWithMiddleClick());
 	_ui.OneAssetAtATime->setChecked(_applicationSettings->OneAssetAtATime);
-	_ui.PromptExternalProgramLaunch->setChecked(_applicationSettings->PromptExternalProgramLaunch);
 	_ui.MaxRecentFiles->setValue(_applicationSettings->GetRecentFiles()->GetMaxRecentFiles());
 	_ui.TickRate->setValue(_applicationSettings->GetTickRate());
 	_ui.InvertMouseX->setChecked(_applicationSettings->ShouldInvertMouseX());
@@ -74,7 +73,6 @@ void OptionsPageGeneralWidget::ApplyChanges()
 	_applicationSettings->PauseAnimationsOnTimelineClick = _ui.PauseAnimationsOnTimelineClick->isChecked();
 	_applicationSettings->SetAllowTabCloseWithMiddleClick(_ui.AllowTabCloseWithMiddleClick->isChecked());
 	_applicationSettings->OneAssetAtATime = _ui.OneAssetAtATime->isChecked();
-	_applicationSettings->PromptExternalProgramLaunch = _ui.PromptExternalProgramLaunch->isChecked();
 	_applicationSettings->GetRecentFiles()->SetMaxRecentFiles(_ui.MaxRecentFiles->value());
 	_applicationSettings->SetTickRate(_ui.TickRate->value());
 	_applicationSettings->SetInvertMouseX(_ui.InvertMouseX->isChecked());

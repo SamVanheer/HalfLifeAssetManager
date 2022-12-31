@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>688</width>
-    <height>600</height>
+    <height>810</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,6 +35,16 @@
         <string>External programs are launched by Asset Manager when needed to complete certain tasks such as compiling models or opening models in third party model viewers.</string>
        </property>
        <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="PromptExternalProgramLaunch">
+       <property name="text">
+        <string>Prompt before launching external programs</string>
+       </property>
+       <property name="checked">
         <bool>true</bool>
        </property>
       </widget>

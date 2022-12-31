@@ -47,6 +47,8 @@ struct ExternalProgram
 class ExternalProgramSettings final : public BaseSettings
 {
 public:
+	static constexpr bool DefaultPromptExternalProgramLaunch{true};
+
 	using BaseSettings::BaseSettings;
 
 	void LoadSettings() override;
@@ -62,6 +64,8 @@ public:
 
 	void SetProgram(const QString& key, const QString& value);
 
+	bool PromptExternalProgramLaunch{DefaultPromptExternalProgramLaunch};
+
 private:
 	QMap<QString, ExternalProgram> _externalPrograms;
 };
@@ -76,7 +80,6 @@ public:
 	static constexpr bool DefaultTransparentScreenshots{false};
 	static constexpr bool DefaultAllowTabCloseWithMiddleClick{false};
 	static constexpr bool DefaultOneAssetAtATime{false};
-	static constexpr bool DefaultPromptExternalProgramLaunch{true};
 
 	static constexpr int DefaultTickRate{60};
 	static constexpr int MinimumTickRate{1};
@@ -250,7 +253,6 @@ signals:
 public:
 	bool PauseAnimationsOnTimelineClick{DefaultPauseAnimationsOnTimelineClick};
 	bool OneAssetAtATime{DefaultOneAssetAtATime};
-	bool PromptExternalProgramLaunch{DefaultPromptExternalProgramLaunch};
 	bool TransparentScreenshots{DefaultTransparentScreenshots};
 
 	GuidelinesAspectRatio GuidelinesAspectRatio{DefaultGuidelinesAspectRatio};
