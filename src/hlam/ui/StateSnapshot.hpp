@@ -33,7 +33,7 @@ private:
 
 inline QStringList StateSnapshot::AllKeys() const
 {
-	return _values.uniqueKeys();
+	return _values.keys();
 }
 
 inline bool StateSnapshot::Contains(const QString& key) const
