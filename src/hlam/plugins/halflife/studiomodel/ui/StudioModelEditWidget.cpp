@@ -130,7 +130,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	flagsDock->setVisible(false);
 	transformDock->setVisible(false);
 
-	transformDock->toggleViewAction()->setShortcut(QKeySequence{Qt::CTRL + Qt::Key::Key_M});
+	transformDock->toggleViewAction()->setShortcut(QKeySequence{Qt::CTRL + static_cast<int>(Qt::Key::Key_M)});
 
 	connect(_view, &StudioModelView::SceneIndexChanged, this, &StudioModelEditWidget::SceneIndexChanged);
 	connect(_view, &StudioModelView::PoseChanged, this, &StudioModelEditWidget::PoseChanged);

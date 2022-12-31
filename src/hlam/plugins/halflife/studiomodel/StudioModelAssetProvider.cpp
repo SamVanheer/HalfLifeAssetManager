@@ -74,13 +74,13 @@ QMenu* StudioModelAssetProvider::CreateToolMenu()
 {
 	auto menu = new QMenu("StudioModel");
 
-	menu->addAction("Compile Model...", [=]
+	menu->addAction("Compile Model...", [this]
 		{
 			StudioModelCompilerFrontEnd compiler{_editorContext};
 	compiler.exec();
 		});
 
-	menu->addAction("Decompile Model...", [=]
+	menu->addAction("Decompile Model...", [this]
 		{
 			StudioModelDecompilerFrontEnd decompiler{_editorContext};
 	decompiler.exec();
@@ -165,14 +165,14 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 		{
 			GetCurrentAsset()->OnPreviousCamera();
 		},
-		QKeySequence{Qt::CTRL + Qt::Key::Key_U});
+		QKeySequence{Qt::CTRL + static_cast<int>(Qt::Key::Key_U)});
 
 	menu->addAction("Next Camera", this,
 		[this]()
 		{
 			GetCurrentAsset()->OnNextCamera();
 		},
-		QKeySequence{Qt::CTRL + Qt::Key::Key_I});
+		QKeySequence{Qt::CTRL + static_cast<int>(Qt::Key::Key_I)});
 
 	menu->addSeparator();
 
