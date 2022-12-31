@@ -128,6 +128,21 @@ int ToolApplication::Run(int argc, char* argv[])
 				return args;
 			}());
 
+		const auto applicationSettings = std::make_shared<ApplicationSettings>(
+			CreateSettings(programName, commandLine.IsPortable).release());
+
+		auto settings = applicationSettings->GetSettings();
+
+		applicationSettings->LoadSettings();
+
+		ConfigureOpenGL(*applicationSettings);
+
+		QApplication app(argc, argv);
+
+		_application = &app;
+
+		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
+
 		LogFileName = QApplication::applicationDirPath() + QDir::separator() + LogBaseFileName;
 
 		QFile::remove(LogFileName);
@@ -137,25 +152,10 @@ int ToolApplication::Run(int argc, char* argv[])
 			qInstallMessageHandler(&FileMessageOutput);
 		}
 
-		const auto applicationSettings = std::make_shared<ApplicationSettings>(
-			CreateSettings(programName, commandLine.IsPortable).release());
-
-		auto settings = applicationSettings->GetSettings();
-
-		applicationSettings->LoadSettings();
-
 		if (CheckSingleInstance(programName, commandLine.FileName, *applicationSettings))
 		{
 			return EXIT_SUCCESS;
 		}
-
-		ConfigureOpenGL(*applicationSettings);
-
-		QApplication app(argc, argv);
-
-		_application = &app;
-
-		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
 		{
 			const auto openGLFormat = QOpenGLContext::globalShareContext()->format();
