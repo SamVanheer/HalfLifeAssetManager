@@ -56,5 +56,7 @@ signals:
 
 	void TextureNameChanged(int index);
 	void TextureFlagsChanged(int index);
+
+	void SkyLightChanged();
 };
 }

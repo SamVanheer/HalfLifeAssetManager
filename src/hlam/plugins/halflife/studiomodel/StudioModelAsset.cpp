@@ -496,6 +496,80 @@ void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
 	}
 }
 
+bool StudioModelAsset::HandleMouseInput(QMouseEvent* event)
+{
+	if (GetCurrentScene() != GetScene())
+	{
+		return false;
+	}
+
+	if (event->modifiers() & Qt::KeyboardModifier::ControlModifier
+		&& event->buttons() & Qt::MouseButton::LeftButton)
+	{
+		if (event->button() == Qt::MouseButton::LeftButton)
+		{
+			_lightVectorCoordinates.x = event->x();
+			_lightVectorCoordinates.y = event->y();
+		}
+		else
+		{
+			glm::vec3 direction = GetScene()->SkyLight.Direction;
+
+			const float DELTA = 0.05f;
+
+			if (event->modifiers() & Qt::KeyboardModifier::ShiftModifier)
+			{
+				if (_lightVectorCoordinates.x <= event->x())
+				{
+					direction.z += DELTA;
+				}
+				else
+				{
+					direction.z -= DELTA;
+				}
+
+				_lightVectorCoordinates.x = event->x();
+
+				direction.z = std::clamp(direction.z, -1.0f, 1.0f);
+			}
+			else
+			{
+				if (_lightVectorCoordinates.x <= event->x())
+				{
+					direction.x += DELTA;
+				}
+				else
+				{
+					direction.x -= DELTA;
+				}
+
+				if (_lightVectorCoordinates.y <= event->y())
+				{
+					direction.y += DELTA;
+				}
+				else
+				{
+					direction.y -= DELTA;
+				}
+
+				_lightVectorCoordinates.x = event->x();
+				_lightVectorCoordinates.y = event->y();
+
+				direction.x = std::clamp(direction.x, -1.0f, 1.0f);
+				direction.y = std::clamp(direction.y, -1.0f, 1.0f);
+			}
+
+			GetScene()->SkyLight.Direction = direction;
+
+			emit GetModelData()->SkyLightChanged();
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 void StudioModelAsset::OnTick()
 {
 	//TODO: update asset-local world time
@@ -576,6 +650,12 @@ void StudioModelAsset::OnSceneIndexChanged(int index)
 
 void StudioModelAsset::OnSceneWidgetMouseEvent(QMouseEvent* event)
 {
+	// Check if we handle this locally first.
+	if (HandleMouseInput(event))
+	{
+		return;
+	}
+
 	if (_currentScene)
 	{
 		if (auto cameraOperator = _currentScene->GetCurrentCamera(); cameraOperator)

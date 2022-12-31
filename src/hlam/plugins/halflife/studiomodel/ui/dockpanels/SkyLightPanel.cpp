@@ -6,6 +6,7 @@
 #include "settings/ColorSettings.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/ui/StudioModelData.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/SkyLightPanel.hpp"
 
 #include "utility/mathlib.hpp"
@@ -42,22 +43,36 @@ void SkyLightPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 
 void SkyLightPanel::OnAssetChanged(StudioModelAsset* asset)
 {
-	const QSignalBlocker xAngle{_ui.XAngle};
-	const QSignalBlocker yAngle{_ui.YAngle};
-	const QSignalBlocker ambient{_ui.Ambient};
-	const QSignalBlocker shade{_ui.Shade};
+	if (_modelData)
+	{
+		_modelData->DisconnectFromAll(this);
+	}
 
-	auto scene = asset->GetScene();
+	_modelData = asset->GetModelData();
 
-	const glm::vec3 angles{VectorToAngles(scene->SkyLight.Direction)};
+	const auto lambda = [this]()
+	{
+		const QSignalBlocker xAngle{_ui.XAngle};
+		const QSignalBlocker yAngle{_ui.YAngle};
+		const QSignalBlocker ambient{_ui.Ambient};
+		const QSignalBlocker shade{_ui.Shade};
 
-	_ui.XAngle->setValue(angles.x);
-	_ui.YAngle->setValue(angles.y);
+		auto scene = _provider->GetCurrentAsset()->GetScene();
 
-	SetButtonColor(VectorToColor(scene->SkyLight.Color));
+		const glm::vec3 angles{VectorToAngles(scene->SkyLight.Direction)};
 
-	_ui.Ambient->setValue(scene->SkyLight.Ambient);
-	_ui.Shade->setValue(scene->SkyLight.Shade);
+		_ui.XAngle->setValue(angles.x);
+		_ui.YAngle->setValue(angles.y);
+
+		SetButtonColor(VectorToColor(scene->SkyLight.Color));
+
+		_ui.Ambient->setValue(scene->SkyLight.Ambient);
+		_ui.Shade->setValue(scene->SkyLight.Shade);
+	};
+
+	lambda();
+
+	connect(_modelData, &StudioModelData::SkyLightChanged, this, lambda);
 }
 
 void SkyLightPanel::OnAnglesChanged()

@@ -3,6 +3,8 @@
 #include <memory>
 #include <vector>
 
+#include <glm/vec2.hpp>
+
 #include "assets/Assets.hpp"
 
 #include "formats/studiomodel/EditableStudioModel.hpp"
@@ -154,6 +156,8 @@ private:
 	void SaveEntityToSnapshot(StateSnapshot* snapshot);
 	void LoadEntityFromSnapshot(StateSnapshot* snapshot);
 
+	bool HandleMouseInput(QMouseEvent* event);
+
 signals:
 	void Tick();
 
@@ -248,5 +252,7 @@ private:
 
 	//TODO: this is temporarily put here, but needs to be put somewhere else eventually
 	Pose _pose = Pose::Sequences;
+
+	glm::vec2 _lightVectorCoordinates{0};
 };
 }

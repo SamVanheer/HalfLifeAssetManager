@@ -56,6 +56,8 @@ void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
 	_dummyAsset = std::make_unique<StudioModelAsset>(
 		"", _editorContext, this, std::make_unique<studiomdl::EditableStudioModel>());
 
+	_currentAsset = GetDummyAsset();
+
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAssetProvider::OnTick);
 	connect(_editorContext, &EditorContext::ActiveAssetChanged, this, &StudioModelAssetProvider::OnActiveAssetChanged);
 }

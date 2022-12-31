@@ -10,6 +10,7 @@ namespace studiomodel
 {
 class StudioModelAsset;
 class StudioModelAssetProvider;
+class StudioModelData;
 
 class SkyLightPanel final : public QWidget
 {
@@ -37,5 +38,6 @@ private slots:
 private:
 	Ui_SkyLightPanel _ui;
 	StudioModelAssetProvider* const _provider;
+	StudioModelData* _modelData{};
 };
 }
