@@ -116,7 +116,17 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		ConfigureApplication(programName);
 
-		const auto commandLine = ParseCommandLine(QStringList(argv, argv + argc));
+		const auto commandLine = ParseCommandLine([&]()
+			{
+				QStringList args;
+
+				for (int i = 0; i < argc; ++i)
+				{
+					args << argv[i];
+				}
+
+				return args;
+			}());
 
 		LogFileName = QApplication::applicationDirPath() + QDir::separator() + LogBaseFileName;
 
