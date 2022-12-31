@@ -18,7 +18,7 @@
 void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	auto context = GetContext();
-	auto settings = context->Settings;
+	auto settings = context->StudioSettings;
 
 	if (ShowGround)
 	{

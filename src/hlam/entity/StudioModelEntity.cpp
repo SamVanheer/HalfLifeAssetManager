@@ -41,7 +41,7 @@ void StudioModelEntity::Spawn()
 void StudioModelEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	auto asset = GetContext()->Asset;
-	auto settings = GetContext()->Settings;
+	auto settings = GetContext()->StudioSettings;
 
 	// setup stencil buffer and draw mirror
 	if (asset->GetGroundEntity()->MirrorOnGround)
@@ -143,14 +143,14 @@ void StudioModelEntity::CreateDeviceObjects(graphics::SceneContext& sc)
 {
 	auto model = GetEditableModel();
 
-	model->CreateTextures(*sc.TextureLoader);
+	model->CreateTextures(*sc.TexLoader);
 }
 
 void StudioModelEntity::DestroyDeviceObjects(graphics::SceneContext& sc)
 {
 	auto model = GetEditableModel();
 
-	model->DeleteTextures(*sc.TextureLoader);
+	model->DeleteTextures(*sc.TexLoader);
 }
 
 float StudioModelEntity::GetRenderDistance(const glm::vec3& cameraOrigin) const

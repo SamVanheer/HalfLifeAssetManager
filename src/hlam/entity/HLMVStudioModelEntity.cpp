@@ -39,11 +39,11 @@ void HLMVStudioModelEntity::HandleAnimEvent(const AnimEvent& event)
 	case SCRIPT_EVENT_SOUND_VOICE:
 	case SCRIPT_CLIENT_EVENT_SOUND:
 	{
-		if (GetContext()->ApplicationSettings->PlaySounds)
+		if (GetContext()->AppSettings->PlaySounds)
 		{
 			int pitch = PITCH_NORM;
 
-			if (GetContext()->ApplicationSettings->FramerateAffectsPitch)
+			if (GetContext()->AppSettings->FramerateAffectsPitch)
 			{
 				pitch = static_cast<int>(pitch * GetFrameRate());
 			}

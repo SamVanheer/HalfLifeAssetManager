@@ -47,23 +47,23 @@ struct EntityContext final
 	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
 	sprite::ISpriteRenderer* const SpriteRenderer;
 	ISoundSystem* const SoundSystem;
-	ApplicationSettings* const ApplicationSettings;
-	StudioModelSettings* const Settings;
+	ApplicationSettings* const AppSettings;
+	StudioModelSettings* const StudioSettings;
 
 	EntityContext(studiomodel::StudioModelAsset* asset,
 		WorldTime* time,
 		studiomdl::IStudioModelRenderer* studioModelRenderer,
 		sprite::ISpriteRenderer* spriteRenderer,
 		ISoundSystem* soundSystem,
-		::ApplicationSettings* applicationSettings,
-		StudioModelSettings* settings)
+		::ApplicationSettings* appSettings,
+		StudioModelSettings* studioSettings)
 		: Asset(asset)
 		, Time(time)
 		, SpriteRenderer(spriteRenderer)
 		, StudioModelRenderer(studioModelRenderer)
 		, SoundSystem(soundSystem)
-		, ApplicationSettings(applicationSettings)
-		, Settings(settings)
+		, AppSettings(appSettings)
+		, StudioSettings(studioSettings)
 	{
 	}
 };

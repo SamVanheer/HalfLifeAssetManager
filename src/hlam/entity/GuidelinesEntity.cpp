@@ -78,7 +78,7 @@ void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		sc.OpenGLFunctions->glEnd();
 
-		const float flWidth = sc.WindowHeight * GetAspectRatio(GetContext()->ApplicationSettings->GuidelinesAspectRatio);
+		const float flWidth = sc.WindowHeight * GetAspectRatio(GetContext()->AppSettings->GuidelinesAspectRatio);
 
 		sc.OpenGLFunctions->glLineWidth(GUIDELINES_EDGE_WIDTH);
 

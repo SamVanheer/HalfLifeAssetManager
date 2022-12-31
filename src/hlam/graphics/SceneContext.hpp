@@ -14,13 +14,13 @@ class SceneContext final
 public:
 	SceneContext(QOpenGLFunctions_1_1* openglFunctions, TextureLoader* textureLoader)
 		: OpenGLFunctions(openglFunctions)
-		, TextureLoader(textureLoader)
+		, TexLoader(textureLoader)
 	{
 
 	}
 
 	QOpenGLFunctions_1_1* const OpenGLFunctions;
-	TextureLoader* const TextureLoader;
+	TextureLoader* const TexLoader;
 
 	int WindowWidth = 0;
 	int WindowHeight = 0;

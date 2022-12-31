@@ -82,7 +82,7 @@ void Scene::Tick()
 
 void Scene::Draw(SceneContext& sc)
 {
-	auto applicationSettings = _entityContext->ApplicationSettings;
+	auto applicationSettings = _entityContext->AppSettings;
 	auto colors = _entityContext->Asset->GetEditorContext()->GetColorSettings();
 
 	const auto backgroundColor = colors->GetColor(studiomodel::BackgroundColor);
