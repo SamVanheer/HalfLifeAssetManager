@@ -12,7 +12,7 @@ class ApplicationBuilder final
 {
 public:
 	QApplication* const Application;
-	ApplicationSettings* const ApplicationSettings;
-	AssetProviderRegistry* const AssetProviderRegistry;
-	OptionsPageRegistry* const OptionsPageRegistry;
+	ApplicationSettings* const Settings;
+	AssetProviderRegistry* const AssetProviders;
+	OptionsPageRegistry* const OptionsPages;
 };

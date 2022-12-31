@@ -75,9 +75,9 @@ private:
 
 bool Source1AssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 {
-	builder.ApplicationSettings->GetExternalPrograms()->AddProgram(Source1ModelViewerFileNameKey, "Source 1 Model Viewer");
+	builder.Settings->GetExternalPrograms()->AddProgram(Source1ModelViewerFileNameKey, "Source 1 Model Viewer");
 
-	auto source1StudioModelAssetProvider = std::make_unique<Source1StudioModelAssetProvider>(builder.ApplicationSettings);
-	builder.AssetProviderRegistry->AddProvider(std::move(source1StudioModelAssetProvider));
+	auto source1StudioModelAssetProvider = std::make_unique<Source1StudioModelAssetProvider>(builder.Settings);
+	builder.AssetProviders->AddProvider(std::move(source1StudioModelAssetProvider));
 	return true;
 }

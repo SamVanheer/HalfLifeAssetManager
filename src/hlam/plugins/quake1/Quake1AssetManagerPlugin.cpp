@@ -69,10 +69,10 @@ private:
 
 bool Quake1AssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 {
-	builder.ApplicationSettings->GetExternalPrograms()->AddProgram(Quake1ModelViewerFileNameKey, "Quake 1 Model Viewer");
+	builder.Settings->GetExternalPrograms()->AddProgram(Quake1ModelViewerFileNameKey, "Quake 1 Model Viewer");
 
-	auto quake1AliasModelAssetProvider = std::make_unique<Quake1AliasModelAssetProvider>(builder.ApplicationSettings);
-	builder.AssetProviderRegistry->AddProvider(std::move(quake1AliasModelAssetProvider));
+	auto quake1AliasModelAssetProvider = std::make_unique<Quake1AliasModelAssetProvider>(builder.Settings);
+	builder.AssetProviders->AddProvider(std::move(quake1AliasModelAssetProvider));
 
 	return true;
 }
