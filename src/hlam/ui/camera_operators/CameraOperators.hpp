@@ -114,7 +114,7 @@ inline void CameraOperators::ChangeCamera(bool next)
 	}
 	else
 	{
-		auto it = std::find_if(_cameraOperators.begin(), _cameraOperators.end(), [=](const auto& candidate)
+		auto it = std::find_if(_cameraOperators.begin(), _cameraOperators.end(), [this](const auto& candidate)
 			{
 				return candidate == _current;
 			});
