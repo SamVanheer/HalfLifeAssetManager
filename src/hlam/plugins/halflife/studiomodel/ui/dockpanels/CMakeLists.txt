@@ -34,9 +34,6 @@ target_sources(HLAM
 		ModelDisplayPanel.cpp
 		ModelDisplayPanel.hpp
 		ModelDisplayPanel.ui
-		ModelInfoPanel.cpp
-		ModelInfoPanel.hpp
-		ModelInfoPanel.ui
 		ScenePanel.cpp
 		ScenePanel.hpp
 		ScenePanel.ui

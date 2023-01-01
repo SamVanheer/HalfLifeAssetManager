@@ -28,7 +28,6 @@
 #include "plugins/halflife/studiomodel/ui/dockpanels/LightingPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/ModelDataPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/ModelDisplayPanel.hpp"
-#include "plugins/halflife/studiomodel/ui/dockpanels/ModelInfoPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/ScenePanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/SequencesPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/TexturesPanel.hpp"
@@ -88,7 +87,6 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	addDockPanel(_camerasPanel, "Cameras");
 	addDockPanel(new ScenePanel(_provider), "Scene");
-	addDockPanel(new ModelInfoPanel(_provider), "Model Info");
 	auto modelDisplayDock = addDockPanel(new ModelDisplayPanel(_provider), "Model Display");
 	addDockPanel(new LightingPanel(_provider), "Lighting");
 	addDockPanel(new SequencesPanel(_provider), "Sequences");

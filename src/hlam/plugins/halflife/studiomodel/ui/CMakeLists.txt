@@ -16,4 +16,5 @@ target_sources(HLAM
 		StudioModelView.ui)
 
 add_subdirectory(compiler)
+add_subdirectory(dialogs)
 add_subdirectory(dockpanels)
