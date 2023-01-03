@@ -97,7 +97,7 @@ void ApplicationSettings::LoadSettings()
 	FramerateAffectsPitch = _settings->value("FramerateAffectsPitch", DefaultFramerateAffectsPitch).toBool();
 	_settings->endGroup();
 
-	_settings->beginGroup("Graphics");
+	_settings->beginGroup("Video");
 
 	_powerOf2Textures = _settings->value("PowerOf2Textures", DefaultPowerOf2Textures).toBool();
 
@@ -154,7 +154,7 @@ void ApplicationSettings::SaveSettings()
 	_settings->setValue("FramerateAffectsPitch", FramerateAffectsPitch);
 	_settings->endGroup();
 
-	_settings->beginGroup("Graphics");
+	_settings->beginGroup("Video");
 	_settings->setValue("PowerOf2Textures", _powerOf2Textures);
 
 	_settings->beginGroup("TextureFilters");
@@ -201,12 +201,12 @@ void ApplicationSettings::SetAllowTabCloseWithMiddleClick(bool value)
 
 bool ApplicationSettings::ShouldEnableVSync() const
 {
-	return _settings->value("Graphics/EnableVSync", DefaultEnableVSync).toBool();
+	return _settings->value("Video/EnableVSync", DefaultEnableVSync).toBool();
 }
 
 void ApplicationSettings::SetEnableVSync(bool value)
 {
-	_settings->setValue("Graphics/EnableVSync", value);
+	_settings->setValue("Video/EnableVSync", value);
 }
 
 QString ApplicationSettings::GetSavedPath(const QString& pathName)

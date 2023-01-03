@@ -37,9 +37,6 @@
     </widget>
     <addaction name="ActionRefresh"/>
     <addaction name="separator"/>
-    <addaction name="ActionPlaySounds"/>
-    <addaction name="ActionFramerateAffectsPitch"/>
-    <addaction name="separator"/>
     <addaction name="menuGuidelines_Aspect_Ratio"/>
     <addaction name="separator"/>
     <addaction name="ActionOptions"/>
@@ -87,9 +84,9 @@
      <string>Edit</string>
     </property>
    </widget>
-   <widget class="QMenu" name="MenuGraphics">
+   <widget class="QMenu" name="MenuVideo">
     <property name="title">
-     <string>Graphics</string>
+     <string>Video</string>
     </property>
     <widget class="QMenu" name="MenuMinFilter">
      <property name="title">
@@ -129,10 +126,18 @@
     <addaction name="separator"/>
     <addaction name="ActionTransparentScreenshots"/>
    </widget>
+   <widget class="QMenu" name="menuAudio">
+    <property name="title">
+     <string>Audio</string>
+    </property>
+    <addaction name="ActionPlaySounds"/>
+    <addaction name="ActionFramerateAffectsPitch"/>
+   </widget>
    <addaction name="MenuFile"/>
    <addaction name="MenuEdit"/>
    <addaction name="MenuView"/>
-   <addaction name="MenuGraphics"/>
+   <addaction name="menuAudio"/>
+   <addaction name="MenuVideo"/>
    <addaction name="MenuTools"/>
    <addaction name="MenuHelp"/>
   </widget>
