@@ -10,6 +10,8 @@
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/objects/GroundPanel.hpp"
 
+#include "ui/EditorContext.hpp"
+
 namespace studiomodel
 {
 GroundPanel::GroundPanel(StudioModelAssetProvider* provider)
@@ -113,11 +115,16 @@ void GroundPanel::OnTextureChanged()
 
 void GroundPanel::OnBrowseTexture()
 {
-	const QString fileName{QFileDialog::getOpenFileName(nullptr, {}, {}, qt::GetImagesFileFilter())};
+	const QString PathKey{"GroundPath"};
+
+	const QString fileName{QFileDialog::getOpenFileName(nullptr, {},
+		_provider->GetCurrentAsset()->GetEditorContext()->GetPath(PathKey),
+		qt::GetImagesFileFilter())};
 
 	if (!fileName.isEmpty())
 	{
 		_ui.GroundTexture->setText(fileName);
+		_provider->GetCurrentAsset()->GetEditorContext()->SetPath(PathKey, fileName);
 	}
 }
 
