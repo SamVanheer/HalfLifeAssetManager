@@ -23,4 +23,5 @@ public:
 	virtual void Draw(graphics::SceneContext& sc, RenderPasses renderPass) override;
 
 	bool ShowGuidelines = false;
+	bool ShowOffscreenAreas = true;
 };

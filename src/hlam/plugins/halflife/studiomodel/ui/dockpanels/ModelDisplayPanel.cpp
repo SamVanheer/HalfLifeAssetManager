@@ -11,6 +11,10 @@
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/ModelDisplayPanel.hpp"
 
+#include "settings/ApplicationSettings.hpp"
+
+#include "ui/EditorContext.hpp"
+
 namespace studiomodel
 {
 ModelDisplayPanel::ModelDisplayPanel(StudioModelAssetProvider* provider)
@@ -40,13 +44,30 @@ ModelDisplayPanel::ModelDisplayPanel(StudioModelAssetProvider* provider)
 	connect(_ui.ShowAxes, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnShowAxesChanged);
 
 	connect(_ui.ShowNormals, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnShowNormalsChanged);
-	connect(_ui.ShowCrosshair, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnShowCrosshairChanged);
-	connect(_ui.ShowGuidelines, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnShowGuidelinesChanged);
 	connect(_ui.ShowPlayerHitbox, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnShowPlayerHitboxChanged);
 
 	connect(_ui.MirrorOnXAxis, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnMirrorXAxisChanged);
 	connect(_ui.MirrorOnYAxis, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnMirrorYAxisChanged);
 	connect(_ui.MirrorOnZAxis, &QCheckBox::stateChanged, this, &ModelDisplayPanel::OnMirrorZAxisChanged);
+
+	connect(_ui.ShowCrosshair, &QCheckBox::stateChanged, this, [this]
+		{
+			_asset->GetCrosshairEntity()->ShowCrosshair = _ui.ShowCrosshair->isChecked();
+		});
+	connect(_ui.ShowGuidelines, &QCheckBox::stateChanged, this, [this]
+		{
+			_asset->GetGuidelinesEntity()->ShowGuidelines = _ui.ShowGuidelines->isChecked();
+		});
+	connect(_ui.ShowOffscreenAreas, &QCheckBox::stateChanged, this, [this]
+		{
+			_asset->GetGuidelinesEntity()->ShowOffscreenAreas = _ui.ShowOffscreenAreas->isChecked();
+		});
+	connect(_ui.AspectRatio, qOverload<int>(&QComboBox::currentIndexChanged), this,
+		[this](int index)
+		{
+			auto settings = _provider->GetCurrentAsset()->GetEditorContext()->GetApplicationSettings();
+			settings->AspectRatio = static_cast<AspectRatioOption>(index);
+		});
 }
 
 ModelDisplayPanel::~ModelDisplayPanel() = default;
@@ -75,12 +96,13 @@ void ModelDisplayPanel::OnAssetChanged(StudioModelAsset* asset)
 	const QSignalBlocker shadowZFighting{_ui.FixShadowZFighting};
 	const QSignalBlocker axes{_ui.ShowAxes};
 	const QSignalBlocker normals{_ui.ShowNormals};
-	const QSignalBlocker crosshair{_ui.ShowCrosshair};
-	const QSignalBlocker guidelines{_ui.ShowGuidelines};
 	const QSignalBlocker playerHitbox{_ui.ShowPlayerHitbox};
 	const QSignalBlocker mirrorX{_ui.MirrorOnXAxis};
 	const QSignalBlocker mirrorY{_ui.MirrorOnYAxis};
 	const QSignalBlocker mirrorZ{_ui.MirrorOnZAxis};
+	const QSignalBlocker crosshair{_ui.ShowCrosshair};
+	const QSignalBlocker guidelines{_ui.ShowGuidelines};
+	const QSignalBlocker aspectRatio{_ui.AspectRatio};
 
 	_ui.RenderModeComboBox->setCurrentIndex(static_cast<int>(_asset->CurrentRenderMode));
 	_ui.OpacitySlider->setValue(static_cast<int>(entity->GetTransparency() * 100));
@@ -96,13 +118,16 @@ void ModelDisplayPanel::OnAssetChanged(StudioModelAsset* asset)
 	_ui.FixShadowZFighting->setChecked(_asset->FixShadowZFighting);
 	_ui.ShowAxes->setChecked(_asset->GetAxesEntity()->ShowAxes);
 	_ui.ShowNormals->setChecked(_asset->ShowNormals);
-	_ui.ShowCrosshair->setChecked(_asset->GetCrosshairEntity()->ShowCrosshair);
-	_ui.ShowGuidelines->setChecked(_asset->GetGuidelinesEntity()->ShowGuidelines);
 	_ui.ShowPlayerHitbox->setChecked(_asset->GetPlayerHitboxEntity()->ShowPlayerHitbox);
 
 	_ui.MirrorOnXAxis->setChecked(entity->GetScale().x == -1);
 	_ui.MirrorOnYAxis->setChecked(entity->GetScale().y == -1);
 	_ui.MirrorOnZAxis->setChecked(entity->GetScale().z == -1);
+
+	_ui.ShowCrosshair->setChecked(_asset->GetCrosshairEntity()->ShowCrosshair);
+	_ui.ShowGuidelines->setChecked(_asset->GetGuidelinesEntity()->ShowGuidelines);
+	_ui.ShowOffscreenAreas->setChecked(_asset->GetGuidelinesEntity()->ShowOffscreenAreas);
+	_ui.AspectRatio->setCurrentIndex(static_cast<int>(_asset->GetEditorContext()->GetApplicationSettings()->AspectRatio));
 }
 
 void ModelDisplayPanel::OnRenderModeChanged(int index)
@@ -175,16 +200,6 @@ void ModelDisplayPanel::OnShowAxesChanged()
 void ModelDisplayPanel::OnShowNormalsChanged()
 {
 	_asset->ShowNormals = _ui.ShowNormals->isChecked();
-}
-
-void ModelDisplayPanel::OnShowCrosshairChanged()
-{
-	_asset->GetCrosshairEntity()->ShowCrosshair = _ui.ShowCrosshair->isChecked();
-}
-
-void ModelDisplayPanel::OnShowGuidelinesChanged()
-{
-	_asset->GetGuidelinesEntity()->ShowGuidelines = _ui.ShowGuidelines->isChecked();
 }
 
 void ModelDisplayPanel::OnShowPlayerHitboxChanged()

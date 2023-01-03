@@ -37,8 +37,6 @@ private slots:
 	void OnShowAxesChanged();
 
 	void OnShowNormalsChanged();
-	void OnShowCrosshairChanged();
-	void OnShowGuidelinesChanged();
 	void OnShowPlayerHitboxChanged();
 
 	void OnMirrorXAxisChanged();

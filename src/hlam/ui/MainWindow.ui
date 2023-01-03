@@ -27,17 +27,7 @@
     <property name="title">
      <string>Tools</string>
     </property>
-    <widget class="QMenu" name="menuGuidelines_Aspect_Ratio">
-     <property name="title">
-      <string>Guidelines Aspect Ratio</string>
-     </property>
-     <addaction name="Action4_3"/>
-     <addaction name="Action16_9"/>
-     <addaction name="Action16_10"/>
-    </widget>
     <addaction name="ActionRefresh"/>
-    <addaction name="separator"/>
-    <addaction name="menuGuidelines_Aspect_Ratio"/>
     <addaction name="separator"/>
     <addaction name="ActionOptions"/>
    </widget>

@@ -77,11 +77,9 @@ void ApplicationSettings::LoadSettings()
 	OneAssetAtATime = _settings->value("OneAssetAtATime", DefaultOneAssetAtATime).toBool();
 	_tickRate = std::clamp(_settings->value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
 
-	GuidelinesAspectRatio = static_cast<AspectRatioOption>(_settings->value(
-		"GuidelinesAspectRatio", static_cast<int>(AspectRatioOption::SixteenNine)).toInt());
-
-	GuidelinesAspectRatio = std::clamp(
-		GuidelinesAspectRatio, AspectRatioOption::FourThree, AspectRatioOption::SixteenTen);
+	AspectRatio = static_cast<AspectRatioOption>(_settings->value(
+		"AspectRatio", static_cast<int>(AspectRatioOption::SixteenNine)).toInt());
+	AspectRatio = std::clamp(AspectRatio, AspectRatioOption::FourThree, AspectRatioOption::SixteenTen);
 	_settings->endGroup();
 
 	_settings->beginGroup("Mouse");
@@ -138,7 +136,7 @@ void ApplicationSettings::SaveSettings()
 	_settings->setValue("PauseAnimationsOnTimelineClick", PauseAnimationsOnTimelineClick);
 	_settings->setValue("OneAssetAtATime", OneAssetAtATime);
 	_settings->setValue("TickRate", _tickRate);
-	_settings->setValue("GuidelinesAspectRatio", static_cast<int>(GuidelinesAspectRatio));
+	_settings->setValue("AspectRatio", static_cast<int>(AspectRatio));
 	_settings->endGroup();
 
 	_settings->beginGroup("Mouse");

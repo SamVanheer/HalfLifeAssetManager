@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>381</width>
+    <width>518</width>
     <height>143</height>
    </rect>
   </property>
@@ -302,20 +302,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="ShowCrosshair">
-       <property name="text">
-        <string>Show Crosshair</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="ShowGuidelines">
-       <property name="text">
-        <string>Show Guidelines</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QCheckBox" name="ShowPlayerHitbox">
        <property name="text">
         <string>Show Player Hitbox</string>
@@ -345,6 +331,93 @@
      </item>
      <item>
       <spacer name="verticalSpacer_8">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QCheckBox" name="ShowCrosshair">
+       <property name="text">
+        <string>Show Crosshair</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="ShowGuidelines">
+       <property name="text">
+        <string>Show Guidelines</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="ShowOffscreenAreas">
+       <property name="text">
+        <string>Show Off-screen Areas</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Aspect Ratio</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QComboBox" name="AspectRatio">
+          <item>
+           <property name="text">
+            <string>4 / 3</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 / 9</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 / 10</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>

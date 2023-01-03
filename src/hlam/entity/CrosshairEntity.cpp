@@ -22,15 +22,6 @@ void CrosshairEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 		const int centerX = sc.WindowWidth / 2;
 		const int centerY = sc.WindowHeight / 2;
 
-		sc.OpenGLFunctions->glMatrixMode(GL_PROJECTION);
-		sc.OpenGLFunctions->glLoadIdentity();
-
-		sc.OpenGLFunctions->glOrtho(0.0f, (float)sc.WindowWidth, (float)sc.WindowHeight, 0.0f, 1.0f, -1.0f);
-
-		sc.OpenGLFunctions->glMatrixMode(GL_MODELVIEW);
-		sc.OpenGLFunctions->glPushMatrix();
-		sc.OpenGLFunctions->glLoadIdentity();
-
 		sc.OpenGLFunctions->glDisable(GL_CULL_FACE);
 
 		sc.OpenGLFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -68,7 +59,5 @@ void CrosshairEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		sc.OpenGLFunctions->glPointSize(1);
 		sc.OpenGLFunctions->glLineWidth(1);
-
-		sc.OpenGLFunctions->glPopMatrix();
 	}
 }

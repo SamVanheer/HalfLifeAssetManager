@@ -117,6 +117,15 @@ void Scene::Draw(SceneContext& sc)
 
 	DrawRenderables(sc, RenderPass::Standard);
 	DrawRenderables(sc, RenderPass::Overlay3D);
+
+	sc.OpenGLFunctions->glMatrixMode(GL_PROJECTION);
+	sc.OpenGLFunctions->glLoadIdentity();
+
+	sc.OpenGLFunctions->glOrtho(0.0f, (float)sc.WindowWidth, (float)sc.WindowHeight, 0.0f, 1.0f, -1.0f);
+
+	sc.OpenGLFunctions->glMatrixMode(GL_MODELVIEW);
+	sc.OpenGLFunctions->glLoadIdentity();
+
 	DrawRenderables(sc, RenderPass::Overlay2D);
 
 	_drawnPolygonsCount = _entityContext->StudioModelRenderer->GetDrawnPolygonsCount() - uiOldPolys;

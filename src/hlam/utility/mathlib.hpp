@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat3x4.hpp>
@@ -34,6 +35,14 @@ enum class Axis
 	X,
 	Y,
 	Z
+};
+
+struct Rect
+{
+	float Left{};
+	float Top{};
+	float Right{};
+	float Bottom{};
 };
 
 /**

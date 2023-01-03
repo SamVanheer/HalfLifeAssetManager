@@ -106,7 +106,7 @@ public:
 	static constexpr graphics::TextureFilter DefaultMagFilter{graphics::TextureFilter::Linear};
 	static constexpr graphics::MipmapFilter DefaultMipmapFilter{graphics::MipmapFilter::None};
 
-	static constexpr AspectRatioOption DefaultGuidelinesAspectRatio{AspectRatioOption::SixteenNine};
+	static constexpr AspectRatioOption DefaultAspectRatio{AspectRatioOption::SixteenNine};
 
 	explicit ApplicationSettings(QSettings* settings);
 	~ApplicationSettings() override;
@@ -255,7 +255,7 @@ public:
 	bool OneAssetAtATime{DefaultOneAssetAtATime};
 	bool TransparentScreenshots{DefaultTransparentScreenshots};
 
-	AspectRatioOption GuidelinesAspectRatio{DefaultGuidelinesAspectRatio};
+	AspectRatioOption AspectRatio{DefaultAspectRatio};
 
 private:
 	QSettings* const _settings;

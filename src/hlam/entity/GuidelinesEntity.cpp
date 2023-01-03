@@ -1,5 +1,8 @@
+#include <array>
+
 #include <QOpenGLFunctions_1_1>
 
+#include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -8,6 +11,8 @@
 
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/SceneContext.hpp"
+
+#include "utility/mathlib.hpp"
 
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
@@ -26,21 +31,25 @@ constexpr float GetAspectRatio(AspectRatioOption aspectRatio)
 	}
 }
 
+constexpr float GetTransposedAspectRatio(AspectRatioOption aspectRatio)
+{
+	switch (aspectRatio)
+	{
+	case AspectRatioOption::FourThree: return 3.f / 4.f;
+	default: return 9.f / 16.f;
+	case AspectRatioOption::SixteenTen: return 10.f / 16.f;
+	}
+}
+
 void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
+	const float adjustedWidth = sc.WindowHeight * GetAspectRatio(GetContext()->AppSettings->AspectRatio);
+	const float adjustedHeight = sc.WindowWidth * GetTransposedAspectRatio(GetContext()->AppSettings->AspectRatio);
+
 	if (ShowGuidelines)
 	{
 		const int centerX = sc.WindowWidth / 2;
 		const int centerY = sc.WindowHeight / 2;
-
-		sc.OpenGLFunctions->glMatrixMode(GL_PROJECTION);
-		sc.OpenGLFunctions->glLoadIdentity();
-
-		sc.OpenGLFunctions->glOrtho(0.0f, (float)sc.WindowWidth, (float)sc.WindowHeight, 0.0f, 1.0f, -1.0f);
-
-		sc.OpenGLFunctions->glMatrixMode(GL_MODELVIEW);
-		sc.OpenGLFunctions->glPushMatrix();
-		sc.OpenGLFunctions->glLoadIdentity();
 
 		sc.OpenGLFunctions->glDisable(GL_CULL_FACE);
 
@@ -78,23 +87,70 @@ void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		sc.OpenGLFunctions->glEnd();
 
-		const float flWidth = sc.WindowHeight * GetAspectRatio(GetContext()->AppSettings->GuidelinesAspectRatio);
-
 		sc.OpenGLFunctions->glLineWidth(GUIDELINES_EDGE_WIDTH);
 
 		sc.OpenGLFunctions->glBegin(GL_LINES);
 
-		sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) - (flWidth / 2), 0);
-		sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) - (flWidth / 2), sc.WindowHeight);
+		if (adjustedWidth <= sc.WindowWidth)
+		{
+			sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) - (adjustedWidth / 2), 0);
+			sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) - (adjustedWidth / 2), sc.WindowHeight);
 
-		sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) + (flWidth / 2), 0);
-		sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) + (flWidth / 2), sc.WindowHeight);
+			sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) + (adjustedWidth / 2), 0);
+			sc.OpenGLFunctions->glVertex2f((sc.WindowWidth / 2.) + (adjustedWidth / 2), sc.WindowHeight);
+		}
+		else
+		{
+			sc.OpenGLFunctions->glVertex2f(0, (sc.WindowHeight / 2.) - (adjustedHeight / 2));
+			sc.OpenGLFunctions->glVertex2f(sc.WindowWidth, (sc.WindowHeight / 2.) - (adjustedHeight / 2));
+
+			sc.OpenGLFunctions->glVertex2f(0, (sc.WindowHeight / 2.) + (adjustedHeight / 2));
+			sc.OpenGLFunctions->glVertex2f(sc.WindowWidth, (sc.WindowHeight / 2.) + (adjustedHeight / 2));
+		}
 
 		sc.OpenGLFunctions->glEnd();
 
 		sc.OpenGLFunctions->glPointSize(1);
 		sc.OpenGLFunctions->glLineWidth(1);
+	}
 
-		sc.OpenGLFunctions->glPopMatrix();
+	if (!ShowOffscreenAreas)
+	{
+		sc.OpenGLFunctions->glDisable(GL_DEPTH_TEST);
+		sc.OpenGLFunctions->glColor4f(0, 0, 0, 1);
+
+		Rect rectangles[2]{};
+
+		rectangles[0].Left = 0;
+		rectangles[0].Top = 0;
+		rectangles[1].Right = sc.WindowWidth;
+		rectangles[1].Bottom = sc.WindowHeight;
+
+		if (adjustedWidth <= sc.WindowWidth)
+		{
+			rectangles[0].Right = (sc.WindowWidth - adjustedWidth) / 2;
+			rectangles[0].Bottom = sc.WindowHeight;
+			rectangles[1].Left = sc.WindowWidth - rectangles[0].Right;
+			rectangles[1].Top = 0;
+		}
+		else
+		{
+			rectangles[0].Right = sc.WindowWidth;
+			rectangles[0].Bottom = (sc.WindowHeight - adjustedHeight) / 2;
+			rectangles[1].Left = 0;
+			rectangles[1].Top = sc.WindowHeight - rectangles[0].Bottom;
+		}
+
+		for (const auto& rect : rectangles)
+		{
+			sc.OpenGLFunctions->glBegin(GL_TRIANGLES);
+			sc.OpenGLFunctions->glVertex2f(rect.Left, rect.Top);
+			sc.OpenGLFunctions->glVertex2f(rect.Right, rect.Top);
+			sc.OpenGLFunctions->glVertex2f(rect.Right, rect.Bottom);
+			sc.OpenGLFunctions->glVertex2f(rect.Right, rect.Bottom);
+			sc.OpenGLFunctions->glVertex2f(rect.Left, rect.Bottom);
+			sc.OpenGLFunctions->glVertex2f(rect.Left, rect.Top);
+			sc.OpenGLFunctions->glEnd();
+		}
 	}
 }
