@@ -606,9 +606,9 @@ void StudioModelAsset::OnSceneWidgetRecreated()
 	}
 	else if (_provider->AreEditControlsVisible())
 	{
-		_provider->GetEditWidget()->AttachSceneWidget();
-
 		auto editWidget = _provider->GetEditWidget();
+
+		editWidget->AttachSceneWidget();
 		_editWidget->layout()->addWidget(editWidget);
 		editWidget->setParent(_editWidget);
 	}

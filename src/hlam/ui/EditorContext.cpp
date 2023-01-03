@@ -101,7 +101,10 @@ EditorContext::~EditorContext()
 {
 	_soundSystem->Shutdown();
 
-	delete _sceneWidget;
+	if (_sceneWidget)
+	{
+		delete _sceneWidget->GetContainer();
+	}
 }
 
 QSettings* EditorContext::GetSettings() const
@@ -135,7 +138,7 @@ void EditorContext::RecreateSceneWidget()
 
 	// The filter needs to be installed on the main window (handles dropping on any child widget),
 	// as well as the scene widget (has special behavior due to being OpenGL)
-	_sceneWidget = new SceneWidget(this, GetOpenGLFunctions(), GetTextureLoader(), nullptr);
+	_sceneWidget = new SceneWidget(this, GetOpenGLFunctions(), GetTextureLoader());
 	_sceneWidget->installEventFilter(GetDragNDropEventFilter());
 
 	emit SceneWidgetRecreated();
@@ -143,7 +146,7 @@ void EditorContext::RecreateSceneWidget()
 	// Delete the widget after notifying everybody so any remaining references to this can be removed.
 	if (oldWidget)
 	{
-		delete oldWidget;
+		delete oldWidget->GetContainer();
 	}
 }
 

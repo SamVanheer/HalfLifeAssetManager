@@ -11,10 +11,9 @@
 #include "ui/SceneWidget.hpp"
 
 SceneWidget::SceneWidget(EditorContext* editorContext,
-	QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader* textureLoader,
-	QWidget* parent)
+	QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader* textureLoader)
 	: QOpenGLWindow()
-	, _container(QWidget::createWindowContainer(this, parent))
+	, _container(QWidget::createWindowContainer(this))
 	, _sceneContext(std::make_unique<graphics::SceneContext>(openglFunctions, textureLoader))
 {
 	// It's safe to modify this since it doesn't affect the underlying window, only the FBO used for MSAA.

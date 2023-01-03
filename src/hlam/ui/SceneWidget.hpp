@@ -26,8 +26,7 @@ class SceneWidget final : public QOpenGLWindow
 public:
 	SceneWidget(
 		EditorContext* editorContext,
-		QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader* textureLoader,
-		QWidget* parent);
+		QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader* textureLoader);
 	~SceneWidget();
 
 	QWidget* GetContainer() { return _container; }
