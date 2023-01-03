@@ -105,6 +105,8 @@ void BodyPartsPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 
 		snapshot->SetValue("bodyparts.bodypart", QString::fromStdString(model->Bodyparts[index]->Name));
 	}
+
+	snapshot->SetValue("BodyParts.Skin", _ui.Skins->currentIndex());
 }
 
 void BodyPartsPanel::OnLoadSnapshot(StateSnapshot* snapshot)
@@ -125,6 +127,8 @@ void BodyPartsPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 			_ui.BodyParts->setCurrentIndex(index);
 		}
 	}
+
+	_ui.Skins->setCurrentIndex(snapshot->Value("BodyParts.Skin", 0).toInt());
 }
 
 void BodyPartsPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
