@@ -31,11 +31,39 @@ glm::vec3 SimpleVector3Edit::GetValue() const
 void SimpleVector3Edit::SetValue(const glm::vec3& value)
 {
 	{
+		const auto formatFloat = [](double input)
+		{
+			if (input == static_cast<int>(input))
+			{
+				return QString::number(static_cast<int>(input));
+			}
+			else
+			{
+				auto text = QString::number(input, 'f', 6);
+
+				int size = text.size();
+
+				while (size > 0 && text[size - 1] == '0')
+				{
+					--size;
+				}
+
+				if (size > 0 && text[size - 1] == '.')
+				{
+					--size;
+				}
+
+				text.resize(size);
+
+				return text;
+			}
+		};
+
 		const QSignalBlocker blocker{this};
 		this->setText(QString{"%1 %2 %3"}
-			.arg(value.x, 0, 'f', QLocale::FloatingPointShortest)
-			.arg(value.y, 0, 'f', QLocale::FloatingPointShortest)
-			.arg(value.z, 0, 'f', QLocale::FloatingPointShortest));
+			.arg(formatFloat(value.x))
+			.arg(formatFloat(value.y))
+			.arg(formatFloat(value.z)));
 	}
 
 	OnValueChanged();
