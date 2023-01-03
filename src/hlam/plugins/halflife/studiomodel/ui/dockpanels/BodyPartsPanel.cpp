@@ -59,12 +59,10 @@ void BodyPartsPanel::OnAssetChanged(StudioModelAsset* asset)
 	connect(_asset, &StudioModelAsset::LoadSnapshot, this, &BodyPartsPanel::OnLoadSnapshot);
 
 	_ui.BodyParts->setModel(modelData->BodyParts);
-	_ui.BodyParts->setEnabled(_ui.BodyParts->count() > 0);
 
-	_ui.BodypartsDataWidget->setVisible(_ui.BodyParts->isEnabled());
+	this->setEnabled(_ui.BodyParts->count() > 0);
 
-	// TODO: maybe store the list of submodels for each bodypart in user data.
-	_ui.Submodels->setEnabled(_ui.BodyParts->isEnabled());
+	// TODO: maybe store the list of submodels for each bodypart in user data
 
 	const int skin = _asset->GetEntity()->GetSkin();
 	{
