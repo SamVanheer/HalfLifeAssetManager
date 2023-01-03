@@ -22,7 +22,6 @@
 #include "plugins/halflife/studiomodel/ui/dockpanels/BodyPartsPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/BoneControllersPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/BonesPanel.hpp"
-#include "plugins/halflife/studiomodel/ui/dockpanels/FlagsPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/HitboxesPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/InfoBar.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/LightingPanel.hpp"
@@ -93,7 +92,6 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	addDockPanel(new BodyPartsPanel(_provider), "Body Parts");
 	addDockPanel(new TexturesPanel(_provider), "Textures");
 	addDockPanel(new ModelDataPanel(_provider), "Model Data");
-	auto flagsDock = addDockPanel(new FlagsPanel(_provider), "Model Flags");
 	addDockPanel(new BonesPanel(_provider), "Bones");
 	addDockPanel(new BoneControllersPanel(_provider), "Bone Controllers");
 	addDockPanel(new AttachmentsPanel(_provider), "Attachments");
@@ -125,7 +123,6 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 	modelDisplayDock->raise();
 
 	//Hidden by default
-	flagsDock->setVisible(false);
 	transformDock->setVisible(false);
 
 	transformDock->toggleViewAction()->setShortcut(QKeySequence{Qt::CTRL + static_cast<int>(Qt::Key::Key_M)});

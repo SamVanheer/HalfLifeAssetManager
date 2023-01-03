@@ -16,9 +16,6 @@ target_sources(HLAM
 		ExportUVMeshDialog.hpp
 		ExportUVMeshDialog.cpp
 		ExportUVMeshDialog.ui
-		FlagsPanel.cpp
-		FlagsPanel.hpp
-		FlagsPanel.ui
 		HitboxesPanel.cpp
 		HitboxesPanel.hpp
 		HitboxesPanel.ui

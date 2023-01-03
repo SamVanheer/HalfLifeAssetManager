@@ -4,8 +4,6 @@
 
 #include "ui/DockableWidget.hpp"
 
-class StateSnapshot;
-
 namespace studiomodel
 {
 class StudioModelAsset;
@@ -18,8 +16,8 @@ public:
 	explicit ModelDataPanel(StudioModelAssetProvider* provider);
 	~ModelDataPanel();
 
-	// Disable automatic direction change.
-	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override {}
+private:
+	void SetFlags(int flags);
 
 private slots:
 	void OnAssetChanged(StudioModelAsset* asset);
@@ -27,6 +25,8 @@ private slots:
 	void OnEyePositionChanged();
 	void OnBBoxChanged();
 	void OnCBoxChanged();
+
+	void OnFlagChanged(int state);
 
 private:
 	Ui_ModelDataPanel _ui;
