@@ -18,6 +18,8 @@ public:
 	explicit HitboxesPanel(StudioModelAssetProvider* provider);
 	~HitboxesPanel();
 
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
+
 private:
 	void UpdateQCString();
 

@@ -18,6 +18,8 @@ public:
 	explicit AttachmentsPanel(StudioModelAssetProvider* provider);
 	~AttachmentsPanel();
 
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
+
 private:
 	void UpdateQCString();
 

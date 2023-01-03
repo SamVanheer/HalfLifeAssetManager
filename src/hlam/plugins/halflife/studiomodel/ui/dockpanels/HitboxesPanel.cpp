@@ -37,6 +37,11 @@ HitboxesPanel::HitboxesPanel(StudioModelAssetProvider* provider)
 
 HitboxesPanel::~HitboxesPanel() = default;
 
+void HitboxesPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
+{
+	_ui.DockLayout->setDirection(direction);
+}
+
 void HitboxesPanel::OnAssetChanged(StudioModelAsset* asset)
 {
 	if (_asset)

@@ -47,6 +47,11 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAssetProvider* provider)
 
 AttachmentsPanel::~AttachmentsPanel() = default;
 
+void AttachmentsPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
+{
+	_ui.DockLayout->setDirection(direction);
+}
+
 void AttachmentsPanel::OnAssetChanged(StudioModelAsset* asset)
 {
 	if (_asset)
