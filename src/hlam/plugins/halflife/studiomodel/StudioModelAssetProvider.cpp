@@ -17,7 +17,7 @@
 
 #include "plugins/halflife/studiomodel/ui/compiler/StudioModelCompilerFrontEnd.hpp"
 #include "plugins/halflife/studiomodel/ui/compiler/StudioModelDecompilerFrontEnd.hpp"
-#include "plugins/halflife/studiomodel/ui/dialogs/ModelInfoDialog.hpp"
+#include "plugins/halflife/studiomodel/ui/dialogs/QCDataDialog.hpp"
 
 #include "qt/QtLogSink.hpp"
 #include "qt/QtUtilities.hpp"
@@ -200,9 +200,9 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 
 	menu->addSeparator();
 
-	menu->addAction("Show Model Info", this, [this]
+	menu->addAction("Show QC Data", this, [this]
 		{
-			ModelInfoDialog dialog{this, _editorContext->GetMainWindow()};
+			QCDataDialog dialog{this, _editorContext->GetMainWindow()};
 			dialog.exec();
 		});
 
