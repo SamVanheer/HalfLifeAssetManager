@@ -8,7 +8,7 @@
 
 namespace qt::widgets
 {
-static const QRegularExpression Vector3Regex(R"(^-?\d+(\.\d+)? -?\d+(\.\d+)? -?\d+(\.\d+)?$)");
+static const QRegularExpression Vector3Regex(R"(^-?\d+(\.\d*)? -?\d+(\.\d*)? -?\d+(\.\d*)?$)");
 
 SimpleVector3Edit::SimpleVector3Edit(QWidget* parent)
 	: QLineEdit(parent)
