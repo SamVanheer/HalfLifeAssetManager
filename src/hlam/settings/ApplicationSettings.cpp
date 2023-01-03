@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include <QFileInfo>
 #include <QSettings>
 
@@ -76,10 +78,6 @@ void ApplicationSettings::LoadSettings()
 	PauseAnimationsOnTimelineClick = _settings->value("PauseAnimationsOnTimelineClick", DefaultPauseAnimationsOnTimelineClick).toBool();
 	OneAssetAtATime = _settings->value("OneAssetAtATime", DefaultOneAssetAtATime).toBool();
 	_tickRate = std::clamp(_settings->value("TickRate", DefaultTickRate).toInt(), MinimumTickRate, MaximumTickRate);
-
-	AspectRatio = static_cast<AspectRatioOption>(_settings->value(
-		"AspectRatio", static_cast<int>(AspectRatioOption::SixteenNine)).toInt());
-	AspectRatio = std::clamp(AspectRatio, AspectRatioOption::FourThree, AspectRatioOption::SixteenTen);
 	_settings->endGroup();
 
 	_settings->beginGroup("Mouse");
@@ -118,6 +116,8 @@ void ApplicationSettings::LoadSettings()
 
 	_msaaLevel = _settings->value("MSAALevel", DefaultMSAALevel).toInt();
 	TransparentScreenshots = _settings->value("TransparentScreenshots", DefaultTransparentScreenshots).toBool();
+	_aspectRatio.x = std::floor(_settings->value("AspectRatio/X", DefaultAspectRatio.x).toFloat());
+	_aspectRatio.y = std::floor(_settings->value("AspectRatio/Y", DefaultAspectRatio.y).toFloat());
 	_settings->endGroup();
 
 	_recentFiles->LoadSettings();
@@ -136,7 +136,6 @@ void ApplicationSettings::SaveSettings()
 	_settings->setValue("PauseAnimationsOnTimelineClick", PauseAnimationsOnTimelineClick);
 	_settings->setValue("OneAssetAtATime", OneAssetAtATime);
 	_settings->setValue("TickRate", _tickRate);
-	_settings->setValue("AspectRatio", static_cast<int>(AspectRatio));
 	_settings->endGroup();
 
 	_settings->beginGroup("Mouse");
@@ -163,6 +162,8 @@ void ApplicationSettings::SaveSettings()
 
 	_settings->setValue("MSAALevel", _msaaLevel);
 	_settings->setValue("TransparentScreenshots", DefaultTransparentScreenshots);
+	_settings->setValue("AspectRatio/X", _aspectRatio.x);
+	_settings->setValue("AspectRatio/Y", _aspectRatio.y);
 	_settings->endGroup();
 
 	_recentFiles->SaveSettings();

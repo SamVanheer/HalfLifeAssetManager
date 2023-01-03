@@ -62,12 +62,17 @@ ModelDisplayPanel::ModelDisplayPanel(StudioModelAssetProvider* provider)
 		{
 			_asset->GetGuidelinesEntity()->ShowOffscreenAreas = _ui.ShowOffscreenAreas->isChecked();
 		});
-	connect(_ui.AspectRatio, qOverload<int>(&QComboBox::currentIndexChanged), this,
-		[this](int index)
+
+	{
+		const auto lambda = [this]()
 		{
 			auto settings = _provider->GetCurrentAsset()->GetEditorContext()->GetApplicationSettings();
-			settings->AspectRatio = static_cast<AspectRatioOption>(index);
-		});
+			settings->SetAspectRatio(glm::vec2{_ui.AspectRatioX->value(), _ui.AspectRatioY->value()});
+		};
+
+		connect(_ui.AspectRatioX, qOverload<int>(&QSpinBox::valueChanged), this, lambda);
+		connect(_ui.AspectRatioY, qOverload<int>(&QSpinBox::valueChanged), this, lambda);
+	}
 }
 
 ModelDisplayPanel::~ModelDisplayPanel() = default;
@@ -102,7 +107,8 @@ void ModelDisplayPanel::OnAssetChanged(StudioModelAsset* asset)
 	const QSignalBlocker mirrorZ{_ui.MirrorOnZAxis};
 	const QSignalBlocker crosshair{_ui.ShowCrosshair};
 	const QSignalBlocker guidelines{_ui.ShowGuidelines};
-	const QSignalBlocker aspectRatio{_ui.AspectRatio};
+	const QSignalBlocker aspectRatioX{_ui.AspectRatioX};
+	const QSignalBlocker aspectRatioY{_ui.AspectRatioY};
 
 	_ui.RenderModeComboBox->setCurrentIndex(static_cast<int>(_asset->CurrentRenderMode));
 	_ui.OpacitySlider->setValue(static_cast<int>(entity->GetTransparency() * 100));
@@ -127,7 +133,10 @@ void ModelDisplayPanel::OnAssetChanged(StudioModelAsset* asset)
 	_ui.ShowCrosshair->setChecked(_asset->GetCrosshairEntity()->ShowCrosshair);
 	_ui.ShowGuidelines->setChecked(_asset->GetGuidelinesEntity()->ShowGuidelines);
 	_ui.ShowOffscreenAreas->setChecked(_asset->GetGuidelinesEntity()->ShowOffscreenAreas);
-	_ui.AspectRatio->setCurrentIndex(static_cast<int>(_asset->GetEditorContext()->GetApplicationSettings()->AspectRatio));
+
+	const auto aspectRatio = _asset->GetEditorContext()->GetApplicationSettings()->GetAspectRatio();
+	_ui.AspectRatioX->setValue(static_cast<int>(aspectRatio.x));
+	_ui.AspectRatioY->setValue(static_cast<int>(aspectRatio.y));
 }
 
 void ModelDisplayPanel::OnRenderModeChanged(int index)

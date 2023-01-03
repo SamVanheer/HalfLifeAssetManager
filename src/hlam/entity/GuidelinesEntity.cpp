@@ -21,30 +21,11 @@
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
 #include "ui/EditorContext.hpp"
 
-constexpr float GetAspectRatio(AspectRatioOption aspectRatio)
-{
-	switch (aspectRatio)
-	{
-	case AspectRatioOption::FourThree: return 4.f / 3.f;
-	default: return 16.f / 9.f;
-	case AspectRatioOption::SixteenTen: return 16.f / 10.f;
-	}
-}
-
-constexpr float GetTransposedAspectRatio(AspectRatioOption aspectRatio)
-{
-	switch (aspectRatio)
-	{
-	case AspectRatioOption::FourThree: return 3.f / 4.f;
-	default: return 9.f / 16.f;
-	case AspectRatioOption::SixteenTen: return 10.f / 16.f;
-	}
-}
-
 void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
-	const float adjustedWidth = sc.WindowHeight * GetAspectRatio(GetContext()->AppSettings->AspectRatio);
-	const float adjustedHeight = sc.WindowWidth * GetTransposedAspectRatio(GetContext()->AppSettings->AspectRatio);
+	const auto aspectRatio = GetContext()->AppSettings->GetAspectRatio();
+	const float adjustedWidth = sc.WindowHeight * (aspectRatio.x / aspectRatio.y);
+	const float adjustedHeight = sc.WindowWidth * (aspectRatio.y / aspectRatio.x);
 
 	if (ShowGuidelines)
 	{

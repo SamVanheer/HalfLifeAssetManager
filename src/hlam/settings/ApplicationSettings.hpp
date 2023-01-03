@@ -7,19 +7,14 @@
 #include <QString>
 #include <QVector>
 
+#include <glm/vec2.hpp>
+
 #include "graphics/TextureLoader.hpp"
 
 class ColorSettings;
 class GameConfigurationsSettings;
 class QSettings;
 class RecentFilesSettings;
-
-enum class AspectRatioOption
-{
-	FourThree,
-	SixteenNine,
-	SixteenTen
-};
 
 class BaseSettings : public QObject
 {
@@ -106,7 +101,7 @@ public:
 	static constexpr graphics::TextureFilter DefaultMagFilter{graphics::TextureFilter::Linear};
 	static constexpr graphics::MipmapFilter DefaultMipmapFilter{graphics::MipmapFilter::None};
 
-	static constexpr AspectRatioOption DefaultAspectRatio{AspectRatioOption::SixteenNine};
+	static constexpr glm::vec2 DefaultAspectRatio{16.f, 9.f};
 
 	explicit ApplicationSettings(QSettings* settings);
 	~ApplicationSettings() override;
@@ -230,6 +225,13 @@ public:
 		}
 	}
 
+	const glm::vec2 GetAspectRatio() const { return _aspectRatio; }
+
+	void SetAspectRatio(const glm::vec2& value)
+	{
+		_aspectRatio = value;
+	}
+
 	QString GetSavedPath(const QString& pathName);
 	void SetSavedPath(const QString& pathName, const QString& path);
 
@@ -254,8 +256,6 @@ public:
 	bool PauseAnimationsOnTimelineClick{DefaultPauseAnimationsOnTimelineClick};
 	bool OneAssetAtATime{DefaultOneAssetAtATime};
 	bool TransparentScreenshots{DefaultTransparentScreenshots};
-
-	AspectRatioOption AspectRatio{DefaultAspectRatio};
 
 private:
 	QSettings* const _settings;
@@ -285,4 +285,6 @@ private:
 	graphics::MipmapFilter _mipmapFilter{DefaultMipmapFilter};
 
 	int _msaaLevel{DefaultMSAALevel};
+
+	glm::vec2 _aspectRatio{DefaultAspectRatio};
 };
