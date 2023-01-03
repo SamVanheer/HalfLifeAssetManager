@@ -105,7 +105,7 @@ void HitboxesPanel::UpdateQCString()
 
 		_ui.QCString->setText(QString{"$hbox %1 \"%2\" %3 %4 %5 %6 %7 %8"}
 			.arg(hitbox.Group)
-			.arg(hitbox.Bone->Name.c_str())
+			.arg(QString::fromStdString(hitbox.Bone->Name))
 			.arg(hitbox.Min[0], 0, 'f', 6)
 			.arg(hitbox.Min[1], 0, 'f', 6)
 			.arg(hitbox.Min[2], 0, 'f', 6)

@@ -200,7 +200,7 @@ void BodyPartsPanel::OnSubmodelChanged(int index)
 		{
 			const auto subModel = model->GetModelByBodyPart(entity->GetBodygroup(), bodyPartIndex);
 
-			modelName = subModel->Name.c_str();
+			modelName = QString::fromStdString(subModel->Name);
 			meshCount = subModel->Meshes.size();
 			vertexCount = subModel->Vertices.size();
 			normalCount = subModel->Normals.size();
@@ -239,7 +239,7 @@ void BodyPartsPanel::OnModelNameChanged()
 
 	_asset->AddUndoCommand(new ChangeModelNameCommand(
 		_asset, _ui.BodyParts->currentIndex(), _ui.Submodels->currentIndex(),
-		subModel.Name.c_str(), _ui.ModelName->text()));
+		QString::fromStdString(subModel.Name), _ui.ModelName->text()));
 }
 
 void BodyPartsPanel::OnModelNameRejected()

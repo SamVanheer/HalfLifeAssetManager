@@ -119,7 +119,7 @@ void AttachmentsPanel::UpdateQCString()
 
 		_ui.QCString->setText(QString{"$attachment %1 \"%2\" %3 %4 %5"}
 			.arg(_ui.Attachments->currentIndex())
-			.arg(attachment.Bone->Name.c_str())
+			.arg(QString::fromStdString(attachment.Bone->Name))
 			.arg(attachment.Origin[0], 0, 'f', 6)
 			.arg(attachment.Origin[1], 0, 'f', 6)
 			.arg(attachment.Origin[2], 0, 'f', 6));
@@ -180,7 +180,8 @@ void AttachmentsPanel::OnNameChanged()
 	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeAttachmentNameCommand(_asset, _ui.Attachments->currentIndex(), attachment.Name.c_str(), _ui.Name->text()));
+	_asset->AddUndoCommand(new ChangeAttachmentNameCommand(_asset, _ui.Attachments->currentIndex(),
+		QString::fromStdString(attachment.Name), _ui.Name->text()));
 }
 
 void AttachmentsPanel::OnNameRejected()

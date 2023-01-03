@@ -120,7 +120,7 @@ void EditableStudioModel::UpdateTexture(graphics::TextureLoader& textureLoader, 
 
 	int low, mid, high;
 
-	if (graphics::TryGetRemapColors(texture.Name.c_str(), low, mid, high))
+	if (graphics::TryGetRemapColors(texture.Name, low, mid, high))
 	{
 		graphics::PaletteHueReplace(palette, TopColor, low, mid);
 

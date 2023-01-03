@@ -38,7 +38,7 @@ ExportUVMeshDialog::ExportUVMeshDialog(StudioModelAsset* asset,
 	connect(_ui.AntiAliasLines, &QCheckBox::stateChanged, this, &ExportUVMeshDialog::UpdatePreview);
 	connect(_ui.AddAlphaChannel, &QCheckBox::stateChanged, this, &ExportUVMeshDialog::UpdatePreview);
 
-	_ui.TextureNameLabel->setText(studioTexture.Name.c_str());
+	_ui.TextureNameLabel->setText(QString::fromStdString(studioTexture.Name));
 
 	_ui.OkButton->setEnabled(false);
 }

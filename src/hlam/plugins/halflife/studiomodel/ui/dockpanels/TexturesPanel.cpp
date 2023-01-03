@@ -184,7 +184,7 @@ void TexturesPanel::OnAssetChanged(StudioModelAsset* asset)
 		{
 			if (index == _ui.Textures->currentIndex())
 			{
-				const QString name{_asset->GetEditableStudioModel()->Textures[index]->Name.c_str()};
+				const QString name{QString::fromStdString(_asset->GetEditableStudioModel()->Textures[index]->Name)};
 
 				//Avoid resetting the edit position
 				if (_ui.TextureName->text() != name)
@@ -277,7 +277,7 @@ void TexturesPanel::OnTextureChanged(int index)
 	{
 		const QSignalBlocker name{_ui.TextureName};
 
-		_ui.TextureName->setText(texture.Name.c_str());
+		_ui.TextureName->setText(QString::fromStdString(texture.Name));
 	}
 
 	SetTextureFlagCheckBoxes(_ui, texture.Flags);
@@ -349,7 +349,8 @@ void TexturesPanel::OnTextureNameChanged()
 {
 	const auto& texture = *_asset->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeTextureNameCommand(_asset, _ui.Textures->currentIndex(), texture.Name.c_str(), _ui.TextureName->text()));
+	_asset->AddUndoCommand(new ChangeTextureNameCommand(_asset, _ui.Textures->currentIndex(),
+		QString::fromStdString(texture.Name), _ui.TextureName->text()));
 }
 
 void TexturesPanel::OnTextureNameRejected()
@@ -684,7 +685,7 @@ void TexturesPanel::OnImportAllTextures()
 	{
 		auto& texture = *model->Textures[i];
 
-		const QFileInfo fileName{path, texture.Name.c_str()};
+		const QFileInfo fileName{path, QString::fromStdString(texture.Name)};
 
 		if (fileName.exists())
 		{
@@ -716,7 +717,7 @@ void TexturesPanel::OnExportAllTextures()
 	{
 		const auto& texture = *model->Textures[i];
 
-		const QFileInfo fileName{path, texture.Name.c_str()};
+		const QFileInfo fileName{path, QString::fromStdString(texture.Name)};
 
 		auto fullPath = fileName.absoluteFilePath();
 

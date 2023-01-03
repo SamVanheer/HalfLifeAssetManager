@@ -493,7 +493,7 @@ void SequencesPanel::OnEventChanged(int index)
 
 	//Only call setText if the text is different
 	//This prevents the edit state from being overwritten
-	const QString options{event->Options.c_str()};
+	const QString options{QString::fromStdString(event->Options)};
 
 	if (_ui.EventOptions->text() != options)
 	{

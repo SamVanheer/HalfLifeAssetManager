@@ -101,7 +101,7 @@ void BonesPanel::OnAssetChanged(StudioModelAsset* asset)
 			if (topLeft.row() <= _ui.Bones->currentIndex() && _ui.Bones->currentIndex() <= bottomRight.row())
 			{
 				const auto model = _asset->GetEntity()->GetEditableModel();
-				const QString text{model->Bones[topLeft.row()]->Name.c_str()};
+				const QString text{QString::fromStdString(model->Bones[topLeft.row()]->Name)};
 
 				//Avoid resetting the edit position
 				if (_ui.BoneName->text() != text)
@@ -185,7 +185,7 @@ void BonesPanel::OnBoneChanged(int index)
 		const QSignalBlocker parentBone{_ui.ParentBone};
 		const QSignalBlocker boneFlags{_ui.BoneFlags};
 
-		_ui.BoneName->setText(bone.Name.c_str());
+		_ui.BoneName->setText(QString::fromStdString(bone.Name));
 
 		if (bone.Parent)
 		{
@@ -224,7 +224,8 @@ void BonesPanel::OnBoneNameChanged()
 	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
-	_asset->AddUndoCommand(new BoneRenameCommand(_asset, _ui.Bones->currentIndex(), bone.Name.c_str(), _ui.BoneName->text()));
+	_asset->AddUndoCommand(new BoneRenameCommand(_asset, _ui.Bones->currentIndex(),
+		QString::fromStdString(bone.Name), _ui.BoneName->text()));
 }
 
 void BonesPanel::OnBoneNameRejected()
