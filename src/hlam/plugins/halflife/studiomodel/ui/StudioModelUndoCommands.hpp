@@ -778,6 +778,7 @@ struct SequenceProps
 	float FPS{};
 	int Activity{};
 	int ActivityWeight{};
+	glm::vec3 LinearMovement{0};
 };
 
 class ChangeSequencePropsCommand : public ModelListUndoCommand<SequenceProps>

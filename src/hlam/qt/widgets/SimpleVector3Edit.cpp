@@ -59,11 +59,17 @@ void SimpleVector3Edit::SetValue(const glm::vec3& value)
 			}
 		};
 
-		const QSignalBlocker blocker{this};
-		this->setText(QString{"%1 %2 %3"}
+		const QString newText = QString{"%1 %2 %3"}
 			.arg(formatFloat(value.x))
 			.arg(formatFloat(value.y))
-			.arg(formatFloat(value.z)));
+			.arg(formatFloat(value.z));
+
+		// Avoid changing cursor position if we're responding to a redo command.
+		if (text() != newText)
+		{
+			const QSignalBlocker blocker{this};
+			this->setText(newText);
+		}
 	}
 
 	OnValueChanged();

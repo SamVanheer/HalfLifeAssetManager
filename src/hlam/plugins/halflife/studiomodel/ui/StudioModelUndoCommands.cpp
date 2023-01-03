@@ -249,6 +249,7 @@ void ChangeSequencePropsCommand::Apply(int index, const SequenceProps& oldValue,
 	sequence.FPS = newValue.FPS;
 	sequence.Activity = newValue.Activity;
 	sequence.ActivityWeight = newValue.ActivityWeight;
+	sequence.LinearMovement = newValue.LinearMovement;
 
 	EmitDataChanged(_asset->GetModelData()->Sequences, index);
 }

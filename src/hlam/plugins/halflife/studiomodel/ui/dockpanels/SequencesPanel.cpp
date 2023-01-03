@@ -61,9 +61,11 @@ SequencesPanel::SequencesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.IsLooping, &QCheckBox::toggled, this, &SequencesPanel::OnSequencePropertiesChanged);
 	connect(_ui.FPS, qOverload<double>(&QDoubleSpinBox::valueChanged),
 		this, &SequencesPanel::OnSequencePropertiesChanged);
+	connect(_ui.Activity, qOverload<int>(&QComboBox::currentIndexChanged),
+		this, &SequencesPanel::OnSequencePropertiesChanged);
 	connect(_ui.ActWeight, qOverload<int>(&QSpinBox::valueChanged),
 		this, &SequencesPanel::OnSequencePropertiesChanged);
-	connect(_ui.Activity, qOverload<int>(&QComboBox::currentIndexChanged),
+	connect(_ui.LinearMovement, &qt::widgets::SimpleVector3Edit::ValueChanged,
 		this, &SequencesPanel::OnSequencePropertiesChanged);
 
 	connect(_ui.BlendMode, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnBlendModeChanged);
@@ -344,8 +346,9 @@ void SequencesPanel::OnSequenceChanged(int index)
 {
 	const QSignalBlocker isLoopingBlocker{_ui.IsLooping};
 	const QSignalBlocker fpsBlocker{_ui.FPS};
-	const QSignalBlocker actWeightBlocker{_ui.ActWeight};
 	const QSignalBlocker activityBlocker{_ui.Activity};
+	const QSignalBlocker actWeightBlocker{_ui.ActWeight};
+	const QSignalBlocker linearMovementBlocker{_ui.LinearMovement};
 
 	auto entity = _asset->GetEntity();
 
@@ -368,8 +371,13 @@ void SequencesPanel::OnSequenceChanged(int index)
 
 	_ui.IsLooping->setChecked((sequence.Flags & STUDIO_LOOPING) != 0);
 	_ui.FPS->setValue(sequence.FPS);
-	_ui.ActWeight->setValue(sequence.ActivityWeight);
 	_ui.Activity->setCurrentIndex(sequence.Activity);
+	_ui.ActWeight->setValue(sequence.ActivityWeight);
+
+	if (_ui.LinearMovement->GetValue() != sequence.LinearMovement)
+	{
+		_ui.LinearMovement->SetValue(sequence.LinearMovement);
+	}
 
 	if (sequenceHasChanged)
 	{
@@ -417,7 +425,8 @@ void SequencesPanel::OnSequencePropertiesChanged()
 		.IsLooping = (sequence.Flags & STUDIO_LOOPING) != 0,
 		.FPS = sequence.FPS,
 		.Activity = sequence.Activity,
-		.ActivityWeight = sequence.ActivityWeight
+		.ActivityWeight = sequence.ActivityWeight,
+		.LinearMovement = sequence.LinearMovement
 	};
 
 	const SequenceProps newProps
@@ -425,11 +434,11 @@ void SequencesPanel::OnSequencePropertiesChanged()
 		.IsLooping = _ui.IsLooping->isChecked(),
 		.FPS = static_cast<float>(_ui.FPS->value()),
 		.Activity = _ui.Activity->currentIndex(),
-		.ActivityWeight = _ui.ActWeight->value()
+		.ActivityWeight = _ui.ActWeight->value(),
+		.LinearMovement = _ui.LinearMovement->GetValue()
 	};
 
-	_asset->AddUndoCommand(
-		new ChangeSequencePropsCommand(_asset, _ui.Sequences->currentIndex(), oldProps, newProps));
+	_asset->AddUndoCommand(new ChangeSequencePropsCommand(_asset, _ui.Sequences->currentIndex(), oldProps, newProps));
 }
 
 void SequencesPanel::OnBlendModeChanged(int index)
