@@ -18,6 +18,9 @@ public:
 	explicit ModelDataPanel(StudioModelAssetProvider* provider);
 	~ModelDataPanel();
 
+	// Disable automatic direction change.
+	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override {}
+
 private slots:
 	void OnAssetChanged(StudioModelAsset* asset);
 
