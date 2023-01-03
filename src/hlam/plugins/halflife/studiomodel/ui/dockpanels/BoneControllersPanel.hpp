@@ -23,8 +23,6 @@ public:
 	explicit BoneControllersPanel(StudioModelAssetProvider* provider);
 	~BoneControllersPanel();
 
-	void OnLayoutDirectionChanged(QBoxLayout::Direction direction) override;
-
 private:
 	void UpdateControllerRange(const studiomdl::StudioBoneController& boneController);
 

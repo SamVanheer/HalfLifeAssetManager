@@ -82,20 +82,19 @@ void BoneControllersPanel::OnAssetChanged(StudioModelAsset* asset)
 		const QSignalBlocker blocker{_ui.BoneControllerBone};
 		_ui.BoneControllerBone->setModel(modelData->BonesWithNone);
 		//Start off with nothing selected
-		_ui.BoneControllerBone->setCurrentIndex(-1);
+		_ui.BoneControllerBone->setCurrentIndex(0);
 	}
 
 	_ui.BoneControllers->setModel(modelData->BoneControllers);
-	_ui.BoneControllers->setEnabled(_ui.BoneControllers->count() > 0);
 
-	_ui.ControllerDataWidget->setVisible(_ui.BoneControllers->isEnabled());
+	this->setEnabled(_ui.BoneControllers->count() > 0);
 
-	_ui.BoneControllerValueSlider->setEnabled(_ui.BoneControllers->count() > 0);
-	_ui.BoneControllerValueSpinner->setEnabled(_ui.BoneControllers->count() > 0);
-
-	if (!_ui.BoneControllers->isEnabled())
+	if (!this->isEnabled())
 	{
 		//Disable and center it
+		const QSignalBlocker sliderBlocker{_ui.BoneControllerValueSlider};
+		const QSignalBlocker spinnerBlocker{_ui.BoneControllerValueSpinner};
+
 		_ui.BoneControllerValueSlider->setRange(0, 2);
 		_ui.BoneControllerValueSlider->setValue(1);
 
@@ -178,13 +177,6 @@ void BoneControllersPanel::UpdateControllerRange(const studiomdl::StudioBoneCont
 		_ui.BoneControllerValueSpinner->setRange(start, end);
 		_ui.BoneControllerValueSpinner->setValue(value);
 	}
-}
-
-void BoneControllersPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
-{
-	DockableWidget::OnLayoutDirectionChanged(direction);
-
-	_ui.ControllerDataLayout->setDirection(direction);
 }
 
 void BoneControllersPanel::OnBoneControllerChanged(int index)
