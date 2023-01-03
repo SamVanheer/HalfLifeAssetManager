@@ -66,6 +66,7 @@ Component.prototype.createOperations = function()
 	{
 		var isRegisterMDLChecked = optionsForm.RegisterMDLExtension.checked;
 		var addStartMenuEntry = optionsForm.AddStartMenuEntry.checked;
+		var addDesktopShortcut = optionsForm.AddDesktopShortcut.checked;
     }
 	
 	if (systemInfo.productType === "windows")
@@ -81,9 +82,24 @@ Component.prototype.createOperations = function()
 		
 		if (addStartMenuEntry)
 		{
-			component.addOperation("CreateShortcut", "@TargetDir@/bin/HLAM.exe", "@StartMenuDir@/Half-Life Asset Manager.lnk",
-            "workingDirectory=@TargetDir@/bin", "iconPath=@TargetDir@/bin/HLAM.exe",
-            "iconId=0", "description=Launch Half-Life Asset Manager");
+			component.addOperation("CreateShortcut",
+				"@TargetDir@/bin/HLAM.exe",
+				"@StartMenuDir@/Half-Life Asset Manager.lnk",
+				"workingDirectory=@TargetDir@/bin",
+				"iconPath=@TargetDir@/bin/HLAM.exe",
+				"iconId=0",
+				"description=Launch Half-Life Asset Manager");
+		}
+		
+		if (addDesktopShortcut)
+		{
+			component.addOperation("CreateShortcut",
+				"@TargetDir@/bin/HLAM.exe",
+				"@DesktopDir@/Half-Life Asset Manager.lnk",
+				"workingDirectory=@TargetDir@/bin",
+				"iconPath=@TargetDir@/bin/HLAM.exe",
+				"iconId=0",
+				"description=Launch Half-Life Asset Manager");
 		}
 		
 		// Exit code 1638 is returned when the redist is already installed
