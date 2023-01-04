@@ -101,6 +101,8 @@ public:
 	static constexpr graphics::TextureFilter DefaultMagFilter{graphics::TextureFilter::Linear};
 	static constexpr graphics::MipmapFilter DefaultMipmapFilter{graphics::MipmapFilter::None};
 
+	static constexpr int MinimumAspectRatio{1};
+	static constexpr int MaximumAspectRatio{100};
 	static constexpr glm::vec2 DefaultAspectRatio{16.f, 9.f};
 
 	explicit ApplicationSettings(QSettings* settings);

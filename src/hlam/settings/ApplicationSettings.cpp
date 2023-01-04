@@ -116,8 +116,10 @@ void ApplicationSettings::LoadSettings()
 
 	_msaaLevel = _settings->value("MSAALevel", DefaultMSAALevel).toInt();
 	TransparentScreenshots = _settings->value("TransparentScreenshots", DefaultTransparentScreenshots).toBool();
-	_aspectRatio.x = std::floor(_settings->value("AspectRatio/X", DefaultAspectRatio.x).toFloat());
-	_aspectRatio.y = std::floor(_settings->value("AspectRatio/Y", DefaultAspectRatio.y).toFloat());
+	_aspectRatio.x = std::clamp(_settings->value("AspectRatio/X", static_cast<int>(DefaultAspectRatio.x)).toInt(),
+		MinimumAspectRatio, MaximumAspectRatio);
+	_aspectRatio.y = std::clamp(_settings->value("AspectRatio/Y", static_cast<int>(DefaultAspectRatio.y)).toInt(),
+		MinimumAspectRatio, MaximumAspectRatio);
 	_settings->endGroup();
 
 	_recentFiles->LoadSettings();
@@ -162,8 +164,8 @@ void ApplicationSettings::SaveSettings()
 
 	_settings->setValue("MSAALevel", _msaaLevel);
 	_settings->setValue("TransparentScreenshots", DefaultTransparentScreenshots);
-	_settings->setValue("AspectRatio/X", _aspectRatio.x);
-	_settings->setValue("AspectRatio/Y", _aspectRatio.y);
+	_settings->setValue("AspectRatio/X", static_cast<int>(_aspectRatio.x));
+	_settings->setValue("AspectRatio/Y", static_cast<int>(_aspectRatio.y));
 	_settings->endGroup();
 
 	_recentFiles->SaveSettings();

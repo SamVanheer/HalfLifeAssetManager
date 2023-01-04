@@ -22,6 +22,11 @@ ModelDisplayPanel::ModelDisplayPanel(StudioModelAssetProvider* provider)
 {
 	_ui.setupUi(this);
 
+	for (auto spinner : {_ui.AspectRatioX, _ui.AspectRatioY})
+	{
+		spinner->setRange(ApplicationSettings::MinimumAspectRatio, ApplicationSettings::MaximumAspectRatio);
+	}
+
 	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &ModelDisplayPanel::OnAssetChanged);
 
 	connect(_ui.RenderModeComboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &ModelDisplayPanel::OnRenderModeChanged);
