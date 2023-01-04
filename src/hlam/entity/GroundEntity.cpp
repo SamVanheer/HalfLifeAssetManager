@@ -90,7 +90,7 @@ void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		auto colors = GetContext()->Asset->GetEditorContext()->GetColorSettings();
 
-		std::optional<GLuint> texture;
+		GLuint texture = GetContext()->Asset->GetProvider()->GetDefaultGroundTexture();
 
 		if (_hasTexture)
 		{

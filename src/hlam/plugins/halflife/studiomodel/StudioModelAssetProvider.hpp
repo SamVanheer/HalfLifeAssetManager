@@ -7,6 +7,8 @@
 
 #include "assets/Assets.hpp"
 
+#include "graphics/OpenGL.hpp"
+
 #include "ui/StateSnapshot.hpp"
 
 class QAction;
@@ -79,6 +81,8 @@ public:
 
 	StudioModelAsset* GetCurrentAsset() const { return _currentAsset; }
 
+	GLuint GetDefaultGroundTexture() const { return _defaultGroundTexture; }
+
 signals:
 	void Tick();
 
@@ -103,6 +107,8 @@ private:
 	StudioModelAsset* _currentAsset{};
 
 	StateSnapshot _cameraSnapshot;
+
+	GLuint _defaultGroundTexture{0};
 };
 
 /**

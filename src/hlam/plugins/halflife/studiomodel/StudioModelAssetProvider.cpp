@@ -1,15 +1,20 @@
+#include <algorithm>
 #include <cassert>
 
 #include <QDockWidget>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMenu>
+#include <QOpenGLFunctions_1_1>
 #include <QSignalBlocker>
 
 #include "formats/sprite/SpriteRenderer.hpp"
 #include "formats/studiomodel/StudioModelIO.hpp"
 #include "formats/studiomodel/StudioModelRenderer.hpp"
 #include "formats/studiomodel/StudioModelUtils.hpp"
+
+#include "graphics/IGraphicsContext.hpp"
+#include "graphics/Palette.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/StudioModelAssetProvider.hpp"
@@ -62,10 +67,61 @@ void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
 
 	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAssetProvider::OnTick);
 	connect(_editorContext, &EditorContext::ActiveAssetChanged, this, &StudioModelAssetProvider::OnActiveAssetChanged);
+
+	{
+		const auto graphicsContext = _editorContext->GetGraphicsContext();
+		const auto openglFunctions = _editorContext->GetOpenGLFunctions();
+
+		graphicsContext->Begin();
+		openglFunctions->glGenTextures(1, &_defaultGroundTexture);
+		openglFunctions->glBindTexture(GL_TEXTURE_2D, _defaultGroundTexture);
+
+		const int side = 64;
+		const int pixelCount = side * side;
+
+		graphics::RGB24 pixels[pixelCount];
+
+		// Paint texture as darkish gray with black lines in the center (based on Source's dev_measuregeneric01b).
+		// Gray/white lines don't look so good due to transparency.
+		const graphics::RGB24 groundColor{90, 90, 90};
+		const graphics::RGB24 lineColor{0, 0, 0};
+
+		std::fill(std::begin(pixels), std::end(pixels), groundColor);
+
+		for (int edge = 0; edge < 2; ++edge)
+		{
+			const int middle = (side / 2) - edge;
+
+			for (int i = 0; i < side; ++i)
+			{
+				pixels[(side * middle) + i] = lineColor;
+			}
+
+			for (int i = 0; i < side; ++i)
+			{
+				pixels[middle + (i * side)] = lineColor;
+			}
+		}
+
+		openglFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, side, side, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+		openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		graphicsContext->End();
+	}
 }
 
 void StudioModelAssetProvider::Shutdown()
 {
+	{
+		const auto graphicsContext = _editorContext->GetGraphicsContext();
+		const auto openglFunctions = _editorContext->GetOpenGLFunctions();
+
+		graphicsContext->Begin();
+		openglFunctions->glDeleteTextures(1, &_defaultGroundTexture);
+		_defaultGroundTexture = 0;
+		graphicsContext->End();
+	}
+
 	if (_editWidget)
 	{
 		_editorContext->GetSettings()->setValue(WindowStateKey, _editWidget->SaveState());
