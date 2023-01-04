@@ -19,7 +19,6 @@ class EditorContext;
 class FileListPanel;
 class FullscreenWidget;
 class GameConfiguration;
-class GameEnvironment;
 class QActionGroup;
 
 enum class LoadResult
@@ -56,7 +55,7 @@ private:
 
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
 
-	void SetupFileSystem(std::pair<GameEnvironment*, GameConfiguration*> activeConfiguration);
+	void SetupFileSystem(const GameConfiguration* configuration);
 
 private slots:
 	LoadResult TryLoadAsset(QString fileName);
@@ -103,10 +102,7 @@ private slots:
 
 	void OnShowAbout();
 
-	void OnActiveConfigurationChanged(std::pair<GameEnvironment*, GameConfiguration*> current,
-		std::pair<GameEnvironment*, GameConfiguration*> previous);
-
-	void OnGameConfigurationDirectoryChanged();
+	void OnConfigurationUpdated(const GameConfiguration* configuration);
 
 private:
 	Ui_MainWindow _ui;

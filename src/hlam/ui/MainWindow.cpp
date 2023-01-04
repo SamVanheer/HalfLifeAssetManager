@@ -221,8 +221,8 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	connect(_editorContext, &EditorContext::TryingToLoadAsset, this, &MainWindow::TryLoadAsset);
 	connect(_editorContext, &EditorContext::SettingsChanged, this, &MainWindow::SyncSettings);
-	connect(_editorContext->GetGameConfigurations(), &GameConfigurationsSettings::ActiveConfigurationChanged,
-		this, &MainWindow::OnActiveConfigurationChanged);
+	connect(_editorContext->GetGameConfigurations(), &GameConfigurationsSettings::DefaultConfigurationChanged,
+		this, &MainWindow::SetupFileSystem);
 
 	{
 		const bool isSoundAvailable = _editorContext->GetSoundSystem()->IsSoundAvailable();
@@ -243,7 +243,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	_assetTabs->setVisible(false);
 
 	OnRecentFilesChanged();
-	OnActiveConfigurationChanged(_editorContext->GetGameConfigurations()->GetActiveConfiguration(), {});
+	SetupFileSystem(_editorContext->GetGameConfigurations()->GetDefaultConfiguration());
 
 	setWindowTitle({});
 
@@ -1004,61 +1004,41 @@ Build Date: %10
 	);
 }
 
-void MainWindow::SetupFileSystem(std::pair<GameEnvironment*, GameConfiguration*> activeConfiguration)
+void MainWindow::SetupFileSystem(const GameConfiguration* configuration)
 {
 	auto fileSystem = _editorContext->GetFileSystem();
 
 	fileSystem->RemoveAllSearchPaths();
 
-	const auto environment = activeConfiguration.first;
-	const auto configuration = activeConfiguration.second;
-	const auto defaultGameConfiguration = environment->GetGameConfigurationById(environment->GetDefaultModId());
-
-	fileSystem->SetBasePath(environment->GetInstallationPath().toStdString().c_str());
+	if (!configuration)
+	{
+		return;
+	}
 
 	const auto directoryExtensions{GetSteamPipeDirectoryExtensions()};
 
-	const auto gameDir{defaultGameConfiguration->GetDirectory().toStdString()};
-	const auto modDir{configuration->GetDirectory().toStdString()};
+	const auto gameDir{configuration->BaseGameDirectory.toStdString()};
+	const auto modDir{configuration->ModDirectory.toStdString()};
 
 	//Add mod dirs first since they override game dirs
 	if (gameDir != modDir)
 	{
 		for (const auto& extension : directoryExtensions)
 		{
-			fileSystem->AddSearchPath((modDir + extension).c_str());
+			fileSystem->AddSearchPath(modDir + extension);
 		}
 	}
 
 	for (const auto& extension : directoryExtensions)
 	{
-		fileSystem->AddSearchPath((gameDir + extension).c_str());
+		fileSystem->AddSearchPath(gameDir + extension);
 	}
 }
 
-void MainWindow::OnActiveConfigurationChanged(std::pair<GameEnvironment*, GameConfiguration*> current,
-	std::pair<GameEnvironment*, GameConfiguration*> previous)
+void MainWindow::OnConfigurationUpdated(const GameConfiguration* configuration)
 {
-	if (previous.second)
+	if (configuration == _editorContext->GetGameConfigurations()->GetDefaultConfiguration())
 	{
-		disconnect(previous.second, &GameConfiguration::DirectoryChanged, this, &MainWindow::OnGameConfigurationDirectoryChanged);
+		SetupFileSystem(_editorContext->GetGameConfigurations()->GetDefaultConfiguration());
 	}
-
-	if (current.second)
-	{
-		connect(current.second, &GameConfiguration::DirectoryChanged, this, &MainWindow::OnGameConfigurationDirectoryChanged);
-
-		SetupFileSystem(current);
-	}
-	else
-	{
-		auto fileSystem = _editorContext->GetFileSystem();
-
-		fileSystem->RemoveAllSearchPaths();
-	}
-}
-
-void MainWindow::OnGameConfigurationDirectoryChanged()
-{
-	SetupFileSystem(_editorContext->GetGameConfigurations()->GetActiveConfiguration());
 }

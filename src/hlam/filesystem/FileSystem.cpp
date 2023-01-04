@@ -6,28 +6,6 @@
 
 #include "utility/IOUtils.hpp"
 
-FileSystem::FileSystem()
-{
-	SetBasePath(".");
-}
-
-FileSystem::~FileSystem() = default;
-
-std::string FileSystem::GetBasePath() const
-{
-	return _basePath;
-}
-
-void FileSystem::SetBasePath(std::string&& path)
-{
-	if (path.empty())
-	{
-		return;
-	}
-
-	_basePath = std::move(path);
-}
-
 bool FileSystem::HasSearchPath(std::string_view path) const
 {
 	if (path.empty())
@@ -83,7 +61,7 @@ std::string FileSystem::GetRelativePath(std::string_view fileName)
 	for (const auto& path : _searchPaths)
 	{
 		stream.str({});
-		stream << _basePath << '/' << path << '/' << fileName;
+		stream << path << '/' << fileName;
 
 		auto result = stream.str();
 
@@ -93,27 +71,26 @@ std::string FileSystem::GetRelativePath(std::string_view fileName)
 		}
 	}
 
-	stream.str({});
-	stream << _basePath << '/' << fileName;
-
 	auto result = stream.str();
 
-	if (FileExists(result))
+	if (FileExists(fileName))
 	{
-		return result;
+		return std::string{fileName};
 	}
 
 	return {};
 }
 
-bool FileSystem::FileExists(const std::string& fileName) const
+bool FileSystem::FileExists(std::string_view fileName) const
 {
 	if (fileName.empty())
 	{
 		return false;
 	}
 
-	if (FILE* file = utf8_fopen(fileName.c_str(), "r"); file)
+	const std::string fullName{fileName};
+
+	if (FILE* file = utf8_fopen(fullName.c_str(), "r"); file)
 	{
 		fclose(file);
 

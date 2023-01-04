@@ -9,9 +9,18 @@
 #include <QDebug>
 #include <QObject>
 #include <QSettings>
+#include <QString>
+#include <QUuid>
 
-#include "settings/GameConfiguration.hpp"
-#include "settings/GameEnvironment.hpp"
+class GameConfiguration final
+{
+public:
+	QUuid Id;
+	QString Name;
+	QString GameExecutable;
+	QString BaseGameDirectory;
+	QString ModDirectory;
+};
 
 class GameConfigurationsSettings final : public QObject
 {
@@ -27,178 +36,95 @@ public:
 
 	void LoadSettings()
 	{
-		RemoveAllGameEnvironments();
+		RemoveAll();
 
-		_settings->beginGroup("GameEnvironments");
+		_settings->beginGroup("GameConfigurations");
 
-		const int environmentCount = _settings->beginReadArray("List");
+		const int configurationCount = _settings->beginReadArray("List");
 
-		for (int i = 0; i < environmentCount; ++i)
+		for (int i = 0; i < configurationCount; ++i)
 		{
 			_settings->setArrayIndex(i);
 
-			const auto environmentId{_settings->value("Id").toUuid()};
-			auto environmentName{_settings->value("Name").toString()};
-			auto environmentInstallationPath{_settings->value("InstallationPath").toString()};
-			const auto environmentDefaultMod{_settings->value("DefaultMod").toUuid()};
+			const auto configurationId{_settings->value("Id").toUuid()};
 
-			if (!environmentId.isNull())
+			if (!configurationId.isNull())
 			{
-				auto environment{std::make_unique<GameEnvironment>(environmentId, std::move(environmentName))};
-
-				environment->SetInstallationPath(std::move(environmentInstallationPath));
-
-				const int configurationCount = _settings->beginReadArray("Configurations");
-
-				for (int c = 0; c < configurationCount; ++c)
+				GameConfiguration configuration
 				{
-					_settings->setArrayIndex(c);
+					.Id = configurationId,
+					.Name = _settings->value("Name").toString(),
+					.GameExecutable = _settings->value("GameExecutable").toString(),
+					.BaseGameDirectory = _settings->value("BaseGameDirectory").toString(),
+					.ModDirectory = _settings->value("ModDirectory").toString()
+				};
 
-					const auto configurationId{_settings->value("Id").toUuid()};
-					auto configurationDirectory{_settings->value("Directory").toString()};
-					auto configurationName{_settings->value("Name").toString()};
-
-					if (!configurationId.isNull())
-					{
-						auto configuration{std::make_unique<GameConfiguration>(configurationId, std::move(configurationDirectory), std::move(configurationName))};
-
-						environment->AddGameConfiguration(std::move(configuration));
-					}
-					else
-					{
-						qDebug() << "Game configuration \"" << c << "\" in environment \"" << environment->GetName() << "\" has invalid settings data";
-					}
-				}
-
-				_settings->endArray();
-
-				if (!environmentDefaultMod.isNull() && environment->GetGameConfigurationById(environmentDefaultMod))
-				{
-					environment->SetDefaultModId(environmentDefaultMod);
-				}
-
-				AddGameEnvironment(std::move(environment));
+				AddConfiguration(std::make_unique<GameConfiguration>(std::move(configuration)));
 			}
 			else
 			{
-				qDebug() << "Game environment \"" << i << "\" has invalid settings data";
+				qDebug() << "Game configuration \"" << i << "\" has invalid settings data";
 			}
 		}
 
 		_settings->endArray();
 
-		{
-			_settings->beginGroup("ActiveConfiguration");
-
-			const auto environmentId{_settings->value("EnvironmentId").toUuid()};
-			const auto configurationId{_settings->value("ConfigurationId").toUuid()};
-
-			auto activeEnvironment{GetGameEnvironmentById(environmentId)};
-
-			GameConfiguration* activeConfiguration{nullptr};
-
-			if (activeEnvironment)
-			{
-				activeConfiguration = activeEnvironment->GetGameConfigurationById(configurationId);
-			}
-
-			SetActiveConfiguration({activeEnvironment, activeConfiguration});
-
-			_settings->endGroup();
-		}
+		SetDefaultConfiguration(_settings->value("DefaultConfigurationId").toUuid());
 
 		_settings->endGroup();
 	}
 
 	void SaveSettings()
 	{
-		_settings->beginGroup("GameEnvironments");
+		_settings->beginGroup("GameConfigurations");
 
 		_settings->remove("List");
 
-		_settings->beginWriteArray("List", _gameEnvironments.size());
+		_settings->beginWriteArray("List", _gameConfigurations.size());
 
-		for (int i = 0; i < _gameEnvironments.size(); ++i)
+		for (int i = 0; i < _gameConfigurations.size(); ++i)
 		{
-			const auto environment = _gameEnvironments[i].get();
-
-			const auto configurations = environment->GetGameConfigurations();
+			const auto configuration = _gameConfigurations[i].get();
 
 			_settings->setArrayIndex(i);
 
-			_settings->setValue("Id", environment->GetId());
-			_settings->setValue("Name", environment->GetName());
-			_settings->setValue("InstallationPath", environment->GetInstallationPath());
-			_settings->setValue("DefaultMod", environment->GetDefaultModId());
-
-			_settings->remove("Configurations");
-
-			_settings->beginWriteArray("Configurations", configurations.size());
-
-			for (int c = 0; c < configurations.size(); ++c)
-			{
-				const auto configuration = configurations[c];
-
-				_settings->setArrayIndex(c);
-
-				_settings->setValue("Id", configuration->GetId());
-				_settings->setValue("Directory", configuration->GetDirectory());
-				_settings->setValue("Name", configuration->GetName());
-			}
-
-			_settings->endArray();
+			_settings->setValue("Id", configuration->Id);
+			_settings->setValue("Name", configuration->Name);
+			_settings->setValue("GameExecutable", configuration->GameExecutable);
+			_settings->setValue("BaseGameDirectory", configuration->BaseGameDirectory);
+			_settings->setValue("ModDirectory", configuration->ModDirectory);
 		}
 
 		_settings->endArray();
 
-		{
-			const auto activeConfiguration = GetActiveConfiguration();
-
-			_settings->beginGroup("ActiveConfiguration");
-
-			QUuid environmentId{};
-			QUuid configurationId{};
-
-			if (activeConfiguration.first)
-			{
-				environmentId = activeConfiguration.first->GetId();
-			}
-
-			if (activeConfiguration.second)
-			{
-				configurationId = activeConfiguration.second->GetId();
-			}
-
-			_settings->setValue("EnvironmentId", environmentId);
-			_settings->setValue("ConfigurationId", configurationId);
-
-			_settings->endGroup();
-		}
+		_settings->setValue("DefaultConfigurationId", _defaultConfiguration);
 
 		_settings->endGroup();
 	}
 
-	std::vector<GameEnvironment*> GetGameEnvironments() const
+	std::vector<const GameConfiguration*> GetConfigurations() const
 	{
-		std::vector<GameEnvironment*> environments;
+		std::vector<const GameConfiguration*> configurations;
 
-		environments.reserve(_gameEnvironments.size());
+		configurations.reserve(_gameConfigurations.size());
 
-		std::transform(_gameEnvironments.begin(), _gameEnvironments.end(), std::back_inserter(environments), [](const auto& environment)
+		std::transform(_gameConfigurations.begin(), _gameConfigurations.end(), std::back_inserter(configurations),
+			[](const auto& configuration)
 			{
-				return environment.get();
+				return configuration.get();
 			});
 
-		return environments;
+		return configurations;
 	}
 
-	GameEnvironment* GetGameEnvironmentById(const QUuid& id) const
+	const GameConfiguration* GetConfigurationById(const QUuid& id) const
 	{
-		if (auto it = std::find_if(_gameEnvironments.begin(), _gameEnvironments.end(), [&](const auto& environment)
+		if (auto it = std::find_if(_gameConfigurations.begin(), _gameConfigurations.end(),
+			[&](const auto& configuration)
 			{
-				return environment->GetId() == id;
+				return configuration->Id == id;
 			}
-		); it != _gameEnvironments.end())
+		); it != _gameConfigurations.end())
 		{
 			return it->get();
 		}
@@ -206,79 +132,94 @@ public:
 		return nullptr;
 	}
 
-	void AddGameEnvironment(std::unique_ptr<GameEnvironment>&& gameEnvironment)
+	void AddConfiguration(std::unique_ptr<GameConfiguration>&& configuration)
 	{
-		assert(gameEnvironment);
+		auto& ref = _gameConfigurations.emplace_back(std::move(configuration));
 
-		auto& ref = _gameEnvironments.emplace_back(std::move(gameEnvironment));
-
-		emit GameEnvironmentAdded(ref.get());
+		emit ConfigurationAdded(ref.get());
 	}
 
-	void RemoveGameEnvironment(const QUuid& id)
+	void RemoveConfiguration(const QUuid& id)
 	{
-		if (auto it = std::find_if(_gameEnvironments.begin(), _gameEnvironments.end(), [&](const auto& environment)
+		if (auto it = std::find_if(_gameConfigurations.begin(), _gameConfigurations.end(),
+			[&](const auto& configuration)
 			{
-				return environment->GetId() == id;
+				return configuration->Id == id;
 			}
-		); it != _gameEnvironments.end())
+		); it != _gameConfigurations.end())
 		{
-			const std::unique_ptr<GameEnvironment> gameEnvironment{std::move(*it)};
+			const std::unique_ptr<GameConfiguration> gameConfiguration{std::move(*it)};
 
-			if (_activeConfiguration.first == gameEnvironment.get())
+			if (_defaultConfiguration == id)
 			{
-				SetActiveConfiguration({});
+				SetDefaultConfiguration({});
 			}
 
-			_gameEnvironments.erase(it);
+			_gameConfigurations.erase(it);
 
-			emit GameEnvironmentRemoved(gameEnvironment.get());
+			emit ConfigurationRemoved(gameConfiguration.get());
 		}
 	}
 
-	void RemoveAllGameEnvironments()
+	void UpdateConfiguration(const GameConfiguration& configuration)
 	{
-		SetActiveConfiguration({nullptr, nullptr});
+		auto target = const_cast<GameConfiguration*>(GetConfigurationById(configuration.Id));
 
-		for (auto it = _gameEnvironments.begin(); it != _gameEnvironments.end();)
+		if (!target)
 		{
-			const std::unique_ptr<GameEnvironment> gameEnvironment{std::move(*it)};
-			it = _gameEnvironments.erase(it);
-			emit GameEnvironmentRemoved(gameEnvironment.get());
+			qDebug() << "Invalid configuration id passed to UpdateConfiguration";
+		}
+
+		*target = configuration;
+
+		emit ConfigurationUpdated(target);
+	}
+
+	void RemoveAll()
+	{
+		SetDefaultConfiguration(QUuid{});
+
+		for (auto it = _gameConfigurations.begin(); it != _gameConfigurations.end();)
+		{
+			const std::unique_ptr<GameConfiguration> gameConfiguration{std::move(*it)};
+			it = _gameConfigurations.erase(it);
+			emit ConfigurationRemoved(gameConfiguration.get());
 		}
 	}
 
-	std::pair<GameEnvironment*, GameConfiguration*> GetActiveConfiguration() const { return _activeConfiguration; }
+	const GameConfiguration* GetDefaultConfiguration() const { return GetConfigurationById(_defaultConfiguration); }
 
-	void SetActiveConfiguration(std::pair<GameEnvironment*, GameConfiguration*> configuration)
+	void SetDefaultConfiguration(const QUuid& id)
 	{
-		if (_activeConfiguration != configuration)
+		if (_defaultConfiguration != id)
 		{
-			const auto previous = _activeConfiguration;
+			const auto current = GetConfigurationById(id);
 
-			if (configuration.second && !configuration.first)
+			if (!id.isNull() && !current)
 			{
-				qDebug() << "The active configuration requires a valid environment if the configuration is not null";
-				configuration.second = nullptr;
+				qDebug() << "Invalid configuration id passed to SetDefaultConfiguration";
+				return;
 			}
 
-			_activeConfiguration = configuration;
+			const auto previous = GetConfigurationById(_defaultConfiguration);
 
-			emit ActiveConfigurationChanged(configuration, previous);
+			_defaultConfiguration = id;
+
+			emit DefaultConfigurationChanged(current, previous);
 		}
 	}
 
 signals:
-	void GameEnvironmentAdded(GameEnvironment* gameEnvironment);
-	void GameEnvironmentRemoved(GameEnvironment* gameEnvironment);
+	void ConfigurationAdded(const GameConfiguration* configuration);
+	void ConfigurationRemoved(const GameConfiguration* configuration);
+	void ConfigurationUpdated(const GameConfiguration* configuration);
 
-	void ActiveConfigurationChanged(std::pair<GameEnvironment*, GameConfiguration*> current,
-		std::pair<GameEnvironment*, GameConfiguration*> previous);
+	void DefaultConfigurationChanged(const GameConfiguration* current, const GameConfiguration* previous);
 
 private:
 	QSettings* const _settings;
 
-	std::vector<std::unique_ptr<GameEnvironment>> _gameEnvironments;
+	std::vector<std::unique_ptr<GameConfiguration>> _gameConfigurations;
 
-	std::pair<GameEnvironment*, GameConfiguration*> _activeConfiguration{};
+	QUuid _defaultConfiguration;
 };

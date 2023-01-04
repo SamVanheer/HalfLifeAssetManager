@@ -1,5 +1,8 @@
 target_sources(HLAM
 	PRIVATE
+		EditGameConfigurationsDialog.cpp
+		EditGameConfigurationsDialog.hpp
+		EditGameConfigurationsDialog.ui
 		OptionsDialog.cpp
 		OptionsDialog.hpp
 		OptionsDialog.ui

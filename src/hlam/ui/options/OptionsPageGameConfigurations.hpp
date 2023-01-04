@@ -17,8 +17,8 @@
 
 class ApplicationSettings;
 class EditorContext;
+class GameConfiguration;
 class GameConfigurationsSettings;
-class GameEnvironment;
 
 extern const QString OptionsPageGameConfigurationsId;
 
@@ -72,48 +72,37 @@ class OptionsPageGameConfigurationsWidget final : public OptionsWidget
 	};
 
 public:
-	OptionsPageGameConfigurationsWidget(EditorContext* editorContext);
+	explicit OptionsPageGameConfigurationsWidget(EditorContext* editorContext);
 	~OptionsPageGameConfigurationsWidget();
 
 	void ApplyChanges() override;
 
 private:
-	ChangeSet* GetOrCreateGameConfigurationChangeSet(const QUuid& id);
-
-	void AddGameEnvironment(std::unique_ptr<GameEnvironment>&& gameEnvironment);
+	void AddGameConfiguration(std::unique_ptr<GameConfiguration>&& configuration);
 
 private slots:
-	void OnActiveGameEnvironmentChanged(int index);
+	void OnEditGameConfigurations();
 
-	void OnGameEnvironmentNameChanged(const QModelIndex& topLeft);
-	void OnGameEnvironmentSelectionChanged(const QModelIndex& current, const QModelIndex& previous);
+	void OnConfigurationChanged(int index);
 
-	void OnNewGameEnvironment();
-	void OnRemoveGameEnvironment();
+	void OnGameExecutableChanged(const QString& text);
+	void OnBrowseGameExecutable();
 
-	void OnGameInstallLocationChanged(const QString& text);
-	void OnBrowseGameInstallation();
+	void OnBaseGameDirectoryChanged(const QString& text);
+	void OnBrowseBaseGameDirectory();
 
-	void OnDefaultGameChanged();
-
-	void OnGameConfigurationDataChanged(const QModelIndex& topLeft);
-	void OnGameConfigurationSelectionChanged(const QModelIndex& current, const QModelIndex& previous);
-
-	void OnNewGameConfiguration();
-	void OnRemoveGameConfiguration();
+	void OnModDirectoryChanged(const QString& text);
+	void OnBrowseModDirectory();
 
 private:
 	Ui_OptionsPageGameConfigurations _ui;
 
 	EditorContext* const _editorContext;
 
-	std::vector<std::unique_ptr<GameEnvironment>> _gameEnvironments;
+	std::vector<std::unique_ptr<GameConfiguration>> _gameConfigurations;
 
-	ChangeSet _gameEnvironmentsChangeSet;
+	ChangeSet _gameConfigurationsChangeSet;
 
-	std::unordered_map<QUuid, std::unique_ptr<ChangeSet>> _gameConfigurationsChangeSet;
-
-	QStandardItemModel* _gameEnvironmentsModel;
 	QStandardItemModel* _gameConfigurationsModel;
 
 	bool _currentEnvironmentIsActive = false;

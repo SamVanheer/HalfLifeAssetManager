@@ -13,15 +13,11 @@
 class FileSystem final : public IFileSystem
 {
 public:
-	FileSystem();
-	~FileSystem();
+	FileSystem() = default;
+	~FileSystem() = default;
 
 	FileSystem(const FileSystem&) = delete;
 	FileSystem& operator=(const FileSystem&) = delete;
-
-	std::string GetBasePath() const override final;
-
-	void SetBasePath(std::string&& path) override final;
 
 	bool HasSearchPath(std::string_view path) const override final;
 
@@ -33,10 +29,9 @@ public:
 
 	std::string GetRelativePath(std::string_view fileName) override final;
 
-	bool FileExists(const std::string& fileName) const override final;
+	bool FileExists(std::string_view fileName) const override final;
 
 private:
-	std::string _basePath;
 	std::vector<std::string> _searchPaths;
 };
 
