@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QMap>
-#include <QObject>
 #include <QString>
 #include <QStringList>
 #include <QVariant>
@@ -9,11 +8,17 @@
 /**
 *	@brief Used to create and restore snapshots of an asset's UI state
 */
-class StateSnapshot : public QObject
+class StateSnapshot
 {
 public:
-	using QObject::QObject;
+	explicit StateSnapshot() = default;
 	~StateSnapshot() = default;
+
+	StateSnapshot(const StateSnapshot&) = default;
+	StateSnapshot& operator=(const StateSnapshot&) = default;
+
+	StateSnapshot(StateSnapshot&&) = default;
+	StateSnapshot& operator=(StateSnapshot&&) = default;
 
 	QStringList AllKeys() const;
 

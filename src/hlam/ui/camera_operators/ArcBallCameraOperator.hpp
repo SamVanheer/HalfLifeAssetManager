@@ -14,16 +14,6 @@
 */
 class ArcBallCameraOperator : public SceneCameraOperator
 {
-private:
-	struct ArcBallParameters
-	{
-		glm::vec3 TargetPosition{0};
-
-		float Pitch{0};
-		float Yaw{0};
-		float Distance{0};
-	};
-
 public:
 	static constexpr float DefaultFOV = 65.f;
 
@@ -83,20 +73,20 @@ public:
 						|| (event.buttons() & Qt::MouseButton::ExtraButton1))
 					{
 						//Drag the camera across the view plane
-						_parameters.TargetPosition += _camera.GetRightVector() * horizontalAdjust;
-						_parameters.TargetPosition += _camera.GetUpVector() * verticalAdjust;
+						_targetPosition += _camera.GetRightVector() * horizontalAdjust;
+						_targetPosition += _camera.GetUpVector() * verticalAdjust;
 					}
 					else
 					{
-						_parameters.Yaw -= horizontalAdjust;
-						_parameters.Pitch -= verticalAdjust;
+						_yaw -= horizontalAdjust;
+						_pitch -= verticalAdjust;
 					}
 				}
 				else if (event.buttons() & Qt::MouseButton::RightButton)
 				{
 					const auto adjust = GetMouseYValue(static_cast<float>(event.y() - _oldCoordinates.y));
 
-					_parameters.Distance += adjust;
+					_distance += adjust;
 
 					_oldCoordinates.x = event.x();
 					_oldCoordinates.y = event.y();
@@ -117,7 +107,7 @@ public:
 	{
 		if (const QPoint degrees = event.angleDelta() / 8; !degrees.isNull())
 		{
-			_parameters.Distance -= (degrees.y() / 15.f) * _applicationSettings->GetMouseWheelSpeed();
+			_distance -= (degrees.y() / 15.f) * _applicationSettings->GetMouseWheelSpeed();
 			UpdateArcBallCamera();
 		}
 
@@ -129,31 +119,46 @@ public:
 		SetTargetPosition(targetOrigin, pitch, yaw, glm::length(targetOrigin - cameraOrigin));
 	}
 
-	void SaveView() override
+	bool SaveView(StateSnapshot* snapshot) override
 	{
-		_savedParameters = _parameters;
+		snapshot->SetValue("TargetPosition/X", _targetPosition.x);
+		snapshot->SetValue("TargetPosition/Y", _targetPosition.y);
+		snapshot->SetValue("TargetPosition/Z", _targetPosition.z);
+
+		snapshot->SetValue("Pitch", _pitch);
+		snapshot->SetValue("Yaw", _yaw);
+		snapshot->SetValue("Distance", _distance);
+
+		return true;
 	}
 
-	void RestoreView() override
+	void RestoreView(StateSnapshot* snapshot) override
 	{
-		_parameters = _savedParameters;
+		 _targetPosition.x = snapshot->Value("TargetPosition/X", 0.f).toFloat();
+		 _targetPosition.y = snapshot->Value("TargetPosition/Y", 0.f).toFloat();
+		 _targetPosition.z = snapshot->Value("TargetPosition/Z", 0.f).toFloat();
+
+		 _pitch = snapshot->Value("Pitch", 0.f).toFloat();
+		 _yaw = snapshot->Value("Yaw", 0.f).toFloat();
+		 _distance = snapshot->Value("Distance", 0.f).toFloat();
+
 		UpdateArcBallCamera();
 	}
 
-	const glm::vec3& GetTargetPosition() const { return _parameters.TargetPosition; }
+	const glm::vec3& GetTargetPosition() const { return _targetPosition; }
 
-	float GetPitch() const { return _parameters.Pitch; }
+	float GetPitch() const { return _pitch; }
 
-	float GetYaw() const { return _parameters.Yaw; }
+	float GetYaw() const { return _yaw; }
 
-	float GetDistance() const { return _parameters.Distance; }
+	float GetDistance() const { return _distance; }
 
 	void SetTargetPosition(const glm::vec3& targetPosition, float pitch, float yaw, float distance)
 	{
-		_parameters.TargetPosition = targetPosition;
-		_parameters.Pitch = pitch;
-		_parameters.Yaw = yaw;
-		_parameters.Distance = distance;
+		_targetPosition = targetPosition;
+		_pitch = pitch;
+		_yaw = yaw;
+		_distance = distance;
 
 		UpdateArcBallCamera();
 	}
@@ -162,24 +167,27 @@ private:
 	void UpdateArcBallCamera()
 	{
 		//First create a vector that represents a position at distance without any rotation applied
-		auto cameraPosition = math::ForwardVector * -_parameters.Distance;
+		auto cameraPosition = math::ForwardVector * -_distance;
 
 		//Now apply rotation
 		cameraPosition =
-			glm::rotate(glm::radians(_parameters.Yaw), math::UpVector) *
-			glm::rotate(glm::radians(-_parameters.Pitch), math::RightVector) *
+			glm::rotate(glm::radians(_yaw), math::UpVector) *
+			glm::rotate(glm::radians(-_pitch), math::RightVector) *
 			glm::vec4{cameraPosition, 1};
 
 		//Make relative to target position
-		cameraPosition += _parameters.TargetPosition;
+		cameraPosition += _targetPosition;
 
 		//Set camera variables
-		_camera.SetProperties(cameraPosition, _parameters.Pitch, _parameters.Yaw, _parameters.Distance);
+		_camera.SetProperties(cameraPosition, _pitch, _yaw, _distance);
 
 		emit CameraPropertiesChanged();
 	}
 
 private:
-	ArcBallParameters _parameters;
-	ArcBallParameters _savedParameters;
+	glm::vec3 _targetPosition{0};
+
+	float _pitch{0};
+	float _yaw{0};
+	float _distance{0};
 };

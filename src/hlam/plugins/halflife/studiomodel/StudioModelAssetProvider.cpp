@@ -26,6 +26,7 @@
 #include "settings/StudioModelSettings.hpp"
 
 #include "ui/EditorContext.hpp"
+#include "ui/camera_operators/CameraOperators.hpp"
 
 namespace studiomodel
 {
@@ -139,7 +140,7 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 	}
 
 	{
-		_editControlsVisible = menu->addAction("Show Edit Controls", this,
+		_editControlsVisibleAction = menu->addAction("Show Edit Controls", this,
 			[this, controlsbar, timeline](bool checked)
 			{
 				controlsbar->setEnabled(checked);
@@ -154,9 +155,9 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 				}
 			});
 
-		const QSignalBlocker blocker{_editControlsVisible};
-		_editControlsVisible->setCheckable(true);
-		_editControlsVisible->setChecked(true);
+		const QSignalBlocker blocker{_editControlsVisibleAction};
+		_editControlsVisibleAction->setCheckable(true);
+		_editControlsVisibleAction->setChecked(true);
 	}
 
 	menu->addSeparator();
@@ -191,8 +192,42 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 		centerMenu->addAction("Center On Negative Z", [this]() { GetCurrentAsset()->OnCenterView(Axis::Z, false); });
 	}
 
-	menu->addAction("Save View", this, [this]() { GetCurrentAsset()->OnSaveView(); });
-	menu->addAction("Restore View", this, [this]() { GetCurrentAsset()->OnRestoreView(); });
+	menu->addAction("Save View", this, [this]()
+		{
+			auto cameraOperators = GetCurrentAsset()->GetCameraOperators();
+
+			if (auto cameraOperator = cameraOperators->GetCurrent(); cameraOperator)
+			{
+				StateSnapshot snapshot;
+
+				if (cameraOperator->SaveView(&snapshot))
+				{
+					_cameraSnapshot = std::move(snapshot);
+					_cameraSnapshot.SetValue("CameraIndex", cameraOperators->IndexOf(cameraOperator));
+					_restoreViewAction->setEnabled(true);
+				}
+			}
+		});
+
+	_restoreViewAction = menu->addAction("Restore View", this, [this]()
+		{
+			auto cameraOperators = GetCurrentAsset()->GetCameraOperators();
+
+			const int index = _cameraSnapshot.Value("CameraIndex", -1).toInt();
+
+			if (index == -1)
+			{
+				return;
+			}
+
+			if (const auto cameraOperator = cameraOperators->Get(index); cameraOperator)
+			{
+				cameraOperators->SetCurrent(cameraOperator);
+				cameraOperator->RestoreView(&_cameraSnapshot);
+			}
+		});
+
+	_restoreViewAction->setEnabled(false);
 
 	menu->addSeparator();
 
@@ -264,7 +299,7 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 
 bool StudioModelAssetProvider::AreEditControlsVisible() const
 {
-	return _editControlsVisible->isChecked();
+	return _editControlsVisibleAction->isChecked();
 }
 
 StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget()

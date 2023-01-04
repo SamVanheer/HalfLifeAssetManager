@@ -140,8 +140,6 @@ public:
 	void OnNextCamera();
 
 	void OnCenterView(Axis axis, bool positive);
-	void OnSaveView();
-	void OnRestoreView();
 
 	void OnFlipNormals();
 

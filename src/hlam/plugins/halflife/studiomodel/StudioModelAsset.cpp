@@ -175,8 +175,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	{
 		const auto cameraOperator = _cameraOperators->Get(i);
 		cameraOperator->CenterView(targetOrigin, cameraOrigin, pitch, yaw);
-		//Set initial restoration point to the initial camera view
-		cameraOperator->SaveView();
 	}
 
 	auto studioModelSettings = _provider->GetStudioModelSettings();
@@ -698,22 +696,6 @@ void StudioModelAsset::OnCenterView(Axis axis, bool positive)
 		const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*_modelEntity, axis, positive);
 
 		cameraOperator->CenterView(targetOrigin, cameraOrigin, pitch, yaw);
-	}
-}
-
-void StudioModelAsset::OnSaveView()
-{
-	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
-	{
-		cameraOperator->SaveView();
-	}
-}
-
-void StudioModelAsset::OnRestoreView()
-{
-	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
-	{
-		cameraOperator->RestoreView();
 	}
 }
 

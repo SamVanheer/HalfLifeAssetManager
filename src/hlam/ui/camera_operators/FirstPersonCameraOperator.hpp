@@ -35,8 +35,4 @@ public:
 	}
 
 	void CenterView(const glm::vec3&, const glm::vec3&, float, float) override {}
-
-	void SaveView() override {}
-
-	void RestoreView() override {}
 };

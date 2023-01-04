@@ -15,6 +15,8 @@
 
 #include "settings/ApplicationSettings.hpp"
 
+#include "ui/StateSnapshot.hpp"
+
 class QWidget;
 
 class CameraOperator : public QObject, public graphics::ICameraOperator
@@ -52,9 +54,12 @@ public:
 
 	virtual void CenterView(const glm::vec3& targetOrigin, const glm::vec3& cameraOrigin, float pitch, float yaw) = 0;
 
-	virtual void SaveView() = 0;
+	virtual bool SaveView(StateSnapshot* snapshot)
+	{
+		return false;
+	}
 
-	virtual void RestoreView() = 0;
+	virtual void RestoreView(StateSnapshot* snapshot) {}
 
 protected:
 	float GetMouseXValue(float value)

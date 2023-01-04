@@ -7,6 +7,8 @@
 
 #include "assets/Assets.hpp"
 
+#include "ui/StateSnapshot.hpp"
+
 class QAction;
 class StudioModelSettings;
 
@@ -93,11 +95,14 @@ private:
 	std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	std::unique_ptr<StudioModelAsset> _dummyAsset;
 
-	QPointer<QAction> _editControlsVisible;
+	QPointer<QAction> _editControlsVisibleAction;
+	QPointer<QAction> _restoreViewAction;
 
 	QPointer<StudioModelEditWidget> _editWidget;
 
 	StudioModelAsset* _currentAsset{};
+
+	StateSnapshot _cameraSnapshot;
 };
 
 /**

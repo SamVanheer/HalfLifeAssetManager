@@ -121,17 +121,32 @@ public:
 		emit CameraPropertiesChanged();
 	}
 
-	void SaveView() override
+	bool SaveView(StateSnapshot* snapshot) override
 	{
-		_savedOrigin = _camera.GetOrigin();
-		_savedPitch = _camera.GetPitch();
-		_savedYaw = _camera.GetYaw();
+		snapshot->SetValue("Origin/X", _camera.GetOrigin().x);
+		snapshot->SetValue("Origin/Y", _camera.GetOrigin().y);
+		snapshot->SetValue("Origin/Z", _camera.GetOrigin().z);
+
+		snapshot->SetValue("Pitch", _camera.GetPitch());
+		snapshot->SetValue("Yaw", _camera.GetYaw());
+
+		return true;
 	}
 
-	void RestoreView() override
+	void RestoreView(StateSnapshot* snapshot) override
 	{
 		_camera.SetOrigin(_savedOrigin);
 		_camera.SetAngles(_savedPitch, _savedYaw);
+
+		_camera.SetOrigin(glm::vec3{
+			snapshot->Value("Origin/X", 0.f).toFloat(),
+			snapshot->Value("Origin/Y", 0.f).toFloat(),
+			snapshot->Value("Origin/Z", 0.f).toFloat()
+			});
+
+		_camera.SetPitch(snapshot->Value("Pitch", 0.f).toFloat());
+		_camera.SetYaw(snapshot->Value("Yaw", 0.f).toFloat());
+
 		emit CameraPropertiesChanged();
 	}
 
