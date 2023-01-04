@@ -38,10 +38,10 @@
 
 #include "ui/options/OptionsPageColors.hpp"
 #include "ui/options/OptionsPageExternalPrograms.hpp"
-#include "ui/options/OptionsPageGameConfigurations.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/options/OptionsPageRegistry.hpp"
 #include "ui/options/OptionsPageStyle.hpp"
+#include "ui/options/gameconfigurations/OptionsPageGameConfigurations.hpp"
 
 using namespace logging;
 

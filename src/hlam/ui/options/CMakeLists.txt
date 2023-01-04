@@ -1,8 +1,5 @@
 target_sources(HLAM
 	PRIVATE
-		EditGameConfigurationsDialog.cpp
-		EditGameConfigurationsDialog.hpp
-		EditGameConfigurationsDialog.ui
 		OptionsDialog.cpp
 		OptionsDialog.hpp
 		OptionsDialog.ui
@@ -14,9 +11,6 @@ target_sources(HLAM
 		OptionsPageExternalPrograms.cpp
 		OptionsPageExternalPrograms.hpp
 		OptionsPageExternalPrograms.ui
-		OptionsPageGameConfigurations.cpp
-		OptionsPageGameConfigurations.hpp
-		OptionsPageGameConfigurations.ui
 		OptionsPageGeneral.cpp
 		OptionsPageGeneral.hpp
 		OptionsPageGeneral.ui
@@ -28,3 +22,5 @@ target_sources(HLAM
 		OptionsPageStyle.cpp
 		OptionsPageStyle.hpp
 		OptionsPageStyle.ui)
+
+add_subdirectory(gameconfigurations)

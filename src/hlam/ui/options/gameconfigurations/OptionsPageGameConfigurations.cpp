@@ -9,8 +9,8 @@
 
 #include "ui/EditorContext.hpp"
 
-#include "ui/options/EditGameConfigurationsDialog.hpp"
-#include "ui/options/OptionsPageGameConfigurations.hpp"
+#include "ui/options/gameconfigurations/EditGameConfigurationsDialog.hpp"
+#include "ui/options/gameconfigurations/OptionsPageGameConfigurations.hpp"
 
 //TODO: implement automatic scanning of mods
 

@@ -1,7 +1,7 @@
 #include <QInputDialog>
 #include <QStandardItemModel>
 
-#include "ui/options/EditGameConfigurationsDialog.hpp"
+#include "ui/options/gameconfigurations/EditGameConfigurationsDialog.hpp"
 
 const QString DefaultConfigurationName{"New Game"};
 
