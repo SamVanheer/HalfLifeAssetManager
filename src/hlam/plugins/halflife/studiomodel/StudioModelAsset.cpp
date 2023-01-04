@@ -80,26 +80,13 @@ public:
 	}
 };
 
-static std::tuple<glm::vec3, glm::vec3, float, float> GetCenteredValues(const HLMVStudioModelEntity& entity, Axis axis, bool positive)
+static std::tuple<glm::vec3, glm::vec3, float, float> GetCenteredValues(
+	const HLMVStudioModelEntity& entity, Axis axis, bool positive)
 {
 	glm::vec3 min, max;
 	entity.ExtractBbox(min, max);
 
-	//Clamp the values to a reasonable range
-	for (int i = 0; i < 3; ++i)
-	{
-		//Use different limits for min and max so centering won't end up setting origin to 0 0 0
-		min[i] = std::clamp(min[i], -2000.f, 2000.f);
-		max[i] = std::clamp(max[i], -1000.f, 1000.f);
-	}
-
 	const glm::vec3 size = max - min;
-
-	const float distance{std::max({size.x, size.y, size.z})};
-
-	const int axisIndex = static_cast<int>(axis);
-
-	const int positiveValue = positive ? 1 : -1;
 
 	const glm::vec3 targetOrigin{0, 0, min.z + (size.z / 2)};
 
@@ -107,7 +94,9 @@ static std::tuple<glm::vec3, glm::vec3, float, float> GetCenteredValues(const HL
 	//Offset camera origin to be relative to target
 	glm::vec3 cameraOrigin{targetOrigin};
 
-	cameraOrigin[axisIndex] += distance * positiveValue;
+	const float distance{std::clamp(std::max({size.x, size.y, size.z}), -1000.f, 1000.f)};
+
+	cameraOrigin[static_cast<int>(axis)] += distance * (positive ? 1 : -1);
 
 	//Look back down the axis
 	float pitch = 0;
