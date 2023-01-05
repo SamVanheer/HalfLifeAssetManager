@@ -7,6 +7,7 @@
 #include <QString>
 #include <QUuid>
 
+class IFileSystem;
 class QSettings;
 
 class GameConfiguration final
@@ -49,6 +50,8 @@ public:
 	const GameConfiguration* GetDefaultConfiguration() const { return GetConfigurationById(_defaultConfiguration); }
 
 	void SetDefaultConfiguration(const QUuid& id);
+
+	std::unique_ptr<IFileSystem> CreateFileSystem(const GameConfiguration* configuration) const;
 
 signals:
 	void ConfigurationAdded(const GameConfiguration* configuration);

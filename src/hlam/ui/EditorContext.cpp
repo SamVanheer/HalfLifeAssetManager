@@ -57,7 +57,6 @@ EditorContext::EditorContext(
 
 	, _timer(new QTimer(this))
 
-	, _fileSystem(std::make_unique<FileSystem>())
 	, _soundSystem(_applicationSettings->ShouldEnableAudioPlayback()
 		? std::unique_ptr<ISoundSystem>(std::make_unique<SoundSystem>(CreateQtLoggerSt(logging::HLAMSoundSystem())))
 		: std::make_unique<DummySoundSystem>())

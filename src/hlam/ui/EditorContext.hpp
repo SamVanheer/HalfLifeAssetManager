@@ -16,7 +16,6 @@ class ColorSettings;
 class DragNDropEventFilter;
 class FullscreenWidget;
 class GameConfigurationsSettings;
-class IFileSystem;
 class ISoundSystem;
 class OptionsPageRegistry;
 class QOpenGLFunctions_1_1;
@@ -78,8 +77,6 @@ public:
 	OptionsPageRegistry* GetOptionsPageRegistry() const { return _optionsPageRegistry.get(); }
 
 	QTimer* GetTimer() const { return _timer; }
-
-	IFileSystem* GetFileSystem() const { return _fileSystem.get(); }
 
 	ISoundSystem* GetSoundSystem() const { return _soundSystem.get(); }
 
@@ -158,7 +155,6 @@ private:
 
 	QTimer* const _timer;
 
-	const std::unique_ptr<IFileSystem> _fileSystem;
 	const std::unique_ptr<ISoundSystem> _soundSystem;
 	const std::unique_ptr<WorldTime> _worldTime;
 

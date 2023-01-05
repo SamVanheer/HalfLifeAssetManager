@@ -3,6 +3,9 @@
 #include <QDebug>
 #include <QSettings>
 
+#include "filesystem/FileSystem.hpp"
+#include "filesystem/FileSystemConstants.hpp"
+
 #include "settings/GameConfigurationsSettings.hpp"
 
 void GameConfigurationsSettings::LoadSettings()
@@ -176,4 +179,33 @@ void GameConfigurationsSettings::SetDefaultConfiguration(const QUuid& id)
 
 		emit DefaultConfigurationChanged(current, previous);
 	}
+}
+
+std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const GameConfiguration* configuration) const
+{
+	auto fileSystem = std::make_unique<FileSystem>();
+
+	if (configuration)
+	{
+		const auto directoryExtensions{GetSteamPipeDirectoryExtensions()};
+
+		const auto gameDir{configuration->BaseGameDirectory.toStdString()};
+		const auto modDir{configuration->ModDirectory.toStdString()};
+
+		//Add mod dirs first since they override game dirs
+		if (gameDir != modDir)
+		{
+			for (const auto& extension : directoryExtensions)
+			{
+				fileSystem->AddSearchPath(modDir + extension);
+			}
+		}
+
+		for (const auto& extension : directoryExtensions)
+		{
+			fileSystem->AddSearchPath(gameDir + extension);
+		}
+	}
+
+	return fileSystem;
 }

@@ -16,9 +16,7 @@
 class Asset;
 class AssetProvider;
 class EditorContext;
-class FileListPanel;
 class FullscreenWidget;
-class GameConfiguration;
 class QActionGroup;
 
 enum class LoadResult
@@ -54,8 +52,6 @@ private:
 	bool TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowCancel = true);
 
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
-
-	void SetupFileSystem(const GameConfiguration* configuration);
 
 private slots:
 	LoadResult TryLoadAsset(QString fileName);
@@ -101,8 +97,6 @@ private slots:
 	void OnOpenOptionsDialog();
 
 	void OnShowAbout();
-
-	void OnConfigurationUpdated(const GameConfiguration* configuration);
 
 private:
 	Ui_MainWindow _ui;

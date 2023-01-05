@@ -28,6 +28,8 @@
 #include "entity/PlayerHitboxEntity.hpp"
 #include "entity/TextureEntity.hpp"
 
+#include "filesystem/IFileSystem.hpp"
+
 #include "formats/studiomodel/DumpModelInfo.hpp"
 #include "formats/studiomodel/StudioModelIO.hpp"
 #include "formats/studiomodel/StudioModelUtils.hpp"
@@ -47,6 +49,7 @@
 #include "qt/QtUtilities.hpp"
 
 #include "settings/ColorSettings.hpp"
+#include "settings/GameConfigurationsSettings.hpp"
 #include "settings/StudioModelSettings.hpp"
 
 #include "soundsystem/SoundSystem.hpp"
@@ -131,8 +134,9 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
 	, _modelData(new StudioModelData(_editableStudioModel.get(), this))
-	, _soundSystem(std::make_unique<SoundSystemWrapper>(
-		_editorContext->GetSoundSystem(), _editorContext->GetFileSystem()))
+	, _fileSystem(_editorContext->GetApplicationSettings()->GetGameConfigurations()->CreateFileSystem(
+		_editorContext->GetApplicationSettings()->GetGameConfigurations()->GetDefaultConfiguration()))
+	, _soundSystem(std::make_unique<SoundSystemWrapper>(_editorContext->GetSoundSystem(), _fileSystem.get()))
 	, _entityContext(std::make_unique<EntityContext>(this,
 		_editorContext->GetWorldTime(),
 		_provider->GetStudioModelRenderer(),

@@ -221,8 +221,6 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	connect(_editorContext, &EditorContext::TryingToLoadAsset, this, &MainWindow::TryLoadAsset);
 	connect(_editorContext, &EditorContext::SettingsChanged, this, &MainWindow::SyncSettings);
-	connect(_editorContext->GetGameConfigurations(), &GameConfigurationsSettings::DefaultConfigurationChanged,
-		this, &MainWindow::SetupFileSystem);
 
 	{
 		const bool isSoundAvailable = _editorContext->GetSoundSystem()->IsSoundAvailable();
@@ -243,7 +241,6 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	_assetTabs->setVisible(false);
 
 	OnRecentFilesChanged();
-	SetupFileSystem(_editorContext->GetGameConfigurations()->GetDefaultConfiguration());
 
 	setWindowTitle({});
 
@@ -1002,43 +999,4 @@ Build Date: %10
 			.arg(QT_VERSION_STR)
 			.arg(__DATE__)
 	);
-}
-
-void MainWindow::SetupFileSystem(const GameConfiguration* configuration)
-{
-	auto fileSystem = _editorContext->GetFileSystem();
-
-	fileSystem->RemoveAllSearchPaths();
-
-	if (!configuration)
-	{
-		return;
-	}
-
-	const auto directoryExtensions{GetSteamPipeDirectoryExtensions()};
-
-	const auto gameDir{configuration->BaseGameDirectory.toStdString()};
-	const auto modDir{configuration->ModDirectory.toStdString()};
-
-	//Add mod dirs first since they override game dirs
-	if (gameDir != modDir)
-	{
-		for (const auto& extension : directoryExtensions)
-		{
-			fileSystem->AddSearchPath(modDir + extension);
-		}
-	}
-
-	for (const auto& extension : directoryExtensions)
-	{
-		fileSystem->AddSearchPath(gameDir + extension);
-	}
-}
-
-void MainWindow::OnConfigurationUpdated(const GameConfiguration* configuration)
-{
-	if (configuration == _editorContext->GetGameConfigurations()->GetDefaultConfiguration())
-	{
-		SetupFileSystem(_editorContext->GetGameConfigurations()->GetDefaultConfiguration());
-	}
 }
