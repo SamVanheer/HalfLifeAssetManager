@@ -282,15 +282,25 @@ std::pair<const GameConfiguration*, bool> GameConfigurationsSettings::DetectGame
 		}
 	}
 
-	for (const auto& configuration : _gameConfigurations)
+	// Do 2 passes: first check for one with no mod directory, then one with.
+	// This improves accuracy in edge cases where a mod overrides assets and the model is actually from the base game.
+	for (int pass = 0; pass < 2; ++pass)
 	{
-		if (!configuration->BaseGameDirectory.isEmpty()
-			&& directory.startsWith(configuration->BaseGameDirectory, Qt::CaseInsensitive))
+		for (const auto& configuration : _gameConfigurations)
 		{
-			qCDebug(logging::HLAMFileSystem) << "Using game configuration"
-				<< configuration->Name << "(" << configuration->Id << ") for asset"
-				<< assetFileName << "based on base game directory" << configuration->BaseGameDirectory;
-			return {configuration.get(), false};
+			if (pass == 0 && !configuration->ModDirectory.isEmpty())
+			{
+				continue;
+			}
+
+			if (!configuration->BaseGameDirectory.isEmpty()
+				&& directory.startsWith(configuration->BaseGameDirectory, Qt::CaseInsensitive))
+			{
+				qCDebug(logging::HLAMFileSystem) << "Using game configuration"
+					<< configuration->Name << "(" << configuration->Id << ") for asset"
+					<< assetFileName << "based on base game directory" << configuration->BaseGameDirectory;
+				return {configuration.get(), false};
+			}
 		}
 	}
 
