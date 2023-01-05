@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "assets/AssetIO.hpp"
+
 #include "formats/studiomodel/StudioModelUtils.hpp"
 
 #include "utility/Platform.hpp"
@@ -16,6 +18,15 @@ namespace studiomdl
 {
 namespace
 {
+template<typename T>
+static void ValidateMemoryAddress(const StudioPtr<T>& ptr, const void* address)
+{
+	if (address < ptr.get() || address > (reinterpret_cast<const std::byte*>(ptr.get()) + ptr.SizeInBytes))
+	{
+		throw AssetException("Invalid file offset in model");
+	}
+}
+
 std::vector<std::unique_ptr<StudioBoneController>> ConvertBoneControllersToEditable(const StudioModel& studioModel)
 {
 	auto header = studioModel.GetStudioHeader();
@@ -27,6 +38,8 @@ std::vector<std::unique_ptr<StudioBoneController>> ConvertBoneControllersToEdita
 	for (int i = 0; i < header->numbonecontrollers; ++i)
 	{
 		auto source = header->GetBoneController(i);
+
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
 
 		StudioBoneController controller
 		{
@@ -56,6 +69,8 @@ std::vector<std::unique_ptr<StudioBone>> ConvertBonesToEditable(
 	for (int i = 0; i < header->numbones; ++i)
 	{
 		auto source = header->GetBone(i);
+
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
 
 		std::array<StudioBoneAxisData, STUDIO_NUM_COORDINATE_AXES> axisData{};
 
@@ -111,6 +126,8 @@ std::vector<std::unique_ptr<StudioHitbox>> ConvertHitboxesToEditable(
 	{
 		auto source = header->GetHitBox(i);
 
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
+
 		StudioHitbox hitbox
 		{
 			bones[source->bone].get(),
@@ -140,6 +157,8 @@ std::vector<std::unique_ptr<StudioSequenceGroup>> ConvertSequenceGroupsToEditabl
 	{
 		auto source = header->GetSequenceGroup(i);
 
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
+
 		StudioSequenceGroup group
 		{
 			source->label
@@ -163,6 +182,8 @@ std::vector<std::unique_ptr<StudioSequenceEvent>> ConvertEventsToEditable(
 	for (int i = 0; i < sequence.numevents; ++i)
 	{
 		auto source = reinterpret_cast<const mstudioevent_t*>(header->GetData() + sequence.eventindex) + i;
+
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
 
 		StudioSequenceEvent event
 		{
@@ -191,6 +212,8 @@ std::vector<StudioSequencePivot> ConvertPivotsToEditable(
 	{
 		auto source = reinterpret_cast<const mstudiopivot_t*>(header->GetData() + sequence.pivotindex) + i;
 
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
+
 		StudioSequencePivot pivot
 		{
 			source->org,
@@ -215,6 +238,20 @@ std::vector<std::vector<StudioAnimation>> ConvertAnimationBlendsToEditable(
 
 	auto source = studioModel.GetAnim(&sequence);
 
+	const auto validateSequenceAddress = [&](const void* address)
+	{
+		if (sequence.seqgroup == 0)
+		{
+			ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), address);
+		}
+		else
+		{
+			ValidateMemoryAddress(studioModel.GetSeqGroupHeaderPtr(sequence.seqgroup - 1), address);
+		}
+	};
+	
+	validateSequenceAddress(source);
+
 	for (int i = 0; i < sequence.numblends; ++i)
 	{
 		std::vector<StudioAnimation> animations;
@@ -234,6 +271,8 @@ std::vector<std::vector<StudioAnimation>> ConvertAnimationBlendsToEditable(
 					auto valuesStart = reinterpret_cast<const mstudioanimvalue_t*>((reinterpret_cast<std::byte*>(source) + source->offset[j]));
 					auto valuesEnd = valuesStart;
 
+					validateSequenceAddress(valuesStart);
+
 					//Determine number of values
 					std::size_t valuesCount = 0;
 
@@ -245,6 +284,8 @@ std::vector<std::vector<StudioAnimation>> ConvertAnimationBlendsToEditable(
 							f += valuesEnd->num.total;
 
 							valuesEnd += 1 + valuesEnd->num.valid;
+
+							validateSequenceAddress(valuesEnd);
 						}
 					}
 					else
@@ -281,6 +322,13 @@ std::vector<std::unique_ptr<StudioSequence>> ConvertSequencesToEditable(const St
 	for (int i = 0; i < header->numseq; ++i)
 	{
 		auto source = header->GetSequence(i);
+
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
+
+		if (source->seqgroup < 0 || (source->seqgroup != 0 && (source->seqgroup - 1) >= studioModel.GetSeqGroupCount()))
+		{
+			throw AssetException("Invalid seqgroup value");
+		}
 
 		auto events = ConvertEventsToEditable(studioModel, *source);
 
@@ -352,6 +400,8 @@ std::vector<std::unique_ptr<StudioAttachment>> ConvertAttachmentsToEditable(
 	{
 		auto source = header->GetAttachment(i);
 
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
+
 		StudioAttachment attachment
 		{
 			source->name,
@@ -383,12 +433,17 @@ std::vector<StudioMesh> ConvertMeshesToEditable(const StudioModel& studioModel, 
 	{
 		auto source = reinterpret_cast<const mstudiomesh_t*>(header->GetData() + model.meshindex) + i;
 
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
+
 		auto cmdStart = reinterpret_cast<const short*>(header->GetData() + source->triindex);
 		auto cmdEnd = cmdStart;
+
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), cmdStart);
 
 		for (int i = std::abs(*cmdEnd++); i > 0; i = std::abs(*cmdEnd++))
 		{
 			cmdEnd += i * 4;
+			ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), cmdEnd);
 		}
 
 		StudioMesh mesh
@@ -410,6 +465,14 @@ std::vector<StudioModelVertexInfo> ConvertModelVertexInfoToEditable(
 	int vertexIndex, int vertexInfoIndex, int count)
 {
 	auto header = studioModel.GetStudioHeader();
+
+	ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), header->GetData() + vertexIndex);
+	ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(),
+		header->GetData() + vertexIndex + sizeof(glm::vec3) * count);
+
+	ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), header->GetData() + vertexInfoIndex);
+	ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(),
+		header->GetData() + vertexInfoIndex + sizeof(std::uint8_t) * count);
 
 	std::vector<StudioModelVertexInfo> result;
 
@@ -442,6 +505,8 @@ std::vector<StudioSubModel> ConvertModelsToEditable(
 	{
 		auto source = reinterpret_cast<const mstudiomodel_t*>(header->GetData() + bodypart.modelindex) + i;
 
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
+
 		StudioSubModel model
 		{
 			source->name,
@@ -471,6 +536,8 @@ std::vector<std::unique_ptr<StudioBodypart>> ConvertBodypartsToEditable(
 	{
 		auto source = header->GetBodypart(i);
 
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
+
 		StudioBodypart bodypart
 		{
 			source->name,
@@ -484,8 +551,9 @@ std::vector<std::unique_ptr<StudioBodypart>> ConvertBodypartsToEditable(
 	return result;
 }
 
-//Dol differs only in texture storage
-//Instead of pixels followed by RGB palette, it has a 32 byte texture name (name of file without extension), followed by an RGBA palette and pixels
+// Dol differs only in texture storage
+// Instead of pixels followed by RGB palette, it has a 32 byte texture name (name of file without extension),
+// followed by an RGBA palette and pixels
 std::vector<std::unique_ptr<StudioTexture>> ConvertDolTexturesToEditable(const StudioModel& studioModel)
 {
 	auto header = studioModel.GetTextureHeader();
@@ -498,8 +566,14 @@ std::vector<std::unique_ptr<StudioTexture>> ConvertDolTexturesToEditable(const S
 	{
 		auto source = header->GetTexture(i);
 
+		ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), source);
+
 		//Starts off with 32 byte texture name
+		// TODO: don't arbitrarily reinterpret data
 		const auto& sourcePalette = *reinterpret_cast<graphics::RGBAPalette*>(header->GetData() + source->index + 32);
+
+		ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), &sourcePalette);
+		ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), &sourcePalette + 1);
 
 		graphics::RGBPalette palette;
 
@@ -516,6 +590,9 @@ std::vector<std::unique_ptr<StudioTexture>> ConvertDolTexturesToEditable(const S
 		pixels.resize(size);
 
 		auto pSourcePixels = header->GetData() + source->index + 32 + sourcePalette.GetSizeInBytes();
+
+		ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), pSourcePixels);
+		ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), pSourcePixels + size);
 
 		for (int i = 0; i < size; ++i)
 		{
@@ -573,9 +650,20 @@ std::vector<std::unique_ptr<StudioTexture>> ConvertMdlTexturesToEditable(const S
 	{
 		auto source = header->GetTexture(i);
 
+		ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), source);
+
 		graphics::RGBPalette palette;
 
-		std::memcpy(palette.AsByteArray(), header->GetData() + source->index + (source->width * source->height), sizeof(palette));
+		const auto pixelsAddress = header->GetData() + source->index;
+		const std::size_t size = source->width * source->height;
+		const auto paletteAddress = header->GetData() + source->index + size;
+
+		ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), paletteAddress);
+		ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), paletteAddress + sizeof(palette));
+		ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), pixelsAddress);
+		ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), pixelsAddress + size);
+
+		std::memcpy(palette.AsByteArray(), paletteAddress, sizeof(palette));
 
 		StudioTexture texture
 		{
@@ -584,7 +672,7 @@ std::vector<std::unique_ptr<StudioTexture>> ConvertMdlTexturesToEditable(const S
 			{
 				source->width,
 				source->height,
-				{header->GetData() + source->index, header->GetData() + source->index + (source->width * source->height)},
+				{pixelsAddress, paletteAddress},
 				palette
 			},
 			i
@@ -619,6 +707,9 @@ std::vector<std::vector<StudioTexture*>> ConvertSkinFamiliesToEditable(
 
 	auto source = header->GetSkins();
 
+	ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), source);
+	ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), source + (header->numskinfamilies * header->numskinref));
+
 	for (int i = 0; i < header->numskinfamilies; ++i)
 	{
 		std::vector<StudioTexture*> skinRef;
@@ -648,6 +739,9 @@ std::vector<std::vector<std::uint8_t>> ConvertTransitionsToEditable(const Studio
 	{
 		auto source = header->GetTransitions() + (header->numtransitions * i);
 
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source);
+		ValidateMemoryAddress(studioModel.GetStudioHeaderPtr(), source + header->numtransitions);
+
 		std::vector<std::uint8_t> transitions;
 
 		transitions.resize(header->numtransitions);
@@ -661,9 +755,33 @@ std::vector<std::vector<std::uint8_t>> ConvertTransitionsToEditable(const Studio
 }
 }
 
+static void ValidateCount(int count)
+{
+	if (count < 0)
+	{
+		throw AssetException("Negative data chunk count value");
+	}
+}
+
 EditableStudioModel ConvertToEditable(const StudioModel& studioModel)
 {
 	auto header = studioModel.GetStudioHeader();
+	auto textureHeader = studioModel.GetTextureHeader();
+
+	ValidateCount(header->numbones < 0);
+	ValidateCount(header->numbonecontrollers < 0);
+	ValidateCount(header->numhitboxes < 0);
+	ValidateCount(header->numseq < 0);
+	ValidateCount(header->numseqgroups < 0);
+
+	// These can be 0 if there's a T.mdl.
+	ValidateCount(textureHeader->numtextures < 0);
+	ValidateCount(textureHeader->numskinfamilies < 0);
+	ValidateCount(textureHeader->numskinref < 0);
+
+	ValidateCount(header->numbodyparts < 0);
+	ValidateCount(header->numattachments < 0);
+	ValidateCount(header->numtransitions < 0);
 
 	EditableStudioModel result;
 
@@ -1269,7 +1387,6 @@ StudioModel ConvertFromEditable(const std::filesystem::path& fileName, const Edi
 	std::memcpy(&header.id, STUDIOMDL_HDR_ID, sizeof(header.id));
 	header.version = STUDIO_VERSION;
 
-
 	//Store only the filename itself. It's never used for file loading so it's not terribly important
 	UTIL_CopyString(header.name, reinterpret_cast<const char*>(fileName.filename().u8string().c_str()));
 
@@ -1304,7 +1421,13 @@ StudioModel ConvertFromEditable(const std::filesystem::path& fileName, const Edi
 
 	std::memcpy(studioHeader.get(), buffer.data(), buffer.size());
 
-	return StudioModel{studio_ptr<studiohdr_t>{reinterpret_cast<studiohdr_t*>(studioHeader.release())}, {}, {}, false};
+	return StudioModel{StudioPtr<studiohdr_t>
+	{
+		reinterpret_cast<studiohdr_t*>(studioHeader.release()), buffer.size()},
+		{},
+		{},
+		false
+	};
 }
 
 bool IsXashModel(const StudioModel& studioModel)

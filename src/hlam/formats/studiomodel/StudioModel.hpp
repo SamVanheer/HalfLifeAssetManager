@@ -22,7 +22,34 @@ struct StudioDataDeleter
 };
 
 template<typename T>
-using studio_ptr = std::unique_ptr<T, StudioDataDeleter>;
+struct StudioPtr
+{
+	constexpr StudioPtr() noexcept = default;
+
+	explicit constexpr StudioPtr(T* data, std::size_t sizeInBytes) noexcept
+		: Header(data)
+		, SizeInBytes(sizeInBytes)
+	{
+	}
+
+	std::unique_ptr<T, StudioDataDeleter> Header;
+	std::size_t SizeInBytes{};
+
+	constexpr T* get() const noexcept
+	{
+		return Header.get();
+	}
+
+	constexpr operator bool() const noexcept
+	{
+		return !!Header;
+	}
+
+	constexpr T* operator->() const noexcept
+	{
+		return Header.get();
+	}
+};
 
 /**
 *	Container representing a studiomodel and its data.
@@ -30,8 +57,8 @@ using studio_ptr = std::unique_ptr<T, StudioDataDeleter>;
 class StudioModel final
 {
 public:
-	StudioModel(studio_ptr<studiohdr_t>&& studioHeader, studio_ptr<studiohdr_t>&& textureHeader,
-		std::vector<studio_ptr<studioseqhdr_t>>&& sequenceHeaders, bool isDol)
+	StudioModel(StudioPtr<studiohdr_t>&& studioHeader, StudioPtr<studiohdr_t>&& textureHeader,
+		std::vector<StudioPtr<studioseqhdr_t>>&& sequenceHeaders, bool isDol)
 		: _studioHeader(std::move(studioHeader))
 		, _textureHeader(std::move(textureHeader))
 		, _sequenceHeaders(std::move(sequenceHeaders))
@@ -51,15 +78,26 @@ public:
 
 	studiohdr_t* GetTextureHeader() const
 	{
-		if (_textureHeader)
-		{
-			return _textureHeader.get();
-		}
-
-		return _studioHeader.get();
+		return GetTextureHeaderPtr().get();
 	}
 
 	studioseqhdr_t* GetSeqGroupHeader(const size_t i) const { return _sequenceHeaders[i].get(); }
+
+	const StudioPtr<studiohdr_t>& GetStudioHeaderPtr() const { return _studioHeader; }
+
+	const StudioPtr<studiohdr_t>& GetTextureHeaderPtr() const
+	{
+		if (_textureHeader)
+		{
+			return _textureHeader;
+		}
+
+		return _studioHeader;
+	}
+
+	const StudioPtr<studioseqhdr_t>& GetSeqGroupHeaderPtr(const size_t i) const { return _sequenceHeaders[i]; }
+
+	size_t GetSeqGroupCount() const { return _sequenceHeaders.size(); }
 
 	mstudioanim_t* GetAnim(const mstudioseqdesc_t* pseqdesc) const
 	{
@@ -76,10 +114,10 @@ public:
 	bool IsDol() const { return _isDol; }
 
 private:
-	studio_ptr<studiohdr_t> _studioHeader;
-	studio_ptr<studiohdr_t> _textureHeader;
+	StudioPtr<studiohdr_t> _studioHeader;
+	StudioPtr<studiohdr_t> _textureHeader;
 
-	std::vector<studio_ptr<studioseqhdr_t>> _sequenceHeaders;
+	std::vector<StudioPtr<studioseqhdr_t>> _sequenceHeaders;
 
 	bool _isDol;
 };

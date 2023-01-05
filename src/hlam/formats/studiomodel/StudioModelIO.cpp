@@ -47,7 +47,7 @@ bool IsStudioModel(FILE* file)
 namespace
 {
 template<typename T>
-studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* existingFile, const bool bAllowSeqGroup, const bool externalTextures)
+StudioPtr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* existingFile, const bool bAllowSeqGroup, const bool externalTextures)
 {
 	const std::string utf8FileName{reinterpret_cast<const char*>(fileName.u8string().c_str())};
 
@@ -123,16 +123,18 @@ studio_ptr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* exis
 			std::to_string(STUDIO_VERSION) + "\", got \"" + std::to_string(header->version) + "\"");
 	}
 
+	/*
 	//Validate header length. This should always be valid since it's set by the compiler
 	if (header->length < 0 || (static_cast<size_t>(header->length) != size))
 	{
 		throw AssetException(std::string{"File \""} + utf8FileName + "\": length does not match file size: expected \""
 			+ std::to_string(size) + "\", got \"" + std::to_string(header->length) + "\"");
 	}
+	*/
 
 	buffer.release();
 
-	return studio_ptr<T>(header);
+	return StudioPtr<T>(header, size);
 }
 }
 
@@ -160,7 +162,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 		throw AssetException(message);
 	}
 
-	studio_ptr<studiohdr_t> textureHeader;
+	StudioPtr<studiohdr_t> textureHeader;
 
 	// preload textures
 	if (mainHeader->numtextures == 0)
@@ -183,7 +185,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 		}
 	}
 
-	std::vector<studio_ptr<studioseqhdr_t>> sequenceHeaders;
+	std::vector<StudioPtr<studioseqhdr_t>> sequenceHeaders;
 
 	// preload animations
 	if (mainHeader->numseqgroups > 1)
