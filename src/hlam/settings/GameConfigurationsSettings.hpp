@@ -8,6 +8,7 @@
 #include <QString>
 #include <QUuid>
 
+class ApplicationSettings;
 class IFileSystem;
 class QSettings;
 
@@ -26,8 +27,9 @@ class GameConfigurationsSettings final : public QObject
 	Q_OBJECT
 
 public:
-	explicit GameConfigurationsSettings(QSettings* settings)
-		: _settings(settings)
+	explicit GameConfigurationsSettings(ApplicationSettings* applicationSettings, QSettings* settings)
+		: _applicationSettings(applicationSettings)
+		, _settings(settings)
 	{
 	}
 
@@ -72,6 +74,7 @@ signals:
 	void DefaultConfigurationChanged(const GameConfiguration* current, const GameConfiguration* previous);
 
 private:
+	ApplicationSettings* const _applicationSettings;
 	QSettings* const _settings;
 
 	std::vector<std::unique_ptr<GameConfiguration>> _gameConfigurations;

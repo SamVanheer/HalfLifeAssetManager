@@ -240,6 +240,9 @@ public:
 	QString GetStylePath() const;
 	void SetStylePath(const QString& stylePath);
 
+	QString GetSteamLanguage() const;
+	void SetSteamLanguage(const QString& value);
+
 signals:
 	void SettingsSaved();
 
@@ -289,4 +292,6 @@ private:
 	int _msaaLevel{DefaultMSAALevel};
 
 	glm::vec2 _aspectRatio{DefaultAspectRatio};
+
+	QString _steamLanguage;
 };

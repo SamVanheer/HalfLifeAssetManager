@@ -9,6 +9,7 @@
 
 #include "qt/QtLogging.hpp"
 
+#include "settings/ApplicationSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
 
 void GameConfigurationsSettings::LoadSettings()
@@ -195,26 +196,37 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 
 	auto fileSystem = std::make_unique<FileSystem>();
 
+	const auto language = _applicationSettings->GetSteamLanguage().toStdString();
+	const bool hasLanguage = language != DefaultSteamLanguage;
+
 	const auto addConfiguration = [&](const GameConfiguration& configuration)
 	{
 		const auto gameDir{configuration.BaseGameDirectory.toStdString()};
 		const auto modDir{configuration.ModDirectory.toStdString()};
 
+		const auto addGameDirectory = [&](const std::string& directory)
+		{
+			fileSystem->AddSearchPath(directory + "_addon");
+
+			if (hasLanguage)
+			{
+				fileSystem->AddSearchPath(directory + "_" + language);
+			}
+
+			fileSystem->AddSearchPath(directory + "_hd");
+			fileSystem->AddSearchPath(std::string{directory});
+			fileSystem->AddSearchPath(directory + "_downloads");
+		};
+
 		//Add mod dirs first since they override game dirs
 		if (!modDir.empty() && gameDir != modDir)
 		{
-			for (const auto& extension : SteamPipeDirectoryExtensions)
-			{
-				fileSystem->AddSearchPath(modDir + extension);
-			}
+			addGameDirectory(modDir);
 		}
 
 		if (!gameDir.empty())
 		{
-			for (const auto& extension : SteamPipeDirectoryExtensions)
-			{
-				fileSystem->AddSearchPath(gameDir + extension);
-			}
+			addGameDirectory(gameDir);
 		}
 	};
 

@@ -1,7 +1,10 @@
+#include <algorithm>
 #include <cmath>
 
 #include <QFileInfo>
 #include <QSettings>
+
+#include "filesystem/FileSystemConstants.hpp"
 
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
@@ -63,11 +66,13 @@ ApplicationSettings::ApplicationSettings(QSettings* settings)
 	: _settings(settings)
 	, _recentFiles(std::make_unique<RecentFilesSettings>(settings))
 	, _colorSettings(std::make_unique<ColorSettings>(settings))
-	, _gameConfigurations(std::make_unique<GameConfigurationsSettings>(settings))
+	, _gameConfigurations(std::make_unique<GameConfigurationsSettings>(this, settings))
 	, _externalPrograms(std::make_unique<ExternalProgramSettings>(settings))
 {
 	_settings->setParent(this);
 	_settingsObjects.push_back(_externalPrograms.get());
+
+	_steamLanguage = QString::fromStdString(std::string{DefaultSteamLanguage});
 }
 
 ApplicationSettings::~ApplicationSettings() = default;
@@ -122,6 +127,17 @@ void ApplicationSettings::LoadSettings()
 		MinimumAspectRatio, MaximumAspectRatio);
 	_settings->endGroup();
 
+	_settings->beginGroup("FileSystem");
+	_steamLanguage = _settings->value("SteamLanguage", QString::fromStdString(std::string{DefaultSteamLanguage}))
+		.toString();
+
+	if (std::find(SteamLanguages.begin(), SteamLanguages.end(), _steamLanguage.toStdString()) == SteamLanguages.end())
+	{
+		_steamLanguage = QString::fromStdString(std::string{DefaultSteamLanguage});
+	}
+
+	_settings->endGroup();
+
 	_recentFiles->LoadSettings();
 	_colorSettings->LoadSettings();
 	_gameConfigurations->LoadSettings();
@@ -166,6 +182,10 @@ void ApplicationSettings::SaveSettings()
 	_settings->setValue("TransparentScreenshots", DefaultTransparentScreenshots);
 	_settings->setValue("AspectRatio/X", static_cast<int>(_aspectRatio.x));
 	_settings->setValue("AspectRatio/Y", static_cast<int>(_aspectRatio.y));
+	_settings->endGroup();
+
+	_settings->beginGroup("FileSystem");
+	_settings->setValue("SteamLanguage", _steamLanguage);
 	_settings->endGroup();
 
 	_recentFiles->SaveSettings();
@@ -240,4 +260,14 @@ void ApplicationSettings::SetStylePath(const QString& stylePath)
 		_settings->setValue("Style/CurrentStyle", stylePath);
 		emit StylePathChanged(stylePath);
 	}
+}
+
+QString ApplicationSettings::GetSteamLanguage() const
+{
+	return _steamLanguage;
+}
+
+void ApplicationSettings::SetSteamLanguage(const QString& value)
+{
+	_steamLanguage = value;
 }

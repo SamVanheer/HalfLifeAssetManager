@@ -24,6 +24,42 @@ const std::vector<std::string> SteamPipeDirectoryExtensions
 	std::string{"_hd"sv}
 };
 
+// From https://partner.steamgames.com/doc/store/localization/languages#supported_languages
+const std::string_view DefaultSteamLanguage{"english"sv};
+
+const std::vector<std::string_view> SteamLanguages
+{
+	"arabic"sv,
+	"bulgarian"sv,
+	"schinese"sv,
+	"tchinese"sv,
+	"czech"sv,
+	"danish"sv,
+	"dutch"sv,
+	"english"sv,
+	"finnish"sv,
+	"french"sv,
+	"german"sv,
+	"greek"sv,
+	"hungarian"sv,
+	"italian"sv,
+	"japanese"sv,
+	"koreana"sv,
+	"norwegian"sv,
+	"polish"sv,
+	"portuguese"sv,
+	"brazilian"sv,
+	"romanian"sv,
+	"russian"sv,
+	"spanish"sv,
+	"latam"sv,
+	"swedish"sv,
+	"thai"sv,
+	"turkish"sv,
+	"ukrainian"sv,
+	"vietnamese"sv
+};
+
 std::pair<bool, std::filesystem::path> IsFileInGameAssetsDirectory(const std::filesystem::path& fileName)
 {
 	auto directory = fileName.parent_path();
