@@ -22,7 +22,7 @@ AutodetectGameConfigurationsWizard::AutodetectGameConfigurationsWizard(
 		static_cast<int>(std::ceil(screenSize.height() * 0.9)));
 
 	setWindowTitle("Auto-detect Game Configurations");
-
+	setWindowIcon(QIcon{":/hlam.ico"});
 	setButtonText(QWizard::FinishButton, "Add Configurations");
 
 	addPage(new AutodetectConfigurePropertiesPage());
