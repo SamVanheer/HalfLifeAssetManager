@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>529</height>
+    <width>911</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -152,8 +152,13 @@
      </property>
      <property name="text">
       <string>Add game configurations to enable Asset Manager to locate related game assets.
-The default configuration is used when an asset is loaded.
-Changing the default configuration does not affected assets that have already been loaded.</string>
+The configuration is auto-detected based on filename.
+
+If no configuration could be found Asset Manager will check if the asset is in a game asset directory (ex: models) 
+and creates a temporary configuration based on that directory structure.
+The default configuration is always used as a fallback if no configuration could be found, even if a temporary one was created.
+
+Changing configurations does not affect assets that have already been loaded.</string>
      </property>
     </widget>
    </item>
