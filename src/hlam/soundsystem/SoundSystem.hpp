@@ -59,7 +59,7 @@ public:
 
 	bool IsSoundAvailable() const override final { return _device != nullptr; }
 
-	bool Initialize(IFileSystem* filesystem) override final;
+	bool Initialize() override final;
 	void Shutdown() override final;
 
 	void RunFrame() override final;
@@ -78,8 +78,6 @@ private:
 private:
 	std::shared_ptr<spdlog::logger> _logger;
 
-	IFileSystem* _fileSystem{};
-
 	ALCdevice* _device{};
 	ALCcontext* _context{};
 
@@ -88,6 +86,35 @@ private:
 	std::list<size_t> _soundsLRU;
 
 	std::unique_ptr<nqr::NyquistIO> m_Loader;
+};
+
+/**
+*	@brief Wraps around a sound system and converts relative paths to absolute paths.
+*/
+class SoundSystemWrapper final : public ISoundSystem
+{
+public:
+	explicit SoundSystemWrapper(ISoundSystem* soundSystem, IFileSystem* fileSystem)
+		: _soundSystem(soundSystem)
+		, _fileSystem(fileSystem)
+	{
+	}
+
+	bool IsSoundAvailable() const override { return _soundSystem->IsSoundAvailable(); }
+
+	bool Initialize() override { return _soundSystem->Initialize(); }
+
+	void Shutdown() override { _soundSystem->Shutdown(); }
+
+	void RunFrame() override { _soundSystem->RunFrame(); }
+
+	void PlaySound(std::string_view fileName, float volume, int pitch) override;
+
+	void StopAllSounds() override { _soundSystem->StopAllSounds(); }
+
+private:
+	ISoundSystem* const _soundSystem;
+	IFileSystem* const _fileSystem;
 };
 
 /** @} */

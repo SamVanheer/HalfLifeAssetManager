@@ -7,7 +7,7 @@ class DummySoundSystem final : public ISoundSystem
 public:
 	bool IsSoundAvailable() const override { return false; }
 
-	bool Initialize(IFileSystem*) override { return true; }
+	bool Initialize() override { return true; }
 
 	void Shutdown() override {}
 

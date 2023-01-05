@@ -26,6 +26,7 @@ class EntityContext;
 class GroundEntity;
 class GuidelinesEntity;
 class HLMVStudioModelEntity;
+class ISoundSystem;
 class PlayerHitboxEntity;
 class SceneCameraOperator;
 class TextureCameraOperator;
@@ -216,6 +217,7 @@ private:
 	StudioModelAssetProvider* const _provider;
 	std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;
 	StudioModelData* _modelData;
+	const std::unique_ptr<ISoundSystem> _soundSystem;
 	const std::unique_ptr<EntityContext> _entityContext;
 
 	std::vector<graphics::Scene*> _scenes;

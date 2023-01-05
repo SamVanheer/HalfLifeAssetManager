@@ -49,6 +49,8 @@
 #include "settings/ColorSettings.hpp"
 #include "settings/StudioModelSettings.hpp"
 
+#include "soundsystem/SoundSystem.hpp"
+
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/SceneWidget.hpp"
@@ -129,11 +131,13 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
 	, _modelData(new StudioModelData(_editableStudioModel.get(), this))
+	, _soundSystem(std::make_unique<SoundSystemWrapper>(
+		_editorContext->GetSoundSystem(), _editorContext->GetFileSystem()))
 	, _entityContext(std::make_unique<EntityContext>(this,
 		_editorContext->GetWorldTime(),
 		_provider->GetStudioModelRenderer(),
 		_provider->GetSpriteRenderer(),
-		_editorContext->GetSoundSystem(),
+		_soundSystem.get(),
 		_editorContext->GetApplicationSettings(),
 		_provider->GetStudioModelSettings()))
 	, _cameraOperators(new CameraOperators(this))

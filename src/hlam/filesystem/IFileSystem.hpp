@@ -45,7 +45,7 @@ public:
 
 	/**
 	*	@brief Gets a relative path to a file.
-	*	This may actually be an absolute path, depending on the value of the base path. The file must exist.
+	*	This may actually be an absolute path, depending on search paths. The file must exist.
 	*	@param fileName File to get a path to.
 	*	@return The path to the file if a path could be formed, an empty string otherwise.
 	*/

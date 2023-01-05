@@ -10,8 +10,6 @@
 *	@{
 */
 
-class IFileSystem;
-
 /**
 *	A sound system that can be used to play back sounds. Sounds are non-looping.
 */
@@ -29,7 +27,7 @@ public:
 	*	Initializes the sound system. Should be called on startup.
 	*	@return true on success, false otherwise.
 	*/
-	virtual bool Initialize(IFileSystem* filesystem) = 0;
+	virtual bool Initialize() = 0;
 
 	/**
 	*	Shuts down the sound system. Should be called on shutdown.

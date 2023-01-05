@@ -43,15 +43,8 @@ SoundSystem::SoundSystem(const std::shared_ptr<spdlog::logger>& logger)
 
 SoundSystem::~SoundSystem() = default;
 
-bool SoundSystem::Initialize(IFileSystem* filesystem)
+bool SoundSystem::Initialize()
 {
-	_fileSystem = filesystem;
-
-	if (!_fileSystem)
-	{
-		return false;
-	}
-
 	_device = alcOpenDevice(nullptr);
 
 	if (nullptr != _device)
@@ -126,22 +119,9 @@ void SoundSystem::PlaySound(std::string_view fileName, float volume, int pitch)
 		return;
 	}
 
-	if (fileName[0] == '*')
+	if (fileName.empty())
 	{
-		fileName = fileName.substr(1);
-	}
-
-	std::ostringstream stream;
-
-	stream << "sound/" << fileName;
-
-	const auto actualFileName{stream.str()};
-
-	const auto fullFileName{_fileSystem->GetRelativePath(actualFileName)};
-
-	if (fullFileName.empty())
-	{
-		SPDLOG_LOGGER_CALL(_logger, spdlog::level::warn, "Unable to find sound file '{}'", actualFileName);
+		SPDLOG_LOGGER_CALL(_logger, spdlog::level::warn, "Unable to find sound file '{}'", fileName);
 		return;
 	}
 
@@ -153,7 +133,7 @@ void SoundSystem::PlaySound(std::string_view fileName, float volume, int pitch)
 	volume = std::clamp(volume, 0.0f, 1.0f);
 	pitch = std::clamp(pitch, 0, 255);
 
-	std::unique_ptr<Sound> sound = TryLoadFile(fullFileName);
+	std::unique_ptr<Sound> sound = TryLoadFile(std::string{fileName});
 
 	if (!sound)
 	{
@@ -305,4 +285,22 @@ std::unique_ptr<SoundSystem::Sound> SoundSystem::TryLoadFile(const std::string& 
 	}
 
 	return sound;
+}
+
+void SoundSystemWrapper::PlaySound(std::string_view fileName, float volume, int pitch)
+{
+	if (fileName[0] == '*')
+	{
+		fileName = fileName.substr(1);
+	}
+
+	std::ostringstream stream;
+
+	stream << "sound/" << fileName;
+
+	const auto actualFileName{stream.str()};
+
+	const auto fullFileName{_fileSystem->GetRelativePath(actualFileName)};
+
+	_soundSystem->PlaySound(fullFileName, volume, pitch);
 }

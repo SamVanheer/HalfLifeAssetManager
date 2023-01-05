@@ -78,7 +78,7 @@ EditorContext::EditorContext(
 
 	_timer->setTimerType(Qt::TimerType::PreciseTimer);
 
-	if (!_soundSystem->Initialize(_fileSystem.get()))
+	if (!_soundSystem->Initialize())
 	{
 		throw std::runtime_error("Failed to initialize sound system");
 	}
