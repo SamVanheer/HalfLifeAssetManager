@@ -14,8 +14,7 @@
 */
 
 extern const std::vector<std::string_view> GameAssetDirectories;
-
-std::vector<std::string> GetSteamPipeDirectoryExtensions();
+extern const std::vector<std::string> SteamPipeDirectoryExtensions;
 
 std::pair<bool, std::filesystem::path> IsFileInGameAssetsDirectory(const std::filesystem::path& fileName);
 

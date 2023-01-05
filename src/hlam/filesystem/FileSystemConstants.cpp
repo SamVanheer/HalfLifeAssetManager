@@ -16,16 +16,13 @@ const std::vector<std::string_view> GameAssetDirectories
 	"sound"sv
 };
 
-std::vector<std::string> GetSteamPipeDirectoryExtensions()
+const std::vector<std::string> SteamPipeDirectoryExtensions
 {
-	return
-	{
-		"",
-		"_downloads",
-		"_addon",
-		"_hd"
-	};
-}
+	std::string{""sv},
+	std::string{"_downloads"sv},
+	std::string{"_addon"sv},
+	std::string{"_hd"sv}
+};
 
 std::pair<bool, std::filesystem::path> IsFileInGameAssetsDirectory(const std::filesystem::path& fileName)
 {

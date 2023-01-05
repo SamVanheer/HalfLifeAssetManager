@@ -197,15 +197,13 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 
 	const auto addConfiguration = [&](const GameConfiguration& configuration)
 	{
-		const auto directoryExtensions{GetSteamPipeDirectoryExtensions()};
-
 		const auto gameDir{configuration.BaseGameDirectory.toStdString()};
 		const auto modDir{configuration.ModDirectory.toStdString()};
 
 		//Add mod dirs first since they override game dirs
 		if (!modDir.empty() && gameDir != modDir)
 		{
-			for (const auto& extension : directoryExtensions)
+			for (const auto& extension : SteamPipeDirectoryExtensions)
 			{
 				fileSystem->AddSearchPath(modDir + extension);
 			}
@@ -213,7 +211,7 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 
 		if (!gameDir.empty())
 		{
-			for (const auto& extension : directoryExtensions)
+			for (const auto& extension : SteamPipeDirectoryExtensions)
 			{
 				fileSystem->AddSearchPath(gameDir + extension);
 			}
