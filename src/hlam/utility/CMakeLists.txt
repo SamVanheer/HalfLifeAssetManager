@@ -10,6 +10,8 @@ target_sources(HLAM
 		mathlib.hpp
 		Platform.hpp
 		StringUtils.hpp
+		Tokenizer.cpp
+		Tokenizer.hpp
 		Utility.hpp
 		WorldTime.cpp
 		WorldTime.hpp)
