@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include <QObject>
@@ -59,7 +60,9 @@ public:
 	std::unique_ptr<IFileSystem> CreateFileSystem(const QString& assetFileName) const;
 
 private:
-	const GameConfiguration* DetectGameConfiguration(const QString& assetFileName) const;
+	static void SanitizeConfiguration(GameConfiguration& configuration);
+
+	std::pair<const GameConfiguration*, bool> DetectGameConfiguration(const QString& assetFileName) const;
 
 signals:
 	void ConfigurationAdded(const GameConfiguration* configuration);

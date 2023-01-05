@@ -76,7 +76,7 @@ OptionsPageGameConfigurationsWidget::OptionsPageGameConfigurationsWidget(EditorC
 
 	for (int index = 0; const auto configuration : gameConfigurations->GetConfigurations())
 	{
-		AddGameConfiguration(std::make_unique<GameConfiguration>(*configuration));
+		AddGameConfiguration(std::make_unique<GameConfiguration>(*configuration), false);
 
 		if (configuration == defaultConfiguration)
 		{
@@ -140,9 +140,10 @@ void OptionsPageGameConfigurationsWidget::ApplyChanges()
 	gameConfigurations->SetDefaultConfiguration(defaultConfigurationId);
 }
 
-void OptionsPageGameConfigurationsWidget::AddGameConfiguration(std::unique_ptr<GameConfiguration>&& configuration)
+void OptionsPageGameConfigurationsWidget::AddGameConfiguration(
+	std::unique_ptr<GameConfiguration>&& configuration, bool markAsNew)
 {
-	_options->AddGameConfiguration(std::move(configuration));
+	_options->AddGameConfiguration(std::move(configuration), markAsNew);
 }
 
 void OptionsPageGameConfigurationsWidget::OnEditGameConfigurations()
@@ -158,7 +159,7 @@ void OptionsPageGameConfigurationsWidget::OnEditGameConfigurations()
 			configuration->Id = QUuid::createUuid();
 			configuration->Name = name;
 
-			AddGameConfiguration(std::move(configuration));
+			AddGameConfiguration(std::move(configuration), true);
 		});
 
 	connect(&dialog, &EditGameConfigurationsDialog::ConfigurationRemoved, this,
@@ -179,7 +180,7 @@ void OptionsPageGameConfigurationsWidget::OnEditGameConfigurations()
 			configuration->Id = QUuid::createUuid();
 			configuration->Name += " (Copy)";
 
-			AddGameConfiguration(std::move(configuration));
+			AddGameConfiguration(std::move(configuration), true);
 		});
 
 	connect(&dialog, &EditGameConfigurationsDialog::ConfigurationRenamed, this,

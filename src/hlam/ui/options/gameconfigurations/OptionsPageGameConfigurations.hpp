@@ -30,7 +30,7 @@ public:
 	void ApplyChanges() override;
 
 private:
-	void AddGameConfiguration(std::unique_ptr<GameConfiguration>&& configuration);
+	void AddGameConfiguration(std::unique_ptr<GameConfiguration>&& configuration, bool markAsNew);
 
 private slots:
 	void OnEditGameConfigurations();

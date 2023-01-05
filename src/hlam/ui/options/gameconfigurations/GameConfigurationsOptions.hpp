@@ -62,9 +62,13 @@ public:
 
 	const std::unique_ptr<QStandardItemModel> GameConfigurationsModel = std::make_unique<QStandardItemModel>();
 
-	void AddGameConfiguration(std::unique_ptr<GameConfiguration>&& configuration)
+	void AddGameConfiguration(std::unique_ptr<GameConfiguration>&& configuration, bool markAsNew)
 	{
-		GameConfigurationsChangeSet.MarkNew(configuration->Id);
+		if (markAsNew)
+		{
+			GameConfigurationsChangeSet.MarkNew(configuration->Id);
+		}
+
 		auto item = new QStandardItem(configuration->Name);
 		GameConfigurations.emplace_back(std::move(configuration));
 		GameConfigurationsModel->insertRow(GameConfigurationsModel->rowCount(), item);

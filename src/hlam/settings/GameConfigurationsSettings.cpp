@@ -113,6 +113,8 @@ void GameConfigurationsSettings::AddConfiguration(std::unique_ptr<GameConfigurat
 {
 	auto& ref = _gameConfigurations.emplace_back(std::move(configuration));
 
+	SanitizeConfiguration(*ref);
+
 	emit ConfigurationAdded(ref.get());
 }
 
@@ -125,12 +127,12 @@ void GameConfigurationsSettings::RemoveConfiguration(const QUuid& id)
 		}
 	); it != _gameConfigurations.end())
 	{
-		const std::unique_ptr<GameConfiguration> gameConfiguration{std::move(*it)};
-
 		if (_defaultConfiguration == id)
 		{
 			SetDefaultConfiguration({});
 		}
+
+		const std::unique_ptr<GameConfiguration> gameConfiguration{std::move(*it)};
 
 		_gameConfigurations.erase(it);
 
@@ -145,9 +147,12 @@ void GameConfigurationsSettings::UpdateConfiguration(const GameConfiguration& co
 	if (!target)
 	{
 		qDebug() << "Invalid configuration id passed to UpdateConfiguration";
+		return;
 	}
 
 	*target = configuration;
+
+	SanitizeConfiguration(*target);
 
 	emit ConfigurationUpdated(target);
 }
@@ -186,19 +191,19 @@ void GameConfigurationsSettings::SetDefaultConfiguration(const QUuid& id)
 
 std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const QString& assetFileName) const
 {
-	const auto configuration = DetectGameConfiguration(assetFileName);
+	const auto [configuration, isDefault] = DetectGameConfiguration(assetFileName);
 
 	auto fileSystem = std::make_unique<FileSystem>();
 
-	if (configuration)
+	const auto addConfiguration = [&](const GameConfiguration& configuration)
 	{
 		const auto directoryExtensions{GetSteamPipeDirectoryExtensions()};
 
-		const auto gameDir{configuration->BaseGameDirectory.toStdString()};
-		const auto modDir{configuration->ModDirectory.toStdString()};
+		const auto gameDir{configuration.BaseGameDirectory.toStdString()};
+		const auto modDir{configuration.ModDirectory.toStdString()};
 
 		//Add mod dirs first since they override game dirs
-		if (gameDir != modDir)
+		if (!modDir.empty() && gameDir != modDir)
 		{
 			for (const auto& extension : directoryExtensions)
 			{
@@ -206,16 +211,48 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 			}
 		}
 
-		for (const auto& extension : directoryExtensions)
+		if (!gameDir.empty())
 		{
-			fileSystem->AddSearchPath(gameDir + extension);
+			for (const auto& extension : directoryExtensions)
+			{
+				fileSystem->AddSearchPath(gameDir + extension);
+			}
 		}
+	};
+
+	if (isDefault)
+	{
+		const std::filesystem::path assetPath{assetFileName.toStdString()};
+		const auto [isInGameAssetDirectory, baseGameDirectoryPath] = IsFileInGameAssetsDirectory(assetPath);
+
+		if (isInGameAssetDirectory)
+		{
+			const auto baseGameDirectory = QString::fromStdString(baseGameDirectoryPath.string());
+
+			addConfiguration(GameConfiguration{.BaseGameDirectory = baseGameDirectory});
+
+			qCDebug(logging::HLAMFileSystem) << "Using auto-detected game configuration for asset"
+				<< assetFileName << "based on base game directory" << baseGameDirectory;
+		}
+	}
+
+	if (configuration)
+	{
+		addConfiguration(*configuration);
 	}
 
 	return fileSystem;
 }
 
-const GameConfiguration* GameConfigurationsSettings::DetectGameConfiguration(const QString& assetFileName) const
+void GameConfigurationsSettings::SanitizeConfiguration(GameConfiguration& configuration)
+{
+	configuration.GameExecutable = QFileInfo{configuration.GameExecutable}.absoluteFilePath();
+	configuration.BaseGameDirectory = QFileInfo{configuration.BaseGameDirectory}.absoluteFilePath();
+	configuration.ModDirectory = QFileInfo{configuration.ModDirectory}.absoluteFilePath();
+}
+
+std::pair<const GameConfiguration*, bool> GameConfigurationsSettings::DetectGameConfiguration(
+	const QString& assetFileName) const
 {
 	const QFileInfo file{assetFileName};
 
@@ -231,7 +268,7 @@ const GameConfiguration* GameConfigurationsSettings::DetectGameConfiguration(con
 			qCDebug(logging::HLAMFileSystem) << "Using game configuration"
 				<< configuration->Name << "(" << configuration->Id << ") for asset"
 				<< assetFileName << "based on mod directory" << configuration->ModDirectory;
-			return configuration.get();
+			return {configuration.get(), false};
 		}
 	}
 
@@ -243,7 +280,7 @@ const GameConfiguration* GameConfigurationsSettings::DetectGameConfiguration(con
 			qCDebug(logging::HLAMFileSystem) << "Using game configuration"
 				<< configuration->Name << "(" << configuration->Id << ") for asset"
 				<< assetFileName << "based on base game directory" << configuration->BaseGameDirectory;
-			return configuration.get();
+			return {configuration.get(), false};
 		}
 	}
 
@@ -260,5 +297,5 @@ const GameConfiguration* GameConfigurationsSettings::DetectGameConfiguration(con
 		qCDebug(logging::HLAMFileSystem) << "No game configuration for asset" << assetFileName;
 	}
 
-	return configuration;
+	return {configuration, true};
 }

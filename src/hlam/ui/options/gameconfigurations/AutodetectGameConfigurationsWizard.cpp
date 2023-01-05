@@ -49,7 +49,8 @@ void AutodetectGameConfigurationsWizard::accept()
 			name,
 			gameExecutable,
 			baseGameDirectory,
-			baseGameDirectory != modDirectory ? modDirectory : QString{}));
+			baseGameDirectory != modDirectory ? modDirectory : QString{}),
+			true);
 	}
 
 	QWizard::accept();
