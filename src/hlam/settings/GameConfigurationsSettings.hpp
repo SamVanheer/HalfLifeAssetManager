@@ -51,7 +51,15 @@ public:
 
 	void SetDefaultConfiguration(const QUuid& id);
 
-	std::unique_ptr<IFileSystem> CreateFileSystem(const GameConfiguration* configuration) const;
+	/**
+	*	@brief Creates a filesystem for an asset with the given filename.
+	*	If the file is located in a game directory with a known configuration it will be used,
+	*	otherwise the default configuration is used.
+	*/
+	std::unique_ptr<IFileSystem> CreateFileSystem(const QString& assetFileName) const;
+
+private:
+	const GameConfiguration* DetectGameConfiguration(const QString& assetFileName) const;
 
 signals:
 	void ConfigurationAdded(const GameConfiguration* configuration);

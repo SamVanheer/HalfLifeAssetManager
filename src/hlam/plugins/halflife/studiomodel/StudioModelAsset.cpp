@@ -134,8 +134,7 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
 	, _modelData(new StudioModelData(_editableStudioModel.get(), this))
-	, _fileSystem(_editorContext->GetApplicationSettings()->GetGameConfigurations()->CreateFileSystem(
-		_editorContext->GetApplicationSettings()->GetGameConfigurations()->GetDefaultConfiguration()))
+	, _fileSystem(_editorContext->GetApplicationSettings()->GetGameConfigurations()->CreateFileSystem(GetFileName()))
 	, _soundSystem(std::make_unique<SoundSystemWrapper>(_editorContext->GetSoundSystem(), _fileSystem.get()))
 	, _entityContext(std::make_unique<EntityContext>(this,
 		_editorContext->GetWorldTime(),

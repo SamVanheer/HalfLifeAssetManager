@@ -1,10 +1,13 @@
 #include <algorithm>
 
 #include <QDebug>
+#include <QFileInfo>
 #include <QSettings>
 
 #include "filesystem/FileSystem.hpp"
 #include "filesystem/FileSystemConstants.hpp"
+
+#include "qt/QtLogging.hpp"
 
 #include "settings/GameConfigurationsSettings.hpp"
 
@@ -181,8 +184,10 @@ void GameConfigurationsSettings::SetDefaultConfiguration(const QUuid& id)
 	}
 }
 
-std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const GameConfiguration* configuration) const
+std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const QString& assetFileName) const
 {
+	const auto configuration = DetectGameConfiguration(assetFileName);
+
 	auto fileSystem = std::make_unique<FileSystem>();
 
 	if (configuration)
@@ -208,4 +213,52 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 	}
 
 	return fileSystem;
+}
+
+const GameConfiguration* GameConfigurationsSettings::DetectGameConfiguration(const QString& assetFileName) const
+{
+	const QFileInfo file{assetFileName};
+
+	const auto directory = file.absolutePath();
+
+	// Search mod directories first in case a mod was added as both a mod and base game.
+	// Mods fall back on the base game for assets so configurations with that setup will work better.
+	for (const auto& configuration : _gameConfigurations)
+	{
+		if (!configuration->ModDirectory.isEmpty()
+			&& directory.startsWith(configuration->ModDirectory, Qt::CaseInsensitive))
+		{
+			qCDebug(logging::HLAMFileSystem) << "Using game configuration"
+				<< configuration->Name << "(" << configuration->Id << ") for asset"
+				<< assetFileName << "based on mod directory" << configuration->ModDirectory;
+			return configuration.get();
+		}
+	}
+
+	for (const auto& configuration : _gameConfigurations)
+	{
+		if (!configuration->BaseGameDirectory.isEmpty()
+			&& directory.startsWith(configuration->BaseGameDirectory, Qt::CaseInsensitive))
+		{
+			qCDebug(logging::HLAMFileSystem) << "Using game configuration"
+				<< configuration->Name << "(" << configuration->Id << ") for asset"
+				<< assetFileName << "based on base game directory" << configuration->BaseGameDirectory;
+			return configuration.get();
+		}
+	}
+
+	const auto configuration = GetDefaultConfiguration();
+
+	if (configuration)
+	{
+		qCDebug(logging::HLAMFileSystem) << "Using default game configuration"
+			<< configuration->Name << "(" << configuration->Id << "for asset"
+			<< assetFileName;
+	}
+	else
+	{
+		qCDebug(logging::HLAMFileSystem) << "No game configuration for asset" << assetFileName;
+	}
+
+	return configuration;
 }
