@@ -1,8 +1,17 @@
 target_sources(HLAM
 	PRIVATE
+		AutodetectConfigurePropertiesPage.cpp
+		AutodetectConfigurePropertiesPage.hpp
+		AutodetectConfigurePropertiesPage.ui
+		AutodetectGameConfigurationsWizard.cpp
+		AutodetectGameConfigurationsWizard.hpp
+		AutodetectScanResultsPage.cpp
+		AutodetectScanResultsPage.hpp
+		AutodetectScanResultsPage.ui
 		EditGameConfigurationsDialog.cpp
 		EditGameConfigurationsDialog.hpp
 		EditGameConfigurationsDialog.ui
+		GameConfigurationsOptions.hpp
 		OptionsPageGameConfigurations.cpp
 		OptionsPageGameConfigurations.hpp
 		OptionsPageGameConfigurations.ui)

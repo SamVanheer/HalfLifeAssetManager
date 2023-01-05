@@ -1,24 +1,17 @@
 #pragma once
 
 #include <memory>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
 
-#include <QStandardItemModel>
 #include <QString>
 #include <QWidget>
 
 #include "ui_OptionsPageGameConfigurations.h"
 
-#include "qt/HashFunctions.hpp"
-
 #include "ui/options/OptionsPage.hpp"
 
-class ApplicationSettings;
 class EditorContext;
 class GameConfiguration;
-class GameConfigurationsSettings;
+class GameConfigurationsOptions;
 
 extern const QString OptionsPageGameConfigurationsId;
 
@@ -30,47 +23,6 @@ public:
 
 class OptionsPageGameConfigurationsWidget final : public OptionsWidget
 {
-	struct ChangeSet
-	{
-		std::unordered_set<QUuid> NewObjects;
-		std::unordered_set<QUuid> RemovedObjects;
-		std::unordered_set<QUuid> UpdatedObjects;
-
-		void Clear()
-		{
-			NewObjects.clear();
-			RemovedObjects.clear();
-			UpdatedObjects.clear();
-		}
-
-		void MarkNew(const QUuid& id)
-		{
-			NewObjects.emplace(id);
-		}
-
-		void MarkChanged(const QUuid& id)
-		{
-			if (!NewObjects.count(id))
-			{
-				UpdatedObjects.emplace(id);
-			}
-		}
-
-		void MarkRemoved(const QUuid& id)
-		{
-			if (auto it = NewObjects.find(id); it != NewObjects.end())
-			{
-				NewObjects.erase(it);
-			}
-			else if (auto it = UpdatedObjects.find(id); it != UpdatedObjects.end())
-			{
-				UpdatedObjects.erase(it);
-			}
-
-			RemovedObjects.emplace(id);
-		}
-	};
-
 public:
 	explicit OptionsPageGameConfigurationsWidget(EditorContext* editorContext);
 	~OptionsPageGameConfigurationsWidget();
@@ -94,16 +46,12 @@ private slots:
 	void OnModDirectoryChanged(const QString& text);
 	void OnBrowseModDirectory();
 
+	void OnAutodetect();
+
 private:
 	Ui_OptionsPageGameConfigurations _ui;
 
 	EditorContext* const _editorContext;
 
-	std::vector<std::unique_ptr<GameConfiguration>> _gameConfigurations;
-
-	ChangeSet _gameConfigurationsChangeSet;
-
-	QStandardItemModel* _gameConfigurationsModel;
-
-	bool _currentEnvironmentIsActive = false;
+	std::unique_ptr<GameConfigurationsOptions> _options;
 };

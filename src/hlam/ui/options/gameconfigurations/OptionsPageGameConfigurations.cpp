@@ -4,15 +4,16 @@
 #include <QFileDialog>
 #include <QSignalBlocker>
 #include <QStringLiteral>
+#include <QWizard>
 
 #include "settings/GameConfigurationsSettings.hpp"
 
 #include "ui/EditorContext.hpp"
 
+#include "ui/options/gameconfigurations/AutodetectGameConfigurationsWizard.hpp"
 #include "ui/options/gameconfigurations/EditGameConfigurationsDialog.hpp"
 #include "ui/options/gameconfigurations/OptionsPageGameConfigurations.hpp"
-
-//TODO: implement automatic scanning of mods
+#include "ui/options/gameconfigurations/GameConfigurationsOptions.hpp"
 
 const QString OptionsPageGameConfigurationsCategory{QStringLiteral("T.GameConfigurations")};
 const QString OptionsPageGameConfigurationsId{QStringLiteral("T.GameConfigurations")};
@@ -31,13 +32,20 @@ OptionsPageGameConfigurations::OptionsPageGameConfigurations()
 
 OptionsPageGameConfigurationsWidget::OptionsPageGameConfigurationsWidget(EditorContext* editorContext)
 	: _editorContext(editorContext)
+	, _options(std::make_unique<GameConfigurationsOptions>())
 {
 	_ui.setupUi(this);
 
-	_gameConfigurationsModel = new QStandardItemModel(this);
+	_ui.DefaultConfiguration->setModel(_options->GameConfigurationsModel.get());
+	_ui.Configurations->setModel(_options->GameConfigurationsModel.get());
 
-	_ui.DefaultConfiguration->setModel(_gameConfigurationsModel);
-	_ui.Configurations->setModel(_gameConfigurationsModel);
+	connect(_options->GameConfigurationsModel.get(), &QStandardItemModel::rowsInserted, this,
+		[this](const QModelIndex& parent, int first)
+		{
+			_ui.DefaultConfiguration->setEnabled(true);
+			_ui.Configurations->setEnabled(true);
+			_ui.Configurations->setCurrentIndex(first);
+		});
 
 	connect(_ui.EditConfigurations, &QPushButton::clicked,
 		this, &OptionsPageGameConfigurationsWidget::OnEditGameConfigurations);
@@ -59,6 +67,8 @@ OptionsPageGameConfigurationsWidget::OptionsPageGameConfigurationsWidget(EditorC
 		this, &OptionsPageGameConfigurationsWidget::OnModDirectoryChanged);
 	connect(_ui.BrowseModDirectory, &QPushButton::clicked,
 		this, &OptionsPageGameConfigurationsWidget::OnBrowseModDirectory);
+
+	connect(_ui.Autodetect, &QPushButton::clicked, this, &OptionsPageGameConfigurationsWidget::OnAutodetect);
 
 	const auto gameConfigurations = _editorContext->GetGameConfigurations();
 
@@ -85,46 +95,46 @@ void OptionsPageGameConfigurationsWidget::ApplyChanges()
 {
 	const auto gameConfigurations = _editorContext->GetGameConfigurations();
 
-	for (const auto& configurationId : _gameConfigurationsChangeSet.RemovedObjects)
+	for (const auto& configurationId : _options->GameConfigurationsChangeSet.RemovedObjects)
 	{
 		gameConfigurations->RemoveConfiguration(configurationId);
 	}
 
-	for (const auto& configurationId : _gameConfigurationsChangeSet.NewObjects)
+	for (const auto& configurationId : _options->GameConfigurationsChangeSet.NewObjects)
 	{
-		auto it = std::find_if(_gameConfigurations.begin(), _gameConfigurations.end(),
+		auto it = std::find_if(_options->GameConfigurations.begin(), _options->GameConfigurations.end(),
 			[&](const auto& configuration)
 			{
 				return configuration->Id == configurationId;
 			}
 		);
 
-		assert(it != _gameConfigurations.end());
+		assert(it != _options->GameConfigurations.end());
 
 		gameConfigurations->AddConfiguration(std::make_unique<GameConfiguration>(**it));
 	}
 
-	for (const auto& environmentId : _gameConfigurationsChangeSet.UpdatedObjects)
+	for (const auto& environmentId : _options->GameConfigurationsChangeSet.UpdatedObjects)
 	{
-		auto it = std::find_if(_gameConfigurations.begin(), _gameConfigurations.end(),
+		auto it = std::find_if(_options->GameConfigurations.begin(), _options->GameConfigurations.end(),
 			[&](const auto& configuration)
 			{
 				return configuration->Id == environmentId;
 			}
 		);
 
-		assert(it != _gameConfigurations.end());
+		assert(it != _options->GameConfigurations.end());
 
 		gameConfigurations->UpdateConfiguration(**it);
 	}
 
-	_gameConfigurationsChangeSet.Clear();
+	_options->GameConfigurationsChangeSet.Clear();
 
 	QUuid defaultConfigurationId{};
 
 	if (_ui.DefaultConfiguration->currentIndex() != -1)
 	{
-		defaultConfigurationId = _gameConfigurations[_ui.DefaultConfiguration->currentIndex()]->Id;
+		defaultConfigurationId = _options->GameConfigurations[_ui.DefaultConfiguration->currentIndex()]->Id;
 	}
 
 	gameConfigurations->SetDefaultConfiguration(defaultConfigurationId);
@@ -132,20 +142,13 @@ void OptionsPageGameConfigurationsWidget::ApplyChanges()
 
 void OptionsPageGameConfigurationsWidget::AddGameConfiguration(std::unique_ptr<GameConfiguration>&& configuration)
 {
-	auto& ref = _gameConfigurations.emplace_back(std::move(configuration));
-
-	_ui.DefaultConfiguration->setEnabled(true);
-	_ui.Configurations->setEnabled(true);
-
-	auto item = new QStandardItem(ref->Name);
-
-	_gameConfigurationsModel->insertRow(_gameConfigurationsModel->rowCount(), item);
-	_ui.Configurations->setCurrentIndex(item->index().row());
+	_options->AddGameConfiguration(std::move(configuration));
 }
 
 void OptionsPageGameConfigurationsWidget::OnEditGameConfigurations()
 {
-	EditGameConfigurationsDialog dialog{_gameConfigurationsModel, _ui.Configurations->currentIndex(), this};
+	EditGameConfigurationsDialog dialog{
+		_options->GameConfigurationsModel.get(), _ui.Configurations->currentIndex(), this};
 
 	connect(&dialog, &EditGameConfigurationsDialog::ConfigurationAdded, this,
 		[this](const QString& name)
@@ -155,38 +158,36 @@ void OptionsPageGameConfigurationsWidget::OnEditGameConfigurations()
 			configuration->Id = QUuid::createUuid();
 			configuration->Name = name;
 
-			_gameConfigurationsChangeSet.MarkNew(configuration->Id);
 			AddGameConfiguration(std::move(configuration));
 		});
 
 	connect(&dialog, &EditGameConfigurationsDialog::ConfigurationRemoved, this,
 		[this](int index)
 		{
-			_gameConfigurationsChangeSet.MarkRemoved(_gameConfigurations[index]->Id);
-			_gameConfigurations.erase(_gameConfigurations.begin() + index);
-			_gameConfigurationsModel->removeRow(index);
-			_ui.DefaultConfiguration->setEnabled(_gameConfigurationsModel->rowCount() > 0);
-			_ui.Configurations->setEnabled(_gameConfigurationsModel->rowCount() > 0);
+			_options->GameConfigurationsChangeSet.MarkRemoved(_options->GameConfigurations[index]->Id);
+			_options->GameConfigurations.erase(_options->GameConfigurations.begin() + index);
+			_options->GameConfigurationsModel->removeRow(index);
+			_ui.DefaultConfiguration->setEnabled(_options->GameConfigurationsModel->rowCount() > 0);
+			_ui.Configurations->setEnabled(_options->GameConfigurationsModel->rowCount() > 0);
 		});
 
 	connect(&dialog, &EditGameConfigurationsDialog::ConfigurationCopied, this,
 		[this](int index)
 		{
-			auto configuration = std::make_unique<GameConfiguration>(*_gameConfigurations[index]);
+			auto configuration = std::make_unique<GameConfiguration>(*_options->GameConfigurations[index]);
 
 			configuration->Id = QUuid::createUuid();
 			configuration->Name += " (Copy)";
 
-			_gameConfigurationsChangeSet.MarkNew(configuration->Id);
 			AddGameConfiguration(std::move(configuration));
 		});
 
 	connect(&dialog, &EditGameConfigurationsDialog::ConfigurationRenamed, this,
 		[this](int index, const QString& name)
 		{
-			_gameConfigurationsChangeSet.MarkChanged(_gameConfigurations[index]->Id);
-			_gameConfigurations[index]->Name = name;
-			_gameConfigurationsModel->item(index)->setText(name);
+			_options->GameConfigurationsChangeSet.MarkChanged(_options->GameConfigurations[index]->Id);
+			_options->GameConfigurations[index]->Name = name;
+			_options->GameConfigurationsModel->item(index)->setText(name);
 		});
 
 	dialog.exec();
@@ -196,7 +197,7 @@ void OptionsPageGameConfigurationsWidget::OnConfigurationChanged(int index)
 {
 	const GameConfiguration dummy;
 
-	const GameConfiguration* configuration = index != -1 ? _gameConfigurations[index].get() : &dummy;
+	const GameConfiguration* configuration = index != -1 ? _options->GameConfigurations[index].get() : &dummy;
 
 	const QSignalBlocker exe{_ui.GameExecutable};
 	const QSignalBlocker base{_ui.BaseGameDirectory};
@@ -213,9 +214,9 @@ void OptionsPageGameConfigurationsWidget::OnGameExecutableChanged(const QString&
 {
 	if (const int index = _ui.Configurations->currentIndex(); index != -1)
 	{
-		auto configuration = _gameConfigurations[index].get();
+		auto configuration = _options->GameConfigurations[index].get();
 		configuration->GameExecutable = text;
-		_gameConfigurationsChangeSet.MarkChanged(configuration->Id);
+		_options->GameConfigurationsChangeSet.MarkChanged(configuration->Id);
 	}
 }
 
@@ -234,9 +235,9 @@ void OptionsPageGameConfigurationsWidget::OnBaseGameDirectoryChanged(const QStri
 {
 	if (const int index = _ui.Configurations->currentIndex(); index != -1)
 	{
-		auto configuration = _gameConfigurations[index].get();
+		auto configuration = _options->GameConfigurations[index].get();
 		configuration->BaseGameDirectory = text;
-		_gameConfigurationsChangeSet.MarkChanged(configuration->Id);
+		_options->GameConfigurationsChangeSet.MarkChanged(configuration->Id);
 	}
 }
 
@@ -255,9 +256,9 @@ void OptionsPageGameConfigurationsWidget::OnModDirectoryChanged(const QString& t
 {
 	if (const int index = _ui.Configurations->currentIndex(); index != -1)
 	{
-		auto configuration = _gameConfigurations[index].get();
+		auto configuration = _options->GameConfigurations[index].get();
 		configuration->ModDirectory = text;
-		_gameConfigurationsChangeSet.MarkChanged(configuration->Id);
+		_options->GameConfigurationsChangeSet.MarkChanged(configuration->Id);
 	}
 }
 
@@ -269,4 +270,10 @@ void OptionsPageGameConfigurationsWidget::OnBrowseModDirectory()
 	{
 		_ui.ModDirectory->setText(path);
 	}
+}
+
+void OptionsPageGameConfigurationsWidget::OnAutodetect()
+{
+	AutodetectGameConfigurationsWizard wizard{_options.get()};
+	wizard.exec();
 }
