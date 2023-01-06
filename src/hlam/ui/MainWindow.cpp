@@ -845,7 +845,7 @@ void MainWindow::OnEnterFullscreen()
 	// Prevent a bunch of edge cases by disabling these.
 	_ui.MenuFile->setEnabled(false);
 	_ui.ActionFullscreen->setEnabled(false);
-	_assetTabs->setEnabled(false);
+	_assetTabs->tabBar()->setEnabled(false);
 
 	_editorContext->SetFullscreenWidget(_fullscreenWidget.get());
 }
@@ -865,7 +865,7 @@ void MainWindow::OnExitFullscreen()
 
 	_fullscreenWidget.reset();
 
-	_assetTabs->setEnabled(true);
+	_assetTabs->tabBar()->setEnabled(true);
 	_ui.ActionFullscreen->setEnabled(true);
 	_ui.MenuFile->setEnabled(true);
 }

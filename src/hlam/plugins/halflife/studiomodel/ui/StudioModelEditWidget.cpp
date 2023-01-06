@@ -160,8 +160,6 @@ void StudioModelEditWidget::AttachSceneWidget()
 	_view->SetWidget(sceneWidget->GetContainer());
 
 	connect(sceneWidget, &SceneWidget::frameSwapped, _view->GetInfoBar(), &InfoBar::OnDraw, Qt::UniqueConnection);
-
-	this->setVisible(true);
 }
 
 void StudioModelEditWidget::DetachSceneWidget()
@@ -170,9 +168,6 @@ void StudioModelEditWidget::DetachSceneWidget()
 
 	sceneWidget->disconnect(_view->GetInfoBar());
 	sceneWidget->GetContainer()->setParent(nullptr);
-
-	// Hide ourselves so it doesn't show laid out strangely.
-	this->setVisible(false);
 }
 
 bool StudioModelEditWidget::IsControlsBarVisible() const
