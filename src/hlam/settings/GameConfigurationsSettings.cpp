@@ -233,11 +233,11 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 	if (isDefault)
 	{
 		const std::filesystem::path assetPath{assetFileName.toStdString()};
-		const auto [isInGameAssetDirectory, baseGameDirectoryPath] = IsFileInGameAssetsDirectory(assetPath);
+		const auto baseGameDirectoryPath = IsFileInGameAssetsDirectory(assetPath);
 
-		if (isInGameAssetDirectory)
+		if (baseGameDirectoryPath)
 		{
-			const auto baseGameDirectory = QString::fromStdString(baseGameDirectoryPath.string());
+			const auto baseGameDirectory = QString::fromStdString(baseGameDirectoryPath->string());
 
 			addConfiguration(GameConfiguration{.BaseGameDirectory = baseGameDirectory});
 

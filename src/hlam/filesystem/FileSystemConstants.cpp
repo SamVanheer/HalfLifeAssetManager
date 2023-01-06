@@ -60,7 +60,7 @@ const std::vector<std::string_view> SteamLanguages
 	"vietnamese"sv
 };
 
-std::pair<bool, std::filesystem::path> IsFileInGameAssetsDirectory(const std::filesystem::path& fileName)
+std::optional<std::filesystem::path> IsFileInGameAssetsDirectory(const std::filesystem::path& fileName)
 {
 	auto directory = fileName.parent_path();
 
@@ -84,10 +84,10 @@ std::pair<bool, std::filesystem::path> IsFileInGameAssetsDirectory(const std::fi
 					directory = directory.parent_path();
 				}
 
-				return {true, directory};
+				return directory;
 			}
 		}
 	}
 
-	return {false, {}};
+	return {};
 }
