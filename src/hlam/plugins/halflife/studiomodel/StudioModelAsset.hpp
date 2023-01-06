@@ -177,8 +177,6 @@ public slots:
 private slots:
 	void OnTick();
 
-	void OnIsActiveChanged(bool value);
-
 	void OnSceneWidgetRecreated();
 
 	void OnResizeTexturesToPowerOf2Changed();

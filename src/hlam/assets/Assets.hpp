@@ -58,17 +58,6 @@ public:
 
 	QUndoStack* GetUndoStack() const { return _undoStack; }
 
-	bool IsActive() const { return _isActive; }
-
-	void SetActive(bool value)
-	{
-		if (_isActive != value)
-		{
-			_isActive = value;
-			emit IsActiveChanged(_isActive);
-		}
-	}
-
 	/**
 	*	@brief Gets a widget to view and edit this asset
 	*/
@@ -84,8 +73,6 @@ public:
 
 signals:
 	void FileNameChanged(const QString& fileName);
-
-	void IsActiveChanged(bool value);
 
 private:
 	QString _fileName;

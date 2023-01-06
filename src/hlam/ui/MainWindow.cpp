@@ -504,8 +504,6 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowC
 
 		_undoGroup->removeStack(asset->GetUndoStack());
 
-		asset->SetActive(false);
-
 		_assets.erase(_assets.begin() + index);
 
 		_assetTabs->removeTab(index);
@@ -688,11 +686,6 @@ void MainWindow::OnAssetTabChanged(int index)
 		_assetMenu->menuAction()->setVisible(false);
 	}
 
-	if (_currentAsset)
-	{
-		_currentAsset->SetActive(false);
-	}
-
 	_currentAsset = index != -1 ? GetAsset(index) : nullptr;
 
 	bool success = false;
@@ -712,8 +705,6 @@ void MainWindow::OnAssetTabChanged(int index)
 		{
 			_assetMenu = nullptr;
 		}
-
-		_currentAsset->SetActive(true);
 
 		success = true;
 	}

@@ -379,24 +379,12 @@ void StudioModelAssetProvider::OnTick()
 
 void StudioModelAssetProvider::OnActiveAssetChanged(Asset* asset)
 {
-	if (_currentAsset == GetDummyAsset())
-	{
-		// Don't let it overwrite the changes made by the new asset.
-		const QSignalBlocker assetBlocker{_currentAsset};
-		_currentAsset->SetActive(false);
-	}
-
 	if (_currentAsset)
 	{
 		_currentAsset->OnDeactivated();
 	}
 
 	_currentAsset = asset && asset->GetProvider() == this ? static_cast<StudioModelAsset*>(asset) : GetDummyAsset();
-
-	if (_currentAsset == GetDummyAsset())
-	{
-		_currentAsset->SetActive(true);
-	}
 
 	emit AssetChanged(_currentAsset);
 

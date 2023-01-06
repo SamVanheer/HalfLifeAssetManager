@@ -184,7 +184,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_cameraOperators->SetCurrent(arcBallCamera);
 	}
 
-	connect(this, &StudioModelAsset::IsActiveChanged, this, &StudioModelAsset::OnIsActiveChanged);
 	connect(_editorContext->GetApplicationSettings(), &ApplicationSettings::ResizeTexturesToPowerOf2Changed,
 		this, &StudioModelAsset::OnResizeTexturesToPowerOf2Changed);
 	connect(_editorContext->GetApplicationSettings(), &ApplicationSettings::TextureFiltersChanged,
@@ -337,7 +336,7 @@ void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 
 	_currentScene = _scenes[index];
 
-	if (IsActive())
+	if (_provider->GetCurrentAsset() == this)
 	{
 		auto editWidget = _provider->GetEditWidget();
 		editWidget->SetSceneIndex(index);
@@ -359,6 +358,8 @@ void StudioModelAsset::OnActivated()
 		editWidget->SetAsset(this);
 	}
 
+	connect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick);
+	connect(_editorContext, &EditorContext::SceneWidgetRecreated, this, &StudioModelAsset::OnSceneWidgetRecreated);
 	connect(editWidget, &StudioModelEditWidget::SceneIndexChanged, this, &StudioModelAsset::OnSceneIndexChanged);
 	connect(editWidget, &StudioModelEditWidget::PoseChanged, this, &StudioModelAsset::SetPose);
 
@@ -377,6 +378,10 @@ void StudioModelAsset::OnDeactivated()
 	editWidget->disconnect(this);
 	sceneWidget->disconnect(this);
 	editWidget->SetAsset(_provider->GetDummyAsset());
+
+	disconnect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick);
+	disconnect(_editorContext, &EditorContext::SceneWidgetRecreated,
+		this, &StudioModelAsset::OnSceneWidgetRecreated);
 
 	auto item = _editWidget->layout()->takeAt(0);
 	_editWidget->layout()->removeItem(item);
@@ -573,23 +578,6 @@ void StudioModelAsset::OnTick()
 	}
 
 	emit Tick();
-}
-
-void StudioModelAsset::OnIsActiveChanged(bool value)
-{
-	// Only update if we're active.
-	if (value)
-	{
-		connect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick, Qt::UniqueConnection);
-		connect(_editorContext, &EditorContext::SceneWidgetRecreated, this, &StudioModelAsset::OnSceneWidgetRecreated,
-			Qt::UniqueConnection);
-	}
-	else
-	{
-		disconnect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick);
-		disconnect(_editorContext, &EditorContext::SceneWidgetRecreated,
-			this, &StudioModelAsset::OnSceneWidgetRecreated);
-	}
 }
 
 void StudioModelAsset::OnSceneWidgetRecreated()
