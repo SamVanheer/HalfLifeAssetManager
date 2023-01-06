@@ -59,7 +59,7 @@ public:
 		return false;
 	}
 
-	virtual void RestoreView(StateSnapshot* snapshot) {}
+	virtual void RestoreView(const StateSnapshot* snapshot) {}
 
 protected:
 	float GetMouseXValue(float value)

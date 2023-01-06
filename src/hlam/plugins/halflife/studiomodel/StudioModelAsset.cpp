@@ -59,11 +59,7 @@
 #include "ui/SceneWidget.hpp"
 #include "ui/StateSnapshot.hpp"
 
-#include "ui/camera_operators/ArcBallCameraOperator.hpp"
-#include "ui/camera_operators/CameraOperator.hpp"
 #include "ui/camera_operators/CameraOperators.hpp"
-#include "ui/camera_operators/FirstPersonCameraOperator.hpp"
-#include "ui/camera_operators/FreeLookCameraOperator.hpp"
 #include "ui/camera_operators/TextureCameraOperator.hpp"
 
 #include "utility/IOUtils.hpp"
@@ -143,7 +139,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_soundSystem.get(),
 		_editorContext->GetApplicationSettings(),
 		_provider->GetStudioModelSettings()))
-	, _cameraOperators(new CameraOperators(this))
 {
 	{
 		_editWidget = new QWidget();
@@ -153,36 +148,8 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_editWidget->setLayout(layout);
 	}
 
-	connect(_cameraOperators, &CameraOperators::CameraChanged, this, &StudioModelAsset::OnCameraChanged);
-
 	CreateMainScene();
 	CreateTextureScene();
-
-	auto arcBallCamera = new ArcBallCameraOperator(_editorContext->GetApplicationSettings());
-	_firstPersonCamera = new FirstPersonCameraOperator(_editorContext->GetApplicationSettings());
-
-	_cameraOperators->Add(arcBallCamera);
-	_cameraOperators->Add(new FreeLookCameraOperator(_editorContext->GetApplicationSettings()));
-	_cameraOperators->Add(_firstPersonCamera);
-
-	const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*_modelEntity, Axis::X, true);
-
-	for (int i = 0; i < _cameraOperators->Count(); ++i)
-	{
-		const auto cameraOperator = _cameraOperators->Get(i);
-		cameraOperator->CenterView(targetOrigin, cameraOrigin, pitch, yaw);
-	}
-
-	auto studioModelSettings = _provider->GetStudioModelSettings();
-
-	if (studioModelSettings->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
-	{
-		_cameraOperators->SetCurrent(_firstPersonCamera);
-	}
-	else
-	{
-		_cameraOperators->SetCurrent(arcBallCamera);
-	}
 
 	connect(_editorContext->GetApplicationSettings(), &ApplicationSettings::ResizeTexturesToPowerOf2Changed,
 		this, &StudioModelAsset::OnResizeTexturesToPowerOf2Changed);
@@ -346,7 +313,7 @@ void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 
 bool StudioModelAsset::CameraIsFirstPerson() const
 {
-	return _cameraOperators->GetCurrent() == _firstPersonCamera;
+	return _provider->CameraIsFirstPerson();
 }
 
 void StudioModelAsset::OnActivated()
@@ -366,11 +333,55 @@ void StudioModelAsset::OnActivated()
 	OnSceneWidgetRecreated();
 
 	emit LoadSnapshot(&_snapshot);
+
+	connect(_provider->GetCameraOperators(), &CameraOperators::CameraChanged,
+		this, &StudioModelAsset::OnCameraChanged, Qt::UniqueConnection);
+
+	if (_isInitialized)
+	{
+		_provider->GetCameraOperators()->RestoreViews(_cameraViewStates);
+		_provider->GetCameraOperators()->SetCurrent(_provider->GetCameraOperators()->Get(_activeCamera));
+	}
+	else
+	{
+		_isInitialized = true;
+
+		const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*_modelEntity, Axis::X, true);
+
+		auto cameraOperators = _provider->GetCameraOperators();
+
+		for (int i = 0; i < cameraOperators->Count(); ++i)
+		{
+			const auto cameraOperator = cameraOperators->Get(i);
+			cameraOperator->CenterView(targetOrigin, cameraOrigin, pitch, yaw);
+		}
+
+		auto studioModelSettings = _provider->GetStudioModelSettings();
+
+		if (studioModelSettings->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
+		{
+			cameraOperators->SetCurrent(_provider->GetFirstPersonCameraOperator());
+		}
+		else
+		{
+			cameraOperators->SetCurrent(_provider->GetArcBallCameraOperator());
+		}
+
+		_activeCamera = _provider->GetCameraOperators()->IndexOf(_provider->GetCameraOperators()->GetCurrent());
+	}
+
+	OnCameraChanged(nullptr, _provider->GetCameraOperators()->GetCurrent());
 }
 
 void StudioModelAsset::OnDeactivated()
 {
 	emit SaveSnapshot(&_snapshot);
+
+	_cameraViewStates = _provider->GetCameraOperators()->SaveViews();
+	_activeCamera = _provider->GetCameraOperators()->IndexOf(_provider->GetCameraOperators()->GetCurrent());
+
+	disconnect(_provider->GetCameraOperators(), &CameraOperators::CameraChanged,
+		this, &StudioModelAsset::OnCameraChanged);
 
 	auto editWidget = _provider->GetEditWidget();
 	auto sceneWidget = _editorContext->GetSceneWidget();
@@ -663,19 +674,9 @@ void StudioModelAsset::OnCameraChanged(SceneCameraOperator* previous, SceneCamer
 	_scene->SetCurrentCamera(current);
 }
 
-void StudioModelAsset::OnPreviousCamera()
-{
-	_cameraOperators->PreviousCamera();
-}
-
-void StudioModelAsset::OnNextCamera()
-{
-	_cameraOperators->NextCamera();
-}
-
 void StudioModelAsset::OnCenterView(Axis axis, bool positive)
 {
-	if (auto cameraOperator = _cameraOperators->GetCurrent(); cameraOperator)
+	if (auto cameraOperator = _provider->GetCameraOperators()->GetCurrent(); cameraOperator)
 	{
 		const auto [targetOrigin, cameraOrigin, pitch, yaw] = GetCenteredValues(*_modelEntity, axis, positive);
 

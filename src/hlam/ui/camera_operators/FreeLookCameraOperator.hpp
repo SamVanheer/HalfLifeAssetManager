@@ -133,7 +133,7 @@ public:
 		return true;
 	}
 
-	void RestoreView(StateSnapshot* snapshot) override
+	void RestoreView(const StateSnapshot* snapshot) override
 	{
 		_camera.SetOrigin(_savedOrigin);
 		_camera.SetAngles(_savedPitch, _savedYaw);

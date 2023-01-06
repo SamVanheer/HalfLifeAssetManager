@@ -40,7 +40,7 @@ bool HalfLifeAssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 	// TODO: needs to be moved later on
 	studioModelSettings->LoadSettings();
 
-	auto studioModelAssetProvider = std::make_unique<StudioModelAssetProvider>(studioModelSettings);
+	auto studioModelAssetProvider = std::make_unique<StudioModelAssetProvider>(builder.Settings, studioModelSettings);
 	auto studioModelImportProvider = std::make_unique<StudioModelDolImportProvider>(studioModelAssetProvider.get());
 
 	builder.AssetProviders->AddProvider(std::move(studioModelAssetProvider));

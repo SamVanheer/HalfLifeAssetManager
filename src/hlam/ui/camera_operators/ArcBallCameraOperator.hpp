@@ -132,7 +132,7 @@ public:
 		return true;
 	}
 
-	void RestoreView(StateSnapshot* snapshot) override
+	void RestoreView(const StateSnapshot* snapshot) override
 	{
 		 _targetPosition.x = snapshot->Value("TargetPosition/X", 0.f).toFloat();
 		 _targetPosition.y = snapshot->Value("TargetPosition/Y", 0.f).toFloat();

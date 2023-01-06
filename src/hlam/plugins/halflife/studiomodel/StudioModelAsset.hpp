@@ -3,6 +3,8 @@
 #include <memory>
 #include <vector>
 
+#include <QVector>
+
 #include <glm/vec2.hpp>
 
 #include "assets/Assets.hpp"
@@ -19,7 +21,6 @@
 class AxesEntity;
 class BackgroundEntity;
 class BoundingBoxEntity;
-class CameraOperators;
 class ClippingBoxEntity;
 class CrosshairEntity;
 class EntityContext;
@@ -100,8 +101,6 @@ public:
 
 	graphics::Scene* GetScene() { return _scene.get(); }
 
-	CameraOperators* GetCameraOperators() const { return _cameraOperators; }
-
 	void AddUndoCommand(QUndoCommand* command)
 	{
 		GetUndoStack()->push(command);
@@ -137,9 +136,6 @@ public:
 
 	void OnActivated();
 	void OnDeactivated();
-
-	void OnPreviousCamera();
-	void OnNextCamera();
 
 	void OnCenterView(Axis axis, bool positive);
 
@@ -228,11 +224,13 @@ private:
 
 	std::unique_ptr<graphics::Scene> _scene;
 
-	CameraOperators* _cameraOperators;
-
-	SceneCameraOperator* _firstPersonCamera;
-
 	QWidget* _editWidget{};
+
+	int _activeCamera = -1;
+
+	QVector<StateSnapshot> _cameraViewStates;
+
+	bool _isInitialized = false;
 
 	std::shared_ptr<HLMVStudioModelEntity> _modelEntity;
 	std::shared_ptr<AxesEntity> _axesEntity;

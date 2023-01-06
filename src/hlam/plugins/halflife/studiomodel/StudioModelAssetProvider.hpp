@@ -11,7 +11,10 @@
 
 #include "ui/StateSnapshot.hpp"
 
+class ApplicationSettings;
+class CameraOperators;
 class QAction;
+class SceneCameraOperator;
 class StudioModelSettings;
 
 namespace sprite
@@ -40,7 +43,8 @@ class StudioModelAssetProvider final : public AssetProvider
 	Q_OBJECT
 
 public:
-	explicit StudioModelAssetProvider(const std::shared_ptr<StudioModelSettings>& studioModelSettings);
+	explicit StudioModelAssetProvider(ApplicationSettings* applicationSettings,
+		const std::shared_ptr<StudioModelSettings>& studioModelSettings);
 	~StudioModelAssetProvider();
 
 	QString GetProviderName() const override { return "Studiomodel"; }
@@ -77,11 +81,19 @@ public:
 
 	StudioModelEditWidget* GetEditWidget();
 
+	CameraOperators* GetCameraOperators() const { return _cameraOperators; }
+
+	SceneCameraOperator* GetArcBallCameraOperator() const { return _arcBallCamera; }
+
+	SceneCameraOperator* GetFirstPersonCameraOperator() const { return _firstPersonCamera; }
+
 	StudioModelAsset* GetDummyAsset() const { return _dummyAsset.get(); }
 
 	StudioModelAsset* GetCurrentAsset() const { return _currentAsset; }
 
 	GLuint GetDefaultGroundTexture() const { return _defaultGroundTexture; }
+
+	bool CameraIsFirstPerson() const;
 
 signals:
 	void Tick();
@@ -104,9 +116,14 @@ private:
 
 	QPointer<StudioModelEditWidget> _editWidget;
 
-	StudioModelAsset* _currentAsset{};
+	CameraOperators* _cameraOperators;
+
+	SceneCameraOperator* _arcBallCamera;
+	SceneCameraOperator* _firstPersonCamera;
 
 	StateSnapshot _cameraSnapshot;
+
+	StudioModelAsset* _currentAsset{};
 
 	GLuint _defaultGroundTexture{0};
 };

@@ -82,7 +82,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 		return dock;
 	};
 
-	_camerasPanel = new CamerasPanel();
+	_camerasPanel = new CamerasPanel(_provider->GetCameraOperators());
 
 	addDockPanel(_camerasPanel, "Cameras");
 	addDockPanel(new ScenePanel(_provider), "Scene");
@@ -221,8 +221,6 @@ void StudioModelEditWidget::SetAsset(StudioModelAsset* asset)
 
 	_view->GetInfoBar()->SetAsset(asset);
 	_timeline->SetAsset(asset);
-
-	_camerasPanel->SetCameraOperators(asset->GetCameraOperators());
 }
 
 void StudioModelEditWidget::SetSceneIndex(int index)

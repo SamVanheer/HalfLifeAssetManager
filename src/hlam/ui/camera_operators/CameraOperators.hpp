@@ -2,10 +2,11 @@
 
 #include <cassert>
 
-#include <QList>
 #include <QObject>
+#include <QVector>
 
-#include "CameraOperator.hpp"
+#include "ui/StateSnapshot.hpp"
+#include "ui/camera_operators/CameraOperator.hpp"
 
 /**
 *	@brief Manages the set of camera operators, signals when the operator changes
@@ -18,12 +19,17 @@ public:
 	using QObject::QObject;
 	~CameraOperators() = default;
 
-	QList<SceneCameraOperator*> GetAll() const { return _cameraOperators; }
+	QVector<SceneCameraOperator*> GetAll() const { return _cameraOperators; }
 
 	int Count() const { return _cameraOperators.size(); }
 
 	SceneCameraOperator* Get(int index) const
 	{
+		if (index == -1)
+		{
+			return nullptr;
+		}
+
 		return _cameraOperators[index];
 	}
 
@@ -55,8 +61,8 @@ public:
 
 	void SetCurrent(SceneCameraOperator* cameraOperator);
 
-	void PreviousCamera();
-	void NextCamera();
+	QVector<StateSnapshot> SaveViews();
+	void RestoreViews(const QVector<StateSnapshot>& snapshots);
 
 private:
 	void ChangeCamera(bool next);
@@ -64,8 +70,12 @@ private:
 signals:
 	void CameraChanged(SceneCameraOperator* previous, SceneCameraOperator* current);
 
+public slots:
+	void PreviousCamera();
+	void NextCamera();
+
 private:
-	QList<SceneCameraOperator*> _cameraOperators;
+	QVector<SceneCameraOperator*> _cameraOperators;
 
 	SceneCameraOperator* _current = nullptr;
 };
@@ -98,6 +108,34 @@ inline void CameraOperators::PreviousCamera()
 inline void CameraOperators::NextCamera()
 {
 	ChangeCamera(true);
+}
+
+inline QVector<StateSnapshot> CameraOperators::SaveViews()
+{
+	QVector<StateSnapshot> snapshots{_cameraOperators.size()};
+
+	for (int index = 0; auto cameraOperator : _cameraOperators)
+	{
+		cameraOperator->SaveView(&snapshots[index]);
+		++index;
+	}
+
+	return snapshots;
+}
+
+inline void CameraOperators::RestoreViews(const QVector<StateSnapshot>& snapshots)
+{
+	if (snapshots.size() != _cameraOperators.size())
+	{
+		assert(!"Camera snapshots do not match current set of operators!");
+		return;
+	}
+
+	for (int index = 0; auto cameraOperator : _cameraOperators)
+	{
+		cameraOperator->RestoreView(&snapshots[index]);
+		++index;
+	}
 }
 
 inline void CameraOperators::ChangeCamera(bool next)

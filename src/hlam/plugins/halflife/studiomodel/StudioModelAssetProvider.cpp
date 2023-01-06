@@ -31,7 +31,10 @@
 #include "settings/StudioModelSettings.hpp"
 
 #include "ui/EditorContext.hpp"
+#include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperators.hpp"
+#include "ui/camera_operators/FirstPersonCameraOperator.hpp"
+#include "ui/camera_operators/FreeLookCameraOperator.hpp"
 
 namespace studiomodel
 {
@@ -39,9 +42,16 @@ Q_LOGGING_CATEGORY(HLAMStudioModel, "hlam.studiomodel")
 
 const QString WindowStateKey{QStringLiteral("Asset/StudioModel/WindowState")};
 
-StudioModelAssetProvider::StudioModelAssetProvider(const std::shared_ptr<StudioModelSettings>& studioModelSettings)
+StudioModelAssetProvider::StudioModelAssetProvider(ApplicationSettings* applicationSettings,
+	const std::shared_ptr<StudioModelSettings>& studioModelSettings)
 	: _studioModelSettings(studioModelSettings)
+	, _cameraOperators(new CameraOperators(this))
+	, _arcBallCamera(new ArcBallCameraOperator(applicationSettings))
+	, _firstPersonCamera(new FirstPersonCameraOperator(applicationSettings))
 {
+	_cameraOperators->Add(_arcBallCamera);
+	_cameraOperators->Add(new FreeLookCameraOperator(applicationSettings));
+	_cameraOperators->Add(_firstPersonCamera);
 }
 
 StudioModelAssetProvider::~StudioModelAssetProvider()
@@ -218,18 +228,10 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 
 	menu->addSeparator();
 
-	menu->addAction("Previous Camera", this,
-		[this]()
-		{
-			GetCurrentAsset()->OnPreviousCamera();
-		},
+	menu->addAction("Previous Camera", GetCameraOperators(), &CameraOperators::PreviousCamera,
 		QKeySequence{Qt::CTRL + static_cast<int>(Qt::Key::Key_U)});
 
-	menu->addAction("Next Camera", this,
-		[this]()
-		{
-			GetCurrentAsset()->OnNextCamera();
-		},
+	menu->addAction("Next Camera", GetCameraOperators(), &CameraOperators::NextCamera,
 		QKeySequence{Qt::CTRL + static_cast<int>(Qt::Key::Key_I)});
 
 	menu->addSeparator();
@@ -250,7 +252,7 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 
 	menu->addAction("Save View", this, [this]()
 		{
-			auto cameraOperators = GetCurrentAsset()->GetCameraOperators();
+			auto cameraOperators = GetCameraOperators();
 
 			if (auto cameraOperator = cameraOperators->GetCurrent(); cameraOperator)
 			{
@@ -267,7 +269,7 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 
 	_restoreViewAction = menu->addAction("Restore View", this, [this]()
 		{
-			auto cameraOperators = GetCurrentAsset()->GetCameraOperators();
+			auto cameraOperators = GetCameraOperators();
 
 			const int index = _cameraSnapshot.Value("CameraIndex", -1).toInt();
 
@@ -368,6 +370,11 @@ StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget()
 	}
 
 	return _editWidget;
+}
+
+bool StudioModelAssetProvider::CameraIsFirstPerson() const
+{
+	return _cameraOperators->GetCurrent() == _firstPersonCamera;
 }
 
 void StudioModelAssetProvider::OnTick()
