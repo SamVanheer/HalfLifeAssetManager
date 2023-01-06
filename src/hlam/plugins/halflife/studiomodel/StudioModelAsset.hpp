@@ -71,7 +71,7 @@ public:
 
 	StudioModelAssetProvider* GetProvider() const override { return _provider; }
 
-	QWidget* GetEditWidget() override;
+	QWidget* GetEditWidget() override { return _editWidget; }
 
 	void Save() override;
 

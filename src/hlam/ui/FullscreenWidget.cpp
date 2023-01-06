@@ -15,6 +15,7 @@ FullscreenWidget::FullscreenWidget()
 	//Without this going fullscreen will cause black flickering
 	QWindowsWindowFunctions::setHasBorderInFullScreen(this->windowHandle(), true);
 
+	setWindowIcon(QIcon{":/hlam.ico"});
 	setWindowState(_windowedState);
 }
 

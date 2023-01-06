@@ -169,7 +169,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionClose, &QAction::triggered, this, &MainWindow::OnCloseAsset);
 	connect(_ui.ActionExit, &QAction::triggered, this, &MainWindow::OnExit);
 
-	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnEnterFullscreen);
+	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnToggleFullscreen);
 
 	connect(_ui.ActionPlaySounds, &QAction::triggered, this, &MainWindow::OnPlaySoundsChanged);
 	connect(_ui.ActionFramerateAffectsPitch, &QAction::triggered, this, &MainWindow::OnFramerateAffectsPitchChanged);
@@ -484,11 +484,11 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowC
 		return true;
 	}
 
-	if (_fullscreenWidget)
+	if (_fullscreenWidget && _fullscreenWidget->isFullScreen())
 	{
-		//Always exit the fullscreen window if we're getting a close request
-		//The user needs to be able to see the main window and interact with it,
-		//and the fullscreen window may be holding a reference to the asset being closed
+		// Exit the fullscreen window if we're getting a close request
+		// The user needs to be able to see the main window and interact with it
+		// If the window isn't fullscreen then the user can easily open the program window
 		_fullscreenWidget->ExitFullscreen();
 	}
 
@@ -713,6 +713,7 @@ void MainWindow::OnAssetTabChanged(int index)
 	{
 		_undoGroup->setActiveStack(nullptr);
 		setWindowTitle({});
+		OnExitFullscreen();
 	}
 
 	emit _editorContext->ActiveAssetChanged(_currentAsset);
@@ -812,10 +813,11 @@ void MainWindow::OnExit()
 	this->close();
 }
 
-void MainWindow::OnEnterFullscreen()
+void MainWindow::OnToggleFullscreen()
 {
 	if (_fullscreenWidget)
 	{
+		OnExitFullscreen();
 		return;
 	}
 
@@ -826,8 +828,6 @@ void MainWindow::OnEnterFullscreen()
 	connect(_fullscreenWidget.get(), &FullscreenWidget::ExitedFullscreen, this, &MainWindow::OnExitFullscreen);
 
 	_editorContext->SetFullscreenWidget(_fullscreenWidget.get());
-
-	const auto asset = GetCurrentAsset();
 
 	const auto lambda = [this]()
 	{
@@ -841,11 +841,6 @@ void MainWindow::OnEnterFullscreen()
 	_fullscreenWidget->raise();
 	_fullscreenWidget->showFullScreen();
 	_fullscreenWidget->activateWindow();
-
-	// Prevent a bunch of edge cases by disabling these.
-	_ui.MenuFile->setEnabled(false);
-	_ui.ActionFullscreen->setEnabled(false);
-	_assetTabs->tabBar()->setEnabled(false);
 }
 
 void MainWindow::OnExitFullscreen()
@@ -856,12 +851,8 @@ void MainWindow::OnExitFullscreen()
 	}
 
 	_editorContext->SetFullscreenWidget(nullptr);
-
 	_fullscreenWidget.reset();
-
-	_assetTabs->tabBar()->setEnabled(true);
-	_ui.ActionFullscreen->setEnabled(true);
-	_ui.MenuFile->setEnabled(true);
+	_ui.ActionFullscreen->setChecked(false);
 }
 
 void MainWindow::OnFileSelected(const QString& fileName)

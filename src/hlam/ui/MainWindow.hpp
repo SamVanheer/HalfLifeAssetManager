@@ -80,7 +80,7 @@ private slots:
 
 	void OnExit();
 
-	void OnEnterFullscreen();
+	void OnToggleFullscreen();
 
 	void OnExitFullscreen();
 

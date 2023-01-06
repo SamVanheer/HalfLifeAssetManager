@@ -189,11 +189,6 @@ StudioModelAsset::~StudioModelAsset()
 	delete _editWidget;
 }
 
-QWidget* StudioModelAsset::GetEditWidget()
-{
-	return _editWidget;
-}
-
 void StudioModelAsset::Save()
 {
 	const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
@@ -578,26 +573,38 @@ void StudioModelAsset::OnTick()
 
 void StudioModelAsset::OnSceneWidgetRecreated()
 {
-	auto editWidget = _provider->GetEditWidget();
+	const auto fullscreenWidget = _editorContext->GetFullscreenWidget();
+	const auto editWidget = _provider->GetEditWidget();
+	const auto sceneWidget = _editorContext->GetSceneWidget();
 
 	editWidget->DetachSceneWidget();
 
-	if (auto fullscreenWidget = _editorContext->GetFullscreenWidget(); fullscreenWidget)
+	if (fullscreenWidget)
 	{
-		fullscreenWidget->SetWidget(_editorContext->GetSceneWidget()->GetContainer());
+		fullscreenWidget->SetWidget(sceneWidget->GetContainer());
 	}
-	else if (_provider->AreEditControlsVisible())
+
+	if (_provider->AreEditControlsVisible())
 	{
-		editWidget->AttachSceneWidget();
+		if (!fullscreenWidget)
+		{
+			editWidget->AttachSceneWidget();
+		}
+
 		_editWidget->layout()->addWidget(editWidget);
 		editWidget->setParent(_editWidget);
+		editWidget->show();
+	}
+	else if (!fullscreenWidget)
+	{
+		_editWidget->layout()->addWidget(sceneWidget->GetContainer());
 	}
 	else
 	{
-		_editWidget->layout()->addWidget(_editorContext->GetSceneWidget()->GetContainer());
+		// If fullscreen is enabled the edit widget will be shown unless explicitly hidden.
+		editWidget->hide();
 	}
 
-	auto sceneWidget = _editorContext->GetSceneWidget();
 	sceneWidget->SetScene(GetCurrentScene());
 
 	connect(sceneWidget, &SceneWidget::MouseEvent,
