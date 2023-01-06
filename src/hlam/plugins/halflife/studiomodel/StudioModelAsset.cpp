@@ -194,17 +194,6 @@ QWidget* StudioModelAsset::GetEditWidget()
 	return _editWidget;
 }
 
-void StudioModelAsset::EnterFullscreen(FullscreenWidget* fullscreenWidget)
-{
-	_provider->GetEditWidget()->DetachSceneWidget();
-	fullscreenWidget->SetWidget(_editorContext->GetSceneWidget()->GetContainer());
-}
-
-void StudioModelAsset::ExitFullscreen(FullscreenWidget* fullscreenWidget)
-{
-	OnSceneWidgetRecreated();
-}
-
 void StudioModelAsset::Save()
 {
 	const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
@@ -322,6 +311,7 @@ void StudioModelAsset::OnActivated()
 
 	connect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick);
 	connect(_editorContext, &EditorContext::SceneWidgetRecreated, this, &StudioModelAsset::OnSceneWidgetRecreated);
+	connect(_editorContext, &EditorContext::FullscreenWidgetChanged, this, &StudioModelAsset::OnSceneWidgetRecreated);
 	connect(editWidget, &StudioModelEditWidget::SceneIndexChanged, this, &StudioModelAsset::OnSceneIndexChanged);
 	connect(editWidget, &StudioModelEditWidget::PoseChanged, this, &StudioModelAsset::SetPose);
 
@@ -387,6 +377,8 @@ void StudioModelAsset::OnDeactivated()
 
 	disconnect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick);
 	disconnect(_editorContext, &EditorContext::SceneWidgetRecreated,
+		this, &StudioModelAsset::OnSceneWidgetRecreated);
+	disconnect(_editorContext, &EditorContext::FullscreenWidgetChanged,
 		this, &StudioModelAsset::OnSceneWidgetRecreated);
 
 	auto item = _editWidget->layout()->takeAt(0);
@@ -586,14 +578,16 @@ void StudioModelAsset::OnTick()
 
 void StudioModelAsset::OnSceneWidgetRecreated()
 {
+	auto editWidget = _provider->GetEditWidget();
+
+	editWidget->DetachSceneWidget();
+
 	if (auto fullscreenWidget = _editorContext->GetFullscreenWidget(); fullscreenWidget)
 	{
 		fullscreenWidget->SetWidget(_editorContext->GetSceneWidget()->GetContainer());
 	}
 	else if (_provider->AreEditControlsVisible())
 	{
-		auto editWidget = _provider->GetEditWidget();
-
 		editWidget->AttachSceneWidget();
 		_editWidget->layout()->addWidget(editWidget);
 		editWidget->setParent(_editWidget);
@@ -605,6 +599,7 @@ void StudioModelAsset::OnSceneWidgetRecreated()
 
 	auto sceneWidget = _editorContext->GetSceneWidget();
 	sceneWidget->SetScene(GetCurrentScene());
+
 	connect(sceneWidget, &SceneWidget::MouseEvent,
 		this, &StudioModelAsset::OnSceneWidgetMouseEvent, Qt::UniqueConnection);
 	connect(sceneWidget, &SceneWidget::WheelEvent,

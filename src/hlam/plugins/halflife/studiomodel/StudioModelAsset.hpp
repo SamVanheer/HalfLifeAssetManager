@@ -73,10 +73,6 @@ public:
 
 	QWidget* GetEditWidget() override;
 
-	void EnterFullscreen(FullscreenWidget* fullscreenWidget) override;
-
-	void ExitFullscreen(FullscreenWidget* fullscreenWidget) override;
-
 	void Save() override;
 
 	bool TryRefresh() override;

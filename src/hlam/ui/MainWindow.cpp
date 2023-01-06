@@ -825,9 +825,9 @@ void MainWindow::OnEnterFullscreen()
 
 	connect(_fullscreenWidget.get(), &FullscreenWidget::ExitedFullscreen, this, &MainWindow::OnExitFullscreen);
 
-	const auto asset = GetCurrentAsset();
+	_editorContext->SetFullscreenWidget(_fullscreenWidget.get());
 
-	asset->EnterFullscreen(_fullscreenWidget.get());
+	const auto asset = GetCurrentAsset();
 
 	const auto lambda = [this]()
 	{
@@ -846,8 +846,6 @@ void MainWindow::OnEnterFullscreen()
 	_ui.MenuFile->setEnabled(false);
 	_ui.ActionFullscreen->setEnabled(false);
 	_assetTabs->tabBar()->setEnabled(false);
-
-	_editorContext->SetFullscreenWidget(_fullscreenWidget.get());
 }
 
 void MainWindow::OnExitFullscreen()
@@ -858,10 +856,6 @@ void MainWindow::OnExitFullscreen()
 	}
 
 	_editorContext->SetFullscreenWidget(nullptr);
-
-	const auto asset = GetCurrentAsset();
-
-	asset->ExitFullscreen(_fullscreenWidget.get());
 
 	_fullscreenWidget.reset();
 

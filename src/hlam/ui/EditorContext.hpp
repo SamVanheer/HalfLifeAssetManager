@@ -100,7 +100,11 @@ public:
 
 	void SetFullscreenWidget(FullscreenWidget* fullscreenWidget)
 	{
-		_fullscreenWidget = fullscreenWidget;
+		if (_fullscreenWidget != fullscreenWidget)
+		{
+			_fullscreenWidget = fullscreenWidget;
+			emit FullscreenWidgetChanged();
+		}
 	}
 
 	void StartTimer();
@@ -129,6 +133,8 @@ signals:
 	void SettingsChanged();
 
 	void SceneWidgetRecreated();
+
+	void FullscreenWidgetChanged();
 
 public slots:
 	void TryLoadAsset(const QString& fileName)

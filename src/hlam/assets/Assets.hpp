@@ -12,12 +12,9 @@
 #include <QUndoStack>
 #include <QWidget>
 
-class QMenu;
-
-class EditorContext;
-class FullscreenWidget;
-
 class AssetProvider;
+class EditorContext;
+class QMenu;
 
 enum class ProviderFeature
 {
@@ -62,10 +59,6 @@ public:
 	*	@brief Gets a widget to view and edit this asset
 	*/
 	virtual QWidget* GetEditWidget() = 0;
-
-	virtual void EnterFullscreen(FullscreenWidget* fullscreenWidget) = 0;
-
-	virtual void ExitFullscreen(FullscreenWidget* fullscreenWidget) = 0;
 
 	virtual void Save() = 0;
 
