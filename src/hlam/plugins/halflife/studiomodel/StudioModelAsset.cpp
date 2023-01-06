@@ -30,7 +30,6 @@
 
 #include "filesystem/IFileSystem.hpp"
 
-#include "formats/studiomodel/DumpModelInfo.hpp"
 #include "formats/studiomodel/StudioModelIO.hpp"
 #include "formats/studiomodel/StudioModelUtils.hpp"
 
@@ -48,7 +47,6 @@
 #include "qt/QtLogSink.hpp"
 #include "qt/QtUtilities.hpp"
 
-#include "settings/ColorSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
 #include "settings/StudioModelSettings.hpp"
 
@@ -57,12 +55,9 @@
 #include "ui/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/SceneWidget.hpp"
-#include "ui/StateSnapshot.hpp"
 
 #include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/TextureCameraOperator.hpp"
-
-#include "utility/IOUtils.hpp"
 
 namespace studiomodel
 {
@@ -707,49 +702,5 @@ void StudioModelAsset::OnFlipNormals()
 	}
 
 	AddUndoCommand(new FlipNormalsCommand(this, std::move(oldNormals), std::move(newNormals)));
-}
-
-void StudioModelAsset::OnDumpModelInfo()
-{
-	const QFileInfo fileInfo{GetFileName()};
-
-	const auto suggestedFileName{QString{"%1%2%3_modelinfo.txt"}.arg(fileInfo.path()).arg(QDir::separator()).arg(fileInfo.completeBaseName())};
-
-	const QString fileName{QFileDialog::getSaveFileName(nullptr, {}, suggestedFileName, "Text Files (*.txt);;All Files (*.*)")};
-
-	if (!fileName.isEmpty())
-	{
-		if (FILE* file = utf8_fopen(fileName.toStdString().c_str(), "w"); file)
-		{
-			studiomdl::DumpModelInfo(file, *_editableStudioModel);
-
-			fclose(file);
-
-			qt::LaunchDefaultProgram(fileName);
-		}
-		else
-		{
-			QMessageBox::critical(nullptr, "Error", QString{"Could not open file \"%1\" for writing"}.arg(fileName));
-		}
-	}
-}
-
-void StudioModelAsset::OnTakeScreenshot()
-{
-	//Ensure the edit widget exists
-	//Should always be the case since the screenshot action is only available if the edit widget is open
-	GetEditWidget();
-
-	const QImage screenshot = _editorContext->GetSceneWidget()->grabFramebuffer();
-
-	const QString fileName{QFileDialog::getSaveFileName(nullptr, {}, {}, qt::GetImagesFileFilter())};
-
-	if (!fileName.isEmpty())
-	{
-		if (!screenshot.save(fileName))
-		{
-			QMessageBox::critical(nullptr, "Error", "An error occurred while saving screenshot");
-		}
-	}
 }
 }

@@ -5,10 +5,12 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMenu>
+#include <QMessageBox>
 #include <QOpenGLFunctions_1_1>
 #include <QSignalBlocker>
 
 #include "formats/sprite/SpriteRenderer.hpp"
+#include "formats/studiomodel/DumpModelInfo.hpp"
 #include "formats/studiomodel/StudioModelIO.hpp"
 #include "formats/studiomodel/StudioModelRenderer.hpp"
 #include "formats/studiomodel/StudioModelUtils.hpp"
@@ -30,11 +32,14 @@
 #include "settings/ApplicationSettings.hpp"
 #include "settings/StudioModelSettings.hpp"
 
+#include "ui/SceneWidget.hpp"
 #include "ui/EditorContext.hpp"
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/FirstPersonCameraOperator.hpp"
 #include "ui/camera_operators/FreeLookCameraOperator.hpp"
+
+#include "utility/IOUtils.hpp"
 
 namespace studiomodel
 {
@@ -299,11 +304,11 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 			dialog.exec();
 		});
 
-	menu->addAction("Dump Model Info...", this, [this]() { GetCurrentAsset()->OnDumpModelInfo(); });
+	menu->addAction("Dump Model Info...", this, &StudioModelAssetProvider::OnDumpModelInfo);
 
 	menu->addSeparator();
 
-	menu->addAction("Take Screenshot...", this, [this]() { GetCurrentAsset()->OnTakeScreenshot(); });
+	menu->addAction("Take Screenshot...", this, &StudioModelAssetProvider::OnTakeScreenshot);
 }
 
 bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) const
@@ -399,5 +404,47 @@ void StudioModelAssetProvider::OnActiveAssetChanged(Asset* asset)
 
 	_editWidget->setEnabled(_currentAsset != GetDummyAsset());
 	_editWidget->setVisible(_currentAsset != GetDummyAsset());
+}
+
+void StudioModelAssetProvider::OnDumpModelInfo()
+{
+	const auto asset = GetCurrentAsset();
+
+	const QFileInfo fileInfo{asset->GetFileName()};
+
+	const auto suggestedFileName{QString{"%1%2%3_modelinfo.txt"}.arg(fileInfo.path()).arg(QDir::separator()).arg(fileInfo.completeBaseName())};
+
+	const QString fileName{QFileDialog::getSaveFileName(nullptr, {}, suggestedFileName, "Text Files (*.txt);;All Files (*.*)")};
+
+	if (!fileName.isEmpty())
+	{
+		if (FILE* file = utf8_fopen(fileName.toStdString().c_str(), "w"); file)
+		{
+			studiomdl::DumpModelInfo(file, *asset->GetEditableStudioModel());
+
+			fclose(file);
+
+			qt::LaunchDefaultProgram(fileName);
+		}
+		else
+		{
+			QMessageBox::critical(nullptr, "Error", QString{"Could not open file \"%1\" for writing"}.arg(fileName));
+		}
+	}
+}
+
+void StudioModelAssetProvider::OnTakeScreenshot()
+{
+	const QImage screenshot = _editorContext->GetSceneWidget()->grabFramebuffer();
+
+	const QString fileName{QFileDialog::getSaveFileName(nullptr, {}, {}, qt::GetImagesFileFilter())};
+
+	if (!fileName.isEmpty())
+	{
+		if (!screenshot.save(fileName))
+		{
+			QMessageBox::critical(nullptr, "Error", "An error occurred while saving screenshot");
+		}
+	}
 }
 }

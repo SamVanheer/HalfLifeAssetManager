@@ -105,6 +105,10 @@ private slots:
 
 	void OnActiveAssetChanged(Asset* asset);
 
+	void OnDumpModelInfo();
+
+	void OnTakeScreenshot();
+
 private:
 	const std::shared_ptr<StudioModelSettings> _studioModelSettings;
 	std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;

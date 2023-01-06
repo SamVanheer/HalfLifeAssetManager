@@ -141,10 +141,6 @@ public:
 
 	void OnFlipNormals();
 
-	void OnDumpModelInfo();
-
-	void OnTakeScreenshot();
-
 private:
 	void CreateMainScene();
 	void CreateTextureScene();
