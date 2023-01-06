@@ -735,7 +735,6 @@ void TexturesPanel::OnExportAllTextures()
 	}
 }
 
-// TODO: check if this causes the colormap to update twice
 void TexturesPanel::OnTopColorSliderChanged()
 {
 	_ui.TopColorSpinner->setValue(_ui.TopColorSlider->value());

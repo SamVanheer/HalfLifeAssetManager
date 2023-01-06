@@ -7,6 +7,8 @@
 
 #include "settings/ApplicationSettings.hpp"
 
+#undef PlaySound
+
 void HLMVStudioModelEntity::Spawn()
 {
 	SetThink(&ThisClass::AnimThink);
