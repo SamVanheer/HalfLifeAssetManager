@@ -7,6 +7,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QOpenGLFunctions_1_1>
+#include <QSettings>
 #include <QSignalBlocker>
 
 #include "formats/sprite/SpriteRenderer.hpp"
@@ -57,6 +58,12 @@ StudioModelAssetProvider::StudioModelAssetProvider(ApplicationSettings* applicat
 	_cameraOperators->Add(_arcBallCamera);
 	_cameraOperators->Add(new FreeLookCameraOperator(applicationSettings));
 	_cameraOperators->Add(_firstPersonCamera);
+
+	for (auto cameraOperator : _cameraOperators->GetAll())
+	{
+		auto camera = cameraOperator->GetCamera();
+		camera->SetFieldOfView(_studioModelSettings->GetCameraFOV(cameraOperator->GetName(), camera->GetFieldOfView()));
+	}
 }
 
 StudioModelAssetProvider::~StudioModelAssetProvider()
@@ -140,6 +147,11 @@ void StudioModelAssetProvider::Shutdown()
 	if (_editWidget)
 	{
 		_editorContext->GetSettings()->setValue(WindowStateKey, _editWidget->SaveState());
+	}
+
+	for (auto cameraOperator : _cameraOperators->GetAll())
+	{
+		_studioModelSettings->SetCameraFOV(cameraOperator->GetName(), cameraOperator->GetCamera()->GetFieldOfView());
 	}
 }
 

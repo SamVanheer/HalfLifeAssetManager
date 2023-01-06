@@ -1,15 +1,12 @@
 #pragma once
 
-#include <algorithm>
-
 #include <QObject>
-#include <QSettings>
 #include <QString>
+
+class QSettings;
 
 class StudioModelSettings final : public QObject
 {
-	Q_OBJECT
-
 public:
 	static constexpr bool DefaultAutodetectViewmodels{true};
 	static constexpr bool DefaultActivateTextureViewWhenTexturesPanelOpened{true};
@@ -18,31 +15,15 @@ public:
 	static constexpr int MaximumFloorLength = 2048;
 	static constexpr int DefaultFloorLength = 100;
 
-	StudioModelSettings(QSettings* settings)
+	explicit StudioModelSettings(QSettings* settings)
 		: _settings(settings)
 	{
 	}
 
 	~StudioModelSettings() = default;
 
-	void LoadSettings()
-	{
-		_settings->beginGroup("Assets/StudioModel");
-		_autodetectViewModels = _settings->value("AutodetectViewmodels", DefaultAutodetectViewmodels).toBool();
-		_activateTextureViewWhenTexturesPanelOpened = _settings->value(
-			"ActivateTextureViewWhenTexturesPanelOpened", DefaultActivateTextureViewWhenTexturesPanelOpened).toBool();
-		_floorLength = std::clamp(_settings->value("FloorLength", DefaultFloorLength).toInt(), MinimumFloorLength, MaximumFloorLength);
-		_settings->endGroup();
-	}
-
-	void SaveSettings()
-	{
-		_settings->beginGroup("Assets/StudioModel");
-		_settings->setValue("AutodetectViewmodels", _autodetectViewModels);
-		_settings->setValue("ActivateTextureViewWhenTexturesPanelOpened", _activateTextureViewWhenTexturesPanelOpened);
-		_settings->setValue("FloorLength", _floorLength);
-		_settings->endGroup();
-	}
+	void LoadSettings();
+	void SaveSettings();
 
 	bool ShouldAutodetectViewmodels() const { return _autodetectViewModels; }
 
@@ -54,7 +35,10 @@ public:
 		}
 	}
 
-	bool ShouldActivateTextureViewWhenTexturesPanelOpened() const { return _activateTextureViewWhenTexturesPanelOpened; }
+	bool ShouldActivateTextureViewWhenTexturesPanelOpened() const
+	{
+		return _activateTextureViewWhenTexturesPanelOpened;
+	}
 
 	void SetActivateTextureViewWhenTexturesPanelOpened(bool value)
 	{
@@ -67,6 +51,9 @@ public:
 	{
 		_floorLength = value;
 	}
+
+	float GetCameraFOV(const QString& name, float defaultValue) const;
+	void SetCameraFOV(const QString& name, float value);
 
 private:
 	QSettings* const _settings;
