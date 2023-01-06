@@ -582,8 +582,6 @@ void StudioModelAsset::OnTick()
 	{
 		scene->Tick();
 	}
-
-	emit Tick();
 }
 
 void StudioModelAsset::OnSceneWidgetRecreated()

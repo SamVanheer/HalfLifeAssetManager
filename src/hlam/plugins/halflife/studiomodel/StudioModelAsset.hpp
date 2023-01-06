@@ -151,8 +151,6 @@ private:
 	bool HandleMouseInput(QMouseEvent* event);
 
 signals:
-	void Tick();
-
 	void SaveSnapshot(StateSnapshot* snapshot);
 
 	void LoadSnapshot(StateSnapshot* snapshot);
