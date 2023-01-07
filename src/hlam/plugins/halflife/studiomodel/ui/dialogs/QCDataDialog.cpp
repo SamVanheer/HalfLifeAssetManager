@@ -211,7 +211,9 @@ QCDataDialog::QCDataDialog(StudioModelAssetProvider* provider, QWidget* parent)
 				.arg(attachment->Origin.z, 0, 'f', 2);
 		});
 
-	initializePageWithList("Sequences", {}, model->Sequences,
+	initializePageWithList("Sequences",
+		"Sequences support custom activities using <b>ACT_&lt;number&gt;</b> syntax",
+		model->Sequences,
 		[&](int index, const auto& sequence)
 		{
 			const auto name = QString::fromStdString(sequence->Label);
@@ -238,11 +240,15 @@ QCDataDialog::QCDataDialog(StudioModelAssetProvider* provider, QWidget* parent)
 					.arg(sequence->BlendData[0].End);
 			}
 
-			const auto activityName = (sequence->Activity >= 0 && sequence->Activity <= ACT_FLINCH_RIGHTLEG)
-				? activity_map[sequence->Activity].name
-				: "ACT_UNKNOWN";
-			result += QString{" "} + activityName;
-			result += " " + QString::number(sequence->ActivityWeight);
+			// It is unlikely but not impossible for Activity to be zero while ActivityWeight is non-zero.
+			if (sequence->Activity != 0 || sequence->ActivityWeight != 0)
+			{
+				const auto activityName = (sequence->Activity > 0 && sequence->Activity <= ACT_FLINCH_RIGHTLEG)
+					? ActivityMap[sequence->Activity - 1].Name
+					: QString{"ACT_%1"}.arg(sequence->Activity);
+
+				result += QString{" "} + activityName + " " + QString::number(sequence->ActivityWeight);
+			}
 
 			if (sequence->MotionType != 0)
 			{

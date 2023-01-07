@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <iterator>
 
 enum Activity
 {
@@ -97,16 +98,15 @@ enum Activity
 	ACT_FLINCH_RIGHTLEG,
 };
 
-
-struct activity_map_t
+struct ActivityEntry
 {
-	int	type;
-	const char* name;
+	int	Type;
+	const char* Name;
 };
 
 #define _A(a) { a, #a }
 
-constexpr activity_map_t activity_map[] =
+constexpr ActivityEntry ActivityMap[] =
 {
 	_A(ACT_IDLE),
 	_A(ACT_GUARD),
@@ -183,6 +183,9 @@ constexpr activity_map_t activity_map[] =
 	_A(ACT_FLINCH_LEFTARM),
 	_A(ACT_FLINCH_RIGHTARM),
 	_A(ACT_FLINCH_LEFTLEG),
-	_A(ACT_FLINCH_RIGHTLEG),
-	0, nullptr
+	_A(ACT_FLINCH_RIGHTLEG)
 };
+
+#undef _A
+
+constexpr int NumBuiltinActivities = std::size(ActivityMap) + 1;

@@ -1,6 +1,7 @@
 #include <limits>
 
 #include <QAbstractItemView>
+#include <QRegularExpressionValidator>
 
 #include "entity/HLMVStudioModelEntity.hpp"
 
@@ -30,27 +31,25 @@ SequencesPanel::SequencesPanel(StudioModelAssetProvider* provider)
 	_ui.EventId->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 	_ui.EventType->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
-	// TODO: will need to do this for every activity map once users can define their own.
 	{
 		QStringList items;
 
 		items.append("None (0)");
 
-		for (const auto& activity : activity_map)
+		for (const auto& activity : ActivityMap)
 		{
-			// TODO: remove once list is user-defined.
-			if (!activity.name)
-			{
-				break;
-			}
-
-			items.append(QString{"%1 (%2)"}.arg(activity.name).arg(activity.type));
+			items.append(QString{"%1 (%2)"}.arg(activity.Name).arg(activity.Type));
 		}
 
 		_ui.Activity->addItems(items);
 
 		// Set the popup to be wide enough to fit the longest name.
 		_ui.Activity->view()->setMinimumWidth(_ui.Activity->minimumSizeHint().width());
+
+		// Allow user to enter custom activities using compiler supported syntax.
+		_ui.Activity->setValidator(new QRegularExpressionValidator(QRegularExpression{R"(^ACT_-?\d+$)"}, this));
+		// Built-in activities can't be selected by typing them so auto-completing them is counter-intuitive.
+		_ui.Activity->setCompleter(nullptr);
 	}
 
 	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &SequencesPanel::OnAssetChanged);
@@ -371,7 +370,25 @@ void SequencesPanel::OnSequenceChanged(int index)
 
 	_ui.IsLooping->setChecked((sequence.Flags & STUDIO_LOOPING) != 0);
 	_ui.FPS->setValue(sequence.FPS);
-	_ui.Activity->setCurrentIndex(sequence.Activity);
+
+	// Remove custom activities.
+	while (_ui.Activity->count() > NumBuiltinActivities)
+	{
+		_ui.Activity->removeItem(NumBuiltinActivities);
+	}
+
+	// If this is a custom activity add it.
+	if (sequence.Activity >= 0 && sequence.Activity < NumBuiltinActivities)
+	{
+		_ui.Activity->setCurrentIndex(sequence.Activity);
+	}
+	else
+	{
+		_ui.Activity->addItem(QString{"ACT_%1"}.arg(sequence.Activity));
+		_ui.Activity->setCurrentIndex(NumBuiltinActivities);
+		_ui.Activity->view()->setMinimumWidth(_ui.Activity->minimumSizeHint().width());
+	}
+
 	_ui.ActWeight->setValue(sequence.ActivityWeight);
 
 	if (_ui.LinearMovement->GetValue() != sequence.LinearMovement)
@@ -429,15 +446,25 @@ void SequencesPanel::OnSequencePropertiesChanged()
 		.LinearMovement = sequence.LinearMovement
 	};
 
+	int currentActivity = _ui.Activity->currentIndex();
+
+	if (currentActivity < 0 || currentActivity >= NumBuiltinActivities)
+	{
+		auto actText = _ui.Activity->currentText();
+		actText.remove(0, 4);
+		currentActivity = actText.toInt();
+	}
+
 	const SequenceProps newProps
 	{
 		.IsLooping = _ui.IsLooping->isChecked(),
 		.FPS = static_cast<float>(_ui.FPS->value()),
-		.Activity = _ui.Activity->currentIndex(),
+		.Activity = currentActivity,
 		.ActivityWeight = _ui.ActWeight->value(),
 		.LinearMovement = _ui.LinearMovement->GetValue()
 	};
 
+	// This action will trigger a refresh which clears any unused custom activities.
 	_asset->AddUndoCommand(new ChangeSequencePropsCommand(_asset, _ui.Sequences->currentIndex(), oldProps, newProps));
 }
 
