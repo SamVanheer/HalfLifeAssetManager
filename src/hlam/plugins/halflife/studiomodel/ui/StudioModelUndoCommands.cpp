@@ -87,48 +87,31 @@ void ChangeAttachmentPropsCommand::Apply(int index, const AttachmentProps& oldVa
 	EmitDataChanged(_asset->GetModelData()->Attachments, index);
 }
 
-void ChangeBoneControllerRangeCommand::Apply(int index, const ChangeBoneControllerRange& oldValue, const ChangeBoneControllerRange& newValue)
+void ChangeBoneControllerPropsCommand::Apply(int index,
+	const BoneControllerProps& oldValue, const BoneControllerProps& newValue)
 {
-	auto& controller = *_asset->GetEditableStudioModel()->BoneControllers[index];
+	auto model = _asset->GetEditableStudioModel();
+	auto& controller = *model->BoneControllers[index];
 
 	controller.Start = newValue.Start;
 	controller.End = newValue.End;
+	controller.Rest = newValue.Rest;
+	controller.Index = newValue.Index;
 
-	emit _asset->GetModelData()->BoneControllerDataChanged(index);
-}
-
-void ChangeBoneControllerRestCommand::Apply(int index, const int& oldValue, const int& newValue)
-{
-	_asset->GetEditableStudioModel()->BoneControllers[index]->Rest = newValue;
-	emit _asset->GetModelData()->BoneControllerDataChanged(index);
-}
-
-void ChangeBoneControllerIndexCommand::Apply(int index, const int& oldValue, const int& newValue)
-{
-	_asset->GetEditableStudioModel()->BoneControllers[index]->Index = newValue;
-	emit _asset->GetModelData()->BoneControllerDataChanged(index);
-}
-
-void ChangeBoneControllerFromControllerCommand::Apply(int index, const ChangeBoneControllerData& oldValue, const ChangeBoneControllerData& newValue)
-{
-	auto model = _asset->GetEditableStudioModel();
-
-	auto& controller = *model->BoneControllers[index];
-
-	auto oldBone = oldValue.first != -1 ? model->Bones[oldValue.first].get() : nullptr;
-	auto newBone = newValue.first != -1 ? model->Bones[newValue.first].get() : nullptr;
+	auto oldBone = oldValue.Bone != -1 ? model->Bones[oldValue.Bone].get() : nullptr;
+	auto newBone = newValue.Bone != -1 ? model->Bones[newValue.Bone].get() : nullptr;
 
 	//Detach from old bone, if any
 	if (oldBone)
 	{
-		oldBone->Axes[oldValue.second].Controller = nullptr;
+		oldBone->Axes[oldValue.BoneAxis].Controller = nullptr;
 	}
 
 	//Attach to new bone
 	if (newBone)
 	{
-		newBone->Axes[newValue.second].Controller = &controller;
-		controller.Type = 1 << newValue.second;
+		newBone->Axes[newValue.BoneAxis].Controller = &controller;
+		controller.Type = 1 << newValue.BoneAxis;
 	}
 	else
 	{
@@ -136,6 +119,7 @@ void ChangeBoneControllerFromControllerCommand::Apply(int index, const ChangeBon
 	}
 
 	emit _asset->GetModelData()->BoneControllerDataChanged(index);
+	EmitDataChanged(_asset->GetModelData()->BoneControllers, index);
 }
 
 void ChangeModelFlagsCommand::Apply(const int& oldValue, const int& newValue)

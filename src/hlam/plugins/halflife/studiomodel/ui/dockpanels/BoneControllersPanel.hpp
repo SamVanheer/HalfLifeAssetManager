@@ -37,13 +37,7 @@ private slots:
 	void OnBoneControllerValueSliderChanged(int value);
 	void OnBoneControllerValueSpinnerChanged(double value);
 
-	void OnBoneControllerRangeChanged();
-
-	void OnBoneControllerRestChanged();
-	void OnBoneControllerIndexChanged();
-
-	void OnBoneControllerBoneChanged(int index);
-	void OnBoneControllerAxisChanged(int index);
+	void OnPropsChanged();
 
 private:
 	Ui_BoneControllersPanel _ui;

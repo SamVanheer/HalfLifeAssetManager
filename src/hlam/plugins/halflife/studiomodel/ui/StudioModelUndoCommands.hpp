@@ -36,14 +36,10 @@ enum class ModelChangeId
 	ChangeBoneParent,
 	ChangeBoneFlags,
 	ChangeBoneProperty,
-	ChangeBoneControllerFromBone,
 
 	ChangeAttachmentProps,
 
-	ChangeBoneControllerRange,
-	ChangeBoneControllerRest,
-	ChangeBoneControllerIndex,
-	ChangeBoneControllerFromController,
+	ChangeBoneControllerProps,
 
 	ChangeModelFlags,
 	ChangeModelOrigin,
@@ -459,94 +455,35 @@ protected:
 	void Apply(int index, const AttachmentProps& oldValue, const AttachmentProps& newValue) override;
 };
 
-struct ChangeBoneControllerRange
+struct BoneControllerProps
 {
-	float Start;
-	float End;
+	float Start{};
+	float End{};
+	int Rest{};
+	int Index{};
+	int Bone{};
+	int BoneAxis{};
 
-	bool operator!=(const ChangeBoneControllerRange& other) const
-	{
-		return Start != other.Start || End != other.End;
-	}
+	constexpr auto operator<=>(const BoneControllerProps&) const = default;
 };
 
-class ChangeBoneControllerRangeCommand : public ModelListUndoCommand<ChangeBoneControllerRange>
+class ChangeBoneControllerPropsCommand : public ModelListUndoCommand<BoneControllerProps>
 {
 public:
-	ChangeBoneControllerRangeCommand(StudioModelAsset* asset, int boneControllerIndex,
-		const ChangeBoneControllerRange& oldRange, const ChangeBoneControllerRange& newRange)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerRange, boneControllerIndex, oldRange, newRange)
+	ChangeBoneControllerPropsCommand(StudioModelAsset* asset, int boneControllerIndex,
+		const BoneControllerProps& oldProps, const BoneControllerProps& newProps)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerProps, boneControllerIndex, oldProps, newProps)
 	{
-		setText("Change bone controller range");
+		setText("Change bone controller properties");
 	}
 
 protected:
-	bool CanMerge(const ModelListUndoCommand<ChangeBoneControllerRange>* other) override
+	bool CanMerge(const ModelListUndoCommand<BoneControllerProps>* other) override
 	{
 		return _oldValue != other->GetNewValue();
 	}
 
-	void Apply(int index, const ChangeBoneControllerRange& oldValue, const ChangeBoneControllerRange& newValue) override;
-};
-
-class ChangeBoneControllerRestCommand : public ModelListUndoCommand<int>
-{
-public:
-	ChangeBoneControllerRestCommand(StudioModelAsset* asset, int boneControllerIndex, int oldRest, int newRest)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerRest, boneControllerIndex, oldRest, newRest)
-	{
-		setText("Change bone controller rest");
-	}
-
-protected:
-	bool CanMerge(const ModelListUndoCommand<int>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const int& oldValue, const int& newValue) override;
-};
-
-class ChangeBoneControllerIndexCommand : public ModelListUndoCommand<int>
-{
-public:
-	ChangeBoneControllerIndexCommand(StudioModelAsset* asset, int boneControllerIndex, int oldIndex, int newIndex)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerIndex, boneControllerIndex, oldIndex, newIndex)
-	{
-		setText("Change bone controller index");
-	}
-
-protected:
-	bool CanMerge(const ModelListUndoCommand<int>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const int& oldValue, const int& newValue) override;
-};
-
-/**
-*	@brief bone, axis
-*/
-using ChangeBoneControllerData = std::pair<int, int>;
-
-class ChangeBoneControllerFromControllerCommand : public ModelListUndoCommand<ChangeBoneControllerData>
-{
-public:
-	ChangeBoneControllerFromControllerCommand(StudioModelAsset* asset, int boneControllerIndex,
-		const ChangeBoneControllerData& oldValue, const ChangeBoneControllerData& newValue)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneControllerFromController, boneControllerIndex, oldValue, newValue)
-	{
-		setText("Change bone controller");
-	}
-
-protected:
-	bool CanMerge(const ModelListUndoCommand<ChangeBoneControllerData>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const ChangeBoneControllerData& oldValue, const ChangeBoneControllerData& newValue) override;
+	void Apply(int index, const BoneControllerProps& oldValue, const BoneControllerProps& newValue) override;
 };
 
 class ChangeModelFlagsCommand : public ModelUndoCommand<int>

@@ -46,18 +46,18 @@ BoneControllersPanel::BoneControllersPanel(StudioModelAssetProvider* provider)
 		this, &BoneControllersPanel::OnBoneControllerValueSpinnerChanged);
 
 	connect(_ui.BoneControllerStart, qOverload<double>(&QDoubleSpinBox::valueChanged),
-		this, &BoneControllersPanel::OnBoneControllerRangeChanged);
+		this, &BoneControllersPanel::OnPropsChanged);
 	connect(_ui.BoneControllerEnd, qOverload<double>(&QDoubleSpinBox::valueChanged),
-		this, &BoneControllersPanel::OnBoneControllerRangeChanged);
+		this, &BoneControllersPanel::OnPropsChanged);
 	connect(_ui.BoneControllerRest, qOverload<int>(&QSpinBox::valueChanged),
-		this, &BoneControllersPanel::OnBoneControllerRestChanged);
+		this, &BoneControllersPanel::OnPropsChanged);
 	connect(_ui.BoneControllerIndex, qOverload<int>(&QComboBox::currentIndexChanged),
-		this, &BoneControllersPanel::OnBoneControllerIndexChanged);
+		this, &BoneControllersPanel::OnPropsChanged);
 
 	connect(_ui.BoneControllerBone, qOverload<int>(&QComboBox::currentIndexChanged),
-		this, &BoneControllersPanel::OnBoneControllerBoneChanged);
+		this, &BoneControllersPanel::OnPropsChanged);
 	connect(_ui.BoneControllerBoneAxis, qOverload<int>(&QComboBox::currentIndexChanged),
-		this, &BoneControllersPanel::OnBoneControllerAxisChanged);
+		this, &BoneControllersPanel::OnPropsChanged);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }
@@ -248,72 +248,38 @@ void BoneControllersPanel::OnBoneControllerValueSpinnerChanged(double value)
 	}
 }
 
-void BoneControllersPanel::OnBoneControllerRangeChanged()
+void BoneControllersPanel::OnPropsChanged()
 {
 	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
 
 	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
+
+	const auto oldConnection = model->FindBoneControllerIsAttachedTo(boneControllerLogicalIndex)
+		.value_or(std::pair(-1, -1));
+
+	const BoneControllerProps oldProps
+	{
+		.Start = boneController.Start,
+		.End = boneController.End,
+		.Rest = boneController.Rest,
+		.Index = boneController.Index,
+		.Bone = oldConnection.first,
+		.BoneAxis = oldConnection.second,
+	};
+
+	const BoneControllerProps newProps
+	{
+		.Start = static_cast<float>(_ui.BoneControllerStart->value()),
+		.End = static_cast<float>(_ui.BoneControllerEnd->value()),
+		.Rest = _ui.BoneControllerRest->value(),
+		.Index = _ui.BoneControllerIndex->currentIndex(),
+		.Bone = _ui.BoneControllerBone->currentIndex() - BoneOffset,
+		.BoneAxis = _ui.BoneControllerBoneAxis->currentIndex(),
+	};
 
 	_changingBoneControllerProperties = true;
-
-	_asset->AddUndoCommand(new ChangeBoneControllerRangeCommand(_asset, boneControllerLogicalIndex,
-		{boneController.Start, boneController.End},
-		{static_cast<float>(_ui.BoneControllerStart->value()), static_cast<float>(_ui.BoneControllerEnd->value())}));
-
+	_asset->AddUndoCommand(new ChangeBoneControllerPropsCommand(_asset, boneControllerLogicalIndex, oldProps, newProps));
 	_changingBoneControllerProperties = false;
-}
-
-void BoneControllersPanel::OnBoneControllerRestChanged()
-{
-	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
-
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
-
-	_asset->AddUndoCommand(new ChangeBoneControllerRestCommand(_asset, boneControllerLogicalIndex,
-		boneController.Rest, _ui.BoneControllerRest->value()));
-}
-
-void BoneControllersPanel::OnBoneControllerIndexChanged()
-{
-	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
-
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
-
-	_asset->AddUndoCommand(new ChangeBoneControllerIndexCommand(_asset, boneControllerLogicalIndex,
-		boneController.Index, _ui.BoneControllerIndex->currentIndex()));
-}
-
-void BoneControllersPanel::OnBoneControllerBoneChanged(int index)
-{
-	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
-
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
-
-	const auto oldConnection = model->FindBoneControllerIsAttachedTo(boneControllerLogicalIndex);
-
-	//Will default to 0 if not currently attached to anything
-	const int axis = static_cast<int>(std::log2(boneController.Type & STUDIO_BONECONTROLLER_TYPES));
-
-	_asset->AddUndoCommand(new ChangeBoneControllerFromControllerCommand(_asset, boneControllerLogicalIndex,
-		oldConnection.value_or(std::pair<int, int>{-1, -1}), {index - BoneOffset, axis}));
-}
-
-void BoneControllersPanel::OnBoneControllerAxisChanged(int index)
-{
-	const int boneControllerLogicalIndex = _ui.BoneControllers->currentIndex();
-
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
-
-	//Will default to 0 if not currently attached to anything
-	const int axis = static_cast<int>(std::log2(boneController.Type & STUDIO_BONECONTROLLER_TYPES));
-
-	_asset->AddUndoCommand(new ChangeBoneControllerFromControllerCommand(_asset, boneControllerLogicalIndex,
-		{_ui.BoneControllerBone->currentIndex() - BoneOffset, axis},
-		{_ui.BoneControllerBone->currentIndex() - BoneOffset, index}));
 }
 }
