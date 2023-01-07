@@ -929,7 +929,7 @@ void MainWindow::OnShowAbout()
 		QString::fromUtf8(
 			reinterpret_cast<const char*>(u8R"(%1 %2.%3.%4
 
-2022 Sam Vanheer
+2023 Sam Vanheer
 
 Email:	sam.vanheer@outlook.com
 
