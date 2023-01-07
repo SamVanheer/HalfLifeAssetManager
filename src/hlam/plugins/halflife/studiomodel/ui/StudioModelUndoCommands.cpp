@@ -185,6 +185,7 @@ void ChangeHitboxPropsCommand::Apply(int index, const HitboxProps& oldValue, con
 	hitbox.Min = newValue.Min;
 	hitbox.Max = newValue.Max;
 	emit _asset->GetModelData()->HitboxDataChanged(index);
+	EmitDataChanged(_asset->GetModelData()->Hitboxes, index);
 }
 
 void ChangeTextureNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)

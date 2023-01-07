@@ -74,7 +74,7 @@ void HitboxesPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	_previousModelData = modelData;
 
-	connect(modelData->Bones, &QAbstractItemModel::dataChanged, this, &HitboxesPanel::UpdateQCString);
+	connect(modelData->Hitboxes, &QAbstractItemModel::dataChanged, this, &HitboxesPanel::UpdateQCString);
 
 	connect(modelData, &StudioModelData::HitboxDataChanged, this, [this](int index)
 		{
