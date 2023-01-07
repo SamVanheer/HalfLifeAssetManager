@@ -253,12 +253,6 @@ void BonesPanel::OnPropsChanged()
 		.Scales = {_ui.PositionScale->GetValue(), _ui.RotationScale->GetValue()}
 	};
 
-	// This can happen if the user added zeroes to a vec3 value.
-	if (oldProps == newProps)
-	{
-		return;
-	}
-
 	_changingBoneProperties = true;
 	_asset->AddUndoCommand(new ChangeBonePropsCommand(_asset, _ui.Bones->currentIndex(), oldProps, newProps));
 	_changingBoneProperties = false;

@@ -94,6 +94,11 @@ void SimpleVector3Edit::OnValueChanged()
 		value[i] = std::strtod(start, &start);
 	}
 
+	if (_value == value)
+	{
+		return;
+	}
+
 	_value = value;
 
 	emit ValueChanged(value);

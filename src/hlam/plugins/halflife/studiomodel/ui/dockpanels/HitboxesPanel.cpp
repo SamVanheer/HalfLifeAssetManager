@@ -176,12 +176,6 @@ void HitboxesPanel::OnHitboxPropsChanged()
 		.Max = _ui.Maximum->GetValue()
 	};
 
-	// This can happen if the user added zeroes to a vec3 value.
-	if (oldProps == newProps)
-	{
-		return;
-	}
-
 	_changingHitboxProperties = true;
 	_asset->AddUndoCommand(new ChangeHitboxPropsCommand(_asset, _ui.Hitboxes->currentIndex(), oldProps, newProps));
 	_changingHitboxProperties = false;

@@ -200,12 +200,6 @@ void AttachmentsPanel::OnPropsChanged()
 		.Origin = _ui.Origin->GetValue()
 	};
 
-	// This can happen if the user added zeroes to a vec3 value.
-	if (oldProps == newProps)
-	{
-		return;
-	}
-
 	_changingAttachmentProperties = true;
 	_asset->AddUndoCommand(new ChangeAttachmentPropsCommand(_asset, _ui.Attachments->currentIndex(), oldProps, newProps));
 	_changingAttachmentProperties = false;
