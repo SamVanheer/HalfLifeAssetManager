@@ -662,15 +662,30 @@ void MainWindow::SyncSettings()
 	}
 }
 
+static QStringList GetOpenFileNames(QWidget* parent, const QString& dir, const QString& filter, bool allowMultiple)
+{
+	if (allowMultiple)
+	{
+		return QFileDialog::getOpenFileNames(parent, "Select asset", dir, filter);
+	}
+
+	return QStringList{} << QFileDialog::getOpenFileName(parent, "Select asset", dir, filter);
+}
+
 void MainWindow::OnOpenLoadAssetDialog()
 {
-	if (const auto fileName = QFileDialog::getOpenFileName(this, "Select asset",
-		_editorContext->GetPath(AssetPathName), _loadFileFilter);
-		!fileName.isEmpty())
+	const auto fileNames = GetOpenFileNames(this, _editorContext->GetPath(AssetPathName), _loadFileFilter,
+		!_editorContext->GetApplicationSettings()->OneAssetAtATime);
+	
+	if (!fileNames.isEmpty())
 	{
-		_editorContext->SetPath(AssetPathName, fileName);
+		// Set directory to first file. All files are in the same directory.
+		_editorContext->SetPath(AssetPathName, fileNames[0]);
 
-		TryLoadAsset(fileName);
+		for (const auto& fileName : fileNames)
+		{
+			TryLoadAsset(fileName);
+		}
 	}
 }
 
