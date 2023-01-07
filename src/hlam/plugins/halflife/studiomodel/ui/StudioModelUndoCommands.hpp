@@ -2,7 +2,6 @@
 
 #include <array>
 #include <cassert>
-#include <compare>
 #include <cstring>
 #include <memory>
 #include <vector>
@@ -480,45 +479,63 @@ protected:
 	void Apply(const int& oldValue, const int& newValue) override;
 };
 
-class ChangeModelOriginCommand : public ModelUndoCommand<studiomdl::MoveData>
+class ChangeModelOriginCommand : public BaseModelUndoCommand
 {
 public:
-	ChangeModelOriginCommand(StudioModelAsset* asset, studiomdl::MoveData&& oldPositions, studiomdl::MoveData&& newPositions)
-		: ModelUndoCommand(asset, ModelChangeId::ChangeModelOrigin, std::move(oldPositions), std::move(newPositions))
+	ChangeModelOriginCommand(StudioModelAsset* asset,
+		std::vector<studiomdl::MoveBoneData>&& data, const glm::vec3& offset)
+		: BaseModelUndoCommand(asset, ModelChangeId::ChangeModelOrigin)
+		, _data(std::move(data))
+		, _offset(offset)
 	{
 		setText("Change model origin");
 	}
 
-protected:
-	void Apply(const studiomdl::MoveData& oldValue, const studiomdl::MoveData& newValue) override;
+	void undo() override;
+	void redo() override;
+
+private:
+	const std::vector<studiomdl::MoveBoneData> _data;
+	const glm::vec3 _offset;
 };
 
-class ChangeModelScaleCommand : public ModelUndoCommand<studiomdl::ScaleData>
+class ChangeModelScaleCommand : public BaseModelUndoCommand
 {
 public:
-	ChangeModelScaleCommand(
-		StudioModelAsset* asset, studiomdl::ScaleData&& oldData, studiomdl::ScaleData&& newData)
-		: ModelUndoCommand(asset, ModelChangeId::ChangeModelScale, std::move(oldData), std::move(newData))
+	ChangeModelScaleCommand(StudioModelAsset* asset, studiomdl::ScaleData&& data, float scale)
+		: BaseModelUndoCommand(asset, ModelChangeId::ChangeModelScale)
+		, _data(std::move(data))
+		, _scale(scale)
 	{
 		setText("Scale model");
 	}
 
-protected:
-	void Apply(const studiomdl::ScaleData& oldValue, const studiomdl::ScaleData& newValue) override;
+	void undo() override;
+	void redo() override;
+
+private:
+	const studiomdl::ScaleData _data;
+	const float _scale;
 };
 
-class ChangeModelRotationCommand : public ModelUndoCommand<studiomdl::RotateData>
+class ChangeModelRotationCommand : public BaseModelUndoCommand
 {
 public:
 	ChangeModelRotationCommand(
-		StudioModelAsset* asset, studiomdl::RotateData&& oldData, studiomdl::RotateData&& newData)
-		: ModelUndoCommand(asset, ModelChangeId::ChangeModelRotation, std::move(oldData), std::move(newData))
+		StudioModelAsset* asset, std::vector<studiomdl::RotateBoneData>&& data, const glm::vec3& angles)
+		: BaseModelUndoCommand(asset, ModelChangeId::ChangeModelRotation)
+		, _data(std::move(data))
+		, _angles(angles)
 	{
 		setText("Rotate model");
 	}
 
-protected:
-	void Apply(const studiomdl::RotateData& oldValue, const studiomdl::RotateData& newValue) override;
+	void undo() override;
+	void redo() override;
+
+private:
+	const std::vector<studiomdl::RotateBoneData> _data;
+	const glm::vec3 _angles;
 };
 
 struct HitboxProps

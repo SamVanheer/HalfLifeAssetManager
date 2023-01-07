@@ -309,41 +309,25 @@ struct RotateBoneData
 	glm::vec3 Rotation;
 };
 
-struct RotateData
-{
-	std::vector<RotateBoneData> Bones;
-};
+std::vector<RotateBoneData> GetRotateData(const EditableStudioModel& studioModel);
 
-std::pair<RotateData, RotateData> CalculateRotatedData(const EditableStudioModel& studioModel, glm::vec3 angles);
+void ApplyRotateData(EditableStudioModel& studioModel, const std::vector<RotateBoneData>& data,
+	std::optional<glm::vec3> angles);
 
-void ApplyRotateData(EditableStudioModel& studioModel, const RotateData& data);
+std::vector<glm::vec3> GetScaleMeshesData(const EditableStudioModel& studioModel);
 
-struct ScaleMeshesData
-{
-	std::vector<std::vector<glm::vec3>> Vertices;
-};
+void ApplyScaleMeshesData(EditableStudioModel& studioModel, const std::vector<glm::vec3>& data,
+	std::optional<float> scale);
 
-std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const EditableStudioModel& studioModel, const float scale);
+std::vector<std::pair<glm::vec3, glm::vec3>> GetScaleHitboxesData(const EditableStudioModel& studioModel);
 
-void ApplyScaleMeshesData(EditableStudioModel& studioModel, const ScaleMeshesData& data);
+void ApplyScaleHitboxesData(EditableStudioModel& studioModel, const std::vector<std::pair<glm::vec3, glm::vec3>>& data,
+	std::optional<float> scale);
 
-struct ScaleHitboxesData
-{
-	std::vector<std::pair<glm::vec3, glm::vec3>> Hitboxes;
-};
+std::vector<std::pair<glm::vec3, glm::vec3>> GetScaleSequenceBBoxesData(const EditableStudioModel& studioModel);
 
-std::pair<ScaleHitboxesData, ScaleHitboxesData> CalculateScaledHitboxesData(const EditableStudioModel& studioModel, const float scale);
-
-void ApplyScaleHitboxesData(EditableStudioModel& studioModel, const ScaleHitboxesData& data);
-
-struct ScaleSequenceBBoxesData
-{
-	std::vector<std::pair<glm::vec3, glm::vec3>> SequenceBBoxes;
-};
-
-std::pair<ScaleSequenceBBoxesData, ScaleSequenceBBoxesData> CalculateScaledSequenceBBoxesData(const EditableStudioModel& studioModel, const float scale);
-
-void ApplyScaleSequenceBBoxesData(EditableStudioModel& studioModel, const ScaleSequenceBBoxesData& data);
+void ApplyScaleSequenceBBoxesData(EditableStudioModel& studioModel,
+	const std::vector<std::pair<glm::vec3, glm::vec3>>& data, std::optional<float> scale);
 
 struct ScaleBonesBoneData
 {
@@ -351,36 +335,24 @@ struct ScaleBonesBoneData
 	glm::vec3 Scale;
 };
 
-struct ScaleBonesData
-{
-	std::vector<ScaleBonesBoneData> Bones;
-};
+std::vector<ScaleBonesBoneData> GetScaleBonesData(const EditableStudioModel& studioModel);
 
-std::pair<ScaleBonesData, ScaleBonesData> CalculateScaledBonesData(const EditableStudioModel& studioModel, const float scale);
+void ApplyScaleBonesData(EditableStudioModel& studioModel, const std::vector<ScaleBonesBoneData>& data,
+	std::optional<float> scale);
 
-void ApplyScaleBonesData(EditableStudioModel& studioModel, const ScaleBonesData& data);
+std::vector<glm::vec3> GetScaleAttachments(const EditableStudioModel& studioModel);
 
-std::pair<glm::vec3, glm::vec3> CalculateScaledEyePosition(const EditableStudioModel& studioModel, const float scale);
-
-void ApplyScaleEyePosition(EditableStudioModel& studioModel, const glm::vec3& position);
-
-struct ScaleAttachmentsData
-{
-	std::vector<glm::vec3> Attachments;
-};
-
-std::pair<ScaleAttachmentsData, ScaleAttachmentsData> CalculateScaledAttachments(const EditableStudioModel& studioModel, const float scale);
-
-void ApplyScaleAttachments(EditableStudioModel& studioModel, const ScaleAttachmentsData& data);
+void ApplyScaleAttachments(EditableStudioModel& studioModel, const std::vector<glm::vec3>& data,
+	std::optional<float> scale);
 
 struct ScaleData
 {
-	std::optional<ScaleMeshesData> Meshes;
-	std::optional<ScaleHitboxesData> Hitboxes;
-	std::optional<ScaleSequenceBBoxesData> SequenceBBoxes;
-	std::optional<ScaleBonesData> Bones;
+	std::optional<std::vector<glm::vec3>> Meshes;
+	std::optional<std::vector<std::pair<glm::vec3, glm::vec3>>> Hitboxes;
+	std::optional<std::vector<std::pair<glm::vec3, glm::vec3>>> SequenceBBoxes;
+	std::optional<std::vector<ScaleBonesBoneData>> Bones;
 	std::optional<glm::vec3> EyePosition;
-	std::optional<ScaleAttachmentsData> Attachments;
+	std::optional<std::vector<glm::vec3>> Attachments;
 };
 
 namespace ScaleFlags
@@ -397,9 +369,9 @@ enum ScaleFlags
 };
 }
 
-std::pair<ScaleData, ScaleData> CalculateScaleData(const EditableStudioModel& studioModel, const float scale, const int flags);
+ScaleData CalculateScaleData(const EditableStudioModel& studioModel, const int flags);
 
-void ApplyScaleData(EditableStudioModel& studioModel, const ScaleData& data);
+void ApplyScaleData(EditableStudioModel& studioModel, const ScaleData& data, std::optional<float> scale);
 
 struct MoveBoneData
 {
@@ -407,14 +379,10 @@ struct MoveBoneData
 	glm::vec3 Position;
 };
 
-struct MoveData
-{
-	std::vector<MoveBoneData> BoneData;
-};
+std::vector<MoveBoneData> GetMoveData(const EditableStudioModel& studioModel);
 
-std::pair<MoveData, MoveData> CalculateMoveData(const EditableStudioModel& studioModel, const glm::vec3 offset);
-
-void ApplyMoveData(EditableStudioModel& studioModel, const MoveData& data);
+void ApplyMoveData(EditableStudioModel& studioModel, const std::vector<MoveBoneData>& rootBonePositions,
+	std::optional<glm::vec3> offset);
 
 struct ScaleSTCoordinatesData
 {

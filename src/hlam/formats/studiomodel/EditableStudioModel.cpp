@@ -222,27 +222,11 @@ const StudioBone* FindNearestRootBone(const EditableStudioModel& studioModel, co
 	return nearest;
 }
 
-std::pair<RotateData, RotateData> CalculateRotatedData(const EditableStudioModel& studioModel, glm::vec3 angles)
+std::vector<RotateBoneData> GetRotateData(const EditableStudioModel& studioModel)
 {
-	//Determine center of model from root bone nearest to average of all root bones
-	glm::vec3 center{FindAverageOfRootBones(studioModel)};
+	std::vector<RotateBoneData> data;
 
-	if (const StudioBone* nearest = FindNearestRootBone(studioModel, center); nearest)
-	{
-		center = {nearest->Axes[0].Value, nearest->Axes[1].Value, nearest->Axes[2].Value};
-	}
-
-	angles.x = glm::radians(angles.x);
-	angles.y = glm::radians(angles.y);
-	angles.z = glm::radians(angles.z);
-
-	const glm::quat anglesRotation{angles};
-
-	std::vector<RotateBoneData> oldBoneData;
-	std::vector<RotateBoneData> newBoneData;
-
-	oldBoneData.reserve(studioModel.Bones.size());
-	newBoneData.reserve(studioModel.Bones.size());
+	data.reserve(studioModel.Bones.size());
 
 	for (const auto& bone : studioModel.Bones)
 	{
@@ -251,400 +235,438 @@ std::pair<RotateData, RotateData> CalculateRotatedData(const EditableStudioModel
 			continue;
 		}
 
-		glm::vec3 position{bone->Axes[0].Value, bone->Axes[1].Value, bone->Axes[2].Value};
-		glm::vec3 rotation{bone->Axes[3].Value, bone->Axes[4].Value, bone->Axes[5].Value};
-
-		oldBoneData.emplace_back(
-			RotateBoneData
+		data.emplace_back(RotateBoneData
 			{
-				position, rotation
-			});
-
-		//Rotate around center
-		position -= center;
-
-		position = anglesRotation * position;
-
-		position += center;
-
-		//Convert euler angles to quaternion
-		glm::quat boneRotationQuat{rotation};
-
-		//Apply desired rotation
-		boneRotationQuat = anglesRotation * boneRotationQuat;
-
-		//Convert back to euler angles
-		rotation = glm::eulerAngles(boneRotationQuat);
-
-		newBoneData.emplace_back(
-			RotateBoneData
-			{
-				position, rotation
+				glm::vec3{bone->Axes[0].Value, bone->Axes[1].Value, bone->Axes[2].Value},
+				glm::vec3{bone->Axes[3].Value, bone->Axes[4].Value, bone->Axes[5].Value}
 			});
 	}
 
-	return {{std::move(oldBoneData)}, {std::move(newBoneData)}};
+	data.shrink_to_fit();
+
+	return data;
 }
 
-void ApplyRotateData(EditableStudioModel& studioModel, const RotateData& data)
+void ApplyRotateData(EditableStudioModel& studioModel, const std::vector<RotateBoneData>& data,
+	std::optional<glm::vec3> angles)
 {
-	std::size_t boneIndex = 0;
-
-	for (int i = 0; i < studioModel.Bones.size(); ++i)
+	if (angles)
 	{
-		auto& bone = *studioModel.Bones[i];
+		//Determine center of model from root bone nearest to average of all root bones
+		glm::vec3 center{FindAverageOfRootBones(studioModel)};
 
-		if (bone.Parent)
+		if (const StudioBone* nearest = FindNearestRootBone(studioModel, center); nearest)
 		{
-			continue;
+			center = {nearest->Axes[0].Value, nearest->Axes[1].Value, nearest->Axes[2].Value};
 		}
 
-		const auto& boneData = data.Bones[boneIndex++];
+		angles->x = glm::radians(angles->x);
+		angles->y = glm::radians(angles->y);
+		angles->z = glm::radians(angles->z);
 
-		for (int j = 0; j < boneData.Position.length(); ++j)
+		const glm::quat anglesRotation{*angles};
+
+		std::size_t boneIndex = 0;
+
+		for (const auto& bone : studioModel.Bones)
 		{
-			bone.Axes[j].Value = boneData.Position[j];
-			bone.Axes[j + 3].Value = boneData.Rotation[j];
+			if (bone->Parent)
+			{
+				continue;
+			}
+
+			const auto& boneData = data[boneIndex++];
+
+			glm::vec3 position{boneData.Position};
+			glm::vec3 rotation{boneData.Rotation};
+
+			//Rotate around center
+			position -= center;
+
+			position = anglesRotation * position;
+
+			position += center;
+
+			//Convert euler angles to quaternion
+			glm::quat boneRotationQuat{rotation};
+
+			//Apply desired rotation
+			boneRotationQuat = anglesRotation * boneRotationQuat;
+
+			//Convert back to euler angles
+			rotation = glm::eulerAngles(boneRotationQuat);
+
+			for (int j = 0; j < glm::vec3::length(); ++j)
+			{
+				bone->Axes[j].Value = position[j];
+				bone->Axes[j + 3].Value = rotation[j];
+			}
+		}
+	}
+	else
+	{
+		std::size_t boneIndex = 0;
+
+		for (auto& bone : studioModel.Bones)
+		{
+			if (bone->Parent)
+			{
+				continue;
+			}
+
+			const auto& boneData = data[boneIndex++];
+
+			for (int j = 0; j < glm::vec3::length(); ++j)
+			{
+				bone->Axes[j].Value = boneData.Position[j];
+				bone->Axes[j + 3].Value = boneData.Rotation[j];
+			}
 		}
 	}
 }
 
-std::pair<ScaleMeshesData, ScaleMeshesData> CalculateScaledMeshesData(const EditableStudioModel& studioModel, const float scale)
+std::vector<glm::vec3> GetScaleMeshesData(const EditableStudioModel& studioModel)
 {
-	std::vector<std::vector<glm::vec3>> oldVertices;
-	std::vector<std::vector<glm::vec3>> newVertices;
+	std::vector<glm::vec3> vertices;
 
-	for (int i = 0; i < studioModel.Bodyparts.size(); ++i)
+	for (std::size_t i = 0; i < studioModel.Bodyparts.size(); ++i)
 	{
 		const auto& bodypart = *studioModel.Bodyparts[i];
 
-		oldVertices.reserve(oldVertices.size() + bodypart.Models.size());
-		newVertices.reserve(newVertices.size() + bodypart.Models.size());
-
-		for (int j = 0; j < bodypart.Models.size(); ++j)
+		for (std::size_t j = 0; j < bodypart.Models.size(); ++j)
 		{
 			const auto& model = bodypart.Models[j];
 
-			std::vector<glm::vec3> oldVerticesList;
-			std::vector<glm::vec3> newVerticesList;
+			vertices.reserve(vertices.size() + model.Vertices.size());
 
-			oldVerticesList.reserve(model.Vertices.size());
-			newVerticesList.reserve(model.Vertices.size());
-
-			for (int k = 0; k < model.Vertices.size(); ++k)
+			for (std::size_t k = 0; k < model.Vertices.size(); ++k)
 			{
-				oldVerticesList.push_back(model.Vertices[k].Vertex);
-				newVerticesList.push_back(model.Vertices[k].Vertex * scale);
+				vertices.push_back(model.Vertices[k].Vertex);
 			}
-
-			oldVertices.emplace_back(std::move(oldVerticesList));
-			newVertices.emplace_back(std::move(newVerticesList));
 		}
 	}
 
 	// TODO: maybe scale pivots
 
-	return {{std::move(oldVertices)}, {std::move(newVertices)}};
+	return vertices;
 }
 
-void ApplyScaleMeshesData(EditableStudioModel& studioModel, const ScaleMeshesData& data)
+void ApplyScaleMeshesData(EditableStudioModel& studioModel, const std::vector<glm::vec3>& data,
+	std::optional<float> scale)
 {
-	int vertexIndex = 0;
+	std::size_t vertexIndex = 0;
 
-	for (int i = 0; i < studioModel.Bodyparts.size(); ++i)
+	if (scale)
 	{
-		auto& bodypart = *studioModel.Bodyparts[i];
-
-		for (int j = 0; j < bodypart.Models.size(); ++j)
+		for (auto& bodypart : studioModel.Bodyparts)
 		{
-			auto& model = bodypart.Models[j];
-
-			for (std::size_t k = 0; k < model.Vertices.size(); ++k)
+			for (auto& model : bodypart->Models)
 			{
-				model.Vertices[k].Vertex = data.Vertices[vertexIndex][k];
+				for (auto& vertex : model.Vertices)
+				{
+					vertex.Vertex = data[vertexIndex++] * (*scale);
+				}
 			}
-
-			++vertexIndex;
 		}
 	}
-}
-
-std::pair<ScaleHitboxesData, ScaleHitboxesData> CalculateScaledHitboxesData(const EditableStudioModel& studioModel, const float scale)
-{
-	std::vector<std::pair<glm::vec3, glm::vec3>> oldHitboxes;
-	std::vector<std::pair<glm::vec3, glm::vec3>> newHitboxes;
-
-	oldHitboxes.reserve(studioModel.Hitboxes.size());
-	newHitboxes.reserve(studioModel.Hitboxes.size());
-
-	for (int i = 0; i < studioModel.Hitboxes.size(); ++i)
+	else
 	{
-		const auto& hitbox = *studioModel.Hitboxes[i];
-
-		oldHitboxes.emplace_back(std::make_pair(hitbox.Min, hitbox.Max));
-		newHitboxes.emplace_back(std::make_pair(hitbox.Min * scale, hitbox.Max * scale));
-	}
-
-	return {{std::move(oldHitboxes)}, {std::move(newHitboxes)}};
-}
-
-void ApplyScaleHitboxesData(EditableStudioModel& studioModel, const ScaleHitboxesData& data)
-{
-	for (int i = 0; i < studioModel.Hitboxes.size(); ++i)
-	{
-		auto& hitbox = *studioModel.Hitboxes[i];
-
-		hitbox.Min = data.Hitboxes[i].first;
-		hitbox.Max = data.Hitboxes[i].second;
-	}
-}
-
-std::pair<ScaleSequenceBBoxesData, ScaleSequenceBBoxesData> CalculateScaledSequenceBBoxesData(const EditableStudioModel& studioModel, const float scale)
-{
-	std::vector<std::pair<glm::vec3, glm::vec3>> oldSequenceBBBoxes;
-	std::vector<std::pair<glm::vec3, glm::vec3>> newSequenceBBBoxes;
-
-	oldSequenceBBBoxes.reserve(studioModel.Sequences.size());
-	newSequenceBBBoxes.reserve(studioModel.Sequences.size());
-
-	for (int i = 0; i < studioModel.Sequences.size(); ++i)
-	{
-		const auto& sequence = *studioModel.Sequences[i];
-
-		oldSequenceBBBoxes.emplace_back(std::make_pair(sequence.BBMin, sequence.BBMax));
-		newSequenceBBBoxes.emplace_back(std::make_pair(sequence.BBMin * scale, sequence.BBMax * scale));
-	}
-
-	return {{std::move(oldSequenceBBBoxes)}, {std::move(newSequenceBBBoxes)}};
-}
-
-void ApplyScaleSequenceBBoxesData(EditableStudioModel& studioModel, const ScaleSequenceBBoxesData& data)
-{
-	for (int i = 0; i < studioModel.Sequences.size(); ++i)
-	{
-		auto& sequence = *studioModel.Sequences[i];
-
-		sequence.BBMin = data.SequenceBBoxes[i].first;
-		sequence.BBMax = data.SequenceBBoxes[i].second;
-	}
-}
-
-std::pair<ScaleBonesData, ScaleBonesData> CalculateScaledBonesData(const EditableStudioModel& studioModel, const float scale)
-{
-	std::vector<ScaleBonesBoneData> oldData;
-	std::vector<ScaleBonesBoneData> newData;
-
-	oldData.reserve(studioModel.Bones.size());
-	newData.reserve(studioModel.Bones.size());
-
-	for (int i = 0; i < studioModel.Bones.size(); ++i)
-	{
-		const auto& bone = *studioModel.Bones[i];
-
-		oldData.emplace_back(
-			ScaleBonesBoneData
-			{
-				{bone.Axes[0].Value, bone.Axes[1].Value, bone.Axes[2].Value},
-				{bone.Axes[0].Scale, bone.Axes[1].Scale, bone.Axes[2].Scale}
-			});
-
-		newData.emplace_back(
-			ScaleBonesBoneData
-			{
-				{bone.Axes[0].Value * scale, bone.Axes[1].Value * scale, bone.Axes[2].Value * scale},
-				{bone.Axes[0].Scale * scale, bone.Axes[1].Scale * scale, bone.Axes[2].Scale * scale}
-			});
-	}
-
-	return {{std::move(oldData)}, {std::move(newData)}};
-}
-
-void ApplyScaleBonesData(EditableStudioModel& studioModel, const ScaleBonesData& data)
-{
-	for (int i = 0; i < studioModel.Bones.size(); ++i)
-	{
-		auto& bone = *studioModel.Bones[i];
-
-		const auto& boneData = data.Bones[i];
-
-		for (int j = 0; j < boneData.Position.length(); ++j)
+		for (auto& bodypart : studioModel.Bodyparts)
 		{
-			bone.Axes[j].Value = boneData.Position[j];
-			bone.Axes[j].Scale = boneData.Scale[j];
+			for (auto& model : bodypart->Models)
+			{
+				for (auto& vertex : model.Vertices)
+				{
+					vertex.Vertex = data[vertexIndex++];
+				}
+			}
 		}
 	}
 }
 
-std::pair<glm::vec3, glm::vec3> CalculateScaledEyePosition(const EditableStudioModel& studioModel, const float scale)
+std::vector<std::pair<glm::vec3, glm::vec3>> GetScaleHitboxesData(const EditableStudioModel& studioModel)
 {
-	return {studioModel.EyePosition, studioModel.EyePosition * scale};
+	std::vector<std::pair<glm::vec3, glm::vec3>> hitboxes;
+	hitboxes.reserve(studioModel.Hitboxes.size());
+
+	for (const auto& hitbox : studioModel.Hitboxes)
+	{
+		hitboxes.emplace_back(std::make_pair(hitbox->Min, hitbox->Max));
+	}
+
+	return hitboxes;
 }
 
-void ApplyScaleEyePosition(EditableStudioModel& studioModel, const glm::vec3& position)
+void ApplyScaleHitboxesData(EditableStudioModel& studioModel, const std::vector<std::pair<glm::vec3, glm::vec3>>& data,
+	std::optional<float> scale)
 {
-	studioModel.EyePosition = position;
+	if (scale)
+	{
+		for (std::size_t i = 0; i < studioModel.Hitboxes.size(); ++i)
+		{
+			auto& hitbox = *studioModel.Hitboxes[i];
+			hitbox.Min = data[i].first * (*scale);
+			hitbox.Max = data[i].second * (*scale);
+		}
+	}
+	else
+	{
+		for (std::size_t i = 0; i < studioModel.Hitboxes.size(); ++i)
+		{
+			auto& hitbox = *studioModel.Hitboxes[i];
+			hitbox.Min = data[i].first;
+			hitbox.Max = data[i].second;
+		}
+	}
 }
 
-std::pair<ScaleAttachmentsData, ScaleAttachmentsData> CalculateScaledAttachments(const EditableStudioModel& studioModel, const float scale)
+std::vector<std::pair<glm::vec3, glm::vec3>> GetScaleSequenceBBoxesData(const EditableStudioModel& studioModel)
 {
-	std::vector<glm::vec3> oldAttachments;
-	std::vector<glm::vec3> newAttachments;
+	std::vector<std::pair<glm::vec3, glm::vec3>> data;
+	data.reserve(studioModel.Sequences.size());
 
-	oldAttachments.reserve(studioModel.Attachments.size());
-	newAttachments.reserve(studioModel.Attachments.size());
+	for (const auto& sequence : studioModel.Sequences)
+	{
+		data.emplace_back(std::make_pair(sequence->BBMin, sequence->BBMax));
+	}
+
+	return data;
+}
+
+void ApplyScaleSequenceBBoxesData(EditableStudioModel& studioModel,
+	const std::vector<std::pair<glm::vec3, glm::vec3>>& data, std::optional<float> scale)
+{
+	if (scale)
+	{
+		for (std::size_t i = 0; i < studioModel.Sequences.size(); ++i)
+		{
+			auto& sequence = *studioModel.Sequences[i];
+			sequence.BBMin = data[i].first * (*scale);
+			sequence.BBMax = data[i].second * (*scale);
+		}
+	}
+	else
+	{
+		for (std::size_t i = 0; i < studioModel.Sequences.size(); ++i)
+		{
+			auto& sequence = *studioModel.Sequences[i];
+			sequence.BBMin = data[i].first;
+			sequence.BBMax = data[i].second;
+		}
+	}
+	
+}
+
+std::vector<ScaleBonesBoneData> GetScaleBonesData(const EditableStudioModel& studioModel)
+{
+	std::vector<ScaleBonesBoneData> data;
+
+	data.reserve(studioModel.Bones.size());
+
+	for (const auto& bone : studioModel.Bones)
+	{
+		data.emplace_back(
+			ScaleBonesBoneData
+			{
+				{bone->Axes[0].Value, bone->Axes[1].Value, bone->Axes[2].Value},
+				{bone->Axes[0].Scale, bone->Axes[1].Scale, bone->Axes[2].Scale}
+			});
+	}
+
+	return data;
+}
+
+void ApplyScaleBonesData(EditableStudioModel& studioModel, const std::vector<ScaleBonesBoneData>& data,
+	std::optional<float> scale)
+{
+	if (scale)
+	{
+		for (int i = 0; i < studioModel.Bones.size(); ++i)
+		{
+			auto& bone = *studioModel.Bones[i];
+
+			const auto& boneData = data[i];
+
+			for (int j = 0; j < glm::vec3::length(); ++j)
+			{
+				bone.Axes[j].Value = boneData.Position[j] * (*scale);
+				bone.Axes[j].Scale = boneData.Scale[j] * (*scale);
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < studioModel.Bones.size(); ++i)
+		{
+			auto& bone = *studioModel.Bones[i];
+
+			const auto& boneData = data[i];
+
+			for (int j = 0; j < glm::vec3::length(); ++j)
+			{
+				bone.Axes[j].Value = boneData.Position[j];
+				bone.Axes[j].Scale = boneData.Scale[j];
+			}
+		}
+	}
+}
+
+std::vector<glm::vec3> GetScaleAttachments(const EditableStudioModel& studioModel)
+{
+	std::vector<glm::vec3> data;
+	data.reserve(studioModel.Attachments.size());
 
 	for (const auto& attachment : studioModel.Attachments)
 	{
-		oldAttachments.push_back(attachment->Origin);
-		newAttachments.push_back(attachment->Origin * scale);
+		data.push_back(attachment->Origin);
 	}
 
-	return {{std::move(oldAttachments)}, {std::move(newAttachments)}};
+	return data;
 }
 
-void ApplyScaleAttachments(EditableStudioModel& studioModel, const ScaleAttachmentsData& data)
+void ApplyScaleAttachments(EditableStudioModel& studioModel, const std::vector<glm::vec3>& data,
+	std::optional<float> scale)
 {
-	for (int i = 0; i < studioModel.Attachments.size(); ++i)
+	if (scale)
 	{
-		studioModel.Attachments[i]->Origin = data.Attachments[i];
+		for (std::size_t i = 0; i < studioModel.Attachments.size(); ++i)
+		{
+			studioModel.Attachments[i]->Origin = data[i] * (*scale);
+		}
+	}
+	else
+	{
+		for (std::size_t i = 0; i < studioModel.Attachments.size(); ++i)
+		{
+			studioModel.Attachments[i]->Origin = data[i];
+		}
 	}
 }
 
-std::pair<ScaleData, ScaleData> CalculateScaleData(const EditableStudioModel& studioModel, const float scale, const int flags)
+ScaleData CalculateScaleData(const EditableStudioModel& studioModel, const int flags)
 {
-	ScaleData oldData;
-	ScaleData newData;
+	ScaleData data;
 
 	if (flags & ScaleFlags::ScaleMeshes)
 	{
-		auto meshData = CalculateScaledMeshesData(studioModel, scale);
-
-		oldData.Meshes = std::move(meshData.first);
-		newData.Meshes = std::move(meshData.second);
+		data.Meshes = GetScaleMeshesData(studioModel);
 	}
 
 	if (flags & ScaleFlags::ScaleHitboxes)
 	{
-		auto hitboxData = CalculateScaledHitboxesData(studioModel, scale);
-
-		oldData.Hitboxes = std::move(hitboxData.first);
-		newData.Hitboxes = std::move(hitboxData.second);
+		data.Hitboxes = GetScaleHitboxesData(studioModel);
 	}
 
 	if (flags & ScaleFlags::ScaleSequenceBBoxes)
 	{
-		auto sequenceData = CalculateScaledSequenceBBoxesData(studioModel, scale);
-
-		oldData.SequenceBBoxes = std::move(sequenceData.first);
-		newData.SequenceBBoxes = std::move(sequenceData.second);
+		data.SequenceBBoxes = GetScaleSequenceBBoxesData(studioModel);
 	}
 
 	if (flags & ScaleFlags::ScaleBones)
 	{
-		auto bonesData = CalculateScaledBonesData(studioModel, scale);
-
-		oldData.Bones = std::move(bonesData.first);
-		newData.Bones = std::move(bonesData.second);
+		data.Bones = GetScaleBonesData(studioModel);
 	}
 
 	if (flags & ScaleFlags::ScaleEyePosition)
 	{
-		auto data = CalculateScaledEyePosition(studioModel, scale);
-
-		oldData.EyePosition = std::move(data.first);
-		newData.EyePosition = std::move(data.second);
+		data.EyePosition = studioModel.EyePosition;
 	}
 
 	if (flags & ScaleFlags::ScaleAttachments)
 	{
-		auto data = CalculateScaledAttachments(studioModel, scale);
-
-		oldData.Attachments = std::move(data.first);
-		newData.Attachments = std::move(data.second);
+		data.Attachments = GetScaleAttachments(studioModel);
 	}
 
-	return {std::move(oldData), std::move(newData)};
+	return data;
 }
 
-void ApplyScaleData(EditableStudioModel& studioModel, const ScaleData& data)
+void ApplyScaleData(EditableStudioModel& studioModel, const ScaleData& data, std::optional<float> scale)
 {
 	if (data.Meshes.has_value())
 	{
-		ApplyScaleMeshesData(studioModel, data.Meshes.value());
+		ApplyScaleMeshesData(studioModel, data.Meshes.value(), scale);
 	}
 
 	if (data.Hitboxes.has_value())
 	{
-		ApplyScaleHitboxesData(studioModel, data.Hitboxes.value());
+		ApplyScaleHitboxesData(studioModel, data.Hitboxes.value(), scale);
 	}
 
 	if (data.SequenceBBoxes.has_value())
 	{
-		ApplyScaleSequenceBBoxesData(studioModel, data.SequenceBBoxes.value());
+		ApplyScaleSequenceBBoxesData(studioModel, data.SequenceBBoxes.value(), scale);
 	}
 
 	if (data.Bones.has_value())
 	{
-		ApplyScaleBonesData(studioModel, data.Bones.value());
+		ApplyScaleBonesData(studioModel, data.Bones.value(), scale);
 	}
 
 	if (data.EyePosition.has_value())
 	{
-		ApplyScaleEyePosition(studioModel, data.EyePosition.value());
+		studioModel.EyePosition = data.EyePosition.value();
+
+		if (scale)
+		{
+			studioModel.EyePosition *= *scale;
+		}
 	}
 
 	if (data.Attachments.has_value())
 	{
-		ApplyScaleAttachments(studioModel, data.Attachments.value());
+		ApplyScaleAttachments(studioModel, data.Attachments.value(), scale);
 	}
 }
 
-std::pair<MoveData, MoveData> CalculateMoveData(const EditableStudioModel& studioModel, const glm::vec3 offset)
+std::vector<MoveBoneData> GetMoveData(const EditableStudioModel& studioModel)
 {
 	const auto rootBoneIndices{studioModel.GetRootBoneIndices()};
 
-	std::vector<MoveBoneData> oldRootBonePositions;
-	std::vector<MoveBoneData> newRootBonePositions;
+	std::vector<MoveBoneData> rootBonePositions;
 
-	oldRootBonePositions.reserve(rootBoneIndices.size());
-	newRootBonePositions.reserve(rootBoneIndices.size());
+	rootBonePositions.reserve(rootBoneIndices.size());
 
 	for (auto rootBoneIndex : rootBoneIndices)
 	{
 		const auto& rootBone = *studioModel.Bones[rootBoneIndex];
 
-		oldRootBonePositions.emplace_back(
+		rootBonePositions.emplace_back(
 			MoveBoneData
 			{
 				rootBoneIndex,
 				{rootBone.Axes[0].Value, rootBone.Axes[1].Value, rootBone.Axes[2].Value}
 			}
 		);
-
-		newRootBonePositions.emplace_back(
-			MoveBoneData
-			{
-				rootBoneIndex,
-				{
-					rootBone.Axes[0].Value + offset[0],
-					rootBone.Axes[1].Value + offset[1],
-					rootBone.Axes[2].Value + offset[2]
-				}
-			});
 	}
 
-	return {{std::move(oldRootBonePositions)}, {std::move(newRootBonePositions)}};
+	return rootBonePositions;
 }
 
-void ApplyMoveData(EditableStudioModel& studioModel, const MoveData& data)
+void ApplyMoveData(EditableStudioModel& studioModel, const std::vector<MoveBoneData>& rootBonePositions,
+	std::optional<glm::vec3> offset)
 {
-	for (const auto& data : data.BoneData)
+	if (offset)
 	{
-		auto& bone = *studioModel.Bones[data.Index];
-
-		for (int i = 0; i < data.Position.length(); ++i)
+		for (const auto& data : rootBonePositions)
 		{
-			bone.Axes[i].Value = data.Position[i];
+			auto& bone = *studioModel.Bones[data.Index];
+
+			for (int i = 0; i < glm::vec3::length(); ++i)
+			{
+				bone.Axes[i].Value = data.Position[i] + (*offset)[i];
+			}
+		}
+	}
+	else
+	{
+		for (const auto& data : rootBonePositions)
+		{
+			auto& bone = *studioModel.Bones[data.Index];
+
+			for (int i = 0; i < glm::vec3::length(); ++i)
+			{
+				bone.Axes[i].Value = data.Position[i];
+			}
 		}
 	}
 }

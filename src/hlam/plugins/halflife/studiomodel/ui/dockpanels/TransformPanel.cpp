@@ -57,18 +57,14 @@ void TransformPanel::OnApply()
 	{
 	case RotateId:
 	{
-		auto entity = asset->GetEntity();
+		auto data{studiomdl::GetRotateData(*asset->GetEntity()->GetEditableModel())};
 
-		auto data{studiomdl::CalculateRotatedData(*entity->GetEditableModel(), _ui.RotateValues->GetValue())};
-
-		asset->AddUndoCommand(new ChangeModelRotationCommand(asset, std::move(data.first), std::move(data.second)));
+		asset->AddUndoCommand(new ChangeModelRotationCommand(asset, std::move(data), _ui.RotateValues->GetValue()));
 		break;
 	}
 
 	case ScaleId:
 	{
-		const double scale = _ui.ScaleValue->value();
-
 		int flags = studiomdl::ScaleFlags::None;
 
 		if (_ui.ScaleMeshes->isChecked())
@@ -103,20 +99,21 @@ void TransformPanel::OnApply()
 
 		auto entity = asset->GetEntity();
 
-		auto data{studiomdl::CalculateScaleData(*entity->GetEditableModel(), scale, flags)};
+		auto data{studiomdl::CalculateScaleData(*entity->GetEditableModel(), flags)};
 
-		asset->AddUndoCommand(new ChangeModelScaleCommand(asset, std::move(data.first), std::move(data.second)));
+		asset->AddUndoCommand(new ChangeModelScaleCommand(asset,
+			std::move(data), static_cast<float>(_ui.ScaleValue->value())));
 
 		break;
 	}
 
 	case MoveId:
 	{
-		auto moveData = studiomdl::CalculateMoveData(*asset->GetEntity()->GetEditableModel(), _ui.MoveValues->GetValue());
+		auto moveData = studiomdl::GetMoveData(*asset->GetEntity()->GetEditableModel());
 
-		if (!moveData.first.BoneData.empty())
+		if (!moveData.empty())
 		{
-			asset->AddUndoCommand(new ChangeModelOriginCommand(asset, std::move(moveData.first), std::move(moveData.second)));
+			asset->AddUndoCommand(new ChangeModelOriginCommand(asset, std::move(moveData), _ui.MoveValues->GetValue()));
 		}
 		break;
 	}

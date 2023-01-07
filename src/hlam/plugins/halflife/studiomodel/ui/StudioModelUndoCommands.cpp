@@ -114,21 +114,39 @@ void ChangeModelFlagsCommand::Apply(const int& oldValue, const int& newValue)
 	emit _asset->GetModelData()->ModelFlagsChanged();
 }
 
-void ChangeModelOriginCommand::Apply(const studiomdl::MoveData& oldValue, const studiomdl::MoveData& newValue)
+void ChangeModelOriginCommand::undo()
 {
-	ApplyMoveData(*_asset->GetEditableStudioModel(), newValue);
+	ApplyMoveData(*_asset->GetEditableStudioModel(), _data, std::nullopt);
 	emit _asset->GetModelData()->ModelOriginChanged();
 }
 
-void ChangeModelScaleCommand::Apply(const studiomdl::ScaleData& oldValue, const studiomdl::ScaleData& newValue)
+void ChangeModelOriginCommand::redo()
 {
-	ApplyScaleData(*_asset->GetEditableStudioModel(), newValue);
+	ApplyMoveData(*_asset->GetEditableStudioModel(), _data, _offset);
+	emit _asset->GetModelData()->ModelOriginChanged();
+}
+
+void ChangeModelScaleCommand::undo()
+{
+	ApplyScaleData(*_asset->GetEditableStudioModel(), _data, std::nullopt);
 	emit _asset->GetModelData()->ModelScaleChanged();
 }
 
-void ChangeModelRotationCommand::Apply(const studiomdl::RotateData& oldValue, const studiomdl::RotateData& newValue)
+void ChangeModelScaleCommand::redo()
 {
-	ApplyRotateData(*_asset->GetEditableStudioModel(), newValue);
+	ApplyScaleData(*_asset->GetEditableStudioModel(), _data, _scale);
+	emit _asset->GetModelData()->ModelScaleChanged();
+}
+
+void ChangeModelRotationCommand::undo()
+{
+	ApplyRotateData(*_asset->GetEditableStudioModel(), _data, std::nullopt);
+	emit _asset->GetModelData()->ModelRotationChanged();
+}
+
+void ChangeModelRotationCommand::redo()
+{
+	ApplyRotateData(*_asset->GetEditableStudioModel(), _data, _angles);
 	emit _asset->GetModelData()->ModelRotationChanged();
 }
 
