@@ -235,17 +235,18 @@ bool StudioModelAsset::TryRefresh()
 		_modelEntity->SetEditableModel(GetEditableStudioModel());
 		_modelEntity->Spawn();
 
+		LoadEntityFromSnapshot(snapshot.get());
+
 		_modelEntity->CreateDeviceObjects(sc);
 
 		context->End();
 	}
 	catch (const AssetException& e)
 	{
-		QMessageBox::critical(nullptr, "Error", QString{"An error occurred while reloading the model \"%1\":\n%2"}.arg(GetFileName()).arg(e.what()));
+		QMessageBox::critical(nullptr, "Error",
+			QString{"An error occurred while reloading the model \"%1\":\n%2"}.arg(GetFileName()).arg(e.what()));
 		return false;
 	}
-
-	LoadEntityFromSnapshot(snapshot.get());
 
 	emit _provider->AssetChanged(this);
 
@@ -438,6 +439,9 @@ void StudioModelAsset::SaveEntityToSnapshot(StateSnapshot* snapshot)
 	{
 		snapshot->SetValue(QString{"entity.blender%1"}.arg(i), QVariant::fromValue(_modelEntity->GetBlendingValue(i)));
 	}
+
+	snapshot->SetValue("entity.model.topcolor", model->TopColor);
+	snapshot->SetValue("entity.model.bottomcolor", model->BottomColor);
 }
 
 void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
@@ -486,6 +490,9 @@ void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
 	{
 		_modelEntity->SetBlending(i, snapshot->Value(QString{"entity.blender%1"}.arg(i)).toFloat());
 	}
+
+	model->TopColor = snapshot->Value("entity.model.topcolor", 0).toInt();
+	model->BottomColor = snapshot->Value("entity.model.bottomcolor", 0).toInt();
 }
 
 bool StudioModelAsset::HandleMouseInput(QMouseEvent* event)

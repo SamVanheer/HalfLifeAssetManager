@@ -214,18 +214,17 @@ void TexturesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 
 		snapshot->SetValue("textures.texture", QString::fromStdString(texture.Name));
 	}
-
-	snapshot->SetValue("textures.topcolor", _ui.TopColorSlider->value());
-	snapshot->SetValue("textures.bottomcolor", _ui.BottomColorSlider->value());
 }
 
 void TexturesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 {
+	_updatingUI = true;
+
+	auto model = _asset->GetEntity()->GetEditableModel();
+
 	if (auto texture = snapshot->Value("textures.texture"); texture.isValid())
 	{
 		auto textureName = texture.toString().toStdString();
-
-		auto model = _asset->GetEntity()->GetEditableModel();
 
 		if (auto it = std::find_if(model->Textures.begin(), model->Textures.end(), [&](const auto& texture)
 			{
@@ -238,19 +237,10 @@ void TexturesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 		}
 	}
 
-	const int topcolor = snapshot->Value("textures.topcolor", 0).toInt();
-	const int bottomcolor = snapshot->Value("textures.bottomcolor", 0).toInt();
+	_ui.TopColorSlider->setValue(model->TopColor);
+	_ui.BottomColorSlider->setValue(model->BottomColor);
 
-	if (_ui.TopColorSlider->value() != topcolor || _ui.BottomColorSlider->value() != bottomcolor)
-	{
-		_ui.TopColorSlider->setValue(topcolor);
-		_ui.BottomColorSlider->setValue(bottomcolor);
-	}
-	else
-	{
-		// Force an update so that refreshed assets update correctly.
-		UpdateColormapValue();
-	}
+	_updatingUI = false;
 }
 
 void TexturesPanel::OnScaleChanged(float adjust)
@@ -493,6 +483,11 @@ void TexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::Editab
 
 void TexturesPanel::UpdateColormapValue()
 {
+	if (_updatingUI)
+	{
+		return;
+	}
+
 	auto model = _asset->GetEditableStudioModel();
 
 	model->TopColor = _ui.TopColorSlider->value();

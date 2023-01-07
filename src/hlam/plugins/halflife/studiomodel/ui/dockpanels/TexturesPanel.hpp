@@ -81,5 +81,7 @@ private:
 	StudioModelAssetProvider* const _provider;
 	StudioModelAsset* _asset{};
 	StudioModelData* _previousModelData{};
+
+	bool _updatingUI{false};
 };
 }
