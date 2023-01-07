@@ -176,24 +176,14 @@ void ChangeModelRotationCommand::Apply(const studiomdl::RotateData& oldValue, co
 	emit _asset->GetModelData()->ModelRotationChanged();
 }
 
-void ChangeHitboxBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
+void ChangeHitboxPropsCommand::Apply(int index, const HitboxProps& oldValue, const HitboxProps& newValue)
 {
 	auto model = _asset->GetEditableStudioModel();
-	model->Hitboxes[index]->Bone = model->Bones[newValue].get();
-	emit _asset->GetModelData()->HitboxDataChanged(index);
-}
-
-void ChangeHitboxHitgroupCommand::Apply(int index, const int& oldValue, const int& newValue)
-{
-	_asset->GetEditableStudioModel()->Hitboxes[index]->Group = newValue;
-	emit _asset->GetModelData()->HitboxDataChanged(index);
-}
-
-void ChangeHitboxBoundsCommand::Apply(int index, const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue)
-{
-	auto& hitbox = *_asset->GetEditableStudioModel()->Hitboxes[index];
-	hitbox.Min = newValue.first;
-	hitbox.Max = newValue.second;
+	auto& hitbox = *model->Hitboxes[index];
+	hitbox.Bone = model->Bones[newValue.Bone].get();
+	hitbox.Group = newValue.Group;
+	hitbox.Min = newValue.Min;
+	hitbox.Max = newValue.Max;
 	emit _asset->GetModelData()->HitboxDataChanged(index);
 }
 

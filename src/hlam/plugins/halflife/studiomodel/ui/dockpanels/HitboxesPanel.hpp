@@ -33,10 +33,7 @@ private slots:
 
 	void OnHighlightHitboxChanged();
 
-	void OnBoneChanged();
-	void OnHitgroupChanged();
-
-	void OnBoundsChanged();
+	void OnHitboxPropsChanged();
 
 private:
 	Ui_HitboxesPanel _ui;

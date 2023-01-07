@@ -26,11 +26,11 @@ HitboxesPanel::HitboxesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.Hitboxes, qOverload<int>(&QComboBox::currentIndexChanged), this, &HitboxesPanel::OnHitboxChanged);
 	connect(_ui.HighlightHitbox, &QCheckBox::stateChanged, this, &HitboxesPanel::OnHighlightHitboxChanged);
 
-	connect(_ui.Bone, qOverload<int>(&QComboBox::currentIndexChanged), this, &HitboxesPanel::OnBoneChanged);
-	connect(_ui.Hitgroup, qOverload<int>(&QSpinBox::valueChanged), this, &HitboxesPanel::OnHitgroupChanged);
+	connect(_ui.Bone, qOverload<int>(&QComboBox::currentIndexChanged), this, &HitboxesPanel::OnHitboxPropsChanged);
+	connect(_ui.Hitgroup, qOverload<int>(&QSpinBox::valueChanged), this, &HitboxesPanel::OnHitboxPropsChanged);
 
-	connect(_ui.Minimum, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &HitboxesPanel::OnBoundsChanged);
-	connect(_ui.Maximum, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &HitboxesPanel::OnBoundsChanged);
+	connect(_ui.Minimum, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &HitboxesPanel::OnHitboxPropsChanged);
+	connect(_ui.Maximum, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &HitboxesPanel::OnHitboxPropsChanged);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }
@@ -155,32 +155,35 @@ void HitboxesPanel::OnHighlightHitboxChanged()
 	_asset->DrawSingleHitboxIndex = _ui.HighlightHitbox->isChecked() ? _ui.Hitboxes->currentIndex() : -1;
 }
 
-void HitboxesPanel::OnBoneChanged()
+void HitboxesPanel::OnHitboxPropsChanged()
 {
 	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeHitboxBoneCommand(_asset, _ui.Hitboxes->currentIndex(), hitbox.Bone->ArrayIndex, _ui.Bone->currentIndex()));
-}
+	const HitboxProps oldProps
+	{
+		.Bone = hitbox.Bone->ArrayIndex,
+		.Group = hitbox.Group,
+		.Min = hitbox.Min,
+		.Max = hitbox.Max
+	};
 
-void HitboxesPanel::OnHitgroupChanged()
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
+	const HitboxProps newProps
+	{
+		.Bone = _ui.Bone->currentIndex(),
+		.Group = _ui.Hitgroup->value(),
+		.Min = _ui.Minimum->GetValue(),
+		.Max = _ui.Maximum->GetValue()
+	};
 
-	_asset->AddUndoCommand(new ChangeHitboxHitgroupCommand(_asset, _ui.Hitboxes->currentIndex(), hitbox.Group, _ui.Hitgroup->value()));
-}
-
-void HitboxesPanel::OnBoundsChanged()
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& hitbox = *model->Hitboxes[_ui.Hitboxes->currentIndex()];
+	// This can happen if the user added zeroes to a vec3 value.
+	if (oldProps == newProps)
+	{
+		return;
+	}
 
 	_changingHitboxProperties = true;
-
-	_asset->AddUndoCommand(new ChangeHitboxBoundsCommand(_asset, _ui.Hitboxes->currentIndex(),
-		std::make_pair(hitbox.Min, hitbox.Max), std::make_pair(_ui.Minimum->GetValue(), _ui.Maximum->GetValue())));
-
+	_asset->AddUndoCommand(new ChangeHitboxPropsCommand(_asset, _ui.Hitboxes->currentIndex(), oldProps, newProps));
 	_changingHitboxProperties = false;
 }
 }

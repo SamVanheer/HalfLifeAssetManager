@@ -53,9 +53,7 @@ enum class ModelChangeId
 	ChangeModelScale,
 	ChangeModelRotation,
 
-	ChangeHitboxBone,
-	ChangeHitboxHitgroup,
-	ChangeHitboxBounds,
+	ChangeHitboxProps,
 
 	ChangeTextureName,
 	ChangeTextureFlags,
@@ -657,59 +655,33 @@ protected:
 	void Apply(const studiomdl::RotateData& oldValue, const studiomdl::RotateData& newValue) override;
 };
 
-class ChangeHitboxBoneCommand : public ModelListUndoCommand<int>
+struct HitboxProps
 {
-public:
-	ChangeHitboxBoneCommand(StudioModelAsset* asset, int hitboxIndex, int oldBone, int newBone)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeHitboxBone, hitboxIndex, oldBone, newBone)
-	{
-		setText("Change hitbox bone");
-	}
+	int Bone{};
+	int Group{};
+	glm::vec3 Min{0};
+	glm::vec3 Max{0};
 
-protected:
-	bool CanMerge(const ModelListUndoCommand<int>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const int& oldValue, const int& newValue) override;
+	constexpr auto operator<=>(const HitboxProps&) const = default;
 };
 
-class ChangeHitboxHitgroupCommand : public ModelListUndoCommand<int>
+class ChangeHitboxPropsCommand : public ModelListUndoCommand<HitboxProps>
 {
 public:
-	ChangeHitboxHitgroupCommand(StudioModelAsset* asset, int hitboxIndex, int oldHitgroup, int newHitgroup)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeHitboxHitgroup, hitboxIndex, oldHitgroup, newHitgroup)
+	ChangeHitboxPropsCommand(StudioModelAsset* asset, int hitboxIndex,
+		const HitboxProps& oldProps, const HitboxProps& newProps)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeHitboxProps, hitboxIndex, oldProps, newProps)
 	{
-		setText("Change hitbox hitgroup");
+		setText("Change hitbox properties");
 	}
 
 protected:
-	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	bool CanMerge(const ModelListUndoCommand* other) override
 	{
 		return _oldValue != other->GetNewValue();
 	}
 
-	void Apply(int index, const int& oldValue, const int& newValue) override;
-};
-
-class ChangeHitboxBoundsCommand : public ModelListUndoCommand<std::pair<glm::vec3, glm::vec3>>
-{
-public:
-	ChangeHitboxBoundsCommand(StudioModelAsset* asset, int hitboxIndex,
-		const std::pair<glm::vec3, glm::vec3>& oldBounds, const std::pair<glm::vec3, glm::vec3>& newBounds)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeHitboxBounds, hitboxIndex, oldBounds, newBounds)
-	{
-		setText("Change hitbox bounds");
-	}
-
-protected:
-	bool CanMerge(const ModelListUndoCommand<std::pair<glm::vec3, glm::vec3>>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
+	void Apply(int index, const HitboxProps& oldValue, const HitboxProps& newValue) override;
 };
 
 class ChangeTextureNameCommand : public ModelListUndoCommand<QString>
