@@ -862,21 +862,15 @@ protected:
 	const int _modelIndex;
 };
 
-class FlipNormalsCommand : public ModelListUndoCommand<std::vector<glm::vec3>>
+class FlipNormalsCommand : public BaseModelUndoCommand
 {
 public:
-	FlipNormalsCommand(StudioModelAsset* asset, std::vector<glm::vec3>&& oldNormals, std::vector<glm::vec3>&& newNormals)
-		: ModelListUndoCommand(asset, ModelChangeId::FlipNormals, -1, std::move(oldNormals), std::move(newNormals))
-	{
-		setText("Flip normals");
-	}
+	explicit FlipNormalsCommand(StudioModelAsset* asset);
 
-protected:
-	bool CanMerge(const ModelListUndoCommand<std::vector<glm::vec3>>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
+	void undo() override;
+	void redo() override;
 
-	void Apply(int index, const std::vector<glm::vec3>& oldValue, const std::vector<glm::vec3>& newValue) override;
+private:
+	std::vector<glm::vec3> _normals;
 };
 }

@@ -298,19 +298,58 @@ void ChangeModelNameCommand::Apply(int index, const QString& oldValue, const QSt
 	emit _asset->GetModelData()->SubModelNameChanged(index, _modelIndex);
 }
 
-void FlipNormalsCommand::Apply(int index, const std::vector<glm::vec3>& oldValue, const std::vector<glm::vec3>& newValue)
+FlipNormalsCommand::FlipNormalsCommand(StudioModelAsset* asset)
+	: BaseModelUndoCommand(asset, ModelChangeId::FlipNormals)
+{
+	setText("Flip normals");
+
+	auto model = asset->GetEditableStudioModel();
+
+	for (auto& bodypart : model->Bodyparts)
+	{
+		for (auto& model : bodypart->Models)
+		{
+			_normals.reserve(_normals.size() + model.Normals.size());
+
+			for (auto& normal : model.Normals)
+			{
+				_normals.push_back(normal.Vertex);
+			}
+		}
+	}
+}
+
+void FlipNormalsCommand::undo()
 {
 	auto model = _asset->GetEditableStudioModel();
 
 	std::size_t normalIndex = 0;
-	
+
 	for (auto& bodypart : model->Bodyparts)
 	{
 		for (auto& model : bodypart->Models)
 		{
 			for (auto& normal : model.Normals)
 			{
-				normal.Vertex = newValue[normalIndex++];
+				normal.Vertex = _normals[normalIndex++];
+			}
+		}
+	}
+}
+
+void FlipNormalsCommand::redo()
+{
+	auto model = _asset->GetEditableStudioModel();
+
+	std::size_t normalIndex = 0;
+
+	for (auto& bodypart : model->Bodyparts)
+	{
+		for (auto& model : bodypart->Models)
+		{
+			for (auto& normal : model.Normals)
+			{
+				normal.Vertex = -_normals[normalIndex++];
 			}
 		}
 	}

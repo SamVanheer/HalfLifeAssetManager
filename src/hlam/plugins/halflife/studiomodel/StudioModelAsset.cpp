@@ -688,26 +688,6 @@ void StudioModelAsset::OnCenterView(Axis axis, bool positive)
 
 void StudioModelAsset::OnFlipNormals()
 {
-	std::vector<glm::vec3> oldNormals;
-	std::vector<glm::vec3> newNormals;
-
-	auto model = _modelEntity->GetEditableModel();
-
-	for (auto& bodypart : model->Bodyparts)
-	{
-		for (auto& model : bodypart->Models)
-		{
-			oldNormals.reserve(oldNormals.size() + model.Normals.size());
-			newNormals.reserve(newNormals.size() + model.Normals.size());
-
-			for (auto& normal : model.Normals)
-			{
-				oldNormals.push_back(normal.Vertex);
-				newNormals.push_back(-normal.Vertex);
-			}
-		}
-	}
-
-	AddUndoCommand(new FlipNormalsCommand(this, std::move(oldNormals), std::move(newNormals)));
+	AddUndoCommand(new FlipNormalsCommand(this));
 }
 }
