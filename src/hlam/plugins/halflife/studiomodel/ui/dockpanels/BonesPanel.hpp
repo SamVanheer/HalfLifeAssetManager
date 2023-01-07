@@ -32,12 +32,9 @@ private slots:
 	void OnBoneChanged(int index);
 	void OnHightlightBoneChanged();
 
-	void OnBoneNameChanged();
 	void OnBoneNameRejected();
 
-	void OnBoneFlagsChanged();
-
-	void OnBonePropertyChanged();
+	void OnPropsChanged();
 
 private:
 	Ui_BonesPanel _ui;

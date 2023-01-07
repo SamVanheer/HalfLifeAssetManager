@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cassert>
+#include <compare>
 #include <cstring>
 #include <memory>
 #include <vector>
@@ -32,13 +33,8 @@ enum class ModelChangeId
 	ChangeBBox,
 	ChangeCBox,
 
-	RenameBone,
-	ChangeBoneParent,
-	ChangeBoneFlags,
-	ChangeBoneProperty,
-
+	ChangeBoneProps,
 	ChangeAttachmentProps,
-
 	ChangeBoneControllerProps,
 
 	ChangeModelFlags,
@@ -354,77 +350,57 @@ protected:
 	void Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, const std::pair<glm::vec3, glm::vec3>& newValue) override;
 };
 
-class BoneRenameCommand : public ModelListUndoCommand<QString>
+struct BoneProps
 {
-public:
-	BoneRenameCommand(StudioModelAsset* asset, int boneIndex, const QString& oldName, const QString& newName)
-		: ModelListUndoCommand(asset, ModelChangeId::RenameBone, boneIndex, oldName, newName)
-	{
-		setText("Rename bone");
-	}
-
-protected:
-	bool CanMerge(const ModelListUndoCommand<QString>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const QString& oldValue, const QString& newValue) override;
-};
-
-class ChangeBoneParentCommand : public ModelListUndoCommand<int>
-{
-public:
-	ChangeBoneParentCommand(StudioModelAsset* asset, int boneIndex, int oldParent, int newParent)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneParent, boneIndex, oldParent, newParent)
-	{
-		setText("Change bone parent");
-	}
-
-protected:
-	bool CanMerge(const ModelListUndoCommand<int>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const int& oldValue, const int& newValue) override;
-};
-
-class ChangeBoneFlagsCommand : public ModelListUndoCommand<int>
-{
-public:
-	ChangeBoneFlagsCommand(StudioModelAsset* asset, int boneIndex, int oldFlags, int newFlags)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneParent, boneIndex, oldFlags, newFlags)
-	{
-		setText("Change bone flags");
-	}
-
-protected:
-	bool CanMerge(const ModelListUndoCommand<int>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const int& oldValue, const int& newValue) override;
-};
-
-struct ChangeBoneProperties
-{
+	std::string Name;
+	int Flags{};
 	std::array<glm::vec3, 2> Values;
 	std::array<glm::vec3, 2> Scales;
+
+	constexpr bool operator==(const BoneProps& other) const
+	{
+		if (Name != other.Name)
+		{
+			return false;
+		}
+
+		if (Flags != other.Flags)
+		{
+			return false;
+		}
+
+		for (std::size_t j = 0; j < Values.size(); ++j)
+		{
+			for (int i = 0; i < glm::vec3::length(); ++i)
+			{
+				if (Values[j][i] != other.Values[j][i] || Scales[j][i] != other.Scales[j][i])
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
 };
 
-class ChangeBonePropertyCommand : public ModelListUndoCommand<ChangeBoneProperties>
+class ChangeBonePropsCommand : public ModelListUndoCommand<BoneProps>
 {
 public:
-	ChangeBonePropertyCommand(StudioModelAsset* asset, int boneIndex, const ChangeBoneProperties& oldProperties, const ChangeBoneProperties& newProperties)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneProperty, boneIndex, oldProperties, newProperties)
+	ChangeBonePropsCommand(StudioModelAsset* asset, int boneIndex,
+		const BoneProps& oldProps, const BoneProps& newProps)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeBoneProps, boneIndex, oldProps, newProps)
 	{
-		setText("Change bone property");
+		setText("Change bone properties");
 	}
 
 protected:
-	void Apply(int index, const ChangeBoneProperties& oldValue, const ChangeBoneProperties& newValue) override;
+	bool CanMerge(const ModelListUndoCommand<BoneProps>* other) override
+	{
+		return _oldValue != other->GetNewValue();
+	}
+
+	void Apply(int index, const BoneProps& oldValue, const BoneProps& newValue) override;
 };
 
 struct AttachmentProps

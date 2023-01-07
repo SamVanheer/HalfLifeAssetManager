@@ -37,15 +37,15 @@ BonesPanel::BonesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.Bones, qOverload<int>(&QComboBox::currentIndexChanged), this, &BonesPanel::OnBoneChanged);
 	connect(_ui.HighlightBone, &QCheckBox::stateChanged, this, &BonesPanel::OnHightlightBoneChanged);
 
-	connect(_ui.BoneName, &QLineEdit::textChanged, this, &BonesPanel::OnBoneNameChanged);
+	connect(_ui.BoneName, &QLineEdit::textChanged, this, &BonesPanel::OnPropsChanged);
 	connect(_ui.BoneName, &QLineEdit::inputRejected, this, &BonesPanel::OnBoneNameRejected);
 
-	connect(_ui.BoneFlags, qOverload<int>(&QSpinBox::valueChanged), this, &BonesPanel::OnBoneFlagsChanged);
+	connect(_ui.BoneFlags, qOverload<int>(&QSpinBox::valueChanged), this, &BonesPanel::OnPropsChanged);
 
-	connect(_ui.Position, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnBonePropertyChanged);
-	connect(_ui.PositionScale, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnBonePropertyChanged);
-	connect(_ui.Rotation, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnBonePropertyChanged);
-	connect(_ui.RotationScale, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnBonePropertyChanged);
+	connect(_ui.Position, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
+	connect(_ui.PositionScale, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
+	connect(_ui.Rotation, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
+	connect(_ui.RotationScale, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }
@@ -219,51 +219,48 @@ void BonesPanel::OnHightlightBoneChanged()
 	_asset->DrawSingleBoneIndex = _ui.HighlightBone->isChecked() ? _ui.Bones->currentIndex() : -1;
 }
 
-void BonesPanel::OnBoneNameChanged()
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
-
-	_asset->AddUndoCommand(new BoneRenameCommand(_asset, _ui.Bones->currentIndex(),
-		QString::fromStdString(bone.Name), _ui.BoneName->text()));
-}
-
 void BonesPanel::OnBoneNameRejected()
 {
 	QToolTip::showText(_ui.BoneName->mapToGlobal({0, -20}), "Bone names must be unique");
 }
 
-void BonesPanel::OnBoneFlagsChanged()
+void BonesPanel::OnPropsChanged()
 {
 	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeBoneFlagsCommand(_asset, _ui.Bones->currentIndex(), bone.Flags, _ui.BoneFlags->value()));
-}
+	const BoneProps oldProps
+	{
+		.Name = bone.Name,
+		.Flags = bone.Flags,
+		.Values =
+		{
+			glm::vec3{bone.Axes[0].Value, bone.Axes[1].Value, bone.Axes[2].Value},
+			glm::vec3{bone.Axes[3].Value, bone.Axes[4].Value, bone.Axes[5].Value}
+		},
+		.Scales = 
+		{
+			glm::vec3{bone.Axes[0].Scale, bone.Axes[1].Scale, bone.Axes[2].Scale},
+			glm::vec3{bone.Axes[3].Scale, bone.Axes[4].Scale, bone.Axes[5].Scale}
+		}
+	};
 
-void BonesPanel::OnBonePropertyChanged()
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& bone = *model->Bones[_ui.Bones->currentIndex()];
+	const BoneProps newProps
+	{
+		.Name = _ui.BoneName->text().toStdString(),
+		.Flags = _ui.BoneFlags->value(),
+		.Values = {_ui.Position->GetValue(), _ui.Rotation->GetValue()},
+		.Scales = {_ui.PositionScale->GetValue(), _ui.RotationScale->GetValue()}
+	};
+
+	// This can happen if the user added zeroes to a vec3 value.
+	if (oldProps == newProps)
+	{
+		return;
+	}
 
 	_changingBoneProperties = true;
-
-	_asset->AddUndoCommand(new ChangeBonePropertyCommand(_asset, _ui.Bones->currentIndex(),
-		{
-			{
-				glm::vec3{bone.Axes[0].Value, bone.Axes[1].Value, bone.Axes[2].Value},
-				glm::vec3{bone.Axes[3].Value, bone.Axes[4].Value, bone.Axes[5].Value}
-			},
-			{
-				glm::vec3{bone.Axes[0].Scale, bone.Axes[1].Scale, bone.Axes[2].Scale},
-				glm::vec3{bone.Axes[3].Scale, bone.Axes[4].Scale, bone.Axes[5].Scale}
-			}
-		},
-		{
-			{_ui.Position->GetValue(), _ui.Rotation->GetValue()},
-			{_ui.PositionScale->GetValue(), _ui.RotationScale->GetValue()}
-		}));
-
+	_asset->AddUndoCommand(new ChangeBonePropsCommand(_asset, _ui.Bones->currentIndex(), oldProps, newProps));
 	_changingBoneProperties = false;
 }
 }

@@ -39,40 +39,26 @@ void ChangeCBoxCommand::Apply(const std::pair<glm::vec3, glm::vec3>& oldValue, c
 	emit _asset->GetModelData()->ModelCBoxChanged();
 }
 
-void BoneRenameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
-{
-	_asset->GetEditableStudioModel()->Bones[index]->Name = newValue.toStdString();
-	EmitDataChanged(_asset->GetModelData()->Bones, index);
-	EmitDataChanged(_asset->GetModelData()->BonesWithNone, index + 1);
-}
-
-void ChangeBoneParentCommand::Apply(int index, const int& oldValue, const int& newValue)
+void ChangeBonePropsCommand::Apply(int index, const BoneProps& oldValue, const BoneProps& newValue)
 {
 	auto model = _asset->GetEditableStudioModel();
-	model->Bones[index]->Parent = newValue != -1 ? model->Bones[newValue].get() : nullptr;
-	emit _asset->GetModelData()->BoneDataChanged(index);
-}
+	auto& bone = *model->Bones[index];
 
-void ChangeBoneFlagsCommand::Apply(int index, const int& oldValue, const int& newValue)
-{
-	_asset->GetEditableStudioModel()->Bones[index]->Flags = newValue;
-	emit _asset->GetModelData()->BoneDataChanged(index);
-}
-
-void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& oldValue, const ChangeBoneProperties& newValue)
-{
-	auto& bone = *_asset->GetEditableStudioModel()->Bones[index];
+	bone.Name = newValue.Name;
+	bone.Flags = newValue.Flags;
 
 	for (std::size_t j = 0; j < newValue.Values.size(); ++j)
 	{
-		for (int i = 0; i < newValue.Values[j].length(); ++i)
+		for (int i = 0; i < glm::vec3::length(); ++i)
 		{
-			bone.Axes[(j * newValue.Values[j].length()) + i].Value = newValue.Values[j][i];
-			bone.Axes[(j * newValue.Scales[j].length()) + i].Scale = newValue.Scales[j][i];
+			bone.Axes[(j * glm::vec3::length()) + i].Value = newValue.Values[j][i];
+			bone.Axes[(j * glm::vec3::length()) + i].Scale = newValue.Scales[j][i];
 		}
 	}
 
 	emit _asset->GetModelData()->BoneDataChanged(index);
+	EmitDataChanged(_asset->GetModelData()->Bones, index);
+	EmitDataChanged(_asset->GetModelData()->BonesWithNone, index + 1);
 }
 
 void ChangeAttachmentPropsCommand::Apply(int index, const AttachmentProps& oldValue, const AttachmentProps& newValue)
