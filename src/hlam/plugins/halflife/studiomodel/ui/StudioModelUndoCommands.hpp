@@ -38,10 +38,7 @@ enum class ModelChangeId
 	ChangeBoneProperty,
 	ChangeBoneControllerFromBone,
 
-	ChangeAttachmentName,
-	ChangeAttachmentType,
-	ChangeAttachmentBone,
-	ChangeAttachmentOrigin,
+	ChangeAttachmentProps,
 
 	ChangeBoneControllerRange,
 	ChangeBoneControllerRest,
@@ -434,76 +431,32 @@ protected:
 	void Apply(int index, const ChangeBoneProperties& oldValue, const ChangeBoneProperties& newValue) override;
 };
 
-class ChangeAttachmentNameCommand : public ModelListUndoCommand<QString>
+struct AttachmentProps
 {
-public:
-	ChangeAttachmentNameCommand(StudioModelAsset* asset, int attachmentIndex, const QString& oldName, const QString& newName)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeAttachmentName, attachmentIndex, oldName, newName)
-	{
-		setText("Change attachment name");
-	}
+	std::string Name;
+	int Type{};
+	int Bone{};
+	glm::vec3 Origin{0};
 
-protected:
-	bool CanMerge(const ModelListUndoCommand<QString>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const QString& oldValue, const QString& newValue) override;
+	constexpr auto operator<=>(const AttachmentProps&) const = default;
 };
 
-class ChangeAttachmentTypeCommand : public ModelListUndoCommand<int>
+class ChangeAttachmentPropsCommand : public ModelListUndoCommand<AttachmentProps>
 {
 public:
-	ChangeAttachmentTypeCommand(StudioModelAsset* asset, int attachmentIndex, int oldType, int newType)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeAttachmentType, attachmentIndex, oldType, newType)
+	ChangeAttachmentPropsCommand(StudioModelAsset* asset, int attachmentIndex, const AttachmentProps& oldProps, const AttachmentProps& newProps)
+		: ModelListUndoCommand(asset, ModelChangeId::ChangeAttachmentProps, attachmentIndex, oldProps, newProps)
 	{
-		setText("Change attachment type");
+		setText("Change attachment properties");
 	}
 
 protected:
-	bool CanMerge(const ModelListUndoCommand<int>* other) override
+	bool CanMerge(const ModelListUndoCommand<AttachmentProps>* other) override
 	{
 		return _oldValue != other->GetNewValue();
 	}
 
-	void Apply(int index, const int& oldValue, const int& newValue) override;
-};
-
-class ChangeAttachmentBoneCommand : public ModelListUndoCommand<int>
-{
-public:
-	ChangeAttachmentBoneCommand(StudioModelAsset* asset, int attachmentIndex, int oldBone, int newBone)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeAttachmentBone, attachmentIndex, oldBone, newBone)
-	{
-		setText("Change attachment bone");
-	}
-
-protected:
-	bool CanMerge(const ModelListUndoCommand<int>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const int& oldValue, const int& newValue) override;
-};
-
-class ChangeAttachmentOriginCommand : public ModelListUndoCommand<glm::vec3>
-{
-public:
-	ChangeAttachmentOriginCommand(StudioModelAsset* asset, int attachmentIndex, const glm::vec3& oldOrigin, const glm::vec3& newOrigin)
-		: ModelListUndoCommand(asset, ModelChangeId::ChangeAttachmentOrigin, attachmentIndex, oldOrigin, newOrigin)
-	{
-		setText("Change attachment origin");
-	}
-
-protected:
-	bool CanMerge(const ModelListUndoCommand<glm::vec3>* other) override
-	{
-		return _oldValue != other->GetNewValue();
-	}
-
-	void Apply(int index, const glm::vec3& oldValue, const glm::vec3& newValue) override;
+	void Apply(int index, const AttachmentProps& oldValue, const AttachmentProps& newValue) override;
 };
 
 struct ChangeBoneControllerRange

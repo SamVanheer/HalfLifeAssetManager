@@ -32,13 +32,9 @@ private slots:
 	void OnAttachmentChanged(int index);
 	void OnHighlightAttachmentChanged();
 
-	void OnNameChanged();
 	void OnNameRejected();
 
-	void OnTypeChanged();
-	void OnBoneChanged();
-
-	void OnOriginChanged();
+	void OnPropsChanged();
 
 private:
 	Ui_AttachmentsPanel _ui;

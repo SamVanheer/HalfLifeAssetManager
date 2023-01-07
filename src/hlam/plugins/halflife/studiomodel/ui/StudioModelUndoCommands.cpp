@@ -75,30 +75,16 @@ void ChangeBonePropertyCommand::Apply(int index, const ChangeBoneProperties& old
 	emit _asset->GetModelData()->BoneDataChanged(index);
 }
 
-void ChangeAttachmentNameCommand::Apply(int index, const QString& oldValue, const QString& newValue)
-{
-	_asset->GetEditableStudioModel()->Attachments[index]->Name = newValue.toStdString();
-	emit _asset->GetModelData()->AttachmentDataChanged(index);
-	EmitDataChanged(_asset->GetModelData()->Attachments, index);
-}
-
-void ChangeAttachmentTypeCommand::Apply(int index, const int& oldValue, const int& newValue)
-{
-	_asset->GetEditableStudioModel()->Attachments[index]->Type = newValue;
-	emit _asset->GetModelData()->AttachmentDataChanged(index);
-}
-
-void ChangeAttachmentBoneCommand::Apply(int index, const int& oldValue, const int& newValue)
+void ChangeAttachmentPropsCommand::Apply(int index, const AttachmentProps& oldValue, const AttachmentProps& newValue)
 {
 	auto model = _asset->GetEditableStudioModel();
-	model->Attachments[index]->Bone = newValue != -1 ? model->Bones[newValue].get() : nullptr;
+	auto& attachment = *model->Attachments[index];
+	attachment.Name = newValue.Name;
+	attachment.Type = newValue.Type;
+	attachment.Bone = newValue.Bone != -1 ? model->Bones[newValue.Bone].get() : nullptr;
+	attachment.Origin = newValue.Origin;
 	emit _asset->GetModelData()->AttachmentDataChanged(index);
-}
-
-void ChangeAttachmentOriginCommand::Apply(int index, const glm::vec3& oldValue, const glm::vec3& newValue)
-{
-	_asset->GetEditableStudioModel()->Attachments[index]->Origin = newValue;
-	emit _asset->GetModelData()->AttachmentDataChanged(index);
+	EmitDataChanged(_asset->GetModelData()->Attachments, index);
 }
 
 void ChangeBoneControllerRangeCommand::Apply(int index, const ChangeBoneControllerRange& oldValue, const ChangeBoneControllerRange& newValue)

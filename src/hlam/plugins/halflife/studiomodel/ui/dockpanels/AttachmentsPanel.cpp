@@ -34,13 +34,12 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAssetProvider* provider)
 	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), this, &AttachmentsPanel::OnAttachmentChanged);
 	connect(_ui.HighlightAttachment, &QCheckBox::stateChanged, this, &AttachmentsPanel::OnHighlightAttachmentChanged);
 
-	connect(_ui.Name, &QLineEdit::textChanged, this, &AttachmentsPanel::OnNameChanged);
+	connect(_ui.Name, &QLineEdit::textChanged, this, &AttachmentsPanel::OnPropsChanged);
 	connect(_ui.Name, &QLineEdit::inputRejected, this, &AttachmentsPanel::OnNameRejected);
 
-	connect(_ui.Type, qOverload<int>(&QSpinBox::valueChanged), this, &AttachmentsPanel::OnTypeChanged);
-	connect(_ui.Bone, qOverload<int>(&QComboBox::currentIndexChanged), this, &AttachmentsPanel::OnBoneChanged);
-
-	connect(_ui.Origin, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &AttachmentsPanel::OnOriginChanged);
+	connect(_ui.Type, qOverload<int>(&QSpinBox::valueChanged), this, &AttachmentsPanel::OnPropsChanged);
+	connect(_ui.Bone, qOverload<int>(&QComboBox::currentIndexChanged), this, &AttachmentsPanel::OnPropsChanged);
+	connect(_ui.Origin, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &AttachmentsPanel::OnPropsChanged);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }
@@ -85,7 +84,7 @@ void AttachmentsPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	_previousModelData = modelData;
 
-	connect(modelData->Bones, &QAbstractItemModel::dataChanged, this, &AttachmentsPanel::UpdateQCString);
+	connect(modelData->Attachments, &QAbstractItemModel::dataChanged, this, &AttachmentsPanel::UpdateQCString);
 
 	connect(modelData, &StudioModelData::AttachmentDataChanged, this, [this](int index)
 		{
@@ -175,46 +174,40 @@ void AttachmentsPanel::OnHighlightAttachmentChanged()
 	_asset->DrawSingleAttachmentIndex = _ui.HighlightAttachment->isChecked() ? _ui.Attachments->currentIndex() : -1;
 }
 
-void AttachmentsPanel::OnNameChanged()
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
-
-	_asset->AddUndoCommand(new ChangeAttachmentNameCommand(_asset, _ui.Attachments->currentIndex(),
-		QString::fromStdString(attachment.Name), _ui.Name->text()));
-}
-
 void AttachmentsPanel::OnNameRejected()
 {
 	QToolTip::showText(_ui.Name->mapToGlobal({0, -20}), "Attachment names must be unique");
 }
 
-void AttachmentsPanel::OnTypeChanged()
+void AttachmentsPanel::OnPropsChanged()
 {
 	const auto model = _asset->GetEntity()->GetEditableModel();
 	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
 
-	_asset->AddUndoCommand(new ChangeAttachmentTypeCommand(_asset, _ui.Attachments->currentIndex(), attachment.Type, _ui.Type->value()));
-}
+	const AttachmentProps oldProps
+	{
+		.Name = attachment.Name,
+		.Type = attachment.Type,
+		.Bone = attachment.Bone->ArrayIndex,
+		.Origin = attachment.Origin
+	};
 
-void AttachmentsPanel::OnBoneChanged()
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
+	const AttachmentProps newProps
+	{
+		.Name = _ui.Name->text().toStdString(),
+		.Type = _ui.Type->value(),
+		.Bone = _ui.Bone->currentIndex(),
+		.Origin = _ui.Origin->GetValue()
+	};
 
-	_asset->AddUndoCommand(new ChangeAttachmentBoneCommand(_asset, _ui.Attachments->currentIndex(), attachment.Bone->ArrayIndex, _ui.Bone->currentIndex()));
-}
-
-void AttachmentsPanel::OnOriginChanged()
-{
-	const auto model = _asset->GetEntity()->GetEditableModel();
-	const auto& attachment = *model->Attachments[_ui.Attachments->currentIndex()];
+	// This can happen if the user added zeroes to a vec3 value.
+	if (oldProps == newProps)
+	{
+		return;
+	}
 
 	_changingAttachmentProperties = true;
-
-	_asset->AddUndoCommand(new ChangeAttachmentOriginCommand(_asset, _ui.Attachments->currentIndex(),
-		attachment.Origin, _ui.Origin->GetValue()));
-
+	_asset->AddUndoCommand(new ChangeAttachmentPropsCommand(_asset, _ui.Attachments->currentIndex(), oldProps, newProps));
 	_changingAttachmentProperties = false;
 }
 }
