@@ -274,13 +274,10 @@ std::vector<std::vector<StudioAnimation>> ConvertAnimationBlendsToEditable(
 					validateSequenceAddress(valuesStart);
 
 					//Determine number of values
-					std::size_t valuesCount = 0;
-
 					if (sequence.numframes > 0)
 					{
 						for (int f = 0; f < sequence.numframes;)
 						{
-							valuesCount += 1 + valuesEnd->num.valid;
 							f += valuesEnd->num.total;
 
 							valuesEnd += 1 + valuesEnd->num.valid;
@@ -291,12 +288,10 @@ std::vector<std::vector<StudioAnimation>> ConvertAnimationBlendsToEditable(
 					else
 					{
 						//Just the first count entry
-						valuesCount = 1;
+						++valuesEnd;
 					}
 
-					values.resize(valuesCount);
-
-					std::memcpy(values.data(), valuesStart, valuesCount * sizeof(mstudioanimvalue_t));
+					values.insert(values.end(), valuesStart, valuesEnd);
 
 					animation.Data[j] = std::move(values);
 				}
