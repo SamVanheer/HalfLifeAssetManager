@@ -9,7 +9,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 
 static const QString Source1ModelViewerFileNameKey{QStringLiteral("Source1ModelViewerFileName")};
 const QString Source1ModelExtension{QStringLiteral("mdl")};

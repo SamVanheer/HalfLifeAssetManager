@@ -5,7 +5,7 @@
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/options/OptionsPageColors.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 

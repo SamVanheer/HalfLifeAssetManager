@@ -1,7 +1,7 @@
 #include <QKeyEvent>
 #include <QtPlatformHeaders/QWindowsWindowFunctions>
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 
 FullscreenWidget::FullscreenWidget()

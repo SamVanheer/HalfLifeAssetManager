@@ -8,7 +8,7 @@
 
 #include "settings/GameConfigurationsSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 
 #include "ui/options/gameconfigurations/AutodetectGameConfigurationsWizard.hpp"
 #include "ui/options/gameconfigurations/EditGameConfigurationsDialog.hpp"

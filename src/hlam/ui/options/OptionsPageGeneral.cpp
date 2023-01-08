@@ -6,7 +6,7 @@
 #include "settings/ApplicationSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 
 const QString OptionsPageGeneralCategory{QStringLiteral("A.General")};

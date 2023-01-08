@@ -1,6 +1,8 @@
 target_sources(HLAM
 	PRIVATE
 		ApplicationBuilder.hpp
+		EditorContext.cpp
+		EditorContext.hpp
 		SingleInstance.cpp
 		SingleInstance.hpp
 		ToolApplication.cpp

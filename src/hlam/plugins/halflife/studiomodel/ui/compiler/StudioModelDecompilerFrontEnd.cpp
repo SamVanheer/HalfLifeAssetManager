@@ -1,6 +1,6 @@
 #include "plugins/halflife/studiomodel/ui/compiler/StudioModelDecompilerFrontEnd.hpp"
 #include "settings/ApplicationSettings.hpp"
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/options/OptionsPageExternalPrograms.hpp"
 
 namespace studiomodel

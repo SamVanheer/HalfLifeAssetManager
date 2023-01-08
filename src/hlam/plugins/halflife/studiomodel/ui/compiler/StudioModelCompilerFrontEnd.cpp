@@ -4,7 +4,7 @@
 #include "plugins/halflife/studiomodel/ui/compiler/StudioModelCompilerFrontEnd.hpp"
 #include "settings/ApplicationSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 //TODO: move exe filter constant somewhere else
 #include "ui/options/OptionsPageExternalPrograms.hpp"
 

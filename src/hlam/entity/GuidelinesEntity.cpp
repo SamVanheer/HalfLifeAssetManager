@@ -19,7 +19,7 @@
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 
 void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {

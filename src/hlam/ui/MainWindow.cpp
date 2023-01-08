@@ -37,7 +37,7 @@
 #include "soundsystem/ISoundSystem.hpp"
 
 #include "ui/DragNDropEventFilter.hpp"
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/FileListPanel.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/MainWindow.hpp"

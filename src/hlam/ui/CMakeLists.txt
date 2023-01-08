@@ -2,8 +2,6 @@ target_sources(HLAM
 	PRIVATE
 		DockableWidget.hpp
 		DragNDropEventFilter.hpp
-		EditorContext.cpp
-		EditorContext.hpp
 		FileListPanel.cpp
 		FileListPanel.hpp
 		FileListPanel.ui

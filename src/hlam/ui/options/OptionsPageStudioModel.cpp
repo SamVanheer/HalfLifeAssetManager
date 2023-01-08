@@ -8,7 +8,7 @@
 
 #include "settings/StudioModelSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/options/OptionsPageStudioModel.hpp"
 
 class NumericItemDelegate : public QStyledItemDelegate

@@ -8,7 +8,7 @@
 
 #include "qt/QtUtilities.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelTextureUtilities.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/ExportUVMeshDialog.hpp"

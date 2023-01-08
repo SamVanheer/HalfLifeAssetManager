@@ -6,7 +6,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/StateSnapshot.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"

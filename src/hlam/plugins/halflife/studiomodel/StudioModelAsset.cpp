@@ -52,7 +52,7 @@
 
 #include "soundsystem/SoundSystem.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/SceneWidget.hpp"
 

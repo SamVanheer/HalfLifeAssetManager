@@ -11,7 +11,7 @@
 
 #include "ui/DockableWidget.hpp"
 #include "ui/DragNDropEventFilter.hpp"
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/SceneWidget.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"

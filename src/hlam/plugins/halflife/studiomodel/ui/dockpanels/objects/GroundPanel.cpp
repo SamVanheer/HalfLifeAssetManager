@@ -10,7 +10,7 @@
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/objects/GroundPanel.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 
 namespace studiomodel
 {

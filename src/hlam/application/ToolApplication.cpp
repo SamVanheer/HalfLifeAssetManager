@@ -32,7 +32,7 @@
 #include "settings/GameConfigurationsSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/MainWindow.hpp"
 #include "ui/OpenGLGraphicsContext.hpp"
 

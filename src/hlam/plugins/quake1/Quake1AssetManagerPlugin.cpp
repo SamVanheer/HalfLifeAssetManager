@@ -8,7 +8,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 
 static const QString Quake1ModelViewerFileNameKey{QStringLiteral("Quake1ModelViewerFileName")};
 const QString AliasModelExtension{QStringLiteral("mdl")};

@@ -31,7 +31,7 @@
 #include "soundsystem/SoundSystem.hpp"
 
 #include "ui/DragNDropEventFilter.hpp"
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/SceneWidget.hpp"
 
 #include "ui/options/OptionsPageRegistry.hpp"

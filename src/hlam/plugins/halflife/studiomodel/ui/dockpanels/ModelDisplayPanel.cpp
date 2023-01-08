@@ -13,7 +13,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 
 namespace studiomodel
 {

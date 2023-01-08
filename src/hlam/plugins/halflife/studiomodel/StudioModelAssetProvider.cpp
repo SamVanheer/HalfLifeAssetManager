@@ -34,7 +34,7 @@
 #include "settings/StudioModelSettings.hpp"
 
 #include "ui/SceneWidget.hpp"
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/FirstPersonCameraOperator.hpp"

@@ -9,7 +9,7 @@
 #include <QSignalBlocker>
 #include <QString>
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "plugins/halflife/studiomodel/ui/compiler/CommandLineFrontEnd.hpp"
 
 namespace studiomodel

@@ -12,7 +12,7 @@
 
 #include "settings/GameConfigurationsSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/FileListPanel.hpp"
 
 FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)

@@ -6,7 +6,7 @@
 #include <QMimeData>
 #include <QObject>
 
-#include "EditorContext.hpp"
+#include "application/EditorContext.hpp"
 
 /**
 *	@brief Handles drag&drop events and automatically forwards dropped files to the editor context

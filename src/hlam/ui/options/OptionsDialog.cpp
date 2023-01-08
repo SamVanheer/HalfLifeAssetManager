@@ -11,7 +11,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 
 #include "ui/options/OptionsDialog.hpp"
 #include "ui/options/OptionsPage.hpp"

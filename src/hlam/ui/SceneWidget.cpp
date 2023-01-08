@@ -7,7 +7,7 @@
 
 #include "graphics/Scene.hpp"
 #include "graphics/SceneContext.hpp"
-#include "ui/EditorContext.hpp"
+#include "application/EditorContext.hpp"
 #include "ui/SceneWidget.hpp"
 
 SceneWidget::SceneWidget(EditorContext* editorContext,
