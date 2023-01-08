@@ -30,7 +30,14 @@ void StudioModelView::SetWidget(QWidget* widget)
 {
 	if (_ui.SceneContainer->count() > 0)
 	{
-		_ui.SceneContainer->removeItem(_ui.SceneContainer->itemAt(0));
+		auto item = _ui.SceneContainer->itemAt(0);
+
+		if (item->widget() == widget)
+		{
+			return;
+		}
+
+		_ui.SceneContainer->removeItem(item);
 	}
 
 	_ui.SceneContainer->addWidget(widget);

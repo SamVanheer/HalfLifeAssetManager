@@ -220,7 +220,11 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_assetTabs, &QTabWidget::currentChanged, this, &MainWindow::OnAssetTabChanged);
 	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &MainWindow::OnAssetTabCloseRequested);
 
-	connect(_editorContext, &EditorContext::TryingToLoadAsset, this, &MainWindow::TryLoadAsset);
+	connect(_editorContext, &EditorContext::TryingToLoadAsset, this, 
+		[this](const QString& fileName)
+		{
+			return TryLoadAsset(fileName, true);
+		});
 	connect(_editorContext, &EditorContext::SettingsChanged, this, &MainWindow::SyncSettings);
 
 	{
@@ -361,7 +365,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 	// Close each asset
 	// Don't ask the user to save again
-	CloseAllButCount(0, false, false);
+	CloseAllButCount(0, false);
 
 	event->accept();
 
@@ -497,6 +501,8 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowC
 			return false;
 		}
 
+		const TimerSuspender timerSuspender{_editorContext};
+
 		// Don't destroy the asset until after we've cleaned everything up.
 		const std::unique_ptr<Asset> asset = std::move(_assets[index]);
 
@@ -510,23 +516,30 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowC
 	return true;
 }
 
-void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges, bool allowCancel)
+void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
 {
 	assert(leaveOpenCount >= 0);
 
-	QProgressDialog progress("Closing assets...", "Abort Close", 0, _assetTabs->count() - leaveOpenCount, this);
+	const TimerSuspender timerSuspender{_editorContext};
+
+	int count = _assetTabs->count();
+
+	QProgressDialog progress(QString{"Closing %1 assets..."}.arg(count), {}, 0, count - leaveOpenCount, this);
 	progress.setWindowModality(Qt::WindowModal);
+
+	// Switch to the first asset to reduce the overhead involved with constant tab switching.
+	_assetTabs->setCurrentIndex(0);
 
 	int i = 0;
 
-	while (_assetTabs->count() > leaveOpenCount)
+	while (count > leaveOpenCount)
 	{
+		--count;
+
 		progress.setValue(i++);
 
-		if (progress.wasCanceled())
-			break;
-
-		TryCloseAsset(leaveOpenCount, verifyUnsavedChanges, allowCancel);
+		// Never allow cancel, otherwise we'll end up in an infinite loop.
+		TryCloseAsset(count, verifyUnsavedChanges, false);
 	}
 
 	progress.setValue(i);
@@ -538,7 +551,7 @@ void MainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
 	setWindowModified(hasUnsavedChanges);
 }
 
-LoadResult MainWindow::TryLoadAsset(QString fileName)
+LoadResult MainWindow::TryLoadAsset(QString fileName, bool activateTab)
 {
 	fileName = fileName.trimmed();
 
@@ -628,7 +641,10 @@ LoadResult MainWindow::TryLoadAsset(QString fileName)
 
 					assert(index == (_assets.size() - 1));
 
-					_assetTabs->setCurrentIndex(index);
+					if (activateTab)
+					{
+						_assetTabs->setCurrentIndex(index);
+					}
 
 					qCDebug(logging::HLAM) << "Loaded asset" << fileName;
 
@@ -650,8 +666,6 @@ LoadResult MainWindow::TryLoadAsset(QString fileName)
 
 				return LoadResult::Success;
 			}, asset);
-
-		
 	}
 	catch (const AssetException& e)
 	{
@@ -675,7 +689,7 @@ void MainWindow::SyncSettings()
 
 	if (_editorContext->GetApplicationSettings()->OneAssetAtATime)
 	{
-		CloseAllButCount(1, true, false);
+		CloseAllButCount(1, true);
 	}
 }
 
@@ -699,7 +713,10 @@ void MainWindow::OnOpenLoadAssetDialog()
 		// Set directory to first file. All files are in the same directory.
 		_editorContext->SetPath(AssetPathName, fileNames[0]);
 
-		QProgressDialog progress("Opening assets...", "Abort Open", 0, fileNames.size(), this);
+		const TimerSuspender timerSuspender{_editorContext};
+
+		QProgressDialog progress(
+			QString{"Opening %1 assets..."}.arg(fileNames.size()), "Abort Open", 0, fileNames.size(), this);
 		progress.setWindowModality(Qt::WindowModal);
 
 		for (int i = 0; const auto& fileName : fileNames)
@@ -709,7 +726,7 @@ void MainWindow::OnOpenLoadAssetDialog()
 			if (progress.wasCanceled())
 				break;
 
-			TryLoadAsset(fileName);
+			TryLoadAsset(fileName, false);
 		}
 
 		progress.setValue(fileNames.size());

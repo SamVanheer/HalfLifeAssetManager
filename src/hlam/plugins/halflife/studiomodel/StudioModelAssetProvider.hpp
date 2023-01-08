@@ -96,8 +96,6 @@ public:
 	bool CameraIsFirstPerson() const;
 
 signals:
-	void Tick();
-
 	void AssetChanged(StudioModelAsset* asset);
 
 private slots:

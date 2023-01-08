@@ -51,12 +51,12 @@ private:
 
 	bool TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowCancel = true);
 
-	void CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges, bool allowCancel);
+	void CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges);
 
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
 
 private slots:
-	LoadResult TryLoadAsset(QString fileName);
+	LoadResult TryLoadAsset(QString fileName, bool activateTab = true);
 
 	void SyncSettings();
 

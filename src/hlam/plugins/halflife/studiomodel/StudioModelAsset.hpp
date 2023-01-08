@@ -77,6 +77,8 @@ public:
 
 	bool TryRefresh() override;
 
+	void Tick();
+
 	EditorContext* GetEditorContext() { return _editorContext; }
 
 	studiomdl::EditableStudioModel* GetEditableStudioModel() { return _editableStudioModel.get(); }
@@ -161,8 +163,6 @@ public slots:
 	}
 
 private slots:
-	void OnTick();
-
 	void OnSceneWidgetRecreated();
 
 	void OnResizeTexturesToPowerOf2Changed();

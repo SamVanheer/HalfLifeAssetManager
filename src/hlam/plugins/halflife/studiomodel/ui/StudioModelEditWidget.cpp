@@ -138,6 +138,11 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 StudioModelEditWidget::~StudioModelEditWidget() = default;
 
+void StudioModelEditWidget::Tick()
+{
+	_timeline->Tick();
+}
+
 QByteArray StudioModelEditWidget::SaveState()
 {
 	return _ui.Window->saveState(StateVersion);
@@ -167,7 +172,6 @@ void StudioModelEditWidget::DetachSceneWidget()
 	auto sceneWidget = _editorContext->GetSceneWidget();
 
 	sceneWidget->disconnect(_view->GetInfoBar());
-	sceneWidget->GetContainer()->setParent(nullptr);
 }
 
 bool StudioModelEditWidget::IsControlsBarVisible() const

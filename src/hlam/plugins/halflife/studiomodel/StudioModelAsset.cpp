@@ -305,7 +305,6 @@ void StudioModelAsset::OnActivated()
 		editWidget->SetAsset(this);
 	}
 
-	connect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick);
 	connect(_editorContext, &EditorContext::SceneWidgetRecreated, this, &StudioModelAsset::OnSceneWidgetRecreated);
 	connect(_editorContext, &EditorContext::FullscreenWidgetChanged, this, &StudioModelAsset::OnSceneWidgetRecreated);
 	connect(editWidget, &StudioModelEditWidget::SceneIndexChanged, this, &StudioModelAsset::OnSceneIndexChanged);
@@ -369,17 +368,11 @@ void StudioModelAsset::OnDeactivated()
 
 	editWidget->disconnect(this);
 	sceneWidget->disconnect(this);
-	editWidget->SetAsset(_provider->GetDummyAsset());
 
-	disconnect(_provider, &StudioModelAssetProvider::Tick, this, &StudioModelAsset::OnTick);
 	disconnect(_editorContext, &EditorContext::SceneWidgetRecreated,
 		this, &StudioModelAsset::OnSceneWidgetRecreated);
 	disconnect(_editorContext, &EditorContext::FullscreenWidgetChanged,
 		this, &StudioModelAsset::OnSceneWidgetRecreated);
-
-	auto item = _editWidget->layout()->takeAt(0);
-	_editWidget->layout()->removeItem(item);
-	delete item;
 }
 
 void StudioModelAsset::CreateMainScene()
@@ -569,7 +562,7 @@ bool StudioModelAsset::HandleMouseInput(QMouseEvent* event)
 	return false;
 }
 
-void StudioModelAsset::OnTick()
+void StudioModelAsset::Tick()
 {
 	//TODO: update asset-local world time
 	for (auto scene : _scenes)
@@ -598,7 +591,11 @@ void StudioModelAsset::OnSceneWidgetRecreated()
 			editWidget->AttachSceneWidget();
 		}
 
-		_editWidget->layout()->addWidget(editWidget);
+		if (_editWidget->layout()->indexOf(editWidget) == -1)
+		{
+			_editWidget->layout()->addWidget(editWidget);
+		}
+
 		editWidget->setParent(_editWidget);
 		editWidget->show();
 	}

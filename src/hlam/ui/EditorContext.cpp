@@ -154,6 +154,28 @@ void EditorContext::StartTimer()
 	_timer->start(1000 / _applicationSettings->GetTickRate());
 }
 
+void EditorContext::PauseTimer()
+{
+	++_timerPauseCount;
+
+	if (_timerPauseCount == 1)
+	{
+		_timer->stop();
+	}
+}
+
+void EditorContext::ResumeTimer()
+{
+	--_timerPauseCount;
+
+	assert(_timerPauseCount >= 0);
+
+	if (_timerPauseCount == 0)
+	{
+		StartTimer();
+	}
+}
+
 QString EditorContext::GetPath(const QString& pathName) const
 {
 	return _applicationSettings->GetSavedPath(pathName);

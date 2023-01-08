@@ -29,6 +29,8 @@ public:
 
 	void SetAsset(StudioModelAsset* asset);
 
+	void Tick();
+
 private:
 	void InitializeUI();
 
@@ -38,8 +40,6 @@ private:
 	void ModifyFrame(int amount);
 
 private slots:
-	void OnTick();
-
 	void OnLoadSnapshot(StateSnapshot* snapshot);
 
 	void OnFrameSliderChanged();

@@ -34,6 +34,8 @@ public:
 	StudioModelEditWidget(EditorContext* editorContext, StudioModelAssetProvider* provider);
 	~StudioModelEditWidget();
 
+	void Tick();
+
 	QByteArray SaveState();
 
 	void RestoreState(const QByteArray& state);

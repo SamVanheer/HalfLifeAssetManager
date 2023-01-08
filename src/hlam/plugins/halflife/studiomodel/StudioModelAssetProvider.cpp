@@ -398,7 +398,9 @@ void StudioModelAssetProvider::OnTick()
 {
 	_studioModelRenderer->RunFrame();
 
-	emit Tick();
+	GetCurrentAsset()->Tick();
+
+	_editWidget->Tick();
 }
 
 void StudioModelAssetProvider::OnActiveAssetChanged(Asset* asset)
@@ -413,9 +415,6 @@ void StudioModelAssetProvider::OnActiveAssetChanged(Asset* asset)
 	emit AssetChanged(_currentAsset);
 
 	_currentAsset->OnActivated();
-
-	_editWidget->setEnabled(_currentAsset != GetDummyAsset());
-	_editWidget->setVisible(_currentAsset != GetDummyAsset());
 }
 
 void StudioModelAssetProvider::OnDumpModelInfo()

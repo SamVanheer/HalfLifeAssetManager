@@ -109,6 +109,17 @@ public:
 
 	void StartTimer();
 
+	/**
+	*	@brief Pause the timer to suspend Tick signals.
+	*	Each call to PauseTimer must be matched with a call to @ref ResumeTimer.
+	*/
+	void PauseTimer();
+
+	/**
+	*	@see PauseTimer
+	*/
+	void ResumeTimer();
+
 	QString GetPath(const QString& pathName) const;
 
 	void SetPath(const QString& pathName, const QString& path);
@@ -161,10 +172,28 @@ private:
 
 	QTimer* const _timer;
 
+	int _timerPauseCount{0};
+
 	const std::unique_ptr<ISoundSystem> _soundSystem;
 	const std::unique_ptr<WorldTime> _worldTime;
 
 	QWidget* _mainWindow{};
 	QPointer<SceneWidget> _sceneWidget;
 	FullscreenWidget* _fullscreenWidget{};
+};
+
+struct TimerSuspender final
+{
+	explicit TimerSuspender(EditorContext* editorContext)
+		: EditorContext(editorContext)
+	{
+		EditorContext->PauseTimer();
+	}
+
+	~TimerSuspender()
+	{
+		EditorContext->ResumeTimer();
+	}
+
+	EditorContext* const EditorContext;
 };

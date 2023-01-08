@@ -20,8 +20,6 @@ Timeline::Timeline(StudioModelAssetProvider* provider, QWidget* parent)
 {
 	_ui.setupUi(this);
 
-	connect(_provider, &StudioModelAssetProvider::Tick, this, &Timeline::OnTick);
-
 	connect(_ui.FrameSlider, &QSlider::valueChanged, this, &Timeline::OnFrameSliderChanged);
 	connect(_ui.FrameSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &Timeline::OnFrameSpinnerChanged);
 
@@ -166,7 +164,7 @@ void Timeline::ModifyFrame(int amount)
 	entity->SetFrame(newFrameValue);
 }
 
-void Timeline::OnTick()
+void Timeline::Tick()
 {
 	auto entity = _asset->GetEntity();
 	auto model = entity->GetEditableModel();
