@@ -719,6 +719,8 @@ void MainWindow::OnOpenLoadAssetDialog()
 			QString{"Opening %1 assets..."}.arg(fileNames.size()), "Abort Open", 0, fileNames.size(), this);
 		progress.setWindowModality(Qt::WindowModal);
 
+		bool shouldActivate = true;
+
 		for (int i = 0; const auto& fileName : fileNames)
 		{
 			progress.setValue(i++);
@@ -726,7 +728,10 @@ void MainWindow::OnOpenLoadAssetDialog()
 			if (progress.wasCanceled())
 				break;
 
-			TryLoadAsset(fileName, false);
+			if (TryLoadAsset(fileName, shouldActivate) == LoadResult::Success)
+			{
+				shouldActivate = false;
+			}
 		}
 
 		progress.setValue(fileNames.size());
