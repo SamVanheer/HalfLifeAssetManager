@@ -14,6 +14,7 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QProgressDialog>
 #include <QScreen>
 #include <QWindow>
 
@@ -358,12 +359,9 @@ void MainWindow::closeEvent(QCloseEvent* event)
 		}
 	}
 
-	//Close each asset
-	while (_assetTabs->count() > 0)
-	{
-		//Don't ask the user to save again
-		TryCloseAsset(0, false);
-	}
+	// Close each asset
+	// Don't ask the user to save again
+	CloseAllButCount(0, false, false);
 
 	event->accept();
 
@@ -512,6 +510,28 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowC
 	return true;
 }
 
+void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges, bool allowCancel)
+{
+	assert(leaveOpenCount >= 0);
+
+	QProgressDialog progress("Closing assets...", "Abort Close", 0, _assetTabs->count() - leaveOpenCount, this);
+	progress.setWindowModality(Qt::WindowModal);
+
+	int i = 0;
+
+	while (_assetTabs->count() > leaveOpenCount)
+	{
+		progress.setValue(i++);
+
+		if (progress.wasCanceled())
+			break;
+
+		TryCloseAsset(leaveOpenCount, verifyUnsavedChanges, allowCancel);
+	}
+
+	progress.setValue(i);
+}
+
 void MainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
 {
 	setWindowTitle(QString{"%1[*]"}.arg(fileName));
@@ -655,10 +675,7 @@ void MainWindow::SyncSettings()
 
 	if (_editorContext->GetApplicationSettings()->OneAssetAtATime)
 	{
-		while (_assetTabs->count() > 1)
-		{
-			TryCloseAsset(1, true, false);
-		}
+		CloseAllButCount(1, true, false);
 	}
 }
 
@@ -682,10 +699,20 @@ void MainWindow::OnOpenLoadAssetDialog()
 		// Set directory to first file. All files are in the same directory.
 		_editorContext->SetPath(AssetPathName, fileNames[0]);
 
-		for (const auto& fileName : fileNames)
+		QProgressDialog progress("Opening assets...", "Abort Open", 0, fileNames.size(), this);
+		progress.setWindowModality(Qt::WindowModal);
+
+		for (int i = 0; const auto& fileName : fileNames)
 		{
+			progress.setValue(i++);
+
+			if (progress.wasCanceled())
+				break;
+
 			TryLoadAsset(fileName);
 		}
+
+		progress.setValue(fileNames.size());
 	}
 }
 

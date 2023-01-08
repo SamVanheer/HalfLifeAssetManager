@@ -51,6 +51,8 @@ private:
 
 	bool TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowCancel = true);
 
+	void CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges, bool allowCancel);
+
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
 
 private slots:
