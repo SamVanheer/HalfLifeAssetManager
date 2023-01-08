@@ -8,7 +8,6 @@
 #include "ui/options/OptionsPage.hpp"
 
 class EditorContext;
-
 class StudioModelSettings;
 
 class OptionsPageStudioModel : public OptionsPage
@@ -30,6 +29,8 @@ public:
 	~OptionsPageStudioModelWidget();
 
 	void ApplyChanges() override;
+
+	int FindFirstFreeEventId(const int startId) const;
 
 private slots:
 	void OnResetFloorLength();

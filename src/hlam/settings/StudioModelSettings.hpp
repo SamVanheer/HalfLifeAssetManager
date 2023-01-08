@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QSet>
 #include <QString>
 
 class QSettings;
@@ -55,6 +56,13 @@ public:
 	float GetCameraFOV(const QString& name, float defaultValue) const;
 	void SetCameraFOV(const QString& name, float value);
 
+	const QSet<int>& GetSoundEventIds() const { return _soundEventIds; }
+
+	void SetSoundEventIds(QSet<int>&& soundEventIds)
+	{
+		_soundEventIds = std::move(soundEventIds);
+	}
+
 private:
 	QSettings* const _settings;
 
@@ -62,4 +70,6 @@ private:
 	bool _activateTextureViewWhenTexturesPanelOpened{DefaultActivateTextureViewWhenTexturesPanelOpened};
 
 	int _floorLength = DefaultFloorLength;
+
+	QSet<int> _soundEventIds;
 };

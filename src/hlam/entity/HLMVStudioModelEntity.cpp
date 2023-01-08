@@ -6,6 +6,7 @@
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 
 #include "settings/ApplicationSettings.hpp"
+#include "settings/StudioModelSettings.hpp"
 
 #undef PlaySound
 
@@ -35,11 +36,11 @@ void HLMVStudioModelEntity::Spawn()
 
 void HLMVStudioModelEntity::HandleAnimEvent(const AnimEvent& event)
 {
-	switch (event.id)
-	{
-	case SCRIPT_EVENT_SOUND:			// Play a named wave file
-	case SCRIPT_EVENT_SOUND_VOICE:
-	case SCRIPT_CLIENT_EVENT_SOUND:
+	// Play a named wave file
+	if (event.id == SCRIPT_EVENT_SOUND
+		|| event.id == SCRIPT_EVENT_SOUND_VOICE
+		|| event.id == SCRIPT_CLIENT_EVENT_SOUND
+		|| GetContext()->StudioSettings->GetSoundEventIds().contains(event.id))
 	{
 		if (GetContext()->AppSettings->PlaySounds)
 		{
@@ -52,10 +53,10 @@ void HLMVStudioModelEntity::HandleAnimEvent(const AnimEvent& event)
 
 			GetContext()->SoundSystem->PlaySound(event.options, VOLUME_NORM, pitch);
 		}
-
-		break;
 	}
 
+	switch (event.id)
+	{
 	default: break;
 	}
 }

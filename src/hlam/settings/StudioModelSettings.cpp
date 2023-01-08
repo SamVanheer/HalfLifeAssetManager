@@ -12,6 +12,21 @@ void StudioModelSettings::LoadSettings()
 		"ActivateTextureViewWhenTexturesPanelOpened", DefaultActivateTextureViewWhenTexturesPanelOpened).toBool();
 	_floorLength = std::clamp(_settings->value(
 		"FloorLength", DefaultFloorLength).toInt(), MinimumFloorLength, MaximumFloorLength);
+
+	_soundEventIds.clear();
+	const int soundEventIdsCount = _settings->beginReadArray("SoundEventIds");
+	for (int i = 0; i < soundEventIdsCount; ++i)
+	{
+		_settings->setArrayIndex(i);
+
+		// 0 is not allowed since it's the default event id.
+		if (const int id = _settings->value("Id", 0).toInt(); id > 0)
+		{
+			_soundEventIds.insert(id);
+		}
+	}
+	_settings->endArray();
+
 	_settings->endGroup();
 }
 
@@ -21,6 +36,15 @@ void StudioModelSettings::SaveSettings()
 	_settings->setValue("AutodetectViewmodels", _autodetectViewModels);
 	_settings->setValue("ActivateTextureViewWhenTexturesPanelOpened", _activateTextureViewWhenTexturesPanelOpened);
 	_settings->setValue("FloorLength", _floorLength);
+
+	_settings->beginWriteArray("SoundEventIds", _soundEventIds.size());
+	for (int i = 0; auto id : _soundEventIds)
+	{
+		_settings->setArrayIndex(i++);
+		_settings->setValue("Id", id);
+	}
+	_settings->endArray();
+
 	_settings->endGroup();
 }
 
