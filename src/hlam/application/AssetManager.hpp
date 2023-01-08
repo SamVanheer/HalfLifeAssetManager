@@ -41,20 +41,20 @@ enum class LaunchExternalProgramResult
 /**
 *	@brief Used to communicate between the main window and edit widgets
 */
-class EditorContext final : public QObject
+class AssetManager final : public QObject
 {
 	Q_OBJECT
 
 public:
-	EditorContext(
+	AssetManager(
 		const std::shared_ptr<ApplicationSettings>& applicationSettings,
 		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
 		std::unique_ptr<AssetProviderRegistry>&& assetProviderRegistry,
 		std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
 		QObject* parent = nullptr);
-	~EditorContext();
-	EditorContext(const EditorContext&) = delete;
-	EditorContext& operator=(const EditorContext&) = delete;
+	~AssetManager();
+	AssetManager(const AssetManager&) = delete;
+	AssetManager& operator=(const AssetManager&) = delete;
 
 	QSettings* GetSettings() const;
 
@@ -184,16 +184,16 @@ private:
 
 struct TimerSuspender final
 {
-	explicit TimerSuspender(EditorContext* editorContext)
-		: EditorContext(editorContext)
+	explicit TimerSuspender(AssetManager* application)
+		: Application(application)
 	{
-		EditorContext->PauseTimer();
+		Application->PauseTimer();
 	}
 
 	~TimerSuspender()
 	{
-		EditorContext->ResumeTimer();
+		Application->ResumeTimer();
 	}
 
-	EditorContext* const EditorContext;
+	AssetManager* const Application;
 };

@@ -13,7 +13,7 @@
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 
 void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
@@ -88,7 +88,7 @@ void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 		_floorTextureOffset.x = std::fmod(_floorTextureOffset.x, floorTextureLength);
 		_floorTextureOffset.y = std::fmod(_floorTextureOffset.y, floorTextureLength);
 
-		auto colors = GetContext()->Asset->GetEditorContext()->GetColorSettings();
+		auto colors = GetContext()->Asset->GetApplication()->GetColorSettings();
 
 		GLuint texture = GetContext()->Asset->GetProvider()->GetDefaultGroundTexture();
 

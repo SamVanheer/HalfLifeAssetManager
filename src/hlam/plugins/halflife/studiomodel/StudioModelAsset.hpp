@@ -62,7 +62,7 @@ class StudioModelAsset final : public Asset
 
 public:
 	StudioModelAsset(QString&& fileName,
-		EditorContext* editorContext, StudioModelAssetProvider* provider,
+		AssetManager* application, StudioModelAssetProvider* provider,
 		std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel);
 
 	~StudioModelAsset();
@@ -79,7 +79,7 @@ public:
 
 	void Tick();
 
-	EditorContext* GetEditorContext() { return _editorContext; }
+	AssetManager* GetApplication() { return _application; }
 
 	studiomdl::EditableStudioModel* GetEditableStudioModel() { return _editableStudioModel.get(); }
 
@@ -198,7 +198,7 @@ public:
 	bool PlaySequence = true;
 
 private:
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 	StudioModelAssetProvider* const _provider;
 
 	std::unique_ptr<studiomdl::EditableStudioModel> _editableStudioModel;

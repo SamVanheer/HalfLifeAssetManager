@@ -9,14 +9,14 @@
 class QListWidgetItem;
 class QWidget;
 
-class EditorContext;
+class AssetManager;
 
 namespace studiomodel
 {
 class CommandLineFrontEnd : public QDialog
 {
 public:
-	CommandLineFrontEnd(EditorContext* editorContext);
+	CommandLineFrontEnd(AssetManager* application);
 	~CommandLineFrontEnd();
 
 protected:
@@ -71,7 +71,7 @@ private slots:
 	void OnCompilationFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 protected:
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 
 private:
 	Ui_CommandLineFrontEnd _ui;

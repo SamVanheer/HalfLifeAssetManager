@@ -37,7 +37,7 @@
 #include "soundsystem/ISoundSystem.hpp"
 
 #include "ui/DragNDropEventFilter.hpp"
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/FileListPanel.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/MainWindow.hpp"
@@ -49,11 +49,11 @@
 
 const QString AssetPathName{QStringLiteral("AssetPath")};
 
-MainWindow::MainWindow(EditorContext* editorContext)
+MainWindow::MainWindow(AssetManager* application)
 	: QMainWindow()
-	, _editorContext(editorContext)
+	, _application(application)
 {
-	_editorContext->SetMainWindow(this);
+	_application->SetMainWindow(this);
 
 	_ui.setupUi(this);
 
@@ -61,7 +61,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	this->setWindowIcon(QIcon{":/hlam.ico"});
 
-	this->installEventFilter(_editorContext->GetDragNDropEventFilter());
+	this->installEventFilter(_application->GetDragNDropEventFilter());
 
 	{
 		auto undo = _undoGroup->createUndoAction(this);
@@ -75,7 +75,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	}
 
 	// Create and add asset menus for each provider.
-	for (auto provider : _editorContext->GetAssetProviderRegistry()->GetAssetProviders())
+	for (auto provider : _application->GetAssetProviderRegistry()->GetAssetProviders())
 	{
 		auto menu = new QMenu("Asset", _ui.MenuBar);
 
@@ -92,7 +92,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		//Create the tool menu for each provider, sort by provider name, then add them all
 		std::vector<std::pair<QString, QMenu*>> menus;
 
-		for (auto provider : _editorContext->GetAssetProviderRegistry()->GetAssetProviders())
+		for (auto provider : _application->GetAssetProviderRegistry()->GetAssetProviders())
 		{
 			if (auto menu = provider->CreateToolMenu(); menu)
 			{
@@ -113,7 +113,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	}
 
 	{
-		auto fileList = new FileListPanel(_editorContext, this);
+		auto fileList = new FileListPanel(_application, this);
 
 		connect(fileList, &FileListPanel::FileSelected, this, &MainWindow::OnFileSelected);
 
@@ -153,7 +153,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 			action->setCheckable(true);
 		}
 
-		int index = _editorContext->GetApplicationSettings()->GetMSAALevel();
+		int index = _application->GetApplicationSettings()->GetMSAALevel();
 
 		// Won't match the actual setting but this lets the user override the level manually.
 		if (index < 0 || index >= _msaaActionGroup->actions().size())
@@ -177,7 +177,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionFramerateAffectsPitch, &QAction::triggered, this, &MainWindow::OnFramerateAffectsPitchChanged);
 
 	connect(_ui.ActionPowerOf2Textures, &QAction::toggled,
-		_editorContext->GetApplicationSettings(), &ApplicationSettings::SetResizeTexturesToPowerOf2);
+		_application->GetApplicationSettings(), &ApplicationSettings::SetResizeTexturesToPowerOf2);
 
 	connect(_ui.ActionMinPoint, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
 	connect(_ui.ActionMinLinear, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
@@ -193,7 +193,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		const auto lambda = [this]()
 		{
 			const int index = _msaaActionGroup->actions().indexOf(_msaaActionGroup->checkedAction());
-			_editorContext->GetApplicationSettings()->SetMSAALevel(index);
+			_application->GetApplicationSettings()->SetMSAALevel(index);
 		};
 
 		for (auto action : _msaaActionGroup->actions())
@@ -204,7 +204,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	connect(_ui.ActionTransparentScreenshots, &QAction::triggered, this, [this](bool value)
 		{
-			_editorContext->GetApplicationSettings()->TransparentScreenshots = value;
+			_application->GetApplicationSettings()->TransparentScreenshots = value;
 		});
 
 	connect(_ui.ActionRefresh, &QAction::triggered, this, &MainWindow::OnRefreshAsset);
@@ -213,7 +213,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionAbout, &QAction::triggered, this, &MainWindow::OnShowAbout);
 	connect(_ui.ActionAboutQt, &QAction::triggered, QApplication::instance(), &QApplication::aboutQt);
 
-	connect(_editorContext->GetApplicationSettings()->GetRecentFiles(), &RecentFilesSettings::RecentFilesChanged,
+	connect(_application->GetApplicationSettings()->GetRecentFiles(), &RecentFilesSettings::RecentFilesChanged,
 		this, &MainWindow::OnRecentFilesChanged);
 
 	connect(_undoGroup, &QUndoGroup::cleanChanged, this, &MainWindow::OnAssetCleanChanged);
@@ -221,23 +221,23 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_assetTabs, &QTabWidget::currentChanged, this, &MainWindow::OnAssetTabChanged);
 	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &MainWindow::OnAssetTabCloseRequested);
 
-	connect(_editorContext, &EditorContext::TryingToLoadAsset, this, 
+	connect(_application, &AssetManager::TryingToLoadAsset, this, 
 		[this](const QString& fileName)
 		{
 			return TryLoadAsset(fileName, true);
 		});
-	connect(_editorContext, &EditorContext::SettingsChanged, this, &MainWindow::SyncSettings);
+	connect(_application, &AssetManager::SettingsChanged, this, &MainWindow::SyncSettings);
 
 	{
-		const bool isSoundAvailable = _editorContext->GetSoundSystem()->IsSoundAvailable();
+		const bool isSoundAvailable = _application->GetSoundSystem()->IsSoundAvailable();
 
 		_ui.ActionPlaySounds->setEnabled(isSoundAvailable);
 		_ui.ActionFramerateAffectsPitch->setEnabled(isSoundAvailable);
 
 		if (isSoundAvailable)
 		{
-			_ui.ActionPlaySounds->setChecked(_editorContext->GetApplicationSettings()->PlaySounds);
-			_ui.ActionFramerateAffectsPitch->setChecked(_editorContext->GetApplicationSettings()->FramerateAffectsPitch);
+			_ui.ActionPlaySounds->setChecked(_application->GetApplicationSettings()->PlaySounds);
+			_ui.ActionFramerateAffectsPitch->setChecked(_application->GetApplicationSettings()->FramerateAffectsPitch);
 		}
 	}
 
@@ -257,7 +257,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 		{
 			QStringList filters;
 
-			for (auto provider : _editorContext->GetAssetProviderRegistry()->GetAssetProviders())
+			for (auto provider : _application->GetAssetProviderRegistry()->GetAssetProviders())
 			{
 				if (provider->GetFeatures() & feature)
 				{
@@ -295,7 +295,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	// TODO: it might be easier to load settings after creating the main window and letting signals set this up.
 	{
-		auto textureLoader = _editorContext->GetTextureLoader();
+		auto textureLoader = _application->GetTextureLoader();
 
 		_ui.ActionPowerOf2Textures->setChecked(textureLoader->ShouldResizeToPowerOf2());
 		_ui.MinFilterGroup->actions()[static_cast<int>(textureLoader->GetMinFilter())]->setChecked(true);
@@ -305,17 +305,17 @@ MainWindow::MainWindow(EditorContext* editorContext)
 
 	SyncSettings();
 
-	_editorContext->StartTimer();
+	_application->StartTimer();
 }
 
 MainWindow::~MainWindow()
 {
-	_editorContext->SetMainWindow(nullptr);
+	_application->SetMainWindow(nullptr);
 }
 
 void MainWindow::LoadSettings()
 {
-	auto settings = _editorContext->GetSettings();
+	auto settings = _application->GetSettings();
 
 	{
 		settings->beginGroup("MainWindow");
@@ -375,7 +375,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 	auto name = screen->name();
 
-	auto settings = _editorContext->GetSettings();
+	auto settings = _application->GetSettings();
 
 	settings->beginGroup("MainWindow");
 	settings->setValue("ScreenName", name);
@@ -384,7 +384,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 	//Main window cleanup has to be done here because Qt won't call the destructor
 	{
-		_editorContext->GetTimer()->stop();
+		_application->GetTimer()->stop();
 
 		delete _fileListDock;
 		_currentAsset.clear();
@@ -503,7 +503,7 @@ bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowC
 			return false;
 		}
 
-		const TimerSuspender timerSuspender{_editorContext};
+		const TimerSuspender timerSuspender{_application};
 
 		// Don't destroy the asset until after we've cleaned everything up.
 		const std::unique_ptr<Asset> asset = std::move(_assets[index]);
@@ -522,7 +522,7 @@ void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
 {
 	assert(leaveOpenCount >= 0);
 
-	const TimerSuspender timerSuspender{_editorContext};
+	const TimerSuspender timerSuspender{_application};
 
 	int count = _assetTabs->count();
 
@@ -589,14 +589,14 @@ LoadResult MainWindow::TryLoadAsset(QString fileName, bool activateTab)
 
 			if (result)
 			{
-				_editorContext->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
+				_application->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
 			}
 
 			return result ? LoadResult::Success : LoadResult::Cancelled;
 		}
 	}
 
-	if (_editorContext->GetApplicationSettings()->OneAssetAtATime)
+	if (_application->GetApplicationSettings()->OneAssetAtATime)
 	{
 		if (!TryCloseAsset(0, true))
 		{
@@ -607,7 +607,7 @@ LoadResult MainWindow::TryLoadAsset(QString fileName, bool activateTab)
 
 	try
 	{
-		auto asset = _editorContext->GetAssetProviderRegistry()->Load(fileName);
+		auto asset = _application->GetAssetProviderRegistry()->Load(fileName);
 
 		return std::visit([&, this](auto&& result)
 			{
@@ -663,7 +663,7 @@ LoadResult MainWindow::TryLoadAsset(QString fileName, bool activateTab)
 
 				if (loaded)
 				{
-					_editorContext->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
+					_application->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
 				}
 
 				return LoadResult::Success;
@@ -680,7 +680,7 @@ LoadResult MainWindow::TryLoadAsset(QString fileName, bool activateTab)
 
 void MainWindow::SyncSettings()
 {
-	if (_editorContext->GetApplicationSettings()->ShouldAllowTabCloseWithMiddleClick())
+	if (_application->GetApplicationSettings()->ShouldAllowTabCloseWithMiddleClick())
 	{
 		_assetTabs->tabBar()->installEventFilter(this);
 	}
@@ -689,7 +689,7 @@ void MainWindow::SyncSettings()
 		_assetTabs->tabBar()->removeEventFilter(this);
 	}
 
-	if (_editorContext->GetApplicationSettings()->OneAssetAtATime)
+	if (_application->GetApplicationSettings()->OneAssetAtATime)
 	{
 		CloseAllButCount(1, true);
 	}
@@ -707,15 +707,15 @@ static QStringList GetOpenFileNames(QWidget* parent, const QString& dir, const Q
 
 void MainWindow::OnOpenLoadAssetDialog()
 {
-	const auto fileNames = GetOpenFileNames(this, _editorContext->GetPath(AssetPathName), _loadFileFilter,
-		!_editorContext->GetApplicationSettings()->OneAssetAtATime);
+	const auto fileNames = GetOpenFileNames(this, _application->GetPath(AssetPathName), _loadFileFilter,
+		!_application->GetApplicationSettings()->OneAssetAtATime);
 	
 	if (!fileNames.isEmpty())
 	{
 		// Set directory to first file. All files are in the same directory.
-		_editorContext->SetPath(AssetPathName, fileNames[0]);
+		_application->SetPath(AssetPathName, fileNames[0]);
 
-		const TimerSuspender timerSuspender{_editorContext};
+		const TimerSuspender timerSuspender{_application};
 
 		QProgressDialog progress(
 			QString{"Opening %1 assets..."}.arg(fileNames.size()), "Abort Open", 0, fileNames.size(), this);
@@ -791,7 +791,7 @@ void MainWindow::OnAssetTabChanged(int index)
 
 	_assetTabs->setVisible(success);
 
-	emit _editorContext->ActiveAssetChanged(_currentAsset);
+	emit _application->ActiveAssetChanged(_currentAsset);
 }
 
 void MainWindow::OnAssetTabCloseRequested(int index)
@@ -809,7 +809,7 @@ void MainWindow::OnAssetFileNameChanged(const QString& fileName)
 	{
 		_assetTabs->setTabText(index, fileName);
 
-		_editorContext->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
+		_application->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
 
 		if (_assetTabs->currentWidget() == asset->GetEditWidget())
 		{
@@ -836,7 +836,7 @@ void MainWindow::OnSaveAssetAs()
 	if (!fileName.isEmpty())
 	{
 		//Also update the saved path when saving files
-		_editorContext->SetPath(AssetPathName, QFileInfo(fileName).absolutePath());
+		_application->SetPath(AssetPathName, QFileInfo(fileName).absolutePath());
 		asset->SetFileName(std::move(fileName));
 		SaveAsset(asset);
 	}
@@ -857,7 +857,7 @@ void MainWindow::CloseAllAssets()
 
 void MainWindow::OnRecentFilesChanged()
 {
-	const auto recentFiles = _editorContext->GetApplicationSettings()->GetRecentFiles();
+	const auto recentFiles = _application->GetApplicationSettings()->GetRecentFiles();
 
 	_ui.MenuRecentFiles->clear();
 
@@ -877,7 +877,7 @@ void MainWindow::OnOpenRecentFile()
 
 	if (TryLoadAsset(fileName) == LoadResult::Failed)
 	{
-		_editorContext->GetApplicationSettings()->GetRecentFiles()->Remove(fileName);
+		_application->GetApplicationSettings()->GetRecentFiles()->Remove(fileName);
 	}
 }
 
@@ -900,16 +900,16 @@ void MainWindow::OnToggleFullscreen()
 
 	connect(_fullscreenWidget.get(), &FullscreenWidget::ExitedFullscreen, this, &MainWindow::OnExitFullscreen);
 
-	_editorContext->SetFullscreenWidget(_fullscreenWidget.get());
+	_application->SetFullscreenWidget(_fullscreenWidget.get());
 
 	const auto lambda = [this]()
 	{
-		_fullscreenWidget->SetWidget(_editorContext->GetSceneWidget()->GetContainer());
+		_fullscreenWidget->SetWidget(_application->GetSceneWidget()->GetContainer());
 	};
 
 	lambda();
 
-	connect(_editorContext, &EditorContext::SceneWidgetRecreated, _fullscreenWidget.get(), lambda);
+	connect(_application, &AssetManager::SceneWidgetRecreated, _fullscreenWidget.get(), lambda);
 
 	_fullscreenWidget->raise();
 	_fullscreenWidget->showFullScreen();
@@ -923,7 +923,7 @@ void MainWindow::OnExitFullscreen()
 		return;
 	}
 
-	_editorContext->SetFullscreenWidget(nullptr);
+	_application->SetFullscreenWidget(nullptr);
 	_fullscreenWidget.reset();
 	_ui.ActionFullscreen->setChecked(false);
 }
@@ -947,7 +947,7 @@ void MainWindow::OnTextureFiltersChanged()
 		return index;
 	};
 
-	_editorContext->GetApplicationSettings()->SetTextureFilters(
+	_application->GetApplicationSettings()->SetTextureFilters(
 		static_cast<graphics::TextureFilter>(currentIndex(_ui.MinFilterGroup)),
 		static_cast<graphics::TextureFilter>(currentIndex(_ui.MagFilterGroup)),
 		static_cast<graphics::MipmapFilter>(currentIndex(_ui.MipmapFilterGroup)));
@@ -971,17 +971,17 @@ bool MainWindow::OnRefreshAsset()
 
 void MainWindow::OnPlaySoundsChanged()
 {
-	_editorContext->GetApplicationSettings()->PlaySounds = _ui.ActionPlaySounds->isChecked();
+	_application->GetApplicationSettings()->PlaySounds = _ui.ActionPlaySounds->isChecked();
 }
 
 void MainWindow::OnFramerateAffectsPitchChanged()
 {
-	_editorContext->GetApplicationSettings()->FramerateAffectsPitch = _ui.ActionFramerateAffectsPitch->isChecked();
+	_application->GetApplicationSettings()->FramerateAffectsPitch = _ui.ActionFramerateAffectsPitch->isChecked();
 }
 
 void MainWindow::OnOpenOptionsDialog()
 {
-	OptionsDialog dialog{_editorContext, this};
+	OptionsDialog dialog{_application, this};
 
 	dialog.exec();
 }

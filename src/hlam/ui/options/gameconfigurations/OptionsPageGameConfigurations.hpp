@@ -9,7 +9,7 @@
 
 #include "ui/options/OptionsPage.hpp"
 
-class EditorContext;
+class AssetManager;
 class GameConfiguration;
 class GameConfigurationsOptions;
 
@@ -24,7 +24,7 @@ public:
 class OptionsPageGameConfigurationsWidget final : public OptionsWidget
 {
 public:
-	explicit OptionsPageGameConfigurationsWidget(EditorContext* editorContext);
+	explicit OptionsPageGameConfigurationsWidget(AssetManager* application);
 	~OptionsPageGameConfigurationsWidget();
 
 	void ApplyChanges() override;
@@ -51,7 +51,7 @@ private slots:
 private:
 	Ui_OptionsPageGameConfigurations _ui;
 
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 
 	std::unique_ptr<GameConfigurationsOptions> _options;
 };

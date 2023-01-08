@@ -2,14 +2,14 @@
 
 #include "ui/options/OptionsPage.hpp"
 
-QWidget* OptionsPage::GetWidget(EditorContext* editorContext)
+QWidget* OptionsPage::GetWidget(AssetManager* application)
 {
-	assert(editorContext);
+	assert(application);
 	assert(_widgetFactory);
 
-	if (!_widget && editorContext && _widgetFactory)
+	if (!_widget && application && _widgetFactory)
 	{
-		_widget = _widgetFactory(editorContext);
+		_widget = _widgetFactory(application);
 	}
 
 	return _widget;

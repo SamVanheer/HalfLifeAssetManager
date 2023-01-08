@@ -8,7 +8,7 @@
 
 #include "settings/StudioModelSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/options/OptionsPageStudioModel.hpp"
 
 class NumericItemDelegate : public QStyledItemDelegate
@@ -68,17 +68,17 @@ OptionsPageStudioModel::OptionsPageStudioModel(const std::shared_ptr<StudioModel
 	SetCategoryTitle("Assets");
 	SetId(QString{OptionsPageStudioModelId});
 	SetPageTitle("Studiomodel");
-	SetWidgetFactory([this](EditorContext* editorContext)
+	SetWidgetFactory([this](AssetManager* application)
 		{
-			return new OptionsPageStudioModelWidget(editorContext, _studioModelSettings.get());
+			return new OptionsPageStudioModelWidget(application, _studioModelSettings.get());
 		});
 }
 
 OptionsPageStudioModel::~OptionsPageStudioModel() = default;
 
 OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(
-	EditorContext* editorContext, StudioModelSettings* studioModelSettings)
-	: _editorContext(editorContext)
+	AssetManager* application, StudioModelSettings* studioModelSettings)
+	: _application(application)
 	, _studioModelSettings(studioModelSettings)
 {
 	_ui.setupUi(this);

@@ -7,7 +7,7 @@
 
 #include "ui/options/OptionsPage.hpp"
 
-class EditorContext;
+class AssetManager;
 class StudioModelSettings;
 
 class OptionsPageStudioModel : public OptionsPage
@@ -25,7 +25,7 @@ class OptionsPageStudioModelWidget final : public OptionsWidget
 	Q_OBJECT
 
 public:
-	OptionsPageStudioModelWidget(EditorContext* editorContext, StudioModelSettings* studioModelSettings);
+	OptionsPageStudioModelWidget(AssetManager* application, StudioModelSettings* studioModelSettings);
 	~OptionsPageStudioModelWidget();
 
 	void ApplyChanges() override;
@@ -38,7 +38,7 @@ private slots:
 private:
 	Ui_OptionsPageStudioModel _ui;
 
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 
 	StudioModelSettings* const _studioModelSettings;
 };

@@ -7,10 +7,10 @@
 
 #include "graphics/Scene.hpp"
 #include "graphics/SceneContext.hpp"
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/SceneWidget.hpp"
 
-SceneWidget::SceneWidget(EditorContext* editorContext,
+SceneWidget::SceneWidget(AssetManager* application,
 	QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader* textureLoader)
 	: QOpenGLWindow()
 	, _container(QWidget::createWindowContainer(this))
@@ -19,7 +19,7 @@ SceneWidget::SceneWidget(EditorContext* editorContext,
 	// It's safe to modify this since it doesn't affect the underlying window, only the FBO used for MSAA.
 	auto format = QSurfaceFormat::defaultFormat();
 
-	const int msaaLevel = editorContext->GetApplicationSettings()->GetMSAALevel();
+	const int msaaLevel = application->GetApplicationSettings()->GetMSAALevel();
 
 	format.setSamples(msaaLevel > 0 && msaaLevel < 32 ? 1 << msaaLevel : -1);
 

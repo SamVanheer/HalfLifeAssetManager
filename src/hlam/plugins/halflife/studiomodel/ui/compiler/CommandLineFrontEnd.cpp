@@ -9,13 +9,13 @@
 #include <QSignalBlocker>
 #include <QString>
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "plugins/halflife/studiomodel/ui/compiler/CommandLineFrontEnd.hpp"
 
 namespace studiomodel
 {
-CommandLineFrontEnd::CommandLineFrontEnd(EditorContext* editorContext)
-	: _editorContext(editorContext)
+CommandLineFrontEnd::CommandLineFrontEnd(AssetManager* application)
+	: _application(application)
 {
 	_ui.setupUi(this);
 

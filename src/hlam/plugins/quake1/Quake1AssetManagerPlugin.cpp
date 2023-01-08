@@ -8,7 +8,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 
 static const QString Quake1ModelViewerFileNameKey{QStringLiteral("Quake1ModelViewerFileName")};
 const QString AliasModelExtension{QStringLiteral("mdl")};
@@ -49,7 +49,7 @@ public:
 	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
 		const QString& fileName, FILE* file) override
 	{
-		const auto result = _editorContext->TryLaunchExternalProgram(
+		const auto result = _application->TryLaunchExternalProgram(
 			Quake1ModelViewerFileNameKey, QStringList(fileName),
 			"This is a Quake 1 Alias model which requires it to be loaded in Quake 1 Model Viewer.");
 

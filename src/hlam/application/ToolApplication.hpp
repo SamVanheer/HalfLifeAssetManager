@@ -13,7 +13,7 @@
 
 class ApplicationBuilder;
 class ApplicationSettings;
-class EditorContext;
+class AssetManager;
 class IAssetManagerPlugin;
 class MainWindow;
 class QApplication;
@@ -56,7 +56,7 @@ private:
 
 	bool CheckSingleInstance(const QString& programName, const QString& fileName, ApplicationSettings& settings);
 
-	std::unique_ptr<EditorContext> CreateEditorContext(std::shared_ptr<ApplicationSettings> applicationSettings,
+	std::unique_ptr<AssetManager> CreateApplication(std::shared_ptr<ApplicationSettings> applicationSettings,
 		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext);
 
 	bool AddPlugins(ApplicationBuilder& builder);
@@ -81,11 +81,11 @@ private slots:
 	void OnStylePathChanged(const QString& stylePath);
 
 private:
-	QApplication* _application{};
+	QApplication* _guiApplication{};
 
 	std::vector<std::unique_ptr<IAssetManagerPlugin>> _plugins;
 
-	std::unique_ptr<EditorContext> _editorContext;
+	std::unique_ptr<AssetManager> _application;
 	QPointer<MainWindow> _mainWindow;
 
 	std::unique_ptr<SingleInstance> _singleInstance;

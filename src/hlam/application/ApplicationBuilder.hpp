@@ -11,7 +11,7 @@ class QApplication;
 class ApplicationBuilder final
 {
 public:
-	QApplication* const Application;
+	QApplication* const GUIApplication;
 	ApplicationSettings* const Settings;
 	AssetProviderRegistry* const AssetProviders;
 	OptionsPageRegistry* const OptionsPages;

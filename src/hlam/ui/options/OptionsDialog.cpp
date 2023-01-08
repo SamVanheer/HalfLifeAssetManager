@@ -11,7 +11,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 
 #include "ui/options/OptionsDialog.hpp"
 #include "ui/options/OptionsPage.hpp"
@@ -19,9 +19,9 @@
 
 const int PageIndexRole = Qt::ItemDataRole::UserRole;
 
-OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
+OptionsDialog::OptionsDialog(AssetManager* application, QWidget* parent)
 	: QDialog(parent)
-	, _editorContext(editorContext)
+	, _application(application)
 {
 	_ui.setupUi(this);
 
@@ -32,7 +32,7 @@ OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
 
 	QMap<QString, QTreeWidgetItem*> categoryMap;
 
-	_pages = _editorContext->GetOptionsPageRegistry()->GetPages();
+	_pages = _application->GetOptionsPageRegistry()->GetPages();
 
 	for (auto page : _pages)
 	{
@@ -60,14 +60,14 @@ OptionsDialog::OptionsDialog(EditorContext* editorContext, QWidget* parent)
 
 		it.value()->addChild(pageItem);
 
-		_ui.OptionsPagesStack->addWidget(page->GetWidget(_editorContext));
+		_ui.OptionsPagesStack->addWidget(page->GetWidget(_application));
 	}
 
 	connect(_ui.OptionsPagesList, &QTreeWidget::currentItemChanged, this, &OptionsDialog::OnPageSelected);
 	connect(_ui.DialogButtons, &QDialogButtonBox::clicked, this, &OptionsDialog::OnButtonClicked);
 	connect(_ui.OpenConfigDirectory, &QPushButton::clicked, this, [this]()
 		{
-			const QString fileName = _editorContext->GetSettings()->fileName();
+			const QString fileName = _application->GetSettings()->fileName();
 			const QFileInfo fileInfo{fileName};
 			const QString fullPath = fileInfo.absolutePath();
 			QDesktopServices::openUrl(QUrl{QString{"file:///%1"}.arg(fullPath), QUrl::TolerantMode});
@@ -108,10 +108,10 @@ void OptionsDialog::OnButtonClicked(QAbstractButton* button)
 			page->ApplyChanges();
 		}
 
-		_editorContext->GetApplicationSettings()->SaveSettings();
+		_application->GetApplicationSettings()->SaveSettings();
 
-		_editorContext->GetApplicationSettings()->GetSettings()->sync();
+		_application->GetApplicationSettings()->GetSettings()->sync();
 
-		emit _editorContext->SettingsChanged();
+		emit _application->SettingsChanged();
 	}
 }

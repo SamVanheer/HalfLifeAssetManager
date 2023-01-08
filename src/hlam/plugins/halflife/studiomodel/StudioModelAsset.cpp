@@ -52,7 +52,7 @@
 
 #include "soundsystem/SoundSystem.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/SceneWidget.hpp"
 
@@ -118,21 +118,21 @@ static std::tuple<glm::vec3, glm::vec3, float, float> GetCenteredValues(
 }
 
 StudioModelAsset::StudioModelAsset(QString&& fileName,
-	EditorContext* editorContext, StudioModelAssetProvider* provider,
+	AssetManager* application, StudioModelAssetProvider* provider,
 	std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel)
 	: Asset(std::move(fileName))
-	, _editorContext(editorContext)
+	, _application(application)
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
 	, _modelData(new StudioModelData(_editableStudioModel.get(), this))
-	, _fileSystem(_editorContext->GetApplicationSettings()->GetGameConfigurations()->CreateFileSystem(GetFileName()))
-	, _soundSystem(std::make_unique<SoundSystemWrapper>(_editorContext->GetSoundSystem(), _fileSystem.get()))
+	, _fileSystem(_application->GetApplicationSettings()->GetGameConfigurations()->CreateFileSystem(GetFileName()))
+	, _soundSystem(std::make_unique<SoundSystemWrapper>(_application->GetSoundSystem(), _fileSystem.get()))
 	, _entityContext(std::make_unique<EntityContext>(this,
-		_editorContext->GetWorldTime(),
+		_application->GetWorldTime(),
 		_provider->GetStudioModelRenderer(),
 		_provider->GetSpriteRenderer(),
 		_soundSystem.get(),
-		_editorContext->GetApplicationSettings(),
+		_application->GetApplicationSettings(),
 		_provider->GetStudioModelSettings()))
 {
 	{
@@ -146,16 +146,16 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	CreateMainScene();
 	CreateTextureScene();
 
-	connect(_editorContext->GetApplicationSettings(), &ApplicationSettings::ResizeTexturesToPowerOf2Changed,
+	connect(_application->GetApplicationSettings(), &ApplicationSettings::ResizeTexturesToPowerOf2Changed,
 		this, &StudioModelAsset::OnResizeTexturesToPowerOf2Changed);
-	connect(_editorContext->GetApplicationSettings(), &ApplicationSettings::TextureFiltersChanged,
+	connect(_application->GetApplicationSettings(), &ApplicationSettings::TextureFiltersChanged,
 		this, &StudioModelAsset::OnTextureFiltersChanged);
 
 	// Initialize graphics resources.
 	{
-		graphics::SceneContext sc{_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader()};
+		graphics::SceneContext sc{_application->GetOpenGLFunctions(), _application->GetTextureLoader()};
 
-		auto context = _editorContext->GetGraphicsContext();
+		auto context = _application->GetGraphicsContext();
 		context->Begin();
 
 		for (auto scene : _scenes)
@@ -172,9 +172,9 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 StudioModelAsset::~StudioModelAsset()
 {
 	{
-		graphics::SceneContext sc{_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader()};
+		graphics::SceneContext sc{_application->GetOpenGLFunctions(), _application->GetTextureLoader()};
 
-		auto context = _editorContext->GetGraphicsContext();
+		auto context = _application->GetGraphicsContext();
 
 		context->Begin();
 
@@ -217,9 +217,9 @@ bool StudioModelAsset::TryRefresh()
 		// Clear UI to null state so changes to the models don't trigger changes in UI slots.
 		emit _provider->AssetChanged(_provider->GetDummyAsset());
 
-		graphics::SceneContext sc{_editorContext->GetOpenGLFunctions(), _editorContext->GetTextureLoader()};
+		graphics::SceneContext sc{_application->GetOpenGLFunctions(), _application->GetTextureLoader()};
 
-		auto context = _editorContext->GetGraphicsContext();
+		auto context = _application->GetGraphicsContext();
 		context->Begin();
 
 		//Clean up old model resources
@@ -260,12 +260,12 @@ bool StudioModelAsset::TryRefresh()
 
 graphics::IGraphicsContext* StudioModelAsset::GetGraphicsContext()
 {
-	return _editorContext->GetGraphicsContext();
+	return _application->GetGraphicsContext();
 }
 
 graphics::TextureLoader* StudioModelAsset::GetTextureLoader()
 {
-	return _editorContext->GetTextureLoader();
+	return _application->GetTextureLoader();
 }
 
 studiomdl::IStudioModelRenderer* StudioModelAsset::GetStudioModelRenderer() const
@@ -287,7 +287,7 @@ void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 	{
 		auto editWidget = _provider->GetEditWidget();
 		editWidget->SetSceneIndex(index);
-		_editorContext->GetSceneWidget()->SetScene(_currentScene);
+		_application->GetSceneWidget()->SetScene(_currentScene);
 	}
 }
 
@@ -305,8 +305,8 @@ void StudioModelAsset::OnActivated()
 		editWidget->SetAsset(this);
 	}
 
-	connect(_editorContext, &EditorContext::SceneWidgetRecreated, this, &StudioModelAsset::OnSceneWidgetRecreated);
-	connect(_editorContext, &EditorContext::FullscreenWidgetChanged, this, &StudioModelAsset::OnSceneWidgetRecreated);
+	connect(_application, &AssetManager::SceneWidgetRecreated, this, &StudioModelAsset::OnSceneWidgetRecreated);
+	connect(_application, &AssetManager::FullscreenWidgetChanged, this, &StudioModelAsset::OnSceneWidgetRecreated);
 	connect(editWidget, &StudioModelEditWidget::SceneIndexChanged, this, &StudioModelAsset::OnSceneIndexChanged);
 	connect(editWidget, &StudioModelEditWidget::PoseChanged, this, &StudioModelAsset::SetPose);
 
@@ -364,14 +364,14 @@ void StudioModelAsset::OnDeactivated()
 		this, &StudioModelAsset::OnCameraChanged);
 
 	auto editWidget = _provider->GetEditWidget();
-	auto sceneWidget = _editorContext->GetSceneWidget();
+	auto sceneWidget = _application->GetSceneWidget();
 
 	editWidget->disconnect(this);
 	sceneWidget->disconnect(this);
 
-	disconnect(_editorContext, &EditorContext::SceneWidgetRecreated,
+	disconnect(_application, &AssetManager::SceneWidgetRecreated,
 		this, &StudioModelAsset::OnSceneWidgetRecreated);
-	disconnect(_editorContext, &EditorContext::FullscreenWidgetChanged,
+	disconnect(_application, &AssetManager::FullscreenWidgetChanged,
 		this, &StudioModelAsset::OnSceneWidgetRecreated);
 }
 
@@ -573,9 +573,9 @@ void StudioModelAsset::Tick()
 
 void StudioModelAsset::OnSceneWidgetRecreated()
 {
-	const auto fullscreenWidget = _editorContext->GetFullscreenWidget();
+	const auto fullscreenWidget = _application->GetFullscreenWidget();
 	const auto editWidget = _provider->GetEditWidget();
-	const auto sceneWidget = _editorContext->GetSceneWidget();
+	const auto sceneWidget = _application->GetSceneWidget();
 
 	editWidget->DetachSceneWidget();
 
@@ -619,7 +619,7 @@ void StudioModelAsset::OnSceneWidgetRecreated()
 
 void StudioModelAsset::OnResizeTexturesToPowerOf2Changed()
 {
-	auto context = _editorContext->GetGraphicsContext();
+	auto context = _application->GetGraphicsContext();
 
 	context->Begin();
 	_editableStudioModel->UpdateTextures(*GetTextureLoader());
@@ -628,7 +628,7 @@ void StudioModelAsset::OnResizeTexturesToPowerOf2Changed()
 
 void StudioModelAsset::OnTextureFiltersChanged()
 {
-	auto context = _editorContext->GetGraphicsContext();
+	auto context = _application->GetGraphicsContext();
 
 	context->Begin();
 	_editableStudioModel->UpdateFilters(*GetTextureLoader());

@@ -11,7 +11,7 @@
 
 #include "ui/DockableWidget.hpp"
 #include "ui/DragNDropEventFilter.hpp"
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/SceneWidget.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
@@ -39,8 +39,8 @@ namespace studiomodel
 {
 const int StateVersion = 0;
 
-StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, StudioModelAssetProvider* provider)
-	: _editorContext(editorContext)
+StudioModelEditWidget::StudioModelEditWidget(AssetManager* application, StudioModelAssetProvider* provider)
+	: _application(application)
 	, _provider(provider)
 {
 	_ui.setupUi(this);
@@ -51,7 +51,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	_ui.MainLayout->addWidget(_timeline);
 
-	_ui.Window->installEventFilter(_editorContext->GetDragNDropEventFilter());
+	_ui.Window->installEventFilter(_application->GetDragNDropEventFilter());
 
 	_ui.Window->setCentralWidget(_view);
 
@@ -129,7 +129,7 @@ StudioModelEditWidget::StudioModelEditWidget(EditorContext* editorContext, Studi
 
 	connect(_view, &StudioModelView::SceneIndexChanged, this, &StudioModelEditWidget::SceneIndexChanged);
 	connect(_view, &StudioModelView::PoseChanged, this, &StudioModelEditWidget::PoseChanged);
-	connect(_editorContext, &EditorContext::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
+	connect(_application, &AssetManager::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
 
 	SetAsset(_provider->GetDummyAsset());
 
@@ -160,7 +160,7 @@ void StudioModelEditWidget::ResetToInitialState()
 
 void StudioModelEditWidget::AttachSceneWidget()
 {
-	auto sceneWidget = _editorContext->GetSceneWidget();
+	auto sceneWidget = _application->GetSceneWidget();
 
 	_view->SetWidget(sceneWidget->GetContainer());
 
@@ -169,7 +169,7 @@ void StudioModelEditWidget::AttachSceneWidget()
 
 void StudioModelEditWidget::DetachSceneWidget()
 {
-	auto sceneWidget = _editorContext->GetSceneWidget();
+	auto sceneWidget = _application->GetSceneWidget();
 
 	sceneWidget->disconnect(_view->GetInfoBar());
 }

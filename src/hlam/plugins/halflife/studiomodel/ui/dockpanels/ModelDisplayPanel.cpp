@@ -13,7 +13,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 
 namespace studiomodel
 {
@@ -71,7 +71,7 @@ ModelDisplayPanel::ModelDisplayPanel(StudioModelAssetProvider* provider)
 	{
 		const auto lambda = [this]()
 		{
-			auto settings = _provider->GetCurrentAsset()->GetEditorContext()->GetApplicationSettings();
+			auto settings = _provider->GetCurrentAsset()->GetApplication()->GetApplicationSettings();
 			settings->SetAspectRatio(glm::vec2{_ui.AspectRatioX->value(), _ui.AspectRatioY->value()});
 		};
 
@@ -139,7 +139,7 @@ void ModelDisplayPanel::OnAssetChanged(StudioModelAsset* asset)
 	_ui.ShowGuidelines->setChecked(_asset->GetGuidelinesEntity()->ShowGuidelines);
 	_ui.ShowOffscreenAreas->setChecked(_asset->GetGuidelinesEntity()->ShowOffscreenAreas);
 
-	const auto aspectRatio = _asset->GetEditorContext()->GetApplicationSettings()->GetAspectRatio();
+	const auto aspectRatio = _asset->GetApplication()->GetApplicationSettings()->GetAspectRatio();
 	_ui.AspectRatioX->setValue(static_cast<int>(aspectRatio.x));
 	_ui.AspectRatioY->setValue(static_cast<int>(aspectRatio.y));
 }

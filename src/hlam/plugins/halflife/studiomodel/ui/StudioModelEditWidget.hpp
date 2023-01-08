@@ -16,7 +16,7 @@ namespace graphics
 class Scene;
 }
 
-class EditorContext;
+class AssetManager;
 class SceneWidget;
 
 namespace studiomodel
@@ -31,7 +31,7 @@ class StudioModelEditWidget final : public QWidget
 	Q_OBJECT
 
 public:
-	StudioModelEditWidget(EditorContext* editorContext, StudioModelAssetProvider* provider);
+	StudioModelEditWidget(AssetManager* application, StudioModelAssetProvider* provider);
 	~StudioModelEditWidget();
 
 	void Tick();
@@ -74,7 +74,7 @@ private slots:
 	void OnDockVisibilityChanged(bool visible);
 
 private:
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 	StudioModelAssetProvider* const _provider;
 
 	Ui_StudioModelEditWidget _ui;

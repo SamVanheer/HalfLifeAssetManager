@@ -7,14 +7,14 @@
 
 #include "ui_OptionsDialog.h"
 
-class EditorContext;
+class AssetManager;
 
 class OptionsPage;
 
 class OptionsDialog final : public QDialog
 {
 public:
-	OptionsDialog(EditorContext* editorContext, QWidget* parent);
+	OptionsDialog(AssetManager* application, QWidget* parent);
 	~OptionsDialog();
 
 private slots:
@@ -25,7 +25,7 @@ private slots:
 private:
 	Ui_OptionsDialog _ui;
 
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 
 	std::vector<OptionsPage*> _pages;
 };

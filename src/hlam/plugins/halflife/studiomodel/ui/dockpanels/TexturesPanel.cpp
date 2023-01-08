@@ -22,7 +22,7 @@
 
 #include "settings/StudioModelSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/StateSnapshot.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
@@ -559,14 +559,14 @@ void TexturesPanel::OnImportTexture()
 	}
 
 	const QString fileName = QFileDialog::getOpenFileName(
-		this, {}, _asset->GetEditorContext()->GetPath(TexturePathName), qt::GetImagesFileFilter());
+		this, {}, _asset->GetApplication()->GetPath(TexturePathName), qt::GetImagesFileFilter());
 
 	if (fileName.isEmpty())
 	{
 		return;
 	}
 
-	_asset->GetEditorContext()->SetPath(TexturePathName, fileName);
+	_asset->GetApplication()->SetPath(TexturePathName, fileName);
 
 	ImportTextureFrom(fileName, *model, iTextureIndex);
 }
@@ -587,7 +587,7 @@ void TexturesPanel::OnExportTexture()
 
 	const QString fileName = QFileDialog::getSaveFileName(
 		this, {}, QString{"%1/%2"}
-			.arg(_asset->GetEditorContext()->GetPath(TexturePathName))
+			.arg(_asset->GetApplication()->GetPath(TexturePathName))
 			.arg(QString::fromStdString(texture.Name)),
 		qt::GetSeparatedImagesFileFilter());
 
@@ -600,7 +600,7 @@ void TexturesPanel::OnExportTexture()
 
 	if (textureImage.save(fileName))
 	{
-		_asset->GetEditorContext()->SetPath(TexturePathName, fileName);
+		_asset->GetApplication()->SetPath(TexturePathName, fileName);
 	}
 	else
 	{
@@ -659,14 +659,14 @@ void TexturesPanel::OnImportAllTextures()
 {
 	const auto path = QFileDialog::getExistingDirectory(
 		this, "Select the directory to import all textures from",
-		_asset->GetEditorContext()->GetPath(TexturePathName));
+		_asset->GetApplication()->GetPath(TexturePathName));
 
 	if (path.isEmpty())
 	{
 		return;
 	}
 
-	_asset->GetEditorContext()->SetPath(TexturePathName, path);
+	_asset->GetApplication()->SetPath(TexturePathName, path);
 
 	auto entity = _asset->GetEntity();
 
@@ -695,14 +695,14 @@ void TexturesPanel::OnExportAllTextures()
 {
 	const auto path = QFileDialog::getExistingDirectory(
 		this, "Select the directory to export all textures to",
-		_asset->GetEditorContext()->GetPath(TexturePathName));
+		_asset->GetApplication()->GetPath(TexturePathName));
 
 	if (path.isEmpty())
 	{
 		return;
 	}
 
-	_asset->GetEditorContext()->SetPath(TexturePathName, path);
+	_asset->GetApplication()->SetPath(TexturePathName, path);
 
 	auto model = _asset->GetEntity()->GetEditableModel();
 

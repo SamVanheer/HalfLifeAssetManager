@@ -7,7 +7,7 @@
 
 #include "ui/options/OptionsPage.hpp"
 
-class EditorContext;
+class AssetManager;
 
 class ApplicationSettings;
 
@@ -26,7 +26,7 @@ private:
 class OptionsPageGeneralWidget final : public OptionsWidget
 {
 public:
-	OptionsPageGeneralWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings);
+	OptionsPageGeneralWidget(AssetManager* application, ApplicationSettings* applicationSettings);
 	~OptionsPageGeneralWidget();
 
 	void ApplyChanges() override;
@@ -34,7 +34,7 @@ public:
 private:
 	Ui_OptionsPageGeneral _ui;
 
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 
 	ApplicationSettings* const _applicationSettings;
 };

@@ -6,7 +6,7 @@
 #include "settings/ApplicationSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 
 const QString OptionsPageGeneralCategory{QStringLiteral("A.General")};
@@ -21,22 +21,22 @@ OptionsPageGeneral::OptionsPageGeneral(const std::shared_ptr<ApplicationSettings
 	SetCategoryTitle("General");
 	SetId(QString{OptionsPageGeneralId});
 	SetPageTitle("General");
-	SetWidgetFactory([this](EditorContext* editorContext)
+	SetWidgetFactory([this](AssetManager* application)
 		{
-			return new OptionsPageGeneralWidget(editorContext, _applicationSettings.get());
+			return new OptionsPageGeneralWidget(application, _applicationSettings.get());
 		});
 }
 
 OptionsPageGeneral::~OptionsPageGeneral() = default;
 
 OptionsPageGeneralWidget::OptionsPageGeneralWidget(
-	EditorContext* editorContext, ApplicationSettings* applicationSettings)
-	: _editorContext(editorContext)
+	AssetManager* application, ApplicationSettings* applicationSettings)
+	: _application(application)
 	, _applicationSettings(applicationSettings)
 {
 	_ui.setupUi(this);
 
-	auto settings = _editorContext->GetSettings();
+	auto settings = _application->GetSettings();
 
 	_ui.TickRate->setRange(ApplicationSettings::MinimumTickRate, ApplicationSettings::MaximumTickRate);
 

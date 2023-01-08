@@ -15,7 +15,7 @@
 
 class Asset;
 class AssetProvider;
-class EditorContext;
+class AssetManager;
 class FullscreenWidget;
 class QActionGroup;
 
@@ -31,7 +31,7 @@ class MainWindow final : public QMainWindow
 	Q_OBJECT
 
 public:
-	MainWindow(EditorContext* editorContext);
+	MainWindow(AssetManager* application);
 	~MainWindow();
 
 	void LoadSettings();
@@ -105,7 +105,7 @@ private slots:
 private:
 	Ui_MainWindow _ui;
 
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 
 	QMap<AssetProvider*, QMenu*> _assetMenus;
 

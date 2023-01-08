@@ -34,7 +34,7 @@
 #include "settings/StudioModelSettings.hpp"
 
 #include "ui/SceneWidget.hpp"
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/FirstPersonCameraOperator.hpp"
@@ -71,28 +71,28 @@ StudioModelAssetProvider::~StudioModelAssetProvider()
 	delete _editWidget;
 }
 
-void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
+void StudioModelAssetProvider::Initialize(AssetManager* application)
 {
-	AssetProvider::Initialize(editorContext);
+	AssetProvider::Initialize(application);
 
 	_studioModelRenderer = std::make_unique<studiomdl::StudioModelRenderer>(
 		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()),
-		_editorContext->GetOpenGLFunctions(), _editorContext->GetColorSettings());
+		_application->GetOpenGLFunctions(), _application->GetColorSettings());
 
 	_spriteRenderer = std::make_unique<sprite::SpriteRenderer>(
-		CreateQtLoggerSt(logging::HLAMSpriteRenderer()), _editorContext->GetWorldTime());
+		CreateQtLoggerSt(logging::HLAMSpriteRenderer()), _application->GetWorldTime());
 
 	_dummyAsset = std::make_unique<StudioModelAsset>(
-		"", _editorContext, this, std::make_unique<studiomdl::EditableStudioModel>());
+		"", _application, this, std::make_unique<studiomdl::EditableStudioModel>());
 
 	_currentAsset = GetDummyAsset();
 
-	connect(_editorContext, &EditorContext::Tick, this, &StudioModelAssetProvider::OnTick);
-	connect(_editorContext, &EditorContext::ActiveAssetChanged, this, &StudioModelAssetProvider::OnActiveAssetChanged);
+	connect(_application, &AssetManager::Tick, this, &StudioModelAssetProvider::OnTick);
+	connect(_application, &AssetManager::ActiveAssetChanged, this, &StudioModelAssetProvider::OnActiveAssetChanged);
 
 	{
-		const auto graphicsContext = _editorContext->GetGraphicsContext();
-		const auto openglFunctions = _editorContext->GetOpenGLFunctions();
+		const auto graphicsContext = _application->GetGraphicsContext();
+		const auto openglFunctions = _application->GetOpenGLFunctions();
 
 		graphicsContext->Begin();
 		openglFunctions->glGenTextures(1, &_defaultGroundTexture);
@@ -135,8 +135,8 @@ void StudioModelAssetProvider::Initialize(EditorContext* editorContext)
 void StudioModelAssetProvider::Shutdown()
 {
 	{
-		const auto graphicsContext = _editorContext->GetGraphicsContext();
-		const auto openglFunctions = _editorContext->GetOpenGLFunctions();
+		const auto graphicsContext = _application->GetGraphicsContext();
+		const auto openglFunctions = _application->GetOpenGLFunctions();
 
 		graphicsContext->Begin();
 		openglFunctions->glDeleteTextures(1, &_defaultGroundTexture);
@@ -146,7 +146,7 @@ void StudioModelAssetProvider::Shutdown()
 
 	if (_editWidget)
 	{
-		_editorContext->GetSettings()->setValue(WindowStateKey, _editWidget->SaveState());
+		_application->GetSettings()->setValue(WindowStateKey, _editWidget->SaveState());
 	}
 
 	for (auto cameraOperator : _cameraOperators->GetAll())
@@ -161,13 +161,13 @@ QMenu* StudioModelAssetProvider::CreateToolMenu()
 
 	menu->addAction("Compile Model...", [this]
 		{
-			StudioModelCompilerFrontEnd compiler{_editorContext};
+			StudioModelCompilerFrontEnd compiler{_application};
 	compiler.exec();
 		});
 
 	menu->addAction("Decompile Model...", [this]
 		{
-			StudioModelDecompilerFrontEnd decompiler{_editorContext};
+			StudioModelDecompilerFrontEnd decompiler{_application};
 	decompiler.exec();
 		});
 
@@ -312,7 +312,7 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 
 	menu->addAction("Show QC Data", this, [this]
 		{
-			QCDataDialog dialog{this, _editorContext->GetMainWindow()};
+			QCDataDialog dialog{this, _application->GetMainWindow()};
 			dialog.exec();
 		});
 
@@ -340,7 +340,7 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 	{
 		qCDebug(HLAMStudioModel) << "Model" << fileName << "is a Xash model";
 
-		const auto result = _editorContext->TryLaunchExternalProgram(
+		const auto result = _application->TryLaunchExternalProgram(
 			XashModelViewerFileNameKey, QStringList(fileName),
 			"This is a Xash model which requires it to be loaded in Xash Model Viewer.");
 
@@ -368,7 +368,7 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 
 	qCDebug(HLAMStudioModel) << "Loaded model" << fileName << "as" << updatedFileName;
 
-	return std::make_unique<StudioModelAsset>(std::move(updatedFileName), _editorContext, this,
+	return std::make_unique<StudioModelAsset>(std::move(updatedFileName), _application, this,
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
 }
 
@@ -381,9 +381,9 @@ StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget()
 {
 	if (!_editWidget)
 	{
-		assert(_editorContext);
-		_editWidget = new StudioModelEditWidget(_editorContext, this);
-		_editWidget->RestoreState(_editorContext->GetSettings()->value(WindowStateKey).toByteArray());
+		assert(_application);
+		_editWidget = new StudioModelEditWidget(_application, this);
+		_editWidget->RestoreState(_application->GetSettings()->value(WindowStateKey).toByteArray());
 	}
 
 	return _editWidget;
@@ -446,7 +446,7 @@ void StudioModelAssetProvider::OnDumpModelInfo()
 
 void StudioModelAssetProvider::OnTakeScreenshot()
 {
-	const QImage screenshot = _editorContext->GetSceneWidget()->grabFramebuffer();
+	const QImage screenshot = _application->GetSceneWidget()->grabFramebuffer();
 
 	const QString fileName{QFileDialog::getSaveFileName(nullptr, {}, {}, qt::GetImagesFileFilter())};
 

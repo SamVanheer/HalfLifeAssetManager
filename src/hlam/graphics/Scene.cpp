@@ -20,7 +20,7 @@
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 
 namespace graphics
 {
@@ -54,7 +54,7 @@ Scene::Scene(std::string&& name, EntityContext* entityContext)
 {
 	SetCurrentCamera(nullptr);
 
-	SkyLight.Color = _entityContext->Asset->GetEditorContext()->GetColorSettings()->GetColor(studiomodel::SkyLightColor);
+	SkyLight.Color = _entityContext->Asset->GetApplication()->GetColorSettings()->GetColor(studiomodel::SkyLightColor);
 }
 
 Scene::~Scene() = default;
@@ -83,7 +83,7 @@ void Scene::Tick()
 void Scene::Draw(SceneContext& sc)
 {
 	auto applicationSettings = _entityContext->AppSettings;
-	auto colors = _entityContext->Asset->GetEditorContext()->GetColorSettings();
+	auto colors = _entityContext->Asset->GetApplication()->GetColorSettings();
 
 	const auto backgroundColor = colors->GetColor(studiomodel::BackgroundColor);
 

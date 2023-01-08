@@ -10,7 +10,7 @@
 
 class ApplicationSettings;
 class ColorSettings;
-class EditorContext;
+class AssetManager;
 
 extern const QString OptionsPageColorsId;
 
@@ -29,7 +29,7 @@ class OptionsPageColorsWidget final : public OptionsWidget
 {
 public:
 	OptionsPageColorsWidget(
-		EditorContext* editorContext, ColorSettings* colorSettings);
+		AssetManager* application, ColorSettings* colorSettings);
 	~OptionsPageColorsWidget();
 
 	void ApplyChanges() override;
@@ -47,7 +47,7 @@ private slots:
 private:
 	Ui_OptionsPageColors _ui;
 
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 
 	ColorSettings* const _colorSettings;
 };

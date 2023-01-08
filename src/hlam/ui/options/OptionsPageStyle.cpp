@@ -4,7 +4,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/options/OptionsPageStyle.hpp"
 
@@ -19,16 +19,16 @@ OptionsPageStyle::OptionsPageStyle(const std::shared_ptr<ApplicationSettings>& a
 	SetCategoryTitle("General");
 	SetId(QString{OptionsPageStyleId});
 	SetPageTitle("Style");
-	SetWidgetFactory([this](EditorContext* editorContext)
+	SetWidgetFactory([this](AssetManager* application)
 		{
-			return new OptionsPageStyleWidget(editorContext, _applicationSettings.get());
+			return new OptionsPageStyleWidget(application, _applicationSettings.get());
 		});
 }
 
 OptionsPageStyle::~OptionsPageStyle() = default;
 
-OptionsPageStyleWidget::OptionsPageStyleWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings)
-	: _editorContext(editorContext)
+OptionsPageStyleWidget::OptionsPageStyleWidget(AssetManager* application, ApplicationSettings* applicationSettings)
+	: _application(application)
 	, _applicationSettings(applicationSettings)
 {
 	_ui.setupUi(this);

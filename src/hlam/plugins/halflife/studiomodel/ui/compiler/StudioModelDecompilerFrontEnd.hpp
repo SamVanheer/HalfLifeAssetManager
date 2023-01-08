@@ -13,7 +13,7 @@ const inline QString StudiomdlDecompilerFileNameKey{QStringLiteral("StudioMdlDec
 class StudioModelDecompilerFrontEnd final : public CommandLineFrontEnd
 {
 public:
-	StudioModelDecompilerFrontEnd(EditorContext* editorContext);
+	StudioModelDecompilerFrontEnd(AssetManager* application);
 	~StudioModelDecompilerFrontEnd();
 };
 }

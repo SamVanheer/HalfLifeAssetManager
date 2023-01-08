@@ -8,7 +8,7 @@
 
 #include "settings/GameConfigurationsSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 
 #include "ui/options/gameconfigurations/AutodetectGameConfigurationsWizard.hpp"
 #include "ui/options/gameconfigurations/EditGameConfigurationsDialog.hpp"
@@ -24,14 +24,14 @@ OptionsPageGameConfigurations::OptionsPageGameConfigurations()
 	SetCategoryTitle("Game Configurations");
 	SetId(QString{OptionsPageGameConfigurationsId});
 	SetPageTitle("Game Configurations");
-	SetWidgetFactory([](EditorContext* editorContext)
+	SetWidgetFactory([](AssetManager* application)
 		{
-			return new OptionsPageGameConfigurationsWidget(editorContext);
+			return new OptionsPageGameConfigurationsWidget(application);
 		});
 }
 
-OptionsPageGameConfigurationsWidget::OptionsPageGameConfigurationsWidget(EditorContext* editorContext)
-	: _editorContext(editorContext)
+OptionsPageGameConfigurationsWidget::OptionsPageGameConfigurationsWidget(AssetManager* application)
+	: _application(application)
 	, _options(std::make_unique<GameConfigurationsOptions>())
 {
 	_ui.setupUi(this);
@@ -70,7 +70,7 @@ OptionsPageGameConfigurationsWidget::OptionsPageGameConfigurationsWidget(EditorC
 
 	connect(_ui.Autodetect, &QPushButton::clicked, this, &OptionsPageGameConfigurationsWidget::OnAutodetect);
 
-	const auto gameConfigurations = _editorContext->GetGameConfigurations();
+	const auto gameConfigurations = _application->GetGameConfigurations();
 
 	const auto defaultConfiguration = gameConfigurations->GetDefaultConfiguration();
 
@@ -93,7 +93,7 @@ OptionsPageGameConfigurationsWidget::~OptionsPageGameConfigurationsWidget() = de
 
 void OptionsPageGameConfigurationsWidget::ApplyChanges()
 {
-	const auto gameConfigurations = _editorContext->GetGameConfigurations();
+	const auto gameConfigurations = _application->GetGameConfigurations();
 
 	for (const auto& configurationId : _options->GameConfigurationsChangeSet.RemovedObjects)
 	{

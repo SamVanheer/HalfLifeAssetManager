@@ -8,7 +8,7 @@
 
 #include "qt/QtUtilities.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelTextureUtilities.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/ExportUVMeshDialog.hpp"
@@ -90,12 +90,12 @@ void ExportUVMeshDialog::OnFileNameChanged()
 void ExportUVMeshDialog::OnBrowseFileName()
 {
 	const QString fileName = QFileDialog::getSaveFileName(
-		this, "Select Image Filename", _asset->GetEditorContext()->GetPath(TexturePathName),
+		this, "Select Image Filename", _asset->GetApplication()->GetPath(TexturePathName),
 		qt::GetSeparatedImagesFileFilter());
 
 	if (!fileName.isEmpty())
 	{
-		_asset->GetEditorContext()->SetPath(TexturePathName, fileName);
+		_asset->GetApplication()->SetPath(TexturePathName, fileName);
 		_ui.FileName->setText(fileName);
 	}
 }

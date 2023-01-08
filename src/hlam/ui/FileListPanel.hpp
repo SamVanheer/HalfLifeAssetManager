@@ -5,7 +5,7 @@
 
 #include "ui_FileListPanel.h"
 
-class EditorContext;
+class AssetManager;
 class GameConfiguration;
 class QFileSystemModel;
 
@@ -14,7 +14,7 @@ class FileListPanel final : public QWidget
 	Q_OBJECT
 
 public:
-	FileListPanel(EditorContext* editorContext, QWidget* parent);
+	FileListPanel(AssetManager* application, QWidget* parent);
 	~FileListPanel();
 
 private:

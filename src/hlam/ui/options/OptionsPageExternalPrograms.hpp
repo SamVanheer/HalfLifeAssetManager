@@ -8,7 +8,7 @@
 #include "ui/options/OptionsPage.hpp"
 
 class ApplicationSettings;
-class EditorContext;
+class AssetManager;
 
 extern const QString ExternalProgramsExeFilter;
 
@@ -25,7 +25,7 @@ private:
 class OptionsPageExternalProgramsWidget final : public OptionsWidget
 {
 public:
-	OptionsPageExternalProgramsWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings);
+	OptionsPageExternalProgramsWidget(AssetManager* application, ApplicationSettings* applicationSettings);
 	~OptionsPageExternalProgramsWidget();
 
 	void ApplyChanges() override;
@@ -33,7 +33,7 @@ public:
 private:
 	Ui_OptionsPageExternalPrograms _ui;
 
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 
 	ApplicationSettings* const _applicationSettings;
 };

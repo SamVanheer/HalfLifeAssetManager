@@ -6,7 +6,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/StateSnapshot.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
@@ -216,7 +216,7 @@ void Timeline::OnFrameSliderChanged()
 {
 	SetFrame(static_cast<double>(_ui.FrameSlider->value()) / FrameSliderRangeMultiplier, true);
 
-	if (_asset && _asset->GetEditorContext()->GetApplicationSettings()->PauseAnimationsOnTimelineClick)
+	if (_asset && _asset->GetApplication()->GetApplicationSettings()->PauseAnimationsOnTimelineClick)
 	{
 		if (_asset->PlaySequence)
 		{

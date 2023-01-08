@@ -58,7 +58,7 @@ public:
 		return ProviderFeature::AssetLoading | ProviderFeature::AssetSaving;
 	}
 
-	void Initialize(EditorContext* editorContext) override;
+	void Initialize(AssetManager* application) override;
 
 	void Shutdown() override;
 

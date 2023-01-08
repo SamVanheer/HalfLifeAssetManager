@@ -6,7 +6,7 @@
 #include <QMimeData>
 #include <QObject>
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 
 /**
 *	@brief Handles drag&drop events and automatically forwards dropped files to the editor context
@@ -14,9 +14,9 @@
 class DragNDropEventFilter : public QObject
 {
 public:
-	DragNDropEventFilter(EditorContext* editorContext, QObject* parent)
+	DragNDropEventFilter(AssetManager* application, QObject* parent)
 		: QObject(parent)
-		, _editorContext(editorContext)
+		, _application(application)
 	{
 	}
 
@@ -43,7 +43,7 @@ protected:
 
 			for (const auto& url : dropEvent->mimeData()->urls())
 			{
-				_editorContext->TryLoadAsset(url.toLocalFile());
+				_application->TryLoadAsset(url.toLocalFile());
 			}
 
 			return true;
@@ -54,5 +54,5 @@ protected:
 	}
 
 private:
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 };

@@ -5,7 +5,7 @@
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/options/OptionsPageColors.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 
@@ -21,17 +21,17 @@ OptionsPageColors::OptionsPageColors(
 	SetCategoryTitle("General");
 	SetId(QString{OptionsPageColorsId});
 	SetPageTitle("Colors");
-	SetWidgetFactory([this](EditorContext* editorContext)
+	SetWidgetFactory([this](AssetManager* application)
 		{
-			return new OptionsPageColorsWidget(editorContext, _applicationSettings->GetColorSettings());
+			return new OptionsPageColorsWidget(application, _applicationSettings->GetColorSettings());
 		});
 }
 
 OptionsPageColors::~OptionsPageColors() = default;
 
 OptionsPageColorsWidget::OptionsPageColorsWidget(
-	EditorContext* editorContext, ColorSettings* colorSettings)
-	: _editorContext(editorContext)
+	AssetManager* application, ColorSettings* colorSettings)
+	: _application(application)
 	, _colorSettings(colorSettings)
 {
 	_ui.setupUi(this);

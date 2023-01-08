@@ -8,7 +8,7 @@
 #include "ui/options/OptionsPage.hpp"
 
 class ApplicationSettings;
-class EditorContext;
+class AssetManager;
 
 class OptionsPageStyle : public OptionsPage
 {
@@ -23,7 +23,7 @@ private:
 class OptionsPageStyleWidget final : public OptionsWidget
 {
 public:
-	OptionsPageStyleWidget(EditorContext* editorContext, ApplicationSettings* applicationSettings);
+	OptionsPageStyleWidget(AssetManager* application, ApplicationSettings* applicationSettings);
 	~OptionsPageStyleWidget();
 
 	void ApplyChanges() override;
@@ -34,7 +34,7 @@ private slots:
 private:
 	Ui_OptionsPageStyle _ui;
 
-	EditorContext* const _editorContext;
+	AssetManager* const _application;
 
 	ApplicationSettings* const _applicationSettings;
 };

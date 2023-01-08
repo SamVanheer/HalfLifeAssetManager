@@ -1,8 +1,8 @@
 target_sources(HLAM
 	PRIVATE
 		ApplicationBuilder.hpp
-		EditorContext.cpp
-		EditorContext.hpp
+		AssetManager.cpp
+		AssetManager.hpp
 		SingleInstance.cpp
 		SingleInstance.hpp
 		ToolApplication.cpp

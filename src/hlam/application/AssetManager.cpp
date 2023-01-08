@@ -31,14 +31,14 @@
 #include "soundsystem/SoundSystem.hpp"
 
 #include "ui/DragNDropEventFilter.hpp"
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/SceneWidget.hpp"
 
 #include "ui/options/OptionsPageRegistry.hpp"
 
 #include "utility/WorldTime.hpp"
 
-EditorContext::EditorContext(
+AssetManager::AssetManager(
 	const std::shared_ptr<ApplicationSettings>& applicationSettings,
 	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
 	std::unique_ptr<AssetProviderRegistry>&& assetProviderRegistry,
@@ -82,8 +82,8 @@ EditorContext::EditorContext(
 		throw std::runtime_error("Failed to initialize sound system");
 	}
 
-	connect(_timer, &QTimer::timeout, this, &EditorContext::OnTimerTick);
-	connect(_applicationSettings.get(), &ApplicationSettings::TickRateChanged, this, &EditorContext::OnTickRateChanged);
+	connect(_timer, &QTimer::timeout, this, &AssetManager::OnTimerTick);
+	connect(_applicationSettings.get(), &ApplicationSettings::TickRateChanged, this, &AssetManager::OnTickRateChanged);
 
 	connect(_applicationSettings.get(), &ApplicationSettings::ResizeTexturesToPowerOf2Changed,
 		this, [this](bool value) { _textureLoader->SetResizeToPowerOf2(value); });
@@ -93,10 +93,10 @@ EditorContext::EditorContext(
 			_textureLoader->SetTextureFilters(minFilter, magFilter, mipmapFilter);
 		});
 
-	connect(_applicationSettings.get(), &ApplicationSettings::MSAALevelChanged, this, &EditorContext::RecreateSceneWidget);
+	connect(_applicationSettings.get(), &ApplicationSettings::MSAALevelChanged, this, &AssetManager::RecreateSceneWidget);
 }
 
-EditorContext::~EditorContext()
+AssetManager::~AssetManager()
 {
 	_soundSystem->Shutdown();
 
@@ -106,22 +106,22 @@ EditorContext::~EditorContext()
 	}
 }
 
-QSettings* EditorContext::GetSettings() const
+QSettings* AssetManager::GetSettings() const
 {
 	return _applicationSettings->GetSettings();
 }
 
-ColorSettings* EditorContext::GetColorSettings() const
+ColorSettings* AssetManager::GetColorSettings() const
 {
 	return _applicationSettings->GetColorSettings();
 }
 
-GameConfigurationsSettings* EditorContext::GetGameConfigurations() const
+GameConfigurationsSettings* AssetManager::GetGameConfigurations() const
 {
 	return _applicationSettings->GetGameConfigurations();
 }
 
-SceneWidget* EditorContext::GetSceneWidget()
+SceneWidget* AssetManager::GetSceneWidget()
 {
 	if (!_sceneWidget)
 	{
@@ -131,7 +131,7 @@ SceneWidget* EditorContext::GetSceneWidget()
 	return _sceneWidget;
 }
 
-void EditorContext::RecreateSceneWidget()
+void AssetManager::RecreateSceneWidget()
 {
 	auto oldWidget = _sceneWidget.data();
 
@@ -149,12 +149,12 @@ void EditorContext::RecreateSceneWidget()
 	}
 }
 
-void EditorContext::StartTimer()
+void AssetManager::StartTimer()
 {
 	_timer->start(1000 / _applicationSettings->GetTickRate());
 }
 
-void EditorContext::PauseTimer()
+void AssetManager::PauseTimer()
 {
 	++_timerPauseCount;
 
@@ -164,7 +164,7 @@ void EditorContext::PauseTimer()
 	}
 }
 
-void EditorContext::ResumeTimer()
+void AssetManager::ResumeTimer()
 {
 	--_timerPauseCount;
 
@@ -176,17 +176,17 @@ void EditorContext::ResumeTimer()
 	}
 }
 
-QString EditorContext::GetPath(const QString& pathName) const
+QString AssetManager::GetPath(const QString& pathName) const
 {
 	return _applicationSettings->GetSavedPath(pathName);
 }
 
-void EditorContext::SetPath(const QString& pathName, const QString& path)
+void AssetManager::SetPath(const QString& pathName, const QString& path)
 {
 	_applicationSettings->SetSavedPath(pathName, path);
 }
 
-LaunchExternalProgramResult EditorContext::TryLaunchExternalProgram(
+LaunchExternalProgramResult AssetManager::TryLaunchExternalProgram(
 	const QString& programKey, const QStringList& arguments, const QString& message)
 {
 	const auto externalPrograms = GetApplicationSettings()->GetExternalPrograms();
@@ -238,7 +238,7 @@ LaunchExternalProgramResult EditorContext::TryLaunchExternalProgram(
 	return LaunchExternalProgramResult::Success;
 }
 
-void EditorContext::OnTimerTick()
+void AssetManager::OnTimerTick()
 {
 	const auto timeMillis{std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()};
 
@@ -265,7 +265,7 @@ void EditorContext::OnTimerTick()
 	emit Tick();
 }
 
-void EditorContext::OnTickRateChanged(int value)
+void AssetManager::OnTickRateChanged(int value)
 {
 	if (_timer->isActive())
 	{

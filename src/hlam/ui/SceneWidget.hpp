@@ -5,7 +5,7 @@
 #include <QOpenGLWindow>
 #include <QPointer>
 
-class EditorContext;
+class AssetManager;
 class QOpenGLFunctions_1_1;
 
 namespace graphics
@@ -25,7 +25,7 @@ class SceneWidget final : public QOpenGLWindow
 
 public:
 	SceneWidget(
-		EditorContext* editorContext,
+		AssetManager* application,
 		QOpenGLFunctions_1_1* openglFunctions, graphics::TextureLoader* textureLoader);
 	~SceneWidget();
 

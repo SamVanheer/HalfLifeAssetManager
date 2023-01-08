@@ -13,7 +13,7 @@
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 
 void CrosshairEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
@@ -28,7 +28,7 @@ void CrosshairEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		sc.OpenGLFunctions->glDisable(GL_TEXTURE_2D);
 
-		auto colors = GetContext()->Asset->GetEditorContext()->GetColorSettings();
+		auto colors = GetContext()->Asset->GetApplication()->GetColorSettings();
 
 		sc.OpenGLFunctions->glColor4fv(glm::value_ptr(colors->GetColor(studiomodel::CrosshairColor)));
 

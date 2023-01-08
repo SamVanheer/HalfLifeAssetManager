@@ -13,7 +13,7 @@
 #include <QWidget>
 
 class AssetProvider;
-class EditorContext;
+class AssetManager;
 class QMenu;
 
 enum class ProviderFeature
@@ -95,9 +95,9 @@ public:
 
 	virtual ProviderFeatures GetFeatures() const = 0;
 
-	virtual void Initialize(EditorContext* editorContext)
+	virtual void Initialize(AssetManager* application)
 	{
-		_editorContext = editorContext;
+		_application = application;
 	}
 
 	virtual void Shutdown() {}
@@ -120,7 +120,7 @@ public:
 		const QString& fileName, FILE* file) = 0;
 
 protected:
-	EditorContext* _editorContext{};
+	AssetManager* _application{};
 };
 
 /**
@@ -138,7 +138,7 @@ public:
 
 	void AddProvider(std::unique_ptr<AssetProvider>&& provider);
 
-	void Initialize(EditorContext* editorContext);
+	void Initialize(AssetManager* application);
 
 	void Shutdown();
 

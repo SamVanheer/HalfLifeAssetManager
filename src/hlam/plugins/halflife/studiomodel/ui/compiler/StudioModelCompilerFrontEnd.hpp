@@ -15,7 +15,7 @@ const inline QString StudiomdlCompilerFileNameKey{QStringLiteral("StudioMdlCompi
 class StudioModelCompilerFrontEnd final : public CommandLineFrontEnd
 {
 public:
-	StudioModelCompilerFrontEnd(EditorContext* editorContext);
+	StudioModelCompilerFrontEnd(AssetManager* application);
 	~StudioModelCompilerFrontEnd();
 
 protected:

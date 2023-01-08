@@ -32,7 +32,7 @@
 #include "settings/GameConfigurationsSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/MainWindow.hpp"
 #include "ui/OpenGLGraphicsContext.hpp"
 
@@ -139,7 +139,7 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		QApplication app(argc, argv);
 
-		_application = &app;
+		_guiApplication = &app;
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
@@ -190,18 +190,18 @@ int ToolApplication::Run(int argc, char* argv[])
 			return EXIT_FAILURE;
 		}
 
-		_editorContext = CreateEditorContext(applicationSettings, std::move(offscreenContext));
+		_application = CreateApplication(applicationSettings, std::move(offscreenContext));
 
-		if (!_editorContext)
+		if (!_application)
 		{
 			return EXIT_FAILURE;
 		}
 
-		_mainWindow = new MainWindow(_editorContext.get());
+		_mainWindow = new MainWindow(_application.get());
 
 		if (!commandLine.FileName.isEmpty())
 		{
-			_editorContext->TryLoadAsset(commandLine.FileName);
+			_application->TryLoadAsset(commandLine.FileName);
 		}
 
 		//Note: do this after the file has loaded to avoid any flickering.
@@ -334,7 +334,7 @@ bool ToolApplication::CheckSingleInstance(
 	return false;
 }
 
-std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
+std::unique_ptr<AssetManager> ToolApplication::CreateApplication(
 	std::shared_ptr<ApplicationSettings> applicationSettings,
 	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext)
 {
@@ -346,7 +346,7 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 	{
 		ApplicationBuilder builder
 		{
-			_application,
+			_guiApplication,
 			applicationSettings.get(),
 			assetProviderRegistry.get(),
 			optionsPageRegistry.get()
@@ -366,15 +366,15 @@ std::unique_ptr<EditorContext> ToolApplication::CreateEditorContext(
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGameConfigurations>());
 	optionsPageRegistry->AddPage(std::make_unique<OptionsPageStyle>(applicationSettings));
 
-	auto editorContext = std::make_unique<EditorContext>(
+	auto application = std::make_unique<AssetManager>(
 		applicationSettings,
 		std::move(graphicsContext),
 		std::move(assetProviderRegistry),
 		std::move(optionsPageRegistry));
 
-	editorContext->GetAssetProviderRegistry()->Initialize(editorContext.get());
+	application->GetAssetProviderRegistry()->Initialize(application.get());
 
-	return editorContext;
+	return application;
 }
 
 bool ToolApplication::AddPlugins(ApplicationBuilder& builder)
@@ -437,13 +437,13 @@ std::unique_ptr<graphics::IGraphicsContext> ToolApplication::InitializeOpenGL()
 
 void ToolApplication::OnExit()
 {
-	const auto settings = _editorContext->GetSettings();
+	const auto settings = _application->GetSettings();
 
-	_editorContext->GetApplicationSettings()->SaveSettings();
+	_application->GetApplicationSettings()->SaveSettings();
 
 	CallPlugins(&IAssetManagerPlugin::SaveSettings, *settings);
 
-	_editorContext->GetAssetProviderRegistry()->Shutdown();
+	_application->GetAssetProviderRegistry()->Shutdown();
 
 	settings->sync();
 
@@ -452,7 +452,7 @@ void ToolApplication::OnExit()
 	_plugins.clear();
 
 	_singleInstance.reset();
-	_editorContext.reset();
+	_application.reset();
 }
 
 void ToolApplication::OnFileNameReceived(const QString& fileName)
@@ -468,7 +468,7 @@ void ToolApplication::OnFileNameReceived(const QString& fileName)
 
 	_mainWindow->activateWindow();
 
-	_editorContext->TryLoadAsset(fileName);
+	_application->TryLoadAsset(fileName);
 }
 
 void ToolApplication::OnStylePathChanged(const QString& stylePath)
@@ -480,10 +480,10 @@ void ToolApplication::OnStylePathChanged(const QString& stylePath)
 	{
 		auto stream = std::make_unique<QTextStream>(file.get());
 
-		_application->setStyleSheet(stream->readAll());
+		_guiApplication->setStyleSheet(stream->readAll());
 	}
 	else
 	{
-		_application->setStyleSheet({});
+		_guiApplication->setStyleSheet({});
 	}
 }

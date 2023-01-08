@@ -8,7 +8,7 @@
 #include <QString>
 #include <QWidget>
 
-class EditorContext;
+class AssetManager;
 
 class OptionsWidget : public QWidget
 {
@@ -28,7 +28,7 @@ public:
 class OptionsPage
 {
 public:
-	using WidgetFactory = std::function<OptionsWidget* (EditorContext* editorContext)>;
+	using WidgetFactory = std::function<OptionsWidget* (AssetManager* application)>;
 
 	virtual ~OptionsPage() = default;
 
@@ -40,7 +40,7 @@ public:
 
 	QString GetPageTitle() const { return _pageTitle; }
 
-	virtual QWidget* GetWidget(EditorContext* editorContext);
+	virtual QWidget* GetWidget(AssetManager* application);
 
 	virtual void ApplyChanges();
 

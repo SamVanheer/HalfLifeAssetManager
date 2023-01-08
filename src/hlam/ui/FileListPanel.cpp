@@ -12,10 +12,10 @@
 
 #include "settings/GameConfigurationsSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/FileListPanel.hpp"
 
-FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
+FileListPanel::FileListPanel(AssetManager* application, QWidget* parent)
 	: QWidget(parent)
 {
 	_ui.setupUi(this);
@@ -23,7 +23,7 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 	_model = new QFileSystemModel(this);
 
 	{
-		const auto settings = editorContext->GetSettings();
+		const auto settings = application->GetSettings();
 		settings->beginGroup("FileList");
 		_model->setNameFilterDisables(!settings->value("HideFilesThatDontMatch", true).toBool());
 		settings->endGroup();
@@ -34,20 +34,20 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 	_ui.FileView->setColumnWidth(0, 250);
 
 	//Initialize to current game configuration
-	UpdateCurrentRootPath(editorContext->GetGameConfigurations()->GetDefaultConfiguration());
+	UpdateCurrentRootPath(application->GetGameConfigurations()->GetDefaultConfiguration());
 
 	/*
-	connect(editorContext->GetGameConfigurations(), &settings::GameConfigurationsSettings::DefaultConfigurationChanged,
+	connect(application->GetGameConfigurations(), &settings::GameConfigurationsSettings::DefaultConfigurationChanged,
 		this, &FileListPanel::UpdateCurrentRootPath);
 	*/
 
 	connect(_ui.Filters, qOverload<int>(&QComboBox::currentIndexChanged), this, &FileListPanel::OnFilterChanged);
 
-	connect(_ui.HideFilesThatDontMatch, &QCheckBox::stateChanged, [this, editorContext]
+	connect(_ui.HideFilesThatDontMatch, &QCheckBox::stateChanged, [this, application]
 		{
 			_model->setNameFilterDisables(!_ui.HideFilesThatDontMatch->isChecked());
 
-			const auto settings = editorContext->GetSettings();
+			const auto settings = application->GetSettings();
 			settings->beginGroup("FileList");
 			settings->setValue("HideFilesThatDontMatch", _ui.HideFilesThatDontMatch->isChecked());
 			settings->endGroup();
@@ -68,7 +68,7 @@ FileListPanel::FileListPanel(EditorContext* editorContext, QWidget* parent)
 	//Build list of file extension filters
 	std::vector<std::pair<QString, QString>> filters;
 
-	for (const auto provider : editorContext->GetAssetProviderRegistry()->GetAssetProviders())
+	for (const auto provider : application->GetAssetProviderRegistry()->GetAssetProviders())
 	{
 		for (const auto& fileType : provider->GetFileTypes())
 		{

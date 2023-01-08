@@ -5,7 +5,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 #include "ui/options/OptionsPageExternalPrograms.hpp"
 #include "ui/options/OptionsPageGeneral.hpp"
 
@@ -21,17 +21,17 @@ OptionsPageExternalPrograms::OptionsPageExternalPrograms(const std::shared_ptr<A
 	SetCategoryTitle("General");
 	SetId(QString{OptionsPageExternalProgramsId});
 	SetPageTitle("External Programs");
-	SetWidgetFactory([this](EditorContext* editorContext)
+	SetWidgetFactory([this](AssetManager* application)
 		{
-			return new OptionsPageExternalProgramsWidget(editorContext, _applicationSettings.get());
+			return new OptionsPageExternalProgramsWidget(application, _applicationSettings.get());
 		});
 }
 
 OptionsPageExternalPrograms::~OptionsPageExternalPrograms() = default;
 
 OptionsPageExternalProgramsWidget::OptionsPageExternalProgramsWidget(
-	EditorContext* editorContext, ApplicationSettings* applicationSettings)
-	: _editorContext(editorContext)
+	AssetManager* application, ApplicationSettings* applicationSettings)
+	: _application(application)
 	, _applicationSettings(applicationSettings)
 {
 	_ui.setupUi(this);

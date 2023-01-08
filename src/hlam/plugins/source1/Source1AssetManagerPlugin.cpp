@@ -9,7 +9,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
-#include "application/EditorContext.hpp"
+#include "application/AssetManager.hpp"
 
 static const QString Source1ModelViewerFileNameKey{QStringLiteral("Source1ModelViewerFileName")};
 const QString Source1ModelExtension{QStringLiteral("mdl")};
@@ -55,7 +55,7 @@ public:
 	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
 		const QString& fileName, FILE* file) override
 	{
-		const auto result = _editorContext->TryLaunchExternalProgram(
+		const auto result = _application->TryLaunchExternalProgram(
 			Source1ModelViewerFileNameKey, QStringList(fileName),
 			"This is a Source 1 Studio model which requires it to be loaded in Source 1 Half-Life Model Viewer.");
 
