@@ -44,6 +44,7 @@
     <addaction name="ActionSave"/>
     <addaction name="ActionSaveAs"/>
     <addaction name="ActionClose"/>
+    <addaction name="ActionCloseAll"/>
     <addaction name="separator"/>
     <addaction name="MenuRecentFiles"/>
     <addaction name="separator"/>
@@ -262,6 +263,14 @@
    </property>
    <property name="text">
     <string>None</string>
+   </property>
+  </action>
+  <action name="ActionCloseAll">
+   <property name="text">
+    <string>Close All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+W</string>
    </property>
   </action>
   <actiongroup name="MinFilterGroup">

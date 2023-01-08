@@ -168,6 +168,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	connect(_ui.ActionSave, &QAction::triggered, this, &MainWindow::OnSaveAsset);
 	connect(_ui.ActionSaveAs, &QAction::triggered, this, &MainWindow::OnSaveAssetAs);
 	connect(_ui.ActionClose, &QAction::triggered, this, &MainWindow::OnCloseAsset);
+	connect(_ui.ActionCloseAll, &QAction::triggered, this, &MainWindow::CloseAllAssets);
 	connect(_ui.ActionExit, &QAction::triggered, this, &MainWindow::OnExit);
 
 	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnToggleFullscreen);
@@ -243,6 +244,7 @@ MainWindow::MainWindow(EditorContext* editorContext)
 	_ui.ActionSave->setEnabled(false);
 	_ui.ActionSaveAs->setEnabled(false);
 	_ui.ActionClose->setEnabled(false);
+	_ui.ActionCloseAll->setEnabled(false);
 	_assetTabs->setVisible(false);
 
 	OnRecentFilesChanged();
@@ -785,6 +787,7 @@ void MainWindow::OnAssetTabChanged(int index)
 	_ui.ActionSave->setEnabled(success);
 	_ui.ActionSaveAs->setEnabled(success);
 	_ui.ActionClose->setEnabled(success);
+	_ui.ActionCloseAll->setEnabled(success);
 	_assetTabs->setVisible(success);
 	_ui.ActionFullscreen->setEnabled(success);
 	_ui.ActionRefresh->setEnabled(success);
@@ -844,6 +847,11 @@ void MainWindow::OnCloseAsset()
 	{
 		TryCloseAsset(index, true);
 	}
+}
+
+void MainWindow::CloseAllAssets()
+{
+	CloseAllButCount(0, true);
 }
 
 void MainWindow::OnRecentFilesChanged()
