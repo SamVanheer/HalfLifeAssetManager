@@ -356,7 +356,7 @@ struct BoneProps
 	std::array<glm::vec3, 2> Values;
 	std::array<glm::vec3, 2> Scales;
 
-	constexpr bool operator==(const BoneProps& other) const
+	bool operator==(const BoneProps& other) const
 	{
 		if (Name != other.Name)
 		{
@@ -409,7 +409,7 @@ struct AttachmentProps
 	int Bone{};
 	glm::vec3 Origin{0};
 
-	constexpr auto operator<=>(const AttachmentProps&) const = default;
+	auto operator<=>(const AttachmentProps&) const = default;
 };
 
 class ChangeAttachmentPropsCommand : public ModelListUndoCommand<AttachmentProps>
