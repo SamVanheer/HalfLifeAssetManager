@@ -455,6 +455,10 @@ void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
 	// Switch to the first asset to reduce the overhead involved with constant tab switching.
 	_assets->SetCurrent(_assets->Get(0));
 
+	// Make the tab widget invisible to reduce overhead from updating it.
+	_assetTabs->setVisible(false);
+	_modifyingTabs = true;
+
 	int i;
 
 	for (i = 0; count-- > leaveOpenCount; ++i)
@@ -466,6 +470,9 @@ void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
 	}
 
 	progress.setValue(i);
+
+	_modifyingTabs = false;
+	_assetTabs->setVisible(_assetTabs->count() > 0);
 }
 
 void MainWindow::SyncSettings()
@@ -511,6 +518,10 @@ void MainWindow::OnOpenLoadAssetDialog()
 			QString{"Opening %1 assets..."}.arg(fileNames.size()), "Abort Open", 0, fileNames.size(), this);
 		progress.setWindowModality(Qt::WindowModal);
 
+		// Make the tab widget invisible to reduce overhead from updating it.
+		_assetTabs->setVisible(false);
+		_modifyingTabs = true;
+
 		for (int i = 0; const auto& fileName : fileNames)
 		{
 			progress.setValue(i++);
@@ -527,6 +538,9 @@ void MainWindow::OnOpenLoadAssetDialog()
 		_activateNewTabs = true;
 
 		progress.setValue(fileNames.size());
+
+		_modifyingTabs = false;
+		_assetTabs->setVisible(_assetTabs->count() > 0);
 	}
 }
 
@@ -569,7 +583,11 @@ void MainWindow::OnAssetTabChanged(int index)
 	_ui.ActionCloseAll->setEnabled(success);
 	_ui.ActionFullscreen->setEnabled(success);
 	_ui.ActionRefresh->setEnabled(success);
-	_assetTabs->setVisible(success);
+
+	if (!_modifyingTabs)
+	{
+		_assetTabs->setVisible(success);
+	}
 
 	_assets->SetCurrent(currentAsset);
 }

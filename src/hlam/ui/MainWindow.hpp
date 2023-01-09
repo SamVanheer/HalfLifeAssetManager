@@ -86,6 +86,7 @@ private:
 	QPointer<QTabWidget> _assetTabs;
 
 	bool _activateNewTabs = true;
+	bool _modifyingTabs = false;
 
 	QString _loadFileFilter;
 	QString _saveFileFilter;
