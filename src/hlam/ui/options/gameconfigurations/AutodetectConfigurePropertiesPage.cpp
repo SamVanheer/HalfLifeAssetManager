@@ -1,6 +1,6 @@
 #include <QDir>
-#include <QFile>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QSettings>
 
 #include "ui/options/gameconfigurations/AutodetectConfigurePropertiesPage.hpp"
@@ -18,7 +18,7 @@ AutodetectConfigurePropertiesPage::AutodetectConfigurePropertiesPage(QWidget* pa
 #ifdef WIN32
 	QSettings modInstallPath{R"(HKEY_CURRENT_USER\SOFTWARE\Valve\Steam)", QSettings::NativeFormat};
 
-	_ui.GameDirectory->setText(modInstallPath.value("ModInstallPath").toString().trimmed());
+	_ui.GameDirectory->setText(QDir::fromNativeSeparators(modInstallPath.value("ModInstallPath").toString().trimmed()));
 
 	// Set default values for Half-Life.
 	if (const auto gameDirectory = _ui.GameDirectory->text(); !gameDirectory.isEmpty())
@@ -99,7 +99,7 @@ bool AutodetectConfigurePropertiesPage::isComplete() const
 	const auto gameExecutable = _ui.GameExecutable->text();
 	const auto baseGameDirectory = _ui.BaseGameDirectory->text();
 
-	return !gameDirectory.isEmpty() && QDir {gameDirectory}.exists()
-		&& !gameExecutable.isEmpty() && QFile::exists(gameExecutable)
-		&& !baseGameDirectory.isEmpty() && QDir{baseGameDirectory}.exists();
+	return !gameDirectory.isEmpty() && QFileInfo{gameDirectory}.isDir()
+		&& !gameExecutable.isEmpty() && QFileInfo{gameExecutable}.isFile()
+		&& !baseGameDirectory.isEmpty() && QFileInfo{baseGameDirectory}.isDir();
 }

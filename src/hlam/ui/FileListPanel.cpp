@@ -4,6 +4,7 @@
 
 #include <QDir>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QFileSystemModel>
 #include <QSettings>
 #include <QString>
@@ -135,6 +136,13 @@ void FileListPanel::OnFileSelected(const QModelIndex& index)
 {
 	if (index.isValid())
 	{
+		const auto fileName = _model->filePath(index);
+
+		if (!QFileInfo{fileName}.isFile())
+		{
+			return;
+		}
+
 		emit FileSelected(_model->filePath(index));
 	}
 }
