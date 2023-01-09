@@ -17,11 +17,11 @@ class DragNDropEventFilter;
 class FullscreenWidget;
 class GameConfigurationsSettings;
 class ISoundSystem;
+class MainWindow;
 class OptionsPageRegistry;
 class QOpenGLFunctions_1_1;
 class QSettings;
 class QStringList;
-class QWidget;
 class SceneWidget;
 class WorldTime;
 
@@ -76,20 +76,13 @@ public:
 
 	OptionsPageRegistry* GetOptionsPageRegistry() const { return _optionsPageRegistry.get(); }
 
-	QTimer* GetTimer() const { return _timer; }
-
 	ISoundSystem* GetSoundSystem() const { return _soundSystem.get(); }
 
 	WorldTime* GetWorldTime() const { return _worldTime.get(); }
 
 	AssetList* GetAssets() const { return _assets.get(); }
 
-	QWidget* GetMainWindow() const { return _mainWindow; }
-
-	void SetMainWindow(QWidget* widget)
-	{
-		_mainWindow = widget;
-	}
+	MainWindow* GetMainWindow() const { return _mainWindow; }
 
 	/**
 	*	@brief Gets the shared scene widget.
@@ -127,6 +120,12 @@ public:
 	*/
 	LaunchExternalProgramResult TryLaunchExternalProgram(
 		const QString& programKey, const QStringList& arguments, const QString& message);
+
+	void Start();
+
+	void OnExit();
+
+	void OnFileNameReceived(const QString& fileName);
 
 signals:
 	/**
@@ -166,7 +165,7 @@ private:
 
 	const std::unique_ptr<AssetList> _assets;
 
-	QWidget* _mainWindow{};
+	MainWindow* _mainWindow{};
 	QPointer<SceneWidget> _sceneWidget;
 	std::unique_ptr<FullscreenWidget> _fullscreenWidget;
 };

@@ -34,6 +34,7 @@
 
 #include "ui/DragNDropEventFilter.hpp"
 #include "ui/FullscreenWidget.hpp"
+#include "ui/MainWindow.hpp"
 #include "ui/SceneWidget.hpp"
 
 #include "ui/options/OptionsPageRegistry.hpp"
@@ -280,6 +281,41 @@ LaunchExternalProgramResult AssetManager::TryLaunchExternalProgram(
 
 	// If process start failed we've already logged an error, caller doesn't need to handle it.
 	return LaunchExternalProgramResult::Success;
+}
+
+void AssetManager::Start()
+{
+	_mainWindow = new MainWindow(this);
+
+	_mainWindow->showMaximized();
+
+	// Now load settings to restore window geometry.
+	_mainWindow->LoadSettings();
+
+	StartTimer();
+}
+
+void AssetManager::OnExit()
+{
+	_mainWindow = nullptr;
+
+	_timer->stop();
+}
+
+void AssetManager::OnFileNameReceived(const QString& fileName)
+{
+	if (_mainWindow->isMaximized())
+	{
+		_mainWindow->showMaximized();
+	}
+	else
+	{
+		_mainWindow->showNormal();
+	}
+
+	_mainWindow->activateWindow();
+
+	GetAssets()->TryLoad(fileName);
 }
 
 void AssetManager::OnTimerTick()

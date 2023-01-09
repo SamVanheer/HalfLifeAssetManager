@@ -52,8 +52,6 @@ MainWindow::MainWindow(AssetManager* application)
 	, _application(application)
 	, _assets(_application->GetAssets())
 {
-	_application->SetMainWindow(this);
-
 	_ui.setupUi(this);
 
 	this->setAttribute(Qt::WidgetAttribute::WA_DeleteOnClose);
@@ -303,8 +301,6 @@ MainWindow::MainWindow(AssetManager* application)
 	}
 
 	SyncSettings();
-
-	_application->StartTimer();
 }
 
 MainWindow::~MainWindow()
@@ -316,10 +312,6 @@ MainWindow::~MainWindow()
 	settings->setValue("ScreenName", screen->name());
 	settings->setValue("ScreenGeometry", saveGeometry());
 	settings->endGroup();
-
-	_application->GetTimer()->stop();
-
-	_application->SetMainWindow(nullptr);
 }
 
 void MainWindow::LoadSettings()

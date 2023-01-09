@@ -11,6 +11,7 @@
 #include <QSignalBlocker>
 
 #include "application/AssetList.hpp"
+#include "application/AssetManager.hpp"
 
 #include "formats/sprite/SpriteRenderer.hpp"
 #include "formats/studiomodel/DumpModelInfo.hpp"
@@ -35,8 +36,8 @@
 #include "settings/ApplicationSettings.hpp"
 #include "settings/StudioModelSettings.hpp"
 
+#include "ui/MainWindow.hpp"
 #include "ui/SceneWidget.hpp"
-#include "application/AssetManager.hpp"
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 #include "ui/camera_operators/CameraOperators.hpp"
 #include "ui/camera_operators/FirstPersonCameraOperator.hpp"

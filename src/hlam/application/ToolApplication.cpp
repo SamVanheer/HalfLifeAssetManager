@@ -18,6 +18,7 @@
 
 #include "application/ApplicationBuilder.hpp"
 #include "application/AssetList.hpp"
+#include "application/AssetManager.hpp"
 #include "application/Assets.hpp"
 #include "application/ToolApplication.hpp"
 
@@ -33,8 +34,6 @@
 #include "settings/GameConfigurationsSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
-#include "application/AssetManager.hpp"
-#include "ui/MainWindow.hpp"
 #include "ui/OpenGLGraphicsContext.hpp"
 
 #include "ui/options/OptionsPageColors.hpp"
@@ -198,18 +197,18 @@ int ToolApplication::Run(int argc, char* argv[])
 			return EXIT_FAILURE;
 		}
 
-		_mainWindow = new MainWindow(_application.get());
+		if (_singleInstance)
+		{
+			connect(_singleInstance.get(), &SingleInstance::FileNameReceived,
+				_application.get(), &AssetManager::OnFileNameReceived);
+		}
+
+		_application->Start();
 
 		if (!commandLine.FileName.isEmpty())
 		{
 			_application->GetAssets()->TryLoad(commandLine.FileName);
 		}
-
-		//Note: do this after the file has loaded to avoid any flickering.
-		_mainWindow->showMaximized();
-
-		// Now load settings to restore window geometry.
-		_mainWindow->LoadSettings();
 
 		return app.exec();
 	}
@@ -328,8 +327,6 @@ bool ToolApplication::CheckSingleInstance(
 		{
 			return true;
 		}
-
-		connect(_singleInstance.get(), &SingleInstance::FileNameReceived, this, &ToolApplication::OnFileNameReceived);
 	}
 
 	return false;
@@ -438,6 +435,8 @@ std::unique_ptr<graphics::IGraphicsContext> ToolApplication::InitializeOpenGL()
 
 void ToolApplication::OnExit()
 {
+	_application->OnExit();
+
 	const auto settings = _application->GetSettings();
 
 	_application->GetApplicationSettings()->SaveSettings();
@@ -454,22 +453,6 @@ void ToolApplication::OnExit()
 
 	_singleInstance.reset();
 	_application.reset();
-}
-
-void ToolApplication::OnFileNameReceived(const QString& fileName)
-{
-	if (_mainWindow->isMaximized())
-	{
-		_mainWindow->showMaximized();
-	}
-	else
-	{
-		_mainWindow->showNormal();
-	}
-
-	_mainWindow->activateWindow();
-
-	_application->GetAssets()->TryLoad(fileName);
 }
 
 void ToolApplication::OnStylePathChanged(const QString& stylePath)

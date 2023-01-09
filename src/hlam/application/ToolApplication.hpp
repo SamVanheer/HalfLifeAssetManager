@@ -15,7 +15,6 @@ class ApplicationBuilder;
 class ApplicationSettings;
 class AssetManager;
 class IAssetManagerPlugin;
-class MainWindow;
 class QApplication;
 class QSettings;
 class QStringList;
@@ -76,8 +75,6 @@ private:
 private slots:
 	void OnExit();
 
-	void OnFileNameReceived(const QString& fileName);
-
 	void OnStylePathChanged(const QString& stylePath);
 
 private:
@@ -86,7 +83,6 @@ private:
 	std::vector<std::unique_ptr<IAssetManagerPlugin>> _plugins;
 
 	std::unique_ptr<AssetManager> _application;
-	QPointer<MainWindow> _mainWindow;
 
 	std::unique_ptr<SingleInstance> _singleInstance;
 };

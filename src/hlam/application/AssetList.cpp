@@ -16,6 +16,8 @@
 #include "settings/ApplicationSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
+#include "ui/MainWindow.hpp"
+
 AssetList::AssetList(AssetManager* application)
 	: _application(application)
 {
