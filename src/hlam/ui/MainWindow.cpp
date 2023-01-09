@@ -142,6 +142,8 @@ MainWindow::MainWindow(AssetManager* application)
 		dock->setAllowedAreas(Qt::DockWidgetArea::BottomDockWidgetArea);
 		dock->hide();
 
+		connect(dock, &QDockWidget::dockLocationChanged, this, [dock] { dock->resize(400, 100); });
+
 		addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, dock);
 
 		_ui.MenuView->addAction(dock->toggleViewAction());
