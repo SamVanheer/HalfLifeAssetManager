@@ -782,15 +782,16 @@ void MainWindow::OnAssetTabChanged(int index)
 		OnExitFullscreen();
 	}
 
-	emit _editorContext->ActiveAssetChanged(_currentAsset);
-
 	_ui.ActionSave->setEnabled(success);
 	_ui.ActionSaveAs->setEnabled(success);
 	_ui.ActionClose->setEnabled(success);
 	_ui.ActionCloseAll->setEnabled(success);
-	_assetTabs->setVisible(success);
 	_ui.ActionFullscreen->setEnabled(success);
 	_ui.ActionRefresh->setEnabled(success);
+
+	_assetTabs->setVisible(success);
+
+	emit _editorContext->ActiveAssetChanged(_currentAsset);
 }
 
 void MainWindow::OnAssetTabCloseRequested(int index)
