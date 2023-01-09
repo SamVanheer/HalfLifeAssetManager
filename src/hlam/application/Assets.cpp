@@ -32,11 +32,11 @@ void AssetProviderRegistry::AddProvider(std::unique_ptr<AssetProvider>&& provide
 	_providers.push_back(std::move(provider));
 }
 
-void AssetProviderRegistry::Initialize(AssetManager* application)
+void AssetProviderRegistry::Initialize()
 {
 	for (const auto& provider : _providers)
 	{
-		provider->Initialize(application);
+		provider->Initialize();
 	}
 }
 

@@ -10,7 +10,7 @@ class Source1AssetManagerPlugin final : public IAssetManagerPlugin
 public:
 	QString GetName() const override { return "Source1Plugin"; }
 
-	bool Initialize(ApplicationBuilder& builder) override;
+	bool Initialize(AssetManager* application) override;
 
 	void Shutdown() override {}
 

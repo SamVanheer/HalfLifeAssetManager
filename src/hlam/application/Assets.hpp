@@ -82,6 +82,12 @@ struct AssetLoadInExternalProgram
 */
 class AssetProvider : public QObject
 {
+protected:
+	explicit AssetProvider(AssetManager* application)
+		: _application(application)
+	{
+	}
+
 public:
 	/**
 	*	@brief e.g. "Studiomodel". Used for file filters.
@@ -94,10 +100,7 @@ public:
 
 	virtual ProviderFeatures GetFeatures() const = 0;
 
-	virtual void Initialize(AssetManager* application)
-	{
-		_application = application;
-	}
+	virtual void Initialize() {}
 
 	virtual void Shutdown() {}
 
@@ -119,7 +122,7 @@ public:
 		const QString& fileName, FILE* file) = 0;
 
 protected:
-	AssetManager* _application{};
+	AssetManager* const _application;
 };
 
 /**
@@ -137,8 +140,7 @@ public:
 
 	void AddProvider(std::unique_ptr<AssetProvider>&& provider);
 
-	void Initialize(AssetManager* application);
-
+	void Initialize();
 	void Shutdown();
 
 	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(const QString& fileName) const;

@@ -51,15 +51,27 @@ Q_LOGGING_CATEGORY(HLAMStudioModel, "hlam.studiomodel")
 
 const QString WindowStateKey{QStringLiteral("Asset/StudioModel/WindowState")};
 
-StudioModelAssetProvider::StudioModelAssetProvider(ApplicationSettings* applicationSettings,
+StudioModelAssetProvider::StudioModelAssetProvider(AssetManager* application,
 	const std::shared_ptr<StudioModelSettings>& studioModelSettings)
-	: _studioModelSettings(studioModelSettings)
+	: AssetProvider(application)
+	, _studioModelSettings(studioModelSettings)
+
+	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(
+		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()),
+		_application->GetOpenGLFunctions(), _application->GetColorSettings()))
+
+	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(
+		CreateQtLoggerSt(logging::HLAMSpriteRenderer()), _application->GetWorldTime()))
+
+	, _dummyAsset(std::make_unique<StudioModelAsset>(
+		"", _application, this, std::make_unique<studiomdl::EditableStudioModel>()))
+
 	, _cameraOperators(new CameraOperators(this))
-	, _arcBallCamera(new ArcBallCameraOperator(applicationSettings))
-	, _firstPersonCamera(new FirstPersonCameraOperator(applicationSettings))
+	, _arcBallCamera(new ArcBallCameraOperator(application->GetApplicationSettings()))
+	, _firstPersonCamera(new FirstPersonCameraOperator(application->GetApplicationSettings()))
 {
 	_cameraOperators->Add(_arcBallCamera);
-	_cameraOperators->Add(new FreeLookCameraOperator(applicationSettings));
+	_cameraOperators->Add(new FreeLookCameraOperator(application->GetApplicationSettings()));
 	_cameraOperators->Add(_firstPersonCamera);
 
 	for (auto cameraOperator : _cameraOperators->GetAll())
@@ -67,26 +79,6 @@ StudioModelAssetProvider::StudioModelAssetProvider(ApplicationSettings* applicat
 		auto camera = cameraOperator->GetCamera();
 		camera->SetFieldOfView(_studioModelSettings->GetCameraFOV(cameraOperator->GetName(), camera->GetFieldOfView()));
 	}
-}
-
-StudioModelAssetProvider::~StudioModelAssetProvider()
-{
-	delete _editWidget;
-}
-
-void StudioModelAssetProvider::Initialize(AssetManager* application)
-{
-	AssetProvider::Initialize(application);
-
-	_studioModelRenderer = std::make_unique<studiomdl::StudioModelRenderer>(
-		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()),
-		_application->GetOpenGLFunctions(), _application->GetColorSettings());
-
-	_spriteRenderer = std::make_unique<sprite::SpriteRenderer>(
-		CreateQtLoggerSt(logging::HLAMSpriteRenderer()), _application->GetWorldTime());
-
-	_dummyAsset = std::make_unique<StudioModelAsset>(
-		"", _application, this, std::make_unique<studiomdl::EditableStudioModel>());
 
 	_currentAsset = GetDummyAsset();
 
@@ -134,6 +126,11 @@ void StudioModelAssetProvider::Initialize(AssetManager* application)
 		openglFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		graphicsContext->End();
 	}
+}
+
+StudioModelAssetProvider::~StudioModelAssetProvider()
+{
+	delete _editWidget;
 }
 
 void StudioModelAssetProvider::Shutdown()

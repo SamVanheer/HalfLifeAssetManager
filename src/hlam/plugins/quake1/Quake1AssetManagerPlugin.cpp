@@ -1,14 +1,12 @@
 #include <cstdio>
 #include <cstring>
 
-#include "application/ApplicationBuilder.hpp"
 #include "application/AssetIO.hpp"
+#include "application/AssetManager.hpp"
 #include "application/Assets.hpp"
 #include "plugins/quake1/Quake1AssetManagerPlugin.hpp"
 
 #include "settings/ApplicationSettings.hpp"
-
-#include "application/AssetManager.hpp"
 
 static const QString Quake1ModelViewerFileNameKey{QStringLiteral("Quake1ModelViewerFileName")};
 const QString AliasModelExtension{QStringLiteral("mdl")};
@@ -18,8 +16,8 @@ constexpr char AliasModelHeaderId[] = "IDPO";
 class Quake1AliasModelAssetProvider final : public AssetProvider
 {
 public:
-	explicit Quake1AliasModelAssetProvider(ApplicationSettings* applicationSettings)
-		: _applicationSettings(applicationSettings)
+	explicit Quake1AliasModelAssetProvider(AssetManager* application)
+		: AssetProvider(application)
 	{
 	}
 
@@ -62,17 +60,15 @@ public:
 			+ "\" is a Quake 1 Alias model and cannot be opened by this program."
 			+ "\nSet the Quake 1 Model Viewer executable setting to open the model through that program instead.");
 	}
-
-private:
-	ApplicationSettings* const _applicationSettings;
 };
 
-bool Quake1AssetManagerPlugin::Initialize(ApplicationBuilder& builder)
+bool Quake1AssetManagerPlugin::Initialize(AssetManager* application)
 {
-	builder.Settings->GetExternalPrograms()->AddProgram(Quake1ModelViewerFileNameKey, "Quake 1 Model Viewer");
+	application->GetApplicationSettings()->GetExternalPrograms()->AddProgram(
+		Quake1ModelViewerFileNameKey, "Quake 1 Model Viewer");
 
-	auto quake1AliasModelAssetProvider = std::make_unique<Quake1AliasModelAssetProvider>(builder.Settings);
-	builder.AssetProviders->AddProvider(std::move(quake1AliasModelAssetProvider));
+	auto quake1AliasModelAssetProvider = std::make_unique<Quake1AliasModelAssetProvider>(application);
+	application->GetAssetProviderRegistry()->AddProvider(std::move(quake1AliasModelAssetProvider));
 
 	return true;
 }

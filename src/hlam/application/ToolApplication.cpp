@@ -16,10 +16,8 @@
 #include <QSurfaceFormat>
 #include <QTextStream>
 
-#include "application/ApplicationBuilder.hpp"
 #include "application/AssetList.hpp"
 #include "application/AssetManager.hpp"
-#include "application/Assets.hpp"
 #include "application/ToolApplication.hpp"
 
 #include "plugins/IAssetManagerPlugin.hpp"
@@ -30,18 +28,8 @@
 #include "qt/QtLogging.hpp"
 
 #include "settings/ApplicationSettings.hpp"
-#include "settings/ColorSettings.hpp"
-#include "settings/GameConfigurationsSettings.hpp"
-#include "settings/RecentFilesSettings.hpp"
 
 #include "ui/OpenGLGraphicsContext.hpp"
-
-#include "ui/options/OptionsPageColors.hpp"
-#include "ui/options/OptionsPageExternalPrograms.hpp"
-#include "ui/options/OptionsPageGeneral.hpp"
-#include "ui/options/OptionsPageRegistry.hpp"
-#include "ui/options/OptionsPageStyle.hpp"
-#include "ui/options/gameconfigurations/OptionsPageGameConfigurations.hpp"
 
 using namespace logging;
 
@@ -336,69 +324,22 @@ std::unique_ptr<AssetManager> ToolApplication::CreateApplication(
 	std::shared_ptr<ApplicationSettings> applicationSettings,
 	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext)
 {
-	connect(applicationSettings.get(), &ApplicationSettings::StylePathChanged, this, &ToolApplication::OnStylePathChanged);
-
-	auto assetProviderRegistry{std::make_unique<AssetProviderRegistry>()};
-	auto optionsPageRegistry{std::make_unique<OptionsPageRegistry>()};
+	auto application = std::make_unique<AssetManager>(_guiApplication, applicationSettings, std::move(graphicsContext));
 
 	{
-		ApplicationBuilder builder
-		{
-			_guiApplication,
-			applicationSettings.get(),
-			assetProviderRegistry.get(),
-			optionsPageRegistry.get()
-		};
+		bool success = true;
 
-		if (!AddPlugins(builder))
+		success = application->AddPlugin(std::make_unique<HalfLifeAssetManagerPlugin>()) && success;
+		success = application->AddPlugin(std::make_unique<Quake1AssetManagerPlugin>()) && success;
+		success = application->AddPlugin(std::make_unique<Source1AssetManagerPlugin>()) && success;
+
+		if (!success)
 		{
 			return {};
 		}
 	}
 
-	CallPlugins(&IAssetManagerPlugin::LoadSettings, *applicationSettings->GetSettings());
-
-	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGeneral>(applicationSettings));
-	optionsPageRegistry->AddPage(std::make_unique<OptionsPageColors>(applicationSettings));
-	optionsPageRegistry->AddPage(std::make_unique<OptionsPageExternalPrograms>(applicationSettings));
-	optionsPageRegistry->AddPage(std::make_unique<OptionsPageGameConfigurations>());
-	optionsPageRegistry->AddPage(std::make_unique<OptionsPageStyle>(applicationSettings));
-
-	auto application = std::make_unique<AssetManager>(
-		applicationSettings,
-		std::move(graphicsContext),
-		std::move(assetProviderRegistry),
-		std::move(optionsPageRegistry));
-
-	application->GetAssetProviderRegistry()->Initialize(application.get());
-
 	return application;
-}
-
-bool ToolApplication::AddPlugins(ApplicationBuilder& builder)
-{
-	bool success = true;
-
-	const auto addPlugin = [&builder, &success, this](std::unique_ptr<IAssetManagerPlugin>&& plugin)
-	{
-		if (!plugin->Initialize(builder))
-		{
-			QMessageBox::critical(nullptr, "Fatal Error",
-				QString{"Error initializing plugin \"%1\""}.arg(plugin->GetName()));
-			success = false;
-			return;
-		}
-
-		qCDebug(HLAM) << "Adding plugin " << plugin->GetName();
-
-		_plugins.push_back(std::move(plugin));
-	};
-
-	addPlugin(std::make_unique<HalfLifeAssetManagerPlugin>());
-	addPlugin(std::make_unique<Quake1AssetManagerPlugin>());
-	addPlugin(std::make_unique<Source1AssetManagerPlugin>());
-
-	return success;
 }
 
 std::unique_ptr<graphics::IGraphicsContext> ToolApplication::InitializeOpenGL()
@@ -437,37 +378,6 @@ void ToolApplication::OnExit()
 {
 	_application->OnExit();
 
-	const auto settings = _application->GetSettings();
-
-	_application->GetApplicationSettings()->SaveSettings();
-
-	CallPlugins(&IAssetManagerPlugin::SaveSettings, *settings);
-
-	_application->GetAssetProviderRegistry()->Shutdown();
-
-	settings->sync();
-
-	CallPlugins(&IAssetManagerPlugin::Shutdown);
-
-	_plugins.clear();
-
-	_singleInstance.reset();
 	_application.reset();
-}
-
-void ToolApplication::OnStylePathChanged(const QString& stylePath)
-{
-	auto file = std::make_unique<QFile>(stylePath);
-	file->open(QFile::ReadOnly | QFile::Text);
-
-	if (file->isOpen())
-	{
-		auto stream = std::make_unique<QTextStream>(file.get());
-
-		_guiApplication->setStyleSheet(stream->readAll());
-	}
-	else
-	{
-		_guiApplication->setStyleSheet({});
-	}
+	_singleInstance.reset();
 }

@@ -16,9 +16,11 @@ class ColorSettings;
 class DragNDropEventFilter;
 class FullscreenWidget;
 class GameConfigurationsSettings;
+class IAssetManagerPlugin;
 class ISoundSystem;
 class MainWindow;
 class OptionsPageRegistry;
+class QApplication;
 class QOpenGLFunctions_1_1;
 class QSettings;
 class QStringList;
@@ -47,14 +49,15 @@ class AssetManager final : public QObject
 
 public:
 	AssetManager(
+		QApplication* guiApplication,
 		const std::shared_ptr<ApplicationSettings>& applicationSettings,
 		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
-		std::unique_ptr<AssetProviderRegistry>&& assetProviderRegistry,
-		std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
 		QObject* parent = nullptr);
 	~AssetManager();
 	AssetManager(const AssetManager&) = delete;
 	AssetManager& operator=(const AssetManager&) = delete;
+
+	QApplication* GetGUIApplication() const { return _guiApplication; }
 
 	QSettings* GetSettings() const;
 
@@ -71,6 +74,8 @@ public:
 	QOpenGLFunctions_1_1* GetOpenGLFunctions() { return _openglFunctions.get(); }
 
 	graphics::TextureLoader* GetTextureLoader() { return _textureLoader.get(); }
+
+	bool AddPlugin(std::unique_ptr<IAssetManagerPlugin> plugin);
 
 	AssetProviderRegistry* GetAssetProviderRegistry() const { return _assetProviderRegistry.get(); }
 
@@ -127,6 +132,16 @@ public:
 
 	void OnFileNameReceived(const QString& fileName);
 
+private:
+	template<typename TFunction, typename... Args>
+	void CallPlugins(TFunction&& function, Args&&... args)
+	{
+		for (auto& plugin : _plugins)
+		{
+			(*plugin.*function)(std::forward<Args>(args)...);
+		}
+	}
+
 signals:
 	/**
 	*	@brief Emitted every time a frame tick occurs
@@ -144,7 +159,11 @@ private slots:
 
 	void OnTickRateChanged(int value);
 
+	void OnStylePathChanged(const QString& stylePath);
+
 private:
+	QApplication* const _guiApplication;
+
 	const std::shared_ptr<ApplicationSettings> _applicationSettings;
 
 	DragNDropEventFilter* const _dragNDropEventFilter;
@@ -152,6 +171,10 @@ private:
 	const std::unique_ptr<graphics::IGraphicsContext> _graphicsContext;
 	const std::unique_ptr<QOpenGLFunctions_1_1> _openglFunctions;
 	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
+
+	// Plugin destructors should be called after the asset and options page destructors,
+	// so it has to be listed before the registries.
+	std::vector<std::unique_ptr<IAssetManagerPlugin>> _plugins;
 
 	const std::unique_ptr<AssetProviderRegistry> _assetProviderRegistry;
 	const std::unique_ptr<OptionsPageRegistry> _optionsPageRegistry;

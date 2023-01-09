@@ -1,15 +1,13 @@
 #include <cstdio>
 #include <cstring>
 
-#include "application/ApplicationBuilder.hpp"
 #include "application/AssetIO.hpp"
+#include "application/AssetManager.hpp"
 #include "application/Assets.hpp"
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
 #include "plugins/source1/Source1AssetManagerPlugin.hpp"
 
 #include "settings/ApplicationSettings.hpp"
-
-#include "application/AssetManager.hpp"
 
 static const QString Source1ModelViewerFileNameKey{QStringLiteral("Source1ModelViewerFileName")};
 const QString Source1ModelExtension{QStringLiteral("mdl")};
@@ -20,8 +18,8 @@ constexpr int Source1StudioVersionMax = 48;
 class Source1StudioModelAssetProvider final : public AssetProvider
 {
 public:
-	explicit Source1StudioModelAssetProvider(ApplicationSettings* applicationSettings)
-		: _applicationSettings(applicationSettings)
+	explicit Source1StudioModelAssetProvider(AssetManager* application)
+		: AssetProvider(application)
 	{
 	}
 
@@ -68,16 +66,14 @@ public:
 			+ "\" is a Source 1 Studio model and cannot be opened by this program."
 			+ "\nSet the Source 1 Half-Life Model Viewer executable setting to open the model through that program instead.");
 	}
-
-private:
-	ApplicationSettings* const _applicationSettings;
 };
 
-bool Source1AssetManagerPlugin::Initialize(ApplicationBuilder& builder)
+bool Source1AssetManagerPlugin::Initialize(AssetManager* application)
 {
-	builder.Settings->GetExternalPrograms()->AddProgram(Source1ModelViewerFileNameKey, "Source 1 Model Viewer");
+	application->GetApplicationSettings()->GetExternalPrograms()->AddProgram(
+		Source1ModelViewerFileNameKey, "Source 1 Model Viewer");
 
-	auto source1StudioModelAssetProvider = std::make_unique<Source1StudioModelAssetProvider>(builder.Settings);
-	builder.AssetProviders->AddProvider(std::move(source1StudioModelAssetProvider));
+	auto source1StudioModelAssetProvider = std::make_unique<Source1StudioModelAssetProvider>(application);
+	application->GetAssetProviderRegistry()->AddProvider(std::move(source1StudioModelAssetProvider));
 	return true;
 }

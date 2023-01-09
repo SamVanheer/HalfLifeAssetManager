@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "assets/AssetIO.hpp"
+#include "application/AssetIO.hpp"
 
 #include "formats/studiomodel/StudioModelUtils.hpp"
 

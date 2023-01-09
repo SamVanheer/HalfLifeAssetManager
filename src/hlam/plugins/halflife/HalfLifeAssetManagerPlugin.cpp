@@ -1,4 +1,4 @@
-#include "application/ApplicationBuilder.hpp"
+#include "application/AssetManager.hpp"
 #include "application/Assets.hpp"
 
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
@@ -16,13 +16,14 @@
 
 using namespace studiomodel;
 
-bool HalfLifeAssetManagerPlugin::Initialize(ApplicationBuilder& builder)
+bool HalfLifeAssetManagerPlugin::Initialize(AssetManager* application)
 {
-	builder.Settings->GetExternalPrograms()->AddProgram(StudiomdlCompilerFileNameKey, "Studiomdl compiler");
-	builder.Settings->GetExternalPrograms()->AddProgram(StudiomdlDecompilerFileNameKey, "Studiomdl Decompiler");
-	builder.Settings->GetExternalPrograms()->AddProgram(XashModelViewerFileNameKey, "Xash Model Viewer");
+	auto settings = application->GetApplicationSettings();
+	settings->GetExternalPrograms()->AddProgram(StudiomdlCompilerFileNameKey, "Studiomdl compiler");
+	settings->GetExternalPrograms()->AddProgram(StudiomdlDecompilerFileNameKey, "Studiomdl Decompiler");
+	settings->GetExternalPrograms()->AddProgram(XashModelViewerFileNameKey, "Xash Model Viewer");
 
-	auto colorSettings = builder.Settings->GetColorSettings();
+	auto colorSettings = settings->GetColorSettings();
 
 	colorSettings->Add(GroundColor, RGBA8888ToVector(216, 216, 175, 178));
 	colorSettings->Add(BackgroundColor, RGB888ToVector(63, 127, 127));
@@ -32,21 +33,22 @@ bool HalfLifeAssetManagerPlugin::Initialize(ApplicationBuilder& builder)
 	colorSettings->Add(HitboxEdgeColor, RGBA8888ToVector(255, 0, 0, 128));
 	colorSettings->Add(HitboxFaceColor, RGBA8888ToVector(128, 0, 0, 0));
 
-	const auto studioModelSettings{std::make_shared<StudioModelSettings>(builder.Settings->GetSettings())};
+	const auto studioModelSettings{std::make_shared<StudioModelSettings>(settings->GetSettings())};
 
-	QObject::connect(builder.Settings, &ApplicationSettings::SettingsSaved,
+	QObject::connect(settings, &ApplicationSettings::SettingsSaved,
 		studioModelSettings.get(), &StudioModelSettings::SaveSettings);
 
 	// TODO: needs to be moved later on
 	studioModelSettings->LoadSettings();
 
-	auto studioModelAssetProvider = std::make_unique<StudioModelAssetProvider>(builder.Settings, studioModelSettings);
-	auto studioModelImportProvider = std::make_unique<StudioModelDolImportProvider>(studioModelAssetProvider.get());
+	auto studioModelAssetProvider = std::make_unique<StudioModelAssetProvider>(application, studioModelSettings);
+	auto studioModelImportProvider = std::make_unique<StudioModelDolImportProvider>(
+		application, studioModelAssetProvider.get());
 
-	builder.AssetProviders->AddProvider(std::move(studioModelAssetProvider));
-	builder.AssetProviders->AddProvider(std::move(studioModelImportProvider));
+	application->GetAssetProviderRegistry()->AddProvider(std::move(studioModelAssetProvider));
+	application->GetAssetProviderRegistry()->AddProvider(std::move(studioModelImportProvider));
 
-	builder.OptionsPages->AddPage(std::make_unique<OptionsPageStudioModel>(studioModelSettings));
+	application->GetOptionsPageRegistry()->AddPage(std::make_unique<OptionsPageStudioModel>(studioModelSettings));
 
 	return true;
 }

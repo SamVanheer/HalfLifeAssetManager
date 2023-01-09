@@ -2,7 +2,7 @@
 
 #include <QString>
 
-class ApplicationBuilder;
+class AssetManager;
 class QSettings;
 
 /**
@@ -15,7 +15,7 @@ public:
 
 	virtual QString GetName() const = 0;
 
-	virtual bool Initialize(ApplicationBuilder& builder) = 0;
+	virtual bool Initialize(AssetManager* application) = 0;
 
 	virtual void Shutdown() = 0;
 

@@ -10,7 +10,7 @@ class Quake1AssetManagerPlugin final : public IAssetManagerPlugin
 public:
 	QString GetName() const override { return "Quake1Plugin"; }
 
-	bool Initialize(ApplicationBuilder& builder) override;
+	bool Initialize(AssetManager* application) override;
 
 	void Shutdown() override {}
 

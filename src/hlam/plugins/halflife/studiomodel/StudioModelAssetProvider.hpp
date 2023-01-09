@@ -43,7 +43,7 @@ class StudioModelAssetProvider final : public AssetProvider
 	Q_OBJECT
 
 public:
-	explicit StudioModelAssetProvider(ApplicationSettings* applicationSettings,
+	explicit StudioModelAssetProvider(AssetManager* application,
 		const std::shared_ptr<StudioModelSettings>& studioModelSettings);
 	~StudioModelAssetProvider();
 
@@ -57,8 +57,6 @@ public:
 	{
 		return ProviderFeature::AssetLoading | ProviderFeature::AssetSaving;
 	}
-
-	void Initialize(AssetManager* application) override;
 
 	void Shutdown() override;
 
@@ -109,19 +107,19 @@ private slots:
 
 private:
 	const std::shared_ptr<StudioModelSettings> _studioModelSettings;
-	std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
-	std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
-	std::unique_ptr<StudioModelAsset> _dummyAsset;
+	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
+	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
+	const std::unique_ptr<StudioModelAsset> _dummyAsset;
 
 	QPointer<QAction> _editControlsVisibleAction;
 	QPointer<QAction> _restoreViewAction;
 
 	QPointer<StudioModelEditWidget> _editWidget;
 
-	CameraOperators* _cameraOperators;
+	CameraOperators* const _cameraOperators;
 
-	SceneCameraOperator* _arcBallCamera;
-	SceneCameraOperator* _firstPersonCamera;
+	SceneCameraOperator* const _arcBallCamera;
+	SceneCameraOperator* const _firstPersonCamera;
 
 	StateSnapshot _cameraSnapshot;
 
@@ -136,8 +134,9 @@ private:
 class StudioModelDolImportProvider final : public AssetProvider
 {
 public:
-	StudioModelDolImportProvider(StudioModelAssetProvider* assetProvider)
-		: _assetProvider(assetProvider)
+	explicit StudioModelDolImportProvider(AssetManager* application, StudioModelAssetProvider* assetProvider)
+		: AssetProvider(application)
+		, _assetProvider(assetProvider)
 	{
 	}
 

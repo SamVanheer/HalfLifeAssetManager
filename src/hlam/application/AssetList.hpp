@@ -6,7 +6,8 @@
 #include <QObject>
 #include <QPointer>
 
-class Asset;
+#include "application/Assets.hpp"
+
 class AssetManager;
 
 enum class AssetLoadResult

@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QOpenGLFunctions_1_1>
 #include <QProcess>
+#include <QSettings>
 
 #include <spdlog/logger.h>
 
@@ -21,6 +22,8 @@
 
 #include "graphics/IGraphicsContext.hpp"
 #include "graphics/TextureLoader.hpp"
+
+#include "plugins/IAssetManagerPlugin.hpp"
 
 #include "qt/QtLogging.hpp"
 #include "qt/QtLogSink.hpp"
@@ -37,17 +40,22 @@
 #include "ui/MainWindow.hpp"
 #include "ui/SceneWidget.hpp"
 
+#include "ui/options/OptionsPageColors.hpp"
+#include "ui/options/OptionsPageExternalPrograms.hpp"
+#include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/options/OptionsPageRegistry.hpp"
+#include "ui/options/OptionsPageStyle.hpp"
+#include "ui/options/gameconfigurations/OptionsPageGameConfigurations.hpp"
 
 #include "utility/WorldTime.hpp"
 
 AssetManager::AssetManager(
+	QApplication* guiApplication,
 	const std::shared_ptr<ApplicationSettings>& applicationSettings,
 	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext,
-	std::unique_ptr<AssetProviderRegistry>&& assetProviderRegistry,
-	std::unique_ptr<OptionsPageRegistry>&& optionsPageRegistry,
 	QObject* parent)
 	: QObject(parent)
+	, _guiApplication(guiApplication)
 	, _applicationSettings(applicationSettings)
 	, _dragNDropEventFilter(new DragNDropEventFilter(this, this))
 
@@ -55,8 +63,8 @@ AssetManager::AssetManager(
 	, _openglFunctions(std::make_unique<QOpenGLFunctions_1_1>())
 	, _textureLoader(std::make_unique<graphics::TextureLoader>(_openglFunctions.get()))
 
-	, _assetProviderRegistry(std::move(assetProviderRegistry))
-	, _optionsPageRegistry(std::move(optionsPageRegistry))
+	, _assetProviderRegistry(std::make_unique<AssetProviderRegistry>())
+	, _optionsPageRegistry(std::make_unique<OptionsPageRegistry>())
 
 	, _timer(new QTimer(this))
 
@@ -88,6 +96,7 @@ AssetManager::AssetManager(
 
 	connect(_timer, &QTimer::timeout, this, &AssetManager::OnTimerTick);
 	connect(_applicationSettings.get(), &ApplicationSettings::TickRateChanged, this, &AssetManager::OnTickRateChanged);
+	connect(_applicationSettings.get(), &ApplicationSettings::StylePathChanged, this, &AssetManager::OnStylePathChanged);
 
 	connect(_applicationSettings.get(), &ApplicationSettings::ResizeTexturesToPowerOf2Changed,
 		this, [this](bool value) { _textureLoader->SetResizeToPowerOf2(value); });
@@ -98,6 +107,12 @@ AssetManager::AssetManager(
 		});
 
 	connect(_applicationSettings.get(), &ApplicationSettings::MSAALevelChanged, this, &AssetManager::RecreateSceneWidget);
+
+	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageGeneral>(applicationSettings));
+	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageColors>(applicationSettings));
+	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageExternalPrograms>(applicationSettings));
+	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageGameConfigurations>());
+	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageStyle>(applicationSettings));
 }
 
 AssetManager::~AssetManager()
@@ -123,6 +138,21 @@ ColorSettings* AssetManager::GetColorSettings() const
 GameConfigurationsSettings* AssetManager::GetGameConfigurations() const
 {
 	return _applicationSettings->GetGameConfigurations();
+}
+
+bool AssetManager::AddPlugin(std::unique_ptr<IAssetManagerPlugin> plugin)
+{
+	if (!plugin->Initialize(this))
+	{
+		QMessageBox::critical(nullptr, "Fatal Error", QString{"Error initializing plugin \"%1\""}.arg(plugin->GetName()));
+		return false;
+	}
+
+	qCDebug(logging::HLAM) << "Adding plugin " << plugin->GetName();
+
+	_plugins.push_back(std::move(plugin));
+
+	return true;
 }
 
 SceneWidget* AssetManager::GetSceneWidget()
@@ -285,9 +315,13 @@ LaunchExternalProgramResult AssetManager::TryLaunchExternalProgram(
 
 void AssetManager::Start()
 {
+	GetAssetProviderRegistry()->Initialize();
+
 	_mainWindow = new MainWindow(this);
 
 	_mainWindow->showMaximized();
+
+	CallPlugins(&IAssetManagerPlugin::LoadSettings, *GetSettings());
 
 	// Now load settings to restore window geometry.
 	_mainWindow->LoadSettings();
@@ -300,6 +334,16 @@ void AssetManager::OnExit()
 	_mainWindow = nullptr;
 
 	_timer->stop();
+
+	GetApplicationSettings()->SaveSettings();
+
+	CallPlugins(&IAssetManagerPlugin::SaveSettings, *GetSettings());
+
+	GetAssetProviderRegistry()->Shutdown();
+
+	GetSettings()->sync();
+
+	CallPlugins(&IAssetManagerPlugin::Shutdown);
 }
 
 void AssetManager::OnFileNameReceived(const QString& fileName)
@@ -350,5 +394,22 @@ void AssetManager::OnTickRateChanged(int value)
 	if (_timer->isActive())
 	{
 		StartTimer();
+	}
+}
+
+void AssetManager::OnStylePathChanged(const QString& stylePath)
+{
+	auto file = std::make_unique<QFile>(stylePath);
+	file->open(QFile::ReadOnly | QFile::Text);
+
+	if (file->isOpen())
+	{
+		auto stream = std::make_unique<QTextStream>(file.get());
+
+		_guiApplication->setStyleSheet(stream->readAll());
+	}
+	else
+	{
+		_guiApplication->setStyleSheet({});
 	}
 }
