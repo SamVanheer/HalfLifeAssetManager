@@ -252,6 +252,11 @@ MainWindow::MainWindow(AssetManager* application)
 	connect(_assets, &AssetList::AssetAdded, this, &MainWindow::OnAssetAdded);
 	connect(_assets, &AssetList::AboutToCloseAsset, this, &MainWindow::OnAboutToCloseAsset);
 	connect(_assets, &AssetList::AboutToRemoveAsset, this, &MainWindow::OnAssetRemoved);
+	connect(_assets, &AssetList::ActiveAssetChanged, this,
+		[this](Asset* currentAsset)
+		{
+			_assetTabs->setCurrentIndex(_assets->IndexOf(currentAsset));
+		});
 
 	connect(_application, &AssetManager::SettingsChanged, this, &MainWindow::SyncSettings);
 
