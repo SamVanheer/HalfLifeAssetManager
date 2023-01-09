@@ -39,8 +39,9 @@ class StudioModelAsset;
 */
 using ThinkFunction = void (BaseEntity::*)();
 
-struct EntityContext final
+class EntityContext final
 {
+public:
 	//TODO: improve this
 	studiomodel::StudioModelAsset* Asset;
 	WorldTime* const Time;

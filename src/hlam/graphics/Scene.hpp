@@ -10,7 +10,7 @@
 
 class BaseEntity;
 class EntityList;
-struct EntityContext;
+class EntityContext;
 
 namespace graphics
 {
