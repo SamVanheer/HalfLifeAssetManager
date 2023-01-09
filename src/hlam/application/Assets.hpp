@@ -48,8 +48,7 @@ public:
 		if (_fileName != fileName)
 		{
 			_fileName = std::move(fileName);
-
-			emit FileNameChanged(_fileName);
+			emit FileNameChanged(this);
 		}
 	}
 
@@ -65,7 +64,7 @@ public:
 	virtual bool TryRefresh() = 0;
 
 signals:
-	void FileNameChanged(const QString& fileName);
+	void FileNameChanged(Asset* asset);
 
 private:
 	QString _fileName;

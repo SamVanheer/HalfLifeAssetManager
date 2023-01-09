@@ -1,8 +1,13 @@
 target_sources(HLAM
 	PRIVATE
 		ApplicationBuilder.hpp
+		AssetIO.hpp
+		AssetList.cpp
+		AssetList.hpp
 		AssetManager.cpp
 		AssetManager.hpp
+		Assets.cpp
+		Assets.hpp
 		SingleInstance.cpp
 		SingleInstance.hpp
 		ToolApplication.cpp

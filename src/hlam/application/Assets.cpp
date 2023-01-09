@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "assets/AssetIO.hpp"
-#include "assets/Assets.hpp"
+#include "application/AssetIO.hpp"
+#include "application/Assets.hpp"
 #include "utility/IOUtils.hpp"
 
 std::vector<AssetProvider*> AssetProviderRegistry::GetAssetProviders() const

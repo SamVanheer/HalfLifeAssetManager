@@ -12,7 +12,9 @@
 
 #include <spdlog/logger.h>
 
-#include "assets/Assets.hpp"
+#include "application/AssetList.hpp"
+#include "application/AssetManager.hpp"
+#include "application/Assets.hpp"
 
 #include "filesystem/FileSystem.hpp"
 #include "filesystem/IFileSystem.hpp"
@@ -31,7 +33,7 @@
 #include "soundsystem/SoundSystem.hpp"
 
 #include "ui/DragNDropEventFilter.hpp"
-#include "application/AssetManager.hpp"
+#include "ui/FullscreenWidget.hpp"
 #include "ui/SceneWidget.hpp"
 
 #include "ui/options/OptionsPageRegistry.hpp"
@@ -61,6 +63,7 @@ AssetManager::AssetManager(
 		? std::unique_ptr<ISoundSystem>(std::make_unique<SoundSystem>(CreateQtLoggerSt(logging::HLAMSoundSystem())))
 		: std::make_unique<DummySoundSystem>())
 	, _worldTime(std::make_unique<WorldTime>())
+	, _assets(std::make_unique<AssetList>(this))
 {
 	qCDebug(logging::HLAM) << "Initializing OpenGL";
 
@@ -147,6 +150,47 @@ void AssetManager::RecreateSceneWidget()
 	{
 		delete oldWidget->GetContainer();
 	}
+}
+
+void AssetManager::ToggleFullscreen()
+{
+	if (_fullscreenWidget)
+	{
+		ExitFullscreen();
+		return;
+	}
+
+	//Note: creating this window as a child of the main window causes problems with OpenGL rendering
+	//This must be created with no parent to function properly
+	_fullscreenWidget = std::make_unique<FullscreenWidget>();
+
+	connect(_fullscreenWidget.get(), &FullscreenWidget::ExitedFullscreen, this, &AssetManager::ExitFullscreen);
+
+	emit FullscreenWidgetChanged();
+
+	const auto lambda = [this]()
+	{
+		_fullscreenWidget->SetWidget(GetSceneWidget()->GetContainer());
+	};
+
+	lambda();
+
+	connect(this, &AssetManager::SceneWidgetRecreated, _fullscreenWidget.get(), lambda);
+
+	_fullscreenWidget->raise();
+	_fullscreenWidget->showFullScreen();
+	_fullscreenWidget->activateWindow();
+}
+
+void AssetManager::ExitFullscreen()
+{
+	if (!_fullscreenWidget)
+	{
+		return;
+	}
+
+	const std::unique_ptr<FullscreenWidget> fullscreenWidget = std::move(_fullscreenWidget);
+	emit FullscreenWidgetChanged();
 }
 
 void AssetManager::StartTimer()

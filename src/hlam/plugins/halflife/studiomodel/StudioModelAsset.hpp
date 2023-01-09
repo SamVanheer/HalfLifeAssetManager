@@ -7,7 +7,7 @@
 
 #include <glm/vec2.hpp>
 
-#include "assets/Assets.hpp"
+#include "application/Assets.hpp"
 
 #include "formats/studiomodel/EditableStudioModel.hpp"
 

@@ -2,8 +2,8 @@
 #include <cstring>
 
 #include "application/ApplicationBuilder.hpp"
-#include "assets/AssetIO.hpp"
-#include "assets/Assets.hpp"
+#include "application/AssetIO.hpp"
+#include "application/Assets.hpp"
 #include "plugins/quake1/Quake1AssetManagerPlugin.hpp"
 
 #include "settings/ApplicationSettings.hpp"

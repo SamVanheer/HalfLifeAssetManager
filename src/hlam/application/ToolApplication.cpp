@@ -17,8 +17,9 @@
 #include <QTextStream>
 
 #include "application/ApplicationBuilder.hpp"
+#include "application/AssetList.hpp"
+#include "application/Assets.hpp"
 #include "application/ToolApplication.hpp"
-#include "assets/Assets.hpp"
 
 #include "plugins/IAssetManagerPlugin.hpp"
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
@@ -201,7 +202,7 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		if (!commandLine.FileName.isEmpty())
 		{
-			_application->TryLoadAsset(commandLine.FileName);
+			_application->GetAssets()->TryLoad(commandLine.FileName);
 		}
 
 		//Note: do this after the file has loaded to avoid any flickering.
@@ -468,7 +469,7 @@ void ToolApplication::OnFileNameReceived(const QString& fileName)
 
 	_mainWindow->activateWindow();
 
-	_application->TryLoadAsset(fileName);
+	_application->GetAssets()->TryLoad(fileName);
 }
 
 void ToolApplication::OnStylePathChanged(const QString& stylePath)

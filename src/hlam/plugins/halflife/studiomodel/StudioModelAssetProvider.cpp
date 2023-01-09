@@ -10,6 +10,8 @@
 #include <QSettings>
 #include <QSignalBlocker>
 
+#include "application/AssetList.hpp"
+
 #include "formats/sprite/SpriteRenderer.hpp"
 #include "formats/studiomodel/DumpModelInfo.hpp"
 #include "formats/studiomodel/StudioModelIO.hpp"
@@ -88,7 +90,8 @@ void StudioModelAssetProvider::Initialize(AssetManager* application)
 	_currentAsset = GetDummyAsset();
 
 	connect(_application, &AssetManager::Tick, this, &StudioModelAssetProvider::OnTick);
-	connect(_application, &AssetManager::ActiveAssetChanged, this, &StudioModelAssetProvider::OnActiveAssetChanged);
+	connect(_application->GetAssets(), &AssetList::ActiveAssetChanged,
+		this, &StudioModelAssetProvider::OnActiveAssetChanged);
 
 	{
 		const auto graphicsContext = _application->GetGraphicsContext();

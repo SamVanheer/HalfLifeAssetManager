@@ -146,6 +146,9 @@
    </property>
   </action>
   <action name="ActionSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
@@ -178,6 +181,9 @@
    </property>
   </action>
   <action name="ActionSaveAs">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save As...</string>
    </property>
@@ -191,6 +197,9 @@
    </property>
   </action>
   <action name="ActionClose">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Close</string>
    </property>
@@ -266,6 +275,9 @@
    </property>
   </action>
   <action name="ActionCloseAll">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Close All</string>
    </property>

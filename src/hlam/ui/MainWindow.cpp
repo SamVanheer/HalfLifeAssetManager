@@ -20,11 +20,9 @@
 
 #include "ProjectInfo.hpp"
 
-#include "assets/AssetIO.hpp"
-#include "assets/Assets.hpp"
-
-#include "filesystem/IFileSystem.hpp"
-#include "filesystem/FileSystemConstants.hpp"
+#include "application/AssetIO.hpp"
+#include "application/AssetList.hpp"
+#include "application/Assets.hpp"
 
 #include "graphics/TextureLoader.hpp"
 
@@ -52,6 +50,7 @@ const QString AssetPathName{QStringLiteral("AssetPath")};
 MainWindow::MainWindow(AssetManager* application)
 	: QMainWindow()
 	, _application(application)
+	, _assets(_application->GetAssets())
 {
 	_application->SetMainWindow(this);
 
@@ -115,7 +114,8 @@ MainWindow::MainWindow(AssetManager* application)
 	{
 		auto fileList = new FileListPanel(_application, this);
 
-		connect(fileList, &FileListPanel::FileSelected, this, &MainWindow::OnFileSelected);
+		connect(fileList, &FileListPanel::FileSelected, this,
+			[this](const QString& fileName) { _assets->TryLoad(fileName); });
 
 		_fileListDock = new QDockWidget(this);
 
@@ -165,16 +165,22 @@ MainWindow::MainWindow(AssetManager* application)
 	}
 
 	connect(_ui.ActionLoad, &QAction::triggered, this, &MainWindow::OnOpenLoadAssetDialog);
-	connect(_ui.ActionSave, &QAction::triggered, this, &MainWindow::OnSaveAsset);
+	connect(_ui.ActionSave, &QAction::triggered, this, [this] { _assets->Save(_assets->GetCurrent()); });
 	connect(_ui.ActionSaveAs, &QAction::triggered, this, &MainWindow::OnSaveAssetAs);
 	connect(_ui.ActionClose, &QAction::triggered, this, &MainWindow::OnCloseAsset);
-	connect(_ui.ActionCloseAll, &QAction::triggered, this, &MainWindow::CloseAllAssets);
-	connect(_ui.ActionExit, &QAction::triggered, this, &MainWindow::OnExit);
+	connect(_ui.ActionCloseAll, &QAction::triggered, this, [this] { CloseAllButCount(0, true); });
+	connect(_ui.ActionExit, &QAction::triggered, this, &MainWindow::close);
 
-	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnToggleFullscreen);
+	connect(_ui.ActionFullscreen, &QAction::triggered, _application, &AssetManager::ToggleFullscreen);
 
-	connect(_ui.ActionPlaySounds, &QAction::triggered, this, &MainWindow::OnPlaySoundsChanged);
-	connect(_ui.ActionFramerateAffectsPitch, &QAction::triggered, this, &MainWindow::OnFramerateAffectsPitchChanged);
+	connect(_application, &AssetManager::FullscreenWidgetChanged, this,
+		[this] { _ui.ActionFullscreen->setChecked(_application->GetFullscreenWidget() != nullptr); });
+
+	connect(_ui.ActionPlaySounds, &QAction::triggered, this,
+		[this](bool value) { _application->GetApplicationSettings()->PlaySounds = value; });
+
+	connect(_ui.ActionFramerateAffectsPitch, &QAction::triggered, this,
+		[this](bool value) { _application->GetApplicationSettings()->FramerateAffectsPitch = value; });
 
 	connect(_ui.ActionPowerOf2Textures, &QAction::toggled,
 		_application->GetApplicationSettings(), &ApplicationSettings::SetResizeTexturesToPowerOf2);
@@ -202,12 +208,10 @@ MainWindow::MainWindow(AssetManager* application)
 		}
 	}
 
-	connect(_ui.ActionTransparentScreenshots, &QAction::triggered, this, [this](bool value)
-		{
-			_application->GetApplicationSettings()->TransparentScreenshots = value;
-		});
+	connect(_ui.ActionTransparentScreenshots, &QAction::triggered, this,
+		[this](bool value) { _application->GetApplicationSettings()->TransparentScreenshots = value; });
 
-	connect(_ui.ActionRefresh, &QAction::triggered, this, &MainWindow::OnRefreshAsset);
+	connect(_ui.ActionRefresh, &QAction::triggered, this, [this] { _assets->RefreshCurrent(); });
 
 	connect(_ui.ActionOptions, &QAction::triggered, this, &MainWindow::OnOpenOptionsDialog);
 	connect(_ui.ActionAbout, &QAction::triggered, this, &MainWindow::OnShowAbout);
@@ -216,16 +220,15 @@ MainWindow::MainWindow(AssetManager* application)
 	connect(_application->GetApplicationSettings()->GetRecentFiles(), &RecentFilesSettings::RecentFilesChanged,
 		this, &MainWindow::OnRecentFilesChanged);
 
-	connect(_undoGroup, &QUndoGroup::cleanChanged, this, &MainWindow::OnAssetCleanChanged);
+	connect(_undoGroup, &QUndoGroup::cleanChanged, this, [this](bool clean) { setWindowModified(!clean); });
 
 	connect(_assetTabs, &QTabWidget::currentChanged, this, &MainWindow::OnAssetTabChanged);
-	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &MainWindow::OnAssetTabCloseRequested);
+	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &MainWindow::OnCloseAsset);
 
-	connect(_application, &AssetManager::TryingToLoadAsset, this, 
-		[this](const QString& fileName)
-		{
-			return TryLoadAsset(fileName, true);
-		});
+	connect(_assets, &AssetList::AssetAdded, this, &MainWindow::OnAssetAdded);
+	connect(_assets, &AssetList::AboutToCloseAsset, this, &MainWindow::OnAboutToCloseAsset);
+	connect(_assets, &AssetList::AboutToRemoveAsset, this, &MainWindow::OnAssetRemoved);
+
 	connect(_application, &AssetManager::SettingsChanged, this, &MainWindow::SyncSettings);
 
 	{
@@ -241,10 +244,6 @@ MainWindow::MainWindow(AssetManager* application)
 		}
 	}
 
-	_ui.ActionSave->setEnabled(false);
-	_ui.ActionSaveAs->setEnabled(false);
-	_ui.ActionClose->setEnabled(false);
-	_ui.ActionCloseAll->setEnabled(false);
 	_assetTabs->setVisible(false);
 
 	OnRecentFilesChanged();
@@ -310,6 +309,16 @@ MainWindow::MainWindow(AssetManager* application)
 
 MainWindow::~MainWindow()
 {
+	auto screen = this->windowHandle()->screen();
+	auto settings = _application->GetSettings();
+
+	settings->beginGroup("MainWindow");
+	settings->setValue("ScreenName", screen->name());
+	settings->setValue("ScreenGeometry", saveGeometry());
+	settings->endGroup();
+
+	_application->GetTimer()->stop();
+
 	_application->SetMainWindow(nullptr);
 }
 
@@ -351,14 +360,14 @@ void MainWindow::LoadSettings()
 void MainWindow::closeEvent(QCloseEvent* event)
 {
 	// If the user is in fullscreen mode force them out of it.
-	OnExitFullscreen();
+	_application->ExitFullscreen();
 
 	//If the user cancels any close request cancel the window close event as well
 	for (int i = 0; i < _assetTabs->count(); ++i)
 	{
-		const auto asset = GetAsset(i);
+		const auto asset = _assets->Get(i);
 
-		if (!VerifyNoUnsavedChanges(asset, true))
+		if (!_assets->VerifyNoUnsavedChanges(asset, true))
 		{
 			event->ignore();
 			return;
@@ -370,26 +379,6 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	CloseAllButCount(0, false);
 
 	event->accept();
-
-	auto screen = this->windowHandle()->screen();
-
-	auto name = screen->name();
-
-	auto settings = _application->GetSettings();
-
-	settings->beginGroup("MainWindow");
-	settings->setValue("ScreenName", name);
-	settings->setValue("ScreenGeometry", saveGeometry());
-	settings->endGroup();
-
-	//Main window cleanup has to be done here because Qt won't call the destructor
-	{
-		_application->GetTimer()->stop();
-
-		delete _fileListDock;
-		_currentAsset.clear();
-		delete _assetTabs;
-	}
 }
 
 bool MainWindow::eventFilter(QObject* watched, QEvent* event)
@@ -406,7 +395,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 
 				if (tab != -1)
 				{
-					TryCloseAsset(tab, true);
+					_assets->TryClose(tab, true);
 					return true;
 				}
 			}
@@ -416,266 +405,42 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 	return QMainWindow::eventFilter(watched, event);
 }
 
-Asset* MainWindow::GetAsset(int index) const
-{
-	return _assets[index].get();
-}
-
-Asset* MainWindow::GetCurrentAsset() const
-{
-	return _currentAsset;
-}
-
-bool MainWindow::SaveAsset(Asset* asset)
-{
-	assert(asset);
-
-	qCDebug(logging::HLAM) << "Trying to save asset" << asset->GetFileName();
-
-	try
-	{
-		asset->Save();
-	}
-	catch (const AssetException& e)
-	{
-		QMessageBox::critical(this, "Error saving asset", QString{"Error saving asset:\n%1"}.arg(e.what()));
-		return false;
-	}
-
-	auto undoStack = asset->GetUndoStack();
-
-	undoStack->setClean();
-
-	return true;
-}
-
-bool MainWindow::VerifyNoUnsavedChanges(Asset* asset, bool allowCancel)
-{
-	assert(asset);
-
-	if (asset->GetUndoStack()->isClean())
-	{
-		return true;
-	}
-
-	QMessageBox::StandardButtons buttons = QMessageBox::StandardButton::Save | QMessageBox::StandardButton::Discard;
-
-	if (allowCancel)
-	{
-		buttons |= QMessageBox::StandardButton::Cancel;
-	}
-
-	const QMessageBox::StandardButton action = QMessageBox::question(
-		this,
-		{},
-		QString{"Save changes made to \"%1\"?"}.arg(asset->GetFileName()),
-		buttons,
-		QMessageBox::StandardButton::Save);
-
-	switch (action)
-	{
-	case QMessageBox::StandardButton::Save: return SaveAsset(asset);
-	case QMessageBox::StandardButton::Discard: return true;
-	default:
-	case QMessageBox::StandardButton::Cancel: return false;
-	}
-}
-
-bool MainWindow::TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowCancel)
-{
-	if (index >= _assetTabs->count())
-	{
-		return true;
-	}
-
-	if (_fullscreenWidget && _fullscreenWidget->isFullScreen())
-	{
-		// Exit the fullscreen window if we're getting a close request
-		// The user needs to be able to see the main window and interact with it
-		// If the window isn't fullscreen then the user can easily open the program window
-		_fullscreenWidget->ExitFullscreen();
-	}
-
-	{
-		if (verifyUnsavedChanges && !VerifyNoUnsavedChanges(GetAsset(index), allowCancel))
-		{
-			//User cancelled or an error occurred
-			return false;
-		}
-
-		const TimerSuspender timerSuspender{_application};
-
-		// Don't destroy the asset until after we've cleaned everything up.
-		const std::unique_ptr<Asset> asset = std::move(_assets[index]);
-
-		_undoGroup->removeStack(asset->GetUndoStack());
-
-		_assets.erase(_assets.begin() + index);
-
-		_assetTabs->removeTab(index);
-	}
-
-	return true;
-}
-
-void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
-{
-	assert(leaveOpenCount >= 0);
-
-	const TimerSuspender timerSuspender{_application};
-
-	int count = _assetTabs->count();
-
-	QProgressDialog progress(QString{"Closing %1 assets..."}.arg(count), {}, 0, count - leaveOpenCount, this);
-	progress.setWindowModality(Qt::WindowModal);
-
-	// Switch to the first asset to reduce the overhead involved with constant tab switching.
-	_assetTabs->setCurrentIndex(0);
-
-	int i = 0;
-
-	while (count > leaveOpenCount)
-	{
-		--count;
-
-		progress.setValue(i++);
-
-		// Never allow cancel, otherwise we'll end up in an infinite loop.
-		TryCloseAsset(count, verifyUnsavedChanges, false);
-	}
-
-	progress.setValue(i);
-}
-
 void MainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
 {
 	setWindowTitle(QString{"%1[*]"}.arg(fileName));
 	setWindowModified(hasUnsavedChanges);
 }
 
-LoadResult MainWindow::TryLoadAsset(QString fileName, bool activateTab)
+void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
 {
-	fileName = fileName.trimmed();
+	assert(leaveOpenCount >= 0);
 
-	if (fileName.isEmpty())
+	int count = _assets->Count();
+
+	if (count <= leaveOpenCount)
 	{
-		qCDebug(logging::HLAM) << "Asset filename is empty";
-		QMessageBox::critical(this, "Error loading asset", "Asset filename is empty");
-		return LoadResult::Failed;
+		return;
 	}
 
-	const QFileInfo fileInfo{fileName};
+	const TimerSuspender timerSuspender{_application};
 
-	fileName = fileInfo.absoluteFilePath();
+	QProgressDialog progress(QString{"Closing %1 assets..."}.arg(count), {}, 0, count - leaveOpenCount, this);
+	progress.setWindowModality(Qt::WindowModal);
 
-	qCDebug(logging::HLAM) << "Trying to load asset" << fileName;
+	// Switch to the first asset to reduce the overhead involved with constant tab switching.
+	_assets->SetCurrent(_assets->Get(0));
 
-	if (!fileInfo.exists())
+	int i;
+
+	for (i = 0; count-- > leaveOpenCount; ++i)
 	{
-		qCDebug(logging::HLAM) << "Asset" << fileName << "does not exist";
-		QMessageBox::critical(this, "Error loading asset", QString{"Asset \"%1\" does not exist"}.arg(fileName));
-		return LoadResult::Failed;
+		progress.setValue(i);
+
+		// Never allow cancel, otherwise we'll end up in an infinite loop.
+		_assets->TryClose(count, verifyUnsavedChanges, false);
 	}
 
-	// First check if it's already loaded.
-	for (int i = 0; i < _assetTabs->count(); ++i)
-	{
-		auto asset = GetAsset(i);
-
-		if (asset->GetFileName() == fileName)
-		{
-			_assetTabs->setCurrentIndex(i);
-			const bool result = OnRefreshAsset();
-
-			if (result)
-			{
-				_application->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
-			}
-
-			return result ? LoadResult::Success : LoadResult::Cancelled;
-		}
-	}
-
-	if (_application->GetApplicationSettings()->OneAssetAtATime)
-	{
-		if (!TryCloseAsset(0, true))
-		{
-			//User canceled, abort load
-			return LoadResult::Cancelled;
-		}
-	}
-
-	try
-	{
-		auto asset = _application->GetAssetProviderRegistry()->Load(fileName);
-
-		return std::visit([&, this](auto&& result)
-			{
-				using T = std::decay_t<decltype(result)>;
-
-				bool loaded = false;
-
-				if constexpr (std::is_same_v<T, std::unique_ptr<Asset>>)
-				{
-					if (!result)
-					{
-						qCDebug(logging::HLAM) << "Asset" << fileName << "couldn't be loaded";
-						QMessageBox::critical(this, "Error loading asset",
-							QString{"Error loading asset \"%1\":\nNull asset returned"}.arg(fileName));
-						return LoadResult::Failed;
-					}
-
-					auto currentFileName = result->GetFileName();
-
-					qCDebug(logging::HLAM) << "Asset" << fileName << "loaded as" << currentFileName;
-
-					connect(result.get(), &Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
-
-					const auto editWidget = result->GetEditWidget();
-
-					_undoGroup->addStack(result->GetUndoStack());
-
-					//Now owned by this window
-					_assets.push_back(std::move(result));
-
-					//Use the current filename for this
-					const auto index = _assetTabs->addTab(editWidget, currentFileName);
-
-					assert(index == (_assets.size() - 1));
-
-					if (activateTab)
-					{
-						_assetTabs->setCurrentIndex(index);
-					}
-
-					qCDebug(logging::HLAM) << "Loaded asset" << fileName;
-
-					loaded = true;
-				}
-				else if constexpr (std::is_same_v<T, AssetLoadInExternalProgram>)
-				{
-					loaded = result.Loaded;
-				}
-				else
-				{
-					static_assert(always_false_v<T>, "Unhandled Asset load return type");
-				}
-
-				if (loaded)
-				{
-					_application->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
-				}
-
-				return LoadResult::Success;
-			}, asset);
-	}
-	catch (const AssetException& e)
-	{
-		QMessageBox::critical(this, "Error loading asset",
-			QString{"Error loading asset \"%1\":\n%2"}.arg(fileName).arg(e.what()));
-	}
-
-	return LoadResult::Failed;
+	progress.setValue(i);
 }
 
 void MainWindow::SyncSettings()
@@ -721,8 +486,6 @@ void MainWindow::OnOpenLoadAssetDialog()
 			QString{"Opening %1 assets..."}.arg(fileNames.size()), "Abort Open", 0, fileNames.size(), this);
 		progress.setWindowModality(Qt::WindowModal);
 
-		bool shouldActivate = true;
-
 		for (int i = 0; const auto& fileName : fileNames)
 		{
 			progress.setValue(i++);
@@ -730,19 +493,16 @@ void MainWindow::OnOpenLoadAssetDialog()
 			if (progress.wasCanceled())
 				break;
 
-			if (TryLoadAsset(fileName, shouldActivate) == LoadResult::Success)
+			if (_assets->TryLoad(fileName) == AssetLoadResult::Success)
 			{
-				shouldActivate = false;
+				_activateNewTabs = false;
 			}
 		}
 
+		_activateNewTabs = true;
+
 		progress.setValue(fileNames.size());
 	}
-}
-
-void MainWindow::OnAssetCleanChanged(bool clean)
-{
-	setWindowModified(!clean);
 }
 
 void MainWindow::OnAssetTabChanged(int index)
@@ -752,17 +512,16 @@ void MainWindow::OnAssetTabChanged(int index)
 		_assetMenu->menuAction()->setVisible(false);
 	}
 
-	_currentAsset = index != -1 ? GetAsset(index) : nullptr;
+	const auto currentAsset = index != -1 ? _assets->Get(index) : nullptr;
+	const bool success = currentAsset != nullptr;
 
-	bool success = false;
-
-	if (index != -1)
+	if (success)
 	{
-		_undoGroup->setActiveStack(_currentAsset->GetUndoStack());
+		_undoGroup->setActiveStack(currentAsset->GetUndoStack());
 
-		UpdateTitle(_currentAsset->GetFileName(), !_undoGroup->isClean());
+		UpdateTitle(currentAsset->GetFileName(), !_undoGroup->isClean());
 
-		if (auto menu = _assetMenus.find(_currentAsset->GetProvider()); menu != _assetMenus.end())
+		if (auto menu = _assetMenus.find(currentAsset->GetProvider()); menu != _assetMenus.end())
 		{
 			_assetMenu = *menu;
 			_assetMenu->menuAction()->setVisible(true);
@@ -771,15 +530,12 @@ void MainWindow::OnAssetTabChanged(int index)
 		{
 			_assetMenu = nullptr;
 		}
-
-		success = true;
 	}
-
-	if (!success)
+	else
 	{
 		_undoGroup->setActiveStack(nullptr);
 		setWindowTitle({});
-		OnExitFullscreen();
+		_application->ExitFullscreen();
 	}
 
 	_ui.ActionSave->setEnabled(success);
@@ -788,48 +544,61 @@ void MainWindow::OnAssetTabChanged(int index)
 	_ui.ActionCloseAll->setEnabled(success);
 	_ui.ActionFullscreen->setEnabled(success);
 	_ui.ActionRefresh->setEnabled(success);
-
 	_assetTabs->setVisible(success);
 
-	emit _application->ActiveAssetChanged(_currentAsset);
+	_assets->SetCurrent(currentAsset);
 }
 
-void MainWindow::OnAssetTabCloseRequested(int index)
+void MainWindow::OnAssetAdded(int index)
 {
-	TryCloseAsset(index, true);
-}
+	auto asset = _assets->Get(index);
 
-void MainWindow::OnAssetFileNameChanged(const QString& fileName)
-{
-	auto asset = static_cast<Asset*>(sender());
+	connect(asset, &Asset::FileNameChanged, this, &MainWindow::OnAssetFileNameChanged);
 
-	const int index = _assetTabs->indexOf(asset->GetEditWidget());
+	_undoGroup->addStack(asset->GetUndoStack());
 
-	if (index != -1)
+	//Use the current filename for this
+	const auto tabIndex = _assetTabs->addTab(asset->GetEditWidget(), asset->GetFileName());
+
+	assert(tabIndex == index);
+
+	if (_activateNewTabs)
 	{
-		_assetTabs->setTabText(index, fileName);
-
-		_application->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
-
-		if (_assetTabs->currentWidget() == asset->GetEditWidget())
-		{
-			UpdateTitle(asset->GetFileName(), !_undoGroup->isClean());
-		}
-	}
-	else
-	{
-		QMessageBox::critical(this, "Internal Error", "Asset index not found in assets tab widget");
+		_assetTabs->setCurrentIndex(index);
 	}
 }
 
-void MainWindow::OnSaveAsset()
+void MainWindow::OnAboutToCloseAsset(int index)
 {
-	SaveAsset(GetCurrentAsset());
+	if (_fullscreenWidget && _fullscreenWidget->isFullScreen())
+	{
+		// Exit the fullscreen window if we're getting a close request
+		// The user needs to be able to see the main window and interact with it
+		// If the window isn't fullscreen then the user can easily open the program window
+		_fullscreenWidget->ExitFullscreen();
+	}
+}
+
+void MainWindow::OnAssetRemoved(int index)
+{
+	auto asset = _assets->Get(index);
+	_undoGroup->removeStack(asset->GetUndoStack());
+	_assetTabs->removeTab(index);
+}
+
+void MainWindow::OnAssetFileNameChanged(Asset* asset)
+{
+	_assetTabs->setTabText(_assets->IndexOf(asset), asset->GetFileName());
+
+	if (_assetTabs->currentWidget() == asset->GetEditWidget())
+	{
+		UpdateTitle(asset->GetFileName(), !_undoGroup->isClean());
+	}
 }
 
 void MainWindow::OnSaveAssetAs()
 {
-	const auto asset = GetCurrentAsset();
+	const auto asset = _assets->GetCurrent();
 
 	QString fileName{QFileDialog::getSaveFileName(this, {}, asset->GetFileName(), _saveFileFilter)};
 
@@ -838,21 +607,13 @@ void MainWindow::OnSaveAssetAs()
 		//Also update the saved path when saving files
 		_application->SetPath(AssetPathName, QFileInfo(fileName).absolutePath());
 		asset->SetFileName(std::move(fileName));
-		SaveAsset(asset);
+		_assets->Save(asset);
 	}
 }
 
 void MainWindow::OnCloseAsset()
 {
-	if (auto index = this->_assetTabs->currentIndex(); index != -1)
-	{
-		TryCloseAsset(index, true);
-	}
-}
-
-void MainWindow::CloseAllAssets()
-{
-	CloseAllButCount(0, true);
+	_assets->TryClose(_assetTabs->currentIndex(), true);
 }
 
 void MainWindow::OnRecentFilesChanged()
@@ -860,91 +621,25 @@ void MainWindow::OnRecentFilesChanged()
 	const auto recentFiles = _application->GetApplicationSettings()->GetRecentFiles();
 
 	_ui.MenuRecentFiles->clear();
+	_ui.MenuRecentFiles->setEnabled(recentFiles->GetCount() > 0);
 
 	for (int i = 0; i < recentFiles->GetCount(); ++i)
 	{
 		_ui.MenuRecentFiles->addAction(recentFiles->At(i), this, &MainWindow::OnOpenRecentFile);
 	}
-
-	_ui.MenuRecentFiles->setEnabled(recentFiles->GetCount() > 0);
 }
 
 void MainWindow::OnOpenRecentFile()
 {
 	const auto action = static_cast<QAction*>(sender());
-
-	const QString fileName{action->text()};
-
-	if (TryLoadAsset(fileName) == LoadResult::Failed)
-	{
-		_application->GetApplicationSettings()->GetRecentFiles()->Remove(fileName);
-	}
-}
-
-void MainWindow::OnExit()
-{
-	this->close();
-}
-
-void MainWindow::OnToggleFullscreen()
-{
-	if (_fullscreenWidget)
-	{
-		OnExitFullscreen();
-		return;
-	}
-
-	//Note: creating this window as a child of the main window causes problems with OpenGL rendering
-	//This must be created with no parent to function properly
-	_fullscreenWidget = std::make_unique<FullscreenWidget>();
-
-	connect(_fullscreenWidget.get(), &FullscreenWidget::ExitedFullscreen, this, &MainWindow::OnExitFullscreen);
-
-	_application->SetFullscreenWidget(_fullscreenWidget.get());
-
-	const auto lambda = [this]()
-	{
-		_fullscreenWidget->SetWidget(_application->GetSceneWidget()->GetContainer());
-	};
-
-	lambda();
-
-	connect(_application, &AssetManager::SceneWidgetRecreated, _fullscreenWidget.get(), lambda);
-
-	_fullscreenWidget->raise();
-	_fullscreenWidget->showFullScreen();
-	_fullscreenWidget->activateWindow();
-}
-
-void MainWindow::OnExitFullscreen()
-{
-	if (!_fullscreenWidget)
-	{
-		return;
-	}
-
-	_application->SetFullscreenWidget(nullptr);
-	_fullscreenWidget.reset();
-	_ui.ActionFullscreen->setChecked(false);
-}
-
-void MainWindow::OnFileSelected(const QString& fileName)
-{
-	TryLoadAsset(fileName);
+	_assets->TryLoad(action->text());
 }
 
 void MainWindow::OnTextureFiltersChanged()
 {
 	const auto currentIndex = [](QActionGroup* group)
 	{
-		const int index = group->actions().indexOf(group->checkedAction());
-
-		if (index == -1)
-		{
-			return 0;
-		}
-
-		return index;
+		return group->actions().indexOf(group->checkedAction());
 	};
 
 	_application->GetApplicationSettings()->SetTextureFilters(
@@ -953,36 +648,9 @@ void MainWindow::OnTextureFiltersChanged()
 		static_cast<graphics::MipmapFilter>(currentIndex(_ui.MipmapFilterGroup)));
 }
 
-bool MainWindow::OnRefreshAsset()
-{
-	if (auto asset = GetCurrentAsset(); asset)
-	{
-		if (!VerifyNoUnsavedChanges(asset, true))
-		{
-			//User canceled, abort refresh
-			return false;
-		}
-
-		return asset->TryRefresh();
-	}
-
-	return false;
-}
-
-void MainWindow::OnPlaySoundsChanged()
-{
-	_application->GetApplicationSettings()->PlaySounds = _ui.ActionPlaySounds->isChecked();
-}
-
-void MainWindow::OnFramerateAffectsPitchChanged()
-{
-	_application->GetApplicationSettings()->FramerateAffectsPitch = _ui.ActionFramerateAffectsPitch->isChecked();
-}
-
 void MainWindow::OnOpenOptionsDialog()
 {
 	OptionsDialog dialog{_application, this};
-
 	dialog.exec();
 }
 

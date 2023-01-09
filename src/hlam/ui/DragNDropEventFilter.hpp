@@ -6,6 +6,7 @@
 #include <QMimeData>
 #include <QObject>
 
+#include "application/AssetList.hpp"
 #include "application/AssetManager.hpp"
 
 /**
@@ -43,7 +44,7 @@ protected:
 
 			for (const auto& url : dropEvent->mimeData()->urls())
 			{
-				_application->TryLoadAsset(url.toLocalFile());
+				_application->GetAssets()->TryLoad(url.toLocalFile());
 			}
 
 			return true;

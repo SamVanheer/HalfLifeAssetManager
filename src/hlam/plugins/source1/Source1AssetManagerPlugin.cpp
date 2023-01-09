@@ -2,8 +2,8 @@
 #include <cstring>
 
 #include "application/ApplicationBuilder.hpp"
-#include "assets/AssetIO.hpp"
-#include "assets/Assets.hpp"
+#include "application/AssetIO.hpp"
+#include "application/Assets.hpp"
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
 #include "plugins/source1/Source1AssetManagerPlugin.hpp"
 

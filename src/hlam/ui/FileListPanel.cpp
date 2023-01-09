@@ -8,7 +8,7 @@
 #include <QSettings>
 #include <QString>
 
-#include "assets/Assets.hpp"
+#include "application/Assets.hpp"
 
 #include "settings/GameConfigurationsSettings.hpp"
 

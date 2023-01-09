@@ -13,7 +13,7 @@
 #include <QSignalBlocker>
 #include <QWidget>
 
-#include "assets/AssetIO.hpp"
+#include "application/AssetIO.hpp"
 
 #include "entity/AxesEntity.hpp"
 #include "entity/BackgroundEntity.hpp"

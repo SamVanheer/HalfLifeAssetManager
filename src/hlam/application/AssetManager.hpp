@@ -10,7 +10,7 @@
 #include <QTimer>
 
 class ApplicationSettings;
-class Asset;
+class AssetList;
 class AssetProviderRegistry;
 class ColorSettings;
 class DragNDropEventFilter;
@@ -82,6 +82,8 @@ public:
 
 	WorldTime* GetWorldTime() const { return _worldTime.get(); }
 
+	AssetList* GetAssets() const { return _assets.get(); }
+
 	QWidget* GetMainWindow() const { return _mainWindow; }
 
 	void SetMainWindow(QWidget* widget)
@@ -96,16 +98,11 @@ public:
 
 	void RecreateSceneWidget();
 
-	FullscreenWidget* GetFullscreenWidget() { return _fullscreenWidget; }
+	FullscreenWidget* GetFullscreenWidget() const { return _fullscreenWidget.get(); }
 
-	void SetFullscreenWidget(FullscreenWidget* fullscreenWidget)
-	{
-		if (_fullscreenWidget != fullscreenWidget)
-		{
-			_fullscreenWidget = fullscreenWidget;
-			emit FullscreenWidgetChanged();
-		}
-	}
+	void ToggleFullscreen();
+
+	void ExitFullscreen();
 
 	void StartTimer();
 
@@ -137,21 +134,11 @@ signals:
 	*/
 	void Tick();
 
-	void TryingToLoadAsset(const QString& fileName);
-
-	void ActiveAssetChanged(Asset* asset);
-
 	void SettingsChanged();
 
 	void SceneWidgetRecreated();
 
 	void FullscreenWidgetChanged();
-
-public slots:
-	void TryLoadAsset(const QString& fileName)
-	{
-		emit TryingToLoadAsset(fileName);
-	}
 
 private slots:
 	void OnTimerTick();
@@ -177,9 +164,11 @@ private:
 	const std::unique_ptr<ISoundSystem> _soundSystem;
 	const std::unique_ptr<WorldTime> _worldTime;
 
+	const std::unique_ptr<AssetList> _assets;
+
 	QWidget* _mainWindow{};
 	QPointer<SceneWidget> _sceneWidget;
-	FullscreenWidget* _fullscreenWidget{};
+	std::unique_ptr<FullscreenWidget> _fullscreenWidget;
 };
 
 struct TimerSuspender final

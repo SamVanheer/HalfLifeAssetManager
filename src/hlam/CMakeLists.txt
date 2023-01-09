@@ -51,7 +51,6 @@ target_sources(HLAM
 		resources.qrc)
 
 add_subdirectory(application)
-add_subdirectory(assets)
 add_subdirectory(entity)
 add_subdirectory(filesystem)
 add_subdirectory(formats)

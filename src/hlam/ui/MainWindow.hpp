@@ -14,17 +14,11 @@
 #include "ui_MainWindow.h"
 
 class Asset;
+class AssetList;
 class AssetProvider;
 class AssetManager;
 class FullscreenWidget;
 class QActionGroup;
-
-enum class LoadResult
-{
-	Success = 0,
-	Failed,
-	Cancelled
-};
 
 class MainWindow final : public QMainWindow
 {
@@ -42,61 +36,34 @@ protected:
 	bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
-	Asset* GetAsset(int index) const;
-	Asset* GetCurrentAsset() const;
-
-	bool SaveAsset(Asset* asset);
-
-	bool VerifyNoUnsavedChanges(Asset* asset, bool allowCancel);
-
-	bool TryCloseAsset(int index, bool verifyUnsavedChanges, bool allowCancel = true);
+	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
 
 	void CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges);
 
-	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
-
 private slots:
-	LoadResult TryLoadAsset(QString fileName, bool activateTab = true);
-
 	void SyncSettings();
 
 	void OnOpenLoadAssetDialog();
 
-	void OnAssetCleanChanged(bool clean);
-
 	void OnAssetTabChanged(int index);
 
-	void OnAssetTabCloseRequested(int index);
+	void OnAssetAdded(int index);
 
-	void OnAssetFileNameChanged(const QString& fileName);
+	void OnAboutToCloseAsset(int index);
 
-	void OnSaveAsset();
+	void OnAssetRemoved(int index);
+
+	void OnAssetFileNameChanged(Asset* asset);
 
 	void OnSaveAssetAs();
 
 	void OnCloseAsset();
 
-	void CloseAllAssets();
-
 	void OnRecentFilesChanged();
 
 	void OnOpenRecentFile();
 
-	void OnExit();
-
-	void OnToggleFullscreen();
-
-	void OnExitFullscreen();
-
-	void OnFileSelected(const QString& fileName);
-
 	void OnTextureFiltersChanged();
-
-	bool OnRefreshAsset();
-
-	void OnPlaySoundsChanged();
-
-	void OnFramerateAffectsPitchChanged();
 
 	void OnOpenOptionsDialog();
 
@@ -106,6 +73,7 @@ private:
 	Ui_MainWindow _ui;
 
 	AssetManager* const _application;
+	AssetList* const _assets;
 
 	QMap<AssetProvider*, QMenu*> _assetMenus;
 
@@ -117,11 +85,10 @@ private:
 
 	QPointer<QTabWidget> _assetTabs;
 
+	bool _activateNewTabs = true;
+
 	QString _loadFileFilter;
 	QString _saveFileFilter;
-
-	std::vector<std::unique_ptr<Asset>> _assets;
-	QPointer<Asset> _currentAsset;
 
 	std::unique_ptr<FullscreenWidget> _fullscreenWidget;
 

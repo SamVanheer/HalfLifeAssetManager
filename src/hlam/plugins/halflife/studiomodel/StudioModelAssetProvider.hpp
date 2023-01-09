@@ -5,7 +5,7 @@
 #include <QLoggingCategory>
 #include <QPointer>
 
-#include "assets/Assets.hpp"
+#include "application/Assets.hpp"
 
 #include "graphics/OpenGL.hpp"
 

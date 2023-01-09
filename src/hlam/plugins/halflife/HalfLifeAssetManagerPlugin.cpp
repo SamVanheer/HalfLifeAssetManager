@@ -1,5 +1,5 @@
 #include "application/ApplicationBuilder.hpp"
-#include "assets/Assets.hpp"
+#include "application/Assets.hpp"
 
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"

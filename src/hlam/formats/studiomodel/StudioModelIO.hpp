@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <memory>
 
-#include "assets/AssetIO.hpp"
+#include "application/AssetIO.hpp"
 
 namespace studiomdl
 {
