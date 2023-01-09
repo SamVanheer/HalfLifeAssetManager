@@ -181,6 +181,9 @@ public:
 	bool PlaySounds = DefaultPlaySounds;
 	bool FramerateAffectsPitch = DefaultFramerateAffectsPitch;
 
+	bool HasCheckedOpenGLVersion() const;
+	void SetCheckedOpenGLVersion(bool value);
+
 	bool ShouldEnableVSync() const;
 	void SetEnableVSync(bool value);
 

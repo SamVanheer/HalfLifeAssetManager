@@ -104,17 +104,7 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		ConfigureApplication(programName);
 
-		const auto commandLine = ParseCommandLine([&]()
-			{
-				QStringList args;
-
-				for (int i = 0; i < argc; ++i)
-				{
-					args << argv[i];
-				}
-
-				return args;
-			}());
+		const auto commandLine = ParseCommandLine(QStringList{argv, argv + argc});
 
 		const auto applicationSettings = std::make_shared<ApplicationSettings>(
 			CreateSettings(programName, commandLine.IsPortable).release());
@@ -145,31 +135,7 @@ int ToolApplication::Run(int argc, char* argv[])
 			return EXIT_SUCCESS;
 		}
 
-		{
-			const auto openGLFormat = QOpenGLContext::globalShareContext()->format();
-
-			auto makeVersionCode = [](int major, int minor)
-			{
-				return (major << 8) + minor;
-			};
-
-			const int versionCode = makeVersionCode(openGLFormat.majorVersion(), openGLFormat.minorVersion());
-
-			const int minimumSupportedVersionCode = makeVersionCode(2, 1);
-
-			//Only check this once
-			if (!settings->value("Video/CheckedOpenGLVersion", false).toBool()
-				&& versionCode < minimumSupportedVersionCode)
-			{
-				QMessageBox::warning(nullptr, "Warning",
-					QString{"%1 may not work correctly with your version of OpenGL (%2.%3)"}
-						.arg(programName)
-						.arg(openGLFormat.majorVersion())
-						.arg(openGLFormat.minorVersion()));
-
-				settings->setValue("Video/CheckedOpenGLVersion", true);
-			}
-		}
+		CheckOpenGLVersion(programName, *applicationSettings);
 
 		auto offscreenContext{InitializeOpenGL()};
 
@@ -304,6 +270,64 @@ void ToolApplication::ConfigureOpenGL(ApplicationSettings& settings)
 	QSurfaceFormat::setDefaultFormat(defaultFormat);
 }
 
+void ToolApplication::CheckOpenGLVersion(const QString& programName, ApplicationSettings& settings)
+{
+	const auto openGLFormat = QOpenGLContext::globalShareContext()->format();
+
+	auto makeVersionCode = [](int major, int minor)
+	{
+		return (major << 8) + minor;
+	};
+
+	const int versionCode = makeVersionCode(openGLFormat.majorVersion(), openGLFormat.minorVersion());
+
+	const int minimumSupportedVersionCode = makeVersionCode(2, 1);
+
+	//Only check this once
+	if (!settings.HasCheckedOpenGLVersion() && versionCode < minimumSupportedVersionCode)
+	{
+		QMessageBox::warning(nullptr, "Warning",
+			QString{"%1 may not work correctly with your version of OpenGL (%2.%3)"}
+			.arg(programName)
+			.arg(openGLFormat.majorVersion())
+			.arg(openGLFormat.minorVersion()));
+
+		settings.SetCheckedOpenGLVersion(true);
+	}
+}
+
+std::unique_ptr<graphics::IGraphicsContext> ToolApplication::InitializeOpenGL()
+{
+	auto context{std::make_unique<QOpenGLContext>()};
+
+	context->setFormat(QSurfaceFormat::defaultFormat());
+
+	const auto shareContext{QOpenGLContext::globalShareContext()};
+
+	context->setShareContext(shareContext);
+	context->setScreen(shareContext->screen());
+
+	if (!context->create())
+	{
+		QMessageBox::critical(nullptr, "Fatal Error", "Couldn't create OpenGL context");
+		return {};
+	}
+
+	auto surface{std::make_unique<QOffscreenSurface>(context->screen(), this)};
+
+	surface->setFormat(context->format());
+	surface->setScreen(context->screen());
+	surface->create();
+
+	if (!context->makeCurrent(surface.get()))
+	{
+		QMessageBox::critical(nullptr, "Fatal Error", "Couldn't make offscreen surface context current");
+		return {};
+	}
+
+	return std::make_unique<OpenGLGraphicsContext>(std::move(surface), std::move(context));
+}
+
 bool ToolApplication::CheckSingleInstance(
 	const QString& programName, const QString& fileName, ApplicationSettings& settings)
 {
@@ -340,38 +364,6 @@ std::unique_ptr<AssetManager> ToolApplication::CreateApplication(
 	}
 
 	return application;
-}
-
-std::unique_ptr<graphics::IGraphicsContext> ToolApplication::InitializeOpenGL()
-{
-	auto context{std::make_unique<QOpenGLContext>()};
-
-	context->setFormat(QSurfaceFormat::defaultFormat());
-
-	const auto shareContext{QOpenGLContext::globalShareContext()};
-
-	context->setShareContext(shareContext);
-	context->setScreen(shareContext->screen());
-
-	if (!context->create())
-	{
-		QMessageBox::critical(nullptr, "Fatal Error", "Couldn't create OpenGL context");
-		return {};
-	}
-
-	auto surface{std::make_unique<QOffscreenSurface>(context->screen(), this)};
-
-	surface->setFormat(context->format());
-	surface->setScreen(context->screen());
-	surface->create();
-
-	if (!context->makeCurrent(surface.get()))
-	{
-		QMessageBox::critical(nullptr, "Fatal Error", "Couldn't make offscreen surface context current");
-		return {};
-	}
-
-	return std::make_unique<OpenGLGraphicsContext>(std::move(surface), std::move(context));
 }
 
 void ToolApplication::OnExit()

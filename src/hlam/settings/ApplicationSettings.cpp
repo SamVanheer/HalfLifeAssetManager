@@ -220,6 +220,16 @@ void ApplicationSettings::SetAllowTabCloseWithMiddleClick(bool value)
 	_settings->setValue("General/AllowTabCloseWithMiddleClick", value);
 }
 
+bool ApplicationSettings::HasCheckedOpenGLVersion() const
+{
+	return _settings->value("Video/CheckedOpenGLVersion", false).toBool();
+}
+
+void ApplicationSettings::SetCheckedOpenGLVersion(bool value)
+{
+	_settings->setValue("Video/CheckedOpenGLVersion", true);
+}
+
 bool ApplicationSettings::ShouldEnableVSync() const
 {
 	return _settings->value("Video/EnableVSync", DefaultEnableVSync).toBool();

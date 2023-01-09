@@ -45,12 +45,14 @@ private:
 
 	void ConfigureOpenGL(ApplicationSettings& settings);
 
+	void CheckOpenGLVersion(const QString& programName, ApplicationSettings& settings);
+
+	std::unique_ptr<graphics::IGraphicsContext> InitializeOpenGL();
+
 	bool CheckSingleInstance(const QString& programName, const QString& fileName, ApplicationSettings& settings);
 
 	std::unique_ptr<AssetManager> CreateApplication(std::shared_ptr<ApplicationSettings> applicationSettings,
 		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext);
-
-	std::unique_ptr<graphics::IGraphicsContext> InitializeOpenGL();
 
 private slots:
 	void OnExit();
