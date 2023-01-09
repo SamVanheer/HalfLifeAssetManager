@@ -107,7 +107,7 @@ int ToolApplication::Run(int argc, char* argv[])
 		const auto commandLine = ParseCommandLine(QStringList{argv, argv + argc});
 
 		const auto applicationSettings = std::make_shared<ApplicationSettings>(
-			CreateSettings(programName, commandLine.IsPortable).release());
+			CreateSettings(argv[0], programName, commandLine.IsPortable).release());
 
 		auto settings = applicationSettings->GetSettings();
 
@@ -121,7 +121,8 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
-		LogFileName = QApplication::applicationDirPath() + QDir::separator() + LogBaseFileName;
+		LogFileName = QFileInfo{applicationSettings->GetSettings()->fileName()}.absolutePath() + QDir::separator()
+			+ LogBaseFileName;
 
 		QFile::remove(LogFileName);
 
@@ -221,11 +222,12 @@ ParsedCommandLine ToolApplication::ParseCommandLine(const QStringList& arguments
 	return result;
 }
 
-std::unique_ptr<QSettings> ToolApplication::CreateSettings(const QString& programName, bool isPortable)
+std::unique_ptr<QSettings> ToolApplication::CreateSettings(
+	const QString& applicationFileName, const QString& programName, bool isPortable)
 {
 	if (isPortable)
 	{
-		const QString directory = QApplication::applicationDirPath();
+		const QString directory = QFileInfo{applicationFileName}.absolutePath();
 		const QString fileName = QString{"%1/%2.ini"}.arg(directory).arg(programName);
 		return std::make_unique<QSettings>(fileName, QSettings::Format::IniFormat);
 	}
