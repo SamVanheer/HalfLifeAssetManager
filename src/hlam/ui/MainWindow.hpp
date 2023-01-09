@@ -92,5 +92,5 @@ private:
 
 	std::unique_ptr<FullscreenWidget> _fullscreenWidget;
 
-	QPointer<QDockWidget> _fileListDock;
+	QPointer<QDockWidget> _fileBrowserDock;
 };

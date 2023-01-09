@@ -243,6 +243,12 @@ public:
 	QString GetStylePath() const;
 	void SetStylePath(const QString& stylePath);
 
+	QString GetFileListFilter() const;
+	void SetFileListFilter(const QString& filterName);
+
+	QString GetFileListRootDirectory() const;
+	void SetFileListRootDirectory(const QString& directory);
+
 	QString GetSteamLanguage() const;
 	void SetSteamLanguage(const QString& value);
 

@@ -12,6 +12,8 @@ class StudioModel;
 
 bool IsStudioModel(FILE* file);
 
+bool IsMainStudioModel(FILE* file);
+
 /**
 *	@brief Loads a studio model
 *	@param fileName Name of the model to load. This is the entire path, including the extension

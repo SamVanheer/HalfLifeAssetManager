@@ -82,6 +82,8 @@ struct AssetLoadInExternalProgram
 */
 class AssetProvider : public QObject
 {
+	Q_OBJECT
+
 protected:
 	explicit AssetProvider(AssetManager* application)
 		: _application(application)
@@ -121,6 +123,14 @@ public:
 	virtual std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
 		const QString& fileName, FILE* file) = 0;
 
+	/**
+	*	@brief Returns whether the given file is a candidate for loading when a file list is presented to the user.
+	*/
+	virtual bool IsCandidateForLoading(const QString& fileName, FILE* file) const
+	{
+		return CanLoad(fileName, file);
+	}
+
 protected:
 	AssetManager* const _application;
 };
@@ -150,3 +160,4 @@ private:
 };
 
 Q_DECLARE_METATYPE(Asset*)
+Q_DECLARE_METATYPE(AssetProvider*)

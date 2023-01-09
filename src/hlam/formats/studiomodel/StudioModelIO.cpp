@@ -44,6 +44,31 @@ bool IsStudioModel(FILE* file)
 	return true;
 }
 
+bool IsMainStudioModel(FILE* file)
+{
+	if (!IsStudioModel(file))
+	{
+		return false;
+	}
+
+	// It's a main file if it has a bone section, even if it has no bones.
+	const std::size_t offset = offsetof(studiohdr_t, boneindex);
+
+	if (fseek(file, offset, SEEK_SET) != 0)
+	{
+		return false;
+	}
+
+	int boneindex;
+
+	if (fread(&boneindex, sizeof(boneindex), 1, file) != 1)
+	{
+		return false;
+	}
+
+	return boneindex > 0;
+}
+
 namespace
 {
 template<typename T>

@@ -373,6 +373,11 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
 }
 
+bool StudioModelAssetProvider::IsCandidateForLoading(const QString& fileName, FILE* file) const
+{
+	return studiomdl::IsMainStudioModel(file);
+}
+
 bool StudioModelAssetProvider::AreEditControlsVisible() const
 {
 	return _editControlsVisibleAction->isChecked();

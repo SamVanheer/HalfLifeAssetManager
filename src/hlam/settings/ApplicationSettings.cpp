@@ -272,6 +272,26 @@ void ApplicationSettings::SetStylePath(const QString& stylePath)
 	}
 }
 
+QString ApplicationSettings::GetFileListFilter() const
+{
+	return _settings->value("FileList/Filter", QString{}).toString();
+}
+
+void ApplicationSettings::SetFileListFilter(const QString& filterName)
+{
+	_settings->setValue("FileList/Filter", filterName);
+}
+
+QString ApplicationSettings::GetFileListRootDirectory() const
+{
+	return _settings->value("FileList/RootDirectory", QString{}).toString();
+}
+
+void ApplicationSettings::SetFileListRootDirectory(const QString& directory)
+{
+	_settings->setValue("FileList/RootDirectory", directory);
+}
+
 QString ApplicationSettings::GetSteamLanguage() const
 {
 	return _steamLanguage;

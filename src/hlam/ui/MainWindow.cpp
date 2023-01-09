@@ -36,10 +36,11 @@
 
 #include "ui/DragNDropEventFilter.hpp"
 #include "application/AssetManager.hpp"
-#include "ui/FileListPanel.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/MainWindow.hpp"
 #include "ui/SceneWidget.hpp"
+
+#include "ui/dockpanels/FileBrowser.hpp"
 
 #include "ui/options/OptionsDialog.hpp"
 
@@ -109,22 +110,26 @@ MainWindow::MainWindow(AssetManager* application)
 		}
 	}
 
-	{
-		auto fileList = new FileListPanel(_application, this);
+	// Add Windows to View menu.
 
-		connect(fileList, &FileListPanel::FileSelected, this,
+	_ui.MenuView->addSeparator();
+
+	{
+		auto fileBrowser = new FileBrowser(_application, this);
+
+		connect(fileBrowser, &FileBrowser::FileSelected, this,
 			[this](const QString& fileName) { _assets->TryLoad(fileName); });
 
-		_fileListDock = new QDockWidget(this);
+		_fileBrowserDock = new QDockWidget(this);
 
-		_fileListDock->setWidget(fileList);
-		_fileListDock->setWindowTitle("File List");
+		_fileBrowserDock->setWidget(fileBrowser);
+		_fileBrowserDock->setWindowTitle(fileBrowser->windowTitle());
 
-		this->addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, _fileListDock);
+		this->addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, _fileBrowserDock);
 
-		_fileListDock->hide();
+		_fileBrowserDock->hide();
 
-		_ui.MenuWindows->addAction(_fileListDock->toggleViewAction());
+		_ui.MenuView->addAction(_fileBrowserDock->toggleViewAction());
 	}
 
 	_assetTabs = new QTabWidget(this);

@@ -3,19 +3,20 @@
 #include <QString>
 #include <QWidget>
 
-#include "ui_FileListPanel.h"
+#include "ui_FileBrowser.h"
 
+class AssetFilterModel;
 class AssetManager;
 class GameConfiguration;
 class QFileSystemModel;
 
-class FileListPanel final : public QWidget
+class FileBrowser final : public QWidget
 {
 	Q_OBJECT
 
 public:
-	FileListPanel(AssetManager* application, QWidget* parent);
-	~FileListPanel();
+	FileBrowser(AssetManager* application, QWidget* parent);
+	~FileBrowser();
 
 private:
 	void SetRootDirectory(const QString& directory);
@@ -24,13 +25,11 @@ signals:
 	void FileSelected(const QString& fileName);
 
 private slots:
-	void UpdateCurrentRootPath(const GameConfiguration* defaultConfiguration);
-
-	void OnFilterChanged();
-
 	void OnFileSelected(const QModelIndex& index);
 
 private:
-	Ui_FileListPanel _ui;
-	QFileSystemModel* _model;
+	Ui_FileBrowser _ui;
+	AssetManager* const _application;
+	QFileSystemModel* const _model;
+	AssetFilterModel* const _filterModel;
 };

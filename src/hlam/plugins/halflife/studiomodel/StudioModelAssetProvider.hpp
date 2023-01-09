@@ -69,6 +69,8 @@ public:
 	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
 		const QString& fileName, FILE* file) override;
 
+	bool IsCandidateForLoading(const QString& fileName, FILE* file) const override;
+
 	StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
 
 	studiomdl::IStudioModelRenderer* GetStudioModelRenderer() const { return _studioModelRenderer.get(); }
@@ -159,6 +161,11 @@ public:
 		const QString& fileName, FILE* file) override
 	{
 		return _assetProvider->Load(fileName, file);
+	}
+
+	bool IsCandidateForLoading(const QString& fileName, FILE* file) const override
+	{
+		return _assetProvider->IsCandidateForLoading(fileName, file);
 	}
 
 private:

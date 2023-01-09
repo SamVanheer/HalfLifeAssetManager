@@ -2,9 +2,6 @@ target_sources(HLAM
 	PRIVATE
 		DockableWidget.hpp
 		DragNDropEventFilter.hpp
-		FileListPanel.cpp
-		FileListPanel.hpp
-		FileListPanel.ui
 		FullscreenWidget.cpp
 		FullscreenWidget.hpp
 		MainWindow.cpp
@@ -16,4 +13,6 @@ target_sources(HLAM
 		StateSnapshot.hpp)
 
 add_subdirectory(camera_operators)
+add_subdirectory(dialogs)
+add_subdirectory(dockpanels)
 add_subdirectory(options)
