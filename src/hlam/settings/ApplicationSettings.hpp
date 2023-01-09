@@ -7,6 +7,8 @@
 #include <QString>
 #include <QVector>
 
+#include <spdlog/logger.h>
+
 #include <glm/vec2.hpp>
 
 #include "graphics/TextureLoader.hpp"
@@ -105,7 +107,7 @@ public:
 	static constexpr int MaximumAspectRatio{100};
 	static constexpr glm::vec2 DefaultAspectRatio{16.f, 9.f};
 
-	explicit ApplicationSettings(QSettings* settings);
+	explicit ApplicationSettings(QSettings* settings, std::shared_ptr<spdlog::logger> fileSystemLogger);
 	~ApplicationSettings() override;
 
 	QSettings* GetSettings() const { return _settings; }

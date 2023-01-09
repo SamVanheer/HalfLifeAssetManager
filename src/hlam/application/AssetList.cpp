@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <cassert>
 
-#include <QDebug>
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QString>
@@ -18,8 +17,9 @@
 
 #include "ui/MainWindow.hpp"
 
-AssetList::AssetList(AssetManager* application)
+AssetList::AssetList(AssetManager* application, std::shared_ptr<spdlog::logger> logger)
 	: _application(application)
+	, _logger(logger)
 {
 }
 
@@ -84,8 +84,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 
 	if (fileName.isEmpty())
 	{
-		qCDebug(logging::HLAM) << "Asset filename is empty";
-		QMessageBox::critical(_application->GetMainWindow(), "Error loading asset", "Asset filename is empty");
+		_logger->error("Asset filename is empty");
 		return AssetLoadResult::Failed;
 	}
 
@@ -93,13 +92,11 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 
 	fileName = fileInfo.absoluteFilePath();
 
-	qCDebug(logging::HLAM) << "Trying to load asset" << fileName;
+	_logger->trace("Trying to load asset \"{}\"", fileName);
 
 	if (!fileInfo.exists())
 	{
-		qCDebug(logging::HLAM) << "Asset" << fileName << "does not exist";
-		QMessageBox::critical(
-			_application->GetMainWindow(), "Error loading asset", QString{"Asset \"%1\" does not exist"}.arg(fileName));
+		_logger->error("Asset \"{}\" does not exist", fileName);
 		return AssetLoadResult::Failed;
 	}
 
@@ -138,15 +135,13 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 				{
 					if (!result)
 					{
-						qCDebug(logging::HLAM) << "Asset" << fileName << "couldn't be loaded";
-						QMessageBox::critical(_application->GetMainWindow(), "Error loading asset",
-							QString{"Error loading asset \"%1\":\nNull asset returned"}.arg(fileName));
+						_logger->debug("Asset \"{}\" couldn't be loaded", fileName);
 						return AssetLoadResult::Failed;
 					}
 
 					auto currentFileName = result->GetFileName();
 
-					qCDebug(logging::HLAM) << "Asset" << fileName << "loaded as" << currentFileName;
+					_logger->debug("Asset \"{}\" loaded as \"{}\"", fileName, currentFileName);
 
 					connect(result.get(), &Asset::FileNameChanged, this, &AssetList::OnAssetFileNameChanged);
 
@@ -154,7 +149,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 
 					emit AssetAdded(_assets.size() - 1);
 
-					qCDebug(logging::HLAM) << "Loaded asset" << fileName;
+					_logger->trace("Loaded asset \"{}\"", fileName);
 				}
 				else if constexpr (std::is_same_v<T, AssetLoadInExternalProgram>)
 				{
@@ -170,8 +165,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 	}
 	catch (const AssetException& e)
 	{
-		QMessageBox::critical(_application->GetMainWindow(), "Error loading asset",
-			QString{"Error loading asset \"%1\":\n%2"}.arg(fileName).arg(e.what()));
+		_logger->error("Error loading asset \"{}\":\n{}", fileName, e.what());
 	}
 
 	return AssetLoadResult::Failed;
@@ -209,7 +203,7 @@ bool AssetList::Save(Asset* asset)
 {
 	assert(asset);
 
-	qCDebug(logging::HLAM) << "Trying to save asset" << asset->GetFileName();
+	_logger->trace("Trying to save asset \"{}\"", asset->GetFileName());
 
 	try
 	{
@@ -217,8 +211,7 @@ bool AssetList::Save(Asset* asset)
 	}
 	catch (const AssetException& e)
 	{
-		QMessageBox::critical(
-			_application->GetMainWindow(), "Error saving asset", QString{"Error saving asset:\n%1"}.arg(e.what()));
+		_logger->error("Error saving asset:\n{}", e.what());
 		return false;
 	}
 

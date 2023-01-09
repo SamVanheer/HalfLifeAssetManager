@@ -17,7 +17,6 @@
 #include <QTextStream>
 
 #include "application/AssetList.hpp"
-#include "application/AssetManager.hpp"
 #include "application/ToolApplication.hpp"
 
 #include "plugins/IAssetManagerPlugin.hpp"
@@ -31,56 +30,63 @@
 
 #include "ui/OpenGLGraphicsContext.hpp"
 
-using namespace logging;
-
 const QString LogBaseFileName{QStringLiteral("HLAM-Log.txt")};
 
 QString LogFileName = LogBaseFileName;
 
 const QtMessageHandler DefaultMessageHandler = qInstallMessageHandler(nullptr);
 
-void FileMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+static bool LogToFile = false;
+
+void AssetManagerMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
-	QByteArray localMsg = msg.toLocal8Bit();
-
-	QFile logFile{LogFileName};
-
-	if (!logFile.open(QFile::WriteOnly | QFile::Append))
+	if (LogToFile)
 	{
-		QMessageBox::critical(nullptr, "Error", QString{"Couldn't open file \"%1\" for writing log messages"}
+		QFile logFile{LogFileName};
+
+		if (!logFile.open(QFile::WriteOnly | QFile::Append))
+		{
+			QMessageBox::critical(nullptr, "Error", QString{"Couldn't open file \"%1\" for writing log messages"}
 			.arg(QFileInfo{logFile}.absoluteFilePath()));
-		return;
+		}
+		else
+		{
+			QTextStream stream{&logFile};
+
+			const char* messageType = "Unknown";
+
+			switch (type)
+			{
+			case QtDebugMsg:
+				messageType = "Debug";
+				break;
+
+			case QtInfoMsg:
+				messageType = "Info";
+				break;
+
+			case QtWarningMsg:
+				messageType = "Warning";
+				break;
+
+			case QtCriticalMsg:
+				messageType = "Critical";
+				break;
+
+			case QtFatalMsg:
+				messageType = "Fatal";
+				break;
+			}
+
+			stream << messageType << ": "
+				<< msg << " (" << context.file << ":" << context.line << ", " << context.function << ")\n";
+		}
 	}
 
-	QTextStream stream{&logFile};
-
-	const char* messageType = "Unknown";
-
-	switch (type)
+	if (auto application = ToolApplication::GetApplication(); application)
 	{
-	case QtDebugMsg:
-		messageType = "Debug";
-		break;
-
-	case QtInfoMsg:
-		messageType = "Info";
-		break;
-
-	case QtWarningMsg:
-		messageType = "Warning";
-		break;
-
-	case QtCriticalMsg:
-		messageType = "Critical";
-		break;
-
-	case QtFatalMsg:
-		messageType = "Fatal";
-		break;
+		emit application->LogMessageReceived(type, context, msg);
 	}
-
-	stream << messageType << ": "
-		<< msg << " (" << context.file << ":" << context.line << ", " << context.function << ")\n";
 
 	//Let the default handler handle abort
 	/*
@@ -107,7 +113,7 @@ int ToolApplication::Run(int argc, char* argv[])
 		const auto commandLine = ParseCommandLine(QStringList{argv, argv + argc});
 
 		const auto applicationSettings = std::make_shared<ApplicationSettings>(
-			CreateSettings(argv[0], programName, commandLine.IsPortable).release());
+			CreateSettings(argv[0], programName, commandLine.IsPortable).release(), CreateQtLoggerSt(HLAMFileSystem()));
 
 		auto settings = applicationSettings->GetSettings();
 
@@ -126,10 +132,9 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		QFile::remove(LogFileName);
 
-		if (commandLine.LogDebugMessagesToConsole)
-		{
-			qInstallMessageHandler(&FileMessageOutput);
-		}
+		LogToFile = commandLine.LogDebugMessagesToConsole;
+
+		qInstallMessageHandler(&AssetManagerMessageOutput);
 
 		if (CheckSingleInstance(programName, commandLine.FileName, *applicationSettings))
 		{
@@ -267,7 +272,7 @@ void ToolApplication::ConfigureOpenGL(ApplicationSettings& settings)
 	defaultFormat.setAlphaBufferSize(4);
 	defaultFormat.setSwapInterval(settings.ShouldEnableVSync() ? 1 : 0);
 
-	qCDebug(logging::HLAM) << "Configuring OpenGL for" << defaultFormat;
+	qCDebug(HLAM) << "Configuring OpenGL for" << defaultFormat;
 
 	QSurfaceFormat::setDefaultFormat(defaultFormat);
 }

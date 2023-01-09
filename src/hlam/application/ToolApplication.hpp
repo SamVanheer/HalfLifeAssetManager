@@ -5,10 +5,10 @@
 #include <QObject>
 #include <QString>
 
+#include "application/AssetManager.hpp"
 #include "application/SingleInstance.hpp"
 
 class ApplicationSettings;
-class AssetManager;
 class QApplication;
 class QSettings;
 class QStringList;
@@ -33,6 +33,8 @@ class ToolApplication final : public QObject
 public:
 	ToolApplication();
 	~ToolApplication();
+
+	static AssetManager* GetApplication() { return _application.get(); }
 
 	int Run(int argc, char* argv[]);
 
@@ -61,7 +63,7 @@ private slots:
 private:
 	QApplication* _guiApplication{};
 
-	std::unique_ptr<AssetManager> _application;
+	static inline std::unique_ptr<AssetManager> _application;
 
 	std::unique_ptr<SingleInstance> _singleInstance;
 };

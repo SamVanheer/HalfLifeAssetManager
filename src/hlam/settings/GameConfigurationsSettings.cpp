@@ -1,6 +1,5 @@
 #include <algorithm>
 
-#include <QDebug>
 #include <QFileInfo>
 #include <QSettings>
 
@@ -41,7 +40,7 @@ void GameConfigurationsSettings::LoadSettings()
 		}
 		else
 		{
-			qDebug() << "Game configuration \"" << i << "\" has invalid settings data";
+			_logger->error("Game configuration \"{}\" has invalid settings data", i);
 		}
 	}
 
@@ -147,7 +146,7 @@ void GameConfigurationsSettings::UpdateConfiguration(const GameConfiguration& co
 
 	if (!target)
 	{
-		qDebug() << "Invalid configuration id passed to UpdateConfiguration";
+		_logger->error("Invalid configuration id passed to UpdateConfiguration");
 		return;
 	}
 
@@ -178,7 +177,7 @@ void GameConfigurationsSettings::SetDefaultConfiguration(const QUuid& id)
 
 		if (!id.isNull() && !current)
 		{
-			qDebug() << "Invalid configuration id passed to SetDefaultConfiguration";
+			_logger->error("Invalid configuration id passed to SetDefaultConfiguration");
 			return;
 		}
 
@@ -241,8 +240,9 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 
 			addConfiguration(GameConfiguration{.BaseGameDirectory = baseGameDirectory});
 
-			qCDebug(logging::HLAMFileSystem) << "Using auto-detected game configuration for asset"
-				<< assetFileName << "based on base game directory" << baseGameDirectory;
+			_logger->trace(
+				"Using auto-detected game configuration for asset \"{}\" based on base game directory \"{}\"",
+				assetFileName, baseGameDirectory);
 		}
 	}
 
@@ -275,9 +275,8 @@ std::pair<const GameConfiguration*, bool> GameConfigurationsSettings::DetectGame
 		if (!configuration->ModDirectory.isEmpty()
 			&& directory.startsWith(configuration->ModDirectory, Qt::CaseInsensitive))
 		{
-			qCDebug(logging::HLAMFileSystem) << "Using game configuration"
-				<< configuration->Name << "(" << configuration->Id << ") for asset"
-				<< assetFileName << "based on mod directory" << configuration->ModDirectory;
+			_logger->trace("Using game configuration \"{}\" ({}) for asset \"{}\" based on mod directory \"{}\"",
+				configuration->Name, configuration->Id,assetFileName, configuration->ModDirectory);
 			return {configuration.get(), false};
 		}
 	}
@@ -296,9 +295,9 @@ std::pair<const GameConfiguration*, bool> GameConfigurationsSettings::DetectGame
 			if (!configuration->BaseGameDirectory.isEmpty()
 				&& directory.startsWith(configuration->BaseGameDirectory, Qt::CaseInsensitive))
 			{
-				qCDebug(logging::HLAMFileSystem) << "Using game configuration"
-					<< configuration->Name << "(" << configuration->Id << ") for asset"
-					<< assetFileName << "based on base game directory" << configuration->BaseGameDirectory;
+				_logger->trace(
+					"Using game configuration \"{}\" ({}) for asset \"{}\" based on base game directory \"{}\"",
+					configuration->Name, configuration->Id, assetFileName, configuration->BaseGameDirectory);
 				return {configuration.get(), false};
 			}
 		}
@@ -308,13 +307,12 @@ std::pair<const GameConfiguration*, bool> GameConfigurationsSettings::DetectGame
 
 	if (configuration)
 	{
-		qCDebug(logging::HLAMFileSystem) << "Using default game configuration"
-			<< configuration->Name << "(" << configuration->Id << "for asset"
-			<< assetFileName;
+		_logger->trace("Using default game configuration \"{}\" ({}) for asset \"{}\"",
+			configuration->Name, configuration->Id, assetFileName);
 	}
 	else
 	{
-		qCDebug(logging::HLAMFileSystem) << "No game configuration for asset" << assetFileName;
+		_logger->trace("No game configuration for asset \"{}\"", assetFileName);
 	}
 
 	return {configuration, true};

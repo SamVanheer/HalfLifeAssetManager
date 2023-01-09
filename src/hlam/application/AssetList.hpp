@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QPointer>
 
+#include <spdlog/logger.h>
+
 #include "application/Assets.hpp"
 
 class AssetManager;
@@ -22,7 +24,7 @@ class AssetList final : public QObject
 	Q_OBJECT
 
 public:
-	explicit AssetList(AssetManager* application);
+	explicit AssetList(AssetManager* application, std::shared_ptr<spdlog::logger> logger);
 	~AssetList() override;
 
 	std::size_t Count() const { return _assets.size(); }
@@ -60,6 +62,7 @@ private slots:
 
 private:
 	AssetManager* const _application;
+	const std::shared_ptr<spdlog::logger> _logger;
 
 	std::vector<std::unique_ptr<Asset>> _assets;
 	QPointer<Asset> _currentAsset;

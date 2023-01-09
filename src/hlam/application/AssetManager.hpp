@@ -5,9 +5,12 @@
 #include <vector>
 
 #include <QObject>
+#include <QLoggingCategory>
 #include <QPointer>
 #include <QString>
 #include <QTimer>
+
+#include <spdlog/logger.h>
 
 class ApplicationSettings;
 class AssetList;
@@ -40,6 +43,9 @@ enum class LaunchExternalProgramResult
 	Cancelled
 };
 
+Q_DECLARE_LOGGING_CATEGORY(HLAM)
+Q_DECLARE_LOGGING_CATEGORY(HLAMFileSystem)
+
 /**
 *	@brief Used to communicate between the main window and edit widgets
 */
@@ -58,6 +64,8 @@ public:
 	AssetManager& operator=(const AssetManager&) = delete;
 
 	QApplication* GetGUIApplication() const { return _guiApplication; }
+
+	const std::shared_ptr<spdlog::logger>& GetLogger() const { return _logger; }
 
 	QSettings* GetSettings() const;
 
@@ -154,6 +162,8 @@ signals:
 
 	void FullscreenWidgetChanged();
 
+	void LogMessageReceived(QtMsgType type, const QMessageLogContext& context, const QString& msg);
+
 private slots:
 	void OnTimerTick();
 
@@ -163,6 +173,8 @@ private slots:
 
 private:
 	QApplication* const _guiApplication;
+
+	const std::shared_ptr<spdlog::logger> _logger;
 
 	const std::shared_ptr<ApplicationSettings> _applicationSettings;
 

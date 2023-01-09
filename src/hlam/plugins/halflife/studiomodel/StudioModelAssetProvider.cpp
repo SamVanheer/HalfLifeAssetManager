@@ -4,6 +4,7 @@
 #include <QDockWidget>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QLoggingCategory>
 #include <QMenu>
 #include <QMessageBox>
 #include <QOpenGLFunctions_1_1>
@@ -30,7 +31,7 @@
 #include "plugins/halflife/studiomodel/ui/compiler/StudioModelDecompilerFrontEnd.hpp"
 #include "plugins/halflife/studiomodel/ui/dialogs/QCDataDialog.hpp"
 
-#include "qt/QtLogSink.hpp"
+#include "qt/QtLogging.hpp"
 #include "qt/QtUtilities.hpp"
 
 #include "settings/ApplicationSettings.hpp"
@@ -48,20 +49,23 @@
 namespace studiomodel
 {
 Q_LOGGING_CATEGORY(HLAMStudioModel, "hlam.studiomodel")
+Q_LOGGING_CATEGORY(HLAMSpriteRenderer, "hlam.spriterenderer")
+Q_LOGGING_CATEGORY(HLAMStudioModelRenderer, "hlam.studiomodelrenderer")
 
 const QString WindowStateKey{QStringLiteral("Asset/StudioModel/WindowState")};
 
 StudioModelAssetProvider::StudioModelAssetProvider(AssetManager* application,
 	const std::shared_ptr<StudioModelSettings>& studioModelSettings)
 	: AssetProvider(application)
+	, _logger(CreateQtLoggerSt(HLAMStudioModel()))
 	, _studioModelSettings(studioModelSettings)
 
 	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(
-		CreateQtLoggerSt(logging::HLAMStudioModelRenderer()),
+		CreateQtLoggerSt(HLAMStudioModelRenderer()),
 		_application->GetOpenGLFunctions(), _application->GetColorSettings()))
 
 	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(
-		CreateQtLoggerSt(logging::HLAMSpriteRenderer()), _application->GetWorldTime()))
+		CreateQtLoggerSt(HLAMSpriteRenderer()), _application->GetWorldTime()))
 
 	, _dummyAsset(std::make_unique<StudioModelAsset>(
 		"", _application, this, std::make_unique<studiomdl::EditableStudioModel>()))
@@ -332,14 +336,14 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) cons
 std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAssetProvider::Load(
 	const QString& fileName, FILE* file)
 {
-	qCDebug(HLAMStudioModel) << "Trying to load model" << fileName;
+	_logger->trace("Trying to load model {}", fileName);
 
 	const auto filePath = std::filesystem::u8path(fileName.toStdString());
 	auto studioModel = studiomdl::LoadStudioModel(filePath, file);
 
 	if (studiomdl::IsXashModel(*studioModel))
 	{
-		qCDebug(HLAMStudioModel) << "Model" << fileName << "is a Xash model";
+		_logger->debug("Model {} is a Xash model", fileName);
 
 		const auto result = _application->TryLaunchExternalProgram(
 			XashModelViewerFileNameKey, QStringList(fileName),
@@ -367,7 +371,7 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 		updatedFileName = fileInfo.path() + '/' + fileInfo.completeBaseName() + '.' + StudioModelExtension;
 	}
 
-	qCDebug(HLAMStudioModel) << "Loaded model" << fileName << "as" << updatedFileName;
+	_logger->trace("Loaded model {} as {}", fileName, updatedFileName);
 
 	return std::make_unique<StudioModelAsset>(std::move(updatedFileName), _application, this,
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));

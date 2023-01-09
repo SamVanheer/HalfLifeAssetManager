@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include <limits>
 #include <memory>
 
@@ -8,10 +7,7 @@
 #include <QLoggingCategory>
 #include <QMessageLogger>
 
-#include <spdlog/logger.h>
 #include <spdlog/sinks/base_sink.h>
-
-#include "qt/QtLogging.hpp"
 
 /**
 *	@brief spdlog sink that forward messages to Qt's logging system
@@ -23,6 +19,7 @@ public:
 	QtLogSink(const QLoggingCategory& category)
 		: _category(category)
 	{
+		this->set_level(spdlog::level::trace);
 	}
 
 protected:
@@ -94,10 +91,3 @@ private:
 private:
 	const QLoggingCategory& _category;
 };
-
-inline std::shared_ptr<spdlog::logger> CreateQtLoggerSt(const QLoggingCategory& category)
-{
-	auto sink = std::make_shared<QtLogSink<spdlog::details::null_mutex>>(category);
-
-	return std::make_shared<spdlog::logger>(category.categoryName(), std::move(sink));
-}

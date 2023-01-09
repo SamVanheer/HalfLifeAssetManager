@@ -8,6 +8,8 @@
 #include <QString>
 #include <QUuid>
 
+#include <spdlog/logger.h>
+
 class ApplicationSettings;
 class IFileSystem;
 class QSettings;
@@ -27,9 +29,11 @@ class GameConfigurationsSettings final : public QObject
 	Q_OBJECT
 
 public:
-	explicit GameConfigurationsSettings(ApplicationSettings* applicationSettings, QSettings* settings)
+	explicit GameConfigurationsSettings(ApplicationSettings* applicationSettings, QSettings* settings,
+		std::shared_ptr<spdlog::logger> logger)
 		: _applicationSettings(applicationSettings)
 		, _settings(settings)
+		, _logger(logger)
 	{
 	}
 
@@ -76,6 +80,7 @@ signals:
 private:
 	ApplicationSettings* const _applicationSettings;
 	QSettings* const _settings;
+	const std::shared_ptr<spdlog::logger> _logger;
 
 	std::vector<std::unique_ptr<GameConfiguration>> _gameConfigurations;
 

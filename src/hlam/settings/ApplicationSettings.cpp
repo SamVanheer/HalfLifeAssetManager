@@ -62,11 +62,11 @@ void ExternalProgramSettings::SetProgram(const QString& key, const QString& valu
 	_externalPrograms[key].ExecutablePath = value;
 }
 
-ApplicationSettings::ApplicationSettings(QSettings* settings)
+ApplicationSettings::ApplicationSettings(QSettings* settings, std::shared_ptr<spdlog::logger> fileSystemLogger)
 	: _settings(settings)
 	, _recentFiles(std::make_unique<RecentFilesSettings>(settings))
 	, _colorSettings(std::make_unique<ColorSettings>(settings))
-	, _gameConfigurations(std::make_unique<GameConfigurationsSettings>(this, settings))
+	, _gameConfigurations(std::make_unique<GameConfigurationsSettings>(this, settings, fileSystemLogger))
 	, _externalPrograms(std::make_unique<ExternalProgramSettings>(settings))
 {
 	_settings->setParent(this);

@@ -5,6 +5,8 @@
 #include <QLoggingCategory>
 #include <QPointer>
 
+#include <spdlog/logger.h>
+
 #include "application/Assets.hpp"
 
 #include "graphics/OpenGL.hpp"
@@ -35,8 +37,6 @@ class StudioModelEditWidget;
 inline const QString XashModelViewerFileNameKey{QStringLiteral("XashModelViewerFileName")};
 inline const QString StudioModelExtension{QStringLiteral("mdl")};
 inline const QString StudioModelPS2Extension{QStringLiteral("dol")};
-
-Q_DECLARE_LOGGING_CATEGORY(HLAMStudioModel)
 
 class StudioModelAssetProvider final : public AssetProvider
 {
@@ -108,6 +108,7 @@ private slots:
 	void OnTakeScreenshot();
 
 private:
+	const std::shared_ptr<spdlog::logger> _logger;
 	const std::shared_ptr<StudioModelSettings> _studioModelSettings;
 	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;

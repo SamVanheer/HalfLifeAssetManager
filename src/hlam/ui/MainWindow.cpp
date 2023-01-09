@@ -41,6 +41,7 @@
 #include "ui/SceneWidget.hpp"
 
 #include "ui/dockpanels/FileBrowser.hpp"
+#include "ui/dockpanels/MessagesPanel.hpp"
 
 #include "ui/options/OptionsDialog.hpp"
 
@@ -132,7 +133,27 @@ MainWindow::MainWindow(AssetManager* application)
 		_ui.MenuView->addAction(_fileBrowserDock->toggleViewAction());
 	}
 
+	{
+		auto messagesPanel = new MessagesPanel(_application, this);
+		auto dock = new QDockWidget(this);
+
+		dock->setWidget(messagesPanel);
+		dock->setWindowTitle(messagesPanel->windowTitle());
+		dock->setAllowedAreas(Qt::DockWidgetArea::BottomDockWidgetArea);
+		dock->hide();
+
+		addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, dock);
+
+		_ui.MenuView->addAction(dock->toggleViewAction());
+	}
+
 	_assetTabs = new QTabWidget(this);
+
+	{
+		auto sizePolicy = _assetTabs->sizePolicy();
+		sizePolicy.setRetainSizeWhenHidden(true);
+		_assetTabs->setSizePolicy(sizePolicy);
+	}
 
 	//Eliminate the border on the sides so the scene widget takes up all horizontal space
 	_assetTabs->setDocumentMode(true);

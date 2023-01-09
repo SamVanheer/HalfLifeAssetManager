@@ -49,6 +49,10 @@
 
 #include "utility/WorldTime.hpp"
 
+Q_LOGGING_CATEGORY(HLAM, "hlam")
+Q_LOGGING_CATEGORY(HLAMFileSystem, "hlam.filesystem")
+Q_LOGGING_CATEGORY(HLAMSoundSystem, "hlam.soundsystem")
+
 AssetManager::AssetManager(
 	QApplication* guiApplication,
 	const std::shared_ptr<ApplicationSettings>& applicationSettings,
@@ -56,6 +60,9 @@ AssetManager::AssetManager(
 	QObject* parent)
 	: QObject(parent)
 	, _guiApplication(guiApplication)
+
+	, _logger(CreateQtLoggerSt(HLAM()))
+
 	, _applicationSettings(applicationSettings)
 	, _dragNDropEventFilter(new DragNDropEventFilter(this, this))
 
@@ -69,12 +76,12 @@ AssetManager::AssetManager(
 	, _timer(new QTimer(this))
 
 	, _soundSystem(_applicationSettings->ShouldEnableAudioPlayback()
-		? std::unique_ptr<ISoundSystem>(std::make_unique<SoundSystem>(CreateQtLoggerSt(logging::HLAMSoundSystem())))
+		? std::unique_ptr<ISoundSystem>(std::make_unique<SoundSystem>(CreateQtLoggerSt(HLAMSoundSystem())))
 		: std::make_unique<DummySoundSystem>())
 	, _worldTime(std::make_unique<WorldTime>())
-	, _assets(std::make_unique<AssetList>(this))
+	, _assets(std::make_unique<AssetList>(this, _logger))
 {
-	qCDebug(logging::HLAM) << "Initializing OpenGL";
+	_logger->debug("Initializing OpenGL");
 
 	_graphicsContext->Begin();
 	const bool initializedOpenGLFunctions = _openglFunctions->initializeOpenGLFunctions();
@@ -85,7 +92,7 @@ AssetManager::AssetManager(
 	_textureLoader->SetTextureFilters(_applicationSettings->GetMinFilter(), _applicationSettings->GetMagFilter(),
 		_applicationSettings->GetMipmapFilter());
 
-	qCDebug(logging::HLAM) << "Initialized OpenGL";
+	_logger->debug("Initialized OpenGL");
 
 	_timer->setTimerType(Qt::TimerType::PreciseTimer);
 
@@ -148,7 +155,7 @@ bool AssetManager::AddPlugin(std::unique_ptr<IAssetManagerPlugin> plugin)
 		return false;
 	}
 
-	qCDebug(logging::HLAM) << "Adding plugin " << plugin->GetName();
+	_logger->trace("Adding plugin {}", plugin->GetName());
 
 	_plugins.push_back(std::move(plugin));
 
