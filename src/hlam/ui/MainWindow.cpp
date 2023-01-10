@@ -679,8 +679,8 @@ bool MainWindow::ShouldContinueWithSave(Asset* asset)
 		if (fileName.compare(other->GetFileName(), Qt::CaseInsensitive) == 0)
 		{
 			const auto action = QMessageBox::question(this, "Resolve asset conflicts",
-				R"(You are attempting to save an asset with the same filename as another asset that is already open.
-Do you want to discard the other asset and any changes that have been made to it or cancel this operation?)",
+				R"(Attempting to save an asset with the same filename as another asset that is already open.
+Discard the other asset and any changes that have been made to it or cancel this operation?)",
 				QMessageBox::Discard | QMessageBox::Cancel);
 
 			if (action != QMessageBox::Discard)
