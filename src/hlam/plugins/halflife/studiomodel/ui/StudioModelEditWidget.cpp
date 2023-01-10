@@ -237,7 +237,7 @@ void StudioModelEditWidget::OnDockLocationChanged(Qt::DockWidgetArea area)
 	if (area != Qt::DockWidgetArea::NoDockWidgetArea)
 	{
 		//Force the window to resize the dock area to fit to the new set of dock widgets
-		_ui.Window->resizeDocks({dock}, {0}, qt::GetOrientationForDockArea(area));
+		_ui.Window->resizeDocks({dock}, {1}, qt::GetOrientationForDockArea(area));
 	}
 }
 
