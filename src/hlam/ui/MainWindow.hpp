@@ -42,6 +42,8 @@ private:
 
 	QString GetCanonicalFileName(Asset* asset) const;
 
+	bool ShouldContinueWithSave(Asset* asset);
+
 private slots:
 	void SyncSettings();
 

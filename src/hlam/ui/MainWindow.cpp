@@ -663,6 +663,38 @@ QString MainWindow::GetCanonicalFileName(Asset* asset) const
 	return fileName;
 }
 
+bool MainWindow::ShouldContinueWithSave(Asset* asset)
+{
+	const auto fileName = asset->GetFileName();
+
+	for (int i = 0; i < _assets->Count(); ++i)
+	{
+		const auto other = _assets->Get(i);
+
+		if (asset == other)
+		{
+			continue;
+		}
+
+		if (fileName.compare(other->GetFileName(), Qt::CaseInsensitive) == 0)
+		{
+			const auto action = QMessageBox::question(this, "Resolve asset conflicts",
+				R"(You are attempting to save an asset with the same filename as another asset that is already open.
+Do you want to discard the other asset and any changes that have been made to it or cancel this operation?)",
+				QMessageBox::Discard | QMessageBox::Cancel);
+
+			if (action != QMessageBox::Discard)
+			{
+				return false;
+			}
+
+			_assets->TryClose(i, false, false);
+		}
+	}
+
+	return true;
+}
+
 void MainWindow::OnSaveAsset()
 {
 	auto asset = _assets->GetCurrent();
@@ -672,6 +704,11 @@ void MainWindow::OnSaveAsset()
 		_application->GetLogger()->info("Asset \"{}\" automatically renamed to \"{}\" due to unsupported extension",
 			asset->GetFileName(), canonicalFileName);
 		asset->SetFileName(std::move(canonicalFileName));
+	}
+
+	if (!ShouldContinueWithSave(asset))
+	{
+		return;
 	}
 
 	_assets->Save(asset);
@@ -687,6 +724,11 @@ void MainWindow::OnSaveAssetAs()
 
 	if (!fileName.isEmpty())
 	{
+		if (!ShouldContinueWithSave(asset))
+		{
+			return;
+		}
+
 		//Also update the saved path when saving files
 		_application->SetPath(AssetPathName, QFileInfo(fileName).absolutePath());
 		asset->SetFileName(std::move(fileName));
