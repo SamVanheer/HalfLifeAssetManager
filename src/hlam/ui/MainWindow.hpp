@@ -57,8 +57,6 @@ private slots:
 
 	void OnSaveAssetAs();
 
-	void OnCloseAsset();
-
 	void OnRecentFilesChanged();
 
 	void OnOpenRecentFile();

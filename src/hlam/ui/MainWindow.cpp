@@ -193,7 +193,7 @@ MainWindow::MainWindow(AssetManager* application)
 	connect(_ui.ActionLoad, &QAction::triggered, this, &MainWindow::OnOpenLoadAssetDialog);
 	connect(_ui.ActionSave, &QAction::triggered, this, [this] { _assets->Save(_assets->GetCurrent()); });
 	connect(_ui.ActionSaveAs, &QAction::triggered, this, &MainWindow::OnSaveAssetAs);
-	connect(_ui.ActionClose, &QAction::triggered, this, &MainWindow::OnCloseAsset);
+	connect(_ui.ActionClose, &QAction::triggered, this, [this] { _assets->TryClose(_assetTabs->currentIndex(), true); });
 	connect(_ui.ActionCloseAll, &QAction::triggered, this, [this] { CloseAllButCount(0, true); });
 	connect(_ui.ActionExit, &QAction::triggered, this, &MainWindow::close);
 
@@ -249,7 +249,7 @@ MainWindow::MainWindow(AssetManager* application)
 	connect(_undoGroup, &QUndoGroup::cleanChanged, this, [this](bool clean) { setWindowModified(!clean); });
 
 	connect(_assetTabs, &QTabWidget::currentChanged, this, &MainWindow::OnAssetTabChanged);
-	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, &MainWindow::OnCloseAsset);
+	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, [this](int index) { _assets->TryClose(index, true); });
 
 	connect(_assets, &AssetList::AssetAdded, this, &MainWindow::OnAssetAdded);
 	connect(_assets, &AssetList::AboutToCloseAsset, this, &MainWindow::OnAboutToCloseAsset);
@@ -652,11 +652,6 @@ void MainWindow::OnSaveAssetAs()
 		asset->SetFileName(std::move(fileName));
 		_assets->Save(asset);
 	}
-}
-
-void MainWindow::OnCloseAsset()
-{
-	_assets->TryClose(_assetTabs->currentIndex(), true);
 }
 
 void MainWindow::OnRecentFilesChanged()
