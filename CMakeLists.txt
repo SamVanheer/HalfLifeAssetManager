@@ -13,9 +13,9 @@ set(HLAM_VERSION_MAJOR 2)
 set(HLAM_VERSION_MINOR 0)
 set(HLAM_VERSION_PATCH 0)
 
-project(HL_Tools
+project(HalfLifeAssetManager
 	VERSION ${HLAM_VERSION_MAJOR}.${HLAM_VERSION_MINOR}.${HLAM_VERSION_PATCH}
-	DESCRIPTION "Half-Life Modding Tools"
+	DESCRIPTION "Half-Life Asset Manager"
 	LANGUAGES CXX)
 
 # Find includes in corresponding build directories

@@ -4,4 +4,4 @@ This program includes code copyrighted by Id Software and Valve Software, includ
 
 See the licenses directory for licenses covering third party libraries.
 
-See https://github.com/Solokiller/HL_Tools and https://github.com/Solokiller/HL_Tools/wiki/Half-Life-Asset-Manager for more information.
+See https://github.com/SamVanheer/HalfLifeAssetManager and https://github.com/SamVanheer/HalfLifeAssetManager/wiki/Half-Life-Asset-Manager for more information.

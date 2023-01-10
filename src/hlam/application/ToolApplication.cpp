@@ -182,7 +182,7 @@ int ToolApplication::Run(int argc, char* argv[])
 void ToolApplication::ConfigureApplication(const QString& programName)
 {
 	QApplication::setOrganizationName(programName);
-	QApplication::setOrganizationDomain(QStringLiteral("https://github.com/Solokiller/HL_Tools"));
+	QApplication::setOrganizationDomain(QStringLiteral("https://github.com/SamVanheer/HalfLifeAssetManager"));
 	QApplication::setApplicationName(programName);
 	QApplication::setApplicationDisplayName(programName);
 
