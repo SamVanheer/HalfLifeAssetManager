@@ -596,7 +596,6 @@ void StudioModelAsset::OnSceneWidgetRecreated()
 			_editWidget->layout()->addWidget(editWidget);
 		}
 
-		editWidget->setParent(_editWidget);
 		editWidget->show();
 	}
 	else if (!fullscreenWidget)
@@ -608,6 +607,8 @@ void StudioModelAsset::OnSceneWidgetRecreated()
 		// If fullscreen is enabled the edit widget will be shown unless explicitly hidden.
 		editWidget->hide();
 	}
+
+	editWidget->setParent(_editWidget);
 
 	sceneWidget->SetScene(GetCurrentScene());
 
