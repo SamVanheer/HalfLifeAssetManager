@@ -1,11 +1,84 @@
-# HL_Tools
-Half-Life Tools
+# Half-Life Asset Manager
 
-This repository contains code, libraries and executables for Half-life Tools.
+Half-Life Asset Manager is a brand new tool based on [Half-Life Model Viewer 2](https://github.com/SamVanheer/HalfLifeModelViewer2). Unlike Half-Life Model Viewer this tool is designed to support multiple asset types. This allows the tool to be updated to support other Half-life 1 assets in the future.
+
+The change in executable name also has the advantage that associations with `HLMV.exe` made by other versions of the program no longer affect this program.
+
+> **Note**
+> This tool only supports Half-Life 1/GoldSource, not Half-Life 2/Source and Source 2!
+
+## Minimum requirements
+
+* Operating system: Windows 7 or newer
+* OpenGL version: 2.1 or newer
+
+## Download
+
+See the releases for a download link: https://github.com/SamVanheer/HalfLifeAssetManager/releases
+
+## Development builds
+
+Development builds can be downloaded from the Github Actions runs: https://github.com/SamVanheer/HalfLifeAssetManager/actions
+
+These are work-in-progress builds with known issues. Refrain from using these for anything other than testing individual features and bug fixes.
+
+It is recommended to use portable mode (see below) to avoid corrupting the configuration file.
+
+You will need to install the latest Visual C++ x86 redistributable yourself to run these builds: https://aka.ms/vs/17/release/vc_redist.x86.exe
+
+## Installation
+
+The installer will take care of most of the installation process. Simply run the installer, change the install location if desired, choose which file extensions to associate the program with, and the installer will do the rest.
+
+If you already have file associations set up for one or more of the file types supported by Half-Life Asset Manager then you will have to manually change the association in the [control panel](https://www.thewindowsclub.com/change-file-associations-windows).
+
+The installer will also install the Visual Studio re-distributable. If it has already been installed then no changes will be made.
+
+## Uninstalling
+
+To uninstall Half-Life Asset Manager, simply run the program `maintenancetool.exe` located in the Half-Life Asset Manager install directory. Choose the option "Uninstall all components" to uninstall the program.
+
+## Updating
+
+To update Half-Life Model Viewer, first uninstall the current version and then install the new version. User configuration files are not removed by the uninstaller so you will not lose any settings.
+
+## Options
+
+Asset manager provides a number of options that allow for customization and enables it to provide a more complete representation of the assets it has.
+
+### Game configurations
+
+Game configurations allow asset manager to access game content located in both the main game directory, as well as SteamPipe directories. It also supports mod directories. See [Game configurations](/docs/game-configurations.md) for more information.
+
+### Portable Mode
+
+Launching Half-Life Asset Manager with the command line parameter `--portable` launches it in portable mode. In this mode the program configuration file is stored next to the executable, which makes it easier to run the program from a removable storage device or with multiple user accounts.
+
+## Differences between Model Viewer and Asset Manager
+
+Asset manager is based on model viewer and as such has the same functionality. However asset manager has a completely rebuilt user interface designed using Qt instead of wxWidgets, and incorporates many improvements and new features.
+
+## Changelog
+
+See [[Changelog|Half-Life-Asset-Manager-Changelog]]
+
+## Debug log output
+
+See [Configuring Log File Output](/docs/configuring-log-output.md)
+
+## Third party libraries
+
+There are several third party libraries used by Half-Life Asset Manager.
+
+Most of these are acquired using [vcpkg](https://vcpkg.io). You can find a list of these dependencies here: https://github.com/SamVanheer/HalfLifeAssetManager/blob/dev/vcpkg.json
+
+Additionally Qt 5.15.2 (cross platform GUI framework) is also used and has to be installed using Qt's maintenance tool. The maintenance tool is part of the Qt open source release, which you can download here: https://www.qt.io/download
+
+# License
+
+This repository contains code for Half-Life Asset Manager.
 
 This includes code copyrighted by Id Software and Valve Software, included in their SDK. It is included without the intend to infringe on any rights.
 All code is redistributed freely.
 
 All of the code in this repository may be used in other projects provided that the author(s) is/are credited.
-
-See the wiki for more information about project dependencies, libraries and tools.
