@@ -361,19 +361,7 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 
 	auto editableStudioModel = studiomdl::ConvertToEditable(*studioModel);
 
-	QString updatedFileName = fileName;
-
-	QFileInfo fileInfo{fileName};
-
-	//Automatically change the name of dol files to mdl to reflect the conversion
-	if (fileInfo.suffix() == StudioModelPS2Extension)
-	{
-		updatedFileName = fileInfo.path() + '/' + fileInfo.completeBaseName() + '.' + StudioModelExtension;
-	}
-
-	_logger->trace("Loaded model {} as {}", fileName, updatedFileName);
-
-	return std::make_unique<StudioModelAsset>(std::move(updatedFileName), _application, this,
+	return std::make_unique<StudioModelAsset>(QString{fileName}, _application, this,
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
 }
 

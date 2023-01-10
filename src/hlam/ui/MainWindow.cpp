@@ -191,7 +191,7 @@ MainWindow::MainWindow(AssetManager* application)
 	}
 
 	connect(_ui.ActionLoad, &QAction::triggered, this, &MainWindow::OnOpenLoadAssetDialog);
-	connect(_ui.ActionSave, &QAction::triggered, this, [this] { _assets->Save(_assets->GetCurrent()); });
+	connect(_ui.ActionSave, &QAction::triggered, this, &MainWindow::OnSaveAsset);
 	connect(_ui.ActionSaveAs, &QAction::triggered, this, &MainWindow::OnSaveAssetAs);
 	connect(_ui.ActionClose, &QAction::triggered, this, [this] { _assets->TryClose(_assetTabs->currentIndex(), true); });
 	connect(_ui.ActionCloseAll, &QAction::triggered, this, [this] { CloseAllButCount(0, true); });
@@ -639,11 +639,46 @@ void MainWindow::OnAssetFileNameChanged(Asset* asset)
 	}
 }
 
+QString MainWindow::GetCanonicalFileName(Asset* asset) const
+{
+	const auto provider = asset->GetProvider();
+
+	const auto validExtensions = provider->GetFileTypes();
+
+	QString fileName{asset->GetFileName()};
+
+	const QFileInfo info{fileName};
+
+	if (!validExtensions.contains(info.suffix()))
+	{
+		fileName = QString{"%1/%2.%3"}
+		.arg(info.absolutePath(), info.completeBaseName(), provider->GetPreferredFileType());
+	}
+
+	return fileName;
+}
+
+void MainWindow::OnSaveAsset()
+{
+	auto asset = _assets->GetCurrent();
+
+	if (auto canonicalFileName = GetCanonicalFileName(asset); canonicalFileName != asset->GetFileName())
+	{
+		_application->GetLogger()->info("Asset \"{}\" automatically renamed to \"{}\" due to unsupported extension",
+			asset->GetFileName(), canonicalFileName);
+		asset->SetFileName(std::move(canonicalFileName));
+	}
+
+	_assets->Save(asset);
+}
+
 void MainWindow::OnSaveAssetAs()
 {
 	const auto asset = _assets->GetCurrent();
 
-	QString fileName{QFileDialog::getSaveFileName(this, {}, asset->GetFileName(), _saveFileFilter)};
+	QString fileName = GetCanonicalFileName(asset);
+
+	fileName = QFileDialog::getSaveFileName(this, {}, fileName, _saveFileFilter);
 
 	if (!fileName.isEmpty())
 	{

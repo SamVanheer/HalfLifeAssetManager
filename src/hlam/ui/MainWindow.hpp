@@ -40,6 +40,8 @@ private:
 
 	void CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges);
 
+	QString GetCanonicalFileName(Asset* asset) const;
+
 private slots:
 	void SyncSettings();
 
@@ -54,6 +56,8 @@ private slots:
 	void OnAssetRemoved(int index);
 
 	void OnAssetFileNameChanged(Asset* asset);
+
+	void OnSaveAsset();
 
 	void OnSaveAssetAs();
 
