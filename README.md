@@ -63,7 +63,7 @@ Asset Manager is based on Model Viewer and as such has the same functionality. H
 
 ## Changelog
 
-See [[Changelog|Half-Life-Asset-Manager-Changelog]]
+See [Changelog](/docs/CHANGELOG.md)
 
 ## Debug log output
 
