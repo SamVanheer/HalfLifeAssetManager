@@ -208,24 +208,20 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 	const auto controlsbar = menu->addAction("Show Controls Bar", this, [this](bool checked)
 		{
 			GetEditWidget()->SetControlsBarVisible(checked);
+			_studioModelSettings->SetControlsBarVisible(checked);
 		});
 
-	{
-		const QSignalBlocker blocker{controlsbar};
-		controlsbar->setCheckable(true);
-		controlsbar->setChecked(GetEditWidget()->IsControlsBarVisible());
-	}
+	controlsbar->setCheckable(true);
+	controlsbar->setChecked(GetEditWidget()->IsControlsBarVisible());
 
 	const auto timeline = menu->addAction("Show Timeline", this, [this](bool checked)
 		{
 			GetEditWidget()->SetTimelineVisible(checked);
+			_studioModelSettings->SetTimelineVisible(checked);
 		});
 
-	{
-		const QSignalBlocker blocker{timeline};
-		timeline->setCheckable(true);
-		timeline->setChecked(GetEditWidget()->IsTimelineVisible());
-	}
+	timeline->setCheckable(true);
+	timeline->setChecked(GetEditWidget()->IsTimelineVisible());
 
 	{
 		_editControlsVisibleAction = menu->addAction("Show Edit Controls", this,
@@ -241,11 +237,12 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 					asset->OnDeactivated();
 					asset->OnActivated();
 				}
+
+				_studioModelSettings->SetEditControlsVisible(checked);
 			});
 
-		const QSignalBlocker blocker{_editControlsVisibleAction};
 		_editControlsVisibleAction->setCheckable(true);
-		_editControlsVisibleAction->setChecked(true);
+		_editControlsVisibleAction->setChecked(_studioModelSettings->AreEditControlsVisible());
 	}
 
 	menu->addSeparator();
@@ -394,6 +391,8 @@ StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget()
 		assert(_application);
 		_editWidget = new StudioModelEditWidget(_application, this);
 		_editWidget->RestoreState(_application->GetSettings()->value(WindowStateKey).toByteArray());
+		_editWidget->SetControlsBarVisible(_studioModelSettings->IsControlsBarVisible());
+		_editWidget->SetTimelineVisible(_studioModelSettings->IsTimelineVisible());
 	}
 
 	return _editWidget;

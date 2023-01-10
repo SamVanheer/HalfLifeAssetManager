@@ -48,6 +48,36 @@ void StudioModelSettings::SaveSettings()
 	_settings->endGroup();
 }
 
+bool StudioModelSettings::IsControlsBarVisible() const
+{
+	return _settings->value("Assets/StudioModel/UI/IsControlsBarVisible", true).toBool();
+}
+
+void StudioModelSettings::SetControlsBarVisible(bool value)
+{
+	_settings->setValue("Assets/StudioModel/UI/IsControlsBarVisible", value);
+}
+
+bool StudioModelSettings::IsTimelineVisible() const
+{
+	return _settings->value("Assets/StudioModel/UI/IsTimelineVisible", true).toBool();
+}
+
+void StudioModelSettings::SetTimelineVisible(bool value)
+{
+	_settings->setValue("Assets/StudioModel/UI/IsTimelineVisible", value);
+}
+
+bool StudioModelSettings::AreEditControlsVisible() const
+{
+	return _settings->value("Assets/StudioModel/UI/AreEditControlsVisible", true).toBool();
+}
+
+void StudioModelSettings::SetEditControlsVisible(bool value)
+{
+	_settings->setValue("Assets/StudioModel/UI/AreEditControlsVisible", value);
+}
+
 float StudioModelSettings::GetCameraFOV(const QString& name, float defaultValue) const
 {
 	_settings->beginGroup("Assets/StudioModel/Cameras/FOV");

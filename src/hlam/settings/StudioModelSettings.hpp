@@ -46,6 +46,15 @@ public:
 		_activateTextureViewWhenTexturesPanelOpened = value;
 	}
 
+	bool IsControlsBarVisible() const;
+	void SetControlsBarVisible(bool value);
+
+	bool IsTimelineVisible() const;
+	void SetTimelineVisible(bool value);
+
+	bool AreEditControlsVisible() const;
+	void SetEditControlsVisible(bool value);
+
 	int GetFloorLength() const { return _floorLength; }
 
 	void SetFloorLength(int value)
