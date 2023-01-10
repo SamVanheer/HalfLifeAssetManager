@@ -245,6 +245,9 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 		_editControlsVisibleAction->setChecked(_studioModelSettings->AreEditControlsVisible());
 	}
 
+	controlsbar->setEnabled(_editControlsVisibleAction->isChecked());
+	timeline->setEnabled(_editControlsVisibleAction->isChecked());
+
 	menu->addSeparator();
 
 	menu->addAction("Previous Camera", GetCameraOperators(), &CameraOperators::PreviousCamera,
