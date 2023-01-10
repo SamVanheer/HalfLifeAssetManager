@@ -253,7 +253,8 @@ MainWindow::MainWindow(AssetManager* application)
 
 	connect(_assets, &AssetList::AssetAdded, this, &MainWindow::OnAssetAdded);
 	connect(_assets, &AssetList::AboutToCloseAsset, this, &MainWindow::OnAboutToCloseAsset);
-	connect(_assets, &AssetList::AboutToRemoveAsset, this, &MainWindow::OnAssetRemoved);
+	connect(_assets, &AssetList::AboutToRemoveAsset, this, &MainWindow::OnAboutToRemoveAsset);
+	connect(_assets, &AssetList::AssetRemoved, this, &MainWindow::OnAssetRemoved);
 	connect(_assets, &AssetList::ActiveAssetChanged, this,
 		[this](Asset* currentAsset)
 		{
@@ -622,10 +623,14 @@ void MainWindow::OnAboutToCloseAsset(int index)
 	}
 }
 
-void MainWindow::OnAssetRemoved(int index)
+void MainWindow::OnAboutToRemoveAsset(int index)
 {
 	auto asset = _assets->Get(index);
 	_undoGroup->removeStack(asset->GetUndoStack());
+}
+
+void MainWindow::OnAssetRemoved(int index)
+{
 	_assetTabs->removeTab(index);
 }
 

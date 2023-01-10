@@ -53,6 +53,8 @@ private slots:
 
 	void OnAboutToCloseAsset(int index);
 
+	void OnAboutToRemoveAsset(int index);
+
 	void OnAssetRemoved(int index);
 
 	void OnAssetFileNameChanged(Asset* asset);
