@@ -12,6 +12,9 @@ The change in executable name also has the advantage that associations with `HLM
 * Operating system: Windows 7 or newer
 * OpenGL version: 2.1 or newer
 
+> **Note**
+> Half-Life Model Viewer 2 works on Windows XP and newer. If you cannot run Asset Manager then that tool may be a better option.
+
 ## Download
 
 See the releases for a download link: https://github.com/SamVanheer/HalfLifeAssetManager/releases
