@@ -1,6 +1,6 @@
 # Half-Life Asset Manager
 
-Half-Life Asset Manager is a brand new tool based on [Half-Life Model Viewer 2](https://github.com/SamVanheer/HalfLifeModelViewer2). Unlike Half-Life Model Viewer this tool is designed to support multiple asset types. This allows the tool to be updated to support other Half-life 1 assets in the future.
+Half-Life Asset Manager is a tool based on [Half-Life Model Viewer 2](https://github.com/SamVanheer/HalfLifeModelViewer2). Unlike Half-Life Model Viewer this tool is designed to support multiple asset types. This allows the tool to be updated to support other Half-life 1 assets in the future.
 
 The change in executable name also has the advantage that associations with `HLMV.exe` made by other versions of the program no longer affect this program.
 
@@ -40,15 +40,15 @@ To uninstall Half-Life Asset Manager, simply run the program `maintenancetool.ex
 
 ## Updating
 
-To update Half-Life Model Viewer, first uninstall the current version and then install the new version. User configuration files are not removed by the uninstaller so you will not lose any settings.
+To update Half-Life Asset Manager, first uninstall the current version and then install the new version. User configuration files are not removed by the uninstaller so you will not lose any settings.
 
 ## Options
 
-Asset manager provides a number of options that allow for customization and enables it to provide a more complete representation of the assets it has.
+Asset Manager provides a number of options that allow for customization and enables it to provide a more complete representation of the assets it has.
 
 ### Game configurations
 
-Game configurations allow asset manager to access game content located in both the main game directory, as well as SteamPipe directories. It also supports mod directories. See [Game configurations](/docs/game-configurations.md) for more information.
+Game configurations allow Asset Manager to access game content located in both the main game directory, as well as SteamPipe directories. It also supports mod directories. See [Game configurations](/docs/game-configurations.md) for more information.
 
 ### Portable Mode
 
@@ -56,7 +56,7 @@ Launching Half-Life Asset Manager with the command line parameter `--portable` l
 
 ## Differences between Model Viewer and Asset Manager
 
-Asset manager is based on model viewer and as such has the same functionality. However asset manager has a completely rebuilt user interface designed using Qt instead of wxWidgets, and incorporates many improvements and new features.
+Asset Manager is based on Model Viewer and as such has the same functionality. However Asset Manager has a completely rebuilt user interface designed using Qt instead of wxWidgets, and incorporates many improvements and new features.
 
 ## Changelog
 
