@@ -192,15 +192,15 @@ QMenu* StudioModelAssetProvider::CreateToolMenu()
 void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 {
 	{
-		auto panelsMenu = menu->addMenu("Panels");
+		auto dockWidgetsMenu = menu->addMenu("Dock Widgets");
 
 		for (auto dock : GetEditWidget()->GetDockWidgets())
 		{
-			panelsMenu->addAction(dock->toggleViewAction());
+			dockWidgetsMenu->addAction(dock->toggleViewAction());
 		}
 	}
 
-	menu->addAction("Reset dock widgets", this, [this]()
+	menu->addAction("Reset Dock Widgets", this, [this]()
 		{
 			GetEditWidget()->ResetToInitialState();
 		});
