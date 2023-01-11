@@ -61,7 +61,21 @@ AutodetectScanResultsPage::AutodetectScanResultsPage(GameConfigurationsOptions* 
 	connect(_ui.ConfigurationsFound->selectionModel(), &QItemSelectionModel::selectionChanged, this,
 		[this](const QItemSelection& selected)
 		{
-			_ui.Add->setEnabled(!selected.isEmpty());
+			bool hasEnabledItems = false;
+
+			for (const auto& selection : selected)
+			{
+				for (int i = selection.top(); i <= selection.bottom(); ++i)
+				{
+					if (_ui.ConfigurationsFound->item(i, 0)->flags() & Qt::ItemIsEnabled)
+					{
+						hasEnabledItems = true;
+						break;
+					}
+				}
+			}
+
+			_ui.Add->setEnabled(hasEnabledItems);
 		});
 
 	connect(_ui.ConfigurationsToAdd->selectionModel(), &QItemSelectionModel::selectionChanged, this,
