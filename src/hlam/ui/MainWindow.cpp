@@ -29,6 +29,7 @@
 #include "graphics/TextureLoader.hpp"
 
 #include "qt/QtLogging.hpp"
+#include "qt/QtUtilities.hpp"
 
 #include "settings/ApplicationSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
@@ -242,8 +243,14 @@ MainWindow::MainWindow(AssetManager* application)
 	connect(_ui.ActionRefresh, &QAction::triggered, this, [this] { _assets->RefreshCurrent(); });
 
 	connect(_ui.ActionOptions, &QAction::triggered, this, &MainWindow::OnOpenOptionsDialog);
+
+	connect(_ui.ActionOpenManual, &QAction::triggered, this, [this]
+		{
+			const QString manualLocation{QApplication::applicationDirPath() + "/../manual/HalfLifeAssetManagerManual.pdf"};
+			qt::LaunchDefaultProgram(manualLocation);
+		});
 	connect(_ui.ActionAbout, &QAction::triggered, this, &MainWindow::OnShowAbout);
-	connect(_ui.ActionAboutQt, &QAction::triggered, QApplication::instance(), &QApplication::aboutQt);
+	connect(_ui.ActionAboutQt, &QAction::triggered, this, &QApplication::aboutQt);
 
 	connect(_application->GetApplicationSettings()->GetRecentFiles(), &RecentFilesSettings::RecentFilesChanged,
 		this, &MainWindow::OnRecentFilesChanged);

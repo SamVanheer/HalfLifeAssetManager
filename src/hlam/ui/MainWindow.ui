@@ -54,6 +54,8 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="ActionOpenManual"/>
+    <addaction name="separator"/>
     <addaction name="ActionAbout"/>
     <addaction name="ActionAboutQt"/>
    </widget>
@@ -276,6 +278,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+W</string>
+   </property>
+  </action>
+  <action name="ActionOpenManual">
+   <property name="text">
+    <string>Open Manual...</string>
    </property>
   </action>
   <actiongroup name="MinFilterGroup">

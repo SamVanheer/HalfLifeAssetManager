@@ -14,8 +14,13 @@ bool LaunchDefaultProgram(const QString& fileName)
 {
 	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(fileName)))
 	{
+		const QFileInfo info(fileName);
+
 		QMessageBox::critical(nullptr, "Error",
-			QString{"Unable to start default program\nMake sure the %1 extension is associated with a program"}.arg(QFileInfo(fileName).completeSuffix()));
+			QString{R"(Unable to start default program
+Make sure the %1 extension is associated with a program
+and that the file "%2" exists)"}
+				.arg(info.completeSuffix(), info.absoluteFilePath()));
 
 		return false;
 	}
