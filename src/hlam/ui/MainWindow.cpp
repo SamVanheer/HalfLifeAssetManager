@@ -14,6 +14,7 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QOpenGLFunctions>
 #include <QProgressDialog>
 #include <QScreen>
 #include <QWindow>
@@ -24,6 +25,7 @@
 #include "application/AssetList.hpp"
 #include "application/Assets.hpp"
 
+#include "graphics/IGraphicsContext.hpp"
 #include "graphics/TextureLoader.hpp"
 
 #include "qt/QtLogging.hpp"
@@ -327,6 +329,22 @@ MainWindow::MainWindow(AssetManager* application)
 	// TODO: it might be easier to load settings after creating the main window and letting signals set this up.
 	{
 		auto textureLoader = _application->GetTextureLoader();
+
+		const auto graphicsContext = _application->GetGraphicsContext();
+
+		graphicsContext->Begin();
+
+		QOpenGLFunctions functions;
+
+		functions.initializeOpenGLFunctions();
+
+		if (!functions.hasOpenGLFeature(QOpenGLFunctions::OpenGLFeature::NPOTTextures))
+		{
+			textureLoader->SetResizeToPowerOf2(true);
+			_ui.ActionPowerOf2Textures->setEnabled(false);
+		}
+
+		graphicsContext->End();
 
 		_ui.ActionPowerOf2Textures->setChecked(textureLoader->ShouldResizeToPowerOf2());
 		_ui.MinFilterGroup->actions()[static_cast<int>(textureLoader->GetMinFilter())]->setChecked(true);
