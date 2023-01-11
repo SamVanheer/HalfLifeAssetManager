@@ -25,8 +25,6 @@ void InfoBar::SetAsset(StudioModelAsset* asset)
 	}
 
 	_asset = asset;
-	_currentFPS = 0;
-	_lastFPSUpdate = 0;
 	_oldDrawnPolygonsCount = 0;
 }
 
