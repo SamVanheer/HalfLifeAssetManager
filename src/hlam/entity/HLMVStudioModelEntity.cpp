@@ -36,9 +36,7 @@ void HLMVStudioModelEntity::Spawn()
 void HLMVStudioModelEntity::HandleAnimEvent(const AnimEvent& event)
 {
 	// Play a named wave file
-	if (event.id == SCRIPT_EVENT_SOUND
-		|| event.id == SCRIPT_EVENT_SOUND_VOICE
-		|| event.id == SCRIPT_CLIENT_EVENT_SOUND
+	if (IsSoundEvent(event.id)
 		|| GetContext()->StudioSettings->GetSoundEventIds().contains(event.id))
 	{
 		if (GetContext()->AppSettings->PlaySounds)
@@ -54,10 +52,12 @@ void HLMVStudioModelEntity::HandleAnimEvent(const AnimEvent& event)
 		}
 	}
 
+	/*
 	switch (event.id)
 	{
 	default: break;
 	}
+	*/
 }
 
 void HLMVStudioModelEntity::AnimThink()

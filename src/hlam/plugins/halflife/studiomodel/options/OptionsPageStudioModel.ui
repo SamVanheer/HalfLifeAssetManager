@@ -86,7 +86,24 @@
      <property name="rightMargin">
       <number>0</number>
      </property>
-     <item row="3" column="1">
+     <item row="0" column="1" rowspan="3">
+      <widget class="QListView" name="SoundEventIds">
+       <property name="selectionMode">
+        <enum>QAbstractItemView::ExtendedSelection</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="AddSoundEventId">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Add</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -99,17 +116,7 @@
        </property>
       </spacer>
      </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="AddSoundEventId">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Add</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
+     <item row="1" column="2">
       <widget class="QPushButton" name="RemoveSoundEventId">
        <property name="enabled">
         <bool>false</bool>
@@ -119,21 +126,21 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0" colspan="2">
+     <item row="0" column="0" rowspan="3">
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Add event Ids that should play sounds. The following Ids are used in Half-Life and always play sounds:
-1004,  1008, 5004</string>
+        <string>Add event Ids that should play sounds.
+The following Ids are used in Half-Life:
+1004,  1008, 5004
+The following Ids are used in Opposing Force:
+1011, 1012, 1013
+They are automatically recognized.</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" rowspan="3">
-      <widget class="QListView" name="SoundEventIds">
-       <property name="selectionMode">
-        <enum>QAbstractItemView::ExtendedSelection</enum>
        </property>
       </widget>
      </item>

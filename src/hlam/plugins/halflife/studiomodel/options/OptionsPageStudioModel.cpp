@@ -7,6 +7,7 @@
 #include <QStyledItemDelegate>
 
 #include "application/AssetManager.hpp"
+#include "entity/Events.hpp"
 #include "plugins/halflife/studiomodel/options/OptionsPageStudioModel.hpp"
 #include "plugins/halflife/studiomodel/settings/StudioModelSettings.hpp"
 
@@ -43,7 +44,11 @@ public:
 		spinBox->interpretText();
 		int value = spinBox->value();
 
-		model->setData(index, _optionsWidget->FindFirstFreeEventId(value), Qt::EditRole);
+		// Don't update the value unless it has changed to prevent auto-increment by selecting and de-selecting.
+		if (model->data(index, Qt::EditRole).toInt() != value)
+		{
+			model->setData(index, _optionsWidget->FindFirstFreeEventId(value), Qt::EditRole);
+		}
 	}
 
 	void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex&) const
@@ -137,10 +142,23 @@ OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(
 					return rhs < lhs;
 				});
 
+			int lastRow = selectedRows.back().row() - 1;
+
 			for (const auto& selected : selectedRows)
 			{
-				model->removeRow(selected.row());
+				const int row = selected.row();
+				model->removeRow(row);
+
+				if (row <= lastRow)
+				{
+					--lastRow;
+				}
 			}
+
+			// Select the row immediately preceding the last item, or the first item if there are no rows preceding it.
+			lastRow = std::max(0, lastRow);
+			_ui.SoundEventIds->selectionModel()->select(
+				_ui.SoundEventIds->model()->index(lastRow, 0), QItemSelectionModel::ClearAndSelect);
 		});
 
 	connect(_ui.SoundEventIds->selectionModel(), &QItemSelectionModel::selectionChanged, this,
@@ -189,19 +207,23 @@ int OptionsPageStudioModelWidget::FindFirstFreeEventId(const int startId) const
 
 	while (true)
 	{
-		int i;
-
-		for (i = 0; i < model->rowCount(); ++i)
+		// Exclude built-in events.
+		if (!IsSoundEvent(id))
 		{
-			if (model->data(model->index(i, 0), Qt::EditRole).toInt() == id)
+			int i;
+
+			for (i = 0; i < model->rowCount(); ++i)
+			{
+				if (model->data(model->index(i, 0), Qt::EditRole).toInt() == id)
+				{
+					break;
+				}
+			}
+
+			if (i >= model->rowCount())
 			{
 				break;
 			}
-		}
-
-		if (i >= model->rowCount())
-		{
-			break;
 		}
 
 		++id;
