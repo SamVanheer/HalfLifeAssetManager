@@ -73,6 +73,11 @@ bool UniqueBoneNameValidator::IsUnique(StudioModelAsset* asset, const QString& t
 
 bool UniqueTextureNameValidator::IsUnique(StudioModelAsset* asset, const QString& text) const
 {
+	if (text.trimmed() != text || text.isEmpty())
+	{
+		return false;
+	}
+
 	const auto model = asset->GetEntity()->GetEditableModel();
 
 	for (int i = 0; i < model->Textures.size(); ++i)

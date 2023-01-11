@@ -32,6 +32,7 @@ public:
 	void OnVisibilityChanged(bool visible) override;
 
 private:
+	void SetTextureName();
 	void ImportTextureFrom(const QString& fileName, studiomdl::EditableStudioModel& model, int textureIndex);
 	void UpdateColormapValue();
 	void UpdateUVMapTexture();

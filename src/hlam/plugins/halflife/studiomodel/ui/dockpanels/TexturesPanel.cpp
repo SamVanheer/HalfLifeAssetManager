@@ -44,6 +44,8 @@ static constexpr double TextureViewScaleSingleStepValue = 0.1;
 static constexpr double TextureViewScaleSliderRatio = 10.0;
 static constexpr double UVLineWidthSliderRatio = 10.0;
 
+const QString TextureExtension{QStringLiteral(".bmp")};
+
 static int GetMeshIndexForDrawing(QComboBox* comboBox)
 {
 	int meshIndex = comboBox->currentIndex();
@@ -184,14 +186,7 @@ void TexturesPanel::OnAssetChanged(StudioModelAsset* asset)
 		{
 			if (index == _ui.Textures->currentIndex())
 			{
-				const QString name{QString::fromStdString(_asset->GetEditableStudioModel()->Textures[index]->Name)};
-
-				//Avoid resetting the edit position
-				if (_ui.TextureName->text() != name)
-				{
-					const QSignalBlocker blocker{_ui.TextureName};
-					_ui.TextureName->setText(name);
-				}
+				SetTextureName();
 			}
 		});
 
@@ -264,11 +259,7 @@ void TexturesPanel::OnTextureChanged(int index)
 
 	const auto& texture = index != -1 ? *entity->GetEditableModel()->Textures[index] : emptyTexture;
 
-	{
-		const QSignalBlocker name{_ui.TextureName};
-
-		_ui.TextureName->setText(QString::fromStdString(texture.Name));
-	}
+	SetTextureName();
 
 	SetTextureFlagCheckBoxes(_ui, texture.Flags);
 
@@ -335,17 +326,43 @@ void TexturesPanel::OnUVLineWidthSpinnerChanged(double value)
 	UpdateUVMapTexture();
 }
 
+void TexturesPanel::SetTextureName()
+{
+	const QSignalBlocker blocker{_ui.TextureName};
+
+	const int index = _ui.Textures->currentIndex();
+
+	if (index == -1)
+	{
+		_ui.TextureName->setText(QString{});
+		return;
+	}
+
+	QString name{QString::fromStdString(_asset->GetEditableStudioModel()->Textures[index]->Name)};
+
+	name.chop(TextureExtension.size());
+
+	//Avoid resetting the edit position
+	if (_ui.TextureName->text() != name)
+	{
+		_ui.TextureName->setText(name);
+	}
+}
+
 void TexturesPanel::OnTextureNameChanged()
 {
 	const auto& texture = *_asset->GetEntity()->GetEditableModel()->Textures[_ui.Textures->currentIndex()];
 
+	auto newName = _ui.TextureName->text() + TextureExtension;
+
 	_asset->AddUndoCommand(new ChangeTextureNameCommand(_asset, _ui.Textures->currentIndex(),
-		QString::fromStdString(texture.Name), _ui.TextureName->text()));
+		QString::fromStdString(texture.Name), std::move(newName)));
 }
 
 void TexturesPanel::OnTextureNameRejected()
 {
-	QToolTip::showText(_ui.TextureName->mapToGlobal({0, -20}), "Texture names must be unique");
+	QToolTip::showText(_ui.TextureName->mapToGlobal({0, -20}),
+		"Texture names must be unique and cannot start/end with whitespace");
 }
 
 void TexturesPanel::OnChromeChanged()
