@@ -130,6 +130,8 @@ void SoundSystem::PlaySound(std::string_view fileName, float volume, int pitch)
 		return;
 	}
 
+	SPDLOG_LOGGER_CALL(_logger, spdlog::level::trace, "Playing sound \"{}\"", fileName);
+
 	volume = std::clamp(volume, 0.0f, 1.0f);
 	pitch = std::clamp(pitch, 0, 255);
 
@@ -252,7 +254,7 @@ std::unique_ptr<SoundSystem::Sound> SoundSystem::TryLoadFile(const std::string& 
 
 	if (std::fread(buffer.data(), 1, size, file.get()) != size)
 	{
-		SPDLOG_LOGGER_CALL(_logger, spdlog::level::err, "Error while reading file \"{}\" ({})\n", fileName, size);
+		SPDLOG_LOGGER_CALL(_logger, spdlog::level::err, "Error while reading file \"{}\" ({})", fileName, size);
 		return {};
 	}
 
