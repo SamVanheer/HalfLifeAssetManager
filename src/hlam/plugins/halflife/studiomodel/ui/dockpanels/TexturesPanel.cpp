@@ -511,6 +511,7 @@ void TexturesPanel::UpdateUVMapTexture()
 	auto scene = _asset->GetScene();
 
 	textureEntity->ShowUVMap = _ui.ShowUVMap->isChecked();
+	textureEntity->OverlayUVMap = _ui.OverlayUVMap->isChecked();
 
 	if (!_ui.ShowUVMap->isChecked())
 	{
