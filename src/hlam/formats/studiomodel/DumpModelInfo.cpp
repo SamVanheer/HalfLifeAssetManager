@@ -8,12 +8,12 @@
 
 namespace studiomdl
 {
-void DumpModelInfo(FILE* file, const EditableStudioModel& model)
+void DumpModelInfo(FILE* file, const std::filesystem::path& fileName, const EditableStudioModel& model)
 {
 	assert(file);
 
 	//Pack it up first so everything's accurate
-	const auto packedData = ConvertFromEditable({}, model);
+	const auto packedData = ConvertFromEditable(fileName, model);
 
 	const studiohdr_t* const pHdr = packedData.GetStudioHeader();
 	const auto pTextureHdr = packedData.GetTextureHeader();
