@@ -250,9 +250,14 @@ QCDataDialog::QCDataDialog(StudioModelAssetProvider* provider, QWidget* parent)
 				result += QString{" "} + activityName + " " + QString::number(sequence->ActivityWeight);
 			}
 
-			if (sequence->MotionType != 0)
+			for (int i = 0; i < 3; ++i)
 			{
-				result += QString{" "} + ControlToString(sequence->MotionType);
+				const int type = STUDIO_LX << i;
+
+				if (sequence->MotionType & type)
+				{
+					result += QString{" "} + ControlToString(type);
+				}
 			}
 
 			if (sequence->EntryNode != 0)
