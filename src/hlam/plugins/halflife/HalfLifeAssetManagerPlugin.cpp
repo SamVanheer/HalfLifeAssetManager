@@ -21,7 +21,7 @@ using namespace studiomodel;
 bool HalfLifeAssetManagerPlugin::Initialize(AssetManager* application)
 {
 	auto settings = application->GetApplicationSettings();
-	settings->GetExternalPrograms()->AddProgram(StudiomdlCompilerFileNameKey, "Studiomdl compiler");
+	settings->GetExternalPrograms()->AddProgram(StudiomdlCompilerFileNameKey, "Studiomdl Compiler");
 	settings->GetExternalPrograms()->AddProgram(StudiomdlDecompilerFileNameKey, "Studiomdl Decompiler");
 	settings->GetExternalPrograms()->AddProgram(XashModelViewerFileNameKey, "Xash Model Viewer");
 
