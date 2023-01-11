@@ -347,6 +347,8 @@ void TexturesPanel::SetTextureName()
 	{
 		_ui.TextureName->setText(name);
 	}
+
+	UpdateColormapValue();
 }
 
 void TexturesPanel::OnTextureNameChanged()
