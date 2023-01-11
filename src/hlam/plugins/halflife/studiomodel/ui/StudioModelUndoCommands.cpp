@@ -214,6 +214,28 @@ void ChangeSequencePropsCommand::Apply(int index, const SequenceProps& oldValue,
 	sequence.ActivityWeight = newValue.ActivityWeight;
 	sequence.LinearMovement = newValue.LinearMovement;
 
+	// Update the motion type flags based on the new linear movement vector.
+	// The compiler calculates linear movement based on these flags,
+	// conversely the flags need to be cleared if the values are zeroed out.
+	int motionType = 0;
+
+	if (sequence.LinearMovement.x != 0)
+	{
+		motionType |= STUDIO_LX;
+	}
+
+	if (sequence.LinearMovement.y != 0)
+	{
+		motionType |= STUDIO_LY;
+	}
+
+	if (sequence.LinearMovement.z != 0)
+	{
+		motionType |= STUDIO_LZ;
+	}
+
+	sequence.MotionType = (sequence.MotionType & ~(STUDIO_LX | STUDIO_LY | STUDIO_LZ)) | motionType;
+
 	EmitDataChanged(_asset->GetModelData()->Sequences, index);
 }
 
