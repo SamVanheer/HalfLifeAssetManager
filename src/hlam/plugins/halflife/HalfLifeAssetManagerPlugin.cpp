@@ -4,15 +4,17 @@
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
+
+#include "plugins/halflife/studiomodel/options/OptionsPageStudioModel.hpp"
+#include "plugins/halflife/studiomodel/settings/StudioModelSettings.hpp"
+
 #include "plugins/halflife/studiomodel/ui/compiler/StudioModelCompilerFrontEnd.hpp"
 #include "plugins/halflife/studiomodel/ui/compiler/StudioModelDecompilerFrontEnd.hpp"
 
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
-#include "settings/StudioModelSettings.hpp"
 
 #include "ui/options/OptionsPageRegistry.hpp"
-#include "ui/options/OptionsPageStudioModel.hpp"
 
 using namespace studiomodel;
 

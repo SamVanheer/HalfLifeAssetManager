@@ -4,9 +4,8 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
-
+#include "plugins/halflife/studiomodel/settings/StudioModelSettings.hpp"
 #include "settings/ApplicationSettings.hpp"
-#include "settings/StudioModelSettings.hpp"
 
 #undef PlaySound
 

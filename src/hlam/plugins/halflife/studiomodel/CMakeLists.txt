@@ -6,4 +6,6 @@ target_sources(HLAM
 		StudioModelAssetProvider.hpp
 		StudioModelColors.hpp)
 
+add_subdirectory(options)
+add_subdirectory(settings)
 add_subdirectory(ui)

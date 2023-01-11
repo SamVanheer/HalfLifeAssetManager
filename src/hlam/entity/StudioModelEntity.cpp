@@ -10,9 +10,8 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/SceneContext.hpp"
 
-#include "settings/StudioModelSettings.hpp"
-
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/settings/StudioModelSettings.hpp"
 
 #include "utility/WorldTime.hpp"
 

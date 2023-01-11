@@ -9,11 +9,10 @@
 
 #include "qt/ByteLengthValidator.hpp"
 
-#include "settings/StudioModelSettings.hpp"
-
 #include "ui/StateSnapshot.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
+
 #include "plugins/halflife/studiomodel/ui/StudioModelData.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelUndoCommands.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/SequencesPanel.hpp"

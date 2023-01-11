@@ -5,6 +5,4 @@ target_sources(HLAM
 		ColorSettings.hpp
 		GameConfigurationsSettings.cpp
 		GameConfigurationsSettings.hpp
-		RecentFilesSettings.hpp
-		StudioModelSettings.cpp
-		StudioModelSettings.hpp)
+		RecentFilesSettings.hpp)

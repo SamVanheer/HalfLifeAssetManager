@@ -16,9 +16,6 @@ target_sources(HLAM
 		OptionsPageGeneral.ui
 		OptionsPageRegistry.cpp
 		OptionsPageRegistry.hpp
-		OptionsPageStudioModel.cpp
-		OptionsPageStudioModel.hpp
-		OptionsPageStudioModel.ui
 		OptionsPageStyle.cpp
 		OptionsPageStyle.hpp
 		OptionsPageStyle.ui)

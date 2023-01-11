@@ -6,10 +6,9 @@
 #include <QStandardItemModel>
 #include <QStyledItemDelegate>
 
-#include "settings/StudioModelSettings.hpp"
-
 #include "application/AssetManager.hpp"
-#include "ui/options/OptionsPageStudioModel.hpp"
+#include "plugins/halflife/studiomodel/options/OptionsPageStudioModel.hpp"
+#include "plugins/halflife/studiomodel/settings/StudioModelSettings.hpp"
 
 class NumericItemDelegate : public QStyledItemDelegate
 {

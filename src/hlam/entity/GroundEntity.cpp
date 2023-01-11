@@ -9,10 +9,10 @@
 #include "graphics/SceneContext.hpp"
 
 #include "settings/ColorSettings.hpp"
-#include "settings/StudioModelSettings.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
+#include "plugins/halflife/studiomodel/settings/StudioModelSettings.hpp"
 #include "application/AssetManager.hpp"
 
 void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
