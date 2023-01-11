@@ -26,6 +26,7 @@ GroundPanel::GroundPanel(StudioModelAssetProvider* provider)
 
 	connect(_ui.ShowGround, &QCheckBox::stateChanged, this, &GroundPanel::OnShowGroundChanged);
 	connect(_ui.MirrorModelOnGround, &QCheckBox::stateChanged, this, &GroundPanel::OnMirrorOnGroundChanged);
+	connect(_ui.EnableTexture, &QCheckBox::toggled, this, &GroundPanel::OnEnableTextureChanged);
 	connect(_ui.EnableGroundTextureTiling, &QGroupBox::toggled, this, &GroundPanel::OnEnableGroundTextureTilingChanged);
 	connect(_ui.GroundTextureSize, qOverload<int>(&QSpinBox::valueChanged), this, &GroundPanel::OnGroundTextureSizeChanged);
 
@@ -44,6 +45,7 @@ void GroundPanel::OnAssetChanged(StudioModelAsset* asset)
 {
 	const QSignalBlocker showGroundBlocker{_ui.ShowGround};
 	const QSignalBlocker mirrorBlocker{_ui.MirrorModelOnGround};
+	const QSignalBlocker enableTextureBlocker{_ui.EnableTexture};
 	const QSignalBlocker tilingBlocker{_ui.EnableGroundTextureTiling};
 	const QSignalBlocker textureSizeBlocker{_ui.GroundTextureSize};
 	const QSignalBlocker groundTextureBlocker{_ui.GroundTexture};
@@ -53,6 +55,7 @@ void GroundPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	_ui.ShowGround->setChecked(entity->ShowGround);
 	_ui.MirrorModelOnGround->setChecked(entity->MirrorOnGround);
+	_ui.EnableTexture->setChecked(entity->EnableTexture);
 	_ui.EnableGroundTextureTiling->setChecked(entity->EnableGroundTextureTiling);
 	_ui.GroundTextureSize->setValue(entity->GroundTextureLength);
 	_ui.GroundTexture->setText(QString::fromStdString(entity->GetImageName()));
@@ -79,6 +82,11 @@ void GroundPanel::OnMirrorOnGroundChanged()
 	}
 }
 
+void GroundPanel::OnEnableTextureChanged()
+{
+	_provider->GetCurrentAsset()->GetGroundEntity()->EnableTexture = _ui.EnableTexture->isChecked();
+}
+
 void GroundPanel::OnEnableGroundTextureTilingChanged()
 {
 	_provider->GetCurrentAsset()->GetGroundEntity()->EnableGroundTextureTiling = _ui.EnableGroundTextureTiling->isChecked();
@@ -103,6 +111,7 @@ void GroundPanel::OnTextureChanged()
 				{image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits())});
 
 			_ui.ShowGround->setChecked(true);
+			_ui.EnableTexture->setChecked(true);
 			hasTexture = true;
 		}
 	}

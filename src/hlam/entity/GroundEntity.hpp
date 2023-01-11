@@ -44,6 +44,7 @@ public:
 
 	bool ShowGround = false;
 	bool MirrorOnGround = false;
+	bool EnableTexture = false;
 	bool EnableGroundTextureTiling{false};
 	int GroundTextureLength{16};
 

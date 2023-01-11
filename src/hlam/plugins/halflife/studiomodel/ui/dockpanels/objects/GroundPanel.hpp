@@ -25,6 +25,8 @@ private slots:
 	void OnShowGroundChanged();
 	void OnMirrorOnGroundChanged();
 
+	void OnEnableTextureChanged();
+
 	void OnEnableGroundTextureTilingChanged();
 	void OnGroundTextureSizeChanged();
 
