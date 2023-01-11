@@ -61,7 +61,7 @@ private:
 };
 
 const QString OptionsPageStudioModelCategory{QStringLiteral("D.Assets")};
-const QString OptionsPageStudioModelId{QStringLiteral("Studiomodel")};
+const QString OptionsPageStudioModelId{QStringLiteral("StudioModel")};
 
 OptionsPageStudioModel::OptionsPageStudioModel(const std::shared_ptr<StudioModelSettings>& studioModelSettings)
 	: _studioModelSettings(studioModelSettings)
@@ -71,7 +71,7 @@ OptionsPageStudioModel::OptionsPageStudioModel(const std::shared_ptr<StudioModel
 	SetCategory(QString{OptionsPageStudioModelCategory});
 	SetCategoryTitle("Assets");
 	SetId(QString{OptionsPageStudioModelId});
-	SetPageTitle("Studiomodel");
+	SetPageTitle("StudioModel");
 	SetWidgetFactory([this](AssetManager* application)
 		{
 			return new OptionsPageStudioModelWidget(application, _studioModelSettings.get());

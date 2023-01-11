@@ -47,7 +47,7 @@ public:
 		const std::shared_ptr<StudioModelSettings>& studioModelSettings);
 	~StudioModelAssetProvider();
 
-	QString GetProviderName() const override { return "Studiomodel"; }
+	QString GetProviderName() const override { return "StudioModel"; }
 
 	QStringList GetFileTypes() const override { return {StudioModelExtension}; }
 
@@ -145,7 +145,7 @@ public:
 
 	~StudioModelDolImportProvider() = default;
 
-	QString GetProviderName() const override { return "Studiomodel PS2"; }
+	QString GetProviderName() const override { return "StudioModel PS2"; }
 
 	QStringList GetFileTypes() const override { return {StudioModelPS2Extension}; }
 

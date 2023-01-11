@@ -92,7 +92,7 @@ protected:
 
 public:
 	/**
-	*	@brief e.g. "Studiomodel". Used for file filters.
+	*	@brief e.g. "StudioModel". Used for file filters.
 	*/
 	virtual QString GetProviderName() const = 0;
 

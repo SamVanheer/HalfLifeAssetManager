@@ -64,7 +64,7 @@ enum class AddRemoveType
 };
 
 /**
-*	@brief Base class for all undo commands related to Studiomodel editing
+*	@brief Base class for all undo commands related to StudioModel editing
 */
 class BaseModelUndoCommand : public QUndoCommand
 {
