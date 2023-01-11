@@ -24,8 +24,6 @@ BonesPanel::BonesPanel(StudioModelAssetProvider* provider)
 {
 	_ui.setupUi(this);
 
-	_ui.BoneFlags->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
-
 	const auto boneNameValidator = new UniqueBoneNameValidator(MaxBoneNameBytes - 1, _provider, this);
 
 	_ui.BoneName->setValidator(boneNameValidator);
@@ -39,8 +37,6 @@ BonesPanel::BonesPanel(StudioModelAssetProvider* provider)
 
 	connect(_ui.BoneName, &QLineEdit::textChanged, this, &BonesPanel::OnPropsChanged);
 	connect(_ui.BoneName, &QLineEdit::inputRejected, this, &BonesPanel::OnBoneNameRejected);
-
-	connect(_ui.BoneFlags, qOverload<int>(&QSpinBox::valueChanged), this, &BonesPanel::OnPropsChanged);
 
 	connect(_ui.Position, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
 	connect(_ui.PositionScale, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
@@ -183,7 +179,6 @@ void BonesPanel::OnBoneChanged(int index)
 	{
 		const QSignalBlocker boneName{_ui.BoneName};
 		const QSignalBlocker parentBone{_ui.ParentBone};
-		const QSignalBlocker boneFlags{_ui.BoneFlags};
 
 		_ui.BoneName->setText(QString::fromStdString(bone.Name));
 
@@ -197,8 +192,6 @@ void BonesPanel::OnBoneChanged(int index)
 		{
 			_ui.ParentBone->clear();
 		}
-
-		_ui.BoneFlags->setValue(bone.Flags);
 
 		const QSignalBlocker position{_ui.Position};
 		const QSignalBlocker positionScale{_ui.PositionScale};
@@ -232,7 +225,6 @@ void BonesPanel::OnPropsChanged()
 	const BoneProps oldProps
 	{
 		.Name = bone.Name,
-		.Flags = bone.Flags,
 		.Values =
 		{
 			glm::vec3{bone.Axes[0].Value, bone.Axes[1].Value, bone.Axes[2].Value},
@@ -248,7 +240,6 @@ void BonesPanel::OnPropsChanged()
 	const BoneProps newProps
 	{
 		.Name = _ui.BoneName->text().toStdString(),
-		.Flags = _ui.BoneFlags->value(),
 		.Values = {_ui.Position->GetValue(), _ui.Rotation->GetValue()},
 		.Scales = {_ui.PositionScale->GetValue(), _ui.RotationScale->GetValue()}
 	};

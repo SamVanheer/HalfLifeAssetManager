@@ -352,18 +352,12 @@ protected:
 struct BoneProps
 {
 	std::string Name;
-	int Flags{};
 	std::array<glm::vec3, 2> Values;
 	std::array<glm::vec3, 2> Scales;
 
 	bool operator==(const BoneProps& other) const
 	{
 		if (Name != other.Name)
-		{
-			return false;
-		}
-
-		if (Flags != other.Flags)
 		{
 			return false;
 		}
@@ -405,7 +399,6 @@ protected:
 struct AttachmentProps
 {
 	std::string Name;
-	int Type{};
 	int Bone{};
 	glm::vec3 Origin{0};
 

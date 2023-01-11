@@ -45,7 +45,6 @@ void ChangeBonePropsCommand::Apply(int index, const BoneProps& oldValue, const B
 	auto& bone = *model->Bones[index];
 
 	bone.Name = newValue.Name;
-	bone.Flags = newValue.Flags;
 
 	for (std::size_t j = 0; j < newValue.Values.size(); ++j)
 	{
@@ -66,7 +65,6 @@ void ChangeAttachmentPropsCommand::Apply(int index, const AttachmentProps& oldVa
 	auto model = _asset->GetEditableStudioModel();
 	auto& attachment = *model->Attachments[index];
 	attachment.Name = newValue.Name;
-	attachment.Type = newValue.Type;
 	attachment.Bone = newValue.Bone != -1 ? model->Bones[newValue.Bone].get() : nullptr;
 	attachment.Origin = newValue.Origin;
 	emit _asset->GetModelData()->AttachmentDataChanged(index);

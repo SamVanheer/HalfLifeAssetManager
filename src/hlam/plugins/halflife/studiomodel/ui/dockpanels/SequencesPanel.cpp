@@ -27,9 +27,7 @@ SequencesPanel::SequencesPanel(StudioModelAssetProvider* provider)
 
 	_ui.FPS->setRange(0, std::numeric_limits<double>::max());
 	_ui.ActWeight->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
-
 	_ui.EventId->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
-	_ui.EventType->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
 	{
 		QStringList items;
@@ -81,7 +79,6 @@ SequencesPanel::SequencesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.EventFrameIndex, qOverload<int>(&QSpinBox::valueChanged), this, &SequencesPanel::OnEventEdited);
 	connect(_ui.EventId, qOverload<int>(&QSpinBox::valueChanged), this, &SequencesPanel::OnEventEdited);
 	connect(_ui.EventOptions, &QLineEdit::textChanged, this, &SequencesPanel::OnEventEdited);
-	connect(_ui.EventType, qOverload<int>(&QSpinBox::valueChanged), this, &SequencesPanel::OnEventEdited);
 
 	_ui.EventOptions->setValidator(new qt::ByteLengthValidator(STUDIO_MAX_EVENT_OPTIONS_LENGTH - 1, this));
 
@@ -513,7 +510,6 @@ void SequencesPanel::OnEventChanged(int index)
 	const QSignalBlocker eventFrameIndex{_ui.EventFrameIndex};
 	const QSignalBlocker eventId{_ui.EventId};
 	const QSignalBlocker eventOptions{_ui.EventOptions};
-	const QSignalBlocker eventType{_ui.EventType};
 
 	_ui.EventFrameIndex->setValue(event->Frame);
 	_ui.EventId->setValue(event->EventId);
@@ -526,8 +522,6 @@ void SequencesPanel::OnEventChanged(int index)
 	{
 		_ui.EventOptions->setText(options);
 	}
-
-	_ui.EventType->setValue(event->Type);
 
 	_ui.EventDataWidget->setEnabled(hasEvent);
 }
@@ -559,7 +553,6 @@ void SequencesPanel::OnEventEdited()
 
 	changedEvent.Frame = _ui.EventFrameIndex->value();
 	changedEvent.EventId = _ui.EventId->value();
-	changedEvent.Type = _ui.EventType->value();
 
 	changedEvent.Options = _ui.EventOptions->text().toStdString();
 

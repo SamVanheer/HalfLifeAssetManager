@@ -21,8 +21,6 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAssetProvider* provider)
 {
 	_ui.setupUi(this);
 
-	_ui.Type->setRange(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
-
 	const auto attachmentNameValidator = new UniqueAttachmentNameValidator(MaxAttachmentNameBytes - 1, _provider, this);
 
 	_ui.Name->setValidator(attachmentNameValidator);
@@ -37,7 +35,6 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAssetProvider* provider)
 	connect(_ui.Name, &QLineEdit::textChanged, this, &AttachmentsPanel::OnPropsChanged);
 	connect(_ui.Name, &QLineEdit::inputRejected, this, &AttachmentsPanel::OnNameRejected);
 
-	connect(_ui.Type, qOverload<int>(&QSpinBox::valueChanged), this, &AttachmentsPanel::OnPropsChanged);
 	connect(_ui.Bone, qOverload<int>(&QComboBox::currentIndexChanged), this, &AttachmentsPanel::OnPropsChanged);
 	connect(_ui.Origin, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &AttachmentsPanel::OnPropsChanged);
 
@@ -147,7 +144,6 @@ void AttachmentsPanel::OnAttachmentChanged(int index)
 
 	{
 		const QSignalBlocker nameBlocker{_ui.Name};
-		const QSignalBlocker typeBlocker{_ui.Type};
 		const QSignalBlocker boneBlocker{_ui.Bone};
 		const QSignalBlocker originBlocker{_ui.Origin};
 
@@ -159,7 +155,6 @@ void AttachmentsPanel::OnAttachmentChanged(int index)
 			_ui.Name->setText(name);
 		}
 
-		_ui.Type->setValue(attachment.Type);
 		_ui.Bone->setCurrentIndex(attachment.Bone ? attachment.Bone->ArrayIndex : -1);
 		_ui.Origin->SetValue(attachment.Origin);
 	}
@@ -187,7 +182,6 @@ void AttachmentsPanel::OnPropsChanged()
 	const AttachmentProps oldProps
 	{
 		.Name = attachment.Name,
-		.Type = attachment.Type,
 		.Bone = attachment.Bone->ArrayIndex,
 		.Origin = attachment.Origin
 	};
@@ -195,7 +189,6 @@ void AttachmentsPanel::OnPropsChanged()
 	const AttachmentProps newProps
 	{
 		.Name = _ui.Name->text().toStdString(),
-		.Type = _ui.Type->value(),
 		.Bone = _ui.Bone->currentIndex(),
 		.Origin = _ui.Origin->GetValue()
 	};
