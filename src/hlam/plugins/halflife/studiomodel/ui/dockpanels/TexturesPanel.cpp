@@ -20,12 +20,12 @@
 
 #include "qt/QtUtilities.hpp"
 
-#include "settings/StudioModelSettings.hpp"
-
 #include "application/AssetManager.hpp"
 #include "ui/StateSnapshot.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/settings/StudioModelSettings.hpp"
+
 #include "plugins/halflife/studiomodel/ui/StudioModelData.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelTextureUtilities.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelUndoCommands.hpp"
