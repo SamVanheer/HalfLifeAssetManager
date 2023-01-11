@@ -85,6 +85,11 @@ void GroundPanel::OnMirrorOnGroundChanged()
 void GroundPanel::OnEnableTextureChanged()
 {
 	_provider->GetCurrentAsset()->GetGroundEntity()->EnableTexture = _ui.EnableTexture->isChecked();
+
+	if (_provider->GetCurrentAsset()->GetGroundEntity()->EnableTexture)
+	{
+		_ui.ShowGround->setChecked(true);
+	}
 }
 
 void GroundPanel::OnEnableGroundTextureTilingChanged()
