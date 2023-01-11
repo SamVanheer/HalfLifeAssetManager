@@ -33,7 +33,7 @@ public:
 	int FindFirstFreeEventId(const int startId) const;
 
 private slots:
-	void OnResetFloorLength();
+	void OnResetGroundLength();
 
 private:
 	Ui_OptionsPageStudioModel _ui;

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>605</width>
+    <width>620</width>
     <height>400</height>
    </rect>
   </property>
@@ -42,26 +42,26 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Floor Length:</string>
+        <string>Ground Length:</string>
        </property>
       </widget>
      </item>
      <item row="2" column="3">
-      <widget class="QPushButton" name="ResetFloorLength">
+      <widget class="QPushButton" name="ResetGroundLength">
        <property name="text">
         <string>Default</string>
        </property>
       </widget>
      </item>
      <item row="2" column="2">
-      <widget class="QSpinBox" name="FloorLengthSpinner">
+      <widget class="QSpinBox" name="GroundLengthSpinner">
        <property name="maximum">
         <number>100</number>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSlider" name="FloorLengthSlider">
+      <widget class="QSlider" name="GroundLengthSlider">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>

@@ -349,9 +349,9 @@ void SetupRenderMode(QOpenGLFunctions_1_1* openglFunctions, RenderMode renderMod
 	}
 }
 
-void DrawFloorQuad(QOpenGLFunctions_1_1* openglFunctions, const glm::vec3& origin, float floorLength, float textureRepeatLength, glm::vec2 textureOffset)
+void DrawGroundQuad(QOpenGLFunctions_1_1* openglFunctions, const glm::vec3& origin, float groundLength, float textureRepeatLength, glm::vec2 textureOffset)
 {
-	const float vertexCoord{floorLength / 2};
+	const float vertexCoord{groundLength / 2};
 
 	//The texture should repeat so that a textureRepeatLength sized quad contains one repetition of the texture
 	//It should also, when movement distance is 0, repeat at 0, 0, 0
@@ -379,8 +379,8 @@ void DrawFloorQuad(QOpenGLFunctions_1_1* openglFunctions, const glm::vec3& origi
 	openglFunctions->glEnd();
 }
 
-void DrawFloor(QOpenGLFunctions_1_1* openglFunctions,
-	const glm::vec3& origin, float floorLength, float textureRepeatLength,
+void DrawGround(QOpenGLFunctions_1_1* openglFunctions,
+	const glm::vec3& origin, float groundLength, float textureRepeatLength,
 	const glm::vec2& textureOffset, std::optional<GLuint> groundTexture, const glm::vec4& groundColor,
 	const bool bMirror)
 {
@@ -421,7 +421,7 @@ void DrawFloor(QOpenGLFunctions_1_1* openglFunctions,
 
 	openglFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	DrawFloorQuad(openglFunctions, origin, floorLength, textureRepeatLength, textureOffset);
+	DrawGroundQuad(openglFunctions, origin, groundLength, textureRepeatLength, textureOffset);
 
 	openglFunctions->glDisable(GL_BLEND);
 
@@ -430,7 +430,7 @@ void DrawFloor(QOpenGLFunctions_1_1* openglFunctions,
 		openglFunctions->glCullFace(GL_BACK);
 		openglFunctions->glColor4f(0.1f, 0.1f, 0.1f, 1.0f);
 		openglFunctions->glBindTexture(GL_TEXTURE_2D, 0);
-		DrawFloorQuad(openglFunctions, origin, floorLength, textureRepeatLength, textureOffset);
+		DrawGroundQuad(openglFunctions, origin, groundLength, textureRepeatLength, textureOffset);
 
 		openglFunctions->glFrontFace(GL_CCW);
 	}
@@ -449,7 +449,7 @@ void DrawFloor(QOpenGLFunctions_1_1* openglFunctions,
 
 unsigned int DrawMirroredModel(QOpenGLFunctions_1_1* openglFunctions,
 	studiomdl::IStudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
-	const RenderMode renderMode, const bool bWireframeOverlay, const glm::vec3& origin, const float floorLength, const bool bBackfaceCulling)
+	const RenderMode renderMode, const bool bWireframeOverlay, const glm::vec3& origin, const float groundLength, const bool bBackfaceCulling)
 {
 	GLint oldCullFace;
 
@@ -464,13 +464,13 @@ unsigned int DrawMirroredModel(QOpenGLFunctions_1_1* openglFunctions,
 	openglFunctions->glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	openglFunctions->glStencilFunc(GL_ALWAYS, 1, 0xffffffff);
 
-	//Cull backside of the floor so the model can't draw underneath the floor
+	//Cull backside of the ground so the model can't draw underneath the ground
 	openglFunctions->glEnable(GL_CULL_FACE);
 	openglFunctions->glCullFace(GL_BACK);
 
-	/* Now render floor; floor pixels just get their stencil set to 1. */
+	/* Now render ground; ground pixels just get their stencil set to 1. */
 	//Texture length is irrelevant here
-	DrawFloorQuad(openglFunctions, origin, floorLength, 1, glm::vec2{0});
+	DrawGroundQuad(openglFunctions, origin, groundLength, 1, glm::vec2{0});
 
 	/* Re-enable update of color and depth. */
 	openglFunctions->glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);

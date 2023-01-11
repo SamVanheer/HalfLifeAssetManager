@@ -51,7 +51,7 @@ void StudioModelEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass
 			asset->CurrentRenderMode,
 			asset->ShowWireframeOverlay,
 			asset->GetGroundEntity()->GetOrigin(),
-			settings->GetFloorLength(),
+			settings->GetGroundLength(),
 			asset->EnableBackfaceCulling);
 	}
 

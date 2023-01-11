@@ -44,14 +44,14 @@ public:
 
 	bool ShowGround = false;
 	bool MirrorOnGround = false;
-	bool EnableFloorTextureTiling{false};
-	int FloorTextureLength{16};
+	bool EnableGroundTextureTiling{false};
+	int GroundTextureLength{16};
 
 private:
-	int _floorSequence{-1};
-	float _previousFloorFrame{0};
+	int _groundSequence{-1};
+	float _previousGroundFrame{0};
 
-	glm::vec2 _floorTextureOffset{0};
+	glm::vec2 _groundTextureOffset{0};
 
 	GLuint _texture{0};
 	std::string _imageName;

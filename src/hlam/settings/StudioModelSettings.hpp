@@ -12,9 +12,9 @@ public:
 	static constexpr bool DefaultAutodetectViewmodels{true};
 	static constexpr bool DefaultActivateTextureViewWhenTexturesPanelOpened{true};
 
-	static constexpr int MinimumFloorLength = 0;
-	static constexpr int MaximumFloorLength = 2048;
-	static constexpr int DefaultFloorLength = 100;
+	static constexpr int MinimumGroundLength = 0;
+	static constexpr int MaximumGroundLength = 2048;
+	static constexpr int DefaultGroundLength = 100;
 
 	explicit StudioModelSettings(QSettings* settings)
 		: _settings(settings)
@@ -55,11 +55,11 @@ public:
 	bool AreEditControlsVisible() const;
 	void SetEditControlsVisible(bool value);
 
-	int GetFloorLength() const { return _floorLength; }
+	int GetGroundLength() const { return _groundLength; }
 
-	void SetFloorLength(int value)
+	void SetGroundLength(int value)
 	{
-		_floorLength = value;
+		_groundLength = value;
 	}
 
 	float GetCameraFOV(const QString& name, float defaultValue) const;
@@ -78,7 +78,7 @@ private:
 	bool _autodetectViewModels{DefaultAutodetectViewmodels};
 	bool _activateTextureViewWhenTexturesPanelOpened{DefaultActivateTextureViewWhenTexturesPanelOpened};
 
-	int _floorLength = DefaultFloorLength;
+	int _groundLength = DefaultGroundLength;
 
 	QSet<int> _soundEventIds;
 };

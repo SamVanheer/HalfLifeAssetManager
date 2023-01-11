@@ -82,26 +82,26 @@ void PaletteHueReplace(RGBPalette& palette, int newHue, int start, int end);
 void SetupRenderMode(QOpenGLFunctions_1_1* openglFunctions, RenderMode renderMode, const bool bBackfaceCulling);
 
 /**
-*	Draws a floor quad.
-*	@param origin Floor origin
-*	@param floorLength Length of one side of the floor
+*	Draws a ground quad.
+*	@param origin Ground origin
+*	@param groundLength Length of one side of the ground
 *	@param textureRepeatLength Size of a texture repetition
 *	@param textureOffset Offset in units to shift the texture
 */
-void DrawFloorQuad(QOpenGLFunctions_1_1* openglFunctions, const glm::vec3& origin, float floorLength, float textureRepeatLength, glm::vec2 textureOffset);
+void DrawGroundQuad(QOpenGLFunctions_1_1* openglFunctions, const glm::vec3& origin, float groundLength, float textureRepeatLength, glm::vec2 textureOffset);
 
 /**
-*	Draws a floor, optionally with a texture.
-*	@param origin Floor origin
-*	@param floorLength		Length of one side of the floor
+*	Draws a ground, optionally with a texture.
+*	@param origin Ground origin
+*	@param groundLength		Length of one side of the ground
 *	@param textureRepeatLength Size of a texture repetition
 *	@param textureOffset Offset in units to shift the texture
-*	@param groundTexture	OpenGL texture id of the texture to draw as the floor, or GL_INVALID_TEXTURE_ID to draw a solid color instead
+*	@param groundTexture	OpenGL texture id of the texture to draw as the ground, or GL_INVALID_TEXTURE_ID to draw a solid color instead
 *	@param groundColor		Color of the ground if no texture is specified
 *	@param bMirror			If true, draws a solid underside
 */
-void DrawFloor(QOpenGLFunctions_1_1* openglFunctions, 
-	const glm::vec3& origin, float floorLength, float textureRepeatLength, const glm::vec2& textureOffset, std::optional<GLuint> groundTexture,
+void DrawGround(QOpenGLFunctions_1_1* openglFunctions, 
+	const glm::vec3& origin, float groundLength, float textureRepeatLength, const glm::vec2& textureOffset, std::optional<GLuint> groundTexture,
 	const glm::vec4& groundColor, const bool bMirror);
 
 /**
@@ -110,10 +110,10 @@ void DrawFloor(QOpenGLFunctions_1_1* openglFunctions,
 *	@param pEntity				Entity to draw
 *	@param renderMode			Render mode to use
 *	@param bWireframeOverlay	Whether to render a wireframe overlay on top of the model
-*	@param floorLength			Length of one side of the floor
+*	@param groundLength			Length of one side of the ground
 *	@param bBackfaceCulling		Whether to perform backface culling or not
 */
 unsigned int DrawMirroredModel(QOpenGLFunctions_1_1* openglFunctions, 
 	studiomdl::IStudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
-	const RenderMode renderMode, const bool bWireframeOverlay, const glm::vec3& origin, const float floorLength, const bool bBackfaceCulling);
+	const RenderMode renderMode, const bool bWireframeOverlay, const glm::vec3& origin, const float groundLength, const bool bBackfaceCulling);
 }

@@ -53,16 +53,16 @@ void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 				float delta;
 
-				if (currentFrame >= _previousFloorFrame)
+				if (currentFrame >= _previousGroundFrame)
 				{
-					delta = currentFrame - _previousFloorFrame;
+					delta = currentFrame - _previousGroundFrame;
 				}
 				else
 				{
-					delta = (currentFrame + 1) - _previousFloorFrame;
+					delta = (currentFrame + 1) - _previousGroundFrame;
 				}
 
-				_previousFloorFrame = currentFrame;
+				_previousGroundFrame = currentFrame;
 
 				//Adjust scrolling direction based on whether the model is mirrored, but don't apply scale itself
 				const int xDirection = entity->GetScale().x > 0 ? 1 : -1;
@@ -71,22 +71,22 @@ void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 				textureOffset.x = sequence.LinearMovement.x * delta * xDirection;
 				textureOffset.y = -(sequence.LinearMovement.y * delta * yDirection);
 
-				if (_floorSequence != entity->GetSequence())
+				if (_groundSequence != entity->GetSequence())
 				{
-					_floorSequence = entity->GetSequence();
-					_previousFloorFrame = 0;
-					_floorTextureOffset.x = _floorTextureOffset.y = 0;
+					_groundSequence = entity->GetSequence();
+					_previousGroundFrame = 0;
+					_groundTextureOffset.x = _groundTextureOffset.y = 0;
 				}
 			}
 		}
 
-		_floorTextureOffset += textureOffset;
+		_groundTextureOffset += textureOffset;
 
-		const float floorTextureLength = EnableFloorTextureTiling ? FloorTextureLength : settings->GetFloorLength();
+		const float groundTextureLength = EnableGroundTextureTiling ? GroundTextureLength : settings->GetGroundLength();
 
 		//Prevent the offset from overflowing
-		_floorTextureOffset.x = std::fmod(_floorTextureOffset.x, floorTextureLength);
-		_floorTextureOffset.y = std::fmod(_floorTextureOffset.y, floorTextureLength);
+		_groundTextureOffset.x = std::fmod(_groundTextureOffset.x, groundTextureLength);
+		_groundTextureOffset.y = std::fmod(_groundTextureOffset.y, groundTextureLength);
 
 		auto colors = GetContext()->Asset->GetApplication()->GetColorSettings();
 
@@ -97,8 +97,8 @@ void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 			texture = _texture;
 		}
 
-		graphics::DrawFloor(sc.OpenGLFunctions,
-			GetOrigin(), settings->GetFloorLength(), floorTextureLength, _floorTextureOffset, texture,
+		graphics::DrawGround(sc.OpenGLFunctions,
+			GetOrigin(), settings->GetGroundLength(), groundTextureLength, _groundTextureOffset, texture,
 			colors->GetColor(studiomodel::GroundColor), MirrorOnGround);
 	}
 }

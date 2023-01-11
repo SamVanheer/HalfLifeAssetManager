@@ -87,15 +87,15 @@ OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(
 	_ui.ActivateTextureViewWhenTexturesPanelOpened->setChecked(
 		_studioModelSettings->ShouldActivateTextureViewWhenTexturesPanelOpened());
 
-	_ui.FloorLengthSlider->setRange(_studioModelSettings->MinimumFloorLength, _studioModelSettings->MaximumFloorLength);
-	_ui.FloorLengthSpinner->setRange(_studioModelSettings->MinimumFloorLength, _studioModelSettings->MaximumFloorLength);
+	_ui.GroundLengthSlider->setRange(_studioModelSettings->MinimumGroundLength, _studioModelSettings->MaximumGroundLength);
+	_ui.GroundLengthSpinner->setRange(_studioModelSettings->MinimumGroundLength, _studioModelSettings->MaximumGroundLength);
 
-	_ui.FloorLengthSlider->setValue(_studioModelSettings->GetFloorLength());
-	_ui.FloorLengthSpinner->setValue(_studioModelSettings->GetFloorLength());
+	_ui.GroundLengthSlider->setValue(_studioModelSettings->GetGroundLength());
+	_ui.GroundLengthSpinner->setValue(_studioModelSettings->GetGroundLength());
 
-	connect(_ui.FloorLengthSlider, &QSlider::valueChanged, _ui.FloorLengthSpinner, &QSpinBox::setValue);
-	connect(_ui.FloorLengthSpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.FloorLengthSlider, &QSlider::setValue);
-	connect(_ui.ResetFloorLength, &QPushButton::clicked, this, &OptionsPageStudioModelWidget::OnResetFloorLength);
+	connect(_ui.GroundLengthSlider, &QSlider::valueChanged, _ui.GroundLengthSpinner, &QSpinBox::setValue);
+	connect(_ui.GroundLengthSpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.GroundLengthSlider, &QSlider::setValue);
+	connect(_ui.ResetGroundLength, &QPushButton::clicked, this, &OptionsPageStudioModelWidget::OnResetGroundLength);
 
 	auto model = new QStandardItemModel();
 
@@ -168,7 +168,7 @@ void OptionsPageStudioModelWidget::ApplyChanges()
 	_studioModelSettings->SetAutodetectViewmodels(_ui.AutodetectViewmodels->isChecked());
 	_studioModelSettings->SetActivateTextureViewWhenTexturesPanelOpened(
 		_ui.ActivateTextureViewWhenTexturesPanelOpened->isChecked());
-	_studioModelSettings->SetFloorLength(_ui.FloorLengthSlider->value());
+	_studioModelSettings->SetGroundLength(_ui.GroundLengthSlider->value());
 
 	QSet<int> soundEventIds;
 
@@ -227,8 +227,8 @@ int OptionsPageStudioModelWidget::FindFirstFreeEventId(const int startId) const
 	return id;
 }
 
-void OptionsPageStudioModelWidget::OnResetFloorLength()
+void OptionsPageStudioModelWidget::OnResetGroundLength()
 {
-	_ui.FloorLengthSlider->setValue(_studioModelSettings->DefaultFloorLength);
-	_ui.FloorLengthSpinner->setValue(_studioModelSettings->DefaultFloorLength);
+	_ui.GroundLengthSlider->setValue(_studioModelSettings->DefaultGroundLength);
+	_ui.GroundLengthSpinner->setValue(_studioModelSettings->DefaultGroundLength);
 }

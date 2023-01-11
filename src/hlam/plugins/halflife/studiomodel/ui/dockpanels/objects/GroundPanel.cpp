@@ -53,8 +53,8 @@ void GroundPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	_ui.ShowGround->setChecked(entity->ShowGround);
 	_ui.MirrorModelOnGround->setChecked(entity->MirrorOnGround);
-	_ui.EnableGroundTextureTiling->setChecked(entity->EnableFloorTextureTiling);
-	_ui.GroundTextureSize->setValue(entity->FloorTextureLength);
+	_ui.EnableGroundTextureTiling->setChecked(entity->EnableGroundTextureTiling);
+	_ui.GroundTextureSize->setValue(entity->GroundTextureLength);
 	_ui.GroundTexture->setText(QString::fromStdString(entity->GetImageName()));
 	_ui.GroundOrigin->SetValue(entity->GetOrigin());
 }
@@ -81,12 +81,12 @@ void GroundPanel::OnMirrorOnGroundChanged()
 
 void GroundPanel::OnEnableGroundTextureTilingChanged()
 {
-	_provider->GetCurrentAsset()->GetGroundEntity()->EnableFloorTextureTiling = _ui.EnableGroundTextureTiling->isChecked();
+	_provider->GetCurrentAsset()->GetGroundEntity()->EnableGroundTextureTiling = _ui.EnableGroundTextureTiling->isChecked();
 }
 
 void GroundPanel::OnGroundTextureSizeChanged()
 {
-	_provider->GetCurrentAsset()->GetGroundEntity()->FloorTextureLength = _ui.GroundTextureSize->value();
+	_provider->GetCurrentAsset()->GetGroundEntity()->GroundTextureLength = _ui.GroundTextureSize->value();
 }
 
 void GroundPanel::OnTextureChanged()
