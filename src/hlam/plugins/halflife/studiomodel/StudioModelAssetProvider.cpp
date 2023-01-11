@@ -336,8 +336,6 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) cons
 std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAssetProvider::Load(
 	const QString& fileName, FILE* file)
 {
-	_logger->trace("Trying to load model {}", fileName);
-
 	const auto filePath = std::filesystem::u8path(fileName.toStdString());
 	auto studioModel = studiomdl::LoadStudioModel(filePath, file);
 

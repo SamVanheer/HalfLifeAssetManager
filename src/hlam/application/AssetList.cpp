@@ -139,10 +139,6 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 						return AssetLoadResult::Failed;
 					}
 
-					auto currentFileName = result->GetFileName();
-
-					_logger->debug("Asset \"{}\" loaded as \"{}\"", fileName, currentFileName);
-
 					connect(result.get(), &Asset::FileNameChanged, this, &AssetList::OnAssetFileNameChanged);
 
 					_assets.push_back(std::move(result));
