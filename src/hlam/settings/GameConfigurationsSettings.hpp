@@ -46,6 +46,8 @@ public:
 
 	const GameConfiguration* GetConfigurationById(const QUuid& id) const;
 
+	const GameConfiguration* FindConfigurationByModDirectory(const QString& modDirectory) const;
+
 	void AddConfiguration(std::unique_ptr<GameConfiguration>&& configuration);
 
 	void RemoveConfiguration(const QUuid& id);
@@ -67,6 +69,8 @@ public:
 
 private:
 	static void SanitizeConfiguration(GameConfiguration& configuration);
+
+	void AddConfigurationToFileSystem(IFileSystem& fileSystem, const GameConfiguration& configuration) const;
 
 	std::pair<const GameConfiguration*, bool> DetectGameConfiguration(const QString& assetFileName) const;
 

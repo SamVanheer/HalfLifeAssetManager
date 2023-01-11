@@ -1,10 +1,13 @@
 #include <algorithm>
 
+#include <QDir>
 #include <QFileInfo>
 #include <QSettings>
 
 #include "filesystem/FileSystem.hpp"
 #include "filesystem/FileSystemConstants.hpp"
+
+#include "formats/liblist/LiblistReader.hpp"
 
 #include "qt/QtLogging.hpp"
 
@@ -109,6 +112,21 @@ const GameConfiguration* GameConfigurationsSettings::GetConfigurationById(const 
 	return nullptr;
 }
 
+const GameConfiguration* GameConfigurationsSettings::FindConfigurationByModDirectory(const QString& modDirectory) const
+{
+	if (auto it = std::find_if(_gameConfigurations.begin(), _gameConfigurations.end(),
+		[&](const auto& configuration)
+		{
+			return configuration->ModDirectory == modDirectory;
+		}
+	); it != _gameConfigurations.end())
+	{
+		return it->get();
+	}
+
+	return nullptr;
+}
+
 void GameConfigurationsSettings::AddConfiguration(std::unique_ptr<GameConfiguration>&& configuration)
 {
 	auto& ref = _gameConfigurations.emplace_back(std::move(configuration));
@@ -195,40 +213,6 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 
 	auto fileSystem = std::make_unique<FileSystem>();
 
-	const auto language = _applicationSettings->GetSteamLanguage().toStdString();
-	const bool hasLanguage = language != DefaultSteamLanguage;
-
-	const auto addConfiguration = [&](const GameConfiguration& configuration)
-	{
-		const auto gameDir{configuration.BaseGameDirectory.toStdString()};
-		const auto modDir{configuration.ModDirectory.toStdString()};
-
-		const auto addGameDirectory = [&](const std::string& directory)
-		{
-			fileSystem->AddSearchPath(directory + "_addon");
-
-			if (hasLanguage)
-			{
-				fileSystem->AddSearchPath(directory + "_" + language);
-			}
-
-			fileSystem->AddSearchPath(directory + "_hd");
-			fileSystem->AddSearchPath(std::string{directory});
-			fileSystem->AddSearchPath(directory + "_downloads");
-		};
-
-		//Add mod dirs first since they override game dirs
-		if (!modDir.empty() && gameDir != modDir)
-		{
-			addGameDirectory(modDir);
-		}
-
-		if (!gameDir.empty())
-		{
-			addGameDirectory(gameDir);
-		}
-	};
-
 	if (isDefault)
 	{
 		const std::filesystem::path assetPath{assetFileName.toStdString()};
@@ -238,7 +222,7 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 		{
 			const auto baseGameDirectory = QString::fromStdString(baseGameDirectoryPath->string());
 
-			addConfiguration(GameConfiguration{.BaseGameDirectory = baseGameDirectory});
+			AddConfigurationToFileSystem(*fileSystem, GameConfiguration{.BaseGameDirectory = baseGameDirectory});
 
 			_logger->trace(
 				"Using auto-detected game configuration for asset \"{}\" based on base game directory \"{}\"",
@@ -248,7 +232,31 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 
 	if (configuration)
 	{
-		addConfiguration(*configuration);
+		AddConfigurationToFileSystem(*fileSystem, *configuration);
+
+		// See if it's a mod with a fallback_dir.
+		if (!configuration->ModDirectory.isEmpty())
+		{
+			const auto liblistFileName = QDir::toNativeSeparators(configuration->ModDirectory + "/liblist.gam");
+			
+			if (auto liblist = LiblistReader::Read(liblistFileName.toStdString()); liblist)
+			{
+				const QString fallbackDirectory = QString::fromStdString((*liblist)["fallback_dir"]);
+
+				if (!fallbackDirectory.isEmpty())
+				{
+					const QString path = QFileInfo{configuration->ModDirectory}.absolutePath();
+					const QString modDirectory = path + '/' + fallbackDirectory;
+
+					const auto fallbackConfiguration = FindConfigurationByModDirectory(modDirectory);
+
+					if (fallbackConfiguration)
+					{
+						AddConfigurationToFileSystem(*fileSystem, *fallbackConfiguration);
+					}
+				}
+			}
+		}
 	}
 
 	return fileSystem;
@@ -259,6 +267,41 @@ void GameConfigurationsSettings::SanitizeConfiguration(GameConfiguration& config
 	configuration.GameExecutable = QFileInfo{configuration.GameExecutable}.absoluteFilePath();
 	configuration.BaseGameDirectory = QFileInfo{configuration.BaseGameDirectory}.absoluteFilePath();
 	configuration.ModDirectory = QFileInfo{configuration.ModDirectory}.absoluteFilePath();
+}
+
+void GameConfigurationsSettings::AddConfigurationToFileSystem(
+	IFileSystem& fileSystem, const GameConfiguration& configuration) const
+{
+	const auto language = _applicationSettings->GetSteamLanguage().toStdString();
+	const bool hasLanguage = language != DefaultSteamLanguage;
+
+	const auto addGameDirectory = [&](const std::string& directory)
+	{
+		fileSystem.AddSearchPath(directory + "_addon");
+
+		if (hasLanguage)
+		{
+			fileSystem.AddSearchPath(directory + "_" + language);
+		}
+
+		fileSystem.AddSearchPath(directory + "_hd");
+		fileSystem.AddSearchPath(std::string{directory});
+		fileSystem.AddSearchPath(directory + "_downloads");
+	};
+
+	const auto gameDir{configuration.BaseGameDirectory.toStdString()};
+	const auto modDir{configuration.ModDirectory.toStdString()};
+
+	//Add mod dirs first since they override game dirs
+	if (!modDir.empty() && gameDir != modDir)
+	{
+		addGameDirectory(modDir);
+	}
+
+	if (!gameDir.empty())
+	{
+		addGameDirectory(gameDir);
+	}
 }
 
 std::pair<const GameConfiguration*, bool> GameConfigurationsSettings::DetectGameConfiguration(
