@@ -26,7 +26,7 @@ LightingPanel::~LightingPanel() = default;
 
 void LightingPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 {
-	DockableWidget::OnLayoutDirectionChanged(direction);
+	//DockableWidget::OnLayoutDirectionChanged(direction);
 
 	emit LayoutDirectionChanged(direction);
 }
