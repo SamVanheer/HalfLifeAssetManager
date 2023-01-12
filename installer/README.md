@@ -1,4 +1,5 @@
 To create the installer you will need to put the program executable and all required Qt libraries in the bin directory, and place the Visual Studio x86 redistributable in the redist directory.
+The PDF manual generated from [HalfLifeAssetManagerManual.tex](/docs/manual/HalfLifeAssetManagerManual.tex) should be placed in the manual directory.
 
 Also required are the following libraries included with Qt's installation, needed for ANGLE-based OpenGL rendering:
 * libEGL.dll
