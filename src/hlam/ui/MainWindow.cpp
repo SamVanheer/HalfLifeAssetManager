@@ -48,8 +48,6 @@
 
 #include "ui/options/OptionsDialog.hpp"
 
-#include "utility/Utility.hpp"
-
 const QString AssetPathName{QStringLiteral("AssetPath")};
 
 MainWindow::MainWindow(AssetManager* application)

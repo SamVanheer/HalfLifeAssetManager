@@ -17,6 +17,8 @@
 
 #include "ui/MainWindow.hpp"
 
+#include "utility/Utility.hpp"
+
 AssetList::AssetList(AssetManager* application, std::shared_ptr<spdlog::logger> logger)
 	: _application(application)
 	, _logger(logger)
