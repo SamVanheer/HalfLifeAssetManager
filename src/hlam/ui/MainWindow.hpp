@@ -73,8 +73,6 @@ private slots:
 
 	void OnOpenOptionsDialog();
 
-	void OnShowAbout();
-
 private:
 	Ui_MainWindow _ui;
 

@@ -1,5 +1,7 @@
 target_sources(HLAM
 	PRIVATE
+		AboutDialog.cpp
+		AboutDialog.hpp
 		DockableWidget.hpp
 		DragNDropEventFilter.hpp
 		FullscreenWidget.cpp
