@@ -20,7 +20,7 @@ void ShowAboutDialog(QWidget* parent)
 
 	QMessageBox::about(parent, "About " + programName,
 		QString::fromUtf8(
-			reinterpret_cast<const char*>(u8R"(%1 %2.%3.%4
+			reinterpret_cast<const char*>(u8R"(%1 %2.%3.%4 Beta
 
 2023 Sam Vanheer
 
