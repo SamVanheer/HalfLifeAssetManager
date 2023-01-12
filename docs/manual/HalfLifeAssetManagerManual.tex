@@ -12,6 +12,8 @@
 \titlespacing*{\paragraph}
 {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
 
+\newcommand{\code}[1]{\mbox{\texttt{#1}}}
+
 \begin{document}
 \title{Half-Life Asset Manager Manual\\
 \large Version 2.0.0}
@@ -38,6 +40,8 @@ It does not support Source 1 and Source 2, though some file formats are recogniz
 
 Asset Manager is available in installer and archive form. The installer will automatically install the program to a location of your choosing and can optionally create shortcuts for you.
 
+When using the off-line installer you must uninstall the previous version before installing a new version.
+
 The archive version does not require installation itself but does require you to install the Visual C++ redistributable included with the archive. This redistributable includes the Visual C++ runtime used by the program and is required to run it.
 
 \section{General usage}
@@ -45,6 +49,74 @@ The archive version does not require installation itself but does require you to
 When installing Asset Manager using the installer you are given the option to associate the program with file types supported by the tool. Enabling this allows you to open Asset Manager by double clicking the file in Windows Explorer.
 
 You can also associate file types manually by following this tutorial: \url{https://www.thewindowsclub.com/change-file-associations-windows}
+
+Asset Manager treats positional arguments passed on the command line as a filename. Only one filename may be passed and it should be enclosed by quotes. If passed without quotes Asset Manager will attempt to reconstruct the filename by joining all positional arguments together separated by a space.
+
+\section{Portable Mode}
+
+Launching Half-Life Asset Manager with the command line parameter \code{--portable} launches it in portable mode.
+In this mode the program configuration file is stored next to the executable, which makes it easier to run the program from a removable storage device or with multiple user accounts.
+
+\newpage
+
+\section{Configuring Log Output}
+
+Half-Life Asset Manager can output log information to a file. To enable this add the command line parameter \code{--log-to-file} to the command line.
+
+Create a desktop shortcut to add this when launching the program directly.
+
+Log output will be written to a text file called \code{HLAM-Log.txt} located in the same directory as the program configuration file.
+
+When running the program using its default configuration this will be in \code{\%AppData\%/Roaming/Half-Life Asset Manager} (Windows).
+When running in portable mode this will be in the `bin` directory.
+
+You can open this directory by opening the options dialog and clicking `Open Configuration Directory`.
+
+The file is cleared on startup.
+
+
+\subsection{Configuring logging categories}
+
+Qt uses logging categories to filter log output. To control which categories are enabled, create a file called \code{qtlogging.ini} in \code{Half-Life Asset Manager/bin} and add the following:
+
+\code{[Rules]}
+
+Now add logging rules below this section, for example:
+
+\code{[Rules]}
+
+\code{qt.qpa.gl=true}
+
+This will enable the logging category for OpenGL.
+
+\newpage
+
+\section{Supported asset types}
+\label{sec:supported_asset_types}
+
+\subsection{Half-Life 1 StudioModel}
+
+The Half-Life 1 StudioModel format identified as IDST version 10 is fully supported.
+
+See Section~\nameref{sec:hl1studiomodel} for more information.
+
+\subsection{Source 1 StudioModel}
+
+The Source 1 StudioModel format identified as IDST versions 44 through 48 are recognized and forwarded to a user-configured Source 1 Model Viewer.
+
+See Section~\nameref{sec:external_programs} for more information.
+
+\subsection{Xash StudioModel}
+
+The Xash StudioModel format identified as IDST version 10 with additional Xash-specific data is recognized and forwarded to a user-configured Xash Model Viewer.
+
+See Section~\nameref{sec:external_programs} for more information.
+
+\subsection{Quake 1 Alias Model}
+
+The Quake 1 Alias Model format identified as IDPO is recognized and forwarded to a user-configured Quake 1 Model Viewer.
+
+See Section~\nameref{sec:external_programs} for more information.
 
 \newpage
 
@@ -310,6 +382,7 @@ External programs are launched by Asset Manager when needed to complete certain 
 For actions that automatically choose to use external programs this option requires those actions to ask the user to continue.
 
 \subsubsection{Supported External Programs}
+\label{sec:external_programs}
 
 Note: model viewers need to support the loading of models by passing the filename on the command line to work as an external program.
 
@@ -324,16 +397,16 @@ Note: model viewers need to support the loading of models by passing the filenam
 
 	Known model viewers:
 	\begin{itemize}
-	\item Source 1 \textit{hlmv.exe} included with Source 1 games. Prefer using a model viewer running on the latest engine branch to ensure all 4 versions of the format can be opened.
+	\item Source 1 \code{hlmv.exe} included with Source 1 games. Prefer using a model viewer running on the latest engine branch to ensure all 4 versions of the format can be opened.
 	\end{itemize}
-\item Studiomdl compiler: Path to a \textit{studiomdl.exe} compiler that can compile Half-Life 1 models
+\item Studiomdl compiler: Path to a \code{studiomdl.exe} compiler that can compile Half-Life 1 models
 
 	Known compilers:
 	\begin{itemize}
 	\item \href{http://www.the303.org/backups/sven_studiomdl_2019.rar}{Sven Co-op Studiomdl Compiler}
-	\item Standard compiler included with the \href{https://steamdb.info/app/254430/}{Half-Life SDK on Steam} in the \textit{Model Tools} directory.
+	\item Standard compiler included with the \href{https://steamdb.info/app/254430/}{Half-Life SDK on Steam} in the \code{Model Tools} directory.
 	\end{itemize}
-\item Studiomdl Decompiler: Path to a \textit{mdldec.exe} decompiler that can decompile Half-Life 1 models
+\item Studiomdl Decompiler: Path to a \code{mdldec.exe} decompiler that can decompile Half-Life 1 models
 
 	Known decompilers:
 	\begin{itemize}
@@ -367,7 +440,7 @@ If no configuration could be found Asset Manager will check if the asset is in a
 The default configuration is always used as a fallback if no configuration could be found, even if a temporary one was created.
 
 \vspace{\baselineskip}
-If a game's \textit{liblist.gam} file contains a \textit{fallback\_dir} entry it will be used to find that game's configuration and use it as well as the originating game's configuration. This matches the engine's behavior.
+If a game's \code{liblist.gam} file contains a \code{fallback\_dir} entry it will be used to find that game's configuration and use it as well as the originating game's configuration. This matches the engine's behavior.
 
 \vspace{\baselineskip}
 Changing configurations does not affect assets that have already been loaded.
@@ -384,74 +457,70 @@ You can then select the mods you want to add as configurations, move them to the
 
 \newpage
 
-\section{Supported asset types}
-\label{sec:supported_asset_types}
+\section{Half-Life 1 StudioModel}
+\label{sec:hl1studiomodel}
 
-\subsection{Half-Life 1 StudioModel}
+\subsection{Asset menu}
 
-The Half-Life 1, StudioModel identified as IDST version 10 is fully supported.
-
-\subsubsection{Asset menu}
-
-\paragraph{Dock Widgets}
+\subsubsection{Dock Widgets}
 
 Provides actions toggle each of the dock widgets in the user interface.
 
-\paragraph{Reset Dock Widgets}
+\subsubsection{Reset Dock Widgets}
 
 Resets the dock widgets to their initial visibility state and position.
 
-\paragraph{Show Controls Bar}
+\subsubsection{Show Controls Bar}
 
 Toggles the control bar located directly under the 3D window.
 
-\paragraph{Show Timeline}
+\subsubsection{Show Timeline}
 
 Toggles the timeline located at the bottom of the edit controls.
 
-\paragraph{Show Edit Controls}
+\subsubsection{Show Edit Controls}
 
 Toggles between the full edit controls view and a maximized 3D window view.
 
 Hiding the edit controls also hides the controls bar and timeline, so those actions are disabled while hidden.
 
-\paragraph{Previous Camera}
+\subsubsection{Previous Camera}
 
 Cycles to the previous camera type in the scene.
 
-\paragraph{Next Camera}
+\subsubsection{Next Camera}
 
 Cycles to the next camera type in the scene.
 
-\paragraph{Center View}
+\subsubsection{Center View}
 
 Centers the current camera on the selected axis. Not all cameras support centering.
 
-\paragraph{Save View}
+\subsubsection{Save View}
 
 Saves the current camera and camera state.
 
-\paragraph{Restore View}
+\subsubsection{Restore View}
 
 Restores the saved camera and camera state.
 
 This works even when the saved view is restored with another asset.
 
-\paragraph{Flip Normals}
+\subsubsection{Flip Normals}
 
 Flips the vertex normals in all meshes.
 
-\paragraph{Show QC Data}
+\subsubsection{Show QC Data}
 
 Opens the QC data dialog. This dialog shows the model data in the QC format.
 
 Because not all of the original QC data is available this is only pseudo-QC data. Use a decompiler to obtain QC data that can be used to compile a model.
 
-\paragraph{Dump Model Info...}
+\subsubsection{Dump Model Info...}
 
 Dumps model info to a file of the user's choosing.
 
-\paragraph{Take Screenshot...}
+\subsubsection{Take Screenshot...}
 
 Takes a screenshot and asks the user where to save it.
 
@@ -465,33 +534,33 @@ To avoid this set the background color to black first using \mbox{Tools-$>$Optio
 
 This will cause transparent objects to be rendered using only their own color and not that of the background.
 
-\subsubsection{Tool Menu}
+\subsection{Tool Menu}
 
 The StudioModel Tool menu adds actions for interacting with StudioModel files outside the program.
 
-\paragraph{Compile Model...}
+\subsubsection{Compile Model...}
 
 Opens the Studiomdl compiler frontend.
 
-\paragraph{Decompile Model...}
+\subsubsection{Decompile Model...}
 
 Opens the Studiomdl decompiler frontend.
 
-\paragraph{Edit QC File...}
+\subsubsection{Edit QC File...}
 
 Opens the selected QC file in the system-configured text editor.
 
 \newpage
 
-\subsubsection{Options Dialog}
+\subsection{Options Dialog}
 
 The StudioModel page is added to provide options specific to this format.
 
-\paragraph{Automatically switch to the First Person camera for view models}
+\subsubsection{Automatically switch to the First Person camera for view models}
 
-When enabled models whose name starts with \textit{v\_} are loaded with the First Person camera activated.
+When enabled models whose name starts with \code{v\_} are loaded with the First Person camera activated.
 
-\paragraph{Activate the Texture view when the Textures panel is opened}
+\subsubsection{Activate the Texture view when the Textures panel is opened}
 
 When enabled, when the Textures panel is made visible the Textures view is automatically selected.
 
@@ -499,29 +568,29 @@ This matches the behavior of earlier model viewers.
 
 Note that the Textures view will also be activated if you drag the Textures panel to float it or dock it elsewhere.
 
-\paragraph{Ground Length}
+\subsubsection{Ground Length}
 
 The length of the ground in units.
 
-\paragraph{Sound events}
+\subsubsection{Sound events}
 
 List of event Ids that should play sounds.
 
-The following Ids are used in Half-Life: \textit{1004}, \textit{1008}, \textit{5004}.
+The following Ids are used in Half-Life: \code{1004}, \code{1008}, \code{5004}.
 
-The following Ids are used in Opposing Force: \textit{1011}, \textit{1012}, \textit{1013}.
+The following Ids are used in Opposing Force: \code{1011}, \code{1012}, \code{1013}.
 
 They are automatically recognized.
 
 \newpage
 
-\subsubsection{User Interface}
+\subsection{User Interface}
 
 The StudioModel interface is collectively referred to as the Edit Controls.
 
 It consists of the view, below that is the Controls Bar. Surrounding those are the dock widgets. Below those is the Timeline.
 
-\paragraph{View}
+\subsubsection{View}
 
 The view contains the Scene and Texture views.
 
@@ -535,13 +604,13 @@ The Texture view shows the currently selected texture. You can left click and dr
 
 The Texture view is synchronized to the Textures panel.
 
-\paragraph{Controls Bar}
+\subsubsection{Controls Bar}
 
 The Controls Bar contains the current frames per second, the drawn polygons count, the view selection tab bar and the pose selection dropdown.
 
 The pose selection switches between Sequences (shows the currently selected animation) and Skeleton (shows the model as positioned without any animations affecting it).
 
-\paragraph{Timeline}
+\subsubsection{Timeline}
 
 The Timeline shows the current animation frame and provides controls to restart, skip one frame back, skip 5 frames back, pause/play the animation, skip 5 frames ahead and skip one frame ahead.
 
@@ -549,11 +618,11 @@ It also provides the framerate control to speed up or slow down animation playba
 
 \newpage
 
-\subsubsection{Dock Widgets}
+\subsection{Dock Widgets}
 
 \setlength{\parindent}{0cm}
 
-\paragraph{Cameras}
+\subsubsection{Cameras}
 
 The Cameras panel allows to change the current camera as well as modify the camera properties.
 
@@ -573,9 +642,9 @@ The user can change the projection mode from perspective to orthographic. The ca
 The Free Look camera allows free movement in 3D space. This allows the user to view a model from any angle.
 
 \vspace{\baselineskip}
-The First Person camera shows models from the first person perspective and is useful mostly for weapon viewmodels (\textit{v\_} models).
+The First Person camera shows models from the first person perspective and is useful mostly for weapon viewmodels (\code{v\_} models).
 
-\paragraph{Scene}
+\subsubsection{Scene}
 
 The Scene panel allows objects in the scene to be modified.
 
@@ -597,7 +666,7 @@ The Background object allows a background texture to be displayed. This texture 
 
 \newpage
 
-\paragraph{Model Display}
+\subsubsection{Model Display}
 
 The Model Display panel allows various display settings to be changed.
 
@@ -661,7 +730,7 @@ Show Off-screen Areas shows the sections of the 3D window that are normally invi
 \vspace{\baselineskip}
 Aspect Ratio sets the aspect ratio used by Show Guidelines and Show Off-screen Areas. When you resize the window the program will adjust both to maintain the selected aspect ratio.
 
-\paragraph{Lighting}
+\subsubsection{Lighting}
 
 The Lighting panel allows to control the lights in the scene.
 
@@ -676,18 +745,18 @@ The ambient and shade lighting values are configurable. In-game these values are
 
 \newpage
 
-\paragraph{Sequences}
+\subsubsection{Sequences}
 
 The Sequences panel allows to preview and modify the model's sequences (animations).
 
 \vspace{\baselineskip}
-Animations are referenced by the game in a couple different ways. NPCs commonly use activities to pick an animation but may also use the name or part of it. The Human Grunt for instance selects the stance used to aim and fire weapons using a prefix like \textit{crouching\_}.
+Animations are referenced by the game in a couple different ways. NPCs commonly use activities to pick an animation but may also use the name or part of it. The Human Grunt for instance selects the stance used to aim and fire weapons using a prefix like \code{crouching\_}.
 
 \vspace{\baselineskip}
 Weapons in particular use the animation index, displayed in parentheses in the sequence list.
 
 \vspace{\baselineskip}
-A special note for the Tentacle monster (\textit{monster\_tentacle}): this NPC uses custom activities. The program recognizes these and supports the use of custom activities just like the compiler does using the syntax \textit{ACT\_$<$number$>$} where \textit{$<$number$>$} is an integer value. This value can be a negative value though the game only uses positive values.
+A special note for the Tentacle monster (\code{monster\_tentacle}): this NPC uses custom activities. The program recognizes these and supports the use of custom activities just like the compiler does using the syntax \code{ACT\_$<$number$>$} where \code{$<$number$>$} is an integer value. This value can be a negative value though the game only uses positive values.
 
 \vspace{\baselineskip}
 The looping mode dropdown controls how the animation is looped. Always Loop causes it to loop no matter what, Never Loop only plays once, and Default uses the animation setting controlled by the Is Looping checkbox. This last option is what the game uses.
@@ -731,7 +800,7 @@ Common event ids include:
 \vspace{\baselineskip}
 Not all entities and mods support all events.
 
-\paragraph{Body Parts}
+\subsubsection{Body Parts}
 
 The Body Parts panel allows to change the enabled submodel for each body part, change the skin and view information about them.
 
@@ -742,7 +811,7 @@ A model has one or more body parts. A body part can have one or more submodels. 
 Submodels have a name taken from the smd filename.
 
 \vspace{\baselineskip}
-The Body Value contains the value that entities store in the \textit{body} keyvalue to enable a specific set of submodels.
+The Body Value contains the value that entities store in the \code{body} keyvalue to enable a specific set of submodels.
 
 \vspace{\baselineskip}
 A model has one or more skins. Each skin is a set of textures applied to the model's meshes. Skins are used to change skin colors, animate eyes and show injuries.
@@ -752,7 +821,7 @@ The mesh, vertex and normal counters show how many of each the submodel has.
 
 \newpage
 
-\paragraph{Textures}
+\subsubsection{Textures}
 
 The Textures panel allows to preview and modify the model's textures.
 
@@ -778,52 +847,52 @@ Export UV Map allows the previewed UV map to be exported. Because most textures 
 The colormap controls allow the texture's top and bottom colors to be modified for real-time display. This only affects the preview, the model is not modified.
 
 \vspace{\baselineskip}
-Remapping works by using a \textit{low}, \textit{mid} and \textit{high} color table index to replace the hue values with the selected top and bottom colors. The range \textit{low} to \textit{mid} is replaced with the top color, the range \textit{mid + 1} to \textit{high} is replaced with the bottom color.
+Remapping works by using a \code{low}, \code{mid} and \code{high} color table index to replace the hue values with the selected top and bottom colors. The range \code{low} to \code{mid} is replaced with the top color, the range \code{mid + 1} to \code{high} is replaced with the bottom color.
 
 \vspace{\baselineskip}
 Color remapping only works if the texture has a specific name:
 
 \begin{itemize}
-\item If the name has the format \textit{remap$<$number$>$\_$<$low$>$\_$<$mid$>$\_$<$high$>$.bmp} then \textit{low}, \textit{mid} and \textit{high} are extracted from the texture name.
-\item If the name has the format \textit{remapC\_$<$low$>$\_$<$mid$>$.bmp} (C can be lowercase c as well) then only \textit{low} and \textit{mid} are extracted.
-\item If the name is \textit{DM\_Base.bmp} then \textit{low} is set to \textbf{160}, \textit{mid} is set to \textbf{191} and \textit{high} is set to \textbf{223}.
+\item If the name has the format \code{remap$<$number$>$\_$<$low$>$\_$<$mid$>$\_$<$high$>$.bmp} then \code{low}, \code{mid} and \code{high} are extracted from the texture name.
+\item If the name has the format \code{remapC\_$<$low$>$\_$<$mid$>$.bmp} (C can be lowercase c as well) then only \code{low} and \code{mid} are extracted.
+\item If the name is \code{DM\_Base.bmp} then \code{low} is set to \textbf{160}, \code{mid} is set to \textbf{191} and \code{high} is set to \textbf{223}.
 \end{itemize}
 
-Color table indices must always contain 3 numbers, for example an index of \textbf{10} is \textbf{010}. To work properly \textit{mid} must be greater than \textit{low}. \textit{high} can be \textbf{0} to disable bottom color remapping, otherwise it must be greater than \textit{mid + 1}.
+Color table indices must always contain 3 numbers, for example an index of \textbf{10} is \textbf{010}. To work properly \code{mid} must be greater than \code{low}. \code{high} can be \textbf{0} to disable bottom color remapping, otherwise it must be greater than \code{mid + 1}.
 
-\paragraph{Model Data}
+\subsubsection{Model Data}
 
 The Model Data panel allows to modify the model's eye position, bounding and clipping boxes as well as the model flags.
 
-\paragraph{Bones}
+\subsubsection{Bones}
 
 The Bones panel allows to preview and modify the model's bones.
 
 \vspace{\baselineskip}
 A bone's position, position scale, rotation and rotation scale is the data used calculate the bone's position for animation. This data is usually too specific to be modified directly.
 
-\paragraph{Bone Controllers}
+\subsubsection{Bone Controllers}
 
 The Bone Controllers panel allows to preview and modify the model's bone controllers.
 
 \vspace{\baselineskip}
 The controller value is only used to preview the controller and does not change the model itself.
 
-\paragraph{Attachments}
+\subsubsection{Attachments}
 
 The Attachments panel allows to preview and modify the model's attachments.
 
 \vspace{\baselineskip}
 Attachments usually do not have names as this is a feature that was not used by original models, but it is an option and can be used to refer to attachments by name in-game.
 
-\paragraph{Hitboxes}
+\subsubsection{Hitboxes}
 
 The Hitboxes panel allows to preview and modify the model's hitboxes.
 
 \vspace{\baselineskip}
 The hitgroup is often entity-specific, refer to the game's source code and/or documentation for more information about which hitgroups are used.
 
-\paragraph{Transformation}
+\subsubsection{Transformation}
 
 The Transformation panel allows to modify the model's data. The user can move the model, rotate it around it's center-most root bone and scale part or all of the model.
 
