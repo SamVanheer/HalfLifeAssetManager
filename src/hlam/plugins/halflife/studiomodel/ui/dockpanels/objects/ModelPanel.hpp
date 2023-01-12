@@ -16,9 +16,6 @@ public:
 	explicit ModelPanel(StudioModelAssetProvider* provider);
 	~ModelPanel() = default;
 
-public slots:
-	void OnLayoutDirectionChanged(QBoxLayout::Direction direction);
-
 private slots:
 	void OnAssetChanged(StudioModelAsset* asset);
 

@@ -13,18 +13,12 @@ ScenePanel::ScenePanel(StudioModelAssetProvider* provider)
 
 	connect(_ui.ObjectList, &QListWidget::currentRowChanged, _ui.ObjectStack, &QStackedWidget::setCurrentIndex);
 
-	auto modelPanel = new ModelPanel(_provider);
-	auto groundPanel = new GroundPanel(_provider);
-
-	AddObject(modelPanel, "Model");
-	AddObject(groundPanel, "Ground");
+	AddObject(new ModelPanel(_provider), "Model");
+	AddObject(new GroundPanel(_provider), "Ground");
 	AddObject(new BackgroundPanel(_provider), "Background");
 
 	//Ensure first row is selected
 	_ui.ObjectList->setCurrentRow(0);
-
-	connect(this, &ScenePanel::LayoutDirectionChanged, modelPanel, &ModelPanel::OnLayoutDirectionChanged);
-	connect(this, &ScenePanel::LayoutDirectionChanged, groundPanel, &GroundPanel::OnLayoutDirectionChanged);
 }
 
 void ScenePanel::AddObject(QWidget* widget, const QString& label)
@@ -36,7 +30,5 @@ void ScenePanel::AddObject(QWidget* widget, const QString& label)
 void ScenePanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 {
 	DockableWidget::OnLayoutDirectionChanged(direction);
-
-	emit LayoutDirectionChanged(direction);
 }
 }

@@ -22,11 +22,6 @@ ModelPanel::ModelPanel(StudioModelAssetProvider* provider)
 	connect(_ui.AlignOnGround, &QPushButton::clicked, this, &ModelPanel::OnAlignOnGround);
 }
 
-void ModelPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
-{
-	_ui.MainLayout->setDirection(direction);
-}
-
 void ModelPanel::OnAssetChanged(StudioModelAsset* asset)
 {
 	const QSignalBlocker originBlocker{_ui.Origin};

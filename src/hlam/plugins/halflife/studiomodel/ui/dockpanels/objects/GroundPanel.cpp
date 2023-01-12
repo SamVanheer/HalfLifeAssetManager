@@ -1,5 +1,3 @@
-#include <limits>
-
 #include <QFileDialog>
 #include <QSignalBlocker>
 
@@ -19,9 +17,6 @@ GroundPanel::GroundPanel(StudioModelAssetProvider* provider)
 {
 	_ui.setupUi(this);
 
-	_ui.GroundOrigin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	_ui.GroundOrigin->SetDecimals(6);
-
 	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &GroundPanel::OnAssetChanged);
 
 	connect(_ui.ShowGround, &QCheckBox::stateChanged, this, &GroundPanel::OnShowGroundChanged);
@@ -33,12 +28,7 @@ GroundPanel::GroundPanel(StudioModelAssetProvider* provider)
 	connect(_ui.GroundTexture, &QLineEdit::textChanged, this, &GroundPanel::OnTextureChanged);
 	connect(_ui.BrowseGroundTexture, &QPushButton::clicked, this, &GroundPanel::OnBrowseTexture);
 
-	connect(_ui.GroundOrigin, &qt::widgets::Vector3Edit::ValueChanged, this, &GroundPanel::OnOriginChanged);
-}
-
-void GroundPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
-{
-	_ui.MainLayout->setDirection(direction);
+	connect(_ui.GroundOrigin, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &GroundPanel::OnOriginChanged);
 }
 
 void GroundPanel::OnAssetChanged(StudioModelAsset* asset)
