@@ -30,7 +30,7 @@ public:
 
 		_maxRecentFiles = std::max(0, _settings->value("MaxRecentFiles", DefaultMaxRecentFiles).toInt());
 
-		const int fileCount = _settings->beginReadArray("list");
+		const int fileCount = _settings->beginReadArray("List");
 
 		for (int i = 0; i < fileCount; ++i)
 		{
