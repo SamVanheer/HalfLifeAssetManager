@@ -13,6 +13,61 @@ env:
   VCPKG_ROOT: ${{github.workspace}}/vcpkg
 
 jobs:
+  linux:
+    name: Linux-x64
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+         
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '5.15.2'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'gcc_64'
+          dir: '${{github.workspace}}/qt/'
+          
+      - uses: lukka/get-cmake@latest
+      
+      - name: Restore artifacts, setup vcpkg
+        uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgDirectory: '${{env.VCPKG_ROOT}}'
+          runVcpkgInstall: false
+          vcpkgJsonIgnores: "['**/vcpkg/**', '**/vcpkg_config/**']"
+         
+      - name: Configure
+        run: >
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake
+          -DQt5_DIR=${{env.Qt5_DIR}}
+      
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
+      
+      - name: Prepare artifacts
+        run: |
+          mkdir bin
+          mv build/bin/HLAM bin
+          mv build/bin/libopenal.so.1.22.2 bin
+          mv build/bin/libQt5Core.so.5.15.2 bin
+          mv build/bin/libQt5Gui.so.5.15.2 bin
+          mv build/bin/libQt5Network.so.5.15.2 bin
+          mv build/bin/libQt5Widgets.so.5.15.2 bin
+          mv build/bin/imageformats bin/imageformats
+          mv build/bin/platforms bin/platforms
+          mv build/bin/styles bin/styles
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Linux-x64
+          path: |
+            bin
   win32:
     name: Win32
     runs-on: windows-latest
