@@ -15,22 +15,23 @@
 #include "ui/SceneWidget.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/ui/InfoBar.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelEditWidget.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelView.hpp"
+#include "plugins/halflife/studiomodel/ui/Timeline.hpp"
 
 #include "plugins/halflife/studiomodel/ui/dockpanels/AttachmentsPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/BodyPartsPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/BoneControllersPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/BonesPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/HitboxesPanel.hpp"
-#include "plugins/halflife/studiomodel/ui/dockpanels/InfoBar.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/LightingPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/ModelDataPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/ModelDisplayPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/ScenePanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/SequencesPanel.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/TexturesPanel.hpp"
-#include "plugins/halflife/studiomodel/ui/dockpanels/Timeline.hpp"
+
 #include "plugins/halflife/studiomodel/ui/dockpanels/TransformPanel.hpp"
 
 #include "ui/camera_operators/dockpanels/CamerasPanel.hpp"

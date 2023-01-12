@@ -10,7 +10,7 @@
 #include "ui/StateSnapshot.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
-#include "plugins/halflife/studiomodel/ui/dockpanels/Timeline.hpp"
+#include "plugins/halflife/studiomodel/ui/Timeline.hpp"
 
 namespace studiomodel
 {

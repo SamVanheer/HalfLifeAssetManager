@@ -127,7 +127,7 @@
   <customwidget>
    <class>studiomodel::InfoBar</class>
    <extends>QWidget</extends>
-   <header>plugins/halflife/studiomodel/ui/dockpanels/InfoBar.hpp</header>
+   <header>plugins/halflife/studiomodel/ui/InfoBar.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>

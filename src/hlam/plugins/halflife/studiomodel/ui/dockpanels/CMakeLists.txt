@@ -12,16 +12,12 @@ target_sources(HLAM
 		BonesPanel.cpp
 		BonesPanel.hpp
 		BonesPanel.ui
-		DockHelpers.hpp
 		ExportUVMeshDialog.hpp
 		ExportUVMeshDialog.cpp
 		ExportUVMeshDialog.ui
 		HitboxesPanel.cpp
 		HitboxesPanel.hpp
 		HitboxesPanel.ui
-		InfoBar.cpp
-		InfoBar.hpp
-		InfoBar.ui
 		LightingPanel.cpp
 		LightingPanel.hpp
 		LightingPanel.ui
@@ -43,9 +39,6 @@ target_sources(HLAM
 		TexturesPanel.cpp
 		TexturesPanel.hpp
 		TexturesPanel.ui
-		Timeline.cpp
-		Timeline.hpp
-		Timeline.ui
 		TransformPanel.cpp
 		TransformPanel.hpp
 		TransformPanel.ui)

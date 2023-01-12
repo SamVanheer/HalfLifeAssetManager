@@ -1,5 +1,9 @@
 target_sources(HLAM
 	PRIVATE
+		DockHelpers.hpp
+		InfoBar.hpp
+		InfoBar.cpp
+		InfoBar.ui
 		StudioModelData.cpp
 		StudioModelData.hpp
 		StudioModelEditWidget.cpp
@@ -13,7 +17,10 @@ target_sources(HLAM
 		StudioModelValidators.hpp
 		StudioModelView.cpp
 		StudioModelView.hpp
-		StudioModelView.ui)
+		StudioModelView.ui
+		Timeline.cpp
+		Timeline.hpp
+		Timeline.ui)
 
 add_subdirectory(compiler)
 add_subdirectory(dialogs)

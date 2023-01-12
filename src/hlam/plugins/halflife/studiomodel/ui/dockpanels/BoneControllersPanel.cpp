@@ -8,10 +8,10 @@
 #include "ui/StateSnapshot.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
+#include "plugins/halflife/studiomodel/ui/DockHelpers.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelData.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelUndoCommands.hpp"
 #include "plugins/halflife/studiomodel/ui/dockpanels/BoneControllersPanel.hpp"
-#include "plugins/halflife/studiomodel/ui/dockpanels/DockHelpers.hpp"
 
 namespace studiomodel
 {

@@ -5,7 +5,7 @@
 #include "graphics/Scene.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
-#include "plugins/halflife/studiomodel/ui/dockpanels/InfoBar.hpp"
+#include "plugins/halflife/studiomodel/ui/InfoBar.hpp"
 
 namespace studiomodel
 {
