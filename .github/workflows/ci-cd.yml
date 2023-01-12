@@ -60,7 +60,6 @@ jobs:
           mv build/bin/libQt5Widgets.so.5.15.2 bin
           mv build/bin/imageformats bin/imageformats
           mv build/bin/platforms bin/platforms
-          mv build/bin/styles bin/styles
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
