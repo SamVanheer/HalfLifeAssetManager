@@ -44,7 +44,7 @@ add_custom_target(ProjectInfo
 	BYPRODUCTS ${CMAKE_BINARY_DIR}/ProjectInfo.hpp)
 
 # Find the QtWidgets library
-find_package(Qt5 COMPONENTS Widgets Network REQUIRED)
+find_package(Qt5 CONFIG COMPONENTS Widgets Network REQUIRED)
 
 function(copy_qt_dependencies target_name plugins)
 	foreach(plugin ${${plugins}})
@@ -63,9 +63,9 @@ function(copy_qt_dependencies target_name plugins)
 	endforeach()
 endfunction()
 
-find_package(glm REQUIRED)
-find_package(spdlog REQUIRED)
-find_package(OpenAL REQUIRED)
-find_package(libnyquist REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+find_package(OpenAL CONFIG REQUIRED)
+find_package(libnyquist CONFIG REQUIRED)
 
 add_subdirectory(src)
