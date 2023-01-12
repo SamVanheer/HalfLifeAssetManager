@@ -23,30 +23,6 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QLabel" name="label_3">
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>External programs are launched by Asset Manager when needed to complete certain tasks such as compiling models or opening models in third party model viewers.</string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QCheckBox" name="PromptExternalProgramLaunch">
        <property name="text">
         <string>Prompt before launching external programs</string>
