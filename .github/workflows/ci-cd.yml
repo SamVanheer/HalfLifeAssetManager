@@ -49,24 +49,25 @@ jobs:
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
       
-      - name: Prepare artifacts
-        run: |
-          mkdir bin
-          mv build/bin/HLAM bin
-          mv build/bin/libopenal.so.1.22.2 bin
-          mv build/bin/libQt5Core.so.5.15.2 bin
-          mv build/bin/libQt5Gui.so.5.15.2 bin
-          mv build/bin/libQt5Network.so.5.15.2 bin
-          mv build/bin/libQt5Widgets.so.5.15.2 bin
-          mv build/bin/imageformats bin/imageformats
-          mv build/bin/platforms bin/platforms
-      
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: Linux-x64
-          path: |
-            bin
+#      - name: Prepare artifacts
+#        run: |
+#          mkdir bin
+#          mv build/bin/HLAM bin
+#          mv build/bin/libopenal.so.1.22.2 bin
+#          mv build/bin/libQt5Core.so.5.15.2 bin
+#          mv build/bin/libQt5Gui.so.5.15.2 bin
+#          mv build/bin/libQt5Network.so.5.15.2 bin
+#          mv build/bin/libQt5Widgets.so.5.15.2 bin
+#          mv build/bin/imageformats bin/imageformats
+#          mv build/bin/platforms bin/platforms
+#      
+#      - name: Upload artifacts
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: Linux-x64
+#          path: |
+#            bin
+
   win32:
     name: Win32
     runs-on: windows-latest
