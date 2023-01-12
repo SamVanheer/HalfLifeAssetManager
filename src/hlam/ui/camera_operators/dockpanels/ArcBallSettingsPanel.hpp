@@ -15,10 +15,10 @@ public:
 private slots:
 	void UpdateCameraProperties();
 
-	void OnPropertyChanged();
-
 	void OnFieldOfViewChanged(double value);
 	void OnResetFieldOfView();
+
+	void OnPropertyChanged();
 
 	void OnProjectionModeChanged(int index);
 

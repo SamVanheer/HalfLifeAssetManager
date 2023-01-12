@@ -15,12 +15,12 @@ public:
 private slots:
 	void UpdateCameraProperties();
 
-	void OnOriginChanged();
+	void OnFieldOfViewChanged(double value);
+	void OnResetFieldOfView();
 
 	void OnAnglesChanged();
 
-	void OnFieldOfViewChanged(double value);
-	void OnResetFieldOfView();
+	void OnOriginChanged();
 
 private:
 	Ui_FreeLookSettingsPanel _ui;
