@@ -286,10 +286,9 @@ LaunchExternalProgramResult AssetManager::TryLaunchExternalProgram(
 
 	if (!info.exists())
 	{
-		const QString errorMessage = QString{
-			"The external program \"%1\" does not exist. Check the program settings to ensure the path is correct."}
-				.arg(exeFileName);
-		QMessageBox::critical(GetMainWindow(), "Error Launching External Program", errorMessage);
+		_logger->error(
+			"The external program \"{}\" does not exist. Check the program settings to ensure the path is correct",
+			exeFileName);
 		return LaunchExternalProgramResult::Failed;
 	}
 
@@ -307,13 +306,12 @@ LaunchExternalProgramResult AssetManager::TryLaunchExternalProgram(
 		return LaunchExternalProgramResult::Cancelled;
 	}
 
+	_logger->info("Launching external program \"{}\" {}", exeFileName, arguments.join(" "));
+
 	// Make sure the working directory is the exe location to avoid bugs.
 	if (!QProcess::startDetached(exeFileName, arguments, info.absolutePath()))
 	{
-		QMessageBox::critical(GetMainWindow(), "Error Launching External Program", 
-			QString{"The external program \"%1\" could not be launched.\nArguments:\n%2"}
-				.arg(exeFileName)
-				.arg(arguments.join("\n")));
+		_logger->critical("The external program could not be launched");
 	}
 
 	// If process start failed we've already logged an error, caller doesn't need to handle it.
