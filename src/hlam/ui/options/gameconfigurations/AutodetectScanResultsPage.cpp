@@ -73,6 +73,11 @@ AutodetectScanResultsPage::AutodetectScanResultsPage(GameConfigurationsOptions* 
 						break;
 					}
 				}
+
+				if (hasEnabledItems)
+				{
+					break;
+				}
 			}
 
 			_ui.Add->setEnabled(hasEnabledItems);
