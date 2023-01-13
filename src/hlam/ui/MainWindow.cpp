@@ -620,6 +620,11 @@ void MainWindow::OnAssetTabChanged(int index)
 	_ui.ActionRefresh->setEnabled(success);
 	_assetListButton->setEnabled(success);
 
+	if (index != -1)
+	{
+		_assetListMenu->setDefaultAction(_assetListMenu->actions()[index]);
+	}
+
 	if (!_modifyingTabs)
 	{
 		_assetTabs->setVisible(success);
@@ -638,11 +643,12 @@ void MainWindow::OnAssetAdded(int index)
 
 	const QString fileName = asset->GetFileName();
 
+	// Add the action before adding the tab so OnAssetTabChanged references the right action.
+	_assetListMenu->addAction(fileName, this, &MainWindow::OnAssetActivated);
+
 	const auto tabIndex = _assetTabs->addTab(asset->GetEditWidget(), fileName);
 
 	assert(tabIndex == index);
-
-	_assetListMenu->addAction(fileName, this, &MainWindow::OnAssetActivated);
 
 	if (_activateNewTabs)
 	{
