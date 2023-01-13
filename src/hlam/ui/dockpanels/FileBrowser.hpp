@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QString>
+#include <QStringList>
 #include <QWidget>
 
 #include "ui_FileBrowser.h"
@@ -21,11 +22,14 @@ public:
 private:
 	void SetRootDirectory(const QString& directory);
 
+	void MaybeOpenFiles(const QModelIndexList& indices);
+
 signals:
-	void FileSelected(const QString& fileName);
+	void FilesSelected(const QStringList& fileNames);
 
 private slots:
 	void OnFileSelected(const QModelIndex& index);
+	void OnFileDoubleClicked(const QModelIndex& index);
 
 private:
 	Ui_FileBrowser _ui;

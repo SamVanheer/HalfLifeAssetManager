@@ -20,6 +20,7 @@ class AssetManager;
 class FullscreenWidget;
 class QActionGroup;
 class QMenu;
+class QStringList;
 class QToolButton;
 
 class MainWindow final : public QMainWindow
@@ -39,6 +40,8 @@ protected:
 
 private:
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
+
+	void MaybeOpenAll(const QStringList& fileNames);
 
 	void CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges);
 

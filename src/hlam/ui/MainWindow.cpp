@@ -120,8 +120,7 @@ MainWindow::MainWindow(AssetManager* application)
 	{
 		auto fileBrowser = new FileBrowser(_application, this);
 
-		connect(fileBrowser, &FileBrowser::FileSelected, this,
-			[this](const QString& fileName) { _assets->TryLoad(fileName); });
+		connect(fileBrowser, &FileBrowser::FilesSelected, this, &MainWindow::MaybeOpenAll);
 
 		_fileBrowserDock = new QDockWidget(this);
 
@@ -471,6 +470,47 @@ void MainWindow::UpdateTitle(const QString& fileName, bool hasUnsavedChanges)
 	setWindowModified(hasUnsavedChanges);
 }
 
+void MainWindow::MaybeOpenAll(const QStringList& fileNames)
+{
+	if (fileNames.isEmpty())
+	{
+		return;
+	}
+
+	// Set directory to first file. All files are in the same directory.
+	_application->SetPath(AssetPathName, fileNames[0]);
+
+	const TimerSuspender timerSuspender{_application};
+
+	QProgressDialog progress(
+		QString{"Opening %1 assets..."}.arg(fileNames.size()), "Abort Open", 0, fileNames.size(), this);
+	progress.setWindowModality(Qt::WindowModal);
+
+	// Make the tab widget invisible to reduce overhead from updating it.
+	_assetTabs->setVisible(false);
+	_modifyingTabs = true;
+
+	for (int i = 0; const auto & fileName : fileNames)
+	{
+		progress.setValue(i++);
+
+		if (progress.wasCanceled())
+			break;
+
+		if (_assets->TryLoad(fileName) == AssetLoadResult::Success)
+		{
+			_activateNewTabs = false;
+		}
+	}
+
+	_activateNewTabs = true;
+
+	progress.setValue(fileNames.size());
+
+	_modifyingTabs = false;
+	_assetTabs->setVisible(_assetTabs->count() > 0);
+}
+
 void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
 {
 	assert(leaveOpenCount >= 0);
@@ -541,42 +581,8 @@ void MainWindow::OnOpenLoadAssetDialog()
 {
 	const auto fileNames = GetOpenFileNames(this, _application->GetPath(AssetPathName), _loadFileFilter,
 		!_application->GetApplicationSettings()->OneAssetAtATime);
-	
-	if (!fileNames.isEmpty())
-	{
-		// Set directory to first file. All files are in the same directory.
-		_application->SetPath(AssetPathName, fileNames[0]);
 
-		const TimerSuspender timerSuspender{_application};
-
-		QProgressDialog progress(
-			QString{"Opening %1 assets..."}.arg(fileNames.size()), "Abort Open", 0, fileNames.size(), this);
-		progress.setWindowModality(Qt::WindowModal);
-
-		// Make the tab widget invisible to reduce overhead from updating it.
-		_assetTabs->setVisible(false);
-		_modifyingTabs = true;
-
-		for (int i = 0; const auto& fileName : fileNames)
-		{
-			progress.setValue(i++);
-
-			if (progress.wasCanceled())
-				break;
-
-			if (_assets->TryLoad(fileName) == AssetLoadResult::Success)
-			{
-				_activateNewTabs = false;
-			}
-		}
-
-		_activateNewTabs = true;
-
-		progress.setValue(fileNames.size());
-
-		_modifyingTabs = false;
-		_assetTabs->setVisible(_assetTabs->count() > 0);
-	}
+	MaybeOpenAll(fileNames);
 }
 
 void MainWindow::OnAssetTabChanged(int index)

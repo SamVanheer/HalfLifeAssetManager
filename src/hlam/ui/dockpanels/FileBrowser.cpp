@@ -108,6 +108,9 @@ FileBrowser::FileBrowser(AssetManager* application, QWidget* parent)
 {
 	_ui.setupUi(this);
 
+	// Allow navigation to parent directory using dotdot.
+	_model->setFilter(QDir::AllEntries | QDir::AllDirs);
+
 	_filterModel->setSourceModel(_model);
 	_ui.FileView->setModel(_filterModel);
 	_ui.FileView->setColumnWidth(0, 250);
@@ -128,6 +131,7 @@ FileBrowser::FileBrowser(AssetManager* application, QWidget* parent)
 		});
 
 	connect(_ui.FileView, &QTreeView::activated, this, &FileBrowser::OnFileSelected);
+	connect(_ui.FileView, &QTreeView::doubleClicked, this, &FileBrowser::OnFileDoubleClicked);
 
 	connect(_ui.BrowseRoot, &QPushButton::clicked, this,
 		[this]
@@ -180,6 +184,34 @@ FileBrowser::FileBrowser(AssetManager* application, QWidget* parent)
 					}
 				}
 		});
+
+	connect(_ui.FileView->selectionModel(), &QItemSelectionModel::selectionChanged, this,
+		[this](const QItemSelection& selected)
+		{
+			bool hasEnabledItems = false;
+
+			for (const auto& selection : _filterModel->mapSelectionToSource(selected))
+			{
+				for (const auto& index : selection.indexes())
+				{
+					if (!_model->isDir(index))
+					{
+						hasEnabledItems = true;
+						break;
+					}
+				}
+
+				if (hasEnabledItems)
+				{
+					break;
+				}
+			}
+
+			_ui.OpenSelected->setEnabled(hasEnabledItems);
+		});
+
+	connect(_ui.OpenSelected, &QPushButton::clicked, this,
+		[this] { MaybeOpenFiles(_ui.FileView->selectionModel()->selectedIndexes()); });
 
 	//Build list of provider filters
 	std::vector<std::pair<QString, AssetProvider*>> filters;
@@ -235,17 +267,45 @@ void FileBrowser::SetRootDirectory(const QString& directory)
 	_ui.Root->setText(directory);
 }
 
-void FileBrowser::OnFileSelected(const QModelIndex& index)
+void FileBrowser::MaybeOpenFiles(const QModelIndexList& indices)
 {
-	if (index.isValid())
+	QStringList fileNames;
+
+	for (const auto& index : indices)
 	{
+		if (index.column() != 0)
+		{
+			continue;
+		}
+
 		const auto fileName = _model->filePath(_filterModel->mapToSource(index));
 
 		if (!QFileInfo{fileName}.isFile())
 		{
-			return;
+			continue;
 		}
 
-		emit FileSelected(fileName);
+		fileNames.append(fileName);
+	}
+
+	emit FilesSelected(fileNames);
+}
+
+void FileBrowser::OnFileSelected(const QModelIndex& index)
+{
+	if (index.isValid())
+	{
+		MaybeOpenFiles({index});
+	}
+}
+
+void FileBrowser::OnFileDoubleClicked(const QModelIndex& index)
+{
+	const auto fileName = _model->filePath(_filterModel->mapToSource(index));
+	const QFileInfo info{fileName};
+
+	if (info.isDir())
+	{
+		SetRootDirectory(info.absoluteFilePath());
 	}
 }
