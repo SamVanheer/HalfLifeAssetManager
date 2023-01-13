@@ -19,6 +19,8 @@ class AssetProvider;
 class AssetManager;
 class FullscreenWidget;
 class QActionGroup;
+class QMenu;
+class QToolButton;
 
 class MainWindow final : public QMainWindow
 {
@@ -52,6 +54,8 @@ private slots:
 	void OnAssetTabChanged(int index);
 
 	void OnAssetAdded(int index);
+
+	void OnAssetActivated();
 
 	void OnAboutToCloseAsset(int index);
 
@@ -88,6 +92,8 @@ private:
 	QUndoGroup* const _undoGroup = new QUndoGroup(this);
 
 	QPointer<QTabWidget> _assetTabs;
+	QToolButton* _assetListButton;
+	QMenu* _assetListMenu;
 
 	bool _activateNewTabs = true;
 	bool _modifyingTabs = false;

@@ -12,11 +12,13 @@
 #include <QDockWidget>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QMenu>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QOpenGLFunctions>
 #include <QProgressDialog>
 #include <QScreen>
+#include <QToolButton>
 #include <QWindow>
 
 #include "application/AssetIO.hpp"
@@ -163,6 +165,16 @@ MainWindow::MainWindow(AssetManager* application)
 	_assetTabs->setElideMode(Qt::TextElideMode::ElideLeft);
 
 	setCentralWidget(_assetTabs);
+
+	_assetListMenu = new QMenu(_assetTabs);
+	_assetListMenu->setStyleSheet("QMenu { menu-scrollable: 1; }");
+
+	_assetListButton = new QToolButton(_assetTabs);
+	_assetListButton->setEnabled(false);
+	_assetListButton->setMenu(_assetListMenu);
+	_assetListButton->setPopupMode(QToolButton::InstantPopup);
+
+	_assetTabs->setCornerWidget(_assetListButton, Qt::TopRightCorner);
 
 	setAcceptDrops(true);
 
@@ -606,6 +618,7 @@ void MainWindow::OnAssetTabChanged(int index)
 	_ui.ActionCloseAll->setEnabled(success);
 	_ui.ActionFullscreen->setEnabled(success);
 	_ui.ActionRefresh->setEnabled(success);
+	_assetListButton->setEnabled(success);
 
 	if (!_modifyingTabs)
 	{
@@ -623,15 +636,25 @@ void MainWindow::OnAssetAdded(int index)
 
 	_undoGroup->addStack(asset->GetUndoStack());
 
-	//Use the current filename for this
-	const auto tabIndex = _assetTabs->addTab(asset->GetEditWidget(), asset->GetFileName());
+	const QString fileName = asset->GetFileName();
+
+	const auto tabIndex = _assetTabs->addTab(asset->GetEditWidget(), fileName);
 
 	assert(tabIndex == index);
+
+	_assetListMenu->addAction(fileName, this, &MainWindow::OnAssetActivated);
 
 	if (_activateNewTabs)
 	{
 		_assetTabs->setCurrentIndex(index);
 	}
+}
+
+void MainWindow::OnAssetActivated()
+{
+	const auto action = static_cast<QAction*>(sender());
+	const int index = _assetListMenu->actions().indexOf(action);
+	_assetTabs->setCurrentIndex(index);
 }
 
 void MainWindow::OnAboutToCloseAsset(int index)
@@ -654,6 +677,7 @@ void MainWindow::OnAboutToRemoveAsset(int index)
 void MainWindow::OnAssetRemoved(int index)
 {
 	_assetTabs->removeTab(index);
+	_assetListMenu->removeAction(_assetListMenu->actions()[index]);
 }
 
 void MainWindow::OnAssetFileNameChanged(Asset* asset)
