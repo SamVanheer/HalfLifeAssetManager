@@ -112,14 +112,9 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		const auto commandLine = ParseCommandLine(QStringList{argv, argv + argc});
 
-		const auto applicationSettings = std::make_shared<ApplicationSettings>(
-			CreateSettings(argv[0], programName, commandLine.IsPortable).release(), CreateQtLoggerSt(HLAMFileSystem()));
+		auto settings = CreateSettings(argv[0], programName, commandLine.IsPortable);
 
-		auto settings = applicationSettings->GetSettings();
-
-		applicationSettings->LoadSettings();
-
-		ConfigureOpenGL(*applicationSettings);
+		ConfigureOpenGL(*settings);
 
 		QApplication app(argc, argv);
 
@@ -127,7 +122,7 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
-		LogFileName = QFileInfo{applicationSettings->GetSettings()->fileName()}.absolutePath() + QDir::separator()
+		LogFileName = QFileInfo{settings->fileName()}.absolutePath() + QDir::separator()
 			+ LogBaseFileName;
 
 		QFile::remove(LogFileName);
@@ -136,12 +131,12 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		qInstallMessageHandler(&AssetManagerMessageOutput);
 
-		if (CheckSingleInstance(programName, commandLine.FileName, *applicationSettings))
+		if (CheckSingleInstance(programName, commandLine.FileName, *settings))
 		{
 			return EXIT_SUCCESS;
 		}
 
-		CheckOpenGLVersion(programName, *applicationSettings);
+		CheckOpenGLVersion(programName, *settings);
 
 		auto offscreenContext{InitializeOpenGL()};
 
@@ -150,7 +145,7 @@ int ToolApplication::Run(int argc, char* argv[])
 			return EXIT_FAILURE;
 		}
 
-		_application = CreateApplication(applicationSettings, std::move(offscreenContext));
+		_application = CreateApplication(std::move(settings), std::move(offscreenContext));
 
 		if (!_application)
 		{
@@ -242,7 +237,7 @@ std::unique_ptr<QSettings> ToolApplication::CreateSettings(
 	}
 }
 
-void ToolApplication::ConfigureOpenGL(ApplicationSettings& settings)
+void ToolApplication::ConfigureOpenGL(QSettings& settings)
 {
 	//Neither OpenGL ES nor Software OpenGL will work here
 	QApplication::setAttribute(Qt::ApplicationAttribute::AA_UseDesktopOpenGL, true);
@@ -270,14 +265,14 @@ void ToolApplication::ConfigureOpenGL(ApplicationSettings& settings)
 	defaultFormat.setGreenBufferSize(4);
 	defaultFormat.setBlueBufferSize(4);
 	defaultFormat.setAlphaBufferSize(4);
-	defaultFormat.setSwapInterval(settings.ShouldEnableVSync() ? 1 : 0);
+	defaultFormat.setSwapInterval(ApplicationSettings::ShouldEnableVSync(settings) ? 1 : 0);
 
 	qCDebug(HLAM) << "Configuring OpenGL for" << defaultFormat;
 
 	QSurfaceFormat::setDefaultFormat(defaultFormat);
 }
 
-void ToolApplication::CheckOpenGLVersion(const QString& programName, ApplicationSettings& settings)
+void ToolApplication::CheckOpenGLVersion(const QString& programName, QSettings& settings)
 {
 	const auto openGLFormat = QOpenGLContext::globalShareContext()->format();
 
@@ -291,7 +286,7 @@ void ToolApplication::CheckOpenGLVersion(const QString& programName, Application
 	const int minimumSupportedVersionCode = makeVersionCode(2, 1);
 
 	//Only check this once
-	if (!settings.HasCheckedOpenGLVersion() && versionCode < minimumSupportedVersionCode)
+	if (!settings.value("Video/CheckedOpenGLVersion", false).toBool() && versionCode < minimumSupportedVersionCode)
 	{
 		QMessageBox::warning(nullptr, "Warning",
 			QString{"%1 may not work correctly with your version of OpenGL (%2.%3)"}
@@ -299,7 +294,7 @@ void ToolApplication::CheckOpenGLVersion(const QString& programName, Application
 			.arg(openGLFormat.majorVersion())
 			.arg(openGLFormat.minorVersion()));
 
-		settings.SetCheckedOpenGLVersion(true);
+		settings.setValue("Video/CheckedOpenGLVersion", true);
 	}
 }
 
@@ -336,9 +331,9 @@ std::unique_ptr<graphics::IGraphicsContext> ToolApplication::InitializeOpenGL()
 }
 
 bool ToolApplication::CheckSingleInstance(
-	const QString& programName, const QString& fileName, ApplicationSettings& settings)
+	const QString& programName, const QString& fileName, QSettings& settings)
 {
-	if (settings.ShouldUseSingleInstance())
+	if (ApplicationSettings::ShouldUseSingleInstance(settings))
 	{
 		_singleInstance.reset(new SingleInstance());
 
@@ -351,10 +346,12 @@ bool ToolApplication::CheckSingleInstance(
 	return false;
 }
 
-std::unique_ptr<AssetManager> ToolApplication::CreateApplication(
-	std::shared_ptr<ApplicationSettings> applicationSettings,
-	std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext)
+std::unique_ptr<AssetManager> ToolApplication::CreateApplication(std::unique_ptr<QSettings> settings,
+	std::unique_ptr<graphics::IGraphicsContext> graphicsContext)
 {
+	const auto applicationSettings = std::make_shared<ApplicationSettings>(
+		settings.release(), CreateQtLoggerSt(HLAMFileSystem()));
+
 	auto application = std::make_unique<AssetManager>(_guiApplication, applicationSettings, std::move(graphicsContext));
 
 	{
@@ -369,6 +366,8 @@ std::unique_ptr<AssetManager> ToolApplication::CreateApplication(
 			return {};
 		}
 	}
+
+	applicationSettings->LoadSettings();
 
 	return application;
 }

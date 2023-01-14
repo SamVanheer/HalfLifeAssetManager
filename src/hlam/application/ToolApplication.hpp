@@ -8,7 +8,6 @@
 #include "application/AssetManager.hpp"
 #include "application/SingleInstance.hpp"
 
-class ApplicationSettings;
 class QApplication;
 class QSettings;
 class QStringList;
@@ -46,16 +45,16 @@ private:
 	std::unique_ptr<QSettings> CreateSettings(
 		const QString& applicationFileName, const QString& programName, bool isPortable);
 
-	void ConfigureOpenGL(ApplicationSettings& settings);
+	void ConfigureOpenGL(QSettings& settings);
 
-	void CheckOpenGLVersion(const QString& programName, ApplicationSettings& settings);
+	void CheckOpenGLVersion(const QString& programName, QSettings& settings);
 
 	std::unique_ptr<graphics::IGraphicsContext> InitializeOpenGL();
 
-	bool CheckSingleInstance(const QString& programName, const QString& fileName, ApplicationSettings& settings);
+	bool CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings);
 
-	std::unique_ptr<AssetManager> CreateApplication(std::shared_ptr<ApplicationSettings> applicationSettings,
-		std::unique_ptr<graphics::IGraphicsContext>&& graphicsContext);
+	std::unique_ptr<AssetManager> CreateApplication(std::unique_ptr<QSettings> settings,
+		std::unique_ptr<graphics::IGraphicsContext> graphicsContext);
 
 private slots:
 	void OnExit();

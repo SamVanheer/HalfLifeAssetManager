@@ -146,9 +146,14 @@ void ApplicationSettings::SaveSettings()
 	emit SettingsSaved();
 }
 
+bool ApplicationSettings::ShouldUseSingleInstance(const QSettings& settings)
+{
+	return settings.value("Startup/UseSingleInstance", DefaultUseSingleInstance).toBool();
+}
+
 bool ApplicationSettings::ShouldUseSingleInstance() const
 {
-	return _settings->value("Startup/UseSingleInstance", DefaultUseSingleInstance).toBool();
+	return ShouldUseSingleInstance(*_settings);
 }
 
 void ApplicationSettings::SetUseSingleInstance(bool value)
@@ -166,19 +171,14 @@ void ApplicationSettings::SetAllowTabCloseWithMiddleClick(bool value)
 	_settings->setValue("General/AllowTabCloseWithMiddleClick", value);
 }
 
-bool ApplicationSettings::HasCheckedOpenGLVersion() const
+bool ApplicationSettings::ShouldEnableVSync(const QSettings& settings)
 {
-	return _settings->value("Video/CheckedOpenGLVersion", false).toBool();
-}
-
-void ApplicationSettings::SetCheckedOpenGLVersion(bool value)
-{
-	_settings->setValue("Video/CheckedOpenGLVersion", true);
+	return settings.value("Video/EnableVSync", DefaultEnableVSync).toBool();
 }
 
 bool ApplicationSettings::ShouldEnableVSync() const
 {
-	return _settings->value("Video/EnableVSync", DefaultEnableVSync).toBool();
+	return ShouldEnableVSync(*_settings);
 }
 
 void ApplicationSettings::SetEnableVSync(bool value)

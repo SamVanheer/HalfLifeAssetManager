@@ -75,6 +75,8 @@ public:
 	void LoadSettings();
 	void SaveSettings();
 
+	static bool ShouldUseSingleInstance(const QSettings& settings);
+
 	bool ShouldUseSingleInstance() const;
 	void SetUseSingleInstance(bool value);
 
@@ -135,8 +137,7 @@ public:
 	bool PlaySounds = DefaultPlaySounds;
 	bool FramerateAffectsPitch = DefaultFramerateAffectsPitch;
 
-	bool HasCheckedOpenGLVersion() const;
-	void SetCheckedOpenGLVersion(bool value);
+	static bool ShouldEnableVSync(const QSettings& settings);
 
 	bool ShouldEnableVSync() const;
 	void SetEnableVSync(bool value);
