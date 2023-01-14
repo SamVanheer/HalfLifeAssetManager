@@ -4,11 +4,12 @@
 #include <utility>
 #include <vector>
 
-#include <QObject>
 #include <QString>
 #include <QUuid>
 
 #include <spdlog/logger.h>
+
+#include "settings/BaseSettings.hpp"
 
 class ApplicationSettings;
 class IFileSystem;
@@ -24,20 +25,18 @@ public:
 	QString ModDirectory;
 };
 
-class GameConfigurationsSettings final : public QObject
+class GameConfigurationsSettings final : public BaseSettings
 {
 	Q_OBJECT
 
 public:
-	explicit GameConfigurationsSettings(ApplicationSettings* applicationSettings, QSettings* settings,
+	explicit GameConfigurationsSettings(QSettings* settings, ApplicationSettings* applicationSettings,
 		std::shared_ptr<spdlog::logger> logger)
-		: _applicationSettings(applicationSettings)
-		, _settings(settings)
+		: BaseSettings(settings)
+		, _applicationSettings(applicationSettings)
 		, _logger(logger)
 	{
 	}
-
-	~GameConfigurationsSettings() = default;
 
 	void LoadSettings();
 	void SaveSettings();
@@ -83,7 +82,6 @@ signals:
 
 private:
 	ApplicationSettings* const _applicationSettings;
-	QSettings* const _settings;
 	const std::shared_ptr<spdlog::logger> _logger;
 
 	std::vector<std::unique_ptr<GameConfiguration>> _gameConfigurations;

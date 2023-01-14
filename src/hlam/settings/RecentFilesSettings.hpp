@@ -1,24 +1,22 @@
 #pragma once
 
-#include <QObject>
 #include <QSettings>
 #include <QString>
 #include <QStringList>
 
+#include "settings/BaseSettings.hpp"
+
 /**
 *	@brief Stores the list of recent files, from newest (0) to oldest (GetCount() - 1)
 */
-class RecentFilesSettings final : public QObject
+class RecentFilesSettings final : public BaseSettings
 {
 	Q_OBJECT
 
 public:
 	static constexpr int DefaultMaxRecentFiles{10};
 
-	explicit RecentFilesSettings(QSettings* settings)
-		: _settings(settings)
-	{
-	}
+	using BaseSettings::BaseSettings;
 
 	~RecentFilesSettings() = default;
 
@@ -121,8 +119,6 @@ signals:
 	void RecentFilesChanged();
 
 private:
-	QSettings* const _settings;
-
 	QStringList _recentFiles;
 
 	int _maxRecentFiles{DefaultMaxRecentFiles};

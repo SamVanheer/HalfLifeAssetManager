@@ -17,10 +17,13 @@ ApplicationSettings::ApplicationSettings(QSettings* settings, std::shared_ptr<sp
 	: _settings(settings)
 	, _recentFiles(std::make_unique<RecentFilesSettings>(settings))
 	, _colorSettings(std::make_unique<ColorSettings>(settings))
-	, _gameConfigurations(std::make_unique<GameConfigurationsSettings>(this, settings, fileSystemLogger))
+	, _gameConfigurations(std::make_unique<GameConfigurationsSettings>(settings, this, fileSystemLogger))
 	, _externalPrograms(std::make_unique<ExternalProgramSettings>(settings))
 {
 	_settings->setParent(this);
+	_settingsObjects.push_back(_recentFiles.get());
+	_settingsObjects.push_back(_colorSettings.get());
+	_settingsObjects.push_back(_gameConfigurations.get());
 	_settingsObjects.push_back(_externalPrograms.get());
 
 	_steamLanguage = QString::fromStdString(std::string{DefaultSteamLanguage});
@@ -89,10 +92,6 @@ void ApplicationSettings::LoadSettings()
 
 	_settings->endGroup();
 
-	_recentFiles->LoadSettings();
-	_colorSettings->LoadSettings();
-	_gameConfigurations->LoadSettings();
-
 	for (auto settings : _settingsObjects)
 	{
 		settings->LoadSettings();
@@ -138,10 +137,6 @@ void ApplicationSettings::SaveSettings()
 	_settings->beginGroup("FileSystem");
 	_settings->setValue("SteamLanguage", _steamLanguage);
 	_settings->endGroup();
-
-	_recentFiles->SaveSettings();
-	_colorSettings->SaveSettings();
-	_gameConfigurations->SaveSettings();
 
 	for (auto settings : _settingsObjects)
 	{

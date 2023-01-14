@@ -8,13 +8,14 @@
 
 #include <QColor>
 #include <QMap>
-#include <QObject>
 #include <QSettings>
 #include <QString>
 #include <QStringList>
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+
+#include "settings/BaseSettings.hpp"
 
 inline glm::vec4 ColorToVector(const QColor& color)
 {
@@ -41,7 +42,7 @@ inline glm::vec4 RGBA8888ToVector(int r, int g, int b, int a)
 	return {r / 255.f, g / 255.f, b / 255.f, a / 255.f};
 }
 
-class ColorSettings final : public QObject
+class ColorSettings final : public BaseSettings
 {
 	Q_OBJECT
 
@@ -56,12 +57,7 @@ private:
 	static constexpr glm::vec4 DefaultColor{0, 0, 0, 1};
 
 public:
-	explicit ColorSettings(QSettings* settings)
-		: _settings(settings)
-	{
-	}
-
-	~ColorSettings() = default;
+	using BaseSettings::BaseSettings;
 
 	void LoadSettings()
 	{
@@ -159,6 +155,5 @@ signals:
 	void ColorsChanged();
 
 private:
-	QSettings* const _settings;
 	QMap<QString, ColorData> _colors;
 };
