@@ -53,8 +53,7 @@ private:
 
 	bool CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings);
 
-	std::unique_ptr<AssetManager> CreateApplication(std::unique_ptr<QSettings> settings,
-		std::unique_ptr<graphics::IGraphicsContext> graphicsContext);
+	std::unique_ptr<AssetManager> CreateApplication(std::unique_ptr<QSettings> settings);
 
 private slots:
 	void OnExit();

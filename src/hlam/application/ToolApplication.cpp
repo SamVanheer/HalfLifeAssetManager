@@ -138,14 +138,7 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		CheckOpenGLVersion(programName, *settings);
 
-		auto offscreenContext{InitializeOpenGL()};
-
-		if (!offscreenContext)
-		{
-			return EXIT_FAILURE;
-		}
-
-		_application = CreateApplication(std::move(settings), std::move(offscreenContext));
+		_application = CreateApplication(std::move(settings));
 
 		if (!_application)
 		{
@@ -346,9 +339,15 @@ bool ToolApplication::CheckSingleInstance(
 	return false;
 }
 
-std::unique_ptr<AssetManager> ToolApplication::CreateApplication(std::unique_ptr<QSettings> settings,
-	std::unique_ptr<graphics::IGraphicsContext> graphicsContext)
+std::unique_ptr<AssetManager> ToolApplication::CreateApplication(std::unique_ptr<QSettings> settings)
 {
+	auto graphicsContext{InitializeOpenGL()};
+
+	if (!graphicsContext)
+	{
+		return {};
+	}
+
 	const auto applicationSettings = std::make_shared<ApplicationSettings>(
 		settings.release(), CreateQtLoggerSt(HLAMFileSystem()));
 
