@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 
 #include <QFileInfo>
@@ -30,6 +31,40 @@ ApplicationSettings::ApplicationSettings(QSettings* settings, std::shared_ptr<sp
 }
 
 ApplicationSettings::~ApplicationSettings() = default;
+
+void ApplicationSettings::RegisterSettings(BaseSettings* settings)
+{
+	if (!settings)
+	{
+		assert(!"Null settings object passed");
+		return;
+	}
+
+	if (_settingsObjects.contains(settings))
+	{
+		assert(!"Cannot add settings objects twice!");
+		return;
+	}
+
+	_settingsObjects.push_back(settings);
+
+	connect(settings, &BaseSettings::destroyed, this, &ApplicationSettings::OnSettingsDestroyed);
+}
+
+void ApplicationSettings::OnSettingsDestroyed(QObject* object)
+{
+	auto settings = static_cast<BaseSettings*>(object);
+
+	auto index = _settingsObjects.indexOf(settings);
+
+	if (index == -1)
+	{
+		assert(!"Couldn't find settings object being destroyed");
+		return;
+	}
+
+	_settingsObjects.remove(index);
+}
 
 void ApplicationSettings::LoadSettings()
 {
@@ -142,8 +177,6 @@ void ApplicationSettings::SaveSettings()
 	{
 		settings->SaveSettings();
 	}
-
-	emit SettingsSaved();
 }
 
 bool ApplicationSettings::ShouldUseSingleInstance(const QSettings& settings)

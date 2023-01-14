@@ -20,7 +20,7 @@ public:
 
 	~RecentFilesSettings() = default;
 
-	void LoadSettings()
+	void LoadSettings() override
 	{
 		_recentFiles.clear();
 
@@ -45,7 +45,7 @@ public:
 		emit RecentFilesChanged();
 	}
 
-	void SaveSettings()
+	void SaveSettings() override
 	{
 		_settings->beginGroup("RecentFiles");
 

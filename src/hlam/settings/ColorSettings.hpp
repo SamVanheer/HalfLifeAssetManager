@@ -59,7 +59,7 @@ private:
 public:
 	using BaseSettings::BaseSettings;
 
-	void LoadSettings()
+	void LoadSettings() override
 	{
 		_settings->beginGroup("Colors");
 
@@ -76,7 +76,7 @@ public:
 		_settings->endGroup();
 	}
 
-	void SaveSettings()
+	void SaveSettings() override
 	{
 		_settings->beginGroup("Colors");
 		_settings->remove("List");

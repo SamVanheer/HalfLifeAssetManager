@@ -327,8 +327,6 @@ void AssetManager::Start()
 
 	_mainWindow->showMaximized();
 
-	CallPlugins(&IAssetManagerPlugin::LoadSettings, *GetSettings());
-
 	// Now load settings to restore window geometry.
 	_mainWindow->LoadSettings();
 
@@ -342,8 +340,6 @@ void AssetManager::OnExit()
 	_timer->stop();
 
 	GetApplicationSettings()->SaveSettings();
-
-	CallPlugins(&IAssetManagerPlugin::SaveSettings, *GetSettings());
 
 	GetAssetProviderRegistry()->Shutdown();
 

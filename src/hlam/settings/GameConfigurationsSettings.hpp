@@ -38,8 +38,8 @@ public:
 	{
 	}
 
-	void LoadSettings();
-	void SaveSettings();
+	void LoadSettings() override;
+	void SaveSettings() override;
 
 	std::vector<const GameConfiguration*> GetConfigurations() const;
 

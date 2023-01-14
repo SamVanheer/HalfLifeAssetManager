@@ -13,7 +13,4 @@ public:
 	bool Initialize(AssetManager* application) override;
 
 	void Shutdown() override;
-
-	void LoadSettings(QSettings& settings) override;
-	void SaveSettings(QSettings& settings) override;
 };

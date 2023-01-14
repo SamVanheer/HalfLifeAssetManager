@@ -38,11 +38,7 @@ bool HalfLifeAssetManagerPlugin::Initialize(AssetManager* application)
 
 	const auto studioModelSettings{std::make_shared<StudioModelSettings>(settings->GetSettings())};
 
-	QObject::connect(settings, &ApplicationSettings::SettingsSaved,
-		studioModelSettings.get(), &StudioModelSettings::SaveSettings);
-
-	// TODO: needs to be moved later on
-	studioModelSettings->LoadSettings();
+	settings->RegisterSettings(studioModelSettings.get());
 
 	auto studioModelAssetProvider = std::make_unique<StudioModelAssetProvider>(application, studioModelSettings);
 	auto studioModelImportProvider = std::make_unique<StudioModelDolImportProvider>(
@@ -57,13 +53,5 @@ bool HalfLifeAssetManagerPlugin::Initialize(AssetManager* application)
 }
 
 void HalfLifeAssetManagerPlugin::Shutdown()
-{
-}
-
-void HalfLifeAssetManagerPlugin::LoadSettings(QSettings& settings)
-{
-}
-
-void HalfLifeAssetManagerPlugin::SaveSettings(QSettings& settings)
 {
 }

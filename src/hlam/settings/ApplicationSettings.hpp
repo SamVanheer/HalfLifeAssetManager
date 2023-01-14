@@ -72,6 +72,12 @@ public:
 
 	ExternalProgramSettings* GetExternalPrograms() const { return _externalPrograms.get(); }
 
+	/**
+	*	@brief Registers a settings object to participate in saving and loading.
+	*	Ownership is not transferred to this application settings object.
+	*/
+	void RegisterSettings(BaseSettings* settings);
+
 	void LoadSettings();
 	void SaveSettings();
 
@@ -208,8 +214,6 @@ public:
 	void SetSteamLanguage(const QString& value);
 
 signals:
-	void SettingsSaved();
-
 	void TickRateChanged(int value);
 
 	void ResizeTexturesToPowerOf2Changed(bool value);
@@ -220,6 +224,9 @@ signals:
 	void MSAALevelChanged(int msaaLevel);
 
 	void StylePathChanged(const QString& stylePath);
+
+private slots:
+	void OnSettingsDestroyed(QObject* object);
 
 public:
 	bool PauseAnimationsOnTimelineClick{DefaultPauseAnimationsOnTimelineClick};

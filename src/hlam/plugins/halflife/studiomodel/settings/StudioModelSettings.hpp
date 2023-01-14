@@ -1,12 +1,11 @@
 #pragma once
 
-#include <QObject>
 #include <QSet>
 #include <QString>
 
-class QSettings;
+#include "settings/BaseSettings.hpp"
 
-class StudioModelSettings final : public QObject
+class StudioModelSettings final : public BaseSettings
 {
 public:
 	static constexpr bool DefaultAutodetectViewmodels{true};
@@ -16,15 +15,10 @@ public:
 	static constexpr int MaximumGroundLength = 2048;
 	static constexpr int DefaultGroundLength = 100;
 
-	explicit StudioModelSettings(QSettings* settings)
-		: _settings(settings)
-	{
-	}
+	using BaseSettings::BaseSettings;
 
-	~StudioModelSettings() = default;
-
-	void LoadSettings();
-	void SaveSettings();
+	void LoadSettings() override;
+	void SaveSettings() override;
 
 	bool ShouldAutodetectViewmodels() const { return _autodetectViewModels; }
 
@@ -73,8 +67,6 @@ public:
 	}
 
 private:
-	QSettings* const _settings;
-
 	bool _autodetectViewModels{DefaultAutodetectViewmodels};
 	bool _activateTextureViewWhenTexturesPanelOpened{DefaultActivateTextureViewWhenTexturesPanelOpened};
 
