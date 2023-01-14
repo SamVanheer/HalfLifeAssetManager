@@ -86,7 +86,6 @@ StudioModelAssetProvider::StudioModelAssetProvider(AssetManager* application,
 
 	_currentAsset = GetDummyAsset();
 
-	connect(_application, &AssetManager::Tick, this, &StudioModelAssetProvider::OnTick);
 	connect(_application->GetAssets(), &AssetList::ActiveAssetChanged,
 		this, &StudioModelAssetProvider::OnActiveAssetChanged);
 
@@ -158,6 +157,15 @@ void StudioModelAssetProvider::Shutdown()
 	{
 		_studioModelSettings->SetCameraFOV(cameraOperator->GetName(), cameraOperator->GetCamera()->GetFieldOfView());
 	}
+}
+
+void StudioModelAssetProvider::Tick()
+{
+	_studioModelRenderer->RunFrame();
+
+	GetCurrentAsset()->Tick();
+
+	_editWidget->Tick();
 }
 
 QMenu* StudioModelAssetProvider::CreateToolMenu()
@@ -390,15 +398,6 @@ StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget()
 bool StudioModelAssetProvider::CameraIsFirstPerson() const
 {
 	return _cameraOperators->GetCurrent() == _firstPersonCamera;
-}
-
-void StudioModelAssetProvider::OnTick()
-{
-	_studioModelRenderer->RunFrame();
-
-	GetCurrentAsset()->Tick();
-
-	_editWidget->Tick();
 }
 
 void StudioModelAssetProvider::OnActiveAssetChanged(Asset* asset)

@@ -107,6 +107,11 @@ public:
 	virtual void Shutdown() {}
 
 	/**
+	*	@brief Called every frame while an asset loaded through this provider is active.
+	*/
+	virtual void Tick() {}
+
+	/**
 	*	@brief Creates the tool menu for this asset, or nullptr if no menu is available.
 	*/
 	virtual QMenu* CreateToolMenu() { return nullptr; }

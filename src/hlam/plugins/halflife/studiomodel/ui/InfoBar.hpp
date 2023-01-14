@@ -12,14 +12,14 @@ class InfoBar final : public QWidget
 {
 public:
 	InfoBar(QWidget* parent = nullptr);
-
 	~InfoBar();
+
+	void Tick();
 
 	void SetAsset(StudioModelAsset* asset);
 
 public slots:
 	void OnDraw();
-	void OnTick();
 
 private:
 	Ui_InfoBar _ui;

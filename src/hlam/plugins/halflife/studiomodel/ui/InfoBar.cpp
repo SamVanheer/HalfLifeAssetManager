@@ -7,6 +7,8 @@
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/ui/InfoBar.hpp"
 
+using namespace std::chrono;
+
 namespace studiomodel
 {
 InfoBar::InfoBar(QWidget* parent)
@@ -16,6 +18,20 @@ InfoBar::InfoBar(QWidget* parent)
 }
 
 InfoBar::~InfoBar() = default;
+
+void InfoBar::Tick()
+{
+	const long long currentTick = duration_cast<milliseconds>(high_resolution_clock::now().time_since_epoch()).count();
+
+	if (_lastFPSUpdate == 0 || ((currentTick - _lastFPSUpdate) >= 1000))
+	{
+		_lastFPSUpdate = currentTick;
+
+		_ui.FPSLabel->setText(QString::number(_currentFPS));
+
+		_currentFPS = 0;
+	}
+}
 
 void InfoBar::SetAsset(StudioModelAsset* asset)
 {
@@ -39,20 +55,6 @@ void InfoBar::OnDraw()
 	{
 		_oldDrawnPolygonsCount = drawnPolygonsCount;
 		_ui.DrawnPolygonsCountLabel->setText(QString::number(drawnPolygonsCount));
-	}
-}
-
-void InfoBar::OnTick()
-{
-	const long long currentTick = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-
-	if (_lastFPSUpdate == 0 || ((currentTick - _lastFPSUpdate) >= 1000))
-	{
-		_lastFPSUpdate = currentTick;
-
-		_ui.FPSLabel->setText(QString::number(_currentFPS));
-
-		_currentFPS = 0;
 	}
 }
 }

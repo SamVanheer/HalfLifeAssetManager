@@ -388,7 +388,10 @@ void AssetManager::OnTimerTick()
 
 	_worldTime->TimeChanged(currentTime);
 
-	emit Tick();
+	if (auto asset = _assets->GetCurrent(); asset)
+	{
+		asset->GetProvider()->Tick();
+	}
 }
 
 void AssetManager::OnTickRateChanged(int value)

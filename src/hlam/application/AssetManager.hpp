@@ -151,11 +151,6 @@ private:
 	}
 
 signals:
-	/**
-	*	@brief Emitted every time a frame tick occurs
-	*/
-	void Tick();
-
 	void SettingsChanged();
 
 	void SceneWidgetRecreated();

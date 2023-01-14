@@ -60,6 +60,8 @@ public:
 
 	void Shutdown() override;
 
+	void Tick() override;
+
 	QMenu* CreateToolMenu() override;
 
 	void PopulateAssetMenu(QMenu* menu) override;
@@ -99,8 +101,6 @@ signals:
 	void AssetChanged(StudioModelAsset* asset);
 
 private slots:
-	void OnTick();
-
 	void OnActiveAssetChanged(Asset* asset);
 
 	void OnDumpModelInfo();

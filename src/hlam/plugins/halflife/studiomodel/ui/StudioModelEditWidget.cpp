@@ -130,7 +130,6 @@ StudioModelEditWidget::StudioModelEditWidget(AssetManager* application, StudioMo
 
 	connect(_view, &StudioModelView::SceneIndexChanged, this, &StudioModelEditWidget::SceneIndexChanged);
 	connect(_view, &StudioModelView::PoseChanged, this, &StudioModelEditWidget::PoseChanged);
-	connect(_application, &AssetManager::Tick, _view->GetInfoBar(), &InfoBar::OnTick);
 
 	SetAsset(_provider->GetDummyAsset());
 
@@ -141,6 +140,7 @@ StudioModelEditWidget::~StudioModelEditWidget() = default;
 
 void StudioModelEditWidget::Tick()
 {
+	_view->GetInfoBar()->Tick();
 	_timeline->Tick();
 }
 
