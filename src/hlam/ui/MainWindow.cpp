@@ -694,7 +694,13 @@ void MainWindow::OnAssetRemoved(int index)
 
 void MainWindow::OnAssetFileNameChanged(Asset* asset)
 {
-	_assetTabs->setTabText(_assets->IndexOf(asset), asset->GetFileName());
+	const QString fileName = asset->GetFileName();
+	const int index = _assets->IndexOf(asset);
+
+	_assetTabs->setTabText(index, asset->GetFileName());
+
+	const auto action = _assetListMenu->actions()[index];
+	action->setText(fileName);
 
 	if (_assetTabs->currentWidget() == asset->GetEditWidget())
 	{
