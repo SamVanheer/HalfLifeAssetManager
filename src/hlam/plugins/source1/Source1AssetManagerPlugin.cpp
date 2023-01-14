@@ -8,6 +8,7 @@
 #include "plugins/source1/Source1AssetManagerPlugin.hpp"
 
 #include "settings/ApplicationSettings.hpp"
+#include "settings/ExternalProgramSettings.hpp"
 
 static const QString Source1ModelViewerFileNameKey{QStringLiteral("Source1ModelViewerFileName")};
 const QString Source1ModelExtension{QStringLiteral("mdl")};

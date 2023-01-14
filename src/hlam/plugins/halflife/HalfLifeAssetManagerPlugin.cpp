@@ -13,6 +13,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
+#include "settings/ExternalProgramSettings.hpp"
 
 #include "ui/options/OptionsPageRegistry.hpp"
 

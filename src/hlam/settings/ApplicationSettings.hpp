@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include <QMap>
 #include <QObject>
 #include <QString>
 #include <QVector>
@@ -13,59 +12,12 @@
 
 #include "graphics/TextureLoader.hpp"
 
+class BaseSettings;
 class ColorSettings;
+class ExternalProgramSettings;
 class GameConfigurationsSettings;
 class QSettings;
 class RecentFilesSettings;
-
-class BaseSettings : public QObject
-{
-public:
-	explicit BaseSettings(QSettings* settings)
-		: _settings(settings)
-	{
-	}
-
-	~BaseSettings() = default;
-
-	virtual void LoadSettings() = 0;
-	virtual void SaveSettings() = 0;
-
-protected:
-	QSettings* const _settings;
-};
-
-struct ExternalProgram
-{
-	QString Name;
-	QString ExecutablePath;
-};
-
-class ExternalProgramSettings final : public BaseSettings
-{
-public:
-	static constexpr bool DefaultPromptExternalProgramLaunch{true};
-
-	using BaseSettings::BaseSettings;
-
-	void LoadSettings() override;
-	void SaveSettings() override;
-
-	const QMap<QString, ExternalProgram>& GetMap() const { return _externalPrograms; }
-
-	void AddProgram(const QString& key, const QString& name);
-
-	QString GetName(const QString& key) const;
-
-	QString GetProgram(const QString& key) const;
-
-	void SetProgram(const QString& key, const QString& value);
-
-	bool PromptExternalProgramLaunch{DefaultPromptExternalProgramLaunch};
-
-private:
-	QMap<QString, ExternalProgram> _externalPrograms;
-};
 
 class ApplicationSettings final : public QObject
 {

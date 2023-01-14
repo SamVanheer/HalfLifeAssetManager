@@ -2,7 +2,10 @@ target_sources(HLAM
 	PRIVATE
 		ApplicationSettings.cpp
 		ApplicationSettings.hpp
+		BaseSettings.hpp
 		ColorSettings.hpp
+		ExternalProgramSettings.cpp
+		ExternalProgramSettings.hpp
 		GameConfigurationsSettings.cpp
 		GameConfigurationsSettings.hpp
 		RecentFilesSettings.hpp)

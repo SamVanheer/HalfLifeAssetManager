@@ -4,6 +4,7 @@
 #include <QPushButton>
 
 #include "settings/ApplicationSettings.hpp"
+#include "settings/ExternalProgramSettings.hpp"
 
 #include "application/AssetManager.hpp"
 #include "ui/options/OptionsPageExternalPrograms.hpp"

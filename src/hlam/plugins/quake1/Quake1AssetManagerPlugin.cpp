@@ -7,6 +7,7 @@
 #include "plugins/quake1/Quake1AssetManagerPlugin.hpp"
 
 #include "settings/ApplicationSettings.hpp"
+#include "settings/ExternalProgramSettings.hpp"
 
 static const QString Quake1ModelViewerFileNameKey{QStringLiteral("Quake1ModelViewerFileName")};
 const QString AliasModelExtension{QStringLiteral("mdl")};

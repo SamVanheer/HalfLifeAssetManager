@@ -29,6 +29,7 @@
 #include "qt/QtLogSink.hpp"
 
 #include "settings/ApplicationSettings.hpp"
+#include "settings/ExternalProgramSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
 
 #include "soundsystem/DummySoundSystem.hpp"

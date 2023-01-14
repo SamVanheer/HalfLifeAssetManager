@@ -7,60 +7,11 @@
 #include "filesystem/FileSystemConstants.hpp"
 
 #include "settings/ApplicationSettings.hpp"
+#include "settings/BaseSettings.hpp"
 #include "settings/ColorSettings.hpp"
+#include "settings/ExternalProgramSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
-
-void ExternalProgramSettings::LoadSettings()
-{
-	_settings->beginGroup("ExternalPrograms");
-	PromptExternalProgramLaunch = _settings->value(
-		"PromptExternalProgramLaunch", DefaultPromptExternalProgramLaunch).toBool();
-
-	_settings->beginGroup("Programs");
-	// Load all settings that are in the config file even if they haven't been added yet.
-	for (auto& program : _settings->childKeys())
-	{
-		SetProgram(program, _settings->value(program, QString{}).toString());
-	}
-	_settings->endGroup();
-	_settings->endGroup();
-}
-
-void ExternalProgramSettings::SaveSettings()
-{
-	_settings->beginGroup("ExternalPrograms");
-	_settings->setValue("PromptExternalProgramLaunch", PromptExternalProgramLaunch);
-
-	_settings->beginGroup("Programs");
-	for (auto& program : _externalPrograms.keys())
-	{
-		_settings->setValue(program, _externalPrograms[program].ExecutablePath);
-	}
-	_settings->endGroup();
-	_settings->endGroup();
-}
-
-void ExternalProgramSettings::AddProgram(const QString& key, const QString& name)
-{
-	// Insert or update entry.
-	_externalPrograms[key].Name = name;
-}
-
-QString ExternalProgramSettings::GetName(const QString& key) const
-{
-	return _externalPrograms.value(key).Name;
-}
-
-QString ExternalProgramSettings::GetProgram(const QString& key) const
-{
-	return _externalPrograms.value(key).ExecutablePath;
-}
-
-void ExternalProgramSettings::SetProgram(const QString& key, const QString& value)
-{
-	_externalPrograms[key].ExecutablePath = value;
-}
 
 ApplicationSettings::ApplicationSettings(QSettings* settings, std::shared_ptr<spdlog::logger> fileSystemLogger)
 	: _settings(settings)

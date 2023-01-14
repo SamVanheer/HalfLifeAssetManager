@@ -3,6 +3,7 @@
 
 #include "plugins/halflife/studiomodel/ui/compiler/StudioModelCompilerFrontEnd.hpp"
 #include "settings/ApplicationSettings.hpp"
+#include "settings/ExternalProgramSettings.hpp"
 
 #include "application/AssetManager.hpp"
 //TODO: move exe filter constant somewhere else
