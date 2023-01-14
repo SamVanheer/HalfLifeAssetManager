@@ -1,5 +1,7 @@
 #include <QOpenGLFunctions_1_1>
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "entity/TextureEntity.hpp"
 
@@ -16,25 +18,6 @@ void TextureEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 	if (TextureIndex < 0 || TextureIndex >= model->Textures.size())
 	{
 		return;
-	}
-
-	// Update image if changed.
-	if (!_uvMeshImage.GetData().empty())
-	{
-		sc.OpenGLFunctions->glBindTexture(GL_TEXTURE_2D, _uvMeshTexture);
-
-		sc.OpenGLFunctions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-			_uvMeshImage.GetWidth(), _uvMeshImage.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, _uvMeshImage.GetData().data());
-
-		//Nearest filtering causes gaps in lines, linear does not
-		sc.OpenGLFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		sc.OpenGLFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		//Prevent the texture from wrapping and spilling over on the other side
-		sc.OpenGLFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		sc.OpenGLFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		_uvMeshImage = {};
 	}
 
 	sc.OpenGLFunctions->glMatrixMode(GL_PROJECTION);
@@ -105,46 +88,65 @@ void TextureEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 	if (ShowUVMap)
 	{
-		sc.OpenGLFunctions->glEnable(GL_ALPHA_TEST);
-		sc.OpenGLFunctions->glAlphaFunc(GL_GREATER, 0.1f);
-
-		sc.OpenGLFunctions->glEnable(GL_TEXTURE_2D);
+		sc.OpenGLFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		sc.OpenGLFunctions->glDisable(GL_TEXTURE_2D);
 
 		sc.OpenGLFunctions->glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		sc.OpenGLFunctions->glBindTexture(GL_TEXTURE_2D, _uvMeshTexture);
 
-		sc.OpenGLFunctions->glBegin(GL_TRIANGLE_STRIP);
+		if (AntiAliasLines)
+		{
+			sc.OpenGLFunctions->glEnable(GL_BLEND);
+			sc.OpenGLFunctions->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			sc.OpenGLFunctions->glEnable(GL_LINE_SMOOTH);
+		}
+		else
+		{
+			sc.OpenGLFunctions->glDisable(GL_BLEND);
+		}
 
-		sc.OpenGLFunctions->glTexCoord2f(0, 0);
-		sc.OpenGLFunctions->glVertex2f(x, y);
+		auto meshes = model->ComputeMeshList(TextureIndex);
 
-		sc.OpenGLFunctions->glTexCoord2f(1, 0);
-		sc.OpenGLFunctions->glVertex2f(x + w, y);
+		if (MeshIndex != -1)
+		{
+			auto singleMesh = meshes[MeshIndex];
+			meshes.clear();
+			meshes.emplace_back(singleMesh);
+		}
 
-		sc.OpenGLFunctions->glTexCoord2f(0, 1);
-		sc.OpenGLFunctions->glVertex2f(x, y + h);
+		int i;
 
-		sc.OpenGLFunctions->glTexCoord2f(1, 1);
-		sc.OpenGLFunctions->glVertex2f(x + w, y + h);
+		for (const auto mesh : meshes)
+		{
+			auto triCommands = mesh->Triangles.data();
 
-		sc.OpenGLFunctions->glEnd();
+			while (i = *(triCommands++))
+			{
+				if (i < 0)
+				{
+					sc.OpenGLFunctions->glBegin(GL_TRIANGLE_FAN);
+					i = -i;
+				}
+				else
+				{
+					sc.OpenGLFunctions->glBegin(GL_TRIANGLE_STRIP);
+				}
 
-		sc.OpenGLFunctions->glBindTexture(GL_TEXTURE_2D, 0);
-		sc.OpenGLFunctions->glDisable(GL_ALPHA_TEST);
+				for (; i > 0; i--, triCommands += 4)
+				{
+					// FIX: put these in as integer coords, not floats
+					sc.OpenGLFunctions->glVertex2f(x + triCommands[2] * TextureScale, y + triCommands[3] * TextureScale);
+				}
+				sc.OpenGLFunctions->glEnd();
+			}
+		}
+
+		if (AntiAliasLines)
+		{
+			sc.OpenGLFunctions->glDisable(GL_LINE_SMOOTH);
+		}
 	}
 
 	sc.OpenGLFunctions->glPopMatrix();
 
 	sc.OpenGLFunctions->glClear(GL_DEPTH_BUFFER_BIT);
-}
-
-void TextureEntity::CreateDeviceObjects(graphics::SceneContext& sc)
-{
-	sc.OpenGLFunctions->glGenTextures(1, &_uvMeshTexture);
-}
-
-void TextureEntity::DestroyDeviceObjects(graphics::SceneContext& sc)
-{
-	sc.OpenGLFunctions->glDeleteTextures(1, &_uvMeshTexture);
-	_uvMeshTexture = 0;
 }

@@ -35,7 +35,7 @@ private:
 	void SetTextureName();
 	void ImportTextureFrom(const QString& fileName, studiomdl::EditableStudioModel& model, int textureIndex);
 	void UpdateColormapValue();
-	void UpdateUVMapTexture();
+	void UpdateUVMapProperties();
 
 private slots:
 	void OnAssetChanged(StudioModelAsset* asset);
@@ -49,9 +49,6 @@ private slots:
 
 	void OnTextureViewScaleSliderChanged(int value);
 	void OnTextureViewScaleSpinnerChanged(double value);
-
-	void OnUVLineWidthSliderChanged(int value);
-	void OnUVLineWidthSpinnerChanged(double value);
 
 	void OnTextureNameChanged();
 	void OnTextureNameRejected();

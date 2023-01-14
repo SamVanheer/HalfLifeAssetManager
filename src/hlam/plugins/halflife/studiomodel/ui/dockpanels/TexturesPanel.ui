@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>603</width>
-    <height>140</height>
+    <height>119</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,42 +37,24 @@
      <property name="verticalSpacing">
       <number>0</number>
      </property>
-     <item row="0" column="0" colspan="3">
-      <widget class="QComboBox" name="Textures">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="2">
-      <widget class="QDoubleSpinBox" name="UVLineWidthSpinner">
-       <property name="minimum">
-        <double>1.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>10.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label_2">
+     <item row="5" column="0" colspan="2">
+      <widget class="QCheckBox" name="OverlayUVMap">
        <property name="text">
-        <string>UV Line Width</string>
+        <string>Overlay UV Map</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QCheckBox" name="ShowUVMap">
+       <property name="text">
+        <string>Show UV Map</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Texture Scale</string>
        </property>
       </widget>
      </item>
@@ -107,37 +89,42 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>Mesh</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QDoubleSpinBox" name="ScaleTextureViewSpinner">
-       <property name="minimum">
-        <double>1.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>20.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QSlider" name="UVLineWidthSlider">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>20</number>
-       </property>
+     <item row="6" column="0" colspan="3">
+      <spacer name="verticalSpacer">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QLineEdit" name="TextureName">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
        </property>
       </widget>
      </item>
-     <item row="4" column="1" colspan="2">
+     <item row="3" column="1" colspan="2">
       <widget class="QComboBox" name="Meshes">
        <property name="enabled">
         <bool>false</bool>
@@ -162,62 +149,15 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0" colspan="2">
-      <widget class="QCheckBox" name="ShowUVMap">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_7">
        <property name="text">
-        <string>Show UV Map</string>
+        <string>Mesh</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="0" colspan="3">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>0</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="5" column="2">
-      <widget class="QCheckBox" name="AntiAliasLines">
-       <property name="text">
-        <string>Anti-Alias Lines</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0" colspan="2">
-      <widget class="QCheckBox" name="OverlayUVMap">
-       <property name="text">
-        <string>Overlay UV Map</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Texture Scale</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLineEdit" name="TextureName">
+     <item row="0" column="0" colspan="3">
+      <widget class="QComboBox" name="Textures">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -235,6 +175,36 @@
          <width>16777215</width>
          <height>16777215</height>
         </size>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QCheckBox" name="AntiAliasLines">
+       <property name="text">
+        <string>Anti-Alias Lines</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_9">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QDoubleSpinBox" name="ScaleTextureViewSpinner">
+       <property name="minimum">
+        <double>1.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>20.000000000000000</double>
        </property>
       </widget>
      </item>

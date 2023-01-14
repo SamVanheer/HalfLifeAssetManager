@@ -78,12 +78,6 @@ TexturesPanel::TexturesPanel(StudioModelAssetProvider* provider)
 	_ui.ScaleTextureViewSlider->setValue(
 		static_cast<int>((_ui.ScaleTextureViewSpinner->value() - _ui.ScaleTextureViewSpinner->minimum()) * TextureViewScaleSliderRatio));
 
-	_ui.UVLineWidthSlider->setRange(
-		static_cast<int>(_ui.UVLineWidthSpinner->minimum() * UVLineWidthSliderRatio),
-		static_cast<int>(_ui.UVLineWidthSpinner->maximum() * UVLineWidthSliderRatio));
-
-	_ui.UVLineWidthSlider->setValue(static_cast<int>(_ui.UVLineWidthSpinner->value() * UVLineWidthSliderRatio));
-
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), textureNameValidator, &UniqueTextureNameValidator::SetCurrentIndex);
 
 	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &TexturesPanel::OnAssetChanged);
@@ -91,8 +85,6 @@ TexturesPanel::TexturesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.Textures, qOverload<int>(&QComboBox::currentIndexChanged), this, &TexturesPanel::OnTextureChanged);
 	connect(_ui.ScaleTextureViewSlider, &QSlider::valueChanged, this, &TexturesPanel::OnTextureViewScaleSliderChanged);
 	connect(_ui.ScaleTextureViewSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &TexturesPanel::OnTextureViewScaleSpinnerChanged);
-	connect(_ui.UVLineWidthSlider, &QSlider::valueChanged, this, &TexturesPanel::OnUVLineWidthSliderChanged);
-	connect(_ui.UVLineWidthSpinner, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &TexturesPanel::OnUVLineWidthSpinnerChanged);
 
 	connect(_ui.TextureName, &QLineEdit::textChanged, this, &TexturesPanel::OnTextureNameChanged);
 	connect(_ui.TextureName, &QLineEdit::inputRejected, this, &TexturesPanel::OnTextureNameRejected);
@@ -104,11 +96,11 @@ TexturesPanel::TexturesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.Fullbright, &QCheckBox::stateChanged, this, &TexturesPanel::OnFullbrightChanged);
 	connect(_ui.Mipmaps, &QCheckBox::stateChanged, this, &TexturesPanel::OnMipmapsChanged);
 
-	connect(_ui.ShowUVMap, &QCheckBox::stateChanged, this, &TexturesPanel::UpdateUVMapTexture);
+	connect(_ui.ShowUVMap, &QCheckBox::stateChanged, this, &TexturesPanel::UpdateUVMapProperties);
 	connect(_ui.OverlayUVMap, &QCheckBox::stateChanged, this, &TexturesPanel::OnOverlayUVMapChanged);
-	connect(_ui.AntiAliasLines, &QCheckBox::stateChanged, this, &TexturesPanel::UpdateUVMapTexture);
+	connect(_ui.AntiAliasLines, &QCheckBox::stateChanged, this, &TexturesPanel::UpdateUVMapProperties);
 
-	connect(_ui.Meshes, qOverload<int>(&QComboBox::currentIndexChanged), this, &TexturesPanel::UpdateUVMapTexture);
+	connect(_ui.Meshes, qOverload<int>(&QComboBox::currentIndexChanged), this, &TexturesPanel::UpdateUVMapProperties);
 
 	connect(_ui.ImportTexture, &QPushButton::clicked, this, &TexturesPanel::OnImportTexture);
 	connect(_ui.ExportTexture, &QPushButton::clicked, this, &TexturesPanel::OnExportTexture);
@@ -275,7 +267,7 @@ void TexturesPanel::OnTextureChanged(int index)
 		_ui.Meshes->addItem("All");
 	}
 
-	UpdateUVMapTexture();
+	UpdateUVMapProperties();
 }
 
 void TexturesPanel::OnTextureViewScaleSliderChanged(int value)
@@ -288,8 +280,6 @@ void TexturesPanel::OnTextureViewScaleSliderChanged(int value)
 	}
 
 	_asset->GetTextureEntity()->TextureScale = newValue;
-
-	UpdateUVMapTexture();
 }
 
 void TexturesPanel::OnTextureViewScaleSpinnerChanged(double value)
@@ -300,30 +290,6 @@ void TexturesPanel::OnTextureViewScaleSpinnerChanged(double value)
 	}
 
 	_asset->GetTextureEntity()->TextureScale = value;
-
-	UpdateUVMapTexture();
-}
-
-void TexturesPanel::OnUVLineWidthSliderChanged(int value)
-{
-	const double newValue = value / UVLineWidthSliderRatio;
-
-	{
-		const QSignalBlocker blocker{_ui.UVLineWidthSpinner};
-		_ui.UVLineWidthSpinner->setValue(newValue);
-	}
-
-	UpdateUVMapTexture();
-}
-
-void TexturesPanel::OnUVLineWidthSpinnerChanged(double value)
-{
-	{
-		const QSignalBlocker blocker{_ui.UVLineWidthSlider};
-		_ui.UVLineWidthSlider->setValue(static_cast<int>(value * UVLineWidthSliderRatio));
-	}
-
-	UpdateUVMapTexture();
 }
 
 void TexturesPanel::SetTextureName()
@@ -523,47 +489,14 @@ void TexturesPanel::UpdateColormapValue()
 	graphicsContext->End();
 }
 
-void TexturesPanel::UpdateUVMapTexture()
+void TexturesPanel::UpdateUVMapProperties()
 {
 	auto textureEntity = _asset->GetTextureEntity();
 
-	auto scene = _asset->GetScene();
-
 	textureEntity->ShowUVMap = _ui.ShowUVMap->isChecked();
 	textureEntity->OverlayUVMap = _ui.OverlayUVMap->isChecked();
-
-	if (!_ui.ShowUVMap->isChecked())
-	{
-		return;
-	}
-
-	const int textureIndex = _ui.Textures->currentIndex();
-
-	if (textureIndex == -1)
-	{
-		//Make sure nothing is drawn when no texture is selected
-		std::byte transparentImage[4];
-
-		std::fill_n(transparentImage, std::size(transparentImage), std::byte{0});
-
-		textureEntity->SetUVMeshImage({1, 1, transparentImage});
-		return;
-	}
-
-	auto entity = _asset->GetEntity();
-
-	auto model = entity->GetEditableModel();
-
-	textureEntity->ShowUVMap = _ui.ShowUVMap->isChecked();
-
-	const float scale = textureEntity->TextureScale;
-
-	//Create an updated image of the UV map with current settings
-	const auto uvMapImage = CreateUVMapImage(
-		*model, textureIndex, GetMeshIndexForDrawing(_ui.Meshes),
-		_ui.AntiAliasLines->isChecked(), scale, _ui.UVLineWidthSpinner->value());
-
-	textureEntity->SetUVMeshImage({uvMapImage.width(), uvMapImage.height(), reinterpret_cast<const std::byte*>(uvMapImage.constBits())});
+	textureEntity->MeshIndex = GetMeshIndexForDrawing(_ui.Meshes);
+	textureEntity->AntiAliasLines = _ui.AntiAliasLines->isChecked();
 }
 
 void TexturesPanel::OnImportTexture()
