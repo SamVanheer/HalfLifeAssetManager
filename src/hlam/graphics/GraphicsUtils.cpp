@@ -163,6 +163,8 @@ void DrawOutlinedBox(QOpenGLFunctions_1_1* openglFunctions,
 	DrawBox(openglFunctions, points);
 
 	openglFunctions->glDepthMask(depthMaskWasEnabled ? GL_TRUE : GL_FALSE);
+
+	openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 const std::string_view DmBaseName{"DM_Base.bmp"};
