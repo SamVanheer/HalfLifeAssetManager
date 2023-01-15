@@ -5,8 +5,6 @@
 #include <QFileInfo>
 #include <QSettings>
 
-#include "filesystem/FileSystemConstants.hpp"
-
 #include "settings/ApplicationSettings.hpp"
 #include "settings/BaseSettings.hpp"
 #include "settings/ColorSettings.hpp"
@@ -18,7 +16,7 @@ ApplicationSettings::ApplicationSettings(QSettings* settings, std::shared_ptr<sp
 	: _settings(settings)
 	, _recentFiles(std::make_unique<RecentFilesSettings>(settings))
 	, _colorSettings(std::make_unique<ColorSettings>(settings))
-	, _gameConfigurations(std::make_unique<GameConfigurationsSettings>(settings, this, fileSystemLogger))
+	, _gameConfigurations(std::make_unique<GameConfigurationsSettings>(settings, fileSystemLogger))
 	, _externalPrograms(std::make_unique<ExternalProgramSettings>(settings))
 {
 	_settings->setParent(this);
@@ -26,8 +24,6 @@ ApplicationSettings::ApplicationSettings(QSettings* settings, std::shared_ptr<sp
 	_settingsObjects.push_back(_colorSettings.get());
 	_settingsObjects.push_back(_gameConfigurations.get());
 	_settingsObjects.push_back(_externalPrograms.get());
-
-	_steamLanguage = QString::fromStdString(std::string{DefaultSteamLanguage});
 }
 
 ApplicationSettings::~ApplicationSettings() = default;
@@ -116,17 +112,6 @@ void ApplicationSettings::LoadSettings()
 		MinimumAspectRatio, MaximumAspectRatio);
 	_settings->endGroup();
 
-	_settings->beginGroup("FileSystem");
-	_steamLanguage = _settings->value("SteamLanguage", QString::fromStdString(std::string{DefaultSteamLanguage}))
-		.toString();
-
-	if (std::find(SteamLanguages.begin(), SteamLanguages.end(), _steamLanguage.toStdString()) == SteamLanguages.end())
-	{
-		_steamLanguage = QString::fromStdString(std::string{DefaultSteamLanguage});
-	}
-
-	_settings->endGroup();
-
 	for (auto settings : _settingsObjects)
 	{
 		settings->LoadSettings();
@@ -167,10 +152,6 @@ void ApplicationSettings::SaveSettings()
 	_settings->setValue("TransparentScreenshots", DefaultTransparentScreenshots);
 	_settings->setValue("AspectRatio/X", static_cast<int>(_aspectRatio.x));
 	_settings->setValue("AspectRatio/Y", static_cast<int>(_aspectRatio.y));
-	_settings->endGroup();
-
-	_settings->beginGroup("FileSystem");
-	_settings->setValue("SteamLanguage", _steamLanguage);
 	_settings->endGroup();
 
 	for (auto settings : _settingsObjects)
@@ -269,14 +250,4 @@ QString ApplicationSettings::GetFileListRootDirectory() const
 void ApplicationSettings::SetFileListRootDirectory(const QString& directory)
 {
 	_settings->setValue("FileList/RootDirectory", directory);
-}
-
-QString ApplicationSettings::GetSteamLanguage() const
-{
-	return _steamLanguage;
-}
-
-void ApplicationSettings::SetSteamLanguage(const QString& value)
-{
-	_steamLanguage = value;
 }

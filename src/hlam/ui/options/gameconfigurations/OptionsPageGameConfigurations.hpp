@@ -3,7 +3,6 @@
 #include <memory>
 
 #include <QString>
-#include <QWidget>
 
 #include "ui_OptionsPageGameConfigurations.h"
 
@@ -12,8 +11,6 @@
 class AssetManager;
 class GameConfiguration;
 class GameConfigurationsOptions;
-
-extern const QString OptionsPageGameConfigurationsId;
 
 class OptionsPageGameConfigurations final : public OptionsPage
 {

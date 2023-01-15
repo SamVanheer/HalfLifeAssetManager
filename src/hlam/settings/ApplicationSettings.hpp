@@ -210,9 +210,6 @@ public:
 	QString GetFileListRootDirectory() const;
 	void SetFileListRootDirectory(const QString& directory);
 
-	QString GetSteamLanguage() const;
-	void SetSteamLanguage(const QString& value);
-
 signals:
 	void TickRateChanged(int value);
 
@@ -263,6 +260,4 @@ private:
 	int _msaaLevel{DefaultMSAALevel};
 
 	glm::vec2 _aspectRatio{DefaultAspectRatio};
-
-	QString _steamLanguage;
 };

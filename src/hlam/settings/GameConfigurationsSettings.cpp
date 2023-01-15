@@ -11,14 +11,32 @@
 
 #include "qt/QtLogging.hpp"
 
-#include "settings/ApplicationSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
+
+GameConfigurationsSettings::GameConfigurationsSettings(QSettings* settings, std::shared_ptr<spdlog::logger> logger)
+	: BaseSettings(settings)
+	, _logger(logger)
+{
+	_steamLanguage = QString::fromStdString(std::string{DefaultSteamLanguage});
+}
 
 void GameConfigurationsSettings::LoadSettings()
 {
 	RemoveAll();
 
 	_settings->beginGroup("GameConfigurations");
+
+	_checkHDDirectories = _settings->value("CheckHDDirectories", _checkHDDirectories).toBool();
+	_checkAddonDirectories = _settings->value("CheckAddonDirectories", _checkAddonDirectories).toBool();
+	_checkDownloadsDirectories = _settings->value("CheckDownloadsDirectories", _checkDownloadsDirectories).toBool();
+
+	_steamLanguage = _settings->value("SteamLanguage", QString::fromStdString(std::string{DefaultSteamLanguage}))
+		.toString();
+
+	if (std::find(SteamLanguages.begin(), SteamLanguages.end(), _steamLanguage.toStdString()) == SteamLanguages.end())
+	{
+		_steamLanguage = QString::fromStdString(std::string{DefaultSteamLanguage});
+	}
 
 	const int configurationCount = _settings->beginReadArray("List");
 
@@ -58,6 +76,11 @@ void GameConfigurationsSettings::SaveSettings()
 {
 	_settings->beginGroup("GameConfigurations");
 
+	_settings->setValue("CheckHDDirectories", _checkHDDirectories);
+	_settings->setValue("CheckAddonDirectories", _checkAddonDirectories);
+	_settings->setValue("CheckDownloadsDirectories", _checkDownloadsDirectories);
+	_settings->setValue("SteamLanguage", _steamLanguage);
+
 	_settings->remove("List");
 
 	_settings->beginWriteArray("List", _gameConfigurations.size());
@@ -80,6 +103,46 @@ void GameConfigurationsSettings::SaveSettings()
 	_settings->setValue("DefaultConfigurationId", _defaultConfiguration);
 
 	_settings->endGroup();
+}
+
+bool GameConfigurationsSettings::ShouldCheckHDDirectories() const
+{
+	return _checkHDDirectories;
+}
+
+void GameConfigurationsSettings::SetCheckHDDirectories(bool value)
+{
+	_checkHDDirectories = value;
+}
+
+bool GameConfigurationsSettings::ShouldCheckAddonDirectories() const
+{
+	return _checkAddonDirectories;
+}
+
+void GameConfigurationsSettings::SetCheckAddonDirectories(bool value)
+{
+	_checkAddonDirectories = value;
+}
+
+bool GameConfigurationsSettings::ShouldCheckDownloadsDirectories() const
+{
+	return _checkDownloadsDirectories;
+}
+
+void GameConfigurationsSettings::SetCheckDownloadsDirectories(bool value)
+{
+	_checkDownloadsDirectories = value;
+}
+
+QString GameConfigurationsSettings::GetSteamLanguage() const
+{
+	return _steamLanguage;
+}
+
+void GameConfigurationsSettings::SetSteamLanguage(const QString& value)
+{
+	_steamLanguage = value;
 }
 
 std::vector<const GameConfiguration*> GameConfigurationsSettings::GetConfigurations() const
@@ -272,21 +335,32 @@ void GameConfigurationsSettings::SanitizeConfiguration(GameConfiguration& config
 void GameConfigurationsSettings::AddConfigurationToFileSystem(
 	IFileSystem& fileSystem, const GameConfiguration& configuration) const
 {
-	const auto language = _applicationSettings->GetSteamLanguage().toStdString();
+	const auto language = GetSteamLanguage().toStdString();
 	const bool hasLanguage = language != DefaultSteamLanguage;
 
 	const auto addGameDirectory = [&](const std::string& directory)
 	{
-		fileSystem.AddSearchPath(directory + "_addon");
+		if (ShouldCheckAddonDirectories())
+		{
+			fileSystem.AddSearchPath(directory + "_addon");
+		}
 
 		if (hasLanguage)
 		{
 			fileSystem.AddSearchPath(directory + "_" + language);
 		}
 
-		fileSystem.AddSearchPath(directory + "_hd");
+		if (ShouldCheckHDDirectories())
+		{
+			fileSystem.AddSearchPath(directory + "_hd");
+		}
+
 		fileSystem.AddSearchPath(std::string{directory});
-		fileSystem.AddSearchPath(directory + "_downloads");
+
+		if (ShouldCheckDownloadsDirectories())
+		{
+			fileSystem.AddSearchPath(directory + "_downloads");
+		}
 	};
 
 	const auto gameDir{configuration.BaseGameDirectory.toStdString()};

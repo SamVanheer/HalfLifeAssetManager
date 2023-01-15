@@ -4,7 +4,6 @@
 #include <QFileDialog>
 #include <QSignalBlocker>
 #include <QStringLiteral>
-#include <QWizard>
 
 #include "settings/GameConfigurationsSettings.hpp"
 
@@ -12,10 +11,10 @@
 
 #include "ui/options/gameconfigurations/AutodetectGameConfigurationsWizard.hpp"
 #include "ui/options/gameconfigurations/EditGameConfigurationsDialog.hpp"
-#include "ui/options/gameconfigurations/OptionsPageGameConfigurations.hpp"
 #include "ui/options/gameconfigurations/GameConfigurationsOptions.hpp"
+#include "ui/options/gameconfigurations/OptionsPageFileSystem.hpp"
+#include "ui/options/gameconfigurations/OptionsPageGameConfigurations.hpp"
 
-const QString OptionsPageGameConfigurationsCategory{QStringLiteral("T.GameConfigurations")};
 const QString OptionsPageGameConfigurationsId{QStringLiteral("T.GameConfigurations")};
 
 OptionsPageGameConfigurations::OptionsPageGameConfigurations()

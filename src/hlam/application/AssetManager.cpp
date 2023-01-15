@@ -46,6 +46,7 @@
 #include "ui/options/OptionsPageGeneral.hpp"
 #include "ui/options/OptionsPageRegistry.hpp"
 #include "ui/options/OptionsPageStyle.hpp"
+#include "ui/options/gameconfigurations/OptionsPageFileSystem.hpp"
 #include "ui/options/gameconfigurations/OptionsPageGameConfigurations.hpp"
 
 #include "utility/WorldTime.hpp"
@@ -119,6 +120,7 @@ AssetManager::AssetManager(
 	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageGeneral>(applicationSettings));
 	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageColors>(applicationSettings));
 	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageExternalPrograms>(applicationSettings));
+	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageFileSystem>());
 	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageGameConfigurations>());
 	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageStyle>(applicationSettings));
 }

@@ -12,6 +12,9 @@ target_sources(HLAM
 		EditGameConfigurationsDialog.hpp
 		EditGameConfigurationsDialog.ui
 		GameConfigurationsOptions.hpp
+		OptionsPageFileSystem.cpp
+		OptionsPageFileSystem.hpp
+		OptionsPageFileSystem.ui
 		OptionsPageGameConfigurations.cpp
 		OptionsPageGameConfigurations.hpp
 		OptionsPageGameConfigurations.ui)

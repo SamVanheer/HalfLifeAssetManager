@@ -1,8 +1,6 @@
 #include <algorithm>
 #include <cassert>
 
-#include "filesystem/FileSystemConstants.hpp"
-
 #include "settings/ApplicationSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
@@ -61,18 +59,6 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 	_ui.EnableAudioPlayback->setChecked(_applicationSettings->ShouldEnableAudioPlayback());
 	_ui.EnableVerticalSync->setChecked(_applicationSettings->ShouldEnableVSync());
 
-	for (const auto& language : SteamLanguages)
-	{
-		_ui.SteamLanguage->addItem(QString::fromStdString(std::string{language}));
-	}
-
-	if (auto it = std::find(SteamLanguages.begin(), SteamLanguages.end(),
-		_applicationSettings->GetSteamLanguage().toStdString());
-		it != SteamLanguages.end())
-	{
-		_ui.SteamLanguage->setCurrentIndex(it - SteamLanguages.begin());
-	}
-
 	connect(_ui.MouseSensitivitySlider, &QSlider::valueChanged, _ui.MouseSensitivitySpinner, &QSpinBox::setValue);
 	connect(_ui.MouseSensitivitySpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.MouseSensitivitySlider, &QSlider::setValue);
 
@@ -96,5 +82,4 @@ void OptionsPageGeneralWidget::ApplyChanges()
 	_applicationSettings->SetMouseWheelSpeed(_ui.MouseWheelSpeedSlider->value());
 	_applicationSettings->SetEnableAudioPlayback(_ui.EnableAudioPlayback->isChecked());
 	_applicationSettings->SetEnableVSync(_ui.EnableVerticalSync->isChecked());
-	_applicationSettings->SetSteamLanguage(_ui.SteamLanguage->currentText());
 }

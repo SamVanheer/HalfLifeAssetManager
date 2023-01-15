@@ -11,7 +11,6 @@
 
 #include "settings/BaseSettings.hpp"
 
-class ApplicationSettings;
 class IFileSystem;
 class QSettings;
 
@@ -30,16 +29,22 @@ class GameConfigurationsSettings final : public BaseSettings
 	Q_OBJECT
 
 public:
-	explicit GameConfigurationsSettings(QSettings* settings, ApplicationSettings* applicationSettings,
-		std::shared_ptr<spdlog::logger> logger)
-		: BaseSettings(settings)
-		, _applicationSettings(applicationSettings)
-		, _logger(logger)
-	{
-	}
+	explicit GameConfigurationsSettings(QSettings* settings, std::shared_ptr<spdlog::logger> logger);
 
 	void LoadSettings() override;
 	void SaveSettings() override;
+
+	bool ShouldCheckHDDirectories() const;
+	void SetCheckHDDirectories(bool value);
+
+	bool ShouldCheckAddonDirectories() const;
+	void SetCheckAddonDirectories(bool value);
+
+	bool ShouldCheckDownloadsDirectories() const;
+	void SetCheckDownloadsDirectories(bool value);
+
+	QString GetSteamLanguage() const;
+	void SetSteamLanguage(const QString& value);
 
 	std::vector<const GameConfiguration*> GetConfigurations() const;
 
@@ -81,8 +86,13 @@ signals:
 	void DefaultConfigurationChanged(const GameConfiguration* current, const GameConfiguration* previous);
 
 private:
-	ApplicationSettings* const _applicationSettings;
 	const std::shared_ptr<spdlog::logger> _logger;
+
+	bool _checkHDDirectories{false};
+	bool _checkAddonDirectories{false};
+	bool _checkDownloadsDirectories{false};
+
+	QString _steamLanguage;
 
 	std::vector<std::unique_ptr<GameConfiguration>> _gameConfigurations;
 

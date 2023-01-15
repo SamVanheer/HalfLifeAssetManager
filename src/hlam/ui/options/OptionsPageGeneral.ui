@@ -14,29 +14,36 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0" colspan="2">
-    <widget class="QCheckBox" name="PauseAnimationsOnTimelineClick">
+   <item row="3" column="0" colspan="2">
+    <widget class="QCheckBox" name="OneAssetAtATime">
      <property name="text">
-      <string>Pause animations when clicking on the timeline</string>
+      <string>Limit to one open asset at a time</string>
      </property>
     </widget>
    </item>
-   <item row="9" column="0" colspan="2">
-    <widget class="QLabel" name="label_5">
+   <item row="11" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="EnableAudioPlayback">
+       <property name="text">
+        <string>Enable Audio Playback (Requires Restart)</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="13" column="0" colspan="2">
+    <widget class="QLabel" name="label_7">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
       </font>
      </property>
      <property name="text">
-      <string>Audio</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QCheckBox" name="AllowTabCloseWithMiddleClick">
-     <property name="text">
-      <string>Allow tab close with middle click</string>
+      <string>Graphics</string>
      </property>
     </widget>
    </item>
@@ -127,65 +134,12 @@
      </item>
     </layout>
    </item>
-   <item row="14" column="0">
-    <widget class="QCheckBox" name="EnableVerticalSync">
-     <property name="text">
-      <string>Enable Vertical Sync (Requires Restart)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QSpinBox" name="TickRate">
-     <property name="minimum">
-      <number>1</number>
-     </property>
-     <property name="maximum">
-      <number>1000</number>
-     </property>
-     <property name="value">
-      <number>60</number>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Maximum Recent Files (0 for unlimited):</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Tick Rate:</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0" colspan="2">
     <widget class="QCheckBox" name="UseSingleInstance">
      <property name="text">
       <string>Use single instance</string>
      </property>
     </widget>
-   </item>
-   <item row="18" column="0" colspan="2">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
    </item>
    <item row="7" column="0" colspan="2">
     <widget class="QLabel" name="label">
@@ -202,17 +156,10 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <widget class="QSpinBox" name="MaxRecentFiles">
-     <property name="maximum">
-      <number>100</number>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QCheckBox" name="OneAssetAtATime">
+   <item row="1" column="0" colspan="2">
+    <widget class="QCheckBox" name="PauseAnimationsOnTimelineClick">
      <property name="text">
-      <string>Limit to one open asset at a time</string>
+      <string>Pause animations when clicking on the timeline</string>
      </property>
     </widget>
    </item>
@@ -229,63 +176,84 @@
      </property>
     </widget>
    </item>
-   <item row="11" column="0" colspan="2">
-    <layout class="QGridLayout" name="gridLayout_3">
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item row="0" column="0">
-      <widget class="QCheckBox" name="EnableAudioPlayback">
-       <property name="text">
-        <string>Enable Audio Playback (Requires Restart)</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="15" column="0" colspan="2">
-    <widget class="QLabel" name="label_8">
+   <item row="9" column="0" colspan="2">
+    <widget class="QLabel" name="label_5">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
       </font>
      </property>
      <property name="text">
-      <string>File System</string>
+      <string>Audio</string>
      </property>
     </widget>
    </item>
-   <item row="13" column="0" colspan="2">
-    <widget class="QLabel" name="label_7">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
+   <item row="5" column="1">
+    <widget class="QSpinBox" name="TickRate">
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>1000</number>
+     </property>
+     <property name="value">
+      <number>60</number>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Tick Rate:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="text">
-      <string>Graphics</string>
+      <string>Maximum Recent Files (0 for unlimited):</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QSpinBox" name="MaxRecentFiles">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="0">
+    <widget class="QCheckBox" name="EnableVerticalSync">
+     <property name="text">
+      <string>Enable Vertical Sync (Requires Restart)</string>
      </property>
     </widget>
    </item>
    <item row="16" column="0" colspan="2">
-    <layout class="QGridLayout" name="gridLayout_4">
-     <item row="0" column="1">
-      <widget class="QComboBox" name="SteamLanguage"/>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Steam Language:</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QCheckBox" name="AllowTabCloseWithMiddleClick">
+     <property name="text">
+      <string>Allow tab close with middle click</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
