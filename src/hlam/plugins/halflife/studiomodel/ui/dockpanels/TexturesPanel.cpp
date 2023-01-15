@@ -100,7 +100,8 @@ TexturesPanel::TexturesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.OverlayUVMap, &QCheckBox::stateChanged, this, &TexturesPanel::OnOverlayUVMapChanged);
 	connect(_ui.AntiAliasLines, &QCheckBox::stateChanged, this, &TexturesPanel::UpdateUVMapProperties);
 
-	connect(_ui.Meshes, qOverload<int>(&QComboBox::currentIndexChanged), this, &TexturesPanel::UpdateUVMapProperties);
+	connect(_ui.Meshes, qOverload<int>(&QComboBox::currentIndexChanged), this,
+		[this] { _asset->GetTextureEntity()->SetMeshIndex(GetMeshIndexForDrawing(_ui.Meshes)); });
 
 	connect(_ui.ImportTexture, &QPushButton::clicked, this, &TexturesPanel::OnImportTexture);
 	connect(_ui.ExportTexture, &QPushButton::clicked, this, &TexturesPanel::OnExportTexture);
@@ -201,6 +202,8 @@ void TexturesPanel::OnSaveSnapshot(StateSnapshot* snapshot)
 
 		snapshot->SetValue("textures.texture", QString::fromStdString(texture.Name));
 	}
+
+	snapshot->SetValue("textures.mesh", _ui.Meshes->currentIndex());
 }
 
 void TexturesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
@@ -224,6 +227,11 @@ void TexturesPanel::OnLoadSnapshot(StateSnapshot* snapshot)
 		}
 	}
 
+	if (auto meshIndex = snapshot->Value("textures.mesh"); meshIndex.isValid())
+	{
+		_ui.Meshes->setCurrentIndex(meshIndex.toInt());
+	}
+
 	_ui.TopColorSlider->setValue(model->TopColor);
 	_ui.BottomColorSlider->setValue(model->BottomColor);
 
@@ -238,22 +246,18 @@ void TexturesPanel::OnScaleChanged(float adjust)
 void TexturesPanel::OnTextureChanged(int index)
 {
 	auto entity = _asset->GetEntity();
-	auto textureEntity = _asset->GetTextureEntity();
-
-	//Reset texture position to be centered
-	textureEntity->XOffset = textureEntity->YOffset = 0;
-	textureEntity->TextureIndex = index;
-
-	_ui.Meshes->clear();
-	_ui.Meshes->setEnabled(index != -1);
 
 	const studiomdl::StudioTexture emptyTexture{};
 
 	const auto& texture = index != -1 ? *entity->GetEditableModel()->Textures[index] : emptyTexture;
 
 	SetTextureName();
-
 	SetTextureFlagCheckBoxes(_ui, texture.Flags);
+
+	const QSignalBlocker meshesBlocker{_ui.Meshes};
+
+	_ui.Meshes->clear();
+	_ui.Meshes->setEnabled(index != -1);
 
 	const auto meshes = entity->GetEditableModel()->ComputeMeshList(index);
 
@@ -266,6 +270,12 @@ void TexturesPanel::OnTextureChanged(int index)
 	{
 		_ui.Meshes->addItem("All");
 	}
+
+	auto textureEntity = _asset->GetTextureEntity();
+
+	//Reset texture position to be centered
+	textureEntity->XOffset = textureEntity->YOffset = 0;
+	textureEntity->SetTextureIndex(index, _ui.Meshes->currentIndex());
 
 	UpdateUVMapProperties();
 }
@@ -495,7 +505,6 @@ void TexturesPanel::UpdateUVMapProperties()
 
 	textureEntity->ShowUVMap = _ui.ShowUVMap->isChecked();
 	textureEntity->OverlayUVMap = _ui.OverlayUVMap->isChecked();
-	textureEntity->MeshIndex = GetMeshIndexForDrawing(_ui.Meshes);
 	textureEntity->AntiAliasLines = _ui.AntiAliasLines->isChecked();
 }
 

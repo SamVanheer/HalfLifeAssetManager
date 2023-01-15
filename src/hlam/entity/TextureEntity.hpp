@@ -1,8 +1,14 @@
 #pragma once
 
 #include <cstddef>
+#include <vector>
 
 #include "entity/BaseEntity.hpp"
+
+namespace studiomdl
+{
+struct StudioMesh;
+}
 
 /**
 *	Draws the current model texture.
@@ -17,9 +23,11 @@ public:
 
 	void Draw(graphics::SceneContext& sc, RenderPasses renderPass) override;
 
-	int TextureIndex = -1;
+	void SetTextureIndex(int textureIndex, int meshIndex);
+
+	void SetMeshIndex(int meshIndex);
+
 	float TextureScale = 1;
-	int MeshIndex = -1;
 
 	int XOffset = 0;
 	int YOffset = 0;
@@ -27,4 +35,8 @@ public:
 	bool ShowUVMap = false;
 	bool OverlayUVMap = false;
 	bool AntiAliasLines = false;
+
+private:
+	int _textureIndex = -1;
+	std::vector<const studiomdl::StudioMesh*> _meshes;
 };

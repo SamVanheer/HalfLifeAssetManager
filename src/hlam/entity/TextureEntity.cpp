@@ -15,7 +15,7 @@ void TextureEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 	assert(model);
 
-	if (TextureIndex < 0 || TextureIndex >= model->Textures.size())
+	if (_textureIndex == -1)
 	{
 		return;
 	}
@@ -25,7 +25,7 @@ void TextureEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 	sc.OpenGLFunctions->glOrtho(0.0f, (float)sc.WindowWidth, (float)sc.WindowHeight, 0.0f, 1.0f, -1.0f);
 
-	const auto& texture = *model->Textures[TextureIndex];
+	const auto& texture = *model->Textures[_textureIndex];
 
 	const float w = texture.Data.Width * TextureScale;
 	const float h = texture.Data.Height * TextureScale;
@@ -104,18 +104,9 @@ void TextureEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 			sc.OpenGLFunctions->glDisable(GL_BLEND);
 		}
 
-		auto meshes = model->ComputeMeshList(TextureIndex);
-
-		if (MeshIndex != -1)
-		{
-			auto singleMesh = meshes[MeshIndex];
-			meshes.clear();
-			meshes.emplace_back(singleMesh);
-		}
-
 		int i;
 
-		for (const auto mesh : meshes)
+		for (const auto mesh : _meshes)
 		{
 			auto triCommands = mesh->Triangles.data();
 
@@ -149,4 +140,38 @@ void TextureEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 	sc.OpenGLFunctions->glPopMatrix();
 
 	sc.OpenGLFunctions->glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void TextureEntity::SetTextureIndex(int textureIndex, int meshIndex)
+{
+	const auto model = GetContext()->Asset->GetEntity()->GetEditableModel();
+
+	if (textureIndex < 0 || textureIndex >= model->Textures.size())
+	{
+		textureIndex = -1;
+	}
+
+	_textureIndex = textureIndex;
+
+	SetMeshIndex(meshIndex);
+}
+
+void TextureEntity::SetMeshIndex(int meshIndex)
+{
+	if (_textureIndex == -1)
+	{
+		_meshes.clear();
+		return;
+	}
+
+	const auto model = GetContext()->Asset->GetEntity()->GetEditableModel();
+
+	_meshes = model->ComputeMeshList(_textureIndex);
+
+	if (meshIndex != -1)
+	{
+		auto singleMesh = _meshes[meshIndex];
+		_meshes.clear();
+		_meshes.emplace_back(singleMesh);
+	}
 }
