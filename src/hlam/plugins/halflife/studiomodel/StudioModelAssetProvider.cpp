@@ -367,6 +367,16 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 
 	auto editableStudioModel = studiomdl::ConvertToEditable(*studioModel);
 
+	if (studioModel->GetSeqGroupCount() > 0)
+	{
+		_logger->info("Merged {} sequence group files into main file \"{}\"", studioModel->GetSeqGroupCount(), fileName);
+	}
+
+	if (studioModel->HasSeparateTextureHeader())
+	{
+		_logger->info("Merged texture file into main file \"{}\"", fileName);
+	}
+	
 	return std::make_unique<StudioModelAsset>(QString{fileName}, _application, this,
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
 }
