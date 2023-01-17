@@ -48,7 +48,7 @@ void InfoBar::OnDraw()
 {
 	++_currentFPS;
 
-	const unsigned int drawnPolygonsCount = _asset ? _asset->GetScene()->GetDrawnPolygonsCount() : 0;
+	const unsigned int drawnPolygonsCount = _asset ? _asset->GetCurrentScene()->GetDrawnPolygonsCount() : 0;
 
 	//Don't update if it's identical. Prevents flickering
 	if (_oldDrawnPolygonsCount != drawnPolygonsCount)
