@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Installer>
     <Name>Half-Life Asset Manager</Name>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <Title>Half-Life Asset Manager</Title>
     <Publisher>Sam Vanheer</Publisher>
     <StartMenuDir>Half-Life Asset Manager</StartMenuDir>
