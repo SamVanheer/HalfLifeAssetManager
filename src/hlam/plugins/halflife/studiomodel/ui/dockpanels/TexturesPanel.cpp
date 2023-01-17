@@ -179,7 +179,7 @@ void TexturesPanel::OnAssetChanged(StudioModelAsset* asset)
 		{
 			if (index == _ui.Textures->currentIndex())
 			{
-				SetTextureName();
+				SetTextureName(true);
 			}
 		});
 
@@ -251,7 +251,7 @@ void TexturesPanel::OnTextureChanged(int index)
 
 	const auto& texture = index != -1 ? *entity->GetEditableModel()->Textures[index] : emptyTexture;
 
-	SetTextureName();
+	SetTextureName(false);
 	SetTextureFlagCheckBoxes(_ui, texture.Flags);
 
 	const QSignalBlocker meshesBlocker{_ui.Meshes};
@@ -302,7 +302,7 @@ void TexturesPanel::OnTextureViewScaleSpinnerChanged(double value)
 	_asset->GetTextureEntity()->TextureScale = value;
 }
 
-void TexturesPanel::SetTextureName()
+void TexturesPanel::SetTextureName(bool updateTextures)
 {
 	const QSignalBlocker blocker{_ui.TextureName};
 
@@ -324,7 +324,10 @@ void TexturesPanel::SetTextureName()
 		_ui.TextureName->setText(name);
 	}
 
-	UpdateColormapValue();
+	if (updateTextures)
+	{
+		UpdateColormapValue();
+	}
 }
 
 void TexturesPanel::OnTextureNameChanged()
