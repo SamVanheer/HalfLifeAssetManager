@@ -203,6 +203,7 @@ void OptionsPageGameConfigurationsWidget::OnConfigurationChanged(int index)
 	const QSignalBlocker base{_ui.BaseGameDirectory};
 	const QSignalBlocker mod{_ui.ModDirectory};
 
+	_ui.UniqueId->setText(configuration->Id.toString());
 	_ui.GameExecutable->setText(configuration->GameExecutable);
 	_ui.BaseGameDirectory->setText(configuration->BaseGameDirectory);
 	_ui.ModDirectory->setText(configuration->ModDirectory);
