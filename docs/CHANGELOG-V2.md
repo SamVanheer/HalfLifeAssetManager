@@ -59,18 +59,19 @@
 
 * Multiple assets can be loaded at the same time using the Load dialog. Using `CTRL+A` it is possible to load *all* models in a directory at the same time. Note that this may take a few seconds
 * Opening an asset that is already opened will now refresh the existing asset tab
-* Added the option to limited to only one asset open at a time (matches original model viewer behavior)
+* Added the option to limit to only one asset open at a time (matches original model viewer behavior)
 * Assets pause when they are not the active asset to save CPU time (improves performance)
 * PS2 (`*.dol`) models are no longer renamed on load, instead the extension is changed on save to the correct one
 * When saving a file with a new name where another asset has the file with that name already opened the user is asked what to do (discard other asset or cancel)
 * Added `Close All` action to the `File` menu
+* Added dropdown menu showing list of all loaded assets for quick navigation
 * Added progress dialogs to asset load and close to give the user the opportunity to cancel if the process takes too long
 * Optimized asset load and close to dramatically reduce the time required. This also speeds up program shutdown with many assets opened
 * Asset filenames are removed from the `Recent Files` menu if the file fails to load for any reason
 * Optimized some undo commands to halve their memory usage
 * Simplified some undo commands
 * Switching back and forth between borderless fullscreen and bordered now remembers the bordered window state to improve window state restoration
-* Redesigned the `File List` panel to be a more useful `File Browser`. The `File Browser` can quickly switch directories based on the available game configurations and can filter files based not on their extension but by checking their contents. Opening a directory is a bit slower as a result but provides more accurate results and allows fast navigation between files. Combining the `Limit to one asset at a time` feature with the arrow and Enter keys allows switching between models just like the `Previous` and `Next` actions in Half-Life Model Viewer 2
+* Redesigned the `File List` panel to be a more useful `File Browser`. The `File Browser` can quickly switch directories based on the available game configurations and can filter files based not on their extension but by checking their contents. Opening a directory is a bit slower as a result but provides more accurate results and allows fast navigation between files. Combining the `Limit to one asset at a time` feature with the arrow and Enter keys allows switching between models just like the `Previous` and `Next` actions in Half-Life Model Viewer 2. Users can navigate through directories like they would in Windows Explorer
 * Added the `Messages` panel. This panel shows messages from the application. When an error occurs the panel is automatically opened to show the error. It is also possible to enable debug message output to get more information about the program's behavior
 * The `Play Sounds` and `Pitch *= Framerate` (renamed to `Framerate affects Pitch`) checkboxes are now global settings in the new `Audio` menu
 * Moved `Power Of 2 Textures` and filter settings to the new `Video` menu, removed settings from Options dialog and Textures panel
@@ -99,10 +100,12 @@
 	* This works even if the asset isn't located in a game directory; if the file is located in a game asset directory like `models` any directories related to it will be used to locate files. A common case is a downloaded model with related sounds which will play correctly.
 	* This also supports the use of fallback directories, so a Condition Zero model can reference a sound file from Counter-Strike and play it as it would in-game
 	* This also detects and uses language-specific directories
+	* Game directories containing additional content like HD or Addon content are searched only if the user enables this behavior
 
 #### StudioModel interface
 
 * The StudioModel renderer is now shared between assets, dramatically reducing memory usage (nearly 3MB per asset)
+* Loading a Studio model that has sequence group and/or external texture files now shows information in the Messages panel indicating that those files have been merged into the main file. Saving the file will save the merged file
 * Objects in the 3D scene are now sorted back to front to combat graphical issues involving transparent objects
 * Reworked the StudioModel user interface to use a single shared instance between all assets
 * Reworked user interface to reduce overall size to allow the window to be made smaller
@@ -127,6 +130,7 @@
 * The last path used in the Import and Export Texture options is now saved
 * Texture widths are now required to be multiples of 4 to match the engine's expectations. Textures will be resized on import if needed and the user will be warned about this
 * Removed the `bmp` extension from the editable texture name control (extension is required to be there) and blocked setting the name to an empty string or having whitespace at the start or end
+* The UV map is drawn using OpenGL again as it did in Half-Life Model Viewer 2. This results in sharper lines removing the need for the UV line width setting. Note that the Export UV Map dialog does not use OpenGL to draw the UV map. This will be changed in Half-Life Asset Manager 3.0.0
 
 ### Removed features
 
