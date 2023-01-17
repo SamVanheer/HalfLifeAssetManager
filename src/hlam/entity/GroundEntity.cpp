@@ -18,6 +18,7 @@
 void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	auto context = GetContext();
+	auto asset = context->Asset;
 	auto settings = context->StudioSettings;
 
 	if (ShowGround)
@@ -33,6 +34,20 @@ void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 			sc.OpenGLFunctions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 			_image = {};
+		}
+
+		// HACK: draw the mirrored model now.
+		// setup stencil buffer and draw mirror
+		if (MirrorOnGround)
+		{
+			graphics::DrawMirroredModel(sc.OpenGLFunctions,
+				*GetContext()->StudioModelRenderer,
+				asset->GetEntity(),
+				asset->CurrentRenderMode,
+				asset->ShowWireframeOverlay,
+				asset->GetGroundEntity()->GetOrigin(),
+				settings->GetGroundLength(),
+				asset->EnableBackfaceCulling);
 		}
 
 		glm::vec2 textureOffset{0};

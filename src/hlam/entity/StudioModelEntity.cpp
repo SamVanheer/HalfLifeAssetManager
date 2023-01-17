@@ -42,6 +42,7 @@ void StudioModelEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass
 	auto asset = GetContext()->Asset;
 	auto settings = GetContext()->StudioSettings;
 
+	/*
 	// setup stencil buffer and draw mirror
 	if (asset->GetGroundEntity()->MirrorOnGround)
 	{
@@ -53,6 +54,7 @@ void StudioModelEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass
 			settings->GetGroundLength(),
 			asset->EnableBackfaceCulling);
 	}
+	*/
 
 	graphics::SetupRenderMode(sc.OpenGLFunctions, asset->CurrentRenderMode, asset->EnableBackfaceCulling);
 
