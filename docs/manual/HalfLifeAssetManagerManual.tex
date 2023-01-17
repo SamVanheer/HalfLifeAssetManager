@@ -189,14 +189,22 @@ The fullscreen window can be converted to a maximized window and back by pressin
 \subsubsection{File Browser}
 
 The File Browser displays the contents of a directory and allows files to be opened directly.
-
-The browser has a filter option to show only files that match a specific file format, and filters out files that cannot be opened (e.g. StudioModel texture files that belong to another StudioModel file).
+The browser has a filter option to show only files that match a specific file format and filters out files that cannot be opened (e.g. StudioModel texture files that belong to another StudioModel file).
 
 Using the arrow and Enter keys allows one to quickly view models.
 
+\vspace{\baselineskip}
 Note that using a format filter can be slow if there are many of files in a directory since each file has to be opened to detect its format.
 
+\vspace{\baselineskip}
 The root directory can be changed at will and can be set to the directory belonging to a game configuration to quickly switch directories.
+
+Double-clicking directories switches the root directory to that directory. Double-clicking the parent directory \code{..} switches to the parent directory.
+
+\vspace{\baselineskip}
+Multiple files can selected by clicking and holding the left mouse button and dragging over the filenames, using \code{CTRL+Left Mouse Button} or by using \code{CTRL+A} to select all files.
+
+Multiple files can be opened by selecting the files and clicking \code{Open Selected}.
 
 \subsubsection{Messages}
 
@@ -359,10 +367,6 @@ Whether to enable vertical sync on the 3D window. Enabling vertical sync clamps 
 
 Disabling it allows for higher framerates but may cause screen tearing.
 
-\subsubsection{Steam Language}
-
-The language that Steam is configured to use. This setting affects how files referenced by assets are located to allow localized files to be used instead.
-
 \subsection{Style}
 
 Allows the program style sheet to be replaced with a user-defined alternative. This allows the programs to be set to dark mode, among other things.
@@ -445,6 +449,14 @@ If a game's \code{liblist.gam} file contains a \code{fallback\_dir} entry it wil
 \vspace{\baselineskip}
 Changing configurations does not affect assets that have already been loaded.
 
+\subsubsection{File System}
+
+Allows filesystem behavior to be configured. Users can control whether game directories containing additional game content like HD or Addon content are searched.
+
+\paragraph{Steam Language}
+
+The language that Steam is configured to use. This setting affects how files referenced by assets are located to allow localized files to be used instead.
+
 \subsubsection{Auto-Detect Game Configurations}
 
 The Auto-Detect Game Configurations wizard allows game configurations to be added automatically.
@@ -459,6 +471,10 @@ You can then select the mods you want to add as configurations, move them to the
 
 \section{Half-Life 1 StudioModel}
 \label{sec:hl1studiomodel}
+
+\subsection{Asset Load Behavior}
+
+Loading Half-Life 1 Studio models that have sequence group and/or external texture files will show information in the Messages panel indicating that these files have been merged into the main file. Saving the file through Asset Manager will save the merged file.
 
 \subsection{Asset menu}
 
