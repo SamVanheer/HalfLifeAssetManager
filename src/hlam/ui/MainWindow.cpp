@@ -486,6 +486,9 @@ void MainWindow::MaybeOpenAll(const QStringList& fileNames)
 		QString{"Opening %1 assets..."}.arg(fileNames.size()), "Abort Open", 0, fileNames.size(), this);
 	progress.setWindowModality(Qt::WindowModal);
 
+	// Always show immediately for 10 or more, wait only a second otherwise for slow loading assets.
+	progress.setMinimumDuration(fileNames.size() < 10 ? 1000 : 0);
+
 	// Make the tab widget invisible to reduce overhead from updating it.
 	_assetTabs->setVisible(false);
 	_modifyingTabs = true;
