@@ -153,7 +153,7 @@ public:
 
 	std::vector<AssetProvider*> GetAssetProviders() const;
 
-	void AddProvider(std::unique_ptr<AssetProvider>&& provider);
+	void AddProvider(std::unique_ptr<AssetProvider> provider);
 
 	void Initialize();
 	void Shutdown();

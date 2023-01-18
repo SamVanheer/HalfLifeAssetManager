@@ -20,9 +20,8 @@
 #include "application/ToolApplication.hpp"
 
 #include "plugins/IAssetManagerPlugin.hpp"
+#include "plugins/forwarding/ForwardingAssetManagerPlugin.hpp"
 #include "plugins/halflife/HalfLifeAssetManagerPlugin.hpp"
-#include "plugins/quake1/Quake1AssetManagerPlugin.hpp"
-#include "plugins/source1/Source1AssetManagerPlugin.hpp"
 
 #include "qt/QtLogging.hpp"
 
@@ -357,8 +356,7 @@ std::unique_ptr<AssetManager> ToolApplication::CreateApplication(std::unique_ptr
 		bool success = true;
 
 		success = application->AddPlugin(std::make_unique<HalfLifeAssetManagerPlugin>()) && success;
-		success = application->AddPlugin(std::make_unique<Quake1AssetManagerPlugin>()) && success;
-		success = application->AddPlugin(std::make_unique<Source1AssetManagerPlugin>()) && success;
+		success = application->AddPlugin(std::make_unique<ForwardingAssetManagerPlugin>()) && success;
 
 		if (!success)
 		{

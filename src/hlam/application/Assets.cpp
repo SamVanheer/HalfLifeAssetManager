@@ -19,7 +19,7 @@ std::vector<AssetProvider*> AssetProviderRegistry::GetAssetProviders() const
 	return providers;
 }
 
-void AssetProviderRegistry::AddProvider(std::unique_ptr<AssetProvider>&& provider)
+void AssetProviderRegistry::AddProvider(std::unique_ptr<AssetProvider> provider)
 {
 	if (std::find_if(_providers.begin(), _providers.end(), [&](const auto& other)
 		{
