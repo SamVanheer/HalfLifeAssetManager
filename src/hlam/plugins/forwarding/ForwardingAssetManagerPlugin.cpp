@@ -125,15 +125,76 @@ public:
 	}
 };
 
+static const QString NexonModelViewerFileNameKey{QStringLiteral("NexonModelViewerFileName")};
+const QString NexonModelExtension{QStringLiteral("mdl")};
+
+constexpr int NexonStudioVersion = 11;
+
+class NexonStudioModelAssetProvider final : public AssetProvider
+{
+public:
+	explicit NexonStudioModelAssetProvider(AssetManager* application)
+		: AssetProvider(application)
+	{
+	}
+
+	QString GetProviderName() const override { return "Counter-Strike Nexon Studio model"; }
+
+	QStringList GetFileTypes() const override { return {NexonModelExtension}; }
+
+	QString GetPreferredFileType() const override { return NexonModelExtension; }
+
+	ProviderFeatures GetFeatures() const override { return ProviderFeature::AssetLoading; }
+
+	bool CanLoad(const QString& fileName, FILE* file) const override
+	{
+		int id;
+
+		if (fread(&id, sizeof(id), 1, file) == 1
+			&& strncmp(reinterpret_cast<const char*>(&id), STUDIOMDL_HDR_ID, 4) == 0)
+		{
+			int version;
+
+			if (fread(&version, sizeof(version), 1, file) == 1
+				&& NexonStudioVersion == version)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
+		const QString& fileName, FILE* file) override
+	{
+		const auto result = _application->TryLaunchExternalProgram(
+			NexonModelViewerFileNameKey, QStringList(fileName),
+			"This is a Counter-Strike Nexon Studio model which requires it to be loaded in Counter-Strike Nexon Model Viewer.");
+
+		if (result != LaunchExternalProgramResult::Failed)
+		{
+			return AssetLoadInExternalProgram{.Loaded = result == LaunchExternalProgramResult::Success};
+		}
+
+		throw AssetException(std::string{"File \""} + fileName.toStdString()
+			+ "\" is a Counter-Strike Nexon Studio model and cannot be opened by this program."
+			+ "\nSet the Counter-Strike Nexon Half-Life Model Viewer executable setting to open the model through that program instead.");
+	}
+};
+
 bool ForwardingAssetManagerPlugin::Initialize(AssetManager* application)
 {
 	application->GetApplicationSettings()->GetExternalPrograms()->AddProgram(
 		Quake1ModelViewerFileNameKey, "Quake 1 Model Viewer");
 	application->GetApplicationSettings()->GetExternalPrograms()->AddProgram(
 		Source1ModelViewerFileNameKey, "Source 1 Model Viewer");
+	application->GetApplicationSettings()->GetExternalPrograms()->AddProgram(
+		NexonModelViewerFileNameKey, "Counter-Strike Nexon Model Viewer");
 
 	application->GetAssetProviderRegistry()->AddProvider(std::make_unique<Quake1AliasModelAssetProvider>(application));
 	application->GetAssetProviderRegistry()->AddProvider(std::make_unique<Source1StudioModelAssetProvider>(application));
+	application->GetAssetProviderRegistry()->AddProvider(std::make_unique<NexonStudioModelAssetProvider>(application));
 
 	return true;
 }
