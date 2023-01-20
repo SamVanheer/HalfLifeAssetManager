@@ -10,6 +10,12 @@ std::optional<std::unordered_map<std::string, std::string>> LiblistReader::Read(
 	// liblist.gam files have comments and a list of keyvalue pairs in the format "key \"value\""
 
 	std::ifstream file(fileName);
+
+	if (!file.is_open())
+	{
+		return {};
+	}
+
 	std::string contents;
 
 	file.seekg(0, std::ios::end);
