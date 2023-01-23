@@ -68,8 +68,7 @@ public:
 
 	bool CanLoad(const QString& fileName, FILE* file) const override;
 
-	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		const QString& fileName, FILE* file) override;
+	AssetLoadData Load(const QString& fileName, FILE* file) override;
 
 	bool IsCandidateForLoading(const QString& fileName, FILE* file) const override;
 
@@ -158,8 +157,7 @@ public:
 		return _assetProvider->CanLoad(fileName, file);
 	}
 
-	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		const QString& fileName, FILE* file) override
+	AssetLoadData Load(const QString& fileName, FILE* file) override
 	{
 		return _assetProvider->Load(fileName, file);
 	}

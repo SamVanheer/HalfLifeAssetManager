@@ -13,6 +13,7 @@
 #include "qt/QtLogging.hpp"
 
 #include "settings/ApplicationSettings.hpp"
+#include "settings/ExternalProgramSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
 #include "ui/MainWindow.hpp"
@@ -151,7 +152,20 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 				}
 				else if constexpr (std::is_same_v<T, AssetLoadInExternalProgram>)
 				{
-					// Nothing.
+					const auto externalPrograms = _application->GetApplicationSettings()->GetExternalPrograms();
+
+					const auto programName = externalPrograms->GetName(result.ExternalProgramKey);
+
+					const auto launchResult = _application->TryLaunchExternalProgram(
+						result.ExternalProgramKey, QStringList(fileName),
+						QString{"This model has to be opened in %1."}.arg(programName));
+
+					if (launchResult == LaunchExternalProgramResult::Failed)
+					{
+						throw AssetException(QString{R"(File "%1" has to be opened in %2.
+Set the %2 executable setting to open the model through that program instead.)"}
+							.arg(fileName).arg(programName).toStdString());
+					}
 				}
 				else
 				{

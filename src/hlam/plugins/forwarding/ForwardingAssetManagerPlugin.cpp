@@ -48,21 +48,9 @@ public:
 		return false;
 	}
 
-	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		const QString& fileName, FILE* file) override
+	AssetLoadData Load(const QString& fileName, FILE* file) override
 	{
-		const auto result = _application->TryLaunchExternalProgram(
-			Quake1ModelViewerFileNameKey, QStringList(fileName),
-			"This is a Quake 1 Alias model which requires it to be loaded in Quake 1 Model Viewer.");
-
-		if (result != LaunchExternalProgramResult::Failed)
-		{
-			return AssetLoadInExternalProgram{.Loaded = result == LaunchExternalProgramResult::Success};
-		}
-
-		throw AssetException(std::string{"File \""} + fileName.toStdString()
-			+ "\" is a Quake 1 Alias model and cannot be opened by this program."
-			+ "\nSet the Quake 1 Model Viewer executable setting to open the model through that program instead.");
+		return AssetLoadInExternalProgram{.ExternalProgramKey = Quake1ModelViewerFileNameKey};
 	}
 };
 
@@ -107,21 +95,9 @@ public:
 		return false;
 	}
 
-	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		const QString& fileName, FILE* file) override
+	AssetLoadData Load(const QString& fileName, FILE* file) override
 	{
-		const auto result = _application->TryLaunchExternalProgram(
-			Source1ModelViewerFileNameKey, QStringList(fileName),
-			"This is a Source 1 Studio model which requires it to be loaded in Source 1 Half-Life Model Viewer.");
-
-		if (result != LaunchExternalProgramResult::Failed)
-		{
-			return AssetLoadInExternalProgram{.Loaded = result == LaunchExternalProgramResult::Success};
-		}
-
-		throw AssetException(std::string{"File \""} + fileName.toStdString()
-			+ "\" is a Source 1 Studio model and cannot be opened by this program."
-			+ "\nSet the Source 1 Half-Life Model Viewer executable setting to open the model through that program instead.");
+		return AssetLoadInExternalProgram{.ExternalProgramKey = Source1ModelViewerFileNameKey};
 	}
 };
 
@@ -165,32 +141,18 @@ public:
 		return false;
 	}
 
-	std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		const QString& fileName, FILE* file) override
+	AssetLoadData Load(const QString& fileName, FILE* file) override
 	{
-		const auto result = _application->TryLaunchExternalProgram(
-			NexonModelViewerFileNameKey, QStringList(fileName),
-			"This is a Counter-Strike Nexon Studio model which requires it to be loaded in Counter-Strike Nexon Model Viewer.");
-
-		if (result != LaunchExternalProgramResult::Failed)
-		{
-			return AssetLoadInExternalProgram{.Loaded = result == LaunchExternalProgramResult::Success};
-		}
-
-		throw AssetException(std::string{"File \""} + fileName.toStdString()
-			+ "\" is a Counter-Strike Nexon Studio model and cannot be opened by this program."
-			+ "\nSet the Counter-Strike Nexon Half-Life Model Viewer executable setting to open the model through that program instead.");
+		return AssetLoadInExternalProgram{.ExternalProgramKey = NexonModelViewerFileNameKey};
 	}
 };
 
 bool ForwardingAssetManagerPlugin::Initialize(AssetManager* application)
 {
-	application->GetApplicationSettings()->GetExternalPrograms()->AddProgram(
-		Quake1ModelViewerFileNameKey, "Quake 1 Model Viewer");
-	application->GetApplicationSettings()->GetExternalPrograms()->AddProgram(
-		Source1ModelViewerFileNameKey, "Source 1 Model Viewer");
-	application->GetApplicationSettings()->GetExternalPrograms()->AddProgram(
-		NexonModelViewerFileNameKey, "Counter-Strike Nexon Model Viewer");
+	const auto externalPrograms = application->GetApplicationSettings()->GetExternalPrograms();
+	externalPrograms->AddProgram(Quake1ModelViewerFileNameKey, "Quake 1 Model Viewer");
+	externalPrograms->AddProgram(Source1ModelViewerFileNameKey, "Source 1 Model Viewer");
+	externalPrograms->AddProgram(NexonModelViewerFileNameKey, "Counter-Strike Nexon Model Viewer");
 
 	application->GetAssetProviderRegistry()->AddProvider(std::make_unique<Quake1AliasModelAssetProvider>(application));
 	application->GetAssetProviderRegistry()->AddProvider(std::make_unique<Source1StudioModelAssetProvider>(application));

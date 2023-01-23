@@ -341,8 +341,7 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) cons
 	return studiomdl::IsStudioModel(file);
 }
 
-std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAssetProvider::Load(
-	const QString& fileName, FILE* file)
+AssetLoadData StudioModelAssetProvider::Load(const QString& fileName, FILE* file)
 {
 	const auto filePath = std::filesystem::u8path(fileName.toStdString());
 	auto studioModel = studiomdl::LoadStudioModel(filePath, file);
@@ -350,19 +349,7 @@ std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> StudioModelAsse
 	if (studiomdl::IsXashModel(*studioModel))
 	{
 		_logger->debug("Model {} is a Xash model", fileName);
-
-		const auto result = _application->TryLaunchExternalProgram(
-			XashModelViewerFileNameKey, QStringList(fileName),
-			"This is a Xash model which requires it to be loaded in Xash Model Viewer.");
-
-		if (result != LaunchExternalProgramResult::Failed)
-		{
-			return AssetLoadInExternalProgram{.Loaded = result == LaunchExternalProgramResult::Success};
-		}
-		
-		throw AssetException(std::string{"File \""} + fileName.toStdString()
-			+ "\" is a Xash model and cannot be opened by this program."
-			+ "\nSet the Xash Model Viewer executable setting to open the model through that program instead.");
+		return AssetLoadInExternalProgram{.ExternalProgramKey = XashModelViewerFileNameKey};
 	}
 
 	auto editableStudioModel = studiomdl::ConvertToEditable(*studioModel);

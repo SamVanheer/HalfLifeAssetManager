@@ -74,8 +74,10 @@ private:
 
 struct AssetLoadInExternalProgram
 {
-	bool Loaded = false;
+	QString ExternalProgramKey;
 };
+
+using AssetLoadData = std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram>;
 
 /**
 *	@brief Provides a means of loading and saving assets
@@ -125,8 +127,7 @@ public:
 	virtual bool CanLoad(const QString& fileName, FILE* file) const = 0;
 
 	//TODO: pass a filesystem object to resolve additional file locations with
-	virtual std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> Load(
-		const QString& fileName, FILE* file) = 0;
+	virtual AssetLoadData Load(const QString& fileName, FILE* file) = 0;
 
 	/**
 	*	@brief Returns whether the given file is a candidate for loading when a file list is presented to the user.
