@@ -272,13 +272,11 @@ void AssetManager::SetPath(const QString& pathName, const QString& path)
 }
 
 LaunchExternalProgramResult AssetManager::TryLaunchExternalProgram(
-	const QString& programKey, const QStringList& arguments, const QString& message)
+	const QString& programKey, const QStringList& arguments, const std::optional<QString> confirmMessage)
 {
 	const auto externalPrograms = GetApplicationSettings()->GetExternalPrograms();
 
-	QString exeFileName = externalPrograms->GetProgram(programKey);
-
-	exeFileName = exeFileName.trimmed();
+	const QString exeFileName = externalPrograms->GetProgram(programKey);
 
 	if (exeFileName.isEmpty())
 	{
@@ -297,10 +295,10 @@ LaunchExternalProgramResult AssetManager::TryLaunchExternalProgram(
 
 	QMessageBox::StandardButton action = QMessageBox::StandardButton::Yes;
 
-	if (externalPrograms->PromptExternalProgramLaunch)
+	if (confirmMessage && externalPrograms->PromptExternalProgramLaunch)
 	{
 		action = QMessageBox::question(GetMainWindow(), "Launch External Program",
-			QString{"%1\nLaunch \"%2\"?"}.arg(message).arg(info.fileName()),
+			QString{"%1\nLaunch \"%2\"?"}.arg(*confirmMessage).arg(info.fileName()),
 			QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::Cancel);
 	}
 
@@ -350,20 +348,9 @@ void AssetManager::OnExit()
 	CallPlugins(&IAssetManagerPlugin::Shutdown);
 }
 
-void AssetManager::OnFileNameReceived(const QString& fileName)
+void AssetManager::LoadFile(const QString& fileName)
 {
-	if (_mainWindow->isMaximized())
-	{
-		_mainWindow->showMaximized();
-	}
-	else
-	{
-		_mainWindow->showNormal();
-	}
-
-	_mainWindow->activateWindow();
-
-	GetAssets()->TryLoad(fileName);
+	_mainWindow->LoadFile(fileName);
 }
 
 void AssetManager::OnTimerTick()

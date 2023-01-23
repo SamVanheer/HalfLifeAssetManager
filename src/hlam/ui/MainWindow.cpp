@@ -33,6 +33,7 @@
 #include "qt/QtUtilities.hpp"
 
 #include "settings/ApplicationSettings.hpp"
+#include "settings/ExternalProgramSettings.hpp"
 #include "settings/GameConfigurationsSettings.hpp"
 #include "settings/RecentFilesSettings.hpp"
 
@@ -42,12 +43,15 @@
 #include "ui/DragNDropEventFilter.hpp"
 #include "ui/FullscreenWidget.hpp"
 #include "ui/MainWindow.hpp"
-#include "ui/SceneWidget.hpp"
+
+#include "ui/dialogs/OpenInExternalProgramDialog.hpp"
 
 #include "ui/dockpanels/FileBrowser.hpp"
 #include "ui/dockpanels/MessagesPanel.hpp"
 
 #include "ui/options/OptionsDialog.hpp"
+
+#include "utility/Utility.hpp"
 
 const QString AssetPathName{QStringLiteral("AssetPath")};
 
@@ -416,6 +420,22 @@ void MainWindow::LoadSettings()
 	}
 }
 
+void MainWindow::LoadFile(const QString& fileName)
+{
+	if (isMaximized())
+	{
+		showMaximized();
+	}
+	else
+	{
+		showNormal();
+	}
+
+	activateWindow();
+
+	MaybeOpenAll(QStringList{fileName});
+}
+
 void MainWindow::closeEvent(QCloseEvent* event)
 {
 	// If the user is in fullscreen mode force them out of it.
@@ -480,38 +500,106 @@ void MainWindow::MaybeOpenAll(const QStringList& fileNames)
 	// Set directory to first file. All files are in the same directory.
 	_application->SetPath(AssetPathName, fileNames[0]);
 
-	const TimerSuspender timerSuspender{_application};
+	std::vector<ExternalProgramCommand> filesToLoadInExternalPrograms;
 
-	QProgressDialog progress(
-		QString{"Opening %1 assets..."}.arg(fileNames.size()), "Abort Open", 0, fileNames.size(), this);
-	progress.setWindowModality(Qt::WindowModal);
-
-	// Always show immediately for 10 or more, wait only a second otherwise for slow loading assets.
-	progress.setMinimumDuration(fileNames.size() < 10 ? 1000 : 0);
-
-	// Make the tab widget invisible to reduce overhead from updating it.
-	_assetTabs->setVisible(false);
-	_modifyingTabs = true;
-
-	for (int i = 0; const auto & fileName : fileNames)
 	{
-		progress.setValue(i++);
+		const auto externalPrograms = _application->GetApplicationSettings()->GetExternalPrograms();
+		const std::shared_ptr<spdlog::logger> logger = _application->GetLogger();
 
-		if (progress.wasCanceled())
-			break;
+		const TimerSuspender timerSuspender{_application};
 
-		if (_assets->TryLoad(fileName) == AssetLoadResult::Success)
+		QProgressDialog progress(
+			QString{"Opening %1 assets..."}.arg(fileNames.size()), "Abort Open", 0, fileNames.size(), this);
+		progress.setWindowModality(Qt::WindowModal);
+
+		// Always show immediately for 10 or more, wait only a second otherwise for slow loading assets.
+		progress.setMinimumDuration(fileNames.size() < 10 ? 1000 : 0);
+
+		// Make the tab widget invisible to reduce overhead from updating it.
+		_assetTabs->setVisible(false);
+		_modifyingTabs = true;
+
+		for (int i = 0; const auto & fileName : fileNames)
 		{
-			_activateNewTabs = false;
+			progress.setValue(i++);
+
+			if (progress.wasCanceled())
+				break;
+
+			auto loadResult = _assets->TryLoad(fileName);
+
+			std::visit([&](auto&& result)
+				{
+					using T = std::decay_t<decltype(result)>;
+
+					if constexpr (std::is_same_v<T, AssetLoadAction>)
+					{
+						if (result == AssetLoadAction::Success)
+						{
+							_activateNewTabs = false;
+						}
+					}
+					else if constexpr (std::is_same_v<T, AssetLoadInExternalProgram>)
+					{
+						filesToLoadInExternalPrograms.emplace_back(fileName, std::move(result.ExternalProgramKey));
+					}
+					else
+					{
+						static_assert(always_false_v<T>, "Unhandled Asset load return type");
+					}
+				}, loadResult);
 		}
+
+		_activateNewTabs = true;
+
+		progress.setValue(fileNames.size());
+
+		_modifyingTabs = false;
+		_assetTabs->setVisible(_assetTabs->count() > 0);
 	}
 
-	_activateNewTabs = true;
+	// Use the simplified dialog when there's only one.
+	switch (filesToLoadInExternalPrograms.size())
+	{
+	case 0U: break;
+	case 1U:
+	{
+		const auto& file = filesToLoadInExternalPrograms.front();
+		TryLoadInExternalProgram(file.FileName, file.ExternalProgramKey);
+		break;
+	}
 
-	progress.setValue(fileNames.size());
+	default:
+	{
+		OpenInExternalProgramDialog dialog{_application, this, filesToLoadInExternalPrograms};
+		dialog.exec();
+		break;
+	}
+	}
+}
 
-	_modifyingTabs = false;
-	_assetTabs->setVisible(_assetTabs->count() > 0);
+void MainWindow::TryLoadInExternalProgram(const QString& fileName, const QString& externalProgramKey)
+{
+	const auto externalPrograms = _application->GetApplicationSettings()->GetExternalPrograms();
+
+	const auto programName = externalPrograms->GetName(externalProgramKey);
+
+	const auto launchResult = _application->TryLaunchExternalProgram(
+		externalProgramKey, QStringList(fileName),
+		QString{"This file has to be opened in %1."}.arg(programName));
+
+	switch (launchResult)
+	{
+	case LaunchExternalProgramResult::Success:
+		_application->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
+		break;
+
+	case LaunchExternalProgramResult::Failed:
+		_application->GetLogger()->error(R"(Error loading asset "{0}":
+File "{0}" has to be opened in {1}.
+Set the {1} executable setting to open the file through that program instead.)", fileName, programName);
+		break;
+	}
 }
 
 void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
@@ -819,7 +907,7 @@ void MainWindow::OnRecentFilesChanged()
 void MainWindow::OnOpenRecentFile()
 {
 	const auto action = static_cast<QAction*>(sender());
-	_assets->TryLoad(action->text());
+	MaybeOpenAll(QStringList{action->text()});
 }
 
 void MainWindow::OnTextureFiltersChanged()

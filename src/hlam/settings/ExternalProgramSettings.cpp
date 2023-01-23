@@ -50,5 +50,5 @@ QString ExternalProgramSettings::GetProgram(const QString& key) const
 
 void ExternalProgramSettings::SetProgram(const QString& key, const QString& value)
 {
-	_externalPrograms[key].ExecutablePath = value;
+	_externalPrograms[key].ExecutablePath = value.trimmed();
 }

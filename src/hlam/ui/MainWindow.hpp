@@ -33,6 +33,8 @@ public:
 
 	void LoadSettings();
 
+	void LoadFile(const QString& fileName);
+
 protected:
 	void closeEvent(QCloseEvent* event) override;
 
@@ -42,6 +44,8 @@ private:
 	void UpdateTitle(const QString& fileName, bool hasUnsavedChanges);
 
 	void MaybeOpenAll(const QStringList& fileNames);
+
+	void TryLoadInExternalProgram(const QString& fileName, const QString& externalProgramKey);
 
 	void CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges);
 

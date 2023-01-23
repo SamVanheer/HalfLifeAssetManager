@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -131,14 +132,14 @@ public:
 	*	@brief Try to launch an external program.
 	*	The user is asked what to do.
 	*/
-	LaunchExternalProgramResult TryLaunchExternalProgram(
-		const QString& programKey, const QStringList& arguments, const QString& message);
+	LaunchExternalProgramResult TryLaunchExternalProgram(const QString& programKey, const QStringList& arguments,
+		const std::optional<QString> confirmMessage = std::nullopt);
 
 	void Start();
 
 	void OnExit();
 
-	void OnFileNameReceived(const QString& fileName);
+	void LoadFile(const QString& fileName);
 
 private:
 	template<typename TFunction, typename... Args>

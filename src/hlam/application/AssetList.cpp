@@ -65,20 +65,36 @@ void AssetList::SetCurrent(Asset* asset)
 
 AssetLoadResult AssetList::TryLoad(const QString& fileName)
 {
-	const AssetLoadResult result = TryLoadCore(fileName);
+	const AssetLoadResult loadResult = TryLoadCore(fileName);
 
-	switch (result)
-	{
-	case AssetLoadResult::Success:
-		_application->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
-		break;
+	return std::visit([&, this](auto&& result) -> AssetLoadResult
+		{
+			using T = std::decay_t<decltype(result)>;
 
-	case AssetLoadResult::Failed:
-		_application->GetApplicationSettings()->GetRecentFiles()->Remove(fileName);
-		break;
-	}
+			if constexpr (std::is_same_v<T, AssetLoadAction>)
+			{
+				switch (result)
+				{
+				case AssetLoadAction::Success:
+					_application->GetApplicationSettings()->GetRecentFiles()->Add(fileName);
+					break;
 
-	return result;
+				case AssetLoadAction::Failed:
+					_application->GetApplicationSettings()->GetRecentFiles()->Remove(fileName);
+					break;
+				}
+			}
+			else if constexpr (std::is_same_v<T, AssetLoadInExternalProgram>)
+			{
+				// Let the caller handle this.
+			}
+			else
+			{
+				static_assert(always_false_v<T>, "Unhandled Asset load return type");
+			}
+
+			return result;
+		}, loadResult);
 }
 
 AssetLoadResult AssetList::TryLoadCore(QString fileName)
@@ -88,7 +104,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 	if (fileName.isEmpty())
 	{
 		_logger->error("Asset filename is empty");
-		return AssetLoadResult::Failed;
+		return AssetLoadAction::Failed;
 	}
 
 	const QFileInfo fileInfo{fileName};
@@ -100,7 +116,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 	if (!fileInfo.exists())
 	{
 		_logger->error("Asset \"{}\" does not exist", fileName);
-		return AssetLoadResult::Failed;
+		return AssetLoadAction::Failed;
 	}
 
 	// First check if it's already loaded.
@@ -113,7 +129,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 			SetCurrent(asset);
 			const bool result = RefreshCurrent();
 
-			return result ? AssetLoadResult::Success : AssetLoadResult::Cancelled;
+			return result ? AssetLoadAction::Success : AssetLoadAction::Cancelled;
 		}
 	}
 
@@ -122,7 +138,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 		if (!TryClose(0, true))
 		{
 			//User canceled, abort load
-			return AssetLoadResult::Cancelled;
+			return AssetLoadAction::Cancelled;
 		}
 	}
 
@@ -130,7 +146,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 	{
 		auto asset = _application->GetAssetProviderRegistry()->Load(fileName);
 
-		return std::visit([&, this](auto&& result)
+		return std::visit([&, this](auto&& result) -> AssetLoadResult
 			{
 				using T = std::decay_t<decltype(result)>;
 
@@ -139,7 +155,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 					if (!result)
 					{
 						_logger->debug("Asset \"{}\" couldn't be loaded", fileName);
-						return AssetLoadResult::Failed;
+						return AssetLoadAction::Failed;
 					}
 
 					connect(result.get(), &Asset::FileNameChanged, this, &AssetList::OnAssetFileNameChanged);
@@ -152,27 +168,14 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 				}
 				else if constexpr (std::is_same_v<T, AssetLoadInExternalProgram>)
 				{
-					const auto externalPrograms = _application->GetApplicationSettings()->GetExternalPrograms();
-
-					const auto programName = externalPrograms->GetName(result.ExternalProgramKey);
-
-					const auto launchResult = _application->TryLaunchExternalProgram(
-						result.ExternalProgramKey, QStringList(fileName),
-						QString{"This model has to be opened in %1."}.arg(programName));
-
-					if (launchResult == LaunchExternalProgramResult::Failed)
-					{
-						throw AssetException(QString{R"(File "%1" has to be opened in %2.
-Set the %2 executable setting to open the model through that program instead.)"}
-							.arg(fileName).arg(programName).toStdString());
-					}
+					return result;
 				}
 				else
 				{
 					static_assert(always_false_v<T>, "Unhandled Asset load return type");
 				}
 
-				return AssetLoadResult::Success;
+				return AssetLoadAction::Success;
 			}, asset);
 	}
 	catch (const AssetException& e)
@@ -180,7 +183,7 @@ Set the %2 executable setting to open the model through that program instead.)"}
 		_logger->error("Error loading asset \"{}\":\n{}", fileName, e.what());
 	}
 
-	return AssetLoadResult::Failed;
+	return AssetLoadAction::Failed;
 }
 
 bool AssetList::TryClose(int index, bool verifyUnsavedChanges, bool allowCancel)

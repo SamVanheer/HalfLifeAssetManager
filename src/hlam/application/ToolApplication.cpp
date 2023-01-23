@@ -146,15 +146,14 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		if (_singleInstance)
 		{
-			connect(_singleInstance.get(), &SingleInstance::FileNameReceived,
-				_application.get(), &AssetManager::OnFileNameReceived);
+			connect(_singleInstance.get(), &SingleInstance::FileNameReceived, _application.get(), &AssetManager::LoadFile);
 		}
 
 		_application->Start();
 
 		if (!commandLine.FileName.isEmpty())
 		{
-			_application->GetAssets()->TryLoad(commandLine.FileName);
+			_application->LoadFile(commandLine.FileName);
 		}
 
 		return app.exec();

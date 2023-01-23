@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include <QObject>
@@ -12,12 +13,14 @@
 
 class AssetManager;
 
-enum class AssetLoadResult
+enum class AssetLoadAction
 {
 	Success = 0,
 	Failed,
 	Cancelled
 };
+
+using AssetLoadResult = std::variant<AssetLoadAction, AssetLoadInExternalProgram>;
 
 class AssetList final : public QObject
 {
