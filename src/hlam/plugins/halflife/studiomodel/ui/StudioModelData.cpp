@@ -184,8 +184,14 @@ public:
 protected:
 	QString ElementToString(const QModelIndex& index) const override
 	{
+		// Trim excess whitespace and replace newlines with whitespace so names don't spread across multiple lines.
+		QString sequenceName = QString::fromStdString((*_items)[index.row()]->Label)
+			.trimmed()
+			.replace('\r', ' ')
+			.replace('\n', ' ');
+
 		return QString{"%1 (%2)"}
-			.arg(QString::fromStdString((*_items)[index.row()]->Label))
+			.arg(sequenceName)
 			.arg(index.row());
 	}
 };
