@@ -27,6 +27,7 @@
 
 #include "settings/ApplicationSettings.hpp"
 
+#include "ui/AboutDialog.hpp"
 #include "ui/OpenGLGraphicsContext.hpp"
 
 const QString LogBaseFileName{QStringLiteral("HLAM-Log.txt")};
@@ -35,51 +36,46 @@ QString LogFileName = LogBaseFileName;
 
 const QtMessageHandler DefaultMessageHandler = qInstallMessageHandler(nullptr);
 
-static bool LogToFile = false;
-
 void AssetManagerMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
-	if (LogToFile)
+	QFile logFile{LogFileName};
+
+	if (!logFile.open(QFile::WriteOnly | QFile::Append))
 	{
-		QFile logFile{LogFileName};
+		QMessageBox::critical(nullptr, "Error", QString{"Couldn't open file \"%1\" for writing log messages"}
+		.arg(QFileInfo{logFile}.absoluteFilePath()));
+	}
+	else
+	{
+		QTextStream stream{&logFile};
 
-		if (!logFile.open(QFile::WriteOnly | QFile::Append))
+		const char* messageType = "Unknown";
+
+		switch (type)
 		{
-			QMessageBox::critical(nullptr, "Error", QString{"Couldn't open file \"%1\" for writing log messages"}
-			.arg(QFileInfo{logFile}.absoluteFilePath()));
+		case QtDebugMsg:
+			messageType = "Debug";
+			break;
+
+		case QtInfoMsg:
+			messageType = "Info";
+			break;
+
+		case QtWarningMsg:
+			messageType = "Warning";
+			break;
+
+		case QtCriticalMsg:
+			messageType = "Critical";
+			break;
+
+		case QtFatalMsg:
+			messageType = "Fatal";
+			break;
 		}
-		else
-		{
-			QTextStream stream{&logFile};
 
-			const char* messageType = "Unknown";
-
-			switch (type)
-			{
-			case QtDebugMsg:
-				messageType = "Debug";
-				break;
-
-			case QtInfoMsg:
-				messageType = "Info";
-				break;
-
-			case QtWarningMsg:
-				messageType = "Warning";
-				break;
-
-			case QtCriticalMsg:
-				messageType = "Critical";
-				break;
-
-			case QtFatalMsg:
-				messageType = "Fatal";
-				break;
-			}
-
-			stream << messageType << ": "
-				<< msg << " (" << context.file << ":" << context.line << ", " << context.function << ")\n";
-		}
+		stream << messageType << ": "
+			<< msg << " (" << context.file << ":" << context.line << ", " << context.function << ")\n";
 	}
 
 	if (auto application = ToolApplication::GetApplication(); application)
@@ -126,9 +122,9 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		QFile::remove(LogFileName);
 
-		LogToFile = commandLine.LogDebugMessagesToConsole;
-
 		qInstallMessageHandler(&AssetManagerMessageOutput);
+
+		LogAppInfo();
 
 		if (CheckSingleInstance(programName, commandLine.FileName, *settings))
 		{
@@ -180,7 +176,6 @@ ParsedCommandLine ToolApplication::ParseCommandLine(const QStringList& arguments
 	QCommandLineParser parser;
 
 	parser.addOption(QCommandLineOption{"portable", "Launch in portable mode"});
-	parser.addOption(QCommandLineOption{"log-to-file", "Log debug messages to a file"});
 	parser.addPositionalArgument("fileName", "Filename of the model to load on startup", "[fileName]");
 
 	parser.process(arguments);
@@ -188,7 +183,6 @@ ParsedCommandLine ToolApplication::ParseCommandLine(const QStringList& arguments
 	ParsedCommandLine result;
 
 	result.IsPortable = parser.isSet("portable");
-	result.LogDebugMessagesToConsole = parser.isSet("log-to-file");
 
 	const auto positionalArguments = parser.positionalArguments();
 

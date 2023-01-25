@@ -20,7 +20,6 @@ class IGraphicsContext;
 struct ParsedCommandLine
 {
 	bool IsPortable{false};
-	bool LogDebugMessagesToConsole{false};
 	QString FileName;
 };
 

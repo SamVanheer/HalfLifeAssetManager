@@ -2,4 +2,6 @@
 
 class QWidget;
 
+void LogAppInfo();
+
 void ShowAboutDialog(QWidget* parent);
