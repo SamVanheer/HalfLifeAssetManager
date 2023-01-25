@@ -11,7 +11,10 @@ void ExternalProgramSettings::LoadSettings()
 	_settings->beginGroup("Programs");
 	for (auto& program : _externalPrograms.keys())
 	{
-		SetProgram(program, _settings->value(program, QString{}).toString());
+		_settings->beginGroup(program);
+		SetProgram(program, _settings->value("ExecutablePath", QString{}).toString());
+		SetAdditionalArguments(program, _settings->value("AdditionalArguments", QString{}).toString());
+		_settings->endGroup();
 	}
 	_settings->endGroup();
 	_settings->endGroup();
@@ -25,7 +28,10 @@ void ExternalProgramSettings::SaveSettings()
 	_settings->beginGroup("Programs");
 	for (auto& program : _externalPrograms.keys())
 	{
-		_settings->setValue(program, _externalPrograms[program].ExecutablePath);
+		_settings->beginGroup(program);
+		_settings->setValue("ExecutablePath", GetProgram(program));
+		_settings->setValue("AdditionalArguments", GetAdditionalArguments(program));
+		_settings->endGroup();
 	}
 	_settings->endGroup();
 	_settings->endGroup();
@@ -47,7 +53,17 @@ QString ExternalProgramSettings::GetProgram(const QString& key) const
 	return _externalPrograms.value(key).ExecutablePath;
 }
 
+QString ExternalProgramSettings::GetAdditionalArguments(const QString& key) const
+{
+	return _externalPrograms.value(key).AdditionalArguments;
+}
+
 void ExternalProgramSettings::SetProgram(const QString& key, const QString& value)
 {
 	_externalPrograms[key].ExecutablePath = value.trimmed();
+}
+
+void ExternalProgramSettings::SetAdditionalArguments(const QString& key, const QString& value)
+{
+	_externalPrograms[key].AdditionalArguments = value.trimmed();
 }

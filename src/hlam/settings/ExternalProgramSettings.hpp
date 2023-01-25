@@ -9,6 +9,7 @@ struct ExternalProgram
 {
 	QString Name;
 	QString ExecutablePath;
+	QString AdditionalArguments;
 };
 
 class ExternalProgramSettings final : public BaseSettings
@@ -29,7 +30,11 @@ public:
 
 	QString GetProgram(const QString& key) const;
 
+	QString GetAdditionalArguments(const QString& key) const;
+
 	void SetProgram(const QString& key, const QString& value);
+
+	void SetAdditionalArguments(const QString& key, const QString& value);
 
 	bool PromptExternalProgramLaunch{DefaultPromptExternalProgramLaunch};
 

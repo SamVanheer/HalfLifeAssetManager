@@ -30,6 +30,9 @@ public:
 
 	void ApplyChanges() override;
 
+private slots:
+	void OnProgramChanged(int index);
+
 private:
 	Ui_OptionsPageExternalPrograms _ui;
 

@@ -307,10 +307,14 @@ LaunchExternalProgramResult AssetManager::TryLaunchExternalProgram(
 		return LaunchExternalProgramResult::Cancelled;
 	}
 
-	_logger->info("Launching external program \"{}\" {}", exeFileName, arguments.join(" "));
+	QStringList allArguments = QProcess::splitCommand(externalPrograms->GetAdditionalArguments(programKey));
+
+	allArguments.append(arguments);
+
+	_logger->info("Launching external program \"{}\" {}", exeFileName, allArguments.join(" "));
 
 	// Make sure the working directory is the exe location to avoid bugs.
-	if (!QProcess::startDetached(exeFileName, arguments, info.absolutePath()))
+	if (!QProcess::startDetached(exeFileName, allArguments, info.absolutePath()))
 	{
 		_logger->critical("The external program could not be launched");
 	}

@@ -2,6 +2,7 @@
 
 #include <QFileDialog>
 #include <QPushButton>
+#include <QSignalBlocker>
 
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ExternalProgramSettings.hpp"
@@ -12,6 +13,13 @@
 
 const QString OptionsPageExternalProgramsId{QStringLiteral("E.ExternalPrograms")};
 const QString ExternalProgramsExeFilter{QStringLiteral("Executable Files (*.exe *.com);;All Files (*.*)")};
+
+enum ExternalProgramsRole
+{
+	KeyRole = Qt::UserRole,
+	ExecutablePathRole,
+	AdditionalArgumentsRole,
+};
 
 OptionsPageExternalPrograms::OptionsPageExternalPrograms(const std::shared_ptr<ApplicationSettings>& applicationSettings)
 	: _applicationSettings(applicationSettings)
@@ -45,49 +53,45 @@ OptionsPageExternalProgramsWidget::OptionsPageExternalProgramsWidget(
 
 	keys.sort();
 
-	_ui.Programs->setRowCount(keys.count());
-
 	for (int row = 0; const auto& key : keys)
 	{
-		auto name = new QTableWidgetItem(externalPrograms->GetName(key));
-
-		name->setFlags(name->flags() & ~(Qt::ItemFlag::ItemIsEditable));
-
-		_ui.Programs->setItem(row, 0, name);
-
-		auto executable = new QTableWidgetItem(externalPrograms->GetProgram(key));
-
-		executable->setData(Qt::UserRole, key);
-
-		_ui.Programs->setItem(row, 1, executable);
-
-		auto button = new QPushButton("Browse", _ui.Programs);
-
-		button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
-		connect(button, &QPushButton::clicked,
-			this, [this, name, executable]()
-			{
-				const QString fileName{QFileDialog::getOpenFileName(
-					this, QString{"Select %1"}.arg(name->text()), executable->text(), ExternalProgramsExeFilter)};
-
-				if (!fileName.isEmpty())
-				{
-					executable->setText(fileName);
-				}
-			});
-
-		_ui.Programs->setCellWidget(row, 2, button);
+		_ui.Programs->addItem(externalPrograms->GetName(key));
+		_ui.Programs->setItemData(row, key, KeyRole);
+		_ui.Programs->setItemData(row, externalPrograms->GetProgram(key), ExecutablePathRole);
+		_ui.Programs->setItemData(row, externalPrograms->GetAdditionalArguments(key), AdditionalArgumentsRole);
 
 		++row;
 	}
 
-	_ui.Programs->resizeColumnsToContents();
+	connect(_ui.Programs, qOverload<int>(&QComboBox::currentIndexChanged),
+		this, &OptionsPageExternalProgramsWidget::OnProgramChanged);
 
-	_ui.Programs->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeMode::Fixed);
-	_ui.Programs->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-	_ui.Programs->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeMode::Fixed);
+	connect(_ui.ExecutablePath, &QLineEdit::textChanged, this,
+		[this]
+		{
+			_ui.Programs->setItemData(_ui.Programs->currentIndex(), _ui.ExecutablePath->text(), ExecutablePathRole);
+		});
 
+	connect(_ui.Arguments, &QLineEdit::textChanged, this,
+		[this]
+		{
+			_ui.Programs->setItemData(_ui.Programs->currentIndex(), _ui.Arguments->text(), AdditionalArgumentsRole);
+		});
+
+	connect(_ui.BrowseExecutablePath, &QPushButton::clicked, this,
+		[this]
+		{
+			const QString fileName{QFileDialog::getOpenFileName(
+				this, QString{"Select %1"}.arg(_ui.Programs->currentText()), _ui.ExecutablePath->text(),
+				ExternalProgramsExeFilter)};
+
+			if (!fileName.isEmpty())
+			{
+				_ui.ExecutablePath->setText(fileName);
+			}
+		});
+
+	OnProgramChanged(_ui.Programs->currentIndex());
 	setEnabled(keys.size() > 0);
 }
 
@@ -99,10 +103,22 @@ void OptionsPageExternalProgramsWidget::ApplyChanges()
 
 	externalPrograms->PromptExternalProgramLaunch = _ui.PromptExternalProgramLaunch->isChecked();
 
-	for (int row = 0; row < _ui.Programs->rowCount(); ++row)
+	for (int row = 0; row < _ui.Programs->count(); ++row)
 	{
-		auto executable = _ui.Programs->item(row, 1);
+		const auto key = _ui.Programs->itemData(row, KeyRole).toString();
 
-		externalPrograms->SetProgram(executable->data(Qt::UserRole).toString(), executable->text());
+		externalPrograms->SetProgram(key, _ui.Programs->itemData(row, ExecutablePathRole).toString());
+		externalPrograms->SetAdditionalArguments(key, _ui.Programs->itemData(row, AdditionalArgumentsRole).toString());
 	}
+}
+
+void OptionsPageExternalProgramsWidget::OnProgramChanged(int index)
+{
+	const QSignalBlocker executablePathBlocker{_ui.ExecutablePath};
+	const QSignalBlocker argumentsBlocker{_ui.Arguments};
+
+	_ui.ExecutablePath->setText(_ui.Programs->itemData(index, ExecutablePathRole).toString());
+	_ui.Arguments->setText(_ui.Programs->itemData(index, AdditionalArgumentsRole).toString());
+
+	_ui.ProgramData->setEnabled(index != -1);
 }
