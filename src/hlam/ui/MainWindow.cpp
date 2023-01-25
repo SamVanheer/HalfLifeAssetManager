@@ -11,14 +11,16 @@
 #include <QDockWidget>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QGridLayout>
 #include <QMenu>
 #include <QMessageBox>
 #include <QOpenGLFunctions>
 #include <QProgressDialog>
 #include <QScreen>
-#include <QTabWidget>
+#include <QTabBar>
 #include <QToolButton>
 #include <QUndoGroup>
+#include <QWidget>
 #include <QWindow>
 
 #include "application/AssetIO.hpp"
@@ -155,20 +157,33 @@ MainWindow::MainWindow(AssetManager* application)
 		_ui.MenuView->addAction(dock->toggleViewAction());
 	}
 
-	_assetTabs = new QTabWidget(this);
+	_assetsWidget = new QWidget(this);
 
 	{
-		auto sizePolicy = _assetTabs->sizePolicy();
+		auto sizePolicy = _assetsWidget->sizePolicy();
 		sizePolicy.setRetainSizeWhenHidden(true);
-		_assetTabs->setSizePolicy(sizePolicy);
+		_assetsWidget->setSizePolicy(sizePolicy);
 	}
+
+	_assetsLayout = new QGridLayout(_assetsWidget);
+
+	_assetsLayout->setSpacing(0);
+	_assetsLayout->setContentsMargins(0, 0, 0, 0);
+
+	_assetsWidget->setLayout(_assetsLayout);
+
+	_assetTabs = new QTabBar(this);
+
+	_assetsLayout->addWidget(_assetTabs, 0, 0);
 
 	//Eliminate the border on the sides so the scene widget takes up all horizontal space
 	_assetTabs->setDocumentMode(true);
+	_assetTabs->setExpanding(false);
+	_assetTabs->setDrawBase(true);
 	_assetTabs->setTabsClosable(true);
 	_assetTabs->setElideMode(Qt::TextElideMode::ElideLeft);
 
-	setCentralWidget(_assetTabs);
+	setCentralWidget(_assetsWidget);
 
 	_assetListMenu = new QMenu(_assetTabs);
 	_assetListMenu->setStyleSheet("QMenu { menu-scrollable: 1; }");
@@ -178,7 +193,7 @@ MainWindow::MainWindow(AssetManager* application)
 	_assetListButton->setMenu(_assetListMenu);
 	_assetListButton->setPopupMode(QToolButton::InstantPopup);
 
-	_assetTabs->setCornerWidget(_assetListButton, Qt::TopRightCorner);
+	_assetsLayout->addWidget(_assetListButton, 0, 1);
 
 	setAcceptDrops(true);
 
@@ -270,8 +285,8 @@ MainWindow::MainWindow(AssetManager* application)
 
 	connect(_undoGroup, &QUndoGroup::cleanChanged, this, [this](bool clean) { setWindowModified(!clean); });
 
-	connect(_assetTabs, &QTabWidget::currentChanged, this, &MainWindow::OnAssetTabChanged);
-	connect(_assetTabs, &QTabWidget::tabCloseRequested, this, [this](int index) { _assets->TryClose(index, true); });
+	connect(_assetTabs, &QTabBar::currentChanged, this, &MainWindow::OnAssetTabChanged);
+	connect(_assetTabs, &QTabBar::tabCloseRequested, this, [this](int index) { _assets->TryClose(index, true); });
 
 	connect(_assets, &AssetList::AssetAdded, this, &MainWindow::OnAssetAdded);
 	connect(_assets, &AssetList::AboutToCloseAsset, this, &MainWindow::OnAboutToCloseAsset);
@@ -298,7 +313,7 @@ MainWindow::MainWindow(AssetManager* application)
 		}
 	}
 
-	_assetTabs->setVisible(false);
+	_assetsWidget->setVisible(false);
 
 	OnRecentFilesChanged();
 
@@ -463,7 +478,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 {
-	if (watched == _assetTabs->tabBar())
+	if (watched == _assetTabs)
 	{
 		if (event->type() == QEvent::Type::MouseButtonPress)
 		{
@@ -471,7 +486,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event)
 
 			if (mouseEvent->button() == Qt::MouseButton::MiddleButton)
 			{
-				auto tab = _assetTabs->tabBar()->tabAt(mouseEvent->pos());
+				auto tab = _assetTabs->tabAt(mouseEvent->pos());
 
 				if (tab != -1)
 				{
@@ -517,7 +532,7 @@ void MainWindow::MaybeOpenAll(const QStringList& fileNames)
 		progress.setMinimumDuration(fileNames.size() < 10 ? 1000 : 0);
 
 		// Make the tab widget invisible to reduce overhead from updating it.
-		_assetTabs->setVisible(false);
+		_assetsWidget->setVisible(false);
 		_modifyingTabs = true;
 
 		for (int i = 0; const auto & fileName : fileNames)
@@ -556,7 +571,7 @@ void MainWindow::MaybeOpenAll(const QStringList& fileNames)
 		progress.setValue(fileNames.size());
 
 		_modifyingTabs = false;
-		_assetTabs->setVisible(_assetTabs->count() > 0);
+		_assetsWidget->setVisible(_assetTabs->count() > 0);
 	}
 
 	// Use the simplified dialog when there's only one.
@@ -623,7 +638,7 @@ void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
 	_assets->SetCurrent(_assets->Get(0));
 
 	// Make the tab widget invisible to reduce overhead from updating it.
-	_assetTabs->setVisible(false);
+	_assetsWidget->setVisible(false);
 	_modifyingTabs = true;
 
 	int i;
@@ -639,18 +654,18 @@ void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
 	progress.setValue(i);
 
 	_modifyingTabs = false;
-	_assetTabs->setVisible(_assetTabs->count() > 0);
+	_assetsWidget->setVisible(_assetTabs->count() > 0);
 }
 
 void MainWindow::SyncSettings()
 {
 	if (_application->GetApplicationSettings()->ShouldAllowTabCloseWithMiddleClick())
 	{
-		_assetTabs->tabBar()->installEventFilter(this);
+		_assetTabs->installEventFilter(this);
 	}
 	else
 	{
-		_assetTabs->tabBar()->removeEventFilter(this);
+		_assetTabs->removeEventFilter(this);
 	}
 
 	if (_application->GetApplicationSettings()->OneAssetAtATime)
@@ -725,7 +740,21 @@ void MainWindow::OnAssetTabChanged(int index)
 
 	if (!_modifyingTabs)
 	{
-		_assetTabs->setVisible(success);
+		_assetsWidget->setVisible(success);
+	}
+
+	QWidget* const nextEditWidget = index != -1 ? currentAsset->GetEditWidget() : nullptr;
+
+	if (_currentEditWidget != nextEditWidget)
+	{
+		_assetsLayout->removeWidget(_currentEditWidget);
+
+		if (nextEditWidget)
+		{
+			_assetsLayout->addWidget(nextEditWidget, 1, 0, 1, 2);
+		}
+
+		_currentEditWidget = nextEditWidget;
 	}
 
 	_assets->SetCurrent(currentAsset);
@@ -744,7 +773,7 @@ void MainWindow::OnAssetAdded(int index)
 	// Add the action before adding the tab so OnAssetTabChanged references the right action.
 	_assetListMenu->addAction(fileName, this, &MainWindow::OnAssetActivated);
 
-	const auto tabIndex = _assetTabs->addTab(asset->GetEditWidget(), fileName);
+	const auto tabIndex = _assetTabs->addTab(fileName);
 
 	assert(tabIndex == index);
 
@@ -794,7 +823,7 @@ void MainWindow::OnAssetFileNameChanged(Asset* asset)
 	const auto action = _assetListMenu->actions()[index];
 	action->setText(fileName);
 
-	if (_assetTabs->currentWidget() == asset->GetEditWidget())
+	if (_assetTabs->currentIndex() == index)
 	{
 		UpdateTitle(asset->GetFileName(), !_undoGroup->isClean());
 	}

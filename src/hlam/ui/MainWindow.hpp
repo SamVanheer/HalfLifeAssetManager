@@ -15,11 +15,13 @@ class AssetProvider;
 class AssetManager;
 class FullscreenWidget;
 class QActionGroup;
+class QGridLayout;
 class QMenu;
 class QStringList;
-class QTabWidget;
+class QTabBar;
 class QToolButton;
 class QUndoGroup;
+class QWidget;
 
 class MainWindow final : public QMainWindow
 {
@@ -96,9 +98,12 @@ private:
 
 	QUndoGroup* const _undoGroup;
 
-	QPointer<QTabWidget> _assetTabs;
+	QWidget* _assetsWidget;
+	QGridLayout* _assetsLayout;
+	QPointer<QTabBar> _assetTabs;
 	QToolButton* _assetListButton;
 	QMenu* _assetListMenu;
+	QPointer<QWidget> _currentEditWidget;
 
 	bool _activateNewTabs = true;
 	bool _modifyingTabs = false;
