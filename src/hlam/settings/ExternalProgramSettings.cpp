@@ -9,8 +9,7 @@ void ExternalProgramSettings::LoadSettings()
 		"PromptExternalProgramLaunch", DefaultPromptExternalProgramLaunch).toBool();
 
 	_settings->beginGroup("Programs");
-	// Load all settings that are in the config file even if they haven't been added yet.
-	for (auto& program : _settings->childKeys())
+	for (auto& program : _externalPrograms.keys())
 	{
 		SetProgram(program, _settings->value(program, QString{}).toString());
 	}
