@@ -773,6 +773,7 @@ void MainWindow::UpdateAssetWidget()
 
 		if (nextEditWidget)
 		{
+			nextEditWidget->setParent(_assetsWidget);
 			_assetsLayout->addWidget(nextEditWidget, 1, 0, 1, 2);
 		}
 
