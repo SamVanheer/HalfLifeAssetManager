@@ -27,14 +27,13 @@
 #include "plugins/halflife/studiomodel/StudioModelAssetProvider.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelEditWidget.hpp"
 
-#include "plugins/halflife/studiomodel/ui/compiler/StudioModelCompilerFrontEnd.hpp"
-#include "plugins/halflife/studiomodel/ui/compiler/StudioModelDecompilerFrontEnd.hpp"
 #include "plugins/halflife/studiomodel/ui/dialogs/QCDataDialog.hpp"
 
 #include "qt/QtLogging.hpp"
 #include "qt/QtUtilities.hpp"
 
 #include "settings/ApplicationSettings.hpp"
+#include "settings/ExternalProgramSettings.hpp"
 #include "settings/StudioModelSettings.hpp"
 
 #include "ui/MainWindow.hpp"
@@ -86,8 +85,16 @@ StudioModelAssetProvider::StudioModelAssetProvider(AssetManager* application,
 
 	_currentAsset = GetDummyAsset();
 
+	connect(_application->GetApplicationSettings(), &ApplicationSettings::SettingsLoaded,
+		this, &StudioModelAssetProvider::UpdateSettingsState);
+	connect(_application->GetApplicationSettings(), &ApplicationSettings::SettingsSaved,
+		this, &StudioModelAssetProvider::UpdateSettingsState);
+
 	connect(_application->GetAssets(), &AssetList::ActiveAssetChanged,
 		this, &StudioModelAssetProvider::OnActiveAssetChanged);
+
+	CreateToolMenu();
+	UpdateSettingsState();
 
 	{
 		const auto graphicsContext = _application->GetGraphicsContext();
@@ -170,31 +177,26 @@ void StudioModelAssetProvider::Tick()
 
 QMenu* StudioModelAssetProvider::CreateToolMenu()
 {
-	auto menu = new QMenu("StudioModel");
-
-	menu->addAction("Compile Model...", [this]
-		{
-			StudioModelCompilerFrontEnd compiler{_application};
-	compiler.exec();
-		});
-
-	menu->addAction("Decompile Model...", [this]
-		{
-			StudioModelDecompilerFrontEnd decompiler{_application};
-	decompiler.exec();
-		});
-
-	menu->addAction("Edit QC File...", []
-		{
-			const QString fileName{QFileDialog::getOpenFileName(nullptr, "Select QC File", {}, "QC files (*.qc);;All Files (*.*)")};
-
-	if (!fileName.isEmpty())
+	if (!_toolMenu)
 	{
-		qt::LaunchDefaultProgram(fileName);
-	}
-		});
+		_toolMenu = new QMenu("StudioModel");
 
-	return menu;
+		_launchCrowbarAction = _toolMenu->addAction("Launch Crowbar",
+			[this] { _application->TryLaunchExternalProgram(CrowbarFileNameKey, QStringList{}); });
+
+		_toolMenu->addAction("Edit QC File...", []
+			{
+				const QString fileName{QFileDialog::getOpenFileName(
+					nullptr, "Select QC File", {}, "QC files (*.qc);;All Files (*.*)")};
+
+				if (!fileName.isEmpty())
+				{
+					qt::LaunchDefaultProgram(fileName);
+				}
+			});
+	}
+
+	return _toolMenu;
 }
 
 void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
@@ -395,6 +397,16 @@ StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget()
 bool StudioModelAssetProvider::CameraIsFirstPerson() const
 {
 	return _cameraOperators->GetCurrent() == _firstPersonCamera;
+}
+
+void StudioModelAssetProvider::UpdateSettingsState()
+{
+	const auto externalPrograms = _application->GetApplicationSettings()->GetExternalPrograms();
+
+	if (_launchCrowbarAction)
+	{
+		_launchCrowbarAction->setEnabled(!externalPrograms->GetProgram(CrowbarFileNameKey).isEmpty());
+	}
 }
 
 void StudioModelAssetProvider::OnActiveAssetChanged(Asset* asset)

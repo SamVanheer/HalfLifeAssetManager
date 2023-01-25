@@ -211,6 +211,9 @@ public:
 	void SetFileListRootDirectory(const QString& directory);
 
 signals:
+	void SettingsLoaded();
+	void SettingsSaved();
+
 	void TickRateChanged(int value);
 
 	void ResizeTexturesToPowerOf2Changed(bool value);

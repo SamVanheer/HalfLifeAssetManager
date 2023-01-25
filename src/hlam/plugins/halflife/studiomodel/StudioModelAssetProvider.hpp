@@ -16,6 +16,7 @@
 class ApplicationSettings;
 class CameraOperators;
 class QAction;
+class QMenu;
 class SceneCameraOperator;
 class StudioModelSettings;
 
@@ -34,6 +35,7 @@ namespace studiomodel
 class StudioModelAsset;
 class StudioModelEditWidget;
 
+inline const QString CrowbarFileNameKey{QStringLiteral("CrowbarFileName")};
 inline const QString XashModelViewerFileNameKey{QStringLiteral("XashModelViewerFileName")};
 inline const QString StudioModelExtension{QStringLiteral("mdl")};
 inline const QString StudioModelPS2Extension{QStringLiteral("dol")};
@@ -100,6 +102,8 @@ signals:
 	void AssetChanged(StudioModelAsset* asset);
 
 private slots:
+	void UpdateSettingsState();
+
 	void OnActiveAssetChanged(Asset* asset);
 
 	void OnDumpModelInfo();
@@ -113,6 +117,8 @@ private:
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<StudioModelAsset> _dummyAsset;
 
+	QPointer<QMenu> _toolMenu;
+	QPointer<QAction> _launchCrowbarAction;
 	QPointer<QAction> _editControlsVisibleAction;
 	QPointer<QAction> _restoreViewAction;
 

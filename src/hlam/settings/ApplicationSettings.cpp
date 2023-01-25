@@ -116,6 +116,8 @@ void ApplicationSettings::LoadSettings()
 	{
 		settings->LoadSettings();
 	}
+
+	emit SettingsLoaded();
 }
 
 void ApplicationSettings::SaveSettings()
@@ -158,6 +160,8 @@ void ApplicationSettings::SaveSettings()
 	{
 		settings->SaveSettings();
 	}
+
+	emit SettingsSaved();
 }
 
 bool ApplicationSettings::ShouldUseSingleInstance(const QSettings& settings)

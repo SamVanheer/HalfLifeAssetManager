@@ -8,9 +8,6 @@
 #include "plugins/halflife/studiomodel/options/OptionsPageStudioModel.hpp"
 #include "plugins/halflife/studiomodel/settings/StudioModelSettings.hpp"
 
-#include "plugins/halflife/studiomodel/ui/compiler/StudioModelCompilerFrontEnd.hpp"
-#include "plugins/halflife/studiomodel/ui/compiler/StudioModelDecompilerFrontEnd.hpp"
-
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 #include "settings/ExternalProgramSettings.hpp"
@@ -22,8 +19,7 @@ using namespace studiomodel;
 bool HalfLifeAssetManagerPlugin::Initialize(AssetManager* application)
 {
 	auto settings = application->GetApplicationSettings();
-	settings->GetExternalPrograms()->AddProgram(StudiomdlCompilerFileNameKey, "Studiomdl Compiler");
-	settings->GetExternalPrograms()->AddProgram(StudiomdlDecompilerFileNameKey, "Studiomdl Decompiler");
+	settings->GetExternalPrograms()->AddProgram(CrowbarFileNameKey, "Crowbar (De)compiler");
 	settings->GetExternalPrograms()->AddProgram(XashModelViewerFileNameKey, "Xash Model Viewer");
 
 	auto colorSettings = settings->GetColorSettings();
