@@ -173,7 +173,7 @@ MainWindow::MainWindow(AssetManager* application)
 
 	_assetsWidget->setLayout(_assetsLayout);
 
-	_assetTabs = new QTabBar(this);
+	_assetTabs = new QTabBar(_assetsWidget);
 
 	_assetsLayout->addWidget(_assetTabs, 0, 0);
 
@@ -184,12 +184,14 @@ MainWindow::MainWindow(AssetManager* application)
 	_assetTabs->setTabsClosable(true);
 	_assetTabs->setElideMode(Qt::TextElideMode::ElideLeft);
 
+	_assetsWidget->setFocusProxy(_assetTabs);
+
 	setCentralWidget(_assetsWidget);
 
-	_assetListMenu = new QMenu(_assetTabs);
+	_assetListMenu = new QMenu(_assetsWidget);
 	_assetListMenu->setStyleSheet("QMenu { menu-scrollable: 1; }");
 
-	_assetListButton = new QToolButton(_assetTabs);
+	_assetListButton = new QToolButton(_assetsWidget);
 	_assetListButton->setEnabled(false);
 	_assetListButton->setMenu(_assetListMenu);
 	_assetListButton->setPopupMode(QToolButton::InstantPopup);
