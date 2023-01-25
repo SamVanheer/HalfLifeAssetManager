@@ -1,10 +1,9 @@
 #pragma once
 
+#include <QColor>
 #include <QWidget>
 
 #include "ui_SkyLightPanel.h"
-
-class QColor;
 
 namespace studiomodel
 {
@@ -39,5 +38,7 @@ private:
 	Ui_SkyLightPanel _ui;
 	StudioModelAssetProvider* const _provider;
 	StudioModelData* _modelData{};
+
+	QColor _buttonColor = QColor::Invalid;
 };
 }
