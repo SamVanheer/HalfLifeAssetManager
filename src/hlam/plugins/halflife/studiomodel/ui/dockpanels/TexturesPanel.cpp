@@ -27,6 +27,7 @@
 #include "plugins/halflife/studiomodel/settings/StudioModelSettings.hpp"
 
 #include "plugins/halflife/studiomodel/ui/StudioModelData.hpp"
+#include "plugins/halflife/studiomodel/ui/StudioModelEditWidget.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelTextureUtilities.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelUndoCommands.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelValidators.hpp"
@@ -123,7 +124,7 @@ TexturesPanel::~TexturesPanel() = default;
 void TexturesPanel::OnVisibilityChanged(bool visible)
 {
 	if (_provider->GetStudioModelSettings()->ShouldActivateTextureViewWhenTexturesPanelOpened()
-		&& _asset->GetEditWidget()->isVisible())
+		&& _provider->GetEditWidget()->isVisible())
 	{
 		auto scene = visible ? _asset->GetTextureScene() : _asset->GetScene();
 

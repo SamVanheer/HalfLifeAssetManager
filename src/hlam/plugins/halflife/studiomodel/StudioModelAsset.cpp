@@ -2,7 +2,6 @@
 #include <tuple>
 #include <vector>
 
-#include <QBoxLayout>
 #include <QDir>
 #include <QDockWidget>
 #include <QFileDialog>
@@ -61,21 +60,6 @@
 
 namespace studiomodel
 {
-/**
-*	@brief Layout that allows no more than one widget to be added.
-*/
-class SingleWidgetLayout final : public QVBoxLayout
-{
-public:
-	using QVBoxLayout::QVBoxLayout;
-
-	void addItem(QLayoutItem* item) override
-	{
-		delete takeAt(0);
-		QVBoxLayout::addItem(item);
-	}
-};
-
 static std::tuple<glm::vec3, glm::vec3, float, float> GetCenteredValues(
 	const HLMVStudioModelEntity& entity, Axis axis, bool positive)
 {
@@ -135,14 +119,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_application->GetApplicationSettings(),
 		_provider->GetStudioModelSettings()))
 {
-	{
-		_editWidget = new QWidget();
-		auto layout = new SingleWidgetLayout(_editWidget);
-		layout->setContentsMargins(0, 0, 0, 0);
-		layout->setSpacing(0);
-		_editWidget->setLayout(layout);
-	}
-
 	CreateMainScene();
 	CreateTextureScene();
 
@@ -185,8 +161,20 @@ StudioModelAsset::~StudioModelAsset()
 
 		context->End();
 	}
+}
 
-	delete _editWidget;
+QWidget* StudioModelAsset::GetEditWidget()
+{
+	if (_provider->AreEditControlsVisible())
+	{
+		return _provider->GetEditWidget();
+	}
+	else if (!_application->GetFullscreenWidget())
+	{
+		return _application->GetSceneWidget()->GetContainer();
+	}
+
+	return nullptr;
 }
 
 void StudioModelAsset::Save()
@@ -592,24 +580,13 @@ void StudioModelAsset::OnSceneWidgetRecreated()
 			editWidget->AttachSceneWidget();
 		}
 
-		if (_editWidget->layout()->indexOf(editWidget) == -1)
-		{
-			_editWidget->layout()->addWidget(editWidget);
-		}
-
 		editWidget->show();
 	}
-	else if (!fullscreenWidget)
-	{
-		_editWidget->layout()->addWidget(sceneWidget->GetContainer());
-	}
-	else
+	else if (fullscreenWidget)
 	{
 		// If fullscreen is enabled the edit widget will be shown unless explicitly hidden.
 		editWidget->hide();
 	}
-
-	editWidget->setParent(_editWidget);
 
 	sceneWidget->SetScene(GetCurrentScene());
 
@@ -617,6 +594,8 @@ void StudioModelAsset::OnSceneWidgetRecreated()
 		this, &StudioModelAsset::OnSceneWidgetMouseEvent, Qt::UniqueConnection);
 	connect(sceneWidget, &SceneWidget::WheelEvent,
 		this, &StudioModelAsset::OnSceneWidgetWheelEvent, Qt::UniqueConnection);
+
+	emit EditWidgetChanged();
 }
 
 void StudioModelAsset::OnResizeTexturesToPowerOf2Changed()

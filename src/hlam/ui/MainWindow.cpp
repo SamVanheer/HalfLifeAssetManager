@@ -169,6 +169,7 @@ MainWindow::MainWindow(AssetManager* application)
 
 	_assetsLayout->setSpacing(0);
 	_assetsLayout->setContentsMargins(0, 0, 0, 0);
+	_assetsLayout->setRowStretch(1, 1);
 
 	_assetsWidget->setLayout(_assetsLayout);
 
@@ -743,7 +744,26 @@ void MainWindow::OnAssetTabChanged(int index)
 		_assetsWidget->setVisible(success);
 	}
 
-	QWidget* const nextEditWidget = index != -1 ? currentAsset->GetEditWidget() : nullptr;
+	if (auto previousAsset = _assets->GetCurrent(); previousAsset)
+	{
+		disconnect(previousAsset, &Asset::EditWidgetChanged, this, &MainWindow::UpdateAssetWidget);
+	}
+
+	_assets->SetCurrent(currentAsset);
+
+	if (currentAsset)
+	{
+		connect(currentAsset, &Asset::EditWidgetChanged, this, &MainWindow::UpdateAssetWidget);
+	}
+
+	UpdateAssetWidget();
+}
+
+void MainWindow::UpdateAssetWidget()
+{
+	const auto currentAsset = _assets->GetCurrent();
+
+	QWidget* const nextEditWidget = currentAsset ? currentAsset->GetEditWidget() : nullptr;
 
 	if (_currentEditWidget != nextEditWidget)
 	{
@@ -756,8 +776,6 @@ void MainWindow::OnAssetTabChanged(int index)
 
 		_currentEditWidget = nextEditWidget;
 	}
-
-	_assets->SetCurrent(currentAsset);
 }
 
 void MainWindow::OnAssetAdded(int index)

@@ -64,6 +64,8 @@ public:
 	virtual bool TryRefresh() = 0;
 
 signals:
+	void EditWidgetChanged();
+
 	void FileNameChanged(Asset* asset);
 
 private:

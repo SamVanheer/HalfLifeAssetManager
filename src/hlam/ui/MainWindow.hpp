@@ -60,6 +60,8 @@ private slots:
 
 	void OnAssetTabChanged(int index);
 
+	void UpdateAssetWidget();
+
 	void OnAssetAdded(int index);
 
 	void OnAssetActivated();

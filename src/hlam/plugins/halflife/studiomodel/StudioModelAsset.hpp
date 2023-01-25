@@ -71,7 +71,7 @@ public:
 
 	StudioModelAssetProvider* GetProvider() const override { return _provider; }
 
-	QWidget* GetEditWidget() override { return _editWidget; }
+	QWidget* GetEditWidget() override;
 
 	void Save() override;
 
@@ -213,8 +213,6 @@ private:
 	graphics::Scene* _currentScene{};
 
 	std::unique_ptr<graphics::Scene> _scene;
-
-	QWidget* _editWidget{};
 
 	int _activeCamera = -1;
 
