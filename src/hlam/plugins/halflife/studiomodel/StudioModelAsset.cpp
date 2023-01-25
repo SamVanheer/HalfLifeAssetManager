@@ -338,7 +338,8 @@ void StudioModelAsset::OnActivated()
 
 		auto studioModelSettings = _provider->GetStudioModelSettings();
 
-		if (studioModelSettings->ShouldAutodetectViewmodels() && QFileInfo{GetFileName()}.fileName().startsWith("v_"))
+		if (studioModelSettings->ShouldAutodetectViewmodels()
+			&& QFileInfo{GetFileName()}.fileName().startsWith("v_", Qt::CaseInsensitive))
 		{
 			cameraOperators->SetCurrent(_provider->GetFirstPersonCameraOperator());
 		}
