@@ -1,15 +1,11 @@
 #pragma once
 
 #include <memory>
-#include <utility>
-#include <vector>
 
 #include <QMainWindow>
 #include <QMap>
 #include <QPointer>
 #include <QString>
-#include <QTabWidget>
-#include <QUndoGroup>
 
 #include "ui_MainWindow.h"
 
@@ -21,7 +17,9 @@ class FullscreenWidget;
 class QActionGroup;
 class QMenu;
 class QStringList;
+class QTabWidget;
 class QToolButton;
+class QUndoGroup;
 
 class MainWindow final : public QMainWindow
 {
@@ -96,7 +94,7 @@ private:
 
 	QActionGroup* _msaaActionGroup;
 
-	QUndoGroup* const _undoGroup = new QUndoGroup(this);
+	QUndoGroup* const _undoGroup;
 
 	QPointer<QTabWidget> _assetTabs;
 	QToolButton* _assetListButton;

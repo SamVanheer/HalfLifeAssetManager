@@ -8,17 +8,17 @@
 #include <QActionGroup>
 #include <QApplication>
 #include <QCloseEvent>
-#include <QDir>
 #include <QDockWidget>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMenu>
 #include <QMessageBox>
-#include <QMimeData>
 #include <QOpenGLFunctions>
 #include <QProgressDialog>
 #include <QScreen>
+#include <QTabWidget>
 #include <QToolButton>
+#include <QUndoGroup>
 #include <QWindow>
 
 #include "application/AssetIO.hpp"
@@ -59,6 +59,7 @@ MainWindow::MainWindow(AssetManager* application)
 	: QMainWindow()
 	, _application(application)
 	, _assets(_application->GetAssets())
+	, _undoGroup(new QUndoGroup(this))
 {
 	_ui.setupUi(this);
 
