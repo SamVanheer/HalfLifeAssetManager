@@ -214,7 +214,9 @@ bool TryGetRemapColors(std::string_view fileName, int& low, int& mid, int& high)
 
 		//Clamp to valid range
 		low = std::clamp(low, 0, 255);
-		mid = std::clamp(mid, 0, 255);
+		// Allow mid to be -1 if low is 0.
+		// In this case the top color won't be applied at all and bottom will affect the first color as well.
+		mid = std::clamp(mid, low == 0 ? -1 : 0, 255);
 		high = std::clamp(high, 0, 255);
 
 		return true;
