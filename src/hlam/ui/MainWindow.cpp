@@ -277,7 +277,7 @@ MainWindow::MainWindow(AssetManager* application)
 
 	connect(_ui.ActionOpenManual, &QAction::triggered, this, [this]
 		{
-			const QString manualLocation{QApplication::applicationDirPath() + "/../manual/HalfLifeAssetManagerManual.pdf"};
+			const QString manualLocation{QApplication::applicationDirPath() + "/manual/HalfLifeAssetManagerManual.pdf"};
 			qt::LaunchDefaultProgram(manualLocation);
 		});
 	connect(_ui.ActionAbout, &QAction::triggered, this, [this] { ShowAboutDialog(this); });
