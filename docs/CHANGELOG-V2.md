@@ -51,13 +51,15 @@
 
 * Experimental Linux support (Thanks Shepard for helping to fix compiler errors)
 * Many optimizations to reduce memory usage and improve performance
-* The program log file is now stored next to the configuration file
+* The program log file is now stored next to the configuration file and is always created. The `log-to-file` command line parameter has been removed
 * Added log message for sound playback. This shows the full sound file path and is useful for debugging
 * Configuration file data has been changed to use consistent case style. This means existing settings will not be recognized. Many changes have been made that render existing settings obsolete or unusable so it will be necessary to reconfigure the program on first use
+* The program executable and required libraries are now located in the root of the program installation instead of in the bin directory
 
 #### Menus and related functionality
 
 * Multiple assets can be loaded at the same time using the Load dialog. Using `CTRL+A` it is possible to load *all* models in a directory at the same time. Note that this may take a few seconds
+* Loading assets that are to be opened by an external program will be listed in a separate dialog to allow selective loading of each asset, along with indicating whether the external program for that type has been configured
 * Opening an asset that is already opened will now refresh the existing asset tab
 * Added the option to limit to only one asset open at a time (matches original model viewer behavior)
 * Assets pause when they are not the active asset to save CPU time (improves performance)
@@ -69,6 +71,7 @@
 * Optimized asset load and close to dramatically reduce the time required. This also speeds up program shutdown with many assets opened
 * Asset filenames are removed from the `Recent Files` menu if the file fails to load for any reason
 * Optimized some undo commands to halve their memory usage
+* Optimized asset tab switching to reduce the time required
 * Simplified some undo commands
 * Switching back and forth between borderless fullscreen and bordered now remembers the bordered window state to improve window state restoration
 * Redesigned the `File List` panel to be a more useful `File Browser`. The `File Browser` can quickly switch directories based on the available game configurations and can filter files based not on their extension but by checking their contents. Opening a directory is a bit slower as a result but provides more accurate results and allows fast navigation between files. Combining the `Limit to one asset at a time` feature with the arrow and Enter keys allows switching between models just like the `Previous` and `Next` actions in Half-Life Model Viewer 2. Users can navigate through directories like they would in Windows Explorer
@@ -91,7 +94,8 @@
 * Added option to allow closing tabs using middle mouse button
 * Added vertical sync option
 * Added support for changing a color's alpha value in the Color options page for colors that support it
-* Added the option to specify the filename for Quake 1 Model Viewer, Source 1 Model Viewer and Xash Model Viewer to delegate the loading of models from these engines to
+* Added the option to specify the filename for Quake 1 Model Viewer, Source 1 Model Viewer, Xash Model Viewer and Counter-Strike Nexon Model Viewer to delegate the loading of models from these engines to
+* Additional command line arguments for external programs can be specified as needed
 * Added the event Ids `1011`, `1012` and `1013` from Opposing Force as valid sound events
 * Added the option to specify which event Ids correspond to sound events in addition to built-in event Ids
 * Reworked game configurations to use Hammer-like configuration
@@ -101,10 +105,12 @@
 	* This also supports the use of fallback directories, so a Condition Zero model can reference a sound file from Counter-Strike and play it as it would in-game
 	* This also detects and uses language-specific directories
 	* Game directories containing additional content like HD or Addon content are searched only if the user enables this behavior
+	* The filesystem is automatically updated when the asset filename changes or when program settings are changed
 
 #### StudioModel interface
 
 * The StudioModel renderer is now shared between assets, dramatically reducing memory usage (nearly 3MB per asset)
+* Replaced the StudioModel compiler and decompiler dialogs with a shortcut to launch Crowbar
 * Loading a Studio model that has sequence group and/or external texture files now shows information in the Messages panel indicating that those files have been merged into the main file. Saving the file will save the merged file
 * Objects in the 3D scene are now sorted back to front to combat graphical issues involving transparent objects
 * Reworked the StudioModel user interface to use a single shared instance between all assets
@@ -113,6 +119,7 @@
 * Reworked the 3D window to use a single shared instance for all 3D rendering. This reduces the amount of graphics resources allocated for use with windows. Note that this stops models from rendering in the normal window while the fullscreen window is open
 * Added option to switch between Perspective and Orthographic projection in Scene view for the Arc Ball camera. Orthographic mode tries to maintain a good zoom to match the equivalent Perspective zoom, but this behavior is limited and does not work well with unusual window aspect ratios
 * Reworked Cameras panel to make contents for each camera consistent
+* The First Person camera is now activated if the model name starts with a capital `V_`
 * Camera field of view settings are now remembered
 * The Ground texture directory is now remembered
 * Added the `Enable Texture` option to the Scene->Ground panel. Enabling this without a texture loaded now uses an auto-generated grid texture
@@ -124,6 +131,7 @@
 * Added the option to change the sky light's ambient ahd shade lighting values (normally calculated by the engine, not possible here)
 * Made the Sky Light panel change orientation when docked vertically
 * Re-implemented keyboard and mouse shortcuts for light vector control
+* Fixed sequence names with newlines spreading across multiple lines in the dropdown menu
 * It is now possible to edit a sequence's looping flag framerate, activity, activity weight and linear movement vector. Changing the linear movement vector also updates the linear movement flags (LX, LY and LZ)
 * Added support for custom activities using the `ACT_<number>` syntax supported by the studiomdl compiler. This fixes `tentacle2.mdl` not showing the right activities
 * Split the Body Parts panel into Body Parts and Bone Controllers
