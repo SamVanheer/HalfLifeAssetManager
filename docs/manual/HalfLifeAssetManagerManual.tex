@@ -61,23 +61,20 @@ In this mode the program configuration file is stored next to the executable, wh
 
 \section{Configuring Log Output}
 
-Half-Life Asset Manager can output log information to a file. To enable this add the command line parameter \code{--log-to-file} to the command line.
+Half-Life Asset Manager outputs log information to a file.
 
-Create a desktop shortcut to add this when launching the program directly.
-
-Log output will be written to a text file called \code{HLAM-Log.txt} located in the same directory as the program configuration file.
+Log output is written to a text file called \code{HLAM-Log.txt} located in the same directory as the program configuration file.
 
 When running the program using its default configuration this will be in \code{\%AppData\%/Roaming/Half-Life Asset Manager} (Windows).
-When running in portable mode this will be in the `bin` directory.
+When running in portable mode this will be in the directory containing \code{HLAM.exe}.
 
 You can open this directory by opening the options dialog and clicking `Open Configuration Directory`.
 
 The file is cleared on startup.
 
-
 \subsection{Configuring logging categories}
 
-Qt uses logging categories to filter log output. To control which categories are enabled, create a file called \code{qtlogging.ini} in \code{Half-Life Asset Manager/bin} and add the following:
+Qt uses logging categories to filter log output. To control which categories are enabled, create a file called \code{qtlogging.ini} in \code{Half-Life Asset Manager} and add the following:
 
 \code{[Rules]}
 
@@ -109,6 +106,12 @@ See Section~\nameref{sec:external_programs} for more information.
 \subsection{Xash StudioModel}
 
 The Xash StudioModel format identified as IDST version 10 with additional Xash-specific data is recognized and forwarded to a user-configured Xash Model Viewer.
+
+See Section~\nameref{sec:external_programs} for more information.
+
+\subsection{Counter-Strike Nexon StudioModel}
+
+The Counter-Strike StudioModel format identified as IDST version 11 with additional Nexon-specific data is recognized and forwarded to a user-configured Counter-Strike Nexon Model Viewer.
 
 See Section~\nameref{sec:external_programs} for more information.
 
@@ -390,7 +393,14 @@ For actions that automatically choose to use external programs this option requi
 
 Note: model viewers need to support the loading of models by passing the filename on the command line to work as an external program.
 
+Users can specify additional command line arguments if needed to correctly launch programs. It is also possible to use batch files by launching \code{cmd.exe} with the \code{/C} argument to allow a script to handle the launching of an external program.
+
+The working directory is set to the location of the program executable. When using scripts it may be necessary to change this to the location of the script to ensure correct execution.
+
 \begin{itemize}
+\item Counter-Strike Nexon Model Viewer: Path to a model viewer that can display Counter-Strike Nexon Studio models
+
+	No known model viewers support this format
 \item Quake 1 Model Viewer: Path to a model viewer that can display Quake 1 Alias models
 
 	Known model viewers:
@@ -401,22 +411,11 @@ Note: model viewers need to support the loading of models by passing the filenam
 
 	Known model viewers:
 	\begin{itemize}
-	\item Source 1 \code{hlmv.exe} included with Source 1 games. Prefer using a model viewer running on the latest engine branch to ensure all 4 versions of the format can be opened.
+	\item Source 1 \code{hlmv.exe} included with Source 1 games. Prefer using a model viewer running on the latest engine branch to ensure all 4 versions of the format can be opened. You may need to add this additional command line argument to point the program to the correct game directory: \code{-game "path/to/gameinfo.txt/directory"}.
 	\end{itemize}
-\item Studiomdl compiler: Path to a \code{studiomdl.exe} compiler that can compile Half-Life 1 models
+\item Crowbar: Path to the Crowbar tool
 
-	Known compilers:
-	\begin{itemize}
-	\item \href{http://www.the303.org/backups/sven_studiomdl_2019.rar}{Sven Co-op Studiomdl Compiler}
-	\item Standard compiler included with the \href{https://steamdb.info/app/254430/}{Half-Life SDK on Steam} in the \code{Model Tools} directory.
-	\end{itemize}
-\item Studiomdl Decompiler: Path to a \code{mdldec.exe} decompiler that can decompile Half-Life 1 models
-
-	Known decompilers:
-	\begin{itemize}
-	\item \href{https://www.moddb.com/downloads/half-life-studio-model-decompilerwin32-linux}{Half-Life Studio Model Decompiler v1.1 (Note: newer than the decompiler below)}
-	\item \href{https://www.wunderboy.org/downloads/mdldec12-zip/?tmstv=1673442739}{MDLDec.exe v1.2}
-	\end{itemize}
+	More information and a download link can be found here: \url{https://steamcommunity.com/groups/CrowbarTool}
 \item Xash Model Viewer: Path to a model viewer that can display Xash Studio models
 
 	Known model viewers:
@@ -447,7 +446,7 @@ The default configuration is always used as a fallback if no configuration could
 If a game's \code{liblist.gam} file contains a \code{fallback\_dir} entry it will be used to find that game's configuration and use it as well as the originating game's configuration. This matches the engine's behavior.
 
 \vspace{\baselineskip}
-Changing configurations does not affect assets that have already been loaded.
+Changing configurations will automatically reinitialize the filesystem for all loaded assets. The same happens if an asset is renamed. Only files loaded after the filesystem has reinitialized will be affected by this change.
 
 \subsubsection{File System}
 
@@ -554,13 +553,11 @@ This will cause transparent objects to be rendered using only their own color an
 
 The StudioModel Tool menu adds actions for interacting with StudioModel files outside the program.
 
-\subsubsection{Compile Model...}
+\subsubsection{Launch Crowbar}
 
-Opens the Studiomdl compiler frontend.
+Launches Crowbar. This action is only enabled if the path to the Crowbar tool has been specified in the External Programs options page.
 
-\subsubsection{Decompile Model...}
-
-Opens the Studiomdl decompiler frontend.
+See Section~\nameref{sec:external_programs} for more information.
 
 \subsubsection{Edit QC File...}
 
@@ -574,7 +571,7 @@ The StudioModel page is added to provide options specific to this format.
 
 \subsubsection{Automatically switch to the First Person camera for view models}
 
-When enabled models whose name starts with \code{v\_} are loaded with the First Person camera activated.
+When enabled models whose name starts with \code{v\_} or \code{V\_} are loaded with the First Person camera activated.
 
 \subsubsection{Activate the Texture view when the Textures panel is opened}
 
