@@ -139,6 +139,7 @@
 * The last path used in the Import and Export Texture options is now saved
 * Texture widths are now required to be multiples of 4 to match the engine's expectations. Textures will be resized on import if needed and the user will be warned about this
 * Removed the `bmp` extension from the editable texture name control (extension is required to be there) and blocked setting the name to an empty string or having whitespace at the start or end
+* Added support for specifying a texture remap `mid` value of `-01` (see manual for complete explanation)
 * The UV map is drawn using OpenGL again as it did in Half-Life Model Viewer 2. This results in sharper lines removing the need for the UV line width setting. Note that the Export UV Map dialog does not use OpenGL to draw the UV map. This will be changed in Half-Life Asset Manager 3.0.0
 
 ### Removed features
