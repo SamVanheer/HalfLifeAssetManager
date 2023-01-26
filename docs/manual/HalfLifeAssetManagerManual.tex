@@ -860,18 +860,40 @@ Export UV Map allows the previewed UV map to be exported. Because most textures 
 The colormap controls allow the texture's top and bottom colors to be modified for real-time display. This only affects the preview, the model is not modified.
 
 \vspace{\baselineskip}
-Remapping works by using a \code{low}, \code{mid} and \code{high} color table index to replace the hue values with the selected top and bottom colors. The range \code{low} to \code{mid} is replaced with the top color, the range \code{mid + 1} to \code{high} is replaced with the bottom color.
+Remapping works by using a \code{low}, \code{mid} and \code{high} color table index to replace the hue values with the selected top and bottom colors. The range \code{low} to \code{mid} inclusive is replaced with the top color, the range \code{mid + 1} to \code{high} inclusive is replaced with the bottom color.
+
+\vspace{\baselineskip}
+A color table is a list of colors used by the image. Half-Life 1 only supports 8 bit indexed images which have a color table containing 256 colors. This means color indices range from 0 to 255.
+
+\newpage
 
 \vspace{\baselineskip}
 Color remapping only works if the texture has a specific name:
 
 \begin{itemize}
-\item If the name has the format \code{remap$<$character$>$\_$<$low$>$\_$<$mid$>$\_$<$high$>$.bmp} then \code{low}, \code{mid} and \code{high} are extracted from the texture name. \code{character} can be any ASCII character, but it is recommended to use the established convention that uses the numbers \code{1-9} and the letters \code{A-Z}. Avoid using unprintable characters and characters already used as delimiters in the rest of the string (underscores and dots).
-\item If the name has the format \code{remapC\_$<$low$>$\_$<$mid$>$.bmp} (C can be lowercase c as well) then only \code{low} and \code{mid} are extracted. This is equivalent to the above method with the \code{high} value set to \code{000}.
+\item If the name has the format \code{remap$<$character$>$\_$<$low$>$\_$<$mid$>$\_$<$high$>$.bmp} then \code{low}, \code{mid} and \code{high} are extracted from the texture name. \code{character} can be any ASCII character, but it is recommended to use the established convention that uses the numbers \code{1-9} and the letters \code{A-Z}. Avoid using unprintable characters and characters already used as delimiters in the rest of the string (underscores, dots and minus/dash signs).
+\item If the name has the format \code{remapC\_$<$low$>$\_$<$mid$>$.bmp} (C can be lowercase c as well) then only \code{low} and \code{mid} are extracted. This is equivalent to the above method with the \code{high} value set to \code{000}. This format appears to exist to fix an incorrect use of the above format and should be avoided.
 \item If the name is \code{DM\_Base.bmp} then \code{low} is set to \textbf{160}, \code{mid} is set to \textbf{191} and \code{high} is set to \textbf{223}.
 \end{itemize}
 
 Color table indices must always contain 3 numbers, for example an index of \textbf{10} is \textbf{010}. To work properly \code{mid} must be greater than \code{low}. \code{high} can be \textbf{0} to disable bottom color remapping, otherwise it must be greater than \code{mid + 1}.
+
+\vspace{\baselineskip}
+A special case exists when remapping the first color index to the bottom color. To do this you must use the following values: \code{remap1\_000\_-01\_255.bmp}. The \code{high} value can be any color index greater than 0. This is needed because the engine will remap the bottom color starting at \code{mid + 1} so you must adjust the starting index accordingly. You should not use negative indices in any other case.
+
+\vspace{\baselineskip}
+
+Examples:
+\begin{itemize}
+\item \code{remap1\_000\_127\_255.bmp}: Remap the first half of the color table according to the top color and the second half according to the bottom color.
+\item \code{remap1\_000\_127\_000.bmp}: Remap the first half according to the top color. The bottom color is not used.
+\item \code{remap1\_128\_127\_255.bmp}: Remap the second half according to the bottom color. The top color is not used. Note that the \code{low} value is greater than \code{mid}.
+\item \code{remap1\_000\_255\_000.bmp}: Remap the all colors according to the top color. The bottom color is not used.
+\item \code{remap1\_000\_-01\_255.bmp}: Remap the all colors according to the bottom color. The top color is not used.
+\item \code{remap1\_000\_-01\_000.bmp}: Colors are not remapped at all. Note the use of a negative \code{mid} index to prevent the first color from being remapped to the top color. This is not particularly useful since the same can be accomplished by not using texture remapping at all.
+\end{itemize}
+
+\newpage
 
 \subsubsection{Model Data}
 
