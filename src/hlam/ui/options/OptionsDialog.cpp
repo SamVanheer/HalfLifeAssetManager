@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cmath>
 #include <unordered_map>
 
@@ -73,11 +74,37 @@ OptionsDialog::OptionsDialog(AssetManager* application, QWidget* parent)
 			QDesktopServices::openUrl(QUrl{QString{"file:///%1"}.arg(fullPath), QUrl::TolerantMode});
 		});
 
-	_ui.OptionsPagesList->setCurrentItem(_ui.OptionsPagesList->topLevelItem(0));
+	bool setDefaultPage = true;
+
+	if (!_lastActivePageName.isEmpty())
+	{
+		const auto items = _ui.OptionsPagesList->findItems(_lastActivePageName,
+			Qt::MatchFixedString | Qt::MatchRecursive);
+
+		assert(items.size() == 1);
+
+		if (!items.isEmpty())
+		{
+			_ui.OptionsPagesList->setCurrentItem(items.front());
+			setDefaultPage = false;
+		}
+	}
+
+	if (setDefaultPage)
+	{
+		_ui.OptionsPagesList->setCurrentItem(_ui.OptionsPagesList->topLevelItem(0));
+	}
 }
 
 OptionsDialog::~OptionsDialog()
 {
+	const auto currentPage = _ui.OptionsPagesList->currentItem();
+
+	if (currentPage)
+	{
+		_lastActivePageName = currentPage->text(0);
+	}
+
 	for (auto page : _pages)
 	{
 		page->DestroyWidget();

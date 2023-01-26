@@ -28,4 +28,8 @@ private:
 	AssetManager* const _application;
 
 	std::vector<OptionsPage*> _pages;
+
+	// Remember which page the user was on. Doesn't need persisting but is useful during a session.
+	// This needs to be string-based since the item<->index API isn't public in Qt5.
+	static inline QString _lastActivePageName;
 };
