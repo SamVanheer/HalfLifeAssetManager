@@ -90,6 +90,7 @@
 
 #### Options Dialog
 
+* The last active page is now remembered during a session to facilitate testing changes more quickly
 * Added button to the Options dialog to open the configuration file directory in Windows Explorer
 * Added option to allow closing tabs using middle mouse button
 * Added vertical sync option
