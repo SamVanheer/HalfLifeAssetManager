@@ -51,22 +51,21 @@ jobs:
       
 #      - name: Prepare artifacts
 #        run: |
-#          mkdir bin
-#          mv build/bin/HLAM bin
-#          mv build/bin/libopenal.so.1.22.2 bin
-#          mv build/bin/libQt5Core.so.5.15.2 bin
-#          mv build/bin/libQt5Gui.so.5.15.2 bin
-#          mv build/bin/libQt5Network.so.5.15.2 bin
-#          mv build/bin/libQt5Widgets.so.5.15.2 bin
-#          mv build/bin/imageformats bin/imageformats
-#          mv build/bin/platforms bin/platforms
+#          mkdir "Half-Life Asset Manager"
+#          mv build/HLAM "Half-Life Asset Manager"
+#          mv build/libopenal.so.1.22.2 "Half-Life Asset Manager"
+#          mv build/libQt5Core.so.5.15.2 "Half-Life Asset Manager"
+#          mv build/libQt5Gui.so.5.15.2 "Half-Life Asset Manager"
+#          mv build/libQt5Network.so.5.15.2 "Half-Life Asset Manager"
+#          mv build/libQt5Widgets.so.5.15.2 "Half-Life Asset Manager"
+#          mv build/imageformats "Half-Life Asset Manager/imageformats"
+#          mv build/platforms "Half-Life Asset Manager/platforms"
 #      
 #      - name: Upload artifacts
 #        uses: actions/upload-artifact@v3
 #        with:
 #          name: Linux-x64
-#          path: |
-#            bin
+#          path: "Half-Life Asset Manager"
 
   win32:
     name: Win32
@@ -107,20 +106,19 @@ jobs:
       
       - name: Prepare artifacts
         run: |
-          mkdir bin
-          mv build/bin/HLAM.exe bin
-          mv build/bin/OpenAL32.dll bin
-          mv build/bin/Qt5Core.dll bin
-          mv build/bin/Qt5Gui.dll bin
-          mv build/bin/Qt5Network.dll bin
-          mv build/bin/Qt5Widgets.dll bin
-          mv build/bin/imageformats bin/imageformats
-          mv build/bin/platforms bin/platforms
-          mv build/bin/styles bin/styles
+          mkdir "Half-Life Asset Manager"
+          mv build/HLAM.exe "Half-Life Asset Manager"
+          mv build/OpenAL32.dll "Half-Life Asset Manager"
+          mv build/Qt5Core.dll "Half-Life Asset Manager"
+          mv build/Qt5Gui.dll "Half-Life Asset Manager"
+          mv build/Qt5Network.dll "Half-Life Asset Manager"
+          mv build/Qt5Widgets.dll "Half-Life Asset Manager"
+          mv build/imageformats "Half-Life Asset Manager/imageformats"
+          mv build/platforms "Half-Life Asset Manager/platforms"
+          mv build/styles "Half-Life Asset Manager/styles"
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: Win32
-          path: |
-            bin
+          path: "Half-Life Asset Manager"
