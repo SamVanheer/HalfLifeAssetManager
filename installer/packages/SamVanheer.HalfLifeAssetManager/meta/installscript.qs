@@ -75,7 +75,7 @@ Component.prototype.createOperations = function()
 		{
 			component.addOperation("RegisterFileType",
 				".mdl",
-				"\"@TargetDir@/bin/HLAM.exe\" \"%1\"",
+				"\"@TargetDir@/HLAM.exe\" \"%1\"",
 				"Half-Life studiomodel file",
 				"application/octet-stream");
 		}
@@ -83,10 +83,10 @@ Component.prototype.createOperations = function()
 		if (addStartMenuEntry)
 		{
 			component.addOperation("CreateShortcut",
-				"@TargetDir@/bin/HLAM.exe",
+				"@TargetDir@/HLAM.exe",
 				"@StartMenuDir@/Half-Life Asset Manager.lnk",
-				"workingDirectory=@TargetDir@/bin",
-				"iconPath=@TargetDir@/bin/HLAM.exe",
+				"workingDirectory=@TargetDir@",
+				"iconPath=@TargetDir@/HLAM.exe",
 				"iconId=0",
 				"description=Launch Half-Life Asset Manager");
 		}
@@ -94,10 +94,10 @@ Component.prototype.createOperations = function()
 		if (addDesktopShortcut)
 		{
 			component.addOperation("CreateShortcut",
-				"@TargetDir@/bin/HLAM.exe",
+				"@TargetDir@/HLAM.exe",
 				"@DesktopDir@/Half-Life Asset Manager.lnk",
-				"workingDirectory=@TargetDir@/bin",
-				"iconPath=@TargetDir@/bin/HLAM.exe",
+				"workingDirectory=@TargetDir@",
+				"iconPath=@TargetDir@/HLAM.exe",
 				"iconId=0",
 				"description=Launch Half-Life Asset Manager");
 		}
