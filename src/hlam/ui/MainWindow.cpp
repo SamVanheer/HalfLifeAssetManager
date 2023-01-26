@@ -775,6 +775,7 @@ void MainWindow::UpdateAssetWidget()
 		{
 			nextEditWidget->setParent(_assetsWidget);
 			_assetsLayout->addWidget(nextEditWidget, 1, 0, 1, 2);
+			nextEditWidget->show();
 		}
 
 		_currentEditWidget = nextEditWidget;

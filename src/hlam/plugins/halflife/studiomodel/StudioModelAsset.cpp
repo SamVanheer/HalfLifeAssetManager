@@ -592,8 +592,6 @@ void StudioModelAsset::OnSceneWidgetRecreated()
 		{
 			editWidget->AttachSceneWidget();
 		}
-
-		editWidget->show();
 	}
 	else if (fullscreenWidget)
 	{
