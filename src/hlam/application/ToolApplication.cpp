@@ -32,12 +32,23 @@
 
 const QString LogBaseFileName{QStringLiteral("HLAM-Log.txt")};
 
-QString LogFileName = LogBaseFileName;
+QString LogDirectory;
+QString LogFileName;
+
+static void SetLogFileName(const QString& logFileName)
+{
+	const QFileInfo info{logFileName};
+
+	LogDirectory = info.absolutePath();
+	LogFileName = info.absoluteFilePath();
+}
 
 const QtMessageHandler DefaultMessageHandler = qInstallMessageHandler(nullptr);
 
 void AssetManagerMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
+	QDir{LogDirectory}.mkpath(".");
+
 	QFile logFile{LogFileName};
 
 	if (!logFile.open(QFile::WriteOnly | QFile::Append))
@@ -117,8 +128,7 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
-		LogFileName = QFileInfo{settings->fileName()}.absolutePath() + QDir::separator()
-			+ LogBaseFileName;
+		SetLogFileName(QFileInfo{settings->fileName()}.absolutePath() + QDir::separator() + LogBaseFileName);
 
 		QFile::remove(LogFileName);
 
