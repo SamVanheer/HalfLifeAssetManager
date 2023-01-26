@@ -67,7 +67,7 @@ StudioModelAssetProvider::StudioModelAssetProvider(AssetManager* application,
 		CreateQtLoggerSt(HLAMSpriteRenderer()), _application->GetWorldTime()))
 
 	, _dummyAsset(std::make_unique<StudioModelAsset>(
-		"", _application, this, std::make_unique<studiomdl::EditableStudioModel>()))
+		"", _application, this, _settingsVersion, std::make_unique<studiomdl::EditableStudioModel>()))
 
 	, _cameraOperators(new CameraOperators(this))
 	, _arcBallCamera(new ArcBallCameraOperator(application->GetApplicationSettings()))
@@ -366,8 +366,12 @@ AssetLoadData StudioModelAssetProvider::Load(const QString& fileName, FILE* file
 		_logger->info("Merged texture file into main file \"{}\"", fileName);
 	}
 	
-	return std::make_unique<StudioModelAsset>(QString{fileName}, _application, this,
+	auto asset = std::make_unique<StudioModelAsset>(QString{fileName}, _application, this, _settingsVersion,
 		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
+
+	asset->UpdateFileSystem();
+
+	return asset;
 }
 
 bool StudioModelAssetProvider::IsCandidateForLoading(const QString& fileName, FILE* file) const
@@ -407,6 +411,19 @@ void StudioModelAssetProvider::UpdateSettingsState()
 	{
 		_launchCrowbarAction->setEnabled(!externalPrograms->GetProgram(CrowbarFileNameKey).isEmpty());
 	}
+
+	++_settingsVersion;
+
+	UpdateActiveAssetSettingsState();
+}
+
+void StudioModelAssetProvider::UpdateActiveAssetSettingsState()
+{
+	if (_currentAsset != GetDummyAsset() && _settingsVersion != _currentAsset->_settingsVersion)
+	{
+		_currentAsset->_settingsVersion = _settingsVersion;
+		_currentAsset->UpdateSettingsState();
+	}
 }
 
 void StudioModelAssetProvider::OnActiveAssetChanged(Asset* asset)
@@ -421,6 +438,8 @@ void StudioModelAssetProvider::OnActiveAssetChanged(Asset* asset)
 	emit AssetChanged(_currentAsset);
 
 	_currentAsset->OnActivated();
+
+	UpdateActiveAssetSettingsState();
 }
 
 void StudioModelAssetProvider::OnDumpModelInfo()

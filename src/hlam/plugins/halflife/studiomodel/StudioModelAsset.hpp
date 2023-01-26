@@ -60,9 +60,11 @@ class StudioModelAsset final : public Asset
 {
 	Q_OBJECT
 
+	friend class StudioModelAssetProvider;
+
 public:
 	StudioModelAsset(QString&& fileName,
-		AssetManager* application, StudioModelAssetProvider* provider,
+		AssetManager* application, StudioModelAssetProvider* provider, unsigned int settingsVersion,
 		std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel);
 
 	~StudioModelAsset();
@@ -129,6 +131,10 @@ public:
 	TextureCameraOperator* GetTextureCameraOperator() { return _textureCameraOperator.get(); }
 
 	Pose GetPose() const { return _pose; }
+
+	void UpdateSettingsState();
+
+	void UpdateFileSystem();
 
 	bool CameraIsFirstPerson() const;
 
@@ -207,6 +213,8 @@ private:
 	const std::unique_ptr<IFileSystem> _fileSystem;
 	const std::unique_ptr<ISoundSystem> _soundSystem;
 	const std::unique_ptr<EntityContext> _entityContext;
+
+	unsigned int _settingsVersion{0};
 
 	std::vector<graphics::Scene*> _scenes;
 

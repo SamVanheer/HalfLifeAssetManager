@@ -27,7 +27,7 @@
 #include "entity/PlayerHitboxEntity.hpp"
 #include "entity/TextureEntity.hpp"
 
-#include "filesystem/IFileSystem.hpp"
+#include "filesystem/FileSystem.hpp"
 
 #include "formats/studiomodel/StudioModelIO.hpp"
 #include "formats/studiomodel/StudioModelUtils.hpp"
@@ -102,14 +102,14 @@ static std::tuple<glm::vec3, glm::vec3, float, float> GetCenteredValues(
 }
 
 StudioModelAsset::StudioModelAsset(QString&& fileName,
-	AssetManager* application, StudioModelAssetProvider* provider,
+	AssetManager* application, StudioModelAssetProvider* provider, unsigned int settingsVersion,
 	std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel)
 	: Asset(std::move(fileName))
 	, _application(application)
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
 	, _modelData(new StudioModelData(_editableStudioModel.get(), this))
-	, _fileSystem(_application->GetApplicationSettings()->GetGameConfigurations()->CreateFileSystem(GetFileName()))
+	, _fileSystem(std::make_unique<FileSystem>())
 	, _soundSystem(std::make_unique<SoundSystemWrapper>(_application->GetSoundSystem(), _fileSystem.get()))
 	, _entityContext(std::make_unique<EntityContext>(this,
 		_application->GetWorldTime(),
@@ -118,9 +118,12 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 		_soundSystem.get(),
 		_application->GetApplicationSettings(),
 		_provider->GetStudioModelSettings()))
+	, _settingsVersion(settingsVersion)
 {
 	CreateMainScene();
 	CreateTextureScene();
+
+	connect(this, &StudioModelAsset::FileNameChanged, this, &StudioModelAsset::UpdateFileSystem);
 
 	connect(_application->GetApplicationSettings(), &ApplicationSettings::ResizeTexturesToPowerOf2Changed,
 		this, &StudioModelAsset::OnResizeTexturesToPowerOf2Changed);
@@ -277,6 +280,16 @@ void StudioModelAsset::SetCurrentScene(graphics::Scene* scene)
 		editWidget->SetSceneIndex(index);
 		_application->GetSceneWidget()->SetScene(_currentScene);
 	}
+}
+
+void StudioModelAsset::UpdateSettingsState()
+{
+	UpdateFileSystem();
+}
+
+void StudioModelAsset::UpdateFileSystem()
+{
+	_application->GetApplicationSettings()->GetGameConfigurations()->InitializeFileSystem(*_fileSystem, GetFileName());
 }
 
 bool StudioModelAsset::CameraIsFirstPerson() const

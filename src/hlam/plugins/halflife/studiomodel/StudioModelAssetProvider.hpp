@@ -98,6 +98,9 @@ public:
 
 	bool CameraIsFirstPerson() const;
 
+private:
+	void UpdateActiveAssetSettingsState();
+
 signals:
 	void AssetChanged(StudioModelAsset* asset);
 
@@ -123,6 +126,11 @@ private:
 	QPointer<QAction> _restoreViewAction;
 
 	QPointer<StudioModelEditWidget> _editWidget;
+
+	// Cheap way to update assets on-demand: the provider listens for changes and increments this variable.
+	// When an asset is activated, if its cached copy differs it is updated to account for any changes in settings.
+	// This is done to avoid updating potentially hundreds of assets at the same time which would freeze the UI.
+	unsigned int _settingsVersion{0};
 
 	CameraOperators* const _cameraOperators;
 

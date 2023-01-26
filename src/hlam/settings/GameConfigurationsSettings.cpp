@@ -270,11 +270,11 @@ void GameConfigurationsSettings::SetDefaultConfiguration(const QUuid& id)
 	}
 }
 
-std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const QString& assetFileName) const
+void GameConfigurationsSettings::InitializeFileSystem(IFileSystem& fileSystem, const QString& assetFileName) const
 {
-	const auto [configuration, isDefault] = DetectGameConfiguration(assetFileName);
+	fileSystem.RemoveAllSearchPaths();
 
-	auto fileSystem = std::make_unique<FileSystem>();
+	const auto [configuration, isDefault] = DetectGameConfiguration(assetFileName);
 
 	if (isDefault)
 	{
@@ -285,7 +285,7 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 		{
 			const auto baseGameDirectory = QString::fromStdString(baseGameDirectoryPath->string());
 
-			AddConfigurationToFileSystem(*fileSystem, GameConfiguration{.BaseGameDirectory = baseGameDirectory});
+			AddConfigurationToFileSystem(fileSystem, GameConfiguration{.BaseGameDirectory = baseGameDirectory});
 
 			_logger->trace(
 				"Using auto-detected game configuration for asset \"{}\" based on base game directory \"{}\"",
@@ -295,7 +295,7 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 
 	if (configuration)
 	{
-		AddConfigurationToFileSystem(*fileSystem, *configuration);
+		AddConfigurationToFileSystem(fileSystem, *configuration);
 
 		// See if it's a mod with a fallback_dir.
 		if (!configuration->ModDirectory.isEmpty())
@@ -315,14 +315,12 @@ std::unique_ptr<IFileSystem> GameConfigurationsSettings::CreateFileSystem(const 
 
 					if (fallbackConfiguration)
 					{
-						AddConfigurationToFileSystem(*fileSystem, *fallbackConfiguration);
+						AddConfigurationToFileSystem(fileSystem, *fallbackConfiguration);
 					}
 				}
 			}
 		}
 	}
-
-	return fileSystem;
 }
 
 void GameConfigurationsSettings::SanitizeConfiguration(GameConfiguration& configuration)
