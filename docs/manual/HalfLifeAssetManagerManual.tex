@@ -866,8 +866,8 @@ Remapping works by using a \code{low}, \code{mid} and \code{high} color table in
 Color remapping only works if the texture has a specific name:
 
 \begin{itemize}
-\item If the name has the format \code{remap$<$number$>$\_$<$low$>$\_$<$mid$>$\_$<$high$>$.bmp} then \code{low}, \code{mid} and \code{high} are extracted from the texture name.
-\item If the name has the format \code{remapC\_$<$low$>$\_$<$mid$>$.bmp} (C can be lowercase c as well) then only \code{low} and \code{mid} are extracted.
+\item If the name has the format \code{remap$<$character$>$\_$<$low$>$\_$<$mid$>$\_$<$high$>$.bmp} then \code{low}, \code{mid} and \code{high} are extracted from the texture name. \code{character} can be any ASCII character, but it is recommended to use the established convention that uses the numbers \code{1-9} and the letters \code{A-Z}. Avoid using unprintable characters and characters already used as delimiters in the rest of the string (underscores and dots).
+\item If the name has the format \code{remapC\_$<$low$>$\_$<$mid$>$.bmp} (C can be lowercase c as well) then only \code{low} and \code{mid} are extracted. This is equivalent to the above method with the \code{high} value set to \code{000}.
 \item If the name is \code{DM\_Base.bmp} then \code{low} is set to \textbf{160}, \code{mid} is set to \textbf{191} and \code{high} is set to \textbf{223}.
 \end{itemize}
 
