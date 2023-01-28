@@ -24,7 +24,6 @@ class ApplicationSettings final : public QObject
 	Q_OBJECT
 
 public:
-	static constexpr bool DefaultUseSingleInstance{true};
 	static constexpr bool DefaultPauseAnimationsOnTimelineClick{true};
 	static constexpr bool DefaultTransparentScreenshots{false};
 	static constexpr bool DefaultAllowTabCloseWithMiddleClick{false};
@@ -80,11 +79,6 @@ public:
 
 	void LoadSettings();
 	void SaveSettings();
-
-	static bool ShouldUseSingleInstance(const QSettings& settings);
-
-	bool ShouldUseSingleInstance() const;
-	void SetUseSingleInstance(bool value);
 
 	bool ShouldAllowTabCloseWithMiddleClick() const;
 	void SetAllowTabCloseWithMiddleClick(bool value);

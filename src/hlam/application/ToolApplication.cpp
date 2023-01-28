@@ -136,7 +136,9 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		LogAppInfo();
 
-		if (CheckSingleInstance(programName, commandLine.FileName, *settings))
+		_singleInstance = std::make_unique<SingleInstance>();
+
+		if (!_singleInstance->Create(programName, commandLine.FileName))
 		{
 			return EXIT_SUCCESS;
 		}
@@ -323,22 +325,6 @@ std::unique_ptr<graphics::IGraphicsContext> ToolApplication::InitializeOpenGL()
 	}
 
 	return std::make_unique<OpenGLGraphicsContext>(std::move(surface), std::move(context));
-}
-
-bool ToolApplication::CheckSingleInstance(
-	const QString& programName, const QString& fileName, QSettings& settings)
-{
-	if (ApplicationSettings::ShouldUseSingleInstance(settings))
-	{
-		_singleInstance.reset(new SingleInstance());
-
-		if (!_singleInstance->Create(programName, fileName))
-		{
-			return true;
-		}
-	}
-
-	return false;
 }
 
 std::unique_ptr<AssetManager> ToolApplication::CreateApplication(std::unique_ptr<QSettings> settings)

@@ -44,7 +44,6 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 	_ui.MouseWheelSpeedSlider->setRange(ApplicationSettings::MinimumMouseWheelSpeed, ApplicationSettings::MaximumMouseWheelSpeed);
 	_ui.MouseWheelSpeedSpinner->setRange(ApplicationSettings::MinimumMouseWheelSpeed, ApplicationSettings::MaximumMouseWheelSpeed);
 
-	_ui.UseSingleInstance->setChecked(_applicationSettings->ShouldUseSingleInstance());
 	_ui.PauseAnimationsOnTimelineClick->setChecked(_applicationSettings->PauseAnimationsOnTimelineClick);
 	_ui.AllowTabCloseWithMiddleClick->setChecked(_applicationSettings->ShouldAllowTabCloseWithMiddleClick());
 	_ui.OneAssetAtATime->setChecked(_applicationSettings->OneAssetAtATime);
@@ -70,7 +69,6 @@ OptionsPageGeneralWidget::~OptionsPageGeneralWidget() = default;
 
 void OptionsPageGeneralWidget::ApplyChanges()
 {
-	_applicationSettings->SetUseSingleInstance(_ui.UseSingleInstance->isChecked());
 	_applicationSettings->PauseAnimationsOnTimelineClick = _ui.PauseAnimationsOnTimelineClick->isChecked();
 	_applicationSettings->SetAllowTabCloseWithMiddleClick(_ui.AllowTabCloseWithMiddleClick->isChecked());
 	_applicationSettings->OneAssetAtATime = _ui.OneAssetAtATime->isChecked();

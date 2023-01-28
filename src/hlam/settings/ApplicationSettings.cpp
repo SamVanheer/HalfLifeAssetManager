@@ -164,21 +164,6 @@ void ApplicationSettings::SaveSettings()
 	emit SettingsSaved();
 }
 
-bool ApplicationSettings::ShouldUseSingleInstance(const QSettings& settings)
-{
-	return settings.value("Startup/UseSingleInstance", DefaultUseSingleInstance).toBool();
-}
-
-bool ApplicationSettings::ShouldUseSingleInstance() const
-{
-	return ShouldUseSingleInstance(*_settings);
-}
-
-void ApplicationSettings::SetUseSingleInstance(bool value)
-{
-	_settings->setValue("Startup/UseSingleInstance", value);
-}
-
 bool ApplicationSettings::ShouldAllowTabCloseWithMiddleClick() const
 {
 	return _settings->value("General/AllowTabCloseWithMiddleClick", DefaultAllowTabCloseWithMiddleClick).toBool();

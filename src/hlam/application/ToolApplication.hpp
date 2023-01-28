@@ -50,8 +50,6 @@ private:
 
 	std::unique_ptr<graphics::IGraphicsContext> InitializeOpenGL();
 
-	bool CheckSingleInstance(const QString& programName, const QString& fileName, QSettings& settings);
-
 	std::unique_ptr<AssetManager> CreateApplication(std::unique_ptr<QSettings> settings);
 
 private slots:
