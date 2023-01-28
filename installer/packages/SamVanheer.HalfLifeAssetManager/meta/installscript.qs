@@ -77,7 +77,8 @@ Component.prototype.createOperations = function()
 				".mdl",
 				"\"@TargetDir@/HLAM.exe\" \"%1\"",
 				"Half-Life studiomodel file",
-				"application/octet-stream");
+				"application/octet-stream",
+				"@TargetDir@/HLAM.exe,0");
 		}
 		
 		if (addStartMenuEntry)
