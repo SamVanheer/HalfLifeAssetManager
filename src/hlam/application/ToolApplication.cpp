@@ -128,6 +128,14 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
+		_singleInstance = std::make_unique<SingleInstance>();
+
+		if (!_singleInstance->Create(programName, commandLine.FileName))
+		{
+			return EXIT_SUCCESS;
+		}
+
+		// Install the file logger after the single instance check to ensure only one instance writes to the log file.
 		SetLogFileName(QFileInfo{settings->fileName()}.absolutePath() + QDir::separator() + LogBaseFileName);
 
 		QFile::remove(LogFileName);
@@ -135,13 +143,6 @@ int ToolApplication::Run(int argc, char* argv[])
 		qInstallMessageHandler(&AssetManagerMessageOutput);
 
 		LogAppInfo();
-
-		_singleInstance = std::make_unique<SingleInstance>();
-
-		if (!_singleInstance->Create(programName, commandLine.FileName))
-		{
-			return EXIT_SUCCESS;
-		}
 
 		CheckOpenGLVersion(programName, *settings);
 
