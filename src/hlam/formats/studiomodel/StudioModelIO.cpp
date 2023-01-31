@@ -231,7 +231,8 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 				std::setfill('0') << std::setw(2) << i <<
 				std::setw(0) << suffix;
 
-			sequenceHeaders.emplace_back(LoadStudioHeader<studioseqhdr_t>(seqgroupname.str(), nullptr, true, false));
+			sequenceHeaders.emplace_back(
+				LoadStudioHeader<studioseqhdr_t>(std::filesystem::u8path(seqgroupname.str()), nullptr, true, false));
 		}
 	}
 
