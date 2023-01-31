@@ -16,6 +16,7 @@
 * The installer now checks if the operating system is supported to prevent installation on platforms where the program will crash on start
 * Added license covering use of the program and third party libraries
 * Added the option to create a Start menu entry and desktop shortcut during installation
+* Updated the installer to use the correct icon for Shell Execute (the icon shown when a file opened through Asset Manager is shown in Windows Explorer)
 
 ### Bug fixes
 
@@ -55,6 +56,8 @@
 * Added log message for sound playback. This shows the full sound file path and is useful for debugging
 * Configuration file data has been changed to use consistent case style. This means existing settings will not be recognized. Many changes have been made that render existing settings obsolete or unusable so it will be necessary to reconfigure the program on first use
 * The program executable and required libraries are now located in the root of the program installation instead of in the bin directory
+* Removed the "Use single instance" option. The default behavior is now to always use a single instance. This option was provided to emulate the behavior of older model viewers which could only load one model at a time. Asset Manager can load any number of models and should always use the same instance to share resources
+* Ensured that file logging is initialized after the single instance check to prevent multiple instances from logging to the same file at the same time
 
 #### Menus and related functionality
 
