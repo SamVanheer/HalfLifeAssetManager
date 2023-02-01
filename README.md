@@ -1,8 +1,6 @@
 # Half-Life Asset Manager
 
-Half-Life Asset Manager is a tool based on [Half-Life Model Viewer 2](https://github.com/SamVanheer/HalfLifeModelViewer2). Unlike Half-Life Model Viewer this tool is designed to support multiple asset types. This allows the tool to be updated to support other Half-life 1 assets in the future.
-
-The change in executable name also has the advantage that associations with `HLMV.exe` made by other versions of the program no longer affect this program.
+Half-Life Asset Manager is a model viewer for Half-Life 1. It can be used to view and edit Half-Life 1 Studio models (`.mdl`).
 
 > **Note**
 > This tool only supports Half-Life 1/GoldSource, not Half-Life 2/Source and Source 2!
@@ -43,7 +41,7 @@ To uninstall Half-Life Asset Manager, simply run the program `maintenancetool.ex
 
 ## Updating
 
-To update Half-Life Asset Manager, first uninstall the current version and then install the new version. User configuration files are not removed by the uninstaller so you will not lose any settings.
+To update Half-Life Asset Manager first uninstall the current version and then install the new version. User configuration files are not removed by the uninstaller so you will not lose any settings.
 
 ## Options
 
