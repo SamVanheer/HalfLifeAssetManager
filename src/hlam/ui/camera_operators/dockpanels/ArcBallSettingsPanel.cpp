@@ -1,4 +1,5 @@
 #include <cassert>
+#include <limits>
 
 #include "ui/camera_operators/ArcBallCameraOperator.hpp"
 
@@ -11,6 +12,8 @@ ArcBallSettingsPanel::ArcBallSettingsPanel(ArcBallCameraOperator* cameraOperator
 	assert(_cameraOperator);
 
 	_ui.setupUi(this);
+
+	_ui.Distance->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 
 	setProperty(CameraOperatorPropertyKey.data(), QVariant::fromValue(static_cast<SceneCameraOperator*>(_cameraOperator)));
 
