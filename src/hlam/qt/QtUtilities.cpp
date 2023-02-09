@@ -12,15 +12,26 @@ namespace qt
 {
 bool LaunchDefaultProgram(const QString& fileName)
 {
-	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(fileName)))
-	{
-		const QFileInfo info(fileName);
+	const QFileInfo info(fileName);
 
+	if (!info.exists(fileName))
+	{
 		QMessageBox::critical(nullptr, "Error",
 			QString{R"(Unable to start default program
-Make sure the %1 extension is associated with a program
-and that the file "%2" exists)"}
-				.arg(info.completeSuffix(), info.absoluteFilePath()));
+
+The file "%1" does not exist)"}
+		.arg(info.absoluteFilePath()));
+
+		return false;
+	}
+
+	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(fileName)))
+	{
+		QMessageBox::critical(nullptr, "Error",
+			QString{R"(Unable to start default program
+
+Make sure the %1 extension is associated with a program)"}
+				.arg(info.completeSuffix()));
 
 		return false;
 	}
