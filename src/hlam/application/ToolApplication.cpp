@@ -14,6 +14,7 @@
 #include <QOpenGLContext>
 #include <QSettings>
 #include <QSurfaceFormat>
+#include <QTextCodec>
 #include <QTextStream>
 
 #include "application/AssetList.hpp"
@@ -112,6 +113,9 @@ int ToolApplication::Run(int argc, char* argv[])
 {
 	try
 	{
+		// Set the codec to UTF-8 if possible so I/O operations produce proper filenames.
+		QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+
 		const QString programName{QStringLiteral("Half-Life Asset Manager")};
 
 		ConfigureApplication(programName);
