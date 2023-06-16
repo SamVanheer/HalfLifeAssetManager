@@ -2,9 +2,7 @@
 
 [< Back to Half-Life Asset Manager](/README.md)
 
-Half-Life Asset Manager can output log information to a file. To enable this add the command line parameter `--log-to-file` to the command line.
-
-Create a desktop shortcut to add this when launching the program directly.
+Half-Life Asset Manager outputs log information to a file.
 
 Log output will be written to a text file called `HLAM-Log.txt` located in the same directory as the program configuration file.
 
