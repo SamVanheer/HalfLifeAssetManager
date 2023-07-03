@@ -120,7 +120,7 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		ConfigureApplication(programName);
 
-		const auto commandLine = ParseCommandLine(QStringList{argv, argv + argc});
+		auto commandLine = ParseCommandLine(QStringList{argv, argv + argc});
 
 		auto settings = CreateSettings(argv[0], programName, commandLine.IsPortable);
 
@@ -131,6 +131,10 @@ int ToolApplication::Run(int argc, char* argv[])
 		_guiApplication = &app;
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
+
+		// Re-parse command line using arguments with correct encoding.
+		// TODO: try to rework this to avoid having to parse twice.
+		commandLine = ParseCommandLine(QCoreApplication::arguments());
 
 		_singleInstance = std::make_unique<SingleInstance>();
 
