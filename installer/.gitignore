@@ -6,3 +6,6 @@ packages/SamVanheer.HalfLifeAssetManager/data/redist/*
 
 # Don't try to include generated installer files
 HalfLifeAssetManagerPortable.rar
+
+# Allow inclusion of Markdown files
+!*.md
