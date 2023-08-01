@@ -11,7 +11,7 @@ Half-Life Asset Manager is a model viewer for Half-Life 1. It can be used to vie
 * OpenGL version: 2.1 or newer
 
 > **Note**
-> Half-Life Model Viewer 2 works on Windows XP and newer. If you cannot run Asset Manager then that tool may be a better option.
+> [Half-Life Model Viewer 2](https://github.com/SamVanheer/HalfLifeModelViewer2) works on Windows XP and newer. If you cannot run Asset Manager then that tool may be a better option.
 
 ## Download
 
