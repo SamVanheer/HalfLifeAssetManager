@@ -5,6 +5,19 @@ Half-Life Asset Manager is a model viewer for Half-Life 1. It can be used to vie
 > **Note**
 > This tool only supports Half-Life 1/GoldSource, not Half-Life 2/Source and Source 2!
 
+## Features
+
+* Opens Half-life 1 Studiomodel version 10 models
+* Recognizes Quake 1, Xash3D, Source 1 and Nexon model formats (all `.mdl`) and supports forwarding to a compatible model viewer for them
+* Dock-based interface allows interface elements to be moved and hidden
+* Tabbed interface allows multiple models to be opened, able to open **ALL** models in a mod without slowing down
+* Able to edit parts of the model's data (e.g. import and export textures, change sequence properties, hitboxes, etc)
+* Able to switch between three cameras: Arc Ball, Free Look and First Person
+* Real-time colormap preview (top and bottom color in the Multiplayer tab in-game)
+* Graphics options: texture filtering and resizing, multi-sample anti-aliasing, vertical sync
+* Audio playback for sequence events
+* Game configuration wizard automatically detects installed games and mods with automatic configuration switching based on the location of a model, including on-the-fly detection of loose files if they use a mod's directory structure
+
 ## Minimum requirements
 
 * Operating system: Windows 7 or newer
