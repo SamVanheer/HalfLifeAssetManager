@@ -26,11 +26,13 @@ void DumpModelInfo(FILE* file, const std::filesystem::path& fileName, const Edit
 		"ID Tag: %c%c%c%c\n"
 		"Version: %d\n"
 		"Name: \"%s\"\n"
-		"Length: %d\n\n",
+		"Length: %d\n"
+		"Has external texture file: %s\n\n",
 		pId[0], pId[1], pId[2], pId[3],
 		pHdr->version,
 		pHdr->name,
-		pHdr->length
+		pHdr->length,
+		model.HasExternalTextureFile ? "Yes": "No"
 	);
 
 	fprintf(file,

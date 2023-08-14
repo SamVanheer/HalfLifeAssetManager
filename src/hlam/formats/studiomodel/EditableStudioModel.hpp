@@ -241,6 +241,8 @@ public:
 	int TopColor = 0;
 	int BottomColor = 0;
 
+	bool HasExternalTextureFile = false;
+
 	const StudioSubModel* GetModelByBodyPart(const int iBody, const int iBodyPart) const;
 
 	int GetBodyValueForGroup(int compositeValue, int group) const;

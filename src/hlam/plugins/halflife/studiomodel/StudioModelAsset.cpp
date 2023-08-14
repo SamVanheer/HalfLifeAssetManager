@@ -182,6 +182,9 @@ QWidget* StudioModelAsset::GetEditWidget()
 
 void StudioModelAsset::Save()
 {
+	// Once saved this is never true.
+	_editableStudioModel->HasExternalTextureFile = false;
+
 	const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
 	auto result = studiomdl::ConvertFromEditable(filePath, *_editableStudioModel);
 

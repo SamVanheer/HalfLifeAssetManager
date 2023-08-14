@@ -800,6 +800,8 @@ EditableStudioModel ConvertToEditable(const StudioModel& studioModel)
 
 	result.Transitions = ConvertTransitionsToEditable(studioModel);
 
+	result.HasExternalTextureFile = studioModel.HasSeparateTextureHeader();
+
 	return result;
 }
 
