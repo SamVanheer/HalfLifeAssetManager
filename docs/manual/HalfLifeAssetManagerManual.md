@@ -255,31 +255,39 @@ When enabled the framerate that an asset is displayed at affects the sound pitch
 
 Whether textures are rescaled to a power of 2. Older graphics cards don't support non-power of 2 textures.
 
-### 7.5.2 Min Filter
+### 7.5.2 Wait For Vertical Sync
+
+Also known as VSync.
+
+Whether to enable vertical sync on the 3D window. Enabling vertical sync clamps the framerate to the display's refresh rate.
+
+Disabling it allows for higher framerates but may cause screen tearing.
+
+### 7.5.3 Min Filter
 
 The minification filter used for textures.
 
 See https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering
 
-### 7.5.3 Mag Filter
+### 7.5.4 Mag Filter
 
 The magnification filter used for textures.
 
 See https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering
 
-### 7.5.4 Mipmap Filter
+### 7.5.5 Mipmap Filter
 
 The mipmap filter used for textures.
 
 See https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering
 
-### 7.5.5 Anti-Aliasing
+### 7.5.6 Anti-Aliasing
 
 The Multisample Anti-aliasing setting. Setting this to a higher value reduces jagged edges but requires a more powerful graphics card.
 
  Changing this setting recreates the 3D window.
  
- ### 7.5.6 Transparent Screenshots
+ ### 7.5.7 Transparent Screenshots
 
 Whether screenshots are transparent or include the background color.
 
@@ -376,14 +384,6 @@ How fast the mouse wheel affects the scene.
 ### 8.1.10 Enable Audio Playback
 
 Whether to enable audio playback. When disabled no attempt is made to access the computer's audio devices.
-
-### 8.1.11 Enable Vertical Sync
-
-Also known as VSync.
-
-Whether to enable vertical sync on the 3D window. Enabling vertical sync clamps the framerate to the display's refresh rate.
-
-Disabling it allows for higher framerates but may cause screen tearing.
 
 ## 8.2 Style
 

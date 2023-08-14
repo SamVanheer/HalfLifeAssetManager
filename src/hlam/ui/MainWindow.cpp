@@ -245,6 +245,9 @@ MainWindow::MainWindow(AssetManager* application)
 	connect(_ui.ActionPowerOf2Textures, &QAction::toggled,
 		_application->GetApplicationSettings(), &ApplicationSettings::SetResizeTexturesToPowerOf2);
 
+	connect(_ui.ActionWaitForVerticalSync, &QAction::toggled,
+		_application->GetApplicationSettings(), &ApplicationSettings::SetEnableVSync);
+
 	connect(_ui.ActionMinPoint, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
 	connect(_ui.ActionMinLinear, &QAction::triggered, this, &MainWindow::OnTextureFiltersChanged);
 
@@ -385,6 +388,7 @@ MainWindow::MainWindow(AssetManager* application)
 		graphicsContext->End();
 
 		_ui.ActionPowerOf2Textures->setChecked(textureLoader->ShouldResizeToPowerOf2());
+		_ui.ActionWaitForVerticalSync->setChecked(_application->GetApplicationSettings()->ShouldEnableVSync());
 		_ui.MinFilterGroup->actions()[static_cast<int>(textureLoader->GetMinFilter())]->setChecked(true);
 		_ui.MagFilterGroup->actions()[static_cast<int>(textureLoader->GetMagFilter())]->setChecked(true);
 		_ui.MipmapFilterGroup->actions()[static_cast<int>(textureLoader->GetMipmapFilter())]->setChecked(true);

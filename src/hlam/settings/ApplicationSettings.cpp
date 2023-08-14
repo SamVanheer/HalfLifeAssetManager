@@ -174,19 +174,18 @@ void ApplicationSettings::SetAllowTabCloseWithMiddleClick(bool value)
 	_settings->setValue("General/AllowTabCloseWithMiddleClick", value);
 }
 
-bool ApplicationSettings::ShouldEnableVSync(const QSettings& settings)
-{
-	return settings.value("Video/EnableVSync", DefaultEnableVSync).toBool();
-}
-
 bool ApplicationSettings::ShouldEnableVSync() const
 {
-	return ShouldEnableVSync(*_settings);
+	return _settings->value("Video/EnableVSync", DefaultEnableVSync).toBool();
 }
 
 void ApplicationSettings::SetEnableVSync(bool value)
 {
-	_settings->setValue("Video/EnableVSync", value);
+	if (ShouldEnableVSync() != value)
+	{
+		_settings->setValue("Video/EnableVSync", value);
+		emit SceneWidgetSettingsChanged();
+	}
 }
 
 QString ApplicationSettings::GetSavedPath(const QString& pathName)

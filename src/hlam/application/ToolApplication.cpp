@@ -271,7 +271,6 @@ void ToolApplication::ConfigureOpenGL(QSettings& settings)
 	defaultFormat.setGreenBufferSize(4);
 	defaultFormat.setBlueBufferSize(4);
 	defaultFormat.setAlphaBufferSize(4);
-	defaultFormat.setSwapInterval(ApplicationSettings::ShouldEnableVSync(settings) ? 1 : 0);
 
 	qCDebug(HLAM) << "Configuring OpenGL for" << defaultFormat;
 

@@ -115,7 +115,8 @@ AssetManager::AssetManager(
 			_textureLoader->SetTextureFilters(minFilter, magFilter, mipmapFilter);
 		});
 
-	connect(_applicationSettings.get(), &ApplicationSettings::MSAALevelChanged, this, &AssetManager::RecreateSceneWidget);
+	connect(_applicationSettings.get(), &ApplicationSettings::SceneWidgetSettingsChanged,
+		this, &AssetManager::RecreateSceneWidget);
 
 	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageGeneral>(applicationSettings));
 	_optionsPageRegistry->AddPage(std::make_unique<OptionsPageColors>(applicationSettings));

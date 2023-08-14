@@ -16,12 +16,15 @@ SceneWidget::SceneWidget(AssetManager* application,
 	, _container(QWidget::createWindowContainer(this))
 	, _sceneContext(std::make_unique<graphics::SceneContext>(openglFunctions, textureLoader))
 {
-	// It's safe to modify this since it doesn't affect the underlying window, only the FBO used for MSAA.
+	auto settings = application->GetApplicationSettings();
+
+	// It's safe to modify these settings because they don't affect compatibility with the global context.
 	auto format = QSurfaceFormat::defaultFormat();
 
-	const int msaaLevel = application->GetApplicationSettings()->GetMSAALevel();
+	const int msaaLevel = settings->GetMSAALevel();
 
 	format.setSamples(msaaLevel > 0 && msaaLevel < 32 ? 1 << msaaLevel : -1);
+	format.setSwapInterval(settings->ShouldEnableVSync() ? 1 : 0);
 
 	setFormat(format);
 

@@ -103,6 +103,7 @@
      <addaction name="ActionMSAANone"/>
     </widget>
     <addaction name="ActionPowerOf2Textures"/>
+    <addaction name="ActionWaitForVerticalSync"/>
     <addaction name="separator"/>
     <addaction name="MenuMinFilter"/>
     <addaction name="MenuMagFilter"/>
@@ -283,6 +284,17 @@
   <action name="ActionOpenManual">
    <property name="text">
     <string>Open Manual...</string>
+   </property>
+  </action>
+  <action name="ActionWaitForVerticalSync">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Wait For Vertical Sync</string>
    </property>
   </action>
   <actiongroup name="MinFilterGroup">

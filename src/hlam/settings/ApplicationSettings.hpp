@@ -137,8 +137,6 @@ public:
 	bool PlaySounds = DefaultPlaySounds;
 	bool FramerateAffectsPitch = DefaultFramerateAffectsPitch;
 
-	static bool ShouldEnableVSync(const QSettings& settings);
-
 	bool ShouldEnableVSync() const;
 	void SetEnableVSync(bool value);
 
@@ -181,7 +179,7 @@ public:
 		if (_msaaLevel != msaaLevel)
 		{
 			_msaaLevel = msaaLevel;
-			emit MSAALevelChanged(_msaaLevel);
+			emit SceneWidgetSettingsChanged();
 		}
 	}
 
@@ -215,7 +213,7 @@ signals:
 	void TextureFiltersChanged(
 		graphics::TextureFilter minFilter, graphics::TextureFilter magFilter, graphics::MipmapFilter mipmapFilter);
 
-	void MSAALevelChanged(int msaaLevel);
+	void SceneWidgetSettingsChanged();
 
 	void StylePathChanged(const QString& stylePath);
 
