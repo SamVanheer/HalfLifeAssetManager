@@ -176,7 +176,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 
 	if (mainHeader->name[0] == '\0')
 	{
-		//Only the main hader sets the name, so this must be something else (probably texture header, but could be anything)
+		//Only the main header sets the name, so this must be something else (probably texture header, but could be anything)
 		auto message = std::u8string{u8"The file \""} + fileName.u8string() + u8"\" is not a studio model main header file";
 
 		if (!baseFileName.empty() && std::toupper(baseFileName.u8string().back()) == 'T')
@@ -190,7 +190,9 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 	StudioPtr<studiohdr_t> textureHeader;
 
 	// preload textures
-	if (mainHeader->numtextures == 0)
+	// The original model viewer code used numtextures here, whereas the engine uses textureindex.
+	// numtextures can be 0 for a model with no textures so this must be handled properly.
+	if (mainHeader->textureindex == 0)
 	{
 		const auto extension = isDol ? "T.dol" : "T.mdl";
 
@@ -200,12 +202,11 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 
 		textureHeader = LoadStudioHeader<studiohdr_t>(texturename, nullptr, true, true);
 
-		// If the model doesn't reference any textures then there might not be a T model.
-		if (mainHeader->numbodyparts > 0 && !textureHeader)
+		if (!textureHeader)
 		{
 			throw AssetException(
 				std::string{"External texture file \""}
-					+ reinterpret_cast<const char*>(fileName.u8string().c_str())
+					+ reinterpret_cast<const char*>(texturename.u8string().c_str())
 					+ "\" does not exist or is currently opened by another program");
 		}
 	}
