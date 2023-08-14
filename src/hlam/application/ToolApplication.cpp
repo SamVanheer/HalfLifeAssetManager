@@ -119,12 +119,7 @@ int ToolApplication::Run(int argc, char* argv[])
 		const QString programName{QStringLiteral("Half-Life Asset Manager")};
 
 		ConfigureApplication(programName);
-
-		auto commandLine = ParseCommandLine(QStringList{argv, argv + argc});
-
-		auto settings = CreateSettings(argv[0], programName, commandLine.IsPortable);
-
-		ConfigureOpenGL(*settings);
+		ConfigureOpenGL();
 
 		QApplication app(argc, argv);
 
@@ -132,9 +127,9 @@ int ToolApplication::Run(int argc, char* argv[])
 
 		connect(&app, &QApplication::aboutToQuit, this, &ToolApplication::OnExit);
 
-		// Re-parse command line using arguments with correct encoding.
-		// TODO: try to rework this to avoid having to parse twice.
-		commandLine = ParseCommandLine(QCoreApplication::arguments());
+		const auto commandLine = ParseCommandLine(QCoreApplication::arguments());
+
+		auto settings = CreateSettings(argv[0], programName, commandLine.IsPortable);
 
 		_singleInstance = std::make_unique<SingleInstance>();
 
@@ -243,7 +238,7 @@ std::unique_ptr<QSettings> ToolApplication::CreateSettings(
 	}
 }
 
-void ToolApplication::ConfigureOpenGL(QSettings& settings)
+void ToolApplication::ConfigureOpenGL()
 {
 	//Neither OpenGL ES nor Software OpenGL will work here
 	QApplication::setAttribute(Qt::ApplicationAttribute::AA_UseDesktopOpenGL, true);

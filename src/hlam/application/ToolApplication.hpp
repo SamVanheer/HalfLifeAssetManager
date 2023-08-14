@@ -44,7 +44,7 @@ private:
 	std::unique_ptr<QSettings> CreateSettings(
 		const QString& applicationFileName, const QString& programName, bool isPortable);
 
-	void ConfigureOpenGL(QSettings& settings);
+	void ConfigureOpenGL();
 
 	void CheckOpenGLVersion(const QString& programName, QSettings& settings);
 
