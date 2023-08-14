@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDir>
 #include <QSettings>
 #include <QString>
 #include <QStringList>
@@ -30,10 +31,11 @@ public:
 
 		const int fileCount = _settings->beginReadArray("List");
 
-		for (int i = 0; i < fileCount; ++i)
+		// Read in reverse order because Add prepends.
+		for (int i = fileCount - 1; i >= 0; --i)
 		{
 			_settings->setArrayIndex(i);
-			_recentFiles.append(_settings->value("FileName").toString());
+			Add(_settings->value("FileName").toString());
 		}
 
 		_settings->endArray();
@@ -70,8 +72,10 @@ public:
 
 	QString At(int index) const { return _recentFiles.at(index); }
 
-	void Add(const QString& fileName)
+	void Add(QString fileName)
 	{
+		fileName = QDir::cleanPath(fileName);
+
 		if (const int existingIndex = _recentFiles.indexOf(fileName); existingIndex != -1)
 		{
 			_recentFiles.move(existingIndex, 0);
