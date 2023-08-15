@@ -115,15 +115,6 @@ FileBrowser::FileBrowser(AssetManager* application, QWidget* parent)
 	_ui.FileView->setModel(_filterModel);
 	_ui.FileView->setColumnWidth(0, 250);
 
-	auto rootDirectory = _application->GetApplicationSettings()->GetFileListRootDirectory();
-
-	if (rootDirectory.isEmpty() || !QFileInfo::exists(rootDirectory))
-	{
-		rootDirectory = QDir::currentPath();
-	}
-
-	SetRootDirectory(rootDirectory);
-
 	connect(_ui.Filters, qOverload<int>(&QComboBox::currentIndexChanged), this,
 		[this]
 		{
@@ -258,6 +249,23 @@ FileBrowser::~FileBrowser()
 	auto provider = _ui.Filters->currentData().value<AssetProvider*>();
 	auto providerName = provider ? provider->GetProviderName() : QString{};
 	_application->GetApplicationSettings()->SetFileListFilter(providerName);
+}
+
+void FileBrowser::Initialize()
+{
+	if (!m_Initialized)
+	{
+		m_Initialized = true;
+
+		auto rootDirectory = _application->GetApplicationSettings()->GetFileListRootDirectory();
+
+		if (rootDirectory.isEmpty() || !QFileInfo::exists(rootDirectory))
+		{
+			rootDirectory = QDir::currentPath();
+		}
+
+		SetRootDirectory(rootDirectory);
+	}
 }
 
 void FileBrowser::SetRootDirectory(const QString& directory)

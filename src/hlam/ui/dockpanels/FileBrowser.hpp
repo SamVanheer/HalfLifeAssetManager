@@ -19,6 +19,8 @@ public:
 	FileBrowser(AssetManager* application, QWidget* parent);
 	~FileBrowser();
 
+	void Initialize();
+
 private:
 	void SetRootDirectory(const QString& directory);
 
@@ -36,4 +38,6 @@ private:
 	AssetManager* const _application;
 	QFileSystemModel* const _model;
 	AssetFilterModel* const _filterModel;
+
+	bool m_Initialized{false};
 };

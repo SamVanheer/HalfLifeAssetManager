@@ -82,18 +82,6 @@ MainWindow::MainWindow(AssetManager* application)
 		_ui.MenuEdit->addAction(redo);
 	}
 
-	// Create and add asset menus for each provider.
-	for (auto provider : _application->GetAssetProviderRegistry()->GetAssetProviders())
-	{
-		auto menu = new QMenu("Asset", _ui.MenuBar);
-
-		provider->PopulateAssetMenu(menu);
-
-		_assetMenus.insert(provider, menu);
-		_ui.MenuBar->insertMenu(_ui.MenuTools->menuAction(), menu);
-		menu->menuAction()->setVisible(false);
-	}
-
 	{
 		const auto before = _ui.MenuTools->insertSeparator(_ui.ActionOptions);
 
@@ -139,6 +127,14 @@ MainWindow::MainWindow(AssetManager* application)
 		_fileBrowserDock->hide();
 
 		_ui.MenuView->addAction(_fileBrowserDock->toggleViewAction());
+
+		connect(_fileBrowserDock, &QDockWidget::visibilityChanged, [this, fileBrowser](bool visible)
+			{
+				if (visible)
+				{
+					fileBrowser->Initialize();
+				}
+			});
 	}
 
 	{
@@ -715,15 +711,24 @@ void MainWindow::OnAssetTabChanged(int index)
 
 		UpdateTitle(currentAsset->GetFileName(), !_undoGroup->isClean());
 
-		if (auto menu = _assetMenus.find(currentAsset->GetProvider()); menu != _assetMenus.end())
+		auto provider = currentAsset->GetProvider();
+
+		auto menuIt = _assetMenus.find(provider);
+
+		// Lazily create menus to avoid creating entire windows on startup.
+		if (menuIt == _assetMenus.end())
 		{
-			_assetMenu = *menu;
-			_assetMenu->menuAction()->setVisible(true);
+			auto menu = new QMenu("Asset", _ui.MenuBar);
+
+			provider->PopulateAssetMenu(menu);
+
+			menuIt = _assetMenus.insert(provider, menu);
+			_ui.MenuBar->insertMenu(_ui.MenuTools->menuAction(), menu);
+			menu->menuAction()->setVisible(false);
 		}
-		else
-		{
-			_assetMenu = nullptr;
-		}
+
+		_assetMenu = *menuIt;
+		_assetMenu->menuAction()->setVisible(true);
 	}
 	else
 	{
