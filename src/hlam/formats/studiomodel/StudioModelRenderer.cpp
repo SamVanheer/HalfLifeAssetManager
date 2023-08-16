@@ -306,7 +306,8 @@ void StudioModelRenderer::DrawSingleHitbox(ModelRenderInfo& renderInfo, const in
 	}
 
 	graphics::DrawOutlinedBox(_openglFunctions, v2,
-		_colorSettings->GetColor(studiomodel::HitboxFaceColor), _colorSettings->GetColor(studiomodel::HitboxEdgeColor));
+		_colorSettings->GetColor(studiomodel::SingleHitboxFaceColor),
+		_colorSettings->GetColor(studiomodel::SingleHitboxEdgeColor));
 
 	_studioModel = nullptr;
 	_renderInfo = nullptr;

@@ -11,4 +11,6 @@ const inline QString SkyLightColor{QStringLiteral("SkyLight")};
 const inline QString WireframeColor{QStringLiteral("Wireframe")};
 const inline QString HitboxEdgeColor{QStringLiteral("HitboxEdge")};
 const inline QString HitboxFaceColor{QStringLiteral("HitboxFace")};
+const inline QString SingleHitboxEdgeColor{QStringLiteral("SingleHitboxEdge")};
+const inline QString SingleHitboxFaceColor{QStringLiteral("SingleHitboxFace")};
 }

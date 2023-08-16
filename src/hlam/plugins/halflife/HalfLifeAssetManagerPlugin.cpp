@@ -31,6 +31,8 @@ bool HalfLifeAssetManagerPlugin::Initialize(AssetManager* application)
 	colorSettings->Add(WireframeColor, RGB888ToVector(255, 0, 0));
 	colorSettings->Add(HitboxEdgeColor, RGBA8888ToVector(255, 0, 0, 128));
 	colorSettings->Add(HitboxFaceColor, RGBA8888ToVector(128, 0, 0, 0));
+	colorSettings->Add(SingleHitboxEdgeColor, RGBA8888ToVector(0, 255, 0, 128));
+	colorSettings->Add(SingleHitboxFaceColor, RGBA8888ToVector(0, 128, 0, 128));
 
 	const auto studioModelSettings{std::make_shared<StudioModelSettings>(settings->GetSettings())};
 
