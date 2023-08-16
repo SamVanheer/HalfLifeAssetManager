@@ -14,7 +14,7 @@
 class CameraOperators;
 class SceneCameraOperator;
 
-constexpr std::string_view CameraOperatorPropertyKey{"CameraOperator"};
+constexpr char CameraOperatorPropertyKey[]{"CameraOperator"};
 
 class CamerasPanel : public DockableWidget
 {

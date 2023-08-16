@@ -14,7 +14,7 @@ using namespace qt::widgets;
 
 namespace studiomodel
 {
-const std::string_view CheckBoxModelFlagProperty{"CheckBoxFlagProperty"};
+constexpr char CheckBoxModelFlagProperty[]{"CheckBoxFlagProperty"};
 
 ModelDataPanel::ModelDataPanel(StudioModelAssetProvider* provider)
 	: _provider(provider)
@@ -45,19 +45,19 @@ ModelDataPanel::ModelDataPanel(StudioModelAssetProvider* provider)
 	connect(_ui.HitboxCollision, &QCheckBox::stateChanged, this, &ModelDataPanel::OnFlagChanged);
 	connect(_ui.ForceSkylight, &QCheckBox::stateChanged, this, &ModelDataPanel::OnFlagChanged);
 
-	_ui.RocketTrail->setProperty(CheckBoxModelFlagProperty.data(), EF_ROCKET);
-	_ui.GrenadeSmoke->setProperty(CheckBoxModelFlagProperty.data(), EF_GRENADE);
-	_ui.GibBlood->setProperty(CheckBoxModelFlagProperty.data(), EF_GIB);
-	_ui.ModelRotate->setProperty(CheckBoxModelFlagProperty.data(), EF_ROTATE);
+	_ui.RocketTrail->setProperty(CheckBoxModelFlagProperty, EF_ROCKET);
+	_ui.GrenadeSmoke->setProperty(CheckBoxModelFlagProperty, EF_GRENADE);
+	_ui.GibBlood->setProperty(CheckBoxModelFlagProperty, EF_GIB);
+	_ui.ModelRotate->setProperty(CheckBoxModelFlagProperty, EF_ROTATE);
 
-	_ui.GreenTrail->setProperty(CheckBoxModelFlagProperty.data(), EF_TRACER);
-	_ui.ZombieBlood->setProperty(CheckBoxModelFlagProperty.data(), EF_ZOMGIB);
-	_ui.OrangeTrail->setProperty(CheckBoxModelFlagProperty.data(), EF_TRACER2);
-	_ui.PurpleTrail->setProperty(CheckBoxModelFlagProperty.data(), EF_TRACER3);
+	_ui.GreenTrail->setProperty(CheckBoxModelFlagProperty, EF_TRACER);
+	_ui.ZombieBlood->setProperty(CheckBoxModelFlagProperty, EF_ZOMGIB);
+	_ui.OrangeTrail->setProperty(CheckBoxModelFlagProperty, EF_TRACER2);
+	_ui.PurpleTrail->setProperty(CheckBoxModelFlagProperty, EF_TRACER3);
 
-	_ui.NoShadeLight->setProperty(CheckBoxModelFlagProperty.data(), EF_NOSHADELIGHT);
-	_ui.HitboxCollision->setProperty(CheckBoxModelFlagProperty.data(), EF_HITBOXCOLLISIONS);
-	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty.data(), EF_FORCESKYLIGHT);
+	_ui.NoShadeLight->setProperty(CheckBoxModelFlagProperty, EF_NOSHADELIGHT);
+	_ui.HitboxCollision->setProperty(CheckBoxModelFlagProperty, EF_HITBOXCOLLISIONS);
+	_ui.ForceSkylight->setProperty(CheckBoxModelFlagProperty, EF_FORCESKYLIGHT);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }
@@ -83,7 +83,7 @@ void ModelDataPanel::SetFlags(int flags)
 
 	for (auto checkBox : checkBoxes)
 	{
-		const auto flagValue = checkBox->property(CheckBoxModelFlagProperty.data()).toInt();
+		const auto flagValue = checkBox->property(CheckBoxModelFlagProperty).toInt();
 
 		const QSignalBlocker blocker{checkBox};
 		checkBox->setChecked((flags & flagValue) != 0);
@@ -203,7 +203,7 @@ void ModelDataPanel::OnCBoxChanged()
 
 void ModelDataPanel::OnFlagChanged(int state)
 {
-	const auto flagValue = sender()->property(CheckBoxModelFlagProperty.data()).toInt();
+	const auto flagValue = sender()->property(CheckBoxModelFlagProperty).toInt();
 
 	const auto model = _asset->GetEntity()->GetEditableModel();
 

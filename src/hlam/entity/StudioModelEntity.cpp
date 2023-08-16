@@ -324,7 +324,7 @@ int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float en
 				&& candidate.Frame < end - sequenceDescriptor.NumFrames + 1))
 		{
 			event.id = candidate.EventId;
-			event.options = candidate.Options.data();
+			event.options = candidate.Options.c_str();
 			return index + 1;
 		}
 	}

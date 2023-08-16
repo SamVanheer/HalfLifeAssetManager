@@ -7,13 +7,13 @@
 
 using namespace std::string_view_literals;
 
-const std::vector<std::string_view> GameAssetDirectories
+const std::vector<const char*> GameAssetDirectories
 {
-	"maps"sv,
-	"models"sv,
-	"resource"sv,
-	"sprites"sv,
-	"sound"sv
+	"maps",
+	"models",
+	"resource",
+	"sprites",
+	"sound"
 };
 
 const std::vector<std::string> SteamPipeDirectoryExtensions
@@ -25,39 +25,39 @@ const std::vector<std::string> SteamPipeDirectoryExtensions
 };
 
 // From https://partner.steamgames.com/doc/store/localization/languages#supported_languages
-const std::string_view DefaultSteamLanguage{"english"sv};
+const char DefaultSteamLanguage[]{"english"};
 
-const std::vector<std::string_view> SteamLanguages
+const std::vector<const char*> SteamLanguages
 {
-	"arabic"sv,
-	"bulgarian"sv,
-	"schinese"sv,
-	"tchinese"sv,
-	"czech"sv,
-	"danish"sv,
-	"dutch"sv,
-	"english"sv,
-	"finnish"sv,
-	"french"sv,
-	"german"sv,
-	"greek"sv,
-	"hungarian"sv,
-	"italian"sv,
-	"japanese"sv,
-	"koreana"sv,
-	"norwegian"sv,
-	"polish"sv,
-	"portuguese"sv,
-	"brazilian"sv,
-	"romanian"sv,
-	"russian"sv,
-	"spanish"sv,
-	"latam"sv,
-	"swedish"sv,
-	"thai"sv,
-	"turkish"sv,
-	"ukrainian"sv,
-	"vietnamese"sv
+	"arabic",
+	"bulgarian",
+	"schinese",
+	"tchinese",
+	"czech",
+	"danish",
+	"dutch",
+	"english",
+	"finnish",
+	"french",
+	"german",
+	"greek",
+	"hungarian",
+	"italian",
+	"japanese",
+	"koreana",
+	"norwegian",
+	"polish",
+	"portuguese",
+	"brazilian",
+	"romanian",
+	"russian",
+	"spanish",
+	"latam",
+	"swedish",
+	"thai",
+	"turkish",
+	"ukrainian",
+	"vietnamese"
 };
 
 std::optional<std::filesystem::path> IsFileInGameAssetsDirectory(const std::filesystem::path& fileName)
@@ -77,7 +77,7 @@ std::optional<std::filesystem::path> IsFileInGameAssetsDirectory(const std::file
 	{
 		for (auto it = directories.rbegin(), end = directories.rend(); it != end; ++it)
 		{
-			if (strcasecmp(it->c_str(), test.data()) == 0)
+			if (strcasecmp(it->c_str(), test) == 0)
 			{
 				for (auto toRemove = std::distance(it, end); toRemove > 0; --toRemove)
 				{

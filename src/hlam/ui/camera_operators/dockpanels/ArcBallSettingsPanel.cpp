@@ -15,7 +15,7 @@ ArcBallSettingsPanel::ArcBallSettingsPanel(ArcBallCameraOperator* cameraOperator
 
 	_ui.Distance->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
 
-	setProperty(CameraOperatorPropertyKey.data(), QVariant::fromValue(static_cast<SceneCameraOperator*>(_cameraOperator)));
+	setProperty(CameraOperatorPropertyKey, QVariant::fromValue(static_cast<SceneCameraOperator*>(_cameraOperator)));
 
 	UpdateCameraProperties();
 

@@ -31,9 +31,9 @@ void LogAppInfo()
 	qCCritical(HLAM) << QApplication::applicationName() << GetVersionInfo();
 	qCCritical(HLAM) << "Build Configuration:" << GetBuildConfiguration();
 	qCCritical(HLAM) << "Git Info:"
-		<< "\nBranch:" << QString::fromUtf8(HLAMGitBranchName.data())
-		<< "\nTag:" << QString::fromUtf8(HLAMGitTagName.data())
-		<< "\nCommit Hash:" << QString::fromUtf8(HLAMGitCommitHash.data());
+		<< "\nBranch:" << QString::fromUtf8(HLAMGitBranchName)
+		<< "\nTag:" << QString::fromUtf8(HLAMGitTagName)
+		<< "\nCommit Hash:" << QString::fromUtf8(HLAMGitCommitHash);
 	qCCritical(HLAM) << "Qt Version:" << QT_VERSION_STR;
 	qCCritical(HLAM) << "Build Date:" << __DATE__;
 }
@@ -84,9 +84,9 @@ Build Date: %8
 			.arg(programName)
 			.arg(GetVersionInfo())
 			.arg(GetBuildConfiguration())
-			.arg(QString::fromUtf8(HLAMGitBranchName.data()))
-			.arg(QString::fromUtf8(HLAMGitTagName.data()))
-			.arg(QString::fromUtf8(HLAMGitCommitHash.data()))
+			.arg(QString::fromUtf8(HLAMGitBranchName))
+			.arg(QString::fromUtf8(HLAMGitTagName))
+			.arg(QString::fromUtf8(HLAMGitCommitHash))
 			.arg(QT_VERSION_STR)
 			.arg(__DATE__)
 );

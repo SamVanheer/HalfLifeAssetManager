@@ -12,7 +12,7 @@ FirstPersonSettingsPanel::FirstPersonSettingsPanel(FirstPersonCameraOperator* ca
 
 	_ui.setupUi(this);
 
-	setProperty(CameraOperatorPropertyKey.data(), QVariant::fromValue(static_cast<CameraOperator*>(_cameraOperator)));
+	setProperty(CameraOperatorPropertyKey, QVariant::fromValue(static_cast<CameraOperator*>(_cameraOperator)));
 
 	_ui.FieldOfView->setValue(_cameraOperator->GetCamera()->GetFieldOfView());
 

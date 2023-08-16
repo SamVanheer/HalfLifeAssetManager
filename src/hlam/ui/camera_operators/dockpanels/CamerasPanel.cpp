@@ -70,7 +70,7 @@ void CamerasPanel::OnChangeCamera(int index)
 
 	if (widget)
 	{
-		cameraOperator = widget->property(CameraOperatorPropertyKey.data()).value<SceneCameraOperator*>();
+		cameraOperator = widget->property(CameraOperatorPropertyKey).value<SceneCameraOperator*>();
 	}
 
 	if (_cameraOperators)
@@ -87,7 +87,7 @@ void CamerasPanel::OnAssetCameraChanged(SceneCameraOperator* previous, SceneCame
 	{
 		const auto widget = GetWidget(i);
 
-		if (const auto candidate = widget->property(CameraOperatorPropertyKey.data()).value<SceneCameraOperator*>();
+		if (const auto candidate = widget->property(CameraOperatorPropertyKey).value<SceneCameraOperator*>();
 			candidate == current)
 		{
 			index = i;

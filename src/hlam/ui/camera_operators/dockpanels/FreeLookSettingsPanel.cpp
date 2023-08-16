@@ -14,7 +14,7 @@ FreeLookSettingsPanel::FreeLookSettingsPanel(FreeLookCameraOperator* cameraOpera
 
 	_ui.setupUi(this);
 
-	setProperty(CameraOperatorPropertyKey.data(), QVariant::fromValue(static_cast<SceneCameraOperator*>(_cameraOperator)));
+	setProperty(CameraOperatorPropertyKey, QVariant::fromValue(static_cast<SceneCameraOperator*>(_cameraOperator)));
 
 	UpdateCameraProperties();
 

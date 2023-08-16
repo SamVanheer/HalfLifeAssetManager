@@ -12,10 +12,10 @@
 *	@{
 */
 
-extern const std::vector<std::string_view> GameAssetDirectories;
+extern const std::vector<const char*> GameAssetDirectories;
 extern const std::vector<std::string> SteamPipeDirectoryExtensions;
-extern const std::string_view DefaultSteamLanguage;
-extern const std::vector<std::string_view> SteamLanguages;
+extern const char DefaultSteamLanguage[];
+extern const std::vector<const char*> SteamLanguages;
 
 std::optional<std::filesystem::path> IsFileInGameAssetsDirectory(const std::filesystem::path& fileName);
 
