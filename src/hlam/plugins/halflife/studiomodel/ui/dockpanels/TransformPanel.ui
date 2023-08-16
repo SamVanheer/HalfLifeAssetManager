@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>250</width>
-    <height>209</height>
+    <height>152</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -75,6 +75,12 @@
         </property>
         <widget class="QWidget" name="RotatePage">
          <layout class="QVBoxLayout" name="verticalLayout_5">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="qt::widgets::Vector3Edit" name="RotateValues" native="true"/>
           </item>
@@ -95,6 +101,15 @@
         </widget>
         <widget class="QWidget" name="ScalePage">
          <layout class="QVBoxLayout" name="verticalLayout_4">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QDoubleSpinBox" name="ScaleValue">
             <property name="sizePolicy">
@@ -125,7 +140,7 @@
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>100</height>
+              <height>50</height>
              </size>
             </property>
             <property name="frameShape">
@@ -145,8 +160,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>136</width>
-               <height>138</height>
+               <width>138</width>
+               <height>102</height>
               </rect>
              </property>
              <property name="minimumSize">
@@ -156,6 +171,9 @@
               </size>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_6">
+              <property name="spacing">
+               <number>0</number>
+              </property>
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -249,6 +267,12 @@
         </widget>
         <widget class="QWidget" name="MovePage">
          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="qt::widgets::Vector3Edit" name="MoveValues" native="true"/>
           </item>

@@ -97,7 +97,7 @@ StudioModelEditWidget::StudioModelEditWidget(AssetManager* application, StudioMo
 	addDockPanel(new BoneControllersPanel(_provider), "Bone Controllers");
 	addDockPanel(new AttachmentsPanel(_provider), "Attachments");
 	addDockPanel(new HitboxesPanel(_provider), "Hitboxes");
-	auto transformDock = addDockPanel(new TransformPanel(_provider), "Transformation", Qt::DockWidgetArea::LeftDockWidgetArea);
+	auto transformDock = addDockPanel(new TransformPanel(_provider), "Transformation");
 
 	//Tabify all dock widgets except floating ones
 	{
@@ -122,9 +122,6 @@ StudioModelEditWidget::StudioModelEditWidget(AssetManager* application, StudioMo
 	}
 
 	modelDisplayDock->raise();
-
-	//Hidden by default
-	transformDock->setVisible(false);
 
 	transformDock->toggleViewAction()->setShortcut(QKeySequence{Qt::CTRL + static_cast<int>(Qt::Key::Key_M)});
 
