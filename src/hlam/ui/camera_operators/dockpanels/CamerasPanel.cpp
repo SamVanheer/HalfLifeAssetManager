@@ -100,8 +100,6 @@ void CamerasPanel::OnAssetCameraChanged(SceneCameraOperator* previous, SceneCame
 
 void CamerasPanel::OnLayoutDirectionChanged(QBoxLayout::Direction direction)
 {
-	_ui.NavigationLayout->setDirection(direction);
-
 	for (int i = 0; i < _ui.CamerasStack->count(); ++i)
 	{
 		auto widget = _ui.CamerasStack->widget(i);

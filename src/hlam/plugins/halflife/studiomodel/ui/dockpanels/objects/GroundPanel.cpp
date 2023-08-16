@@ -28,7 +28,7 @@ GroundPanel::GroundPanel(StudioModelAssetProvider* provider)
 	connect(_ui.GroundTexture, &QLineEdit::textChanged, this, &GroundPanel::OnTextureChanged);
 	connect(_ui.BrowseGroundTexture, &QPushButton::clicked, this, &GroundPanel::OnBrowseTexture);
 
-	connect(_ui.GroundOrigin, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &GroundPanel::OnOriginChanged);
+	connect(_ui.GroundOrigin, &qt::widgets::ShortVector3Edit::ValueChanged, this, &GroundPanel::OnOriginChanged);
 }
 
 void GroundPanel::OnAssetChanged(StudioModelAsset* asset)

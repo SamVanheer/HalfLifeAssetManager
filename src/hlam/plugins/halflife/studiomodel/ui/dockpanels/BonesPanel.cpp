@@ -38,10 +38,10 @@ BonesPanel::BonesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.BoneName, &QLineEdit::textChanged, this, &BonesPanel::OnPropsChanged);
 	connect(_ui.BoneName, &QLineEdit::inputRejected, this, &BonesPanel::OnBoneNameRejected);
 
-	connect(_ui.Position, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
-	connect(_ui.PositionScale, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
-	connect(_ui.Rotation, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
-	connect(_ui.RotationScale, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
+	connect(_ui.Position, &qt::widgets::ShortVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
+	connect(_ui.PositionScale, &qt::widgets::ShortVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
+	connect(_ui.Rotation, &qt::widgets::ShortVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
+	connect(_ui.RotationScale, &qt::widgets::ShortVector3Edit::ValueChanged, this, &BonesPanel::OnPropsChanged);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }

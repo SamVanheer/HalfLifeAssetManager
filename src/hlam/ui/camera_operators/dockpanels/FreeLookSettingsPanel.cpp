@@ -26,7 +26,7 @@ FreeLookSettingsPanel::FreeLookSettingsPanel(FreeLookCameraOperator* cameraOpera
 	connect(_ui.Pitch, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &FreeLookSettingsPanel::OnAnglesChanged);
 	connect(_ui.Yaw, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &FreeLookSettingsPanel::OnAnglesChanged);
 
-	connect(_ui.Origin, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &FreeLookSettingsPanel::OnOriginChanged);
+	connect(_ui.Origin, &qt::widgets::ShortVector3Edit::ValueChanged, this, &FreeLookSettingsPanel::OnOriginChanged);
 }
 
 FreeLookSettingsPanel::~FreeLookSettingsPanel() = default;

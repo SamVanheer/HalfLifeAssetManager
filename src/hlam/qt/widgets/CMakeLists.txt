@@ -1,5 +1,10 @@
 target_sources(HLAM
 	PRIVATE
+		ShortDoubleSpinBox.cpp
+		ShortDoubleSpinBox.hpp
+		ShortVector3Edit.cpp
+		ShortVector3Edit.hpp
+		ShortVector3Edit.ui
 		SimpleVector3Edit.cpp
 		SimpleVector3Edit.hpp
 		Vector3Edit.cpp

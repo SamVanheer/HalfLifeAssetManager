@@ -26,7 +26,7 @@ ArcBallSettingsPanel::ArcBallSettingsPanel(ArcBallCameraOperator* cameraOperator
 
 	connect(_ui.Pitch, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ArcBallSettingsPanel::OnPropertyChanged);
 	connect(_ui.Yaw, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ArcBallSettingsPanel::OnPropertyChanged);
-	connect(_ui.Center, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &ArcBallSettingsPanel::OnPropertyChanged);
+	connect(_ui.Center, &qt::widgets::ShortVector3Edit::ValueChanged, this, &ArcBallSettingsPanel::OnPropertyChanged);
 	connect(_ui.Distance, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ArcBallSettingsPanel::OnPropertyChanged);
 
 	connect(_ui.ProjectionMode, qOverload<int>(&QComboBox::currentIndexChanged),

@@ -114,7 +114,7 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="qt::widgets::SimpleVector3Edit" name="Minimum" native="true">
+        <widget class="qt::widgets::ShortVector3Edit" name="Minimum" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -149,7 +149,7 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="qt::widgets::SimpleVector3Edit" name="Maximum" native="true">
+        <widget class="qt::widgets::ShortVector3Edit" name="Maximum" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -308,9 +308,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>qt::widgets::SimpleVector3Edit</class>
+   <class>qt::widgets::ShortVector3Edit</class>
    <extends>QWidget</extends>
-   <header>qt/widgets/SimpleVector3Edit.hpp</header>
+   <header>qt/widgets/ShortVector3Edit.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

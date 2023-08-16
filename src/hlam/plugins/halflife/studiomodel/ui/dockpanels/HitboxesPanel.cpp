@@ -29,8 +29,8 @@ HitboxesPanel::HitboxesPanel(StudioModelAssetProvider* provider)
 	connect(_ui.Bone, qOverload<int>(&QComboBox::currentIndexChanged), this, &HitboxesPanel::OnHitboxPropsChanged);
 	connect(_ui.Hitgroup, qOverload<int>(&QSpinBox::valueChanged), this, &HitboxesPanel::OnHitboxPropsChanged);
 
-	connect(_ui.Minimum, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &HitboxesPanel::OnHitboxPropsChanged);
-	connect(_ui.Maximum, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &HitboxesPanel::OnHitboxPropsChanged);
+	connect(_ui.Minimum, &qt::widgets::ShortVector3Edit::ValueChanged, this, &HitboxesPanel::OnHitboxPropsChanged);
+	connect(_ui.Maximum, &qt::widgets::ShortVector3Edit::ValueChanged, this, &HitboxesPanel::OnHitboxPropsChanged);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }

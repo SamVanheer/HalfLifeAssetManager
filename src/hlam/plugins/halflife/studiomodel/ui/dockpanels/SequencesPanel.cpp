@@ -61,7 +61,7 @@ SequencesPanel::SequencesPanel(StudioModelAssetProvider* provider)
 		this, &SequencesPanel::OnSequencePropertiesChanged);
 	connect(_ui.ActWeight, qOverload<int>(&QSpinBox::valueChanged),
 		this, &SequencesPanel::OnSequencePropertiesChanged);
-	connect(_ui.LinearMovement, &qt::widgets::SimpleVector3Edit::ValueChanged,
+	connect(_ui.LinearMovement, &qt::widgets::ShortVector3Edit::ValueChanged,
 		this, &SequencesPanel::OnSequencePropertiesChanged);
 
 	connect(_ui.BlendMode, qOverload<int>(&QComboBox::currentIndexChanged), this, &SequencesPanel::OnBlendModeChanged);

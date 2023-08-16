@@ -25,18 +25,20 @@ AttachmentsPanel::AttachmentsPanel(StudioModelAssetProvider* provider)
 
 	_ui.Name->setValidator(attachmentNameValidator);
 
-	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), attachmentNameValidator, &UniqueAttachmentNameValidator::SetCurrentIndex);
+	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged),
+		attachmentNameValidator, &UniqueAttachmentNameValidator::SetCurrentIndex);
 
 	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &AttachmentsPanel::OnAssetChanged);
 
-	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged), this, &AttachmentsPanel::OnAttachmentChanged);
+	connect(_ui.Attachments, qOverload<int>(&QComboBox::currentIndexChanged),
+		this, &AttachmentsPanel::OnAttachmentChanged);
 	connect(_ui.HighlightAttachment, &QCheckBox::stateChanged, this, &AttachmentsPanel::OnHighlightAttachmentChanged);
 
 	connect(_ui.Name, &QLineEdit::textChanged, this, &AttachmentsPanel::OnPropsChanged);
 	connect(_ui.Name, &QLineEdit::inputRejected, this, &AttachmentsPanel::OnNameRejected);
 
 	connect(_ui.Bone, qOverload<int>(&QComboBox::currentIndexChanged), this, &AttachmentsPanel::OnPropsChanged);
-	connect(_ui.Origin, &qt::widgets::SimpleVector3Edit::ValueChanged, this, &AttachmentsPanel::OnPropsChanged);
+	connect(_ui.Origin, &qt::widgets::ShortVector3Edit::ValueChanged, this, &AttachmentsPanel::OnPropsChanged);
 
 	OnAssetChanged(_provider->GetDummyAsset());
 }

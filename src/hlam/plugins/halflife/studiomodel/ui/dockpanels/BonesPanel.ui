@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
+    <width>301</width>
     <height>92</height>
    </rect>
   </property>
@@ -37,26 +37,26 @@
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
-     <property name="verticalSpacing">
+     <property name="spacing">
       <number>0</number>
      </property>
      <item row="3" column="1">
       <widget class="QLineEdit" name="BoneName">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="minimumSize">
         <size>
-         <width>150</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>150</width>
+         <width>16777215</width>
          <height>16777215</height>
         </size>
        </property>
@@ -72,7 +72,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>75</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
@@ -84,20 +84,20 @@
      <item row="4" column="1">
       <widget class="QLineEdit" name="ParentBone">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="minimumSize">
         <size>
-         <width>150</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>150</width>
+         <width>16777215</width>
          <height>16777215</height>
         </size>
        </property>
@@ -129,7 +129,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>75</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
@@ -161,7 +161,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>75</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
@@ -173,7 +173,7 @@
      <item row="0" column="0" colspan="2">
       <widget class="QComboBox" name="Bones">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -206,7 +206,7 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout_8">
-     <property name="verticalSpacing">
+     <property name="spacing">
       <number>0</number>
      </property>
      <item row="2" column="0">
@@ -219,7 +219,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>75</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
@@ -238,7 +238,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>75</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
@@ -257,7 +257,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>75</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
@@ -276,7 +276,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>75</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
@@ -292,7 +292,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="qt::widgets::SimpleVector3Edit" name="Position" native="true">
+      <widget class="qt::widgets::ShortVector3Edit" name="Position" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -314,7 +314,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="qt::widgets::SimpleVector3Edit" name="PositionScale" native="true">
+      <widget class="qt::widgets::ShortVector3Edit" name="PositionScale" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -336,7 +336,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="qt::widgets::SimpleVector3Edit" name="Rotation" native="true">
+      <widget class="qt::widgets::ShortVector3Edit" name="Rotation" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -358,7 +358,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="qt::widgets::SimpleVector3Edit" name="RotationScale" native="true">
+      <widget class="qt::widgets::ShortVector3Edit" name="RotationScale" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -398,9 +398,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>qt::widgets::SimpleVector3Edit</class>
+   <class>qt::widgets::ShortVector3Edit</class>
    <extends>QWidget</extends>
-   <header>qt/widgets/SimpleVector3Edit.hpp</header>
+   <header>qt/widgets/ShortVector3Edit.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

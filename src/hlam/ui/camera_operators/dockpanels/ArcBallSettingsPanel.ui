@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>231</width>
+    <width>217</width>
     <height>116</height>
    </rect>
   </property>
@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="sizeConstraint">
-    <enum>QLayout::SetFixedSize</enum>
+    <enum>QLayout::SetDefaultConstraint</enum>
    </property>
    <property name="leftMargin">
     <number>0</number>
@@ -230,20 +230,20 @@
    <item row="1" column="1" colspan="2">
     <widget class="QDoubleSpinBox" name="Pitch">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>150</width>
+       <width>0</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>150</width>
+       <width>16777215</width>
        <height>16777215</height>
       </size>
      </property>
@@ -253,22 +253,22 @@
     </widget>
    </item>
    <item row="3" column="1" colspan="2">
-    <widget class="qt::widgets::SimpleVector3Edit" name="Center" native="true">
+    <widget class="qt::widgets::ShortVector3Edit" name="Center" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>150</width>
+       <width>0</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>150</width>
+       <width>16777215</width>
        <height>16777215</height>
       </size>
      </property>
@@ -277,20 +277,20 @@
    <item row="2" column="1" colspan="2">
     <widget class="QDoubleSpinBox" name="Yaw">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>150</width>
+       <width>0</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>150</width>
+       <width>16777215</width>
        <height>16777215</height>
       </size>
      </property>
@@ -302,20 +302,20 @@
    <item row="4" column="1" colspan="2">
     <widget class="QDoubleSpinBox" name="Distance">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>150</width>
+       <width>0</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>150</width>
+       <width>16777215</width>
        <height>16777215</height>
       </size>
      </property>
@@ -324,20 +324,20 @@
    <item row="5" column="1" colspan="2">
     <widget class="QComboBox" name="ProjectionMode">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>150</width>
+       <width>0</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>150</width>
+       <width>16777215</width>
        <height>16777215</height>
       </size>
      </property>
@@ -357,9 +357,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>qt::widgets::SimpleVector3Edit</class>
+   <class>qt::widgets::ShortVector3Edit</class>
    <extends>QWidget</extends>
-   <header>qt/widgets/SimpleVector3Edit.hpp</header>
+   <header>qt/widgets/ShortVector3Edit.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

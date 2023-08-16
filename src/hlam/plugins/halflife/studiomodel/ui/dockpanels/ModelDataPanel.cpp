@@ -23,13 +23,13 @@ ModelDataPanel::ModelDataPanel(StudioModelAssetProvider* provider)
 
 	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &ModelDataPanel::OnAssetChanged);
 
-	connect(_ui.EyePosition, &SimpleVector3Edit::ValueChanged, this, &ModelDataPanel::OnEyePositionChanged);
+	connect(_ui.EyePosition, &ShortVector3Edit::ValueChanged, this, &ModelDataPanel::OnEyePositionChanged);
 
-	connect(_ui.BBoxMin, &SimpleVector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxChanged);
-	connect(_ui.BBoxMax, &SimpleVector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxChanged);
+	connect(_ui.BBoxMin, &ShortVector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxChanged);
+	connect(_ui.BBoxMax, &ShortVector3Edit::ValueChanged, this, &ModelDataPanel::OnBBoxChanged);
 
-	connect(_ui.CBoxMin, &SimpleVector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
-	connect(_ui.CBoxMax, &SimpleVector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
+	connect(_ui.CBoxMin, &ShortVector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
+	connect(_ui.CBoxMax, &ShortVector3Edit::ValueChanged, this, &ModelDataPanel::OnCBoxChanged);
 
 	connect(_ui.RocketTrail, &QCheckBox::stateChanged, this, &ModelDataPanel::OnFlagChanged);
 	connect(_ui.GrenadeSmoke, &QCheckBox::stateChanged, this, &ModelDataPanel::OnFlagChanged);
@@ -176,7 +176,8 @@ void ModelDataPanel::OnEyePositionChanged()
 {
 	_changingDataProperties = true;
 	_asset->AddUndoCommand(
-		new ChangeEyePositionCommand(_asset, _asset->GetEntity()->GetEditableModel()->EyePosition, _ui.EyePosition->GetValue()));
+		new ChangeEyePositionCommand(_asset,
+			_asset->GetEntity()->GetEditableModel()->EyePosition, _ui.EyePosition->GetValue()));
 	_changingDataProperties = false;
 }
 
@@ -185,7 +186,8 @@ void ModelDataPanel::OnBBoxChanged()
 	auto model = _asset->GetEntity()->GetEditableModel();
 	_changingDataProperties = true;
 	_asset->AddUndoCommand(
-		new ChangeBBoxCommand(_asset, {model->BoundingMin, model->BoundingMax}, {_ui.BBoxMin->GetValue(), _ui.BBoxMax->GetValue()}));
+		new ChangeBBoxCommand(_asset,
+			{model->BoundingMin, model->BoundingMax}, {_ui.BBoxMin->GetValue(), _ui.BBoxMax->GetValue()}));
 	_changingDataProperties = false;
 }
 
@@ -194,11 +196,10 @@ void ModelDataPanel::OnCBoxChanged()
 	auto model = _asset->GetEntity()->GetEditableModel();
 	_changingDataProperties = true;
 	_asset->AddUndoCommand(
-		new ChangeCBoxCommand(_asset, {model->ClippingMin, model->ClippingMax}, {_ui.CBoxMin->GetValue(), _ui.CBoxMax->GetValue()}));
+		new ChangeCBoxCommand(_asset,
+			{model->ClippingMin, model->ClippingMax}, {_ui.CBoxMin->GetValue(), _ui.CBoxMax->GetValue()}));
 	_changingDataProperties = false;
 }
-
-
 
 void ModelDataPanel::OnFlagChanged(int state)
 {
