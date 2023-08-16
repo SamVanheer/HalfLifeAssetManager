@@ -788,7 +788,8 @@ unsigned int StudioModelRenderer::InternalDrawShadows()
 	unsigned int drawnPolys = 0;
 
 	//Always at the entity origin
-	const auto lightSampleHeight = _renderInfo->Origin.z;
+	// TODO: need to find the ground height and use that.
+	const auto lightSampleHeight = -_renderInfo->Origin.z;
 	const auto shadowHeight = lightSampleHeight + 1.0;
 
 	const glm::vec3 shadeVector = -_skyLight.Direction;
