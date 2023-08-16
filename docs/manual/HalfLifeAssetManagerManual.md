@@ -2,12 +2,12 @@
 This document was made to be converted to PDF with this Visual Studio Code extension: https://marketplace.visualstudio.com/items?itemName=yzane.markdown-pdf
 -->
 
-![image](../../assets/hlam_icon2_grayscale.png)
+![hlam_icon](../../assets/hlam_icon2_grayscale.png)
 
 <h1 align="center">Half-Life Asset Manager Manual</h1>
 <h3 align="center">Version 2.0.0 Beta</h3>
 <h3 align="center">Sam Vanheer</h3>
-<p align="center">August 14, 2023</p>
+<p align="center">August 16, 2023</p>
 
 <div class="page"/>
 
@@ -75,12 +75,18 @@ You can also associate file types manually by following this tutorial: https://w
 
 Asset Manager treats positional arguments passed on the command line as a filename. Only one filename may be passed and it should be enclosed by quotes. If passed without quotes Asset Manager will attempt to reconstruct the filename by joining all positional arguments together separated by a space.
 
+Parts of the user interface allow editing numeric data using spin boxes like these:
+
+![spinboxes](../../assets/spinboxes.png)
+
+Clicking the up and down arrow buttons adjusts these values by one. Clicking them while holding down the **CTRL** key is the equivalent of clicking them **10** times. This can be used to quickly make large adjustments.
+
+<div class="page"/>
+
 # 4 Portable Mode
 
 Launching Half-Life Asset Manager with the command line parameter `--portable` launches it in portable mode.
 In this mode the program configuration file is stored next to the executable, which makes it easier to run the program from a removable storage device or with multiple user accounts.
-
-<div class="page"/>
 
 # 5 Configuring Log Output
 
