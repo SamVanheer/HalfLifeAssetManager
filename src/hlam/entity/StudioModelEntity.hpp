@@ -91,7 +91,6 @@ private:
 	std::uint8_t _controller[STUDIO_MAX_CONTROLLERS] = {0, 0, 0, 0};	// bone controllers
 	float _controllerValues[STUDIO_MAX_CONTROLLERS] = {};
 	std::uint8_t _mouth = 0;				// mouth position
-	float _mouthValue = 0;
 	std::uint8_t _blending[STUDIO_MAX_BLENDERS] = {0, 0};			// animation blending
 	float _blendingValues[STUDIO_MAX_BLENDERS] = {};
 
@@ -193,18 +192,9 @@ public:
 	*/
 	void SetController(const int controller, float value);
 
-	/**
-	*	Gets the mouth controller. This is the stored value, not the computed value.
-	*/
 	std::uint8_t GetMouth() const { return _mouth; }
 
-	float GetMouthValue() const { return _mouthValue; }
-
-	/**
-	*	Sets the mouth controller value. The value is processed into a value that is in the range [0, 255]
-	*	@param value Value to set.
-	*/
-	void SetMouth(float value);
+	void SetMouth(std::uint8_t value);
 
 	void SetBlendMode(StudioBlendMode blendMode)
 	{

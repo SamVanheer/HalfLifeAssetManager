@@ -149,7 +149,7 @@ protected:
 	{
 		const auto& boneController = *(*_items)[index.row()];
 
-		if (boneController.Index == STUDIO_MOUTH_CONTROLLER)
+		if (boneController.Index >= STUDIO_MOUTH_CONTROLLER)
 		{
 			return "Mouth";
 		}

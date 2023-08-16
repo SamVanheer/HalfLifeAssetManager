@@ -513,7 +513,7 @@ float StudioModelEntity::GetControllerValue(const int controller) const
 		return 0;
 	}
 
-	if (controller < 0 || controller >= STUDIO_TOTAL_CONTROLLERS)
+	if (controller < 0 || controller >= STUDIO_MAX_CONTROLLERS)
 	{
 		return 0;
 	}
@@ -591,73 +591,14 @@ void StudioModelEntity::SetController(const int controller, float value)
 	_controller[controller] = setting;
 }
 
-void StudioModelEntity::SetMouth(float value)
+void StudioModelEntity::SetMouth(std::uint8_t value)
 {
 	if (!_editableModel)
 	{
 		return;
 	}
 
-	int i;
-
-	// find first controller that matches the mouth
-	for (i = 0; i < _editableModel->BoneControllers.size(); ++i)
-	{
-		if (_editableModel->BoneControllers[i]->Index == STUDIO_MOUTH_CONTROLLER)
-		{
-			break;
-		}
-	}
-
-	if (i >= _editableModel->BoneControllers.size())
-	{
-		return;
-	}
-
-	_mouthValue = value;
-
-	const auto& boneController = *_editableModel->BoneControllers[i];
-
-	// wrap 0..360 if it's a rotational controller
-	if (boneController.Type & (STUDIO_XR | STUDIO_YR | STUDIO_ZR))
-	{
-		// ugly hack, invert value if end < start
-		if (boneController.End < boneController.Start)
-		{
-			value = -value;
-		}
-
-		// does the controller not wrap?
-		if (boneController.Start + 359.0 >= boneController.End)
-		{
-			if (value > ((static_cast<double>(boneController.Start) + boneController.End) / 2.0) + 180)
-			{
-				value = value - 360;
-			}
-
-			if (value < ((static_cast<double>(boneController.Start) + boneController.End) / 2.0) - 180)
-			{
-				value = value + 360;
-			}
-		}
-		else
-		{
-			if (value > 360)
-			{
-				value = static_cast<float>(value - (int)(value / 360.0) * 360.0);
-			}
-			else if (value < 0)
-			{
-				value = static_cast<float>(value + (int)((value / -360.0) + 1) * 360.0);
-			}
-		}
-	}
-
-	int setting = (int)(64 * (value - boneController.Start) / (boneController.End - boneController.Start));
-
-	setting = std::clamp(setting, 0, 64);
-
-	_mouth = setting;
+	_mouth = value;
 }
 
 std::uint8_t StudioModelEntity::GetBlendingByIndex(const int blender) const

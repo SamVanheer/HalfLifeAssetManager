@@ -133,7 +133,7 @@ QCDataDialog::QCDataDialog(StudioModelAssetProvider* provider, QWidget* parent)
 		{
 			QString result{"$controller %1"};
 
-			if (boneController->Index == STUDIO_MOUTH_CONTROLLER)
+			if (boneController->Index >= STUDIO_MOUTH_CONTROLLER)
 			{
 				result = result.arg("mouth");
 			}

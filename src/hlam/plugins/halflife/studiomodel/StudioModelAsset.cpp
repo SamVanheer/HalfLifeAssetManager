@@ -482,7 +482,7 @@ void StudioModelAsset::LoadEntityFromSnapshot(StateSnapshot* snapshot)
 		_modelEntity->SetController(i, snapshot->Value(QString{"entity.bonecontroller%1"}.arg(i)).toFloat());
 	}
 
-	_modelEntity->SetMouth(snapshot->Value("entity.mouth").toFloat());
+	_modelEntity->SetMouth(snapshot->Value("entity.mouth").toInt());
 
 	for (int i = 0; i < STUDIO_MAX_BLENDERS; ++i)
 	{

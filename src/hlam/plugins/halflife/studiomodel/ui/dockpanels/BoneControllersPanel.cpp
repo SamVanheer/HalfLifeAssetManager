@@ -137,56 +137,67 @@ void BoneControllersPanel::UpdateControllerRange(const studiomdl::StudioBoneCont
 {
 	const auto entity = _asset->GetEntity();
 
-	float start, end;
+	// Don't let the changes ripple back to change the current setting,
+	// because this will result in a loss of accuracy due to casting to integer
+	const QSignalBlocker slider{_ui.BoneControllerValueSlider};
+	const QSignalBlocker spinner{_ui.BoneControllerValueSpinner};
 
-	//Swap values if the range is inverted
-	if (boneController.End < boneController.Start)
-	{
-		start = boneController.End;
-		end = boneController.Start;
-	}
-	else
-	{
-		start = boneController.Start;
-		end = boneController.End;
-	}
-
-	//Should probably scale as needed so the range is sufficiently large
-	//This prevents ranges that cover less than a whole integer from not doing anything
-	if ((end - start) < 1.0f)
-	{
-		_controllerSliderScale = 100.0f;
-	}
-	else
+	if (boneController.Index >= STUDIO_MOUTH_CONTROLLER)
 	{
 		_controllerSliderScale = 1.0f;
-	}
 
-	{
-		// Don't let the changes ripple back to change the current setting,
-		// because this will result in a loss of accuracy due to casting to integer
-		const QSignalBlocker slider{_ui.BoneControllerValueSlider};
-		const QSignalBlocker spinner{_ui.BoneControllerValueSpinner};
+		const int value = entity->GetMouth();
 
-		const double value = entity->GetControllerValue(_ui.BoneControllers->currentIndex());
+		_ui.BoneControllerValueSlider->setRange(0, 64);
+		_ui.BoneControllerValueSlider->setValue(value);
 
-		_ui.BoneControllerValueSlider->setRange(
-			(int)(start * _controllerSliderScale), (int)(end * _controllerSliderScale));
-		_ui.BoneControllerValueSlider->setValue(static_cast<int>(value * _controllerSliderScale));
-
-		_ui.BoneControllerValueSpinner->setRange(start, end);
+		_ui.BoneControllerValueSpinner->setDecimals(0);
+		_ui.BoneControllerValueSpinner->setRange(0, 64);
 		_ui.BoneControllerValueSpinner->setValue(value);
+	}
+	else
+	{
+		float start, end;
+
+		//Swap values if the range is inverted
+		if (boneController.End < boneController.Start)
+		{
+			start = boneController.End;
+			end = boneController.Start;
+		}
+		else
+		{
+			start = boneController.Start;
+			end = boneController.End;
+		}
+
+		//Should probably scale as needed so the range is sufficiently large
+		//This prevents ranges that cover less than a whole integer from not doing anything
+		if ((end - start) < 1.0f)
+		{
+			_controllerSliderScale = 100.0f;
+		}
+		else
+		{
+			_controllerSliderScale = 1.0f;
+		}
+
+		{
+			const double value = entity->GetControllerValue(boneController.Index);
+
+			_ui.BoneControllerValueSlider->setRange(
+				(int)(start * _controllerSliderScale), (int)(end * _controllerSliderScale));
+			_ui.BoneControllerValueSlider->setValue(static_cast<int>(value * _controllerSliderScale));
+
+			_ui.BoneControllerValueSpinner->setDecimals(2);
+			_ui.BoneControllerValueSpinner->setRange(start, end);
+			_ui.BoneControllerValueSpinner->setValue(value);
+		}
 	}
 }
 
 void BoneControllersPanel::OnBoneControllerChanged(int index)
 {
-	// Don't refresh the UI if this is getting called in response to a change we made.
-	if (_changingBoneControllerProperties)
-	{
-		return;
-	}
-
 	const auto model = _asset->GetEntity()->GetEditableModel();
 
 	static constexpr studiomdl::StudioBoneController EmptyController{};
@@ -194,6 +205,12 @@ void BoneControllersPanel::OnBoneControllerChanged(int index)
 	const auto& boneController = index != -1 ? *model->BoneControllers[index] : EmptyController;
 
 	UpdateControllerRange(boneController);
+
+	// Don't refresh the rest of the UI if this is getting called in response to a change we made.
+	if (_changingBoneControllerProperties)
+	{
+		return;
+	}
 
 	const QSignalBlocker boneName{_ui.BoneControllerBone};
 	const QSignalBlocker axis{_ui.BoneControllerBoneAxis};
@@ -228,8 +245,7 @@ void BoneControllersPanel::OnBoneControllerValueSpinnerChanged(double value)
 		const auto model = entity->GetEditableModel();
 		const auto& boneController = *model->BoneControllers[boneControllerLogicalIndex];
 
-		//TODO: support multiple mouth controllers somehow.
-		if (boneController.Index == STUDIO_MOUTH_CONTROLLER)
+		if (boneController.Index >= STUDIO_MOUTH_CONTROLLER)
 		{
 			entity->SetMouth(value);
 		}
