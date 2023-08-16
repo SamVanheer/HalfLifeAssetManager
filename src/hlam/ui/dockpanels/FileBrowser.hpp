@@ -39,5 +39,5 @@ private:
 	QFileSystemModel* const _model;
 	AssetFilterModel* const _filterModel;
 
-	bool m_Initialized{false};
+	bool _initialized{false};
 };

@@ -253,9 +253,9 @@ FileBrowser::~FileBrowser()
 
 void FileBrowser::Initialize()
 {
-	if (!m_Initialized)
+	if (!_initialized)
 	{
-		m_Initialized = true;
+		_initialized = true;
 
 		auto rootDirectory = _application->GetApplicationSettings()->GetFileListRootDirectory();
 
