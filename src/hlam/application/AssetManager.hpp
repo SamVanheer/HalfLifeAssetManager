@@ -137,6 +137,8 @@ public:
 
 	void Start();
 
+	void OnMainWindowClosing();
+
 	void OnExit();
 
 	void LoadFile(const QString& fileName);

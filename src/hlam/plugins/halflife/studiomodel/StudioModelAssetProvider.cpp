@@ -51,7 +51,9 @@ Q_LOGGING_CATEGORY(HLAMStudioModel, "hlam.studiomodel")
 Q_LOGGING_CATEGORY(HLAMSpriteRenderer, "hlam.spriterenderer")
 Q_LOGGING_CATEGORY(HLAMStudioModelRenderer, "hlam.studiomodelrenderer")
 
-const QString WindowStateKey{QStringLiteral("Asset/StudioModel/WindowState")};
+const QString StudioModelSettingsGroup{QStringLiteral("Asset/StudioModel")};
+const QString WindowStateKey{QStringLiteral("WindowState")};
+const QString WindowGeometryKey{QStringLiteral("WindowGeometry")};
 
 StudioModelAssetProvider::StudioModelAssetProvider(AssetManager* application,
 	const std::shared_ptr<StudioModelSettings>& studioModelSettings)
@@ -157,7 +159,12 @@ void StudioModelAssetProvider::Shutdown()
 
 	if (_editWidget)
 	{
-		_application->GetSettings()->setValue(WindowStateKey, _editWidget->SaveState());
+		auto settings = _application->GetSettings();
+
+		settings->beginGroup(StudioModelSettingsGroup);
+		settings->setValue(WindowGeometryKey, _editWidget->saveGeometry());
+		settings->setValue(WindowStateKey, _editWidget->SaveState());
+		settings->endGroup();
 	}
 
 	for (auto cameraOperator : _cameraOperators->GetAll())
@@ -390,7 +397,14 @@ StudioModelEditWidget* StudioModelAssetProvider::GetEditWidget()
 	{
 		assert(_application);
 		_editWidget = new StudioModelEditWidget(_application, this);
-		_editWidget->RestoreState(_application->GetSettings()->value(WindowStateKey).toByteArray());
+
+		auto settings = _application->GetSettings();
+
+		settings->beginGroup(StudioModelSettingsGroup);
+		_editWidget->restoreGeometry(settings->value(WindowGeometryKey).toByteArray());
+		_editWidget->RestoreState(settings->value(WindowStateKey).toByteArray());
+		settings->endGroup();
+		
 		_editWidget->SetControlsBarVisible(_studioModelSettings->IsControlsBarVisible());
 		_editWidget->SetTimelineVisible(_studioModelSettings->IsTimelineVisible());
 	}

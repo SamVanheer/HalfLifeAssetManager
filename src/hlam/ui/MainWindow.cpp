@@ -402,6 +402,8 @@ MainWindow::~MainWindow()
 	settings->setValue("ScreenName", screen->name());
 	settings->setValue("ScreenGeometry", saveGeometry());
 	settings->endGroup();
+
+	_application->OnMainWindowClosing();
 }
 
 void MainWindow::LoadSettings()

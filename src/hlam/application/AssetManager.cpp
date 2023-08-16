@@ -338,7 +338,7 @@ void AssetManager::Start()
 	StartTimer();
 }
 
-void AssetManager::OnExit()
+void AssetManager::OnMainWindowClosing()
 {
 	_mainWindow = nullptr;
 
@@ -351,6 +351,10 @@ void AssetManager::OnExit()
 	GetSettings()->sync();
 
 	CallPlugins(&IAssetManagerPlugin::Shutdown);
+}
+
+void AssetManager::OnExit()
+{
 }
 
 void AssetManager::LoadFile(const QString& fileName)
