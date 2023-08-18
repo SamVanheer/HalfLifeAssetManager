@@ -7,13 +7,14 @@ This document was made to be converted to PDF with this Visual Studio Code exten
 <h1 align="center">Half-Life Asset Manager Manual</h1>
 <h3 align="center">Version 2.0.0 Beta</h3>
 <h3 align="center">Sam Vanheer</h3>
-<p align="center">August 16, 2023</p>
+<p align="center">August 18, 2023</p>
 
 <div class="page"/>
 
 # Table Of Contents
 
 * [1 About Half-Life Asset Manager](#1-about-half-life-asset-manager)
+	* [1.1 Known Issues](#11-known-issues)
 * [2 Installing](#2-installing)
 * [3 General Usage](#3-general-usage)
 * [4 Portable Mode](#4-portable-mode)
@@ -59,6 +60,14 @@ Asset Manager supports the loading, viewing and editing of Half-Life 1 Studio mo
 
 It does not support Source 1 and Source 2, though some file formats are recognized for the purpose of redirecting users to other programs.
 
+## 1.1 Known Issues
+
+There are some bugs that will be fixed in a future major version due to depending on the implementation of a new shader-based renderer.
+
+These issues are:
+* **Mirror Model** does not work properly when the ground has been moved up or down (mirroring is done using a faked method, modern methods can do this properly)
+* Shadows are always drawn at a height of 1 unit above the world origin instead of 1 unit above the ground
+
 # 2 Installing
 
 Asset Manager is available in installer and archive form. The installer will automatically install the program to a location of your choosing and can optionally create shortcuts for you.
@@ -66,6 +75,8 @@ Asset Manager is available in installer and archive form. The installer will aut
 When using the off-line installer you must uninstall the previous version before installing a new version.
 
 The archive version does not require installation itself but does require you to install the Visual C++ redistributable included with the archive. This redistributable includes the Visual C++ runtime used by the program and is required to run it.
+
+<div class="page"/>
 
 # 3 General Usage
 
