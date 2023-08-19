@@ -69,16 +69,23 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QDoubleSpinBox" name="XEdit"/>
+    <widget class="qt::widgets::ShortDoubleSpinBox" name="XEdit"/>
    </item>
    <item row="1" column="1">
-    <widget class="QDoubleSpinBox" name="YEdit"/>
+    <widget class="qt::widgets::ShortDoubleSpinBox" name="YEdit"/>
    </item>
    <item row="2" column="1">
-    <widget class="QDoubleSpinBox" name="ZEdit"/>
+    <widget class="qt::widgets::ShortDoubleSpinBox" name="ZEdit"/>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>qt::widgets::ShortDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>qt/widgets/ShortDoubleSpinBox.hpp</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

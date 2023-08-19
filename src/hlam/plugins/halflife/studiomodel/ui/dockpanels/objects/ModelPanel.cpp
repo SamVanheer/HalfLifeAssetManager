@@ -12,12 +12,9 @@ ModelPanel::ModelPanel(StudioModelAssetProvider* provider)
 {
 	_ui.setupUi(this);
 
-	_ui.Origin->SetRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-	_ui.Origin->SetDecimals(6);
-
 	connect(_provider, &StudioModelAssetProvider::AssetChanged, this, &ModelPanel::OnAssetChanged);
 
-	connect(_ui.Origin, &qt::widgets::Vector3Edit::ValueChanged, this, &ModelPanel::OnOriginChanged);
+	connect(_ui.Origin, &qt::widgets::ShortVector3Edit::ValueChanged, this, &ModelPanel::OnOriginChanged);
 	connect(_ui.CenterOnWorldOrigin, &QPushButton::clicked, this, &ModelPanel::OnCenterOnWorldOrigin);
 	connect(_ui.AlignOnGround, &QPushButton::clicked, this, &ModelPanel::OnAlignOnGround);
 }

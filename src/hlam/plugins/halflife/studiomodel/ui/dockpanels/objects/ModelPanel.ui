@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>120</width>
-    <height>56</height>
+    <height>61</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,7 +33,18 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="qt::widgets::Vector3Edit" name="Origin" native="true"/>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Origin</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="qt::widgets::ShortVector3Edit" name="Origin" native="true"/>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QPushButton" name="CenterOnWorldOrigin">
@@ -66,9 +77,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>qt::widgets::Vector3Edit</class>
+   <class>qt::widgets::ShortVector3Edit</class>
    <extends>QWidget</extends>
-   <header>qt/widgets/Vector3Edit.hpp</header>
+   <header>qt/widgets/ShortVector3Edit.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
