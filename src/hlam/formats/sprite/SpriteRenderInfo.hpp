@@ -12,11 +12,11 @@ namespace sprite
 */
 struct SpriteRenderInfo final
 {
-	glm::vec3 Origin;
-	glm::vec3 Angles;
-	glm::vec3 Scale;
+	glm::vec3 Origin{0};
+	glm::vec3 Angles{0};
+	glm::vec3 Scale{0};
 
-	msprite_t* Sprite;
+	msprite_t* Sprite = nullptr;
 
 	float Transparency;
 

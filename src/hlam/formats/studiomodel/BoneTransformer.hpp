@@ -73,7 +73,7 @@ private:
 
 private:
 	//Used to store temporary calculations before calculating final values stored in _boneTransform
-	std::array<TransformState, TransformStatesCount> _transformStates;
+	std::array<TransformState, TransformStatesCount> _transformStates{};
 
 	std::array<glm::mat4x4, MAXSTUDIOBONES> _boneTransform{};
 };

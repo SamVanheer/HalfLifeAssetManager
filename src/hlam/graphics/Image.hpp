@@ -57,8 +57,8 @@ private:
 	}
 
 private:
-	int _width;
-	int _height;
+	int _width = 0;
+	int _height = 0;
 	std::vector<std::byte> _data;
 };
 }
