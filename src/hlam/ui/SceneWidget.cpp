@@ -106,6 +106,7 @@ bool SceneWidget::event(QEvent* event)
 				wheelEvent->ignore();
 			}
 		}
+		break;
 	}
 
 	default: return QOpenGLWindow::event(event);
