@@ -7,7 +7,7 @@ This document was made to be converted to PDF with this Visual Studio Code exten
 <h1 align="center">Half-Life Asset Manager Manual</h1>
 <h3 align="center">Version 2.0.0 Beta</h3>
 <h3 align="center">Sam Vanheer</h3>
-<p align="center">August 18, 2023</p>
+<p align="center">August 20, 2023</p>
 
 <div class="page"/>
 
@@ -854,6 +854,8 @@ A bone's position, position scale, rotation and rotation scale is the data used 
 The Bone Controllers panel allows to preview and modify the model's bone controllers.
 
 The controller value is only used to preview the controller and does not change the model itself.
+
+Note that all mouth controllers use the same controller value.
 
 ### 9.6.11 Attachments
 
