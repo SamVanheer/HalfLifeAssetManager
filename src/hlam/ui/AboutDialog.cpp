@@ -3,6 +3,8 @@
 #include <QMessageBox>
 #include <QString>
 
+#include <AL/al.h>
+
 #include "ProjectInfo.hpp"
 
 #include "application/AssetManager.hpp"
@@ -42,6 +44,8 @@ void ShowAboutDialog(QWidget* parent)
 {
 	const QString programName{QApplication::applicationName()};
 
+	const auto alVersion = alGetString(AL_VERSION);
+
 	QMessageBox::about(parent, "About " + programName,
 		QString::fromUtf8(
 			reinterpret_cast<const char*>(u8R"(%1 %2
@@ -71,15 +75,15 @@ All Rights Reserved.
 Copyright © 1998-2002, Valve LLC.
 All rights reserved.
 
-Uses OpenAL Soft
+Uses OpenAL Soft (Version %7)
 Uses Ogg Vorbis
 Uses Libnyquist, Copyright (c) 2019, Dimitri Diakopoulos All rights reserved.
 Uses The OpenGL Mathemathics library (GLM)
 Copyright © 2005 - 2016 G-Truc Creation
 
-Uses Qt %7
+Uses Qt %8
 
-Build Date: %8
+Build Date: %9
 )"))
 			.arg(programName)
 			.arg(GetVersionInfo())
@@ -87,6 +91,7 @@ Build Date: %8
 			.arg(QString::fromUtf8(HLAMGitBranchName))
 			.arg(QString::fromUtf8(HLAMGitTagName))
 			.arg(QString::fromUtf8(HLAMGitCommitHash))
+			.arg(alVersion)
 			.arg(QT_VERSION_STR)
 			.arg(__DATE__)
 );
