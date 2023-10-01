@@ -9,7 +9,7 @@ on:
       - dev
 
 env:
-  BUILD_TYPE: RelWithDebInfo
+  BUILD_TYPE: Release
   VCPKG_ROOT: ${{github.workspace}}/vcpkg
 
 jobs:
