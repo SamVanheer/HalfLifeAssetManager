@@ -6,6 +6,13 @@
 
 namespace qt
 {
+// On Linux executables don't have an extension so we can't filter for them.
+#ifdef WIN32
+const inline QString ExeFilter{ QStringLiteral("Executable Files (*.exe);;All Files (*.*)") };
+#else
+const inline QString ExeFilter{ QStringLiteral("All Files (*)") };
+#endif
+
 bool LaunchDefaultProgram(const QString& fileName);
 
 QString GetImagesFileFilter();

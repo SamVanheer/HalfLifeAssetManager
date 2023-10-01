@@ -3,6 +3,8 @@
 #include <QFileInfo>
 #include <QSettings>
 
+#include "qt/QtUtilities.hpp"
+
 #include "ui/options/gameconfigurations/AutodetectConfigurePropertiesPage.hpp"
 
 AutodetectConfigurePropertiesPage::AutodetectConfigurePropertiesPage(QWidget* parent)
@@ -62,8 +64,7 @@ AutodetectConfigurePropertiesPage::AutodetectConfigurePropertiesPage(QWidget* pa
 				directory = _ui.GameDirectory->text();
 			}
 
-			const auto path = QFileDialog::getOpenFileName(this, "Select Game Executable", directory,
-				QStringLiteral("Executable Files (*.exe);;All Files (*.*)"));
+			const auto path = QFileDialog::getOpenFileName(this, "Select Game Executable", directory, qt::ExeFilter);
 
 			if (!path.isEmpty())
 			{

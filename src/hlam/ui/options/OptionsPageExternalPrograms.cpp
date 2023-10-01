@@ -4,6 +4,8 @@
 #include <QPushButton>
 #include <QSignalBlocker>
 
+#include "qt/QtUtilities.hpp"
+
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ExternalProgramSettings.hpp"
 
@@ -12,7 +14,6 @@
 #include "ui/options/OptionsPageGeneral.hpp"
 
 const QString OptionsPageExternalProgramsId{QStringLiteral("E.ExternalPrograms")};
-const QString ExternalProgramsExeFilter{QStringLiteral("Executable Files (*.exe *.com);;All Files (*.*)")};
 
 enum ExternalProgramsRole
 {
@@ -83,7 +84,7 @@ OptionsPageExternalProgramsWidget::OptionsPageExternalProgramsWidget(
 		{
 			const QString fileName{QFileDialog::getOpenFileName(
 				this, QString{"Select %1"}.arg(_ui.Programs->currentText()), _ui.ExecutablePath->text(),
-				ExternalProgramsExeFilter)};
+				qt::ExeFilter)};
 
 			if (!fileName.isEmpty())
 			{

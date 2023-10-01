@@ -9,6 +9,8 @@
 
 #include "application/AssetManager.hpp"
 
+#include "qt/QtUtilities.hpp"
+
 #include "ui/options/gameconfigurations/AutodetectGameConfigurationsWizard.hpp"
 #include "ui/options/gameconfigurations/EditGameConfigurationsDialog.hpp"
 #include "ui/options/gameconfigurations/GameConfigurationsOptions.hpp"
@@ -224,7 +226,7 @@ void OptionsPageGameConfigurationsWidget::OnGameExecutableChanged(const QString&
 void OptionsPageGameConfigurationsWidget::OnBrowseGameExecutable()
 {
 	const auto path = QFileDialog::getOpenFileName(this, "Select Game Executable", _ui.GameExecutable->text(),
-		QStringLiteral("Executable Files (*.exe);;All Files (*.*)"));
+		qt::ExeFilter);
 
 	if (!path.isEmpty())
 	{
