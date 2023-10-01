@@ -23,13 +23,7 @@ jobs:
           submodules: recursive
          
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: '5.15.2'
-          host: 'linux'
-          target: 'desktop'
-          arch: 'gcc_64'
-          dir: '${{github.workspace}}/qt/'
+        run: sudo apt install -y qtbase5-dev
           
       - uses: lukka/get-cmake@latest
       
