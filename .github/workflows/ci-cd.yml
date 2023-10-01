@@ -49,23 +49,16 @@ jobs:
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
       
-#      - name: Prepare artifacts
-#        run: |
-#          mkdir "Half-Life Asset Manager"
-#          mv build/HLAM "Half-Life Asset Manager"
-#          mv build/libopenal.so.1.22.2 "Half-Life Asset Manager"
-#          mv build/libQt5Core.so.5.15.2 "Half-Life Asset Manager"
-#          mv build/libQt5Gui.so.5.15.2 "Half-Life Asset Manager"
-#          mv build/libQt5Network.so.5.15.2 "Half-Life Asset Manager"
-#          mv build/libQt5Widgets.so.5.15.2 "Half-Life Asset Manager"
-#          mv build/imageformats "Half-Life Asset Manager/imageformats"
-#          mv build/platforms "Half-Life Asset Manager/platforms"
-#      
-#      - name: Upload artifacts
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: Linux-x64
-#          path: "Half-Life Asset Manager"
+      - name: Prepare artifacts
+        run: |
+          mkdir "Half-Life Asset Manager"
+          mv build/HLAM "Half-Life Asset Manager"
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Linux-x64
+          path: "Half-Life Asset Manager"
 
   win32:
     name: Win32
