@@ -51,7 +51,7 @@ Q_LOGGING_CATEGORY(HLAMStudioModel, "hlam.studiomodel")
 Q_LOGGING_CATEGORY(HLAMSpriteRenderer, "hlam.spriterenderer")
 Q_LOGGING_CATEGORY(HLAMStudioModelRenderer, "hlam.studiomodelrenderer")
 
-const QString StudioModelSettingsGroup{QStringLiteral("Asset/StudioModel")};
+const QString StudioModelSettingsGroup{QStringLiteral("Assets/StudioModel")};
 const QString WindowStateKey{QStringLiteral("WindowState")};
 const QString WindowGeometryKey{QStringLiteral("WindowGeometry")};
 
