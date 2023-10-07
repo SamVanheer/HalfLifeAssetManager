@@ -45,7 +45,7 @@ private:
 
 	void MaybeOpenAll(const QStringList& fileNames);
 
-	void TryLoadInExternalProgram(const QString& fileName, const QString& externalProgramKey);
+	void TryLoadInExternalProgram(const QString& fileName, const QString& externalProgramKey, bool promptBeforeOpening);
 
 	void CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges);
 

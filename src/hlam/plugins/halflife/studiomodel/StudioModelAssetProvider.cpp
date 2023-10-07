@@ -358,7 +358,31 @@ AssetLoadData StudioModelAssetProvider::Load(const QString& fileName, FILE* file
 	if (studiomdl::IsXashModel(*studioModel))
 	{
 		_logger->debug("Model {} is a Xash model", fileName);
-		return AssetLoadInExternalProgram{.ExternalProgramKey = XashModelViewerFileNameKey};
+
+		const XashOpenMode mode = _studioModelSettings->GetXashOpenMode();
+
+		if (mode != XashOpenMode::Never)
+		{
+			bool loadInXashModelViewer = true;
+
+			if (mode == XashOpenMode::Ask)
+			{
+				const auto action = QMessageBox::question(_application->GetMainWindow(),
+					"Attempting to load Xash model", R"(This model was created using Xash's model compiler.
+
+Load in Xash Model Viewer?)", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
+				loadInXashModelViewer = action == QMessageBox::Yes;
+			}
+
+			if (loadInXashModelViewer)
+			{
+				return AssetLoadInExternalProgram{
+					.ExternalProgramKey = XashModelViewerFileNameKey,
+					.PromptBeforeOpening = false
+				};
+			}
+		}
 	}
 
 	auto editableStudioModel = studiomdl::ConvertToEditable(*studioModel);

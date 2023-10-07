@@ -97,6 +97,8 @@ OptionsPageStudioModelWidget::OptionsPageStudioModelWidget(
 	_ui.GroundLengthSlider->setValue(_studioModelSettings->GetGroundLength());
 	_ui.GroundLengthSpinner->setValue(_studioModelSettings->GetGroundLength());
 
+	_ui.XashOpenMode->setCurrentIndex(static_cast<int>(_studioModelSettings->GetXashOpenMode()));
+
 	connect(_ui.GroundLengthSlider, &QSlider::valueChanged, _ui.GroundLengthSpinner, &QSpinBox::setValue);
 	connect(_ui.GroundLengthSpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.GroundLengthSlider, &QSlider::setValue);
 	connect(_ui.ResetGroundLength, &QPushButton::clicked, this, &OptionsPageStudioModelWidget::OnResetGroundLength);
@@ -186,6 +188,7 @@ void OptionsPageStudioModelWidget::ApplyChanges()
 	_studioModelSettings->SetActivateTextureViewWhenTexturesPanelOpened(
 		_ui.ActivateTextureViewWhenTexturesPanelOpened->isChecked());
 	_studioModelSettings->SetGroundLength(_ui.GroundLengthSlider->value());
+	_studioModelSettings->SetXashOpenMode(static_cast<XashOpenMode>(_ui.XashOpenMode->currentIndex()));
 
 	QSet<int> soundEventIds;
 

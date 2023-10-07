@@ -77,6 +77,7 @@ private:
 struct AssetLoadInExternalProgram
 {
 	QString ExternalProgramKey;
+	bool PromptBeforeOpening = true;
 };
 
 using AssetLoadData = std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram>;

@@ -22,6 +22,13 @@
      <property name="bottomMargin">
       <number>0</number>
      </property>
+     <item row="2" column="2">
+      <widget class="QSpinBox" name="GroundLengthSpinner">
+       <property name="maximum">
+        <number>100</number>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="0" colspan="4">
       <widget class="QCheckBox" name="ActivateTextureViewWhenTexturesPanelOpened">
        <property name="text">
@@ -39,24 +46,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Ground Length:</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="3">
       <widget class="QPushButton" name="ResetGroundLength">
        <property name="text">
         <string>Default</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QSpinBox" name="GroundLengthSpinner">
-       <property name="maximum">
-        <number>100</number>
        </property>
       </widget>
      </item>
@@ -65,6 +58,39 @@
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Ground Length:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Open Xash models in Xash model viewer:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1" colspan="3">
+      <widget class="QComboBox" name="XashOpenMode">
+       <item>
+        <property name="text">
+         <string>Ask</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Always</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Never</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>

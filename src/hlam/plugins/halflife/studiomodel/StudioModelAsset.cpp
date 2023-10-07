@@ -53,6 +53,7 @@
 
 #include "application/AssetManager.hpp"
 #include "ui/FullscreenWidget.hpp"
+#include "ui/MainWindow.hpp"
 #include "ui/SceneWidget.hpp"
 
 #include "ui/camera_operators/CameraOperators.hpp"
@@ -182,6 +183,23 @@ QWidget* StudioModelAsset::GetEditWidget()
 
 void StudioModelAsset::Save()
 {
+	if (_editableStudioModel->IsXashModel)
+	{
+		const auto action = QMessageBox::question(_application->GetMainWindow(),
+			"Possible loss of data", R"(This model was created using Xash's model compiler.
+Saving it will remove Xash-specific data.
+
+Continue?)", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
+		if (action != QMessageBox::Yes)
+		{
+			return;
+		}
+
+		// After saving Xash-specific data is lost so this is no longer true.
+		_editableStudioModel->IsXashModel = false;
+	}
+
 	// Once saved this is never true.
 	_editableStudioModel->HasExternalTextureFile = false;
 
@@ -189,6 +207,10 @@ void StudioModelAsset::Save()
 	auto result = studiomdl::ConvertFromEditable(filePath, *_editableStudioModel);
 
 	studiomdl::SaveStudioModel(filePath, result, false);
+
+	auto undoStack = GetUndoStack();
+
+	undoStack->setClean();
 }
 
 bool StudioModelAsset::TryRefresh()

@@ -12,6 +12,7 @@ struct ExternalProgramCommand
 {
 	QString FileName;
 	QString ExternalProgramKey;
+	bool PromptBeforeOpening;
 };
 
 class OpenInExternalProgramDialog final : public QDialog

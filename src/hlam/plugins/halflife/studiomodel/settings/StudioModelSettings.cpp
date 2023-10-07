@@ -13,6 +13,13 @@ void StudioModelSettings::LoadSettings()
 	_groundLength = std::clamp(_settings->value(
 		"GroundLength", DefaultGroundLength).toInt(), MinimumGroundLength, MaximumGroundLength);
 
+	_xashOpenMode = static_cast<XashOpenMode>(_settings->value("XashOpenMode", static_cast<int>(XashOpenMode::Ask)).toInt());
+
+	if (_xashOpenMode < XashOpenMode::Ask || _xashOpenMode > XashOpenMode::Never)
+	{
+		_xashOpenMode = XashOpenMode::Ask;
+	}
+
 	_soundEventIds.clear();
 	const int soundEventIdsCount = _settings->beginReadArray("SoundEventIds");
 	for (int i = 0; i < soundEventIdsCount; ++i)
@@ -36,6 +43,7 @@ void StudioModelSettings::SaveSettings()
 	_settings->setValue("AutodetectViewmodels", _autodetectViewModels);
 	_settings->setValue("ActivateTextureViewWhenTexturesPanelOpened", _activateTextureViewWhenTexturesPanelOpened);
 	_settings->setValue("GroundLength", _groundLength);
+	_settings->setValue("XashOpenMode", static_cast<int>(_xashOpenMode));
 
 	_settings->beginWriteArray("SoundEventIds", _soundEventIds.size());
 	for (int i = 0; auto id : _soundEventIds)

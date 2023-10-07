@@ -5,6 +5,13 @@
 
 #include "settings/BaseSettings.hpp"
 
+enum class XashOpenMode
+{
+	Ask = 0,
+	Always,
+	Never
+};
+
 class StudioModelSettings final : public BaseSettings
 {
 public:
@@ -56,6 +63,13 @@ public:
 		_groundLength = value;
 	}
 
+	XashOpenMode GetXashOpenMode() const { return _xashOpenMode; }
+
+	void SetXashOpenMode(XashOpenMode mode)
+	{
+		_xashOpenMode = mode;
+	}
+
 	float GetCameraFOV(const QString& name, float defaultValue) const;
 	void SetCameraFOV(const QString& name, float value);
 
@@ -71,6 +85,8 @@ private:
 	bool _activateTextureViewWhenTexturesPanelOpened{DefaultActivateTextureViewWhenTexturesPanelOpened};
 
 	int _groundLength = DefaultGroundLength;
+
+	XashOpenMode _xashOpenMode = XashOpenMode::Ask;
 
 	QSet<int> _soundEventIds;
 };

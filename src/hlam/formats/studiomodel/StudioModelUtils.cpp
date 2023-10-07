@@ -306,7 +306,7 @@ std::vector<std::vector<StudioAnimation>> ConvertAnimationBlendsToEditable(
 	return result;
 }
 
-std::vector<std::unique_ptr<StudioSequence>> ConvertSequencesToEditable(const StudioModel& studioModel)
+std::vector<std::unique_ptr<StudioSequence>> ConvertSequencesToEditable(const StudioModel& studioModel, bool convertPivots)
 {
 	auto header = studioModel.GetStudioHeader();
 
@@ -349,7 +349,7 @@ std::vector<std::unique_ptr<StudioSequence>> ConvertSequencesToEditable(const St
 			std::move(events),
 			std::move(sortedEvents),
 			source->numframes,
-			ConvertPivotsToEditable(studioModel, *source),
+			convertPivots ? ConvertPivotsToEditable(studioModel, *source) : std::vector<studiomdl::StudioSequencePivot>{},
 			source->motiontype,
 			source->motionbone,
 			source->linearmovement,
@@ -763,6 +763,8 @@ EditableStudioModel ConvertToEditable(const StudioModel& studioModel)
 	auto header = studioModel.GetStudioHeader();
 	auto textureHeader = studioModel.GetTextureHeader();
 
+	const bool isXashModel = IsXashModel(studioModel);
+
 	ValidateCount(header->numbones < 0);
 	ValidateCount(header->numbonecontrollers < 0);
 	ValidateCount(header->numhitboxes < 0);
@@ -791,7 +793,7 @@ EditableStudioModel ConvertToEditable(const StudioModel& studioModel)
 	result.Bones = ConvertBonesToEditable(studioModel, result.BoneControllers);
 	result.Hitboxes = ConvertHitboxesToEditable(studioModel, result.Bones);
 	result.SequenceGroups = ConvertSequenceGroupsToEditable(studioModel);
-	result.Sequences = ConvertSequencesToEditable(studioModel);
+	result.Sequences = ConvertSequencesToEditable(studioModel, !isXashModel);
 	result.Attachments = ConvertAttachmentsToEditable(studioModel, result.Bones);
 	result.Bodyparts = ConvertBodypartsToEditable(studioModel, result.Bones);
 
@@ -801,6 +803,8 @@ EditableStudioModel ConvertToEditable(const StudioModel& studioModel)
 	result.Transitions = ConvertTransitionsToEditable(studioModel);
 
 	result.HasExternalTextureFile = studioModel.HasSeparateTextureHeader();
+
+	result.IsXashModel = isXashModel;
 
 	return result;
 }

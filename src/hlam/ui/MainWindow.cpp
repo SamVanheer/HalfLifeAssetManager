@@ -549,7 +549,8 @@ void MainWindow::MaybeOpenAll(const QStringList& fileNames)
 					}
 					else if constexpr (std::is_same_v<T, AssetLoadInExternalProgram>)
 					{
-						filesToLoadInExternalPrograms.emplace_back(fileName, std::move(result.ExternalProgramKey));
+						filesToLoadInExternalPrograms.emplace_back(
+							fileName, std::move(result.ExternalProgramKey), result.PromptBeforeOpening);
 					}
 					else
 					{
@@ -571,7 +572,7 @@ void MainWindow::MaybeOpenAll(const QStringList& fileNames)
 	case 1U:
 	{
 		const auto& file = filesToLoadInExternalPrograms.front();
-		TryLoadInExternalProgram(file.FileName, file.ExternalProgramKey);
+		TryLoadInExternalProgram(file.FileName, file.ExternalProgramKey, file.PromptBeforeOpening);
 		break;
 	}
 
@@ -584,7 +585,7 @@ void MainWindow::MaybeOpenAll(const QStringList& fileNames)
 	}
 }
 
-void MainWindow::TryLoadInExternalProgram(const QString& fileName, const QString& externalProgramKey)
+void MainWindow::TryLoadInExternalProgram(const QString& fileName, const QString& externalProgramKey, bool promptBeforeOpening)
 {
 	const auto externalPrograms = _application->GetApplicationSettings()->GetExternalPrograms();
 
@@ -592,7 +593,7 @@ void MainWindow::TryLoadInExternalProgram(const QString& fileName, const QString
 
 	const auto launchResult = _application->TryLaunchExternalProgram(
 		externalProgramKey, QStringList(fileName),
-		QString{"This file has to be opened in %1."}.arg(programName));
+		promptBeforeOpening ? std::optional{ QString{"This file has to be opened in %1."}.arg(programName) } : std::nullopt);
 
 	switch (launchResult)
 	{

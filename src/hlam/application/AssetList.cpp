@@ -230,10 +230,6 @@ bool AssetList::Save(Asset* asset)
 		return false;
 	}
 
-	auto undoStack = asset->GetUndoStack();
-
-	undoStack->setClean();
-
 	return true;
 }
 
