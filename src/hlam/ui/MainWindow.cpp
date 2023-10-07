@@ -15,7 +15,6 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QOpenGLFunctions>
-#include <QProgressDialog>
 #include <QScreen>
 #include <QTabBar>
 #include <QToolButton>
@@ -529,24 +528,12 @@ void MainWindow::MaybeOpenAll(const QStringList& fileNames)
 
 		const TimerSuspender timerSuspender{_application};
 
-		QProgressDialog progress(
-			QString{"Opening %1 assets..."}.arg(fileNames.size()), "Abort Open", 0, fileNames.size(), this);
-		progress.setWindowModality(Qt::WindowModal);
-
-		// Always show immediately for 10 or more, wait only a second otherwise for slow loading assets.
-		progress.setMinimumDuration(fileNames.size() < 10 ? 1000 : 0);
-
 		// Make the tab widget invisible to reduce overhead from updating it.
 		_assetsWidget->setVisible(false);
 		_modifyingTabs = true;
 
 		for (int i = 0; const auto & fileName : fileNames)
 		{
-			progress.setValue(i++);
-
-			if (progress.wasCanceled())
-				break;
-
 			auto loadResult = _assets->TryLoad(fileName);
 
 			std::visit([&](auto&& result)
@@ -572,8 +559,6 @@ void MainWindow::MaybeOpenAll(const QStringList& fileNames)
 		}
 
 		_activateNewTabs = true;
-
-		progress.setValue(fileNames.size());
 
 		_modifyingTabs = false;
 		_assetsWidget->setVisible(_assetTabs->count() > 0);
@@ -636,9 +621,6 @@ void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
 
 	const TimerSuspender timerSuspender{_application};
 
-	QProgressDialog progress(QString{"Closing %1 assets..."}.arg(count), {}, 0, count - leaveOpenCount, this);
-	progress.setWindowModality(Qt::WindowModal);
-
 	// Switch to the first asset to reduce the overhead involved with constant tab switching.
 	_assets->SetCurrent(_assets->Get(0));
 
@@ -646,17 +628,11 @@ void MainWindow::CloseAllButCount(int leaveOpenCount, bool verifyUnsavedChanges)
 	_assetsWidget->setVisible(false);
 	_modifyingTabs = true;
 
-	int i;
-
-	for (i = 0; count-- > leaveOpenCount; ++i)
+	while (count-- > leaveOpenCount)
 	{
-		progress.setValue(i);
-
 		// Never allow cancel, otherwise we'll end up in an infinite loop.
 		_assets->TryClose(count, verifyUnsavedChanges, false);
 	}
-
-	progress.setValue(i);
 
 	_modifyingTabs = false;
 	_assetsWidget->setVisible(_assetTabs->count() > 0);
