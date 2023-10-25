@@ -7,7 +7,7 @@ This document was made to be converted to PDF with this Visual Studio Code exten
 <h1 align="center">Half-Life Asset Manager Manual</h1>
 <h3 align="center">Version 2.0.0 Beta</h3>
 <h3 align="center">Sam Vanheer</h3>
-<p align="center">August 20, 2023</p>
+<p align="center">October 25, 2023</p>
 
 <div class="page"/>
 
@@ -145,7 +145,9 @@ See Section [Supported External Programs](#842-supported-external-programs) for 
 
 ## 6.3 Xash StudioModel
 
-The Xash StudioModel format identified as IDST version 10 with additional Xash-specific data is recognized and forwarded to a user-configured Xash Model Viewer.
+The Xash StudioModel format identified as IDST version 10 with additional Xash-specific data is recognized and forwarded to a user-configured Xash Model Viewer if configured in the [Studiomodel options page](#944-open-xash-models-in-xash-model-viewer).
+
+If a Xash model is loaded in HLAM itself and then saved any Xash-specific data included in the model will be lost. HLAM warns users about this before saving.
 
 See Section [Supported External Programs](#842-supported-external-programs) for more information.
 
@@ -603,7 +605,11 @@ Note that the Textures view will also be activated if you drag the Textures pane
 
 The length of the ground in units.
 
-### 9.4.4 Sound events
+### 9.4.4 Open Xash models in Xash model viewer
+
+This setting determines how Xash models are loaded. **Ask** prompts users every time, **Always** and **Never** automatically use the chosen action.
+
+### 9.4.5 Sound events
 
 List of event Ids that should play sounds.
 
