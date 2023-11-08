@@ -7,7 +7,7 @@ This document was made to be converted to PDF with this Visual Studio Code exten
 <h1 align="center">Half-Life Asset Manager Manual</h1>
 <h3 align="center">Version 2.0.0 Beta</h3>
 <h3 align="center">Sam Vanheer</h3>
-<p align="center">October 25, 2023</p>
+<p align="center">November 8, 2023</p>
 
 <div class="page"/>
 
