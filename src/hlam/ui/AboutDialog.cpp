@@ -60,26 +60,26 @@ Git Info:
 	Tag: %5
 	Commit Hash: %6
 
-Based on Jed's Half-Life Model Viewer v1.3 © 2004 Neil 'Jed' Jedrzejewski
+Based on Jed's Half-Life Model Viewer v1.3 (c) 2004 Neil 'Jed' Jedrzejewski
 Email:	jed@wunderboy.org
 Web:	http://www.wunderboy.org/
 
-Also based on Half-Life Model Viewer v1.25 © 2002 Mete Ciragan
+Also based on Half-Life Model Viewer v1.25 (c) 2002 Mete Ciragan
 Email:	mete@swissquake.ch
 Web:	http://www.milkshape3d.com/
 
 This product contains software technology licensed from Id Software, Inc.
-( "Id Technology" ). Id Technology © 1996 Id Software, Inc.
+( "Id Technology" ). Id Technology (c) 1996 Id Software, Inc.
 All Rights Reserved.
 
-Copyright © 1998-2002, Valve LLC.
+Copyright (c) 1998-2002, Valve LLC.
 All rights reserved.
 
 Uses OpenAL Soft (Version %7)
 Uses Ogg Vorbis
 Uses Libnyquist, Copyright (c) 2019, Dimitri Diakopoulos All rights reserved.
 Uses The OpenGL Mathemathics library (GLM)
-Copyright © 2005 - 2016 G-Truc Creation
+Copyright (c) 2005 - 2016 G-Truc Creation
 
 Uses Qt %8
 
