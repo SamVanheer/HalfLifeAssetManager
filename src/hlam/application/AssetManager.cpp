@@ -8,6 +8,7 @@
 #include <QLayout>
 #include <QMessageBox>
 #include <QOpenGLFunctions_1_1>
+#include <QOpenGLDebugLogger>
 #include <QProcess>
 #include <QSettings>
 
@@ -86,8 +87,24 @@ AssetManager::AssetManager(
 	_logger->debug("Initializing OpenGL");
 
 	_graphicsContext->Begin();
+
 	const bool initializedOpenGLFunctions = _openglFunctions->initializeOpenGLFunctions();
 	assert(initializedOpenGLFunctions);
+
+	_openGLLogger = new QOpenGLDebugLogger(this);
+
+	if (_openGLLogger->initialize())
+	{
+		connect(_openGLLogger, &QOpenGLDebugLogger::messageLogged, this, &AssetManager::OnOpenGLDebugMessage);
+
+		_openGLLogger->startLogging();
+
+		for (const auto& msg : _openGLLogger->loggedMessages())
+		{
+			OnOpenGLDebugMessage(msg);
+		}
+	}
+
 	_graphicsContext->End();
 
 	_textureLoader->SetResizeToPowerOf2(_applicationSettings->ShouldResizeTexturesToPowerOf2());
@@ -134,6 +151,10 @@ AssetManager::~AssetManager()
 	{
 		delete _sceneWidget->GetContainer();
 	}
+
+	_graphicsContext->Begin();
+	delete _openGLLogger;
+	_graphicsContext->End();
 }
 
 QSettings* AssetManager::GetSettings() const
@@ -415,4 +436,9 @@ void AssetManager::OnStylePathChanged(const QString& stylePath)
 	{
 		_guiApplication->setStyleSheet({});
 	}
+}
+
+void AssetManager::OnOpenGLDebugMessage(const QOpenGLDebugMessage& msg)
+{
+	qInfo(HLAM()) << msg;
 }

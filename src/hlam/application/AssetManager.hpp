@@ -25,6 +25,8 @@ class ISoundSystem;
 class MainWindow;
 class OptionsPageRegistry;
 class QApplication;
+class QOpenGLDebugLogger;
+class QOpenGLDebugMessage;
 class QOpenGLFunctions_1_1;
 class QSettings;
 class QStringList;
@@ -169,6 +171,8 @@ private slots:
 
 	void OnStylePathChanged(const QString& stylePath);
 
+	void OnOpenGLDebugMessage(const QOpenGLDebugMessage& msg);
+
 private:
 	QApplication* const _guiApplication;
 
@@ -179,6 +183,7 @@ private:
 	DragNDropEventFilter* const _dragNDropEventFilter;
 
 	const std::unique_ptr<graphics::IGraphicsContext> _graphicsContext;
+	QOpenGLDebugLogger* _openGLLogger{};
 	const std::unique_ptr<QOpenGLFunctions_1_1> _openglFunctions;
 	const std::unique_ptr<graphics::TextureLoader> _textureLoader;
 
