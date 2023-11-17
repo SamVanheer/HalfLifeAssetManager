@@ -74,7 +74,7 @@ Component.prototype.createOperations = function()
 		if (isRegisterMDLChecked)
 		{
 			component.addOperation("RegisterFileType",
-				".mdl",
+				"mdl",
 				"\"@TargetDir@/HLAM.exe\" \"%1\"",
 				"Half-Life studiomodel file",
 				"application/octet-stream",
