@@ -29,8 +29,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 *	Saves a studio model.
 *	@param fileName Name of the file to save the model to. This is the entire path, including the extension.
 *	@param model Model to save.
-* *	@param correctSequenceGroupFileNames Whether the sequence group filenames embedded in the main file should be corrected
 *	@exception assets::AssetException If an error occurs or if the given data is invalid
 */
-void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, bool correctSequenceGroupFileNames);
+void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model);
 }

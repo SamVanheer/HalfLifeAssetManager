@@ -206,7 +206,7 @@ Continue?)", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 	const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
 	auto result = studiomdl::ConvertFromEditable(filePath, *_editableStudioModel);
 
-	studiomdl::SaveStudioModel(filePath, result, false);
+	studiomdl::SaveStudioModel(filePath, result);
 
 	auto undoStack = GetUndoStack();
 

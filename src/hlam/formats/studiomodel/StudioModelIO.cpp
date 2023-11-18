@@ -241,7 +241,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 		std::move(sequenceHeaders), isDol);
 }
 
-void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, bool correctSequenceGroupFileNames)
+void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model)
 {
 	if (fileName.empty())
 	{
@@ -250,71 +250,7 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 
 	studiohdr_t* const pStudioHdr = model.GetStudioHeader();
 
-	if (correctSequenceGroupFileNames)
-	{
-		std::filesystem::path baseFileName{fileName};
-
-		//Find the "models" directory to determine what the relative path is
-		std::filesystem::path relativeTo = baseFileName;
-
-		auto foundRelative = false;
-
-		//This will loop forever unless we test to see if relativeTo is the root path
-		while (!relativeTo.empty() && relativeTo != relativeTo.root_path())
-		{
-			relativeTo = relativeTo.parent_path();
-
-			if (relativeTo.stem() == "models")
-			{
-				relativeTo = relativeTo.parent_path();
-				foundRelative = true;
-				break;
-			}
-		}
-
-		if (!foundRelative)
-		{
-			throw AssetException("Could not find base directory \"models\" in model filename; needed to correct sequence group filenames");
-		}
-
-		std::error_code e;
-
-		baseFileName = std::filesystem::relative(baseFileName, relativeTo, e);
-
-		if (e)
-		{
-			throw AssetException("Could not determine base filename for model to correct sequence group filenames");
-		}
-
-		baseFileName.replace_extension();
-
-		const std::string baseFileNameString = reinterpret_cast<const char*>(baseFileName.u8string().c_str());
-
-		std::ostringstream seqgroupname;
-
-		//Group 0 is the main file and is never used to load files, and also doesn't have a filename set in the seqgroup structure
-		for (int i = 1; i < pStudioHdr->numseqgroups; i++)
-		{
-			seqgroupname.str({});
-
-			seqgroupname << baseFileNameString <<
-				std::setfill('0') << std::setw(2) << i <<
-				std::setw(0) << ".mdl";
-
-			const auto groupNameString = seqgroupname.str();
-
-			auto seqGroup = pStudioHdr->GetSequenceGroup(i);
-
-			if (groupNameString.length() >= sizeof(seqGroup->name))
-			{
-				throw AssetException("Sequence group filename is too long");
-			}
-
-			strncpy(seqGroup->name, reinterpret_cast<const char*>(groupNameString.c_str()), groupNameString.length());
-
-			seqGroup->name[sizeof(seqGroup->name) - 1] = '\0';
-		}
-	}
+	assert(pStudioHdr->numseqgroups == 1);
 
 	FILE* file = utf8_fopen(fileName.u8string().c_str(), "wb");
 
@@ -358,40 +294,6 @@ void SaveStudioModel(const std::filesystem::path& fileName, StudioModel& model, 
 		if (!success)
 		{
 			throw AssetException("Error while writing to texture file");
-		}
-	}
-
-	// write seq groups
-	if (pStudioHdr->numseqgroups > 1)
-	{
-		const std::string baseFileNameString = reinterpret_cast<const char*>(baseFileName.u8string().c_str());
-
-		std::ostringstream seqgroupname;
-
-		for (int i = 1; i < pStudioHdr->numseqgroups; ++i)
-		{
-			seqgroupname.str({});
-
-			seqgroupname << baseFileNameString <<
-				std::setfill('0') << std::setw(2) << i <<
-				std::setw(0) << ".mdl";
-
-			file = utf8_fopen(seqgroupname.str().c_str(), "wb");
-
-			if (!file)
-			{
-				throw AssetException("Could not open sequence file for writing");
-			}
-
-			const auto pAnimHdr = model.GetSeqGroupHeader(i - 1);
-
-			success = fwrite(pAnimHdr, sizeof(std::byte), pAnimHdr->length, file) == pAnimHdr->length;
-			fclose(file);
-
-			if (!success)
-			{
-				throw AssetException("Error while writing to sequence file");
-			}
 		}
 	}
 }
