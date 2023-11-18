@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <cstdio>
-#include <sstream>
+#include <iterator>
+
+#include <fmt/format.h>
 
 #include "filesystem/FileSystem.hpp"
 
@@ -56,22 +58,18 @@ std::string FileSystem::GetRelativePath(std::string_view fileName)
 		return {};
 	}
 
-	std::ostringstream stream;
+	std::string candidate;
 
 	for (const auto& path : _searchPaths)
 	{
-		stream.str({});
-		stream << path << '/' << fileName;
+		candidate.clear();
+		fmt::format_to(std::back_inserter(candidate), "{}/{}", path, fileName);
 
-		auto result = stream.str();
-
-		if (FileExists(result))
+		if (FileExists(candidate))
 		{
-			return result;
+			return candidate;
 		}
 	}
-
-	auto result = stream.str();
 
 	if (FileExists(fileName))
 	{

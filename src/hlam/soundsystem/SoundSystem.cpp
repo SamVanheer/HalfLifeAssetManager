@@ -3,8 +3,9 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include <sstream>
 #include <vector>
+
+#include <fmt/format.h>
 
 #include <spdlog/spdlog.h>
 
@@ -296,11 +297,7 @@ void SoundSystemWrapper::PlaySound(std::string_view fileName, float volume, int 
 		fileName = fileName.substr(1);
 	}
 
-	std::ostringstream stream;
-
-	stream << "sound/" << fileName;
-
-	const auto actualFileName{stream.str()};
+	const auto actualFileName = fmt::format("sound/{}", fileName);
 
 	const auto fullFileName{_fileSystem->GetRelativePath(actualFileName)};
 

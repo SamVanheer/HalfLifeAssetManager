@@ -29,6 +29,7 @@ target_link_libraries(HLAM
 	PRIVATE
 		Qt5::Widgets
 		Qt5::Network
+		fmt::fmt
 		spdlog::spdlog_header_only 
 		OpenAL::OpenAL
 		glm::glm

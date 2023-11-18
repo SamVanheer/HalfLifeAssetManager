@@ -1,6 +1,8 @@
 #include <cstddef>
 #include <cstring>
-#include <sstream>
+#include <iterator>
+
+#include <fmt/format.h>
 
 #include "formats/studiomodel/StudioModel.hpp"
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
@@ -220,20 +222,18 @@ std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileNa
 
 		const std::string baseFileNameString = reinterpret_cast<const char*>(baseFileName.u8string().c_str());
 
-		std::ostringstream seqgroupname;
+		std::string seqgroupname;
 
 		for (int i = 1; i < mainHeader->numseqgroups; ++i)
 		{
-			seqgroupname.str({});
+			seqgroupname.clear();
 
 			const auto suffix = isDol ? ".dol" : ".mdl";
 
-			seqgroupname << baseFileNameString <<
-				std::setfill('0') << std::setw(2) << i <<
-				std::setw(0) << suffix;
+			fmt::format_to(std::back_inserter(seqgroupname), "{}{:0>2}{}", baseFileNameString, i, suffix);
 
 			sequenceHeaders.emplace_back(
-				LoadStudioHeader<studioseqhdr_t>(std::filesystem::u8path(seqgroupname.str()), nullptr, true, false));
+				LoadStudioHeader<studioseqhdr_t>(std::filesystem::u8path(seqgroupname), nullptr, true, false));
 		}
 	}
 

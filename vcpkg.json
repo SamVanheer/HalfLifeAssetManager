@@ -10,6 +10,11 @@
 			"default-features": false
 		},
 		{
+			"name": "fmt",
+			"version>=": "9.0.0",
+			"default-features": false
+		},
+		{
 			"name": "spdlog",
 			"version>=": "1.11.0",
 			"default-features": false
