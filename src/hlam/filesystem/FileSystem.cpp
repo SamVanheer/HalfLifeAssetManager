@@ -51,7 +51,7 @@ void FileSystem::RemoveAllSearchPaths()
 	_searchPaths.clear();
 }
 
-std::string FileSystem::GetRelativePath(std::string_view fileName)
+std::string FileSystem::GetAbsolutePath(std::string_view fileName)
 {
 	if (fileName.empty())
 	{
@@ -71,10 +71,7 @@ std::string FileSystem::GetRelativePath(std::string_view fileName)
 		}
 	}
 
-	if (FileExists(fileName))
-	{
-		return std::string{fileName};
-	}
+	// No reason to check relative to current directory since this program's location is irrelevant.
 
 	return {};
 }

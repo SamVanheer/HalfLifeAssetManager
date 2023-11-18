@@ -27,7 +27,7 @@ public:
 
 	void RemoveAllSearchPaths() override final;
 
-	std::string GetRelativePath(std::string_view fileName) override final;
+	std::string GetAbsolutePath(std::string_view fileName) override final;
 
 	bool FileExists(std::string_view fileName) const override final;
 

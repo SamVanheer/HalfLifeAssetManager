@@ -44,12 +44,12 @@ public:
 	virtual void RemoveAllSearchPaths() = 0;
 
 	/**
-	*	@brief Gets a relative path to a file.
-	*	This may actually be an absolute path, depending on search paths. The file must exist.
+	*	@brief Gets an absolute path to a file.
+	*	The file must exist.
 	*	@param fileName File to get a path to.
 	*	@return The path to the file if a path could be formed, an empty string otherwise.
 	*/
-	virtual std::string GetRelativePath(std::string_view fileName) = 0;
+	virtual std::string GetAbsolutePath(std::string_view fileName) = 0;
 
 	/**
 	*	@brief Returns whether the given file exists.

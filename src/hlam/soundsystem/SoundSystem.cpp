@@ -299,7 +299,7 @@ void SoundSystemWrapper::PlaySound(std::string_view fileName, float volume, int 
 
 	const auto actualFileName = fmt::format("sound/{}", fileName);
 
-	const auto fullFileName{_fileSystem->GetRelativePath(actualFileName)};
+	const auto fullFileName{_fileSystem->GetAbsolutePath(actualFileName)};
 
 	_soundSystem->PlaySound(fullFileName, volume, pitch);
 }
