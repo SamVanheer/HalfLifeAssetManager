@@ -1,6 +1,19 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdio>
+#include <memory>
+#include <tuple>
+
+struct FileDeleter
+{
+	void operator()(FILE* file) const
+	{
+		fclose(file);
+	}
+};
+
+using FilePtr = std::unique_ptr<FILE, FileDeleter>;
 
 /**
 *	@brief Wrapper around fopen to open filenames containing UTF8 characters on Windows
@@ -22,3 +35,5 @@ inline FILE* utf8_exclusive_read_fopen(const char8_t* filename, bool asBinary)
 {
 	return utf8_exclusive_read_fopen(reinterpret_cast<const char*>(filename), asBinary);
 }
+
+std::tuple<std::unique_ptr<std::byte[]>, size_t> ReadFileIntoBuffer(FILE* file);

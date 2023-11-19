@@ -3,6 +3,7 @@
 #include <iterator>
 
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 #include "formats/studiomodel/StudioModel.hpp"
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
@@ -71,171 +72,175 @@ bool IsMainStudioModel(FILE* file)
 	return boneindex > 0;
 }
 
-namespace
+static std::tuple<std::unique_ptr<std::byte[]>, size_t> ReadStudioFileIntoBuffer(
+	const std::filesystem::path& fileName, FILE* file)
 {
+	auto result = ReadFileIntoBuffer(file);
+
+	if (!std::get<0>(result))
+	{
+		throw AssetException(fmt::format("Error reading file \"{}\"", fileName));
+	}
+
+	return result;
+}
+
 template<typename T>
-StudioPtr<T> LoadStudioHeader(const std::filesystem::path& fileName, FILE* existingFile, const bool bAllowSeqGroup, const bool externalTextures)
+static void CheckHeaderIntegrity(const std::filesystem::path& fileName, const T* header, const char* headerId)
 {
-	const std::string utf8FileName{reinterpret_cast<const char*>(fileName.u8string().c_str())};
-
-	// load the model
-	FILE* file = existingFile ? existingFile : utf8_exclusive_read_fopen(utf8FileName.c_str(), true);
-
-	if (!file)
+	if (strncmp(reinterpret_cast<const char*>(&header->id), headerId, 4))
 	{
-		//TODO: eventually file open calls will be routed through IFileSystem which will handle case sensitivity automatically
-		if (externalTextures)
-		{
-			auto stem{fileName.stem().u8string()};
-
-			if (!stem.empty())
-			{
-				stem.back() = 't';
-
-				std::filesystem::path loweredFileName = fileName;
-
-				loweredFileName.replace_filename(stem);
-				loweredFileName.replace_extension(fileName.extension());
-
-				file = utf8_exclusive_read_fopen(loweredFileName.u8string().c_str(), true);
-			}
-		}
-
-		if (!file)
-		{
-			// Not necessarily an error.
-			if (externalTextures)
-			{
-				return {};
-			}
-
-			throw AssetException(std::string{"File \""} + utf8FileName + "\" does not exist or is currently opened by another program");
-		}
-	}
-
-	fseek(file, 0, SEEK_END);
-	const size_t size = ftell(file);
-	fseek(file, 0, SEEK_SET);
-
-	auto buffer = std::make_unique<std::byte[]>(size);
-
-	auto header = reinterpret_cast<T*>(buffer.get());
-
-	const size_t readCount = fread(header, size, 1, file);
-
-	if (!existingFile)
-	{
-		fclose(file);
-	}
-
-	if (readCount != 1)
-	{
-		throw AssetException(std::string{"Error reading file \""} + utf8FileName + "\"");
-	}
-
-	if (strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_HDR_ID, 4) &&
-		strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4))
-	{
-		throw AssetException(std::string{"The file \""} + utf8FileName + "\" is neither a studio header nor a sequence header");
-	}
-
-	if (!bAllowSeqGroup && !strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4))
-	{
-		throw AssetException(std::string{"File \""} + utf8FileName + "\": Expected a main studio model file, got a sequence file");
+		throw AssetException(fmt::format("The file \"{}\" is not a studiomdl type {} header", fileName, headerId));
 	}
 
 	if (header->version != STUDIO_VERSION)
 	{
-		throw AssetException(std::string{"File \""} + utf8FileName + "\": version differs: expected \"" +
-			std::to_string(STUDIO_VERSION) + "\", got \"" + std::to_string(header->version) + "\"");
+		throw AssetException(fmt::format("File \"{}\": version differs: expected \"{}\", got \"{}\"",
+			fileName, std::to_string(STUDIO_VERSION), header->version));
 	}
+}
 
-	/*
-	//Validate header length. This should always be valid since it's set by the compiler
-	if (header->length < 0 || (static_cast<size_t>(header->length) != size))
-	{
-		throw AssetException(std::string{"File \""} + utf8FileName + "\": length does not match file size: expected \""
-			+ std::to_string(size) + "\", got \"" + std::to_string(header->length) + "\"");
-	}
-	*/
+static studiomdl::StudioPtr<studiohdr_t> LoadMainHeader(const std::filesystem::path& fileName, FILE* mainFile)
+{
+	auto [buffer, size] = ReadStudioFileIntoBuffer(fileName, mainFile);
+
+	auto header = reinterpret_cast<studiohdr_t*>(buffer.get());
+
+	CheckHeaderIntegrity(fileName, header, STUDIOMDL_HDR_ID);
 
 	buffer.release();
 
-	return StudioPtr<T>(header, size);
-}
-}
-
-std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileName, FILE* mainFile)
-{
-	std::filesystem::path baseFileName{fileName};
-
-	baseFileName.replace_extension();
-
-	const auto isDol = fileName.extension() == ".dol";
-
-	//Load the model
-	auto mainHeader = LoadStudioHeader<studiohdr_t>(fileName, mainFile, false, false);
+	StudioPtr<studiohdr_t> mainHeader(header, size);
 
 	if (mainHeader->name[0] == '\0')
 	{
 		//Only the main header sets the name, so this must be something else (probably texture header, but could be anything)
-		auto message = std::u8string{u8"The file \""} + fileName.u8string() + u8"\" is not a studio model main header file";
+		auto message = fmt::format("The file \"{}\" is not a studio model main header file",
+			reinterpret_cast<const char*>(fileName.u8string().c_str()));
 
-		if (!baseFileName.empty() && std::toupper(baseFileName.u8string().back()) == 'T')
+		if (!fileName.empty() && std::toupper(fileName.stem().u8string().back()) == 'T')
 		{
-			message += u8" (it is probably a texture file)";
+			message += " (it is probably a texture file)";
 		}
 
 		throw AssetException(message);
 	}
 
-	StudioPtr<studiohdr_t> textureHeader;
+	return mainHeader;
+}
 
+static studiomdl::StudioPtr<studiohdr_t> LoadTextureHeader(
+	const std::filesystem::path& fileName, studiohdr_t* mainHeader)
+{
 	// preload textures
 	// The original model viewer code used numtextures here, whereas the engine uses textureindex.
 	// numtextures can be 0 for a model with no textures so this must be handled properly.
-	if (mainHeader->textureindex == 0)
+	if (mainHeader->textureindex != 0)
 	{
-		const auto extension = isDol ? "T.dol" : "T.mdl";
+		return {};
+	}
 
-		std::filesystem::path texturename = baseFileName;
+	std::filesystem::path texturename = fileName;
 
-		texturename += extension;
+	texturename.replace_filename(texturename.stem().u8string() + u8'T' + texturename.extension().u8string());
 
-		textureHeader = LoadStudioHeader<studiohdr_t>(texturename, nullptr, true, true);
+	FilePtr file{ utf8_exclusive_read_fopen(texturename.u8string().c_str(), true) };
 
-		if (!textureHeader)
+	if (!file)
+	{
+		//TODO: eventually file open calls will be routed through IFileSystem which will handle case sensitivity automatically
+		auto stem{ texturename.stem().u8string() };
+
+		if (!stem.empty())
 		{
-			throw AssetException(
-				std::string{"External texture file \""}
-					+ reinterpret_cast<const char*>(texturename.u8string().c_str())
-					+ "\" does not exist or is currently opened by another program");
+			stem.back() = 't';
+
+			std::filesystem::path loweredFileName = fileName;
+
+			loweredFileName.replace_filename(stem);
+			loweredFileName.replace_extension(fileName.extension());
+
+			file.reset(utf8_exclusive_read_fopen(loweredFileName.u8string().c_str(), true));
 		}
+	}
+
+	if (!file)
+	{
+		throw AssetException(fmt::format(
+			"External texture file \"{}\" does not exist or is currently opened by another program", texturename));
+	}
+
+	auto [buffer, size] = ReadStudioFileIntoBuffer(fileName, file.get());
+
+	auto header = reinterpret_cast<studiohdr_t*>(buffer.get());
+
+	CheckHeaderIntegrity(fileName, header, STUDIOMDL_HDR_ID);
+
+	buffer.release();
+
+	return StudioPtr<studiohdr_t>(header, size);
+}
+
+static StudioPtr<studioseqhdr_t> LoadSequenceGroup(const std::filesystem::path& fileName)
+{
+	FilePtr file{ utf8_exclusive_read_fopen(fileName.u8string().c_str(), true) };
+
+	if (!file)
+	{
+		throw AssetException(fmt::format(
+			"Sequence group file \"{}\" does not exist or is currently opened by another program", fileName));
+	}
+
+	auto [buffer, size] = ReadStudioFileIntoBuffer(fileName, file.get());
+
+	auto header = reinterpret_cast<studioseqhdr_t*>(buffer.get());
+
+	CheckHeaderIntegrity(fileName, header, STUDIOMDL_SEQ_ID);
+
+	buffer.release();
+
+	return StudioPtr<studioseqhdr_t>(header, size);
+}
+
+static std::vector<StudioPtr<studioseqhdr_t>> LoadSequenceGroups(
+	const std::filesystem::path& fileName, studiohdr_t* mainHeader)
+{
+	// preload animations
+	if (mainHeader->numseqgroups <= 1)
+	{
+		return {};
 	}
 
 	std::vector<StudioPtr<studioseqhdr_t>> sequenceHeaders;
 
-	// preload animations
-	if (mainHeader->numseqgroups > 1)
+	sequenceHeaders.reserve(mainHeader->numseqgroups - 1);
+
+	const std::string baseFileName = reinterpret_cast<const char*>(fileName.stem().u8string().c_str());
+	const std::string extension = reinterpret_cast<const char*>(fileName.extension().u8string().c_str());
+
+	std::filesystem::path groupFileName = fileName;
+
+	std::string seqgroupname;
+
+	for (int i = 1; i < mainHeader->numseqgroups; ++i)
 	{
-		sequenceHeaders.reserve(mainHeader->numseqgroups - 1);
+		seqgroupname.clear();
+		fmt::format_to(std::back_inserter(seqgroupname), "{}{:0>2}{}", baseFileName, i, extension);
 
-		const std::string baseFileNameString = reinterpret_cast<const char*>(baseFileName.u8string().c_str());
+		groupFileName.replace_filename(seqgroupname);
 
-		std::string seqgroupname;
-
-		for (int i = 1; i < mainHeader->numseqgroups; ++i)
-		{
-			seqgroupname.clear();
-
-			const auto suffix = isDol ? ".dol" : ".mdl";
-
-			fmt::format_to(std::back_inserter(seqgroupname), "{}{:0>2}{}", baseFileNameString, i, suffix);
-
-			sequenceHeaders.emplace_back(
-				LoadStudioHeader<studioseqhdr_t>(std::filesystem::u8path(seqgroupname), nullptr, true, false));
-		}
+		sequenceHeaders.emplace_back(LoadSequenceGroup(groupFileName));
 	}
+
+	return sequenceHeaders;
+}
+
+std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileName, FILE* mainFile)
+{
+	StudioPtr<studiohdr_t> mainHeader = LoadMainHeader(fileName, mainFile);
+	StudioPtr<studiohdr_t> textureHeader = LoadTextureHeader(fileName, mainHeader.get());
+	std::vector<StudioPtr<studioseqhdr_t>> sequenceHeaders = LoadSequenceGroups(fileName, mainHeader.get());
+	const auto isDol = fileName.extension() == ".dol";
 
 	return std::make_unique<StudioModel>(std::move(mainHeader), std::move(textureHeader),
 		std::move(sequenceHeaders), isDol);

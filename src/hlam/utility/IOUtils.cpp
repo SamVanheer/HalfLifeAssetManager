@@ -1,3 +1,4 @@
+#include <cassert>
 #include <codecvt>
 #include <locale>
 #include <memory>
@@ -66,4 +67,24 @@ FILE* utf8_exclusive_read_fopen(const char* filename, bool asBinary)
 #else
 	return utf8_fopen(filename, asBinary ? "r" : "rb");
 #endif
+}
+
+std::tuple<std::unique_ptr<std::byte[]>, size_t> ReadFileIntoBuffer(FILE* file)
+{
+	assert(file);
+
+	fseek(file, 0, SEEK_END);
+	const size_t size = ftell(file);
+	fseek(file, 0, SEEK_SET);
+
+	auto buffer = std::make_unique<std::byte[]>(size);
+
+	const size_t readCount = fread(buffer.get(), size, 1, file);
+
+	if (readCount != 1)
+	{
+		return {};
+	}
+
+	return { std::move(buffer), size };
 }
