@@ -27,7 +27,7 @@
 #include "entity/PlayerHitboxEntity.hpp"
 #include "entity/TextureEntity.hpp"
 
-#include "filesystem/FileSystem.hpp"
+#include "filesystem/IFileSystem.hpp"
 
 #include "formats/studiomodel/StudioModelIO.hpp"
 #include "formats/studiomodel/StudioModelUtils.hpp"
@@ -46,7 +46,6 @@
 #include "qt/QtLogSink.hpp"
 #include "qt/QtUtilities.hpp"
 
-#include "settings/GameConfigurationsSettings.hpp"
 #include "settings/StudioModelSettings.hpp"
 
 #include "soundsystem/SoundSystem.hpp"
@@ -104,13 +103,14 @@ static std::tuple<glm::vec3, glm::vec3, float, float> GetCenteredValues(
 
 StudioModelAsset::StudioModelAsset(QString&& fileName,
 	AssetManager* application, StudioModelAssetProvider* provider, unsigned int settingsVersion,
-	std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel)
+	std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel,
+	std::unique_ptr<IFileSystem> fileSystem)
 	: Asset(std::move(fileName))
 	, _application(application)
 	, _provider(provider)
 	, _editableStudioModel(std::move(editableStudioModel))
 	, _modelData(new StudioModelData(_editableStudioModel.get(), this))
-	, _fileSystem(std::make_unique<FileSystem>())
+	, _fileSystem(std::move(fileSystem))
 	, _soundSystem(std::make_unique<SoundSystemWrapper>(_application->GetSoundSystem(), _fileSystem.get()))
 	, _entityContext(std::make_unique<EntityContext>(this,
 		_application->GetWorldTime(),
@@ -226,7 +226,7 @@ bool StudioModelAsset::TryRefresh()
 	try
 	{
 		const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
-		auto studioModel = studiomdl::LoadStudioModel(filePath, nullptr);
+		auto studioModel = studiomdl::LoadStudioModel(filePath, nullptr, *_fileSystem);
 
 		auto newModel = std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
 
@@ -314,7 +314,7 @@ void StudioModelAsset::UpdateSettingsState()
 
 void StudioModelAsset::UpdateFileSystem()
 {
-	_application->GetApplicationSettings()->GetGameConfigurations()->InitializeFileSystem(*_fileSystem, GetFileName());
+	_application->InitializeFileSystem(*_fileSystem, GetFileName());
 }
 
 bool StudioModelAsset::CameraIsFirstPerson() const

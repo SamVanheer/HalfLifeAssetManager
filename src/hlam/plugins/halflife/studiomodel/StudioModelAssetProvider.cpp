@@ -14,6 +14,8 @@
 #include "application/AssetList.hpp"
 #include "application/AssetManager.hpp"
 
+#include "filesystem/FileSystem.hpp"
+
 #include "formats/sprite/SpriteRenderer.hpp"
 #include "formats/studiomodel/DumpModelInfo.hpp"
 #include "formats/studiomodel/StudioModelIO.hpp"
@@ -69,7 +71,9 @@ StudioModelAssetProvider::StudioModelAssetProvider(AssetManager* application,
 		CreateQtLoggerSt(HLAMSpriteRenderer()), _application->GetWorldTime()))
 
 	, _dummyAsset(std::make_unique<StudioModelAsset>(
-		"", _application, this, _settingsVersion, std::make_unique<studiomdl::EditableStudioModel>()))
+		"", _application, this, _settingsVersion,
+		std::make_unique<studiomdl::EditableStudioModel>(),
+		std::make_unique<FileSystem>()))
 
 	, _cameraOperators(new CameraOperators(this))
 	, _arcBallCamera(new ArcBallCameraOperator(application->GetApplicationSettings()))
@@ -353,7 +357,11 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) cons
 AssetLoadData StudioModelAssetProvider::Load(const QString& fileName, FILE* file)
 {
 	const auto filePath = std::filesystem::u8path(fileName.toStdString());
-	auto studioModel = studiomdl::LoadStudioModel(filePath, file);
+
+	auto fileSystem = std::make_unique<FileSystem>();
+	_application->InitializeFileSystem(*fileSystem, fileName);
+
+	auto studioModel = studiomdl::LoadStudioModel(filePath, file, *fileSystem);
 
 	if (studiomdl::IsXashModel(*studioModel))
 	{
@@ -398,9 +406,8 @@ Load in Xash Model Viewer?)", QMessageBox::Yes | QMessageBox::No, QMessageBox::N
 	}
 	
 	auto asset = std::make_unique<StudioModelAsset>(QString{fileName}, _application, this, _settingsVersion,
-		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)));
-
-	asset->UpdateFileSystem();
+		std::make_unique<studiomdl::EditableStudioModel>(std::move(editableStudioModel)),
+		std::move(fileSystem));
 
 	return asset;
 }

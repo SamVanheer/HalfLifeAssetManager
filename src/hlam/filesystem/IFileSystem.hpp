@@ -3,6 +3,8 @@
 #include <string>
 #include <string_view>
 
+#include "utility/IOUtils.hpp"
+
 /** @file */
 
 /**
@@ -56,7 +58,23 @@ public:
 	*	@param fileName Name of the file to check for.
 	*	@return true if the file exists, false otherwise.
 	*/
-	virtual bool FileExists(std::string_view fileName) const = 0;
+	virtual bool FileExists(const std::string& fileName) const = 0;
+
+	/**
+	*	@brief Tries to open the file with the given filename.
+	*	@param fileName Absolute name of the file to open.
+	*	@param binary Whether to open as binary or text.
+	*	@param exclusive Whether to open the file using exclusive mode (no other programs have an open write handle to it).
+	*/
+	virtual FilePtr TryOpenAbsolute(const std::string& fileName, bool binary, bool exclusive = false) const = 0;
+
+	/**
+	*	@brief Tries to open the file with the given filename.
+	*	@param fileName Relative name of the file to open.
+	*	@param binary Whether to open as binary or text.
+	*	@param exclusive Whether to open the file using exclusive mode (no other programs have an open write handle to it).
+	*/
+	virtual FilePtr TryOpen(std::string_view fileName, bool binary, bool exclusive = false) const = 0;
 };
 
 /** @} */

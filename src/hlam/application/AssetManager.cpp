@@ -383,6 +383,11 @@ void AssetManager::LoadFile(const QString& fileName)
 	_mainWindow->LoadFile(fileName);
 }
 
+void AssetManager::InitializeFileSystem(IFileSystem& fileSystem, const QString& fileName)
+{
+	GetApplicationSettings()->GetGameConfigurations()->InitializeFileSystem(fileSystem, fileName);
+}
+
 void AssetManager::OnTimerTick()
 {
 	const auto timeMillis{std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()};

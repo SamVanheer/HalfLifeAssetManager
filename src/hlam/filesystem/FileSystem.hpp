@@ -29,7 +29,14 @@ public:
 
 	std::string GetAbsolutePath(std::string_view fileName) override final;
 
-	bool FileExists(std::string_view fileName) const override final;
+	bool FileExists(const std::string& fileName) const override final;
+
+	FilePtr TryOpenAbsolute(const std::string& fileName, bool binary, bool exclusive = false) const override final;
+
+	FilePtr TryOpen(std::string_view fileName, bool binary, bool exclusive = false) const override final;
+
+private:
+	FilePtr TryFindFileName(const std::string& fileName, std::string& realFileName) const;
 
 private:
 	std::vector<std::string> _searchPaths;

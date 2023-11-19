@@ -65,7 +65,8 @@ class StudioModelAsset final : public Asset
 public:
 	StudioModelAsset(QString&& fileName,
 		AssetManager* application, StudioModelAssetProvider* provider, unsigned int settingsVersion,
-		std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel);
+		std::unique_ptr<studiomdl::EditableStudioModel>&& editableStudioModel,
+		std::unique_ptr<IFileSystem> fileSystem);
 
 	~StudioModelAsset();
 	StudioModelAsset(const StudioModelAsset&) = delete;

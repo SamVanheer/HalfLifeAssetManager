@@ -6,6 +6,8 @@
 
 #include "application/AssetIO.hpp"
 
+class IFileSystem;
+
 namespace studiomdl
 {
 class StudioModel;
@@ -18,12 +20,14 @@ bool IsMainStudioModel(FILE* file);
 *	@brief Loads a studio model
 *	@param fileName Name of the model to load. This is the entire path, including the extension
 *	@param mainFile Handle to the main file
+*	@param fileSystem File system used to load files
 *	@exception assets::AssetException If a file could not be found,
 *		If a file has an invalid format
 *		If a file has the wrong studio version
 *		If the filename specifies a studio model file that is not the main file
 */
-std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileName, FILE* mainFile);
+std::unique_ptr<StudioModel> LoadStudioModel(
+	const std::filesystem::path& fileName, FILE* mainFile, IFileSystem& fileSystem);
 
 /**
 *	Saves a studio model.

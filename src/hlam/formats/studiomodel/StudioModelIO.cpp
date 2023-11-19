@@ -5,6 +5,8 @@
 #include <fmt/format.h>
 #include <fmt/std.h>
 
+#include "filesystem/IFileSystem.hpp"
+
 #include "formats/studiomodel/StudioModel.hpp"
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
 #include "formats/studiomodel/StudioModelIO.hpp"
@@ -130,7 +132,7 @@ static studiomdl::StudioPtr<studiohdr_t> LoadMainHeader(const std::filesystem::p
 }
 
 static studiomdl::StudioPtr<studiohdr_t> LoadTextureHeader(
-	const std::filesystem::path& fileName, studiohdr_t* mainHeader)
+	const std::filesystem::path& fileName, studiohdr_t* mainHeader, IFileSystem& fileSystem)
 {
 	// preload textures
 	// The original model viewer code used numtextures here, whereas the engine uses textureindex.
@@ -144,25 +146,7 @@ static studiomdl::StudioPtr<studiohdr_t> LoadTextureHeader(
 
 	texturename.replace_filename(texturename.stem().u8string() + u8'T' + texturename.extension().u8string());
 
-	FilePtr file{ utf8_exclusive_read_fopen(texturename.u8string().c_str(), true) };
-
-	if (!file)
-	{
-		//TODO: eventually file open calls will be routed through IFileSystem which will handle case sensitivity automatically
-		auto stem{ texturename.stem().u8string() };
-
-		if (!stem.empty())
-		{
-			stem.back() = 't';
-
-			std::filesystem::path loweredFileName = fileName;
-
-			loweredFileName.replace_filename(stem);
-			loweredFileName.replace_extension(fileName.extension());
-
-			file.reset(utf8_exclusive_read_fopen(loweredFileName.u8string().c_str(), true));
-		}
-	}
+	FilePtr file{ fileSystem.TryOpenAbsolute(reinterpret_cast<const char*>(texturename.u8string().c_str()), true) };
 
 	if (!file)
 	{
@@ -181,9 +165,9 @@ static studiomdl::StudioPtr<studiohdr_t> LoadTextureHeader(
 	return StudioPtr<studiohdr_t>(header, size);
 }
 
-static StudioPtr<studioseqhdr_t> LoadSequenceGroup(const std::filesystem::path& fileName)
+static StudioPtr<studioseqhdr_t> LoadSequenceGroup(const std::filesystem::path& fileName, IFileSystem& fileSystem)
 {
-	FilePtr file{ utf8_exclusive_read_fopen(fileName.u8string().c_str(), true) };
+	FilePtr file{ fileSystem.TryOpenAbsolute(reinterpret_cast<const char*>(fileName.u8string().c_str()), true, true) };
 
 	if (!file)
 	{
@@ -203,7 +187,7 @@ static StudioPtr<studioseqhdr_t> LoadSequenceGroup(const std::filesystem::path& 
 }
 
 static std::vector<StudioPtr<studioseqhdr_t>> LoadSequenceGroups(
-	const std::filesystem::path& fileName, studiohdr_t* mainHeader)
+	const std::filesystem::path& fileName, studiohdr_t* mainHeader, IFileSystem& fileSystem)
 {
 	// preload animations
 	if (mainHeader->numseqgroups <= 1)
@@ -229,17 +213,18 @@ static std::vector<StudioPtr<studioseqhdr_t>> LoadSequenceGroups(
 
 		groupFileName.replace_filename(seqgroupname);
 
-		sequenceHeaders.emplace_back(LoadSequenceGroup(groupFileName));
+		sequenceHeaders.emplace_back(LoadSequenceGroup(groupFileName, fileSystem));
 	}
 
 	return sequenceHeaders;
 }
 
-std::unique_ptr<StudioModel> LoadStudioModel(const std::filesystem::path& fileName, FILE* mainFile)
+std::unique_ptr<StudioModel> LoadStudioModel(
+	const std::filesystem::path& fileName, FILE* mainFile, IFileSystem& fileSystem)
 {
 	StudioPtr<studiohdr_t> mainHeader = LoadMainHeader(fileName, mainFile);
-	StudioPtr<studiohdr_t> textureHeader = LoadTextureHeader(fileName, mainHeader.get());
-	std::vector<StudioPtr<studioseqhdr_t>> sequenceHeaders = LoadSequenceGroups(fileName, mainHeader.get());
+	StudioPtr<studiohdr_t> textureHeader = LoadTextureHeader(fileName, mainHeader.get(), fileSystem);
+	std::vector<StudioPtr<studioseqhdr_t>> sequenceHeaders = LoadSequenceGroups(fileName, mainHeader.get(), fileSystem);
 	const auto isDol = fileName.extension() == ".dol";
 
 	return std::make_unique<StudioModel>(std::move(mainHeader), std::move(textureHeader),

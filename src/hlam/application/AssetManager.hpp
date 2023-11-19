@@ -21,6 +21,7 @@ class DragNDropEventFilter;
 class FullscreenWidget;
 class GameConfigurationsSettings;
 class IAssetManagerPlugin;
+class IFileSystem;
 class ISoundSystem;
 class MainWindow;
 class OptionsPageRegistry;
@@ -144,6 +145,8 @@ public:
 	void OnExit();
 
 	void LoadFile(const QString& fileName);
+
+	void InitializeFileSystem(IFileSystem& fileSystem, const QString& fileName);
 
 private:
 	template<typename TFunction, typename... Args>
