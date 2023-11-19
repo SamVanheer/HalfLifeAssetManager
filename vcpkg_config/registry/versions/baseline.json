@@ -1,5 +1,5 @@
 {
-	"2022-12-05": {
+	"local": {
 		"libnyquist": {
 			"baseline": "0.1.0",
 			"port-version": 0

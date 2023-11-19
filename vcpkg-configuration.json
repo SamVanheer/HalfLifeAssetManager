@@ -3,7 +3,7 @@
 		{
 			"kind": "filesystem",
 			"path": "vcpkg_config/registry",
-			"baseline": "2022-12-05",
+			"baseline": "local",
 			"packages": [
 				"libnyquist"
 			]
