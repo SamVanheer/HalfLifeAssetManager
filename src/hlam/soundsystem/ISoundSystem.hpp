@@ -23,33 +23,23 @@ public:
 	*/
 	virtual bool IsSoundAvailable() const = 0;
 
-	/**
-	*	Initializes the sound system. Should be called on startup.
-	*	@return true on success, false otherwise.
-	*/
 	virtual bool Initialize() = 0;
 
-	/**
-	*	Shuts down the sound system. Should be called on shutdown.
-	*/
 	virtual void Shutdown() = 0;
 
-	/**
-	*	Must be called every frame.
-	*/
+	virtual void SetMuted(bool muted) = 0;
+
 	virtual void RunFrame() = 0;
 
 	/**
-	*	@brief Plays a sound by name. The filename is relative to the game's sound directory, and is looked up using the filesystem.
+	*	@brief Plays a sound by name.
+	*	The filename is relative to the game's sound directory, and is looked up using the filesystem.
 	*	@param fileName Sound filename.
 	*	@param volume Volume. Expressed as a range between [0, 1].
 	*	@param pitch Pitch amount. Expressed as a range between [0, 255].
 	*/
 	virtual void PlaySound(std::string_view fileName, float volume, int pitch) = 0;
 
-	/**
-	*	Stops all sounds that are currently playing.
-	*/
 	virtual void StopAllSounds() = 0;
 };
 

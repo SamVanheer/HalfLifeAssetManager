@@ -42,6 +42,7 @@ public:
 	static constexpr int MaximumMouseWheelSpeed{2048};
 
 	static constexpr bool DefaultEnableAudioPlayback{true};
+	static constexpr bool DefaultMuteAudioWhenNotActive{false};
 	static constexpr bool DefaultPlaySounds{true};
 	static constexpr bool DefaultFramerateAffectsPitch{false};
 
@@ -134,6 +135,7 @@ public:
 		_enableAudioPlayback = value;
 	}
 
+	bool MuteAudioWhenNotActive = DefaultMuteAudioWhenNotActive;
 	bool PlaySounds = DefaultPlaySounds;
 	bool FramerateAffectsPitch = DefaultFramerateAffectsPitch;
 

@@ -79,6 +79,7 @@ void ApplicationSettings::LoadSettings()
 
 	_settings->beginGroup("Audio");
 	_enableAudioPlayback = _settings->value("EnableAudioPlayback", DefaultEnableAudioPlayback).toBool();
+	MuteAudioWhenNotActive = _settings->value("MuteAudioWhenNotActive", DefaultMuteAudioWhenNotActive).toBool();
 	PlaySounds = _settings->value("PlaySounds", DefaultPlaySounds).toBool();
 	FramerateAffectsPitch = _settings->value("FramerateAffectsPitch", DefaultFramerateAffectsPitch).toBool();
 	_settings->endGroup();
@@ -137,6 +138,7 @@ void ApplicationSettings::SaveSettings()
 
 	_settings->beginGroup("Audio");
 	_settings->setValue("EnableAudioPlayback", _enableAudioPlayback);
+	_settings->setValue("MuteAudioWhenNotActive", MuteAudioWhenNotActive);
 	_settings->setValue("PlaySounds", PlaySounds);
 	_settings->setValue("FramerateAffectsPitch", FramerateAffectsPitch);
 	_settings->endGroup();

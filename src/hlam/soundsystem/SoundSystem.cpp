@@ -60,6 +60,8 @@ bool SoundSystem::Initialize()
 		alcMakeContextCurrent(_context);
 
 		CheckALErrors();
+
+		SetMuted(false);
 	}
 
 	return true;
@@ -81,6 +83,13 @@ void SoundSystem::Shutdown()
 		alcCloseDevice(_device);
 		_device = nullptr;
 	}
+}
+
+void SoundSystem::SetMuted(bool muted)
+{
+	const float volume = muted ? 0.f : 1.f;
+
+	alListenerf(AL_GAIN, volume);
 }
 
 void SoundSystem::RunFrame()

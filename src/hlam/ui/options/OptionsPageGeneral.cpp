@@ -56,6 +56,7 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 	_ui.MouseWheelSpeedSlider->setValue(_applicationSettings->GetMouseWheelSpeed());
 	_ui.MouseWheelSpeedSpinner->setValue(_applicationSettings->GetMouseWheelSpeed());
 	_ui.EnableAudioPlayback->setChecked(_applicationSettings->ShouldEnableAudioPlayback());
+	_ui.MuteAudioWhenNotActive->setChecked(_applicationSettings->MuteAudioWhenNotActive);
 
 	connect(_ui.MouseSensitivitySlider, &QSlider::valueChanged, _ui.MouseSensitivitySpinner, &QSpinBox::setValue);
 	connect(_ui.MouseSensitivitySpinner, qOverload<int>(&QSpinBox::valueChanged), _ui.MouseSensitivitySlider, &QSlider::setValue);
@@ -78,4 +79,5 @@ void OptionsPageGeneralWidget::ApplyChanges()
 	_applicationSettings->SetMouseSensitivity(_ui.MouseSensitivitySlider->value());
 	_applicationSettings->SetMouseWheelSpeed(_ui.MouseWheelSpeedSlider->value());
 	_applicationSettings->SetEnableAudioPlayback(_ui.EnableAudioPlayback->isChecked());
+	_applicationSettings->MuteAudioWhenNotActive = _ui.MuteAudioWhenNotActive->isChecked();
 }

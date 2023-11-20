@@ -11,6 +11,8 @@ public:
 
 	void Shutdown() override {}
 
+	void SetMuted(bool muted) override {}
+
 	void RunFrame() override {}
 
 	void PlaySound(std::string_view, float, int) override {}

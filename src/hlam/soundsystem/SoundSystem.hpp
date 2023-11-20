@@ -62,6 +62,8 @@ public:
 	bool Initialize() override final;
 	void Shutdown() override final;
 
+	void SetMuted(bool muted) override final;
+
 	void RunFrame() override final;
 
 public:
@@ -105,6 +107,8 @@ public:
 	bool Initialize() override { return _soundSystem->Initialize(); }
 
 	void Shutdown() override { _soundSystem->Shutdown(); }
+
+	void SetMuted(bool muted) override { _soundSystem->SetMuted(muted); }
 
 	void RunFrame() override { _soundSystem->RunFrame(); }
 

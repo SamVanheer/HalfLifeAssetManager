@@ -168,6 +168,10 @@ signals:
 	void LogMessageReceived(QtMsgType type, const QMessageLogContext& context, const QString& msg);
 
 private slots:
+	void OnApplicationStateChanged(Qt::ApplicationState state);
+
+	void OnSettingsChanged();
+
 	void OnTimerTick();
 
 	void OnTickRateChanged(int value);

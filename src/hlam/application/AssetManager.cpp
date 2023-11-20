@@ -120,6 +120,12 @@ AssetManager::AssetManager(
 		throw std::runtime_error("Failed to initialize sound system");
 	}
 
+	connect(_guiApplication, &QGuiApplication::applicationStateChanged, this, &AssetManager::OnApplicationStateChanged);
+
+	OnApplicationStateChanged(_guiApplication->applicationState());
+
+	connect(this, &AssetManager::SettingsChanged, this, &AssetManager::OnSettingsChanged);
+
 	connect(_timer, &QTimer::timeout, this, &AssetManager::OnTimerTick);
 	connect(_applicationSettings.get(), &ApplicationSettings::TickRateChanged, this, &AssetManager::OnTickRateChanged);
 	connect(_applicationSettings.get(), &ApplicationSettings::StylePathChanged, this, &AssetManager::OnStylePathChanged);
@@ -386,6 +392,23 @@ void AssetManager::LoadFile(const QString& fileName)
 void AssetManager::InitializeFileSystem(IFileSystem& fileSystem, const QString& fileName)
 {
 	GetApplicationSettings()->GetGameConfigurations()->InitializeFileSystem(fileSystem, fileName);
+}
+
+void AssetManager::OnApplicationStateChanged(Qt::ApplicationState state)
+{
+	if (_applicationSettings->MuteAudioWhenNotActive)
+	{
+		_soundSystem->SetMuted(state != Qt::ApplicationState::ApplicationActive);
+	}
+}
+
+void AssetManager::OnSettingsChanged()
+{
+	// Just in case settings are changed while not active.
+	if (!_applicationSettings->MuteAudioWhenNotActive)
+	{
+		_soundSystem->SetMuted(false);
+	}
 }
 
 void AssetManager::OnTimerTick()
