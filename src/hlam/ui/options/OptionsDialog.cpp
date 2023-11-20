@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <unordered_map>
@@ -69,17 +70,23 @@ OptionsDialog::OptionsDialog(AssetManager* application, QWidget* parent)
 	connect(_ui.OpenConfigDirectory, &QPushButton::clicked, this, [this]()
 		{
 			const QString fileName = _application->GetSettings()->fileName();
-			const QFileInfo fileInfo{fileName};
+			const QFileInfo fileInfo{ fileName };
 			const QString fullPath = fileInfo.absolutePath();
-			QDesktopServices::openUrl(QUrl{QString{"file:///%1"}.arg(fullPath), QUrl::TolerantMode});
+			QDesktopServices::openUrl(QUrl{ QString{"file:///%1"}.arg(fullPath), QUrl::TolerantMode });
 		});
 
 	bool setDefaultPage = true;
 
 	if (!_lastActivePageName.isEmpty())
 	{
-		const auto items = _ui.OptionsPagesList->findItems(_lastActivePageName,
+		auto items = _ui.OptionsPagesList->findItems(_lastActivePageName,
 			Qt::MatchFixedString | Qt::MatchRecursive);
+
+		// Ignore categories, only select pages.
+		items.erase(std::remove_if(items.begin(), items.end(), [](auto item)
+			{
+				return item->childCount() > 0;
+			}), items.end());
 
 		assert(items.size() == 1);
 
@@ -113,7 +120,7 @@ OptionsDialog::~OptionsDialog()
 
 void OptionsDialog::OnPageSelected(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-	bool ok{false};
+	bool ok{ false };
 
 	const int pageIndex = current->data(0, PageIndexRole).toInt(&ok);
 
