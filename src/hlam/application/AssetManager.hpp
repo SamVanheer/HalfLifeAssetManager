@@ -18,7 +18,6 @@ class AssetList;
 class AssetProviderRegistry;
 class ColorSettings;
 class DragNDropEventFilter;
-class FullscreenWidget;
 class GameConfigurationsSettings;
 class IAssetManagerPlugin;
 class IFileSystem;
@@ -108,11 +107,7 @@ public:
 
 	void RecreateSceneWidget();
 
-	FullscreenWidget* GetFullscreenWidget() const { return _fullscreenWidget.get(); }
-
-	void ToggleFullscreen();
-
-	void ExitFullscreen();
+	bool IsInFullscreenMode();
 
 	void StartTimer();
 
@@ -163,7 +158,7 @@ signals:
 
 	void SceneWidgetRecreated();
 
-	void FullscreenWidgetChanged();
+	void FullscreenModeChanged();
 
 	void LogMessageReceived(QtMsgType type, const QMessageLogContext& context, const QString& msg);
 
@@ -212,7 +207,6 @@ private:
 
 	MainWindow* _mainWindow{};
 	QPointer<SceneWidget> _sceneWidget;
-	std::unique_ptr<FullscreenWidget> _fullscreenWidget;
 };
 
 struct TimerSuspender final

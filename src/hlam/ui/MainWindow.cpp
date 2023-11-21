@@ -21,6 +21,7 @@
 #include <QUndoGroup>
 #include <QWidget>
 #include <QWindow>
+#include <QtPlatformHeaders/QWindowsWindowFunctions>
 
 #include "application/AssetIO.hpp"
 #include "application/AssetList.hpp"
@@ -42,7 +43,6 @@
 
 #include "ui/AboutDialog.hpp"
 #include "ui/DragNDropEventFilter.hpp"
-#include "ui/FullscreenWidget.hpp"
 #include "ui/MainWindow.hpp"
 
 #include "ui/dialogs/OpenInExternalProgramDialog.hpp"
@@ -65,6 +65,12 @@ MainWindow::MainWindow(AssetManager* application)
 	_ui.setupUi(this);
 
 	this->setAttribute(Qt::WidgetAttribute::WA_DeleteOnClose);
+
+	//This has to be a native window for there to be a window handle
+	setAttribute(Qt::WidgetAttribute::WA_NativeWindow, true);
+
+	//Without this going fullscreen will cause black flickering
+	QWindowsWindowFunctions::setHasBorderInFullScreen(this->windowHandle(), true);
 
 	this->setWindowIcon(QIcon{":/hlam.ico"});
 
@@ -226,10 +232,7 @@ MainWindow::MainWindow(AssetManager* application)
 	connect(_ui.ActionCloseAll, &QAction::triggered, this, [this] { CloseAllButCount(0, true); });
 	connect(_ui.ActionExit, &QAction::triggered, this, &MainWindow::close);
 
-	connect(_ui.ActionFullscreen, &QAction::triggered, _application, &AssetManager::ToggleFullscreen);
-
-	connect(_application, &AssetManager::FullscreenWidgetChanged, this,
-		[this] { _ui.ActionFullscreen->setChecked(_application->GetFullscreenWidget() != nullptr); });
+	connect(_ui.ActionFullscreen, &QAction::triggered, this, &MainWindow::OnToggleFullscreen);
 
 	connect(_ui.ActionPlaySounds, &QAction::triggered, this,
 		[this](bool value) { _application->GetApplicationSettings()->PlaySounds = value; });
@@ -450,6 +453,9 @@ void MainWindow::LoadSettings()
 			restoreGeometry(geometry.toByteArray());
 		}
 	}
+
+	// In case the program was in fullscreen mode when saved, restore to maximized instead.
+	ExitFullscreen();
 }
 
 void MainWindow::LoadFile(const QString& fileName)
@@ -471,7 +477,7 @@ void MainWindow::LoadFile(const QString& fileName)
 void MainWindow::closeEvent(QCloseEvent* event)
 {
 	// If the user is in fullscreen mode force them out of it.
-	_application->ExitFullscreen();
+	ExitFullscreen();
 
 	//If the user cancels any close request cancel the window close event as well
 	for (int i = 0; i < _assetTabs->count(); ++i)
@@ -725,7 +731,7 @@ void MainWindow::OnAssetTabChanged(int index)
 	{
 		_undoGroup->setActiveStack(nullptr);
 		setWindowTitle({});
-		_application->ExitFullscreen();
+		ExitFullscreen();
 	}
 
 	_ui.ActionSave->setEnabled(success);
@@ -815,13 +821,10 @@ void MainWindow::OnAssetActivated()
 
 void MainWindow::OnAboutToCloseAsset(int index)
 {
-	if (_fullscreenWidget && _fullscreenWidget->isFullScreen())
-	{
-		// Exit the fullscreen window if we're getting a close request
-		// The user needs to be able to see the main window and interact with it
-		// If the window isn't fullscreen then the user can easily open the program window
-		_fullscreenWidget->ExitFullscreen();
-	}
+	// Exit the fullscreen window if we're getting a close request
+	// The user needs to be able to see the main window and interact with it
+	// If the window isn't fullscreen then the user can easily open the program window
+	ExitFullscreen();
 }
 
 void MainWindow::OnAboutToRemoveAsset(int index)
@@ -961,6 +964,57 @@ void MainWindow::OnOpenRecentFile()
 {
 	const auto action = static_cast<QAction*>(sender());
 	MaybeOpenAll(QStringList{action->text()});
+}
+
+void MainWindow::OnToggleFullscreen()
+{
+	const bool goFullscreen = !isFullScreen();
+
+	if (goFullscreen)
+	{
+		// Create shortcuts for actions so they still work when the menu bar is hidden.
+		// Qt Creator passes the window as the parent for menus and actions
+		// so we need to search for children of the window instead of the menu bar.
+		for (auto action : this->findChildren<QAction*>())
+		{
+			auto keySequence = action->shortcut();
+
+			if (!keySequence.isEmpty())
+			{
+				auto shortcut = std::make_unique<QShortcut>(keySequence, this);
+
+				connect(shortcut.get(), &QShortcut::activated, action, &QAction::trigger);
+
+				_fullscreenShortcuts.push_back(std::move(shortcut));
+			}
+		}
+
+		_cachedWindowState = windowState() & ~(Qt::WindowMinimized | Qt::WindowFullScreen);
+
+		setWindowState((windowState() & ~(Qt::WindowMinimized | Qt::WindowMaximized)) | Qt::WindowFullScreen);
+	}
+	else
+	{
+		// Need to clear the state first to force a proper change.
+		setWindowState(Qt::WindowNoState);
+		setWindowState(_cachedWindowState);
+
+		_fullscreenShortcuts.clear();
+	}
+
+	_ui.MenuBar->setVisible(!goFullscreen);
+	_assetTabs->setVisible(!goFullscreen);
+	this->_assetListButton->setVisible(!goFullscreen);
+
+	emit _application->FullscreenModeChanged();
+}
+
+void MainWindow::ExitFullscreen()
+{
+	if (isFullScreen())
+	{
+		_ui.ActionFullscreen->trigger();
+	}
 }
 
 void MainWindow::OnTextureFiltersChanged()

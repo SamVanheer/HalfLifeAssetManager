@@ -4,8 +4,6 @@ target_sources(HLAM
 		AboutDialog.hpp
 		DockableWidget.hpp
 		DragNDropEventFilter.hpp
-		FullscreenWidget.cpp
-		FullscreenWidget.hpp
 		MainWindow.cpp
 		MainWindow.hpp
 		MainWindow.ui

@@ -193,6 +193,37 @@ void StudioModelEditWidget::SetTimelineVisible(bool state)
 	_timeline->setVisible(state);
 }
 
+bool StudioModelEditWidget::AreDockWidgetsVisible() const
+{
+	return _dockWidgetsVisible;
+}
+
+void StudioModelEditWidget::SetDockWidgetsVisible(bool state)
+{
+	if (_dockWidgetsVisible == state)
+	{
+		return;
+	}
+
+	_dockWidgetsVisible = state;
+
+	if (state)
+	{
+		this->restoreGeometry(_savedDockWidgetsGeometry);
+		this->RestoreState(_savedDockWidgetsState);
+	}
+	else
+	{
+		_savedDockWidgetsGeometry = this->saveGeometry();
+		_savedDockWidgetsState = this->SaveState();
+
+		for (auto dock : _dockWidgets)
+		{
+			dock->setVisible(false);
+		}
+	}
+}
+
 int StudioModelEditWidget::GetSceneIndex() const
 {
 	return _view->GetSceneIndex();

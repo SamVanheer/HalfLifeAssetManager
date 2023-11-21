@@ -1,10 +1,12 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include <QMainWindow>
 #include <QMap>
 #include <QPointer>
+#include <QShortcut>
 #include <QString>
 
 #include "ui_MainWindow.h"
@@ -13,7 +15,6 @@ class Asset;
 class AssetList;
 class AssetProvider;
 class AssetManager;
-class FullscreenWidget;
 class QActionGroup;
 class QGridLayout;
 class QMenu;
@@ -82,6 +83,10 @@ private slots:
 
 	void OnOpenRecentFile();
 
+	void OnToggleFullscreen();
+
+	void ExitFullscreen();
+
 	void OnTextureFiltersChanged();
 
 	void OnOpenOptionsDialog();
@@ -113,7 +118,10 @@ private:
 	QString _loadFileFilter;
 	QString _saveFileFilter;
 
-	std::unique_ptr<FullscreenWidget> _fullscreenWidget;
+	std::vector<std::unique_ptr<QShortcut>> _fullscreenShortcuts;
+
+	// To restore when exiting fullscreen mode.
+	Qt::WindowStates _cachedWindowState = Qt::WindowMaximized;
 
 	QPointer<QDockWidget> _fileBrowserDock;
 };

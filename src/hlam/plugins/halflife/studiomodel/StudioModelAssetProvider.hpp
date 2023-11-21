@@ -80,6 +80,10 @@ public:
 
 	sprite::ISpriteRenderer* GetSpriteRenderer() const { return _spriteRenderer.get(); }
 
+	bool IsControlsBarVisible() const;
+
+	bool IsTimelineVisible() const;
+
 	bool AreEditControlsVisible() const;
 
 	StudioModelEditWidget* GetEditWidget();
@@ -120,6 +124,8 @@ private:
 
 	QPointer<QMenu> _toolMenu;
 	QPointer<QAction> _launchCrowbarAction;
+	QPointer<QAction> _controlsBarVisibleAction;
+	QPointer<QAction> _timelineVisibleAction;
 	QPointer<QAction> _editControlsVisibleAction;
 	QPointer<QAction> _restoreViewAction;
 

@@ -54,6 +54,10 @@ public:
 	
 	void SetTimelineVisible(bool state);
 
+	bool AreDockWidgetsVisible() const;
+
+	void SetDockWidgetsVisible(bool state);
+
 	const QVector<QDockWidget*>& GetDockWidgets() const { return _dockWidgets; }
 
 	int GetSceneIndex() const;
@@ -86,6 +90,10 @@ private:
 	//Stored separately to maintain list order
 	QVector<QDockWidget*> _dockWidgets;
 	QByteArray _initialState;
+
+	bool _dockWidgetsVisible = true;
+	QByteArray _savedDockWidgetsState;
+	QByteArray _savedDockWidgetsGeometry;
 
 	CamerasPanel* _camerasPanel{};
 };

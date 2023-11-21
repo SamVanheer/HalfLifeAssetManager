@@ -226,38 +226,34 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 			GetEditWidget()->ResetToInitialState();
 		});
 
-	const auto controlsbar = menu->addAction("Show Controls Bar", this, [this](bool checked)
+	_controlsBarVisibleAction = menu->addAction("Show Controls Bar", this, [this](bool checked)
 		{
 			GetEditWidget()->SetControlsBarVisible(checked);
 			_studioModelSettings->SetControlsBarVisible(checked);
 		});
 
-	controlsbar->setCheckable(true);
-	controlsbar->setChecked(GetEditWidget()->IsControlsBarVisible());
+	_controlsBarVisibleAction->setCheckable(true);
+	_controlsBarVisibleAction->setChecked(GetEditWidget()->IsControlsBarVisible());
 
-	const auto timeline = menu->addAction("Show Timeline", this, [this](bool checked)
+	_timelineVisibleAction = menu->addAction("Show Timeline", this, [this](bool checked)
 		{
 			GetEditWidget()->SetTimelineVisible(checked);
 			_studioModelSettings->SetTimelineVisible(checked);
 		});
 
-	timeline->setCheckable(true);
-	timeline->setChecked(GetEditWidget()->IsTimelineVisible());
+	_timelineVisibleAction->setCheckable(true);
+	_timelineVisibleAction->setChecked(GetEditWidget()->IsTimelineVisible());
 
 	{
 		_editControlsVisibleAction = menu->addAction("Show Edit Controls", this,
-			[this, controlsbar, timeline](bool checked)
+			[this](bool checked)
 			{
-				controlsbar->setEnabled(checked);
-				timeline->setEnabled(checked);
+				_controlsBarVisibleAction->setEnabled(checked);
+				_timelineVisibleAction->setEnabled(checked);
 
 				auto asset = GetCurrentAsset();
 
-				if (asset != GetDummyAsset())
-				{
-					asset->OnDeactivated();
-					asset->OnActivated();
-				}
+				asset->OnSceneWidgetRecreated();
 
 				_studioModelSettings->SetEditControlsVisible(checked);
 			});
@@ -266,8 +262,8 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 		_editControlsVisibleAction->setChecked(_studioModelSettings->AreEditControlsVisible());
 	}
 
-	controlsbar->setEnabled(_editControlsVisibleAction->isChecked());
-	timeline->setEnabled(_editControlsVisibleAction->isChecked());
+	_controlsBarVisibleAction->setEnabled(_editControlsVisibleAction->isChecked());
+	_timelineVisibleAction->setEnabled(_editControlsVisibleAction->isChecked());
 
 	menu->addSeparator();
 
@@ -413,6 +409,16 @@ Load in Xash Model Viewer?)", QMessageBox::Yes | QMessageBox::No, QMessageBox::N
 bool StudioModelAssetProvider::IsCandidateForLoading(const QString& fileName, FILE* file) const
 {
 	return studiomdl::IsMainStudioModel(file);
+}
+
+bool StudioModelAssetProvider::IsControlsBarVisible() const
+{
+	return _controlsBarVisibleAction->isChecked();
+}
+
+bool StudioModelAssetProvider::IsTimelineVisible() const
+{
+	return _timelineVisibleAction->isChecked();
 }
 
 bool StudioModelAssetProvider::AreEditControlsVisible() const

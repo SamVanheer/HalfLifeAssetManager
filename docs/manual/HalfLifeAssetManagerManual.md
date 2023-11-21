@@ -227,9 +227,9 @@ Redo the last undone change made to an asset.
 
 When one or more assets are loaded this action allows the asset to be viewed in fullscreen mode.
 
-If the asset shows a 3D scene the scene will be displayed only in the fullscreen window.
+If the asset shows a 3D scene only the scene will be displayed in the fullscreen window.
 
-The fullscreen window can be converted to a maximized window and back by pressing F11.
+Fullscreen mode can be toggled using **F11**.
 
 ### 7.3.2 File Browser
 

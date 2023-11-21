@@ -168,6 +168,9 @@
    <property name="text">
     <string>Fullscreen</string>
    </property>
+   <property name="shortcut">
+    <string>F11</string>
+   </property>
   </action>
   <action name="ActionExit">
    <property name="text">

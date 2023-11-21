@@ -51,7 +51,6 @@
 #include "soundsystem/SoundSystem.hpp"
 
 #include "application/AssetManager.hpp"
-#include "ui/FullscreenWidget.hpp"
 #include "ui/MainWindow.hpp"
 #include "ui/SceneWidget.hpp"
 
@@ -169,16 +168,7 @@ StudioModelAsset::~StudioModelAsset()
 
 QWidget* StudioModelAsset::GetEditWidget()
 {
-	if (_provider->AreEditControlsVisible())
-	{
-		return _provider->GetEditWidget();
-	}
-	else if (!_application->GetFullscreenWidget())
-	{
-		return _application->GetSceneWidget()->GetContainer();
-	}
-
-	return nullptr;
+	return _provider->GetEditWidget();
 }
 
 void StudioModelAsset::Save()
@@ -352,7 +342,7 @@ void StudioModelAsset::OnActivated()
 	}
 
 	connect(_application, &AssetManager::SceneWidgetRecreated, this, &StudioModelAsset::OnSceneWidgetRecreated);
-	connect(_application, &AssetManager::FullscreenWidgetChanged, this, &StudioModelAsset::OnSceneWidgetRecreated);
+	connect(_application, &AssetManager::FullscreenModeChanged, this, &StudioModelAsset::OnSceneWidgetRecreated);
 	connect(editWidget, &StudioModelEditWidget::SceneIndexChanged, this, &StudioModelAsset::OnSceneIndexChanged);
 	connect(editWidget, &StudioModelEditWidget::PoseChanged, this, &StudioModelAsset::SetPose);
 
@@ -418,7 +408,7 @@ void StudioModelAsset::OnDeactivated()
 
 	disconnect(_application, &AssetManager::SceneWidgetRecreated,
 		this, &StudioModelAsset::OnSceneWidgetRecreated);
-	disconnect(_application, &AssetManager::FullscreenWidgetChanged,
+	disconnect(_application, &AssetManager::FullscreenModeChanged,
 		this, &StudioModelAsset::OnSceneWidgetRecreated);
 }
 
@@ -620,29 +610,17 @@ void StudioModelAsset::Tick()
 
 void StudioModelAsset::OnSceneWidgetRecreated()
 {
-	const auto fullscreenWidget = _application->GetFullscreenWidget();
+	const bool isFullscreen = _application->IsInFullscreenMode();
 	const auto editWidget = _provider->GetEditWidget();
 	const auto sceneWidget = _application->GetSceneWidget();
 
-	editWidget->DetachSceneWidget();
+	editWidget->AttachSceneWidget();
 
-	if (fullscreenWidget)
-	{
-		fullscreenWidget->SetWidget(sceneWidget->GetContainer());
-	}
+	const bool editControlsVisible = _provider->AreEditControlsVisible();
 
-	if (_provider->AreEditControlsVisible())
-	{
-		if (!fullscreenWidget)
-		{
-			editWidget->AttachSceneWidget();
-		}
-	}
-	else if (fullscreenWidget)
-	{
-		// If fullscreen is enabled the edit widget will be shown unless explicitly hidden.
-		editWidget->hide();
-	}
+	editWidget->SetControlsBarVisible(!isFullscreen && _provider->IsControlsBarVisible() && editControlsVisible);
+	editWidget->SetTimelineVisible(!isFullscreen && _provider->IsTimelineVisible() && editControlsVisible);
+	editWidget->SetDockWidgetsVisible(!isFullscreen && editControlsVisible);
 
 	sceneWidget->SetScene(GetCurrentScene());
 

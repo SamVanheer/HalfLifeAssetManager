@@ -38,7 +38,6 @@
 #include "soundsystem/SoundSystem.hpp"
 
 #include "ui/DragNDropEventFilter.hpp"
-#include "ui/FullscreenWidget.hpp"
 #include "ui/MainWindow.hpp"
 #include "ui/SceneWidget.hpp"
 
@@ -221,45 +220,9 @@ void AssetManager::RecreateSceneWidget()
 	}
 }
 
-void AssetManager::ToggleFullscreen()
+bool AssetManager::IsInFullscreenMode()
 {
-	if (_fullscreenWidget)
-	{
-		ExitFullscreen();
-		return;
-	}
-
-	//Note: creating this window as a child of the main window causes problems with OpenGL rendering
-	//This must be created with no parent to function properly
-	_fullscreenWidget = std::make_unique<FullscreenWidget>();
-
-	connect(_fullscreenWidget.get(), &FullscreenWidget::ExitedFullscreen, this, &AssetManager::ExitFullscreen);
-
-	emit FullscreenWidgetChanged();
-
-	const auto lambda = [this]()
-	{
-		_fullscreenWidget->SetWidget(GetSceneWidget()->GetContainer());
-	};
-
-	lambda();
-
-	connect(this, &AssetManager::SceneWidgetRecreated, _fullscreenWidget.get(), lambda);
-
-	_fullscreenWidget->raise();
-	_fullscreenWidget->showFullScreen();
-	_fullscreenWidget->activateWindow();
-}
-
-void AssetManager::ExitFullscreen()
-{
-	if (!_fullscreenWidget)
-	{
-		return;
-	}
-
-	const std::unique_ptr<FullscreenWidget> fullscreenWidget = std::move(_fullscreenWidget);
-	emit FullscreenWidgetChanged();
+	return _mainWindow->isFullScreen();
 }
 
 void AssetManager::StartTimer()
