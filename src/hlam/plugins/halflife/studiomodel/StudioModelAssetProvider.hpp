@@ -111,8 +111,6 @@ private slots:
 
 	void OnDumpModelInfo();
 
-	void OnTakeScreenshot();
-
 private:
 	const std::shared_ptr<spdlog::logger> _logger;
 	const std::shared_ptr<StudioModelSettings> _studioModelSettings;

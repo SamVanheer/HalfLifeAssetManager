@@ -274,6 +274,26 @@ bool StudioModelAsset::TryRefresh()
 	return true;
 }
 
+bool StudioModelAsset::CanTakeScreenshot() const
+{
+	return true;
+}
+
+void StudioModelAsset::TakeScreenshot()
+{
+	const QImage screenshot = _application->GetSceneWidget()->grabFramebuffer();
+
+	const QString fileName{ QFileDialog::getSaveFileName(nullptr, {}, {}, qt::GetImagesFileFilter()) };
+
+	if (!fileName.isEmpty())
+	{
+		if (!screenshot.save(fileName))
+		{
+			QMessageBox::critical(nullptr, "Error", "An error occurred while saving screenshot");
+		}
+	}
+}
+
 graphics::IGraphicsContext* StudioModelAsset::GetGraphicsContext()
 {
 	return _application->GetGraphicsContext();

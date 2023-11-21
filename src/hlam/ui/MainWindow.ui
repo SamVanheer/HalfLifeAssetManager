@@ -112,6 +112,7 @@
     <addaction name="MenuMSAA"/>
     <addaction name="separator"/>
     <addaction name="ActionTransparentScreenshots"/>
+    <addaction name="ActionTakeScreenshot"/>
    </widget>
    <widget class="QMenu" name="menuAudio">
     <property name="title">
@@ -295,6 +296,17 @@
    </property>
    <property name="text">
     <string>Wait For Vertical Sync</string>
+   </property>
+  </action>
+  <action name="ActionTakeScreenshot">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Take Screenshot...</string>
+   </property>
+   <property name="shortcut">
+    <string>F10</string>
    </property>
   </action>
   <actiongroup name="MinFilterGroup">

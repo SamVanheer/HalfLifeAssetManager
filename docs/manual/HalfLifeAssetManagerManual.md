@@ -305,12 +305,26 @@ See https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering
 The Multisample Anti-aliasing setting. Setting this to a higher value reduces jagged edges but requires a more powerful graphics card.
 
  Changing this setting recreates the 3D window.
+
+ <div class="page"/>
  
  ### 7.5.7 Transparent Screenshots
 
 Whether screenshots are transparent or include the background color.
 
-See Section [Take Screenshot](#9214-take-screenshot) for more information.
+See Section [Take Screenshot](#758-take-screenshot) for more information.
+
+### 7.5.8 Take Screenshot...
+
+Takes a screenshot and asks the user where to save it. The keyboard shortcut **F10** can also be used to take a screenshot.
+
+This action is affected by the setting of the Video->Transparent Screenshots action.
+
+Transparent screenshots exclude the background from the resulting image. Note however that transparent objects will still be affected by the background color.
+
+To avoid this set the background color to black first using Tools->Options->Colors->Background.
+
+This will cause transparent objects to be rendered using only their own color and not that of the background.
 
 <div class="page"/>
 
@@ -556,18 +570,6 @@ Because not all of the original QC data is available this is only pseudo-QC data
 ### 9.2.13 Dump Model Info...
 
 Dumps model info to a file of the user's choosing.
-
-### 9.2.14 Take Screenshot...
-
-Takes a screenshot and asks the user where to save it.
-
-This action is affected by the setting of the Video->Transparent Screenshots action.
-
-Transparent screenshots exclude the background from the resulting image. Note however that transparent objects will still be affected by the background color.
-
-To avoid this set the background color to black first using Tools->Options->Colors->Background.
-
-This will cause transparent objects to be rendered using only their own color and not that of the background.
 
 ## 9.3 Tool Menu
 

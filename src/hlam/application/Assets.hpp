@@ -63,6 +63,10 @@ public:
 
 	virtual bool TryRefresh() = 0;
 
+	virtual bool CanTakeScreenshot() const = 0;
+
+	virtual void TakeScreenshot() = 0;
+
 signals:
 	void EditWidgetChanged();
 

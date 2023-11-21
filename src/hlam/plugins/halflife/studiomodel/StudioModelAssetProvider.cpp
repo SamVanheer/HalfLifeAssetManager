@@ -345,8 +345,6 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 	menu->addAction("Dump Model Info...", this, &StudioModelAssetProvider::OnDumpModelInfo);
 
 	menu->addSeparator();
-
-	menu->addAction("Take Screenshot...", this, &StudioModelAssetProvider::OnTakeScreenshot);
 }
 
 bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) const
@@ -510,21 +508,6 @@ void StudioModelAssetProvider::OnDumpModelInfo()
 		else
 		{
 			QMessageBox::critical(nullptr, "Error", QString{"Could not open file \"%1\" for writing"}.arg(fileName));
-		}
-	}
-}
-
-void StudioModelAssetProvider::OnTakeScreenshot()
-{
-	const QImage screenshot = _application->GetSceneWidget()->grabFramebuffer();
-
-	const QString fileName{QFileDialog::getSaveFileName(nullptr, {}, {}, qt::GetImagesFileFilter())};
-
-	if (!fileName.isEmpty())
-	{
-		if (!screenshot.save(fileName))
-		{
-			QMessageBox::critical(nullptr, "Error", "An error occurred while saving screenshot");
 		}
 	}
 }

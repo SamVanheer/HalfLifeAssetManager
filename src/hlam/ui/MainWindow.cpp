@@ -269,6 +269,18 @@ MainWindow::MainWindow(AssetManager* application)
 	connect(_ui.ActionTransparentScreenshots, &QAction::triggered, this,
 		[this](bool value) { _application->GetApplicationSettings()->TransparentScreenshots = value; });
 
+	connect(_ui.ActionTakeScreenshot, &QAction::triggered, this, [this]()
+		{
+			auto asset = _assets->GetCurrent();
+
+			if (!asset)
+			{
+				return;
+			}
+
+			asset->TakeScreenshot();
+		});
+
 	connect(_ui.ActionRefresh, &QAction::triggered, this, [this] { _assets->RefreshCurrent(); });
 
 	connect(_ui.ActionOptions, &QAction::triggered, this, &MainWindow::OnOpenOptionsDialog);
@@ -722,6 +734,7 @@ void MainWindow::OnAssetTabChanged(int index)
 	_ui.ActionCloseAll->setEnabled(success);
 	_ui.ActionFullscreen->setEnabled(success);
 	_ui.ActionRefresh->setEnabled(success);
+	_ui.ActionTakeScreenshot->setEnabled(currentAsset != nullptr && currentAsset->CanTakeScreenshot());
 	_assetListButton->setEnabled(success);
 
 	if (index != -1)

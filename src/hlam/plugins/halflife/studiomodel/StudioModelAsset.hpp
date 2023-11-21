@@ -80,6 +80,10 @@ public:
 
 	bool TryRefresh() override;
 
+	bool CanTakeScreenshot() const override;
+
+	void TakeScreenshot() override;
+
 	void Tick();
 
 	AssetManager* GetApplication() { return _application; }
