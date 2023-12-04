@@ -10,6 +10,7 @@
 #include <spdlog/logger.h>
 
 #include "application/Assets.hpp"
+#include "qt/ObservableList.hpp"
 
 class AssetManager;
 
@@ -22,19 +23,26 @@ enum class AssetLoadAction
 
 using AssetLoadResult = std::variant<AssetLoadAction, AssetLoadInExternalProgram>;
 
+/**
+*	@brief Manages access to the asset list and handles opening, closing and saving of assets.
+*/
 class AssetList final : public QObject
 {
 	Q_OBJECT
 
 public:
+	using ObservableAssetList = ObservableList<std::unique_ptr<Asset>>;
+
 	explicit AssetList(AssetManager* application, std::shared_ptr<spdlog::logger> logger);
 	~AssetList() override;
 
-	std::size_t Count() const { return _assets.size(); }
+	ObservableAssetList* GetObservableList() { return _assetList.get(); }
+
+	std::size_t Count() const;
 
 	int IndexOf(const Asset* asset) const;
 
-	Asset* Get(std::size_t index) const { return _assets[index].get(); }
+	Asset* Get(std::size_t index) const;
 
 	Asset* GetCurrent() const { return _currentAsset; }
 
@@ -61,12 +69,13 @@ signals:
 	void ActiveAssetChanged(Asset* asset);
 
 private slots:
+	void OnAssetAdded(int index);
 	void OnAssetFileNameChanged(Asset* asset);
 
 private:
 	AssetManager* const _application;
 	const std::shared_ptr<spdlog::logger> _logger;
 
-	std::vector<std::unique_ptr<Asset>> _assets;
+	const std::unique_ptr<ObservableAssetList> _assetList;
 	QPointer<Asset> _currentAsset;
 };

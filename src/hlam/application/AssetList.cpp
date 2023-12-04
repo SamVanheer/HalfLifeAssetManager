@@ -8,7 +8,6 @@
 #include "application/AssetIO.hpp"
 #include "application/AssetList.hpp"
 #include "application/AssetManager.hpp"
-#include "application/Assets.hpp"
 
 #include "qt/QtLogging.hpp"
 
@@ -23,27 +22,35 @@
 AssetList::AssetList(AssetManager* application, std::shared_ptr<spdlog::logger> logger)
 	: _application(application)
 	, _logger(logger)
+	, _assetList(std::make_unique<ObservableAssetList>())
 {
+	connect(_assetList.get(), &ObservableList<std::unique_ptr<Asset>>::ObjectAdded, this, &AssetList::OnAssetAdded);
+
+	// Forward signals so users of the manager don't need to interact with the underlying list.
+	connect(_assetList.get(), &ObservableList<std::unique_ptr<Asset>>::ObjectAdded, this, &AssetList::AssetAdded);
+	connect(_assetList.get(), &ObservableList<std::unique_ptr<Asset>>::AboutToRemoveObject,
+		this, &AssetList::AboutToRemoveAsset);
+	connect(_assetList.get(), &ObservableList<std::unique_ptr<Asset>>::ObjectRemoved, this, &AssetList::AssetRemoved);
 }
 
 AssetList::~AssetList() = default;
 
+std::size_t AssetList::Count() const
+{
+	return _assetList->Count();
+}
+
 int AssetList::IndexOf(const Asset* asset) const
 {
-	if (asset)
-	{
-		if (auto it = std::find_if(_assets.begin(), _assets.end(),
-			[&](const auto& candidate)
-			{
-				return candidate.get() == asset;
-			});
-			it != _assets.end())
+	return _assetList->IndexOf([&](const auto& candidate)
 		{
-			return it - _assets.begin();
-		}
-	}
+			return candidate.get() == asset;
+		});
+}
 
-	return -1;
+Asset* AssetList::Get(std::size_t index) const
+{
+	return _assetList->Get(index).get();
 }
 
 void AssetList::SetCurrent(Asset* asset)
@@ -160,11 +167,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 
 					connect(result.get(), &Asset::FileNameChanged, this, &AssetList::OnAssetFileNameChanged);
 
-					_assets.push_back(std::move(result));
-
-					emit AssetAdded(_assets.size() - 1);
-
-					_logger->trace("Loaded asset \"{}\"", fileName);
+					_assetList->Add(std::move(result));
 				}
 				else if constexpr (std::is_same_v<T, AssetLoadInExternalProgram>)
 				{
@@ -199,16 +202,9 @@ bool AssetList::TryClose(int index, bool verifyUnsavedChanges, bool allowCancel)
 			return false;
 		}
 
-		const TimerSuspender timerSuspender{_application};
+		const TimerSuspender timerSuspender{ _application };
 
-		emit AboutToRemoveAsset(index);
-
-		// Don't destroy the asset until after we've cleaned everything up.
-		const std::unique_ptr<Asset> asset = std::move(_assets[index]);
-
-		_assets.erase(_assets.begin() + index);
-
-		emit AssetRemoved(index);
+		_assetList->Remove(index);
 	}
 
 	return true;
@@ -279,6 +275,11 @@ bool AssetList::RefreshCurrent()
 	}
 
 	return false;
+}
+
+void AssetList::OnAssetAdded(int index)
+{
+	_logger->trace("Loaded asset \"{}\"", _assetList->Get(index)->GetFileName());
 }
 
 void AssetList::OnAssetFileNameChanged(Asset* asset)
