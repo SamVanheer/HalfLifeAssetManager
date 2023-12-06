@@ -95,7 +95,7 @@
 * Disabled the `Power Of 2 Textures` option by default. This option will be enabled automatically if the program determines that your computer does not support Non-Power Of 2 textures
 * Added Multisample Anti-Aliasing option in the `Video` menu. Changing this setting will re-create the 3D window which may cause a slight flicker
 * Added the option to take transparent screenshots. This can be enabled by checking the `Transparent Screenshots` option in the `Video` menu. Note that the background color will still affect transparent objects. To counter this set the background color to black before taking screenshots
-* Moved `Take Screenshot` action to `Video` menu, add **F10** shortcut
+* Moved `Take Screenshot` action to `Video` menu with **F10** shortcut
 * The StudioModel dock widgets are now saved and loaded to retain their docking position, visible and active states. The `Reset Dock Widgets` action in the `Asset` menu resets these to their original state
 * Added option to hide the Controls Bar, Timeline and all Edit Controls (switches to maximized 3D window). These settings are remembered and restored
 * The `Save View` and `Restore View` actions now operate globally across all assets, allowing the current camera and camera state to be saved in one asset and restored in another

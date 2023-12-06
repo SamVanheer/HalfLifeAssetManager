@@ -774,9 +774,9 @@ The activity can be selected from the list of predefined activities, or a custom
 
 The activity weight is used by the game to pick an animation with greater chance. Higher values increase the change of the animation being selected. This is typically used to implement a set of idle animations with rarer animations to make an NPC behave a certain way.
 
-The linear movement Vector controls the animation's movement in 3D space during the animation. For NPCs this controls the movement speed but not their direction. It is recommended to change only the X value to change the movemement speed. Player movement animations (referred to as gait in the source code) also use only the X value for movement speed.
+The linear movement vector controls the animation's movement in 3D space during the animation. For NPCs this controls the movement speed but not their direction. It is recommended to change only the X value to change the movemement speed. Player movement animations (referred to as gait in the source code) also use only the X value for movement speed.
 
-Models are rendered according to the complete linear movement Vector, so changing any of the three values can result in the model appearing to move. Note that entities typically move on their own, so this can have unexpected results. This behavior only affects the visible model, not the underlying entity.
+Models are rendered according to the complete linear movement vector, so changing any of the three values can result in the model appearing to move. Note that entities typically move on their own, so this can have unexpected results. This behavior only affects the visible model, not the underlying entity.
 
 Animations can have events. An event occurs on a specific frame, has an id used to tell the game what to do and a text option to pass as a parameter.
 Events are commonly used to play sounds, trigger NPC-specific behavior like firing a weapon and control scripted behavior.
