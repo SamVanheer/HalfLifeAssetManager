@@ -156,10 +156,7 @@ int ToolApplication::Run(int argc, char* argv[])
 			return EXIT_FAILURE;
 		}
 
-		if (_singleInstance)
-		{
-			connect(_singleInstance.get(), &SingleInstance::FileNameReceived, _application.get(), &AssetManager::LoadFile);
-		}
+		connect(_singleInstance.get(), &SingleInstance::FileNameReceived, _application.get(), &AssetManager::LoadFile);
 
 		_application->Start();
 
