@@ -41,16 +41,21 @@
 * Fixed changes made to colors applying even if the Options dialog was closed with the Cancel button
 * Fixed portable mode not always placing the configuration file next to the executable
 * Fixed shadows being rotated towards lighting instead of according to lighting
+* Fixed shadows drawing at wrong height when models are moved up and down
 * Fixed crash when enabling mipmaps on computers that don't support OpenGL 3.0
 * Fixed centering on large models centering on the wrong position
 * Fixed bounding box, clipping box & player hitbox not always rendering on top of the model
 * Fixed Dump Model Info not setting name field
+* Fixed filenames not being interpreted as UTF-8 causing them to become corrupted if they contain non-latin characters
+* Fixed file paths not being normalized before being added to the recent files list causing the same file to be added with different slashes sometimes
+* Mouth controllers are identified the same way as the engine does now (controller id >= 4 instead of == 4)
+* Removed dot in file extension to fix file associations not working when installed using offline installer
 
 ### New features
 
 #### General
 
-* Experimental Linux support (Thanks Shepard for helping to fix compiler errors)
+* Experimental Linux support (Thanks Shepard for helping to fix compiler errors). Linux builds can be downloaded from Github Actions artifacts
 * Many optimizations to reduce memory usage and improve performance
 * The program log file is now stored next to the configuration file and is always created. The `log-to-file` command line parameter has been removed
 * Added log message for sound playback. This shows the full sound file path and is useful for debugging
@@ -59,6 +64,12 @@
 * Removed the "Use single instance" option. The default behavior is now to always use a single instance. This option was provided to emulate the behavior of older model viewers which could only load one model at a time. Asset Manager can load any number of models and should always use the same instance to share resources
 * Ensured that file logging is initialized after the single instance check to prevent multiple instances from logging to the same file at the same time
 * When launching a default program to open a file, if the file does not exist this will be more clearly indicated (previously file existence and default program checks were reported in a single error message)
+* Added info to dumped model info about use of external texture file
+* Files are now looked up using case-insensitive lookup to allow loading files on Linux the same way as on Windows
+* Added option to mute audio when app is in the background
+* Reworked fullscreen mode to use the main window
+* Keyboard shortcuts now work in fullscreen mode
+* Removed **Escape** as fullscreen mode exit (**F11** now does this)
 
 #### Menus and related functionality
 
@@ -71,7 +82,6 @@
 * When saving a file with a new name where another asset has the file with that name already opened the user is asked what to do (discard other asset or cancel)
 * Added `Close All` action to the `File` menu
 * Added dropdown menu showing list of all loaded assets for quick navigation
-* Added progress dialogs to asset load and close to give the user the opportunity to cancel if the process takes too long
 * Optimized asset load and close to dramatically reduce the time required. This also speeds up program shutdown with many assets opened
 * Asset filenames are removed from the `Recent Files` menu if the file fails to load for any reason
 * Optimized some undo commands to halve their memory usage
@@ -85,6 +95,7 @@
 * Disabled the `Power Of 2 Textures` option by default. This option will be enabled automatically if the program determines that your computer does not support Non-Power Of 2 textures
 * Added Multisample Anti-Aliasing option in the `Video` menu. Changing this setting will re-create the 3D window which may cause a slight flicker
 * Added the option to take transparent screenshots. This can be enabled by checking the `Transparent Screenshots` option in the `Video` menu. Note that the background color will still affect transparent objects. To counter this set the background color to black before taking screenshots
+* Moved `Take Screenshot` action to `Video` menu, add **F10** shortcut
 * The StudioModel dock widgets are now saved and loaded to retain their docking position, visible and active states. The `Reset Dock Widgets` action in the `Asset` menu resets these to their original state
 * Added option to hide the Controls Bar, Timeline and all Edit Controls (switches to maximized 3D window). These settings are remembered and restored
 * The `Save View` and `Restore View` actions now operate globally across all assets, allowing the current camera and camera state to be saved in one asset and restored in another
@@ -100,6 +111,8 @@
 * Added vertical sync option
 * Added support for changing a color's alpha value in the Color options page for colors that support it
 * Added the option to specify the filename for Quake 1 Model Viewer, Source 1 Model Viewer, Xash Model Viewer and Counter-Strike Nexon Model Viewer to delegate the loading of models from these engines to
+* Added option to choose how to load Xash models: Always or never load in Asset Manager, or ask first
+* Added warning about potential loss of data when saving Xash models
 * Additional command line arguments for external programs can be specified as needed
 * Added the event Ids `1011`, `1012` and `1013` from Opposing Force as valid sound events
 * Added the option to specify which event Ids correspond to sound events in addition to built-in event Ids
@@ -129,6 +142,7 @@
 * The Ground texture directory is now remembered
 * Added the `Enable Texture` option to the Scene->Ground panel. Enabling this without a texture loaded now uses an auto-generated grid texture
 * Added the option to draw transparent faces on hitboxes. This can be enabled by changing the `HitboxFace` color alpha value to make these faces visible
+* The `Highlight Hitbox` option now uses a separate color setting
 * The `Show Axes` option now renders axes on top of the model
 * Added the option to choose the aspect ratio used by the `Show Guidelines` option
 * Added `Show Off-screen Areas` option to mask portions of the 3D window that are invisible in-game when using the selected aspect ratio
@@ -145,6 +159,9 @@
 * Removed the `bmp` extension from the editable texture name control (extension is required to be there) and blocked setting the name to an empty string or having whitespace at the start or end
 * Added support for specifying a texture remap `mid` value of `-01` (see manual for complete explanation)
 * The UV map is drawn using OpenGL again as it did in Half-Life Model Viewer 2. This results in sharper lines removing the need for the UV line width setting. Note that the Export UV Map dialog does not use OpenGL to draw the UV map. This will be changed in Half-Life Asset Manager 3.0.0
+* Made the Transformation dock visible by default and moved it to the bottom dock area by default
+* Added support for multiple mouth controllers and negative mouth start range
+* Improved accuracy of error messages when a model fails to load
 
 ### Removed features
 
@@ -153,6 +170,7 @@
 * Removed bone flags, attachment type and event type user interface controls (never used in-game, never set by compiler)
 * Removed redundant log messages
 * Removed the `Windows` submenu; the File Browser is now accessible directly in the `View` menu
+* Removed obsolete sequence group filename correction & saving behavior (never used)
 
 ### Project changes
 
@@ -165,3 +183,4 @@
 * Removed GLEW library dependency
 * Redesigned the graphics scene architecture to make scenes lightweight objects
 * The offscreen OpenGL context is used to load graphics resources to eliminate the need to wait for the 3D window to initialize
+* Replaced stringstream with fmtlib
