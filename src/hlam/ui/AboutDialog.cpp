@@ -13,7 +13,7 @@
 
 static QString GetVersionInfo()
 {
-	return QString{"%1.%2.%3 Beta"}
+	return QString{"%1.%2.%3"}
 		.arg(HLAMVersionMajor)
 		.arg(HLAMVersionMinor)
 		.arg(HLAMVersionPatch);
