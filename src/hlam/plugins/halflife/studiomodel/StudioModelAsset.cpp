@@ -203,67 +203,75 @@ Continue?)", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 	undoStack->setClean();
 }
 
-bool StudioModelAsset::TryRefresh()
+std::unique_ptr<studiomdl::EditableStudioModel> TryReloadModel(const QString& fileName, IFileSystem& fileSystem)
 {
-	auto snapshot = std::make_unique<StateSnapshot>();
-
-	SaveEntityToSnapshot(snapshot.get());
-
-	emit SaveSnapshot(snapshot.get());
-
-	auto oldModelData = _modelData;
-
 	try
 	{
-		const std::string filePathString = GetFileName().toStdString();
+		const std::string filePathString = fileName.toStdString();
 		const auto filePath = std::filesystem::u8path(filePathString);
 
-		auto file = _fileSystem->TryOpenAbsolute(filePathString, true, true);
+		auto file = fileSystem.TryOpenAbsolute(filePathString, true, true);
 
 		if (!file)
 		{
 			throw AssetException("Could not open asset: file no longer exists or is currently opened by another program");
 		}
 
-		auto studioModel = studiomdl::LoadStudioModel(filePath, file.get(), *_fileSystem);
+		auto studioModel = studiomdl::LoadStudioModel(filePath, file.get(), fileSystem);
 
-		file.reset();
-
-		auto newModel = std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
-
-		// Clear UI to null state so changes to the models don't trigger changes in UI slots.
-		emit _provider->AssetChanged(_provider->GetDummyAsset());
-
-		graphics::SceneContext sc{_application->GetOpenGLFunctions(), _application->GetTextureLoader()};
-
-		auto context = _application->GetGraphicsContext();
-		context->Begin();
-
-		//Clean up old model resources
-		//TODO: needs to be handled better
-		_modelEntity->DestroyDeviceObjects(sc);
-
-		_editableStudioModel = std::move(newModel);
-
-		_modelData = new StudioModelData(_editableStudioModel.get(), this);
-
-		GetUndoStack()->clear();
-
-		_modelEntity->SetEditableModel(GetEditableStudioModel());
-		_modelEntity->Spawn();
-
-		LoadEntityFromSnapshot(snapshot.get());
-
-		_modelEntity->CreateDeviceObjects(sc);
-
-		context->End();
+		return std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
 	}
 	catch (const AssetException& e)
 	{
 		QMessageBox::critical(nullptr, "Error",
-			QString{"An error occurred while reloading the model \"%1\":\n%2"}.arg(GetFileName()).arg(e.what()));
+			QString{ "An error occurred while reloading the model \"%1\":\n%2" }.arg(fileName).arg(e.what()));
+		return {};
+	}
+}
+
+bool StudioModelAsset::TryRefresh()
+{
+	auto newModel = TryReloadModel(GetFileName(), *_fileSystem);
+
+	if (!newModel)
+	{
 		return false;
 	}
+
+	auto snapshot = std::make_unique<StateSnapshot>();
+
+	SaveEntityToSnapshot(snapshot.get());
+
+	emit SaveSnapshot(snapshot.get());
+
+	// Clear UI to null state so changes to the models don't trigger changes in UI slots.
+	emit _provider->AssetChanged(_provider->GetDummyAsset());
+
+	graphics::SceneContext sc{_application->GetOpenGLFunctions(), _application->GetTextureLoader()};
+
+	auto context = _application->GetGraphicsContext();
+	context->Begin();
+
+	//Clean up old model resources
+	//TODO: needs to be handled better
+	_modelEntity->DestroyDeviceObjects(sc);
+
+	_editableStudioModel = std::move(newModel);
+
+	auto oldModelData = _modelData;
+
+	_modelData = new StudioModelData(_editableStudioModel.get(), this);
+
+	GetUndoStack()->clear();
+
+	_modelEntity->SetEditableModel(GetEditableStudioModel());
+	_modelEntity->Spawn();
+
+	LoadEntityFromSnapshot(snapshot.get());
+
+	_modelEntity->CreateDeviceObjects(sc);
+
+	context->End();
 
 	emit _provider->AssetChanged(this);
 
