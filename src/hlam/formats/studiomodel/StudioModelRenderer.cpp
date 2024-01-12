@@ -98,7 +98,6 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderIn
 
 	if (flags & renderer::DrawFlag::WIREFRAME_OVERLAY)
 	{
-		//TODO: restore render mode after this?
 		_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		_openglFunctions->glDisable(GL_TEXTURE_2D);
 		_openglFunctions->glDisable(GL_CULL_FACE);
@@ -118,6 +117,9 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderIn
 			}
 		}
 	}
+
+	// Restore in case the above draw calls used wireframe.
+	_openglFunctions->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	// draw bones
 	if (flags & renderer::DrawFlag::DRAW_BONES)
