@@ -840,7 +840,7 @@ unsigned int StudioModelRenderer::InternalDrawShadows()
 
 void StudioModelRenderer::Lighting(glm::vec3& lv, int bone, int flags, const glm::vec3& normal)
 {
-	const float ambient = std::max(0.1f, (float)_skyLight.Ambient / 255.0f); // to avoid divison by zero
+	const float ambient = std::max(0.f, (float)_skyLight.Ambient / 255.0f);
 	const float shade = _skyLight.Shade / 255.0f;
 	glm::vec3 illum{ambient};
 
