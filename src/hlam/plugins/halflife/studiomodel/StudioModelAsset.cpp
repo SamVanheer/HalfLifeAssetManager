@@ -215,8 +215,19 @@ bool StudioModelAsset::TryRefresh()
 
 	try
 	{
-		const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
-		auto studioModel = studiomdl::LoadStudioModel(filePath, nullptr, *_fileSystem);
+		const std::string filePathString = GetFileName().toStdString();
+		const auto filePath = std::filesystem::u8path(filePathString);
+
+		auto file = _fileSystem->TryOpenAbsolute(filePathString, true, true);
+
+		if (!file)
+		{
+			throw AssetException("Could not open asset: file no longer exists or is currently opened by another program");
+		}
+
+		auto studioModel = studiomdl::LoadStudioModel(filePath, file.get(), *_fileSystem);
+
+		file.reset();
 
 		auto newModel = std::make_unique<studiomdl::EditableStudioModel>(studiomdl::ConvertToEditable(*studioModel));
 
