@@ -217,7 +217,7 @@ QCDataDialog::QCDataDialog(StudioModelAssetProvider* provider, QWidget* parent)
 		[&](int index, const auto& sequence)
 		{
 			const auto name = QString::fromStdString(sequence->Label);
-			QString result = QString{"$sequence "} + name;
+			QString result = QString{"$sequence \"%1\""}.arg(name);
 
 			// Append a sequence name for each blend. We can't use actual filenames since we don't know them here.
 			for (std::size_t blend = 0; blend < sequence->AnimationBlends.size(); ++blend)
