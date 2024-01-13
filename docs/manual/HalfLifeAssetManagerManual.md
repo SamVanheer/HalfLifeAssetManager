@@ -114,7 +114,7 @@ The file is cleared on startup.
 
 ## 5.1 Configuring Logging Categories
 
-Qt uses logging categories to filter log output. To control which categories are enabled, create a file called `qtlogging.ini` in `Half-Life Asset Manager` and add the following:
+Qt uses logging categories to filter log output. To control which categories are enabled, create a file called `qtlogging.ini` in `Half-Life Asset Manager` (next to the `HLAM` executable) and add the following:
 ```ini
 [Rules]
 ```
