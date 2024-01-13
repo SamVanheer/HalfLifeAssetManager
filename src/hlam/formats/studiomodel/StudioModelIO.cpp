@@ -15,7 +15,7 @@
 
 namespace studiomdl
 {
-bool IsStudioModel(FILE* file)
+bool IsStudioModel(FILE* file, bool acceptSequenceFiles)
 {
 	if (!file)
 	{
@@ -29,7 +29,8 @@ bool IsStudioModel(FILE* file)
 		return false;
 	}
 
-	if (strncmp(reinterpret_cast<const char*>(&id), STUDIOMDL_HDR_ID, 4) != 0)
+	if (strncmp(reinterpret_cast<const char*>(&id), STUDIOMDL_HDR_ID, 4) != 0
+		&& (!acceptSequenceFiles || strncmp(reinterpret_cast<const char*>(&id), STUDIOMDL_SEQ_ID, 4) != 0))
 	{
 		return false;
 	}
@@ -51,7 +52,7 @@ bool IsStudioModel(FILE* file)
 
 bool IsMainStudioModel(FILE* file)
 {
-	if (!IsStudioModel(file))
+	if (!IsStudioModel(file, false))
 	{
 		return false;
 	}
@@ -90,9 +91,16 @@ static std::tuple<std::unique_ptr<std::byte[]>, size_t> ReadStudioFileIntoBuffer
 template<typename T>
 static void CheckHeaderIntegrity(const std::filesystem::path& fileName, const T* header, const char* headerId)
 {
-	if (strncmp(reinterpret_cast<const char*>(&header->id), headerId, 4))
+	if (strncmp(reinterpret_cast<const char*>(&header->id), headerId, 4) != 0)
 	{
-		throw AssetException(fmt::format("The file \"{}\" is not a studiomdl type {} header", fileName, headerId));
+		auto message = fmt::format("The file \"{}\" is not a studio model type {} file", fileName, headerId);
+
+		if (strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4) == 0)
+		{
+			message += "\nIt is a sequence group file (load the main file instead)";
+		}
+
+		throw AssetException(message);
 	}
 
 	if (header->version != STUDIO_VERSION)
@@ -122,7 +130,7 @@ static studiomdl::StudioPtr<studiohdr_t> LoadMainHeader(const std::filesystem::p
 
 		if (!fileName.empty() && std::toupper(fileName.stem().u8string().back()) == 'T')
 		{
-			message += " (it is probably a texture file)";
+			message += "\nIt is probably a texture file (load the main file instead)";
 		}
 
 		throw AssetException(message);

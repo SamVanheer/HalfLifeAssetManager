@@ -345,7 +345,7 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 
 bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) const
 {
-	return studiomdl::IsStudioModel(file);
+	return studiomdl::IsStudioModel(file, true);
 }
 
 AssetLoadData StudioModelAssetProvider::Load(const QString& fileName, FILE* file)

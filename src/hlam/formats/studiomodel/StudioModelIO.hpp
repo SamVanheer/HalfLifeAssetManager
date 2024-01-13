@@ -12,7 +12,7 @@ namespace studiomdl
 {
 class StudioModel;
 
-bool IsStudioModel(FILE* file);
+bool IsStudioModel(FILE* file, bool acceptSequenceFiles);
 
 bool IsMainStudioModel(FILE* file);
 
