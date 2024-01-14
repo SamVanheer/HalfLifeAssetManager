@@ -8,4 +8,6 @@ This program includes code copyrighted by Id Software and Valve Software, includ
 
 See the licenses directory for licenses covering third party libraries.
 
+Make sure to install the Visual C++ redistributable when not installing using the installer program. The redistributable is located in the `redist` directory.
+
 See https://github.com/SamVanheer/HalfLifeAssetManager for more information.
