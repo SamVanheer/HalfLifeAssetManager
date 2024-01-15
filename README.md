@@ -40,6 +40,30 @@ It is recommended to use portable mode (see below) to avoid corrupting the confi
 
 You will need to install the latest Visual C++ x86 redistributable yourself to run these builds: https://aka.ms/vs/17/release/vc_redist.x86.exe
 
+## Building
+
+Requirements:
+* CMake 3.25 or newer
+* Visual Studio 2022 or newer (Windows) or GCC 11 (Linux)
+* Qt 5.15.5 (Windows: download 32 bit MSVC 2019 version using Qt maintenance tool. Linux: install package `qtbase5-dev`)
+
+Clone the repository using Git. Make sure to clone submodules as well (`--recurse-submodules` on the command line).
+
+Use CMake to generate project files for your platform. When specifying how to set up the project make sure to choose "toolchain" and point it to `<repository root>/vcpkg/scripts/buildsystems/vcpkg.cmake`.
+
+Run configure. You will need to specify the variable `Qt5_DIR`. This should point to the path `<Qt install directory>/5.15.2/msvc2019/lib/cmake/Qt5` (Windows) or `/usr/lib/x86_64-linux-gnu/cmake/Qt5` (Linux). The exact path may differ depending on your system.
+
+Point `CMAKE_INSTALL_PREFIX` to `<repository root>/installer/packages/SamVanheer.HalfLifeAssetManager/data`.
+
+Generate the project files and use them to build the project.
+
+Run the install target to deploy required files to the installer directory.
+
+To create the installer you will need to put the program executable and all required Qt libraries in the bin directory, and place the Visual Studio x86 redistributable in the redist directory.
+The PDF manual generated from [HalfLifeAssetManagerManual.md](../docs/manual/HalfLifeAssetManagerManual.md) should be placed in the manual directory.
+
+See this for more information on packaging Qt applications: https://doc.qt.io/qt-5/windows-deployment.html
+
 ## Installation
 
 The installer will take care of most of the installation process. Simply run the installer, change the install location if desired, choose which file extensions to associate the program with, and the installer will do the rest.
