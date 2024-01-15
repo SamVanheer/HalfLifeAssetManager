@@ -2,6 +2,18 @@
 
 [< Back to CHANGELOG](CHANGELOG.md)
 
+## Changes in V2.1.0
+
+* Fixed crash when refreshing model
+* Reworked model refreshing to ensure new data is loaded before refresh is attempted
+* Fixed off-screen area masks rendering as wireframe if model is rendered as wireframe
+* Clamped ambient sky light to 0 instead of 0.1 after normalizing to fix model not being pitch black
+* Added quotes around sequence name in QC data dialog
+* Improved error messages when attempting to load sequence or texture model files
+* Clarified where qtlogging.ini should go
+* Explained where to find redistributable in readme
+* Added build instructions and updated installer instructions
+
 ## Changes in V2.0.0
 
 ### Github repository changes
