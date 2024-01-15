@@ -50,7 +50,7 @@ void ShowAboutDialog(QWidget* parent)
 		QString::fromUtf8(
 			reinterpret_cast<const char*>(u8R"(%1 %2
 
-2023 Sam Vanheer
+2024 Sam Vanheer
 
 Email:	sam.vanheer@outlook.com
 
