@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QLocale>
 #include <QLoggingCategory>
 #include <QMessageBox>
 #include <QOffscreenSurface>
@@ -113,6 +114,8 @@ int ToolApplication::Run(int argc, char* argv[])
 {
 	try
 	{
+		// Use the same locale as the game for consistent behavior.
+		QLocale::setDefault(QLocale{ QLocale::Language::English, QLocale::Country::UnitedStates });
 		// Set the codec to UTF-8 if possible so I/O operations produce proper filenames.
 		QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
