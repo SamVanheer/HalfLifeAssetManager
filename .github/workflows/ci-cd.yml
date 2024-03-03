@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
          
@@ -28,7 +28,7 @@ jobs:
       - uses: lukka/get-cmake@latest
       
       - name: Restore artifacts, setup vcpkg
-        uses: lukka/run-vcpkg@v10
+        uses: lukka/run-vcpkg@v11
         with:
           vcpkgDirectory: '${{env.VCPKG_ROOT}}'
           runVcpkgInstall: false
@@ -48,7 +48,7 @@ jobs:
           mv build/HLAM "Half-Life Asset Manager"
       
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Linux-x64
           path: "Half-Life Asset Manager"
@@ -58,7 +58,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
       
@@ -74,7 +74,7 @@ jobs:
       - uses: lukka/get-cmake@latest
       
       - name: Restore artifacts, setup vcpkg
-        uses: lukka/run-vcpkg@v10
+        uses: lukka/run-vcpkg@v11
         with:
           vcpkgDirectory: '${{env.VCPKG_ROOT}}'
           runVcpkgInstall: false
@@ -104,7 +104,7 @@ jobs:
           mv build/styles "Half-Life Asset Manager/styles"
       
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Win32
           path: "Half-Life Asset Manager"
