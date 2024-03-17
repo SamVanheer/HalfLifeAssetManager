@@ -115,7 +115,8 @@ void StudioModelEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass
 
 	studiomdl::ModelRenderInfo renderInfo = GetRenderInfo();
 
-	GetContext()->StudioModelRenderer->DrawModel(renderInfo, flags);
+	GetContext()->StudioModelRenderer->DrawModel(
+		renderInfo, GetContext()->Asset->GetGroundEntity()->GetOrigin().z, flags);
 
 	//TODO: this is a temporary hack. The graphics scene architecture needs a complete overhaul first,
 		//then this can be done by rendering the model in a separate viewmodel layer

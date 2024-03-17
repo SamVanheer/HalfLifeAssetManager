@@ -41,7 +41,8 @@ void StudioModelRenderer::RunFrame()
 	UpdateColors();
 }
 
-unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderInfo, const renderer::DrawFlags flags)
+unsigned int StudioModelRenderer::DrawModel(
+	studiomdl::ModelRenderInfo& renderInfo, float floorHeight, const renderer::DrawFlags flags)
 {
 	_renderInfo = &renderInfo;
 
@@ -90,7 +91,7 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderIn
 
 				if (flags & renderer::DrawFlag::DRAW_SHADOWS)
 				{
-					uiDrawnPolys += DrawShadows(fixShadowZFighting, false);
+					uiDrawnPolys += DrawShadows(fixShadowZFighting, false, floorHeight);
 				}
 			}
 		}
@@ -112,7 +113,7 @@ unsigned int StudioModelRenderer::DrawModel(studiomdl::ModelRenderInfo& renderIn
 
 				if (flags & renderer::DrawFlag::DRAW_SHADOWS)
 				{
-					uiDrawnPolys += DrawShadows(fixShadowZFighting, true);
+					uiDrawnPolys += DrawShadows(fixShadowZFighting, true, floorHeight);
 				}
 			}
 		}
@@ -726,8 +727,15 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 	return uiDrawnPolys;
 }
 
-unsigned int StudioModelRenderer::DrawShadows(const bool fixZFighting, const bool wireframe)
+unsigned int StudioModelRenderer::DrawShadows(const bool fixZFighting, const bool wireframe, float floorHeight)
 {
+	// Engine traces down to find a surface to use as shadow height,
+	// so don't render shadows if origin is lower than floor.
+	if (floorHeight > _renderInfo->Origin.z)
+	{
+		return 0;
+	}
+
 	if (!(_studioModel->Flags & EF_NOSHADELIGHT))
 	{
 		GLint oldDepthMask;
@@ -764,7 +772,7 @@ unsigned int StudioModelRenderer::DrawShadows(const bool fixZFighting, const boo
 
 		_openglFunctions->glDepthFunc(GL_LESS);
 
-		const auto drawnPolys = InternalDrawShadows();
+		const auto drawnPolys = InternalDrawShadows(floorHeight);
 
 		_openglFunctions->glDepthFunc(GL_LEQUAL);
 
@@ -786,13 +794,11 @@ unsigned int StudioModelRenderer::DrawShadows(const bool fixZFighting, const boo
 	}
 }
 
-unsigned int StudioModelRenderer::InternalDrawShadows()
+unsigned int StudioModelRenderer::InternalDrawShadows(float floorHeight)
 {
 	unsigned int drawnPolys = 0;
 
-	//Always at the entity origin
-	// TODO: need to find the ground height and use that.
-	const auto lightSampleHeight = -_renderInfo->Origin.z;
+	const auto lightSampleHeight = floorHeight;
 	const auto shadowHeight = lightSampleHeight + 1.0;
 
 	const glm::vec3 shadeVector = -_skyLight.Direction;

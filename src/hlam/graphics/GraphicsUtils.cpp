@@ -527,7 +527,7 @@ unsigned int DrawMirroredModel(QOpenGLFunctions_1_1* openglFunctions,
 
 	renderInfo.Origin.z -= origin.z * 2;
 
-	studioModelRenderer.DrawModel(renderInfo, flags);
+	studioModelRenderer.DrawModel(renderInfo, origin.z, flags);
 
 	openglFunctions->glDisable(GL_CLIP_PLANE0);
 

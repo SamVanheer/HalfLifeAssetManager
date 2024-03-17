@@ -67,7 +67,8 @@ public:
 		_skyLight = light;
 	}
 
-	unsigned int DrawModel(ModelRenderInfo& renderInfo, const renderer::DrawFlags flags) override final;
+	unsigned int DrawModel(
+		ModelRenderInfo& renderInfo, float floorHeight, const renderer::DrawFlags flags) override final;
 
 	void DrawSingleBone(ModelRenderInfo& renderInfo, const int iBone) override final;
 
@@ -106,9 +107,9 @@ private:
 
 	unsigned int DrawMeshes(const bool bWireframe, const SortedMesh* pMeshes);
 
-	unsigned int DrawShadows(const bool fixZFighting, const bool wireframe);
+	unsigned int DrawShadows(const bool fixZFighting, const bool wireframe, float floorHeight);
 
-	unsigned int InternalDrawShadows();
+	unsigned int InternalDrawShadows(float floorHeight);
 
 	void Lighting(glm::vec3& lv, int bone, int flags, const glm::vec3& normal);
 	void Chrome(glm::vec2& chrome, int bone, const glm::vec3& normal);
