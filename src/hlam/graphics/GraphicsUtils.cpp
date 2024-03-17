@@ -498,10 +498,10 @@ unsigned int DrawMirroredModel(QOpenGLFunctions_1_1* openglFunctions,
 	*/
 	const GLdouble flClipPlane[] =
 	{
-		0.0,	//X
-		0.0,	//Y
-		1.0,	//Z
-		0.0		//Offset in direction. In our case, this would move the plane up or down.
+		0.0,		//X
+		0.0,		//Y
+		1.0,		//Z
+		origin.z	//Offset in direction. In our case, this would move the plane up or down.
 	};
 
 	openglFunctions->glClipPlane(GL_CLIP_PLANE0, flClipPlane);
@@ -524,6 +524,8 @@ unsigned int DrawMirroredModel(QOpenGLFunctions_1_1* openglFunctions,
 	}
 
 	studiomdl::ModelRenderInfo renderInfo = pEntity->GetRenderInfo();
+
+	renderInfo.Origin.z -= origin.z * 2;
 
 	studioModelRenderer.DrawModel(renderInfo, flags);
 
