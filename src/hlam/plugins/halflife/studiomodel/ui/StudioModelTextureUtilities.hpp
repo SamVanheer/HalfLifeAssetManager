@@ -8,6 +8,7 @@
 #include <QColor>
 #include <QImage>
 #include <QRgb>
+#include <QSize>
 #include <QString>
 
 #include "formats/studiomodel/EditableStudioModel.hpp"
@@ -17,7 +18,8 @@
 *	@brief Converts an image to an indexed 8 bit image compatible with GoldSource
 *	@return If conversion succeeded, the converted texture and whether the image was converted from another format to index 8 bit
 */
-std::optional<std::tuple<studiomdl::StudioTextureData, bool, bool>> ConvertImageToTexture(QImage image);
+std::optional<std::tuple<studiomdl::StudioTextureData, bool, bool>> ConvertImageToTexture(
+	QImage image, std::optional<QSize> requiredSize);
 
 QImage ConvertTextureToRGBImage(
 	const studiomdl::StudioTextureData& texture, const std::byte* textureData,

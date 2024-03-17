@@ -6,23 +6,34 @@
 #include "entity/HLMVStudioModelEntity.hpp"
 #include "plugins/halflife/studiomodel/ui/StudioModelTextureUtilities.hpp"
 
-std::optional<std::tuple<studiomdl::StudioTextureData, bool, bool>> ConvertImageToTexture(QImage image)
+std::optional<std::tuple<studiomdl::StudioTextureData, bool, bool>> ConvertImageToTexture(
+	QImage image, std::optional<QSize> requiredSize)
 {
-	const bool upscaleToMultipleOf4 = ((image.width() * image.height()) % 4) != 0;
-
-	if (upscaleToMultipleOf4)
+	bool upscaleToMultipleOf4 = false;
+	
+	if (!requiredSize)
 	{
-		// Round the width up so that it's a multiple.
-		int width = image.width();
-		const int height = image.height();
+		upscaleToMultipleOf4 = ((image.width() * image.height()) % 4) != 0;
 
-		do
+		if (upscaleToMultipleOf4)
 		{
-			++width;
-		}
-		while (((width * height) % 4) != 0);
+			// Round the width up so that it's a multiple.
+			int width = image.width();
+			const int height = image.height();
 
-		image = image.scaled(width, height);
+			do
+			{
+				++width;
+			}
+			while (((width * height) % 4) != 0);
+
+			requiredSize = QSize{width, height};
+		}
+	}
+
+	if (requiredSize)
+	{
+		image = image.scaled(requiredSize->width(), requiredSize->height());
 	}
 
 	const QImage::Format inputFormat = image.format();

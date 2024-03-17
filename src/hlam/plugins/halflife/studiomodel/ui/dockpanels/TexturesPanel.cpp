@@ -440,7 +440,55 @@ void TexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::Editab
 		return;
 	}
 
-	auto convertedTexture = ConvertImageToTexture(image);
+	// For models with multiple skins we need to enforce the original texture dimensions
+	// if any mesh that uses it uses alternate textures since the UV coordinates affect all textures.
+	bool allowResizing = true;
+
+	if (model.SkinFamilies.size() > 1)
+	{
+		const auto texture = model.Textures[textureIndex].get();
+
+		for (std::size_t i = 0; i < model.SkinFamilies[0].size(); ++i)
+		{
+			std::size_t count = 0;
+
+			for (std::size_t j = 0; j < model.SkinFamilies.size(); ++j)
+			{
+				if (texture == model.SkinFamilies[j][i])
+				{
+					++count;
+				}
+			}
+
+			if (count != 0 && count != model.SkinFamilies.size())
+			{
+				allowResizing = false;
+				break;
+			}
+		}
+	}
+
+	auto& texture = *model.Textures[textureIndex];
+
+	std::optional<QSize> requiredSize;
+
+	if (!allowResizing)
+	{
+		requiredSize = QSize{ texture.Data.Width, texture.Data.Height };
+
+		if (requiredSize != image.size())
+		{
+			if (QMessageBox::question(
+				this, "Input required",
+				"This texture is used in only some skins and must match the original dimensions to ensure UV coordinates are compatible with other skins.\nRescale image?",
+				QMessageBox::Ok, QMessageBox::Cancel) != QMessageBox::Ok)
+			{
+				return;
+			}
+		}
+	}
+
+	auto convertedTexture = ConvertImageToTexture(image, requiredSize);
 
 	if (!convertedTexture)
 	{
@@ -462,8 +510,6 @@ void TexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::Editab
 	}
 
 	auto& textureData = std::get<0>(convertedTexture.value());
-
-	auto& texture = *model.Textures[textureIndex];
 
 	auto scaledSTCoordinates = studiomdl::CalculateScaledSTCoordinatesData(
 		model, textureIndex, texture.Data.Width, texture.Data.Height, textureData.Width, textureData.Height);
