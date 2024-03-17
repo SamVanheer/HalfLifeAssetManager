@@ -24,14 +24,19 @@ enum RenderPass : RenderPasses
 	Standard = 1 << 1,
 
 	/**
+	*	@brief Renders the ground. Always renders after the scene itself.
+	*/
+	Ground = 1 << 2,
+
+	/**
 	*	@brief For 3D objects that need to render on top of or around the scene.
 	*/
-	Overlay3D = 1 << 2,
+	Overlay3D = 1 << 3,
 
 	/**
 	*	@brief For 2D objects that need to render on top of the scene.
 	*/
-	Overlay2D = 1 << 3,
+	Overlay2D = 1 << 4,
 };
 }
 

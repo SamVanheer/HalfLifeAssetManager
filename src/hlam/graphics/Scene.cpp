@@ -116,6 +116,7 @@ void Scene::Draw(SceneContext& sc)
 	sc.OpenGLFunctions->glLoadMatrixf(glm::value_ptr(camera->GetViewMatrix()));
 
 	DrawRenderables(sc, RenderPass::Standard);
+	DrawRenderables(sc, RenderPass::Ground);
 	DrawRenderables(sc, RenderPass::Overlay3D);
 
 	sc.OpenGLFunctions->glMatrixMode(GL_PROJECTION);

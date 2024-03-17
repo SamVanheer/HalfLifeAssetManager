@@ -18,7 +18,7 @@ public:
 	DECLARE_CLASS(GroundEntity, BaseEntity);
 
 public:
-	RenderPasses GetRenderPasses() const override { return RenderPass::Standard; }
+	RenderPasses GetRenderPasses() const override { return RenderPass::Ground; }
 
 	void Draw(graphics::SceneContext& sc, RenderPasses renderPass) override;
 
