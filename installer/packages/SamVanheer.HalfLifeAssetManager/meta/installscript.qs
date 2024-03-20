@@ -71,14 +71,18 @@ Component.prototype.createOperations = function()
 	
 	if (systemInfo.productType === "windows")
 	{
+		var targetDir = installer.value("TargetDir");
+		var exePath = installer.toNativeSeparators(`${targetDir}/HLAM.exe`);
+	
 		if (isRegisterMDLChecked)
 		{
 			component.addOperation("RegisterFileType",
 				"mdl",
-				"\"@TargetDir@/HLAM.exe\" \"%1\"",
+				`\"${exePath}\" \"%1\"`,
 				"Half-Life studiomodel file",
 				"application/octet-stream",
-				"@TargetDir@/HLAM.exe,0");
+				"@TargetDir@/HLAM.exe,0",
+				"ProgId=SamVanheer.HalfLifeAssetManager.mdl");
 		}
 		
 		if (addStartMenuEntry)
