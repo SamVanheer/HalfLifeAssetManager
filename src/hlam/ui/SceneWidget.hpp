@@ -31,6 +31,8 @@ public:
 
 	QWidget* GetContainer() { return _container; }
 
+	graphics::SceneContext* GetSceneContext() { return _sceneContext.get(); }
+
 	graphics::Scene* GetScene() { return _scene; }
 
 	void SetScene(graphics::Scene* scene);

@@ -1,8 +1,11 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
+
+#include <glm/vec4.hpp>
 
 #include "graphics/Camera.hpp"
 #include "graphics/GraphicsConstants.hpp"
@@ -68,7 +71,7 @@ public:
 
 	void Tick();
 
-	void Draw(SceneContext& sc);
+	void Draw(SceneContext& sc, std::optional<glm::vec4> backgroundColor = std::nullopt);
 
 private:
 	void CollectRenderables(RenderPass::RenderPass renderPass, std::vector<BaseEntity*>& renderablesToRender);

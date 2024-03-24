@@ -395,6 +395,13 @@ MainWindow::MainWindow(AssetManager* application)
 			_ui.ActionPowerOf2Textures->setEnabled(false);
 		}
 
+		// Transparent screenshots depend on framebuffers.
+		if (!functions.hasOpenGLFeature(QOpenGLFunctions::OpenGLFeature::Framebuffers))
+		{
+			_application->GetApplicationSettings()->TransparentScreenshots = false;
+			_ui.ActionTransparentScreenshots->setEnabled(false);
+		}
+
 		graphicsContext->End();
 
 		_ui.ActionPowerOf2Textures->setChecked(textureLoader->ShouldResizeToPowerOf2());
@@ -402,6 +409,7 @@ MainWindow::MainWindow(AssetManager* application)
 		_ui.MinFilterGroup->actions()[static_cast<int>(textureLoader->GetMinFilter())]->setChecked(true);
 		_ui.MagFilterGroup->actions()[static_cast<int>(textureLoader->GetMagFilter())]->setChecked(true);
 		_ui.MipmapFilterGroup->actions()[static_cast<int>(textureLoader->GetMipmapFilter())]->setChecked(true);
+		_ui.ActionTransparentScreenshots->setChecked(_application->GetApplicationSettings()->TransparentScreenshots);
 	}
 
 	SyncSettings();

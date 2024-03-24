@@ -6,6 +6,7 @@
 #include <QDockWidget>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QOpenGLFramebufferObject>
 #include <QImage>
 #include <QMenu>
 #include <QMessageBox>
@@ -290,7 +291,43 @@ bool StudioModelAsset::CanTakeScreenshot() const
 
 void StudioModelAsset::TakeScreenshot()
 {
-	const QImage screenshot = _application->GetSceneWidget()->grabFramebuffer();
+	auto graphicsContext = _application->GetGraphicsContext();
+
+	graphicsContext->Begin();
+
+	QImage fboImage;
+	QImage screenshot;
+
+	if (!_application->GetApplicationSettings()->TransparentScreenshots)
+	{
+		screenshot = _application->GetSceneWidget()->grabFramebuffer();
+	}
+	else
+	{
+		auto sceneWidget = _application->GetSceneWidget();
+
+		// Create a temporary framebuffer to render the scene with transparency.
+		QOpenGLFramebufferObjectFormat format;
+
+		format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+		format.setSamples(sceneWidget->format().samples());
+
+		auto buffer = std::make_unique<QOpenGLFramebufferObject>(sceneWidget->size(), format);
+
+		buffer->bind();
+
+		GetScene()->Draw(*sceneWidget->GetSceneContext(), glm::vec4{0, 0, 0, 0});
+
+		// Create a wrapper to handle alpha channel correctly
+		// See https://doc.qt.io/qt-5/qopenglframebufferobject.html#toImage-1 for more information
+		// 'screenshot' does not copy image data so 'fboImage' must live at least as long!
+		fboImage = QImage(buffer->toImage());
+		screenshot = QImage(fboImage.constBits(), fboImage.width(), fboImage.height(), QImage::Format_ARGB32);
+
+		buffer->release();
+	}
+
+	graphicsContext->End();
 
 	const QString fileName{ QFileDialog::getSaveFileName(nullptr, {}, {}, qt::GetImagesFileFilter()) };
 

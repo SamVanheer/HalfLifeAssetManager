@@ -80,16 +80,14 @@ void Scene::Tick()
 	_entityList->RunFrame();
 }
 
-void Scene::Draw(SceneContext& sc)
+void Scene::Draw(SceneContext& sc, std::optional<glm::vec4> backgroundColor)
 {
-	auto applicationSettings = _entityContext->AppSettings;
-	auto colors = _entityContext->Asset->GetApplication()->GetColorSettings();
+	if (!backgroundColor)
+	{
+		backgroundColor = _entityContext->AppSettings->GetColorSettings()->GetColor(studiomodel::BackgroundColor);
+	}
 
-	const auto backgroundColor = colors->GetColor(studiomodel::BackgroundColor);
-
-	const float backgroundAlpha = applicationSettings->TransparentScreenshots ? 0 : 1;
-
-	sc.OpenGLFunctions->glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundAlpha);
+	sc.OpenGLFunctions->glClearColor(backgroundColor->r, backgroundColor->g, backgroundColor->b, backgroundColor->a);
 	sc.OpenGLFunctions->glClearStencil(0);
 	sc.OpenGLFunctions->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
