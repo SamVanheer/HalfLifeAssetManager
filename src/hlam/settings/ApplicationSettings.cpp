@@ -153,7 +153,7 @@ void ApplicationSettings::SaveSettings()
 	_settings->endGroup();
 
 	_settings->setValue("MSAALevel", _msaaLevel);
-	_settings->setValue("TransparentScreenshots", DefaultTransparentScreenshots);
+	_settings->setValue("TransparentScreenshots", TransparentScreenshots);
 	_settings->setValue("AspectRatio/X", static_cast<int>(_aspectRatio.x));
 	_settings->setValue("AspectRatio/Y", static_cast<int>(_aspectRatio.y));
 	_settings->endGroup();
