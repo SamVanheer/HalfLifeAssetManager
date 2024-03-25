@@ -89,21 +89,23 @@ void ApplicationSettings::LoadSettings()
 	_powerOf2Textures = _settings->value("PowerOf2Textures", DefaultPowerOf2Textures).toBool();
 
 	_settings->beginGroup("TextureFilters");
-	_minFilter = static_cast<graphics::TextureFilter>(std::clamp(
+	const auto minFilter = static_cast<graphics::TextureFilter>(std::clamp(
 		_settings->value("Min", static_cast<int>(DefaultMinFilter)).toInt(),
 		static_cast<int>(graphics::TextureFilter::First),
 		static_cast<int>(graphics::TextureFilter::Last)));
 
-	_magFilter = static_cast<graphics::TextureFilter>(std::clamp(
+	const auto magFilter = static_cast<graphics::TextureFilter>(std::clamp(
 		_settings->value("Mag", static_cast<int>(DefaultMagFilter)).toInt(),
 		static_cast<int>(graphics::TextureFilter::First),
 		static_cast<int>(graphics::TextureFilter::Last)));
 
-	_mipmapFilter = static_cast<graphics::MipmapFilter>(std::clamp(
+	const auto mipmapFilter = static_cast<graphics::MipmapFilter>(std::clamp(
 		_settings->value("Mipmap", static_cast<int>(DefaultMipmapFilter)).toInt(),
 		static_cast<int>(graphics::MipmapFilter::First),
 		static_cast<int>(graphics::MipmapFilter::Last)));
 	_settings->endGroup();
+
+	SetTextureFilters(minFilter, magFilter, mipmapFilter);
 
 	_msaaLevel = _settings->value("MSAALevel", DefaultMSAALevel).toInt();
 	TransparentScreenshots = _settings->value("TransparentScreenshots", DefaultTransparentScreenshots).toBool();
