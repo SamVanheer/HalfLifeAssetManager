@@ -265,7 +265,7 @@ void ToolApplication::ConfigureOpenGL()
 	defaultFormat.setRedBufferSize(4);
 	defaultFormat.setGreenBufferSize(4);
 	defaultFormat.setBlueBufferSize(4);
-	defaultFormat.setAlphaBufferSize(4);
+	defaultFormat.setAlphaBufferSize(0);
 
 	qCDebug(HLAM) << "Configuring OpenGL for" << defaultFormat;
 
