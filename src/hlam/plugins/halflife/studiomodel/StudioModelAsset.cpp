@@ -297,12 +297,11 @@ void StudioModelAsset::TakeScreenshot()
 
 	QImage fboImage;
 	QImage screenshot;
+	
+	bool grabScreenshotFromMainScene = true;
+	bool fbIsValid = true;
 
-	if (!_application->GetApplicationSettings()->TransparentScreenshots)
-	{
-		screenshot = _application->GetSceneWidget()->grabFramebuffer();
-	}
-	else
+	if (_application->GetApplicationSettings()->TransparentScreenshots)
 	{
 		auto sceneWidget = _application->GetSceneWidget();
 
@@ -314,17 +313,35 @@ void StudioModelAsset::TakeScreenshot()
 
 		auto buffer = std::make_unique<QOpenGLFramebufferObject>(sceneWidget->size(), format);
 
-		buffer->bind();
+		fbIsValid = buffer->isValid() && buffer->bind();
 
-		GetScene()->Draw(*sceneWidget->GetSceneContext(), glm::vec4{0, 0, 0, 0});
+		if (fbIsValid)
+		{
+			GetScene()->Draw(*sceneWidget->GetSceneContext(), glm::vec4{ 0, 0, 0, 0 });
 
-		// Create a wrapper to handle alpha channel correctly
-		// See https://doc.qt.io/qt-5/qopenglframebufferobject.html#toImage-1 for more information
-		// 'screenshot' does not copy image data so 'fboImage' must live at least as long!
-		fboImage = QImage(buffer->toImage());
-		screenshot = QImage(fboImage.constBits(), fboImage.width(), fboImage.height(), QImage::Format_ARGB32);
+			// Create a wrapper to handle alpha channel correctly
+			// See https://doc.qt.io/qt-5/qopenglframebufferobject.html#toImage-1 for more information
+			// 'screenshot' does not copy image data so 'fboImage' must live at least as long!
+			fboImage = QImage(buffer->toImage());
+			screenshot = QImage(fboImage.constBits(), fboImage.width(), fboImage.height(), QImage::Format_ARGB32);
 
-		buffer->release();
+			buffer->release();
+
+			grabScreenshotFromMainScene = false;
+		}
+	}
+
+	if (grabScreenshotFromMainScene)
+	{
+		screenshot = _application->GetSceneWidget()->grabFramebuffer();
+	}
+
+	// Show error after taking screenshot to avoid scene changing during messagebox display.
+	if (!fbIsValid)
+	{
+		QMessageBox::critical(nullptr, "Error", R"(Error creating OpenGL framebuffer to render transparent screenshot
+
+The screenshot will be rendered without transparency)");
 	}
 
 	graphicsContext->End();
