@@ -20,7 +20,7 @@ bool LaunchDefaultProgram(const QString& fileName)
 			QString{R"(Unable to start default program
 
 The file "%1" does not exist)"}
-		.arg(info.absoluteFilePath()));
+		.arg(fileName));
 
 		return false;
 	}

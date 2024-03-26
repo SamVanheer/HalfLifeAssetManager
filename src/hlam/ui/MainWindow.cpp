@@ -16,6 +16,7 @@
 #include <QMessageBox>
 #include <QOpenGLFunctions>
 #include <QScreen>
+#include <QStandardPaths>
 #include <QTabBar>
 #include <QToolButton>
 #include <QUndoGroup>
@@ -290,7 +291,21 @@ MainWindow::MainWindow(AssetManager* application)
 
 	connect(_ui.ActionOpenManual, &QAction::triggered, this, [this]
 		{
-			const QString manualLocation{QApplication::applicationDirPath() + "/manual/HalfLifeAssetManagerManual.pdf"};
+			const QString manualFileName{ QStringLiteral("HalfLifeAssetManagerManual.pdf") };
+
+#ifdef _WIN32
+			const QString manualLocation{ QApplication::applicationDirPath() + "/manual/" + manualFileName };
+#else
+
+			QString manualLocation = QStandardPaths::locate(QStandardPaths::AppLocalDataLocation, manualFileName);
+
+			if (manualLocation.isEmpty())
+			{
+				// This is mostly to print a proper error message, not as a fallback.
+				manualLocation = manualFileName;
+			}
+#endif
+
 			qt::LaunchDefaultProgram(manualLocation);
 		});
 	connect(_ui.ActionAbout, &QAction::triggered, this, [this] { ShowAboutDialog(this); });
