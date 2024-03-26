@@ -163,5 +163,27 @@ copy_qt_dependencies(HLAM Qt5Network_PLUGINS)
 
 set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT HLAM)
 
-install(TARGETS HLAM RUNTIME DESTINATION .)
-install(FILES "docs/manual/HalfLifeAssetManagerManual.pdf" DESTINATION "manual")
+# On Windows the executable is installed in its own directory.
+# On Linux it's installed in a global location and must follow platform conventions.
+if (WIN32)
+	install(TARGETS HLAM RUNTIME DESTINATION .)
+	install(FILES "docs/manual/HalfLifeAssetManagerManual.pdf" DESTINATION "manual")
+else()
+	include(GNUInstallDirs)
+
+	# Qt searches in "dataroot/orgname/appname" which is why this is nested.
+	set(APP_LOCAL_DIR "${CMAKE_INSTALL_DATAROOTDIR}/Half-Life Asset Manager/Half-Life Asset Manager")
+
+	install(TARGETS HLAM RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+	install(FILES "distribution/linux/hlam.desktop" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications")
+	install(FILES "assets/hlam_icon2_golden_finished.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/128x128/apps" RENAME "hlam.png")
+	install(FILES "docs/manual/HalfLifeAssetManagerManual.pdf" DESTINATION "${APP_LOCAL_DIR}")
+	
+	# CPack is only used for Linux versions.
+	set(CPACK_PACKAGE_CONTACT "https://github.com/SamVanheer/HalfLifeAssetManager")
+	set(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
+	set(CPACK_DEBIAN_PACKAGE_SECTION "editors")
+	set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+	include(CPack)
+endif()

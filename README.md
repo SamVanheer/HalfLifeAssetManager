@@ -20,11 +20,21 @@ Half-Life Asset Manager is a model viewer for Half-Life 1. It can be used to vie
 
 ## Minimum requirements
 
+### Windows
+
 * Operating system: Windows 7 or newer
 * OpenGL version: 2.1 or newer
 
 > **Note**
 > [Half-Life Model Viewer 2](https://github.com/SamVanheer/HalfLifeModelViewer2) works on Windows XP and newer. If you cannot run Asset Manager then that tool may be a better option.
+
+### Linux
+
+* Operating System: 64-bit Ubuntu 22.04 or newer
+* OpenGL version: 2.1 or newer
+
+> **Note**
+> These requirements are based on what the program was developed and tested with. Older operating systems may also work.
 
 ## Download
 
@@ -66,6 +76,40 @@ To create the installer you will need to put the program executable and all requ
 The batch scripts in the `installer` directory are used to create the offline installer and portable archive.
 
 See this for more information on packaging Qt applications: https://doc.qt.io/qt-5/windows-deployment.html
+
+### Creating installation packages on Linux
+
+First build a release version of the project.
+
+Then use CPack to create a Debian package:
+```bash
+cd path/to/build/directory
+cpack -G DEB
+```
+
+<details>
+<summary>Possible output:</summary>
+CPack: Create package using DEB
+
+CPack: Install projects
+
+CPack: - Run preinstall target for: HalfLifeAssetManager
+
+CPack: - Install project: HalfLifeAssetManager []
+
+CPack: Create package
+
+CPackDeb: - Generating dependency list
+
+CPack: - package: /home/username/Documents/Github/HalfLifeAssetManager_dev/build/halflifeassetmanager_2.1.0_amd64.deb generated.
+</details>
+
+This will create a `.deb` file named something like `halflifeassetmanager_3.0.0_amd64.deb`. A `.desktop` file is included to add the program to the applications window of shells like Nautilus.
+
+Third party dependencies are automatically detected and added by CPack. This requires third party tools to be installed first. Consult the CPack and CPack Debian generator documentation for more information:
+* https://cmake.org/cmake/help/latest/module/CPack.html
+* https://cmake.org/cmake/help/book/mastering-cmake/chapter/Packaging%20With%20CPack.html
+* https://cmake.org/cmake/help/latest/cpack_gen/deb.html
 
 ## Installation
 
