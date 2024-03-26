@@ -57,10 +57,13 @@ Point `CMAKE_INSTALL_PREFIX` to `<repository root>/installer/packages/SamVanheer
 
 Generate the project files and use them to build the project.
 
-Run the install target to deploy required files to the installer directory.
+### Creating installation packages on Windows
+
+Build the install target to deploy required files to the `installer` directory. The PDF manual is generated from [HalfLifeAssetManagerManual.md](docs/manual/HalfLifeAssetManagerManual.md) using the [Markdown PDF](https://marketplace.visualstudio.com/items?itemName=yzane.markdown-pdf) Visual Studio Code extension and will be copied by the install target.
 
 To create the installer you will need to put the program executable and all required Qt libraries in the bin directory, and place the Visual Studio x86 redistributable in the redist directory.
-The PDF manual generated from [HalfLifeAssetManagerManual.md](../docs/manual/HalfLifeAssetManagerManual.md) should be placed in the manual directory.
+
+The batch scripts in the `installer` directory are used to create the offline installer and portable archive.
 
 See this for more information on packaging Qt applications: https://doc.qt.io/qt-5/windows-deployment.html
 

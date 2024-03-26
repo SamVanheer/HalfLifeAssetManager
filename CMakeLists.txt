@@ -163,5 +163,5 @@ copy_qt_dependencies(HLAM Qt5Network_PLUGINS)
 
 set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT HLAM)
 
-install(TARGETS HLAM
-	RUNTIME DESTINATION .)
+install(TARGETS HLAM RUNTIME DESTINATION .)
+install(FILES "docs/manual/HalfLifeAssetManagerManual.pdf" DESTINATION "manual")
