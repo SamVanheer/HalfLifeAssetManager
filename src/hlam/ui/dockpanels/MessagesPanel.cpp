@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include <QScrollBar>
 
 #include "application/AssetManager.hpp"
@@ -25,6 +27,11 @@ MessagesPanel::~MessagesPanel() = default;
 
 void MessagesPanel::OnMessageReceived(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
+	if (std::strcmp(context.category, "default") == 0 && !_ui->QtDiagnostics->isChecked())
+	{
+		return;
+	}
+
 	if (type == QtDebugMsg && !_ui->Debug->isChecked())
 	{
 		return;

@@ -62,6 +62,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QCheckBox" name="QtDiagnostics">
+       <property name="text">
+        <string>Qt Diagnostics</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="Clear">
        <property name="text">
         <string>Clear</string>
