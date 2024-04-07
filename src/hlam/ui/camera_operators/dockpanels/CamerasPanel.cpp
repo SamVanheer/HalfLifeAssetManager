@@ -1,6 +1,9 @@
 #include <algorithm>
 #include <cassert>
 
+#include <QFontMetrics>
+#include <QGridLayout>
+#include <QLabel>
 #include <QSignalBlocker>
 
 #include "qt/QtUtilities.hpp"
@@ -44,15 +47,62 @@ QWidget* CamerasPanel::GetWidget(int index) const
 	return _widgets[index];
 }
 
+static QVector<QLabel*> GetCameraLabels(QWidget* panel)
+{
+	QVector<QLabel*> labels;
+
+	if (auto grid = qobject_cast<QGridLayout*>(panel->layout()); grid)
+	{
+		for (int i = 0; i < grid->rowCount(); ++i)
+		{
+			auto item = grid->itemAtPosition(i, 0);
+
+			if (auto label = qobject_cast<QLabel*>(item->widget()); label)
+			{
+				labels.push_back(label);
+			}
+		}
+	}
+
+	return labels;
+}
+
 void CamerasPanel::AddCameraOperator(const QString& name, QWidget* widget)
 {
 	assert(widget);
 
 	_widgets.emplace_back(widget);
 
-	//Add the widget before adding the combo box item because the combo box will select the first item that gets added automatically
+	// Add the widget before adding the combo box item because the combo box
+	// will select the first item that gets added automatically
 	_ui.CamerasStack->addWidget(widget);
 	_ui.Cameras->addItem(name);
+
+	// Redo layout.
+	int widthToSet = -1;
+
+	for (auto widget : _widgets)
+	{
+		for (auto label : GetCameraLabels(widget))
+		{
+			QFontMetrics fm{ label->font() };
+
+			const int width = fm.horizontalAdvance(label->text());
+
+			if (width > widthToSet)
+			{
+				widthToSet = width;
+			}
+		}
+	}
+
+	for (auto widget : _widgets)
+	{
+		for (auto label : GetCameraLabels(widget))
+		{
+			label->setFixedWidth(widthToSet);
+		}
+	}
 }
 
 void CamerasPanel::ChangeCamera(int index)
