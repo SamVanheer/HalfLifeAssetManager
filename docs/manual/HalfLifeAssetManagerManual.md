@@ -16,7 +16,11 @@ This document was made to be converted to PDF with this Visual Studio Code exten
 * [1 About Half-Life Asset Manager](#1-about-half-life-asset-manager)
 	* [1.1 Known Issues](#11-known-issues)
 * [2 Installing](#2-installing)
+	* [2.1 Windows](#21-windows)
+	* [2.2 Linux](#22-linux)
 * [3 General Usage](#3-general-usage)
+	* [3.1 Windows](#31-windows)
+	* [3.2 Linux](#32-linux)
 * [4 Portable Mode](#4-portable-mode)
 * [5 Configuring Log Output](#5-configuring-log-output)
 	* [5.1 Configuring Logging Categories](#51-configuring-logging-categories)
@@ -62,13 +66,11 @@ It does not support Source 1 and Source 2, though some file formats are recogniz
 
 ## 1.1 Known Issues
 
-There are some bugs that will be fixed in a future major version due to depending on the implementation of a new shader-based renderer.
-
-These issues are:
-* **Mirror Model** does not work properly when the ground has been moved up or down (mirroring is done using a faked method, modern methods can do this properly)
-* Shadows are always drawn at a height of 1 unit above the world origin instead of 1 unit above the ground
+No known issues in this version.
 
 # 2 Installing
+
+## 2.1 Windows
 
 Asset Manager is available in installer and archive form. The installer will automatically install the program to a location of your choosing and can optionally create shortcuts for you.
 
@@ -76,13 +78,15 @@ When using the off-line installer you must uninstall the previous version before
 
 The archive version does not require installation itself but does require you to install the Visual C++ redistributable included with the archive. This redistributable includes the Visual C++ runtime used by the program and is required to run it.
 
+## 2.2 Linux
+
+Asset Manager is available in Debian archive form (.deb). This archive can be installed using your system package manager or software installer interface.
+
+A `*.desktop` file will be added to create a shortcut, allowing a shortcut to be added to your desktop if needed.
+
 <div class="page"/>
 
 # 3 General Usage
-
-When installing Asset Manager using the installer you are given the option to associate the program with file types supported by the tool. Enabling this allows you to open Asset Manager by double clicking the file in Windows Explorer.
-
-You can also associate file types manually by following this tutorial: https://www.thewindowsclub.com/change-file-associations-windows
 
 Asset Manager treats positional arguments passed on the command line as a filename. Only one filename may be passed and it should be enclosed by quotes. If passed without quotes Asset Manager will attempt to reconstruct the filename by joining all positional arguments together separated by a space.
 
@@ -91,6 +95,16 @@ Parts of the user interface allow editing numeric data using spin boxes like the
 ![spinboxes](../../assets/spinboxes.png)
 
 Clicking the up and down arrow buttons adjusts these values by one. Clicking them while holding down the **CTRL** key is the equivalent of clicking them **10** times. This can be used to quickly make large adjustments.
+
+## 3.1 Windows
+
+When installing Asset Manager using the installer you are given the option to associate the program with file types supported by the tool. Enabling this allows you to open Asset Manager by double clicking the file in Windows Explorer.
+
+You can also associate file types manually by following this tutorial: [https://www.thewindowsclub.com/change-file-associations-windows](https://www.thewindowsclub.com/change-file-associations-windows)
+
+## 3.2 Linux
+
+Qt 5 supports both the X11 and Wayland windowing systems. While both are generally supported Wayland may not work properly. If you encounter problems running this with Wayland it is possible to override the target platform. See [https://doc.qt.io/qt-6/qpa.html](https://doc.qt.io/qt-6/qpa.html) for more information.
 
 <div class="page"/>
 
@@ -248,15 +262,17 @@ Multiple files can selected by clicking and holding the left mouse button and dr
 
 Multiple files can be opened by selecting the files and clicking `Open Selected`.
 
+<div class="page"/>
+
 ### 7.3.3 Messages
 
 The Messages panel shows debug, info and error messages emitted by the program.
 
 By default only info and error messages are shown. The message category can be enabled to get more information about where a message came from.
 
-This panel is automatically opened when an error occurs.
+Qt diagnostics messages are disabled by default. These messages are generally useful only to application developers.
 
-<div class="page"/>
+This panel is automatically opened when an error occurs.
 
 ## 7.4 Audio
 
@@ -282,35 +298,37 @@ Whether to enable vertical sync on the 3D window. Enabling vertical sync clamps 
 
 Disabling it allows for higher framerates but may cause screen tearing.
 
+<div class="page"/>
+
 ### 7.5.3 Min Filter
 
 The minification filter used for textures.
 
-See https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering
+See [https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering](https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering)
 
 ### 7.5.4 Mag Filter
 
 The magnification filter used for textures.
 
-See https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering
+See [https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering](https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering)
 
 ### 7.5.5 Mipmap Filter
 
 The mipmap filter used for textures.
 
-See https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering
+See [https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering](https://www.khronos.org/opengl/wiki/Sampler_Object#Filtering)
 
 ### 7.5.6 Anti-Aliasing
 
 The Multisample Anti-aliasing setting. Setting this to a higher value reduces jagged edges but requires a more powerful graphics card.
 
  Changing this setting recreates the 3D window.
-
- <div class="page"/>
  
  ### 7.5.7 Transparent Screenshots
 
 Whether screenshots are transparent or include the background color.
+
+This option is only available when the OpenGL driver supports the use of framebuffers.
 
 See Section [Take Screenshot](#758-take-screenshot) for more information.
 
@@ -320,11 +338,9 @@ Takes a screenshot and asks the user where to save it. The keyboard shortcut **F
 
 This action is affected by the setting of the Video->Transparent Screenshots action.
 
-Transparent screenshots exclude the background from the resulting image. Note however that transparent objects will still be affected by the background color.
+Transparent screenshots exclude the background from the resulting image.
 
-To avoid this set the background color to black first using Tools->Options->Colors->Background.
-
-This will cause transparent objects to be rendered using only their own color and not that of the background.
+Note that additive rendered meshes are considered fully opaque. The alpha channel of a transparent screenshot will be white for additive rendered pixels.
 
 <div class="page"/>
 
@@ -708,7 +724,7 @@ The **Opacity** slider allows to change the model to render transparently.
 
 **Wireframe Overlay** adds a wireframe overlay on top of the model.
 
-**Draw Shadows** shows the primitive shadow rendering technique that was once available in the engine. By default this will cause Z fighting due to how shadows are rendered.
+**Draw Shadows** uses the primitive shadow rendering technique that was once available in the engine. By default this will cause Z fighting due to how shadows are rendered. Shadows are drawn 1 unit above the ground, but only if the model origin is not below the ground, just like in the game.
 
 **Fix Shadow Z Fighting** fixes the Z fighting issues.
 
@@ -817,7 +833,11 @@ The texture flags control in-game rendering behavior. Some flags are mutually ex
 
 The Fullbright flag is only supported by Svengine and has no effect in vanilla Half-Life.
 
-Textures can be imported and exported. The Import All and Export All buttons operate on a directory basis.
+Textures can be imported and exported. If an imported texture has different dimensions the UV coordinates will be adjusted.
+
+If a model has multiple skins then those meshes that have multiple skins will only allow the importing of textures with the same dimensions as the original. This is because the UV coordinates are in texture space (i.e. **[0, width]** and **[0, height]**) which requires them to be the same for all textures used on the same mesh.
+
+The Import All and Export All buttons operate on a directory basis.
 
 Import All Textures scans the given directory for files matching the name of textures in the model and imports those. Export All Textures exports all textures with the name they use in the model.
 

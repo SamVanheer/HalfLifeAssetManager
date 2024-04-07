@@ -34,6 +34,9 @@ Half-Life Asset Manager is a model viewer for Half-Life 1. It can be used to vie
 * OpenGL version: 2.1 or newer
 
 > **Note**
+> The Wayland windowing system may not work correctly with this program. Use X11 if you encounter problems. See the [Manual](docs/manuaL/HalfLifeAssetManagerManual.md) for more information.
+
+> **Note**
 > These requirements are based on what the program was developed and tested with. Older operating systems may also work.
 
 ## Download
