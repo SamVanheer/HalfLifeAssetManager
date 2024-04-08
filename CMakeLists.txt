@@ -87,6 +87,11 @@ endif()
 
 add_executable(HLAM WIN32)
 
+# Follow Linux naming conventions.
+if (LINUX)
+	set_target_properties(HLAM PROPERTIES OUTPUT_NAME "hlam")
+endif()
+
 add_dependencies(HLAM ProjectInfo)
 
 target_compile_features(HLAM
