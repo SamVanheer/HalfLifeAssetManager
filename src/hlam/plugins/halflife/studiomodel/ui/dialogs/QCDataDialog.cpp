@@ -313,11 +313,11 @@ The compiler will automatically mark textures whose name contains the text <b>"c
 		model->Textures,
 		[&](QPlainTextEdit* textEdit)
 		{
-			for (const auto& texture : model->Textures)
+			for (std::size_t i = 0; const auto& texture : model->Textures)
 			{
 				textEdit->appendPlainText(QString{"//\"%1\" (%2)"}
 					.arg(QString::fromStdString(texture->Name))
-					.arg(texture->ArrayIndex));
+					.arg(i));
 
 				// Generate a command for each render mode flag that is set.
 				for (const int renderMode :
@@ -359,6 +359,8 @@ The compiler will automatically mark textures whose name contains the text <b>"c
 						textEdit->appendPlainText(command);
 					}
 				}
+
+				++i;
 			}
 		});
 
@@ -377,7 +379,8 @@ The compiler will automatically mark textures whose name contains the text <b>"c
 					if (std::find_if(model->SkinFamilies.begin() + 1, model->SkinFamilies.end(),
 						[&](const auto& candidate)
 						{
-							return model->SkinFamilies[0][index]->Name != candidate[index]->Name;
+							return model->Textures[model->SkinFamilies[0][index]]->Name !=
+								model->Textures[candidate[index]]->Name;
 						}) == model->SkinFamilies.end())
 					{
 						continue;
@@ -396,7 +399,7 @@ The compiler will automatically mark textures whose name contains the text <b>"c
 							result += " ";
 						}
 
-						result += QString{"\"%1\""}.arg(QString::fromStdString(skinFamily[index]->Name));
+						result += QString{"\"%1\""}.arg(QString::fromStdString(model->Textures[skinFamily[index]]->Name));
 					}
 
 					result += "}";

@@ -446,15 +446,13 @@ void TexturesPanel::ImportTextureFrom(const QString& fileName, studiomdl::Editab
 
 	if (model.SkinFamilies.size() > 1)
 	{
-		const auto texture = model.Textures[textureIndex].get();
-
 		for (std::size_t i = 0; i < model.SkinFamilies[0].size(); ++i)
 		{
 			std::size_t count = 0;
 
 			for (std::size_t j = 0; j < model.SkinFamilies.size(); ++j)
 			{
-				if (texture == model.SkinFamilies[j][i])
+				if (textureIndex == model.SkinFamilies[j][i])
 				{
 					++count;
 				}

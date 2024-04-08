@@ -579,7 +579,7 @@ unsigned int StudioModelRenderer::DrawPoints(const bool bWireframe)
 	{
 		const auto& mesh = _model->Meshes[j];
 
-		const int flags = _studioModel->SkinFamilies[_renderInfo->Skin][mesh.SkinRef]->Flags;
+		const int flags = _studioModel->Textures[_studioModel->SkinFamilies[_renderInfo->Skin][mesh.SkinRef]]->Flags;
 
 		meshes[j].Mesh = &mesh;
 		meshes[j].Flags = flags;
@@ -627,7 +627,7 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 		const auto& mesh = *pMeshes[j].Mesh;
 		auto ptricmds = mesh.Triangles.data();
 
-		const auto& texture = *_studioModel->SkinFamilies[_renderInfo->Skin][mesh.SkinRef];
+		const auto& texture = *_studioModel->Textures[_studioModel->SkinFamilies[_renderInfo->Skin][mesh.SkinRef]];
 
 		const auto s = 1.0 / (float)texture.Data.Width;
 		const auto t = 1.0 / (float)texture.Data.Height;

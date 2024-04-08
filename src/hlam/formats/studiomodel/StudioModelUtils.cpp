@@ -623,8 +623,7 @@ std::vector<std::unique_ptr<StudioTexture>> ConvertDolTexturesToEditable(const S
 				source->height,
 				std::move(pixels),
 				palette
-			},
-			i
+			}
 		};
 
 		result.push_back(std::make_unique<StudioTexture>(texture));
@@ -669,8 +668,7 @@ std::vector<std::unique_ptr<StudioTexture>> ConvertMdlTexturesToEditable(const S
 				source->height,
 				{pixelsAddress, paletteAddress},
 				palette
-			},
-			i
+			}
 		};
 
 		result.push_back(std::make_unique<StudioTexture>(texture));
@@ -691,12 +689,12 @@ std::vector<std::unique_ptr<StudioTexture>> ConvertTexturesToEditable(const Stud
 	}
 }
 
-std::vector<std::vector<StudioTexture*>> ConvertSkinFamiliesToEditable(
+std::vector<std::vector<short>> ConvertSkinFamiliesToEditable(
 	const StudioModel& studioModel, std::vector<std::unique_ptr<StudioTexture>>& textures)
 {
 	auto header = studioModel.GetTextureHeader();
 
-	std::vector<std::vector<StudioTexture*>> result;
+	std::vector<std::vector<short>> result;
 
 	result.reserve(header->numskinfamilies);
 
@@ -705,18 +703,9 @@ std::vector<std::vector<StudioTexture*>> ConvertSkinFamiliesToEditable(
 	ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), source);
 	ValidateMemoryAddress(studioModel.GetTextureHeaderPtr(), source + (header->numskinfamilies * header->numskinref));
 
-	for (int i = 0; i < header->numskinfamilies; ++i)
+	for (int i = 0; i < header->numskinfamilies; ++i, source += header->numskinref)
 	{
-		std::vector<StudioTexture*> skinRef;
-
-		skinRef.reserve(header->numskinref);
-
-		for (int j = 0; j < header->numskinref; ++j, ++source)
-		{
-			skinRef.push_back(textures[*source].get());
-		}
-
-		result.push_back(std::move(skinRef));
+		result.emplace_back(source, source + header->numskinref);
 	}
 
 	return result;
@@ -1333,7 +1322,7 @@ void ConvertTexturesFromEditable(const EditableStudioModel& studioModel, studioh
 
 		for (std::size_t j = 0; j < source.size(); ++j)
 		{
-			skinref[j] = source[j]->ArrayIndex;
+			skinref[j] = source[j];
 		}
 	}
 

@@ -196,10 +196,10 @@ protected:
 	}
 };
 
-class SkinsItemModel final : public BaseStudioModelItemModel<std::vector<studiomdl::StudioTexture*>>
+class SkinsItemModel final : public BaseStudioModelItemModel<std::vector<short>>
 {
 public:
-	SkinsItemModel(std::vector<std::vector<studiomdl::StudioTexture*>>* items, QObject* parent)
+	SkinsItemModel(std::vector<std::vector<short>>* items, QObject* parent)
 		: BaseStudioModelItemModel(items, parent, false)
 	{
 	}

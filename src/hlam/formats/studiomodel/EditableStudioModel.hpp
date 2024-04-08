@@ -192,8 +192,6 @@ struct StudioTexture
 	int Flags = 0;
 	StudioTextureData Data;
 
-	int ArrayIndex = -1;
-
 	GLuint TextureId = 0;
 };
 
@@ -233,7 +231,7 @@ public:
 	std::vector<std::unique_ptr<StudioBodypart>> Bodyparts;
 
 	std::vector<std::unique_ptr<StudioTexture>> Textures;
-	std::vector<std::vector<StudioTexture*>> SkinFamilies;
+	std::vector<std::vector<short>> SkinFamilies;
 
 	std::vector<std::vector<std::uint8_t>> Transitions;
 

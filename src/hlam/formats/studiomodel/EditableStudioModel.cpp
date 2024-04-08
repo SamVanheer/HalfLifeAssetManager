@@ -83,7 +83,7 @@ std::vector<const StudioMesh*> EditableStudioModel::ComputeMeshList(const int te
 				//Check each skin family to detect textures used only by alternate skins (e.g. scientist hands)
 				for (int skinFamily = 0; skinFamily < SkinFamilies.size(); ++skinFamily)
 				{
-					if (SkinFamilies[skinFamily][mesh.SkinRef]->ArrayIndex == texture)
+					if (SkinFamilies[skinFamily][mesh.SkinRef] == texture)
 					{
 						meshes.push_back(&mesh);
 						break;
