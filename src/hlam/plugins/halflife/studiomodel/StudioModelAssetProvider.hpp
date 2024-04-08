@@ -27,7 +27,7 @@ class ISpriteRenderer;
 
 namespace studiomdl
 {
-class IStudioModelRenderer;
+class StudioModelRenderer;
 }
 
 namespace studiomodel
@@ -76,7 +76,7 @@ public:
 
 	StudioModelSettings* GetStudioModelSettings() const { return _studioModelSettings.get(); }
 
-	studiomdl::IStudioModelRenderer* GetStudioModelRenderer() const { return _studioModelRenderer.get(); }
+	studiomdl::StudioModelRenderer* GetStudioModelRenderer() const { return _studioModelRenderer.get(); }
 
 	sprite::ISpriteRenderer* GetSpriteRenderer() const { return _spriteRenderer.get(); }
 
@@ -118,7 +118,7 @@ private slots:
 private:
 	const std::shared_ptr<spdlog::logger> _logger;
 	const std::shared_ptr<StudioModelSettings> _studioModelSettings;
-	const std::unique_ptr<studiomdl::IStudioModelRenderer> _studioModelRenderer;
+	const std::unique_ptr<studiomdl::StudioModelRenderer> _studioModelRenderer;
 	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<StudioModelAsset> _dummyAsset;
 

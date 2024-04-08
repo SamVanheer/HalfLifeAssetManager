@@ -18,7 +18,7 @@ class StudioModelEntity;
 
 namespace studiomdl
 {
-class IStudioModelRenderer;
+class StudioModelRenderer;
 }
 
 namespace graphics
@@ -114,6 +114,6 @@ void DrawGround(QOpenGLFunctions_1_1* openglFunctions,
 *	@param bBackfaceCulling		Whether to perform backface culling or not
 */
 unsigned int DrawMirroredModel(QOpenGLFunctions_1_1* openglFunctions, 
-	studiomdl::IStudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
+	studiomdl::StudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
 	const RenderMode renderMode, const bool bWireframeOverlay, const glm::vec3& origin, const float groundLength, const bool bBackfaceCulling);
 }

@@ -367,7 +367,7 @@ graphics::TextureLoader* StudioModelAsset::GetTextureLoader()
 	return _application->GetTextureLoader();
 }
 
-studiomdl::IStudioModelRenderer* StudioModelAsset::GetStudioModelRenderer() const
+studiomdl::StudioModelRenderer* StudioModelAsset::GetStudioModelRenderer() const
 {
 	return GetProvider()->GetStudioModelRenderer();
 }

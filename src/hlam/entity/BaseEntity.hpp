@@ -26,7 +26,7 @@ class ISpriteRenderer;
 
 namespace studiomdl
 {
-class IStudioModelRenderer;
+class StudioModelRenderer;
 }
 
 namespace studiomodel
@@ -45,7 +45,7 @@ public:
 	//TODO: improve this
 	studiomodel::StudioModelAsset* Asset;
 	WorldTime* const Time;
-	studiomdl::IStudioModelRenderer* const StudioModelRenderer;
+	studiomdl::StudioModelRenderer* const StudioModelRenderer;
 	sprite::ISpriteRenderer* const SpriteRenderer;
 	ISoundSystem* const SoundSystem;
 	ApplicationSettings* const AppSettings;
@@ -53,7 +53,7 @@ public:
 
 	EntityContext(studiomodel::StudioModelAsset* asset,
 		WorldTime* time,
-		studiomdl::IStudioModelRenderer* studioModelRenderer,
+		studiomdl::StudioModelRenderer* studioModelRenderer,
 		sprite::ISpriteRenderer* spriteRenderer,
 		ISoundSystem* soundSystem,
 		::ApplicationSettings* appSettings,

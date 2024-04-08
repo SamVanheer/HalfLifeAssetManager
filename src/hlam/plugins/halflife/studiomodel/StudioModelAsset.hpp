@@ -43,7 +43,7 @@ class TextureLoader;
 
 namespace studiomdl
 {
-class IStudioModelRenderer;
+class StudioModelRenderer;
 }
 
 namespace studiomodel
@@ -96,7 +96,7 @@ public:
 
 	graphics::TextureLoader* GetTextureLoader();
 
-	studiomdl::IStudioModelRenderer* GetStudioModelRenderer() const;
+	studiomdl::StudioModelRenderer* GetStudioModelRenderer() const;
 
 	const std::vector<graphics::Scene*>& GetScenes() { return _scenes; }
 

@@ -9,7 +9,7 @@
 #include "entity/BaseEntity.hpp"
 #include "entity/EntityList.hpp"
 
-#include "formats/studiomodel/IStudioModelRenderer.hpp"
+#include "formats/studiomodel/StudioModelRenderer.hpp"
 
 #include "graphics/OpenGL.hpp"
 #include "graphics/Scene.hpp"

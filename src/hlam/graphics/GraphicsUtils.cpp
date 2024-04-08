@@ -12,7 +12,7 @@
 
 #include "entity/StudioModelEntity.hpp"
 
-#include "formats/studiomodel/IStudioModelRenderer.hpp"
+#include "formats/studiomodel/StudioModelRenderer.hpp"
 
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/Palette.hpp"
@@ -452,7 +452,7 @@ void DrawGround(QOpenGLFunctions_1_1* openglFunctions,
 }
 
 unsigned int DrawMirroredModel(QOpenGLFunctions_1_1* openglFunctions,
-	studiomdl::IStudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
+	studiomdl::StudioModelRenderer& studioModelRenderer, StudioModelEntity* pEntity,
 	const RenderMode renderMode, const bool bWireframeOverlay, const glm::vec3& origin, const float groundLength, const bool bBackfaceCulling)
 {
 	GLint oldCullFace;

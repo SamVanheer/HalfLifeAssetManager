@@ -11,8 +11,9 @@
 
 #include <glm/mat4x4.hpp>
 
+#include "formats/DrawConstants.hpp"
 #include "formats/studiomodel/BoneTransformer.hpp"
-#include "formats/studiomodel/IStudioModelRenderer.hpp"
+#include "formats/studiomodel/ModelRenderInfo.hpp"
 #include "formats/studiomodel/StudioModelFileFormat.hpp"
 #include "formats/studiomodel/StudioSorting.hpp"
 
@@ -29,7 +30,11 @@ struct StudioBone;
 struct StudioSubModel;
 struct StudioSequence;
 
-class StudioModelRenderer final : public studiomdl::IStudioModelRenderer
+/**
+*	Used to render studio models. Only one instance of this class should be used, and should be kept around,
+*	in order to achieve reasonably performant and consistent rendering.
+*/
+class StudioModelRenderer final
 {
 public:
 	StudioModelRenderer(const std::shared_ptr<spdlog::logger>& logger, QOpenGLFunctions_1_1* openglFunctions, ColorSettings* colorSettings);
@@ -38,43 +43,72 @@ public:
 	StudioModelRenderer(const StudioModelRenderer&) = delete;
 	StudioModelRenderer& operator=(const StudioModelRenderer&) = delete;
 
-	void RunFrame() override final;
+	void RunFrame();
 
-	unsigned int GetModelsDrawnCount() const override final { return _modelsDrawnCount; }
+	/**
+	*	@return The number of polygons drawn since the last call to Initialize.
+	*/
+	unsigned int GetDrawnPolygonsCount() const { return _drawnPolygonsCount; }
 
-	unsigned int GetDrawnPolygonsCount() const override final { return _drawnPolygonsCount; }
+	/**
+	*	@return The current lambert value. Modifier for pseudo-hemispherical lighting.
+	*/
+	float GetLambert() const { return _lambert; }
 
-	float GetLambert() const override final { return _lambert; }
+	/**
+	*	@return The viewer's origin.
+	*	TODO: move to separate data structure.
+	*/
+	const glm::vec3& GetViewerOrigin() const { return _viewerOrigin; }
 
-	const glm::vec3& GetViewerOrigin() const override final { return _viewerOrigin; }
-
-	void SetViewerOrigin(const glm::vec3& viewerOrigin) override final
+	void SetViewerOrigin(const glm::vec3& viewerOrigin)
 	{
 		_viewerOrigin = viewerOrigin;
 	}
 
-	const glm::vec3& GetViewerRight() const override final { return _viewerRight; }
+	/**
+	*	@return The vector that points to the viewer's right.
+	*	TODO: move to separate data structure.
+	*/
+	const glm::vec3& GetViewerRight() const { return _viewerRight; }
 
-	void SetViewerRight(const glm::vec3& viewerRight) override final
+	void SetViewerRight(const glm::vec3& viewerRight)
 	{
 		_viewerRight = viewerRight;
 	}
 
-	const graphics::Light& GetSkyLight() const override { return _skyLight; }
+	const graphics::Light& GetSkyLight() const { return _skyLight; }
 
-	void SetSkyLight(const graphics::Light& light) override
+	void SetSkyLight(const graphics::Light& light)
 	{
 		_skyLight = light;
 	}
 
-	unsigned int DrawModel(
-		ModelRenderInfo& renderInfo, float floorHeight, const renderer::DrawFlags flags) override final;
+	/**
+	*	Draws the given model.
+	*	@param renderInfo Render info that describes the model.
+	*	@param flags Flags.
+	*	@return Number of polygons that were drawn.
+	*/
+	unsigned int DrawModel(ModelRenderInfo& renderInfo, float floorHeight, const renderer::DrawFlags flags);
 
-	void DrawSingleBone(ModelRenderInfo& renderInfo, const int iBone) override final;
+	/*
+	*	Tool only operations.
+	*/
 
-	void DrawSingleAttachment(ModelRenderInfo& renderInfo, const int iAttachment) override final;
+	/**
+	*	Draws a single bone.
+	*	@param iBone Index of the bone to draw.
+	*/
+	void DrawSingleBone(ModelRenderInfo& renderInfo, const int iBone);
 
-	void DrawSingleHitbox(ModelRenderInfo& renderInfo, const int hitboxIndex) override final;
+	/**
+	*	Draws a single attachment.
+	*	@param iAttachment Index of the attachment to draw.
+	*/
+	void DrawSingleAttachment(ModelRenderInfo& renderInfo, const int iAttachment);
+
+	void DrawSingleHitbox(ModelRenderInfo& renderInfo, const int hitboxIndex);
 
 private:
 	void UpdateColors();

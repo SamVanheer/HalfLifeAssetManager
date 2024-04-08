@@ -10,7 +10,7 @@
 #include "entity/Events.hpp"
 
 #include "formats/studiomodel/EditableStudioModel.hpp"
-#include "formats/studiomodel/IStudioModelRenderer.hpp"
+#include "formats/studiomodel/StudioModelRenderer.hpp"
 
 enum class StudioLoopingMode
 {

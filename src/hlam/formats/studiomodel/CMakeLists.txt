@@ -6,7 +6,6 @@ target_sources(HLAM
 		DumpModelInfo.hpp
 		EditableStudioModel.cpp
 		EditableStudioModel.hpp
-		IStudioModelRenderer.hpp
 		ModelRenderInfo.hpp
 		StudioModel.hpp
 		StudioModelFileFormat.hpp
