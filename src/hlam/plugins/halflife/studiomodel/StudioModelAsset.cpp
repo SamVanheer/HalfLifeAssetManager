@@ -115,7 +115,6 @@ StudioModelAsset::StudioModelAsset(QString&& fileName,
 	, _entityContext(std::make_unique<EntityContext>(this,
 		_application->GetWorldTime(),
 		_provider->GetStudioModelRenderer(),
-		_provider->GetSpriteRenderer(),
 		_soundSystem.get(),
 		_application->GetApplicationSettings(),
 		_provider->GetStudioModelSettings()))

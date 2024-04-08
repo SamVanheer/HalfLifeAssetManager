@@ -16,7 +16,6 @@
 
 #include "filesystem/FileSystem.hpp"
 
-#include "formats/sprite/SpriteRenderer.hpp"
 #include "formats/studiomodel/DumpModelInfo.hpp"
 #include "formats/studiomodel/StudioModelIO.hpp"
 #include "formats/studiomodel/StudioModelRenderer.hpp"
@@ -50,7 +49,6 @@
 namespace studiomodel
 {
 Q_LOGGING_CATEGORY(HLAMStudioModel, "hlam.studiomodel")
-Q_LOGGING_CATEGORY(HLAMSpriteRenderer, "hlam.spriterenderer")
 Q_LOGGING_CATEGORY(HLAMStudioModelRenderer, "hlam.studiomodelrenderer")
 
 const QString StudioModelSettingsGroup{QStringLiteral("Assets/StudioModel")};
@@ -66,9 +64,6 @@ StudioModelAssetProvider::StudioModelAssetProvider(AssetManager* application,
 	, _studioModelRenderer(std::make_unique<studiomdl::StudioModelRenderer>(
 		CreateQtLoggerSt(HLAMStudioModelRenderer()),
 		_application->GetOpenGLFunctions(), _application->GetColorSettings()))
-
-	, _spriteRenderer(std::make_unique<sprite::SpriteRenderer>(
-		CreateQtLoggerSt(HLAMSpriteRenderer()), _application->GetWorldTime()))
 
 	, _dummyAsset(std::make_unique<StudioModelAsset>(
 		"", _application, this, _settingsVersion,

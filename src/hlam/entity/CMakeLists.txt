@@ -25,8 +25,6 @@ target_sources(HLAM
 		HLMVStudioModelEntity.hpp
 		PlayerHitboxEntity.cpp
 		PlayerHitboxEntity.hpp
-		SpriteEntity.cpp
-		SpriteEntity.hpp
 		StudioModelEntity.cpp
 		StudioModelEntity.hpp
 		TextureEntity.cpp

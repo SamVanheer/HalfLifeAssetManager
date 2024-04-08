@@ -20,11 +20,6 @@ class QMenu;
 class SceneCameraOperator;
 class StudioModelSettings;
 
-namespace sprite
-{
-class ISpriteRenderer;
-}
-
 namespace studiomdl
 {
 class StudioModelRenderer;
@@ -78,8 +73,6 @@ public:
 
 	studiomdl::StudioModelRenderer* GetStudioModelRenderer() const { return _studioModelRenderer.get(); }
 
-	sprite::ISpriteRenderer* GetSpriteRenderer() const { return _spriteRenderer.get(); }
-
 	bool IsControlsBarVisible() const;
 
 	bool IsTimelineVisible() const;
@@ -119,7 +112,6 @@ private:
 	const std::shared_ptr<spdlog::logger> _logger;
 	const std::shared_ptr<StudioModelSettings> _studioModelSettings;
 	const std::unique_ptr<studiomdl::StudioModelRenderer> _studioModelRenderer;
-	const std::unique_ptr<sprite::ISpriteRenderer> _spriteRenderer;
 	const std::unique_ptr<StudioModelAsset> _dummyAsset;
 
 	QPointer<QMenu> _toolMenu;

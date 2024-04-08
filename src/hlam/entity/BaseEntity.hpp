@@ -19,11 +19,6 @@ namespace graphics
 class SceneContext;
 }
 
-namespace sprite
-{
-class ISpriteRenderer;
-}
-
 namespace studiomdl
 {
 class StudioModelRenderer;
@@ -46,7 +41,6 @@ public:
 	studiomodel::StudioModelAsset* Asset;
 	WorldTime* const Time;
 	studiomdl::StudioModelRenderer* const StudioModelRenderer;
-	sprite::ISpriteRenderer* const SpriteRenderer;
 	ISoundSystem* const SoundSystem;
 	ApplicationSettings* const AppSettings;
 	StudioModelSettings* const StudioSettings;
@@ -54,13 +48,11 @@ public:
 	EntityContext(studiomodel::StudioModelAsset* asset,
 		WorldTime* time,
 		studiomdl::StudioModelRenderer* studioModelRenderer,
-		sprite::ISpriteRenderer* spriteRenderer,
 		ISoundSystem* soundSystem,
 		::ApplicationSettings* appSettings,
 		StudioModelSettings* studioSettings)
 		: Asset(asset)
 		, Time(time)
-		, SpriteRenderer(spriteRenderer)
 		, StudioModelRenderer(studioModelRenderer)
 		, SoundSystem(soundSystem)
 		, AppSettings(appSettings)
