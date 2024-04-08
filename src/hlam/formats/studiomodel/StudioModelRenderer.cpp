@@ -627,7 +627,9 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 		const auto& mesh = *pMeshes[j].Mesh;
 		auto ptricmds = mesh.Triangles.data();
 
-		const auto& texture = *_studioModel->Textures[_studioModel->SkinFamilies[_renderInfo->Skin][mesh.SkinRef]];
+		const short textureIndex = _studioModel->SkinFamilies[_renderInfo->Skin][mesh.SkinRef];
+
+		const auto& texture = *_studioModel->Textures[textureIndex];
 
 		const auto s = 1.0 / (float)texture.Data.Width;
 		const auto t = 1.0 / (float)texture.Data.Height;
@@ -660,7 +662,7 @@ unsigned int StudioModelRenderer::DrawMeshes(const bool bWireframe, const Sorted
 				_openglFunctions->glAlphaFunc(GL_GREATER, 0.5f);
 			}
 
-			_openglFunctions->glBindTexture(GL_TEXTURE_2D, texture.TextureId);
+			_openglFunctions->glBindTexture(GL_TEXTURE_2D, _studioModel->TextureHandles[textureIndex]);
 		}
 
 		int i;

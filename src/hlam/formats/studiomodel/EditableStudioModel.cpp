@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <limits>
 
 #include <glm/gtc/quaternion.hpp>
@@ -98,9 +99,13 @@ std::vector<const StudioMesh*> EditableStudioModel::ComputeMeshList(const int te
 
 void EditableStudioModel::CreateTextures(graphics::TextureLoader& textureLoader)
 {
-	for (auto& texture : Textures)
+	assert(TextureHandles.empty());
+
+	TextureHandles.resize(Textures.size(), GL_INVALID_TEXTURE_ID);
+
+	for (auto& textureId : TextureHandles)
 	{
-		texture->TextureId = textureLoader.CreateTexture();
+		textureId = textureLoader.CreateTexture();
 	}
 
 	UpdateTextures(textureLoader);
@@ -131,7 +136,7 @@ void EditableStudioModel::UpdateTexture(graphics::TextureLoader& textureLoader, 
 	}
 
 	textureLoader.UploadIndexed8(
-		texture.TextureId,
+		TextureHandles[index],
 		texture.Data.Width, texture.Data.Height,
 		texture.Data.Pixels.data(),
 		palette,
@@ -149,20 +154,22 @@ void EditableStudioModel::UpdateTextures(graphics::TextureLoader& textureLoader)
 
 void EditableStudioModel::DeleteTextures(graphics::TextureLoader& textureLoader)
 {
-	for (auto& texture : Textures)
+	for (auto& textureId : TextureHandles)
 	{
-		textureLoader.DeleteTexture(texture->TextureId);
-		texture->TextureId = 0;
+		textureLoader.DeleteTexture(textureId);
+		textureId = GL_INVALID_TEXTURE_ID;
 	}
+
+	TextureHandles.clear();
 }
 
 void EditableStudioModel::UpdateFilters(graphics::TextureLoader& textureLoader)
 {
-	for (const auto& texture : Textures)
+	for (std::size_t i = 0; i < Textures.size(); ++i)
 	{
-		if (texture->TextureId)
+		if (TextureHandles[i] != GL_INVALID_TEXTURE_ID)
 		{
-			textureLoader.SetFilters(texture->TextureId, (texture->Flags & STUDIO_NF_MIPMAPS) != 0);
+			textureLoader.SetFilters(TextureHandles[i], (Textures[i]->Flags & STUDIO_NF_MIPMAPS) != 0);
 		}
 	}
 }

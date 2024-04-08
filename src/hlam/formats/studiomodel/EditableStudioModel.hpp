@@ -191,8 +191,6 @@ struct StudioTexture
 	std::string Name;
 	int Flags = 0;
 	StudioTextureData Data;
-
-	GLuint TextureId = 0;
 };
 
 constexpr std::array<StudioSequenceBlendData, SequenceBlendCount> CounterStrikeBlendRanges{{{0, -180, 180}, {0, -45, 45}}};
@@ -234,6 +232,9 @@ public:
 	std::vector<std::vector<short>> SkinFamilies;
 
 	std::vector<std::vector<std::uint8_t>> Transitions;
+
+	// In-memory state.
+	std::vector<GLuint> TextureHandles;
 
 	// Used for remapping; not stored in the model.
 	int TopColor = 0;

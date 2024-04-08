@@ -60,7 +60,7 @@ void TextureEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		sc.OpenGLFunctions->glEnable(GL_TEXTURE_2D);
 		sc.OpenGLFunctions->glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		sc.OpenGLFunctions->glBindTexture(GL_TEXTURE_2D, texture.TextureId);
+		sc.OpenGLFunctions->glBindTexture(GL_TEXTURE_2D, model->TextureHandles[_textureIndex]);
 
 		sc.OpenGLFunctions->glBegin(GL_TRIANGLE_STRIP);
 
