@@ -8,12 +8,12 @@
 #include "graphics/GraphicsUtils.hpp"
 #include "graphics/SceneContext.hpp"
 
+#include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 
 #include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
 #include "plugins/halflife/studiomodel/settings/StudioModelSettings.hpp"
-#include "application/AssetManager.hpp"
 
 void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
@@ -103,7 +103,7 @@ void GroundEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 		_groundTextureOffset.x = std::fmod(_groundTextureOffset.x, groundTextureLength);
 		_groundTextureOffset.y = std::fmod(_groundTextureOffset.y, groundTextureLength);
 
-		auto colors = GetContext()->Asset->GetApplication()->GetColorSettings();
+		auto colors = GetContext()->AppSettings->GetColorSettings();
 
 		std::optional<GLuint> texture;
 

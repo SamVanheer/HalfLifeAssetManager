@@ -18,9 +18,7 @@
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 
-#include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
-#include "application/AssetManager.hpp"
 
 namespace graphics
 {
@@ -54,7 +52,7 @@ Scene::Scene(std::string&& name, EntityContext* entityContext)
 {
 	SetCurrentCamera(nullptr);
 
-	SkyLight.Color = _entityContext->Asset->GetApplication()->GetColorSettings()->GetColor(studiomodel::SkyLightColor);
+	SkyLight.Color = _entityContext->AppSettings->GetColorSettings()->GetColor(studiomodel::SkyLightColor);
 }
 
 Scene::~Scene() = default;

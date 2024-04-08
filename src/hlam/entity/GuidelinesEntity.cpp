@@ -17,9 +17,7 @@
 #include "settings/ApplicationSettings.hpp"
 #include "settings/ColorSettings.hpp"
 
-#include "plugins/halflife/studiomodel/StudioModelAsset.hpp"
 #include "plugins/halflife/studiomodel/StudioModelColors.hpp"
-#include "application/AssetManager.hpp"
 
 void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
@@ -38,7 +36,7 @@ void GuidelinesEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 
 		sc.OpenGLFunctions->glDisable(GL_TEXTURE_2D);
 
-		auto colors = GetContext()->Asset->GetApplication()->GetColorSettings();
+		auto colors = GetContext()->AppSettings->GetColorSettings();
 
 		sc.OpenGLFunctions->glColor4fv(glm::value_ptr(colors->GetColor(studiomodel::CrosshairColor)));
 
