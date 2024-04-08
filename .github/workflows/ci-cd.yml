@@ -45,7 +45,7 @@ jobs:
       - name: Prepare artifacts
         run: |
           mkdir "Half-Life Asset Manager"
-          mv build/HLAM "Half-Life Asset Manager"
+          mv build/hlam "Half-Life Asset Manager"
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
