@@ -5,9 +5,9 @@ This document was made to be converted to PDF with this Visual Studio Code exten
 ![hlam_icon](../../assets/hlam_icon2_grayscale.png)
 
 <h1 align="center">Half-Life Asset Manager Manual</h1>
-<h3 align="center">Version 2.1.0</h3>
+<h3 align="center">Version 3.0.0 Beta</h3>
 <h3 align="center">Sam Vanheer</h3>
-<p align="center">January 15, 2024</p>
+<p align="center">April 8, 2024</p>
 
 <div class="page"/>
 
