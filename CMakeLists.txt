@@ -18,6 +18,16 @@ project(HalfLifeAssetManager
 	DESCRIPTION "Half-Life Asset Manager"
 	LANGUAGES CXX)
 
+# Default to Alpha. CI builds will always be Alpha builds.
+set(BUILD_TYPE "Alpha" "Beta" "Public")
+set(HLAM_BUILD_TYPE "Alpha" CACHE STRING "What type of build you're making")
+set_property(CACHE HLAM_BUILD_TYPE PROPERTY STRINGS ${BUILD_TYPE})
+
+list(FIND BUILD_TYPE "${HLAM_BUILD_TYPE}" BUILD_TYPE_INDEX)
+if(BUILD_TYPE_INDEX EQUAL -1)
+	message(FATAL_ERROR "HLAM_BUILD_TYPE must be one of: ${BUILD_TYPE}")
+endif()
+
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -39,6 +49,7 @@ add_custom_target(ProjectInfo
 		-D HLAM_VERSION_MAJOR=${HLAM_VERSION_MAJOR}
 		-D HLAM_VERSION_MINOR=${HLAM_VERSION_MINOR}
 		-D HLAM_VERSION_PATCH=${HLAM_VERSION_PATCH}
+		-D HLAM_BUILD_TYPE=${HLAM_BUILD_TYPE}
 		-D GIT_EXECUTABLE=${GIT_EXECUTABLE}
 		-P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/UpdateProjectInfo.cmake
 	BYPRODUCTS ${CMAKE_BINARY_DIR}/ProjectInfo.hpp)

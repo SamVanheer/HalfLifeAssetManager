@@ -6,6 +6,8 @@ constexpr int HLAMVersionMajor{@HLAM_VERSION_MAJOR@};
 constexpr int HLAMVersionMinor{@HLAM_VERSION_MINOR@};
 constexpr int HLAMVersionPatch{@HLAM_VERSION_PATCH@};
 
+constexpr char HLAMBuildType[]{"@HLAM_BUILD_TYPE@"};
+
 constexpr char HLAMGitBranchName[]{"@HLAM_GIT_BRANCH@"};
 constexpr char HLAMGitTagName[]{"@HLAM_GIT_TAG@"};
 constexpr char HLAMGitCommitHash[]{"@HLAM_GIT_COMMIT_HASH@"};

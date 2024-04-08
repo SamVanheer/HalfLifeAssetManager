@@ -13,10 +13,11 @@
 
 static QString GetVersionInfo()
 {
-	return QString{"%1.%2.%3"}
+	return QString{"%1.%2.%3 %4"}
 		.arg(HLAMVersionMajor)
 		.arg(HLAMVersionMinor)
-		.arg(HLAMVersionPatch);
+		.arg(HLAMVersionPatch)
+		.arg(HLAMBuildType);
 }
 
 static QString GetBuildConfiguration()
