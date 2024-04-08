@@ -2,7 +2,7 @@
 [Desktop Entry]
 Type=Application
 Version=3.0
-Exec=HLAM %u
+Exec=hlam %u
 Icon=hlam
 Name=Half-Life Asset Manager
 Comment=Application for viewing and editing Half-Life 1 models
