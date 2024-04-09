@@ -40,9 +40,10 @@ void StudioModelEntity::Spawn()
 void StudioModelEntity::Draw(graphics::SceneContext& sc, RenderPasses renderPass)
 {
 	auto asset = GetContext()->Asset;
-	auto settings = GetContext()->StudioSettings;
 
 	/*
+	auto settings = GetContext()->StudioSettings;
+
 	// setup stencil buffer and draw mirror
 	if (asset->GetGroundEntity()->MirrorOnGround)
 	{
@@ -299,8 +300,6 @@ int StudioModelEntity::GetAnimationEvent(AnimEvent& event, float start, float en
 	{
 		return 0;
 	}
-
-	int events = 0;
 
 	const auto& sequenceDescriptor = *_editableModel->Sequences[_sequence];
 

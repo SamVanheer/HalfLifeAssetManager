@@ -64,7 +64,7 @@ void HLMVStudioModelEntity::AnimThink()
 {
 	if (GetContext()->Asset->PlaySequence)
 	{
-		const float flTime = AdvanceFrame(0.0f, 0.1f);
+		AdvanceFrame(0.0f, 0.1f);
 
 		DispatchAnimEvents();
 	}

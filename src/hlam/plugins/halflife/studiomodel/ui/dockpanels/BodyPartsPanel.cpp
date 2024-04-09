@@ -64,7 +64,6 @@ void BodyPartsPanel::OnAssetChanged(StudioModelAsset* asset)
 
 	// TODO: maybe store the list of submodels for each bodypart in user data
 
-	const int skin = _asset->GetEntity()->GetSkin();
 	{
 		const QSignalBlocker skinBlocker{_ui.Skins};
 		_ui.Skins->setModel(modelData->Skins);

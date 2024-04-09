@@ -235,8 +235,6 @@ size_t SoundSystem::GetSoundForPlayback()
 
 	_soundsLRU.pop_back();
 
-	auto& sound = _sounds[uiIndex];
-
 	//Reset the sound data. Must be done after the above actions so it doesn't try to access null pointers.
 	_sounds[uiIndex].reset();
 

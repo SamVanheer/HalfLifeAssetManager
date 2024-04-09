@@ -34,8 +34,6 @@ OptionsPageGeneralWidget::OptionsPageGeneralWidget(
 {
 	_ui.setupUi(this);
 
-	auto settings = _application->GetSettings();
-
 	_ui.TickRate->setRange(ApplicationSettings::MinimumTickRate, ApplicationSettings::MaximumTickRate);
 
 	_ui.MouseSensitivitySlider->setRange(ApplicationSettings::MinimumMouseSensitivity, ApplicationSettings::MaximumMouseSensitivity);

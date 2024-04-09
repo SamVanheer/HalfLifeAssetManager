@@ -127,8 +127,6 @@ void OpenInExternalProgramDialog::OpenRow(int row)
 		return;
 	}
 
-	const auto externalPrograms = _application->GetApplicationSettings()->GetExternalPrograms();
-
 	const auto fileName = item->text();
 	const auto externalProgramKey = item->data(Qt::UserRole).toString();
 

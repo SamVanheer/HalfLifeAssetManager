@@ -146,9 +146,9 @@ void EditableStudioModel::UpdateTexture(graphics::TextureLoader& textureLoader, 
 
 void EditableStudioModel::UpdateTextures(graphics::TextureLoader& textureLoader)
 {
-	for (std::size_t index = 0; const auto& texture : Textures)
+	for (std::size_t index = 0; index < Textures.size(); ++index)
 	{
-		UpdateTexture(textureLoader, index++);
+		UpdateTexture(textureLoader, index);
 	}
 }
 
@@ -789,9 +789,6 @@ void ApplyScaledSTCoordinatesData(const EditableStudioModel& studioModel, const 
 					{
 						while (cmd-- > 0)
 						{
-							short s = cmds[2];
-							short t = cmds[3];
-
 							cmds[2] = coordinates->S;
 							cmds[3] = coordinates->T;
 

@@ -564,7 +564,6 @@ void MainWindow::MaybeOpenAll(const QStringList& fileNames)
 	std::vector<ExternalProgramCommand> filesToLoadInExternalPrograms;
 
 	{
-		const auto externalPrograms = _application->GetApplicationSettings()->GetExternalPrograms();
 		const std::shared_ptr<spdlog::logger> logger = _application->GetLogger();
 
 		const TimerSuspender timerSuspender{_application};
@@ -573,7 +572,7 @@ void MainWindow::MaybeOpenAll(const QStringList& fileNames)
 		_assetsWidget->setVisible(false);
 		_modifyingTabs = true;
 
-		for (int i = 0; const auto & fileName : fileNames)
+		for (const auto& fileName : fileNames)
 		{
 			auto loadResult = _assets->TryLoad(fileName);
 
