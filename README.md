@@ -1,5 +1,8 @@
 # Half-Life Asset Manager
 
+> **Note**
+> This program is no longer in development.
+
 Half-Life Asset Manager is a model viewer for Half-Life 1. It can be used to view and edit Half-Life 1 Studio models (`.mdl`).
 
 > **Note**
